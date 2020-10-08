@@ -13,6 +13,7 @@ const Template = (args) => <Button {...args} />;
 export const Default = Template.bind({});
 Default.storyName = "Default";
 Default.args = {
+  label: "Lorem ipsum sit",
   children: "Button",
 };
 

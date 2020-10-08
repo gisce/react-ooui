@@ -11,7 +11,8 @@ const Template = (args) => <Char {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
-  placeholder: "Example...",
+  label: "Lorem ispum sit",
+  placeholder: "Type something...",
   value: "",
   onChange: (value) => {
     console.log("Changed, new value: " + value);

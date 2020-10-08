@@ -1,17 +1,27 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Button as AntButton } from "antd";
+import { Form, Button as AntButton } from "antd";
 import "./Button.css";
 
-export const Button = ({ type, activated, onClick, ...props }) => {
+export const Button = ({ type, activated, onClick, label, ...props }) => {
   return (
-    <AntButton {...props} type={type} disabled={!activated} onClick={onClick}>
-      {props.children}
-    </AntButton>
+    <Form.Item label={label}>
+      <AntButton {...props} type={type} disabled={!activated} onClick={onClick}>
+        {props.children}
+      </AntButton>
+    </Form.Item>
   );
 };
 
 Button.propTypes = {
+  /**
+   * Label
+   */
+  label: PropTypes.string,
+  /**
+   * Button caption
+   */
+  children: PropTypes.string.isRequired,
   /**
    * What type should the button be?
    */
@@ -24,10 +34,6 @@ Button.propTypes = {
    * Optional click handler
    */
   onClick: PropTypes.func,
-  /**
-   * Label
-   */
-  children: PropTypes.string.isRequired,
 };
 
 Button.defaultProps = {

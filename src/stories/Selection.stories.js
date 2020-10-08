@@ -11,6 +11,7 @@ const Template = (args) => <Selection {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
+  label: "Lorem ipsum sit",
   value: "",
   values: [{
     id: '1', name: "Option 1"
