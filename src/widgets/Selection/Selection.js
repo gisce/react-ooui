@@ -1,10 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Select } from "antd";
+import { Form, Select } from "antd";
 import "./Selection.css";
 
 export const Selection = ({
   id,
+  label,
   defaultValue,
   values,
   placeholder,
@@ -20,7 +21,11 @@ export const Selection = ({
       return <Option value={v.id}>{v.name}</Option>;
     });
 
-  return <Select {...props}>{options}</Select>;
+  return (
+    <Form.Item label={label}>
+      <Select {...props}>{options}</Select>
+    </Form.Item>
+  );
 };
 
 Selection.propTypes = {
@@ -28,6 +33,10 @@ Selection.propTypes = {
    * The ID for selection
    */
   id: PropTypes.string,
+  /**
+   * Label
+   */
+  label: PropTypes.string,
   /**
    * The input content value
    */

@@ -1,10 +1,10 @@
 import React from "react";
 
-import { Button } from "../atoms";
+import { Button } from "../widgets";
 
 export default {
   component: Button,
-  title: "Components/Atoms/Button",
+  title: "Components/Widgets/Form/Button",
   argTypes: { onClick: { action: 'clicked' } },
 };
 
@@ -13,6 +13,7 @@ const Template = (args) => <Button {...args} />;
 export const Default = Template.bind({});
 Default.storyName = "Default";
 Default.args = {
+  label: "Lorem ipsum sit",
   children: "Button",
 };
 

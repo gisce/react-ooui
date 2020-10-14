@@ -1,10 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Input } from "antd";
+import { Form, Input } from "antd";
 import "./Char.css";
 
 export const Char = ({
   id,
+  label,
   value,
   placeholder,
   onChange,
@@ -12,15 +13,19 @@ export const Char = ({
   ...props
 }) => {
   return (
-    <Input
-      {...props}
-      id={id}
-      placeholder={placeholder}
-      onChange={onChange}
-      onPressEnter={onPressEnter}
-    >
-      {props.children}
-    </Input>
+    <Form.Item label={label}>
+      <Input
+        {...props}
+        id={id}
+        label={label}
+        value={value}
+        placeholder={placeholder}
+        onChange={onChange}
+        onPressEnter={onPressEnter}
+      >
+        {props.children}
+      </Input>
+    </Form.Item>
   );
 };
 
@@ -29,6 +34,10 @@ Char.propTypes = {
    * The ID for input
    */
   id: PropTypes.string,
+  /**
+   * Label
+   */
+  label: PropTypes.string,
   /**
    * The input content value
    */
