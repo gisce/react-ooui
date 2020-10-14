@@ -1,10 +1,10 @@
 import React from "react";
 
-import { Char } from "../atoms";
+import { Char } from "../widgets";
 
 export default {
   component: Char,
-  title: "Components/Atoms/Char",
+  title: "Components/Widgets/Form/Char",
 };
 
 const Template = (args) => <Char {...args} />;
