@@ -11,13 +11,19 @@ export const Char = ({
   onChange,
   onPressEnter,
   ...props
+}: {
+  id: string,
+  label?: string,
+  value?: string,
+  placeholder?: string,
+  onChange?: ((event: React.ChangeEvent<HTMLInputElement>) => void) | undefined,
+  onPressEnter?: ((event: React.KeyboardEvent<HTMLInputElement>) => void) | undefined,
 }) => {
   return (
     <Form.Item label={label}>
       <Input
         {...props}
         id={id}
-        label={label}
         value={value}
         placeholder={placeholder}
         onChange={onChange}
