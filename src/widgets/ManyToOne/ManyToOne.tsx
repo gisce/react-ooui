@@ -13,16 +13,36 @@ export const ManyToOne = ({
   onOpenDetailClick,
   onSearchClick,
   ...props
+}: {
+  id: string;
+  label?: string;
+  value?: string;
+  placeholder?: string;
+  onChange?: ((event: React.ChangeEvent<HTMLInputElement>) => void) | undefined;
+  onOpenDetailClick?:
+    | ((event: React.MouseEvent<HTMLElement, MouseEvent>) => void)
+    | undefined;
+  onSearchClick?:
+    | ((event: React.MouseEvent<HTMLElement, MouseEvent>) => void)
+    | undefined;
 }) => {
   return (
     <Form.Item label={label}>
       <Input.Group>
         <Row gutter={8}>
           <Col flex="auto">
-            <Input placeholder={placeholder} defaultValue={value} onChange={onChange} />
+            <Input
+              placeholder={placeholder}
+              defaultValue={value}
+              onChange={onChange}
+            />
           </Col>
           <Col flex="32px">
-            <Button icon={<FolderOpenOutlined />} onClick={onOpenDetailClick} disabled={!value} />
+            <Button
+              icon={<FolderOpenOutlined />}
+              onClick={onOpenDetailClick}
+              disabled={!value}
+            />
           </Col>
           <Col flex="32px">
             <Button icon={<SearchOutlined />} onClick={onSearchClick} />

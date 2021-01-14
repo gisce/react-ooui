@@ -3,7 +3,28 @@ import PropTypes from "prop-types";
 import { Form, Button as AntButton } from "antd";
 import "./Button.css";
 
-export const Button = ({ type, activated, onClick, label, ...props }) => {
+export const Button = ({
+  type,
+  activated,
+  onClick,
+  label,
+  ...props
+}: {
+  type?:
+    | "text"
+    | "link"
+    | "ghost"
+    | "default"
+    | "primary"
+    | "dashed"
+    | undefined;
+  activated?: boolean;
+  onClick?:
+    | ((event: React.MouseEvent<HTMLElement, MouseEvent>) => void)
+    | undefined;
+  label?: string;
+  children?: React.ReactNode,
+}) => {
   return (
     <Form.Item label={label}>
       <AntButton {...props} type={type} disabled={!activated} onClick={onClick}>
@@ -38,5 +59,5 @@ Button.propTypes = {
 
 Button.defaultProps = {
   type: "default",
-  activated: true
+  activated: true,
 };

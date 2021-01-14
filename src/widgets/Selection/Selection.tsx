@@ -3,6 +3,11 @@ import PropTypes from "prop-types";
 import { Form, Select } from "antd";
 import "./Selection.css";
 
+type OptionValue = {
+  id: string,
+  name: string
+};
+
 export const Selection = ({
   id,
   label,
@@ -11,6 +16,13 @@ export const Selection = ({
   placeholder,
   onChange,
   ...props
+}: {
+  id: string;
+  label?: string;
+  defaultValue?: string;
+  values?: OptionValue[];
+  placeholder?: string;
+  onChange?: ((event: React.ChangeEvent<HTMLInputElement>) => void) | undefined;
 }) => {
   const { Option } = Select;
 
