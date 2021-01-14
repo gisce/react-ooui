@@ -1,8 +1,6 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { Form, Input, Button, Row, Col } from "antd";
 import { SearchOutlined, FolderOpenOutlined } from "@ant-design/icons";
-import "./ManyToOne.css";
 
 export const ManyToOne = ({
   id,
@@ -51,27 +49,4 @@ export const ManyToOne = ({
       </Input.Group>
     </Form.Item>
   );
-};
-
-ManyToOne.propTypes = {
-  /**
-   * The ID for selection
-   */
-  id: PropTypes.string,
-  /**
-   * Label
-   */
-  label: PropTypes.string,
-  /**
-   * The input default value
-   */
-  defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  /**
-   * Callback when user clicks open detail button
-   */
-  onOpenDetailClick: PropTypes.func,
-  /**
-   * Callback when user clicks search button
-   */
-  onSearchClick: PropTypes.func,
 };

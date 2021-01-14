@@ -1,11 +1,12 @@
 import React from "react";
 
-import { Button } from "../widgets";
+import { Button } from "..";
+import "antd/dist/antd.css";
 
 export default {
   component: Button,
   title: "Components/Widgets/Form/Button",
-  argTypes: { onClick: { action: 'clicked' } },
+  argTypes: { onClick: { action: "clicked" } },
 };
 
 const Template = (args) => <Button {...args} />;

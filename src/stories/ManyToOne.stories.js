@@ -1,6 +1,7 @@
 import React from "react";
 
-import { ManyToOne } from "../widgets";
+import { ManyToOne } from "..";
+import "antd/dist/antd.css";
 
 export default {
   component: ManyToOne,

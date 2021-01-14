@@ -1,6 +1,7 @@
 import React from "react";
 
-import { Checkbox } from "../widgets";
+import { Checkbox } from "..";
+import "antd/dist/antd.css";
 
 export default {
     component: Checkbox,
