@@ -7,7 +7,7 @@ The component library for OpenObject & OpenERP objects based on [ant-design](htt
 Install via git:
 
 ```bash
-$ npm i git://github.com/gisce/react-ooui.git#feature/webpack_lib
+npm i git://github.com/gisce/react-ooui.git#webpack_lib
 ```
 
 Import library components:
@@ -37,20 +37,16 @@ const getOouiComponents = () => {
 
 You have an example app inside this repo. In order to run it you should follow these steps:
 
-```
-$ cd example
-$ npm install
-$ npm run start
-```
+- `cd example`
+- `npm install`
+- `npm start`
 
 ## 👷🏽‍♂️ Building
 
 You must run:
 
-```bash
-$ npm install
-$ npm run build
-```
+- `npm install`
+- `npm run build`
 
 And then you will have the bundled library inside `dist/`
 
@@ -58,7 +54,5 @@ And then you will have the bundled library inside `dist/`
 
 You can browse our Storybook running:
 
-```bash
-$ npm install
-$ npm run storybook
-```
+- `npm install`
+- `npm run storybook`
