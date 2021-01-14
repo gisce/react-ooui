@@ -7,7 +7,7 @@ The component library for OpenObject & OpenERP objects based on [ant-design](htt
 Install via git:
 
 ```bash
-npm i git://github.com/gisce/react-ooui.git#webpack_lib
+npm i git+ssh://github.com/gisce/react-ooui.git#webpack_lib
 ```
 
 Import library components:
