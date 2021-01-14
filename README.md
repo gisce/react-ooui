@@ -2,35 +2,40 @@
 
 The component library for OpenObject & OpenERP objects based on [ant-design](https://github.com/ant-design/ant-design) and built with TypeScript.
 
-## 🚀 Usage
+## 🚀 Usage
 
 Install via git:
 
 ```bash
-$ npm i git://github.com/gisce/react-ooui.git#feature/webpack_lib```
+$ npm i git://github.com/gisce/react-ooui.git#feature/webpack_lib
+```
 
-Import library components: 
+Import library components:
 
 ```javascript
-import { Button, Char } from "react-ooui";```
+import { Button, Char } from "react-ooui";
+```
 
 Import `ant-design` CSS:
 
-```javascript 
-import "antd/dist/antd.css";```
+```javascript
+import "antd/dist/antd.css";
+```
 
 And then you can use it:
 
 ```javascript
 const getOouiComponents = () => {
-  return (<>
-    <Char id="test" placeholder="Enter a task" />
-    <Button type="dashed">Button</Button>
-  </>)
+  return (
+    <>
+      <Char id="test" placeholder="Enter a task" />
+      <Button type="dashed">Button</Button>
+    </>
+  );
 };
 ```
 
-You have an example app inside this repo, so you can test it:
+You have an example app inside this repo. In order to run it you should follow these steps:
 
 ```
 $ cd example
@@ -40,7 +45,7 @@ $ npm run start
 
 ## 👷🏽‍♂️ Building
 
-You have to run:
+You must run:
 
 ```bash
 $ npm install
