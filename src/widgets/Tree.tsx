@@ -51,7 +51,7 @@ function Tree(props: Props): React.ReactElement {
     };
   });
 
-  const from = (page - 1) * limit;
+  const from = (page - 1) * limit + 1;
   const summary = loading ? (
     <Spin />
   ) : (
