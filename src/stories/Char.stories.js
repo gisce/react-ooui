@@ -1,6 +1,7 @@
 import React from "react";
 
-import { Char } from "../widgets";
+import { Char } from "..";
+import "antd/dist/antd.css";
 
 export default {
   component: Char,

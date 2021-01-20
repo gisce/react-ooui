@@ -1,46 +1,58 @@
-# Getting Started with Create React App
+# react-ooui
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The component library for OpenObject & OpenERP objects based on [ant-design](https://github.com/ant-design/ant-design) and built with TypeScript.
 
-## Available Scripts
+## 🚀 Usage
 
-In the project directory, you can run:
+Install via git:
 
-### `yarn start`
+```bash
+npm i git+ssh://github.com/gisce/react-ooui.git#webpack_lib
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Import library components:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```javascript
+import { Button, Char } from "react-ooui";
+```
 
-### `yarn test`
+Import `ant-design` CSS:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```javascript
+import "antd/dist/antd.css";
+```
 
-### `yarn build`
+And then you can use it:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```javascript
+const getOouiComponents = () => {
+  return (
+    <>
+      <Char id="test" placeholder="Enter a task" />
+      <Button type="dashed">Button</Button>
+    </>
+  );
+};
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+You have an example app inside this repo. In order to run it you should follow these steps:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- `cd example`
+- `npm install`
+- `npm start`
 
-### `yarn eject`
+## 👷🏽‍♂️ Building
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+You must run:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- `npm install`
+- `npm run build`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+And then you will have the bundled library inside `dist/`
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## 🎨 Storybook
 
-## Learn More
+You can browse our Storybook running:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- `npm install`
+- `npm run storybook`

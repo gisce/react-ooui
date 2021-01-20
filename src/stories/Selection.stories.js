@@ -1,6 +1,7 @@
 import React from "react";
 
-import { Selection } from "../widgets";
+import { Selection } from "..";
+import "antd/dist/antd.css";
 
 export default {
   component: Selection,
