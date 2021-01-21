@@ -1,55 +1,48 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Pagination, Checkbox, Spin } from "antd";
-
-type Column = {
-  title: string;
-  dataIndex: string;
-  key: string;
-  type?: string;
-};
+import {
+  TreeView,
+  Column,
+  getTree,
+  getTableColumns,
+  getTableItems,
+} from "../helpers/TreeHelper";
 
 type Props = {
   total: number;
   limit: number;
   page: number;
-  items: Array<any>;
   loading: boolean;
-  columns: Array<Column>;
+  treeView: TreeView;
+  results: Array<any>;
   onRequestPageChange: (page: number, pageSize?: number) => void;
 };
 
 function Tree(props: Props): React.ReactElement {
   const {
-    limit,
-    items,
-    columns,
-    total,
-    onRequestPageChange,
     page,
+    limit,
+    total,
+    treeView,
+    results,
+    onRequestPageChange,
     loading,
   } = props;
 
-  const columnsForTable = columns.map((column: Column) => {
-    const { title, dataIndex, key, type } = column;
-    const render =
-      type === "Boolean"
-        ? (booleanField: boolean) => {
-            return <Checkbox defaultChecked={booleanField} disabled />;
-          }
-        : undefined;
+  const [items, setItems] = useState<Array<any>>([]);
+  const [columns, setColumns] = useState<Array<Column>>([]);
 
-    return {
-      title,
-      dataIndex,
-      key,
-      render,
-      sorter: (a: any, b: any) => {
-        if (a[key] < b[key]) return -1;
-        if (a[key] > b[key]) return 1;
-        return 0;
-      },
+  useEffect(() => {
+    const tree = getTree(treeView);
+    const booleanComponentFn = (booleanField: boolean): React.ReactElement => {
+      return <Checkbox defaultChecked={booleanField} disabled />;
     };
-  });
+    const columns = getTableColumns(tree, booleanComponentFn);
+    const items = getTableItems(tree, results);
+
+    setColumns(columns);
+    setItems(items);
+  }, [treeView, results]);
 
   const from = (page - 1) * limit + 1;
   const summary = loading ? (
@@ -71,7 +64,7 @@ function Tree(props: Props): React.ReactElement {
         onChange={onRequestPageChange}
       />
       <Table
-        columns={columnsForTable}
+        columns={columns}
         dataSource={items}
         pagination={false}
         loading={loading}

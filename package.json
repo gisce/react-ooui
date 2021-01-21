@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "antd": "^4.10.2",
+    "ooui": "git+ssh://git@github.com/gisce/ooui.js.git#implement_tree",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   },
