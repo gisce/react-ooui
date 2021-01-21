@@ -8,6 +8,8 @@ import {
   getTableItems,
 } from "../helpers/TreeHelper";
 
+export { TreeView } from "../helpers/TreeHelper";
+
 type Props = {
   total: number;
   limit: number;

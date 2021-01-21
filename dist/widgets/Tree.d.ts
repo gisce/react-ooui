@@ -1,5 +1,6 @@
 import React from "react";
 import { TreeView } from "../helpers/TreeHelper";
+export { TreeView } from "../helpers/TreeHelper";
 declare type Props = {
     total: number;
     limit: number;
