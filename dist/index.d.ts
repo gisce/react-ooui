@@ -4,5 +4,6 @@ import { Selection } from "./widgets/Selection";
 import { Checkbox } from "./widgets/Checkbox";
 import { ManyToOne } from "./widgets/ManyToOne";
 import Tree from "./widgets/Tree";
-export { Button, Char, Selection, Checkbox, ManyToOne, Tree };
+import { TreeView } from "./helpers/TreeHelper";
+export { Button, Char, Selection, Checkbox, ManyToOne, Tree, TreeView };
 //# sourceMappingURL=index.d.ts.map
