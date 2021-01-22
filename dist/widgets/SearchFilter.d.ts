@@ -1,4 +1,6 @@
 import React from "react";
+import "antd/dist/antd.css";
+import "../tailwind.generated.css";
 declare type SearchFields = {
     primary: string[];
     secondary: string[];
