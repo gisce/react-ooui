@@ -60,7 +60,7 @@ const getTableItems = (treeOoui: TreeOoui, results: Array<any>): Array<any> => {
         const widget = treeOoui.findById(key);
 
         if (widget instanceof Selection) {
-          const selection = widget as Selection;
+          const selection = widget;
           parsedItem[key] = selection.selectionValues.get(item[key]);
         } else if (widget instanceof Many2one) {
           parsedItem[key] = item[key][1];
@@ -77,10 +77,4 @@ const getTableItems = (treeOoui: TreeOoui, results: Array<any>): Array<any> => {
   return tableItems;
 };
 
-export {
-  TreeView,
-  Column,
-  getTableColumns,
-  getTableItems,
-  getTree,
-};
+export { TreeView, Column, getTableColumns, getTableItems, getTree };
