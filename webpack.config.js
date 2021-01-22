@@ -28,6 +28,7 @@ module.exports = {
         loader: "ts-loader",
         exclude: /node_modules/,
       },
+      { test: /\.css$/, loader: "ignore-loader" },
     ],
   },
   // plugins: [new BundleAnalyzerPlugin()],
