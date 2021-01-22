@@ -12,5 +12,5 @@ declare type Column = {
 declare const getTree: (treeView: TreeView) => TreeOoui;
 declare const getTableColumns: (tree: TreeOoui, booleanComponent: any) => Array<Column>;
 declare const getTableItems: (treeOoui: TreeOoui, results: Array<any>) => Array<any>;
-export { TreeView, Column, getTableColumns, getTableItems, getTree, };
+export { TreeView, Column, getTableColumns, getTableItems, getTree };
 //# sourceMappingURL=TreeHelper.d.ts.map
