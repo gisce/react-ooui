@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col } from "antd";
+import { Form, Row, Col, Button } from "antd";
+import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 import "../tailwind.generated.css";
 import { Char } from "./Char";
@@ -34,7 +35,7 @@ function SearchFilter(props: Props): React.ReactElement {
       return;
     }
 
-    return advancedSearchFields?.rows.map((row, i) => {
+    return simpleSearchFields?.rows.map((row, i) => {
       return (
         <Row key={i}>
           {row.map((item, j) => {
@@ -76,7 +77,38 @@ function SearchFilter(props: Props): React.ReactElement {
 
   const rows = getRowsAndCols();
 
-  return <>{rows}</>;
+  return (
+    <Form className="bg-gray-100 rounded p-3" layout="vertical">
+      <Row>
+        <Col span={24} className="text-left pb-4">
+          <a
+            className="text-xs"
+            onClick={() => {
+              // setExpand(!expand);
+            }}
+          >
+            {<DownOutlined />} Advanced search
+          </a>
+        </Col>
+      </Row>
+      {rows}
+      <Row>
+        <Col span={24} className="text-right pb-2">
+          <Button
+            className="mr-5"
+            onClick={() => {
+              // form.resetFields();
+            }}
+          >
+            Clear
+          </Button>
+          <Button className="mr-2" type="primary" htmlType="submit">
+            Search
+          </Button>
+        </Col>
+      </Row>
+    </Form>
+  );
 }
 
 export default SearchFilter;

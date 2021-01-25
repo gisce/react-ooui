@@ -1,4 +1,5 @@
 import React from "react";
+import "../tailwind.generated.css";
 export declare const Char: ({ id, label, value, placeholder, onChange, onPressEnter, ...props }: {
     id: string;
     label?: string | undefined;
