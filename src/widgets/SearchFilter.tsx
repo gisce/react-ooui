@@ -29,13 +29,17 @@ function SearchFilter(props: Props): React.ReactElement {
 
   const [simpleSearchFields, setSimpleSearchFields] = useState<Container>();
   const [advancedSearchFields, setAdvancedSearchFields] = useState<Container>();
+  const [advancedFilter, setAdvancedFilter] = useState(false);
+  const [form] = Form.useForm();
 
   const getRowsAndCols = () => {
     if (!advancedSearchFields) {
       return;
     }
 
-    return simpleSearchFields?.rows.map((row, i) => {
+    const fields = advancedFilter ? advancedSearchFields : simpleSearchFields;
+
+    return fields?.rows.map((row, i) => {
       return (
         <Row key={i}>
           {row.map((item, j) => {
@@ -46,7 +50,7 @@ function SearchFilter(props: Props): React.ReactElement {
               <Char id={char._id} label={char.label || char._id} />
             );
             return (
-              <Col className="p-2" span={6} key={j}>
+              <Col xs={24} className="p-2" xl={6} key={j}>
                 {widget}
               </Col>
             );
@@ -78,26 +82,30 @@ function SearchFilter(props: Props): React.ReactElement {
   const rows = getRowsAndCols();
 
   return (
-    <Form className="bg-gray-100 rounded p-3" layout="vertical">
+    <Form
+      className="bg-gray-100 rounded p-3"
+      layout="vertical"
+      form={form}
+      onFinish={onSubmit}
+    >
+      {rows}
       <Row>
-        <Col span={24} className="text-left pb-4">
+        <Col span={12} className="text-left pt-4 pb-2">
           <a
             className="text-xs"
             onClick={() => {
-              // setExpand(!expand);
+              setAdvancedFilter(!advancedFilter);
             }}
           >
-            {<DownOutlined />} Advanced search
+            {advancedFilter ? <UpOutlined /> : <DownOutlined />}
+            {advancedFilter ? "Simple search" : "Advanced search"}
           </a>
         </Col>
-      </Row>
-      {rows}
-      <Row>
-        <Col span={24} className="text-right pb-2">
+        <Col span={12} className="text-right pb-2">
           <Button
             className="mr-5"
             onClick={() => {
-              // form.resetFields();
+              form.resetFields();
             }}
           >
             Clear
