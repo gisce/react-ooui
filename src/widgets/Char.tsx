@@ -1,6 +1,6 @@
 import React from "react";
-import { Form, Input } from "antd";
-import "../tailwind.generated.css";
+import { Input } from "antd";
+import FormItem from "../common/FormItem";
 
 export const Char = ({
   id,
@@ -22,7 +22,7 @@ export const Char = ({
   children?: React.ReactNode;
 }) => {
   return (
-    <Form.Item className="mb-0" label={label}>
+    <FormItem name={id} label={label}>
       <Input
         {...props}
         id={id}
@@ -33,6 +33,6 @@ export const Char = ({
       >
         {props.children}
       </Input>
-    </Form.Item>
+    </FormItem>
   );
 };

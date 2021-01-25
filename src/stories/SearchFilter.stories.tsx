@@ -936,7 +936,7 @@ Default.args = {
   onClear: () => {
     console.log("onClear");
   },
-  onSubmit: () => {
+  onSubmit: (fields) => {
     console.log("onSubmit");
   },
 };

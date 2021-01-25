@@ -1,5 +1,6 @@
 import React from "react";
-import { Form, Select } from "antd";
+import { Select } from "antd";
+import FormItem from "../common/FormItem";
 
 type OptionValue = {
   id: string;
@@ -32,8 +33,8 @@ export const Selection = ({
     });
 
   return (
-    <Form.Item label={label}>
+    <FormItem name={id} label={label}>
       <Select {...props}>{options}</Select>
-    </Form.Item>
+    </FormItem>
   );
 };

@@ -4,12 +4,20 @@ import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 import "../tailwind.generated.css";
 import { Char } from "./Char";
+import { Selection } from "./Selection";
+import { Float } from "./Float";
 
 import {
   SearchFilter as SearchFilterOoui,
   Container,
   Field,
   Char as CharOoui,
+  Text as TextOoui,
+  Selection as SelectionOoui,
+  Many2one,
+  One2many,
+  Float as FloatOoui,
+  Boolean as BooleanOoui,
 } from "ooui";
 
 type SearchFields = {
@@ -38,38 +46,87 @@ function SearchFilter(props: Props): React.ReactElement {
     }
 
     const fields = advancedFilter ? advancedSearchFields : simpleSearchFields;
+    const rows = fields?.rows;
 
-    return fields?.rows.map((row, i) => {
+    return rows?.map((row, i) => {
       return (
         <Row key={i}>
           {row.map((item, j) => {
-            const field = item as Field;
-
-            const char = item as CharOoui;
-            const widget = (
-              <Char id={char._id} label={char.label || char._id} />
-            );
+            const widget = getWidgetForItem(item as Field);
             return (
               <Col xs={24} className="p-2" xl={6} key={j}>
                 {widget}
               </Col>
             );
-
-            // if (field.constructor.name === "Char") {
-            //   const char = item as CharOoui;
-            //   const widget = <Char id={char._id} label={char.label} />;
-            //   return (
-            //     <Col className="p-2" span={6} key={j}>
-            //       {widget}
-            //     </Col>
-            //   );
-            // } else {
-            //   console.log();
-            // }
           })}
         </Row>
       );
     });
+  };
+
+  const getWidgetForItem = (field: Field) => {
+    const widgetType = field.constructor.name;
+
+    switch (widgetType) {
+      case "Text":
+      case "Many2one":
+      case "Char": {
+        const char = field as CharOoui;
+        return <Char id={char._id} label={char.label} />;
+      }
+      case "Boolean": {
+        const selection = field as BooleanOoui;
+        return (
+          <Selection
+            id={selection._id}
+            label={selection.label}
+            values={[
+              { id: "true", name: "Yes" },
+              { id: "false", name: "No" },
+            ]}
+          />
+        );
+      }
+      case "Selection": {
+        const selection = field as SelectionOoui;
+        return (
+          <Selection
+            id={selection._id}
+            label={selection.label}
+            values={Array.from(selection.selectionValues).map(
+              ([name, value]) => {
+                return { id: name, name: value };
+              }
+            )}
+          />
+        );
+      }
+      case "Float": {
+        const selection = field as FloatOoui;
+        return (
+          <Row align={"bottom"}>
+            <Col>
+              <Float
+                id={selection._id + "_from"}
+                label={selection.label}
+                defaultValue={0.0}
+              />
+            </Col>
+            <Col className="pb-1">
+              <span className="pl-2 pr-2 h-full"> - </span>
+            </Col>
+            <Col>
+              <Float id={selection._id + "_to"} label={""} defaultValue={0.0} />
+            </Col>
+          </Row>
+        );
+      }
+
+      default: {
+        const char = field as CharOoui;
+        return <Char id={char._id} label={char.label || char._id} />;
+      }
+    }
   };
 
   useEffect(() => {
@@ -106,6 +163,7 @@ function SearchFilter(props: Props): React.ReactElement {
             className="mr-5"
             onClick={() => {
               form.resetFields();
+              onClear();
             }}
           >
             Clear
