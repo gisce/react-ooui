@@ -47,6 +47,8 @@ function Tree(props: Props): React.ReactElement {
   const from = (page - 1) * limit + 1;
   const summary = loading ? (
     <Spin />
+  ) : total === 0 ? (
+    "No results"
   ) : (
     `Showing registers from ${from} to ${
       from - 1 + items.length
