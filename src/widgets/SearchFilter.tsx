@@ -6,6 +6,7 @@ import "../tailwind.generated.css";
 import { Char } from "./Char";
 import { Selection } from "./Selection";
 import { Float } from "./Float";
+import { RangePicker } from "./RangePicker";
 
 import {
   SearchFilter as SearchFilterOoui,
@@ -18,6 +19,7 @@ import {
   One2many,
   Float as FloatOoui,
   Boolean as BooleanOoui,
+  Date as DateOoui,
 } from "ooui";
 
 type SearchFields = {
@@ -120,6 +122,10 @@ function SearchFilter(props: Props): React.ReactElement {
             </Col>
           </Row>
         );
+      }
+      case "Date": {
+        const date = field as DateOoui;
+        return <RangePicker id={date._id} label={date.label} />;
       }
 
       default: {
