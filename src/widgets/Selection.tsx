@@ -29,7 +29,7 @@ export const Selection = ({
     values &&
     values.length &&
     values.map((v) => {
-      return <Option value={v.id}>{v.name}</Option>;
+      return <Option key={v.id} value={v.id}>{v.name}</Option>;
     });
 
   return (
