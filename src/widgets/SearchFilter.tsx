@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Form, Row, Col, Button } from "antd";
-import { DownOutlined, UpOutlined } from "@ant-design/icons";
+import { DownOutlined, UpOutlined, SearchOutlined, ClearOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 import "../tailwind.generated.css";
 import { Char } from "./Char";
 import { Selection } from "./Selection";
 import { Float } from "./Float";
 import { RangePicker } from "./RangePicker";
-import moment from "moment";
 
 import {
   SearchFilter as SearchFilterOoui,
@@ -33,10 +32,11 @@ type Props = {
   searchFields: SearchFields;
   onClear: () => void;
   onSubmit: (values: any) => void;
+  isSearching: boolean;
 };
 
 function SearchFilter(props: Props): React.ReactElement {
-  const { fields, searchFields, onClear, onSubmit } = props;
+  const { fields, searchFields, onClear, onSubmit, isSearching } = props;
 
   const [simpleSearchFields, setSimpleSearchFields] = useState<Container>();
   const [advancedSearchFields, setAdvancedSearchFields] = useState<Container>();
@@ -232,6 +232,7 @@ function SearchFilter(props: Props): React.ReactElement {
         <Col span={12} className="text-right pb-2">
           <Button
             className="mr-5"
+            icon={<ClearOutlined />}
             onClick={() => {
               form.resetFields();
               onClear();
@@ -239,7 +240,13 @@ function SearchFilter(props: Props): React.ReactElement {
           >
             Clear
           </Button>
-          <Button className="mr-2" type="primary" htmlType="submit">
+          <Button
+            icon={<SearchOutlined />}
+            loading={isSearching}
+            className="mr-2"
+            type="primary"
+            htmlType="submit"
+          >
             Search
           </Button>
         </Col>

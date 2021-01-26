@@ -10,6 +10,7 @@ declare type Props = {
     searchFields: SearchFields;
     onClear: () => void;
     onSubmit: (values: any) => void;
+    isSearching: boolean;
 };
 declare function SearchFilter(props: Props): React.ReactElement;
 export default SearchFilter;
