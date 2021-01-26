@@ -31,7 +31,7 @@ type Props = {
   fields: any;
   searchFields: SearchFields;
   onClear: () => void;
-  onSubmit: () => void;
+  onSubmit: (values: any) => void;
 };
 
 function SearchFilter(props: Props): React.ReactElement {
@@ -127,7 +127,6 @@ function SearchFilter(props: Props): React.ReactElement {
         const date = field as DateOoui;
         return <RangePicker id={date._id} label={date.label} />;
       }
-
       default: {
         const char = field as CharOoui;
         return <Char id={char._id} label={char.label || char._id} />;
