@@ -25,29 +25,14 @@ export const Float = ({
     <FormItem name={id} label={label}>
       <InputNumber
         {...props}
-        className="w-36"
+        className="w-32"
         id={id}
+        precision={2}
         formatter={(value) => {
-          let number;
-          if (!value) {
-            number = defaultValue!;
-          } else if (typeof number === "string") {
-            number = parseInt(value.toString());
-            if (number === NaN) {
-              number = 0.00;
-            }
-          } else {
-            number = Number(value);
-          }
-          return number.toFixed(2).toString();
+          return `${value}`.replace(/[^0-9\.]+/g, "");
         }}
         decimalSeparator={"."}
-        // formatter={(formatterValue) =>
-        //   `${formatterValue}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-        // }
-        value={value}
         defaultValue={defaultValue}
-        // onChange={onChange}
         onPressEnter={onPressEnter}
       >
         {props.children}
