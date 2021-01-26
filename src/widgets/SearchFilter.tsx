@@ -7,6 +7,7 @@ import { Char } from "./Char";
 import { Selection } from "./Selection";
 import { Float } from "./Float";
 import { RangePicker } from "./RangePicker";
+import moment from "moment";
 
 import {
   SearchFilter as SearchFilterOoui,
@@ -143,12 +144,77 @@ function SearchFilter(props: Props): React.ReactElement {
 
   const rows = getRowsAndCols();
 
+  const groupRangeValues = (values: any) => {
+    const newValues: any = {};
+
+    Object.keys(values).forEach((key) => {
+      let baseKey;
+      if (key.indexOf("_from") !== -1) {
+        baseKey = key.replace("_from", "");
+      } else if (key.indexOf("_to") !== -1) {
+        baseKey = key.replace("_to", "");
+      } else {
+        newValues[key] = values[key];
+        return;
+      }
+
+      if (!newValues[baseKey]) {
+        newValues[baseKey] = [];
+      }
+      newValues[baseKey].push(values[key]);
+    });
+
+    return newValues;
+  };
+
+  const convertBooleanParamIfNeeded = (value: any) => {
+    if ((typeof value === "string" && value === "true") || value === "false") {
+      return value === "true";
+    }
+    return value;
+  };
+
+  const getParamForField = (key: string, value: any) => {
+    const type = fields[key].type;
+
+    if (type === "char" || type === "text") {
+      return [key, "ilike", value];
+    } else if (type === "float") {
+      const fromValue = value[0];
+      const toValue = value[1];
+      return [
+        [key, ">=", fromValue],
+        [key, "<=", toValue],
+      ];
+    } else if (type === "date") {
+      const fromValue = value[0].format("YYYY-MM-DD");
+      const toValue = value[1].format("YYYY-MM-DD");
+      return [
+        [key, ">=", fromValue],
+        [key, "<=", toValue],
+      ];
+    } else {
+      return [key, "=", convertBooleanParamIfNeeded(value)];
+    }
+  };
+
   return (
     <Form
       className="bg-gray-100 rounded p-3"
       layout="vertical"
       form={form}
-      onFinish={onSubmit}
+      onFinish={(values: any) => {
+        Object.keys(values).forEach(
+          (key) => values[key] === undefined && delete values[key]
+        );
+
+        const groupedFields = groupRangeValues(values);
+
+        const newParams = Object.keys(groupedFields).map((key) => {
+          return getParamForField(key, groupedFields[key]);
+        });
+        onSubmit(newParams);
+      }}
     >
       {rows}
       <Row>
