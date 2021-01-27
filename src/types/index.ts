@@ -1,22 +1,22 @@
-type Strings = {
+interface Strings {
   [key: string]: string;
-};
+}
 
-type SearchFields = {
+interface SearchFields {
   primary: string[];
   secondary: string[];
-};
+}
 
-type TreeView = {
+interface TreeView {
   arch: string;
   fields: any;
-};
+}
 
-type Column = {
+interface Column {
   title: string;
   dataIndex: string;
   key: string;
   type?: string;
-};
+}
 
 export { Strings, SearchFields, TreeView, Column };
