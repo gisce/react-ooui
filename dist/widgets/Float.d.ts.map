@@ -1,1 +1,0 @@
-{"version":3,"file":"Float.d.ts","sourceRoot":"","sources":["../../src/widgets/Float.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAI1B,eAAO,MAAM,KAAK;QASZ,MAAM;;;;wBAIU,MAAM,WAAW,CAAC,gBAAgB,CAAC,KAAK,IAAI;4BAEnD,mBAAmB,CAAC,gBAAgB,CAAC,KAAK,IAAI;eAEhD,MAAM,SAAS;iBAoB3B,CAAC"}

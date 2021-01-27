@@ -1,16 +1,5 @@
 import { Tree as TreeOoui, Selection, Many2one, Boolean } from "ooui";
-
-type TreeView = {
-  arch: string;
-  fields: any;
-};
-
-type Column = {
-  title: string;
-  dataIndex: string;
-  key: string;
-  type?: string;
-};
+import { TreeView, Column } from "../types";
 
 const getTree = (treeView: TreeView): TreeOoui => {
   const xml = treeView.arch;
@@ -77,4 +66,4 @@ const getTableItems = (treeOoui: TreeOoui, results: Array<any>): Array<any> => {
   return tableItems;
 };
 
-export { TreeView, Column, getTableColumns, getTableItems, getTree };
+export { getTableColumns, getTableItems, getTree };

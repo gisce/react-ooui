@@ -13,6 +13,10 @@ const Template = (args) => <Tree {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
+  strings: {
+    no_results: "No results",
+    summary: "Showing registers from {from} to {to} of {total} registers",
+  },
   total: 5,
   limit: 80,
   page: 1,

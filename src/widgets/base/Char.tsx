@@ -1,6 +1,6 @@
 import React from "react";
 import { Input } from "antd";
-import FormItem from "../common/FormItem";
+import FormItem from "../../common/FormItem";
 
 export const Char = ({
   id,

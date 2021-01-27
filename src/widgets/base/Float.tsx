@@ -1,6 +1,6 @@
 import React from "react";
 import { InputNumber } from "antd";
-import FormItem from "../common/FormItem";
+import FormItem from "../../common/FormItem";
 
 export const Float = ({
   id,
@@ -20,12 +20,12 @@ export const Float = ({
     | ((event: React.KeyboardEvent<HTMLInputElement>) => void)
     | undefined;
   children?: React.ReactNode;
+  className: string;
 }) => {
   return (
     <FormItem name={id} label={label}>
       <InputNumber
         {...props}
-        className="w-32"
         id={id}
         precision={2}
         formatter={(value) => {

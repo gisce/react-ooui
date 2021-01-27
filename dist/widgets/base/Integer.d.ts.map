@@ -1,0 +1,1 @@
+{"version":3,"file":"Integer.d.ts","sourceRoot":"","sources":["../../../src/widgets/base/Integer.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAI1B,eAAO,MAAM,OAAO;QASd,MAAM;;;;wBAIU,MAAM,WAAW,CAAC,gBAAgB,CAAC,KAAK,IAAI;4BAEnD,mBAAmB,CAAC,gBAAgB,CAAC,KAAK,IAAI;eAEhD,MAAM,SAAS;eACf,MAAM;iBAiBlB,CAAC"}

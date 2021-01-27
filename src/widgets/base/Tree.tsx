@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Table, Pagination, Checkbox, Spin } from "antd";
 import {
-  TreeView,
-  Column,
   getTree,
   getTableColumns,
   getTableItems,
-} from "../helpers/TreeHelper";
+} from "../../helpers/treeHelper";
+
+import { Strings, TreeView, Column } from "../../types";
+import { getLocalizedString } from "../../context/LocalesContext";
 
 type Props = {
   total: number;
@@ -16,6 +17,7 @@ type Props = {
   treeView: TreeView;
   results: Array<any>;
   onRequestPageChange: (page: number, pageSize?: number) => void;
+  strings: Strings;
 };
 
 function Tree(props: Props): React.ReactElement {
@@ -27,6 +29,7 @@ function Tree(props: Props): React.ReactElement {
     results,
     onRequestPageChange,
     loading,
+    strings,
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
@@ -45,14 +48,16 @@ function Tree(props: Props): React.ReactElement {
   }, [treeView, results]);
 
   const from = (page - 1) * limit + 1;
+  const to = from - 1 + items.length;
   const summary = loading ? (
     <Spin />
   ) : total === 0 ? (
-    "No results"
+    getLocalizedString("no_results", strings)
   ) : (
-    `Showing registers from ${from} to ${
-      from - 1 + items.length
-    } of ${total} registers`
+    getLocalizedString("summary", strings)
+      .replace("{from}", from?.toString())
+      .replace("{to}", to?.toString())
+      .replace("{total}", total?.toString())
   );
 
   return (

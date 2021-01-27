@@ -1,7 +1,7 @@
 import { DatePicker } from "antd";
 
 import React from "react";
-import FormItem from "../common/FormItem";
+import FormItem from "../../common/FormItem";
 
 export const RangePicker = ({ id, label }: { id: string; label?: string }) => {
   return (
