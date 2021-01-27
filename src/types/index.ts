@@ -1,20 +1,22 @@
-export type Strings = {
+type Strings = {
   [key: string]: string;
 };
 
-export type SearchFields = {
+type SearchFields = {
   primary: string[];
   secondary: string[];
 };
 
-export type TreeView = {
+type TreeView = {
   arch: string;
   fields: any;
 };
 
-export type Column = {
+type Column = {
   title: string;
   dataIndex: string;
   key: string;
   type?: string;
 };
+
+export { Strings, SearchFields, TreeView, Column };

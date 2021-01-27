@@ -1,18 +1,19 @@
-export declare type Strings = {
+declare type Strings = {
     [key: string]: string;
 };
-export declare type SearchFields = {
+declare type SearchFields = {
     primary: string[];
     secondary: string[];
 };
-export declare type TreeView = {
+declare type TreeView = {
     arch: string;
     fields: any;
 };
-export declare type Column = {
+declare type Column = {
     title: string;
     dataIndex: string;
     key: string;
     type?: string;
 };
+export { Strings, SearchFields, TreeView, Column };
 //# sourceMappingURL=index.d.ts.map
