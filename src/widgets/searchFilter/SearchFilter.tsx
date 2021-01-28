@@ -82,7 +82,7 @@ function SearchFilter(props: Props): React.ReactElement {
         if (Array.isArray(val[0])) {
           return acc.concat(val);
         } else {
-          return val;
+          return acc.concat([val]);
         }
       },
       []
