@@ -7,6 +7,6 @@ export declare const Integer: ({ id, label, value, defaultValue, onChange, onPre
     onChange?: ((event: React.ChangeEvent<HTMLInputElement>) => void) | undefined;
     onPressEnter?: ((event: React.KeyboardEvent<HTMLInputElement>) => void) | undefined;
     children?: React.ReactNode;
-    className: string;
+    className?: string | undefined;
 }) => JSX.Element;
 //# sourceMappingURL=Integer.d.ts.map

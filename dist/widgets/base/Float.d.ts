@@ -7,6 +7,6 @@ export declare const Float: ({ id, label, value, defaultValue, onChange, onPress
     onChange?: ((event: React.ChangeEvent<HTMLInputElement>) => void) | undefined;
     onPressEnter?: ((event: React.KeyboardEvent<HTMLInputElement>) => void) | undefined;
     children?: React.ReactNode;
-    className: string;
+    className?: string | undefined;
 }) => JSX.Element;
 //# sourceMappingURL=Float.d.ts.map

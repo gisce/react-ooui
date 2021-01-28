@@ -6,9 +6,11 @@ declare type Props = {
     fields: any;
     searchFields: SearchFields;
     onClear: () => void;
-    onSubmit: (values: any) => void;
+    onSubmit: (values: any, firstAndLimit: any) => void;
     isSearching: boolean;
     strings: Strings;
+    limit: number;
+    offset: number;
 };
 declare function SearchFilter(props: Props): React.ReactElement;
 export default SearchFilter;
