@@ -77,7 +77,10 @@ function SearchFilter(props: Props): React.ReactElement {
   const onFinish = (values: any) => {
     const filteredValues = removeUndefinedFields(values);
     const groupedValues = groupRangeValues(filteredValues);
-    const newParams = getParamsForFields(groupedValues, fields);
+    const newParams = getParamsForFields(groupedValues, fields).reduce(
+      (acc, val) => acc.concat(val),
+      []
+    );
 
     onSubmit(newParams);
   };
