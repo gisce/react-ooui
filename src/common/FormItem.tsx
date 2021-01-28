@@ -12,8 +12,11 @@ export default function FormItem({
 }) {
   const labelText = label && label.length > 1 ? label + " :" : " ";
   return (
-    <Form.Item className="mb-0" name={name} label={labelText}>
-      {children}
-    </Form.Item>
+    <>
+      <span>{labelText}</span>
+      <Form.Item className="mb-0" name={name}>
+        {children}
+      </Form.Item>
+    </>
   );
 }

@@ -84,12 +84,7 @@ function SearchFilter(props: Props): React.ReactElement {
 
   return (
     <LocalesProvider strings={strings}>
-      <Form
-        className="bg-gray-100 rounded p-3"
-        layout="vertical"
-        form={form}
-        onFinish={onFinish}
-      >
+      <Form className="bg-gray-100 rounded p-3" form={form} onFinish={onFinish}>
         {rows}
         <SearchBottomBar
           advancedFilter={advancedFilter}
