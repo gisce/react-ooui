@@ -1,19 +1,19 @@
-interface Strings {
+declare type Strings = {
     [key: string]: string;
-}
-interface SearchFields {
+};
+declare type SearchFields = {
     primary: string[];
     secondary: string[];
-}
-interface TreeView {
+};
+declare type TreeView = {
     arch: string;
     fields: any;
-}
-interface Column {
+};
+declare type Column = {
     title: string;
     dataIndex: string;
     key: string;
     type?: string;
-}
-export { Strings, SearchFields, TreeView, Column };
+};
+export type { Strings, SearchFields, TreeView, Column };
 //# sourceMappingURL=index.d.ts.map
