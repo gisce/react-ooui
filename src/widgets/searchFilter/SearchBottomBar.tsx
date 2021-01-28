@@ -32,9 +32,13 @@ export function SearchBottomBar(props: Props): React.ReactElement {
 
   return (
     <Row>
-      <Col span={12} className="text-left pt-4 pb-2">
+      <Col span={12} className="text-left pt-4 pb-2 pl-2">
         <a className="text-xs" onClick={onAdvancedFilterToggle}>
-          {advancedFilter ? <UpOutlined /> : <DownOutlined />}
+          {advancedFilter ? (
+            <UpOutlined className="pr-1" />
+          ) : (
+            <DownOutlined className="pr-1" />
+          )}
           {advancedFilter
             ? getString("simple_search")
             : getString("advanced_search")}
