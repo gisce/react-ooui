@@ -6,7 +6,7 @@ declare type Props = {
     fields: any;
     searchFields: SearchFields;
     onClear: () => void;
-    onSubmit: (values: any, firstAndLimit: any) => void;
+    onSubmit: (values: any) => void;
     isSearching: boolean;
     strings: Strings;
     limit: number;

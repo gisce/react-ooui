@@ -22,7 +22,7 @@ type Props = {
   fields: any;
   searchFields: SearchFields;
   onClear: () => void;
-  onSubmit: (values: any, firstAndLimit: any) => void;
+  onSubmit: (values: any) => void;
   isSearching: boolean;
   strings: Strings;
   limit: number;
@@ -81,8 +81,7 @@ function SearchFilter(props: Props): React.ReactElement {
 
   const onFinish = (values: any) => {
     const { limit, first } = values;
-    const firstAndLimit = { limit, first };
-    delete values.total;
+    delete values.first;
     delete values.limit;
     const filteredValues = removeUndefinedFields(values);
     const groupedValues = groupRangeValues(filteredValues);
@@ -97,7 +96,7 @@ function SearchFilter(props: Props): React.ReactElement {
       []
     );
 
-    onSubmit(newParams, firstAndLimit);
+    onSubmit({ params: newParams, first, limit });
   };
 
   return (
