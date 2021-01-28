@@ -80,8 +80,8 @@ function SearchFilter(props: Props): React.ReactElement {
   const rows = getRowsAndCols();
 
   const onFinish = (values: any) => {
-    const { limit, first } = values;
-    delete values.first;
+    const { limit, offset } = values;
+    delete values.offset;
     delete values.limit;
     const filteredValues = removeUndefinedFields(values);
     const groupedValues = groupRangeValues(filteredValues);
@@ -96,7 +96,7 @@ function SearchFilter(props: Props): React.ReactElement {
       []
     );
 
-    onSubmit({ params: newParams, first, limit });
+    onSubmit({ params: newParams, offset, limit });
   };
 
   return (
