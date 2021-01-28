@@ -19,7 +19,12 @@ Default.args = {
     simple_search: "Simple search",
     advanced_search: "Advanced search",
     search: "Search",
+    parameters: "Parameters",
+    limit: "Limit",
+    first: "First",
   },
+  limit: 80,
+  offset: 1,
   searchFields: {
     primary: [
       "name",

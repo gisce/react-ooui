@@ -20,7 +20,7 @@ export const Integer = ({
     | ((event: React.KeyboardEvent<HTMLInputElement>) => void)
     | undefined;
   children?: React.ReactNode;
-  className: string;
+  className?: string;
 }) => {
   return (
     <FormItem name={id} label={label}>

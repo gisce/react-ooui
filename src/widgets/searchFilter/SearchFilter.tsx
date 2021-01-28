@@ -10,6 +10,7 @@ import { SearchField } from "./SearchField";
 import { SearchBottomBar } from "./SearchBottomBar";
 import LocalesProvider from "../../context/LocalesContext";
 import { Strings, SearchFields } from "../../types";
+import { SearchParams } from "./SearchParams";
 
 import {
   removeUndefinedFields,
@@ -21,9 +22,11 @@ type Props = {
   fields: any;
   searchFields: SearchFields;
   onClear: () => void;
-  onSubmit: (values: any) => void;
+  onSubmit: (values: any, firstAndLimit: any) => void;
   isSearching: boolean;
   strings: Strings;
+  limit: number;
+  offset: number;
 };
 
 function SearchFilter(props: Props): React.ReactElement {
@@ -33,6 +36,8 @@ function SearchFilter(props: Props): React.ReactElement {
     onClear,
     onSubmit,
     isSearching,
+    offset,
+    limit,
     strings,
   } = props;
 
@@ -75,6 +80,10 @@ function SearchFilter(props: Props): React.ReactElement {
   const rows = getRowsAndCols();
 
   const onFinish = (values: any) => {
+    const { limit, first } = values;
+    const firstAndLimit = { limit, first };
+    delete values.total;
+    delete values.limit;
     const filteredValues = removeUndefinedFields(values);
     const groupedValues = groupRangeValues(filteredValues);
     const newParams = getParamsForFields(groupedValues, fields).reduce(
@@ -88,13 +97,19 @@ function SearchFilter(props: Props): React.ReactElement {
       []
     );
 
-    onSubmit(newParams);
+    onSubmit(newParams, firstAndLimit);
   };
 
   return (
     <LocalesProvider strings={strings}>
-      <Form className="bg-gray-100 rounded p-3" form={form} onFinish={onFinish}>
+      <Form
+        className="bg-gray-100 rounded p-3"
+        form={form}
+        onFinish={onFinish}
+        initialValues={{ offset, limit }}
+      >
         {rows}
+        {advancedFilter && <SearchParams />}
         <SearchBottomBar
           advancedFilter={advancedFilter}
           onAdvancedFilterToggle={() => {
