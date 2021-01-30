@@ -67,6 +67,8 @@ function Tree(props: Props): React.ReactElement {
         <Pagination
           total={total}
           defaultPageSize={limit}
+          defaultCurrent={1}
+          current={page}
           className="pb-5 pt-5"
           showSizeChanger={false}
           onChange={onRequestPageChange}
