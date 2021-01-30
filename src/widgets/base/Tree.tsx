@@ -63,13 +63,15 @@ function Tree(props: Props): React.ReactElement {
   return (
     <>
       {summary}
-      <Pagination
-        total={total}
-        defaultPageSize={limit}
-        className="pb-5 pt-5"
-        showSizeChanger={false}
-        onChange={onRequestPageChange}
-      />
+      {loading ? null : (
+        <Pagination
+          total={total}
+          defaultPageSize={limit}
+          className="pb-5 pt-5"
+          showSizeChanger={false}
+          onChange={onRequestPageChange}
+        />
+      )}
       <Table
         columns={columns}
         dataSource={items}
