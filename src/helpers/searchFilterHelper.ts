@@ -19,7 +19,7 @@ const getParamForField = (key: string, value: any, fields: any) => {
   } else if (
     type === "float" ||
     type === "integer" ||
-    type === "float_time" ||
+    type === "float#time" ||
     type === "progressbar"
   ) {
     const fromValue = value[0];
@@ -35,6 +35,19 @@ const getParamForField = (key: string, value: any, fields: any) => {
       [key, ">=", fromValue],
       [key, "<=", toValue],
     ];
+  } else if (type === "datetime") {
+    const date = value[0];
+    const time = value[1];
+    const dateValueFrom = date[0].format("YYYY-MM-DD");
+    const dateValueTo = date[0].format("YYYY-MM-DD");
+    const timeValueFrom = time[0].format("HH:mm");
+    const timeValueTo = time[0].format("HH:mm");
+    const from = dateValueFrom + " " + timeValueFrom;
+    const to = dateValueTo + " " + timeValueTo;
+    return [
+      [key, ">=", from],
+      [key, "<=", to],
+    ];
   } else {
     return [key, "=", convertBooleanParamIfNeeded(value)];
   }
@@ -45,10 +58,14 @@ const groupRangeValues = (values: any) => {
 
   Object.keys(values).forEach((key) => {
     let baseKey;
-    if (key.indexOf("_from") !== -1) {
-      baseKey = key.replace("_from", "");
-    } else if (key.indexOf("_to") !== -1) {
-      baseKey = key.replace("_to", "");
+    if (key.indexOf("#from") !== -1) {
+      baseKey = key.replace("#from", "");
+    } else if (key.indexOf("#to") !== -1) {
+      baseKey = key.replace("#to", "");
+    } else if (key.indexOf("#date") !== -1) {
+      baseKey = key.replace("#date", "");
+    } else if (key.indexOf("#time") !== -1) {
+      baseKey = key.replace("#time", "");
     } else {
       newValues[key] = values[key];
       return;

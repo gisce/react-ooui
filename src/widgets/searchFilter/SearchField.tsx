@@ -2,7 +2,8 @@ import React, { useContext } from "react";
 
 import { Char } from "../base/Char";
 import { Selection } from "../base/Selection";
-import { RangePicker } from "./RangePicker";
+import { DateRangePicker } from "./DateRangePicker";
+import { DateTimeRangePicker } from "./DateTimeRangePicker";
 import { PairFields } from "./PairFields";
 
 import {
@@ -23,8 +24,11 @@ const types = {
   boolean: "Boolean",
   selection: "Selection",
   float: "Float",
+  float_time: "FloatTime",
+  progressbar: "ProgressBar",
   integer: "Integer",
   date: "Date",
+  datetime: "DateTime",
 };
 
 export function SearchField(props: Props): React.ReactElement {
@@ -64,7 +68,9 @@ export function SearchField(props: Props): React.ReactElement {
         />
       );
     }
-    case types.float: {
+    case types.float:
+    case types.progressbar:
+    case types.float_time: {
       return (
         <PairFields
           id={field._id}
@@ -85,7 +91,10 @@ export function SearchField(props: Props): React.ReactElement {
       );
     }
     case types.date: {
-      return <RangePicker id={field._id} label={field.label} />;
+      return <DateRangePicker id={field._id} label={field.label} />;
+    }
+    case types.datetime: {
+      return <DateTimeRangePicker id={field._id} label={field.label} />;
     }
     default: {
       return <Char id={field._id} label={field.label || field._id} />;

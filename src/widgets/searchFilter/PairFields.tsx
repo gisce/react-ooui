@@ -22,7 +22,7 @@ export function PairFields(props: Props): React.ReactElement {
         <Col>
           <Widget
             className="w-24"
-            id={id + "_from"}
+            id={id + "#from"}
             defaultValue={defaultValue}
           />
         </Col>
@@ -32,7 +32,7 @@ export function PairFields(props: Props): React.ReactElement {
         <Col>
           <Widget
             className="w-24"
-            id={id + "_to"}
+            id={id + "#to"}
             defaultValue={defaultValue}
           />
         </Col>
