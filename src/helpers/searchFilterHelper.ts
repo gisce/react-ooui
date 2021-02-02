@@ -19,7 +19,7 @@ const getParamForField = (key: string, value: any, fields: any) => {
   } else if (
     type === "float" ||
     type === "integer" ||
-    type === "float#time" ||
+    type === "float_time" ||
     type === "progressbar"
   ) {
     const fromValue = value[0];
