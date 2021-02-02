@@ -39,9 +39,9 @@ const getParamForField = (key: string, value: any, fields: any) => {
     const date = value[0];
     const time = value[1];
     const dateValueFrom = date[0].format("YYYY-MM-DD");
-    const dateValueTo = date[0].format("YYYY-MM-DD");
+    const dateValueTo = date[1].format("YYYY-MM-DD");
     const timeValueFrom = time[0].format("HH:mm");
-    const timeValueTo = time[0].format("HH:mm");
+    const timeValueTo = time[1].format("HH:mm");
     const from = dateValueFrom + " " + timeValueFrom;
     const to = dateValueTo + " " + timeValueTo;
     return [
