@@ -14,7 +14,13 @@ const getParamsForFields = (values: any, fields: any) => {
 const getParamForField = (key: string, value: any, fields: any) => {
   const type = fields[key].type;
 
-  if (type === "char" || type === "text" || type === "many2one") {
+  if (
+    type === "char" ||
+    type === "text" ||
+    type === "many2one" ||
+    type === "many2many" ||
+    type === "one2many"
+  ) {
     return [key, "ilike", value];
   } else if (
     type === "float" ||

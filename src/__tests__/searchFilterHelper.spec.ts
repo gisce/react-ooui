@@ -276,7 +276,7 @@ describe("A SearchFilterHelper instance", () => {
       expect(params[0].length).toBe(3);
       const fieldParams = params[0];
       expect(fieldParams[0]).toBe("field");
-      expect(fieldParams[1]).toBe("=");
+      expect(fieldParams[1]).toBe("ilike");
       expect(fieldParams[2]).toBe("lorem ipsum");
     });
     test("should return properly a many2many parameter", () => {
@@ -295,7 +295,7 @@ describe("A SearchFilterHelper instance", () => {
       expect(params[0].length).toBe(3);
       const fieldParams = params[0];
       expect(fieldParams[0]).toBe("field");
-      expect(fieldParams[1]).toBe("=");
+      expect(fieldParams[1]).toBe("ilike");
       expect(fieldParams[2]).toBe("lorem ipsum");
     });
     test("should return properly a selection parameter", () => {
