@@ -12,11 +12,7 @@ import LocalesProvider from "../../context/LocalesContext";
 import { Strings, SearchFields } from "../../types";
 import { SearchParams } from "./SearchParams";
 
-import {
-  removeUndefinedFields,
-  groupRangeValues,
-  getParamsForFields,
-} from "../../helpers/searchFilterHelper";
+import { getParamsForFields } from "../../helpers/searchFilterHelper";
 
 type Props = {
   fields: any;
@@ -83,9 +79,7 @@ function SearchFilter(props: Props): React.ReactElement {
     const { limit, offset } = values;
     delete values.offset;
     delete values.limit;
-    const filteredValues = removeUndefinedFields(values);
-    const groupedValues = groupRangeValues(filteredValues);
-    const newParams = getParamsForFields(groupedValues, fields);
+    const newParams = getParamsForFields(values, fields);
 
     onSubmit({ params: newParams, offset, limit });
   };

@@ -6,24 +6,20 @@ const convertBooleanParamIfNeeded = (value: any) => {
 };
 
 const getParamsForFields = (values: any, fields: any) => {
-  return Object.keys(values)
-    .map((key) => {
-      return getParamForField(key, values[key], fields);
-    })
-    .reduce((acc, val) => {
-      if (Array.isArray(val[0])) {
-        return acc.concat(val);
-      } else {
-        return acc.concat([val]);
-      }
-    }, [])
-    .filter((parm) => {
-      return parm[2] !== undefined && parm[2] !== null && parm[2] !== "";
-    });
+  const filteredValues = removeUndefinedFields(values);
+  const groupedDateTime = groupDateTimeValuesIfNeeded(filteredValues);
+  const groupedValues = ungroupDateValuesIfNeeded(groupedDateTime, fields);
+
+  return [
+    ...Object.keys(groupedValues).map((key) => {
+      return getParamForField(key, groupedValues[key], fields);
+    }),
+  ];
 };
 
 const getParamForField = (key: string, value: any, fields: any) => {
-  const type = fields[key].type;
+  const filteredKey = key.split("#")[0];
+  const type = fields[filteredKey].type;
 
   if (
     type === "char" ||
@@ -39,59 +35,72 @@ const getParamForField = (key: string, value: any, fields: any) => {
     type === "float_time" ||
     type === "progressbar"
   ) {
-    const fromValue = value[0];
-    const toValue = value[1];
-    return [
-      [key, ">=", fromValue],
-      [key, "<=", toValue],
-    ];
+    const operator = key.indexOf("#from") !== -1 ? ">=" : "<=";
+    return [filteredKey, operator, value];
   } else if (type === "date") {
-    const fromValue = value[0].format("YYYY-MM-DD");
-    const toValue = value[1].format("YYYY-MM-DD");
-    return [
-      [key, ">=", fromValue],
-      [key, "<=", toValue],
-    ];
+    const operator = key.indexOf("#from") !== -1 ? ">=" : "<=";
+    return [filteredKey, operator, value.format("YYYY-MM-DD")];
   } else if (type === "datetime") {
-    const date = value[0];
-    const time = value[1];
-    const dateValueFrom = date[0].format("YYYY-MM-DD");
-    const dateValueTo = date[1].format("YYYY-MM-DD");
-    const timeValueFrom = time[0].format("HH:mm");
-    const timeValueTo = time[1].format("HH:mm");
-    const from = dateValueFrom + " " + timeValueFrom;
-    const to = dateValueTo + " " + timeValueTo;
+    const from = value[0];
+    const to = value[1];
     return [
-      [key, ">=", from],
-      [key, "<=", to],
+      [filteredKey, ">=", from],
+      [filteredKey, "<=", to],
     ];
   } else {
     return [key, "=", convertBooleanParamIfNeeded(value)];
   }
 };
 
-const groupRangeValues = (values: any) => {
-  const newValues: any = {};
+const getDatetimeDateFields = (values: any) => {
+  return Object.keys(values).filter((key) => {
+    return key.indexOf("#date") !== -1;
+  });
+};
 
-  Object.keys(values).forEach((key) => {
-    let baseKey;
-    if (key.indexOf("#from") !== -1) {
-      baseKey = key.replace("#from", "");
-    } else if (key.indexOf("#to") !== -1) {
-      baseKey = key.replace("#to", "");
-    } else if (key.indexOf("#date") !== -1) {
-      baseKey = key.replace("#date", "");
-    } else if (key.indexOf("#time") !== -1) {
-      baseKey = key.replace("#time", "");
-    } else {
-      newValues[key] = values[key];
-      return;
-    }
+const removeDateTimeSingleFields = (values: any) => {
+  const newValues = { ...values };
+  Object.keys(newValues).forEach(
+    (key) =>
+      (key.indexOf("#time") !== -1 || key.indexOf("#date") !== -1) &&
+      delete newValues[key]
+  );
+  return newValues;
+};
 
-    if (!newValues[baseKey]) {
-      newValues[baseKey] = [];
-    }
-    newValues[baseKey].push(values[key]);
+const groupDateTimeValuesIfNeeded = (values: any) => {
+  const newValues: any = { ...removeDateTimeSingleFields(values) };
+
+  const datetimeDateFields = getDatetimeDateFields(values);
+
+  datetimeDateFields.forEach((field) => {
+    const datePair = values[field];
+    const baseKey = field.split("#")[0];
+    const timeKey = baseKey + "#time";
+    const timePair = values[timeKey];
+    const dateValueFrom = datePair[0].format("YYYY-MM-DD");
+    const dateValueTo = datePair[1].format("YYYY-MM-DD");
+    const timeValueFrom = timePair[0].format("HH:mm");
+    const timeValueTo = timePair[1].format("HH:mm");
+    const from = dateValueFrom + " " + timeValueFrom;
+    const to = dateValueTo + " " + timeValueTo;
+    newValues[baseKey + "#datetime"] = [from, to];
+  });
+
+  return newValues;
+};
+
+const ungroupDateValuesIfNeeded = (values: any, fields: any) => {
+  const dateFields = Object.keys(values).filter((key) => {
+    return fields[key] && fields[key].type === "date";
+  });
+
+  let newValues: any = { ...values };
+
+  dateFields.forEach((key) => {
+    delete newValues[key];
+    newValues[key + "#from"] = values[key][0];
+    newValues[key + "#to"] = values[key][1];
   });
 
   return newValues;
@@ -100,9 +109,17 @@ const groupRangeValues = (values: any) => {
 const removeUndefinedFields = (values: any) => {
   const newValues = { ...values };
   Object.keys(newValues).forEach(
-    (key) => newValues[key] === undefined && delete newValues[key]
+    (key) =>
+      (newValues[key] === undefined ||
+        newValues[key] === null ||
+        newValues[key] === "") &&
+      delete newValues[key]
   );
   return newValues;
 };
 
-export { removeUndefinedFields, groupRangeValues, getParamsForFields };
+export {
+  removeUndefinedFields,
+  groupDateTimeValuesIfNeeded,
+  getParamsForFields,
+};

@@ -1,6 +1,6 @@
 import {
   removeUndefinedFields,
-  groupRangeValues,
+  groupDateTimeValuesIfNeeded,
   getParamsForFields,
 } from "../helpers/searchFilterHelper";
 import moment from "moment";
@@ -41,65 +41,56 @@ describe("A SearchFilterHelper instance", () => {
       expect(filteredObject.testField1).toBe("field");
       expect(filteredObject.testField2).toBe("field");
     });
+    test("should return an object without fields if we send a null", () => {
+      const object = {
+        testField1: null,
+      };
+
+      const filteredObject = removeUndefinedFields(object);
+      expect(Object.keys(filteredObject).length).toBe(0);
+    });
+    test("should return an object without fields if we send a blank string", () => {
+      const object = {
+        testField1: "",
+      };
+
+      const filteredObject = removeUndefinedFields(object);
+      expect(Object.keys(filteredObject).length).toBe(0);
+    });
   });
   describe("groupRangeValues method", () => {
-    test("should return the same object if it hasn't any fields to group", () => {
+    test("should return the same object if it hasn't any datetime fields to group", () => {
       const object = {
         charValue: "test",
         floatValue: 0.5,
       };
 
-      const filteredObject = groupRangeValues(object);
+      const filteredObject = groupDateTimeValuesIfNeeded(object);
 
       expect(JSON.stringify(filteredObject)).toBe(JSON.stringify(object));
-    });
-    test("should return a date value grouped", () => {
-      const object = {
-        charValue: "test",
-        floatValue: 0.5,
-        "dateField#from": "2021-01-01",
-        "dateField#to": "2021-01-02",
-      };
-
-      const filteredObject = groupRangeValues(object);
-
-      expect(Object.keys(filteredObject).length).toBe(3);
-      expect(Object.keys(filteredObject)).toContain("dateField");
-      expect(filteredObject.charValue).toBe(object.charValue);
-      expect(filteredObject.floatValue).toBe(object.floatValue);
-      expect(Array.isArray(filteredObject.dateField)).toBeTruthy();
-      const from = filteredObject.dateField[0];
-      const to = filteredObject.dateField[1];
-      expect(from).toBe(object["dateField#from"]);
-      expect(to).toBe(object["dateField#to"]);
     });
     test("should return a datetime value grouped", () => {
       const object = {
         charValue: "test",
         floatValue: 0.5,
-        "datetime#date": ["2021-01-01", "2021-01-02"],
-        "datetime#time": ["03:31", "03:32"],
+        "dateField#date": [moment("2021-01-01"), moment("2021-01-02")],
+        "dateField#time": [
+          moment("1970-01-01 00:00"),
+          moment("1970-01-01 04:00"),
+        ],
       };
 
-      const filteredObject = groupRangeValues(object);
+      const filteredObject = groupDateTimeValuesIfNeeded(object);
 
       expect(Object.keys(filteredObject).length).toBe(3);
-      expect(Object.keys(filteredObject)).toContain("datetime");
+      expect(Object.keys(filteredObject)).toContain("dateField#datetime");
       expect(filteredObject.charValue).toBe(object.charValue);
       expect(filteredObject.floatValue).toBe(object.floatValue);
-      expect(Array.isArray(filteredObject.datetime)).toBeTruthy();
-      const date = filteredObject.datetime[0];
-      const time = filteredObject.datetime[1];
-      expect(Array.isArray(date)).toBeTruthy();
-      expect(Array.isArray(time)).toBeTruthy();
-      const dateFrom = date[0];
-      const dateTo = date[1];
-      const timeFrom = time[0];
-      const timeTo = time[1];
-      expect(dateFrom).toBe("2021-01-01");
-      expect(dateTo).toBe("2021-01-02");
-      expect(timeFrom).toBe("03:31");
-      expect(timeTo).toBe("03:32");
+      expect(Array.isArray(filteredObject["dateField#datetime"])).toBeTruthy();
+      const from = filteredObject["dateField#datetime"][0];
+      const to = filteredObject["dateField#datetime"][1];
+      expect(from).toBe("2021-01-01 00:00");
+      expect(to).toBe("2021-01-02 04:00");
     });
   });
   describe("getParamsForField method", () => {
@@ -110,7 +101,8 @@ describe("A SearchFilterHelper instance", () => {
         },
       };
       const values = {
-        floatType: [1.1, 1.5],
+        "floatType#from": 1.1,
+        "floatType#to": 1.5,
       };
       const params = getParamsForFields(values, fields);
       expect(Array.isArray(params)).toBeTruthy();
@@ -135,7 +127,8 @@ describe("A SearchFilterHelper instance", () => {
         },
       };
       const values = {
-        floatType: [1.1, 1.5],
+        "floatType#from": 1.1,
+        "floatType#to": 1.5,
       };
       const params = getParamsForFields(values, fields);
       expect(Array.isArray(params)).toBeTruthy();
@@ -160,7 +153,8 @@ describe("A SearchFilterHelper instance", () => {
         },
       };
       const values = {
-        floatType: [1.1, 1.5],
+        "floatType#from": 1.1,
+        "floatType#to": 1.5,
       };
       const params = getParamsForFields(values, fields);
       expect(Array.isArray(params)).toBeTruthy();
@@ -185,7 +179,8 @@ describe("A SearchFilterHelper instance", () => {
         },
       };
       const values = {
-        field: [1, 5],
+        "field#from": 1,
+        "field#to": 5,
       };
       const params = getParamsForFields(values, fields);
       expect(Array.isArray(params)).toBeTruthy();
@@ -368,10 +363,8 @@ describe("A SearchFilterHelper instance", () => {
         },
       };
       const values = {
-        field: [
-          [moment("2021-01-01"), moment("2021-01-02")],
-          [moment("1970-01-01 03:31"), moment("1970-01-01 03:32")],
-        ],
+        "field#date": [moment("2021-01-01"), moment("2021-01-02")],
+        "field#time": [moment("1970-01-01 03:31"), moment("1970-01-01 03:32")],
       };
       const params = getParamsForFields(values, fields);
       expect(Array.isArray(params)).toBeTruthy();

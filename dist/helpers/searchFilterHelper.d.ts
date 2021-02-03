@@ -1,5 +1,5 @@
-declare const getParamsForFields: (values: any, fields: any) => any[];
-declare const groupRangeValues: (values: any) => any;
+declare const getParamsForFields: (values: any, fields: any) => any[][];
+declare const groupDateTimeValuesIfNeeded: (values: any) => any;
 declare const removeUndefinedFields: (values: any) => any;
-export { removeUndefinedFields, groupRangeValues, getParamsForFields };
+export { removeUndefinedFields, groupDateTimeValuesIfNeeded, getParamsForFields, };
 //# sourceMappingURL=searchFilterHelper.d.ts.map
