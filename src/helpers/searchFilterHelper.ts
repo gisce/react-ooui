@@ -6,9 +6,20 @@ const convertBooleanParamIfNeeded = (value: any) => {
 };
 
 const getParamsForFields = (values: any, fields: any) => {
-  return Object.keys(values).map((key) => {
-    return getParamForField(key, values[key], fields);
-  });
+  return Object.keys(values)
+    .map((key) => {
+      return getParamForField(key, values[key], fields);
+    })
+    .reduce((acc, val) => {
+      if (Array.isArray(val[0])) {
+        return acc.concat(val);
+      } else {
+        return acc.concat([val]);
+      }
+    }, [])
+    .filter((parm) => {
+      return parm[2] !== undefined && parm[2] !== null && parm[2] !== "";
+    });
 };
 
 const getParamForField = (key: string, value: any, fields: any) => {
