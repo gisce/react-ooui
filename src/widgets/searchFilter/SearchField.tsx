@@ -112,7 +112,6 @@ export function SearchField(props: Props): React.ReactElement {
           id={field._id}
           label={field.label || field._id}
           layout="vertical"
-          layout="vertical"
         />
       );
     }
