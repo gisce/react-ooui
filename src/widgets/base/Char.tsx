@@ -9,6 +9,7 @@ export const Char = ({
   placeholder,
   onChange,
   onPressEnter,
+  layout = "horizontal",
   ...props
 }: {
   id: string;
@@ -20,9 +21,10 @@ export const Char = ({
     | ((event: React.KeyboardEvent<HTMLInputElement>) => void)
     | undefined;
   children?: React.ReactNode;
+  layout?: "horizontal" | "vertical";
 }) => {
   return (
-    <FormItem name={id} label={label}>
+    <FormItem name={id} label={label} layout={layout}>
       <Input
         {...props}
         id={id}

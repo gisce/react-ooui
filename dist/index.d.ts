@@ -4,7 +4,9 @@ import { Selection } from "./widgets/base/Selection";
 import { Checkbox } from "./widgets/base/Checkbox";
 import { ManyToOne } from "./widgets/base/ManyToOne";
 import Tree from "./widgets/base/Tree";
+import Group from "./widgets/base/Group";
+import Form from "./widgets/base/Form";
 import SearchFilter from "./widgets/searchFilter/SearchFilter";
 export * from "./types";
-export { Button, Char, Selection, Checkbox, ManyToOne, Tree, SearchFilter };
+export { Button, Char, Selection, Checkbox, ManyToOne, Tree, Group, SearchFilter, Form };
 //# sourceMappingURL=index.d.ts.map

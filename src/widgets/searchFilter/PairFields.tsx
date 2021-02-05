@@ -24,6 +24,7 @@ export function PairFields(props: Props): React.ReactElement {
             className="w-24"
             id={id + "#from"}
             defaultValue={defaultValue}
+            layout="vertical"
           />
         </Col>
         <Col className="pb-1">
@@ -34,6 +35,7 @@ export function PairFields(props: Props): React.ReactElement {
             className="w-24"
             id={id + "#to"}
             defaultValue={defaultValue}
+            layout="vertical"
           />
         </Col>
       </Row>

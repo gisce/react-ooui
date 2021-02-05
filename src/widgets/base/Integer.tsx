@@ -9,6 +9,7 @@ export const Integer = ({
   defaultValue,
   onChange,
   onPressEnter,
+  layout = "horizontal",
   ...props
 }: {
   id: string;
@@ -21,9 +22,10 @@ export const Integer = ({
     | undefined;
   children?: React.ReactNode;
   className?: string;
+  layout?: "horizontal" | "vertical";
 }) => {
   return (
-    <FormItem name={id} label={label}>
+    <FormItem name={id} label={label} layout={layout}>
       <InputNumber
         {...props}
         id={id}

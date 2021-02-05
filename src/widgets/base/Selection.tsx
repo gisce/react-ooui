@@ -14,6 +14,7 @@ export const Selection = ({
   values,
   placeholder,
   onChange,
+  layout = "horizontal",
   ...props
 }: {
   id: string;
@@ -21,6 +22,7 @@ export const Selection = ({
   defaultValue?: string;
   values?: OptionValue[];
   placeholder?: string;
+  layout?: "horizontal" | "vertical";
   onChange?: ((event: React.ChangeEvent<HTMLInputElement>) => void) | undefined;
 }) => {
   const { Option } = Select;
@@ -29,11 +31,15 @@ export const Selection = ({
     values &&
     values.length &&
     values.map((v) => {
-      return <Option key={v.id} value={v.id}>{v.name}</Option>;
+      return (
+        <Option key={v.id} value={v.id}>
+          {v.name}
+        </Option>
+      );
     });
 
   return (
-    <FormItem name={id} label={label}>
+    <FormItem name={id} label={label} layout={layout}>
       <Select {...props}>{options}</Select>
     </FormItem>
   );

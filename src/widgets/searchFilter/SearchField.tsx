@@ -42,11 +42,12 @@ export function SearchField(props: Props): React.ReactElement {
     case types.text:
     case types.many2one:
     case types.char: {
-      return <Char id={field._id} label={field.label} />;
+      return <Char id={field._id} label={field.label} layout="vertical" />;
     }
     case types.boolean: {
       return (
         <Selection
+          layout="vertical"
           id={field._id}
           label={field.label}
           values={[
@@ -60,6 +61,7 @@ export function SearchField(props: Props): React.ReactElement {
       const selection = field as SelectionOoui;
       return (
         <Selection
+          layout="vertical"
           id={selection._id}
           label={selection.label}
           values={Array.from(selection.selectionValues).map(([name, value]) => {
@@ -91,13 +93,28 @@ export function SearchField(props: Props): React.ReactElement {
       );
     }
     case types.date: {
-      return <DateRangePicker id={field._id} label={field.label} />;
+      return (
+        <DateRangePicker id={field._id} label={field.label} layout="vertical" />
+      );
     }
     case types.datetime: {
-      return <DateTimeRangePicker id={field._id} label={field.label} />;
+      return (
+        <DateTimeRangePicker
+          id={field._id}
+          label={field.label}
+          layout="vertical"
+        />
+      );
     }
     default: {
-      return <Char id={field._id} label={field.label || field._id} />;
+      return (
+        <Char
+          id={field._id}
+          label={field.label || field._id}
+          layout="vertical"
+          layout="vertical"
+        />
+      );
     }
   }
 }
