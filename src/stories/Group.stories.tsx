@@ -11,7 +11,7 @@ export default {
 };
 
 const Template = (args: any) => (
-  <Form layout={"horizontal"}>
+  <Form>
     <Group {...args} />
   </Form>
 );
