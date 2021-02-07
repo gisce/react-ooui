@@ -1,13 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Table, Pagination, Checkbox, Spin } from "antd";
-import {
-  getTree,
-  getTableColumns,
-  getTableItems,
-} from "../../helpers/treeHelper";
-
-import { Strings, TreeView, Column } from "../../types";
-import { getLocalizedString } from "../../context/LocalesContext";
 import { Form as FormOoui } from "ooui";
 import { createReactWidget } from "../WidgetFactory";
 

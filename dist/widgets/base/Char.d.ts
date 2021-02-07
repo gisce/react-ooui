@@ -1,12 +1,16 @@
 import React from "react";
-export declare const Char: ({ id, label, value, placeholder, onChange, onPressEnter, layout, ...props }: {
+import { Char as CharOoui } from "ooui";
+declare type Props = {
     id: string;
-    label?: string | undefined;
-    value?: string | undefined;
-    placeholder?: string | undefined;
+    label?: string;
+    value?: string;
+    placeholder?: string;
     onChange?: ((event: React.ChangeEvent<HTMLInputElement>) => void) | undefined;
     onPressEnter?: ((event: React.KeyboardEvent<HTMLInputElement>) => void) | undefined;
     children?: React.ReactNode;
-    layout?: "horizontal" | "vertical" | undefined;
-}) => JSX.Element;
+    layout?: "horizontal" | "vertical";
+    ooui?: CharOoui;
+};
+export declare const Char: (props: Props) => JSX.Element;
+export {};
 //# sourceMappingURL=Char.d.ts.map

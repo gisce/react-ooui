@@ -1,19 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Row, Col } from "antd";
+import { Group as GroupOoui, Widget } from "ooui";
+import { createReactWidget } from "../WidgetFactory";
+import Config from "../../config";
 
 type Props = {
-  children: React.ReactNode[];
+  ooui: GroupOoui;
 };
 
 function Group(props: Props): React.ReactElement {
-  const { children } = props;
+  const { ooui } = props;
+  const { columns } = ooui.container;
+  const span = Config.full_width_colspan / columns;
 
   return (
-    <Row>
-      {children!.map((item: any) => {
-        return <Col>{item}</Col>;
+    <>
+      {ooui!.container.rows.map((row) => {
+        return (
+          <Row className="pb-2">
+            {row.map((item: Widget) => {
+              return <Col span={span * item.colspan}>{createReactWidget(item)}</Col>;
+            })}
+          </Row>
+        );
       })}
-    </Row>
+    </>
   );
 }
 

@@ -1,6 +1,7 @@
 import React from "react";
+import { Group as GroupOoui } from "ooui";
 declare type Props = {
-    children: React.ReactNode[];
+    ooui: GroupOoui;
 };
 declare function Group(props: Props): React.ReactElement;
 export default Group;
