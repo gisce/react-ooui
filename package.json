@@ -18,8 +18,9 @@
     "build-storybook": "build-storybook -s public"
   },
   "dependencies": {
+    "@storybook/addon-knobs": "^6.1.17",
     "antd": "^4.10.2",
-    "ooui": "git+ssh://git@github.com/gisce/ooui.js.git#implement_tree",
+    "ooui": "git+ssh://git@github.com/gisce/ooui.js.git",
     "postcss": "^7.0.35",
     "postcss-cli": "^7.1.0",
     "react": "^17.0.1",

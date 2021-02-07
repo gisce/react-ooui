@@ -1,14 +1,17 @@
 import React from "react";
-import { Widget } from "ooui";
+import { Widget as WidgetOoui } from "ooui";
+import * as Widgets from "..";
 
-const createReactWidget = (widget: Widget) => {
-  const type = widget.constructor.name;
+type widgets = {
+  [key: string]: any;
+};
 
-  if (Object.keys(widget).indexOf("_container") !== -1) {
-    return <div>{type} with container</div>;
-  }
+const widgetTypes = Widgets as widgets;
 
-  return <div>{type}</div>;
+const createReactWidget = (widgetOoui: WidgetOoui) => {
+  const type = widgetOoui.constructor.name;
+  const widgetClass = widgetTypes[type];
+  return React.createElement(widgetClass, { ooui: widgetOoui });
 };
 
 export { createReactWidget };
