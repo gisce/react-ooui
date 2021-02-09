@@ -75,6 +75,7 @@ Default.args = {
       size: 128,
       string: "Char",
       type: "char",
+      help: "Test message",
       views: {},
     },
     char_2: {

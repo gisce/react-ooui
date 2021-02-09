@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Tooltip } from "antd";
+import { Form, Tooltip, Row, Col } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 
 export default function FormItem({
@@ -15,35 +15,40 @@ export default function FormItem({
   layout?: "horizontal" | "vertical";
   tooltip?: string;
 }) {
-  const horizontalMode = (labelText: string) => {
+  const labelText = label && label.length > 1 ? label + " :" : " ";
+
+  const labelWithTooltip = () => {
     return (
-      <div className="flex flex-row items-center">
-        <div className="w-32 pl-2">
-          <div className="flex flex-col items-end">
-            <div className="flex flex-row items-center pb-1">
-              {tooltip && (
-                <Tooltip title={tooltip}>
-                  <QuestionCircleOutlined className="text-xs text-blue-400 pr-1" />
-                </Tooltip>
-              )}
-              <span className="text-right pr-2">{labelText}</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex-grow items-center">
+      <div className="flex flex-row items-center pb-1">
+        {tooltip && (
+          <Tooltip title={tooltip}>
+            <QuestionCircleOutlined className="text-xs text-blue-400 pr-1" />
+          </Tooltip>
+        )}
+        <span className="text-right pr-2">{labelText}</span>
+      </div>
+    );
+  };
+
+  const horizontalMode = () => {
+    return (
+      <Row align="middle">
+        <Col className="ml-2" flex="6rem">
+          <div className="flex flex-col items-end">{labelWithTooltip()}</div>
+        </Col>
+        <Col flex="auto">
           <Form.Item className="mb-0" name={name}>
             {children}
           </Form.Item>
-        </div>
-      </div>
+        </Col>
+      </Row>
     );
   };
 
   const verticalMode = () => {
     return (
       <>
-        {tooltip && <QuestionCircleOutlined />}
-        <span>{labelText}</span>
+        {labelWithTooltip()}
         <Form.Item className="mb-0" name={name}>
           {children}
         </Form.Item>
@@ -51,7 +56,5 @@ export default function FormItem({
     );
   };
 
-  const labelText = label && label.length > 1 ? label + " :" : " ";
-
-  return layout === "horizontal" ? horizontalMode(labelText) : verticalMode();
+  return layout === "horizontal" ? horizontalMode() : verticalMode();
 }
