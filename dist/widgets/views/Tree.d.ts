@@ -1,5 +1,5 @@
 import React from "react";
-import { Strings, TreeView } from "../../types";
+import { Strings, TreeView } from "@/types";
 declare type Props = {
     total: number;
     limit: number;

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Char } from "@/index";
+import { Char } from "..";
 import { Char as CharOoui } from "ooui";
 import "antd/dist/antd.css";
 

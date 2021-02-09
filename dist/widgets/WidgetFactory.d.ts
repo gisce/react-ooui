@@ -4,6 +4,6 @@ declare const createReactWidget: (widgetOoui: WidgetOoui) => React.CElement<{
     ooui: WidgetOoui;
 }, React.Component<{
     ooui: WidgetOoui;
-}, any, any>>;
+}, any, any>> | null;
 export { createReactWidget };
 //# sourceMappingURL=WidgetFactory.d.ts.map

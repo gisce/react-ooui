@@ -13,8 +13,12 @@ export const Char = (props: Props) => {
   const { id, label } = ooui;
 
   return (
-    <FormItem name={id} label={label} layout={layout}>
-      <Input id={id} />
+    <FormItem name={id} label={label} layout={layout} tooltip={ooui.tooltip}>
+      {ooui.isPassword ? (
+        <Input.Password disabled={ooui.readOnly} id={id} />
+      ) : (
+        <Input disabled={ooui.readOnly} id={id} />
+      )}
     </FormItem>
   );
 };

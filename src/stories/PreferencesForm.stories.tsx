@@ -13,8 +13,31 @@ const Template = (args: any) => <Form {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
-  arch:
-    '<form string="Users">\n                            <group colspan="4" col="4">\n                                <field name="name"/>\n                                <field name="login" readonly="1"/>\n                            </group>\n                            <notebook>\n                                <page string="General">\n                                    <field name="password" password="True" readonly="0"/>\n                                    <label colspan="4" string="Please note that you will have to logout and relog if you change your password."/>\n                                    <field name="context_lang" completion="1" readonly="0"/>\n                                    <field name="context_tz" completion="1" readonly="0"/>\n                                    <newline/>\n                                    <field colspan="4" name="signature" readonly="0"/>\n                                </page>\n                            </notebook>\n                        </form>',
+  initialValues: {
+    name: "John Appleseed",
+    login: "john",
+    context_lang: "ca_ES",
+    context_tz: "Europe/Madrid",
+    password: "MaskedPassword",
+    signature: "John Appleseed\n___\nReach me at +34973748312",
+  },
+  arch: `
+  <form string="Users">
+    <group colspan="4" col="4">
+      <field name="name"/>
+      <field name="login" readonly="1"/>
+    </group>
+    <notebook>
+      <page string="General">
+        <field name="password" password="True" readonly="0"/>
+        <label colspan="4" string="Please note that you will have to logout and relog if you change your password."/>
+        <field name="context_lang" completion="1" readonly="0"/>
+        <field name="context_tz" completion="1" readonly="0"/>
+        <newline/>
+        <field colspan="4" name="signature" readonly="0"/>
+      </page>
+    </notebook>
+  </form>`,
   fields: {
     context_lang: {
       required: true,

@@ -1,7 +1,7 @@
 import React from "react";
 import "antd/dist/antd.css";
-import "../../tailwind.generated.css";
-import { Strings, SearchFields } from "../../types";
+import "@/tailwind.generated.css";
+import { Strings, SearchFields } from "@/types";
 declare type Props = {
     fields: any;
     searchFields: SearchFields;
