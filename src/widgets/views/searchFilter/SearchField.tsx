@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 
-import { Char } from "../base/Char";
-import { Selection } from "../base/Selection";
+import { Char } from "../../base/Char";
+import { Selection } from "../../base/Selection";
 import { DateRangePicker } from "./DateRangePicker";
 import { DateTimeRangePicker } from "./DateTimeRangePicker";
 import { PairFields } from "./PairFields";
@@ -9,9 +9,9 @@ import { PairFields } from "./PairFields";
 import {
   LocalesContext,
   LocalesContextType,
-} from "../../context/LocalesContext";
+} from "../../../context/LocalesContext";
 
-import { Field, Selection as SelectionOoui } from "ooui";
+import { Field, Selection as SelectionOoui, Char as CharOoui } from "ooui";
 
 type Props = {
   field: Field;
@@ -42,33 +42,24 @@ export function SearchField(props: Props): React.ReactElement {
     case types.text:
     case types.many2one:
     case types.char: {
-      return <Char id={field._id} label={field.label} layout="vertical" />;
+      const char = field as CharOoui;
+      return <Char ooui={char} layout="vertical" />;
     }
     case types.boolean: {
-      return (
-        <Selection
-          layout="vertical"
-          id={field._id}
-          label={field.label}
-          values={[
-            { id: "true", name: getString("true") },
-            { id: "false", name: getString("false") },
-          ]}
-        />
-      );
+      const ooui = new SelectionOoui({
+        name: field._id,
+        string: field.label,
+        selection: [
+          ["true", getString("true")],
+          ["false", getString("false")],
+        ],
+      });
+
+      return <Selection layout="vertical" ooui={ooui} />;
     }
     case types.selection: {
       const selection = field as SelectionOoui;
-      return (
-        <Selection
-          layout="vertical"
-          id={selection._id}
-          label={selection.label}
-          values={Array.from(selection.selectionValues).map(([name, value]) => {
-            return { id: name, name: value };
-          })}
-        />
-      );
+      return <Selection layout="vertical" ooui={selection} />;
     }
     case types.float:
     case types.progressbar:
@@ -107,13 +98,8 @@ export function SearchField(props: Props): React.ReactElement {
       );
     }
     default: {
-      return (
-        <Char
-          id={field._id}
-          label={field.label || field._id}
-          layout="vertical"
-        />
-      );
+      const char = field as CharOoui;
+      return <Char ooui={char} layout="vertical" />;
     }
   }
 }

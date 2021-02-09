@@ -1,7 +1,7 @@
 import React from "react";
 import { Row, Col } from "antd";
-import { Float } from "../base/Float";
-import { Integer } from "../base/Integer";
+import { Float } from "../../base/Float";
+import { Integer } from "../../base/Integer";
 
 type Props = {
   id: string;

@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
 
-import { Integer } from "../base/Integer";
+import { Integer } from "../../base/Integer";
 import { Row, Space } from "antd";
 
 import {
   LocalesContext,
   LocalesContextType,
-} from "../../context/LocalesContext";
+} from "../../../context/LocalesContext";
 
 export function SearchParams(): React.ReactElement {
   const { getString } = useContext(LocalesContext) as LocalesContextType;

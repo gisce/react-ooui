@@ -4,7 +4,7 @@ import { createReactWidget } from "../WidgetFactory";
 
 type Props = {
   arch: string;
-  fields: string;
+  fields: any;
 };
 
 function Form(props: Props): React.ReactElement {

@@ -1,7 +1,7 @@
 import { DatePicker, TimePicker } from "antd";
 
 import React from "react";
-import FormItem from "../../common/FormItem";
+import FormItem from "../../../common/FormItem";
 import { Row } from "antd";
 
 export const DateTimeRangePicker = ({
