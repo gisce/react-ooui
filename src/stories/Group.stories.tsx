@@ -9,7 +9,7 @@ import { Form as FormOoui, Group as GroupOoui } from "ooui";
 import { Group } from "..";
 
 export default {
-  title: "Components/Widgets/Group",
+  title: "Components/Widgets/Containers/Group",
   decorators: [withKnobs],
 };
 

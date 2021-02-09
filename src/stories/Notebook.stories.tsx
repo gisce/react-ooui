@@ -1,31 +1,47 @@
 import React from "react";
-
-import { Form } from "antd";
-import { Notebook, Char } from "..";
 import "antd/dist/antd.css";
 import "../tailwind.generated.css";
 
+import { withKnobs } from "@storybook/addon-knobs";
+
+import { Form } from "antd";
+import { Form as FormOoui, Notebook as NotebookOoui } from "ooui";
+import { Notebook } from "..";
+
 export default {
-  component: Notebook,
-  title: "Components/Widgets/Notebook",
+  title: "Components/Widgets/Containers/Notebook",
+  decorators: [withKnobs],
 };
 
-const Template = (args: any) => (
-  <Form>
-    <Notebook {...args} />
-  </Form>
-);
+const arch = `<form><notebook name="notebook">
+<page string="General">
+  <field name="name" />
+</page>
+<page string="Secondary">
+  <field name="surname" />
+</page>
+</notebook>
+</form>`;
 
-export const Default = Template.bind({});
-Default.args = {
-  tabs: [
-    {
-      title: "Tab 1",
-      children: <Char id="field1" label="field 1" />,
-    },
-    {
-      title: "Tab 2",
-      children: <Char id="field2" label="field 2" />,
-    },
-  ],
+const fields = {
+  name: {
+    string: "Field of page 1",
+    type: "char",
+  },
+  surname: {
+    string: "Field of page 2",
+    type: "char",
+  },
+};
+
+export const Default = (): React.ReactElement => {
+  const formOoui = new FormOoui(fields);
+  formOoui.parse(arch);
+  const notebookOoui = formOoui.findById("notebook") as NotebookOoui;
+
+  return (
+    <Form>
+      <Notebook ooui={notebookOoui} />
+    </Form>
+  );
 };

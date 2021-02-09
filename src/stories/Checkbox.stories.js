@@ -5,7 +5,7 @@ import "antd/dist/antd.css";
 
 export default {
     component: Checkbox,
-    title: "Components/Widgets/Form/Checkbox",
+    title: "Components/Widgets/Base/Checkbox",
 };
 
 const Template = (args) => <Checkbox {...args} />;

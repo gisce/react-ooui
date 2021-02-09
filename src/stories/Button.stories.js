@@ -5,7 +5,7 @@ import "antd/dist/antd.css";
 
 export default {
   component: Button,
-  title: "Components/Widgets/Form/Button",
+  title: "Components/Widgets/Base/Button",
   argTypes: { onClick: { action: "clicked" } },
 };
 

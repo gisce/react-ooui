@@ -5,7 +5,7 @@ import "antd/dist/antd.css";
 
 export default {
   component: ManyToOne,
-  title: "Components/Widgets/Form/ManyToOne",
+  title: "Components/Widgets/Base/ManyToOne",
 };
 
 const Template = (args) => <ManyToOne {...args} />;

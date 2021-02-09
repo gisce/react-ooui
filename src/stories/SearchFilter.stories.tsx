@@ -6,7 +6,7 @@ import "../tailwind.generated.css";
 
 export default {
   component: SearchFilter,
-  title: "Components/Widgets/SearchFilter",
+  title: "Components/Widgets/Views/SearchFilter",
 };
 
 const Template = (args: any) => <SearchFilter {...args} />;

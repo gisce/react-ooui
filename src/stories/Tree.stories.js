@@ -6,7 +6,7 @@ import "../tailwind.generated.css";
 
 export default {
   component: Tree,
-  title: "Components/Widgets/Tree",
+  title: "Components/Widgets/Views/Tree",
 };
 
 const Template = (args) => <Tree {...args} />;
