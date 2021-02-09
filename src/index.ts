@@ -10,7 +10,7 @@ import Form from "@/widgets/views/Form";
 import Label from "@/widgets/base/Label";
 import Text from "@/widgets/base/Text";
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
-export * from "@/types/index";
+import { TreeView, SearchFields } from "@/types";
 
 export {
   Button,
@@ -25,4 +25,6 @@ export {
   Notebook,
   Label,
   Text,
+  TreeView,
+  SearchFields,
 };

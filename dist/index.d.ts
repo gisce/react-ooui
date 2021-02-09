@@ -10,6 +10,6 @@ import Form from "@/widgets/views/Form";
 import Label from "@/widgets/base/Label";
 import Text from "@/widgets/base/Text";
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
-export * from "@/types/index";
-export { Button, Char, Selection, Checkbox, ManyToOne, Tree, Group, SearchFilter, Form, Notebook, Label, Text, };
+import { TreeView, SearchFields } from "@/types";
+export { Button, Char, Selection, Checkbox, ManyToOne, Tree, Group, SearchFilter, Form, Notebook, Label, Text, TreeView, SearchFields, };
 //# sourceMappingURL=index.d.ts.map
