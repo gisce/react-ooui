@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { Strings } from "../types";
+import { Strings } from "@/types";
 
 export type LocalesContextType = {
   getString: (key: string) => string;

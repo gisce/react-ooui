@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Form as FormOoui } from "ooui";
-import { createReactWidget } from "../WidgetFactory";
+import { createReactWidget } from "@/widgets/WidgetFactory";
 
 type Props = {
   arch: string;

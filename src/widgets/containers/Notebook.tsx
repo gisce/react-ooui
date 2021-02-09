@@ -3,7 +3,7 @@ import { Tabs } from "antd";
 const { TabPane } = Tabs;
 
 import { Notebook as NotebookOoui, Group as GroupOoui } from "ooui";
-import { Group } from "../../";
+import { Group } from "@/index";
 
 type Props = {
   ooui: NotebookOoui;

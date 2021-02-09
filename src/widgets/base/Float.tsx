@@ -1,6 +1,6 @@
 import React from "react";
 import { InputNumber } from "antd";
-import FormItem from "../../common/FormItem";
+import FormItem from "@/common/FormItem";
 
 export const Float = ({
   id,

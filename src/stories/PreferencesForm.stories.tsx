@@ -2,7 +2,7 @@ import React from "react";
 
 import { Form } from "..";
 import "antd/dist/antd.css";
-import "../tailwind.generated.css";
+import "@/tailwind.generated.css";
 
 export default {
   component: Form,

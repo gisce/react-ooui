@@ -2,7 +2,7 @@ import React from "react";
 
 import { SearchFilter } from "..";
 import "antd/dist/antd.css";
-import "../tailwind.generated.css";
+import "@/tailwind.generated.css";
 
 export default {
   component: SearchFilter,

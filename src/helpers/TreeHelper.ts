@@ -1,5 +1,5 @@
 import { Tree as TreeOoui, Selection, Many2one, Boolean } from "ooui";
-import { TreeView, Column } from "../types";
+import { TreeView, Column } from "@/types";
 
 const getTree = (treeView: TreeView): TreeOoui => {
   const xml = treeView.arch;

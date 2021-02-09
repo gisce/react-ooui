@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button } from "..";
+import { Button } from "@/index";
 import "antd/dist/antd.css";
 
 export default {

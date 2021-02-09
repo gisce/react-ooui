@@ -1,6 +1,6 @@
 import React from "react";
 import { Select } from "antd";
-import FormItem from "../../common/FormItem";
+import FormItem from "@/common/FormItem";
 import { Selection as SelectionOoui } from "ooui";
 const { Option } = Select;
 

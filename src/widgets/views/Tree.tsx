@@ -4,10 +4,10 @@ import {
   getTree,
   getTableColumns,
   getTableItems,
-} from "../../helpers/treeHelper";
+} from "@/helpers/treeHelper";
 
-import { Strings, TreeView, Column } from "../../types";
-import { getLocalizedString } from "../../context/LocalesContext";
+import { Strings, TreeView, Column } from "@/types";
+import { getLocalizedString } from "@/context/LocalesContext";
 
 type Props = {
   total: number;

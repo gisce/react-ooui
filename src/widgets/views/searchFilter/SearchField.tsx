@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 
-import { Char } from "../../base/Char";
-import { Selection } from "../../base/Selection";
+import { Char } from "@/widgets/base/Char";
+import { Selection } from "@/widgets/base/Selection";
 import { DateRangePicker } from "./DateRangePicker";
 import { DateTimeRangePicker } from "./DateTimeRangePicker";
 import { PairFields } from "./PairFields";
@@ -9,7 +9,7 @@ import { PairFields } from "./PairFields";
 import {
   LocalesContext,
   LocalesContextType,
-} from "../../../context/LocalesContext";
+} from "@/context/LocalesContext";
 
 import { Field, Selection as SelectionOoui, Char as CharOoui } from "ooui";
 

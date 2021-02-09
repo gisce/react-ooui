@@ -1,18 +1,18 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Row, Col } from "antd";
 
 import "antd/dist/antd.css";
-import "../../../tailwind.generated.css";
+import "@/tailwind.generated.css";
 
 import { SearchFilter as SearchFilterOoui, Container, Field } from "ooui";
 
 import { SearchField } from "./SearchField";
 import { SearchBottomBar } from "./SearchBottomBar";
-import LocalesProvider from "../../../context/LocalesContext";
-import { Strings, SearchFields } from "../../../types";
+import LocalesProvider from "@/context/LocalesContext";
+import { Strings, SearchFields } from "@/types";
 import { SearchParams } from "./SearchParams";
 
-import { getParamsForFields } from "../../../helpers/searchFilterHelper";
+import { getParamsForFields } from "@/helpers/searchFilterHelper";
 
 type Props = {
   fields: any;

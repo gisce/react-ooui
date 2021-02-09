@@ -1,16 +1,16 @@
-import { Button } from "./widgets/base/Button";
-import { Char } from "./widgets/base/Char";
-import { Selection } from "./widgets/base/Selection";
-import { Checkbox } from "./widgets/base/Checkbox";
-import { ManyToOne } from "./widgets/base/ManyToOne";
-import Tree from "./widgets/views/Tree";
-import Group from "./widgets/containers/Group";
-import Notebook from "./widgets/containers/Notebook";
-import Form from "./widgets/views/Form";
-import Label from "./widgets/base/Label";
-import Text from "./widgets/base/Text";
-import SearchFilter from "./widgets/views/searchFilter/SearchFilter";
-export * from "./types";
+import { Button } from "@/widgets/base/Button";
+import { Char } from "@/widgets/base/Char";
+import { Selection } from "@/widgets/base/Selection";
+import { Checkbox } from "@/widgets/base/Checkbox";
+import { ManyToOne } from "@/widgets/base/ManyToOne";
+import Tree from "@/widgets/views/Tree";
+import Group from "@/widgets/containers/Group";
+import Notebook from "@/widgets/containers/Notebook";
+import Form from "@/widgets/views/Form";
+import Label from "@/widgets/base/Label";
+import Text from "@/widgets/base/Text";
+import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
+export * from "@/types";
 
 export {
   Button,

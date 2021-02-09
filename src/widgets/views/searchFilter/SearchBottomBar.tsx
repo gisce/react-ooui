@@ -11,7 +11,7 @@ import {
 import {
   LocalesContext,
   LocalesContextType,
-} from "../../../context/LocalesContext";
+} from "@/context/LocalesContext";
 
 type Props = {
   advancedFilter: boolean;

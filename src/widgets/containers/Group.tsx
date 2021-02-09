@@ -1,8 +1,8 @@
 import React from "react";
 import { Row, Col } from "antd";
 import { Group as GroupOoui, Widget } from "ooui";
-import { createReactWidget } from "../WidgetFactory";
-import Config from "../../config";
+import { createReactWidget } from "@/widgets/WidgetFactory";
+import Config from "@/config";
 
 type Props = {
   ooui: GroupOoui;
