@@ -7,6 +7,8 @@ import Tree from "./widgets/base/Tree";
 import Group from "./widgets/base/Group";
 import Notebook from "./widgets/base/Notebook";
 import Form from "./widgets/base/Form";
+import Label from "./widgets/base/Label";
+import Text from "./widgets/base/Text";
 import SearchFilter from "./widgets/searchFilter/SearchFilter";
 export * from "./types";
 
@@ -21,4 +23,6 @@ export {
   SearchFilter,
   Form,
   Notebook,
+  Label,
+  Text,
 };
