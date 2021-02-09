@@ -1,46 +1,34 @@
 import React from "react";
 import { Select } from "antd";
 import FormItem from "../../common/FormItem";
+import { Selection as SelectionOoui } from "ooui";
+const { Option } = Select;
 
-type OptionValue = {
-  id: string;
-  name: string;
+type Props = {
+  layout?: "horizontal" | "vertical";
+  ooui: SelectionOoui;
 };
 
-export const Selection = ({
-  id,
-  label,
-  defaultValue,
-  values,
-  placeholder,
-  onChange,
-  layout = "horizontal",
-  ...props
-}: {
-  id: string;
-  label?: string;
-  defaultValue?: string;
-  values?: OptionValue[];
-  placeholder?: string;
-  layout?: "horizontal" | "vertical";
-  onChange?: ((event: React.ChangeEvent<HTMLInputElement>) => void) | undefined;
-}) => {
-  const { Option } = Select;
+export const Selection = (props: Props) => {
+  const { ooui, layout } = props;
+  const { id, label, selectionValues } = ooui;
+  const values = Array.from(selectionValues.entries());
 
   const options =
     values &&
     values.length &&
-    values.map((v) => {
+    values.map((entry: string[]) => {
+      const [key, value] = entry;
       return (
-        <Option key={v.id} value={v.id}>
-          {v.name}
+        <Option key={key} value={key}>
+          {value}
         </Option>
       );
     });
 
   return (
     <FormItem name={id} label={label} layout={layout}>
-      <Select {...props}>{options}</Select>
+      <Select>{options}</Select>
     </FormItem>
   );
 };
