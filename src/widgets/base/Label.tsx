@@ -2,7 +2,6 @@ import React from "react";
 import { Typography } from "antd";
 
 import { Label as LabelOoui } from "ooui";
-const { Text } = Typography;
 
 type Props = {
   ooui: LabelOoui;
@@ -11,7 +10,7 @@ type Props = {
 const Label = (props: Props) => {
   const { ooui } = props;
 
-  return <Text>{ooui.label}</Text>;
+  return <p className="text-center">{ooui.label}</p>;
 };
 
 export default Label;
