@@ -15,9 +15,9 @@ function Group(props: Props): React.ReactElement {
 
   return (
     <>
-      {ooui!.container.rows.map((row) => {
+      {ooui!.container.rows.map((row, index) => {
         return (
-          <Row className="pb-2">
+          <Row className="pb-2" key={index}>
             {row.map((item: Widget) => {
               return <Col span={span * item.colspan}>{createReactWidget(item)}</Col>;
             })}

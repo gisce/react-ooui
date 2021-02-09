@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form as FormOoui } from "ooui";
 import { createReactWidget } from "@/widgets/WidgetFactory";
-import { Form as FormAnt } from "antd";
+import { Form as AntForm } from "antd";
 
 type Props = {
   arch: string;
@@ -28,7 +28,7 @@ function Form(props: Props): React.ReactElement {
     setForm(newForm);
   }, [arch, fields]);
 
-  return <FormAnt initialValues={initialValues}>{form && getForm()}</FormAnt>;
+  return <AntForm initialValues={initialValues}>{form && getForm()}</AntForm>;
 }
 
 export default Form;
