@@ -11,10 +11,6 @@ const widgetTypes = Widgets as widgets;
 const createReactWidget = (widgetOoui: WidgetOoui, key?: string) => {
   const type = widgetOoui.constructor.name;
   const widgetClass = widgetTypes[type];
-  if (!widgetClass) {
-    // TODO: Implement pending types, i.e: NewLine arrives as Widget
-    return null;
-  }
   return React.createElement(widgetClass, { ooui: widgetOoui, key });
 };
 
