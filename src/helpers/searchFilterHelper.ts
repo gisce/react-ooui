@@ -10,11 +10,19 @@ const getParamsForFields = (values: any, fields: any) => {
   const groupedDateTime = groupDateTimeValuesIfNeeded(filteredValues);
   const groupedValues = ungroupDateValuesIfNeeded(groupedDateTime, fields);
 
-  return [
+  const params = [
     ...Object.keys(groupedValues).map((key) => {
       return getParamForField(key, groupedValues[key], fields);
     }),
   ];
+
+  // This is needed because in case of datetime we receive an array of arrays
+  return params.reduce((acc, curVal) => {
+    if (Array.isArray(curVal[0])) {
+      return acc.concat(curVal);
+    }
+    return [...acc, curVal];
+  }, []);
 };
 
 const getParamForField = (key: string, value: any, fields: any) => {
