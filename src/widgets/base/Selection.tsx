@@ -28,7 +28,7 @@ export const Selection = (props: Props) => {
 
   return (
     <FormItem name={id} label={label} layout={layout}>
-      <Select>{options}</Select>
+      <Select disabled={ooui.readOnly}>{options}</Select>
     </FormItem>
   );
 };

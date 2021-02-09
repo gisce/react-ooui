@@ -13,7 +13,7 @@ const Text = (props: Props) => {
 
   return (
     <FormItem name={ooui.id} label={ooui.label}>
-      <TextArea rows={4} />
+      <TextArea disabled={ooui.readOnly} rows={4} />
     </FormItem>
   );
 };
