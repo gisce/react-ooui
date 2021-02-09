@@ -15,9 +15,9 @@ function Form(props: Props): React.ReactElement {
   const [form, setForm] = useState<FormOoui>();
 
   const getForm = () => {
-    return form!.container.rows.map((item) => {
-      return item.map((widget) => {
-        return createReactWidget(widget);
+    return form!.container.rows.map((item, i) => {
+      return item.map((widget, j) => {
+        return createReactWidget(widget, `${i}-${j}`);
       });
     });
   };
