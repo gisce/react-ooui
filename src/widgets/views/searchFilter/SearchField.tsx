@@ -6,10 +6,7 @@ import { DateRangePicker } from "./DateRangePicker";
 import { DateTimeRangePicker } from "./DateTimeRangePicker";
 import { PairFields } from "./PairFields";
 
-import {
-  LocalesContext,
-  LocalesContextType,
-} from "@/context/LocalesContext";
+import { LocalesContext, LocalesContextType } from "@/context/LocalesContext";
 
 import { Field, Selection as SelectionOoui, Char as CharOoui } from "ooui";
 
@@ -33,6 +30,7 @@ const types = {
 
 export function SearchField(props: Props): React.ReactElement {
   const { field } = props;
+  field.readOnly = false;
 
   const { getString } = useContext(LocalesContext) as LocalesContextType;
 
