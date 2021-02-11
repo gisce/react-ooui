@@ -5,6 +5,7 @@ declare type Props = {
     fields: any;
     initialValues?: any;
     antForm: FormInstance;
+    onSubmit: (values: any) => void;
 };
 declare function Form(props: Props): React.ReactElement;
 export default Form;
