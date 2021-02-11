@@ -8,11 +8,10 @@ type Props = {
   fields: any;
   initialValues?: any;
   antForm: FormInstance;
-  onSubmit: (values: any) => void;
 };
 
 function Form(props: Props): React.ReactElement {
-  const { arch, fields, initialValues, antForm, onSubmit } = props;
+  const { arch, fields, initialValues, antForm } = props;
 
   const [form, setForm] = useState<FormOoui>();
 
@@ -31,7 +30,7 @@ function Form(props: Props): React.ReactElement {
   }, [arch, fields]);
 
   return (
-    <AntForm form={antForm} initialValues={initialValues} onFinish={onSubmit}>
+    <AntForm form={antForm} initialValues={initialValues}>
       {form && getForm()}
     </AntForm>
   );
