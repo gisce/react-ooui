@@ -33,7 +33,7 @@ export default function FormItem({
   const horizontalMode = () => {
     return (
       <Row align="middle">
-        <Col className="ml-2" flex="6rem">
+        <Col className="ml-2" flex="7rem">
           <div className="flex flex-col items-end">{labelWithTooltip()}</div>
         </Col>
         <Col flex="auto">
