@@ -10,6 +10,21 @@ type Props = {
   antForm: FormInstance;
 };
 
+const filteredValues = (values: any, fields: any) => {
+  if (!fields) {
+    return values;
+  }
+  const filteredValues: any = {};
+  Object.keys(values).forEach((key) => {
+    if (values[key] === false && fields[key] &&  fields[key].type !== "boolean") {
+      filteredValues[key] = "";
+    } else {
+      filteredValues[key] = values[key];
+    }
+  });
+  return filteredValues;
+};
+
 function Form(props: Props): React.ReactElement {
   const { arch, fields, initialValues, antForm } = props;
 
@@ -30,7 +45,10 @@ function Form(props: Props): React.ReactElement {
   }, [arch, fields]);
 
   return (
-    <AntForm form={antForm} initialValues={initialValues}>
+    <AntForm
+      form={antForm}
+      initialValues={filteredValues(initialValues, fields)}
+    >
       {form && getForm()}
     </AntForm>
   );
