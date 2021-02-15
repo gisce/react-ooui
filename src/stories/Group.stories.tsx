@@ -2,7 +2,7 @@ import React from "react";
 import "antd/dist/antd.css";
 import "@/tailwind.generated.css";
 
-import { withKnobs, number } from "@storybook/addon-knobs";
+import { withKnobs, number, text } from "@storybook/addon-knobs";
 
 import { Form } from "antd";
 import { Form as FormOoui, Group as GroupOoui } from "ooui";
@@ -14,7 +14,7 @@ export default {
 };
 
 const archTemplate = [
-  `<form><group name="group" colspan="{colspan}" col="{col}">`,
+  `<form><group name="group" label="{label}" colspan="{colspan}" col="{col}">`,
   `</group></form>`,
 ];
 
@@ -28,12 +28,14 @@ const fields = {
 };
 
 export const Default = (): React.ReactElement => {
+  const label = text("Label", undefined) || undefined;
   const col = number("Columns", 4) || 4;
   const colspan = number("Colspan", 4) || 4;
   const num_fields = number("Number of widgets", 2) || 2;
 
   const arch = [
     archTemplate[0]
+      .replace("{label}", label)
       .replace("{colspan}", colspan.toString())
       .replace("{col}", col.toString()),
   ];
