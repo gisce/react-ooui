@@ -17,24 +17,13 @@ export default function FormItem({
 }) {
   const labelText = label && label.length > 1 ? label + " :" : " ";
 
-  const labelWithTooltip = () => {
-    return (
-      <div className="flex flex-row items-center pb-1">
-        {tooltip && (
-          <Tooltip title={tooltip}>
-            <QuestionCircleOutlined className="text-xs text-blue-400 pr-1" />
-          </Tooltip>
-        )}
-        <span className="text-right pr-2">{labelText}</span>
-      </div>
-    );
-  };
-
   const horizontalMode = () => {
     return (
       <Row align="middle">
         <Col className="ml-2" flex="7rem">
-          <div className="flex flex-col items-end">{labelWithTooltip()}</div>
+          <div className="flex flex-col items-end">
+            {labelWithTooltip(labelText, tooltip)}
+          </div>
         </Col>
         <Col flex="auto">
           <Form.Item className="mb-0" name={name}>
@@ -48,7 +37,7 @@ export default function FormItem({
   const verticalMode = () => {
     return (
       <>
-        {labelWithTooltip()}
+        {labelWithTooltip(labelText, tooltip)}
         <Form.Item className="mb-0" name={name}>
           {children}
         </Form.Item>
@@ -58,3 +47,18 @@ export default function FormItem({
 
   return layout === "horizontal" ? horizontalMode() : verticalMode();
 }
+
+const labelWithTooltip = (label: string, tooltip?: string) => {
+  return (
+    <div className="flex flex-row items-center pb-1">
+      {tooltip && (
+        <Tooltip title={tooltip}>
+          <QuestionCircleOutlined className="text-xs text-blue-400 pr-1" />
+        </Tooltip>
+      )}
+      <span className="text-right pr-2">{label}</span>
+    </div>
+  );
+};
+
+export { labelWithTooltip };
