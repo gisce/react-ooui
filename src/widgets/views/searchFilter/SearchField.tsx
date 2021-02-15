@@ -61,25 +61,9 @@ export function SearchField(props: Props): React.ReactElement {
     }
     case types.float:
     case types.progressbar:
-    case types.float_time: {
-      return (
-        <PairFields
-          id={field._id}
-          label={field.label}
-          defaultValue={0.0}
-          type="float"
-        />
-      );
-    }
+    case types.float_time:
     case types.integer: {
-      return (
-        <PairFields
-          id={field._id}
-          label={field.label}
-          defaultValue={0}
-          type="integer"
-        />
-      );
+      return <PairFields ooui={field} id={field._id} label={field.label} />;
     }
     case types.date: {
       return (

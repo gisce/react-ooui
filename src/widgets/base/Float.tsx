@@ -1,44 +1,32 @@
 import React from "react";
 import { InputNumber } from "antd";
 import FormItem from "@/common/FormItem";
+import { Float as FloatOoui } from "ooui";
 
-export const Float = ({
-  id,
-  label,
-  value,
-  defaultValue,
-  onChange,
-  onPressEnter,
-  layout = "horizontal",
-  ...props
-}: {
-  id: string;
-  label?: string;
-  value?: number;
-  defaultValue?: number;
-  onChange?: ((event: React.ChangeEvent<HTMLInputElement>) => void) | undefined;
-  onPressEnter?:
-    | ((event: React.KeyboardEvent<HTMLInputElement>) => void)
-    | undefined;
-  children?: React.ReactNode;
-  className?: string;
+type Props = {
   layout?: "horizontal" | "vertical";
-}) => {
+  ooui: FloatOoui;
+  id?: string;
+};
+
+export const Float = (props: Props) => {
+  const { ooui, layout } = props;
+  const { label } = ooui;
+  const id = props.id ? props.id : ooui.id;
+
   return (
-    <FormItem name={id} label={label} layout={layout}>
+    <FormItem name={id} label={label} layout={layout} tooltip={ooui.tooltip}>
       <InputNumber
-        {...props}
+        disabled={ooui.readOnly}
+        className="w-full"
         id={id}
-        precision={2}
+        precision={ooui.decimalDigits}
         formatter={(value) => {
           return `${value}`.replace(/[^0-9\.\-]+/g, "");
         }}
+        defaultValue={0}
         decimalSeparator={"."}
-        defaultValue={defaultValue}
-        onPressEnter={onPressEnter}
-      >
-        {props.children}
-      </InputNumber>
+      />
     </FormItem>
   );
 };

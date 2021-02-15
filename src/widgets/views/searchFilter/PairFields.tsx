@@ -2,42 +2,42 @@ import React from "react";
 import { Row, Col } from "antd";
 import { Float } from "@/widgets/base/Float";
 import { Integer } from "@/widgets/base/Integer";
+import { Float as FloatOoui, Integer as IntegerOoui } from "ooui";
+import { labelWithTooltip } from "@/common/FormItem";
 
 type Props = {
+  ooui: any;
   id: string;
   label?: string;
-  defaultValue?: number;
-  type: "float" | "integer";
 };
 
 export function PairFields(props: Props): React.ReactElement {
-  const { id, label, defaultValue, type } = props;
+  const { ooui } = props;
+  const { id, label, tooltip } = ooui;
+  ooui.label = "";
+  ooui.tooltip = undefined;
 
-  const Widget = type === "float" ? Float : Integer;
+  const getWidget = (suffix: string) => {
+    return ooui instanceof IntegerOoui ? getInteger(suffix) : getFloat(suffix);
+  };
+
+  const getFloat = (suffix: string) => (
+    <Float id={id + suffix} ooui={ooui as FloatOoui} layout="vertical" />
+  );
+
+  const getInteger = (suffix: string) => (
+    <Integer id={id + suffix} ooui={ooui as IntegerOoui} layout="vertical" />
+  );
 
   return (
     <>
-      {label}
+      {labelWithTooltip(label, tooltip)}
       <Row align={"bottom"} className="mt-0">
-        <Col>
-          <Widget
-            className="w-24"
-            id={id + "#from"}
-            defaultValue={defaultValue}
-            layout="vertical"
-          />
-        </Col>
+        <Col>{getWidget("#from")}</Col>
         <Col className="pb-1">
           <span className="pl-2 pr-2 h-full"> - </span>
         </Col>
-        <Col>
-          <Widget
-            className="w-24"
-            id={id + "#to"}
-            defaultValue={defaultValue}
-            layout="vertical"
-          />
-        </Col>
+        <Col>{getWidget("#to")}</Col>
       </Row>
     </>
   );
