@@ -6,6 +6,6 @@ declare const createReactWidget: (widgetOoui: WidgetOoui, key?: string | undefin
 }, React.Component<{
     ooui: WidgetOoui;
     key: string | undefined;
-}, any, any>>;
+}, any, any>> | null;
 export { createReactWidget };
 //# sourceMappingURL=WidgetFactory.d.ts.map
