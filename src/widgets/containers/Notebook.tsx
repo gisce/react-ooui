@@ -19,7 +19,7 @@ function Notebook(props: Props): React.ReactElement {
 
         return (
           <TabPane tab={page.label} key={tabKey}>
-            <Group ooui={page as GroupOoui} />
+            <Group ooui={page as GroupOoui} showLabel={false} />
           </TabPane>
         );
       })}
