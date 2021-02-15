@@ -50,6 +50,7 @@ export const Default = (): React.ReactElement => {
   const formOoui = new FormOoui(fields);
   formOoui.parse(arch.join(""));
   const groupOoui = formOoui.findById("group") as GroupOoui;
+  groupOoui.label = label;
 
   return (
     <Form>
