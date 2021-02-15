@@ -9,6 +9,7 @@ export default function FormItem({
   layout = "horizontal",
   tooltip,
   nolabel = false,
+  valuePropName,
 }: {
   name: string;
   label?: string;
@@ -16,8 +17,15 @@ export default function FormItem({
   layout?: "horizontal" | "vertical";
   tooltip?: string;
   nolabel?: boolean;
+  valuePropName?: string;
 }) {
   const labelText = label && label.length > 1 ? label + " :" : " ";
+
+  const formItem = () => (
+    <Form.Item className="mb-0" name={name} valuePropName={valuePropName}>
+      {children}
+    </Form.Item>
+  );
 
   const horizontalMode = () => {
     return (
@@ -29,11 +37,7 @@ export default function FormItem({
             </div>
           </Col>
         ) : null}
-        <Col flex="auto">
-          <Form.Item className="mb-0" name={name}>
-            {children}
-          </Form.Item>
-        </Col>
+        <Col flex="auto">{formItem()}</Col>
       </Row>
     );
   };
@@ -42,9 +46,7 @@ export default function FormItem({
     return (
       <>
         {labelWithTooltip(nolabel ? "" : labelText, tooltip)}
-        <Form.Item className="mb-0" name={name}>
-          {children}
-        </Form.Item>
+        {formItem()}
       </>
     );
   };
