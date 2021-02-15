@@ -11,6 +11,9 @@ const widgetTypes = Widgets as widgets;
 const createReactWidget = (widgetOoui: WidgetOoui, key?: string) => {
   const type = widgetOoui.constructor.name;
   const widgetClass = widgetTypes[type];
+  if (!widgetClass) {
+    return null;
+  }
   return React.createElement(widgetClass, { ooui: widgetOoui, key });
 };
 
