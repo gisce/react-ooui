@@ -19,7 +19,9 @@ function Group(props: Props): React.ReactElement {
       <Row className="pb-2" key={index}>
         {row.map((item: Widget) => {
           return (
-            <Col span={span * item.colspan}>{createReactWidget(item)}</Col>
+            <Col span={span * item.colspan} className="pl-2">
+              {createReactWidget(item)}
+            </Col>
           );
         })}
       </Row>
