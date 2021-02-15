@@ -1,33 +1,21 @@
 import React from "react";
 import { Form, Button as AntButton } from "antd";
+import { Button as ButtonOoui } from "ooui";
+import FormItem from "@/common/FormItem";
 
-export const Button = ({
-  type,
-  activated,
-  onClick,
-  label,
-  ...props
-}: {
-  type?:
-    | "text"
-    | "link"
-    | "ghost"
-    | "default"
-    | "primary"
-    | "dashed"
-    | undefined;
-  activated?: boolean;
-  onClick?:
-    | ((event: React.MouseEvent<HTMLElement, MouseEvent>) => void)
-    | undefined;
-  label?: string;
-  children?: React.ReactNode;
-}) => {
+type Props = {
+  ooui: ButtonOoui;
+};
+
+export const Button = (props: Props) => {
+  const { ooui } = props;
+  const { id, label, activated } = ooui;
+
   return (
-    <Form.Item label={label}>
-      <AntButton {...props} type={type} disabled={!activated} onClick={onClick}>
-        {props.children}
+    <FormItem name={id} label={""} nolabel={true}>
+      <AntButton className="w-full" disabled={!activated}>
+        {label}
       </AntButton>
-    </Form.Item>
+    </FormItem>
   );
 };
