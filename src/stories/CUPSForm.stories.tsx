@@ -6,7 +6,7 @@ import "@/tailwind.generated.css";
 
 export default {
   component: Form,
-  title: "Components/Widgets/Forms/CUPSForm",
+  title: "Components/Widgets/Forms/CUPS",
 };
 
 const Template = (args: any) => <Form {...args} />;

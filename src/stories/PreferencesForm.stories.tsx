@@ -6,7 +6,7 @@ import "@/tailwind.generated.css";
 
 export default {
   component: Form,
-  title: "Components/Widgets/Forms/PreferencesForm",
+  title: "Components/Widgets/Forms/Preferences",
 };
 
 const Template = (args: any) => <Form {...args} />;

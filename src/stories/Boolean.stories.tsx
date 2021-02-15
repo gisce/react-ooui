@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Checkbox } from "..";
+import { Boolean } from "..";
 import { Boolean as BooleanOoui } from "ooui";
 import "antd/dist/antd.css";
 
@@ -13,5 +13,5 @@ export const Default = (): React.ReactElement => {
     name: "checkbox_field",
     string: "Lorem ipsum",
   });
-  return <Checkbox ooui={ooui} />;
+  return <Boolean ooui={ooui} />;
 };
