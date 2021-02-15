@@ -11,7 +11,7 @@ type Props = {
 
 export const Selection = (props: Props) => {
   const { ooui, layout } = props;
-  const { id, label, selectionValues } = ooui;
+  const { id, label, selectionValues, tooltip, nolabel } = ooui;
   const values = Array.from(selectionValues.entries());
 
   const options =
@@ -27,7 +27,13 @@ export const Selection = (props: Props) => {
     });
 
   return (
-    <FormItem name={id} label={label} layout={layout}>
+    <FormItem
+      name={id}
+      label={label}
+      layout={layout}
+      tooltip={tooltip}
+      nolabel={nolabel}
+    >
       <Select disabled={ooui.readOnly}>{options}</Select>
     </FormItem>
   );

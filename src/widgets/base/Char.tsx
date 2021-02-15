@@ -10,10 +10,16 @@ type Props = {
 
 export const Char = (props: Props) => {
   const { ooui, layout } = props;
-  const { id, label } = ooui;
+  const { id, label, nolabel, tooltip } = ooui;
 
   return (
-    <FormItem name={id} label={label} layout={layout} tooltip={ooui.tooltip}>
+    <FormItem
+      name={id}
+      label={label}
+      layout={layout}
+      tooltip={tooltip}
+      nolabel={nolabel}
+    >
       {ooui.isPassword ? (
         <Input.Password disabled={ooui.readOnly} id={id} />
       ) : (

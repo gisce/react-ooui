@@ -8,23 +8,27 @@ export default function FormItem({
   children,
   layout = "horizontal",
   tooltip,
+  nolabel = false,
 }: {
   name: string;
   label?: string;
   children?: React.ReactNode;
   layout?: "horizontal" | "vertical";
   tooltip?: string;
+  nolabel?: boolean;
 }) {
   const labelText = label && label.length > 1 ? label + " :" : " ";
 
   const horizontalMode = () => {
     return (
       <Row align="middle">
-        <Col className="ml-2" flex="7rem">
-          <div className="flex flex-col items-end">
-            {labelWithTooltip(labelText, tooltip)}
-          </div>
-        </Col>
+        {!nolabel ? (
+          <Col className="ml-2" flex="7rem">
+            <div className="flex flex-col items-end">
+              {labelWithTooltip(nolabel ? "" : labelText, tooltip)}
+            </div>
+          </Col>
+        ) : null}
         <Col flex="auto">
           <Form.Item className="mb-0" name={name}>
             {children}
@@ -37,7 +41,7 @@ export default function FormItem({
   const verticalMode = () => {
     return (
       <>
-        {labelWithTooltip(labelText, tooltip)}
+        {labelWithTooltip(nolabel ? "" : labelText, tooltip)}
         <Form.Item className="mb-0" name={name}>
           {children}
         </Form.Item>

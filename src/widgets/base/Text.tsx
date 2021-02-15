@@ -10,10 +10,10 @@ type Props = {
 
 const Text = (props: Props) => {
   const { ooui } = props;
-
+  const { id, label, tooltip, nolabel, readOnly } = ooui;
   return (
-    <FormItem name={ooui.id} label={ooui.label}>
-      <TextArea disabled={ooui.readOnly} rows={4} />
+    <FormItem name={id} label={label} tooltip={tooltip} nolabel={nolabel}>
+      <TextArea disabled={readOnly} rows={4} />
     </FormItem>
   );
 };

@@ -11,11 +11,17 @@ type Props = {
 
 export const Integer = (props: Props) => {
   const { ooui, layout } = props;
-  const { label } = ooui;
+  const { label, tooltip, nolabel } = ooui;
   const id = props.id ? props.id : ooui.id;
 
   return (
-    <FormItem name={id} label={label} layout={layout}>
+    <FormItem
+      name={id}
+      label={label}
+      layout={layout}
+      tooltip={tooltip}
+      nolabel={nolabel}
+    >
       <InputNumber
         id={id}
         className="w-full"

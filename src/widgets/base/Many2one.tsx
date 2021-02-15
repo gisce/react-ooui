@@ -16,9 +16,9 @@ type Props = {
 
 export const Many2one = (props: Props) => {
   const { ooui, onOpenDetailClick, onSearchClick } = props;
-  const { id, label } = ooui;
+  const { id, label, nolabel, tooltip } = ooui;
   return (
-    <FormItem name={id} label={label} tooltip={ooui.tooltip}>
+    <FormItem name={id} label={label} tooltip={tooltip} nolabel={nolabel}>
       <Row gutter={8}>
         <Col flex="auto">
           <Input disabled={ooui.readOnly} />

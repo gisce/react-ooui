@@ -11,11 +11,17 @@ type Props = {
 
 export const Float = (props: Props) => {
   const { ooui, layout } = props;
-  const { label } = ooui;
+  const { label, nolabel, tooltip } = ooui;
   const id = props.id ? props.id : ooui.id;
 
   return (
-    <FormItem name={id} label={label} layout={layout} tooltip={ooui.tooltip}>
+    <FormItem
+      name={id}
+      label={label}
+      layout={layout}
+      tooltip={tooltip}
+      nolabel={nolabel}
+    >
       <InputNumber
         disabled={ooui.readOnly}
         className="w-full"

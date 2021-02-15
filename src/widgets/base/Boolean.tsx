@@ -9,10 +9,10 @@ type Props = {
 
 export const Boolean = (props: Props) => {
   const { ooui } = props;
-  const { id, label } = ooui;
+  const { id, label, tooltip, nolabel } = ooui;
 
   return (
-    <FormItem name={id} label={label} tooltip={ooui.tooltip}>
+    <FormItem name={id} label={label} tooltip={tooltip} nolabel={nolabel}>
       <AntCheckbox disabled={ooui.readOnly} id={id} />
     </FormItem>
   );
