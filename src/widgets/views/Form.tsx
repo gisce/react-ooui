@@ -16,9 +16,10 @@ const filteredValues = (values: any, fields: any) => {
   }
   const filteredValues: any = {};
   Object.keys(values).forEach((key) => {
-    if (values[key] === false && fields[key] &&  fields[key].type !== "boolean") {
-      filteredValues[key] = "";
-    } else {
+    if (
+      values[key] !== false ||
+      (fields[key] && fields[key].type === "boolean")
+    ) {
       filteredValues[key] = values[key];
     }
   });
