@@ -1,11 +1,3 @@
-/*
- * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
- * This devtool is neither made for production nor for readable output files.
- * It uses "eval()" calls to create a separate source file in the browser devtools.
- * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
- * or disable the default devtool with "devtool: false".
- * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
- */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory(require("react"), require("antd"), require("@ant-design/icons"));
@@ -25,7 +17,7 @@ return /******/ (() => { // webpackBootstrap
   \*****************************************/
 /***/ (() => {
 
-eval("\n\n//# sourceURL=webpack://react-ooui/./node_modules/antd/dist/antd.css?");
+
 
 /***/ }),
 
@@ -35,7 +27,7 @@ eval("\n\n//# sourceURL=webpack://react-ooui/./node_modules/antd/dist/antd.css?"
   \************************************/
 /***/ (() => {
 
-eval("\n\n//# sourceURL=webpack://react-ooui/./src/tailwind.generated.css?");
+
 
 /***/ }),
 
@@ -46,7 +38,43 @@ eval("\n\n//# sourceURL=webpack://react-ooui/./src/tailwind.generated.css?");
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ \"./node_modules/ooui/dist/Field.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\n/**\n * Boolean input\n */\nvar Boolean = /** @class */ (function (_super) {\n    __extends(Boolean, _super);\n    function Boolean(props) {\n        var _this = _super.call(this, props) || this;\n        if (props.string) {\n            if (!props.colspan) {\n                _this.colspan = 2;\n            }\n        }\n        return _this;\n    }\n    return Boolean;\n}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Boolean);\n//# sourceMappingURL=Boolean.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Boolean.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ "./node_modules/ooui/dist/Field.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+/**
+ * Boolean input
+ */
+var Boolean = /** @class */ (function (_super) {
+    __extends(Boolean, _super);
+    function Boolean(props) {
+        var _this = _super.call(this, props) || this;
+        if (props.string) {
+            if (!props.colspan) {
+                _this.colspan = 2;
+            }
+        }
+        return _this;
+    }
+    return Boolean;
+}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Boolean);
+//# sourceMappingURL=Boolean.js.map
 
 /***/ }),
 
@@ -57,7 +85,68 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ \"./node_modules/ooui/dist/Field.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\nvar Button = /** @class */ (function (_super) {\n    __extends(Button, _super);\n    function Button(props) {\n        var _this = _super.call(this, props) || this;\n        /**\n         * Type (primary or default)\n         */\n        _this._type = \"default\";\n        /**\n         * Button caption\n         */\n        _this._caption = \"\";\n        if (props) {\n            if (props.string) {\n                _this._caption = props.string;\n            }\n        }\n        return _this;\n    }\n    Object.defineProperty(Button.prototype, \"type\", {\n        get: function () {\n            return this._type;\n        },\n        set: function (value) {\n            this._type = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Button.prototype, \"caption\", {\n        get: function () {\n            return this._caption;\n        },\n        set: function (value) {\n            this._caption = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    return Button;\n}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Button);\n//# sourceMappingURL=Button.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Button.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ "./node_modules/ooui/dist/Field.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var Button = /** @class */ (function (_super) {
+    __extends(Button, _super);
+    function Button(props) {
+        var _this = _super.call(this, props) || this;
+        /**
+         * Type (primary or default)
+         */
+        _this._type = "default";
+        /**
+         * Button caption
+         */
+        _this._caption = "";
+        if (props) {
+            if (props.string) {
+                _this._caption = props.string;
+            }
+        }
+        return _this;
+    }
+    Object.defineProperty(Button.prototype, "type", {
+        get: function () {
+            return this._type;
+        },
+        set: function (value) {
+            this._type = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Button.prototype, "caption", {
+        get: function () {
+            return this._caption;
+        },
+        set: function (value) {
+            this._caption = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return Button;
+}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Button);
+//# sourceMappingURL=Button.js.map
 
 /***/ }),
 
@@ -68,7 +157,90 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ \"./node_modules/ooui/dist/Field.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\n/**\n * One-line input with a length limit.\n */\nvar Char = /** @class */ (function (_super) {\n    __extends(Char, _super);\n    function Char(props) {\n        var _this = _super.call(this, props) || this;\n        /**\n         * Field place holder\n         */\n        _this._placeholder = \"\";\n        /**\n         * Field size\n         */\n        _this._size = 150;\n        _this._isPassword = false;\n        if (props) {\n            if (props.size) {\n                _this._size = props.size;\n            }\n            if (props.string) {\n                if (!props.colspan) {\n                    _this.colspan = 2;\n                }\n            }\n            if (props.password) {\n                _this.isPassword = props.password === \"True\" ? true : false;\n            }\n        }\n        return _this;\n    }\n    Object.defineProperty(Char.prototype, \"placeholder\", {\n        get: function () {\n            return this._placeholder;\n        },\n        set: function (value) {\n            this._placeholder = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Char.prototype, \"size\", {\n        get: function () {\n            return this._size;\n        },\n        set: function (value) {\n            this._size = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Char.prototype, \"isPassword\", {\n        get: function () {\n            return this._isPassword;\n        },\n        set: function (value) {\n            this._isPassword = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    return Char;\n}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Char);\n//# sourceMappingURL=Char.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Char.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ "./node_modules/ooui/dist/Field.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+/**
+ * One-line input with a length limit.
+ */
+var Char = /** @class */ (function (_super) {
+    __extends(Char, _super);
+    function Char(props) {
+        var _this = _super.call(this, props) || this;
+        /**
+         * Field place holder
+         */
+        _this._placeholder = "";
+        /**
+         * Field size
+         */
+        _this._size = 150;
+        _this._isPassword = false;
+        if (props) {
+            if (props.size) {
+                _this._size = props.size;
+            }
+            if (props.string) {
+                if (!props.colspan) {
+                    _this.colspan = 2;
+                }
+            }
+            if (props.password) {
+                _this.isPassword = props.password === "True" ? true : false;
+            }
+        }
+        return _this;
+    }
+    Object.defineProperty(Char.prototype, "placeholder", {
+        get: function () {
+            return this._placeholder;
+        },
+        set: function (value) {
+            this._placeholder = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Char.prototype, "size", {
+        get: function () {
+            return this._size;
+        },
+        set: function (value) {
+            this._size = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Char.prototype, "isPassword", {
+        get: function () {
+            return this._isPassword;
+        },
+        set: function (value) {
+            this._isPassword = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return Char;
+}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Char);
+//# sourceMappingURL=Char.js.map
 
 /***/ }),
 
@@ -79,7 +251,118 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _NewLine__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./NewLine */ \"./node_modules/ooui/dist/NewLine.js\");\n\nvar Container = /** @class */ (function () {\n    function Container(columns, colspan) {\n        if (columns === void 0) { columns = 4; }\n        if (colspan === void 0) { colspan = 6; }\n        this._columns = columns;\n        this._colspan = colspan;\n        this._rows = [[]];\n        this._index = 0;\n    }\n    Object.defineProperty(Container.prototype, \"columns\", {\n        get: function () {\n            return this._columns;\n        },\n        set: function (value) {\n            this._columns = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Container.prototype, \"colspan\", {\n        get: function () {\n            return this._colspan;\n        },\n        set: function (value) {\n            this._colspan = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Container.prototype, \"rows\", {\n        get: function () {\n            return this._rows;\n        },\n        set: function (value) {\n            this._rows = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Container.prototype, \"index\", {\n        get: function () {\n            return this._index;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    /**\n     * Returns the next free position\n     */\n    Container.prototype.freePosition = function () {\n        var span = this._rows[this._index].reduce(function (prev, current) {\n            return prev + current.colspan;\n        }, 0);\n        return this._columns - span;\n    };\n    Container.prototype.addWidget = function (widget) {\n        if (widget instanceof _NewLine__WEBPACK_IMPORTED_MODULE_0__.default) {\n            this._rows.push([]);\n            this._index++;\n            return;\n        }\n        if (widget.colspan > this._columns) {\n            // Widget colspan is greater than container columns, so we change widget\n            // colspan to fit container columns.\n            widget.colspan = this._columns;\n        }\n        if (widget.colspan <= this.freePosition()) {\n            this._rows[this._index].push(widget);\n        }\n        else {\n            this._rows.push([]);\n            this._index++;\n            this.addWidget(widget);\n        }\n    };\n    /**\n     * Traverses children to find a matching container or widget with the exact same id.\n     * @param {string} id id (name) of the field or container to find\n     */\n    Container.prototype.findById = function (id) {\n        var r = null;\n        if (this._rows && this._rows.length) {\n            this._rows.forEach(function (row) {\n                if (r) {\n                    // Item has been found.\n                    return;\n                }\n                if (row && row.length) {\n                    row.forEach(function (item) {\n                        if (r) {\n                            // Item has been found.\n                            return;\n                        }\n                        if (item) {\n                            r = item.findById(id);\n                        }\n                    });\n                }\n            });\n        }\n        return r;\n    };\n    return Container;\n}());\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Container);\n//# sourceMappingURL=Container.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Container.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _NewLine__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./NewLine */ "./node_modules/ooui/dist/NewLine.js");
+
+var Container = /** @class */ (function () {
+    function Container(columns, colspan) {
+        if (columns === void 0) { columns = 4; }
+        if (colspan === void 0) { colspan = 6; }
+        this._columns = columns;
+        this._colspan = colspan;
+        this._rows = [[]];
+        this._index = 0;
+    }
+    Object.defineProperty(Container.prototype, "columns", {
+        get: function () {
+            return this._columns;
+        },
+        set: function (value) {
+            this._columns = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Container.prototype, "colspan", {
+        get: function () {
+            return this._colspan;
+        },
+        set: function (value) {
+            this._colspan = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Container.prototype, "rows", {
+        get: function () {
+            return this._rows;
+        },
+        set: function (value) {
+            this._rows = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Container.prototype, "index", {
+        get: function () {
+            return this._index;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * Returns the next free position
+     */
+    Container.prototype.freePosition = function () {
+        var span = this._rows[this._index].reduce(function (prev, current) {
+            return prev + current.colspan;
+        }, 0);
+        return this._columns - span;
+    };
+    Container.prototype.addWidget = function (widget) {
+        if (widget instanceof _NewLine__WEBPACK_IMPORTED_MODULE_0__.default) {
+            this._rows.push([]);
+            this._index++;
+            return;
+        }
+        if (widget.colspan > this._columns) {
+            // Widget colspan is greater than container columns, so we change widget
+            // colspan to fit container columns.
+            widget.colspan = this._columns;
+        }
+        if (widget.colspan <= this.freePosition()) {
+            this._rows[this._index].push(widget);
+        }
+        else {
+            this._rows.push([]);
+            this._index++;
+            this.addWidget(widget);
+        }
+    };
+    /**
+     * Traverses children to find a matching container or widget with the exact same id.
+     * @param {string} id id (name) of the field or container to find
+     */
+    Container.prototype.findById = function (id) {
+        var r = null;
+        if (this._rows && this._rows.length) {
+            this._rows.forEach(function (row) {
+                if (r) {
+                    // Item has been found.
+                    return;
+                }
+                if (row && row.length) {
+                    row.forEach(function (item) {
+                        if (r) {
+                            // Item has been found.
+                            return;
+                        }
+                        if (item) {
+                            r = item.findById(id);
+                        }
+                    });
+                }
+            });
+        }
+        return r;
+    };
+    return Container;
+}());
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Container);
+//# sourceMappingURL=Container.js.map
 
 /***/ }),
 
@@ -90,7 +373,120 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Widget__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Widget */ \"./node_modules/ooui/dist/Widget.js\");\n/* harmony import */ var _Container__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Container */ \"./node_modules/ooui/dist/Container.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\n\nvar ContainerWidget = /** @class */ (function (_super) {\n    __extends(ContainerWidget, _super);\n    function ContainerWidget(props) {\n        var _this = _super.call(this, props) || this;\n        /**\n         * Field identifier\n         *\n         * Corresponds to the field's name attribute from xml\n         */\n        _this._id = \"\";\n        /**\n         * Container label\n         */\n        _this._label = \"\";\n        _this._container = new _Container__WEBPACK_IMPORTED_MODULE_1__.default(props && props.col, ContainerWidget._defaultColspan);\n        if (props) {\n            if (props.name) {\n                _this._id = props.name;\n            }\n            if (props.colspan) {\n                _this._container.colspan = +props.colspan;\n            }\n            if (props.string) {\n                _this._label = props.string;\n            }\n        }\n        return _this;\n    }\n    Object.defineProperty(ContainerWidget.prototype, \"id\", {\n        get: function () {\n            return this._id;\n        },\n        set: function (value) {\n            this._id = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(ContainerWidget, \"defaultColspan\", {\n        get: function () {\n            return ContainerWidget._defaultColspan;\n        },\n        set: function (value) {\n            ContainerWidget._defaultColspan = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(ContainerWidget.prototype, \"container\", {\n        get: function () {\n            return this._container;\n        },\n        set: function (value) {\n            this._container = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(ContainerWidget.prototype, \"colspan\", {\n        get: function () {\n            return this._container.colspan;\n        },\n        set: function (value) {\n            this._container.colspan = +value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(ContainerWidget.prototype, \"label\", {\n        get: function () {\n            return this._label;\n        },\n        set: function (value) {\n            this._label = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    /**\n     * Calls container's findById method to find the widgets matching with param id\n     * @param {string} id id to find\n     */\n    ContainerWidget.prototype.findById = function (id) {\n        if (id === this.id) {\n            return this;\n        }\n        return this.container.findById(id);\n    };\n    ContainerWidget._defaultColspan = 6;\n    return ContainerWidget;\n}(_Widget__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ContainerWidget);\n//# sourceMappingURL=ContainerWidget.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/ContainerWidget.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Widget__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Widget */ "./node_modules/ooui/dist/Widget.js");
+/* harmony import */ var _Container__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Container */ "./node_modules/ooui/dist/Container.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var ContainerWidget = /** @class */ (function (_super) {
+    __extends(ContainerWidget, _super);
+    function ContainerWidget(props) {
+        var _this = _super.call(this, props) || this;
+        /**
+         * Field identifier
+         *
+         * Corresponds to the field's name attribute from xml
+         */
+        _this._id = "";
+        /**
+         * Container label
+         */
+        _this._label = "";
+        _this._container = new _Container__WEBPACK_IMPORTED_MODULE_1__.default(props && props.col, ContainerWidget._defaultColspan);
+        if (props) {
+            if (props.name) {
+                _this._id = props.name;
+            }
+            if (props.colspan) {
+                _this._container.colspan = +props.colspan;
+            }
+            if (props.string) {
+                _this._label = props.string;
+            }
+        }
+        return _this;
+    }
+    Object.defineProperty(ContainerWidget.prototype, "id", {
+        get: function () {
+            return this._id;
+        },
+        set: function (value) {
+            this._id = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(ContainerWidget, "defaultColspan", {
+        get: function () {
+            return ContainerWidget._defaultColspan;
+        },
+        set: function (value) {
+            ContainerWidget._defaultColspan = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(ContainerWidget.prototype, "container", {
+        get: function () {
+            return this._container;
+        },
+        set: function (value) {
+            this._container = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(ContainerWidget.prototype, "colspan", {
+        get: function () {
+            return this._container.colspan;
+        },
+        set: function (value) {
+            this._container.colspan = +value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(ContainerWidget.prototype, "label", {
+        get: function () {
+            return this._label;
+        },
+        set: function (value) {
+            this._label = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * Calls container's findById method to find the widgets matching with param id
+     * @param {string} id id to find
+     */
+    ContainerWidget.prototype.findById = function (id) {
+        if (id === this.id) {
+            return this;
+        }
+        return this.container.findById(id);
+    };
+    ContainerWidget._defaultColspan = 6;
+    return ContainerWidget;
+}(_Widget__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ContainerWidget);
+//# sourceMappingURL=ContainerWidget.js.map
 
 /***/ }),
 
@@ -101,7 +497,43 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ \"./node_modules/ooui/dist/Field.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\n/**\n * Date input\n */\nvar Date = /** @class */ (function (_super) {\n    __extends(Date, _super);\n    function Date(props) {\n        var _this = _super.call(this, props) || this;\n        if (props.string) {\n            if (!props.colspan) {\n                _this.colspan = 2;\n            }\n        }\n        return _this;\n    }\n    return Date;\n}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Date);\n//# sourceMappingURL=Date.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Date.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ "./node_modules/ooui/dist/Field.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+/**
+ * Date input
+ */
+var Date = /** @class */ (function (_super) {
+    __extends(Date, _super);
+    function Date(props) {
+        var _this = _super.call(this, props) || this;
+        if (props.string) {
+            if (!props.colspan) {
+                _this.colspan = 2;
+            }
+        }
+        return _this;
+    }
+    return Date;
+}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Date);
+//# sourceMappingURL=Date.js.map
 
 /***/ }),
 
@@ -112,7 +544,43 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ \"./node_modules/ooui/dist/Field.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\n/**\n * DateTime input\n */\nvar DateTime = /** @class */ (function (_super) {\n    __extends(DateTime, _super);\n    function DateTime(props) {\n        var _this = _super.call(this, props) || this;\n        if (props.string) {\n            if (!props.colspan) {\n                _this.colspan = 2;\n            }\n        }\n        return _this;\n    }\n    return DateTime;\n}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DateTime);\n//# sourceMappingURL=DateTime.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/DateTime.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ "./node_modules/ooui/dist/Field.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+/**
+ * DateTime input
+ */
+var DateTime = /** @class */ (function (_super) {
+    __extends(DateTime, _super);
+    function DateTime(props) {
+        var _this = _super.call(this, props) || this;
+        if (props.string) {
+            if (!props.colspan) {
+                _this.colspan = 2;
+            }
+        }
+        return _this;
+    }
+    return DateTime;
+}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DateTime);
+//# sourceMappingURL=DateTime.js.map
 
 /***/ }),
 
@@ -123,7 +591,136 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Widget__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Widget */ \"./node_modules/ooui/dist/Widget.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\nvar Field = /** @class */ (function (_super) {\n    __extends(Field, _super);\n    function Field(props) {\n        var _this = _super.call(this, props) || this;\n        /**\n         * Field identifier\n         *\n         * Corresponds to the field's name attribute from xml\n         */\n        _this._id = \"\";\n        /**\n         * Label\n         */\n        _this._label = \"\";\n        /**\n         * No label\n         *\n         * This field hasn't got to show the label\n         *\n         */\n        _this._nolabel = false;\n        /**\n         * Activated (default is true)\n         */\n        _this._activated = true;\n        // Activated by default\n        _this._activated = true;\n        if (props) {\n            if (props.name) {\n                _this._id = props.name;\n            }\n            if (props.activated) {\n                _this._activated = props.activated;\n            }\n            if (props.string) {\n                _this._label = props.string;\n            }\n            if (props.help) {\n                _this._tooltip = props.help;\n            }\n            if (props.nolabel && (props.nolabel === \"1\" || props.nolabel === true)) {\n                _this._nolabel = true;\n            }\n        }\n        return _this;\n    }\n    Object.defineProperty(Field.prototype, \"id\", {\n        get: function () {\n            return this._id;\n        },\n        set: function (value) {\n            this._id = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Field.prototype, \"label\", {\n        get: function () {\n            return this._label;\n        },\n        set: function (value) {\n            this._label = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Field.prototype, \"nolabel\", {\n        get: function () {\n            return this._nolabel;\n        },\n        set: function (value) {\n            this._nolabel = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Field.prototype, \"tooltip\", {\n        get: function () {\n            return this._tooltip;\n        },\n        set: function (value) {\n            this._tooltip = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Field.prototype, \"activated\", {\n        get: function () {\n            return this._activated;\n        },\n        set: function (value) {\n            this._activated = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    /**\n     * Returns this instance in case this id matches param id.\n     * @param {string} id id (name) to find\n     */\n    Field.prototype.findById = function (id) {\n        var r = null;\n        if (this._id === id) {\n            r = this;\n        }\n        return r;\n    };\n    return Field;\n}(_Widget__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Field);\n//# sourceMappingURL=Field.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Field.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Widget__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Widget */ "./node_modules/ooui/dist/Widget.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var Field = /** @class */ (function (_super) {
+    __extends(Field, _super);
+    function Field(props) {
+        var _this = _super.call(this, props) || this;
+        /**
+         * Field identifier
+         *
+         * Corresponds to the field's name attribute from xml
+         */
+        _this._id = "";
+        /**
+         * Label
+         */
+        _this._label = "";
+        /**
+         * No label
+         *
+         * This field hasn't got to show the label
+         *
+         */
+        _this._nolabel = false;
+        /**
+         * Activated (default is true)
+         */
+        _this._activated = true;
+        // Activated by default
+        _this._activated = true;
+        if (props) {
+            if (props.name) {
+                _this._id = props.name;
+            }
+            if (props.activated) {
+                _this._activated = props.activated;
+            }
+            if (props.string) {
+                _this._label = props.string;
+            }
+            if (props.help) {
+                _this._tooltip = props.help;
+            }
+            if (props.nolabel && (props.nolabel === "1" || props.nolabel === true)) {
+                _this._nolabel = true;
+            }
+        }
+        return _this;
+    }
+    Object.defineProperty(Field.prototype, "id", {
+        get: function () {
+            return this._id;
+        },
+        set: function (value) {
+            this._id = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Field.prototype, "label", {
+        get: function () {
+            return this._label;
+        },
+        set: function (value) {
+            this._label = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Field.prototype, "nolabel", {
+        get: function () {
+            return this._nolabel;
+        },
+        set: function (value) {
+            this._nolabel = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Field.prototype, "tooltip", {
+        get: function () {
+            return this._tooltip;
+        },
+        set: function (value) {
+            this._tooltip = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Field.prototype, "activated", {
+        get: function () {
+            return this._activated;
+        },
+        set: function (value) {
+            this._activated = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * Returns this instance in case this id matches param id.
+     * @param {string} id id (name) to find
+     */
+    Field.prototype.findById = function (id) {
+        var r = null;
+        if (this._id === id) {
+            r = this;
+        }
+        return r;
+    };
+    return Field;
+}(_Widget__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Field);
+//# sourceMappingURL=Field.js.map
 
 /***/ }),
 
@@ -134,7 +731,80 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ \"./node_modules/ooui/dist/Field.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\n/**\n * Float input\n */\nvar Float = /** @class */ (function (_super) {\n    __extends(Float, _super);\n    function Float(props) {\n        var _this = _super.call(this, props) || this;\n        /**\n         * Integer digits\n         *\n         * Number of integer digits that will be part of the float\n         */\n        _this._integerDigits = 16;\n        /**\n         * Decimal digits\n         *\n         * Number of decimal digits that will be part of the float\n         */\n        _this._decimalDigits = 2;\n        if (props.string) {\n            if (!props.colspan) {\n                _this.colspan = 2;\n            }\n        }\n        if (props.digits) {\n            var _a = props.digits, integers = _a[0], decimals = _a[1];\n            _this._integerDigits = integers;\n            _this._decimalDigits = decimals;\n        }\n        return _this;\n    }\n    Object.defineProperty(Float.prototype, \"integerDigits\", {\n        get: function () {\n            return this._integerDigits;\n        },\n        set: function (value) {\n            this._integerDigits = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Float.prototype, \"decimalDigits\", {\n        get: function () {\n            return this._decimalDigits;\n        },\n        set: function (value) {\n            this._decimalDigits = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    return Float;\n}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Float);\n//# sourceMappingURL=Float.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Float.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ "./node_modules/ooui/dist/Field.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+/**
+ * Float input
+ */
+var Float = /** @class */ (function (_super) {
+    __extends(Float, _super);
+    function Float(props) {
+        var _this = _super.call(this, props) || this;
+        /**
+         * Integer digits
+         *
+         * Number of integer digits that will be part of the float
+         */
+        _this._integerDigits = 16;
+        /**
+         * Decimal digits
+         *
+         * Number of decimal digits that will be part of the float
+         */
+        _this._decimalDigits = 2;
+        if (props.string) {
+            if (!props.colspan) {
+                _this.colspan = 2;
+            }
+        }
+        if (props.digits) {
+            var _a = props.digits, integers = _a[0], decimals = _a[1];
+            _this._integerDigits = integers;
+            _this._decimalDigits = decimals;
+        }
+        return _this;
+    }
+    Object.defineProperty(Float.prototype, "integerDigits", {
+        get: function () {
+            return this._integerDigits;
+        },
+        set: function (value) {
+            this._integerDigits = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Float.prototype, "decimalDigits", {
+        get: function () {
+            return this._decimalDigits;
+        },
+        set: function (value) {
+            this._decimalDigits = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return Float;
+}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Float);
+//# sourceMappingURL=Float.js.map
 
 /***/ }),
 
@@ -145,7 +815,37 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Float__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Float */ \"./node_modules/ooui/dist/Float.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\n/**\n * FloatTime input\n */\nvar FloatTime = /** @class */ (function (_super) {\n    __extends(FloatTime, _super);\n    function FloatTime() {\n        return _super !== null && _super.apply(this, arguments) || this;\n    }\n    return FloatTime;\n}(_Float__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (FloatTime);\n//# sourceMappingURL=FloatTime.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/FloatTime.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Float__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Float */ "./node_modules/ooui/dist/Float.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+/**
+ * FloatTime input
+ */
+var FloatTime = /** @class */ (function (_super) {
+    __extends(FloatTime, _super);
+    function FloatTime() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return FloatTime;
+}(_Float__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (FloatTime);
+//# sourceMappingURL=FloatTime.js.map
 
 /***/ }),
 
@@ -156,7 +856,112 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _WidgetFactory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./WidgetFactory */ \"./node_modules/ooui/dist/WidgetFactory.js\");\n/* harmony import */ var _Container__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Container */ \"./node_modules/ooui/dist/Container.js\");\n/* harmony import */ var _ContainerWidget__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ContainerWidget */ \"./node_modules/ooui/dist/ContainerWidget.js\");\n/* harmony import */ var _NewLine__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./NewLine */ \"./node_modules/ooui/dist/NewLine.js\");\nvar __assign = (undefined && undefined.__assign) || function () {\n    __assign = Object.assign || function(t) {\n        for (var s, i = 1, n = arguments.length; i < n; i++) {\n            s = arguments[i];\n            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))\n                t[p] = s[p];\n        }\n        return t;\n    };\n    return __assign.apply(this, arguments);\n};\n\n\n\n\nvar Form = /** @class */ (function () {\n    /*\n    _widgets = {\n      *[Symbol.iterator]() {\n        if (this._container && this._container.length) {\n          this._container.forEach((item) => {\n            \n            // yield item\n          });\n        }\n      }\n    };\n    get widgets() {\n      return this._widgets;\n    }\n    */\n    function Form(fields, columns) {\n        if (columns === void 0) { columns = 8; }\n        this._fields = fields;\n        this._container = new _Container__WEBPACK_IMPORTED_MODULE_1__.default(columns);\n    }\n    Object.defineProperty(Form.prototype, \"fields\", {\n        get: function () {\n            return this._fields;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Form.prototype, \"container\", {\n        get: function () {\n            return this._container;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Form.prototype.parse = function (xml) {\n        var parser = new DOMParser();\n        var view = parser.parseFromString(xml, \"text/xml\");\n        this.parseNode(view.documentElement, this._container);\n    };\n    Form.prototype.parseNode = function (node, container) {\n        var _this = this;\n        var widgetFactory = new _WidgetFactory__WEBPACK_IMPORTED_MODULE_0__.default();\n        Array.prototype.forEach.call(node.childNodes, function (child) {\n            if (child.nodeType === child.ELEMENT_NODE) {\n                var tag = child.nodeName;\n                var tagAttributes_1 = {};\n                Array.prototype.forEach.call(child.attributes, function (attr) {\n                    tagAttributes_1[attr.name] = attr.value;\n                });\n                if (tag === \"field\") {\n                    var name_1 = child.getAttribute(\"name\");\n                    var attrWidget = child.getAttribute(\"widget\");\n                    if (attrWidget) {\n                        tag = attrWidget;\n                    }\n                    else if (name_1) {\n                        tag = _this._fields[name_1].type;\n                    }\n                    tagAttributes_1 = __assign(__assign({}, tagAttributes_1), _this._fields[name_1]);\n                }\n                var widget = widgetFactory.createWidget(tag, tagAttributes_1);\n                if (widget instanceof _ContainerWidget__WEBPACK_IMPORTED_MODULE_2__.default) {\n                    _this.parseNode(child, widget.container);\n                }\n                if (widget instanceof _NewLine__WEBPACK_IMPORTED_MODULE_3__.default) {\n                    return;\n                }\n                container.addWidget(widget);\n            }\n        });\n    };\n    /**\n     * Calls container's findById method to find the widgets matching with param id\n     * @param {string} id id to find\n     */\n    Form.prototype.findById = function (id) {\n        return this.container.findById(id);\n    };\n    return Form;\n}());\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Form);\n//# sourceMappingURL=Form.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Form.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _WidgetFactory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./WidgetFactory */ "./node_modules/ooui/dist/WidgetFactory.js");
+/* harmony import */ var _Container__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Container */ "./node_modules/ooui/dist/Container.js");
+/* harmony import */ var _ContainerWidget__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ContainerWidget */ "./node_modules/ooui/dist/ContainerWidget.js");
+/* harmony import */ var _NewLine__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./NewLine */ "./node_modules/ooui/dist/NewLine.js");
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+
+
+
+
+var Form = /** @class */ (function () {
+    /*
+    _widgets = {
+      *[Symbol.iterator]() {
+        if (this._container && this._container.length) {
+          this._container.forEach((item) => {
+            
+            // yield item
+          });
+        }
+      }
+    };
+    get widgets() {
+      return this._widgets;
+    }
+    */
+    function Form(fields, columns) {
+        if (columns === void 0) { columns = 8; }
+        this._fields = fields;
+        this._container = new _Container__WEBPACK_IMPORTED_MODULE_1__.default(columns);
+    }
+    Object.defineProperty(Form.prototype, "fields", {
+        get: function () {
+            return this._fields;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Form.prototype, "container", {
+        get: function () {
+            return this._container;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Form.prototype.parse = function (xml) {
+        var parser = new DOMParser();
+        var view = parser.parseFromString(xml, "text/xml");
+        this.parseNode(view.documentElement, this._container);
+    };
+    Form.prototype.parseNode = function (node, container) {
+        var _this = this;
+        var widgetFactory = new _WidgetFactory__WEBPACK_IMPORTED_MODULE_0__.default();
+        Array.prototype.forEach.call(node.childNodes, function (child) {
+            if (child.nodeType === child.ELEMENT_NODE) {
+                var tag = child.nodeName;
+                var tagAttributes_1 = {};
+                Array.prototype.forEach.call(child.attributes, function (attr) {
+                    tagAttributes_1[attr.name] = attr.value;
+                });
+                if (tag === "field") {
+                    var name_1 = child.getAttribute("name");
+                    var attrWidget = child.getAttribute("widget");
+                    if (attrWidget) {
+                        tag = attrWidget;
+                    }
+                    else if (name_1) {
+                        tag = _this._fields[name_1].type;
+                    }
+                    tagAttributes_1 = __assign(__assign({}, tagAttributes_1), _this._fields[name_1]);
+                }
+                var widget = widgetFactory.createWidget(tag, tagAttributes_1);
+                if (widget instanceof _ContainerWidget__WEBPACK_IMPORTED_MODULE_2__.default) {
+                    _this.parseNode(child, widget.container);
+                }
+                if (widget instanceof _NewLine__WEBPACK_IMPORTED_MODULE_3__.default) {
+                    return;
+                }
+                container.addWidget(widget);
+            }
+        });
+    };
+    /**
+     * Calls container's findById method to find the widgets matching with param id
+     * @param {string} id id to find
+     */
+    Form.prototype.findById = function (id) {
+        return this.container.findById(id);
+    };
+    return Form;
+}());
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Form);
+//# sourceMappingURL=Form.js.map
 
 /***/ }),
 
@@ -167,7 +972,34 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _ContainerWidget__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ContainerWidget */ \"./node_modules/ooui/dist/ContainerWidget.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\nvar Group = /** @class */ (function (_super) {\n    __extends(Group, _super);\n    function Group(props) {\n        return _super.call(this, props) || this;\n    }\n    return Group;\n}(_ContainerWidget__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Group);\n//# sourceMappingURL=Group.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Group.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _ContainerWidget__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ContainerWidget */ "./node_modules/ooui/dist/ContainerWidget.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var Group = /** @class */ (function (_super) {
+    __extends(Group, _super);
+    function Group(props) {
+        return _super.call(this, props) || this;
+    }
+    return Group;
+}(_ContainerWidget__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Group);
+//# sourceMappingURL=Group.js.map
 
 /***/ }),
 
@@ -178,7 +1010,43 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ \"./node_modules/ooui/dist/Field.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\n/**\n * Integer input\n */\nvar Integer = /** @class */ (function (_super) {\n    __extends(Integer, _super);\n    function Integer(props) {\n        var _this = _super.call(this, props) || this;\n        if (props.string) {\n            if (!props.colspan) {\n                _this.colspan = 2;\n            }\n        }\n        return _this;\n    }\n    return Integer;\n}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Integer);\n//# sourceMappingURL=Integer.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Integer.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ "./node_modules/ooui/dist/Field.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+/**
+ * Integer input
+ */
+var Integer = /** @class */ (function (_super) {
+    __extends(Integer, _super);
+    function Integer(props) {
+        var _this = _super.call(this, props) || this;
+        if (props.string) {
+            if (!props.colspan) {
+                _this.colspan = 2;
+            }
+        }
+        return _this;
+    }
+    return Integer;
+}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Integer);
+//# sourceMappingURL=Integer.js.map
 
 /***/ }),
 
@@ -189,7 +1057,49 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ \"./node_modules/ooui/dist/Field.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\nvar Label = /** @class */ (function (_super) {\n    __extends(Label, _super);\n    function Label(props) {\n        var _this = _super.call(this, props) || this;\n        /**\n         * Label text\n         */\n        _this._text = \"\";\n        return _this;\n    }\n    Object.defineProperty(Label.prototype, \"text\", {\n        get: function () {\n            return this._text;\n        },\n        set: function (value) {\n            this._text = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    return Label;\n}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Label);\n//# sourceMappingURL=Label.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Label.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ "./node_modules/ooui/dist/Field.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var Label = /** @class */ (function (_super) {
+    __extends(Label, _super);
+    function Label(props) {
+        var _this = _super.call(this, props) || this;
+        /**
+         * Label text
+         */
+        _this._text = "";
+        return _this;
+    }
+    Object.defineProperty(Label.prototype, "text", {
+        get: function () {
+            return this._text;
+        },
+        set: function (value) {
+            this._text = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return Label;
+}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Label);
+//# sourceMappingURL=Label.js.map
 
 /***/ }),
 
@@ -200,7 +1110,79 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ \"./node_modules/ooui/dist/Field.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\n/**\n * A Many2many relationship field\n */\nvar Many2many = /** @class */ (function (_super) {\n    __extends(Many2many, _super);\n    function Many2many(props) {\n        var _this = _super.call(this, props) || this;\n        /**\n         * Field size\n         */\n        _this._size = 150;\n        /**\n         * Relation\n         */\n        _this._relation = \"\";\n        if (props) {\n            if (props.size) {\n                _this._size = props.size;\n            }\n            if (props.string) {\n                if (!props.colspan) {\n                    _this.colspan = 2;\n                }\n            }\n            if (props.relation) {\n                _this._relation = props.relation;\n            }\n        }\n        return _this;\n    }\n    Object.defineProperty(Many2many.prototype, \"size\", {\n        get: function () {\n            return this._size;\n        },\n        set: function (value) {\n            this._size = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Many2many.prototype, \"relation\", {\n        get: function () {\n            return this._relation;\n        },\n        set: function (value) {\n            this._relation = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    return Many2many;\n}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Many2many);\n//# sourceMappingURL=Many2many.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Many2many.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ "./node_modules/ooui/dist/Field.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+/**
+ * A Many2many relationship field
+ */
+var Many2many = /** @class */ (function (_super) {
+    __extends(Many2many, _super);
+    function Many2many(props) {
+        var _this = _super.call(this, props) || this;
+        /**
+         * Field size
+         */
+        _this._size = 150;
+        /**
+         * Relation
+         */
+        _this._relation = "";
+        if (props) {
+            if (props.size) {
+                _this._size = props.size;
+            }
+            if (props.string) {
+                if (!props.colspan) {
+                    _this.colspan = 2;
+                }
+            }
+            if (props.relation) {
+                _this._relation = props.relation;
+            }
+        }
+        return _this;
+    }
+    Object.defineProperty(Many2many.prototype, "size", {
+        get: function () {
+            return this._size;
+        },
+        set: function (value) {
+            this._size = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Many2many.prototype, "relation", {
+        get: function () {
+            return this._relation;
+        },
+        set: function (value) {
+            this._relation = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return Many2many;
+}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Many2many);
+//# sourceMappingURL=Many2many.js.map
 
 /***/ }),
 
@@ -211,7 +1193,79 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ \"./node_modules/ooui/dist/Field.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\n/**\n * A many2one relationship field\n */\nvar Many2one = /** @class */ (function (_super) {\n    __extends(Many2one, _super);\n    function Many2one(props) {\n        var _this = _super.call(this, props) || this;\n        /**\n         * Field size\n         */\n        _this._size = 150;\n        /**\n         * Relation\n         */\n        _this._relation = \"\";\n        if (props) {\n            if (props.size) {\n                _this._size = props.size;\n            }\n            if (props.string) {\n                if (!props.colspan) {\n                    _this.colspan = 2;\n                }\n            }\n            if (props.relation) {\n                _this._relation = props.relation;\n            }\n        }\n        return _this;\n    }\n    Object.defineProperty(Many2one.prototype, \"size\", {\n        get: function () {\n            return this._size;\n        },\n        set: function (value) {\n            this._size = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Many2one.prototype, \"relation\", {\n        get: function () {\n            return this._relation;\n        },\n        set: function (value) {\n            this._relation = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    return Many2one;\n}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Many2one);\n//# sourceMappingURL=Many2one.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Many2one.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ "./node_modules/ooui/dist/Field.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+/**
+ * A many2one relationship field
+ */
+var Many2one = /** @class */ (function (_super) {
+    __extends(Many2one, _super);
+    function Many2one(props) {
+        var _this = _super.call(this, props) || this;
+        /**
+         * Field size
+         */
+        _this._size = 150;
+        /**
+         * Relation
+         */
+        _this._relation = "";
+        if (props) {
+            if (props.size) {
+                _this._size = props.size;
+            }
+            if (props.string) {
+                if (!props.colspan) {
+                    _this.colspan = 2;
+                }
+            }
+            if (props.relation) {
+                _this._relation = props.relation;
+            }
+        }
+        return _this;
+    }
+    Object.defineProperty(Many2one.prototype, "size", {
+        get: function () {
+            return this._size;
+        },
+        set: function (value) {
+            this._size = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Many2one.prototype, "relation", {
+        get: function () {
+            return this._relation;
+        },
+        set: function (value) {
+            this._relation = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return Many2one;
+}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Many2one);
+//# sourceMappingURL=Many2one.js.map
 
 /***/ }),
 
@@ -222,7 +1276,37 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Widget__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Widget */ \"./node_modules/ooui/dist/Widget.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\nvar NewLine = /** @class */ (function (_super) {\n    __extends(NewLine, _super);\n    function NewLine() {\n        return _super !== null && _super.apply(this, arguments) || this;\n    }\n    NewLine.prototype.findById = function (id) {\n        return null;\n    };\n    return NewLine;\n}(_Widget__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (NewLine);\n//# sourceMappingURL=NewLine.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/NewLine.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Widget__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Widget */ "./node_modules/ooui/dist/Widget.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var NewLine = /** @class */ (function (_super) {
+    __extends(NewLine, _super);
+    function NewLine() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    NewLine.prototype.findById = function (id) {
+        return null;
+    };
+    return NewLine;
+}(_Widget__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (NewLine);
+//# sourceMappingURL=NewLine.js.map
 
 /***/ }),
 
@@ -233,7 +1317,52 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _ContainerWidget__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ContainerWidget */ \"./node_modules/ooui/dist/ContainerWidget.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\nvar Notebook = /** @class */ (function (_super) {\n    __extends(Notebook, _super);\n    function Notebook(props) {\n        var _this = _super.call(this, props) || this;\n        _this.colspan = Notebook._defaultColspan;\n        if (props) {\n            if (props.colspan) {\n                _this.colspan = props.colspan;\n            }\n        }\n        return _this;\n    }\n    Object.defineProperty(Notebook, \"defaultColspan\", {\n        get: function () {\n            return Notebook._defaultColspan;\n        },\n        set: function (value) {\n            Notebook._defaultColspan = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Notebook._defaultColspan = 3;\n    return Notebook;\n}(_ContainerWidget__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Notebook);\n//# sourceMappingURL=Notebook.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Notebook.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _ContainerWidget__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ContainerWidget */ "./node_modules/ooui/dist/ContainerWidget.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var Notebook = /** @class */ (function (_super) {
+    __extends(Notebook, _super);
+    function Notebook(props) {
+        var _this = _super.call(this, props) || this;
+        _this.colspan = Notebook._defaultColspan;
+        if (props) {
+            if (props.colspan) {
+                _this.colspan = props.colspan;
+            }
+        }
+        return _this;
+    }
+    Object.defineProperty(Notebook, "defaultColspan", {
+        get: function () {
+            return Notebook._defaultColspan;
+        },
+        set: function (value) {
+            Notebook._defaultColspan = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Notebook._defaultColspan = 3;
+    return Notebook;
+}(_ContainerWidget__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Notebook);
+//# sourceMappingURL=Notebook.js.map
 
 /***/ }),
 
@@ -244,7 +1373,79 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ \"./node_modules/ooui/dist/Field.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\n/**\n * A One2Many relationship field\n */\nvar One2many = /** @class */ (function (_super) {\n    __extends(One2many, _super);\n    function One2many(props) {\n        var _this = _super.call(this, props) || this;\n        /**\n         * Field size\n         */\n        _this._size = 150;\n        /**\n         * Relation\n         */\n        _this._relation = \"\";\n        if (props) {\n            if (props.size) {\n                _this._size = props.size;\n            }\n            if (props.string) {\n                if (!props.colspan) {\n                    _this.colspan = 2;\n                }\n            }\n            if (props.relation) {\n                _this._relation = props.relation;\n            }\n        }\n        return _this;\n    }\n    Object.defineProperty(One2many.prototype, \"size\", {\n        get: function () {\n            return this._size;\n        },\n        set: function (value) {\n            this._size = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(One2many.prototype, \"relation\", {\n        get: function () {\n            return this._relation;\n        },\n        set: function (value) {\n            this._relation = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    return One2many;\n}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (One2many);\n//# sourceMappingURL=One2many.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/One2many.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ "./node_modules/ooui/dist/Field.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+/**
+ * A One2Many relationship field
+ */
+var One2many = /** @class */ (function (_super) {
+    __extends(One2many, _super);
+    function One2many(props) {
+        var _this = _super.call(this, props) || this;
+        /**
+         * Field size
+         */
+        _this._size = 150;
+        /**
+         * Relation
+         */
+        _this._relation = "";
+        if (props) {
+            if (props.size) {
+                _this._size = props.size;
+            }
+            if (props.string) {
+                if (!props.colspan) {
+                    _this.colspan = 2;
+                }
+            }
+            if (props.relation) {
+                _this._relation = props.relation;
+            }
+        }
+        return _this;
+    }
+    Object.defineProperty(One2many.prototype, "size", {
+        get: function () {
+            return this._size;
+        },
+        set: function (value) {
+            this._size = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(One2many.prototype, "relation", {
+        get: function () {
+            return this._relation;
+        },
+        set: function (value) {
+            this._relation = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return One2many;
+}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (One2many);
+//# sourceMappingURL=One2many.js.map
 
 /***/ }),
 
@@ -255,7 +1456,34 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _ContainerWidget__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ContainerWidget */ \"./node_modules/ooui/dist/ContainerWidget.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\nvar Page = /** @class */ (function (_super) {\n    __extends(Page, _super);\n    function Page(props) {\n        return _super.call(this, props) || this;\n    }\n    return Page;\n}(_ContainerWidget__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Page);\n//# sourceMappingURL=Page.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Page.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _ContainerWidget__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ContainerWidget */ "./node_modules/ooui/dist/ContainerWidget.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var Page = /** @class */ (function (_super) {
+    __extends(Page, _super);
+    function Page(props) {
+        return _super.call(this, props) || this;
+    }
+    return Page;
+}(_ContainerWidget__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Page);
+//# sourceMappingURL=Page.js.map
 
 /***/ }),
 
@@ -266,7 +1494,37 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Float__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Float */ \"./node_modules/ooui/dist/Float.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\n/**\n * ProgressBar input\n */\nvar ProgressBar = /** @class */ (function (_super) {\n    __extends(ProgressBar, _super);\n    function ProgressBar() {\n        return _super !== null && _super.apply(this, arguments) || this;\n    }\n    return ProgressBar;\n}(_Float__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ProgressBar);\n//# sourceMappingURL=ProgressBar.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/ProgressBar.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Float__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Float */ "./node_modules/ooui/dist/Float.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+/**
+ * ProgressBar input
+ */
+var ProgressBar = /** @class */ (function (_super) {
+    __extends(ProgressBar, _super);
+    function ProgressBar() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return ProgressBar;
+}(_Float__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ProgressBar);
+//# sourceMappingURL=ProgressBar.js.map
 
 /***/ }),
 
@@ -277,7 +1535,93 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _WidgetFactory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./WidgetFactory */ \"./node_modules/ooui/dist/WidgetFactory.js\");\n/* harmony import */ var _Container__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Container */ \"./node_modules/ooui/dist/Container.js\");\nvar __assign = (undefined && undefined.__assign) || function () {\n    __assign = Object.assign || function(t) {\n        for (var s, i = 1, n = arguments.length; i < n; i++) {\n            s = arguments[i];\n            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))\n                t[p] = s[p];\n        }\n        return t;\n    };\n    return __assign.apply(this, arguments);\n};\n\n\nvar SearchFilter = /** @class */ (function () {\n    function SearchFilter(searchFields, fields, columns) {\n        if (columns === void 0) { columns = 8; }\n        this._searchFields = searchFields;\n        this._fields = fields;\n        this._simpleSearchContainer = new _Container__WEBPACK_IMPORTED_MODULE_1__.default(columns);\n        this._advancedSearchContainer = new _Container__WEBPACK_IMPORTED_MODULE_1__.default(columns);\n    }\n    Object.defineProperty(SearchFilter.prototype, \"searchFields\", {\n        get: function () {\n            return this._searchFields;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(SearchFilter.prototype, \"fields\", {\n        get: function () {\n            return this._fields;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(SearchFilter.prototype, \"simpleSearchContainer\", {\n        get: function () {\n            return this._simpleSearchContainer;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(SearchFilter.prototype, \"advancedSearchContainer\", {\n        get: function () {\n            return this._advancedSearchContainer;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    SearchFilter.prototype.parse = function () {\n        var _this = this;\n        var widgetFactory = new _WidgetFactory__WEBPACK_IMPORTED_MODULE_0__.default();\n        var simpleSearchWidgets = this.parseFields(this.searchFields.primary, widgetFactory);\n        simpleSearchWidgets.forEach(function (widget) {\n            _this.simpleSearchContainer.addWidget(widget);\n            _this.advancedSearchContainer.addWidget(widget);\n        });\n        var advancedSearchWidgets = this.parseFields(this.searchFields.secondary, widgetFactory);\n        advancedSearchWidgets.forEach(function (widget) {\n            _this.advancedSearchContainer.addWidget(widget);\n        });\n    };\n    SearchFilter.prototype.parseFields = function (searchFields, widgetFactory) {\n        var _this = this;\n        return searchFields.map(function (searchField) {\n            var fieldAttributes = __assign(__assign({}, _this.fields[searchField]), { name: searchField });\n            var type = fieldAttributes.type;\n            return widgetFactory.createWidget(type, fieldAttributes);\n        });\n    };\n    /**\n     * Calls container's findById method to find the widgets matching with param id\n     * @param {string} id id to find\n     */\n    SearchFilter.prototype.findById = function (id) {\n        return this.advancedSearchContainer.findById(id);\n    };\n    return SearchFilter;\n}());\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SearchFilter);\n//# sourceMappingURL=SearchFilter.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/SearchFilter.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _WidgetFactory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./WidgetFactory */ "./node_modules/ooui/dist/WidgetFactory.js");
+/* harmony import */ var _Container__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Container */ "./node_modules/ooui/dist/Container.js");
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+
+
+var SearchFilter = /** @class */ (function () {
+    function SearchFilter(searchFields, fields, columns) {
+        if (columns === void 0) { columns = 8; }
+        this._searchFields = searchFields;
+        this._fields = fields;
+        this._simpleSearchContainer = new _Container__WEBPACK_IMPORTED_MODULE_1__.default(columns);
+        this._advancedSearchContainer = new _Container__WEBPACK_IMPORTED_MODULE_1__.default(columns);
+    }
+    Object.defineProperty(SearchFilter.prototype, "searchFields", {
+        get: function () {
+            return this._searchFields;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(SearchFilter.prototype, "fields", {
+        get: function () {
+            return this._fields;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(SearchFilter.prototype, "simpleSearchContainer", {
+        get: function () {
+            return this._simpleSearchContainer;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(SearchFilter.prototype, "advancedSearchContainer", {
+        get: function () {
+            return this._advancedSearchContainer;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    SearchFilter.prototype.parse = function () {
+        var _this = this;
+        var widgetFactory = new _WidgetFactory__WEBPACK_IMPORTED_MODULE_0__.default();
+        var simpleSearchWidgets = this.parseFields(this.searchFields.primary, widgetFactory);
+        simpleSearchWidgets.forEach(function (widget) {
+            _this.simpleSearchContainer.addWidget(widget);
+            _this.advancedSearchContainer.addWidget(widget);
+        });
+        var advancedSearchWidgets = this.parseFields(this.searchFields.secondary, widgetFactory);
+        advancedSearchWidgets.forEach(function (widget) {
+            _this.advancedSearchContainer.addWidget(widget);
+        });
+    };
+    SearchFilter.prototype.parseFields = function (searchFields, widgetFactory) {
+        var _this = this;
+        return searchFields.map(function (searchField) {
+            var fieldAttributes = __assign(__assign({}, _this.fields[searchField]), { name: searchField });
+            var type = fieldAttributes.type;
+            return widgetFactory.createWidget(type, fieldAttributes);
+        });
+    };
+    /**
+     * Calls container's findById method to find the widgets matching with param id
+     * @param {string} id id to find
+     */
+    SearchFilter.prototype.findById = function (id) {
+        return this.advancedSearchContainer.findById(id);
+    };
+    return SearchFilter;
+}());
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SearchFilter);
+//# sourceMappingURL=SearchFilter.js.map
 
 /***/ }),
 
@@ -288,7 +1632,79 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ \"./node_modules/ooui/dist/Field.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\n/**\n * Selection field for key-value lists\n */\nvar Selection = /** @class */ (function (_super) {\n    __extends(Selection, _super);\n    function Selection(props) {\n        var _this = _super.call(this, props) || this;\n        /**\n         * Field size\n         */\n        _this._size = 150;\n        /**\n         * Values and keys\n         */\n        _this._selectionValues = new Map([]);\n        if (props) {\n            if (props.size) {\n                _this._size = props.size;\n            }\n            if (props.string) {\n                if (!props.colspan) {\n                    _this.colspan = 2;\n                }\n            }\n            if (props.selection) {\n                _this._selectionValues = new Map(props.selection);\n            }\n        }\n        return _this;\n    }\n    Object.defineProperty(Selection.prototype, \"size\", {\n        get: function () {\n            return this._size;\n        },\n        set: function (value) {\n            this._size = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Selection.prototype, \"selectionValues\", {\n        get: function () {\n            return this._selectionValues;\n        },\n        set: function (value) {\n            this._selectionValues = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    return Selection;\n}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Selection);\n//# sourceMappingURL=Selection.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Selection.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ "./node_modules/ooui/dist/Field.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+/**
+ * Selection field for key-value lists
+ */
+var Selection = /** @class */ (function (_super) {
+    __extends(Selection, _super);
+    function Selection(props) {
+        var _this = _super.call(this, props) || this;
+        /**
+         * Field size
+         */
+        _this._size = 150;
+        /**
+         * Values and keys
+         */
+        _this._selectionValues = new Map([]);
+        if (props) {
+            if (props.size) {
+                _this._size = props.size;
+            }
+            if (props.string) {
+                if (!props.colspan) {
+                    _this.colspan = 2;
+                }
+            }
+            if (props.selection) {
+                _this._selectionValues = new Map(props.selection);
+            }
+        }
+        return _this;
+    }
+    Object.defineProperty(Selection.prototype, "size", {
+        get: function () {
+            return this._size;
+        },
+        set: function (value) {
+            this._size = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Selection.prototype, "selectionValues", {
+        get: function () {
+            return this._selectionValues;
+        },
+        set: function (value) {
+            this._selectionValues = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return Selection;
+}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Selection);
+//# sourceMappingURL=Selection.js.map
 
 /***/ }),
 
@@ -299,7 +1715,57 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Widget__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Widget */ \"./node_modules/ooui/dist/Widget.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\nvar Separator = /** @class */ (function (_super) {\n    __extends(Separator, _super);\n    function Separator(props) {\n        var _this = _super.call(this, props) || this;\n        /**\n         * Label\n         */\n        _this._label = \"\";\n        if (props) {\n            if (props.string) {\n                _this._label = props.string;\n            }\n        }\n        return _this;\n    }\n    Object.defineProperty(Separator.prototype, \"label\", {\n        get: function () {\n            return this._label;\n        },\n        set: function (value) {\n            this._label = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Separator.prototype.findById = function (id) {\n        return null;\n    };\n    return Separator;\n}(_Widget__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Separator);\n//# sourceMappingURL=Separator.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Separator.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Widget__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Widget */ "./node_modules/ooui/dist/Widget.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var Separator = /** @class */ (function (_super) {
+    __extends(Separator, _super);
+    function Separator(props) {
+        var _this = _super.call(this, props) || this;
+        /**
+         * Label
+         */
+        _this._label = "";
+        if (props) {
+            if (props.string) {
+                _this._label = props.string;
+            }
+        }
+        return _this;
+    }
+    Object.defineProperty(Separator.prototype, "label", {
+        get: function () {
+            return this._label;
+        },
+        set: function (value) {
+            this._label = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Separator.prototype.findById = function (id) {
+        return null;
+    };
+    return Separator;
+}(_Widget__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Separator);
+//# sourceMappingURL=Separator.js.map
 
 /***/ }),
 
@@ -310,7 +1776,57 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ \"./node_modules/ooui/dist/Field.js\");\nvar __extends = (undefined && undefined.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\n\n/**\n * Multiline input with no length limit.\n */\nvar Text = /** @class */ (function (_super) {\n    __extends(Text, _super);\n    function Text(props) {\n        var _this = _super.call(this, props) || this;\n        /**\n         * Field place holder\n         */\n        _this._placeholder = '';\n        if (props) {\n            if (props.placeholder) {\n                _this._placeholder = props.placeholder;\n            }\n        }\n        return _this;\n    }\n    Object.defineProperty(Text.prototype, \"placeholder\", {\n        get: function () {\n            return this._placeholder;\n        },\n        set: function (value) {\n            this._placeholder = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    return Text;\n}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Text);\n//# sourceMappingURL=Text.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Text.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Field */ "./node_modules/ooui/dist/Field.js");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+/**
+ * Multiline input with no length limit.
+ */
+var Text = /** @class */ (function (_super) {
+    __extends(Text, _super);
+    function Text(props) {
+        var _this = _super.call(this, props) || this;
+        /**
+         * Field place holder
+         */
+        _this._placeholder = '';
+        if (props) {
+            if (props.placeholder) {
+                _this._placeholder = props.placeholder;
+            }
+        }
+        return _this;
+    }
+    Object.defineProperty(Text.prototype, "placeholder", {
+        get: function () {
+            return this._placeholder;
+        },
+        set: function (value) {
+            this._placeholder = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return Text;
+}(_Field__WEBPACK_IMPORTED_MODULE_0__.default));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Text);
+//# sourceMappingURL=Text.js.map
 
 /***/ }),
 
@@ -321,7 +1837,88 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _WidgetFactory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./WidgetFactory */ \"./node_modules/ooui/dist/WidgetFactory.js\");\nvar __assign = (undefined && undefined.__assign) || function () {\n    __assign = Object.assign || function(t) {\n        for (var s, i = 1, n = arguments.length; i < n; i++) {\n            s = arguments[i];\n            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))\n                t[p] = s[p];\n        }\n        return t;\n    };\n    return __assign.apply(this, arguments);\n};\n\nvar Tree = /** @class */ (function () {\n    function Tree(fields) {\n        this._columns = [];\n        this._fields = fields;\n    }\n    Object.defineProperty(Tree.prototype, \"fields\", {\n        get: function () {\n            return this._fields;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Tree.prototype, \"columns\", {\n        get: function () {\n            return this._columns;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Tree.prototype.parse = function (xml) {\n        var parser = new DOMParser();\n        var view = parser.parseFromString(xml, \"text/xml\");\n        this.parseNode(view.documentElement);\n    };\n    Tree.prototype.parseNode = function (node) {\n        var _this = this;\n        var widgetFactory = new _WidgetFactory__WEBPACK_IMPORTED_MODULE_0__.default();\n        Array.prototype.forEach.call(node.childNodes, function (child) {\n            if (child.nodeType === child.ELEMENT_NODE) {\n                var tag = child.nodeName;\n                var tagAttributes_1 = {};\n                Array.prototype.forEach.call(child.attributes, function (attr) {\n                    tagAttributes_1[attr.name] = attr.value;\n                });\n                if (tag === \"field\") {\n                    var name_1 = child.getAttribute(\"name\");\n                    var attrWidget = child.getAttribute(\"widget\");\n                    if (attrWidget) {\n                        tag = attrWidget;\n                    }\n                    else if (name_1) {\n                        tag = _this._fields[name_1].type;\n                    }\n                    tagAttributes_1 = __assign(__assign({}, tagAttributes_1), _this._fields[name_1]);\n                }\n                var widget = widgetFactory.createWidget(tag, tagAttributes_1);\n                _this._columns.push(widget);\n            }\n        });\n    };\n    /**\n     * Find the widgets matching with param id\n     * @param {string} id id to find\n     */\n    Tree.prototype.findById = function (id) {\n        return this._columns.find(function (item) {\n            if (item.findById) {\n                return item.findById(id);\n            }\n        });\n    };\n    return Tree;\n}());\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Tree);\n//# sourceMappingURL=Tree.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Tree.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _WidgetFactory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./WidgetFactory */ "./node_modules/ooui/dist/WidgetFactory.js");
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+
+var Tree = /** @class */ (function () {
+    function Tree(fields) {
+        this._columns = [];
+        this._fields = fields;
+    }
+    Object.defineProperty(Tree.prototype, "fields", {
+        get: function () {
+            return this._fields;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Tree.prototype, "columns", {
+        get: function () {
+            return this._columns;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Tree.prototype.parse = function (xml) {
+        var parser = new DOMParser();
+        var view = parser.parseFromString(xml, "text/xml");
+        this.parseNode(view.documentElement);
+    };
+    Tree.prototype.parseNode = function (node) {
+        var _this = this;
+        var widgetFactory = new _WidgetFactory__WEBPACK_IMPORTED_MODULE_0__.default();
+        Array.prototype.forEach.call(node.childNodes, function (child) {
+            if (child.nodeType === child.ELEMENT_NODE) {
+                var tag = child.nodeName;
+                var tagAttributes_1 = {};
+                Array.prototype.forEach.call(child.attributes, function (attr) {
+                    tagAttributes_1[attr.name] = attr.value;
+                });
+                if (tag === "field") {
+                    var name_1 = child.getAttribute("name");
+                    var attrWidget = child.getAttribute("widget");
+                    if (attrWidget) {
+                        tag = attrWidget;
+                    }
+                    else if (name_1) {
+                        tag = _this._fields[name_1].type;
+                    }
+                    tagAttributes_1 = __assign(__assign({}, tagAttributes_1), _this._fields[name_1]);
+                }
+                var widget = widgetFactory.createWidget(tag, tagAttributes_1);
+                _this._columns.push(widget);
+            }
+        });
+    };
+    /**
+     * Find the widgets matching with param id
+     * @param {string} id id to find
+     */
+    Tree.prototype.findById = function (id) {
+        return this._columns.find(function (item) {
+            if (item.findById) {
+                return item.findById(id);
+            }
+        });
+    };
+    return Tree;
+}());
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Tree);
+//# sourceMappingURL=Tree.js.map
 
 /***/ }),
 
@@ -332,7 +1929,63 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\nvar Widget = /** @class */ (function () {\n    function Widget(props) {\n        this._colspan = Widget._defaultColspan;\n        this._readOnly = false;\n        if (props) {\n            if (props.colspan) {\n                this._colspan = +props.colspan;\n            }\n            if (props.readonly) {\n                if (props.readonly === 1 || props.readonly === true) {\n                    this._readOnly = true;\n                }\n            }\n        }\n    }\n    Object.defineProperty(Widget, \"defaultColspan\", {\n        get: function () {\n            return Widget._defaultColspan;\n        },\n        set: function (value) {\n            Widget._defaultColspan = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Widget.prototype, \"readOnly\", {\n        get: function () {\n            return this._readOnly;\n        },\n        set: function (value) {\n            this._readOnly = value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    Object.defineProperty(Widget.prototype, \"colspan\", {\n        get: function () {\n            return this._colspan;\n        },\n        set: function (value) {\n            this._colspan = +value;\n        },\n        enumerable: false,\n        configurable: true\n    });\n    /**\n     * Default colspan\n     */\n    Widget._defaultColspan = 1;\n    return Widget;\n}());\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Widget);\n//# sourceMappingURL=Widget.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/Widget.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var Widget = /** @class */ (function () {
+    function Widget(props) {
+        this._colspan = Widget._defaultColspan;
+        this._readOnly = false;
+        if (props) {
+            if (props.colspan) {
+                this._colspan = +props.colspan;
+            }
+            if (props.readonly) {
+                if (props.readonly === 1 || props.readonly === true) {
+                    this._readOnly = true;
+                }
+            }
+        }
+    }
+    Object.defineProperty(Widget, "defaultColspan", {
+        get: function () {
+            return Widget._defaultColspan;
+        },
+        set: function (value) {
+            Widget._defaultColspan = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Widget.prototype, "readOnly", {
+        get: function () {
+            return this._readOnly;
+        },
+        set: function (value) {
+            this._readOnly = value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Widget.prototype, "colspan", {
+        get: function () {
+            return this._colspan;
+        },
+        set: function (value) {
+            this._colspan = +value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    /**
+     * Default colspan
+     */
+    Widget._defaultColspan = 1;
+    return Widget;
+}());
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Widget);
+//# sourceMappingURL=Widget.js.map
 
 /***/ }),
 
@@ -343,7 +1996,140 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Notebook__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Notebook */ \"./node_modules/ooui/dist/Notebook.js\");\n/* harmony import */ var _Page__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Page */ \"./node_modules/ooui/dist/Page.js\");\n/* harmony import */ var _Group__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Group */ \"./node_modules/ooui/dist/Group.js\");\n/* harmony import */ var _Button__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Button */ \"./node_modules/ooui/dist/Button.js\");\n/* harmony import */ var _Label__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Label */ \"./node_modules/ooui/dist/Label.js\");\n/* harmony import */ var _Char__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Char */ \"./node_modules/ooui/dist/Char.js\");\n/* harmony import */ var _Text__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Text */ \"./node_modules/ooui/dist/Text.js\");\n/* harmony import */ var _Selection__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Selection */ \"./node_modules/ooui/dist/Selection.js\");\n/* harmony import */ var _Many2one__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Many2one */ \"./node_modules/ooui/dist/Many2one.js\");\n/* harmony import */ var _Boolean__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Boolean */ \"./node_modules/ooui/dist/Boolean.js\");\n/* harmony import */ var _Integer__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Integer */ \"./node_modules/ooui/dist/Integer.js\");\n/* harmony import */ var _Widget__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Widget */ \"./node_modules/ooui/dist/Widget.js\");\n/* harmony import */ var _Float__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Float */ \"./node_modules/ooui/dist/Float.js\");\n/* harmony import */ var _FloatTime__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./FloatTime */ \"./node_modules/ooui/dist/FloatTime.js\");\n/* harmony import */ var _ProgressBar__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./ProgressBar */ \"./node_modules/ooui/dist/ProgressBar.js\");\n/* harmony import */ var _Date__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./Date */ \"./node_modules/ooui/dist/Date.js\");\n/* harmony import */ var _DateTime__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./DateTime */ \"./node_modules/ooui/dist/DateTime.js\");\n/* harmony import */ var _Many2many__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./Many2many */ \"./node_modules/ooui/dist/Many2many.js\");\n/* harmony import */ var _One2many__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./One2many */ \"./node_modules/ooui/dist/One2many.js\");\n/* harmony import */ var _NewLine__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./NewLine */ \"./node_modules/ooui/dist/NewLine.js\");\n/* harmony import */ var _Separator__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./Separator */ \"./node_modules/ooui/dist/Separator.js\");\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nvar WidgetFactory = /** @class */ (function () {\n    function WidgetFactory() {\n    }\n    WidgetFactory.prototype.setWidgetClass = function (type) {\n        switch (type) {\n            case \"notebook\":\n                this._widgetClass = _Notebook__WEBPACK_IMPORTED_MODULE_0__.default;\n                break;\n            case \"page\":\n                this._widgetClass = _Page__WEBPACK_IMPORTED_MODULE_1__.default;\n                break;\n            case \"group\":\n                this._widgetClass = _Group__WEBPACK_IMPORTED_MODULE_2__.default;\n                break;\n            case \"label\":\n                this._widgetClass = _Label__WEBPACK_IMPORTED_MODULE_4__.default;\n                break;\n            case \"char\":\n                this._widgetClass = _Char__WEBPACK_IMPORTED_MODULE_5__.default;\n                break;\n            case \"text\":\n                this._widgetClass = _Text__WEBPACK_IMPORTED_MODULE_6__.default;\n                break;\n            case \"button\":\n                this._widgetClass = _Button__WEBPACK_IMPORTED_MODULE_3__.default;\n                break;\n            case \"selection\":\n                this._widgetClass = _Selection__WEBPACK_IMPORTED_MODULE_7__.default;\n                break;\n            case \"many2one\":\n                this._widgetClass = _Many2one__WEBPACK_IMPORTED_MODULE_8__.default;\n                break;\n            case \"boolean\":\n                this._widgetClass = _Boolean__WEBPACK_IMPORTED_MODULE_9__.default;\n                break;\n            case \"integer\":\n                this._widgetClass = _Integer__WEBPACK_IMPORTED_MODULE_10__.default;\n                break;\n            case \"float\":\n                this._widgetClass = _Float__WEBPACK_IMPORTED_MODULE_12__.default;\n                break;\n            case \"float_time\":\n                this._widgetClass = _FloatTime__WEBPACK_IMPORTED_MODULE_13__.default;\n                break;\n            case \"date\":\n                this._widgetClass = _Date__WEBPACK_IMPORTED_MODULE_15__.default;\n                break;\n            case \"datetime\":\n                this._widgetClass = _DateTime__WEBPACK_IMPORTED_MODULE_16__.default;\n                break;\n            case \"progressbar\":\n                this._widgetClass = _ProgressBar__WEBPACK_IMPORTED_MODULE_14__.default;\n                break;\n            case \"many2many\":\n                this._widgetClass = _Many2many__WEBPACK_IMPORTED_MODULE_17__.default;\n                break;\n            case \"one2many\":\n                this._widgetClass = _One2many__WEBPACK_IMPORTED_MODULE_18__.default;\n                break;\n            case \"newline\":\n                this._widgetClass = _NewLine__WEBPACK_IMPORTED_MODULE_19__.default;\n                break;\n            case \"separator\":\n                this._widgetClass = _Separator__WEBPACK_IMPORTED_MODULE_20__.default;\n                break;\n            default:\n                this._widgetClass = _Widget__WEBPACK_IMPORTED_MODULE_11__.default;\n                break;\n        }\n    };\n    WidgetFactory.prototype.createWidget = function (type, props) {\n        this.setWidgetClass(type);\n        // TODO: Widget Class constructors should use only the props needed, not all props.\n        switch (type) {\n            // Specific cases (only selected props should be used)\n            case \"notebook\":\n            case \"page\":\n            case \"group\":\n                return new this._widgetClass(props);\n            // Generic case\n            default:\n                return new this._widgetClass(props);\n        }\n    };\n    return WidgetFactory;\n}());\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (WidgetFactory);\n//# sourceMappingURL=WidgetFactory.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/WidgetFactory.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Notebook__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Notebook */ "./node_modules/ooui/dist/Notebook.js");
+/* harmony import */ var _Page__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Page */ "./node_modules/ooui/dist/Page.js");
+/* harmony import */ var _Group__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Group */ "./node_modules/ooui/dist/Group.js");
+/* harmony import */ var _Button__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Button */ "./node_modules/ooui/dist/Button.js");
+/* harmony import */ var _Label__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Label */ "./node_modules/ooui/dist/Label.js");
+/* harmony import */ var _Char__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Char */ "./node_modules/ooui/dist/Char.js");
+/* harmony import */ var _Text__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Text */ "./node_modules/ooui/dist/Text.js");
+/* harmony import */ var _Selection__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Selection */ "./node_modules/ooui/dist/Selection.js");
+/* harmony import */ var _Many2one__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Many2one */ "./node_modules/ooui/dist/Many2one.js");
+/* harmony import */ var _Boolean__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Boolean */ "./node_modules/ooui/dist/Boolean.js");
+/* harmony import */ var _Integer__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Integer */ "./node_modules/ooui/dist/Integer.js");
+/* harmony import */ var _Widget__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Widget */ "./node_modules/ooui/dist/Widget.js");
+/* harmony import */ var _Float__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Float */ "./node_modules/ooui/dist/Float.js");
+/* harmony import */ var _FloatTime__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./FloatTime */ "./node_modules/ooui/dist/FloatTime.js");
+/* harmony import */ var _ProgressBar__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./ProgressBar */ "./node_modules/ooui/dist/ProgressBar.js");
+/* harmony import */ var _Date__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./Date */ "./node_modules/ooui/dist/Date.js");
+/* harmony import */ var _DateTime__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./DateTime */ "./node_modules/ooui/dist/DateTime.js");
+/* harmony import */ var _Many2many__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./Many2many */ "./node_modules/ooui/dist/Many2many.js");
+/* harmony import */ var _One2many__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./One2many */ "./node_modules/ooui/dist/One2many.js");
+/* harmony import */ var _NewLine__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./NewLine */ "./node_modules/ooui/dist/NewLine.js");
+/* harmony import */ var _Separator__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./Separator */ "./node_modules/ooui/dist/Separator.js");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var WidgetFactory = /** @class */ (function () {
+    function WidgetFactory() {
+    }
+    WidgetFactory.prototype.setWidgetClass = function (type) {
+        switch (type) {
+            case "notebook":
+                this._widgetClass = _Notebook__WEBPACK_IMPORTED_MODULE_0__.default;
+                break;
+            case "page":
+                this._widgetClass = _Page__WEBPACK_IMPORTED_MODULE_1__.default;
+                break;
+            case "group":
+                this._widgetClass = _Group__WEBPACK_IMPORTED_MODULE_2__.default;
+                break;
+            case "label":
+                this._widgetClass = _Label__WEBPACK_IMPORTED_MODULE_4__.default;
+                break;
+            case "char":
+                this._widgetClass = _Char__WEBPACK_IMPORTED_MODULE_5__.default;
+                break;
+            case "text":
+                this._widgetClass = _Text__WEBPACK_IMPORTED_MODULE_6__.default;
+                break;
+            case "button":
+                this._widgetClass = _Button__WEBPACK_IMPORTED_MODULE_3__.default;
+                break;
+            case "selection":
+                this._widgetClass = _Selection__WEBPACK_IMPORTED_MODULE_7__.default;
+                break;
+            case "many2one":
+                this._widgetClass = _Many2one__WEBPACK_IMPORTED_MODULE_8__.default;
+                break;
+            case "boolean":
+                this._widgetClass = _Boolean__WEBPACK_IMPORTED_MODULE_9__.default;
+                break;
+            case "integer":
+                this._widgetClass = _Integer__WEBPACK_IMPORTED_MODULE_10__.default;
+                break;
+            case "float":
+                this._widgetClass = _Float__WEBPACK_IMPORTED_MODULE_12__.default;
+                break;
+            case "float_time":
+                this._widgetClass = _FloatTime__WEBPACK_IMPORTED_MODULE_13__.default;
+                break;
+            case "date":
+                this._widgetClass = _Date__WEBPACK_IMPORTED_MODULE_15__.default;
+                break;
+            case "datetime":
+                this._widgetClass = _DateTime__WEBPACK_IMPORTED_MODULE_16__.default;
+                break;
+            case "progressbar":
+                this._widgetClass = _ProgressBar__WEBPACK_IMPORTED_MODULE_14__.default;
+                break;
+            case "many2many":
+                this._widgetClass = _Many2many__WEBPACK_IMPORTED_MODULE_17__.default;
+                break;
+            case "one2many":
+                this._widgetClass = _One2many__WEBPACK_IMPORTED_MODULE_18__.default;
+                break;
+            case "newline":
+                this._widgetClass = _NewLine__WEBPACK_IMPORTED_MODULE_19__.default;
+                break;
+            case "separator":
+                this._widgetClass = _Separator__WEBPACK_IMPORTED_MODULE_20__.default;
+                break;
+            default:
+                this._widgetClass = _Widget__WEBPACK_IMPORTED_MODULE_11__.default;
+                break;
+        }
+    };
+    WidgetFactory.prototype.createWidget = function (type, props) {
+        this.setWidgetClass(type);
+        // TODO: Widget Class constructors should use only the props needed, not all props.
+        switch (type) {
+            // Specific cases (only selected props should be used)
+            case "notebook":
+            case "page":
+            case "group":
+                return new this._widgetClass(props);
+            // Generic case
+            default:
+                return new this._widgetClass(props);
+        }
+    };
+    return WidgetFactory;
+}());
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (WidgetFactory);
+//# sourceMappingURL=WidgetFactory.js.map
 
 /***/ }),
 
@@ -354,7 +2140,89 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"Char\": () => (/* reexport safe */ _Char__WEBPACK_IMPORTED_MODULE_2__.default),\n/* harmony export */   \"Selection\": () => (/* reexport safe */ _Selection__WEBPACK_IMPORTED_MODULE_5__.default),\n/* harmony export */   \"Many2one\": () => (/* reexport safe */ _Many2one__WEBPACK_IMPORTED_MODULE_6__.default),\n/* harmony export */   \"Field\": () => (/* reexport safe */ _Field__WEBPACK_IMPORTED_MODULE_7__.default),\n/* harmony export */   \"Widget\": () => (/* reexport safe */ _Widget__WEBPACK_IMPORTED_MODULE_8__.default),\n/* harmony export */   \"Form\": () => (/* reexport safe */ _Form__WEBPACK_IMPORTED_MODULE_0__.default),\n/* harmony export */   \"Tree\": () => (/* reexport safe */ _Tree__WEBPACK_IMPORTED_MODULE_1__.default),\n/* harmony export */   \"Boolean\": () => (/* reexport safe */ _Boolean__WEBPACK_IMPORTED_MODULE_9__.default),\n/* harmony export */   \"One2many\": () => (/* reexport safe */ _One2many__WEBPACK_IMPORTED_MODULE_17__.default),\n/* harmony export */   \"Integer\": () => (/* reexport safe */ _Integer__WEBPACK_IMPORTED_MODULE_10__.default),\n/* harmony export */   \"Float\": () => (/* reexport safe */ _Float__WEBPACK_IMPORTED_MODULE_11__.default),\n/* harmony export */   \"FloatTime\": () => (/* reexport safe */ _FloatTime__WEBPACK_IMPORTED_MODULE_12__.default),\n/* harmony export */   \"Date\": () => (/* reexport safe */ _Date__WEBPACK_IMPORTED_MODULE_14__.default),\n/* harmony export */   \"DateTime\": () => (/* reexport safe */ _DateTime__WEBPACK_IMPORTED_MODULE_15__.default),\n/* harmony export */   \"Many2many\": () => (/* reexport safe */ _Many2many__WEBPACK_IMPORTED_MODULE_16__.default),\n/* harmony export */   \"SearchFilter\": () => (/* reexport safe */ _SearchFilter__WEBPACK_IMPORTED_MODULE_18__.default),\n/* harmony export */   \"Container\": () => (/* reexport safe */ _Container__WEBPACK_IMPORTED_MODULE_3__.default),\n/* harmony export */   \"ContainerWidget\": () => (/* reexport safe */ _ContainerWidget__WEBPACK_IMPORTED_MODULE_4__.default),\n/* harmony export */   \"Text\": () => (/* reexport safe */ _Text__WEBPACK_IMPORTED_MODULE_19__.default),\n/* harmony export */   \"ProgressBar\": () => (/* reexport safe */ _ProgressBar__WEBPACK_IMPORTED_MODULE_13__.default),\n/* harmony export */   \"Notebook\": () => (/* reexport safe */ _Notebook__WEBPACK_IMPORTED_MODULE_21__.default),\n/* harmony export */   \"Group\": () => (/* reexport safe */ _Group__WEBPACK_IMPORTED_MODULE_22__.default),\n/* harmony export */   \"Page\": () => (/* reexport safe */ _Page__WEBPACK_IMPORTED_MODULE_23__.default),\n/* harmony export */   \"Label\": () => (/* reexport safe */ _Label__WEBPACK_IMPORTED_MODULE_20__.default),\n/* harmony export */   \"Separator\": () => (/* reexport safe */ _Separator__WEBPACK_IMPORTED_MODULE_24__.default),\n/* harmony export */   \"Button\": () => (/* reexport safe */ _Button__WEBPACK_IMPORTED_MODULE_25__.default)\n/* harmony export */ });\n/* harmony import */ var _Form__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Form */ \"./node_modules/ooui/dist/Form.js\");\n/* harmony import */ var _Tree__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tree */ \"./node_modules/ooui/dist/Tree.js\");\n/* harmony import */ var _Char__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Char */ \"./node_modules/ooui/dist/Char.js\");\n/* harmony import */ var _Container__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Container */ \"./node_modules/ooui/dist/Container.js\");\n/* harmony import */ var _ContainerWidget__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ContainerWidget */ \"./node_modules/ooui/dist/ContainerWidget.js\");\n/* harmony import */ var _Selection__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Selection */ \"./node_modules/ooui/dist/Selection.js\");\n/* harmony import */ var _Many2one__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Many2one */ \"./node_modules/ooui/dist/Many2one.js\");\n/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Field */ \"./node_modules/ooui/dist/Field.js\");\n/* harmony import */ var _Widget__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Widget */ \"./node_modules/ooui/dist/Widget.js\");\n/* harmony import */ var _Boolean__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Boolean */ \"./node_modules/ooui/dist/Boolean.js\");\n/* harmony import */ var _Integer__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Integer */ \"./node_modules/ooui/dist/Integer.js\");\n/* harmony import */ var _Float__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Float */ \"./node_modules/ooui/dist/Float.js\");\n/* harmony import */ var _FloatTime__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./FloatTime */ \"./node_modules/ooui/dist/FloatTime.js\");\n/* harmony import */ var _ProgressBar__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./ProgressBar */ \"./node_modules/ooui/dist/ProgressBar.js\");\n/* harmony import */ var _Date__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./Date */ \"./node_modules/ooui/dist/Date.js\");\n/* harmony import */ var _DateTime__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./DateTime */ \"./node_modules/ooui/dist/DateTime.js\");\n/* harmony import */ var _Many2many__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./Many2many */ \"./node_modules/ooui/dist/Many2many.js\");\n/* harmony import */ var _One2many__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./One2many */ \"./node_modules/ooui/dist/One2many.js\");\n/* harmony import */ var _SearchFilter__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./SearchFilter */ \"./node_modules/ooui/dist/SearchFilter.js\");\n/* harmony import */ var _Text__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./Text */ \"./node_modules/ooui/dist/Text.js\");\n/* harmony import */ var _Label__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./Label */ \"./node_modules/ooui/dist/Label.js\");\n/* harmony import */ var _Notebook__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./Notebook */ \"./node_modules/ooui/dist/Notebook.js\");\n/* harmony import */ var _Group__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./Group */ \"./node_modules/ooui/dist/Group.js\");\n/* harmony import */ var _Page__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./Page */ \"./node_modules/ooui/dist/Page.js\");\n/* harmony import */ var _Separator__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./Separator */ \"./node_modules/ooui/dist/Separator.js\");\n/* harmony import */ var _Button__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./Button */ \"./node_modules/ooui/dist/Button.js\");\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n//# sourceMappingURL=index.js.map\n\n//# sourceURL=webpack://react-ooui/./node_modules/ooui/dist/index.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Char": () => (/* reexport safe */ _Char__WEBPACK_IMPORTED_MODULE_2__.default),
+/* harmony export */   "Selection": () => (/* reexport safe */ _Selection__WEBPACK_IMPORTED_MODULE_5__.default),
+/* harmony export */   "Many2one": () => (/* reexport safe */ _Many2one__WEBPACK_IMPORTED_MODULE_6__.default),
+/* harmony export */   "Field": () => (/* reexport safe */ _Field__WEBPACK_IMPORTED_MODULE_7__.default),
+/* harmony export */   "Widget": () => (/* reexport safe */ _Widget__WEBPACK_IMPORTED_MODULE_8__.default),
+/* harmony export */   "Form": () => (/* reexport safe */ _Form__WEBPACK_IMPORTED_MODULE_0__.default),
+/* harmony export */   "Tree": () => (/* reexport safe */ _Tree__WEBPACK_IMPORTED_MODULE_1__.default),
+/* harmony export */   "Boolean": () => (/* reexport safe */ _Boolean__WEBPACK_IMPORTED_MODULE_9__.default),
+/* harmony export */   "One2many": () => (/* reexport safe */ _One2many__WEBPACK_IMPORTED_MODULE_17__.default),
+/* harmony export */   "Integer": () => (/* reexport safe */ _Integer__WEBPACK_IMPORTED_MODULE_10__.default),
+/* harmony export */   "Float": () => (/* reexport safe */ _Float__WEBPACK_IMPORTED_MODULE_11__.default),
+/* harmony export */   "FloatTime": () => (/* reexport safe */ _FloatTime__WEBPACK_IMPORTED_MODULE_12__.default),
+/* harmony export */   "Date": () => (/* reexport safe */ _Date__WEBPACK_IMPORTED_MODULE_14__.default),
+/* harmony export */   "DateTime": () => (/* reexport safe */ _DateTime__WEBPACK_IMPORTED_MODULE_15__.default),
+/* harmony export */   "Many2many": () => (/* reexport safe */ _Many2many__WEBPACK_IMPORTED_MODULE_16__.default),
+/* harmony export */   "SearchFilter": () => (/* reexport safe */ _SearchFilter__WEBPACK_IMPORTED_MODULE_18__.default),
+/* harmony export */   "Container": () => (/* reexport safe */ _Container__WEBPACK_IMPORTED_MODULE_3__.default),
+/* harmony export */   "ContainerWidget": () => (/* reexport safe */ _ContainerWidget__WEBPACK_IMPORTED_MODULE_4__.default),
+/* harmony export */   "Text": () => (/* reexport safe */ _Text__WEBPACK_IMPORTED_MODULE_19__.default),
+/* harmony export */   "ProgressBar": () => (/* reexport safe */ _ProgressBar__WEBPACK_IMPORTED_MODULE_13__.default),
+/* harmony export */   "Notebook": () => (/* reexport safe */ _Notebook__WEBPACK_IMPORTED_MODULE_21__.default),
+/* harmony export */   "Group": () => (/* reexport safe */ _Group__WEBPACK_IMPORTED_MODULE_22__.default),
+/* harmony export */   "Page": () => (/* reexport safe */ _Page__WEBPACK_IMPORTED_MODULE_23__.default),
+/* harmony export */   "Label": () => (/* reexport safe */ _Label__WEBPACK_IMPORTED_MODULE_20__.default),
+/* harmony export */   "Separator": () => (/* reexport safe */ _Separator__WEBPACK_IMPORTED_MODULE_24__.default),
+/* harmony export */   "Button": () => (/* reexport safe */ _Button__WEBPACK_IMPORTED_MODULE_25__.default)
+/* harmony export */ });
+/* harmony import */ var _Form__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Form */ "./node_modules/ooui/dist/Form.js");
+/* harmony import */ var _Tree__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tree */ "./node_modules/ooui/dist/Tree.js");
+/* harmony import */ var _Char__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Char */ "./node_modules/ooui/dist/Char.js");
+/* harmony import */ var _Container__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Container */ "./node_modules/ooui/dist/Container.js");
+/* harmony import */ var _ContainerWidget__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ContainerWidget */ "./node_modules/ooui/dist/ContainerWidget.js");
+/* harmony import */ var _Selection__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Selection */ "./node_modules/ooui/dist/Selection.js");
+/* harmony import */ var _Many2one__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Many2one */ "./node_modules/ooui/dist/Many2one.js");
+/* harmony import */ var _Field__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Field */ "./node_modules/ooui/dist/Field.js");
+/* harmony import */ var _Widget__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Widget */ "./node_modules/ooui/dist/Widget.js");
+/* harmony import */ var _Boolean__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Boolean */ "./node_modules/ooui/dist/Boolean.js");
+/* harmony import */ var _Integer__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Integer */ "./node_modules/ooui/dist/Integer.js");
+/* harmony import */ var _Float__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Float */ "./node_modules/ooui/dist/Float.js");
+/* harmony import */ var _FloatTime__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./FloatTime */ "./node_modules/ooui/dist/FloatTime.js");
+/* harmony import */ var _ProgressBar__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./ProgressBar */ "./node_modules/ooui/dist/ProgressBar.js");
+/* harmony import */ var _Date__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./Date */ "./node_modules/ooui/dist/Date.js");
+/* harmony import */ var _DateTime__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./DateTime */ "./node_modules/ooui/dist/DateTime.js");
+/* harmony import */ var _Many2many__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./Many2many */ "./node_modules/ooui/dist/Many2many.js");
+/* harmony import */ var _One2many__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./One2many */ "./node_modules/ooui/dist/One2many.js");
+/* harmony import */ var _SearchFilter__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./SearchFilter */ "./node_modules/ooui/dist/SearchFilter.js");
+/* harmony import */ var _Text__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./Text */ "./node_modules/ooui/dist/Text.js");
+/* harmony import */ var _Label__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./Label */ "./node_modules/ooui/dist/Label.js");
+/* harmony import */ var _Notebook__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./Notebook */ "./node_modules/ooui/dist/Notebook.js");
+/* harmony import */ var _Group__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./Group */ "./node_modules/ooui/dist/Group.js");
+/* harmony import */ var _Page__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./Page */ "./node_modules/ooui/dist/Page.js");
+/* harmony import */ var _Separator__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./Separator */ "./node_modules/ooui/dist/Separator.js");
+/* harmony import */ var _Button__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./Button */ "./node_modules/ooui/dist/Button.js");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//# sourceMappingURL=index.js.map
 
 /***/ }),
 
@@ -365,7 +2233,41 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.labelWithTooltip = void 0;\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"react\"));\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar icons_1 = __webpack_require__(/*! @ant-design/icons */ \"@ant-design/icons\");\nfunction FormItem(_a) {\n    var name = _a.name, label = _a.label, children = _a.children, _b = _a.layout, layout = _b === void 0 ? \"horizontal\" : _b, tooltip = _a.tooltip, _c = _a.nolabel, nolabel = _c === void 0 ? false : _c, valuePropName = _a.valuePropName;\n    var labelText = label && label.length > 1 ? label + \" :\" : \" \";\n    var formItem = function () { return (react_1.default.createElement(antd_1.Form.Item, { className: \"mb-0\", name: name, valuePropName: valuePropName }, children)); };\n    var horizontalMode = function () {\n        return (react_1.default.createElement(antd_1.Row, { align: \"middle\" },\n            !nolabel ? (react_1.default.createElement(antd_1.Col, { className: \"ml-2\", flex: \"7rem\" },\n                react_1.default.createElement(\"div\", { className: \"flex flex-col items-end\" }, labelWithTooltip(nolabel ? \"\" : labelText, tooltip)))) : null,\n            react_1.default.createElement(antd_1.Col, { flex: \"auto\" }, formItem())));\n    };\n    var verticalMode = function () {\n        return (react_1.default.createElement(react_1.default.Fragment, null,\n            labelWithTooltip(nolabel ? \"\" : labelText, tooltip),\n            formItem()));\n    };\n    return layout === \"horizontal\" ? horizontalMode() : verticalMode();\n}\nexports.default = FormItem;\nvar labelWithTooltip = function (label, tooltip) {\n    return (react_1.default.createElement(\"div\", { className: \"flex flex-row items-center pb-1\" },\n        tooltip && (react_1.default.createElement(antd_1.Tooltip, { title: tooltip },\n            react_1.default.createElement(icons_1.QuestionCircleOutlined, { className: \"text-xs text-blue-400 pr-1\" }))),\n        react_1.default.createElement(\"span\", { className: \"text-right pr-2\" }, label)));\n};\nexports.labelWithTooltip = labelWithTooltip;\n\n\n//# sourceURL=webpack://react-ooui/./src/common/FormItem.tsx?");
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.labelWithTooltip = void 0;
+var react_1 = __importDefault(__webpack_require__(/*! react */ "react"));
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var icons_1 = __webpack_require__(/*! @ant-design/icons */ "@ant-design/icons");
+function FormItem(_a) {
+    var name = _a.name, label = _a.label, children = _a.children, _b = _a.layout, layout = _b === void 0 ? "horizontal" : _b, tooltip = _a.tooltip, _c = _a.nolabel, nolabel = _c === void 0 ? false : _c, valuePropName = _a.valuePropName;
+    var labelText = label && label.length > 1 ? label + " :" : " ";
+    var formItem = function () { return (react_1.default.createElement(antd_1.Form.Item, { className: "mb-0", name: name, valuePropName: valuePropName }, children)); };
+    var horizontalMode = function () {
+        return (react_1.default.createElement(antd_1.Row, { align: "middle" },
+            !nolabel ? (react_1.default.createElement(antd_1.Col, { className: "ml-2", flex: "7rem" },
+                react_1.default.createElement("div", { className: "flex flex-col items-end" }, labelWithTooltip(nolabel ? "" : labelText, tooltip)))) : null,
+            react_1.default.createElement(antd_1.Col, { flex: "auto" }, formItem())));
+    };
+    var verticalMode = function () {
+        return (react_1.default.createElement(react_1.default.Fragment, null,
+            labelWithTooltip(nolabel ? "" : labelText, tooltip),
+            formItem()));
+    };
+    return layout === "horizontal" ? horizontalMode() : verticalMode();
+}
+exports.default = FormItem;
+var labelWithTooltip = function (label, tooltip) {
+    return (react_1.default.createElement("div", { className: "flex flex-row items-center pb-1" },
+        tooltip && (react_1.default.createElement(antd_1.Tooltip, { title: tooltip },
+            react_1.default.createElement(icons_1.QuestionCircleOutlined, { className: "text-xs text-blue-400 pr-1" }))),
+        react_1.default.createElement("span", { className: "text-right pr-2" }, label)));
+};
+exports.labelWithTooltip = labelWithTooltip;
+
 
 /***/ }),
 
@@ -376,7 +2278,12 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
-eval("\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.default = {\n    full_width_colspan: 24,\n};\n\n\n//# sourceURL=webpack://react-ooui/./src/config.ts?");
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.default = {
+    full_width_colspan: 24,
+};
+
 
 /***/ }),
 
@@ -387,7 +2294,53 @@ eval("\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexpo
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });\n}) : (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    o[k2] = m[k];\n}));\nvar __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {\n    Object.defineProperty(o, \"default\", { enumerable: true, value: v });\n}) : function(o, v) {\n    o[\"default\"] = v;\n});\nvar __importStar = (this && this.__importStar) || function (mod) {\n    if (mod && mod.__esModule) return mod;\n    var result = {};\n    if (mod != null) for (var k in mod) if (k !== \"default\" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);\n    __setModuleDefault(result, mod);\n    return result;\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.getLocalizedString = exports.LocalesContext = void 0;\nvar react_1 = __importStar(__webpack_require__(/*! react */ \"react\"));\nexports.LocalesContext = react_1.default.createContext(null);\nvar LocalesProvider = function (_a) {\n    var children = _a.children, stringsProp = _a.strings;\n    var _b = react_1.useState({}), strings = _b[0], setStrings = _b[1];\n    react_1.useEffect(function () {\n        setStrings(stringsProp);\n    }, [stringsProp]);\n    var getString = function (key) {\n        return exports.getLocalizedString(key, strings);\n    };\n    return (react_1.default.createElement(exports.LocalesContext.Provider, { value: {\n            getString: getString,\n        } }, children));\n};\nexports.default = LocalesProvider;\nvar getLocalizedString = function (key, strings) {\n    var localized = strings[key];\n    if (localized)\n        return localized;\n    else\n        return key;\n};\nexports.getLocalizedString = getLocalizedString;\n\n\n//# sourceURL=webpack://react-ooui/./src/context/LocalesContext.tsx?");
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getLocalizedString = exports.LocalesContext = void 0;
+var react_1 = __importStar(__webpack_require__(/*! react */ "react"));
+exports.LocalesContext = react_1.default.createContext(null);
+var LocalesProvider = function (_a) {
+    var children = _a.children, stringsProp = _a.strings;
+    var _b = react_1.useState({}), strings = _b[0], setStrings = _b[1];
+    react_1.useEffect(function () {
+        setStrings(stringsProp);
+    }, [stringsProp]);
+    var getString = function (key) {
+        return exports.getLocalizedString(key, strings);
+    };
+    return (react_1.default.createElement(exports.LocalesContext.Provider, { value: {
+            getString: getString,
+        } }, children));
+};
+exports.default = LocalesProvider;
+var getLocalizedString = function (key, strings) {
+    var localized = strings[key];
+    if (localized)
+        return localized;
+    else
+        return key;
+};
+exports.getLocalizedString = getLocalizedString;
+
 
 /***/ }),
 
@@ -398,7 +2351,138 @@ eval("\nvar __createBinding = (this && this.__createBinding) || (Object.create ?
 /***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
-eval("\nvar __assign = (this && this.__assign) || function () {\n    __assign = Object.assign || function(t) {\n        for (var s, i = 1, n = arguments.length; i < n; i++) {\n            s = arguments[i];\n            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))\n                t[p] = s[p];\n        }\n        return t;\n    };\n    return __assign.apply(this, arguments);\n};\nvar __spreadArrays = (this && this.__spreadArrays) || function () {\n    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;\n    for (var r = Array(s), k = 0, i = 0; i < il; i++)\n        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)\n            r[k] = a[j];\n    return r;\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.getParamsForFields = exports.groupDateTimeValuesIfNeeded = exports.removeUndefinedFields = void 0;\nvar convertBooleanParamIfNeeded = function (value) {\n    if ((typeof value === \"string\" && value === \"true\") || value === \"false\") {\n        return value === \"true\";\n    }\n    return value;\n};\nvar getParamsForFields = function (values, fields) {\n    var filteredValues = removeUndefinedFields(values);\n    var groupedDateTime = groupDateTimeValuesIfNeeded(filteredValues);\n    var groupedValues = ungroupDateValuesIfNeeded(groupedDateTime, fields);\n    var params = __spreadArrays(Object.keys(groupedValues).map(function (key) {\n        return getParamForField(key, groupedValues[key], fields);\n    }));\n    // This is needed because in case of datetime we receive an array of arrays\n    return params.reduce(function (acc, curVal) {\n        if (Array.isArray(curVal[0])) {\n            return acc.concat(curVal);\n        }\n        return __spreadArrays(acc, [curVal]);\n    }, []);\n};\nexports.getParamsForFields = getParamsForFields;\nvar getParamForField = function (key, value, fields) {\n    var filteredKey = key.split(\"#\")[0];\n    var type = fields[filteredKey].type;\n    if (type === \"char\" ||\n        type === \"text\" ||\n        type === \"many2one\" ||\n        type === \"many2many\" ||\n        type === \"one2many\") {\n        return [key, \"ilike\", value];\n    }\n    else if (type === \"float\" ||\n        type === \"integer\" ||\n        type === \"float_time\" ||\n        type === \"progressbar\") {\n        var operator = key.indexOf(\"#from\") !== -1 ? \">=\" : \"<=\";\n        return [filteredKey, operator, value];\n    }\n    else if (type === \"date\") {\n        var operator = key.indexOf(\"#from\") !== -1 ? \">=\" : \"<=\";\n        return [filteredKey, operator, value.format(\"YYYY-MM-DD\")];\n    }\n    else if (type === \"datetime\") {\n        var from = value[0];\n        var to = value[1];\n        return [\n            [filteredKey, \">=\", from],\n            [filteredKey, \"<=\", to],\n        ];\n    }\n    else {\n        return [key, \"=\", convertBooleanParamIfNeeded(value)];\n    }\n};\nvar getDatetimeDateFields = function (values) {\n    return Object.keys(values).filter(function (key) {\n        return key.indexOf(\"#date\") !== -1;\n    });\n};\nvar removeDateTimeSingleFields = function (values) {\n    var newValues = __assign({}, values);\n    Object.keys(newValues).forEach(function (key) {\n        return (key.indexOf(\"#time\") !== -1 || key.indexOf(\"#date\") !== -1) &&\n            delete newValues[key];\n    });\n    return newValues;\n};\nvar groupDateTimeValuesIfNeeded = function (values) {\n    var newValues = __assign({}, removeDateTimeSingleFields(values));\n    var datetimeDateFields = getDatetimeDateFields(values);\n    datetimeDateFields.forEach(function (field) {\n        var datePair = values[field];\n        var baseKey = field.split(\"#\")[0];\n        var timeKey = baseKey + \"#time\";\n        var timePair = values[timeKey];\n        var dateValueFrom = datePair[0].format(\"YYYY-MM-DD\");\n        var dateValueTo = datePair[1].format(\"YYYY-MM-DD\");\n        var timeValueFrom = timePair[0].format(\"HH:mm\");\n        var timeValueTo = timePair[1].format(\"HH:mm\");\n        var from = dateValueFrom + \" \" + timeValueFrom;\n        var to = dateValueTo + \" \" + timeValueTo;\n        newValues[baseKey + \"#datetime\"] = [from, to];\n    });\n    return newValues;\n};\nexports.groupDateTimeValuesIfNeeded = groupDateTimeValuesIfNeeded;\nvar ungroupDateValuesIfNeeded = function (values, fields) {\n    var dateFields = Object.keys(values).filter(function (key) {\n        return fields[key] && fields[key].type === \"date\";\n    });\n    var newValues = __assign({}, values);\n    dateFields.forEach(function (key) {\n        delete newValues[key];\n        newValues[key + \"#from\"] = values[key][0];\n        newValues[key + \"#to\"] = values[key][1];\n    });\n    return newValues;\n};\nvar removeUndefinedFields = function (values) {\n    var newValues = __assign({}, values);\n    Object.keys(newValues).forEach(function (key) {\n        return (newValues[key] === undefined ||\n            newValues[key] === null ||\n            newValues[key] === \"\") &&\n            delete newValues[key];\n    });\n    return newValues;\n};\nexports.removeUndefinedFields = removeUndefinedFields;\n\n\n//# sourceURL=webpack://react-ooui/./src/helpers/searchFilterHelper.ts?");
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getParamsForFields = exports.groupDateTimeValuesIfNeeded = exports.removeUndefinedFields = void 0;
+var convertBooleanParamIfNeeded = function (value) {
+    if ((typeof value === "string" && value === "true") || value === "false") {
+        return value === "true";
+    }
+    return value;
+};
+var getParamsForFields = function (values, fields) {
+    var filteredValues = removeUndefinedFields(values);
+    var groupedDateTime = groupDateTimeValuesIfNeeded(filteredValues);
+    var groupedValues = ungroupDateValuesIfNeeded(groupedDateTime, fields);
+    var params = __spreadArrays(Object.keys(groupedValues).map(function (key) {
+        return getParamForField(key, groupedValues[key], fields);
+    }));
+    // This is needed because in case of datetime we receive an array of arrays
+    return params.reduce(function (acc, curVal) {
+        if (Array.isArray(curVal[0])) {
+            return acc.concat(curVal);
+        }
+        return __spreadArrays(acc, [curVal]);
+    }, []);
+};
+exports.getParamsForFields = getParamsForFields;
+var getParamForField = function (key, value, fields) {
+    var filteredKey = key.split("#")[0];
+    var type = fields[filteredKey].type;
+    if (type === "char" ||
+        type === "text" ||
+        type === "many2one" ||
+        type === "many2many" ||
+        type === "one2many") {
+        return [key, "ilike", value];
+    }
+    else if (type === "float" ||
+        type === "integer" ||
+        type === "float_time" ||
+        type === "progressbar") {
+        var operator = key.indexOf("#from") !== -1 ? ">=" : "<=";
+        return [filteredKey, operator, value];
+    }
+    else if (type === "date") {
+        var operator = key.indexOf("#from") !== -1 ? ">=" : "<=";
+        return [filteredKey, operator, value.format("YYYY-MM-DD")];
+    }
+    else if (type === "datetime") {
+        var from = value[0];
+        var to = value[1];
+        return [
+            [filteredKey, ">=", from],
+            [filteredKey, "<=", to],
+        ];
+    }
+    else {
+        return [key, "=", convertBooleanParamIfNeeded(value)];
+    }
+};
+var getDatetimeDateFields = function (values) {
+    return Object.keys(values).filter(function (key) {
+        return key.indexOf("#date") !== -1;
+    });
+};
+var removeDateTimeSingleFields = function (values) {
+    var newValues = __assign({}, values);
+    Object.keys(newValues).forEach(function (key) {
+        return (key.indexOf("#time") !== -1 || key.indexOf("#date") !== -1) &&
+            delete newValues[key];
+    });
+    return newValues;
+};
+var groupDateTimeValuesIfNeeded = function (values) {
+    var newValues = __assign({}, removeDateTimeSingleFields(values));
+    var datetimeDateFields = getDatetimeDateFields(values);
+    datetimeDateFields.forEach(function (field) {
+        var datePair = values[field];
+        var baseKey = field.split("#")[0];
+        var timeKey = baseKey + "#time";
+        var timePair = values[timeKey];
+        var dateValueFrom = datePair[0].format("YYYY-MM-DD");
+        var dateValueTo = datePair[1].format("YYYY-MM-DD");
+        var timeValueFrom = timePair[0].format("HH:mm");
+        var timeValueTo = timePair[1].format("HH:mm");
+        var from = dateValueFrom + " " + timeValueFrom;
+        var to = dateValueTo + " " + timeValueTo;
+        newValues[baseKey + "#datetime"] = [from, to];
+    });
+    return newValues;
+};
+exports.groupDateTimeValuesIfNeeded = groupDateTimeValuesIfNeeded;
+var ungroupDateValuesIfNeeded = function (values, fields) {
+    var dateFields = Object.keys(values).filter(function (key) {
+        return fields[key] && fields[key].type === "date";
+    });
+    var newValues = __assign({}, values);
+    dateFields.forEach(function (key) {
+        delete newValues[key];
+        newValues[key + "#from"] = values[key][0];
+        newValues[key + "#to"] = values[key][1];
+    });
+    return newValues;
+};
+var removeUndefinedFields = function (values) {
+    var newValues = __assign({}, values);
+    Object.keys(newValues).forEach(function (key) {
+        return (newValues[key] === undefined ||
+            newValues[key] === null ||
+            newValues[key] === "") &&
+            delete newValues[key];
+    });
+    return newValues;
+};
+exports.removeUndefinedFields = removeUndefinedFields;
+
 
 /***/ }),
 
@@ -409,7 +2493,75 @@ eval("\nvar __assign = (this && this.__assign) || function () {\n    __assign = 
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-eval("\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.getTree = exports.getTableItems = exports.getTableColumns = void 0;\nvar ooui_1 = __webpack_require__(/*! ooui */ \"./node_modules/ooui/dist/index.js\");\nvar getTree = function (treeView) {\n    var xml = treeView.arch;\n    var fields = treeView.fields;\n    var tree = new ooui_1.Tree(fields);\n    tree.parse(xml);\n    return tree;\n};\nexports.getTree = getTree;\nvar getTableColumns = function (tree, booleanComponent) {\n    var tableColumns = tree.columns.map(function (column) {\n        var type = column.constructor.name;\n        var key = column.id;\n        var render = type === \"Boolean\"\n            ? function (booleanField) {\n                return booleanComponent(booleanField);\n            }\n            : undefined;\n        return {\n            key: key,\n            dataIndex: key,\n            title: column.label,\n            type: type,\n            render: render,\n            sorter: function (a, b) {\n                if (a[key] < b[key])\n                    return -1;\n                if (a[key] > b[key])\n                    return 1;\n                return 0;\n            },\n        };\n    });\n    return tableColumns;\n};\nexports.getTableColumns = getTableColumns;\nvar getTableItems = function (treeOoui, results) {\n    var tableItems = results.map(function (item) {\n        var parsedItem = {};\n        Object.keys(item).map(function (key) {\n            if (key === \"id\") {\n                parsedItem[key] = item[key];\n            }\n            else {\n                var widget = treeOoui.findById(key);\n                if (widget instanceof ooui_1.Selection) {\n                    var selection = widget;\n                    parsedItem[key] = selection.selectionValues.get(item[key]);\n                }\n                else if (widget instanceof ooui_1.Many2one) {\n                    parsedItem[key] = item[key][1];\n                }\n                else if (widget instanceof ooui_1.Boolean) {\n                    parsedItem[key] = item[key];\n                }\n                else if (widget) {\n                    parsedItem[key] = item[key] === false ? \"\" : item[key];\n                }\n            }\n        });\n        return parsedItem;\n    });\n    return tableItems;\n};\nexports.getTableItems = getTableItems;\n\n\n//# sourceURL=webpack://react-ooui/./src/helpers/treeHelper.ts?");
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getTree = exports.getTableItems = exports.getTableColumns = void 0;
+var ooui_1 = __webpack_require__(/*! ooui */ "./node_modules/ooui/dist/index.js");
+var getTree = function (treeView) {
+    var xml = treeView.arch;
+    var fields = treeView.fields;
+    var tree = new ooui_1.Tree(fields);
+    tree.parse(xml);
+    return tree;
+};
+exports.getTree = getTree;
+var getTableColumns = function (tree, booleanComponent) {
+    var tableColumns = tree.columns.map(function (column) {
+        var type = column.constructor.name;
+        var key = column.id;
+        var render = type === "Boolean"
+            ? function (booleanField) {
+                return booleanComponent(booleanField);
+            }
+            : undefined;
+        return {
+            key: key,
+            dataIndex: key,
+            title: column.label,
+            type: type,
+            render: render,
+            sorter: function (a, b) {
+                if (a[key] < b[key])
+                    return -1;
+                if (a[key] > b[key])
+                    return 1;
+                return 0;
+            },
+        };
+    });
+    return tableColumns;
+};
+exports.getTableColumns = getTableColumns;
+var getTableItems = function (treeOoui, results) {
+    var tableItems = results.map(function (item) {
+        var parsedItem = {};
+        Object.keys(item).map(function (key) {
+            if (key === "id") {
+                parsedItem[key] = item[key];
+            }
+            else {
+                var widget = treeOoui.findById(key);
+                if (widget instanceof ooui_1.Selection) {
+                    var selection = widget;
+                    parsedItem[key] = selection.selectionValues.get(item[key]);
+                }
+                else if (widget instanceof ooui_1.Many2one) {
+                    parsedItem[key] = item[key][1];
+                }
+                else if (widget instanceof ooui_1.Boolean) {
+                    parsedItem[key] = item[key];
+                }
+                else if (widget) {
+                    parsedItem[key] = item[key] === false ? "" : item[key];
+                }
+            }
+        });
+        return parsedItem;
+    });
+    return tableItems;
+};
+exports.getTableItems = getTableItems;
+
 
 /***/ }),
 
@@ -420,7 +2572,43 @@ eval("\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexpo
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.Separator = exports.Text = exports.Label = exports.Integer = exports.Float = exports.Notebook = exports.Form = exports.SearchFilter = exports.Group = exports.Tree = exports.Many2one = exports.Boolean = exports.Selection = exports.Char = exports.Button = void 0;\nvar Button_1 = __webpack_require__(/*! @/widgets/base/Button */ \"./src/widgets/base/Button.tsx\");\nObject.defineProperty(exports, \"Button\", ({ enumerable: true, get: function () { return Button_1.Button; } }));\nvar Char_1 = __webpack_require__(/*! @/widgets/base/Char */ \"./src/widgets/base/Char.tsx\");\nObject.defineProperty(exports, \"Char\", ({ enumerable: true, get: function () { return Char_1.Char; } }));\nvar Selection_1 = __webpack_require__(/*! @/widgets/base/Selection */ \"./src/widgets/base/Selection.tsx\");\nObject.defineProperty(exports, \"Selection\", ({ enumerable: true, get: function () { return Selection_1.Selection; } }));\nvar Boolean_1 = __webpack_require__(/*! @/widgets/base/Boolean */ \"./src/widgets/base/Boolean.tsx\");\nObject.defineProperty(exports, \"Boolean\", ({ enumerable: true, get: function () { return Boolean_1.Boolean; } }));\nvar Many2one_1 = __webpack_require__(/*! @/widgets/base/Many2one */ \"./src/widgets/base/Many2one.tsx\");\nObject.defineProperty(exports, \"Many2one\", ({ enumerable: true, get: function () { return Many2one_1.Many2one; } }));\nvar Tree_1 = __importDefault(__webpack_require__(/*! @/widgets/views/Tree */ \"./src/widgets/views/Tree.tsx\"));\nexports.Tree = Tree_1.default;\nvar Float_1 = __webpack_require__(/*! @/widgets/base/Float */ \"./src/widgets/base/Float.tsx\");\nObject.defineProperty(exports, \"Float\", ({ enumerable: true, get: function () { return Float_1.Float; } }));\nvar Integer_1 = __webpack_require__(/*! @/widgets/base/Integer */ \"./src/widgets/base/Integer.tsx\");\nObject.defineProperty(exports, \"Integer\", ({ enumerable: true, get: function () { return Integer_1.Integer; } }));\nvar Group_1 = __importDefault(__webpack_require__(/*! @/widgets/containers/Group */ \"./src/widgets/containers/Group.tsx\"));\nexports.Group = Group_1.default;\nvar Notebook_1 = __importDefault(__webpack_require__(/*! @/widgets/containers/Notebook */ \"./src/widgets/containers/Notebook.tsx\"));\nexports.Notebook = Notebook_1.default;\nvar Form_1 = __importDefault(__webpack_require__(/*! @/widgets/views/Form */ \"./src/widgets/views/Form.tsx\"));\nexports.Form = Form_1.default;\nvar Label_1 = __importDefault(__webpack_require__(/*! @/widgets/base/Label */ \"./src/widgets/base/Label.tsx\"));\nexports.Label = Label_1.default;\nvar Text_1 = __importDefault(__webpack_require__(/*! @/widgets/base/Text */ \"./src/widgets/base/Text.tsx\"));\nexports.Text = Text_1.default;\nvar Separator_1 = __webpack_require__(/*! @/widgets/base/Separator */ \"./src/widgets/base/Separator.tsx\");\nObject.defineProperty(exports, \"Separator\", ({ enumerable: true, get: function () { return Separator_1.Separator; } }));\nvar SearchFilter_1 = __importDefault(__webpack_require__(/*! @/widgets/views/searchFilter/SearchFilter */ \"./src/widgets/views/searchFilter/SearchFilter.tsx\"));\nexports.SearchFilter = SearchFilter_1.default;\n\n\n//# sourceURL=webpack://react-ooui/./src/index.ts?");
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Separator = exports.Text = exports.Label = exports.Integer = exports.Float = exports.Notebook = exports.Form = exports.SearchFilter = exports.Group = exports.Tree = exports.Many2one = exports.Boolean = exports.Selection = exports.Char = exports.Button = void 0;
+var Button_1 = __webpack_require__(/*! @/widgets/base/Button */ "./src/widgets/base/Button.tsx");
+Object.defineProperty(exports, "Button", ({ enumerable: true, get: function () { return Button_1.Button; } }));
+var Char_1 = __webpack_require__(/*! @/widgets/base/Char */ "./src/widgets/base/Char.tsx");
+Object.defineProperty(exports, "Char", ({ enumerable: true, get: function () { return Char_1.Char; } }));
+var Selection_1 = __webpack_require__(/*! @/widgets/base/Selection */ "./src/widgets/base/Selection.tsx");
+Object.defineProperty(exports, "Selection", ({ enumerable: true, get: function () { return Selection_1.Selection; } }));
+var Boolean_1 = __webpack_require__(/*! @/widgets/base/Boolean */ "./src/widgets/base/Boolean.tsx");
+Object.defineProperty(exports, "Boolean", ({ enumerable: true, get: function () { return Boolean_1.Boolean; } }));
+var Many2one_1 = __webpack_require__(/*! @/widgets/base/Many2one */ "./src/widgets/base/Many2one.tsx");
+Object.defineProperty(exports, "Many2one", ({ enumerable: true, get: function () { return Many2one_1.Many2one; } }));
+var Tree_1 = __importDefault(__webpack_require__(/*! @/widgets/views/Tree */ "./src/widgets/views/Tree.tsx"));
+exports.Tree = Tree_1.default;
+var Float_1 = __webpack_require__(/*! @/widgets/base/Float */ "./src/widgets/base/Float.tsx");
+Object.defineProperty(exports, "Float", ({ enumerable: true, get: function () { return Float_1.Float; } }));
+var Integer_1 = __webpack_require__(/*! @/widgets/base/Integer */ "./src/widgets/base/Integer.tsx");
+Object.defineProperty(exports, "Integer", ({ enumerable: true, get: function () { return Integer_1.Integer; } }));
+var Group_1 = __importDefault(__webpack_require__(/*! @/widgets/containers/Group */ "./src/widgets/containers/Group.tsx"));
+exports.Group = Group_1.default;
+var Notebook_1 = __importDefault(__webpack_require__(/*! @/widgets/containers/Notebook */ "./src/widgets/containers/Notebook.tsx"));
+exports.Notebook = Notebook_1.default;
+var Form_1 = __importDefault(__webpack_require__(/*! @/widgets/views/Form */ "./src/widgets/views/Form.tsx"));
+exports.Form = Form_1.default;
+var Label_1 = __importDefault(__webpack_require__(/*! @/widgets/base/Label */ "./src/widgets/base/Label.tsx"));
+exports.Label = Label_1.default;
+var Text_1 = __importDefault(__webpack_require__(/*! @/widgets/base/Text */ "./src/widgets/base/Text.tsx"));
+exports.Text = Text_1.default;
+var Separator_1 = __webpack_require__(/*! @/widgets/base/Separator */ "./src/widgets/base/Separator.tsx");
+Object.defineProperty(exports, "Separator", ({ enumerable: true, get: function () { return Separator_1.Separator; } }));
+var SearchFilter_1 = __importDefault(__webpack_require__(/*! @/widgets/views/searchFilter/SearchFilter */ "./src/widgets/views/searchFilter/SearchFilter.tsx"));
+exports.SearchFilter = SearchFilter_1.default;
+
 
 /***/ }),
 
@@ -431,7 +2619,44 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });\n}) : (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    o[k2] = m[k];\n}));\nvar __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {\n    Object.defineProperty(o, \"default\", { enumerable: true, value: v });\n}) : function(o, v) {\n    o[\"default\"] = v;\n});\nvar __importStar = (this && this.__importStar) || function (mod) {\n    if (mod && mod.__esModule) return mod;\n    var result = {};\n    if (mod != null) for (var k in mod) if (k !== \"default\" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);\n    __setModuleDefault(result, mod);\n    return result;\n};\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.createReactWidget = void 0;\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"react\"));\nvar Widgets = __importStar(__webpack_require__(/*! @/index */ \"./src/index.ts\"));\nvar widgetTypes = Widgets;\nvar createReactWidget = function (widgetOoui, key) {\n    var type = widgetOoui.constructor.name;\n    var widgetClass = widgetTypes[type];\n    if (!widgetClass) {\n        return null;\n    }\n    return react_1.default.createElement(widgetClass, { ooui: widgetOoui, key: key });\n};\nexports.createReactWidget = createReactWidget;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/WidgetFactory.tsx?");
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.createReactWidget = void 0;
+var react_1 = __importDefault(__webpack_require__(/*! react */ "react"));
+var Widgets = __importStar(__webpack_require__(/*! @/index */ "./src/index.ts"));
+var widgetTypes = Widgets;
+var createReactWidget = function (widgetOoui, key) {
+    var type = widgetOoui.constructor.name;
+    var widgetClass = widgetTypes[type];
+    if (!widgetClass) {
+        return null;
+    }
+    return react_1.default.createElement(widgetClass, { ooui: widgetOoui, key: key });
+};
+exports.createReactWidget = createReactWidget;
+
 
 /***/ }),
 
@@ -442,7 +2667,23 @@ eval("\nvar __createBinding = (this && this.__createBinding) || (Object.create ?
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.Boolean = void 0;\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"react\"));\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ \"./src/common/FormItem.tsx\"));\nvar Boolean = function (props) {\n    var ooui = props.ooui;\n    var id = ooui.id, label = ooui.label, tooltip = ooui.tooltip, nolabel = ooui.nolabel;\n    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, tooltip: tooltip, nolabel: nolabel, valuePropName: \"checked\" },\n        react_1.default.createElement(antd_1.Checkbox, { disabled: ooui.readOnly, id: id })));\n};\nexports.Boolean = Boolean;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/base/Boolean.tsx?");
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Boolean = void 0;
+var react_1 = __importDefault(__webpack_require__(/*! react */ "react"));
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ "./src/common/FormItem.tsx"));
+var Boolean = function (props) {
+    var ooui = props.ooui;
+    var id = ooui.id, label = ooui.label, tooltip = ooui.tooltip, nolabel = ooui.nolabel;
+    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, tooltip: tooltip, nolabel: nolabel, valuePropName: "checked" },
+        react_1.default.createElement(antd_1.Checkbox, { disabled: ooui.readOnly, id: id })));
+};
+exports.Boolean = Boolean;
+
 
 /***/ }),
 
@@ -453,7 +2694,23 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.Button = void 0;\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"react\"));\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ \"./src/common/FormItem.tsx\"));\nvar Button = function (props) {\n    var ooui = props.ooui;\n    var id = ooui.id, label = ooui.label, activated = ooui.activated;\n    return (react_1.default.createElement(FormItem_1.default, { name: id, label: \"\", nolabel: true },\n        react_1.default.createElement(antd_1.Button, { className: \"w-full\", disabled: !activated }, label)));\n};\nexports.Button = Button;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/base/Button.tsx?");
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Button = void 0;
+var react_1 = __importDefault(__webpack_require__(/*! react */ "react"));
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ "./src/common/FormItem.tsx"));
+var Button = function (props) {
+    var ooui = props.ooui;
+    var id = ooui.id, label = ooui.label, activated = ooui.activated;
+    return (react_1.default.createElement(FormItem_1.default, { name: id, label: "", nolabel: true },
+        react_1.default.createElement(antd_1.Button, { className: "w-full", disabled: !activated }, label)));
+};
+exports.Button = Button;
+
 
 /***/ }),
 
@@ -464,7 +2721,22 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.Char = void 0;\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"react\"));\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ \"./src/common/FormItem.tsx\"));\nvar Char = function (props) {\n    var ooui = props.ooui, layout = props.layout;\n    var id = ooui.id, label = ooui.label, nolabel = ooui.nolabel, tooltip = ooui.tooltip;\n    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, layout: layout, tooltip: tooltip, nolabel: nolabel }, ooui.isPassword ? (react_1.default.createElement(antd_1.Input.Password, { disabled: ooui.readOnly, id: id })) : (react_1.default.createElement(antd_1.Input, { disabled: ooui.readOnly, id: id }))));\n};\nexports.Char = Char;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/base/Char.tsx?");
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Char = void 0;
+var react_1 = __importDefault(__webpack_require__(/*! react */ "react"));
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ "./src/common/FormItem.tsx"));
+var Char = function (props) {
+    var ooui = props.ooui, layout = props.layout;
+    var id = ooui.id, label = ooui.label, nolabel = ooui.nolabel, tooltip = ooui.tooltip;
+    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, layout: layout, tooltip: tooltip, nolabel: nolabel }, ooui.isPassword ? (react_1.default.createElement(antd_1.Input.Password, { disabled: ooui.readOnly, id: id })) : (react_1.default.createElement(antd_1.Input, { disabled: ooui.readOnly, id: id }))));
+};
+exports.Char = Char;
+
 
 /***/ }),
 
@@ -475,7 +2747,26 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.Float = void 0;\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"react\"));\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ \"./src/common/FormItem.tsx\"));\nvar Float = function (props) {\n    var ooui = props.ooui, layout = props.layout;\n    var label = ooui.label, nolabel = ooui.nolabel, tooltip = ooui.tooltip;\n    var id = props.id ? props.id : ooui.id;\n    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, layout: layout, tooltip: tooltip, nolabel: nolabel },\n        react_1.default.createElement(antd_1.InputNumber, { disabled: ooui.readOnly, className: \"w-full\", id: id, precision: ooui.decimalDigits, formatter: function (value) {\n                return (\"\" + value).replace(/[^0-9\\.\\-]+/g, \"\");\n            }, defaultValue: 0, decimalSeparator: \".\" })));\n};\nexports.Float = Float;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/base/Float.tsx?");
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Float = void 0;
+var react_1 = __importDefault(__webpack_require__(/*! react */ "react"));
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ "./src/common/FormItem.tsx"));
+var Float = function (props) {
+    var ooui = props.ooui, layout = props.layout;
+    var label = ooui.label, nolabel = ooui.nolabel, tooltip = ooui.tooltip;
+    var id = props.id ? props.id : ooui.id;
+    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, layout: layout, tooltip: tooltip, nolabel: nolabel },
+        react_1.default.createElement(antd_1.InputNumber, { disabled: ooui.readOnly, className: "w-full", id: id, precision: ooui.decimalDigits, formatter: function (value) {
+                return ("" + value).replace(/[^0-9\.\-]+/g, "");
+            }, defaultValue: 0, decimalSeparator: "." })));
+};
+exports.Float = Float;
+
 
 /***/ }),
 
@@ -486,7 +2777,26 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.Integer = void 0;\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"react\"));\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ \"./src/common/FormItem.tsx\"));\nvar Integer = function (props) {\n    var ooui = props.ooui, layout = props.layout;\n    var label = ooui.label, tooltip = ooui.tooltip, nolabel = ooui.nolabel;\n    var id = props.id ? props.id : ooui.id;\n    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, layout: layout, tooltip: tooltip, nolabel: nolabel },\n        react_1.default.createElement(antd_1.InputNumber, { id: id, className: \"w-full\", disabled: ooui.readOnly, formatter: function (value) {\n                return (\"\" + value).replace(/[^0-9]+/g, \"\");\n            }, defaultValue: 0 })));\n};\nexports.Integer = Integer;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/base/Integer.tsx?");
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Integer = void 0;
+var react_1 = __importDefault(__webpack_require__(/*! react */ "react"));
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ "./src/common/FormItem.tsx"));
+var Integer = function (props) {
+    var ooui = props.ooui, layout = props.layout;
+    var label = ooui.label, tooltip = ooui.tooltip, nolabel = ooui.nolabel;
+    var id = props.id ? props.id : ooui.id;
+    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, layout: layout, tooltip: tooltip, nolabel: nolabel },
+        react_1.default.createElement(antd_1.InputNumber, { id: id, className: "w-full", disabled: ooui.readOnly, formatter: function (value) {
+                return ("" + value).replace(/[^0-9]+/g, "");
+            }, defaultValue: 0 })));
+};
+exports.Integer = Integer;
+
 
 /***/ }),
 
@@ -497,7 +2807,18 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"react\"));\nvar Label = function (props) {\n    var ooui = props.ooui;\n    return react_1.default.createElement(\"p\", { className: \"text-center\" }, ooui.label);\n};\nexports.default = Label;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/base/Label.tsx?");
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var react_1 = __importDefault(__webpack_require__(/*! react */ "react"));
+var Label = function (props) {
+    var ooui = props.ooui;
+    return react_1.default.createElement("p", { className: "text-center" }, ooui.label);
+};
+exports.default = Label;
+
 
 /***/ }),
 
@@ -508,7 +2829,59 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });\n}) : (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    o[k2] = m[k];\n}));\nvar __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {\n    Object.defineProperty(o, \"default\", { enumerable: true, value: v });\n}) : function(o, v) {\n    o[\"default\"] = v;\n});\nvar __importStar = (this && this.__importStar) || function (mod) {\n    if (mod && mod.__esModule) return mod;\n    var result = {};\n    if (mod != null) for (var k in mod) if (k !== \"default\" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);\n    __setModuleDefault(result, mod);\n    return result;\n};\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.Many2one = void 0;\nvar react_1 = __importStar(__webpack_require__(/*! react */ \"react\"));\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar icons_1 = __webpack_require__(/*! @ant-design/icons */ \"@ant-design/icons\");\nvar FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ \"./src/common/FormItem.tsx\"));\nvar Many2one = function (props) {\n    var ooui = props.ooui, onOpenDetailClick = props.onOpenDetailClick, onSearchClick = props.onSearchClick;\n    var id = ooui.id, label = ooui.label, nolabel = ooui.nolabel, tooltip = ooui.tooltip;\n    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, tooltip: tooltip, nolabel: nolabel },\n        react_1.default.createElement(Many2oneInput, null)));\n};\nexports.Many2one = Many2one;\nvar Many2oneInput = function (props) {\n    var value = props.value, onChange = props.onChange, disabled = props.disabled;\n    var _a = react_1.useState(), m2oValue = _a[0], setM2oValue = _a[1];\n    var triggerChange = function (changedValue) {\n        if (onChange) {\n        }\n    };\n    var onValueStringChange = function (e) { };\n    return (react_1.default.createElement(antd_1.Row, { gutter: 8 },\n        react_1.default.createElement(antd_1.Col, { flex: \"auto\" },\n            react_1.default.createElement(antd_1.Input, { type: \"text\", value: value && value[1], onChange: onValueStringChange, disabled: true, className: \"text-black\" })),\n        react_1.default.createElement(antd_1.Col, { flex: \"32px\" },\n            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: disabled })),\n        react_1.default.createElement(antd_1.Col, { flex: \"32px\" },\n            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.SearchOutlined, null), disabled: disabled }))));\n};\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/base/Many2one.tsx?");
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Many2one = void 0;
+var react_1 = __importStar(__webpack_require__(/*! react */ "react"));
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var icons_1 = __webpack_require__(/*! @ant-design/icons */ "@ant-design/icons");
+var FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ "./src/common/FormItem.tsx"));
+var Many2one = function (props) {
+    var ooui = props.ooui, onOpenDetailClick = props.onOpenDetailClick, onSearchClick = props.onSearchClick;
+    var id = ooui.id, label = ooui.label, nolabel = ooui.nolabel, tooltip = ooui.tooltip;
+    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, tooltip: tooltip, nolabel: nolabel },
+        react_1.default.createElement(Many2oneInput, null)));
+};
+exports.Many2one = Many2one;
+var Many2oneInput = function (props) {
+    var value = props.value, onChange = props.onChange, disabled = props.disabled;
+    var _a = react_1.useState(), m2oValue = _a[0], setM2oValue = _a[1];
+    var triggerChange = function (changedValue) {
+        if (onChange) {
+        }
+    };
+    var onValueStringChange = function (e) { };
+    return (react_1.default.createElement(antd_1.Row, { gutter: 8 },
+        react_1.default.createElement(antd_1.Col, { flex: "auto" },
+            react_1.default.createElement(antd_1.Input, { type: "text", value: value && value[1], onChange: onValueStringChange, disabled: true, className: "text-black" })),
+        react_1.default.createElement(antd_1.Col, { flex: "32px" },
+            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: disabled })),
+        react_1.default.createElement(antd_1.Col, { flex: "32px" },
+            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.SearchOutlined, null), disabled: disabled }))));
+};
+
 
 /***/ }),
 
@@ -519,7 +2892,31 @@ eval("\nvar __createBinding = (this && this.__createBinding) || (Object.create ?
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.Selection = void 0;\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"react\"));\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ \"./src/common/FormItem.tsx\"));\nvar Option = antd_1.Select.Option;\nvar Selection = function (props) {\n    var ooui = props.ooui, layout = props.layout;\n    var id = ooui.id, label = ooui.label, selectionValues = ooui.selectionValues, tooltip = ooui.tooltip, nolabel = ooui.nolabel;\n    var values = Array.from(selectionValues.entries());\n    var options = values &&\n        values.length &&\n        values.map(function (entry) {\n            var key = entry[0], value = entry[1];\n            return (react_1.default.createElement(Option, { key: key, value: key }, value));\n        });\n    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, layout: layout, tooltip: tooltip, nolabel: nolabel },\n        react_1.default.createElement(antd_1.Select, { disabled: ooui.readOnly }, options)));\n};\nexports.Selection = Selection;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/base/Selection.tsx?");
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Selection = void 0;
+var react_1 = __importDefault(__webpack_require__(/*! react */ "react"));
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ "./src/common/FormItem.tsx"));
+var Option = antd_1.Select.Option;
+var Selection = function (props) {
+    var ooui = props.ooui, layout = props.layout;
+    var id = ooui.id, label = ooui.label, selectionValues = ooui.selectionValues, tooltip = ooui.tooltip, nolabel = ooui.nolabel;
+    var values = Array.from(selectionValues.entries());
+    var options = values &&
+        values.length &&
+        values.map(function (entry) {
+            var key = entry[0], value = entry[1];
+            return (react_1.default.createElement(Option, { key: key, value: key }, value));
+        });
+    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, layout: layout, tooltip: tooltip, nolabel: nolabel },
+        react_1.default.createElement(antd_1.Select, { disabled: ooui.readOnly }, options)));
+};
+exports.Selection = Selection;
+
 
 /***/ }),
 
@@ -530,7 +2927,21 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.Separator = void 0;\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"react\"));\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar Separator = function (props) {\n    var ooui = props.ooui;\n    var label = ooui.label;\n    return react_1.default.createElement(antd_1.Divider, { orientation: \"left\", className: \" text-sm\" }, label);\n};\nexports.Separator = Separator;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/base/Separator.tsx?");
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Separator = void 0;
+var react_1 = __importDefault(__webpack_require__(/*! react */ "react"));
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var Separator = function (props) {
+    var ooui = props.ooui;
+    var label = ooui.label;
+    return react_1.default.createElement(antd_1.Divider, { orientation: "left", className: " text-sm" }, label);
+};
+exports.Separator = Separator;
+
 
 /***/ }),
 
@@ -541,7 +2952,23 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"react\"));\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ \"./src/common/FormItem.tsx\"));\nvar TextArea = antd_1.Input.TextArea;\nvar Text = function (props) {\n    var ooui = props.ooui;\n    var id = ooui.id, label = ooui.label, tooltip = ooui.tooltip, nolabel = ooui.nolabel, readOnly = ooui.readOnly;\n    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, tooltip: tooltip, nolabel: nolabel },\n        react_1.default.createElement(TextArea, { disabled: readOnly, rows: 4 })));\n};\nexports.default = Text;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/base/Text.tsx?");
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var react_1 = __importDefault(__webpack_require__(/*! react */ "react"));
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ "./src/common/FormItem.tsx"));
+var TextArea = antd_1.Input.TextArea;
+var Text = function (props) {
+    var ooui = props.ooui;
+    var id = ooui.id, label = ooui.label, tooltip = ooui.tooltip, nolabel = ooui.nolabel, readOnly = ooui.readOnly;
+    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, tooltip: tooltip, nolabel: nolabel },
+        react_1.default.createElement(TextArea, { disabled: readOnly, rows: 4 })));
+};
+exports.default = Text;
+
 
 /***/ }),
 
@@ -552,7 +2979,28 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"react\"));\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar WidgetFactory_1 = __webpack_require__(/*! @/widgets/WidgetFactory */ \"./src/widgets/WidgetFactory.tsx\");\nvar config_1 = __importDefault(__webpack_require__(/*! @/config */ \"./src/config.ts\"));\nfunction Group(props) {\n    var ooui = props.ooui, _a = props.showLabel, showLabel = _a === void 0 ? true : _a;\n    var columns = ooui.container.columns;\n    var span = config_1.default.full_width_colspan / columns;\n    var content = ooui.container.rows.map(function (row, index) {\n        return (react_1.default.createElement(antd_1.Row, { className: \"pb-2\", align: \"middle\", key: index }, row.map(function (item) {\n            return (react_1.default.createElement(antd_1.Col, { span: span * item.colspan, className: \"pl-2\" }, WidgetFactory_1.createReactWidget(item)));\n        })));\n    });\n    return (react_1.default.createElement(react_1.default.Fragment, null, ooui.label && showLabel ? (react_1.default.createElement(antd_1.Card, { type: \"inner\", title: ooui.label }, content)) : (content)));\n}\nexports.default = Group;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/containers/Group.tsx?");
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var react_1 = __importDefault(__webpack_require__(/*! react */ "react"));
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var WidgetFactory_1 = __webpack_require__(/*! @/widgets/WidgetFactory */ "./src/widgets/WidgetFactory.tsx");
+var config_1 = __importDefault(__webpack_require__(/*! @/config */ "./src/config.ts"));
+function Group(props) {
+    var ooui = props.ooui, _a = props.showLabel, showLabel = _a === void 0 ? true : _a;
+    var columns = ooui.container.columns;
+    var span = config_1.default.full_width_colspan / columns;
+    var content = ooui.container.rows.map(function (row, index) {
+        return (react_1.default.createElement(antd_1.Row, { className: "pb-2", align: "middle", key: index }, row.map(function (item) {
+            return (react_1.default.createElement(antd_1.Col, { span: span * item.colspan, className: "pl-2" }, WidgetFactory_1.createReactWidget(item)));
+        })));
+    });
+    return (react_1.default.createElement(react_1.default.Fragment, null, ooui.label && showLabel ? (react_1.default.createElement(antd_1.Card, { type: "inner", title: ooui.label }, content)) : (content)));
+}
+exports.default = Group;
+
 
 /***/ }),
 
@@ -563,7 +3011,26 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"react\"));\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar TabPane = antd_1.Tabs.TabPane;\nvar index_1 = __webpack_require__(/*! @/index */ \"./src/index.ts\");\nfunction Notebook(props) {\n    var ooui = props.ooui;\n    var tabs = [].concat.apply([], ooui.container.rows);\n    return (react_1.default.createElement(antd_1.Tabs, { defaultActiveKey: \"1\" }, tabs.map(function (page, key) {\n        var tabKey = (key + 1).toString();\n        return (react_1.default.createElement(TabPane, { tab: page.label, key: tabKey },\n            react_1.default.createElement(index_1.Group, { ooui: page, showLabel: false })));\n    })));\n}\nexports.default = Notebook;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/containers/Notebook.tsx?");
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var react_1 = __importDefault(__webpack_require__(/*! react */ "react"));
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var TabPane = antd_1.Tabs.TabPane;
+var index_1 = __webpack_require__(/*! @/index */ "./src/index.ts");
+function Notebook(props) {
+    var ooui = props.ooui;
+    var tabs = [].concat.apply([], ooui.container.rows);
+    return (react_1.default.createElement(antd_1.Tabs, { defaultActiveKey: "1" }, tabs.map(function (page, key) {
+        var tabKey = (key + 1).toString();
+        return (react_1.default.createElement(TabPane, { tab: page.label, key: tabKey },
+            react_1.default.createElement(index_1.Group, { ooui: page, showLabel: false })));
+    })));
+}
+exports.default = Notebook;
+
 
 /***/ }),
 
@@ -574,7 +3041,67 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });\n}) : (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    o[k2] = m[k];\n}));\nvar __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {\n    Object.defineProperty(o, \"default\", { enumerable: true, value: v });\n}) : function(o, v) {\n    o[\"default\"] = v;\n});\nvar __importStar = (this && this.__importStar) || function (mod) {\n    if (mod && mod.__esModule) return mod;\n    var result = {};\n    if (mod != null) for (var k in mod) if (k !== \"default\" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);\n    __setModuleDefault(result, mod);\n    return result;\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nvar react_1 = __importStar(__webpack_require__(/*! react */ \"react\"));\nvar ooui_1 = __webpack_require__(/*! ooui */ \"./node_modules/ooui/dist/index.js\");\nvar WidgetFactory_1 = __webpack_require__(/*! @/widgets/WidgetFactory */ \"./src/widgets/WidgetFactory.tsx\");\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar filteredValues = function (values, fields) {\n    if (!fields) {\n        return values;\n    }\n    var filteredValues = {};\n    Object.keys(values).forEach(function (key) {\n        if (values[key] !== false ||\n            (fields[key] && fields[key].type === \"boolean\")) {\n            filteredValues[key] = values[key];\n        }\n    });\n    return filteredValues;\n};\nvar processInitialValues = function (values, fields) {\n    var filterBooleans = filteredValues(values, fields);\n    return filterBooleans;\n};\nfunction Form(props) {\n    var arch = props.arch, fields = props.fields, initialValues = props.initialValues, antForm = props.antForm;\n    var _a = react_1.useState(), form = _a[0], setForm = _a[1];\n    var getForm = function () {\n        return form.container.rows.map(function (item, i) {\n            return item.map(function (widget, j) {\n                return WidgetFactory_1.createReactWidget(widget, i + \"-\" + j);\n            });\n        });\n    };\n    react_1.useEffect(function () {\n        var newForm = new ooui_1.Form(fields);\n        newForm.parse(arch);\n        setForm(newForm);\n    }, [arch, fields]);\n    return (react_1.default.createElement(antd_1.Form, { form: antForm, initialValues: processInitialValues(initialValues, fields) }, form && getForm()));\n}\nexports.default = Form;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/views/Form.tsx?");
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var react_1 = __importStar(__webpack_require__(/*! react */ "react"));
+var ooui_1 = __webpack_require__(/*! ooui */ "./node_modules/ooui/dist/index.js");
+var WidgetFactory_1 = __webpack_require__(/*! @/widgets/WidgetFactory */ "./src/widgets/WidgetFactory.tsx");
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var filteredValues = function (values, fields) {
+    if (!fields) {
+        return values;
+    }
+    var filteredValues = {};
+    Object.keys(values).forEach(function (key) {
+        if (values[key] !== false ||
+            (fields[key] && fields[key].type === "boolean")) {
+            filteredValues[key] = values[key];
+        }
+    });
+    return filteredValues;
+};
+var processInitialValues = function (values, fields) {
+    var filterBooleans = filteredValues(values, fields);
+    return filterBooleans;
+};
+function Form(props) {
+    var arch = props.arch, fields = props.fields, initialValues = props.initialValues, antForm = props.antForm;
+    var _a = react_1.useState(), form = _a[0], setForm = _a[1];
+    var getForm = function () {
+        return form.container.rows.map(function (item, i) {
+            return item.map(function (widget, j) {
+                return WidgetFactory_1.createReactWidget(widget, i + "-" + j);
+            });
+        });
+    };
+    react_1.useEffect(function () {
+        var newForm = new ooui_1.Form(fields);
+        newForm.parse(arch);
+        setForm(newForm);
+    }, [arch, fields]);
+    return (react_1.default.createElement(antd_1.Form, { form: antForm, initialValues: processInitialValues(initialValues, fields) }, form && getForm()));
+}
+exports.default = Form;
+
 
 /***/ }),
 
@@ -585,7 +3112,58 @@ eval("\nvar __createBinding = (this && this.__createBinding) || (Object.create ?
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });\n}) : (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    o[k2] = m[k];\n}));\nvar __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {\n    Object.defineProperty(o, \"default\", { enumerable: true, value: v });\n}) : function(o, v) {\n    o[\"default\"] = v;\n});\nvar __importStar = (this && this.__importStar) || function (mod) {\n    if (mod && mod.__esModule) return mod;\n    var result = {};\n    if (mod != null) for (var k in mod) if (k !== \"default\" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);\n    __setModuleDefault(result, mod);\n    return result;\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nvar react_1 = __importStar(__webpack_require__(/*! react */ \"react\"));\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar treeHelper_1 = __webpack_require__(/*! @/helpers/treeHelper */ \"./src/helpers/treeHelper.ts\");\nvar LocalesContext_1 = __webpack_require__(/*! @/context/LocalesContext */ \"./src/context/LocalesContext.tsx\");\nfunction Tree(props) {\n    var page = props.page, limit = props.limit, total = props.total, treeView = props.treeView, results = props.results, onRequestPageChange = props.onRequestPageChange, loading = props.loading, strings = props.strings;\n    var _a = react_1.useState([]), items = _a[0], setItems = _a[1];\n    var _b = react_1.useState([]), columns = _b[0], setColumns = _b[1];\n    react_1.useEffect(function () {\n        var tree = treeHelper_1.getTree(treeView);\n        var booleanComponentFn = function (booleanField) {\n            return react_1.default.createElement(antd_1.Checkbox, { defaultChecked: booleanField, disabled: true });\n        };\n        var columns = treeHelper_1.getTableColumns(tree, booleanComponentFn);\n        var items = treeHelper_1.getTableItems(tree, results);\n        setColumns(columns);\n        setItems(items);\n    }, [treeView, results]);\n    var from = (page - 1) * limit + 1;\n    var to = from - 1 + items.length;\n    var summary = loading ? (react_1.default.createElement(antd_1.Spin, null)) : total === 0 ? (LocalesContext_1.getLocalizedString(\"no_results\", strings)) : (LocalesContext_1.getLocalizedString(\"summary\", strings)\n        .replace(\"{from}\", from === null || from === void 0 ? void 0 : from.toString())\n        .replace(\"{to}\", to === null || to === void 0 ? void 0 : to.toString())\n        .replace(\"{total}\", total === null || total === void 0 ? void 0 : total.toString()));\n    return (react_1.default.createElement(react_1.default.Fragment, null,\n        summary,\n        loading ? null : (react_1.default.createElement(antd_1.Pagination, { total: total, pageSize: limit, current: page, className: \"pb-5 pt-5\", showSizeChanger: false, onChange: onRequestPageChange })),\n        react_1.default.createElement(antd_1.Table, { columns: columns, dataSource: items, pagination: false, loading: loading })));\n}\nexports.default = Tree;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/views/Tree.tsx?");
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var react_1 = __importStar(__webpack_require__(/*! react */ "react"));
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var treeHelper_1 = __webpack_require__(/*! @/helpers/treeHelper */ "./src/helpers/treeHelper.ts");
+var LocalesContext_1 = __webpack_require__(/*! @/context/LocalesContext */ "./src/context/LocalesContext.tsx");
+function Tree(props) {
+    var page = props.page, limit = props.limit, total = props.total, treeView = props.treeView, results = props.results, onRequestPageChange = props.onRequestPageChange, loading = props.loading, strings = props.strings;
+    var _a = react_1.useState([]), items = _a[0], setItems = _a[1];
+    var _b = react_1.useState([]), columns = _b[0], setColumns = _b[1];
+    react_1.useEffect(function () {
+        var tree = treeHelper_1.getTree(treeView);
+        var booleanComponentFn = function (booleanField) {
+            return react_1.default.createElement(antd_1.Checkbox, { defaultChecked: booleanField, disabled: true });
+        };
+        var columns = treeHelper_1.getTableColumns(tree, booleanComponentFn);
+        var items = treeHelper_1.getTableItems(tree, results);
+        setColumns(columns);
+        setItems(items);
+    }, [treeView, results]);
+    var from = (page - 1) * limit + 1;
+    var to = from - 1 + items.length;
+    var summary = loading ? (react_1.default.createElement(antd_1.Spin, null)) : total === 0 ? (LocalesContext_1.getLocalizedString("no_results", strings)) : (LocalesContext_1.getLocalizedString("summary", strings)
+        .replace("{from}", from === null || from === void 0 ? void 0 : from.toString())
+        .replace("{to}", to === null || to === void 0 ? void 0 : to.toString())
+        .replace("{total}", total === null || total === void 0 ? void 0 : total.toString()));
+    return (react_1.default.createElement(react_1.default.Fragment, null,
+        summary,
+        loading ? null : (react_1.default.createElement(antd_1.Pagination, { total: total, pageSize: limit, current: page, className: "pb-5 pt-5", showSizeChanger: false, onChange: onRequestPageChange })),
+        react_1.default.createElement(antd_1.Table, { columns: columns, dataSource: items, pagination: false, loading: loading })));
+}
+exports.default = Tree;
+
 
 /***/ }),
 
@@ -596,7 +3174,22 @@ eval("\nvar __createBinding = (this && this.__createBinding) || (Object.create ?
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.DateRangePicker = void 0;\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"react\"));\nvar FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ \"./src/common/FormItem.tsx\"));\nvar DateRangePicker = function (_a) {\n    var id = _a.id, label = _a.label, _b = _a.layout, layout = _b === void 0 ? \"horizontal\" : _b;\n    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, layout: layout },\n        react_1.default.createElement(antd_1.DatePicker.RangePicker, { format: \"DD/MM/YYYY\" })));\n};\nexports.DateRangePicker = DateRangePicker;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/views/searchFilter/DateRangePicker.tsx?");
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DateRangePicker = void 0;
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var react_1 = __importDefault(__webpack_require__(/*! react */ "react"));
+var FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ "./src/common/FormItem.tsx"));
+var DateRangePicker = function (_a) {
+    var id = _a.id, label = _a.label, _b = _a.layout, layout = _b === void 0 ? "horizontal" : _b;
+    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, layout: layout },
+        react_1.default.createElement(antd_1.DatePicker.RangePicker, { format: "DD/MM/YYYY" })));
+};
+exports.DateRangePicker = DateRangePicker;
+
 
 /***/ }),
 
@@ -607,7 +3200,31 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.DateTimeRangePicker = void 0;\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"react\"));\nvar FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ \"./src/common/FormItem.tsx\"));\nvar antd_2 = __webpack_require__(/*! antd */ \"antd\");\nvar DateTimeRangePicker = function (_a) {\n    var id = _a.id, label = _a.label, _b = _a.layout, layout = _b === void 0 ? \"horizontal\" : _b;\n    return (react_1.default.createElement(react_1.default.Fragment, null,\n        label + \" :\",\n        react_1.default.createElement(antd_2.Row, { align: \"bottom\", className: \"mt-1\" },\n            react_1.default.createElement(antd_2.Col, { className: \"mr-2\" },\n                react_1.default.createElement(FormItem_1.default, { name: id + \"#date\", label: \"\", layout: layout },\n                    react_1.default.createElement(antd_1.DatePicker.RangePicker, { className: \"w-60\", format: \"DD/MM/YYYY\" }))),\n            react_1.default.createElement(antd_2.Col, null,\n                \" \",\n                react_1.default.createElement(FormItem_1.default, { name: id + \"#time\", label: \"\", layout: layout },\n                    react_1.default.createElement(antd_1.TimePicker.RangePicker, { className: \"w-60\", format: \"HH:mm\" }))))));\n};\nexports.DateTimeRangePicker = DateTimeRangePicker;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/views/searchFilter/DateTimeRangePicker.tsx?");
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DateTimeRangePicker = void 0;
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var react_1 = __importDefault(__webpack_require__(/*! react */ "react"));
+var FormItem_1 = __importDefault(__webpack_require__(/*! @/common/FormItem */ "./src/common/FormItem.tsx"));
+var antd_2 = __webpack_require__(/*! antd */ "antd");
+var DateTimeRangePicker = function (_a) {
+    var id = _a.id, label = _a.label, _b = _a.layout, layout = _b === void 0 ? "horizontal" : _b;
+    return (react_1.default.createElement(react_1.default.Fragment, null,
+        label + " :",
+        react_1.default.createElement(antd_2.Row, { align: "bottom", className: "mt-1" },
+            react_1.default.createElement(antd_2.Col, { className: "mr-2" },
+                react_1.default.createElement(FormItem_1.default, { name: id + "#date", label: "", layout: layout },
+                    react_1.default.createElement(antd_1.DatePicker.RangePicker, { className: "w-60", format: "DD/MM/YYYY" }))),
+            react_1.default.createElement(antd_2.Col, null,
+                " ",
+                react_1.default.createElement(FormItem_1.default, { name: id + "#time", label: "", layout: layout },
+                    react_1.default.createElement(antd_1.TimePicker.RangePicker, { className: "w-60", format: "HH:mm" }))))));
+};
+exports.DateTimeRangePicker = DateTimeRangePicker;
+
 
 /***/ }),
 
@@ -618,7 +3235,38 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.PairFields = void 0;\nvar react_1 = __importDefault(__webpack_require__(/*! react */ \"react\"));\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar Float_1 = __webpack_require__(/*! @/widgets/base/Float */ \"./src/widgets/base/Float.tsx\");\nvar Integer_1 = __webpack_require__(/*! @/widgets/base/Integer */ \"./src/widgets/base/Integer.tsx\");\nvar ooui_1 = __webpack_require__(/*! ooui */ \"./node_modules/ooui/dist/index.js\");\nvar FormItem_1 = __webpack_require__(/*! @/common/FormItem */ \"./src/common/FormItem.tsx\");\nfunction PairFields(props) {\n    var ooui = props.ooui;\n    var id = ooui.id, label = ooui.label, tooltip = ooui.tooltip;\n    ooui.label = \"\";\n    ooui.tooltip = undefined;\n    var getWidget = function (suffix) {\n        return ooui instanceof ooui_1.Integer ? getInteger(suffix) : getFloat(suffix);\n    };\n    var getFloat = function (suffix) { return (react_1.default.createElement(Float_1.Float, { id: id + suffix, ooui: ooui, layout: \"vertical\" })); };\n    var getInteger = function (suffix) { return (react_1.default.createElement(Integer_1.Integer, { id: id + suffix, ooui: ooui, layout: \"vertical\" })); };\n    return (react_1.default.createElement(react_1.default.Fragment, null,\n        FormItem_1.labelWithTooltip(label, tooltip),\n        react_1.default.createElement(antd_1.Row, { align: \"bottom\", className: \"mt-0\" },\n            react_1.default.createElement(antd_1.Col, null, getWidget(\"#from\")),\n            react_1.default.createElement(antd_1.Col, { className: \"pb-1\" },\n                react_1.default.createElement(\"span\", { className: \"pl-2 pr-2 h-full\" }, \" - \")),\n            react_1.default.createElement(antd_1.Col, null, getWidget(\"#to\")))));\n}\nexports.PairFields = PairFields;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/views/searchFilter/PairFields.tsx?");
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PairFields = void 0;
+var react_1 = __importDefault(__webpack_require__(/*! react */ "react"));
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var Float_1 = __webpack_require__(/*! @/widgets/base/Float */ "./src/widgets/base/Float.tsx");
+var Integer_1 = __webpack_require__(/*! @/widgets/base/Integer */ "./src/widgets/base/Integer.tsx");
+var ooui_1 = __webpack_require__(/*! ooui */ "./node_modules/ooui/dist/index.js");
+var FormItem_1 = __webpack_require__(/*! @/common/FormItem */ "./src/common/FormItem.tsx");
+function PairFields(props) {
+    var ooui = props.ooui;
+    var id = ooui.id, label = ooui.label, tooltip = ooui.tooltip;
+    ooui.label = "";
+    ooui.tooltip = undefined;
+    var getWidget = function (suffix) {
+        return ooui instanceof ooui_1.Integer ? getInteger(suffix) : getFloat(suffix);
+    };
+    var getFloat = function (suffix) { return (react_1.default.createElement(Float_1.Float, { id: id + suffix, ooui: ooui, layout: "vertical" })); };
+    var getInteger = function (suffix) { return (react_1.default.createElement(Integer_1.Integer, { id: id + suffix, ooui: ooui, layout: "vertical" })); };
+    return (react_1.default.createElement(react_1.default.Fragment, null,
+        FormItem_1.labelWithTooltip(label, tooltip),
+        react_1.default.createElement(antd_1.Row, { align: "bottom", className: "mt-0" },
+            react_1.default.createElement(antd_1.Col, null, getWidget("#from")),
+            react_1.default.createElement(antd_1.Col, { className: "pb-1" },
+                react_1.default.createElement("span", { className: "pl-2 pr-2 h-full" }, " - ")),
+            react_1.default.createElement(antd_1.Col, null, getWidget("#to")))));
+}
+exports.PairFields = PairFields;
+
 
 /***/ }),
 
@@ -629,7 +3277,48 @@ eval("\nvar __importDefault = (this && this.__importDefault) || function (mod) {
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });\n}) : (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    o[k2] = m[k];\n}));\nvar __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {\n    Object.defineProperty(o, \"default\", { enumerable: true, value: v });\n}) : function(o, v) {\n    o[\"default\"] = v;\n});\nvar __importStar = (this && this.__importStar) || function (mod) {\n    if (mod && mod.__esModule) return mod;\n    var result = {};\n    if (mod != null) for (var k in mod) if (k !== \"default\" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);\n    __setModuleDefault(result, mod);\n    return result;\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.SearchBottomBar = void 0;\nvar react_1 = __importStar(__webpack_require__(/*! react */ \"react\"));\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar icons_1 = __webpack_require__(/*! @ant-design/icons */ \"@ant-design/icons\");\nvar LocalesContext_1 = __webpack_require__(/*! @/context/LocalesContext */ \"./src/context/LocalesContext.tsx\");\nfunction SearchBottomBar(props) {\n    var onAdvancedFilterToggle = props.onAdvancedFilterToggle, advancedFilter = props.advancedFilter, onClear = props.onClear, isSearching = props.isSearching;\n    var getString = react_1.useContext(LocalesContext_1.LocalesContext).getString;\n    return (react_1.default.createElement(antd_1.Row, null,\n        react_1.default.createElement(antd_1.Col, { span: 12, className: \"text-left pt-4 pb-2 pl-2\" },\n            react_1.default.createElement(\"a\", { className: \"text-xs\", onClick: onAdvancedFilterToggle },\n                advancedFilter ? (react_1.default.createElement(icons_1.UpOutlined, { className: \"pr-1\" })) : (react_1.default.createElement(icons_1.DownOutlined, { className: \"pr-1\" })),\n                advancedFilter\n                    ? getString(\"simple_search\")\n                    : getString(\"advanced_search\"))),\n        react_1.default.createElement(antd_1.Col, { span: 12, className: \"text-right pb-2\" },\n            react_1.default.createElement(antd_1.Button, { className: \"mr-5\", icon: react_1.default.createElement(icons_1.ClearOutlined, null), onClick: onClear }, \"Clear\"),\n            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.SearchOutlined, null), loading: isSearching, className: \"mr-2\", type: \"primary\", htmlType: \"submit\" }, getString(\"search\")))));\n}\nexports.SearchBottomBar = SearchBottomBar;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/views/searchFilter/SearchBottomBar.tsx?");
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SearchBottomBar = void 0;
+var react_1 = __importStar(__webpack_require__(/*! react */ "react"));
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var icons_1 = __webpack_require__(/*! @ant-design/icons */ "@ant-design/icons");
+var LocalesContext_1 = __webpack_require__(/*! @/context/LocalesContext */ "./src/context/LocalesContext.tsx");
+function SearchBottomBar(props) {
+    var onAdvancedFilterToggle = props.onAdvancedFilterToggle, advancedFilter = props.advancedFilter, onClear = props.onClear, isSearching = props.isSearching;
+    var getString = react_1.useContext(LocalesContext_1.LocalesContext).getString;
+    return (react_1.default.createElement(antd_1.Row, null,
+        react_1.default.createElement(antd_1.Col, { span: 12, className: "text-left pt-4 pb-2 pl-2" },
+            react_1.default.createElement("a", { className: "text-xs", onClick: onAdvancedFilterToggle },
+                advancedFilter ? (react_1.default.createElement(icons_1.UpOutlined, { className: "pr-1" })) : (react_1.default.createElement(icons_1.DownOutlined, { className: "pr-1" })),
+                advancedFilter
+                    ? getString("simple_search")
+                    : getString("advanced_search"))),
+        react_1.default.createElement(antd_1.Col, { span: 12, className: "text-right pb-2" },
+            react_1.default.createElement(antd_1.Button, { className: "mr-5", icon: react_1.default.createElement(icons_1.ClearOutlined, null), onClick: onClear }, "Clear"),
+            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.SearchOutlined, null), loading: isSearching, className: "mr-2", type: "primary", htmlType: "submit" }, getString("search")))));
+}
+exports.SearchBottomBar = SearchBottomBar;
+
 
 /***/ }),
 
@@ -640,7 +3329,96 @@ eval("\nvar __createBinding = (this && this.__createBinding) || (Object.create ?
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });\n}) : (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    o[k2] = m[k];\n}));\nvar __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {\n    Object.defineProperty(o, \"default\", { enumerable: true, value: v });\n}) : function(o, v) {\n    o[\"default\"] = v;\n});\nvar __importStar = (this && this.__importStar) || function (mod) {\n    if (mod && mod.__esModule) return mod;\n    var result = {};\n    if (mod != null) for (var k in mod) if (k !== \"default\" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);\n    __setModuleDefault(result, mod);\n    return result;\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.SearchField = void 0;\nvar react_1 = __importStar(__webpack_require__(/*! react */ \"react\"));\nvar Char_1 = __webpack_require__(/*! @/widgets/base/Char */ \"./src/widgets/base/Char.tsx\");\nvar Selection_1 = __webpack_require__(/*! @/widgets/base/Selection */ \"./src/widgets/base/Selection.tsx\");\nvar DateRangePicker_1 = __webpack_require__(/*! ./DateRangePicker */ \"./src/widgets/views/searchFilter/DateRangePicker.tsx\");\nvar DateTimeRangePicker_1 = __webpack_require__(/*! ./DateTimeRangePicker */ \"./src/widgets/views/searchFilter/DateTimeRangePicker.tsx\");\nvar PairFields_1 = __webpack_require__(/*! ./PairFields */ \"./src/widgets/views/searchFilter/PairFields.tsx\");\nvar LocalesContext_1 = __webpack_require__(/*! @/context/LocalesContext */ \"./src/context/LocalesContext.tsx\");\nvar ooui_1 = __webpack_require__(/*! ooui */ \"./node_modules/ooui/dist/index.js\");\nvar types = {\n    text: \"Text\",\n    many2one: \"Many2one\",\n    char: \"Char\",\n    boolean: \"Boolean\",\n    selection: \"Selection\",\n    float: \"Float\",\n    float_time: \"FloatTime\",\n    progressbar: \"ProgressBar\",\n    integer: \"Integer\",\n    date: \"Date\",\n    datetime: \"DateTime\",\n};\nfunction SearchField(props) {\n    var field = props.field;\n    field.readOnly = false;\n    var getString = react_1.useContext(LocalesContext_1.LocalesContext).getString;\n    var widgetType = field.constructor.name;\n    switch (widgetType) {\n        case types.text:\n        case types.many2one:\n        case types.char: {\n            var char = field;\n            return react_1.default.createElement(Char_1.Char, { ooui: char, layout: \"vertical\" });\n        }\n        case types.boolean: {\n            var ooui = new ooui_1.Selection({\n                name: field._id,\n                string: field.label,\n                selection: [\n                    [\"true\", getString(\"true\")],\n                    [\"false\", getString(\"false\")],\n                ],\n            });\n            return react_1.default.createElement(Selection_1.Selection, { layout: \"vertical\", ooui: ooui });\n        }\n        case types.selection: {\n            var selection = field;\n            return react_1.default.createElement(Selection_1.Selection, { layout: \"vertical\", ooui: selection });\n        }\n        case types.float:\n        case types.progressbar:\n        case types.float_time:\n        case types.integer: {\n            return react_1.default.createElement(PairFields_1.PairFields, { ooui: field, id: field._id, label: field.label });\n        }\n        case types.date: {\n            return (react_1.default.createElement(DateRangePicker_1.DateRangePicker, { id: field._id, label: field.label, layout: \"vertical\" }));\n        }\n        case types.datetime: {\n            return (react_1.default.createElement(DateTimeRangePicker_1.DateTimeRangePicker, { id: field._id, label: field.label, layout: \"vertical\" }));\n        }\n        default: {\n            var char = field;\n            return react_1.default.createElement(Char_1.Char, { ooui: char, layout: \"vertical\" });\n        }\n    }\n}\nexports.SearchField = SearchField;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/views/searchFilter/SearchField.tsx?");
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SearchField = void 0;
+var react_1 = __importStar(__webpack_require__(/*! react */ "react"));
+var Char_1 = __webpack_require__(/*! @/widgets/base/Char */ "./src/widgets/base/Char.tsx");
+var Selection_1 = __webpack_require__(/*! @/widgets/base/Selection */ "./src/widgets/base/Selection.tsx");
+var DateRangePicker_1 = __webpack_require__(/*! ./DateRangePicker */ "./src/widgets/views/searchFilter/DateRangePicker.tsx");
+var DateTimeRangePicker_1 = __webpack_require__(/*! ./DateTimeRangePicker */ "./src/widgets/views/searchFilter/DateTimeRangePicker.tsx");
+var PairFields_1 = __webpack_require__(/*! ./PairFields */ "./src/widgets/views/searchFilter/PairFields.tsx");
+var LocalesContext_1 = __webpack_require__(/*! @/context/LocalesContext */ "./src/context/LocalesContext.tsx");
+var ooui_1 = __webpack_require__(/*! ooui */ "./node_modules/ooui/dist/index.js");
+var types = {
+    text: "Text",
+    many2one: "Many2one",
+    char: "Char",
+    boolean: "Boolean",
+    selection: "Selection",
+    float: "Float",
+    float_time: "FloatTime",
+    progressbar: "ProgressBar",
+    integer: "Integer",
+    date: "Date",
+    datetime: "DateTime",
+};
+function SearchField(props) {
+    var field = props.field;
+    field.readOnly = false;
+    var getString = react_1.useContext(LocalesContext_1.LocalesContext).getString;
+    var widgetType = field.constructor.name;
+    switch (widgetType) {
+        case types.text:
+        case types.many2one:
+        case types.char: {
+            var char = field;
+            return react_1.default.createElement(Char_1.Char, { ooui: char, layout: "vertical" });
+        }
+        case types.boolean: {
+            var ooui = new ooui_1.Selection({
+                name: field._id,
+                string: field.label,
+                selection: [
+                    ["true", getString("true")],
+                    ["false", getString("false")],
+                ],
+            });
+            return react_1.default.createElement(Selection_1.Selection, { layout: "vertical", ooui: ooui });
+        }
+        case types.selection: {
+            var selection = field;
+            return react_1.default.createElement(Selection_1.Selection, { layout: "vertical", ooui: selection });
+        }
+        case types.float:
+        case types.progressbar:
+        case types.float_time:
+        case types.integer: {
+            return react_1.default.createElement(PairFields_1.PairFields, { ooui: field, id: field._id, label: field.label });
+        }
+        case types.date: {
+            return (react_1.default.createElement(DateRangePicker_1.DateRangePicker, { id: field._id, label: field.label, layout: "vertical" }));
+        }
+        case types.datetime: {
+            return (react_1.default.createElement(DateTimeRangePicker_1.DateTimeRangePicker, { id: field._id, label: field.label, layout: "vertical" }));
+        }
+        default: {
+            var char = field;
+            return react_1.default.createElement(Char_1.Char, { ooui: char, layout: "vertical" });
+        }
+    }
+}
+exports.SearchField = SearchField;
+
 
 /***/ }),
 
@@ -651,7 +3429,86 @@ eval("\nvar __createBinding = (this && this.__createBinding) || (Object.create ?
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });\n}) : (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    o[k2] = m[k];\n}));\nvar __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {\n    Object.defineProperty(o, \"default\", { enumerable: true, value: v });\n}) : function(o, v) {\n    o[\"default\"] = v;\n});\nvar __importStar = (this && this.__importStar) || function (mod) {\n    if (mod && mod.__esModule) return mod;\n    var result = {};\n    if (mod != null) for (var k in mod) if (k !== \"default\" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);\n    __setModuleDefault(result, mod);\n    return result;\n};\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nvar react_1 = __importStar(__webpack_require__(/*! react */ \"react\"));\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\n__webpack_require__(/*! antd/dist/antd.css */ \"./node_modules/antd/dist/antd.css\");\n__webpack_require__(/*! @/tailwind.generated.css */ \"./src/tailwind.generated.css\");\nvar ooui_1 = __webpack_require__(/*! ooui */ \"./node_modules/ooui/dist/index.js\");\nvar SearchField_1 = __webpack_require__(/*! ./SearchField */ \"./src/widgets/views/searchFilter/SearchField.tsx\");\nvar SearchBottomBar_1 = __webpack_require__(/*! ./SearchBottomBar */ \"./src/widgets/views/searchFilter/SearchBottomBar.tsx\");\nvar LocalesContext_1 = __importDefault(__webpack_require__(/*! @/context/LocalesContext */ \"./src/context/LocalesContext.tsx\"));\nvar SearchParams_1 = __webpack_require__(/*! ./SearchParams */ \"./src/widgets/views/searchFilter/SearchParams.tsx\");\nvar searchFilterHelper_1 = __webpack_require__(/*! @/helpers/searchFilterHelper */ \"./src/helpers/searchFilterHelper.ts\");\nfunction SearchFilter(props) {\n    var fields = props.fields, searchFields = props.searchFields, onClear = props.onClear, onSubmit = props.onSubmit, isSearching = props.isSearching, offset = props.offset, limit = props.limit, strings = props.strings;\n    var _a = react_1.useState(), simpleSearchFields = _a[0], setSimpleSearchFields = _a[1];\n    var _b = react_1.useState(), advancedSearchFields = _b[0], setAdvancedSearchFields = _b[1];\n    var _c = react_1.useState(false), advancedFilter = _c[0], setAdvancedFilter = _c[1];\n    var form = antd_1.Form.useForm()[0];\n    var getRowsAndCols = function () {\n        if (!advancedSearchFields) {\n            return;\n        }\n        var fields = advancedFilter ? advancedSearchFields : simpleSearchFields;\n        var rows = fields === null || fields === void 0 ? void 0 : fields.rows;\n        return rows === null || rows === void 0 ? void 0 : rows.map(function (row, i) {\n            return (react_1.default.createElement(antd_1.Row, { key: i }, row.map(function (item, j) {\n                return (react_1.default.createElement(antd_1.Col, { xs: 24, className: \"p-2\", xl: 6, key: j },\n                    react_1.default.createElement(SearchField_1.SearchField, { field: item })));\n            })));\n        });\n    };\n    react_1.useEffect(function () {\n        var sfo = new ooui_1.SearchFilter(searchFields, fields);\n        sfo.parse();\n        setSimpleSearchFields(sfo._simpleSearchContainer);\n        setAdvancedSearchFields(sfo._advancedSearchContainer);\n    }, [fields, searchFields]);\n    var rows = getRowsAndCols();\n    var onFinish = function (values) {\n        var limit = values.limit, offset = values.offset;\n        delete values.offset;\n        delete values.limit;\n        var newParams = searchFilterHelper_1.getParamsForFields(values, fields);\n        onSubmit({ params: newParams, offset: offset, limit: limit });\n    };\n    return (react_1.default.createElement(LocalesContext_1.default, { strings: strings },\n        react_1.default.createElement(antd_1.Form, { className: \"bg-gray-100 rounded p-3\", form: form, onFinish: onFinish, initialValues: { offset: offset, limit: limit } },\n            rows,\n            advancedFilter && react_1.default.createElement(SearchParams_1.SearchParams, null),\n            react_1.default.createElement(SearchBottomBar_1.SearchBottomBar, { advancedFilter: advancedFilter, onAdvancedFilterToggle: function () {\n                    setAdvancedFilter(!advancedFilter);\n                }, onClear: function () {\n                    form.resetFields();\n                    onClear();\n                }, isSearching: isSearching }))));\n}\nexports.default = SearchFilter;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/views/searchFilter/SearchFilter.tsx?");
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var react_1 = __importStar(__webpack_require__(/*! react */ "react"));
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+__webpack_require__(/*! antd/dist/antd.css */ "./node_modules/antd/dist/antd.css");
+__webpack_require__(/*! @/tailwind.generated.css */ "./src/tailwind.generated.css");
+var ooui_1 = __webpack_require__(/*! ooui */ "./node_modules/ooui/dist/index.js");
+var SearchField_1 = __webpack_require__(/*! ./SearchField */ "./src/widgets/views/searchFilter/SearchField.tsx");
+var SearchBottomBar_1 = __webpack_require__(/*! ./SearchBottomBar */ "./src/widgets/views/searchFilter/SearchBottomBar.tsx");
+var LocalesContext_1 = __importDefault(__webpack_require__(/*! @/context/LocalesContext */ "./src/context/LocalesContext.tsx"));
+var SearchParams_1 = __webpack_require__(/*! ./SearchParams */ "./src/widgets/views/searchFilter/SearchParams.tsx");
+var searchFilterHelper_1 = __webpack_require__(/*! @/helpers/searchFilterHelper */ "./src/helpers/searchFilterHelper.ts");
+function SearchFilter(props) {
+    var fields = props.fields, searchFields = props.searchFields, onClear = props.onClear, onSubmit = props.onSubmit, isSearching = props.isSearching, offset = props.offset, limit = props.limit, strings = props.strings;
+    var _a = react_1.useState(), simpleSearchFields = _a[0], setSimpleSearchFields = _a[1];
+    var _b = react_1.useState(), advancedSearchFields = _b[0], setAdvancedSearchFields = _b[1];
+    var _c = react_1.useState(false), advancedFilter = _c[0], setAdvancedFilter = _c[1];
+    var form = antd_1.Form.useForm()[0];
+    var getRowsAndCols = function () {
+        if (!advancedSearchFields) {
+            return;
+        }
+        var fields = advancedFilter ? advancedSearchFields : simpleSearchFields;
+        var rows = fields === null || fields === void 0 ? void 0 : fields.rows;
+        return rows === null || rows === void 0 ? void 0 : rows.map(function (row, i) {
+            return (react_1.default.createElement(antd_1.Row, { key: i }, row.map(function (item, j) {
+                return (react_1.default.createElement(antd_1.Col, { xs: 24, className: "p-2", xl: 6, key: j },
+                    react_1.default.createElement(SearchField_1.SearchField, { field: item })));
+            })));
+        });
+    };
+    react_1.useEffect(function () {
+        var sfo = new ooui_1.SearchFilter(searchFields, fields);
+        sfo.parse();
+        setSimpleSearchFields(sfo._simpleSearchContainer);
+        setAdvancedSearchFields(sfo._advancedSearchContainer);
+    }, [fields, searchFields]);
+    var rows = getRowsAndCols();
+    var onFinish = function (values) {
+        var limit = values.limit, offset = values.offset;
+        delete values.offset;
+        delete values.limit;
+        var newParams = searchFilterHelper_1.getParamsForFields(values, fields);
+        onSubmit({ params: newParams, offset: offset, limit: limit });
+    };
+    return (react_1.default.createElement(LocalesContext_1.default, { strings: strings },
+        react_1.default.createElement(antd_1.Form, { className: "bg-gray-100 rounded p-3", form: form, onFinish: onFinish, initialValues: { offset: offset, limit: limit } },
+            rows,
+            advancedFilter && react_1.default.createElement(SearchParams_1.SearchParams, null),
+            react_1.default.createElement(SearchBottomBar_1.SearchBottomBar, { advancedFilter: advancedFilter, onAdvancedFilterToggle: function () {
+                    setAdvancedFilter(!advancedFilter);
+                }, onClear: function () {
+                    form.resetFields();
+                    onClear();
+                }, isSearching: isSearching }))));
+}
+exports.default = SearchFilter;
+
 
 /***/ }),
 
@@ -662,7 +3519,47 @@ eval("\nvar __createBinding = (this && this.__createBinding) || (Object.create ?
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nvar __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });\n}) : (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    o[k2] = m[k];\n}));\nvar __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {\n    Object.defineProperty(o, \"default\", { enumerable: true, value: v });\n}) : function(o, v) {\n    o[\"default\"] = v;\n});\nvar __importStar = (this && this.__importStar) || function (mod) {\n    if (mod && mod.__esModule) return mod;\n    var result = {};\n    if (mod != null) for (var k in mod) if (k !== \"default\" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);\n    __setModuleDefault(result, mod);\n    return result;\n};\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nexports.SearchParams = void 0;\nvar react_1 = __importStar(__webpack_require__(/*! react */ \"react\"));\nvar Integer_1 = __webpack_require__(/*! @/widgets/base/Integer */ \"./src/widgets/base/Integer.tsx\");\nvar antd_1 = __webpack_require__(/*! antd */ \"antd\");\nvar ooui_1 = __webpack_require__(/*! ooui */ \"./node_modules/ooui/dist/index.js\");\nvar LocalesContext_1 = __webpack_require__(/*! @/context/LocalesContext */ \"./src/context/LocalesContext.tsx\");\nfunction SearchParams() {\n    var getString = react_1.useContext(LocalesContext_1.LocalesContext).getString;\n    var limitOoui = new ooui_1.Integer({ name: \"limit\" });\n    var offsetOoui = new ooui_1.Integer({ name: \"offset\" });\n    return (react_1.default.createElement(\"div\", { className: \"pl-2 pt-2\" },\n        react_1.default.createElement(antd_1.Row, { key: \"count_params\" }, getString(\"parameters\")),\n        react_1.default.createElement(antd_1.Space, { align: \"center\" },\n            getString(\"limit\") + \" :\",\n            react_1.default.createElement(Integer_1.Integer, { ooui: limitOoui }),\n            getString(\"first\") + \" :\",\n            react_1.default.createElement(Integer_1.Integer, { ooui: offsetOoui }))));\n}\nexports.SearchParams = SearchParams;\n\n\n//# sourceURL=webpack://react-ooui/./src/widgets/views/searchFilter/SearchParams.tsx?");
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SearchParams = void 0;
+var react_1 = __importStar(__webpack_require__(/*! react */ "react"));
+var Integer_1 = __webpack_require__(/*! @/widgets/base/Integer */ "./src/widgets/base/Integer.tsx");
+var antd_1 = __webpack_require__(/*! antd */ "antd");
+var ooui_1 = __webpack_require__(/*! ooui */ "./node_modules/ooui/dist/index.js");
+var LocalesContext_1 = __webpack_require__(/*! @/context/LocalesContext */ "./src/context/LocalesContext.tsx");
+function SearchParams() {
+    var getString = react_1.useContext(LocalesContext_1.LocalesContext).getString;
+    var limitOoui = new ooui_1.Integer({ name: "limit" });
+    var offsetOoui = new ooui_1.Integer({ name: "offset" });
+    return (react_1.default.createElement("div", { className: "pl-2 pt-2" },
+        react_1.default.createElement(antd_1.Row, { key: "count_params" }, getString("parameters")),
+        react_1.default.createElement(antd_1.Space, { align: "center" },
+            getString("limit") + " :",
+            react_1.default.createElement(Integer_1.Integer, { ooui: limitOoui }),
+            getString("first") + " :",
+            react_1.default.createElement(Integer_1.Integer, { ooui: offsetOoui }))));
+}
+exports.SearchParams = SearchParams;
+
 
 /***/ }),
 
@@ -761,3 +3658,4 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_react__;
 /******/ })()
 ;
 });
+//# sourceMappingURL=index.js.map
