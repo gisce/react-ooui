@@ -11,9 +11,7 @@ module.exports = {
     filename: "index.js",
     library: "react-ooui",
     libraryTarget: "umd",
-    devtoolModuleFilenameTemplate: "[absolute-resource-path]",
   },
-  devtool: 'cheap-module-source-map',
   externals: {
     react: "react",
     "react-dom": "react-dom",
