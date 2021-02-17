@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "prebuild": "npm run build:tailwind && rimraf dist && npm run build:ts",
-    "build:ts": "tsc --declaration --declarationMap --emitDeclarationOnly",
+    "build:ts": "tsc",
     "build:tailwind": "postcss src/tailwind.css -o src/tailwind.generated.css",
     "build": "webpack",
     "test": "jest",
