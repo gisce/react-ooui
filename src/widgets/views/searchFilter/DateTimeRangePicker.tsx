@@ -2,7 +2,7 @@ import { DatePicker, TimePicker } from "antd";
 
 import React from "react";
 import FormItem from "@/common/FormItem";
-import { Row } from "antd";
+import { Row, Col } from "antd";
 
 export const DateTimeRangePicker = ({
   id,
@@ -16,21 +16,24 @@ export const DateTimeRangePicker = ({
   return (
     <>
       {label + " :"}
-      <Row align={"bottom"} className="mt-0">
-        <FormItem name={id + "#date"} label={""} layout={layout}>
-          <DatePicker.RangePicker
-            className="w-60"
-            format={"DD/MM/YYYY"}
-          ></DatePicker.RangePicker>
-        </FormItem>
-      </Row>
-      <Row align={"bottom"} className="mt-2">
-        <FormItem name={id + "#time"} label={""} layout={layout}>
-          <TimePicker.RangePicker
-            className="w-60"
-            format={"HH:mm"}
-          ></TimePicker.RangePicker>
-        </FormItem>
+      <Row align={"bottom"} className="mt-1">
+        <Col className="mr-2">
+          <FormItem name={id + "#date"} label={""} layout={layout}>
+            <DatePicker.RangePicker
+              className="w-60"
+              format={"DD/MM/YYYY"}
+            ></DatePicker.RangePicker>
+          </FormItem>
+        </Col>
+        <Col>
+          {" "}
+          <FormItem name={id + "#time"} label={""} layout={layout}>
+            <TimePicker.RangePicker
+              className="w-60"
+              format={"HH:mm"}
+            ></TimePicker.RangePicker>
+          </FormItem>
+        </Col>
       </Row>
     </>
   );
