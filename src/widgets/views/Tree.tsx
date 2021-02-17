@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Table, Pagination, Checkbox, Spin } from "antd";
-import {
-  getTree,
-  getTableColumns,
-  getTableItems,
-} from "@/helpers/treeHelper";
+import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
 
 import { Strings, TreeView, Column } from "@/types";
 import { getLocalizedString } from "@/context/LocalesContext";
@@ -18,6 +14,7 @@ type Props = {
   results: Array<any>;
   onRequestPageChange: (page: number, pageSize?: number) => void;
   strings: Strings;
+  onRowClicked?: (id: number) => void;
 };
 
 function Tree(props: Props): React.ReactElement {
@@ -30,6 +27,7 @@ function Tree(props: Props): React.ReactElement {
     onRequestPageChange,
     loading,
     strings,
+    onRowClicked,
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
@@ -78,6 +76,14 @@ function Tree(props: Props): React.ReactElement {
         dataSource={items}
         pagination={false}
         loading={loading}
+        rowClassName="cursor-pointer select-none"
+        onRow={(record) => {
+          return {
+            onDoubleClick: () => {
+              if (onRowClicked) onRowClicked(record.id);
+            },
+          };
+        }}
       />
     </>
   );

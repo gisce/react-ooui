@@ -24,7 +24,7 @@ var antd_1 = require("antd");
 var treeHelper_1 = require("@/helpers/treeHelper");
 var LocalesContext_1 = require("@/context/LocalesContext");
 function Tree(props) {
-    var page = props.page, limit = props.limit, total = props.total, treeView = props.treeView, results = props.results, onRequestPageChange = props.onRequestPageChange, loading = props.loading, strings = props.strings;
+    var page = props.page, limit = props.limit, total = props.total, treeView = props.treeView, results = props.results, onRequestPageChange = props.onRequestPageChange, loading = props.loading, strings = props.strings, onRowClicked = props.onRowClicked;
     var _a = react_1.useState([]), items = _a[0], setItems = _a[1];
     var _b = react_1.useState([]), columns = _b[0], setColumns = _b[1];
     react_1.useEffect(function () {
@@ -46,7 +46,14 @@ function Tree(props) {
     return (react_1.default.createElement(react_1.default.Fragment, null,
         summary,
         loading ? null : (react_1.default.createElement(antd_1.Pagination, { total: total, pageSize: limit, current: page, className: "pb-5 pt-5", showSizeChanger: false, onChange: onRequestPageChange })),
-        react_1.default.createElement(antd_1.Table, { columns: columns, dataSource: items, pagination: false, loading: loading })));
+        react_1.default.createElement(antd_1.Table, { columns: columns, dataSource: items, pagination: false, loading: loading, rowClassName: "cursor-pointer select-none", onRow: function (record) {
+                return {
+                    onDoubleClick: function () {
+                        if (onRowClicked)
+                            onRowClicked(record.id);
+                    },
+                };
+            } })));
 }
 exports.default = Tree;
 //# sourceMappingURL=Tree.js.map

@@ -9,6 +9,7 @@ declare type Props = {
     results: Array<any>;
     onRequestPageChange: (page: number, pageSize?: number) => void;
     strings: Strings;
+    onRowClicked?: (id: number) => void;
 };
 declare function Tree(props: Props): React.ReactElement;
 export default Tree;
