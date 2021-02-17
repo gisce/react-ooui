@@ -1,13 +1,10 @@
-import React from "react";
-export declare const Float: ({ id, label, value, defaultValue, onChange, onPressEnter, layout, ...props }: {
-    id: string;
-    label?: string | undefined;
-    value?: number | undefined;
-    defaultValue?: number | undefined;
-    onChange?: ((event: React.ChangeEvent<HTMLInputElement>) => void) | undefined;
-    onPressEnter?: ((event: React.KeyboardEvent<HTMLInputElement>) => void) | undefined;
-    children?: React.ReactNode;
-    className?: string | undefined;
-    layout?: "horizontal" | "vertical" | undefined;
-}) => JSX.Element;
+/// <reference types="react" />
+import { Float as FloatOoui } from "ooui";
+declare type Props = {
+    layout?: "horizontal" | "vertical";
+    ooui: FloatOoui;
+    id?: string;
+};
+export declare const Float: (props: Props) => JSX.Element;
+export {};
 //# sourceMappingURL=Float.d.ts.map
