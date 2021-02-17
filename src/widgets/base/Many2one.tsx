@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Input, Button, Row, Col } from "antd";
 import { SearchOutlined, FolderOpenOutlined } from "@ant-design/icons";
 import { Many2one as Many2oneOoui } from "ooui";
@@ -17,27 +17,62 @@ type Props = {
 export const Many2one = (props: Props) => {
   const { ooui, onOpenDetailClick, onSearchClick } = props;
   const { id, label, nolabel, tooltip } = ooui;
+
   return (
     <FormItem name={id} label={label} tooltip={tooltip} nolabel={nolabel}>
-      <Row gutter={8}>
-        <Col flex="auto">
-          <Input disabled={ooui.readOnly} />
-        </Col>
-        <Col flex="32px">
-          <Button
-            icon={<FolderOpenOutlined />}
-            onClick={onOpenDetailClick}
-            disabled={ooui.readOnly}
-          />
-        </Col>
-        <Col flex="32px">
-          <Button
-            icon={<SearchOutlined />}
-            onClick={onSearchClick}
-            disabled={ooui.readOnly}
-          />
-        </Col>
-      </Row>
+      <Many2oneInput />
     </FormItem>
+  );
+};
+
+interface Many2oneValue {
+  id?: number;
+  value?: string;
+}
+
+interface Many2oneInputProps {
+  value?: Many2oneValue;
+  onChange?: (value: Many2oneValue) => void;
+  disabled?: boolean;
+}
+
+const Many2oneInput: React.FC<Many2oneInputProps> = (
+  props: Many2oneInputProps
+) => {
+  const { value, onChange, disabled } = props;
+
+  const [m2oValue, setM2oValue] = useState<Many2oneValue>();
+
+  const triggerChange = (changedValue: any[]) => {
+    if (onChange) {
+    }
+  };
+
+  const onValueStringChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
+
+  return (
+    <Row gutter={8}>
+      <Col flex="auto">
+        <Input
+          type="text"
+          value={value?.value}
+          onChange={onValueStringChange}
+          disabled={true}
+          className="text-black"
+        />
+      </Col>
+      <Col flex="32px">
+        <Button
+          icon={<FolderOpenOutlined />}
+          disabled={disabled}
+        />
+      </Col>
+      <Col flex="32px">
+        <Button
+          icon={<SearchOutlined />}
+          disabled={disabled}
+        />
+      </Col>
+    </Row>
   );
 };

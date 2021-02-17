@@ -22,7 +22,11 @@ export default function FormItem({
   const labelText = label && label.length > 1 ? label + " :" : " ";
 
   const formItem = () => (
-    <Form.Item className="mb-0" name={name} valuePropName={valuePropName}>
+    <Form.Item
+      className="mb-0"
+      name={name}
+      valuePropName={valuePropName}
+    >
       {children}
     </Form.Item>
   );
