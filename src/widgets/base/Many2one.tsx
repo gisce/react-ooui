@@ -25,14 +25,9 @@ export const Many2one = (props: Props) => {
   );
 };
 
-interface Many2oneValue {
-  id?: number;
-  value?: string;
-}
-
 interface Many2oneInputProps {
-  value?: Many2oneValue;
-  onChange?: (value: Many2oneValue) => void;
+  value?: any[];
+  onChange?: (value: any[]) => void;
   disabled?: boolean;
 }
 
@@ -41,7 +36,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
 ) => {
   const { value, onChange, disabled } = props;
 
-  const [m2oValue, setM2oValue] = useState<Many2oneValue>();
+  const [m2oValue, setM2oValue] = useState<any[]>();
 
   const triggerChange = (changedValue: any[]) => {
     if (onChange) {
@@ -55,7 +50,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
       <Col flex="auto">
         <Input
           type="text"
-          value={value?.value}
+          value={value && value[1]}
           onChange={onValueStringChange}
           disabled={true}
           className="text-black"

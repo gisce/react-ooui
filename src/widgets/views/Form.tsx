@@ -26,25 +26,10 @@ const filteredValues = (values: any, fields: any) => {
   return filteredValues;
 };
 
-const transformTupples = (values: any) => {
-  if (!values) {
-    return;
-  }
-  const transformedValues: any = {};
-  Object.keys(values).forEach((key) => {
-    if (Array.isArray(values[key]) && values[key].length === 2) {
-      const [id, value] = values[key];
-      transformedValues[key] = { id, value };
-    } else {
-      transformedValues[key] = values[key];
-    }
-  });
-  return transformedValues;
-};
 
 const processInitialValues = (values: any, fields: any) => {
   const filterBooleans = filteredValues(values, fields);
-  return transformTupples(filterBooleans);
+  return filterBooleans;
 };
 
 function Form(props: Props): React.ReactElement {
