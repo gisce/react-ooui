@@ -14,19 +14,17 @@ type Props = {
 export function PairFields(props: Props): React.ReactElement {
   const { ooui } = props;
   const { id, label, tooltip } = ooui;
-  ooui.tooltip = undefined;
+  const Widget = ooui instanceof IntegerOoui ? Integer : Float;
 
   const getWidget = (suffix: string) => {
-    return ooui instanceof IntegerOoui ? getInteger(suffix) : getFloat(suffix);
+    return (
+      <Widget
+        id={id + suffix}
+        ooui={{ ...ooui, label: "", tooltip: undefined }}
+        layout="vertical"
+      />
+    );
   };
-
-  const getFloat = (suffix: string) => (
-    <Float id={id + suffix} ooui={{ ...ooui, label: "" }} layout="vertical" />
-  );
-
-  const getInteger = (suffix: string) => (
-    <Integer id={id + suffix} ooui={{ ...ooui, label: "" }} layout="vertical" />
-  );
 
   return (
     <>

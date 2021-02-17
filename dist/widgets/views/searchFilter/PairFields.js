@@ -24,12 +24,10 @@ var FormItem_1 = require("@/common/FormItem");
 function PairFields(props) {
     var ooui = props.ooui;
     var id = ooui.id, label = ooui.label, tooltip = ooui.tooltip;
-    ooui.tooltip = undefined;
+    var Widget = ooui instanceof ooui_1.Integer ? Integer_1.Integer : Float_1.Float;
     var getWidget = function (suffix) {
-        return ooui instanceof ooui_1.Integer ? getInteger(suffix) : getFloat(suffix);
+        return (react_1.default.createElement(Widget, { id: id + suffix, ooui: __assign(__assign({}, ooui), { label: "", tooltip: undefined }), layout: "vertical" }));
     };
-    var getFloat = function (suffix) { return (react_1.default.createElement(Float_1.Float, { id: id + suffix, ooui: __assign(__assign({}, ooui), { label: "" }), layout: "vertical" })); };
-    var getInteger = function (suffix) { return (react_1.default.createElement(Integer_1.Integer, { id: id + suffix, ooui: __assign(__assign({}, ooui), { label: "" }), layout: "vertical" })); };
     return (react_1.default.createElement(react_1.default.Fragment, null,
         FormItem_1.labelWithTooltip(label, tooltip),
         react_1.default.createElement(antd_1.Row, { align: "bottom", className: "mt-0" },
