@@ -46,7 +46,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
   const onValueStringChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
 
   return (
-    <Row gutter={8}>
+    <Row gutter={8} className="pt-1 pb-1">
       <Col flex="auto">
         <Input
           type="text"
@@ -57,16 +57,10 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
         />
       </Col>
       <Col flex="32px">
-        <Button
-          icon={<FolderOpenOutlined />}
-          disabled={disabled}
-        />
+        <Button icon={<FolderOpenOutlined />} disabled={disabled} />
       </Col>
       <Col flex="32px">
-        <Button
-          icon={<SearchOutlined />}
-          disabled={disabled}
-        />
+        <Button icon={<SearchOutlined />} disabled={disabled} />
       </Col>
     </Row>
   );

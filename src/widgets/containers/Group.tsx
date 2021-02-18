@@ -16,10 +16,10 @@ function Group(props: Props): React.ReactElement {
 
   const content = ooui!.container.rows.map((row, index) => {
     return (
-      <Row className="pb-2" align="middle" key={index}>
+      <Row align="middle" key={index}>
         {row.map((item: Widget) => {
           return (
-            <Col span={span * item.colspan} className="pl-2">
+            <Col xs={24} lg={span * item.colspan} className="pl-2">
               {createReactWidget(item)}
             </Col>
           );

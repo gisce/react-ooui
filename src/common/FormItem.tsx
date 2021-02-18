@@ -33,7 +33,7 @@ export default function FormItem({
 
   const horizontalMode = () => {
     return (
-      <Row align="middle">
+      <Row align="middle" className="pb-1 pt-1">
         {!nolabel ? (
           <Col className="ml-2" flex="7rem">
             <div className="flex flex-col items-end">
