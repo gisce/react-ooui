@@ -52,8 +52,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
           type="text"
           value={value && value[1]}
           onChange={onValueStringChange}
-          disabled={true}
-          className="text-black"
+          disabled={disabled}
         />
       </Col>
       <Col flex="32px">

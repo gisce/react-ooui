@@ -6,7 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(require("react"));
 var Label = function (props) {
     var ooui = props.ooui;
-    return react_1.default.createElement("p", { className: "text-center" }, ooui.label);
+    var style = { textAlign: ooui.align };
+    return react_1.default.createElement("p", { style: style }, ooui.label);
 };
 exports.default = Label;
 //# sourceMappingURL=Label.js.map

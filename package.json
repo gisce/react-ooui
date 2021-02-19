@@ -21,7 +21,8 @@
   "dependencies": {
     "ooui": "git+ssh://git@github.com/gisce/ooui.js.git",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-responsive": "^8.2.0"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^6.0.26",
@@ -37,6 +38,7 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
+    "@types/react-responsive": "^8.0.2",
     "antd": "^4.12.3",
     "autoprefixer": "^9.8.6",
     "cypress": "^5.2.0",

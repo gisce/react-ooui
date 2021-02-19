@@ -5,18 +5,82 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(require("react"));
 var antd_1 = require("antd");
+var ooui_1 = require("ooui");
 var WidgetFactory_1 = require("@/widgets/WidgetFactory");
-var config_1 = __importDefault(require("@/config"));
+var react_responsive_1 = require("react-responsive");
 function Group(props) {
+    var responsiveBehaviour = react_responsive_1.useMediaQuery({ query: "(max-width: 920px)" });
     var ooui = props.ooui, _a = props.showLabel, showLabel = _a === void 0 ? true : _a;
     var columns = ooui.container.columns;
-    var span = config_1.default.full_width_colspan / columns;
-    var content = ooui.container.rows.map(function (row, index) {
-        return (react_1.default.createElement(antd_1.Row, { className: "pb-2", align: "middle", key: index }, row.map(function (item) {
-            return (react_1.default.createElement(antd_1.Col, { span: span * item.colspan, className: "pl-2" }, WidgetFactory_1.createReactWidget(item)));
-        })));
-    });
-    return (react_1.default.createElement(react_1.default.Fragment, null, ooui.label && showLabel ? (react_1.default.createElement(antd_1.Card, { type: "inner", title: ooui.label }, content)) : (content)));
+    var expandLabelsInFields = function (row) {
+        var rowWithExpandedLabels = [];
+        var totalColSpan = 0;
+        row.map(function (item, columnIndex) {
+            if (item instanceof ooui_1.Field &&
+                !(item instanceof ooui_1.Button) &&
+                !(item instanceof ooui_1.Label)) {
+                if (item instanceof ooui_1.Text && item.nolabel) {
+                    rowWithExpandedLabels.push(item);
+                    return;
+                }
+                totalColSpan += 1;
+                totalColSpan += item.colspan - 1;
+                var label = new ooui_1.Label({ string: item.label });
+                label.align = "right";
+                rowWithExpandedLabels.push(label);
+                var newItem = clone(item);
+                newItem._colspan = item._colspan - 1;
+                newItem._nolabel = true;
+                rowWithExpandedLabels.push(newItem);
+                if (columnIndex + 1 === row.length &&
+                    totalColSpan < columns &&
+                    !responsiveBehaviour) {
+                    var gapsToFill = columns - totalColSpan;
+                    for (var i = 0; i < gapsToFill; i += 1) {
+                        rowWithExpandedLabels.push(new ooui_1.Label({ string: "" }));
+                    }
+                }
+            }
+            else {
+                rowWithExpandedLabels.push(item);
+            }
+        });
+        return rowWithExpandedLabels;
+    };
+    var templateColumns = getTemplateColumns(columns);
+    var style = {
+        display: "grid",
+        gridTemplateColumns: responsiveBehaviour ? "auto 1fr" : templateColumns,
+    };
+    var content = (react_1.default.createElement("div", { style: style }, ooui.container.rows.map(function (row) {
+        return expandLabelsInFields(row).map(function (item) {
+            var responsiveSpan = item.colspan === columns ? 2 : 1;
+            return (react_1.default.createElement("div", { style: {
+                    alignSelf: "center",
+                    padding: "0.5em",
+                    gridColumnStart: "span " +
+                        (responsiveBehaviour ? responsiveSpan : item.colspan),
+                } }, WidgetFactory_1.createReactWidget(item)));
+        });
+    })));
+    return (react_1.default.createElement(react_1.default.Fragment, null, ooui.label && showLabel ? (react_1.default.createElement(antd_1.Card, { type: "inner", title: ooui.label, style: { textAlign: "left" } }, content)) : (content)));
 }
+var getTemplateColumns = function (columns) {
+    var odd = "1fr";
+    var even = "auto";
+    var templateColumns = "";
+    for (var i = 0; i < columns; i++) {
+        templateColumns += i % 2 ? odd : even;
+        if (i < columns) {
+            templateColumns += " ";
+        }
+    }
+    return templateColumns;
+};
+var clone = function clone(instance) {
+    var copy = new instance.constructor();
+    Object.assign(copy, instance);
+    return copy;
+};
 exports.default = Group;
 //# sourceMappingURL=Group.js.map

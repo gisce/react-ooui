@@ -12,7 +12,7 @@ function FormItem(_a) {
     var labelText = label && label.length > 1 ? label + " :" : " ";
     var formItem = function () { return (react_1.default.createElement(antd_1.Form.Item, { className: "mb-0", name: name, valuePropName: valuePropName }, children)); };
     var horizontalMode = function () {
-        return (react_1.default.createElement(antd_1.Row, { align: "middle" },
+        return (react_1.default.createElement(antd_1.Row, { align: "middle", className: "pb-1 pt-1" },
             !nolabel ? (react_1.default.createElement(antd_1.Col, { className: "ml-2", flex: "7rem" },
                 react_1.default.createElement("div", { className: "flex flex-col items-end" }, labelWithTooltip(nolabel ? "" : labelText, tooltip)))) : null,
             react_1.default.createElement(antd_1.Col, { flex: "auto" }, formItem())));

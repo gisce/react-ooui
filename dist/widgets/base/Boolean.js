@@ -11,7 +11,8 @@ var Boolean = function (props) {
     var ooui = props.ooui;
     var id = ooui.id, label = ooui.label, tooltip = ooui.tooltip, nolabel = ooui.nolabel;
     return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, tooltip: tooltip, nolabel: nolabel, valuePropName: "checked" },
-        react_1.default.createElement(antd_1.Checkbox, { disabled: ooui.readOnly, id: id })));
+        react_1.default.createElement("div", { className: "flex flex-row" },
+            react_1.default.createElement(antd_1.Checkbox, { disabled: ooui.readOnly, id: id }))));
 };
 exports.Boolean = Boolean;
 //# sourceMappingURL=Boolean.js.map

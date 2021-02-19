@@ -42,9 +42,9 @@ var Many2oneInput = function (props) {
         }
     };
     var onValueStringChange = function (e) { };
-    return (react_1.default.createElement(antd_1.Row, { gutter: 8 },
+    return (react_1.default.createElement(antd_1.Row, { gutter: 8, className: "pt-1 pb-1" },
         react_1.default.createElement(antd_1.Col, { flex: "auto" },
-            react_1.default.createElement(antd_1.Input, { type: "text", value: value && value[1], onChange: onValueStringChange, disabled: true, className: "text-black" })),
+            react_1.default.createElement(antd_1.Input, { type: "text", value: value && value[1], onChange: onValueStringChange, disabled: disabled })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
             react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: disabled })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
