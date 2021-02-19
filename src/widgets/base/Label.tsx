@@ -1,4 +1,3 @@
-import React from "react";
 import { Label as LabelOoui } from "ooui";
 
 type Props = {
@@ -7,8 +6,7 @@ type Props = {
 
 const Label = (props: Props) => {
   const { ooui } = props;
-
-  return <p className="text-center">{ooui.label}</p>;
+  return ooui.label;
 };
 
 export default Label;

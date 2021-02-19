@@ -19,7 +19,9 @@ export const Boolean = (props: Props) => {
       nolabel={nolabel}
       valuePropName="checked"
     >
-      <AntCheckbox disabled={ooui.readOnly} id={id} />
+      <div className="flex flex-row">
+        <AntCheckbox disabled={ooui.readOnly} id={id} />
+      </div>
     </FormItem>
   );
 };
