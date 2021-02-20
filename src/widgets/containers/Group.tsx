@@ -10,7 +10,7 @@ type Props = {
 };
 
 function Group(props: Props): React.ReactElement {
-  const responsiveBehaviour = useMediaQuery({ query: "(max-width: 920px)" });
+  const responsiveBehaviour = useMediaQuery({ query: "(max-width: 1000px)" });
   const { ooui, showLabel = true } = props;
   const { columns } = ooui.container;
 
@@ -33,7 +33,7 @@ function Group(props: Props): React.ReactElement {
         totalColSpan += item.colspan - 1;
 
         const label = new Label({ string: item.label });
-        label.align = "right";
+        label.align = responsiveBehaviour ? "left" : "right";
         rowWithExpandedLabels.push(label);
 
         const newItem = clone(item);
@@ -62,14 +62,14 @@ function Group(props: Props): React.ReactElement {
   const templateColumns = getTemplateColumns(columns);
   const style = {
     display: "grid",
-    gridTemplateColumns: responsiveBehaviour ? "auto 1fr" : templateColumns,
+    gridTemplateColumns: responsiveBehaviour ? "auto" : templateColumns,
   };
 
   const content = (
     <div style={style}>
       {ooui!.container.rows.map((row) => {
         return expandLabelsInFields(row).map((item: Widget) => {
-          const responsiveSpan = item.colspan === columns ? 2 : 1;
+          const responsiveSpan = 1;
 
           return (
             <div
