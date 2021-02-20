@@ -4,12 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(require("react"));
-var antd_1 = require("antd");
 var ooui_1 = require("ooui");
 var WidgetFactory_1 = require("@/widgets/WidgetFactory");
 var react_responsive_1 = require("react-responsive");
 function Group(props) {
-    var responsiveBehaviour = react_responsive_1.useMediaQuery({ query: "(max-width: 920px)" });
+    var responsiveBehaviour = react_responsive_1.useMediaQuery({ query: "(max-width: 1000px)" });
     var ooui = props.ooui, _a = props.showLabel, showLabel = _a === void 0 ? true : _a;
     var columns = ooui.container.columns;
     var expandLabelsInFields = function (row) {
@@ -26,7 +25,7 @@ function Group(props) {
                 totalColSpan += 1;
                 totalColSpan += item.colspan - 1;
                 var label = new ooui_1.Label({ string: item.label });
-                label.align = "right";
+                label.align = responsiveBehaviour ? "left" : "right";
                 rowWithExpandedLabels.push(label);
                 var newItem = clone(item);
                 newItem._colspan = item._colspan - 1;
@@ -50,11 +49,11 @@ function Group(props) {
     var templateColumns = getTemplateColumns(columns);
     var style = {
         display: "grid",
-        gridTemplateColumns: responsiveBehaviour ? "auto 1fr" : templateColumns,
+        gridTemplateColumns: responsiveBehaviour ? "auto" : templateColumns,
     };
     var content = (react_1.default.createElement("div", { style: style }, ooui.container.rows.map(function (row) {
         return expandLabelsInFields(row).map(function (item) {
-            var responsiveSpan = item.colspan === columns ? 2 : 1;
+            var responsiveSpan = 1;
             return (react_1.default.createElement("div", { style: {
                     alignSelf: "center",
                     padding: "0.5em",
@@ -63,7 +62,19 @@ function Group(props) {
                 } }, WidgetFactory_1.createReactWidget(item)));
         });
     })));
-    return (react_1.default.createElement(react_1.default.Fragment, null, ooui.label && showLabel ? (react_1.default.createElement(antd_1.Card, { type: "inner", title: ooui.label, style: { textAlign: "left" } }, content)) : (content)));
+    return (react_1.default.createElement(react_1.default.Fragment, null, ooui.label && showLabel ? (react_1.default.createElement("fieldset", { style: {
+            border: "1px solid #ccc",
+            paddingLeft: "0.5em",
+            paddingRight: "0.5em",
+        } },
+        react_1.default.createElement("legend", { style: {
+                all: "initial",
+                marginLeft: "1em",
+                paddingLeft: "0.5em",
+                paddingRight: "0.5em",
+                fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'",
+            } }, ooui.label),
+        content)) : (content)));
 }
 var getTemplateColumns = function (columns) {
     var odd = "1fr";
