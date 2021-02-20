@@ -92,9 +92,27 @@ function Group(props: Props): React.ReactElement {
   return (
     <>
       {ooui.label && showLabel ? (
-        <Card type="inner" title={ooui.label} style={{ textAlign: "left" }}>
+        <fieldset
+          style={{
+            border: "1px solid #ccc",
+            paddingLeft: "0.5em",
+            paddingRight: "0.5em",
+          }}
+        >
+          <legend
+            style={{
+              all: "initial",
+              marginLeft: "1em",
+              paddingLeft: "0.5em",
+              paddingRight: "0.5em",
+              fontFamily:
+                "system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'",
+            }}
+          >
+            {ooui.label}
+          </legend>
           {content}
-        </Card>
+        </fieldset>
       ) : (
         content
       )}
