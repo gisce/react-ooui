@@ -1,36 +1,23 @@
 import React from "react";
 import { InputNumber } from "antd";
-import FormItem from "@/common/FormItem";
-import { Integer as IntegerOoui } from "ooui";
+import Field from "@/common/Field";
+import { WidgetProps } from "@/types";
 
-type Props = {
-  layout?: "horizontal" | "vertical";
-  ooui: IntegerOoui;
-  id?: string;
-};
-
-export const Integer = (props: Props) => {
+export const Integer = (props: WidgetProps) => {
   const { ooui, layout } = props;
-  const { label, tooltip, nolabel } = ooui;
-  const id = props.id ? props.id : ooui.id;
+  const { id, readOnly } = ooui;
 
   return (
-    <FormItem
-      name={id}
-      label={label}
-      layout={layout}
-      tooltip={tooltip}
-      nolabel={nolabel}
-    >
+    <Field ooui={ooui} layout={layout}>
       <InputNumber
         id={id}
         className="w-full"
-        disabled={ooui.readOnly}
+        disabled={readOnly}
         formatter={(value) => {
           return `${value}`.replace(/[^0-9]+/g, "");
         }}
         defaultValue={0}
       />
-    </FormItem>
+    </Field>
   );
 };

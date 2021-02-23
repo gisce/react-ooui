@@ -1,30 +1,20 @@
 import React from "react";
 import { Input } from "antd";
-import FormItem from "@/common/FormItem";
+import Field from "@/common/Field";
 import { Char as CharOoui } from "ooui";
+import { WidgetProps } from "@/types";
 
-type Props = {
-  layout?: "horizontal" | "vertical";
-  ooui: CharOoui;
-};
-
-export const Char = (props: Props) => {
+export const Char = (props: WidgetProps) => {
   const { ooui, layout } = props;
-  const { id, label, nolabel, tooltip } = ooui;
+  const { id, readOnly, isPassword } = ooui as CharOoui;
 
   return (
-    <FormItem
-      name={id}
-      label={label}
-      layout={layout}
-      tooltip={tooltip}
-      nolabel={nolabel}
-    >
-      {ooui.isPassword ? (
-        <Input.Password disabled={ooui.readOnly} id={id} />
+    <Field ooui={ooui} layout={layout}>
+      {isPassword ? (
+        <Input.Password disabled={readOnly} id={id} />
       ) : (
-        <Input disabled={ooui.readOnly} id={id} />
+        <Input disabled={readOnly} id={id} />
       )}
-    </FormItem>
+    </Field>
   );
 };

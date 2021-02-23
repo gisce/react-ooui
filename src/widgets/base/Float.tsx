@@ -1,38 +1,26 @@
 import React from "react";
 import { InputNumber } from "antd";
-import FormItem from "@/common/FormItem";
+import Field from "@/common/Field";
 import { Float as FloatOoui } from "ooui";
+import { WidgetProps } from "@/types";
 
-type Props = {
-  layout?: "horizontal" | "vertical";
-  ooui: FloatOoui;
-  id?: string;
-};
-
-export const Float = (props: Props) => {
+export const Float = (props: WidgetProps) => {
   const { ooui, layout } = props;
-  const { label, nolabel, tooltip } = ooui;
-  const id = props.id ? props.id : ooui.id;
+  const { id, decimalDigits, readOnly } = ooui as FloatOoui;
 
   return (
-    <FormItem
-      name={id}
-      label={label}
-      layout={layout}
-      tooltip={tooltip}
-      nolabel={nolabel}
-    >
+    <Field ooui={ooui} layout={layout}>
       <InputNumber
-        disabled={ooui.readOnly}
+        disabled={readOnly}
         className="w-full"
         id={id}
-        precision={ooui.decimalDigits}
+        precision={decimalDigits}
         formatter={(value) => {
           return `${value}`.replace(/[^0-9\.\-]+/g, "");
         }}
         defaultValue={0}
         decimalSeparator={"."}
       />
-    </FormItem>
+    </Field>
   );
 };

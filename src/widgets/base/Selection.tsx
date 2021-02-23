@@ -1,6 +1,6 @@
 import React from "react";
 import { Select } from "antd";
-import FormItem from "@/common/FormItem";
+import Field from "@/common/Field";
 import { Selection as SelectionOoui } from "ooui";
 const { Option } = Select;
 
@@ -11,7 +11,7 @@ type Props = {
 
 export const Selection = (props: Props) => {
   const { ooui, layout } = props;
-  const { id, label, selectionValues, tooltip, nolabel } = ooui;
+  const { selectionValues, readOnly } = ooui;
   const values = Array.from(selectionValues.entries());
 
   const options =
@@ -27,14 +27,8 @@ export const Selection = (props: Props) => {
     });
 
   return (
-    <FormItem
-      name={id}
-      label={label}
-      layout={layout}
-      tooltip={tooltip}
-      nolabel={nolabel}
-    >
-      <Select disabled={ooui.readOnly}>{options}</Select>
-    </FormItem>
+    <Field ooui={ooui} layout={layout}>
+      <Select disabled={readOnly}>{options}</Select>
+    </Field>
   );
 };

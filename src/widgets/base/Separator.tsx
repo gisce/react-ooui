@@ -10,5 +10,9 @@ export const Separator = (props: Props) => {
   const { ooui } = props;
   const { label } = ooui;
 
-  return <Divider orientation="left" className=" text-sm">{label}</Divider>;
+  return (
+    <Divider orientation="left" className="text-sm">
+      {label}
+    </Divider>
+  );
 };

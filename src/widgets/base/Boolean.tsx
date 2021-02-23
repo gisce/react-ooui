@@ -1,27 +1,17 @@
 import React from "react";
 import { Checkbox as AntCheckbox } from "antd";
-import { Boolean as BooleanOoui } from "ooui";
-import FormItem from "@/common/FormItem";
+import Field from "@/common/Field";
+import { WidgetProps } from "@/types";
 
-type Props = {
-  ooui: BooleanOoui;
-};
-
-export const Boolean = (props: Props) => {
+export const Boolean = (props: WidgetProps) => {
   const { ooui } = props;
-  const { id, label, tooltip, nolabel } = ooui;
+  const { id, readOnly } = ooui;
 
   return (
-    <FormItem
-      name={id}
-      label={label}
-      tooltip={tooltip}
-      nolabel={nolabel}
-      valuePropName="checked"
-    >
+    <Field ooui={ooui} valuePropName="checked">
       <div className="flex flex-row">
-        <AntCheckbox disabled={ooui.readOnly} id={id} />
+        <AntCheckbox disabled={readOnly} id={id} />
       </div>
-    </FormItem>
+    </Field>
   );
 };

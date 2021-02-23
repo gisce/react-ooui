@@ -1,6 +1,6 @@
 import React from "react";
 import { Input } from "antd";
-import FormItem from "@/common/FormItem";
+import Field from "@/common/Field";
 import { Text as TextOoui } from "ooui";
 const { TextArea } = Input;
 
@@ -10,11 +10,11 @@ type Props = {
 
 const Text = (props: Props) => {
   const { ooui } = props;
-  const { id, label, tooltip, nolabel, readOnly } = ooui;
+  const { readOnly } = ooui;
   return (
-    <FormItem name={id} label={label} tooltip={tooltip} nolabel={nolabel}>
+    <Field ooui={ooui}>
       <TextArea disabled={readOnly} rows={4} />
-    </FormItem>
+    </Field>
   );
 };
 

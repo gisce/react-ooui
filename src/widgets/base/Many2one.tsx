@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Input, Button, Row, Col } from "antd";
 import { SearchOutlined, FolderOpenOutlined } from "@ant-design/icons";
 import { Many2one as Many2oneOoui } from "ooui";
-import FormItem from "@/common/FormItem";
+import Field from "@/common/Field";
 
 type Props = {
   ooui: Many2oneOoui;
@@ -15,13 +15,11 @@ type Props = {
 };
 
 export const Many2one = (props: Props) => {
-  const { ooui, onOpenDetailClick, onSearchClick } = props;
-  const { id, label, nolabel, tooltip } = ooui;
-
+  const { ooui } = props;
   return (
-    <FormItem name={id} label={label} tooltip={tooltip} nolabel={nolabel}>
+    <Field ooui={ooui}>
       <Many2oneInput />
-    </FormItem>
+    </Field>
   );
 };
 

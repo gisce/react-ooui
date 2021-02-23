@@ -1,21 +1,17 @@
 import React from "react";
-import { Form, Button as AntButton } from "antd";
-import { Button as ButtonOoui } from "ooui";
-import FormItem from "@/common/FormItem";
+import Field from "@/common/Field";
+import { Button as AntButton } from "antd";
+import { WidgetProps } from "@/types";
 
-type Props = {
-  ooui: ButtonOoui;
-};
-
-export const Button = (props: Props) => {
+export const Button = (props: WidgetProps) => {
   const { ooui } = props;
-  const { id, label, activated } = ooui;
+  const { label, activated } = ooui;
 
   return (
-    <FormItem name={id} label={""} nolabel={true}>
+    <Field ooui={ooui}>
       <AntButton className="w-full" disabled={!activated}>
         {label}
       </AntButton>
-    </FormItem>
+    </Field>
   );
 };
