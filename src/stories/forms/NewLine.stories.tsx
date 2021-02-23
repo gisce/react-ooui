@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Form } from "..";
+import { Form } from "../..";
 import "antd/dist/antd.css";
 import "@/tailwind.generated.css";
 

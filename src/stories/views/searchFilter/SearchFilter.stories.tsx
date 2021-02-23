@@ -1,12 +1,12 @@
 import React from "react";
 
-import { SearchFilter } from "..";
+import { SearchFilter } from "../../..";
 import "antd/dist/antd.css";
 import "@/tailwind.generated.css";
 
 export default {
   component: SearchFilter,
-  title: "Components/Widgets/Views/SearchFilter",
+  title: "Components/Widgets/Views/SearchFilter/SearchFilter",
 };
 
 const Template = (args: any) => <SearchFilter {...args} />;

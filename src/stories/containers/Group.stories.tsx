@@ -6,7 +6,7 @@ import { withKnobs, number, text } from "@storybook/addon-knobs";
 
 import { Form } from "antd";
 import { Form as FormOoui, Group as GroupOoui } from "ooui";
-import { Group } from "..";
+import { Group } from "../..";
 
 export default {
   title: "Components/Widgets/Containers/Group",

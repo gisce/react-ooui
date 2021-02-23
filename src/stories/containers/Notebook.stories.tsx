@@ -6,7 +6,7 @@ import { withKnobs } from "@storybook/addon-knobs";
 
 import { Form } from "antd";
 import { Form as FormOoui, Notebook as NotebookOoui } from "ooui";
-import { Notebook } from "..";
+import { Notebook } from "../..";
 
 export default {
   title: "Components/Widgets/Containers/Notebook",
