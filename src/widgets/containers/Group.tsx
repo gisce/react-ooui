@@ -1,5 +1,4 @@
 import React from "react";
-import { Card } from "antd";
 import { Group as GroupOoui, Widget, Field, Label, Button, Text } from "ooui";
 import { createReactWidget } from "@/widgets/WidgetFactory";
 import { useMediaQuery } from "react-responsive";
@@ -67,8 +66,8 @@ function Group(props: Props): React.ReactElement {
 
   const content = (
     <div style={style}>
-      {ooui!.container.rows.map((row) => {
-        return expandLabelsInFields(row).map((item: Widget) => {
+      {ooui!.container.rows.map((row, i: number) => {
+        return expandLabelsInFields(row).map((item: Widget, j: number) => {
           const responsiveSpan = 1;
 
           return (
@@ -81,7 +80,10 @@ function Group(props: Props): React.ReactElement {
                   (responsiveBehaviour ? responsiveSpan : item.colspan),
               }}
             >
-              {createReactWidget(item)}
+              {createReactWidget({
+                ooui: item,
+                key: `${i.toString()}-${j.toString()}`,
+              })}
             </div>
           );
         });

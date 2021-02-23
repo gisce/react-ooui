@@ -26,7 +26,6 @@ const filteredValues = (values: any, fields: any) => {
   return filteredValues;
 };
 
-
 const processInitialValues = (values: any, fields: any) => {
   const filterBooleans = filteredValues(values, fields);
   return filterBooleans;
@@ -40,7 +39,10 @@ function Form(props: Props): React.ReactElement {
   const getForm = () => {
     return form!.container.rows.map((item, i) => {
       return item.map((widget, j) => {
-        return createReactWidget(widget, `${i}-${j}`);
+        return createReactWidget({
+          ooui: widget,
+          key: `${i.toString()}-${j.toString()}`,
+        });
       });
     });
   };
