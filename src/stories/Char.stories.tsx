@@ -15,3 +15,12 @@ export const Default = (): React.ReactElement => {
   });
   return <Char ooui={ooui} />;
 };
+
+export const Password = (): React.ReactElement => {
+  const ooui = new CharOoui({
+    name: "field",
+    string: "Password",
+  });
+  ooui.isPassword = true;
+  return <Char ooui={ooui} />;
+};
