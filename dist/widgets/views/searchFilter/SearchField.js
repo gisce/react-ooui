@@ -26,6 +26,7 @@ var Selection_1 = require("@/widgets/base/Selection");
 var DateRangePicker_1 = require("./DateRangePicker");
 var DateTimeRangePicker_1 = require("./DateTimeRangePicker");
 var PairFields_1 = require("./PairFields");
+var WidgetFactory_1 = require("@/widgets/WidgetFactory");
 var LocalesContext_1 = require("@/context/LocalesContext");
 var ooui_1 = require("ooui");
 var types = {
@@ -48,8 +49,7 @@ function SearchField(props) {
     var widgetType = field.constructor.name;
     switch (widgetType) {
         case types.text:
-        case types.many2one:
-        case types.char: {
+        case types.many2one: {
             var char = field;
             return react_1.default.createElement(Char_1.Char, { ooui: char, layout: "vertical" });
         }
@@ -64,25 +64,23 @@ function SearchField(props) {
             });
             return react_1.default.createElement(Selection_1.Selection, { layout: "vertical", ooui: ooui });
         }
-        case types.selection: {
-            var selection = field;
-            return react_1.default.createElement(Selection_1.Selection, { layout: "vertical", ooui: selection });
-        }
         case types.float:
         case types.progressbar:
         case types.float_time:
         case types.integer: {
-            return react_1.default.createElement(PairFields_1.PairFields, { ooui: field, id: field._id, label: field.label });
+            return react_1.default.createElement(PairFields_1.PairFields, { ooui: field });
         }
         case types.date: {
-            return (react_1.default.createElement(DateRangePicker_1.DateRangePicker, { id: field._id, label: field.label, layout: "vertical" }));
+            return react_1.default.createElement(DateRangePicker_1.DateRangePicker, { ooui: field, layout: "vertical" });
         }
         case types.datetime: {
-            return (react_1.default.createElement(DateTimeRangePicker_1.DateTimeRangePicker, { id: field._id, label: field.label, layout: "vertical" }));
+            return react_1.default.createElement(DateTimeRangePicker_1.DateTimeRangePicker, { ooui: field, layout: "vertical" });
         }
         default: {
-            var char = field;
-            return react_1.default.createElement(Char_1.Char, { ooui: char, layout: "vertical" });
+            return WidgetFactory_1.createReactWidget({
+                ooui: field,
+                layout: "vertical",
+            });
         }
     }
 }

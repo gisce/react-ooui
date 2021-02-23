@@ -7,10 +7,11 @@ exports.labelWithTooltip = void 0;
 var react_1 = __importDefault(require("react"));
 var antd_1 = require("antd");
 var icons_1 = require("@ant-design/icons");
-function FormItem(_a) {
-    var name = _a.name, label = _a.label, children = _a.children, _b = _a.layout, layout = _b === void 0 ? "horizontal" : _b, tooltip = _a.tooltip, _c = _a.nolabel, nolabel = _c === void 0 ? false : _c, valuePropName = _a.valuePropName;
+function Field(_a) {
+    var ooui = _a.ooui, children = _a.children, _b = _a.layout, layout = _b === void 0 ? "horizontal" : _b, valuePropName = _a.valuePropName;
+    var id = ooui.id, label = ooui.label, tooltip = ooui.tooltip, nolabel = ooui.nolabel;
     var labelText = label && label.length > 1 ? label + " :" : " ";
-    var formItem = function () { return (react_1.default.createElement(antd_1.Form.Item, { className: "mb-0", name: name, valuePropName: valuePropName }, children)); };
+    var formItem = function () { return (react_1.default.createElement(antd_1.Form.Item, { className: "mb-0", name: id, valuePropName: valuePropName }, children)); };
     var horizontalMode = function () {
         return (react_1.default.createElement(antd_1.Row, { align: "middle", className: "pb-1 pt-1" },
             !nolabel ? (react_1.default.createElement(antd_1.Col, { className: "ml-2", flex: "7rem" },
@@ -24,7 +25,7 @@ function FormItem(_a) {
     };
     return layout === "horizontal" ? horizontalMode() : verticalMode();
 }
-exports.default = FormItem;
+exports.default = Field;
 var labelWithTooltip = function (label, tooltip) {
     return (react_1.default.createElement("div", { className: "flex flex-row items-center pb-1" },
         tooltip && (react_1.default.createElement(antd_1.Tooltip, { title: tooltip },
@@ -32,4 +33,4 @@ var labelWithTooltip = function (label, tooltip) {
         react_1.default.createElement("span", { className: "text-right pr-2" }, label)));
 };
 exports.labelWithTooltip = labelWithTooltip;
-//# sourceMappingURL=FormItem.js.map
+//# sourceMappingURL=Field.js.map

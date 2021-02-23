@@ -1,9 +1,4 @@
 /// <reference types="react" />
-import { Char as CharOoui } from "ooui";
-declare type Props = {
-    layout?: "horizontal" | "vertical";
-    ooui: CharOoui;
-};
-export declare const Char: (props: Props) => JSX.Element;
-export {};
+import { WidgetProps } from "@/types";
+export declare const Char: (props: WidgetProps) => JSX.Element;
 //# sourceMappingURL=Char.d.ts.map

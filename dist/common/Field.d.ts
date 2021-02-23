@@ -1,13 +1,11 @@
 import React from "react";
-export default function FormItem({ name, label, children, layout, tooltip, nolabel, valuePropName, }: {
-    name: string;
-    label?: string;
+import { Field as FieldOoui } from "ooui";
+export default function Field({ ooui, children, layout, valuePropName, }: {
+    ooui: FieldOoui;
     children?: React.ReactNode;
     layout?: "horizontal" | "vertical";
-    tooltip?: string;
-    nolabel?: boolean;
     valuePropName?: string;
 }): JSX.Element;
 declare const labelWithTooltip: (label: string, tooltip?: string | undefined) => JSX.Element;
 export { labelWithTooltip };
-//# sourceMappingURL=FormItem.d.ts.map
+//# sourceMappingURL=Field.d.ts.map

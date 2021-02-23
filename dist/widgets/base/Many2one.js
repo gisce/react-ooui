@@ -26,11 +26,10 @@ exports.Many2one = void 0;
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var icons_1 = require("@ant-design/icons");
-var FormItem_1 = __importDefault(require("@/common/FormItem"));
+var Field_1 = __importDefault(require("@/common/Field"));
 var Many2one = function (props) {
-    var ooui = props.ooui, onOpenDetailClick = props.onOpenDetailClick, onSearchClick = props.onSearchClick;
-    var id = ooui.id, label = ooui.label, nolabel = ooui.nolabel, tooltip = ooui.tooltip;
-    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, tooltip: tooltip, nolabel: nolabel },
+    var ooui = props.ooui;
+    return (react_1.default.createElement(Field_1.default, { ooui: ooui },
         react_1.default.createElement(Many2oneInput, null)));
 };
 exports.Many2one = Many2one;

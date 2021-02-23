@@ -6,13 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Float = void 0;
 var react_1 = __importDefault(require("react"));
 var antd_1 = require("antd");
-var FormItem_1 = __importDefault(require("@/common/FormItem"));
+var Field_1 = __importDefault(require("@/common/Field"));
 var Float = function (props) {
     var ooui = props.ooui, layout = props.layout;
-    var label = ooui.label, nolabel = ooui.nolabel, tooltip = ooui.tooltip;
-    var id = props.id ? props.id : ooui.id;
-    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, layout: layout, tooltip: tooltip, nolabel: nolabel },
-        react_1.default.createElement(antd_1.InputNumber, { disabled: ooui.readOnly, className: "w-full", id: id, precision: ooui.decimalDigits, formatter: function (value) {
+    var _a = ooui, id = _a.id, decimalDigits = _a.decimalDigits, readOnly = _a.readOnly;
+    return (react_1.default.createElement(Field_1.default, { ooui: ooui, layout: layout },
+        react_1.default.createElement(antd_1.InputNumber, { disabled: readOnly, className: "w-full", id: id, precision: decimalDigits, formatter: function (value) {
                 return ("" + value).replace(/[^0-9\.\-]+/g, "");
             }, defaultValue: 0, decimalSeparator: "." })));
 };

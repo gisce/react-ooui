@@ -6,10 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DateRangePicker = void 0;
 var antd_1 = require("antd");
 var react_1 = __importDefault(require("react"));
-var FormItem_1 = __importDefault(require("@/common/FormItem"));
-var DateRangePicker = function (_a) {
-    var id = _a.id, label = _a.label, _b = _a.layout, layout = _b === void 0 ? "horizontal" : _b;
-    return (react_1.default.createElement(FormItem_1.default, { name: id, label: label, layout: layout },
+var Field_1 = __importDefault(require("@/common/Field"));
+var DateRangePicker = function (props) {
+    var ooui = props.ooui, layout = props.layout;
+    return (react_1.default.createElement(Field_1.default, { ooui: ooui, layout: layout },
         react_1.default.createElement(antd_1.DatePicker.RangePicker, { format: "DD/MM/YYYY" })));
 };
 exports.DateRangePicker = DateRangePicker;

@@ -1,3 +1,4 @@
+import { Field as FieldOoui } from "ooui";
 declare type Strings = {
     [key: string]: string;
 };
@@ -15,5 +16,9 @@ declare type Column = {
     key: string;
     type?: string;
 };
-export type { Strings, SearchFields, TreeView, Column };
+declare type WidgetProps = {
+    ooui: FieldOoui;
+    layout?: "horizontal" | "vertical";
+};
+export type { Strings, SearchFields, TreeView, Column, WidgetProps };
 //# sourceMappingURL=index.d.ts.map

@@ -1,8 +1,4 @@
 /// <reference types="react" />
-import { Boolean as BooleanOoui } from "ooui";
-declare type Props = {
-    ooui: BooleanOoui;
-};
-export declare const Boolean: (props: Props) => JSX.Element;
-export {};
+import { WidgetProps } from "@/types";
+export declare const Boolean: (props: WidgetProps) => JSX.Element;
 //# sourceMappingURL=Boolean.d.ts.map

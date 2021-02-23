@@ -51,15 +51,18 @@ function Group(props) {
         display: "grid",
         gridTemplateColumns: responsiveBehaviour ? "auto" : templateColumns,
     };
-    var content = (react_1.default.createElement("div", { style: style }, ooui.container.rows.map(function (row) {
-        return expandLabelsInFields(row).map(function (item) {
+    var content = (react_1.default.createElement("div", { style: style }, ooui.container.rows.map(function (row, i) {
+        return expandLabelsInFields(row).map(function (item, j) {
             var responsiveSpan = 1;
             return (react_1.default.createElement("div", { style: {
                     alignSelf: "center",
                     padding: "0.5em",
                     gridColumnStart: "span " +
                         (responsiveBehaviour ? responsiveSpan : item.colspan),
-                } }, WidgetFactory_1.createReactWidget(item)));
+                } }, WidgetFactory_1.createReactWidget({
+                ooui: item,
+                key: i.toString() + "-" + j.toString(),
+            })));
         });
     })));
     return (react_1.default.createElement(react_1.default.Fragment, null, ooui.label && showLabel ? (react_1.default.createElement("fieldset", { style: {

@@ -1,11 +1,4 @@
 import React from "react";
-import { Widget as WidgetOoui } from "ooui";
-declare const createReactWidget: (widgetOoui: WidgetOoui, key?: string | undefined) => React.CElement<{
-    ooui: WidgetOoui;
-    key: string | undefined;
-}, React.Component<{
-    ooui: WidgetOoui;
-    key: string | undefined;
-}, any, any>> | null;
+declare const createReactWidget: (props: any) => React.CElement<any, React.Component<any, any, any>> | null;
 export { createReactWidget };
 //# sourceMappingURL=WidgetFactory.d.ts.map

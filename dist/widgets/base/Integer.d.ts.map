@@ -1,1 +1,1 @@
-{"version":3,"file":"Integer.d.ts","sourceRoot":"","sources":["../../../src/widgets/base/Integer.tsx"],"names":[],"mappings":";AAGA,OAAO,EAAE,OAAO,IAAI,WAAW,EAAE,MAAM,MAAM,CAAC;AAE9C,aAAK,KAAK,GAAG;IACX,MAAM,CAAC,EAAE,YAAY,GAAG,UAAU,CAAC;IACnC,IAAI,EAAE,WAAW,CAAC;IAClB,EAAE,CAAC,EAAE,MAAM,CAAC;CACb,CAAC;AAEF,eAAO,MAAM,OAAO,UAAW,KAAK,gBAwBnC,CAAC"}
+{"version":3,"file":"Integer.d.ts","sourceRoot":"","sources":["../../../src/widgets/base/Integer.tsx"],"names":[],"mappings":";AAGA,OAAO,EAAE,WAAW,EAAE,MAAM,SAAS,CAAC;AAEtC,eAAO,MAAM,OAAO,UAAW,WAAW,gBAiBzC,CAAC"}

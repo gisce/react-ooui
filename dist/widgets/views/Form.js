@@ -46,7 +46,10 @@ function Form(props) {
     var getForm = function () {
         return form.container.rows.map(function (item, i) {
             return item.map(function (widget, j) {
-                return WidgetFactory_1.createReactWidget(widget, i + "-" + j);
+                return WidgetFactory_1.createReactWidget({
+                    ooui: widget,
+                    key: i.toString() + "-" + j.toString(),
+                });
             });
         });
     };

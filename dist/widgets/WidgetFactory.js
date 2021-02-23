@@ -26,13 +26,14 @@ exports.createReactWidget = void 0;
 var react_1 = __importDefault(require("react"));
 var Widgets = __importStar(require("@/index"));
 var widgetTypes = Widgets;
-var createReactWidget = function (widgetOoui, key) {
-    var type = widgetOoui.constructor.name;
+var createReactWidget = function (props) {
+    var ooui = props.ooui;
+    var type = ooui.constructor.name;
     var widgetClass = widgetTypes[type];
     if (!widgetClass) {
         return null;
     }
-    return react_1.default.createElement(widgetClass, { ooui: widgetOoui, key: key });
+    return react_1.default.createElement(widgetClass, props);
 };
 exports.createReactWidget = createReactWidget;
 //# sourceMappingURL=WidgetFactory.js.map

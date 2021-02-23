@@ -1,7 +1,4 @@
 /// <reference types="react" />
-export declare const DateRangePicker: ({ id, label, layout, }: {
-    id: string;
-    label?: string | undefined;
-    layout?: "horizontal" | "vertical" | undefined;
-}) => JSX.Element;
+import { WidgetProps } from "@/types";
+export declare const DateRangePicker: (props: WidgetProps) => JSX.Element;
 //# sourceMappingURL=DateRangePicker.d.ts.map
