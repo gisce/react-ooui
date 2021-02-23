@@ -51,6 +51,7 @@ function Group(props: Props): React.ReactElement {
           }
         }
       } else {
+        totalColSpan += item.colspan;
         rowWithExpandedLabels.push(item);
       }
     });
