@@ -18,11 +18,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var ooui_1 = require("ooui");
-var WidgetFactory_1 = require("@/widgets/WidgetFactory");
 var antd_1 = require("antd");
+var Container_1 = __importDefault(require("../containers/Container"));
 var filteredValues = function (values, fields) {
     if (!fields) {
         return values;
@@ -43,22 +46,12 @@ var processInitialValues = function (values, fields) {
 function Form(props) {
     var arch = props.arch, fields = props.fields, initialValues = props.initialValues, antForm = props.antForm;
     var _a = react_1.useState(), form = _a[0], setForm = _a[1];
-    var getForm = function () {
-        return form.container.rows.map(function (item, i) {
-            return item.map(function (widget, j) {
-                return WidgetFactory_1.createReactWidget({
-                    ooui: widget,
-                    key: i.toString() + "-" + j.toString(),
-                });
-            });
-        });
-    };
     react_1.useEffect(function () {
         var newForm = new ooui_1.Form(fields);
         newForm.parse(arch);
         setForm(newForm);
     }, [arch, fields]);
-    return (react_1.default.createElement(antd_1.Form, { form: antForm, initialValues: processInitialValues(initialValues, fields) }, form && getForm()));
+    return (react_1.default.createElement(antd_1.Form, { form: antForm, initialValues: processInitialValues(initialValues, fields) }, form && react_1.default.createElement(Container_1.default, { container: form.container, formWrapper: true })));
 }
 exports.default = Form;
 //# sourceMappingURL=Form.js.map
