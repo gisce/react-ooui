@@ -32,12 +32,12 @@ const Container = (props: Props): React.ReactElement => {
     return rowWithExpandedFields.map((item: Widget, j: number) => {
       return (
         <div
+          key={`${i.toString()}-${j.toString()}`}
           className="self-center p-2"
           style={getSpanStyleForItem({ item, responsiveBehaviour })}
         >
           {createReactWidget({
             ooui: item,
-            key: `${i.toString()}-${j.toString()}`,
           })}
         </div>
       );
