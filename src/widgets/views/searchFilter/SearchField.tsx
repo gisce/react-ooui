@@ -5,7 +5,6 @@ import { Selection } from "@/widgets/base/Selection";
 import { DateRangePicker } from "./DateRangePicker";
 import { DateTimeRangePicker } from "./DateTimeRangePicker";
 import { PairFields } from "./PairFields";
-import { createReactWidget } from "@/widgets/WidgetFactory";
 
 import { LocalesContext, LocalesContextType } from "@/context/LocalesContext";
 
@@ -38,11 +37,6 @@ export function SearchField(props: Props) {
   const widgetType = field.constructor.name;
 
   switch (widgetType) {
-    case types.text:
-    case types.many2one: {
-      const char = field as CharOoui;
-      return <Char ooui={char} layout="vertical" />;
-    }
     case types.boolean: {
       const ooui = new SelectionOoui({
         name: field._id,
@@ -68,10 +62,7 @@ export function SearchField(props: Props) {
       return <DateTimeRangePicker ooui={field} layout="vertical" />;
     }
     default: {
-      return createReactWidget({
-        ooui: field,
-        layout: "vertical",
-      });
+      return <Char ooui={field} layout="vertical" />;
     }
   }
 }

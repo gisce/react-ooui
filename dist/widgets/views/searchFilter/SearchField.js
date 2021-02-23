@@ -26,7 +26,6 @@ var Selection_1 = require("@/widgets/base/Selection");
 var DateRangePicker_1 = require("./DateRangePicker");
 var DateTimeRangePicker_1 = require("./DateTimeRangePicker");
 var PairFields_1 = require("./PairFields");
-var WidgetFactory_1 = require("@/widgets/WidgetFactory");
 var LocalesContext_1 = require("@/context/LocalesContext");
 var ooui_1 = require("ooui");
 var types = {
@@ -48,11 +47,6 @@ function SearchField(props) {
     var getString = react_1.useContext(LocalesContext_1.LocalesContext).getString;
     var widgetType = field.constructor.name;
     switch (widgetType) {
-        case types.text:
-        case types.many2one: {
-            var char = field;
-            return react_1.default.createElement(Char_1.Char, { ooui: char, layout: "vertical" });
-        }
         case types.boolean: {
             var ooui = new ooui_1.Selection({
                 name: field._id,
@@ -77,10 +71,7 @@ function SearchField(props) {
             return react_1.default.createElement(DateTimeRangePicker_1.DateTimeRangePicker, { ooui: field, layout: "vertical" });
         }
         default: {
-            return WidgetFactory_1.createReactWidget({
-                ooui: field,
-                layout: "vertical",
-            });
+            return react_1.default.createElement(Char_1.Char, { ooui: field, layout: "vertical" });
         }
     }
 }
