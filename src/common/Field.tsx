@@ -1,32 +1,25 @@
 import React from "react";
 import { Form, Tooltip, Row, Col } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
+import { Field as FieldOoui } from "ooui";
 
-export default function FormItem({
-  name,
-  label,
+export default function Field({
+  ooui,
   children,
   layout = "horizontal",
-  tooltip,
-  nolabel = false,
   valuePropName,
 }: {
-  name: string;
-  label?: string;
+  ooui: FieldOoui;
   children?: React.ReactNode;
   layout?: "horizontal" | "vertical";
-  tooltip?: string;
-  nolabel?: boolean;
   valuePropName?: string;
 }) {
+  const { id, label, tooltip, nolabel } = ooui;
+
   const labelText = label && label.length > 1 ? label + " :" : " ";
 
   const formItem = () => (
-    <Form.Item
-      className="mb-0"
-      name={name}
-      valuePropName={valuePropName}
-    >
+    <Form.Item className="mb-0" name={id} valuePropName={valuePropName}>
       {children}
     </Form.Item>
   );
