@@ -17,7 +17,7 @@ const selectionValues = [
 export const Default = (): React.ReactElement => {
   const ooui = new SelectionOoui({
     name: "selcontext_langection",
-    string: "Lorem ipsum sit",
+    string: "Lorem ipsum",
     selection: selectionValues,
   });
 
