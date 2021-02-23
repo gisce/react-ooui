@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form as FormOoui } from "ooui";
-import { createReactWidget } from "@/widgets/WidgetFactory";
 import { Form as AntForm, FormInstance } from "antd";
+import Container from "../containers/Container";
 
 type Props = {
   arch: string;
@@ -36,17 +36,6 @@ function Form(props: Props): React.ReactElement {
 
   const [form, setForm] = useState<FormOoui>();
 
-  const getForm = () => {
-    return form!.container.rows.map((item, i) => {
-      return item.map((widget, j) => {
-        return createReactWidget({
-          ooui: widget,
-          key: `${i.toString()}-${j.toString()}`,
-        });
-      });
-    });
-  };
-
   useEffect(() => {
     const newForm = new FormOoui(fields);
     newForm.parse(arch);
@@ -58,7 +47,7 @@ function Form(props: Props): React.ReactElement {
       form={antForm}
       initialValues={processInitialValues(initialValues, fields)}
     >
-      {form && getForm()}
+      {form && <Container container={form!.container} formWrapper />}
     </AntForm>
   );
 }
