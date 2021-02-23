@@ -6,7 +6,7 @@ import "@/tailwind.generated.css";
 
 export default {
   component: Form,
-  title: "Components/Widgets/Forms/NewLineExample",
+  title: "Components/Widgets/Containers/NewLineExample",
 };
 
 const Template = (args: any) => <Form {...args} />;
