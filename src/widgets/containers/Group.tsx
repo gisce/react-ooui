@@ -1,6 +1,7 @@
 import React from "react";
 import { Group as GroupOoui } from "ooui";
 import Container from "./Container";
+import Fieldset from "@/ui/Fieldset";
 
 type Props = {
   ooui: GroupOoui;
@@ -13,28 +14,9 @@ function Group(props: Props): React.ReactElement {
   return (
     <>
       {ooui.label && showLabel ? (
-        // TODO: change in-line styles to TailWind classes
-        <fieldset
-          style={{
-            border: "1px solid #ccc",
-            paddingLeft: "0.5em",
-            paddingRight: "0.5em",
-          }}
-        >
-          <legend
-            style={{
-              all: "initial",
-              marginLeft: "1em",
-              paddingLeft: "0.5em",
-              paddingRight: "0.5em",
-              fontFamily:
-                "system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'",
-            }}
-          >
-            {ooui.label}
-          </legend>
+        <Fieldset label={ooui.label}>
           <Container container={ooui!.container} />
-        </fieldset>
+        </Fieldset>
       ) : (
         <Container container={ooui!.container} />
       )}
