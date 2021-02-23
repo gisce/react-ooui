@@ -5,6 +5,7 @@ import { Selection } from "@/widgets/base/Selection";
 import { DateRangePicker } from "./DateRangePicker";
 import { DateTimeRangePicker } from "./DateTimeRangePicker";
 import { PairFields } from "./PairFields";
+import { createReactWidget } from "@/widgets/WidgetFactory";
 
 import { LocalesContext, LocalesContextType } from "@/context/LocalesContext";
 
@@ -28,7 +29,7 @@ const types = {
   datetime: "DateTime",
 };
 
-export function SearchField(props: Props): React.ReactElement {
+export function SearchField(props: Props) {
   const { field } = props;
   field.readOnly = false;
 
@@ -38,8 +39,7 @@ export function SearchField(props: Props): React.ReactElement {
 
   switch (widgetType) {
     case types.text:
-    case types.many2one:
-    case types.char: {
+    case types.many2one: {
       const char = field as CharOoui;
       return <Char ooui={char} layout="vertical" />;
     }
@@ -55,33 +55,23 @@ export function SearchField(props: Props): React.ReactElement {
 
       return <Selection layout="vertical" ooui={ooui} />;
     }
-    case types.selection: {
-      const selection = field as SelectionOoui;
-      return <Selection layout="vertical" ooui={selection} />;
-    }
     case types.float:
     case types.progressbar:
     case types.float_time:
     case types.integer: {
-      return <PairFields ooui={field} id={field._id} label={field.label} />;
+      return <PairFields ooui={field} />;
     }
     case types.date: {
-      return (
-        <DateRangePicker id={field._id} label={field.label} layout="vertical" />
-      );
+      return <DateRangePicker ooui={field} layout="vertical" />;
     }
     case types.datetime: {
-      return (
-        <DateTimeRangePicker
-          id={field._id}
-          label={field.label}
-          layout="vertical"
-        />
-      );
+      return <DateTimeRangePicker ooui={field} layout="vertical" />;
     }
     default: {
-      const char = field as CharOoui;
-      return <Char ooui={char} layout="vertical" />;
+      return createReactWidget({
+        ooui: field,
+        layout: "vertical",
+      });
     }
   }
 }

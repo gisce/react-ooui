@@ -1,20 +1,15 @@
 import { DatePicker } from "antd";
 
 import React from "react";
-import FormItem from "@/common/FormItem";
+import Field from "@/common/Field";
+import { WidgetProps } from "@/types";
 
-export const DateRangePicker = ({
-  id,
-  label,
-  layout = "horizontal",
-}: {
-  id: string;
-  label?: string;
-  layout?: "horizontal" | "vertical";
-}) => {
+export const DateRangePicker = (props: WidgetProps) => {
+  const { ooui, layout } = props;
+
   return (
-    <FormItem name={id} label={label} layout={layout}>
+    <Field ooui={ooui} layout={layout}>
       <DatePicker.RangePicker format={"DD/MM/YYYY"}></DatePicker.RangePicker>
-    </FormItem>
+    </Field>
   );
 };

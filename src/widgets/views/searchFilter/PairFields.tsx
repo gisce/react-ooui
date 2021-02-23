@@ -2,13 +2,11 @@ import React from "react";
 import { Row, Col } from "antd";
 import { Float } from "@/widgets/base/Float";
 import { Integer } from "@/widgets/base/Integer";
-import { Float as FloatOoui, Integer as IntegerOoui } from "ooui";
-import { labelWithTooltip } from "@/common/FormItem";
+import { Integer as IntegerOoui } from "ooui";
+import { labelWithTooltip } from "@/common/Field";
 
 type Props = {
   ooui: any;
-  id: string;
-  label?: string;
 };
 
 export function PairFields(props: Props): React.ReactElement {
@@ -19,8 +17,7 @@ export function PairFields(props: Props): React.ReactElement {
   const getWidget = (suffix: string) => {
     return (
       <Widget
-        id={id + suffix}
-        ooui={{ ...ooui, label: "", tooltip: undefined }}
+        ooui={{ ...ooui, id: id + suffix, label: "", tooltip: undefined }}
         layout="vertical"
       />
     );
