@@ -10,10 +10,10 @@ import {
 
 type Props = {
   container: ContainerOoui;
-  formWrapper: boolean;
+  formWrapper?: boolean;
 };
 
-function Container(props: Props) {
+const Container = (props: Props): React.ReactElement => {
   const responsiveBehaviour = useMediaQuery({ query: "(max-width: 1000px)" });
   const { container, formWrapper = false } = props;
   const { columns, rows } = container;
@@ -45,7 +45,7 @@ function Container(props: Props) {
   });
 
   if (formWrapper) {
-    return content;
+    return content as any;
   }
 
   const templateColumns = getTemplateColumns(columns);
@@ -55,6 +55,6 @@ function Container(props: Props) {
   };
 
   return <div style={gridStyle}>{content}</div>;
-}
+};
 
 export default Container;
