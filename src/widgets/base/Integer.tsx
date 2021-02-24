@@ -4,11 +4,11 @@ import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 
 export const Integer = (props: WidgetProps) => {
-  const { ooui, layout } = props;
+  const { ooui } = props;
   const { id, readOnly } = ooui;
 
   return (
-    <Field ooui={ooui} layout={layout}>
+    <Field {...props}>
       <InputNumber
         id={id}
         className="w-full"

@@ -11,16 +11,17 @@ export default {
 export const Default = (): React.ReactElement => {
   const ooui = new CharOoui({
     name: "field",
-    string: "Lorem ipsum",
+    string: "Lorem ipsum"
   });
-  return <Char ooui={ooui} />;
+  return <Char ooui={ooui} showLabel />;
 };
 
 export const Password = (): React.ReactElement => {
   const ooui = new CharOoui({
     name: "field",
     string: "Password",
+    nolabel: false
   });
   ooui.isPassword = true;
-  return <Char ooui={ooui} />;
+  return <Char ooui={ooui} showLabel />;
 };

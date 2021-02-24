@@ -21,5 +21,5 @@ export const Default = (): React.ReactElement => {
     selection: selectionValues,
   });
 
-  return <Selection ooui={ooui} />;
+  return <Selection ooui={ooui} showLabel />;
 };

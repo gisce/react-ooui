@@ -3,34 +3,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.labelWithTooltip = void 0;
 var react_1 = __importDefault(require("react"));
 var antd_1 = require("antd");
-var icons_1 = require("@ant-design/icons");
+var ooui_1 = require("ooui");
+var Label_1 = __importDefault(require("@/widgets/base/Label"));
 function Field(_a) {
-    var ooui = _a.ooui, children = _a.children, _b = _a.layout, layout = _b === void 0 ? "horizontal" : _b, valuePropName = _a.valuePropName;
-    var id = ooui.id, label = ooui.label, tooltip = ooui.tooltip, nolabel = ooui.nolabel;
-    var labelText = label && label.length > 1 ? label + " :" : " ";
+    var ooui = _a.ooui, children = _a.children, _b = _a.layout, layout = _b === void 0 ? "horizontal" : _b, valuePropName = _a.valuePropName, _c = _a.showLabel, showLabel = _c === void 0 ? false : _c, _d = _a.alignLabel, alignLabel = _d === void 0 ? "left" : _d;
+    var id = ooui.id, label = ooui.label, tooltip = ooui.tooltip;
     var formItem = function () { return (react_1.default.createElement(antd_1.Form.Item, { className: "mb-0", name: id, valuePropName: valuePropName }, children)); };
+    if (!showLabel) {
+        return formItem();
+    }
+    var labelWidget = (react_1.default.createElement(Label_1.default, { ooui: new ooui_1.Label({
+            name: id + "_label",
+            string: label,
+            help: tooltip,
+            fieldForLabel: id,
+        }), align: alignLabel }));
     var horizontalMode = function () {
         return (react_1.default.createElement(antd_1.Row, { align: "middle", className: "pb-1 pt-1" },
-            !nolabel ? (react_1.default.createElement(antd_1.Col, { className: "ml-2", flex: "7rem" },
-                react_1.default.createElement("div", { className: "flex flex-col items-end" }, labelWithTooltip(nolabel ? "" : labelText, tooltip)))) : null,
+            react_1.default.createElement(antd_1.Col, { className: "ml-2", flex: "7rem" },
+                react_1.default.createElement("div", { className: "flex flex-col items-end" }, labelWidget)),
             react_1.default.createElement(antd_1.Col, { flex: "auto" }, formItem())));
     };
     var verticalMode = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
-            labelWithTooltip(nolabel ? "" : labelText, tooltip),
+            labelWidget,
             formItem()));
     };
     return layout === "horizontal" ? horizontalMode() : verticalMode();
 }
 exports.default = Field;
-var labelWithTooltip = function (label, tooltip) {
-    return (react_1.default.createElement("div", { className: "flex flex-row items-center pb-1" },
-        tooltip && (react_1.default.createElement(antd_1.Tooltip, { title: tooltip },
-            react_1.default.createElement(icons_1.QuestionCircleOutlined, { className: "text-xs text-blue-400 pr-1" }))),
-        react_1.default.createElement("span", { className: "text-right pr-2" }, label)));
-};
-exports.labelWithTooltip = labelWithTooltip;
 //# sourceMappingURL=Field.js.map

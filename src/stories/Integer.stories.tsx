@@ -13,5 +13,5 @@ export const Default = (): React.ReactElement => {
     name: "field",
     string: "Lorem ipsum",
   });
-  return <Integer ooui={ooui} />;
+  return <Integer ooui={ooui} showLabel />;
 };

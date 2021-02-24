@@ -8,7 +8,7 @@ import { PairFields } from "./PairFields";
 
 import { LocalesContext, LocalesContextType } from "@/context/LocalesContext";
 
-import { Field, Selection as SelectionOoui, Char as CharOoui } from "ooui";
+import { Field, Selection as SelectionOoui } from "ooui";
 
 type Props = {
   field: Field;
@@ -47,22 +47,22 @@ export function SearchField(props: Props) {
         ],
       });
 
-      return <Selection layout="vertical" ooui={ooui} />;
+      return <Selection layout="vertical" ooui={ooui} showLabel />;
     }
     case types.float:
     case types.progressbar:
     case types.float_time:
     case types.integer: {
-      return <PairFields ooui={field} />;
+      return <PairFields ooui={field} showLabel />;
     }
     case types.date: {
-      return <DateRangePicker ooui={field} layout="vertical" />;
+      return <DateRangePicker ooui={field} layout="vertical" showLabel />;
     }
     case types.datetime: {
-      return <DateTimeRangePicker ooui={field} layout="vertical" />;
+      return <DateTimeRangePicker ooui={field} layout="vertical" showLabel />;
     }
     default: {
-      return <Char ooui={field} layout="vertical" />;
+      return <Char ooui={field} layout="vertical" showLabel />;
     }
   }
 }

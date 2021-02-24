@@ -1,11 +1,11 @@
 import React from "react";
 import { Field as FieldOoui } from "ooui";
-export default function Field({ ooui, children, layout, valuePropName, }: {
+export default function Field({ ooui, children, layout, valuePropName, showLabel, alignLabel, }: {
     ooui: FieldOoui;
     children?: React.ReactNode;
     layout?: "horizontal" | "vertical";
     valuePropName?: string;
+    showLabel?: boolean;
+    alignLabel?: "left" | "center" | "right";
 }): JSX.Element;
-declare const labelWithTooltip: (label: string, tooltip?: string | undefined) => JSX.Element;
-export { labelWithTooltip };
 //# sourceMappingURL=Field.d.ts.map

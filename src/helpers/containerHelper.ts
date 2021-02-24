@@ -18,7 +18,7 @@ const getSpanStyleForItem = ({
   };
 };
 
-const expandLabelsInFields = ({
+const fillRowWithEmptiesToFit = ({
   row,
   mustFillWithEmpties,
   numberOfColumns,
@@ -27,49 +27,26 @@ const expandLabelsInFields = ({
   mustFillWithEmpties: boolean;
   numberOfColumns: number;
 }) => {
-  const rowWithExpandedLabels: any = [];
+  const rowWithEmptiesToFit: any = [];
   let totalColSpan = 0;
 
   row.map((item: Widget, columnIndex: number) => {
+    totalColSpan += item.colspan;
+    rowWithEmptiesToFit.push(item);
+
     if (
-      item instanceof Field &&
-      !(item instanceof Button) &&
-      !(item instanceof Label)
+      columnIndex + 1 === row.length &&
+      totalColSpan < numberOfColumns &&
+      !mustFillWithEmpties
     ) {
-      if (item instanceof Text && item.nolabel) {
-        rowWithExpandedLabels.push(item);
-        return;
+      const gapsToFill = numberOfColumns - totalColSpan;
+      for (let i = 0; i < gapsToFill; i += 1) {
+        rowWithEmptiesToFit.push(new Label({ string: "" }));
       }
-
-      totalColSpan += 1;
-      totalColSpan += item.colspan - 1;
-
-      const label = new Label({ string: item.label });
-      label.align = mustFillWithEmpties ? "left" : "right";
-      rowWithExpandedLabels.push(label);
-
-      const newItem = clone(item);
-      newItem._colspan = item._colspan - 1;
-      newItem._nolabel = true;
-      rowWithExpandedLabels.push(newItem);
-
-      if (
-        columnIndex + 1 === row.length &&
-        totalColSpan < numberOfColumns &&
-        !mustFillWithEmpties
-      ) {
-        const gapsToFill = numberOfColumns - totalColSpan;
-        for (let i = 0; i < gapsToFill; i += 1) {
-          rowWithExpandedLabels.push(new Label({ string: "" }));
-        }
-      }
-    } else {
-      totalColSpan += item.colspan;
-      rowWithExpandedLabels.push(item);
     }
   });
 
-  return rowWithExpandedLabels;
+  return rowWithEmptiesToFit;
 };
 
 const getTemplateColumns = (columns: number) => {
@@ -85,4 +62,4 @@ const getTemplateColumns = (columns: number) => {
   return templateColumns;
 };
 
-export { getTemplateColumns, expandLabelsInFields, getSpanStyleForItem };
+export { getTemplateColumns, fillRowWithEmptiesToFit, getSpanStyleForItem };

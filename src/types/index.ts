@@ -24,6 +24,7 @@ type Column = {
 type WidgetProps = {
   ooui: FieldOoui;
   layout?: "horizontal" | "vertical";
+  showLabel?: boolean;
 };
 
 export type { Strings, SearchFields, TreeView, Column, WidgetProps };

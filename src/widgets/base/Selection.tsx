@@ -2,16 +2,13 @@ import React from "react";
 import { Select } from "antd";
 import Field from "@/common/Field";
 import { Selection as SelectionOoui } from "ooui";
+import { WidgetProps } from "@/types";
+
 const { Option } = Select;
 
-type Props = {
-  layout?: "horizontal" | "vertical";
-  ooui: SelectionOoui;
-};
-
-export const Selection = (props: Props) => {
-  const { ooui, layout } = props;
-  const { selectionValues, readOnly } = ooui;
+export const Selection = (props: WidgetProps) => {
+  const { ooui } = props;
+  const { selectionValues, readOnly } = ooui as SelectionOoui;
   const values = Array.from(selectionValues.entries());
 
   const options =
@@ -27,7 +24,7 @@ export const Selection = (props: Props) => {
     });
 
   return (
-    <Field ooui={ooui} layout={layout}>
+    <Field {...props}>
       <Select disabled={readOnly}>{options}</Select>
     </Field>
   );

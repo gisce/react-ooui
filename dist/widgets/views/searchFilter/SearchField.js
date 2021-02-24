@@ -56,22 +56,22 @@ function SearchField(props) {
                     ["false", getString("false")],
                 ],
             });
-            return react_1.default.createElement(Selection_1.Selection, { layout: "vertical", ooui: ooui });
+            return react_1.default.createElement(Selection_1.Selection, { layout: "vertical", ooui: ooui, showLabel: true });
         }
         case types.float:
         case types.progressbar:
         case types.float_time:
         case types.integer: {
-            return react_1.default.createElement(PairFields_1.PairFields, { ooui: field });
+            return react_1.default.createElement(PairFields_1.PairFields, { ooui: field, showLabel: true });
         }
         case types.date: {
-            return react_1.default.createElement(DateRangePicker_1.DateRangePicker, { ooui: field, layout: "vertical" });
+            return react_1.default.createElement(DateRangePicker_1.DateRangePicker, { ooui: field, layout: "vertical", showLabel: true });
         }
         case types.datetime: {
-            return react_1.default.createElement(DateTimeRangePicker_1.DateTimeRangePicker, { ooui: field, layout: "vertical" });
+            return react_1.default.createElement(DateTimeRangePicker_1.DateTimeRangePicker, { ooui: field, layout: "vertical", showLabel: true });
         }
         default: {
-            return react_1.default.createElement(Char_1.Char, { ooui: field, layout: "vertical" });
+            return react_1.default.createElement(Char_1.Char, { ooui: field, layout: "vertical", showLabel: true });
         }
     }
 }

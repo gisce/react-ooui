@@ -13,5 +13,5 @@ export const Default = (): React.ReactElement => {
     name: "field",
     string: "Lorem ipsum",
   });
-  return <Many2one ooui={ooui} />;
+  return <Many2one ooui={ooui} showLabel />;
 };

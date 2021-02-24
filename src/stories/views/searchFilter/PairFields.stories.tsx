@@ -14,5 +14,5 @@ export const Default = (): React.ReactElement => {
     name: "field",
     string: "Lorem ipsum",
   });
-  return <PairFields ooui={ooui} />;
+  return <PairFields ooui={ooui} showLabel />;
 };

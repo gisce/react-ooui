@@ -8,7 +8,7 @@ export const Boolean = (props: WidgetProps) => {
   const { id, readOnly } = ooui;
 
   return (
-    <Field ooui={ooui} valuePropName="checked">
+    <Field {...props} valuePropName="checked">
       <div className="flex flex-row">
         <AntCheckbox disabled={readOnly} id={id} />
       </div>

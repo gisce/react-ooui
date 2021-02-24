@@ -5,11 +5,11 @@ import { Char as CharOoui } from "ooui";
 import { WidgetProps } from "@/types";
 
 export const Char = (props: WidgetProps) => {
-  const { ooui, layout } = props;
+  const { ooui } = props;
   const { id, readOnly, isPassword } = ooui as CharOoui;
 
   return (
-    <Field ooui={ooui} layout={layout}>
+    <Field {...props}>
       {isPassword ? (
         <Input.Password disabled={readOnly} id={id} />
       ) : (

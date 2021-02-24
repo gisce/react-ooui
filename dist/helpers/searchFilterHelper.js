@@ -10,12 +10,10 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getParamsForFields = exports.groupDateTimeValuesIfNeeded = exports.removeUndefinedFields = void 0;
@@ -29,7 +27,7 @@ var getParamsForFields = function (values, fields) {
     var filteredValues = removeUndefinedFields(values);
     var groupedDateTime = groupDateTimeValuesIfNeeded(filteredValues);
     var groupedValues = ungroupDateValuesIfNeeded(groupedDateTime, fields);
-    var params = __spreadArrays(Object.keys(groupedValues).map(function (key) {
+    var params = __spreadArray([], Object.keys(groupedValues).map(function (key) {
         return getParamForField(key, groupedValues[key], fields);
     }));
     // This is needed because in case of datetime we receive an array of arrays
@@ -37,7 +35,7 @@ var getParamsForFields = function (values, fields) {
         if (Array.isArray(curVal[0])) {
             return acc.concat(curVal);
         }
-        return __spreadArrays(acc, [curVal]);
+        return __spreadArray(__spreadArray([], acc), [curVal]);
     }, []);
 };
 exports.getParamsForFields = getParamsForFields;

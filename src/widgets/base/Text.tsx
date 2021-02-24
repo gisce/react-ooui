@@ -12,7 +12,7 @@ const Text = (props: Props) => {
   const { ooui } = props;
   const { readOnly } = ooui;
   return (
-    <Field ooui={ooui}>
+    <Field {...props}>
       <TextArea disabled={readOnly} rows={4} />
     </Field>
   );

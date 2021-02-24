@@ -20,16 +20,21 @@ var antd_1 = require("antd");
 var Float_1 = require("@/widgets/base/Float");
 var Integer_1 = require("@/widgets/base/Integer");
 var ooui_1 = require("ooui");
-var Field_1 = require("@/common/Field");
+var Label_1 = __importDefault(require("@/widgets/base/Label"));
 function PairFields(props) {
-    var ooui = props.ooui;
+    var ooui = props.ooui, showLabel = props.showLabel;
     var id = ooui.id, label = ooui.label, tooltip = ooui.tooltip;
     var Widget = ooui instanceof ooui_1.Integer ? Integer_1.Integer : Float_1.Float;
     var getWidget = function (suffix) {
         return (react_1.default.createElement(Widget, { ooui: __assign(__assign({}, ooui), { id: id + suffix, label: "", tooltip: undefined }), layout: "vertical" }));
     };
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        Field_1.labelWithTooltip(label, tooltip),
+        showLabel && (react_1.default.createElement(Label_1.default, { ooui: new ooui_1.Label({
+                name: id + "_label",
+                string: label,
+                help: tooltip,
+                fieldForLabel: id,
+            }), align: "left" })),
         react_1.default.createElement(antd_1.Row, { align: "bottom", className: "mt-0" },
             react_1.default.createElement(antd_1.Col, null, getWidget("#from")),
             react_1.default.createElement(antd_1.Col, { className: "pb-1" },

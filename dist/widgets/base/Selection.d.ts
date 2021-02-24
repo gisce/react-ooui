@@ -1,9 +1,4 @@
 /// <reference types="react" />
-import { Selection as SelectionOoui } from "ooui";
-declare type Props = {
-    layout?: "horizontal" | "vertical";
-    ooui: SelectionOoui;
-};
-export declare const Selection: (props: Props) => JSX.Element;
-export {};
+import { WidgetProps } from "@/types";
+export declare const Selection: (props: WidgetProps) => JSX.Element;
 //# sourceMappingURL=Selection.d.ts.map

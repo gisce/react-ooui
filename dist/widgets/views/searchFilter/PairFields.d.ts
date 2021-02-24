@@ -1,7 +1,4 @@
 import React from "react";
-declare type Props = {
-    ooui: any;
-};
-export declare function PairFields(props: Props): React.ReactElement;
-export {};
+import { WidgetProps } from "@/types";
+export declare function PairFields(props: WidgetProps): React.ReactElement;
 //# sourceMappingURL=PairFields.d.ts.map

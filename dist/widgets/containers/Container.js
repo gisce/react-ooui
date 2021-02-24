@@ -15,12 +15,12 @@ var Container = function (props) {
         var rowWithoutInvisibleFields = row.filter(function (widget) {
             return !widget.invisible;
         });
-        var rowWithExpandedFields = containerHelper_1.expandLabelsInFields({
+        var rowWithEmptiesToFit = containerHelper_1.fillRowWithEmptiesToFit({
             row: rowWithoutInvisibleFields,
             numberOfColumns: columns,
             mustFillWithEmpties: responsiveBehaviour,
         });
-        return rowWithExpandedFields.map(function (item, j) {
+        return rowWithEmptiesToFit.map(function (item, j) {
             return (react_1.default.createElement("div", { key: i.toString() + "-" + j.toString(), className: "self-center p-2", style: containerHelper_1.getSpanStyleForItem({ item: item, responsiveBehaviour: responsiveBehaviour }) }, WidgetFactory_1.createReactWidget({
                 ooui: item,
             })));

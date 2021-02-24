@@ -14,5 +14,5 @@ export const Default = (): React.ReactElement => {
     name: "field",
     string: "Lorem ipsum",
   });
-  return <DateRangePicker ooui={ooui} />;
+  return <DateRangePicker ooui={ooui} showLabel />;
 };

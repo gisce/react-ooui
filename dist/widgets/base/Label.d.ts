@@ -1,7 +1,7 @@
 /// <reference types="react" />
-import { Label as LabelOoui } from "ooui";
-declare type Props = {
-    ooui: LabelOoui;
+import { WidgetProps } from "@/types";
+declare type Props = WidgetProps & {
+    align?: "left" | "center" | "right";
 };
 declare const Label: (props: Props) => JSX.Element;
 export default Label;

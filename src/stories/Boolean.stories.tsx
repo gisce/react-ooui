@@ -13,5 +13,5 @@ export const Default = (): React.ReactElement => {
     name: "checkbox_field",
     string: "Lorem ipsum",
   });
-  return <Boolean ooui={ooui} />;
+  return <Boolean ooui={ooui} showLabel />;
 };

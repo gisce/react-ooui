@@ -4,7 +4,7 @@ import { createReactWidget } from "@/widgets/WidgetFactory";
 import { useMediaQuery } from "react-responsive";
 import {
   getTemplateColumns,
-  expandLabelsInFields,
+  fillRowWithEmptiesToFit,
   getSpanStyleForItem,
 } from "@/helpers/containerHelper";
 
@@ -23,13 +23,13 @@ const Container = (props: Props): React.ReactElement => {
       return !widget.invisible;
     });
 
-    const rowWithExpandedFields = expandLabelsInFields({
+    const rowWithEmptiesToFit = fillRowWithEmptiesToFit({
       row: rowWithoutInvisibleFields,
       numberOfColumns: columns,
       mustFillWithEmpties: responsiveBehaviour,
     });
 
-    return rowWithExpandedFields.map((item: Widget, j: number) => {
+    return rowWithEmptiesToFit.map((item: Widget, j: number) => {
       return (
         <div
           key={`${i.toString()}-${j.toString()}`}

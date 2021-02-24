@@ -13,5 +13,5 @@ export const Default = (): React.ReactElement => {
     name: "field",
     string: "Lorem ipsum",
   });
-  return <Float ooui={ooui} />;
+  return <Float ooui={ooui} showLabel />;
 };

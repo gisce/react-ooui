@@ -5,11 +5,11 @@ import { Float as FloatOoui } from "ooui";
 import { WidgetProps } from "@/types";
 
 export const Float = (props: WidgetProps) => {
-  const { ooui, layout } = props;
+  const { ooui } = props;
   const { id, decimalDigits, readOnly } = ooui as FloatOoui;
 
   return (
-    <Field ooui={ooui} layout={layout}>
+    <Field {...props}>
       <InputNumber
         disabled={readOnly}
         className="w-full"

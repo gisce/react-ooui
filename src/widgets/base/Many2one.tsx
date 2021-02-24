@@ -15,9 +15,8 @@ type Props = {
 };
 
 export const Many2one = (props: Props) => {
-  const { ooui } = props;
   return (
-    <Field ooui={ooui}>
+    <Field {...props}>
       <Many2oneInput />
     </Field>
   );
