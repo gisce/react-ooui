@@ -1,5 +1,4 @@
 import React from "react";
-import { Widget as WidgetOoui } from "ooui";
 import * as Widgets from "@/index";
 
 type widgets = {
