@@ -31,6 +31,7 @@ const types = {
 export function SearchField(props: Props) {
   const { field } = props;
   field.readOnly = false;
+  field.required = false;
 
   const { getString } = useContext(LocalesContext) as LocalesContextType;
 

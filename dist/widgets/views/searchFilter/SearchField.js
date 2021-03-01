@@ -44,6 +44,7 @@ var types = {
 function SearchField(props) {
     var field = props.field;
     field.readOnly = false;
+    field.required = false;
     var getString = react_1.useContext(LocalesContext_1.LocalesContext).getString;
     var widgetType = field.constructor.name;
     switch (widgetType) {

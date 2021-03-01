@@ -27,7 +27,7 @@ export const Selection = (props: WidgetProps) => {
       );
     });
 
-  const CustomSelect: any = true ? RequiredSelect : Select;
+  const CustomSelect: any = required ? RequiredSelect : Select;
 
   return (
     <Field {...props}>
