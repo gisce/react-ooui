@@ -1,6 +1,7 @@
 import React from "react";
 import { Input } from "antd";
 import Field from "@/common/Field";
+import Config from "@/Config";
 import { Text as TextOoui } from "ooui";
 const { TextArea } = Input;
 
@@ -10,10 +11,12 @@ type Props = {
 
 const Text = (props: Props) => {
   const { ooui } = props;
-  const { readOnly } = ooui;
+  const { readOnly, required } = ooui;
+  const requiredClass = required ? Config.requiredClass : undefined;
+
   return (
     <Field {...props}>
-      <TextArea disabled={readOnly} rows={4} />
+      <TextArea disabled={readOnly} className={requiredClass} rows={4} />
     </Field>
   );
 };

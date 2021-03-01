@@ -3,6 +3,7 @@ import { Input, Button, Row, Col } from "antd";
 import { SearchOutlined, FolderOpenOutlined } from "@ant-design/icons";
 import { Many2one as Many2oneOoui } from "ooui";
 import Field from "@/common/Field";
+import Config from "@/Config";
 
 type Props = {
   ooui: Many2oneOoui;
@@ -15,14 +16,16 @@ type Props = {
 };
 
 export const Many2one = (props: Props) => {
+  const { ooui } = props;
   return (
     <Field {...props}>
-      <Many2oneInput />
+      <Many2oneInput ooui={ooui} />
     </Field>
   );
 };
 
 interface Many2oneInputProps {
+  ooui: Many2oneOoui;
   value?: any[];
   onChange?: (value: any[]) => void;
   disabled?: boolean;
@@ -31,7 +34,9 @@ interface Many2oneInputProps {
 const Many2oneInput: React.FC<Many2oneInputProps> = (
   props: Many2oneInputProps
 ) => {
-  const { value, onChange, disabled } = props;
+  const { value, onChange, disabled, ooui } = props;
+  const { required } = ooui;
+  const requiredClass = required ? Config.requiredClass : undefined;
 
   const [m2oValue, setM2oValue] = useState<any[]>();
 
@@ -50,6 +55,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
           value={value && value[1]}
           onChange={onValueStringChange}
           disabled={disabled}
+          className={requiredClass}
         />
       </Col>
       <Col flex="32px">

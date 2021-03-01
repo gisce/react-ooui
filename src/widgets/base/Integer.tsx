@@ -2,16 +2,18 @@ import React from "react";
 import { InputNumber } from "antd";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
+import Config from "@/Config";
 
 export const Integer = (props: WidgetProps) => {
   const { ooui } = props;
-  const { id, readOnly } = ooui;
+  const { id, readOnly, required } = ooui;
+  const requiredClass = required ? Config.requiredClass : undefined;
 
   return (
     <Field {...props}>
       <InputNumber
         id={id}
-        className="w-full"
+        className={"w-full " + requiredClass}
         disabled={readOnly}
         formatter={(value) => {
           return `${value}`.replace(/[^0-9]+/g, "");
