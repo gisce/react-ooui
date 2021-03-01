@@ -1,14 +1,18 @@
 import React from "react";
 import { Select } from "antd";
+import styled from "styled-components";
+
 import Field from "@/common/Field";
 import { Selection as SelectionOoui } from "ooui";
 import { WidgetProps } from "@/types";
+import Config from "@/Config";
 
 const { Option } = Select;
 
 export const Selection = (props: WidgetProps) => {
   const { ooui } = props;
-  const { selectionValues, readOnly } = ooui as SelectionOoui;
+  const { selectionValues, readOnly, required } = ooui as SelectionOoui;
+
   const values = Array.from(selectionValues.entries());
 
   const options =
@@ -23,9 +27,17 @@ export const Selection = (props: WidgetProps) => {
       );
     });
 
+  const CustomSelect: any = true ? RequiredSelect : Select;
+
   return (
     <Field {...props}>
-      <Select disabled={readOnly}>{options}</Select>
+      <CustomSelect disabled={readOnly}>{options}</CustomSelect>
     </Field>
   );
 };
+
+const RequiredSelect = styled(Select)`
+  &.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    background-color: ${Config.requiredColor};
+  }
+`;
