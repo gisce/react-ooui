@@ -18,11 +18,13 @@ exports.Float = void 0;
 var react_1 = __importDefault(require("react"));
 var antd_1 = require("antd");
 var Field_1 = __importDefault(require("@/common/Field"));
+var Config_1 = __importDefault(require("@/Config"));
 var Float = function (props) {
     var ooui = props.ooui;
-    var _a = ooui, id = _a.id, decimalDigits = _a.decimalDigits, readOnly = _a.readOnly;
+    var _a = ooui, id = _a.id, decimalDigits = _a.decimalDigits, readOnly = _a.readOnly, required = _a.required;
+    var requiredClass = required ? Config_1.default.requiredClass : undefined;
     return (react_1.default.createElement(Field_1.default, __assign({}, props),
-        react_1.default.createElement(antd_1.InputNumber, { disabled: readOnly, className: "w-full", id: id, precision: decimalDigits, formatter: function (value) {
+        react_1.default.createElement(antd_1.InputNumber, { disabled: readOnly, className: "w-full " + requiredClass, id: id, precision: decimalDigits, formatter: function (value) {
                 return ("" + value).replace(/[^0-9\.\-]+/g, "");
             }, defaultValue: 0, decimalSeparator: "." })));
 };

@@ -38,13 +38,17 @@ var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var icons_1 = require("@ant-design/icons");
 var Field_1 = __importDefault(require("@/common/Field"));
+var Config_1 = __importDefault(require("@/Config"));
 var Many2one = function (props) {
+    var ooui = props.ooui;
     return (react_1.default.createElement(Field_1.default, __assign({}, props),
-        react_1.default.createElement(Many2oneInput, null)));
+        react_1.default.createElement(Many2oneInput, { ooui: ooui })));
 };
 exports.Many2one = Many2one;
 var Many2oneInput = function (props) {
-    var value = props.value, onChange = props.onChange, disabled = props.disabled;
+    var value = props.value, onChange = props.onChange, disabled = props.disabled, ooui = props.ooui;
+    var required = ooui.required;
+    var requiredClass = required ? Config_1.default.requiredClass : undefined;
     var _a = react_1.useState(), m2oValue = _a[0], setM2oValue = _a[1];
     var triggerChange = function (changedValue) {
         if (onChange) {
@@ -53,7 +57,7 @@ var Many2oneInput = function (props) {
     var onValueStringChange = function (e) { };
     return (react_1.default.createElement(antd_1.Row, { gutter: 8, className: "pt-1 pb-1" },
         react_1.default.createElement(antd_1.Col, { flex: "auto" },
-            react_1.default.createElement(antd_1.Input, { type: "text", value: value && value[1], onChange: onValueStringChange, disabled: disabled })),
+            react_1.default.createElement(antd_1.Input, { type: "text", value: value && value[1], onChange: onValueStringChange, disabled: disabled, className: requiredClass })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
             react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: disabled })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },

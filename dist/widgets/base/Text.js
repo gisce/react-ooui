@@ -17,12 +17,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(require("react"));
 var antd_1 = require("antd");
 var Field_1 = __importDefault(require("@/common/Field"));
+var Config_1 = __importDefault(require("@/Config"));
 var TextArea = antd_1.Input.TextArea;
 var Text = function (props) {
     var ooui = props.ooui;
-    var readOnly = ooui.readOnly;
+    var readOnly = ooui.readOnly, required = ooui.required;
+    var requiredClass = required ? Config_1.default.requiredClass : undefined;
     return (react_1.default.createElement(Field_1.default, __assign({}, props),
-        react_1.default.createElement(TextArea, { disabled: readOnly, rows: 4 })));
+        react_1.default.createElement(TextArea, { disabled: readOnly, className: requiredClass, rows: 4 })));
 };
 exports.default = Text;
 //# sourceMappingURL=Text.js.map
