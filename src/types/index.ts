@@ -68,5 +68,7 @@ export type {
   WidgetProps,
   SearchRequest,
   SearchResponse,
-  ConnectionProviderType
+  ConnectionProviderType,
+  UpdateObjectRequest,
+  CreateObjectRequest
 };
