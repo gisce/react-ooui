@@ -39,6 +39,8 @@ var antd_1 = require("antd");
 var icons_1 = require("@ant-design/icons");
 var Field_1 = __importDefault(require("@/common/Field"));
 var Config_1 = __importDefault(require("@/Config"));
+var SearchModal_1 = require("@/widgets/modals/SearchModal");
+var DetailModal_1 = require("@/widgets/modals/DetailModal");
 var Many2one = function (props) {
     var ooui = props.ooui;
     return (react_1.default.createElement(Field_1.default, __assign({}, props),
@@ -49,18 +51,34 @@ var Many2oneInput = function (props) {
     var value = props.value, onChange = props.onChange, disabled = props.disabled, ooui = props.ooui;
     var required = ooui.required;
     var requiredClass = required ? Config_1.default.requiredClass : undefined;
-    var _a = react_1.useState(), m2oValue = _a[0], setM2oValue = _a[1];
+    var _a = react_1.useState(false), showSearchModal = _a[0], setShowSearchModal = _a[1];
+    var _b = react_1.useState(false), showDetailModal = _b[0], setShowDetailModal = _b[1];
     var triggerChange = function (changedValue) {
-        if (onChange) {
-        }
+        onChange === null || onChange === void 0 ? void 0 : onChange(__assign(__assign({}, value), changedValue));
     };
     var onValueStringChange = function (e) { };
     return (react_1.default.createElement(antd_1.Row, { gutter: 8, className: "pt-1 pb-1" },
         react_1.default.createElement(antd_1.Col, { flex: "auto" },
             react_1.default.createElement(antd_1.Input, { type: "text", value: value && value[1], onChange: onValueStringChange, disabled: disabled, className: requiredClass })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
-            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: disabled })),
+            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: disabled, onClick: function () {
+                    setShowDetailModal(true);
+                } })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
-            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.SearchOutlined, null), disabled: disabled }))));
+            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.SearchOutlined, null), disabled: disabled, onClick: function () {
+                    setShowSearchModal(true);
+                } })),
+        react_1.default.createElement(SearchModal_1.SearchModal, { visible: showSearchModal, onSelectValue: function (value) {
+                triggerChange(value);
+                setShowSearchModal(false);
+            }, onCloseModal: function () {
+                setShowSearchModal(false);
+            } }),
+        react_1.default.createElement(DetailModal_1.DetailModal, { visible: showDetailModal, onSelectValue: function (value) {
+                triggerChange(value);
+                setShowDetailModal(false);
+            }, onCloseModal: function () {
+                setShowDetailModal(false);
+            } })));
 };
 //# sourceMappingURL=Many2one.js.map
