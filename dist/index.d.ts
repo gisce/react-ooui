@@ -14,6 +14,6 @@ import Text from "@/widgets/base/Text";
 import { Separator } from "@/widgets/base/Separator";
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import SearchTree from "@/widgets/views/SearchTree";
-import { TreeView, SearchFields } from "@/types";
-export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, Integer, Label, Text, TreeView, SearchFields, Separator, SearchTree, };
+import { TreeView, SearchFields, FormView } from "@/types";
+export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, };
 //# sourceMappingURL=index.d.ts.map

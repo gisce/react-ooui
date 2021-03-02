@@ -27,4 +27,10 @@ type WidgetProps = {
   showLabel?: boolean;
 };
 
-export type { Strings, SearchFields, TreeView, Column, WidgetProps };
+type FormView = {
+  arch: string;
+  fields: any;
+  search_fields: SearchFields;
+};
+
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps };

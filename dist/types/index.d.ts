@@ -21,5 +21,10 @@ declare type WidgetProps = {
     layout?: "horizontal" | "vertical";
     showLabel?: boolean;
 };
-export type { Strings, SearchFields, TreeView, Column, WidgetProps };
+declare type FormView = {
+    arch: string;
+    fields: any;
+    search_fields: SearchFields;
+};
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps };
 //# sourceMappingURL=index.d.ts.map
