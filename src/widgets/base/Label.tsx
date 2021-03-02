@@ -3,6 +3,7 @@ import { Tooltip } from "antd";
 import { WidgetProps } from "@/types";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Label as LabelOoui } from "ooui";
+import { useMediaQuery } from "react-responsive";
 
 type Props = WidgetProps & {
   align?: "left" | "center" | "right";
@@ -15,11 +16,13 @@ const alignClass = {
 };
 
 const Label = (props: Props) => {
+  const responsiveBehaviour = useMediaQuery({ query: "(max-width: 1000px)" });
   const { ooui, align } = props;
   const { label, tooltip, fieldForLabel } = ooui as LabelOoui;
   const addColon = fieldForLabel !== null ? true : false;
   const labelText = addColon && label.length > 1 ? label + " :" : label;
-  const labelAlgin = align ? align : fieldForLabel ? "right" : "left";
+  const responsiveAlign = responsiveBehaviour ? "left" : "right";
+  const labelAlgin = align ? align : fieldForLabel ? responsiveAlign : "left";
 
   return (
     <div className={`flex flex-row items-center pb-1 ${alignClass[labelAlgin]}`}>
