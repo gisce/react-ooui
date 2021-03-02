@@ -80,10 +80,11 @@ function SearchTree(props) {
         setOffset((page - 1) * limit);
     };
     var fetchResults = function () { return __awaiter(_this, void 0, void 0, function () {
-        var _a, totalItems, results;
+        var _a, totalItems_1, results_1, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
+                    _b.trys.push([0, 2, 3, 4]);
                     setTableRefreshing(true);
                     return [4 /*yield*/, onRequestFetch({
                             params: params,
@@ -91,12 +92,19 @@ function SearchTree(props) {
                             offset: offset,
                         })];
                 case 1:
-                    _a = _b.sent(), totalItems = _a.totalItems, results = _a.results;
-                    setTotalItems(totalItems);
-                    setResults(results);
-                    setSearchFilterLoading(false);
+                    _a = _b.sent(), totalItems_1 = _a.totalItems, results_1 = _a.results;
+                    setTotalItems(totalItems_1);
+                    setResults(results_1);
+                    return [3 /*break*/, 4];
+                case 2:
+                    error_1 = _b.sent();
+                    setError(error_1);
+                    return [3 /*break*/, 4];
+                case 3:
                     setTableRefreshing(false);
-                    return [2 /*return*/];
+                    setSearchFilterLoading(false);
+                    return [7 /*endfinally*/];
+                case 4: return [2 /*return*/];
             }
         });
     }); };

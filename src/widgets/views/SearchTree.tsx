@@ -56,16 +56,21 @@ function SearchTree(props: Props): React.ReactElement {
   };
 
   const fetchResults = async () => {
-    setTableRefreshing(true);
-    const { totalItems, results } = await onRequestFetch({
-      params,
-      limit,
-      offset,
-    });
-    setTotalItems(totalItems);
-    setResults(results);
-    setSearchFilterLoading(false);
-    setTableRefreshing(false);
+    try {
+      setTableRefreshing(true);
+      const { totalItems, results } = await onRequestFetch({
+        params,
+        limit,
+        offset,
+      });
+      setTotalItems(totalItems);
+      setResults(results);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setTableRefreshing(false);
+      setSearchFilterLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -123,7 +128,7 @@ function SearchTree(props: Props): React.ReactElement {
         limit={limit!}
         page={page!}
         treeView={{ arch, fields }}
-        results={results || []}
+        results={results || []}
         onRequestPageChange={onRequestPageChange}
         loading={tableRefreshing}
         strings={{
