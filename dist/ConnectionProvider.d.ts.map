@@ -1,0 +1,1 @@
+{"version":3,"file":"ConnectionProvider.d.ts","sourceRoot":"","sources":["../src/ConnectionProvider.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,sBAAsB,EAAE,MAAM,SAAS,CAAC;AAEjD,MAAM,CAAC,OAAO,OAAO,kBAAkB;IACrC,OAAO,CAAC,MAAM,CAAC,OAAO,CAAyB;WAEjC,IAAI,CAAC,OAAO,EAAE,sBAAsB,GAAG,IAAI;WAI3C,UAAU,IAAI,sBAAsB;CAMnD"}

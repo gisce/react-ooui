@@ -62,6 +62,7 @@ var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var SearchFilter_1 = __importDefault(require("@/widgets/views/searchFilter/SearchFilter"));
 var Tree_1 = __importDefault(require("@/widgets/views/Tree"));
+var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 function SearchTree(props) {
     var _this = this;
     var arch = props.arch, fields = props.fields, searchFields = props.searchFields, _a = props.limit, originalLimit = _a === void 0 ? 80 : _a, onRowClicked = props.onRowClicked, onRequestFetch = props.onRequestFetch;
@@ -84,27 +85,36 @@ function SearchTree(props) {
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 2, 3, 4]);
+                    _b.trys.push([0, 3, 4, 5]);
                     setTableRefreshing(true);
-                    return [4 /*yield*/, onRequestFetch({
+                    // TODO: remove this in the future -- just for testing
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().search({
                             params: params,
                             limit: limit,
                             offset: offset,
                         })];
                 case 1:
+                    // TODO: remove this in the future -- just for testing
+                    _b.sent();
+                    return [4 /*yield*/, onRequestFetch({
+                            params: params,
+                            limit: limit,
+                            offset: offset,
+                        })];
+                case 2:
                     _a = _b.sent(), totalItems_1 = _a.totalItems, results_1 = _a.results;
                     setTotalItems(totalItems_1);
                     setResults(results_1);
-                    return [3 /*break*/, 4];
-                case 2:
+                    return [3 /*break*/, 5];
+                case 3:
                     error_1 = _b.sent();
                     setError(error_1);
-                    return [3 /*break*/, 4];
-                case 3:
+                    return [3 /*break*/, 5];
+                case 4:
                     setTableRefreshing(false);
                     setSearchFilterLoading(false);
                     return [7 /*endfinally*/];
-                case 4: return [2 /*return*/];
+                case 5: return [2 /*return*/];
             }
         });
     }); };

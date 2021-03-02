@@ -1,21 +1,12 @@
 import React from "react";
-import { SearchFields } from "@/types/index";
-declare type SearchTreeRequest = {
-    params: Array<any>;
-    limit: number;
-    offset: number;
-};
-declare type SearchTreeResponse = {
-    totalItems: number;
-    results: any;
-};
+import { SearchFields, SearchRequest, SearchResponse } from "@/types/index";
 declare type Props = {
     arch: string;
     fields: any;
     searchFields: SearchFields;
     limit?: number;
     onRowClicked: (value: any) => void;
-    onRequestFetch: (options: SearchTreeRequest) => Promise<SearchTreeResponse>;
+    onRequestFetch: (options: SearchRequest) => Promise<SearchResponse>;
 };
 declare function SearchTree(props: Props): React.ReactElement;
 export default SearchTree;
