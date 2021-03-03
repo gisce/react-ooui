@@ -239,7 +239,7 @@ function SearchTree(props) {
     var onRowClickedHandler = function (id) {
         onRowClicked({
             id: id,
-            model: model,
+            model: currentModel,
             formView: formView,
             treeView: treeView,
         });

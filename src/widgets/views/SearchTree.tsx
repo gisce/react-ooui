@@ -165,7 +165,7 @@ function SearchTree(props: Props) {
   const onRowClickedHandler = (id: number) => {
     onRowClicked({
       id,
-      model: model!,
+      model: currentModel!,
       formView: formView!,
       treeView: treeView!,
     });
