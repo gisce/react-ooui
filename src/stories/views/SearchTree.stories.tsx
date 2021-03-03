@@ -1,6 +1,8 @@
 import React from "react";
 
 import SearchTree from "../../widgets/views/SearchTree";
+import ConnectionProvider from "../../ConnectionProvider";
+
 import "antd/dist/antd.css";
 
 export default {
@@ -425,31 +427,47 @@ const data = {
 };
 
 export const Default = (): React.ReactElement => {
+  ConnectionProvider.init({
+    getForm: async () => {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      return {
+        search_fields: data.searchFields,
+        arch: data.arch,
+        fields: data.fields,
+      };
+    },
+    getTree: async () => {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      return {
+        search_fields: data.searchFields,
+        arch: data.arch,
+        fields: data.fields,
+      };
+    },
+    search: async () => {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      return {
+        totalItems: 1,
+        results: [
+          {
+            city: "Taiwan",
+            country: [218, "Taiwan"],
+            id: 2,
+            lang: false,
+            name: "ASUStek",
+            ref: "1234",
+            title: false,
+          },
+        ],
+      };
+    },
+  });
+
   return (
     <SearchTree
-      searchFields={data.searchFields}
-      fields={data.fields}
-      arch={data.arch}
+      model={"res.partners"}
       onRowClicked={(row) => {
         console.log();
-      }}
-      onRequestFetch={async (options) => {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        return {
-          totalItems: 1,
-          results: [
-            {
-              city: "Taiwan",
-              country: [218, "Taiwan"],
-              id: 2,
-              lang: false,
-              name: "ASUStek",
-              ref: "1234",
-              title: false,
-            },
-          ],
-        };
       }}
     />
   );

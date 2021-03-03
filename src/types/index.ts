@@ -53,7 +53,16 @@ type UpdateObjectRequest = CreateObjectRequest & {
   id: number;
 };
 
+type Views = Map<string, any>;
+
+type ViewData = {
+  views: Views;
+  limit: number;
+  model: string;
+};
+
 type ConnectionProviderType = {
+  getViewsForAction: (action: string) => Promise<ViewData>;
   getForm: (model: string) => Promise<FormView>;
   getTree: (model: string) => Promise<TreeView>;
   search: (options: SearchRequest) => Promise<SearchResponse>;
@@ -72,5 +81,7 @@ export type {
   SearchResponse,
   ConnectionProviderType,
   UpdateObjectRequest,
-  CreateObjectRequest
+  CreateObjectRequest,
+  ViewData,
+  Views,
 };

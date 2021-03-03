@@ -1,42 +1,45 @@
 import React, { useEffect, useState } from "react";
-import { Alert } from "antd";
+import { Alert, Spin } from "antd";
 
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import Tree from "@/widgets/views/Tree";
-import { SearchFields } from "@/types/index";
+import { FormView, TreeView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 
+const DEFAULT_SEARCH_LIMIT = 80;
+
 type Props = {
-  arch: string;
-  fields: any;
-  searchFields: SearchFields;
-  limit?: number;
-  model: string;
+  action?: string;
+  model?: string;
   onRowClicked: (value: any) => void;
 };
 
-function SearchTree(props: Props): React.ReactElement {
-  const {
-    arch,
-    fields,
-    searchFields,
-    limit: originalLimit = 80,
-    model,
-    onRowClicked,
-  } = props;
+function SearchTree(props: Props) {
+  const { action, model, onRowClicked } = props;
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [initialFetchDone, setInitialFetchDone] = useState<boolean>(false);
+
+  const [currentModel, setCurrentModel] = useState<string>();
+  const [treeView, setTreeView] = useState<TreeView>();
+  const [formView, setFormView] = useState<FormView>();
 
   const [page, setPage] = useState<number>(1);
   const [offset, setOffset] = useState<number>(0);
-  const [limit, setLimit] = useState<number>(80);
+  const [limit, setLimit] = useState<number>(DEFAULT_SEARCH_LIMIT);
+  const [limitFromAction, setLimitFromAction] = useState<number>();
+
   const [params, setParams] = useState<Array<any>>([]);
 
   const [totalItems, setTotalItems] = useState<number>(0);
-  const [results, setResults] = useState<any>();
+  const [results, setResults] = useState<any>([]);
 
   const [searchFilterLoading, setSearchFilterLoading] = useState<boolean>(
     false
   );
-  const [error, setError] = useState<string>();
+  const [searchError, setSearchError] = useState<string>();
+  const [initialError, setInitialError] = useState<string>();
+
   const [tableRefreshing, setTableRefreshing] = useState<boolean>(false);
 
   const onRequestPageChange = (page: number) => {
@@ -49,17 +52,20 @@ function SearchTree(props: Props): React.ReactElement {
     try {
       setTableRefreshing(true);
 
-      const { totalItems, results } = await ConnectionProvider.getHandler().search({
+      const {
+        totalItems,
+        results,
+      } = await ConnectionProvider.getHandler().search({
         params,
         limit,
         offset,
-        model,
-        fields,
+        model: currentModel!,
+        fields: treeView!.fields,
       });
       setTotalItems(totalItems);
       setResults(results);
     } catch (error) {
-      setError(error);
+      setSearchError(error);
     } finally {
       setTableRefreshing(false);
       setSearchFilterLoading(false);
@@ -67,71 +73,144 @@ function SearchTree(props: Props): React.ReactElement {
   };
 
   useEffect(() => {
-    fetchResults();
-  }, [page, limit, offset, params]);
+    if (!initialFetchDone) {
+      return;
+    }
 
-  return (
-    <>
-      <SearchFilter
-        fields={fields}
-        searchFields={searchFields}
-        onClear={() => {
-          if (tableRefreshing) return;
-          setError(undefined);
-          setParams([]);
-          setOffset(0);
-          setPage(1);
-          setLimit(originalLimit);
-        }}
-        limit={limit!}
-        offset={offset!}
-        isSearching={searchFilterLoading}
-        onSubmit={({
-          params: newParams,
-          limit,
-          offset,
-        }: {
-          params: any;
-          limit: number;
-          offset: number;
-        }) => {
-          if (tableRefreshing) return;
-          setSearchFilterLoading(true);
-          setError(undefined);
-          setPage(1);
-          if (limit) setLimit(limit);
-          if (offset) setOffset(offset);
-          setParams(newParams);
-        }}
-        strings={{
-          true: "Yes",
-          false: "No",
-          simple_search: "Simple search",
-          advanced_search: "Advanced search",
-          search: "Search",
-          parameters: "Parameters",
-          limit: "Limit",
-          first: "First",
-        }}
-      />
-      {error && <Alert className="mt-10" message={error} type="error" banner />}
-      <div className="pb-10" />
-      <Tree
-        total={totalItems}
-        limit={limit!}
-        page={page!}
-        treeView={{ arch, fields }}
-        results={results || []}
-        onRequestPageChange={onRequestPageChange}
-        loading={tableRefreshing}
-        strings={{
-          no_results: "No results",
-          summary: "Showing registers from {from} to {to} of {total} registers",
-        }}
-        onRowClicked={onRowClicked}
-      />
-    </>
-  );
+    fetchResults();
+  }, [page, limit, offset, params, initialFetchDone]);
+
+  const fetchData = async (type: "action" | "model") => {
+    setInitialFetchDone(false);
+    setIsLoading(true);
+    setInitialError(undefined);
+
+    try {
+      if (type === "action") {
+        await fetchActionData();
+      } else {
+        await fetchModelData();
+      }
+      setInitialFetchDone(true);
+    } catch (error) {
+      setInitialError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchActionData = async () => {
+    const dataForAction = await ConnectionProvider.getHandler().getViewsForAction(
+      action!
+    );
+    setFormView(dataForAction.views.get("form"));
+    setTreeView(dataForAction.views.get("tree"));
+    setCurrentModel(dataForAction.model);
+    setLimitFromAction(dataForAction.limit);
+    setLimit(dataForAction.limit);
+  };
+
+  const fetchModelData = async () => {
+    setCurrentModel(model);
+    const _formView = await ConnectionProvider.getHandler().getForm(model!);
+    const _treeView = await ConnectionProvider.getHandler().getTree(model!);
+    setFormView(_formView);
+    setTreeView(_treeView);
+    setLimitFromAction(undefined);
+    setLimit(DEFAULT_SEARCH_LIMIT);
+  };
+
+  useEffect(() => {
+    if (action) {
+      fetchData('action');
+    } else {
+      fetchData('model');
+    }
+  }, [action, model]);
+
+  const onClear = () => {
+    if (tableRefreshing) return;
+    setSearchError(undefined);
+    setParams([]);
+    setOffset(0);
+    setPage(1);
+    setLimit(limitFromAction || DEFAULT_SEARCH_LIMIT);
+  };
+
+  const onSubmit = ({
+    params: newParams,
+    limit: newLimit,
+    offset: newOffset,
+  }: {
+    params: any;
+    limit: number;
+    offset: number;
+  }) => {
+    if (tableRefreshing) return;
+    setSearchFilterLoading(true);
+    setSearchError(undefined);
+    setPage(1);
+    if (newLimit) setLimit(newLimit);
+    if (newOffset) setOffset(newOffset);
+    setParams(newParams);
+  };
+
+  const content = () => {
+    if (!treeView || !formView) {
+      return null;
+    }
+
+    return (
+      <>
+        <SearchFilter
+          fields={{ ...treeView.fields, ...formView.fields }}
+          searchFields={formView.search_fields}
+          onClear={onClear}
+          limit={limit}
+          offset={offset}
+          isSearching={searchFilterLoading}
+          onSubmit={onSubmit}
+          strings={{
+            true: "Yes",
+            false: "No",
+            simple_search: "Simple search",
+            advanced_search: "Advanced search",
+            search: "Search",
+            parameters: "Parameters",
+            limit: "Limit",
+            first: "First",
+          }}
+        />
+        {searchError && (
+          <Alert className="mt-10" message={searchError} type="error" banner />
+        )}
+        <div className="pb-10" />
+        <Tree
+          total={totalItems}
+          limit={limit}
+          page={page}
+          treeView={treeView}
+          results={results}
+          onRequestPageChange={onRequestPageChange}
+          loading={tableRefreshing}
+          strings={{
+            no_results: "No results",
+            summary:
+              "Showing registers from {from} to {to} of {total} registers",
+          }}
+          onRowClicked={onRowClicked}
+        />
+      </>
+    );
+  };
+
+  if (initialError) {
+    return (
+      <Alert className="mt-10" message={initialError} type="error" banner />
+    );
+  }
+
+  return isLoading ? <Spin /> : content();
 }
 
 export default SearchTree;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Input } from "antd";
 import Field from "@/common/Field";
 import { Char as CharOoui } from "ooui";

@@ -23,6 +23,8 @@ import {
   SearchResponse,
   CreateObjectRequest,
   UpdateObjectRequest,
+  ViewData,
+  Views,
 } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 
@@ -52,4 +54,6 @@ export {
   UpdateObjectRequest,
   ConnectionProvider,
   ConnectionProviderType,
+  ViewData,
+  Views,
 };

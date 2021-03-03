@@ -42,12 +42,19 @@ declare type CreateObjectRequest = {
 declare type UpdateObjectRequest = CreateObjectRequest & {
     id: number;
 };
+declare type Views = Map<string, any>;
+declare type ViewData = {
+    views: Views;
+    limit: number;
+    model: string;
+};
 declare type ConnectionProviderType = {
+    getViewsForAction: (action: string) => Promise<ViewData>;
     getForm: (model: string) => Promise<FormView>;
     getTree: (model: string) => Promise<TreeView>;
     search: (options: SearchRequest) => Promise<SearchResponse>;
     update: (options: UpdateObjectRequest) => Promise<any>;
     create: (options: CreateObjectRequest) => Promise<any>;
 };
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest };
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, };
 //# sourceMappingURL=index.d.ts.map

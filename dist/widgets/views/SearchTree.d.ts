@@ -1,13 +1,9 @@
-import React from "react";
-import { SearchFields } from "@/types/index";
+/// <reference types="react" />
 declare type Props = {
-    arch: string;
-    fields: any;
-    searchFields: SearchFields;
-    limit?: number;
-    model: string;
+    action?: string;
+    model?: string;
     onRowClicked: (value: any) => void;
 };
-declare function SearchTree(props: Props): React.ReactElement;
+declare function SearchTree(props: Props): JSX.Element | null;
 export default SearchTree;
 //# sourceMappingURL=SearchTree.d.ts.map

@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -63,18 +74,26 @@ var antd_1 = require("antd");
 var SearchFilter_1 = __importDefault(require("@/widgets/views/searchFilter/SearchFilter"));
 var Tree_1 = __importDefault(require("@/widgets/views/Tree"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
+var DEFAULT_SEARCH_LIMIT = 80;
 function SearchTree(props) {
     var _this = this;
-    var arch = props.arch, fields = props.fields, searchFields = props.searchFields, _a = props.limit, originalLimit = _a === void 0 ? 80 : _a, model = props.model, onRowClicked = props.onRowClicked;
-    var _b = react_1.useState(1), page = _b[0], setPage = _b[1];
-    var _c = react_1.useState(0), offset = _c[0], setOffset = _c[1];
-    var _d = react_1.useState(80), limit = _d[0], setLimit = _d[1];
-    var _e = react_1.useState([]), params = _e[0], setParams = _e[1];
-    var _f = react_1.useState(0), totalItems = _f[0], setTotalItems = _f[1];
-    var _g = react_1.useState(), results = _g[0], setResults = _g[1];
-    var _h = react_1.useState(false), searchFilterLoading = _h[0], setSearchFilterLoading = _h[1];
-    var _j = react_1.useState(), error = _j[0], setError = _j[1];
-    var _k = react_1.useState(false), tableRefreshing = _k[0], setTableRefreshing = _k[1];
+    var action = props.action, model = props.model, onRowClicked = props.onRowClicked;
+    var _a = react_1.useState(false), isLoading = _a[0], setIsLoading = _a[1];
+    var _b = react_1.useState(false), initialFetchDone = _b[0], setInitialFetchDone = _b[1];
+    var _c = react_1.useState(), currentModel = _c[0], setCurrentModel = _c[1];
+    var _d = react_1.useState(), treeView = _d[0], setTreeView = _d[1];
+    var _e = react_1.useState(), formView = _e[0], setFormView = _e[1];
+    var _f = react_1.useState(1), page = _f[0], setPage = _f[1];
+    var _g = react_1.useState(0), offset = _g[0], setOffset = _g[1];
+    var _h = react_1.useState(DEFAULT_SEARCH_LIMIT), limit = _h[0], setLimit = _h[1];
+    var _j = react_1.useState(), limitFromAction = _j[0], setLimitFromAction = _j[1];
+    var _k = react_1.useState([]), params = _k[0], setParams = _k[1];
+    var _l = react_1.useState(0), totalItems = _l[0], setTotalItems = _l[1];
+    var _m = react_1.useState([]), results = _m[0], setResults = _m[1];
+    var _o = react_1.useState(false), searchFilterLoading = _o[0], setSearchFilterLoading = _o[1];
+    var _p = react_1.useState(), searchError = _p[0], setSearchError = _p[1];
+    var _q = react_1.useState(), initialError = _q[0], setInitialError = _q[1];
+    var _r = react_1.useState(false), tableRefreshing = _r[0], setTableRefreshing = _r[1];
     var onRequestPageChange = function (page) {
         setTableRefreshing(true);
         setPage(page);
@@ -91,8 +110,8 @@ function SearchTree(props) {
                             params: params,
                             limit: limit,
                             offset: offset,
-                            model: model,
-                            fields: fields,
+                            model: currentModel,
+                            fields: treeView.fields,
                         })];
                 case 1:
                     _a = _b.sent(), totalItems_1 = _a.totalItems, results_1 = _a.results;
@@ -101,7 +120,7 @@ function SearchTree(props) {
                     return [3 /*break*/, 4];
                 case 2:
                     error_1 = _b.sent();
-                    setError(error_1);
+                    setSearchError(error_1);
                     return [3 /*break*/, 4];
                 case 3:
                     setTableRefreshing(false);
@@ -112,45 +131,137 @@ function SearchTree(props) {
         });
     }); };
     react_1.useEffect(function () {
+        if (!initialFetchDone) {
+            return;
+        }
         fetchResults();
-    }, [page, limit, offset, params]);
-    return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(SearchFilter_1.default, { fields: fields, searchFields: searchFields, onClear: function () {
-                if (tableRefreshing)
-                    return;
-                setError(undefined);
-                setParams([]);
-                setOffset(0);
-                setPage(1);
-                setLimit(originalLimit);
-            }, limit: limit, offset: offset, isSearching: searchFilterLoading, onSubmit: function (_a) {
-                var newParams = _a.params, limit = _a.limit, offset = _a.offset;
-                if (tableRefreshing)
-                    return;
-                setSearchFilterLoading(true);
-                setError(undefined);
-                setPage(1);
-                if (limit)
-                    setLimit(limit);
-                if (offset)
-                    setOffset(offset);
-                setParams(newParams);
-            }, strings: {
-                true: "Yes",
-                false: "No",
-                simple_search: "Simple search",
-                advanced_search: "Advanced search",
-                search: "Search",
-                parameters: "Parameters",
-                limit: "Limit",
-                first: "First",
-            } }),
-        error && react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true }),
-        react_1.default.createElement("div", { className: "pb-10" }),
-        react_1.default.createElement(Tree_1.default, { total: totalItems, limit: limit, page: page, treeView: { arch: arch, fields: fields }, results: results || [], onRequestPageChange: onRequestPageChange, loading: tableRefreshing, strings: {
-                no_results: "No results",
-                summary: "Showing registers from {from} to {to} of {total} registers",
-            }, onRowClicked: onRowClicked })));
+    }, [page, limit, offset, params, initialFetchDone]);
+    var fetchData = function (type) { return __awaiter(_this, void 0, void 0, function () {
+        var error_2;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    setInitialFetchDone(false);
+                    setIsLoading(true);
+                    setInitialError(undefined);
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 6, 7, 8]);
+                    if (!(type === "action")) return [3 /*break*/, 3];
+                    return [4 /*yield*/, fetchActionData()];
+                case 2:
+                    _a.sent();
+                    return [3 /*break*/, 5];
+                case 3: return [4 /*yield*/, fetchModelData()];
+                case 4:
+                    _a.sent();
+                    _a.label = 5;
+                case 5:
+                    setInitialFetchDone(true);
+                    return [3 /*break*/, 8];
+                case 6:
+                    error_2 = _a.sent();
+                    setInitialError(error_2);
+                    return [3 /*break*/, 8];
+                case 7:
+                    setIsLoading(false);
+                    return [7 /*endfinally*/];
+                case 8: return [2 /*return*/];
+            }
+        });
+    }); };
+    var fetchActionData = function () { return __awaiter(_this, void 0, void 0, function () {
+        var dataForAction;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getViewsForAction(action)];
+                case 1:
+                    dataForAction = _a.sent();
+                    setFormView(dataForAction.views.get("form"));
+                    setTreeView(dataForAction.views.get("tree"));
+                    setCurrentModel(dataForAction.model);
+                    setLimitFromAction(dataForAction.limit);
+                    setLimit(dataForAction.limit);
+                    return [2 /*return*/];
+            }
+        });
+    }); };
+    var fetchModelData = function () { return __awaiter(_this, void 0, void 0, function () {
+        var _formView, _treeView;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    setCurrentModel(model);
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getForm(model)];
+                case 1:
+                    _formView = _a.sent();
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getTree(model)];
+                case 2:
+                    _treeView = _a.sent();
+                    setFormView(_formView);
+                    setTreeView(_treeView);
+                    setLimitFromAction(undefined);
+                    setLimit(DEFAULT_SEARCH_LIMIT);
+                    return [2 /*return*/];
+            }
+        });
+    }); };
+    react_1.useEffect(function () {
+        if (action) {
+            fetchData('action');
+        }
+        else {
+            fetchData('model');
+        }
+    }, [action, model]);
+    var onClear = function () {
+        if (tableRefreshing)
+            return;
+        setSearchError(undefined);
+        setParams([]);
+        setOffset(0);
+        setPage(1);
+        setLimit(limitFromAction || DEFAULT_SEARCH_LIMIT);
+    };
+    var onSubmit = function (_a) {
+        var newParams = _a.params, newLimit = _a.limit, newOffset = _a.offset;
+        if (tableRefreshing)
+            return;
+        setSearchFilterLoading(true);
+        setSearchError(undefined);
+        setPage(1);
+        if (newLimit)
+            setLimit(newLimit);
+        if (newOffset)
+            setOffset(newOffset);
+        setParams(newParams);
+    };
+    var content = function () {
+        if (!treeView || !formView) {
+            return null;
+        }
+        return (react_1.default.createElement(react_1.default.Fragment, null,
+            react_1.default.createElement(SearchFilter_1.default, { fields: __assign(__assign({}, treeView.fields), formView.fields), searchFields: formView.search_fields, onClear: onClear, limit: limit, offset: offset, isSearching: searchFilterLoading, onSubmit: onSubmit, strings: {
+                    true: "Yes",
+                    false: "No",
+                    simple_search: "Simple search",
+                    advanced_search: "Advanced search",
+                    search: "Search",
+                    parameters: "Parameters",
+                    limit: "Limit",
+                    first: "First",
+                } }),
+            searchError && (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: searchError, type: "error", banner: true })),
+            react_1.default.createElement("div", { className: "pb-10" }),
+            react_1.default.createElement(Tree_1.default, { total: totalItems, limit: limit, page: page, treeView: treeView, results: results || [], onRequestPageChange: onRequestPageChange, loading: tableRefreshing, strings: {
+                    no_results: "No results",
+                    summary: "Showing registers from {from} to {to} of {total} registers",
+                }, onRowClicked: onRowClicked })));
+    };
+    if (initialError) {
+        return (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: initialError, type: "error", banner: true }));
+    }
+    return isLoading ? react_1.default.createElement(antd_1.Spin, null) : content();
 }
 exports.default = SearchTree;
 //# sourceMappingURL=SearchTree.js.map
