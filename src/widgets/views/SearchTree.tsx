@@ -8,10 +8,17 @@ import ConnectionProvider from "@/ConnectionProvider";
 
 const DEFAULT_SEARCH_LIMIT = 80;
 
+type OnRowClickedData = {
+  id: number,
+  model: string;
+  formView: FormView,
+  treeView: TreeView,
+};
+
 type Props = {
   action?: string;
   model?: string;
-  onRowClicked: (value: any) => void;
+  onRowClicked: (data: OnRowClickedData) => void;
 };
 
 function SearchTree(props: Props) {
@@ -122,9 +129,9 @@ function SearchTree(props: Props) {
 
   useEffect(() => {
     if (action) {
-      fetchData('action');
+      fetchData("action");
     } else {
-      fetchData('model');
+      fetchData("model");
     }
   }, [action, model]);
 
@@ -153,6 +160,15 @@ function SearchTree(props: Props) {
     if (newLimit) setLimit(newLimit);
     if (newOffset) setOffset(newOffset);
     setParams(newParams);
+  };
+
+  const onRowClickedHandler = (id: number) => {
+    onRowClicked({
+      id,
+      model: model!,
+      formView: formView!,
+      treeView: treeView!,
+    });
   };
 
   const content = () => {
@@ -198,7 +214,7 @@ function SearchTree(props: Props) {
             summary:
               "Showing registers from {from} to {to} of {total} registers",
           }}
-          onRowClicked={onRowClicked}
+          onRowClicked={onRowClickedHandler}
         />
       </>
     );

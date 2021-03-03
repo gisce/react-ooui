@@ -208,10 +208,10 @@ function SearchTree(props) {
     }); };
     react_1.useEffect(function () {
         if (action) {
-            fetchData('action');
+            fetchData("action");
         }
         else {
-            fetchData('model');
+            fetchData("model");
         }
     }, [action, model]);
     var onClear = function () {
@@ -236,6 +236,14 @@ function SearchTree(props) {
             setOffset(newOffset);
         setParams(newParams);
     };
+    var onRowClickedHandler = function (id) {
+        onRowClicked({
+            id: id,
+            model: model,
+            formView: formView,
+            treeView: treeView,
+        });
+    };
     var content = function () {
         if (!treeView || !formView) {
             return null;
@@ -253,10 +261,10 @@ function SearchTree(props) {
                 } }),
             searchError && (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: searchError, type: "error", banner: true })),
             react_1.default.createElement("div", { className: "pb-10" }),
-            react_1.default.createElement(Tree_1.default, { total: totalItems, limit: limit, page: page, treeView: treeView, results: results || [], onRequestPageChange: onRequestPageChange, loading: tableRefreshing, strings: {
+            react_1.default.createElement(Tree_1.default, { total: totalItems, limit: limit, page: page, treeView: treeView, results: results, onRequestPageChange: onRequestPageChange, loading: tableRefreshing, strings: {
                     no_results: "No results",
                     summary: "Showing registers from {from} to {to} of {total} registers",
-                }, onRowClicked: onRowClicked })));
+                }, onRowClicked: onRowClickedHandler })));
     };
     if (initialError) {
         return (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: initialError, type: "error", banner: true }));
