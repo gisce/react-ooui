@@ -3,7 +3,7 @@ import { Alert } from "antd";
 
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import Tree from "@/widgets/views/Tree";
-import { SearchFields, SearchRequest, SearchResponse } from "@/types/index";
+import { SearchFields } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 
 type Props = {
@@ -11,8 +11,8 @@ type Props = {
   fields: any;
   searchFields: SearchFields;
   limit?: number;
+  model: string;
   onRowClicked: (value: any) => void;
-  onRequestFetch: (options: SearchRequest) => Promise<SearchResponse>;
 };
 
 function SearchTree(props: Props): React.ReactElement {
@@ -21,8 +21,8 @@ function SearchTree(props: Props): React.ReactElement {
     fields,
     searchFields,
     limit: originalLimit = 80,
+    model,
     onRowClicked,
-    onRequestFetch,
   } = props;
 
   const [page, setPage] = useState<number>(1);
@@ -49,17 +49,12 @@ function SearchTree(props: Props): React.ReactElement {
     try {
       setTableRefreshing(true);
 
-      // TODO: remove this in the future -- just for testing
-      await ConnectionProvider.getHandler().search({
+      const { totalItems, results } = await ConnectionProvider.getHandler().search({
         params,
         limit,
         offset,
-      });
-
-      const { totalItems, results } = await onRequestFetch({
-        params,
-        limit,
-        offset,
+        model,
+        fields,
       });
       setTotalItems(totalItems);
       setResults(results);

@@ -40,6 +40,8 @@ type SearchRequest = {
   params: Array<any>;
   limit: number;
   offset: number;
+  model: string;
+  fields: any;
 };
 
 type CreateObjectRequest = {
@@ -47,7 +49,7 @@ type CreateObjectRequest = {
   values: any;
 };
 
-type UpdateObjectRequest = {
+type UpdateObjectRequest = CreateObjectRequest & {
   id: number;
 };
 

@@ -32,12 +32,14 @@ declare type SearchRequest = {
     params: Array<any>;
     limit: number;
     offset: number;
+    model: string;
+    fields: any;
 };
 declare type CreateObjectRequest = {
     model: string;
     values: any;
 };
-declare type UpdateObjectRequest = {
+declare type UpdateObjectRequest = CreateObjectRequest & {
     id: number;
 };
 declare type ConnectionProviderType = {
