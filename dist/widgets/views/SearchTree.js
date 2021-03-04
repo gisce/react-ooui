@@ -192,10 +192,10 @@ function SearchTree(props) {
             switch (_a.label) {
                 case 0:
                     setCurrentModel(model);
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getForm(model)];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(model, 'form')];
                 case 1:
                     _formView = _a.sent();
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getTree(model)];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(model, 'tree')];
                 case 2:
                     _treeView = _a.sent();
                     setFormView(_formView);

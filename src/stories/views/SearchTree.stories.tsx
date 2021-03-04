@@ -428,15 +428,7 @@ const data = {
 
 export const Default = (): React.ReactElement => {
   ConnectionProvider.init({
-    getForm: async () => {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      return {
-        search_fields: data.searchFields,
-        arch: data.arch,
-        fields: data.fields,
-      };
-    },
-    getTree: async () => {
+    getView: async () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       return {
         search_fields: data.searchFields,
@@ -467,7 +459,7 @@ export const Default = (): React.ReactElement => {
     <SearchTree
       model={"res.partners"}
       onRowClicked={(row) => {
-        console.log();
+        console.log(row.id);
       }}
     />
   );

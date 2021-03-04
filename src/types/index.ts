@@ -63,8 +63,7 @@ type ViewData = {
 
 type ConnectionProviderType = {
   getViewsForAction: (action: string) => Promise<ViewData>;
-  getForm: (model: string) => Promise<FormView>;
-  getTree: (model: string) => Promise<TreeView>;
+  getView: (model: string, type: "tree" | "form") => Promise<FormView|TreeView>;
   search: (options: SearchRequest) => Promise<SearchResponse>;
   update: (options: UpdateObjectRequest) => Promise<any>;
   create: (options: CreateObjectRequest) => Promise<any>;

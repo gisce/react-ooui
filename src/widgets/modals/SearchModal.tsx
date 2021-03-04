@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { Modal, Button } from "antd";
 import { CreateModal } from "./CreateModal";
+import SearchTree from "@/widgets/views/SearchTree";
 
 type SearchSelectionProps = {
   visible: boolean;
+  model: string;
   onSelectValue: (value: any) => void;
   onCloseModal: () => void;
 };
 
 export const SearchModal = (props: SearchSelectionProps) => {
-  const { visible, onCloseModal, onSelectValue } = props;
+  const { visible, onCloseModal, onSelectValue, model } = props;
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
 
   return (
@@ -23,6 +25,12 @@ export const SearchModal = (props: SearchSelectionProps) => {
         onCancel={onCloseModal}
         footer={null}
       >
+        <SearchTree
+          model={model}
+          onRowClicked={(event) => {
+            console.log(event);
+          }}
+        />
         <Button
           onClick={() => {
             const random = Math.floor(Math.random() * 100000 + 1);
@@ -36,9 +44,9 @@ export const SearchModal = (props: SearchSelectionProps) => {
             setShowCreateModal(true);
           }}
         >
-          new item
+          Create new
         </Button>
-        <Button onClick={onCloseModal}>close</Button>
+        <Button onClick={onCloseModal}>Cancel</Button>
       </Modal>
       <CreateModal
         visible={showCreateModal}

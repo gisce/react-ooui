@@ -119,10 +119,10 @@ function SearchTree(props: Props) {
 
   const fetchModelData = async () => {
     setCurrentModel(model);
-    const _formView = await ConnectionProvider.getHandler().getForm(model!);
-    const _treeView = await ConnectionProvider.getHandler().getTree(model!);
-    setFormView(_formView);
-    setTreeView(_treeView);
+    const _formView = await ConnectionProvider.getHandler().getView(model!, 'form');
+    const _treeView = await ConnectionProvider.getHandler().getView(model!, 'tree');
+    setFormView(_formView as FormView);
+    setTreeView(_treeView as TreeView);
     setLimitFromAction(undefined);
     setLimit(DEFAULT_SEARCH_LIMIT);
   };

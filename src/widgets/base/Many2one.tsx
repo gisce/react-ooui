@@ -37,7 +37,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
   props: Many2oneInputProps
 ) => {
   const { value, onChange, disabled, ooui } = props;
-  const { required } = ooui;
+  const { required, relation } = ooui;
   const requiredClass = required ? Config.requiredClass : undefined;
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
   const [showDetailModal, setShowDetailModal] = useState<boolean>(false);
@@ -78,6 +78,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
         />
       </Col>
       <SearchModal
+        model={relation}
         visible={showSearchModal}
         onSelectValue={(value) => {
           triggerChange(value);

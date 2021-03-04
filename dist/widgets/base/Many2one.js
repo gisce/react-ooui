@@ -49,7 +49,7 @@ var Many2one = function (props) {
 exports.Many2one = Many2one;
 var Many2oneInput = function (props) {
     var value = props.value, onChange = props.onChange, disabled = props.disabled, ooui = props.ooui;
-    var required = ooui.required;
+    var required = ooui.required, relation = ooui.relation;
     var requiredClass = required ? Config_1.default.requiredClass : undefined;
     var _a = react_1.useState(false), showSearchModal = _a[0], setShowSearchModal = _a[1];
     var _b = react_1.useState(false), showDetailModal = _b[0], setShowDetailModal = _b[1];
@@ -68,7 +68,7 @@ var Many2oneInput = function (props) {
             react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.SearchOutlined, null), disabled: disabled, onClick: function () {
                     setShowSearchModal(true);
                 } })),
-        react_1.default.createElement(SearchModal_1.SearchModal, { visible: showSearchModal, onSelectValue: function (value) {
+        react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, visible: showSearchModal, onSelectValue: function (value) {
                 triggerChange(value);
                 setShowSearchModal(false);
             }, onCloseModal: function () {

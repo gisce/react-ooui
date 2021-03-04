@@ -18,24 +18,31 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SearchModal = void 0;
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var CreateModal_1 = require("./CreateModal");
+var SearchTree_1 = __importDefault(require("@/widgets/views/SearchTree"));
 var SearchModal = function (props) {
-    var visible = props.visible, onCloseModal = props.onCloseModal, onSelectValue = props.onSelectValue;
+    var visible = props.visible, onCloseModal = props.onCloseModal, onSelectValue = props.onSelectValue, model = props.model;
     var _a = react_1.useState(false), showCreateModal = _a[0], setShowCreateModal = _a[1];
     return (react_1.default.createElement(react_1.default.Fragment, null,
         react_1.default.createElement(antd_1.Modal, { title: "Search", centered: true, width: 1000, visible: visible && !showCreateModal, closable: true, onCancel: onCloseModal, footer: null },
+            react_1.default.createElement(SearchTree_1.default, { model: model, onRowClicked: function (event) {
+                    console.log(event);
+                } }),
             react_1.default.createElement(antd_1.Button, { onClick: function () {
                     var random = Math.floor(Math.random() * 100000 + 1);
                     onSelectValue([random, "Test value " + random.toString()]);
                 } }, "select value"),
             react_1.default.createElement(antd_1.Button, { onClick: function () {
                     setShowCreateModal(true);
-                } }, "new item"),
-            react_1.default.createElement(antd_1.Button, { onClick: onCloseModal }, "close")),
+                } }, "Create new"),
+            react_1.default.createElement(antd_1.Button, { onClick: onCloseModal }, "Cancel")),
         react_1.default.createElement(CreateModal_1.CreateModal, { visible: showCreateModal, onSelectValue: function (value) {
                 setShowCreateModal(false);
                 onCloseModal();
