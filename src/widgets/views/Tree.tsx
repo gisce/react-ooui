@@ -48,7 +48,7 @@ function Tree(props: Props): React.ReactElement {
   const from = (page - 1) * limit + 1;
   const to = from - 1 + items.length;
   const summary = loading ? (
-    <Spin />
+    null
   ) : total === 0 ? (
     getLocalizedString("no_results", strings)
   ) : (
