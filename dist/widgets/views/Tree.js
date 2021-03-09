@@ -39,7 +39,7 @@ function Tree(props) {
     }, [treeView, results]);
     var from = (page - 1) * limit + 1;
     var to = from - 1 + items.length;
-    var summary = loading ? (react_1.default.createElement(antd_1.Spin, null)) : total === 0 ? (LocalesContext_1.getLocalizedString("no_results", strings)) : (LocalesContext_1.getLocalizedString("summary", strings)
+    var summary = loading ? (null) : total === 0 ? (LocalesContext_1.getLocalizedString("no_results", strings)) : (LocalesContext_1.getLocalizedString("summary", strings)
         .replace("{from}", from === null || from === void 0 ? void 0 : from.toString())
         .replace("{to}", to === null || to === void 0 ? void 0 : to.toString())
         .replace("{total}", total === null || total === void 0 ? void 0 : total.toString()));

@@ -48,12 +48,18 @@ declare type ViewData = {
     limit: number;
     model: string;
 };
+declare type ExecuteRequest = {
+    model: string;
+    action: string;
+    ids: number[];
+};
 declare type ConnectionProviderType = {
     getViewsForAction: (action: string) => Promise<ViewData>;
     getView: (model: string, type: "tree" | "form") => Promise<FormView | TreeView>;
     search: (options: SearchRequest) => Promise<SearchResponse>;
     update: (options: UpdateObjectRequest) => Promise<any>;
     create: (options: CreateObjectRequest) => Promise<any>;
+    execute: (options: ExecuteRequest) => Promise<any>;
 };
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, };
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, };
 //# sourceMappingURL=index.d.ts.map
