@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Modal, Button } from "antd";
+import { Modal, Button, Divider, Alert, Spin } from "antd";
 import { CreateModal } from "./CreateModal";
 import SearchTree from "@/widgets/views/SearchTree";
+import ConnectionProvider from "@/ConnectionProvider";
 
 type SearchSelectionProps = {
   visible: boolean;
@@ -13,32 +14,35 @@ type SearchSelectionProps = {
 export const SearchModal = (props: SearchSelectionProps) => {
   const { visible, onCloseModal, onSelectValue, model } = props;
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>();
 
-  return (
-    <>
-      <Modal
-        title="Search"
-        centered
-        width={1000}
-        visible={visible && !showCreateModal}
-        closable={true}
-        onCancel={onCloseModal}
-        footer={null}
-      >
-        <SearchTree
-          model={model}
-          onRowClicked={(event) => {
-            console.log(event);
-          }}
-        />
-        <Button
-          onClick={() => {
-            const random = Math.floor(Math.random() * 100000 + 1);
-            onSelectValue([random, "Test value " + random.toString()]);
-          }}
-        >
-          select value
-        </Button>
+  const onRowClicked = async (event: any) => {
+    setLoading(true);
+    setError(undefined);
+    try {
+      const { id, model } = event;
+      const value = await ConnectionProvider.getHandler().execute({
+        action: "name_get",
+        ids: [id],
+        model,
+      });
+      onSelectValue(value[0]);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const content = () => {
+    return (
+      <>
+        {error && (
+          <Alert className="mt-10" message={error} type="error" banner />
+        )}
+        <SearchTree model={model} onRowClicked={onRowClicked} />
+        <Divider />
         <Button
           onClick={() => {
             setShowCreateModal(true);
@@ -47,6 +51,22 @@ export const SearchModal = (props: SearchSelectionProps) => {
           Create new
         </Button>
         <Button onClick={onCloseModal}>Cancel</Button>
+      </>
+    );
+  };
+
+  return (
+    <>
+      <Modal
+        title="Search"
+        centered
+        width={1400}
+        visible={visible && !showCreateModal}
+        closable={true}
+        onCancel={onCloseModal}
+        footer={null}
+      >
+        {loading ? <Spin /> : content()}
       </Modal>
       <CreateModal
         visible={showCreateModal}
