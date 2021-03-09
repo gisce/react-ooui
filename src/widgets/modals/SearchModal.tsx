@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Modal, Button, Divider, Alert, Spin } from "antd";
+import { Modal, Button, Divider, Alert, Spin, Row, Space } from "antd";
 import { CreateModal } from "./CreateModal";
 import SearchTree from "@/widgets/views/SearchTree";
 import ConnectionProvider from "@/ConnectionProvider";
+import { FileAddOutlined, CloseOutlined } from "@ant-design/icons";
 
 type SearchSelectionProps = {
   visible: boolean;
@@ -43,14 +44,21 @@ export const SearchModal = (props: SearchSelectionProps) => {
         )}
         <SearchTree model={model} onRowClicked={onRowClicked} />
         <Divider />
-        <Button
-          onClick={() => {
-            setShowCreateModal(true);
-          }}
-        >
-          Create new
-        </Button>
-        <Button onClick={onCloseModal}>Cancel</Button>
+        <Row justify="end">
+          <Space>
+            <Button
+              icon={<FileAddOutlined />}
+              onClick={() => {
+                setShowCreateModal(true);
+              }}
+            >
+              New
+            </Button>
+            <Button icon={<CloseOutlined />} onClick={onCloseModal}>
+              Cancel
+            </Button>
+          </Space>
+        </Row>
       </>
     );
   };
