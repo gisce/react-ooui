@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input, Button, Row, Col, Modal } from "antd";
+import { Input, Button, Row, Col } from "antd";
 import { SearchOutlined, FolderOpenOutlined } from "@ant-design/icons";
 import { Many2one as Many2oneOoui } from "ooui";
 import Field from "@/common/Field";
@@ -48,6 +48,8 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
 
   const onValueStringChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
 
+  const id = value && value[0];
+
   return (
     <Row gutter={8} className="pt-1 pb-1">
       <Col flex="auto">
@@ -62,7 +64,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
       <Col flex="32px">
         <Button
           icon={<FolderOpenOutlined />}
-          disabled={disabled}
+          disabled={disabled || id === undefined}
           onClick={() => {
             setShowDetailModal(true);
           }}
@@ -89,6 +91,8 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
         }}
       />
       <DetailModal
+        model={relation}
+        id={value && value[0]}
         visible={showDetailModal}
         onSelectValue={(value) => {
           triggerChange(value);

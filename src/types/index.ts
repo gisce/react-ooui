@@ -67,13 +67,23 @@ type ExecuteRequest = {
   ids: number[];
 };
 
+type ReadObjectRequest = {
+  arch: string;
+  model: string;
+  id: number;
+};
+
 type ConnectionProviderType = {
   getViewsForAction: (action: string) => Promise<ViewData>;
-  getView: (model: string, type: "tree" | "form") => Promise<FormView|TreeView>;
+  getView: (
+    model: string,
+    type: "tree" | "form"
+  ) => Promise<FormView | TreeView>;
   search: (options: SearchRequest) => Promise<SearchResponse>;
   update: (options: UpdateObjectRequest) => Promise<any>;
   create: (options: CreateObjectRequest) => Promise<any>;
   execute: (options: ExecuteRequest) => Promise<any>;
+  readObject: (options: ReadObjectRequest) => Promise<any>;
 };
 
 export type {
@@ -91,4 +101,5 @@ export type {
   ViewData,
   Views,
   ExecuteRequest,
+  ReadObjectRequest,
 };

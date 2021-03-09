@@ -53,6 +53,11 @@ declare type ExecuteRequest = {
     action: string;
     ids: number[];
 };
+declare type ReadObjectRequest = {
+    arch: string;
+    model: string;
+    id: number;
+};
 declare type ConnectionProviderType = {
     getViewsForAction: (action: string) => Promise<ViewData>;
     getView: (model: string, type: "tree" | "form") => Promise<FormView | TreeView>;
@@ -60,6 +65,7 @@ declare type ConnectionProviderType = {
     update: (options: UpdateObjectRequest) => Promise<any>;
     create: (options: CreateObjectRequest) => Promise<any>;
     execute: (options: ExecuteRequest) => Promise<any>;
+    readObject: (options: ReadObjectRequest) => Promise<any>;
 };
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, };
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectRequest, };
 //# sourceMappingURL=index.d.ts.map

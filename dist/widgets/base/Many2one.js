@@ -57,11 +57,12 @@ var Many2oneInput = function (props) {
         onChange === null || onChange === void 0 ? void 0 : onChange(__assign(__assign({}, value), changedValue));
     };
     var onValueStringChange = function (e) { };
+    var id = value && value[0];
     return (react_1.default.createElement(antd_1.Row, { gutter: 8, className: "pt-1 pb-1" },
         react_1.default.createElement(antd_1.Col, { flex: "auto" },
             react_1.default.createElement(antd_1.Input, { type: "text", value: value && value[1], onChange: onValueStringChange, disabled: disabled, className: requiredClass })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
-            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: disabled, onClick: function () {
+            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: disabled || id === undefined, onClick: function () {
                     setShowDetailModal(true);
                 } })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
@@ -74,7 +75,7 @@ var Many2oneInput = function (props) {
             }, onCloseModal: function () {
                 setShowSearchModal(false);
             } }),
-        react_1.default.createElement(DetailModal_1.DetailModal, { visible: showDetailModal, onSelectValue: function (value) {
+        react_1.default.createElement(DetailModal_1.DetailModal, { model: relation, id: value && value[0], visible: showDetailModal, onSelectValue: function (value) {
                 triggerChange(value);
                 setShowDetailModal(false);
             }, onCloseModal: function () {

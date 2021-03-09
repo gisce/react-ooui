@@ -26,6 +26,7 @@ import {
   ViewData,
   Views,
   ExecuteRequest,
+  ReadObjectRequest,
 } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 

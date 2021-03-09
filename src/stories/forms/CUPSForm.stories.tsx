@@ -11,6 +11,7 @@ import {
   UpdateObjectRequest,
   CreateObjectRequest,
   ExecuteRequest,
+  ReadObjectRequest,
 } from "../../types/index";
 
 export default {
@@ -42,6 +43,12 @@ export const Default = (): React.ReactElement => {
     execute: async (options: ExecuteRequest) => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       return [[1, "Alegría-Dulantzi"]];
+    },
+    readObject: async (options: ReadObjectRequest) => {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      return {
+        cups: "TEST",
+      };
     },
   };
 
