@@ -1,7 +1,8 @@
 import React from "react";
 import { Container as ContainerOoui, Widget } from "ooui";
 import { createReactWidget } from "@/widgets/WidgetFactory";
-import { useMediaQuery } from "react-responsive";
+import useDimensions from "react-cool-dimensions";
+
 import {
   getTemplateColumns,
   fillRowWithEmptiesToFit,
@@ -14,7 +15,9 @@ type Props = {
 };
 
 const Container = (props: Props): React.ReactElement => {
-  const responsiveBehaviour = useMediaQuery({ query: "(max-width: 1000px)" });
+  const { width, observe } = useDimensions();
+  const responsiveBehaviour = width < 1000;
+
   const { container, formWrapper = false } = props;
   const { columns, rows } = container;
 
@@ -38,6 +41,7 @@ const Container = (props: Props): React.ReactElement => {
         >
           {createReactWidget({
             ooui: item,
+            responsiveBehaviour,
           })}
         </div>
       );
@@ -54,7 +58,11 @@ const Container = (props: Props): React.ReactElement => {
     gridTemplateColumns: responsiveBehaviour ? "auto" : templateColumns,
   };
 
-  return <div style={gridStyle}>{content}</div>;
+  return (
+    <div ref={observe as any} style={gridStyle}>
+      {content}
+    </div>
+  );
 };
 
 export default Container;

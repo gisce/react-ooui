@@ -6,15 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(require("react"));
 var antd_1 = require("antd");
 var icons_1 = require("@ant-design/icons");
-var react_responsive_1 = require("react-responsive");
 var alignClass = {
     left: "justify-start",
     center: "justify-center",
     right: "justify-end",
 };
 var Label = function (props) {
-    var responsiveBehaviour = react_responsive_1.useMediaQuery({ query: "(max-width: 1000px)" });
-    var ooui = props.ooui, align = props.align;
+    var ooui = props.ooui, align = props.align, responsiveBehaviour = props.responsiveBehaviour;
     var _a = ooui, label = _a.label, tooltip = _a.tooltip, fieldForLabel = _a.fieldForLabel;
     var addColon = fieldForLabel !== null ? true : false;
     var labelText = addColon && label.length > 1 ? label + " :" : label;
