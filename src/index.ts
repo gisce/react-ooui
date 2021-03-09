@@ -59,4 +59,5 @@ export {
   ViewData,
   Views,
   ExecuteRequest,
+  ReadObjectRequest,
 };
