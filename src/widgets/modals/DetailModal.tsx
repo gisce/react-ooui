@@ -14,23 +14,30 @@ import { FormView } from "@/types/index";
 import Form from "@/widgets/views/Form";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 
-type SearchSelectionProps = {
+type DetailModeProps = {
   visible: boolean;
   model: string;
   id?: number;
   onSelectValue: (value: any) => void;
   onCloseModal: () => void;
+  detailMode?: "create" | "update";
 };
 
-export const DetailModal = (props: SearchSelectionProps) => {
-  const { visible, onCloseModal, onSelectValue, id, model } = props;
+export const DetailModal = (props: DetailModeProps) => {
+  const {
+    visible,
+    onCloseModal,
+    onSelectValue,
+    id,
+    model,
+    detailMode = "update",
+  } = props;
   const [formView, setFormView] = useState<FormView>();
   const [values, setValues] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>();
   const [antForm] = AntForm.useForm();
-  const [newObject, setNewObject] = useState<boolean>(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -44,16 +51,14 @@ export const DetailModal = (props: SearchSelectionProps) => {
       let _values = {};
       if (id) {
         _values = await ConnectionProvider.getHandler().readObject({
-          arch: formView!.arch,
+          arch: _formView!.arch,
           model,
           id,
         });
         setValues(_values);
-        setNewObject(false);
       } else {
         // _values = getDefaultValues();
         setValues(_values);
-        setNewObject(false);
       }
     } catch (err) {
       setError(err);
@@ -111,7 +116,7 @@ export const DetailModal = (props: SearchSelectionProps) => {
 
   return (
     <Modal
-      title="Detail"
+      title={detailMode === "create" ? "New" : "Detail"}
       centered
       width={1000}
       visible={visible}

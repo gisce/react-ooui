@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Button, Divider, Alert, Spin, Row, Space } from "antd";
-import { CreateModal } from "./CreateModal";
+import { DetailModal } from "./DetailModal";
 import SearchTree from "@/widgets/views/SearchTree";
 import ConnectionProvider from "@/ConnectionProvider";
 import { FileAddOutlined, CloseOutlined } from "@ant-design/icons";
@@ -47,6 +47,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
         <Row justify="end">
           <Space>
             <Button
+              disabled={loading}
               icon={<FileAddOutlined />}
               onClick={() => {
                 setShowCreateModal(true);
@@ -54,7 +55,11 @@ export const SearchModal = (props: SearchSelectionProps) => {
             >
               New
             </Button>
-            <Button icon={<CloseOutlined />} onClick={onCloseModal}>
+            <Button
+              disabled={loading}
+              icon={<CloseOutlined />}
+              onClick={onCloseModal}
+            >
               Cancel
             </Button>
           </Space>
@@ -76,7 +81,9 @@ export const SearchModal = (props: SearchSelectionProps) => {
       >
         {loading ? <Spin /> : content()}
       </Modal>
-      <CreateModal
+      <DetailModal
+        model={model}
+        detailMode="create"
         visible={showCreateModal}
         onSelectValue={(value) => {
           setShowCreateModal(false);

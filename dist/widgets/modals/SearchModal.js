@@ -61,7 +61,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SearchModal = void 0;
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
-var CreateModal_1 = require("./CreateModal");
+var DetailModal_1 = require("./DetailModal");
 var SearchTree_1 = __importDefault(require("@/widgets/views/SearchTree"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var icons_1 = require("@ant-design/icons");
@@ -108,14 +108,14 @@ var SearchModal = function (props) {
             react_1.default.createElement(antd_1.Divider, null),
             react_1.default.createElement(antd_1.Row, { justify: "end" },
                 react_1.default.createElement(antd_1.Space, null,
-                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FileAddOutlined, null), onClick: function () {
+                    react_1.default.createElement(antd_1.Button, { disabled: loading, icon: react_1.default.createElement(icons_1.FileAddOutlined, null), onClick: function () {
                             setShowCreateModal(true);
                         } }, "New"),
-                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), onClick: onCloseModal }, "Cancel")))));
+                    react_1.default.createElement(antd_1.Button, { disabled: loading, icon: react_1.default.createElement(icons_1.CloseOutlined, null), onClick: onCloseModal }, "Cancel")))));
     };
     return (react_1.default.createElement(react_1.default.Fragment, null,
         react_1.default.createElement(antd_1.Modal, { title: "Search", centered: true, width: 1400, visible: visible && !showCreateModal, closable: true, onCancel: onCloseModal, footer: null }, loading ? react_1.default.createElement(antd_1.Spin, null) : content()),
-        react_1.default.createElement(CreateModal_1.CreateModal, { visible: showCreateModal, onSelectValue: function (value) {
+        react_1.default.createElement(DetailModal_1.DetailModal, { model: model, detailMode: "create", visible: showCreateModal, onSelectValue: function (value) {
                 setShowCreateModal(false);
                 onCloseModal();
                 onSelectValue(value);

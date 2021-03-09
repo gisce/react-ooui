@@ -65,14 +65,13 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var Form_1 = __importDefault(require("@/widgets/views/Form"));
 var icons_1 = require("@ant-design/icons");
 var DetailModal = function (props) {
-    var visible = props.visible, onCloseModal = props.onCloseModal, onSelectValue = props.onSelectValue, id = props.id, model = props.model;
-    var _a = react_1.useState(), formView = _a[0], setFormView = _a[1];
-    var _b = react_1.useState({}), values = _b[0], setValues = _b[1];
-    var _c = react_1.useState(false), loading = _c[0], setLoading = _c[1];
-    var _d = react_1.useState(false), isSubmitting = _d[0], setIsSubmitting = _d[1];
-    var _e = react_1.useState(), error = _e[0], setError = _e[1];
+    var visible = props.visible, onCloseModal = props.onCloseModal, onSelectValue = props.onSelectValue, id = props.id, model = props.model, _a = props.detailMode, detailMode = _a === void 0 ? "update" : _a;
+    var _b = react_1.useState(), formView = _b[0], setFormView = _b[1];
+    var _c = react_1.useState({}), values = _c[0], setValues = _c[1];
+    var _d = react_1.useState(false), loading = _d[0], setLoading = _d[1];
+    var _e = react_1.useState(false), isSubmitting = _e[0], setIsSubmitting = _e[1];
+    var _f = react_1.useState(), error = _f[0], setError = _f[1];
     var antForm = antd_1.Form.useForm()[0];
-    var _f = react_1.useState(false), newObject = _f[0], setNewObject = _f[1];
     var fetchData = function () { return __awaiter(void 0, void 0, void 0, function () {
         var _formView, _values, err_1;
         return __generator(this, function (_a) {
@@ -89,19 +88,17 @@ var DetailModal = function (props) {
                     _values = {};
                     if (!id) return [3 /*break*/, 4];
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObject({
-                            arch: formView.arch,
+                            arch: _formView.arch,
                             model: model,
                             id: id,
                         })];
                 case 3:
                     _values = _a.sent();
                     setValues(_values);
-                    setNewObject(false);
                     return [3 /*break*/, 5];
                 case 4:
                     // _values = getDefaultValues();
                     setValues(_values);
-                    setNewObject(false);
                     _a.label = 5;
                 case 5: return [3 /*break*/, 8];
                 case 6:
@@ -144,7 +141,7 @@ var DetailModal = function (props) {
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), disabled: isSubmitting, onClick: onCloseModal }, "Cancel"),
                     react_1.default.createElement(antd_1.Button, { loading: isSubmitting, icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: submitForm }, "OK")))));
     };
-    return (react_1.default.createElement(antd_1.Modal, { title: "Detail", centered: true, width: 1000, visible: visible, closable: !isSubmitting, onCancel: onCloseModal, footer: null },
+    return (react_1.default.createElement(antd_1.Modal, { title: detailMode === "create" ? "New" : "Detail", centered: true, width: 1000, visible: visible, closable: !isSubmitting, onCancel: onCloseModal, footer: null },
         error && react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true }),
         loading ? react_1.default.createElement(antd_1.Spin, null) : content()));
 };
