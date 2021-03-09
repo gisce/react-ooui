@@ -25,6 +25,7 @@ import {
   UpdateObjectRequest,
   ViewData,
   Views,
+  ExecuteRequest,
 } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 
@@ -56,4 +57,5 @@ export {
   ConnectionProviderType,
   ViewData,
   Views,
+  ExecuteRequest,
 };
