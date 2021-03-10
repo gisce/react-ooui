@@ -220,6 +220,7 @@ function Form(props) {
                     })];
                 case 6:
                     value = _a.sent();
+                    antForm.resetFields();
                     if (onSubmitSucceed)
                         onSubmitSucceed(value[0]);
                     return [3 /*break*/, 9];

@@ -172,6 +172,7 @@ function Form(props: Props): React.ReactElement {
         model,
       });
 
+      antForm.resetFields();
       if (onSubmitSucceed) onSubmitSucceed(value[0]);
     } catch (err) {
       setError(err);
