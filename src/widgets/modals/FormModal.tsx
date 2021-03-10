@@ -2,16 +2,16 @@ import React from "react";
 import { Modal } from "antd";
 import Form from "@/widgets/views/Form";
 
-type DetailModeProps = {
+type FormModalProps = {
   visible: boolean;
   model: string;
   id?: number;
-  onSelectValue: (value: any) => void;
+  onSelectValue?: (value: any) => void;
   onCloseModal: () => void;
   title?: string;
 };
 
-export const FormModal = (props: DetailModeProps) => {
+export const FormModal = (props: FormModalProps) => {
   const {
     visible,
     onCloseModal,
@@ -37,7 +37,7 @@ export const FormModal = (props: DetailModeProps) => {
           model={model}
           onCancel={onCloseModal}
           onSubmitSuceed={(updatedObject: any) => {
-            onSelectValue(updatedObject);
+            onSelectValue && onSelectValue(updatedObject);
           }}
         />
       ) : null}

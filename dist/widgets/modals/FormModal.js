@@ -10,7 +10,7 @@ var Form_1 = __importDefault(require("@/widgets/views/Form"));
 var FormModal = function (props) {
     var visible = props.visible, onCloseModal = props.onCloseModal, onSelectValue = props.onSelectValue, id = props.id, model = props.model, _a = props.title, title = _a === void 0 ? id ? "Detail" : "New" : _a;
     return (react_1.default.createElement(antd_1.Modal, { title: title, centered: true, width: 1000, visible: visible, closable: false, onCancel: onCloseModal, footer: null }, visible ? (react_1.default.createElement(Form_1.default, { id: id, model: model, onCancel: onCloseModal, onSubmitSuceed: function (updatedObject) {
-            onSelectValue(updatedObject);
+            onSelectValue && onSelectValue(updatedObject);
         } })) : null));
 };
 exports.FormModal = FormModal;
