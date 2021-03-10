@@ -64,7 +64,7 @@ type ViewData = {
 type ExecuteRequest = {
   model: string;
   action: string;
-  ids: number[];
+  payload?: any;
 };
 
 type ReadObjectRequest = {

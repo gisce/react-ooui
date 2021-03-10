@@ -51,7 +51,7 @@ declare type ViewData = {
 declare type ExecuteRequest = {
     model: string;
     action: string;
-    ids: number[];
+    payload?: any;
 };
 declare type ReadObjectRequest = {
     arch: string;

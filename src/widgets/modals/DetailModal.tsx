@@ -57,7 +57,11 @@ export const DetailModal = (props: DetailModeProps) => {
         });
         setValues(_values);
       } else {
-        // _values = getDefaultValues();
+        _values = await ConnectionProvider.getHandler().execute({
+          model,
+          action: "default_get",
+          payload: Object.keys(_formView.fields),
+        });
         setValues(_values);
       }
     } catch (err) {

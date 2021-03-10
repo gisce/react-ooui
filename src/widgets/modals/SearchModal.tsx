@@ -25,7 +25,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
       const { id, model } = event;
       const value = await ConnectionProvider.getHandler().execute({
         action: "name_get",
-        ids: [id],
+        payload: [id],
         model,
       });
       onSelectValue(value[0]);

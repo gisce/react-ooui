@@ -80,7 +80,7 @@ var DetailModal = function (props) {
                     setLoading(true);
                     _a.label = 1;
                 case 1:
-                    _a.trys.push([1, 6, 7, 8]);
+                    _a.trys.push([1, 7, 8, 9]);
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(model, "form")];
                 case 2:
                     _formView = _a.sent();
@@ -95,20 +95,25 @@ var DetailModal = function (props) {
                 case 3:
                     _values = _a.sent();
                     setValues(_values);
-                    return [3 /*break*/, 5];
-                case 4:
-                    // _values = getDefaultValues();
+                    return [3 /*break*/, 6];
+                case 4: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
+                        model: model,
+                        action: "default_get",
+                        payload: Object.keys(_formView.fields),
+                    })];
+                case 5:
+                    _values = _a.sent();
                     setValues(_values);
-                    _a.label = 5;
-                case 5: return [3 /*break*/, 8];
-                case 6:
+                    _a.label = 6;
+                case 6: return [3 /*break*/, 9];
+                case 7:
                     err_1 = _a.sent();
                     setError(err_1);
-                    return [3 /*break*/, 8];
-                case 7:
+                    return [3 /*break*/, 9];
+                case 8:
                     setLoading(false);
                     return [7 /*endfinally*/];
-                case 8: return [2 /*return*/];
+                case 9: return [2 /*return*/];
             }
         });
     }); };

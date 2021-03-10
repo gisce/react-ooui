@@ -83,7 +83,7 @@ var SearchModal = function (props) {
                     id = event.id, model_1 = event.model;
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
                             action: "name_get",
-                            ids: [id],
+                            payload: [id],
                             model: model_1,
                         })];
                 case 2:
