@@ -31,16 +31,14 @@ export const FormModal = (props: FormModalProps) => {
       onCancel={onCancel}
       footer={null}
     >
-      {visible ? (
-        <Form
-          id={id}
-          model={model}
-          onCancel={onCancel}
-          onSubmitSucceed={(updatedObject?: any) => {
-            if(onSubmitSucceed) onSubmitSucceed(updatedObject);
-          }}
-        />
-      ) : null}
+      <Form
+        id={visible ? id : undefined}
+        model={model}
+        onCancel={onCancel}
+        onSubmitSucceed={(updatedObject?: any) => {
+          if (onSubmitSucceed) onSubmitSucceed(updatedObject);
+        }}
+      />
     </Modal>
   );
 };
