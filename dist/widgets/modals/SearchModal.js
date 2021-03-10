@@ -104,7 +104,7 @@ var SearchModal = function (props) {
     var content = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
             error && (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true })),
-            react_1.default.createElement(SearchTree_1.default, { model: model, onRowClicked: onRowClicked }),
+            visible && react_1.default.createElement(SearchTree_1.default, { model: model, onRowClicked: onRowClicked }),
             react_1.default.createElement(antd_1.Divider, null),
             react_1.default.createElement(antd_1.Row, { justify: "end" },
                 react_1.default.createElement(antd_1.Space, null,

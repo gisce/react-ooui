@@ -118,8 +118,10 @@ var DetailModal = function (props) {
         });
     }); };
     react_1.useEffect(function () {
-        fetchData();
-    }, [id]);
+        if (visible) {
+            fetchData();
+        }
+    }, [id, visible]);
     var submitForm = function () { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -146,9 +148,12 @@ var DetailModal = function (props) {
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), disabled: isSubmitting, onClick: onCloseModal }, "Cancel"),
                     react_1.default.createElement(antd_1.Button, { loading: isSubmitting, icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: submitForm }, "OK")))));
     };
-    return (react_1.default.createElement(antd_1.Modal, { title: detailMode === "create" ? "New" : "Detail", centered: true, width: 1000, visible: visible, closable: !isSubmitting, onCancel: onCloseModal, footer: null },
-        error && react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true }),
-        loading ? react_1.default.createElement(antd_1.Spin, null) : content()));
+    var wrapper = function () {
+        return visible ? (react_1.default.createElement(react_1.default.Fragment, null,
+            error && (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true })),
+            loading ? react_1.default.createElement(antd_1.Spin, null) : content())) : null;
+    };
+    return (react_1.default.createElement(antd_1.Modal, { title: detailMode === "create" ? "New" : "Detail", centered: true, width: 1000, visible: visible, closable: !isSubmitting, onCancel: onCloseModal, footer: null }, wrapper()));
 };
 exports.DetailModal = DetailModal;
 //# sourceMappingURL=DetailModal.js.map

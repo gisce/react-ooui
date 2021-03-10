@@ -47,6 +47,7 @@ function Form(props) {
     var arch = props.arch, fields = props.fields, initialValues = props.initialValues, antForm = props.antForm;
     var _a = react_1.useState(), form = _a[0], setForm = _a[1];
     react_1.useEffect(function () {
+        antForm.resetFields();
         var newForm = new ooui_1.Form(fields);
         newForm.parse(arch);
         setForm(newForm);

@@ -52,6 +52,8 @@ function SearchFilter(props) {
         });
     };
     react_1.useEffect(function () {
+        form.resetFields();
+        setAdvancedFilter(false);
         var sfo = new ooui_1.SearchFilter(searchFields, fields);
         sfo.parse();
         setSimpleSearchFields(sfo._simpleSearchContainer);

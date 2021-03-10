@@ -9,9 +9,9 @@ var react_cool_dimensions_1 = __importDefault(require("react-cool-dimensions"));
 var containerHelper_1 = require("@/helpers/containerHelper");
 var Container = function (props) {
     var _a = react_cool_dimensions_1.default(), width = _a.width, observe = _a.observe;
-    var responsiveBehaviour = width < 1000;
     var container = props.container, _b = props.formWrapper, formWrapper = _b === void 0 ? false : _b;
     var columns = container.columns, rows = container.rows;
+    var responsiveBehaviour = formWrapper ? width < 1000 : false;
     var content = rows.map(function (row, i) {
         var rowWithoutInvisibleFields = row.filter(function (widget) {
             return !widget.invisible;
