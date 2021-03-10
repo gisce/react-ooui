@@ -6,16 +6,16 @@ type FormModalProps = {
   visible: boolean;
   model: string;
   id?: number;
-  onSelectValue?: (value: any) => void;
-  onCloseModal: () => void;
+  onCancel?: () => void;
+  onSubmitSuceed?: (updatedObject: any) => void;
   title?: string;
 };
 
 export const FormModal = (props: FormModalProps) => {
   const {
     visible,
-    onCloseModal,
-    onSelectValue,
+    onCancel,
+    onSubmitSuceed,
     id,
     model,
     title = id ? "Detail" : "New",
@@ -28,16 +28,16 @@ export const FormModal = (props: FormModalProps) => {
       width={1000}
       visible={visible}
       closable={false}
-      onCancel={onCloseModal}
+      onCancel={onCancel}
       footer={null}
     >
       {visible ? (
         <Form
           id={id}
           model={model}
-          onCancel={onCloseModal}
-          onSubmitSuceed={(updatedObject: any) => {
-            onSelectValue && onSelectValue(updatedObject);
+          onCancel={onCancel}
+          onSubmitSuceed={(updatedObject?: any) => {
+            onSubmitSuceed && onSubmitSuceed(updatedObject);
           }}
         />
       ) : null}

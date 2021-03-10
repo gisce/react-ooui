@@ -75,10 +75,10 @@ var Many2oneInput = function (props) {
             }, onCloseModal: function () {
                 setShowSearchModal(false);
             } }),
-        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: value && value[0], visible: showFormModal, onSelectValue: function (value) {
+        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: value && value[0], visible: showFormModal, onSubmitSuceed: function (value) {
                 triggerChange(value);
                 setShowFormModal(false);
-            }, onCloseModal: function () {
+            }, onCancel: function () {
                 setShowFormModal(false);
             } })));
 };

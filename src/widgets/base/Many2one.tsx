@@ -94,11 +94,11 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
         model={relation}
         id={value && value[0]}
         visible={showFormModal}
-        onSelectValue={(value) => {
+        onSubmitSuceed={(value: any) => {
           triggerChange(value);
           setShowFormModal(false);
         }}
-        onCloseModal={() => {
+        onCancel={() => {
           setShowFormModal(false);
         }}
       />

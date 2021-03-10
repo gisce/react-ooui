@@ -84,12 +84,12 @@ export const SearchModal = (props: SearchSelectionProps) => {
       <FormModal
         model={model}
         visible={showCreateModal}
-        onSelectValue={(value) => {
+        onSubmitSuceed={(value) => {
           setShowCreateModal(false);
           onCloseModal();
           onSelectValue(value);
         }}
-        onCloseModal={() => {
+        onCancel={() => {
           setShowCreateModal(false);
           onCloseModal();
         }}

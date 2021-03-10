@@ -3,8 +3,8 @@ declare type FormModalProps = {
     visible: boolean;
     model: string;
     id?: number;
-    onSelectValue?: (value: any) => void;
-    onCloseModal: () => void;
+    onCancel?: () => void;
+    onSubmitSuceed?: (updatedObject: any) => void;
     title?: string;
 };
 export declare const FormModal: (props: FormModalProps) => JSX.Element;
