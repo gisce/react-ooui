@@ -13,12 +13,15 @@ import {
   ExecuteRequest,
   ReadObjectRequest,
 } from "../../types/index";
+import { Form as AntForm } from "antd";
 
 export default {
   title: "Components/Widgets/Forms/CUPS",
 };
 
 export const Default = (): React.ReactElement => {
+  const [antForm] = AntForm.useForm();
+
   const handler: ConnectionProviderType = {
     getViewsForAction: async (action: string) => {
       return { limit: 0, model: "", views: null };
@@ -55,6 +58,11 @@ export const Default = (): React.ReactElement => {
   ConnectionProvider.init(handler);
 
   return (
-    <Form initialValues={initialValues} arch={form.arch} fields={form.fields} />
+    <Form
+      initialValues={initialValues}
+      arch={form.arch}
+      fields={form.fields}
+      antForm={antForm}
+    />
   );
 };

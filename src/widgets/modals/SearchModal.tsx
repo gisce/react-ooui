@@ -42,7 +42,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
         {error && (
           <Alert className="mt-10" message={error} type="error" banner />
         )}
-        <SearchTree model={model} onRowClicked={onRowClicked} />
+        {visible && <SearchTree model={model} onRowClicked={onRowClicked} />}
         <Divider />
         <Row justify="end">
           <Space>

@@ -37,6 +37,7 @@ function Form(props: Props): React.ReactElement {
   const [form, setForm] = useState<FormOoui>();
 
   useEffect(() => {
+    antForm.resetFields();
     const newForm = new FormOoui(fields);
     newForm.parse(arch);
     setForm(newForm);

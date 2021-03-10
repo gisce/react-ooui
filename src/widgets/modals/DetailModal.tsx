@@ -72,8 +72,10 @@ export const DetailModal = (props: DetailModeProps) => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, [id]);
+    if (visible) {
+      fetchData();
+    }
+  }, [id, visible]);
 
   const submitForm = async () => {
     setIsSubmitting(true);
@@ -118,6 +120,17 @@ export const DetailModal = (props: DetailModeProps) => {
     );
   };
 
+  const wrapper = () => {
+    return visible ? (
+      <>
+        {error && (
+          <Alert className="mt-10" message={error} type="error" banner />
+        )}
+        {loading ? <Spin /> : content()}
+      </>
+    ) : null;
+  };
+
   return (
     <Modal
       title={detailMode === "create" ? "New" : "Detail"}
@@ -128,8 +141,7 @@ export const DetailModal = (props: DetailModeProps) => {
       onCancel={onCloseModal}
       footer={null}
     >
-      {error && <Alert className="mt-10" message={error} type="error" banner />}
-      {loading ? <Spin /> : content()}
+      {wrapper()}
     </Modal>
   );
 };
