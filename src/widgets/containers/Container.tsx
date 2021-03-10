@@ -16,10 +16,10 @@ type Props = {
 
 const Container = (props: Props): React.ReactElement => {
   const { width, observe } = useDimensions();
-  const responsiveBehaviour = width < 1000;
 
   const { container, formWrapper = false } = props;
   const { columns, rows } = container;
+  const responsiveBehaviour = formWrapper ? width < 1000 : false;
 
   const content = rows.map((row: Widget[], i) => {
     const rowWithoutInvisibleFields = row.filter((widget) => {
