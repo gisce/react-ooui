@@ -1,10 +1,9 @@
 import React from "react";
-import { FormInstance } from "antd";
 declare type Props = {
-    arch: string;
-    fields: any;
-    initialValues?: any;
-    antForm: FormInstance;
+    model: string;
+    id?: number;
+    onSubmitSuceed?: (updatedObject: any) => void;
+    onCancel?: () => void;
 };
 declare function Form(props: Props): React.ReactElement;
 export default Form;

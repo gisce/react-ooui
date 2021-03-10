@@ -5,7 +5,7 @@ declare type DetailModeProps = {
     id?: number;
     onSelectValue: (value: any) => void;
     onCloseModal: () => void;
-    detailMode?: "create" | "update";
+    title?: string;
 };
 export declare const DetailModal: (props: DetailModeProps) => JSX.Element;
 export {};

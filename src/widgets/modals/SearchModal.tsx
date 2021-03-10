@@ -83,7 +83,6 @@ export const SearchModal = (props: SearchSelectionProps) => {
       </Modal>
       <DetailModal
         model={model}
-        detailMode="create"
         visible={showCreateModal}
         onSelectValue={(value) => {
           setShowCreateModal(false);
