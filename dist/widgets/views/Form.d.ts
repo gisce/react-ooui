@@ -2,7 +2,7 @@ import React from "react";
 declare type Props = {
     model: string;
     id?: number;
-    onSubmitSuceed?: (updatedObject: any) => void;
+    onSubmitSucceed?: (updatedObject: any) => void;
     onCancel?: () => void;
 };
 declare function Form(props: Props): React.ReactElement;

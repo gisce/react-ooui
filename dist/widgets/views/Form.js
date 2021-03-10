@@ -86,7 +86,7 @@ var processInitialValues = function (values, fields) {
 };
 function Form(props) {
     var _this = this;
-    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSuceed = props.onSubmitSuceed;
+    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed;
     var _a = react_1.useState(false), isSubmitting = _a[0], setIsSubmitting = _a[1];
     var _b = react_1.useState(), error = _b[0], setError = _b[1];
     var _c = react_1.useState(), formView = _c[0], setFormView = _c[1];
@@ -118,7 +118,8 @@ function Form(props) {
             okText: "Close without saving",
             onOk: function () {
                 antForm.resetFields();
-                onCancel && onCancel();
+                if (onCancel)
+                    onCancel();
             },
         });
     };
@@ -128,7 +129,8 @@ function Form(props) {
             return;
         }
         antForm.resetFields();
-        onCancel && onCancel();
+        if (onCancel)
+            onCancel();
     };
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
         var _formView, newForm, _values, err_1;
@@ -218,7 +220,8 @@ function Form(props) {
                     })];
                 case 6:
                     value = _a.sent();
-                    onSubmitSuceed && onSubmitSuceed(value[0]);
+                    if (onSubmitSucceed)
+                        onSubmitSucceed(value[0]);
                     return [3 /*break*/, 9];
                 case 7:
                     err_2 = _a.sent();

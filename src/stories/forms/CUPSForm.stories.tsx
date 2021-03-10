@@ -49,9 +49,7 @@ export const Default = (): React.ReactElement => {
     },
     readObject: async (options: ReadObjectRequest) => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      return {
-        cups: "TEST",
-      };
+      return initialValues;
     },
   };
 
@@ -59,10 +57,14 @@ export const Default = (): React.ReactElement => {
 
   return (
     <Form
-      initialValues={initialValues}
-      arch={form.arch}
-      fields={form.fields}
-      antForm={antForm}
+      model={"res.cups"}
+      id={6}
+      onCancel={() => {
+        console.log();
+      }}
+      onSubmitSucceed={(value: any) => {
+        console.log();
+      }}
     />
   );
 };

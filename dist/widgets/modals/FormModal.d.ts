@@ -4,7 +4,7 @@ declare type FormModalProps = {
     model: string;
     id?: number;
     onCancel?: () => void;
-    onSubmitSuceed?: (updatedObject: any) => void;
+    onSubmitSucceed?: (updatedObject: any) => void;
     title?: string;
 };
 export declare const FormModal: (props: FormModalProps) => JSX.Element;

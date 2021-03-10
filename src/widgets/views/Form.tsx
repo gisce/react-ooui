@@ -24,7 +24,7 @@ const { confirm } = Modal;
 type Props = {
   model: string;
   id?: number;
-  onSubmitSuceed?: (updatedObject: any) => void;
+  onSubmitSucceed?: (updatedObject: any) => void;
   onCancel?: () => void;
 };
 
@@ -52,7 +52,7 @@ const processInitialValues = (values: any, fields: any) => {
 };
 
 function Form(props: Props): React.ReactElement {
-  const { model, id, onCancel, onSubmitSuceed } = props;
+  const { model, id, onCancel, onSubmitSucceed } = props;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>();
   const [formView, setFormView] = useState<FormView>();
@@ -87,7 +87,7 @@ function Form(props: Props): React.ReactElement {
       okText: "Close without saving",
       onOk() {
         antForm.resetFields();
-        onCancel && onCancel();
+        if (onCancel) onCancel();
       },
     });
   };
@@ -99,7 +99,7 @@ function Form(props: Props): React.ReactElement {
     }
 
     antForm.resetFields();
-    onCancel && onCancel();
+    if (onCancel) onCancel();
   };
 
   const fetchData = async () => {
@@ -172,7 +172,7 @@ function Form(props: Props): React.ReactElement {
         model,
       });
 
-      onSubmitSuceed && onSubmitSuceed(value[0]);
+      if (onSubmitSucceed) onSubmitSucceed(value[0]);
     } catch (err) {
       setError(err);
     } finally {

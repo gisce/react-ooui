@@ -94,7 +94,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
         model={relation}
         id={value && value[0]}
         visible={showFormModal}
-        onSubmitSuceed={(value: any) => {
+        onSubmitSucceed={(value: any) => {
           triggerChange(value);
           setShowFormModal(false);
         }}

@@ -7,7 +7,7 @@ type FormModalProps = {
   model: string;
   id?: number;
   onCancel?: () => void;
-  onSubmitSuceed?: (updatedObject: any) => void;
+  onSubmitSucceed?: (updatedObject: any) => void;
   title?: string;
 };
 
@@ -15,7 +15,7 @@ export const FormModal = (props: FormModalProps) => {
   const {
     visible,
     onCancel,
-    onSubmitSuceed,
+    onSubmitSucceed,
     id,
     model,
     title = id ? "Detail" : "New",
@@ -36,8 +36,8 @@ export const FormModal = (props: FormModalProps) => {
           id={id}
           model={model}
           onCancel={onCancel}
-          onSubmitSuceed={(updatedObject?: any) => {
-            onSubmitSuceed && onSubmitSuceed(updatedObject);
+          onSubmitSucceed={(updatedObject?: any) => {
+            if(onSubmitSucceed) onSubmitSucceed(updatedObject);
           }}
         />
       ) : null}

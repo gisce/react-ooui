@@ -84,7 +84,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
       <FormModal
         model={model}
         visible={showCreateModal}
-        onSubmitSuceed={(value) => {
+        onSubmitSucceed={(value) => {
           setShowCreateModal(false);
           onCloseModal();
           onSelectValue(value);
