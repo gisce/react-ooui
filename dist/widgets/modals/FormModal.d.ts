@@ -7,6 +7,6 @@ declare type DetailModeProps = {
     onCloseModal: () => void;
     title?: string;
 };
-export declare const DetailModal: (props: DetailModeProps) => JSX.Element;
+export declare const FormModal: (props: DetailModeProps) => JSX.Element;
 export {};
-//# sourceMappingURL=DetailModal.d.ts.map
+//# sourceMappingURL=FormModal.d.ts.map

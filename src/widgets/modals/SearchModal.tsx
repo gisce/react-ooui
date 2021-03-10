@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Button, Divider, Alert, Spin, Row, Space } from "antd";
-import { DetailModal } from "./DetailModal";
+import { FormModal } from "./FormModal";
 import SearchTree from "@/widgets/views/SearchTree";
 import ConnectionProvider from "@/ConnectionProvider";
 import { FileAddOutlined, CloseOutlined } from "@ant-design/icons";
@@ -81,7 +81,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
       >
         {loading ? <Spin /> : content()}
       </Modal>
-      <DetailModal
+      <FormModal
         model={model}
         visible={showCreateModal}
         onSelectValue={(value) => {

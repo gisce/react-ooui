@@ -11,7 +11,7 @@ type DetailModeProps = {
   title?: string;
 };
 
-export const DetailModal = (props: DetailModeProps) => {
+export const FormModal = (props: DetailModeProps) => {
   const {
     visible,
     onCloseModal,

@@ -40,7 +40,7 @@ var icons_1 = require("@ant-design/icons");
 var Field_1 = __importDefault(require("@/common/Field"));
 var Config_1 = __importDefault(require("@/Config"));
 var SearchModal_1 = require("@/widgets/modals/SearchModal");
-var DetailModal_1 = require("@/widgets/modals/DetailModal");
+var FormModal_1 = require("@/widgets/modals/FormModal");
 var Many2one = function (props) {
     var ooui = props.ooui;
     return (react_1.default.createElement(Field_1.default, __assign({}, props),
@@ -52,7 +52,7 @@ var Many2oneInput = function (props) {
     var required = ooui.required, relation = ooui.relation;
     var requiredClass = required ? Config_1.default.requiredClass : undefined;
     var _a = react_1.useState(false), showSearchModal = _a[0], setShowSearchModal = _a[1];
-    var _b = react_1.useState(false), showDetailModal = _b[0], setShowDetailModal = _b[1];
+    var _b = react_1.useState(false), showFormModal = _b[0], setShowFormModal = _b[1];
     var triggerChange = function (changedValue) {
         onChange === null || onChange === void 0 ? void 0 : onChange(__assign(__assign({}, value), changedValue));
     };
@@ -63,7 +63,7 @@ var Many2oneInput = function (props) {
             react_1.default.createElement(antd_1.Input, { type: "text", value: value && value[1], onChange: onValueStringChange, disabled: disabled, className: requiredClass })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
             react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: disabled || id === undefined, onClick: function () {
-                    setShowDetailModal(true);
+                    setShowFormModal(true);
                 } })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
             react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.SearchOutlined, null), disabled: disabled, onClick: function () {
@@ -75,11 +75,11 @@ var Many2oneInput = function (props) {
             }, onCloseModal: function () {
                 setShowSearchModal(false);
             } }),
-        react_1.default.createElement(DetailModal_1.DetailModal, { model: relation, id: value && value[0], visible: showDetailModal, onSelectValue: function (value) {
+        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: value && value[0], visible: showFormModal, onSelectValue: function (value) {
                 triggerChange(value);
-                setShowDetailModal(false);
+                setShowFormModal(false);
             }, onCloseModal: function () {
-                setShowDetailModal(false);
+                setShowFormModal(false);
             } })));
 };
 //# sourceMappingURL=Many2one.js.map

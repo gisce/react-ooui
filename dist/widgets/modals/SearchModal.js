@@ -61,7 +61,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SearchModal = void 0;
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
-var DetailModal_1 = require("./DetailModal");
+var FormModal_1 = require("./FormModal");
 var SearchTree_1 = __importDefault(require("@/widgets/views/SearchTree"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var icons_1 = require("@ant-design/icons");
@@ -115,7 +115,7 @@ var SearchModal = function (props) {
     };
     return (react_1.default.createElement(react_1.default.Fragment, null,
         react_1.default.createElement(antd_1.Modal, { title: "Search", centered: true, width: 1400, visible: visible && !showCreateModal, closable: true, onCancel: onCloseModal, footer: null }, loading ? react_1.default.createElement(antd_1.Spin, null) : content()),
-        react_1.default.createElement(DetailModal_1.DetailModal, { model: model, visible: showCreateModal, onSelectValue: function (value) {
+        react_1.default.createElement(FormModal_1.FormModal, { model: model, visible: showCreateModal, onSelectValue: function (value) {
                 setShowCreateModal(false);
                 onCloseModal();
                 onSelectValue(value);

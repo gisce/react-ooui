@@ -5,7 +5,7 @@ import { Many2one as Many2oneOoui } from "ooui";
 import Field from "@/common/Field";
 import Config from "@/Config";
 import { SearchModal } from "@/widgets/modals/SearchModal";
-import { DetailModal } from "@/widgets/modals/DetailModal";
+import { FormModal } from "@/widgets/modals/FormModal";
 
 type Props = {
   ooui: Many2oneOoui;
@@ -40,7 +40,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
   const { required, relation } = ooui;
   const requiredClass = required ? Config.requiredClass : undefined;
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
-  const [showDetailModal, setShowDetailModal] = useState<boolean>(false);
+  const [showFormModal, setShowFormModal] = useState<boolean>(false);
 
   const triggerChange = (changedValue: any[]) => {
     onChange?.({ ...value, ...changedValue });
@@ -66,7 +66,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
           icon={<FolderOpenOutlined />}
           disabled={disabled || id === undefined}
           onClick={() => {
-            setShowDetailModal(true);
+            setShowFormModal(true);
           }}
         />
       </Col>
@@ -90,16 +90,16 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
           setShowSearchModal(false);
         }}
       />
-      <DetailModal
+      <FormModal
         model={relation}
         id={value && value[0]}
-        visible={showDetailModal}
+        visible={showFormModal}
         onSelectValue={(value) => {
           triggerChange(value);
-          setShowDetailModal(false);
+          setShowFormModal(false);
         }}
         onCloseModal={() => {
-          setShowDetailModal(false);
+          setShowFormModal(false);
         }}
       />
     </Row>
