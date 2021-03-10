@@ -1,7 +1,6 @@
 import React from "react";
 import { Container as ContainerOoui, Widget } from "ooui";
 import { createReactWidget } from "@/widgets/WidgetFactory";
-import useDimensions from "react-cool-dimensions";
 
 import {
   getTemplateColumns,
@@ -12,14 +11,12 @@ import {
 type Props = {
   container: ContainerOoui;
   formWrapper?: boolean;
+  responsiveBehaviour: boolean;
 };
 
 const Container = (props: Props): React.ReactElement => {
-  const { width, observe } = useDimensions();
-
-  const { container, formWrapper = false } = props;
+  const { container, formWrapper = false, responsiveBehaviour } = props;
   const { columns, rows } = container;
-  const responsiveBehaviour = formWrapper ? width < 1000 : false;
 
   const content = rows.map((row: Widget[], i) => {
     const rowWithoutInvisibleFields = row.filter((widget) => {
@@ -59,7 +56,7 @@ const Container = (props: Props): React.ReactElement => {
   };
 
   return (
-    <div ref={observe as any} style={gridStyle}>
+    <div style={gridStyle}>
       {content}
     </div>
   );

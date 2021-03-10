@@ -7,10 +7,11 @@ import { Group } from "@/index";
 
 type Props = {
   ooui: NotebookOoui;
+  responsiveBehaviour: boolean;
 };
 
 function Notebook(props: Props): React.ReactElement {
-  const { ooui } = props;
+  const { ooui, responsiveBehaviour } = props;
   const tabs = [].concat.apply([], ooui!.container.rows);
   return (
     <Tabs defaultActiveKey="1">
@@ -19,7 +20,7 @@ function Notebook(props: Props): React.ReactElement {
 
         return (
           <TabPane tab={page.label} key={tabKey}>
-            <Group ooui={page as GroupOoui} showLabel={false} />
+            <Group ooui={page as GroupOoui} showLabel={false} responsiveBehaviour={responsiveBehaviour} />
           </TabPane>
         );
       })}

@@ -3,6 +3,7 @@ import { Group as GroupOoui } from "ooui";
 declare type Props = {
     ooui: GroupOoui;
     showLabel?: boolean;
+    responsiveBehaviour: boolean;
 };
 declare function Group(props: Props): React.ReactElement;
 export default Group;

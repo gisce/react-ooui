@@ -26,6 +26,8 @@ var react_1 = __importStar(require("react"));
 var ooui_1 = require("ooui");
 var antd_1 = require("antd");
 var Container_1 = __importDefault(require("../containers/Container"));
+var react_cool_dimensions_1 = __importDefault(require("react-cool-dimensions"));
+var WIDTH_BREAKPOINT = 1000;
 var filteredValues = function (values, fields) {
     if (!fields) {
         return values;
@@ -45,14 +47,20 @@ var processInitialValues = function (values, fields) {
 };
 function Form(props) {
     var arch = props.arch, fields = props.fields, initialValues = props.initialValues, antForm = props.antForm;
-    var _a = react_1.useState(), form = _a[0], setForm = _a[1];
+    var _a = react_cool_dimensions_1.default({
+        breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
+        updateOnBreakpointChange: true,
+    }), width = _a.width, ref = _a.ref;
+    var responsiveBehaviour = width < WIDTH_BREAKPOINT;
+    var _b = react_1.useState(), form = _b[0], setForm = _b[1];
     react_1.useEffect(function () {
         antForm.resetFields();
         var newForm = new ooui_1.Form(fields);
         newForm.parse(arch);
         setForm(newForm);
     }, [arch, fields]);
-    return (react_1.default.createElement(antd_1.Form, { form: antForm, initialValues: processInitialValues(initialValues, fields) }, form && react_1.default.createElement(Container_1.default, { container: form.container, formWrapper: true })));
+    return (react_1.default.createElement("div", { ref: ref },
+        react_1.default.createElement(antd_1.Form, { form: antForm, initialValues: processInitialValues(initialValues, fields) }, form && (react_1.default.createElement(Container_1.default, { container: form.container, formWrapper: true, responsiveBehaviour: responsiveBehaviour })))));
 }
 exports.default = Form;
 //# sourceMappingURL=Form.js.map

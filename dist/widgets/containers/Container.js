@@ -5,13 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(require("react"));
 var WidgetFactory_1 = require("@/widgets/WidgetFactory");
-var react_cool_dimensions_1 = __importDefault(require("react-cool-dimensions"));
 var containerHelper_1 = require("@/helpers/containerHelper");
 var Container = function (props) {
-    var _a = react_cool_dimensions_1.default(), width = _a.width, observe = _a.observe;
-    var container = props.container, _b = props.formWrapper, formWrapper = _b === void 0 ? false : _b;
+    var container = props.container, _a = props.formWrapper, formWrapper = _a === void 0 ? false : _a, responsiveBehaviour = props.responsiveBehaviour;
     var columns = container.columns, rows = container.rows;
-    var responsiveBehaviour = formWrapper ? width < 1000 : false;
     var content = rows.map(function (row, i) {
         var rowWithoutInvisibleFields = row.filter(function (widget) {
             return !widget.invisible;
@@ -36,7 +33,7 @@ var Container = function (props) {
         display: "grid",
         gridTemplateColumns: responsiveBehaviour ? "auto" : templateColumns,
     };
-    return (react_1.default.createElement("div", { ref: observe, style: gridStyle }, content));
+    return (react_1.default.createElement("div", { style: gridStyle }, content));
 };
 exports.default = Container;
 //# sourceMappingURL=Container.js.map
