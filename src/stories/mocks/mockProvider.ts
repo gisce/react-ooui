@@ -41,8 +41,7 @@ const init = () => {
     },
     readObject: async (options: ReadObjectRequest) => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      const data = getMock(options.model);
-      return { ...data.exampleValues, name: "XDD" + Date.now().toString() };
+      return getMock(options.model);
     },
   };
 
