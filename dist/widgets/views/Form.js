@@ -86,18 +86,18 @@ var processInitialValues = function (values, fields) {
 };
 function Form(props) {
     var _this = this;
-    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed;
-    var _a = react_1.useState(false), isSubmitting = _a[0], setIsSubmitting = _a[1];
-    var _b = react_1.useState(), error = _b[0], setError = _b[1];
-    var _c = react_1.useState(), formView = _c[0], setFormView = _c[1];
-    var _d = react_1.useState({}), values = _d[0], setValues = _d[1];
-    var _e = react_1.useState(false), loading = _e[0], setLoading = _e[1];
-    var _f = react_1.useState(), form = _f[0], setForm = _f[1];
+    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a;
+    var _b = react_1.useState(false), isSubmitting = _b[0], setIsSubmitting = _b[1];
+    var _c = react_1.useState(), error = _c[0], setError = _c[1];
+    var _d = react_1.useState(), formView = _d[0], setFormView = _d[1];
+    var _e = react_1.useState({}), values = _e[0], setValues = _e[1];
+    var _f = react_1.useState(false), loading = _f[0], setLoading = _f[1];
+    var _g = react_1.useState(), form = _g[0], setForm = _g[1];
     var antForm = antd_1.Form.useForm()[0];
-    var _g = react_cool_dimensions_1.default({
+    var _h = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _g.width, ref = _g.ref;
+    }), width = _h.width, ref = _h.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     var getTouchedValues = function () {
         var values = antForm.getFieldsValue(true);
@@ -246,13 +246,17 @@ function Form(props) {
             error && (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true })),
             loading ? react_1.default.createElement(antd_1.Spin, null) : content()));
     };
+    var footer = function () {
+        return (react_1.default.createElement(react_1.default.Fragment, null,
+            react_1.default.createElement(antd_1.Divider, null),
+            react_1.default.createElement(antd_1.Row, { justify: "end" },
+                react_1.default.createElement(antd_1.Space, null,
+                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), disabled: isSubmitting, onClick: cancel }, "Cancel"),
+                    react_1.default.createElement(antd_1.Button, { loading: isSubmitting, icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: submitForm }, "OK")))));
+    };
     return (react_1.default.createElement("div", { ref: ref },
         wrapper(),
-        react_1.default.createElement(antd_1.Divider, null),
-        react_1.default.createElement(antd_1.Row, { justify: "end" },
-            react_1.default.createElement(antd_1.Space, null,
-                react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), disabled: isSubmitting, onClick: cancel }, "Cancel"),
-                react_1.default.createElement(antd_1.Button, { loading: isSubmitting, icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: submitForm }, "OK")))));
+        showFooter && footer()));
 }
 exports.default = Form;
 //# sourceMappingURL=Form.js.map

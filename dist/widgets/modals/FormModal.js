@@ -13,7 +13,7 @@ var FormModal = function (props) {
         react_1.default.createElement(Form_1.default, { id: visible ? id : undefined, model: model, onCancel: onCancel, onSubmitSucceed: function (updatedObject) {
                 if (onSubmitSucceed)
                     onSubmitSucceed(updatedObject);
-            } })));
+            }, showFooter: true })));
 };
 exports.FormModal = FormModal;
 //# sourceMappingURL=FormModal.js.map

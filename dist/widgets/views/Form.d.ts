@@ -4,6 +4,7 @@ declare type Props = {
     id?: number;
     onSubmitSucceed?: (updatedObject: any) => void;
     onCancel?: () => void;
+    showFooter?: boolean;
 };
 declare function Form(props: Props): React.ReactElement;
 export default Form;
