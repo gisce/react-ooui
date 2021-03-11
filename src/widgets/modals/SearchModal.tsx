@@ -79,7 +79,11 @@ export const SearchModal = (props: SearchSelectionProps) => {
         onCancel={onCloseModal}
         footer={null}
       >
-        {loading ? <Spin /> : content()}
+        <div
+          key={Math.random() * 10000} // This forces the component to be unique each time the modal is shown
+        >
+          {loading ? <Spin /> : content()}
+        </div>
       </Modal>
       <FormModal
         model={model}

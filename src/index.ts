@@ -15,6 +15,7 @@ import { Separator } from "@/widgets/base/Separator";
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import SearchTree from "@/widgets/views/SearchTree";
 import { FormModal } from "@/widgets/modals/FormModal";
+import { SearchModal } from "@/widgets/modals/SearchModal";
 
 import {
   TreeView,
@@ -63,4 +64,5 @@ export {
   ExecuteRequest,
   ReadObjectRequest,
   FormModal,
+  SearchModal,
 };
