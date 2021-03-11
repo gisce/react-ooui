@@ -10,15 +10,18 @@ import {
   Spin,
   Modal,
 } from "antd";
-import Container from "../containers/Container";
 import useDimensions from "react-cool-dimensions";
 import {
   CheckOutlined,
   CloseOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
+
+import Container from "@/widgets/containers/Container";
+import { processInitialValues, getTouchedValues } from "@/helpers/formHelper";
 import { FormView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
+
 const { confirm } = Modal;
 
 type Props = {
@@ -27,39 +30,31 @@ type Props = {
   onSubmitSucceed?: (updatedObject: any) => void;
   onCancel?: () => void;
   showFooter?: boolean;
+  getDataFromAction?: boolean;
 };
 
 const WIDTH_BREAKPOINT = 1000;
 
-const filteredValues = (values: any, fields: any) => {
-  if (!fields) {
-    return values;
-  }
-  const filteredValues: any = {};
-  Object.keys(values).forEach((key) => {
-    if (
-      values[key] !== false ||
-      (fields[key] && fields[key].type === "boolean")
-    ) {
-      filteredValues[key] = values[key];
-    }
-  });
-  return filteredValues;
-};
-
-const processInitialValues = (values: any, fields: any) => {
-  const filterBooleans = filteredValues(values, fields);
-  return filterBooleans;
+type FormViewAndOoui = {
+  ooui: FormOoui;
+  view: FormView;
 };
 
 function Form(props: Props): React.ReactElement {
-  const { model, id, onCancel, onSubmitSucceed, showFooter = false } = props;
+  const {
+    model,
+    id,
+    onCancel,
+    onSubmitSucceed,
+    showFooter = false,
+    getDataFromAction = false,
+  } = props;
+
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>();
-  const [formView, setFormView] = useState<FormView>();
   const [values, setValues] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
-  const [form, setForm] = useState<FormOoui>();
+  const [form, setForm] = useState<FormViewAndOoui>();
   const [antForm] = AntForm.useForm();
 
   const { width, ref } = useDimensions<HTMLDivElement>({
@@ -67,22 +62,6 @@ function Form(props: Props): React.ReactElement {
     updateOnBreakpointChange: true,
   });
   const responsiveBehaviour = width < WIDTH_BREAKPOINT;
-
-  const getTouchedValues = () => {
-    const values = antForm.getFieldsValue(true);
-    const touchedValues: any = {};
-    Object.keys(values).map((key) => {
-      if (antForm.isFieldTouched(key)) {
-        touchedValues[key] = values[key];
-      }
-    });
-    return touchedValues;
-  };
-
-  const closeModal = () => {
-    antForm.resetFields();
-    if (onCancel) onCancel();
-  };
 
   const showConfirm = () => {
     confirm({
@@ -92,50 +71,63 @@ function Form(props: Props): React.ReactElement {
       content: "Do you really want to close this window without saving?",
       okText: "Close without saving",
       onOk() {
-        closeModal();
+        if (onCancel) onCancel();
       },
     });
   };
 
   const cancel = () => {
-    if (Object.keys(getTouchedValues()).length > 0) {
+    if (Object.keys(getTouchedValues(antForm)).length > 0) {
       showConfirm();
       return;
     }
 
-    closeModal();
+    if (onCancel) onCancel();
+  };
+
+  const getFormView = async (): Promise<FormView> => {
+    if (getDataFromAction) {
+      const action = await ConnectionProvider.getHandler().execute({
+        model,
+        action: "action_get",
+      });
+      const viewsForAction = await ConnectionProvider.getHandler().getViewsForAction(
+        action
+      );
+      return viewsForAction.views.get("form");
+    }
+
+    return (await ConnectionProvider.getHandler().getView(
+      model,
+      "form"
+    )) as FormView;
   };
 
   const fetchData = async () => {
     setLoading(true);
 
     try {
-      const _formView = await ConnectionProvider.getHandler().getView(
-        model,
-        "form"
-      );
-      setFormView(_formView as FormView);
-      antForm.resetFields();
-      const newForm = new FormOoui(_formView.fields);
-      newForm.parse(_formView.arch);
-      setForm(newForm);
+      const view = await getFormView();
+
+      const ooui = new FormOoui(view.fields);
+      ooui.parse(view.arch);
+      setForm({ ooui, view });
 
       let _values = {};
       if (id) {
         _values = await ConnectionProvider.getHandler().readObject({
-          arch: _formView!.arch,
+          arch: view!.arch,
           model,
           id,
         });
-        setValues(_values);
       } else {
         _values = await ConnectionProvider.getHandler().execute({
           model,
           action: "default_get",
-          payload: Object.keys(_formView.fields),
+          payload: Object.keys(view.fields),
         });
-        setValues(_values);
       }
+      setValues(_values);
     } catch (err) {
       setError(err);
     } finally {
@@ -150,7 +142,7 @@ function Form(props: Props): React.ReactElement {
   const submitForm = async () => {
     setIsSubmitting(true);
     try {
-      const touchedValues = getTouchedValues();
+      const touchedValues = getTouchedValues(antForm);
 
       let objectId = id;
 
@@ -184,34 +176,23 @@ function Form(props: Props): React.ReactElement {
   };
 
   const content = () => {
-    if (!formView) {
+    if (!form) {
       return null;
     }
 
     return (
       <AntForm
         form={antForm}
-        initialValues={processInitialValues(values, formView!.fields)}
+        initialValues={processInitialValues(values, form.view.fields)}
       >
         {form && (
           <Container
-            container={form!.container}
+            container={form.ooui.container}
             formWrapper
             responsiveBehaviour={responsiveBehaviour}
           />
         )}
       </AntForm>
-    );
-  };
-
-  const wrapper = () => {
-    return (
-      <>
-        {error && (
-          <Alert className="mt-10" message={error} type="error" banner />
-        )}
-        {loading ? <Spin /> : content()}
-      </>
     );
   };
 
@@ -244,7 +225,8 @@ function Form(props: Props): React.ReactElement {
 
   return (
     <div ref={ref}>
-      {wrapper()}
+      {error && <Alert className="mt-10" message={error} type="error" banner />}
+      {loading ? <Spin /> : content()}
       {showFooter && footer()}
     </div>
   );
