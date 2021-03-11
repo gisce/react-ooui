@@ -61,6 +61,7 @@ function Form(props: Props): React.ReactElement {
   const [loading, setLoading] = useState<boolean>(false);
   const [form, setForm] = useState<FormOoui>();
   const [antForm] = AntForm.useForm();
+  const [mustReload, setMustReload] = useState<boolean>(false);
 
   const { width, ref } = useDimensions<HTMLDivElement>({
     breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
@@ -79,6 +80,11 @@ function Form(props: Props): React.ReactElement {
     return touchedValues;
   };
 
+  const closeModal = () => {
+    antForm.resetFields();
+    if (onCancel) onCancel();
+  };
+
   const showConfirm = () => {
     confirm({
       title: "There are unsaved changes",
@@ -87,8 +93,7 @@ function Form(props: Props): React.ReactElement {
       content: "Do you really want to close this window without saving?",
       okText: "Close without saving",
       onOk() {
-        antForm.resetFields();
-        if (onCancel) onCancel();
+        closeModal();
       },
     });
   };
@@ -99,8 +104,7 @@ function Form(props: Props): React.ReactElement {
       return;
     }
 
-    antForm.resetFields();
-    if (onCancel) onCancel();
+    closeModal();
   };
 
   const fetchData = async () => {
@@ -142,7 +146,8 @@ function Form(props: Props): React.ReactElement {
 
   useEffect(() => {
     fetchData();
-  }, [id, model]);
+    // We add onSubmitSucceed dependency to force the component reload when opening the modal two times
+  }, [id, model, onSubmitSucceed]);
 
   const submitForm = async () => {
     setIsSubmitting(true);
@@ -172,8 +177,6 @@ function Form(props: Props): React.ReactElement {
         payload: [objectId],
         model,
       });
-
-      antForm.resetFields();
       if (onSubmitSucceed) onSubmitSucceed(value[0]);
     } catch (err) {
       setError(err);
@@ -222,12 +225,13 @@ function Form(props: Props): React.ReactElement {
           <Space>
             <Button
               icon={<CloseOutlined />}
-              disabled={isSubmitting}
+              disabled={isSubmitting || loading}
               onClick={cancel}
             >
               Cancel
             </Button>
             <Button
+              disabled={isSubmitting || loading}
               loading={isSubmitting}
               icon={<CheckOutlined />}
               onClick={submitForm}

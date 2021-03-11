@@ -94,10 +94,11 @@ function Form(props) {
     var _f = react_1.useState(false), loading = _f[0], setLoading = _f[1];
     var _g = react_1.useState(), form = _g[0], setForm = _g[1];
     var antForm = antd_1.Form.useForm()[0];
-    var _h = react_cool_dimensions_1.default({
+    var _h = react_1.useState(false), mustReload = _h[0], setMustReload = _h[1];
+    var _j = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _h.width, ref = _h.ref;
+    }), width = _j.width, ref = _j.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     var getTouchedValues = function () {
         var values = antForm.getFieldsValue(true);
@@ -109,6 +110,11 @@ function Form(props) {
         });
         return touchedValues;
     };
+    var closeModal = function () {
+        antForm.resetFields();
+        if (onCancel)
+            onCancel();
+    };
     var showConfirm = function () {
         confirm({
             title: "There are unsaved changes",
@@ -117,9 +123,7 @@ function Form(props) {
             content: "Do you really want to close this window without saving?",
             okText: "Close without saving",
             onOk: function () {
-                antForm.resetFields();
-                if (onCancel)
-                    onCancel();
+                closeModal();
             },
         });
     };
@@ -128,9 +132,7 @@ function Form(props) {
             showConfirm();
             return;
         }
-        antForm.resetFields();
-        if (onCancel)
-            onCancel();
+        closeModal();
     };
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
         var _formView, newForm, _values, err_1;
@@ -183,7 +185,8 @@ function Form(props) {
     }); };
     react_1.useEffect(function () {
         fetchData();
-    }, [id, model]);
+        // We add onSubmitSucceed dependency to force the component reload when opening the modal two times
+    }, [id, model, onSubmitSucceed]);
     var submitForm = function () { return __awaiter(_this, void 0, void 0, function () {
         var touchedValues, objectId, newId, value, err_2;
         return __generator(this, function (_a) {
@@ -220,7 +223,6 @@ function Form(props) {
                     })];
                 case 6:
                     value = _a.sent();
-                    antForm.resetFields();
                     if (onSubmitSucceed)
                         onSubmitSucceed(value[0]);
                     return [3 /*break*/, 9];
@@ -251,8 +253,8 @@ function Form(props) {
             react_1.default.createElement(antd_1.Divider, null),
             react_1.default.createElement(antd_1.Row, { justify: "end" },
                 react_1.default.createElement(antd_1.Space, null,
-                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), disabled: isSubmitting, onClick: cancel }, "Cancel"),
-                    react_1.default.createElement(antd_1.Button, { loading: isSubmitting, icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: submitForm }, "OK")))));
+                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), disabled: isSubmitting || loading, onClick: cancel }, "Cancel"),
+                    react_1.default.createElement(antd_1.Button, { disabled: isSubmitting || loading, loading: isSubmitting, icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: submitForm }, "OK")))));
     };
     return (react_1.default.createElement("div", { ref: ref },
         wrapper(),
