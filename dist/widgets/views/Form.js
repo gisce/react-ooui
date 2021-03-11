@@ -61,35 +61,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var ooui_1 = require("ooui");
 var antd_1 = require("antd");
-var Container_1 = __importDefault(require("../containers/Container"));
 var react_cool_dimensions_1 = __importDefault(require("react-cool-dimensions"));
 var icons_1 = require("@ant-design/icons");
+var Container_1 = __importDefault(require("@/widgets/containers/Container"));
+var formHelper_1 = require("@/helpers/formHelper");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var confirm = antd_1.Modal.confirm;
 var WIDTH_BREAKPOINT = 1000;
-var filteredValues = function (values, fields) {
-    if (!fields) {
-        return values;
-    }
-    var filteredValues = {};
-    Object.keys(values).forEach(function (key) {
-        if (values[key] !== false ||
-            (fields[key] && fields[key].type === "boolean")) {
-            filteredValues[key] = values[key];
-        }
-    });
-    return filteredValues;
-};
-var processInitialValues = function (values, fields) {
-    var filterBooleans = filteredValues(values, fields);
-    return filterBooleans;
-};
 function Form(props) {
     var _this = this;
-    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a;
-    var _b = react_1.useState(false), isSubmitting = _b[0], setIsSubmitting = _b[1];
-    var _c = react_1.useState(), error = _c[0], setError = _c[1];
-    var _d = react_1.useState(), formView = _d[0], setFormView = _d[1];
+    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b;
+    var _c = react_1.useState(false), isSubmitting = _c[0], setIsSubmitting = _c[1];
+    var _d = react_1.useState(), error = _d[0], setError = _d[1];
     var _e = react_1.useState({}), values = _e[0], setValues = _e[1];
     var _f = react_1.useState(false), loading = _f[0], setLoading = _f[1];
     var _g = react_1.useState(), form = _g[0], setForm = _g[1];
@@ -99,21 +82,6 @@ function Form(props) {
         updateOnBreakpointChange: true,
     }), width = _h.width, ref = _h.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
-    var getTouchedValues = function () {
-        var values = antForm.getFieldsValue(true);
-        var touchedValues = {};
-        Object.keys(values).map(function (key) {
-            if (antForm.isFieldTouched(key)) {
-                touchedValues[key] = values[key];
-            }
-        });
-        return touchedValues;
-    };
-    var closeModal = function () {
-        antForm.resetFields();
-        if (onCancel)
-            onCancel();
-    };
     var showConfirm = function () {
         confirm({
             title: "There are unsaved changes",
@@ -122,19 +90,42 @@ function Form(props) {
             content: "Do you really want to close this window without saving?",
             okText: "Close without saving",
             onOk: function () {
-                closeModal();
+                if (onCancel)
+                    onCancel();
             },
         });
     };
     var cancel = function () {
-        if (Object.keys(getTouchedValues()).length > 0) {
+        if (Object.keys(formHelper_1.getTouchedValues(antForm)).length > 0) {
             showConfirm();
             return;
         }
-        closeModal();
+        if (onCancel)
+            onCancel();
     };
+    var getFormView = function () { return __awaiter(_this, void 0, void 0, function () {
+        var action, viewsForAction;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!getDataFromAction) return [3 /*break*/, 3];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
+                            model: model,
+                            action: "action_get",
+                        })];
+                case 1:
+                    action = _a.sent();
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getViewsForAction(action)];
+                case 2:
+                    viewsForAction = _a.sent();
+                    return [2 /*return*/, viewsForAction.views.get("form")];
+                case 3: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(model, "form")];
+                case 4: return [2 /*return*/, (_a.sent())];
+            }
+        });
+    }); };
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
-        var _formView, newForm, _values, err_1;
+        var view, ooui, _values, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -142,35 +133,33 @@ function Form(props) {
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 7, 8, 9]);
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(model, "form")];
+                    return [4 /*yield*/, getFormView()];
                 case 2:
-                    _formView = _a.sent();
-                    setFormView(_formView);
-                    antForm.resetFields();
-                    newForm = new ooui_1.Form(_formView.fields);
-                    newForm.parse(_formView.arch);
-                    setForm(newForm);
+                    view = _a.sent();
+                    ooui = new ooui_1.Form(view.fields);
+                    ooui.parse(view.arch);
+                    setForm({ ooui: ooui, view: view });
                     _values = {};
                     if (!id) return [3 /*break*/, 4];
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObject({
-                            arch: _formView.arch,
+                            arch: view.arch,
                             model: model,
                             id: id,
                         })];
                 case 3:
                     _values = _a.sent();
-                    setValues(_values);
                     return [3 /*break*/, 6];
                 case 4: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
                         model: model,
                         action: "default_get",
-                        payload: Object.keys(_formView.fields),
+                        payload: Object.keys(view.fields),
                     })];
                 case 5:
                     _values = _a.sent();
-                    setValues(_values);
                     _a.label = 6;
-                case 6: return [3 /*break*/, 9];
+                case 6:
+                    setValues(_values);
+                    return [3 /*break*/, 9];
                 case 7:
                     err_1 = _a.sent();
                     setError(err_1);
@@ -194,7 +183,7 @@ function Form(props) {
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 7, 8, 9]);
-                    touchedValues = getTouchedValues();
+                    touchedValues = formHelper_1.getTouchedValues(antForm);
                     objectId = id;
                     if (!(Object.keys(touchedValues).length !== 0)) return [3 /*break*/, 5];
                     if (!id) return [3 /*break*/, 3];
@@ -236,15 +225,10 @@ function Form(props) {
         });
     }); };
     var content = function () {
-        if (!formView) {
+        if (!form) {
             return null;
         }
-        return (react_1.default.createElement(antd_1.Form, { form: antForm, initialValues: processInitialValues(values, formView.fields) }, form && (react_1.default.createElement(Container_1.default, { container: form.container, formWrapper: true, responsiveBehaviour: responsiveBehaviour }))));
-    };
-    var wrapper = function () {
-        return (react_1.default.createElement(react_1.default.Fragment, null,
-            error && (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true })),
-            loading ? react_1.default.createElement(antd_1.Spin, null) : content()));
+        return (react_1.default.createElement(antd_1.Form, { form: antForm, initialValues: formHelper_1.processInitialValues(values, form.view.fields) }, form && (react_1.default.createElement(Container_1.default, { container: form.ooui.container, formWrapper: true, responsiveBehaviour: responsiveBehaviour }))));
     };
     var footer = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
@@ -255,7 +239,8 @@ function Form(props) {
                     react_1.default.createElement(antd_1.Button, { disabled: isSubmitting || loading, loading: isSubmitting, icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: submitForm }, "OK")))));
     };
     return (react_1.default.createElement("div", { ref: ref },
-        wrapper(),
+        error && react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true }),
+        loading ? react_1.default.createElement(antd_1.Spin, null) : content(),
         showFooter && footer()));
 }
 exports.default = Form;

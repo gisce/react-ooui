@@ -5,6 +5,7 @@ declare type Props = {
     onSubmitSucceed?: (updatedObject: any) => void;
     onCancel?: () => void;
     showFooter?: boolean;
+    getDataFromAction?: boolean;
 };
 declare function Form(props: Props): React.ReactElement;
 export default Form;
