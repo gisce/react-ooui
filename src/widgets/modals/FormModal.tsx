@@ -6,6 +6,7 @@ type FormModalProps = {
   visible: boolean;
   model: string;
   id?: number;
+  getDataFromAction?: boolean;
   onCancel?: () => void;
   onSubmitSucceed?: (updatedObject: any) => void;
   title?: string;
@@ -19,6 +20,7 @@ export const FormModal = (props: FormModalProps) => {
     id,
     model,
     title = id ? "Detail" : "New",
+    getDataFromAction,
   } = props;
 
   return (
@@ -35,6 +37,7 @@ export const FormModal = (props: FormModalProps) => {
         key={Math.random() * 10000} // This forces the Form component to be unique each time the modal is shown
         id={id}
         model={model}
+        getDataFromAction={getDataFromAction}
         onCancel={onCancel}
         onSubmitSucceed={(updatedObject?: any) => {
           if (onSubmitSucceed) onSubmitSucceed(updatedObject);

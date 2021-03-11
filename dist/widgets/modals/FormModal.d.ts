@@ -3,6 +3,7 @@ declare type FormModalProps = {
     visible: boolean;
     model: string;
     id?: number;
+    getDataFromAction?: boolean;
     onCancel?: () => void;
     onSubmitSucceed?: (updatedObject: any) => void;
     title?: string;
