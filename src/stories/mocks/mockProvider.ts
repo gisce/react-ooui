@@ -12,6 +12,9 @@ import {
 
 const init = () => {
   const handler: ConnectionProviderType = {
+    getAction: async (model: string) => {
+      return "ir.actions.act_window,6";
+    },
     getViewsForAction: async (action: string) => {
       return { limit: 0, model: "", views: null };
     },

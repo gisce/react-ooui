@@ -74,6 +74,7 @@ type ReadObjectRequest = {
 };
 
 type ConnectionProviderType = {
+  getAction: (model: string) => Promise<string>;
   getViewsForAction: (action: string) => Promise<ViewData>;
   getView: (
     model: string,

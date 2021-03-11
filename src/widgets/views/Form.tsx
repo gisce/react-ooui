@@ -87,10 +87,7 @@ function Form(props: Props): React.ReactElement {
 
   const getFormView = async (): Promise<FormView> => {
     if (getDataFromAction) {
-      const action = await ConnectionProvider.getHandler().execute({
-        model,
-        action: "action_get",
-      });
+      const action = await ConnectionProvider.getHandler().getAction(model);
       const viewsForAction = await ConnectionProvider.getHandler().getViewsForAction(
         action
       );

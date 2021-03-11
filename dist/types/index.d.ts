@@ -59,6 +59,7 @@ declare type ReadObjectRequest = {
     id: number;
 };
 declare type ConnectionProviderType = {
+    getAction: (model: string) => Promise<string>;
     getViewsForAction: (action: string) => Promise<ViewData>;
     getView: (model: string, type: "tree" | "form") => Promise<FormView | TreeView>;
     search: (options: SearchRequest) => Promise<SearchResponse>;
