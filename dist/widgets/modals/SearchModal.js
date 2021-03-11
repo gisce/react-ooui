@@ -114,7 +114,8 @@ var SearchModal = function (props) {
                     react_1.default.createElement(antd_1.Button, { disabled: loading, icon: react_1.default.createElement(icons_1.CloseOutlined, null), onClick: onCloseModal }, "Cancel")))));
     };
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(antd_1.Modal, { title: "Search", centered: true, width: 1400, visible: visible && !showCreateModal, closable: true, onCancel: onCloseModal, footer: null }, loading ? react_1.default.createElement(antd_1.Spin, null) : content()),
+        react_1.default.createElement(antd_1.Modal, { title: "Search", centered: true, width: 1400, visible: visible && !showCreateModal, closable: true, onCancel: onCloseModal, footer: null },
+            react_1.default.createElement("div", { key: Math.random() * 10000 }, loading ? react_1.default.createElement(antd_1.Spin, null) : content())),
         react_1.default.createElement(FormModal_1.FormModal, { model: model, visible: showCreateModal, onSubmitSucceed: function (value) {
                 setShowCreateModal(false);
                 onCloseModal();
