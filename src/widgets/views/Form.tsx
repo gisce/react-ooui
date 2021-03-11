@@ -61,7 +61,6 @@ function Form(props: Props): React.ReactElement {
   const [loading, setLoading] = useState<boolean>(false);
   const [form, setForm] = useState<FormOoui>();
   const [antForm] = AntForm.useForm();
-  const [mustReload, setMustReload] = useState<boolean>(false);
 
   const { width, ref } = useDimensions<HTMLDivElement>({
     breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
@@ -146,8 +145,7 @@ function Form(props: Props): React.ReactElement {
 
   useEffect(() => {
     fetchData();
-    // We add onSubmitSucceed dependency to force the component reload when opening the modal two times
-  }, [id, model, onSubmitSucceed]);
+  }, [id, model]);
 
   const submitForm = async () => {
     setIsSubmitting(true);

@@ -94,11 +94,10 @@ function Form(props) {
     var _f = react_1.useState(false), loading = _f[0], setLoading = _f[1];
     var _g = react_1.useState(), form = _g[0], setForm = _g[1];
     var antForm = antd_1.Form.useForm()[0];
-    var _h = react_1.useState(false), mustReload = _h[0], setMustReload = _h[1];
-    var _j = react_cool_dimensions_1.default({
+    var _h = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _j.width, ref = _j.ref;
+    }), width = _h.width, ref = _h.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     var getTouchedValues = function () {
         var values = antForm.getFieldsValue(true);
@@ -185,8 +184,7 @@ function Form(props) {
     }); };
     react_1.useEffect(function () {
         fetchData();
-        // We add onSubmitSucceed dependency to force the component reload when opening the modal two times
-    }, [id, model, onSubmitSucceed]);
+    }, [id, model]);
     var submitForm = function () { return __awaiter(_this, void 0, void 0, function () {
         var touchedValues, objectId, newId, value, err_2;
         return __generator(this, function (_a) {

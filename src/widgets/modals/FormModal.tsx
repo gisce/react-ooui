@@ -32,7 +32,8 @@ export const FormModal = (props: FormModalProps) => {
       footer={null}
     >
       <Form
-        id={visible ? id : undefined}
+        key={Math.random() * 10000} // This forces the Form component to be unique each time the modal is shown
+        id={id}
         model={model}
         onCancel={onCancel}
         onSubmitSucceed={(updatedObject?: any) => {
