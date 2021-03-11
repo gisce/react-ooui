@@ -38,6 +38,7 @@ export const FormModal = (props: FormModalProps) => {
         onSubmitSucceed={(updatedObject?: any) => {
           if (onSubmitSucceed) onSubmitSucceed(updatedObject);
         }}
+        showFooter
       />
     </Modal>
   );

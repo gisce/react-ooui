@@ -26,6 +26,7 @@ type Props = {
   id?: number;
   onSubmitSucceed?: (updatedObject: any) => void;
   onCancel?: () => void;
+  showFooter?: boolean;
 };
 
 const WIDTH_BREAKPOINT = 1000;
@@ -52,7 +53,7 @@ const processInitialValues = (values: any, fields: any) => {
 };
 
 function Form(props: Props): React.ReactElement {
-  const { model, id, onCancel, onSubmitSucceed } = props;
+  const { model, id, onCancel, onSubmitSucceed, showFooter = false } = props;
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>();
   const [formView, setFormView] = useState<FormView>();
@@ -213,28 +214,36 @@ function Form(props: Props): React.ReactElement {
     );
   };
 
+  const footer = () => {
+    return (
+      <>
+        <Divider />
+        <Row justify="end">
+          <Space>
+            <Button
+              icon={<CloseOutlined />}
+              disabled={isSubmitting}
+              onClick={cancel}
+            >
+              Cancel
+            </Button>
+            <Button
+              loading={isSubmitting}
+              icon={<CheckOutlined />}
+              onClick={submitForm}
+            >
+              OK
+            </Button>
+          </Space>
+        </Row>
+      </>
+    );
+  };
+
   return (
     <div ref={ref}>
       {wrapper()}
-      <Divider />
-      <Row justify="end">
-        <Space>
-          <Button
-            icon={<CloseOutlined />}
-            disabled={isSubmitting}
-            onClick={cancel}
-          >
-            Cancel
-          </Button>
-          <Button
-            loading={isSubmitting}
-            icon={<CheckOutlined />}
-            onClick={submitForm}
-          >
-            OK
-          </Button>
-        </Space>
-      </Row>
+      {showFooter && footer()}
     </div>
   );
 }
