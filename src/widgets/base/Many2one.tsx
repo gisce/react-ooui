@@ -68,6 +68,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
           onClick={() => {
             setShowFormModal(true);
           }}
+          tabIndex={-1}
         />
       </Col>
       <Col flex="32px">
@@ -77,6 +78,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
           onClick={() => {
             setShowSearchModal(true);
           }}
+          tabIndex={-1}
         />
       </Col>
       <SearchModal
