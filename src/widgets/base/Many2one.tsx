@@ -37,6 +37,8 @@ interface Many2oneInputProps {
   onChange?: (value: any[]) => void;
 }
 
+let SEARCH_BUTTON_TAPPED_FLAG = false;
+
 const Many2oneInput: React.FC<Many2oneInputProps> = (
   props: Many2oneInputProps
 ) => {
@@ -61,6 +63,15 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
 
   const onElementLostFocus = async () => {
     if (!id && !searching && text.trim().length > 0) {
+      // Debounce this event to give time to the search button onClick to set the flag
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // If the focus is lost because the user tapped the search button, we don't need to do nothing here
+      if (SEARCH_BUTTON_TAPPED_FLAG) {
+        triggerChange([undefined, ""]);
+        return;
+      }
+
       setSearching(true);
 
       try {
@@ -112,6 +123,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
           icon={searching ? <LoadingOutlined /> : <SearchOutlined />}
           disabled={readOnly || searching}
           onClick={() => {
+            SEARCH_BUTTON_TAPPED_FLAG = true;
             setSearchText(text);
             setShowSearchModal(true);
           }}
@@ -125,9 +137,11 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
         onSelectValue={(value) => {
           triggerChange(value);
           setShowSearchModal(false);
+          SEARCH_BUTTON_TAPPED_FLAG = false;
         }}
         onCloseModal={() => {
           setShowSearchModal(false);
+          SEARCH_BUTTON_TAPPED_FLAG = false;
         }}
       />
       <FormModal

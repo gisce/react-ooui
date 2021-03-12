@@ -12,6 +12,7 @@ export const Default = (): React.ReactElement => {
   const ooui = new Many2oneOoui({
     name: "field",
     string: "Lorem ipsum",
+    relation: "res.partners",
   });
   return <Many2one ooui={ooui} showLabel />;
 };

@@ -84,6 +84,7 @@ var Many2one = function (props) {
         react_1.default.createElement(Many2oneInput, { ooui: ooui })));
 };
 exports.Many2one = Many2one;
+var SEARCH_BUTTON_TAPPED_FLAG = false;
 var Many2oneInput = function (props) {
     var value = props.value, onChange = props.onChange, ooui = props.ooui;
     var required = ooui.required, relation = ooui.relation, readOnly = ooui.readOnly;
@@ -105,17 +106,27 @@ var Many2oneInput = function (props) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!(!id && !searching && text.trim().length > 0)) return [3 /*break*/, 5];
-                    setSearching(true);
-                    _a.label = 1;
+                    if (!(!id && !searching && text.trim().length > 0)) return [3 /*break*/, 6];
+                    // Debounce this event to give time to the search button onClick to set the flag
+                    return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 100); })];
                 case 1:
-                    _a.trys.push([1, 3, 4, 5]);
+                    // Debounce this event to give time to the search button onClick to set the flag
+                    _a.sent();
+                    // If the focus is lost because the user tapped the search button, we don't need to do nothing here
+                    if (SEARCH_BUTTON_TAPPED_FLAG) {
+                        triggerChange([undefined, ""]);
+                        return [2 /*return*/];
+                    }
+                    setSearching(true);
+                    _a.label = 2;
+                case 2:
+                    _a.trys.push([2, 4, 5, 6]);
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
                             model: relation,
                             action: "name_search",
                             payload: text,
                         })];
-                case 2:
+                case 3:
                     results = _a.sent();
                     if (results.length > 0) {
                         triggerChange(results[0]);
@@ -125,14 +136,14 @@ var Many2oneInput = function (props) {
                         setShowSearchModal(true);
                         triggerChange([undefined, ""]);
                     }
-                    return [3 /*break*/, 5];
-                case 3:
-                    err_1 = _a.sent();
-                    return [3 /*break*/, 5];
+                    return [3 /*break*/, 6];
                 case 4:
+                    err_1 = _a.sent();
+                    return [3 /*break*/, 6];
+                case 5:
                     setSearching(false);
                     return [7 /*endfinally*/];
-                case 5: return [2 /*return*/];
+                case 6: return [2 /*return*/];
             }
         });
     }); };
@@ -145,14 +156,19 @@ var Many2oneInput = function (props) {
                 }, tabIndex: -1 })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
             react_1.default.createElement(antd_1.Button, { icon: searching ? react_1.default.createElement(icons_1.LoadingOutlined, null) : react_1.default.createElement(icons_1.SearchOutlined, null), disabled: readOnly || searching, onClick: function () {
+                    SEARCH_BUTTON_TAPPED_FLAG = true;
                     setSearchText(text);
                     setShowSearchModal(true);
-                }, tabIndex: -1 })),
+                }, tabIndex: -1, onFocus: function () {
+                    console.log();
+                } })),
         react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValue: function (value) {
                 triggerChange(value);
                 setShowSearchModal(false);
+                SEARCH_BUTTON_TAPPED_FLAG = false;
             }, onCloseModal: function () {
                 setShowSearchModal(false);
+                SEARCH_BUTTON_TAPPED_FLAG = false;
             } }),
         react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: value && value[0], visible: showFormModal, onSubmitSucceed: function (value) {
                 triggerChange(value);
