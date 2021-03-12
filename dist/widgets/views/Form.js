@@ -90,8 +90,7 @@ function Form(props) {
             content: "Do you really want to close this window without saving?",
             okText: "Close without saving",
             onOk: function () {
-                if (onCancel)
-                    onCancel();
+                onCancel === null || onCancel === void 0 ? void 0 : onCancel();
             },
         });
     };
@@ -100,8 +99,7 @@ function Form(props) {
             showConfirm();
             return;
         }
-        if (onCancel)
-            onCancel();
+        onCancel === null || onCancel === void 0 ? void 0 : onCancel();
     };
     var getFormView = function () { return __awaiter(_this, void 0, void 0, function () {
         var action, viewsForAction;
@@ -207,8 +205,7 @@ function Form(props) {
                     })];
                 case 6:
                     value = _a.sent();
-                    if (onSubmitSucceed)
-                        onSubmitSucceed(value[0]);
+                    onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(value[0]);
                     return [3 /*break*/, 9];
                 case 7:
                     err_2 = _a.sent();
