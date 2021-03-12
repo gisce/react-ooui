@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 import { Input, Button, Row, Col } from "antd";
-import { SearchOutlined, FolderOpenOutlined } from "@ant-design/icons";
+import {
+  SearchOutlined,
+  FolderOpenOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 import { Many2one as Many2oneOoui } from "ooui";
 import Field from "@/common/Field";
 import Config from "@/Config";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import { FormModal } from "@/widgets/modals/FormModal";
+import ConnectionProvider from "@/ConnectionProvider";
 
 type Props = {
   ooui: Many2oneOoui;
@@ -40,6 +45,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
   const requiredClass = required ? Config.requiredClass : undefined;
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
+  const [searching, setSearching] = useState<boolean>(false);
 
   const triggerChange = (changedValue: any[]) => {
     onChange?.({ ...value, ...changedValue });
@@ -50,22 +56,48 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
   };
 
   const id = value && value[0];
+  const text = (value && value[1]) || "";
+
+  const onElementLostFocus = async () => {
+    if (!id && !searching && text.trim().length > 0) {
+      setSearching(true);
+
+      try {
+        const results: any[] = await ConnectionProvider.getHandler().execute({
+          model: relation,
+          action: "name_search",
+        });
+
+        if (results.length > 0) {
+          triggerChange(results[0]);
+        } else {
+          triggerChange([undefined, ""]);
+          setShowSearchModal(true);
+        }
+      } catch (err) {
+        // TODO: handle error
+      } finally {
+        setSearching(false);
+      }
+    }
+  };
 
   return (
     <Row gutter={8} className="pt-1 pb-1">
       <Col flex="auto">
         <Input
           type="text"
-          value={value && value[1]}
+          value={text}
           onChange={onValueStringChange}
           disabled={readOnly}
           className={requiredClass}
+          onBlur={onElementLostFocus}
         />
       </Col>
       <Col flex="32px">
         <Button
           icon={<FolderOpenOutlined />}
-          disabled={readOnly || id === undefined}
+          disabled={readOnly || id === undefined}
           onClick={() => {
             setShowFormModal(true);
           }}
@@ -74,8 +106,8 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
       </Col>
       <Col flex="32px">
         <Button
-          icon={<SearchOutlined />}
-          disabled={readOnly}
+          icon={searching ? <LoadingOutlined /> : <SearchOutlined />}
+          disabled={readOnly || searching}
           onClick={() => {
             setShowSearchModal(true);
           }}
