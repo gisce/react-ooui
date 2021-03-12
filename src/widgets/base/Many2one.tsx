@@ -46,6 +46,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState<string>();
 
   const triggerChange = (changedValue: any[]) => {
     onChange?.({ ...value, ...changedValue });
@@ -72,8 +73,9 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
         if (results.length > 0) {
           triggerChange(results[0]);
         } else {
-          triggerChange([undefined, ""]);
+          setSearchText(text);
           setShowSearchModal(true);
+          triggerChange([undefined, ""]);
         }
       } catch (err) {
         // TODO: handle error
@@ -110,6 +112,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
           icon={searching ? <LoadingOutlined /> : <SearchOutlined />}
           disabled={readOnly || searching}
           onClick={() => {
+            setSearchText(text);
             setShowSearchModal(true);
           }}
           tabIndex={-1}
@@ -118,6 +121,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
       <SearchModal
         model={relation}
         visible={showSearchModal}
+        nameSearch={!id ? searchText : undefined}
         onSelectValue={(value) => {
           triggerChange(value);
           setShowSearchModal(false);

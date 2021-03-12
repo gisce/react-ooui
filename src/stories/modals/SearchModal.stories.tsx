@@ -20,6 +20,7 @@ export const Default = (): React.ReactElement => {
         Open modal
       </Button>
       <SearchModal
+        nameSearch="test"
         visible={visible}
         model={"giscedata.cups.ps"}
         onSelectValue={(selectedValue: any) => {

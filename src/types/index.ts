@@ -67,10 +67,10 @@ type ExecuteRequest = {
   payload?: any;
 };
 
-type ReadObjectRequest = {
+type ReadObjectsRequest = {
   arch: string;
   model: string;
-  id: number;
+  ids: number[];
 };
 
 type ConnectionProviderType = {
@@ -84,7 +84,7 @@ type ConnectionProviderType = {
   update: (options: UpdateObjectRequest) => Promise<any>;
   create: (options: CreateObjectRequest) => Promise<any>;
   execute: (options: ExecuteRequest) => Promise<any>;
-  readObject: (options: ReadObjectRequest) => Promise<any>;
+  readObjects: (options: ReadObjectsRequest) => Promise<any>;
 };
 
 export type {
@@ -102,5 +102,5 @@ export type {
   ViewData,
   Views,
   ExecuteRequest,
-  ReadObjectRequest,
+  ReadObjectsRequest,
 };

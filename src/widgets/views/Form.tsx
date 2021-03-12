@@ -112,11 +112,13 @@ function Form(props: Props): React.ReactElement {
 
       let _values = {};
       if (id) {
-        _values = await ConnectionProvider.getHandler().readObject({
-          arch: view!.arch,
-          model,
-          id,
-        });
+        _values = (
+          await ConnectionProvider.getHandler().readObjects({
+            arch: view!.arch,
+            model,
+            ids: [id],
+          })
+        )[0];
       } else {
         _values = await ConnectionProvider.getHandler().execute({
           model,

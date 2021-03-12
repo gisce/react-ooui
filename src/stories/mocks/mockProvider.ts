@@ -7,7 +7,7 @@ import {
   UpdateObjectRequest,
   CreateObjectRequest,
   ExecuteRequest,
-  ReadObjectRequest,
+  ReadObjectsRequest,
 } from "../../types/index";
 
 const init = () => {
@@ -42,9 +42,10 @@ const init = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       return [[1, "Alegría-Dulantzi"]];
     },
-    readObject: async (options: ReadObjectRequest) => {
+    readObjects: async (options: ReadObjectsRequest) => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      return getMock(options.model);
+      const modelMock = getMock(options.model);
+      return [modelMock.exampleValues];
     },
   };
 

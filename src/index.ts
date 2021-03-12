@@ -29,7 +29,7 @@ import {
   ViewData,
   Views,
   ExecuteRequest,
-  ReadObjectRequest,
+  ReadObjectsRequest,
 } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 
@@ -62,7 +62,7 @@ export {
   ViewData,
   Views,
   ExecuteRequest,
-  ReadObjectRequest,
+  ReadObjectsRequest,
   FormModal,
   SearchModal,
 };

@@ -9,23 +9,25 @@ import ConnectionProvider from "@/ConnectionProvider";
 const DEFAULT_SEARCH_LIMIT = 80;
 
 type OnRowClickedData = {
-  id: number,
+  id: number;
   model: string;
-  formView: FormView,
-  treeView: TreeView,
+  formView: FormView;
+  treeView: TreeView;
 };
 
 type Props = {
   action?: string;
   model?: string;
   onRowClicked: (data: OnRowClickedData) => void;
+  nameSearch?: string;
 };
 
 function SearchTree(props: Props) {
-  const { action, model, onRowClicked } = props;
+  const { action, model, onRowClicked, nameSearch } = props;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [initialFetchDone, setInitialFetchDone] = useState<boolean>(false);
+  const [searchNameGetDone, setSearchNameGetDone] = useState<boolean>(false);
 
   const [currentModel, setCurrentModel] = useState<string>();
   const [treeView, setTreeView] = useState<TreeView>();
@@ -55,22 +57,55 @@ function SearchTree(props: Props) {
     setOffset((page - 1) * limit!);
   };
 
+  const searchByNameSearch = async () => {
+    const searchResults = await ConnectionProvider.getHandler().execute({
+      model: currentModel!,
+      action: "name_search",
+      payload: nameSearch,
+    });
+
+    setTotalItems(searchResults.length);
+
+    if (searchResults.length > 0) {
+      const resultsIds = searchResults.map((item: any) => {
+        return item?.[0];
+      });
+      const resultsWithData = await ConnectionProvider.getHandler().readObjects({
+        model: currentModel!,
+        ids: resultsIds,
+        arch: treeView?.arch!,
+      });
+      setResults(resultsWithData);
+    } else {
+      setResults([]);
+    }
+
+    setSearchNameGetDone(true);
+  };
+
+  const searchResults = async () => {
+    const {
+      totalItems,
+      results,
+    } = await ConnectionProvider.getHandler().search({
+      params,
+      limit,
+      offset,
+      model: currentModel!,
+      fields: treeView!.fields,
+    });
+    setTotalItems(totalItems);
+    setResults(results);
+  };
+
   const fetchResults = async () => {
     try {
       setTableRefreshing(true);
-
-      const {
-        totalItems,
-        results,
-      } = await ConnectionProvider.getHandler().search({
-        params,
-        limit,
-        offset,
-        model: currentModel!,
-        fields: treeView!.fields,
-      });
-      setTotalItems(totalItems);
-      setResults(results);
+      if (!searchNameGetDone && nameSearch) {
+        await searchByNameSearch();
+      } else {
+        await searchResults();
+      }
     } catch (error) {
       setSearchError(error);
     } finally {
@@ -119,8 +154,14 @@ function SearchTree(props: Props) {
 
   const fetchModelData = async () => {
     setCurrentModel(model);
-    const _formView = await ConnectionProvider.getHandler().getView(model!, 'form');
-    const _treeView = await ConnectionProvider.getHandler().getView(model!, 'tree');
+    const _formView = await ConnectionProvider.getHandler().getView(
+      model!,
+      "form"
+    );
+    const _treeView = await ConnectionProvider.getHandler().getView(
+      model!,
+      "tree"
+    );
     setFormView(_formView as FormView);
     setTreeView(_treeView as TreeView);
     setLimitFromAction(undefined);

@@ -8,12 +8,13 @@ import { FileAddOutlined, CloseOutlined } from "@ant-design/icons";
 type SearchSelectionProps = {
   visible: boolean;
   model: string;
+  nameSearch?: string;
   onSelectValue: (value: any) => void;
   onCloseModal: () => void;
 };
 
 export const SearchModal = (props: SearchSelectionProps) => {
-  const { visible, onCloseModal, onSelectValue, model } = props;
+  const { visible, onCloseModal, onSelectValue, model, nameSearch } = props;
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
@@ -42,7 +43,13 @@ export const SearchModal = (props: SearchSelectionProps) => {
         {error && (
           <Alert className="mt-10" message={error} type="error" banner />
         )}
-        {visible && <SearchTree model={model} onRowClicked={onRowClicked} />}
+        {visible && (
+          <SearchTree
+            model={model}
+            nameSearch={nameSearch}
+            onRowClicked={onRowClicked}
+          />
+        )}
         <Divider />
         <Row justify="end">
           <Space>
