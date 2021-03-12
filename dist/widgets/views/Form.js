@@ -136,13 +136,13 @@ function Form(props) {
                     setForm({ ooui: ooui, view: view });
                     _values = {};
                     if (!id) return [3 /*break*/, 4];
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObject({
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
                             arch: view.arch,
                             model: model,
-                            id: id,
+                            ids: [id],
                         })];
                 case 3:
-                    _values = _a.sent();
+                    _values = (_a.sent())[0];
                     return [3 /*break*/, 6];
                 case 4: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
                         model: model,

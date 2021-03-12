@@ -66,7 +66,7 @@ var SearchTree_1 = __importDefault(require("@/widgets/views/SearchTree"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var icons_1 = require("@ant-design/icons");
 var SearchModal = function (props) {
-    var visible = props.visible, onCloseModal = props.onCloseModal, onSelectValue = props.onSelectValue, model = props.model;
+    var visible = props.visible, onCloseModal = props.onCloseModal, onSelectValue = props.onSelectValue, model = props.model, nameSearch = props.nameSearch;
     var _a = react_1.useState(false), showCreateModal = _a[0], setShowCreateModal = _a[1];
     var _b = react_1.useState(false), loading = _b[0], setLoading = _b[1];
     var _c = react_1.useState(), error = _c[0], setError = _c[1];
@@ -104,7 +104,7 @@ var SearchModal = function (props) {
     var content = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
             error && (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true })),
-            visible && react_1.default.createElement(SearchTree_1.default, { model: model, onRowClicked: onRowClicked }),
+            visible && (react_1.default.createElement(SearchTree_1.default, { model: model, nameSearch: nameSearch, onRowClicked: onRowClicked })),
             react_1.default.createElement(antd_1.Divider, null),
             react_1.default.createElement(antd_1.Row, { justify: "end" },
                 react_1.default.createElement(antd_1.Space, null,

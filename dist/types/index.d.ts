@@ -53,10 +53,10 @@ declare type ExecuteRequest = {
     action: string;
     payload?: any;
 };
-declare type ReadObjectRequest = {
+declare type ReadObjectsRequest = {
     arch: string;
     model: string;
-    id: number;
+    ids: number[];
 };
 declare type ConnectionProviderType = {
     getAction: (model: string) => Promise<string>;
@@ -66,7 +66,7 @@ declare type ConnectionProviderType = {
     update: (options: UpdateObjectRequest) => Promise<any>;
     create: (options: CreateObjectRequest) => Promise<any>;
     execute: (options: ExecuteRequest) => Promise<any>;
-    readObject: (options: ReadObjectRequest) => Promise<any>;
+    readObjects: (options: ReadObjectsRequest) => Promise<any>;
 };
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectRequest, };
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, };
 //# sourceMappingURL=index.d.ts.map

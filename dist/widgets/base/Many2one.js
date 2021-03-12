@@ -91,6 +91,7 @@ var Many2oneInput = function (props) {
     var _a = react_1.useState(false), showSearchModal = _a[0], setShowSearchModal = _a[1];
     var _b = react_1.useState(false), showFormModal = _b[0], setShowFormModal = _b[1];
     var _c = react_1.useState(false), searching = _c[0], setSearching = _c[1];
+    var _d = react_1.useState(), searchText = _d[0], setSearchText = _d[1];
     var triggerChange = function (changedValue) {
         onChange === null || onChange === void 0 ? void 0 : onChange(__assign(__assign({}, value), changedValue));
     };
@@ -120,8 +121,9 @@ var Many2oneInput = function (props) {
                         triggerChange(results[0]);
                     }
                     else {
-                        triggerChange([undefined, ""]);
+                        setSearchText(text);
                         setShowSearchModal(true);
+                        triggerChange([undefined, ""]);
                     }
                     return [3 /*break*/, 5];
                 case 3:
@@ -143,9 +145,10 @@ var Many2oneInput = function (props) {
                 }, tabIndex: -1 })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
             react_1.default.createElement(antd_1.Button, { icon: searching ? react_1.default.createElement(icons_1.LoadingOutlined, null) : react_1.default.createElement(icons_1.SearchOutlined, null), disabled: readOnly || searching, onClick: function () {
+                    setSearchText(text);
                     setShowSearchModal(true);
                 }, tabIndex: -1 })),
-        react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, visible: showSearchModal, onSelectValue: function (value) {
+        react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValue: function (value) {
                 triggerChange(value);
                 setShowSearchModal(false);
             }, onCloseModal: function () {

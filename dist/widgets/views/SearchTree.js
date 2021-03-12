@@ -77,56 +77,108 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var DEFAULT_SEARCH_LIMIT = 80;
 function SearchTree(props) {
     var _this = this;
-    var action = props.action, model = props.model, onRowClicked = props.onRowClicked;
+    var action = props.action, model = props.model, onRowClicked = props.onRowClicked, nameSearch = props.nameSearch;
     var _a = react_1.useState(false), isLoading = _a[0], setIsLoading = _a[1];
     var _b = react_1.useState(false), initialFetchDone = _b[0], setInitialFetchDone = _b[1];
-    var _c = react_1.useState(), currentModel = _c[0], setCurrentModel = _c[1];
-    var _d = react_1.useState(), treeView = _d[0], setTreeView = _d[1];
-    var _e = react_1.useState(), formView = _e[0], setFormView = _e[1];
-    var _f = react_1.useState(1), page = _f[0], setPage = _f[1];
-    var _g = react_1.useState(0), offset = _g[0], setOffset = _g[1];
-    var _h = react_1.useState(DEFAULT_SEARCH_LIMIT), limit = _h[0], setLimit = _h[1];
-    var _j = react_1.useState(), limitFromAction = _j[0], setLimitFromAction = _j[1];
-    var _k = react_1.useState([]), params = _k[0], setParams = _k[1];
-    var _l = react_1.useState(0), totalItems = _l[0], setTotalItems = _l[1];
-    var _m = react_1.useState([]), results = _m[0], setResults = _m[1];
-    var _o = react_1.useState(false), searchFilterLoading = _o[0], setSearchFilterLoading = _o[1];
-    var _p = react_1.useState(), searchError = _p[0], setSearchError = _p[1];
-    var _q = react_1.useState(), initialError = _q[0], setInitialError = _q[1];
-    var _r = react_1.useState(false), tableRefreshing = _r[0], setTableRefreshing = _r[1];
+    var _c = react_1.useState(false), searchNameGetDone = _c[0], setSearchNameGetDone = _c[1];
+    var _d = react_1.useState(), currentModel = _d[0], setCurrentModel = _d[1];
+    var _e = react_1.useState(), treeView = _e[0], setTreeView = _e[1];
+    var _f = react_1.useState(), formView = _f[0], setFormView = _f[1];
+    var _g = react_1.useState(1), page = _g[0], setPage = _g[1];
+    var _h = react_1.useState(0), offset = _h[0], setOffset = _h[1];
+    var _j = react_1.useState(DEFAULT_SEARCH_LIMIT), limit = _j[0], setLimit = _j[1];
+    var _k = react_1.useState(), limitFromAction = _k[0], setLimitFromAction = _k[1];
+    var _l = react_1.useState([]), params = _l[0], setParams = _l[1];
+    var _m = react_1.useState(0), totalItems = _m[0], setTotalItems = _m[1];
+    var _o = react_1.useState([]), results = _o[0], setResults = _o[1];
+    var _p = react_1.useState(false), searchFilterLoading = _p[0], setSearchFilterLoading = _p[1];
+    var _q = react_1.useState(), searchError = _q[0], setSearchError = _q[1];
+    var _r = react_1.useState(), initialError = _r[0], setInitialError = _r[1];
+    var _s = react_1.useState(false), tableRefreshing = _s[0], setTableRefreshing = _s[1];
     var onRequestPageChange = function (page) {
         setTableRefreshing(true);
         setPage(page);
         setOffset((page - 1) * limit);
     };
-    var fetchResults = function () { return __awaiter(_this, void 0, void 0, function () {
-        var _a, totalItems_1, results_1, error_1;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    _b.trys.push([0, 2, 3, 4]);
-                    setTableRefreshing(true);
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().search({
-                            params: params,
-                            limit: limit,
-                            offset: offset,
-                            model: currentModel,
-                            fields: treeView.fields,
-                        })];
+    var searchByNameSearch = function () { return __awaiter(_this, void 0, void 0, function () {
+        var searchResults, resultsIds, resultsWithData;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
+                        model: currentModel,
+                        action: "name_search",
+                        payload: nameSearch,
+                    })];
                 case 1:
-                    _a = _b.sent(), totalItems_1 = _a.totalItems, results_1 = _a.results;
-                    setTotalItems(totalItems_1);
-                    setResults(results_1);
-                    return [3 /*break*/, 4];
+                    searchResults = _a.sent();
+                    setTotalItems(searchResults.length);
+                    if (!(searchResults.length > 0)) return [3 /*break*/, 3];
+                    resultsIds = searchResults.map(function (item) {
+                        return item === null || item === void 0 ? void 0 : item[0];
+                    });
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                            model: currentModel,
+                            ids: resultsIds,
+                            arch: treeView === null || treeView === void 0 ? void 0 : treeView.arch,
+                        })];
                 case 2:
-                    error_1 = _b.sent();
-                    setSearchError(error_1);
+                    resultsWithData = _a.sent();
+                    setResults(resultsWithData);
                     return [3 /*break*/, 4];
                 case 3:
+                    setResults([]);
+                    _a.label = 4;
+                case 4:
+                    setSearchNameGetDone(true);
+                    return [2 /*return*/];
+            }
+        });
+    }); };
+    var searchResults = function () { return __awaiter(_this, void 0, void 0, function () {
+        var _a, totalItems, results;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().search({
+                        params: params,
+                        limit: limit,
+                        offset: offset,
+                        model: currentModel,
+                        fields: treeView.fields,
+                    })];
+                case 1:
+                    _a = _b.sent(), totalItems = _a.totalItems, results = _a.results;
+                    setTotalItems(totalItems);
+                    setResults(results);
+                    return [2 /*return*/];
+            }
+        });
+    }); };
+    var fetchResults = function () { return __awaiter(_this, void 0, void 0, function () {
+        var error_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 5, 6, 7]);
+                    setTableRefreshing(true);
+                    if (!(!searchNameGetDone && nameSearch)) return [3 /*break*/, 2];
+                    return [4 /*yield*/, searchByNameSearch()];
+                case 1:
+                    _a.sent();
+                    return [3 /*break*/, 4];
+                case 2: return [4 /*yield*/, searchResults()];
+                case 3:
+                    _a.sent();
+                    _a.label = 4;
+                case 4: return [3 /*break*/, 7];
+                case 5:
+                    error_1 = _a.sent();
+                    setSearchError(error_1);
+                    return [3 /*break*/, 7];
+                case 6:
                     setTableRefreshing(false);
                     setSearchFilterLoading(false);
                     return [7 /*endfinally*/];
-                case 4: return [2 /*return*/];
+                case 7: return [2 /*return*/];
             }
         });
     }); };
@@ -192,10 +244,10 @@ function SearchTree(props) {
             switch (_a.label) {
                 case 0:
                     setCurrentModel(model);
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(model, 'form')];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(model, "form")];
                 case 1:
                     _formView = _a.sent();
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(model, 'tree')];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(model, "tree")];
                 case 2:
                     _treeView = _a.sent();
                     setFormView(_formView);

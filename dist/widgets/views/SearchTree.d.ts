@@ -10,6 +10,7 @@ declare type Props = {
     action?: string;
     model?: string;
     onRowClicked: (data: OnRowClickedData) => void;
+    nameSearch?: string;
 };
 declare function SearchTree(props: Props): JSX.Element | null;
 export default SearchTree;

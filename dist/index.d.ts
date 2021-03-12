@@ -16,7 +16,7 @@ import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import SearchTree from "@/widgets/views/SearchTree";
 import { FormModal } from "@/widgets/modals/FormModal";
 import { SearchModal } from "@/widgets/modals/SearchModal";
-import { TreeView, SearchFields, FormView, ConnectionProviderType, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectRequest } from "@/types";
+import { TreeView, SearchFields, FormView, ConnectionProviderType, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
-export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectRequest, FormModal, SearchModal, };
+export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectsRequest, FormModal, SearchModal, };
 //# sourceMappingURL=index.d.ts.map
