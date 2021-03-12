@@ -39,9 +39,7 @@ export const FormModal = (props: FormModalProps) => {
         model={model}
         getDataFromAction={getDataFromAction}
         onCancel={onCancel}
-        onSubmitSucceed={(updatedObject?: any) => {
-          if (onSubmitSucceed) onSubmitSucceed(updatedObject);
-        }}
+        onSubmitSucceed={onSubmitSucceed}
         showFooter
       />
     </Modal>

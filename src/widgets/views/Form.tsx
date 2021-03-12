@@ -71,7 +71,7 @@ function Form(props: Props): React.ReactElement {
       content: "Do you really want to close this window without saving?",
       okText: "Close without saving",
       onOk() {
-        if (onCancel) onCancel();
+        onCancel?.();
       },
     });
   };
@@ -82,7 +82,7 @@ function Form(props: Props): React.ReactElement {
       return;
     }
 
-    if (onCancel) onCancel();
+    onCancel?.();
   };
 
   const getFormView = async (): Promise<FormView> => {
@@ -164,7 +164,8 @@ function Form(props: Props): React.ReactElement {
         payload: [objectId],
         model,
       });
-      if (onSubmitSucceed) onSubmitSucceed(value[0]);
+
+      onSubmitSucceed?.(value[0]);
     } catch (err) {
       setError(err);
     } finally {
