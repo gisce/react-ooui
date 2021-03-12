@@ -30,14 +30,13 @@ interface Many2oneInputProps {
   ooui: Many2oneOoui;
   value?: any[];
   onChange?: (value: any[]) => void;
-  disabled?: boolean;
 }
 
 const Many2oneInput: React.FC<Many2oneInputProps> = (
   props: Many2oneInputProps
 ) => {
-  const { value, onChange, disabled, ooui } = props;
-  const { required, relation } = ooui;
+  const { value, onChange, ooui } = props;
+  const { required, relation, readOnly } = ooui;
   const requiredClass = required ? Config.requiredClass : undefined;
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
@@ -46,7 +45,9 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
     onChange?.({ ...value, ...changedValue });
   };
 
-  const onValueStringChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
+  const onValueStringChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    triggerChange([undefined, e.target.value]);
+  };
 
   const id = value && value[0];
 
@@ -57,14 +58,14 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
           type="text"
           value={value && value[1]}
           onChange={onValueStringChange}
-          disabled={disabled}
+          disabled={readOnly}
           className={requiredClass}
         />
       </Col>
       <Col flex="32px">
         <Button
           icon={<FolderOpenOutlined />}
-          disabled={disabled || id === undefined}
+          disabled={readOnly || id === undefined}
           onClick={() => {
             setShowFormModal(true);
           }}
@@ -74,7 +75,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
       <Col flex="32px">
         <Button
           icon={<SearchOutlined />}
-          disabled={disabled}
+          disabled={readOnly}
           onClick={() => {
             setShowSearchModal(true);
           }}
