@@ -66,6 +66,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
         const results: any[] = await ConnectionProvider.getHandler().execute({
           model: relation,
           action: "name_search",
+          payload: text,
         });
 
         if (results.length > 0) {

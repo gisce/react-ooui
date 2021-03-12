@@ -112,6 +112,7 @@ var Many2oneInput = function (props) {
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
                             model: relation,
                             action: "name_search",
+                            payload: text,
                         })];
                 case 2:
                     results = _a.sent();
