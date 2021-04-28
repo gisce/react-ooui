@@ -13,16 +13,6 @@ const Template = (args: any) => <SearchFilter {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
-  strings: {
-    true: "Yes",
-    false: "No",
-    simple_search: "Simple search",
-    advanced_search: "Advanced search",
-    search: "Search",
-    parameters: "Parameters",
-    limit: "Limit",
-    first: "First",
-  },
   limit: 80,
   offset: 1,
   searchFields: {

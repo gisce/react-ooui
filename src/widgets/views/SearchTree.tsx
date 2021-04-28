@@ -227,16 +227,6 @@ function SearchTree(props: Props) {
           offset={offset}
           isSearching={searchFilterLoading}
           onSubmit={onSubmit}
-          strings={{
-            true: "Yes",
-            false: "No",
-            simple_search: "Simple search",
-            advanced_search: "Advanced search",
-            search: "Search",
-            parameters: "Parameters",
-            limit: "Limit",
-            first: "First",
-          }}
         />
         {searchError && (
           <Alert className="mt-10" message={searchError} type="error" banner />
@@ -250,11 +240,6 @@ function SearchTree(props: Props) {
           results={results}
           onRequestPageChange={onRequestPageChange}
           loading={tableRefreshing}
-          strings={{
-            no_results: "No results",
-            summary:
-              "Showing registers from {from} to {to} of {total} registers",
-          }}
           onRowClicked={onRowClickedHandler}
         />
       </>

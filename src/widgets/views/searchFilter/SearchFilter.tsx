@@ -20,9 +20,19 @@ type Props = {
   onClear: () => void;
   onSubmit: (values: any) => void;
   isSearching: boolean;
-  strings: Strings;
   limit: number;
   offset: number;
+};
+
+const strings: Strings = {
+  true: "Yes",
+  false: "No",
+  simple_search: "Simple search",
+  advanced_search: "Advanced search",
+  search: "Search",
+  parameters: "Parameters",
+  limit: "Limit",
+  first: "First",
 };
 
 function SearchFilter(props: Props): React.ReactElement {
@@ -34,7 +44,6 @@ function SearchFilter(props: Props): React.ReactElement {
     isSearching,
     offset,
     limit,
-    strings,
   } = props;
 
   const [simpleSearchFields, setSimpleSearchFields] = useState<Container>();

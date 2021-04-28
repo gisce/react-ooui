@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Pagination, Checkbox, Spin } from "antd";
+import { Table, Pagination, Checkbox } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
 
 import { Strings, TreeView, Column } from "@/types";
@@ -13,8 +13,12 @@ type Props = {
   treeView: TreeView;
   results: Array<any>;
   onRequestPageChange: (page: number, pageSize?: number) => void;
-  strings: Strings;
   onRowClicked?: (id: number) => void;
+};
+
+const strings: Strings = {
+  no_results: "No results",
+  summary: "Showing registers from {from} to {to} of {total} registers",
 };
 
 function Tree(props: Props): React.ReactElement {
@@ -26,7 +30,6 @@ function Tree(props: Props): React.ReactElement {
     results,
     onRequestPageChange,
     loading,
-    strings,
     onRowClicked,
   } = props;
 
