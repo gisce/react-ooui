@@ -17,6 +17,7 @@ import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import SearchTree from "@/widgets/views/SearchTree";
 import { FormModal } from "@/widgets/modals/FormModal";
 import { SearchModal } from "@/widgets/modals/SearchModal";
+import SimpleTree from "@/widgets/views/SimpleTree";
 
 import {
   TreeView,
@@ -67,4 +68,5 @@ export {
   FormModal,
   SearchModal,
   One2many,
+  SimpleTree,
 };
