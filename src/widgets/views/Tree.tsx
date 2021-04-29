@@ -8,11 +8,12 @@ import { getLocalizedString } from "@/context/LocalesContext";
 type Props = {
   total: number;
   limit: number;
-  page: number;
+  page?: number;
   loading: boolean;
   treeView: TreeView;
   results: Array<any>;
-  onRequestPageChange: (page: number, pageSize?: number) => void;
+  showPagination?: boolean;
+  onRequestPageChange?: (page: number, pageSize?: number) => void;
   onRowClicked?: (id: number) => void;
 };
 
@@ -23,7 +24,7 @@ const strings: Strings = {
 
 function Tree(props: Props): React.ReactElement {
   const {
-    page,
+    page = 1,
     limit,
     total,
     treeView,
@@ -31,6 +32,7 @@ function Tree(props: Props): React.ReactElement {
     onRequestPageChange,
     loading,
     onRowClicked,
+    showPagination = true,
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
@@ -50,21 +52,23 @@ function Tree(props: Props): React.ReactElement {
 
   const from = (page - 1) * limit + 1;
   const to = from - 1 + items.length;
-  const summary = loading ? (
-    null
-  ) : total === 0 ? (
-    getLocalizedString("no_results", strings)
-  ) : (
-    getLocalizedString("summary", strings)
-      .replace("{from}", from?.toString())
-      .replace("{to}", to?.toString())
-      .replace("{total}", total?.toString())
-  );
+  const summary = loading
+    ? null
+    : total === 0
+    ? getLocalizedString("no_results", strings)
+    : getLocalizedString("summary", strings)
+        .replace("{from}", from?.toString())
+        .replace("{to}", to?.toString())
+        .replace("{total}", total?.toString());
 
-  return (
-    <>
-      {summary}
-      {loading ? null : (
+  const pagination = () => {
+    if (!showPagination) {
+      return null;
+    }
+
+    return loading ? null : (
+      <>
+        {summary}
         <Pagination
           total={total}
           pageSize={limit}
@@ -73,7 +77,13 @@ function Tree(props: Props): React.ReactElement {
           showSizeChanger={false}
           onChange={onRequestPageChange}
         />
-      )}
+      </>
+    );
+  };
+
+  return (
+    <>
+      {pagination()}
       <Table
         columns={columns}
         dataSource={items}
