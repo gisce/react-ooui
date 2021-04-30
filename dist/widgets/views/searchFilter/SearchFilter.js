@@ -32,8 +32,18 @@ var SearchBottomBar_1 = require("./SearchBottomBar");
 var LocalesContext_1 = __importDefault(require("@/context/LocalesContext"));
 var SearchParams_1 = require("./SearchParams");
 var searchFilterHelper_1 = require("@/helpers/searchFilterHelper");
+var strings = {
+    true: "Yes",
+    false: "No",
+    simple_search: "Simple search",
+    advanced_search: "Advanced search",
+    search: "Search",
+    parameters: "Parameters",
+    limit: "Limit",
+    first: "First",
+};
 function SearchFilter(props) {
-    var fields = props.fields, searchFields = props.searchFields, onClear = props.onClear, onSubmit = props.onSubmit, isSearching = props.isSearching, offset = props.offset, limit = props.limit, strings = props.strings;
+    var fields = props.fields, searchFields = props.searchFields, onClear = props.onClear, onSubmit = props.onSubmit, isSearching = props.isSearching, offset = props.offset, limit = props.limit;
     var _a = react_1.useState(), simpleSearchFields = _a[0], setSimpleSearchFields = _a[1];
     var _b = react_1.useState(), advancedSearchFields = _b[0], setAdvancedSearchFields = _b[1];
     var _c = react_1.useState(false), advancedFilter = _c[0], setAdvancedFilter = _c[1];

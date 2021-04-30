@@ -3,6 +3,7 @@ import { Char } from "@/widgets/base/Char";
 import { Selection } from "@/widgets/base/Selection";
 import { Boolean } from "@/widgets/base/Boolean";
 import { Many2one } from "@/widgets/base/Many2one";
+import { One2many } from "@/widgets/base/One2many";
 import Tree from "@/widgets/views/Tree";
 import { Float } from "@/widgets/base/Float";
 import { Integer } from "@/widgets/base/Integer";
@@ -16,7 +17,8 @@ import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import SearchTree from "@/widgets/views/SearchTree";
 import { FormModal } from "@/widgets/modals/FormModal";
 import { SearchModal } from "@/widgets/modals/SearchModal";
+import SimpleTree from "@/widgets/views/SimpleTree";
 import { TreeView, SearchFields, FormView, ConnectionProviderType, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
-export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectsRequest, FormModal, SearchModal, };
+export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectsRequest, FormModal, SearchModal, One2many, SimpleTree, };
 //# sourceMappingURL=index.d.ts.map

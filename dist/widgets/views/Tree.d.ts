@@ -1,14 +1,14 @@
 import React from "react";
-import { Strings, TreeView } from "@/types";
+import { TreeView } from "@/types";
 declare type Props = {
     total: number;
     limit: number;
-    page: number;
+    page?: number;
     loading: boolean;
     treeView: TreeView;
     results: Array<any>;
-    onRequestPageChange: (page: number, pageSize?: number) => void;
-    strings: Strings;
+    showPagination?: boolean;
+    onRequestPageChange?: (page: number, pageSize?: number) => void;
     onRowClicked?: (id: number) => void;
 };
 declare function Tree(props: Props): React.ReactElement;

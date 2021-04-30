@@ -159,9 +159,7 @@ var Many2oneInput = function (props) {
                     SEARCH_BUTTON_TAPPED_FLAG = true;
                     setSearchText(text);
                     setShowSearchModal(true);
-                }, tabIndex: -1, onFocus: function () {
-                    console.log();
-                } })),
+                }, tabIndex: -1 })),
         react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValue: function (value) {
                 triggerChange(value);
                 setShowSearchModal(false);

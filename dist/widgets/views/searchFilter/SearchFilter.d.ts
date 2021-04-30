@@ -1,14 +1,13 @@
 import React from "react";
 import "antd/dist/antd.css";
 import "@/tailwind.generated.css";
-import { Strings, SearchFields } from "@/types";
+import { SearchFields } from "@/types";
 declare type Props = {
     fields: any;
     searchFields: SearchFields;
     onClear: () => void;
     onSubmit: (values: any) => void;
     isSearching: boolean;
-    strings: Strings;
     limit: number;
     offset: number;
 };
