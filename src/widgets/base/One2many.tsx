@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Button } from "antd";
 import { One2many as One2manyOoui } from "ooui";
-import { WidgetProps } from "@/types";
+import Field from "@/common/Field";
+import { Button } from "antd";
 import { Form } from "@/index";
 import { SimpleTree } from "@/index";
 import { Form as FormOoui, Tree as TreeOoui } from "ooui";
@@ -15,10 +15,34 @@ import {
   AlignLeftOutlined,
 } from "@ant-design/icons";
 
-const ids = [6];
+type Props = {
+  ooui: One2manyOoui;
+};
 
-export const One2many = (props: WidgetProps) => {
+export const One2many = (props: Props) => {
   const { ooui } = props;
+  return (
+    <Field {...props}>
+      <One2manyInput ooui={ooui} />
+    </Field>
+  );
+};
+
+interface One2ManyInputProps {
+  ooui: One2manyOoui;
+  value?: number[];
+  onChange?: (value: any[]) => void;
+}
+
+const One2manyInput: React.FC<One2ManyInputProps> = (
+  props: One2ManyInputProps
+) => {
+  const { value = [], onChange, ooui } = props;
+
+  const triggerChange = (changedValue: any[]) => {
+    onChange?.({ ...value, ...changedValue });
+  };
+
   const {
     id,
     readOnly,
@@ -38,7 +62,7 @@ export const One2many = (props: WidgetProps) => {
   const index = () => {
     return (
       <span className="pl-1 pr-1">
-        ({itemIndex + 1}/{ids.length})
+        ({itemIndex + 1}/{value.length})
       </span>
     );
   };
@@ -84,7 +108,7 @@ export const One2many = (props: WidgetProps) => {
       return (
         <Form
           model={relation}
-          id={6}
+          id={value[itemIndex]}
           onCancel={() => {
             console.log();
           }}
@@ -98,7 +122,7 @@ export const One2many = (props: WidgetProps) => {
     return (
       <SimpleTree
         model={relation}
-        ids={ids}
+        ids={value}
         formView={views.form}
         treeView={views.tree}
         onRowClicked={() => {

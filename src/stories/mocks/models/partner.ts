@@ -2,7 +2,7 @@ export default {
   model: "res.partner",
   exampleValues: {
     active: true,
-    address: [6],
+    address: [6, 10],
     bank_ids: [],
     category_id: [12],
     child_ids: [],
