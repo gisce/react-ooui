@@ -149,13 +149,17 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
         </div>
         <div className="h-8 flex-none pl-2">
           <Button icon={<FileAddOutlined />} />
-          <Button icon={<EditOutlined />} />
-          <Button icon={<DeleteOutlined />} />
+          {currentView === "form" && <Button icon={<EditOutlined />} />}
+          {currentView === "form" && <Button icon={<DeleteOutlined />} />}
           {separator()}
-          <Button icon={<LeftOutlined />} onClick={previousItem} />
-          {index()}
-          <Button icon={<RightOutlined />} onClick={nextItem} />
-          {separator()}
+          {currentView === "form" && (
+            <>
+              <Button icon={<LeftOutlined />} onClick={previousItem} />
+              {index()}
+              <Button icon={<RightOutlined />} onClick={nextItem} />
+              {separator()}
+            </>
+          )}
           <Button icon={<AlignLeftOutlined />} onClick={toggleViewMode} />
         </div>
       </div>
