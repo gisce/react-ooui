@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { One2many as One2manyOoui } from "ooui";
 import Field from "@/common/Field";
-import { Button } from "antd";
+import { Button, Spin, Alert } from "antd";
 import { Form } from "@/index";
 import { SimpleTree } from "@/index";
 import { Form as FormOoui, Tree as TreeOoui } from "ooui";
+import { Views } from "@/types";
+import ConnectionProvider from "@/ConnectionProvider";
 
 import {
   FileAddOutlined,
@@ -48,36 +50,93 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     readOnly,
     required,
     relation,
-    views,
+    views: oouiViews,
     mode,
   } = ooui as One2manyOoui;
 
-  const [viewMode, setViewMode] = useState<string>(mode[0]);
+  const [views, setViews] = useState<Views>(new Map<string, any>());
+
+  const [currentView, setCurrentView] = useState<string>("tree");
   const [itemIndex, setItemIndex] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>();
+
+  const getViewData = async (type: "form" | "tree") => {
+    if (oouiViews[type]) {
+      return oouiViews[type];
+    }
+    return await ConnectionProvider.getHandler().getView(relation, type);
+  };
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    setError(undefined);
+
+    try {
+      if (mode && mode.length > 0) {
+        setCurrentView(mode[0]);
+      }
+
+      const formView = await getViewData("form");
+      const treeView = await getViewData("tree");
+      views.set("form", formView);
+      views.set("tree", treeView);
+      setViews(views);
+    } catch (err) {
+      setError(err);
+    }
+
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [ooui]);
 
   const separator = () => {
     return <div className="inline-block w-3" />;
   };
 
   const index = () => {
+    let itemToShow = "_";
+    if (value.length === 0) {
+      itemToShow = "_";
+    } else {
+      itemToShow = (itemIndex + 1).toString();
+    }
     return (
       <span className="pl-1 pr-1">
-        ({itemIndex + 1}/{value.length})
+        ({itemToShow}/{value.length})
       </span>
     );
   };
 
   const toggleViewMode = () => {
-    if (mode.length > 1) {
-      setViewMode(viewMode === "form" ? "tree" : "form");
+    if (currentView === "form" && views.get("tree")) {
+      setCurrentView("tree");
+    } else if (currentView === "tree" && views.get("form")) {
+      setCurrentView("form");
     }
   };
 
   const getTitle = () => {
-    const type = viewMode === "form" ? FormOoui : TreeOoui;
-    const ooui = new type(views[viewMode].fields);
-    ooui.parse(views[viewMode].arch);
+    const type = currentView === "form" ? FormOoui : TreeOoui;
+    const ooui = new type(views.get(currentView).fields);
+    ooui.parse(views.get(currentView).arch);
     return (ooui as any).string;
+  };
+
+  const previousItem = () => {
+    if (itemIndex > 0) {
+      setItemIndex(itemIndex - 1);
+    }
+  };
+
+  const nextItem = () => {
+    const totalItems = value.length;
+    if (itemIndex < totalItems - 1) {
+      setItemIndex(itemIndex + 1);
+    }
   };
 
   const topBar = () => {
@@ -93,9 +152,9 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
           <Button icon={<EditOutlined />} />
           <Button icon={<DeleteOutlined />} />
           {separator()}
-          <Button icon={<LeftOutlined />} />
+          <Button icon={<LeftOutlined />} onClick={previousItem} />
           {index()}
-          <Button icon={<RightOutlined />} />
+          <Button icon={<RightOutlined />} onClick={nextItem} />
           {separator()}
           <Button icon={<AlignLeftOutlined />} onClick={toggleViewMode} />
         </div>
@@ -104,7 +163,7 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
   };
 
   const content = () => {
-    if (viewMode === "form") {
+    if (currentView === "form") {
       return (
         <Form
           model={relation}
@@ -123,14 +182,22 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
       <SimpleTree
         model={relation}
         ids={value}
-        formView={views.form}
-        treeView={views.tree}
+        formView={views.get("form")}
+        treeView={views.get("tree")}
         onRowClicked={() => {
           console.log();
         }}
       />
     );
   };
+
+  if (isLoading) {
+    return <Spin />;
+  }
+
+  if (error) {
+    return <Alert className="mt-10" message={error} type="error" banner />;
+  }
 
   return (
     <>
