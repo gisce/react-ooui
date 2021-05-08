@@ -1,4 +1,4 @@
-import { Widget, Field, Label, Button, Text } from "ooui";
+import { Widget, Label, One2many, Many2many } from "ooui";
 
 const clone = function clone<T>(instance: T): T {
   const copy = new ((instance as any).constructor as { new (): T })();
@@ -49,6 +49,22 @@ const fillRowWithEmptiesToFit = ({
   return rowWithEmptiesToFit;
 };
 
+const expandWidgetsIfNeeded = ({
+  row,
+  numberOfColumns,
+}: {
+  row: any;
+  numberOfColumns: number;
+}) => {
+  return row.map((item: Widget) => {
+    if ((item as any)._mustExpand) {
+      (item as any).colspan = numberOfColumns;
+      return item;
+    }
+    return item;
+  });
+};
+
 const getTemplateColumns = (columns: number) => {
   const odd = "1fr";
   const even = "auto";
@@ -62,4 +78,4 @@ const getTemplateColumns = (columns: number) => {
   return templateColumns;
 };
 
-export { getTemplateColumns, fillRowWithEmptiesToFit, getSpanStyleForItem };
+export { getTemplateColumns, fillRowWithEmptiesToFit, getSpanStyleForItem, expandWidgetsIfNeeded};

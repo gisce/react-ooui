@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSpanStyleForItem = exports.fillRowWithEmptiesToFit = exports.getTemplateColumns = void 0;
+exports.expandWidgetsIfNeeded = exports.getSpanStyleForItem = exports.fillRowWithEmptiesToFit = exports.getTemplateColumns = void 0;
 var ooui_1 = require("ooui");
 var clone = function clone(instance) {
     var copy = new instance.constructor();
@@ -33,6 +33,17 @@ var fillRowWithEmptiesToFit = function (_a) {
     return rowWithEmptiesToFit;
 };
 exports.fillRowWithEmptiesToFit = fillRowWithEmptiesToFit;
+var expandWidgetsIfNeeded = function (_a) {
+    var row = _a.row, numberOfColumns = _a.numberOfColumns;
+    return row.map(function (item) {
+        if (item._mustExpand) {
+            item.colspan = numberOfColumns;
+            return item;
+        }
+        return item;
+    });
+};
+exports.expandWidgetsIfNeeded = expandWidgetsIfNeeded;
 var getTemplateColumns = function (columns) {
     var odd = "1fr";
     var even = "auto";

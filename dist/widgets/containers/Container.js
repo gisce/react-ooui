@@ -13,8 +13,12 @@ var Container = function (props) {
         var rowWithoutInvisibleFields = row.filter(function (widget) {
             return !widget.invisible;
         });
-        var rowWithEmptiesToFit = containerHelper_1.fillRowWithEmptiesToFit({
+        var rowWithExpandedItems = containerHelper_1.expandWidgetsIfNeeded({
             row: rowWithoutInvisibleFields,
+            numberOfColumns: columns,
+        });
+        var rowWithEmptiesToFit = containerHelper_1.fillRowWithEmptiesToFit({
+            row: rowWithExpandedItems,
             numberOfColumns: columns,
             mustFillWithEmpties: responsiveBehaviour,
         });
@@ -33,7 +37,7 @@ var Container = function (props) {
         display: "grid",
         gridTemplateColumns: responsiveBehaviour ? "auto" : templateColumns,
     };
-    return (react_1.default.createElement("div", { style: gridStyle }, content));
+    return react_1.default.createElement("div", { style: gridStyle }, content);
 };
 exports.default = Container;
 //# sourceMappingURL=Container.js.map

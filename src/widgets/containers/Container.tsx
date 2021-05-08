@@ -6,6 +6,7 @@ import {
   getTemplateColumns,
   fillRowWithEmptiesToFit,
   getSpanStyleForItem,
+  expandWidgetsIfNeeded,
 } from "@/helpers/containerHelper";
 
 type Props = {
@@ -23,8 +24,13 @@ const Container = (props: Props): React.ReactElement => {
       return !widget.invisible;
     });
 
-    const rowWithEmptiesToFit = fillRowWithEmptiesToFit({
+    const rowWithExpandedItems = expandWidgetsIfNeeded({
       row: rowWithoutInvisibleFields,
+      numberOfColumns: columns,
+    });
+
+    const rowWithEmptiesToFit = fillRowWithEmptiesToFit({
+      row: rowWithExpandedItems,
       numberOfColumns: columns,
       mustFillWithEmpties: responsiveBehaviour,
     });
@@ -55,11 +61,7 @@ const Container = (props: Props): React.ReactElement => {
     gridTemplateColumns: responsiveBehaviour ? "auto" : templateColumns,
   };
 
-  return (
-    <div style={gridStyle}>
-      {content}
-    </div>
-  );
+  return <div style={gridStyle}>{content}</div>;
 };
 
 export default Container;
