@@ -17,7 +17,8 @@ type Props = {
 
 const Container = (props: Props): React.ReactElement => {
   const { container, formWrapper = false, responsiveBehaviour } = props;
-  const { columns, rows } = container;
+  const { rows } = container;
+  let { columns } = container;
 
   const content = rows.map((row: Widget[], i) => {
     const rowWithoutInvisibleFields = row.filter((widget) => {
@@ -52,7 +53,8 @@ const Container = (props: Props): React.ReactElement => {
   });
 
   if (formWrapper) {
-    return content as any;
+    columns = 4;
+    // return content as any;
   }
 
   const templateColumns = getTemplateColumns(columns);

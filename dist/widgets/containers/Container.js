@@ -8,7 +8,8 @@ var WidgetFactory_1 = require("@/widgets/WidgetFactory");
 var containerHelper_1 = require("@/helpers/containerHelper");
 var Container = function (props) {
     var container = props.container, _a = props.formWrapper, formWrapper = _a === void 0 ? false : _a, responsiveBehaviour = props.responsiveBehaviour;
-    var columns = container.columns, rows = container.rows;
+    var rows = container.rows;
+    var columns = container.columns;
     var content = rows.map(function (row, i) {
         var rowWithoutInvisibleFields = row.filter(function (widget) {
             return !widget.invisible;
@@ -30,7 +31,8 @@ var Container = function (props) {
         });
     });
     if (formWrapper) {
-        return content;
+        columns = 4;
+        // return content as any;
     }
     var templateColumns = containerHelper_1.getTemplateColumns(columns);
     var gridStyle = {
