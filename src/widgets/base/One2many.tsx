@@ -7,6 +7,7 @@ import { SimpleTree } from "@/index";
 import { Form as FormOoui, Tree as TreeOoui } from "ooui";
 import { Views } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
+import { FormModal } from "@/widgets/modals/FormModal";
 
 import {
   FileAddOutlined,
@@ -60,6 +61,8 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
   const [itemIndex, setItemIndex] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>();
+  const [showFormModal, setShowFormModal] = useState<boolean>(false);
+  const [modalItemId, setModalItemId] = useState<number>();
 
   const getViewData = async (type: "form" | "tree") => {
     if (oouiViews[type]) {
@@ -139,6 +142,11 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     }
   };
 
+  const editItem = () => {
+    setModalItemId(value[itemIndex]);
+    setShowFormModal(true);
+  };
+
   const topBar = () => {
     return (
       <div className="flex mb-2">
@@ -149,7 +157,7 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
         </div>
         <div className="h-8 flex-none pl-2">
           <Button icon={<FileAddOutlined />} />
-          {currentView === "form" && <Button icon={<EditOutlined />} />}
+          {currentView === "form" && <Button icon={<EditOutlined />} onClick={editItem} />}
           {currentView === "form" && <Button icon={<DeleteOutlined />} />}
           {separator()}
           {currentView === "form" && (
@@ -175,7 +183,7 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
           onCancel={() => {
             console.log();
           }}
-          onSubmitSucceed={(value: any) => {
+          onSubmitSucceed={() => {
             console.log();
           }}
         />
@@ -188,8 +196,10 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
         ids={value}
         formView={views.get("form")}
         treeView={views.get("tree")}
-        onRowClicked={() => {
-          console.log();
+        onRowClicked={(event: any) => {
+          const { id } = event;
+          setModalItemId(id);
+          setShowFormModal(true);
         }}
       />
     );
@@ -207,6 +217,17 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     <>
       {topBar()}
       {content()}
+      <FormModal
+        model={relation}
+        id={modalItemId}
+        visible={showFormModal}
+        onSubmitSucceed={(value: any) => {
+          setShowFormModal(false);
+        }}
+        onCancel={() => {
+          setShowFormModal(false);
+        }}
+      />
     </>
   );
 };

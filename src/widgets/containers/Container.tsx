@@ -52,6 +52,7 @@ const Container = (props: Props): React.ReactElement => {
     });
   });
 
+  // TODO: Review this behaviour if it's needed
   if (formWrapper) {
     columns = 4;
     // return content as any;
