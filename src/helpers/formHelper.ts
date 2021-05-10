@@ -16,7 +16,7 @@ const filteredValues = (values: any, fields: any) => {
   return filteredValues;
 };
 
-export const processInitialValues = (values: any, fields: any) => {
+export const processValues = (values: any, fields: any) => {
   const filterBooleans = filteredValues(values, fields);
   return filterBooleans;
 };

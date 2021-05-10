@@ -18,7 +18,7 @@ import {
 } from "@ant-design/icons";
 
 import Container from "@/widgets/containers/Container";
-import { processInitialValues, getTouchedValues } from "@/helpers/formHelper";
+import { processValues, getTouchedValues } from "@/helpers/formHelper";
 import { FormView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 
@@ -126,7 +126,15 @@ function Form(props: Props): React.ReactElement {
           payload: Object.keys(view.fields),
         });
       }
-      setValues(_values);
+    
+      const valuesProcessed = processValues(_values, form?.view.fields);
+      setValues(valuesProcessed);
+
+      const initialValuesArePreviouslySet = Object.keys(antForm.getFieldsValue(true)).length > 0;
+
+      if (initialValuesArePreviouslySet) {
+        antForm.setFieldsValue(valuesProcessed);
+      }
     } catch (err) {
       setError(err);
     } finally {
@@ -183,7 +191,7 @@ function Form(props: Props): React.ReactElement {
     return (
       <AntForm
         form={antForm}
-        initialValues={processInitialValues(values, form.view.fields)}
+        initialValues={values}
       >
         {form && (
           <Container
