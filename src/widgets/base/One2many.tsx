@@ -174,7 +174,6 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
 
     try {
       await ConnectionProvider.getHandler().delete({
-        arch: views.get("form").arch,
         model: relation,
         ids: [value[itemIndex]],
       });

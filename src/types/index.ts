@@ -73,6 +73,11 @@ type ReadObjectsRequest = {
   ids: number[];
 };
 
+type DeleteObjectsRequest = {
+  model: string;
+  ids: number[];
+};
+
 type ConnectionProviderType = {
   getAction: (model: string) => Promise<string>;
   getViewsForAction: (action: string) => Promise<ViewData>;
@@ -83,7 +88,7 @@ type ConnectionProviderType = {
   search: (options: SearchRequest) => Promise<SearchResponse>;
   update: (options: UpdateObjectRequest) => Promise<any>;
   create: (options: CreateObjectRequest) => Promise<any>;
-  delete: (options: ReadObjectsRequest) => Promise<any>;
+  delete: (options: DeleteObjectsRequest) => Promise<any>;
   execute: (options: ExecuteRequest) => Promise<any>;
   readObjects: (options: ReadObjectsRequest) => Promise<any>;
 };
@@ -104,4 +109,5 @@ export type {
   Views,
   ExecuteRequest,
   ReadObjectsRequest,
+  DeleteObjectsRequest,
 };

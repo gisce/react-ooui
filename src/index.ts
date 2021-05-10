@@ -32,6 +32,7 @@ import {
   Views,
   ExecuteRequest,
   ReadObjectsRequest,
+  DeleteObjectsRequest,
 } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 
@@ -65,6 +66,7 @@ export {
   Views,
   ExecuteRequest,
   ReadObjectsRequest,
+  DeleteObjectsRequest,
   FormModal,
   SearchModal,
   One2many,
