@@ -65,6 +65,7 @@ declare type ConnectionProviderType = {
     search: (options: SearchRequest) => Promise<SearchResponse>;
     update: (options: UpdateObjectRequest) => Promise<any>;
     create: (options: CreateObjectRequest) => Promise<any>;
+    delete: (options: ReadObjectsRequest) => Promise<any>;
     execute: (options: ExecuteRequest) => Promise<any>;
     readObjects: (options: ReadObjectsRequest) => Promise<any>;
 };

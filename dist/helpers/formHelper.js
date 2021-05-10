@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTouchedValues = exports.processInitialValues = void 0;
+exports.getTouchedValues = exports.processValues = void 0;
 var filteredValues = function (values, fields) {
     if (!fields) {
         return values;
@@ -14,11 +14,11 @@ var filteredValues = function (values, fields) {
     });
     return filteredValues;
 };
-var processInitialValues = function (values, fields) {
+var processValues = function (values, fields) {
     var filterBooleans = filteredValues(values, fields);
     return filterBooleans;
 };
-exports.processInitialValues = processInitialValues;
+exports.processValues = processValues;
 var getTouchedValues = function (antForm) {
     var values = antForm.getFieldsValue(true);
     var touchedValues = {};

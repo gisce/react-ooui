@@ -73,14 +73,13 @@ function Form(props) {
     var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b;
     var _c = react_1.useState(false), isSubmitting = _c[0], setIsSubmitting = _c[1];
     var _d = react_1.useState(), error = _d[0], setError = _d[1];
-    var _e = react_1.useState({}), values = _e[0], setValues = _e[1];
-    var _f = react_1.useState(false), loading = _f[0], setLoading = _f[1];
-    var _g = react_1.useState(), form = _g[0], setForm = _g[1];
+    var _e = react_1.useState(false), loading = _e[0], setLoading = _e[1];
+    var _f = react_1.useState(), form = _f[0], setForm = _f[1];
     var antForm = antd_1.Form.useForm()[0];
-    var _h = react_cool_dimensions_1.default({
+    var _g = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _h.width, ref = _h.ref;
+    }), width = _g.width, ref = _g.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     var showConfirm = function () {
         confirm({
@@ -120,7 +119,7 @@ function Form(props) {
         });
     }); };
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
-        var view, ooui, _values, err_1;
+        var view, ooui, _values, valuesProcessed, mustClearFieldsFirst, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -153,7 +152,12 @@ function Form(props) {
                     _values = _a.sent();
                     _a.label = 6;
                 case 6:
-                    setValues(_values);
+                    valuesProcessed = formHelper_1.processValues(_values, form === null || form === void 0 ? void 0 : form.view.fields);
+                    mustClearFieldsFirst = Object.keys(antForm.getFieldsValue(true)).length > 0;
+                    if (mustClearFieldsFirst) {
+                        antForm.resetFields();
+                    }
+                    antForm.setFieldsValue(valuesProcessed);
                     return [3 /*break*/, 9];
                 case 7:
                     err_1 = _a.sent();
@@ -222,7 +226,7 @@ function Form(props) {
         if (!form) {
             return null;
         }
-        return (react_1.default.createElement(antd_1.Form, { form: antForm, initialValues: formHelper_1.processInitialValues(values, form.view.fields) }, form && (react_1.default.createElement(Container_1.default, { container: form.ooui.container, formWrapper: true, responsiveBehaviour: responsiveBehaviour }))));
+        return (react_1.default.createElement(antd_1.Form, { form: antForm }, form && (react_1.default.createElement(Container_1.default, { container: form.ooui.container, formWrapper: true, responsiveBehaviour: responsiveBehaviour }))));
     };
     var footer = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
