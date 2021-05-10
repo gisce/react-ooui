@@ -221,7 +221,6 @@ var One2manyInput = function (props) {
                 case 1:
                     _a.trys.push([1, 3, , 4]);
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().delete({
-                            arch: views.get("form").arch,
                             model: relation,
                             ids: [value[itemIndex]],
                         })];

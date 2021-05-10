@@ -58,6 +58,10 @@ declare type ReadObjectsRequest = {
     model: string;
     ids: number[];
 };
+declare type DeleteObjectsRequest = {
+    model: string;
+    ids: number[];
+};
 declare type ConnectionProviderType = {
     getAction: (model: string) => Promise<string>;
     getViewsForAction: (action: string) => Promise<ViewData>;
@@ -65,9 +69,9 @@ declare type ConnectionProviderType = {
     search: (options: SearchRequest) => Promise<SearchResponse>;
     update: (options: UpdateObjectRequest) => Promise<any>;
     create: (options: CreateObjectRequest) => Promise<any>;
-    delete: (options: ReadObjectsRequest) => Promise<any>;
+    delete: (options: DeleteObjectsRequest) => Promise<any>;
     execute: (options: ExecuteRequest) => Promise<any>;
     readObjects: (options: ReadObjectsRequest) => Promise<any>;
 };
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, };
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, };
 //# sourceMappingURL=index.d.ts.map
