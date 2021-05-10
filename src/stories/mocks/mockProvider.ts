@@ -1,6 +1,8 @@
 import ConnectionProvider from "../../ConnectionProvider";
 import { getMock } from "./";
 
+const timeout = 500;
+
 import {
   ConnectionProviderType,
   SearchRequest,
@@ -19,12 +21,12 @@ const init = () => {
       return { limit: 0, model: "", views: null };
     },
     getView: async (model: string, type: "tree" | "form") => {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, timeout));
       const data = getMock(model);
       return data[type];
     },
     search: async (options: SearchRequest) => {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, timeout));
       const data = getMock(options.model);
       return {
         totalItems: 1,
@@ -32,18 +34,18 @@ const init = () => {
       };
     },
     update: async (options: UpdateObjectRequest) => {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, timeout));
     },
     create: async (options: CreateObjectRequest) => {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, timeout));
       return 9999;
     },
     execute: async (options: ExecuteRequest) => {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, timeout));
       return [[1, "Alegría-Dulantzi"]];
     },
     readObjects: async (options: ReadObjectsRequest) => {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, timeout));
       const modelMock = getMock(options.model);
       return modelMock.exampleValues ? [modelMock.exampleValues] : [];
     },

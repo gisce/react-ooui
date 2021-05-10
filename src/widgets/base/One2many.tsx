@@ -157,7 +157,9 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
         </div>
         <div className="h-8 flex-none pl-2">
           <Button icon={<FileAddOutlined />} />
-          {currentView === "form" && <Button icon={<EditOutlined />} onClick={editItem} />}
+          {currentView === "form" && (
+            <Button icon={<EditOutlined />} onClick={editItem} />
+          )}
           {currentView === "form" && <Button icon={<DeleteOutlined />} />}
           {separator()}
           {currentView === "form" && (
@@ -178,6 +180,7 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     if (currentView === "form") {
       return (
         <Form
+          key={Math.random() * 10000} // This forces the Form component to be unique each time the modal is shown
           model={relation}
           id={value[itemIndex]}
           onCancel={() => {
