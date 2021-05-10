@@ -52,7 +52,6 @@ function Form(props: Props): React.ReactElement {
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>();
-  const [values, setValues] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [form, setForm] = useState<FormViewAndOoui>();
   const [antForm] = AntForm.useForm();
@@ -126,15 +125,17 @@ function Form(props: Props): React.ReactElement {
           payload: Object.keys(view.fields),
         });
       }
-    
+
       const valuesProcessed = processValues(_values, form?.view.fields);
-      setValues(valuesProcessed);
 
-      const initialValuesArePreviouslySet = Object.keys(antForm.getFieldsValue(true)).length > 0;
+      const mustClearFieldsFirst =
+        Object.keys(antForm.getFieldsValue(true)).length > 0; // We check if it's a reused form and we already have values filled
 
-      if (initialValuesArePreviouslySet) {
-        antForm.setFieldsValue(valuesProcessed);
+      if (mustClearFieldsFirst) {
+        antForm.resetFields();
       }
+
+      antForm.setFieldsValue(valuesProcessed);
     } catch (err) {
       setError(err);
     } finally {
@@ -191,7 +192,7 @@ function Form(props: Props): React.ReactElement {
     return (
       <AntForm
         form={antForm}
-        initialValues={values}
+        // initialValues={values}
       >
         {form && (
           <Container

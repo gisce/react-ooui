@@ -34,7 +34,7 @@ export const FormModal = (props: FormModalProps) => {
       footer={null}
     >
       <Form
-        key={Math.random() * 10000} // This forces the Form component to be unique each time the modal is shown
+        // key={Math.random() * 10000} // This forces the Form component to be unique each time the modal is shown
         id={id}
         model={model}
         getDataFromAction={getDataFromAction}

@@ -87,7 +87,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
         footer={null}
       >
         <div
-          key={Math.random() * 10000} // This forces the component to be unique each time the modal is shown
+          // key={Math.random() * 10000} // This forces the component to be unique each time the modal is shown
         >
           {loading ? <Spin /> : content()}
         </div>
