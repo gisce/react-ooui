@@ -77,6 +77,7 @@ var index_1 = require("@/index");
 var index_2 = require("@/index");
 var ooui_1 = require("ooui");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
+var FormModal_1 = require("@/widgets/modals/FormModal");
 var icons_1 = require("@ant-design/icons");
 var One2many = function (props) {
     var ooui = props.ooui;
@@ -95,6 +96,8 @@ var One2manyInput = function (props) {
     var _e = react_1.useState(0), itemIndex = _e[0], setItemIndex = _e[1];
     var _f = react_1.useState(true), isLoading = _f[0], setIsLoading = _f[1];
     var _g = react_1.useState(), error = _g[0], setError = _g[1];
+    var _h = react_1.useState(false), showFormModal = _h[0], setShowFormModal = _h[1];
+    var _j = react_1.useState(), modalItemId = _j[0], setModalItemId = _j[1];
     var getViewData = function (type) { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -186,6 +189,10 @@ var One2manyInput = function (props) {
             setItemIndex(itemIndex + 1);
         }
     };
+    var editItem = function () {
+        setModalItemId(value[itemIndex]);
+        setShowFormModal(true);
+    };
     var topBar = function () {
         return (react_1.default.createElement("div", { className: "flex mb-2" },
             react_1.default.createElement("div", { className: "h-8 flex flex-grow bg-gray-700 text-gray-200" },
@@ -193,7 +200,7 @@ var One2manyInput = function (props) {
                     react_1.default.createElement("span", { className: "pl-2 font-bold" }, getTitle()))),
             react_1.default.createElement("div", { className: "h-8 flex-none pl-2" },
                 react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FileAddOutlined, null) }),
-                currentView === "form" && react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.EditOutlined, null) }),
+                currentView === "form" && react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.EditOutlined, null), onClick: editItem }),
                 currentView === "form" && react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.DeleteOutlined, null) }),
                 separator(),
                 currentView === "form" && (react_1.default.createElement(react_1.default.Fragment, null,
@@ -207,12 +214,14 @@ var One2manyInput = function (props) {
         if (currentView === "form") {
             return (react_1.default.createElement(index_1.Form, { model: relation, id: value[itemIndex], onCancel: function () {
                     console.log();
-                }, onSubmitSucceed: function (value) {
+                }, onSubmitSucceed: function () {
                     console.log();
                 } }));
         }
-        return (react_1.default.createElement(index_2.SimpleTree, { model: relation, ids: value, formView: views.get("form"), treeView: views.get("tree"), onRowClicked: function () {
-                console.log();
+        return (react_1.default.createElement(index_2.SimpleTree, { model: relation, ids: value, formView: views.get("form"), treeView: views.get("tree"), onRowClicked: function (event) {
+                var id = event.id;
+                setModalItemId(id);
+                setShowFormModal(true);
             } }));
     };
     if (isLoading) {
@@ -223,6 +232,11 @@ var One2manyInput = function (props) {
     }
     return (react_1.default.createElement(react_1.default.Fragment, null,
         topBar(),
-        content()));
+        content(),
+        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: modalItemId, visible: showFormModal, onSubmitSucceed: function (value) {
+                setShowFormModal(false);
+            }, onCancel: function () {
+                setShowFormModal(false);
+            } })));
 };
 //# sourceMappingURL=One2many.js.map

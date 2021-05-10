@@ -30,6 +30,7 @@ var Container = function (props) {
             })));
         });
     });
+    // TODO: Review this behaviour if it's needed
     if (formWrapper) {
         columns = 4;
         // return content as any;
