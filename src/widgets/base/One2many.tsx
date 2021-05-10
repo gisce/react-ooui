@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { One2many as One2manyOoui } from "ooui";
 import Field from "@/common/Field";
-import { Button, Spin, Alert } from "antd";
+import { Button, Spin, Alert, Modal } from "antd";
 import { Form } from "@/index";
 import { SimpleTree } from "@/index";
 import { Form as FormOoui, Tree as TreeOoui } from "ooui";
@@ -16,11 +16,14 @@ import {
   LeftOutlined,
   RightOutlined,
   AlignLeftOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 
 type Props = {
   ooui: One2manyOoui;
 };
+
+const { confirm } = Modal;
 
 export const One2many = (props: Props) => {
   const { ooui } = props;
@@ -42,8 +45,8 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
 ) => {
   const { value = [], onChange, ooui } = props;
 
-  const triggerChange = (changedValue: any[]) => {
-    onChange?.({ ...value, ...changedValue });
+  const triggerChange = (changedValue: number[]) => {
+    onChange?.(changedValue);
   };
 
   const {
@@ -63,6 +66,19 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
   const [error, setError] = useState<string>();
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
   const [modalItemId, setModalItemId] = useState<number>();
+
+  const showRemoveConfirm = () => {
+    confirm({
+      title: "Remove item",
+      icon: <ExclamationCircleOutlined />,
+      centered: true,
+      content: "Are you sure you want to remove this item?",
+      okText: "Yes, remove it",
+      onOk() {
+        onConfirmRemove();
+      },
+    });
+  };
 
   const getViewData = async (type: "form" | "tree") => {
     if (oouiViews[type]) {
@@ -147,6 +163,31 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     setShowFormModal(true);
   };
 
+  const createItem = () => {
+    setModalItemId(undefined);
+    setShowFormModal(true);
+  };
+
+  const onConfirmRemove = async () => {
+    setIsLoading(true);
+    setError(undefined);
+
+    try {
+      await ConnectionProvider.getHandler().delete({
+        arch: views.get("form").arch,
+        model: relation,
+        ids: [value[itemIndex]],
+      });
+    } catch (err) {
+      setError(err);
+    }
+
+    setItemIndex(0);
+    triggerChange(value.filter((id) => id !== value[itemIndex]));
+    setIsLoading(false);
+    fetchData();
+  };
+
   const topBar = () => {
     return (
       <div className="flex mb-2">
@@ -156,11 +197,13 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
           </div>
         </div>
         <div className="h-8 flex-none pl-2">
-          <Button icon={<FileAddOutlined />} />
+          <Button icon={<FileAddOutlined onClick={createItem} />} />
           {currentView === "form" && (
             <Button icon={<EditOutlined />} onClick={editItem} />
           )}
-          {currentView === "form" && <Button icon={<DeleteOutlined />} />}
+          {currentView === "form" && (
+            <Button icon={<DeleteOutlined onClick={showRemoveConfirm} />} />
+          )}
           {separator()}
           {currentView === "form" && (
             <>
@@ -180,14 +223,11 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     if (currentView === "form") {
       return (
         <Form
-          key={Math.random() * 10000} // This forces the Form component to be unique each time the modal is shown
           model={relation}
           id={value[itemIndex]}
-          onCancel={() => {
-            console.log();
-          }}
+          onCancel={() => {}}
           onSubmitSucceed={() => {
-            console.log();
+            fetchData();
           }}
         />
       );
@@ -224,8 +264,14 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
         model={relation}
         id={modalItemId}
         visible={showFormModal}
-        onSubmitSucceed={(value: any) => {
+        onSubmitSucceed={(event: any) => {
+          const [id] = event;
+          if (!value.includes(id)) {
+            triggerChange(value.concat(id));
+          }
+
           setShowFormModal(false);
+          fetchData();
         }}
         onCancel={() => {
           setShowFormModal(false);
