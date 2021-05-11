@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal } from "antd";
 import Form from "@/widgets/views/Form";
+import useModalWidthDimensions from "@/hooks/useModalWidthDimensions";
 
 type FormModalProps = {
   visible: boolean;
@@ -23,18 +24,19 @@ export const FormModal = (props: FormModalProps) => {
     getDataFromAction,
   } = props;
 
+  const { modalWidth } = useModalWidthDimensions();
+
   return (
     <Modal
       title={title}
       centered
-      width={1000}
+      width={modalWidth}
       visible={visible}
       closable={false}
       onCancel={onCancel}
       footer={null}
     >
       <Form
-        // key={Math.random() * 10000} // This forces the Form component to be unique each time the modal is shown
         id={id}
         model={model}
         getDataFromAction={getDataFromAction}

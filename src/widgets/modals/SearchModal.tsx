@@ -4,6 +4,7 @@ import { FormModal } from "./FormModal";
 import SearchTree from "@/widgets/views/SearchTree";
 import ConnectionProvider from "@/ConnectionProvider";
 import { FileAddOutlined, CloseOutlined } from "@ant-design/icons";
+import useModalWidthDimensions from "@/hooks/useModalWidthDimensions";
 
 type SearchSelectionProps = {
   visible: boolean;
@@ -18,6 +19,8 @@ export const SearchModal = (props: SearchSelectionProps) => {
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
+
+  const { modalWidth } = useModalWidthDimensions();
 
   const onRowClicked = async (event: any) => {
     setLoading(true);
@@ -80,17 +83,13 @@ export const SearchModal = (props: SearchSelectionProps) => {
       <Modal
         title="Search"
         centered
-        width={1400}
+        width={modalWidth}
         visible={visible && !showCreateModal}
         closable={true}
         onCancel={onCloseModal}
         footer={null}
       >
-        <div
-          // key={Math.random() * 10000} // This forces the component to be unique each time the modal is shown
-        >
-          {loading ? <Spin /> : content()}
-        </div>
+        <div>{loading ? <Spin /> : content()}</div>
       </Modal>
       <FormModal
         model={model}
