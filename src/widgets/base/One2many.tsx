@@ -200,6 +200,10 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
   const createItem = async () => {
     if (currentView === "form") {
       showFormChangesDialogIfNeeded(() => {
+        if (!value[itemIndex]) {
+          // If we already have a new blank item, que ignore the action.
+          return;
+        }
         triggerChange(value.concat(undefined));
         setItemIndex(value.length);
       });
@@ -215,10 +219,12 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     setError(undefined);
 
     try {
-      await ConnectionProvider.getHandler().delete({
-        model: relation,
-        ids: [value[itemIndex]!],
-      });
+      if (value[itemIndex]) {
+        await ConnectionProvider.getHandler().delete({
+          model: relation,
+          ids: [value[itemIndex]!],
+        });
+      }
     } catch (err) {
       setError(err);
     }
@@ -255,9 +261,9 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
           {currentView === "form" && (
             <Button icon={<DeleteOutlined onClick={showRemoveConfirm} />} />
           )}
-          {separator()}
           {currentView === "form" && (
             <>
+              {separator()}
               <Button icon={<LeftOutlined />} onClick={previousItem} />
               {index()}
               <Button icon={<RightOutlined />} onClick={nextItem} />
@@ -278,9 +284,17 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
           model={relation}
           id={value[itemIndex]}
           onCancel={() => {}}
-          onSubmitSucceed={() => {
-            setFormIsSaving(false);
-            setFormHasChanges(false);
+          onSubmitSucceed={(event: any) => {
+            const [id] = event;
+            if (!value.includes(id)) {
+              triggerChange(
+                value.concat(id).filter((item) => item !== undefined)
+              );
+              fetchData();
+            } else {
+              setFormIsSaving(false);
+              setFormHasChanges(false);
+            }
           }}
           onSubmitError={() => {
             setFormIsSaving(false);

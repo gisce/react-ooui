@@ -245,6 +245,10 @@ var One2manyInput = function (props) {
         return __generator(this, function (_a) {
             if (currentView === "form") {
                 showFormChangesDialogIfNeeded(function () {
+                    if (!value[itemIndex]) {
+                        // If we already have a new blank item, que ignore the action.
+                        return;
+                    }
                     triggerChange(value.concat(undefined));
                     setItemIndex(value.length);
                 });
@@ -266,19 +270,21 @@ var One2manyInput = function (props) {
                     setError(undefined);
                     _a.label = 1;
                 case 1:
-                    _a.trys.push([1, 3, , 4]);
+                    _a.trys.push([1, 4, , 5]);
+                    if (!value[itemIndex]) return [3 /*break*/, 3];
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().delete({
                             model: relation,
                             ids: [value[itemIndex]],
                         })];
                 case 2:
                     _a.sent();
-                    return [3 /*break*/, 4];
-                case 3:
+                    _a.label = 3;
+                case 3: return [3 /*break*/, 5];
+                case 4:
                     err_2 = _a.sent();
                     setError(err_2);
-                    return [3 /*break*/, 4];
-                case 4:
+                    return [3 /*break*/, 5];
+                case 5:
                     setItemIndex(0);
                     triggerChange(value.filter(function (id) { return id !== value[itemIndex]; }));
                     setIsLoading(false);
@@ -301,8 +307,8 @@ var One2manyInput = function (props) {
                 separator(),
                 currentView === "form" && saveButton(),
                 currentView === "form" && (react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.DeleteOutlined, { onClick: showRemoveConfirm }) })),
-                separator(),
                 currentView === "form" && (react_1.default.createElement(react_1.default.Fragment, null,
+                    separator(),
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.LeftOutlined, null), onClick: previousItem }),
                     index(),
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.RightOutlined, null), onClick: nextItem }),
@@ -311,9 +317,16 @@ var One2manyInput = function (props) {
     };
     var content = function () {
         if (currentView === "form") {
-            return (react_1.default.createElement(index_1.Form, { ref: formRef, model: relation, id: value[itemIndex], onCancel: function () { }, onSubmitSucceed: function () {
-                    setFormIsSaving(false);
-                    setFormHasChanges(false);
+            return (react_1.default.createElement(index_1.Form, { ref: formRef, model: relation, id: value[itemIndex], onCancel: function () { }, onSubmitSucceed: function (event) {
+                    var id = event[0];
+                    if (!value.includes(id)) {
+                        triggerChange(value.concat(id).filter(function (item) { return item !== undefined; }));
+                        fetchData();
+                    }
+                    else {
+                        setFormIsSaving(false);
+                        setFormHasChanges(false);
+                    }
                 }, onSubmitError: function () {
                     setFormIsSaving(false);
                 }, onFieldsChange: function () {
