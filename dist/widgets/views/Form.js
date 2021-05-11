@@ -66,11 +66,11 @@ var icons_1 = require("@ant-design/icons");
 var Container_1 = __importDefault(require("@/widgets/containers/Container"));
 var formHelper_1 = require("@/helpers/formHelper");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
-var confirm = antd_1.Modal.confirm;
+var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"));
 var WIDTH_BREAKPOINT = 1000;
-function Form(props) {
+function Form(props, ref) {
     var _this = this;
-    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b;
+    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError;
     var _c = react_1.useState(false), isSubmitting = _c[0], setIsSubmitting = _c[1];
     var _d = react_1.useState(), error = _d[0], setError = _d[1];
     var _e = react_1.useState(false), loading = _e[0], setLoading = _e[1];
@@ -79,22 +79,20 @@ function Form(props) {
     var _g = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _g.width, ref = _g.ref;
+    }), width = _g.width, containerRef = _g.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
+    react_1.useImperativeHandle(ref, function () { return ({
+        submitForm: submitForm,
+    }); });
     var showConfirm = function () {
-        confirm({
-            title: "There are unsaved changes",
-            icon: react_1.default.createElement(icons_1.ExclamationCircleOutlined, null),
-            centered: true,
-            content: "Do you really want to close this window without saving?",
-            okText: "Close without saving",
+        UnsavedChangesDialog_1.default({
             onOk: function () {
                 onCancel === null || onCancel === void 0 ? void 0 : onCancel();
             },
         });
     };
     var cancel = function () {
-        if (Object.keys(formHelper_1.getTouchedValues(antForm)).length > 0) {
+        if (formHasChanges()) {
             showConfirm();
             return;
         }
@@ -173,6 +171,9 @@ function Form(props) {
     react_1.useEffect(function () {
         fetchData();
     }, [id, model]);
+    var formHasChanges = function () {
+        return Object.keys(formHelper_1.getTouchedValues(antForm)).length !== 0;
+    };
     var submitForm = function () { return __awaiter(_this, void 0, void 0, function () {
         var touchedValues, objectId, newId, value, err_2;
         return __generator(this, function (_a) {
@@ -213,6 +214,7 @@ function Form(props) {
                     return [3 /*break*/, 9];
                 case 7:
                     err_2 = _a.sent();
+                    onSubmitError === null || onSubmitError === void 0 ? void 0 : onSubmitError(err_2);
                     setError(err_2);
                     return [3 /*break*/, 9];
                 case 8:
@@ -226,7 +228,7 @@ function Form(props) {
         if (!form) {
             return null;
         }
-        return (react_1.default.createElement(antd_1.Form, { form: antForm }, form && (react_1.default.createElement(Container_1.default, { container: form.ooui.container, formWrapper: true, responsiveBehaviour: responsiveBehaviour }))));
+        return (react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: onFieldsChange }, form && (react_1.default.createElement(Container_1.default, { container: form.ooui.container, formWrapper: true, responsiveBehaviour: responsiveBehaviour }))));
     };
     var footer = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
@@ -236,10 +238,10 @@ function Form(props) {
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), disabled: isSubmitting || loading, onClick: cancel }, "Cancel"),
                     react_1.default.createElement(antd_1.Button, { disabled: isSubmitting || loading, loading: isSubmitting, icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: submitForm }, "OK")))));
     };
-    return (react_1.default.createElement("div", { ref: ref },
+    return (react_1.default.createElement("div", { ref: containerRef },
         error && react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true }),
         loading ? react_1.default.createElement(antd_1.Spin, null) : content(),
         showFooter && footer()));
 }
-exports.default = Form;
+exports.default = react_1.forwardRef(Form);
 //# sourceMappingURL=Form.js.map
