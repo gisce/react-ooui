@@ -126,7 +126,7 @@ function Form(props: Props): React.ReactElement {
         });
       }
 
-      const valuesProcessed = processValues(_values, form?.view.fields);
+      const valuesProcessed = processValues(_values, view.fields);
 
       const mustClearFieldsFirst =
         Object.keys(antForm.getFieldsValue(true)).length > 0; // We check if it's a reused form and we already have values filled
