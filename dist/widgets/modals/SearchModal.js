@@ -65,11 +65,13 @@ var FormModal_1 = require("./FormModal");
 var SearchTree_1 = __importDefault(require("@/widgets/views/SearchTree"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var icons_1 = require("@ant-design/icons");
+var useModalWidthDimensions_1 = __importDefault(require("@/hooks/useModalWidthDimensions"));
 var SearchModal = function (props) {
     var visible = props.visible, onCloseModal = props.onCloseModal, onSelectValue = props.onSelectValue, model = props.model, nameSearch = props.nameSearch;
     var _a = react_1.useState(false), showCreateModal = _a[0], setShowCreateModal = _a[1];
     var _b = react_1.useState(false), loading = _b[0], setLoading = _b[1];
     var _c = react_1.useState(), error = _c[0], setError = _c[1];
+    var modalWidth = useModalWidthDimensions_1.default().modalWidth;
     var onRowClicked = function (event) { return __awaiter(void 0, void 0, void 0, function () {
         var id, model_1, value, err_1;
         return __generator(this, function (_a) {
@@ -114,7 +116,7 @@ var SearchModal = function (props) {
                     react_1.default.createElement(antd_1.Button, { disabled: loading, icon: react_1.default.createElement(icons_1.CloseOutlined, null), onClick: onCloseModal }, "Cancel")))));
     };
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(antd_1.Modal, { title: "Search", centered: true, width: 1400, visible: visible && !showCreateModal, closable: true, onCancel: onCloseModal, footer: null },
+        react_1.default.createElement(antd_1.Modal, { title: "Search", centered: true, width: modalWidth, visible: visible && !showCreateModal, closable: true, onCancel: onCloseModal, footer: null },
             react_1.default.createElement("div", null, loading ? react_1.default.createElement(antd_1.Spin, null) : content())),
         react_1.default.createElement(FormModal_1.FormModal, { model: model, visible: showCreateModal, onSubmitSucceed: function (value) {
                 setShowCreateModal(false);
