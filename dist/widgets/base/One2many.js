@@ -184,9 +184,13 @@ var One2manyInput = function (props) {
             ")"));
     };
     var showFormChangesDialogIfNeeded = function (callback) {
-        if (formHasChanges) {
+        if (formHasChanges || value[itemIndex] === undefined) {
             UnsavedChangesDialog_1.default({
                 onOk: function () {
+                    if (value[itemIndex] === undefined) {
+                        // We remove the new blank item
+                        triggerChange(value.filter(function (item) { return item !== undefined; }));
+                    }
                     callback();
                     setFormHasChanges(false);
                 },
@@ -244,11 +248,11 @@ var One2manyInput = function (props) {
     var createItem = function () { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             if (currentView === "form") {
+                if (!value[itemIndex]) {
+                    // If we already have a new blank item, que ignore the action.
+                    return [2 /*return*/];
+                }
                 showFormChangesDialogIfNeeded(function () {
-                    if (!value[itemIndex]) {
-                        // If we already have a new blank item, que ignore the action.
-                        return;
-                    }
                     triggerChange(value.concat(undefined));
                     setItemIndex(value.length);
                 });

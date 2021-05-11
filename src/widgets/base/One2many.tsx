@@ -138,9 +138,13 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
   };
 
   const showFormChangesDialogIfNeeded = (callback: () => void) => {
-    if (formHasChanges) {
+    if (formHasChanges || value[itemIndex] === undefined) {
       showUnsavedChangesDialog({
         onOk: () => {
+          if (value[itemIndex] === undefined) {
+            // We remove the new blank item
+            triggerChange(value.filter((item) => item !== undefined));
+          }
           callback();
           setFormHasChanges(false);
         },
@@ -199,11 +203,12 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
 
   const createItem = async () => {
     if (currentView === "form") {
+      if (!value[itemIndex]) {
+        // If we already have a new blank item, que ignore the action.
+        return;
+      }
+
       showFormChangesDialogIfNeeded(() => {
-        if (!value[itemIndex]) {
-          // If we already have a new blank item, que ignore the action.
-          return;
-        }
         triggerChange(value.concat(undefined));
         setItemIndex(value.length);
       });
