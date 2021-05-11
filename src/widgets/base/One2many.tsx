@@ -86,7 +86,7 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
   };
 
   const getViewData = async (type: "form" | "tree") => {
-    if (oouiViews[type]) {
+    if (oouiViews && oouiViews[type]) {
       return oouiViews[type];
     }
     return await ConnectionProvider.getHandler().getView(relation, type);

@@ -119,7 +119,7 @@ var One2manyInput = function (props) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (oouiViews[type]) {
+                    if (oouiViews && oouiViews[type]) {
                         return [2 /*return*/, oouiViews[type]];
                     }
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(relation, type)];

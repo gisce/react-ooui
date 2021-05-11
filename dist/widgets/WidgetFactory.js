@@ -29,6 +29,10 @@ var widgetTypes = Widgets;
 var createReactWidget = function (props) {
     var ooui = props.ooui;
     var type = ooui.constructor.name;
+    // TODO: this is provisional, just to test Many2Many
+    if (type === "Many2many") {
+        return react_1.default.createElement(widgetTypes["One2many"], props);
+    }
     var widgetClass = widgetTypes[type];
     if (!widgetClass) {
         return null;
