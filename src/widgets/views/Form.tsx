@@ -1,4 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { Form as FormOoui } from "ooui";
 import {
   Form as AntForm,
@@ -14,23 +19,23 @@ import useDimensions from "react-cool-dimensions";
 import {
   CheckOutlined,
   CloseOutlined,
-  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 
 import Container from "@/widgets/containers/Container";
 import { processValues, getTouchedValues } from "@/helpers/formHelper";
 import { FormView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
-
-const { confirm } = Modal;
+import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 
 type Props = {
   model: string;
   id?: number;
   onSubmitSucceed?: (updatedObject: any) => void;
+  onSubmitError?: (error: any) => void;
   onCancel?: () => void;
   showFooter?: boolean;
   getDataFromAction?: boolean;
+  onFieldsChange?: () => void;
 };
 
 const WIDTH_BREAKPOINT = 1000;
@@ -40,7 +45,7 @@ type FormViewAndOoui = {
   view: FormView;
 };
 
-function Form(props: Props): React.ReactElement {
+function Form(props: Props, ref: any): React.ReactElement {
   const {
     model,
     id,
@@ -48,6 +53,8 @@ function Form(props: Props): React.ReactElement {
     onSubmitSucceed,
     showFooter = false,
     getDataFromAction = false,
+    onFieldsChange,
+    onSubmitError,
   } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -56,27 +63,26 @@ function Form(props: Props): React.ReactElement {
   const [form, setForm] = useState<FormViewAndOoui>();
   const [antForm] = AntForm.useForm();
 
-  const { width, ref } = useDimensions<HTMLDivElement>({
+  const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
     breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
     updateOnBreakpointChange: true,
   });
   const responsiveBehaviour = width < WIDTH_BREAKPOINT;
 
+  useImperativeHandle(ref, () => ({
+    submitForm,
+  }));
+
   const showConfirm = () => {
-    confirm({
-      title: "There are unsaved changes",
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      content: "Do you really want to close this window without saving?",
-      okText: "Close without saving",
-      onOk() {
+    showUnsavedChangesDialog({
+      onOk: () => {
         onCancel?.();
       },
     });
   };
 
   const cancel = () => {
-    if (Object.keys(getTouchedValues(antForm)).length > 0) {
+    if (formHasChanges()) {
       showConfirm();
       return;
     }
@@ -147,6 +153,10 @@ function Form(props: Props): React.ReactElement {
     fetchData();
   }, [id, model]);
 
+  const formHasChanges = () => {
+    return Object.keys(getTouchedValues(antForm)).length !== 0;
+  };
+
   const submitForm = async () => {
     setIsSubmitting(true);
     try {
@@ -178,6 +188,7 @@ function Form(props: Props): React.ReactElement {
 
       onSubmitSucceed?.(value[0]);
     } catch (err) {
+      onSubmitError?.(err);
       setError(err);
     } finally {
       setIsSubmitting(false);
@@ -190,10 +201,7 @@ function Form(props: Props): React.ReactElement {
     }
 
     return (
-      <AntForm
-        form={antForm}
-        // initialValues={values}
-      >
+      <AntForm form={antForm} onFieldsChange={onFieldsChange}>
         {form && (
           <Container
             container={form.ooui.container}
@@ -233,7 +241,7 @@ function Form(props: Props): React.ReactElement {
   };
 
   return (
-    <div ref={ref}>
+    <div ref={containerRef}>
       {error && <Alert className="mt-10" message={error} type="error" banner />}
       {loading ? <Spin /> : content()}
       {showFooter && footer()}
@@ -241,4 +249,4 @@ function Form(props: Props): React.ReactElement {
   );
 }
 
-export default Form;
+export default forwardRef(Form);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { One2many as One2manyOoui } from "ooui";
 import Field from "@/common/Field";
 import { Button, Spin, Alert, Modal } from "antd";
@@ -8,15 +8,17 @@ import { Form as FormOoui, Tree as TreeOoui } from "ooui";
 import { Views } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import { FormModal } from "@/widgets/modals/FormModal";
+import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 
 import {
   FileAddOutlined,
-  EditOutlined,
+  SaveOutlined,
   DeleteOutlined,
   LeftOutlined,
   RightOutlined,
   AlignLeftOutlined,
   ExclamationCircleOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 
 type Props = {
@@ -36,7 +38,7 @@ export const One2many = (props: Props) => {
 
 interface One2ManyInputProps {
   ooui: One2manyOoui;
-  value?: number[];
+  value?: Array<number | undefined>;
   onChange?: (value: any[]) => void;
 }
 
@@ -44,8 +46,9 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
   props: One2ManyInputProps
 ) => {
   const { value = [], onChange, ooui } = props;
+  const formRef = useRef();
 
-  const triggerChange = (changedValue: number[]) => {
+  const triggerChange = (changedValue: Array<number | undefined>) => {
     onChange?.(changedValue);
   };
 
@@ -66,6 +69,8 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
   const [error, setError] = useState<string>();
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
   const [modalItemId, setModalItemId] = useState<number>();
+  const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
+  const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
 
   const showRemoveConfirm = () => {
     confirm({
@@ -90,6 +95,8 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
   const fetchData = async () => {
     setIsLoading(true);
     setError(undefined);
+    setFormHasChanges(false);
+    setFormIsSaving(false);
 
     try {
       if (mode && mode.length > 0) {
@@ -130,9 +137,24 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     );
   };
 
+  const showFormChangesDialogIfNeeded = (callback: () => void) => {
+    if (formHasChanges) {
+      showUnsavedChangesDialog({
+        onOk: () => {
+          callback();
+          setFormHasChanges(false);
+        },
+      });
+    } else {
+      callback();
+    }
+  };
+
   const toggleViewMode = () => {
     if (currentView === "form" && views.get("tree")) {
-      setCurrentView("tree");
+      showFormChangesDialogIfNeeded(() => {
+        setCurrentView("tree");
+      });
     } else if (currentView === "tree" && views.get("form")) {
       setCurrentView("form");
     }
@@ -147,35 +169,55 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
 
   const previousItem = () => {
     if (itemIndex > 0) {
-      setItemIndex(itemIndex - 1);
+      if (currentView === "form") {
+        showFormChangesDialogIfNeeded(() => {
+          setItemIndex(itemIndex - 1);
+        });
+      } else {
+        setItemIndex(itemIndex - 1);
+      }
     }
   };
 
   const nextItem = () => {
     const totalItems = value.length;
     if (itemIndex < totalItems - 1) {
-      setItemIndex(itemIndex + 1);
+      if (currentView === "form") {
+        showFormChangesDialogIfNeeded(() => {
+          setItemIndex(itemIndex + 1);
+        });
+      } else {
+        setItemIndex(itemIndex + 1);
+      }
     }
   };
 
-  const editItem = () => {
-    setModalItemId(value[itemIndex]);
-    setShowFormModal(true);
+  const saveItem = () => {
+    setFormIsSaving(true);
+    (formRef.current as any).submitForm();
   };
 
-  const createItem = () => {
-    setModalItemId(undefined);
-    setShowFormModal(true);
+  const createItem = async () => {
+    if (currentView === "form") {
+      showFormChangesDialogIfNeeded(() => {
+        triggerChange(value.concat(undefined));
+        setItemIndex(value.length);
+      });
+    } else {
+      setModalItemId(undefined);
+      setShowFormModal(true);
+    }
   };
 
   const onConfirmRemove = async () => {
     setIsLoading(true);
+    setFormHasChanges(false);
     setError(undefined);
 
     try {
       await ConnectionProvider.getHandler().delete({
         model: relation,
-        ids: [value[itemIndex]],
+        ids: [value[itemIndex]!],
       });
     } catch (err) {
       setError(err);
@@ -185,6 +227,17 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     triggerChange(value.filter((id) => id !== value[itemIndex]));
     setIsLoading(false);
     fetchData();
+  };
+
+  const saveButton = () => {
+    const icon = formIsSaving ? <LoadingOutlined /> : <SaveOutlined />;
+    return (
+      <Button
+        icon={icon}
+        onClick={saveItem}
+        disabled={!formHasChanges || formIsSaving}
+      />
+    );
   };
 
   const topBar = () => {
@@ -197,9 +250,8 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
         </div>
         <div className="h-8 flex-none pl-2">
           <Button icon={<FileAddOutlined onClick={createItem} />} />
-          {currentView === "form" && (
-            <Button icon={<EditOutlined />} onClick={editItem} />
-          )}
+          {separator()}
+          {currentView === "form" && saveButton()}
           {currentView === "form" && (
             <Button icon={<DeleteOutlined onClick={showRemoveConfirm} />} />
           )}
@@ -222,11 +274,19 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     if (currentView === "form") {
       return (
         <Form
+          ref={formRef}
           model={relation}
           id={value[itemIndex]}
           onCancel={() => {}}
           onSubmitSucceed={() => {
-            fetchData();
+            setFormIsSaving(false);
+            setFormHasChanges(false);
+          }}
+          onSubmitError={() => {
+            setFormIsSaving(false);
+          }}
+          onFieldsChange={() => {
+            setFormHasChanges(true);
           }}
         />
       );
@@ -235,7 +295,7 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     return (
       <SimpleTree
         model={relation}
-        ids={value}
+        ids={value as Array<number>}
         formView={views.get("form")}
         treeView={views.get("tree")}
         onRowClicked={(event: any) => {
