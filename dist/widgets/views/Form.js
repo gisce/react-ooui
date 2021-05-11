@@ -152,7 +152,7 @@ function Form(props) {
                     _values = _a.sent();
                     _a.label = 6;
                 case 6:
-                    valuesProcessed = formHelper_1.processValues(_values, form === null || form === void 0 ? void 0 : form.view.fields);
+                    valuesProcessed = formHelper_1.processValues(_values, view.fields);
                     mustClearFieldsFirst = Object.keys(antForm.getFieldsValue(true)).length > 0;
                     if (mustClearFieldsFirst) {
                         antForm.resetFields();
