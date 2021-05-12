@@ -52,12 +52,7 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     onChange?.(changedValue);
   };
 
-  const {
-    readOnly,
-    relation,
-    views: oouiViews,
-    mode,
-  } = ooui as One2manyOoui;
+  const { readOnly, relation, views: oouiViews, mode } = ooui as One2manyOoui;
 
   const [views, setViews] = useState<Views>(new Map<string, any>());
 
@@ -136,11 +131,11 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
   };
 
   const showFormChangesDialogIfNeeded = (callback: () => void) => {
-    if (formHasChanges || value[itemIndex] === undefined) {
+    if (formHasChanges) {
       showUnsavedChangesDialog({
         onOk: () => {
           if (value[itemIndex] === undefined) {
-            // We remove the new blank item
+            // We remove the new blank items
             triggerChange(value.filter((item) => item !== undefined));
           }
           callback();
@@ -148,6 +143,8 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
         },
       });
     } else {
+      // We remove the new blank items
+      triggerChange(value.filter((item) => item !== undefined));
       callback();
     }
   };
