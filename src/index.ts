@@ -18,6 +18,8 @@ import SearchTree from "@/widgets/views/SearchTree";
 import { FormModal } from "@/widgets/modals/FormModal";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import SimpleTree from "@/widgets/views/SimpleTree";
+import DatePicker from "@/widgets/base/DatePicker";
+import DateTime from "@/widgets/base/DateTime";
 
 import {
   TreeView,
@@ -71,4 +73,6 @@ export {
   SearchModal,
   One2many,
   SimpleTree,
+  DatePicker,
+  DateTime
 };

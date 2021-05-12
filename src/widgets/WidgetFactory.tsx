@@ -15,6 +15,10 @@ const createReactWidget = (props: any) => {
   if (type === "Many2many") {
     return React.createElement(widgetTypes["One2many"], props);
   }
+  // Just because Javascript has reserved the Date word
+  if (type === "Date") {
+    return React.createElement(widgetTypes["DatePicker"], props);
+  }
 
   const widgetClass = widgetTypes[type];
   if (!widgetClass) {
