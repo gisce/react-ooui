@@ -7,33 +7,33 @@ import Config from "@/Config";
 import { Date as DateOoui } from "ooui";
 import moment from "moment";
 
-const dateFormatView = "DD/MM/YYYY HH:mm:ss";
-const dateFormatInternal = "YYYY-MM-DD HH:mm:ss";
+const dateFormatView = "DD/MM/YYYY";
+const dateFormatInternal = "YYYY-MM-DD";
 
-const DateTime = (props: WidgetProps) => {
+const DatePicker = (props: WidgetProps) => {
   const { ooui } = props;
 
   return (
     <Field {...props}>
-      <DateTimePickerInput ooui={ooui} />
+      <DatePickerInput ooui={ooui} />
     </Field>
   );
 };
 
-interface DateTimePickerInputProps {
+interface DatePickerInputProps {
   ooui: DateOoui;
   value?: undefined | string;
   onChange?: (value: undefined | string) => void;
 }
 
-const DateTimePickerInput: React.FC<DateTimePickerInputProps> = (
-  props: DateTimePickerInputProps
+const DatePickerInput: React.FC<DatePickerInputProps> = (
+  props: DatePickerInputProps
 ) => {
   const { value, onChange, ooui } = props;
   const { id, readOnly, required } = ooui as DateOoui;
   const requiredClass = required ? Config.requiredClass : undefined;
 
-  const triggerChange = (changedValue: undefined | string) => {
+  const triggerChange = (changedValue: undefined | string) => {
     onChange?.(changedValue);
   };
 
@@ -51,8 +51,7 @@ const DateTimePickerInput: React.FC<DateTimePickerInputProps> = (
   return (
     <AntDatePicker
       style={{ width: "100%" }}
-      placeholder="__/__/____ __:__:__"
-      showTime={{ defaultValue: moment("00:00:00", "HH:mm:ss") }}
+      placeholder="__/__/____"
       disabled={readOnly}
       id={id}
       className={requiredClass}
@@ -63,4 +62,4 @@ const DateTimePickerInput: React.FC<DateTimePickerInputProps> = (
   );
 };
 
-export default DateTime;
+export default DatePicker;
