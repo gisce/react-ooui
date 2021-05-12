@@ -53,9 +53,7 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
   };
 
   const {
-    id,
     readOnly,
-    required,
     relation,
     views: oouiViews,
     mode,

@@ -93,7 +93,7 @@ var One2manyInput = function (props) {
     var triggerChange = function (changedValue) {
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
     };
-    var _b = ooui, id = _b.id, readOnly = _b.readOnly, required = _b.required, relation = _b.relation, oouiViews = _b.views, mode = _b.mode;
+    var _b = ooui, readOnly = _b.readOnly, relation = _b.relation, oouiViews = _b.views, mode = _b.mode;
     var _c = react_1.useState(new Map()), views = _c[0], setViews = _c[1];
     var _d = react_1.useState("tree"), currentView = _d[0], setCurrentView = _d[1];
     var _e = react_1.useState(0), itemIndex = _e[0], setItemIndex = _e[1];

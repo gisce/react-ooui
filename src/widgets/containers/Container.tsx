@@ -1,5 +1,9 @@
 import React from "react";
-import { Container as ContainerOoui, Widget } from "ooui";
+import {
+  Container as ContainerOoui,
+  Widget,
+  Notebook as NotebookOoui,
+} from "ooui";
 import { createReactWidget } from "@/widgets/WidgetFactory";
 
 import {
@@ -37,6 +41,10 @@ const Container = (props: Props): React.ReactElement => {
     });
 
     return rowWithEmptiesToFit.map((item: Widget, j: number) => {
+      // TODO: Review this behaviour if it's needed
+      if (item instanceof NotebookOoui) {
+        item.colspan = 4;
+      }
       return (
         <div
           key={`${i.toString()}-${j.toString()}`}
