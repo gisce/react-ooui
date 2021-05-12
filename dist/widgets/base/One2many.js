@@ -79,8 +79,8 @@ var ooui_1 = require("ooui");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var FormModal_1 = require("@/widgets/modals/FormModal");
 var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"));
+var RemoveItemDialog_1 = __importDefault(require("@/ui/RemoveItemDialog"));
 var icons_1 = require("@ant-design/icons");
-var confirm = antd_1.Modal.confirm;
 var One2many = function (props) {
     var ooui = props.ooui;
     return (react_1.default.createElement(Field_1.default, __assign({}, props),
@@ -103,30 +103,9 @@ var One2manyInput = function (props) {
     var _j = react_1.useState(), modalItemId = _j[0], setModalItemId = _j[1];
     var _k = react_1.useState(false), formHasChanges = _k[0], setFormHasChanges = _k[1];
     var _l = react_1.useState(false), formIsSaving = _l[0], setFormIsSaving = _l[1];
-    var showRemoveConfirm = function () {
-        confirm({
-            title: "Remove item",
-            icon: react_1.default.createElement(icons_1.ExclamationCircleOutlined, null),
-            centered: true,
-            content: "Are you sure you want to remove this item?",
-            okText: "Yes, remove it",
-            onOk: function () {
-                onConfirmRemove();
-            },
-        });
-    };
-    var getViewData = function (type) { return __awaiter(void 0, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    if (oouiViews && oouiViews[type]) {
-                        return [2 /*return*/, oouiViews[type]];
-                    }
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(relation, type)];
-                case 1: return [2 /*return*/, _a.sent()];
-            }
-        });
-    }); };
+    react_1.useEffect(function () {
+        fetchData();
+    }, [ooui]);
     var fetchData = function () { return __awaiter(void 0, void 0, void 0, function () {
         var formView, treeView, err_1;
         return __generator(this, function (_a) {
@@ -162,9 +141,18 @@ var One2manyInput = function (props) {
             }
         });
     }); };
-    react_1.useEffect(function () {
-        fetchData();
-    }, [ooui]);
+    var getViewData = function (type) { return __awaiter(void 0, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (oouiViews && oouiViews[type]) {
+                        return [2 /*return*/, oouiViews[type]];
+                    }
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(relation, type)];
+                case 1: return [2 /*return*/, _a.sent()];
+            }
+        });
+    }); };
     var separator = function () {
         return react_1.default.createElement("div", { className: "inline-block w-3" });
     };
@@ -183,13 +171,23 @@ var One2manyInput = function (props) {
             value.length,
             ")"));
     };
+    var showRemoveConfirm = function () {
+        RemoveItemDialog_1.default({
+            onOk: function () {
+                onConfirmRemove();
+            },
+        });
+    };
+    var cleanBlankItems = function () {
+        triggerChange(value.filter(function (item) { return item !== undefined; }));
+    };
     var showFormChangesDialogIfNeeded = function (callback) {
         if (formHasChanges) {
             UnsavedChangesDialog_1.default({
                 onOk: function () {
                     if (value[itemIndex] === undefined) {
                         // We remove the new blank items
-                        triggerChange(value.filter(function (item) { return item !== undefined; }));
+                        cleanBlankItems();
                     }
                     callback();
                     setFormHasChanges(false);
@@ -198,7 +196,7 @@ var One2manyInput = function (props) {
         }
         else {
             // We remove the new blank items
-            triggerChange(value.filter(function (item) { return item !== undefined; }));
+            cleanBlankItems();
             callback();
         }
     };
@@ -211,12 +209,6 @@ var One2manyInput = function (props) {
         else if (currentView === "tree" && views.get("form")) {
             setCurrentView("form");
         }
-    };
-    var getTitle = function () {
-        var type = currentView === "form" ? ooui_1.Form : ooui_1.Tree;
-        var ooui = new type(views.get(currentView).fields);
-        ooui.parse(views.get(currentView).arch);
-        return ooui.string;
     };
     var previousItem = function () {
         if (itemIndex > 0) {
@@ -300,50 +292,84 @@ var One2manyInput = function (props) {
         });
     }); };
     var saveButton = function () {
+        if (currentView !== "form") {
+            return null;
+        }
         var icon = formIsSaving ? react_1.default.createElement(icons_1.LoadingOutlined, null) : react_1.default.createElement(icons_1.SaveOutlined, null);
         return (react_1.default.createElement(antd_1.Button, { icon: icon, onClick: saveItem, disabled: !formHasChanges || formIsSaving }));
     };
+    var getTitle = function () {
+        var type = currentView === "form" ? ooui_1.Form : ooui_1.Tree;
+        var ooui = new type(views.get(currentView).fields);
+        ooui.parse(views.get(currentView).arch);
+        return ooui.string;
+    };
+    var title = function () {
+        return (react_1.default.createElement("div", { className: "h-8 flex flex-grow bg-gray-700 text-gray-200" },
+            react_1.default.createElement("div", { className: "h-full flex flex-col justify-center items-center" },
+                react_1.default.createElement("span", { className: "pl-2 font-bold" }, getTitle()))));
+    };
+    var deleteButton = function () {
+        if (currentView !== "form") {
+            return null;
+        }
+        return react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.DeleteOutlined, { onClick: showRemoveConfirm }) });
+    };
+    var itemBrowser = function () {
+        if (currentView !== "form") {
+            return null;
+        }
+        return (react_1.default.createElement(react_1.default.Fragment, null,
+            separator(),
+            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.LeftOutlined, null), onClick: previousItem }),
+            index(),
+            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.RightOutlined, null), onClick: nextItem }),
+            separator()));
+    };
     var topBar = function () {
         return (react_1.default.createElement("div", { className: "flex mb-2" },
-            react_1.default.createElement("div", { className: "h-8 flex flex-grow bg-gray-700 text-gray-200" },
-                react_1.default.createElement("div", { className: "h-full flex flex-col justify-center items-center" },
-                    react_1.default.createElement("span", { className: "pl-2 font-bold" }, getTitle()))),
+            title(),
             react_1.default.createElement("div", { className: "h-8 flex-none pl-2" },
                 react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FileAddOutlined, { onClick: createItem }) }),
                 separator(),
-                currentView === "form" && saveButton(),
-                currentView === "form" && (react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.DeleteOutlined, { onClick: showRemoveConfirm }) })),
-                currentView === "form" && (react_1.default.createElement(react_1.default.Fragment, null,
-                    separator(),
-                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.LeftOutlined, null), onClick: previousItem }),
-                    index(),
-                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.RightOutlined, null), onClick: nextItem }),
-                    separator())),
+                saveButton(),
+                deleteButton(),
+                itemBrowser(),
                 react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.AlignLeftOutlined, null), onClick: toggleViewMode }))));
+    };
+    var onFormSubmitSucceed = function (event) {
+        var id = event[0];
+        if (!value.includes(id)) {
+            triggerChange(value.concat(id).filter(function (item) { return item !== undefined; }));
+            fetchData();
+        }
+        else {
+            setFormIsSaving(false);
+            setFormHasChanges(false);
+        }
+    };
+    var onFormModalSubmitSucceed = function (event) {
+        var id = event[0];
+        if (!value.includes(id)) {
+            triggerChange(value.concat(id));
+        }
+        setShowFormModal(false);
+        fetchData();
+    };
+    var onTreeRowClicked = function (event) {
+        var id = event.id;
+        setModalItemId(id);
+        setShowFormModal(true);
     };
     var content = function () {
         if (currentView === "form") {
-            return (react_1.default.createElement(index_1.Form, { ref: formRef, model: relation, id: value[itemIndex], onCancel: function () { }, onSubmitSucceed: function (event) {
-                    var id = event[0];
-                    if (!value.includes(id)) {
-                        triggerChange(value.concat(id).filter(function (item) { return item !== undefined; }));
-                        fetchData();
-                    }
-                    else {
-                        setFormIsSaving(false);
-                        setFormHasChanges(false);
-                    }
-                }, onSubmitError: function () {
+            return (react_1.default.createElement(index_1.Form, { ref: formRef, model: relation, id: value[itemIndex], onCancel: function () { }, onSubmitSucceed: onFormSubmitSucceed, onSubmitError: function () {
                     setFormIsSaving(false);
                 }, onFieldsChange: function () {
                     setFormHasChanges(true);
                 } }));
         }
-        return (react_1.default.createElement(index_2.SimpleTree, { model: relation, ids: value, formView: views.get("form"), treeView: views.get("tree"), onRowClicked: function (event) {
-                var id = event.id;
-                setModalItemId(id);
-                setShowFormModal(true);
-            } }));
+        return (react_1.default.createElement(index_2.SimpleTree, { model: relation, ids: value, formView: views.get("form"), treeView: views.get("tree"), onRowClicked: onTreeRowClicked }));
     };
     if (isLoading) {
         return react_1.default.createElement(antd_1.Spin, null);
@@ -354,14 +380,7 @@ var One2manyInput = function (props) {
     return (react_1.default.createElement(react_1.default.Fragment, null,
         topBar(),
         content(),
-        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: modalItemId, visible: showFormModal, onSubmitSucceed: function (event) {
-                var id = event[0];
-                if (!value.includes(id)) {
-                    triggerChange(value.concat(id));
-                }
-                setShowFormModal(false);
-                fetchData();
-            }, onCancel: function () {
+        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: modalItemId, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, onCancel: function () {
                 setShowFormModal(false);
             } })));
 };

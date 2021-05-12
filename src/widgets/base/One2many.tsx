@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { One2many as One2manyOoui } from "ooui";
 import Field from "@/common/Field";
-import { Button, Spin, Alert, Modal } from "antd";
+import { Button, Spin, Alert } from "antd";
 import { Form } from "@/index";
 import { SimpleTree } from "@/index";
 import { Form as FormOoui, Tree as TreeOoui } from "ooui";
@@ -9,6 +9,7 @@ import { Views } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import { FormModal } from "@/widgets/modals/FormModal";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
+import showRemoveItemDialog from "@/ui/RemoveItemDialog";
 
 import {
   FileAddOutlined,
@@ -17,15 +18,12 @@ import {
   LeftOutlined,
   RightOutlined,
   AlignLeftOutlined,
-  ExclamationCircleOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
 
 type Props = {
   ooui: One2manyOoui;
 };
-
-const { confirm } = Modal;
 
 export const One2many = (props: Props) => {
   const { ooui } = props;
@@ -65,25 +63,9 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
 
-  const showRemoveConfirm = () => {
-    confirm({
-      title: "Remove item",
-      icon: <ExclamationCircleOutlined />,
-      centered: true,
-      content: "Are you sure you want to remove this item?",
-      okText: "Yes, remove it",
-      onOk() {
-        onConfirmRemove();
-      },
-    });
-  };
-
-  const getViewData = async (type: "form" | "tree") => {
-    if (oouiViews && oouiViews[type]) {
-      return oouiViews[type];
-    }
-    return await ConnectionProvider.getHandler().getView(relation, type);
-  };
+  useEffect(() => {
+    fetchData();
+  }, [ooui]);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -108,9 +90,12 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     setIsLoading(false);
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [ooui]);
+  const getViewData = async (type: "form" | "tree") => {
+    if (oouiViews && oouiViews[type]) {
+      return oouiViews[type];
+    }
+    return await ConnectionProvider.getHandler().getView(relation, type);
+  };
 
   const separator = () => {
     return <div className="inline-block w-3" />;
@@ -130,13 +115,25 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     );
   };
 
+  const showRemoveConfirm = () => {
+    showRemoveItemDialog({
+      onOk: () => {
+        onConfirmRemove();
+      },
+    });
+  };
+
+  const cleanBlankItems = () => {
+    triggerChange(value.filter((item) => item !== undefined));
+  };
+
   const showFormChangesDialogIfNeeded = (callback: () => void) => {
     if (formHasChanges) {
       showUnsavedChangesDialog({
         onOk: () => {
           if (value[itemIndex] === undefined) {
             // We remove the new blank items
-            triggerChange(value.filter((item) => item !== undefined));
+            cleanBlankItems();
           }
           callback();
           setFormHasChanges(false);
@@ -144,7 +141,7 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
       });
     } else {
       // We remove the new blank items
-      triggerChange(value.filter((item) => item !== undefined));
+      cleanBlankItems();
       callback();
     }
   };
@@ -157,13 +154,6 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     } else if (currentView === "tree" && views.get("form")) {
       setCurrentView("form");
     }
-  };
-
-  const getTitle = () => {
-    const type = currentView === "form" ? FormOoui : TreeOoui;
-    const ooui = new type(views.get(currentView).fields);
-    ooui.parse(views.get(currentView).arch);
-    return (ooui as any).string;
   };
 
   const previousItem = () => {
@@ -236,6 +226,10 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
   };
 
   const saveButton = () => {
+    if (currentView !== "form") {
+      return null;
+    }
+
     const icon = formIsSaving ? <LoadingOutlined /> : <SaveOutlined />;
     return (
       <Button
@@ -246,34 +240,87 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     );
   };
 
+  const getTitle = () => {
+    const type = currentView === "form" ? FormOoui : TreeOoui;
+    const ooui = new type(views.get(currentView).fields);
+    ooui.parse(views.get(currentView).arch);
+    return (ooui as any).string;
+  };
+
+  const title = () => {
+    return (
+      <div className="h-8 flex flex-grow bg-gray-700 text-gray-200">
+        <div className="h-full flex flex-col justify-center items-center">
+          <span className="pl-2 font-bold">{getTitle()}</span>
+        </div>
+      </div>
+    );
+  };
+
+  const deleteButton = () => {
+    if (currentView !== "form") {
+      return null;
+    }
+
+    return <Button icon={<DeleteOutlined onClick={showRemoveConfirm} />} />;
+  };
+
+  const itemBrowser = () => {
+    if (currentView !== "form") {
+      return null;
+    }
+    return (
+      <>
+        {separator()}
+        <Button icon={<LeftOutlined />} onClick={previousItem} />
+        {index()}
+        <Button icon={<RightOutlined />} onClick={nextItem} />
+        {separator()}
+      </>
+    );
+  };
+
   const topBar = () => {
     return (
       <div className="flex mb-2">
-        <div className="h-8 flex flex-grow bg-gray-700 text-gray-200">
-          <div className="h-full flex flex-col justify-center items-center">
-            <span className="pl-2 font-bold">{getTitle()}</span>
-          </div>
-        </div>
+        {title()}
         <div className="h-8 flex-none pl-2">
           <Button icon={<FileAddOutlined onClick={createItem} />} />
           {separator()}
-          {currentView === "form" && saveButton()}
-          {currentView === "form" && (
-            <Button icon={<DeleteOutlined onClick={showRemoveConfirm} />} />
-          )}
-          {currentView === "form" && (
-            <>
-              {separator()}
-              <Button icon={<LeftOutlined />} onClick={previousItem} />
-              {index()}
-              <Button icon={<RightOutlined />} onClick={nextItem} />
-              {separator()}
-            </>
-          )}
+          {saveButton()}
+          {deleteButton()}
+          {itemBrowser()}
           <Button icon={<AlignLeftOutlined />} onClick={toggleViewMode} />
         </div>
       </div>
     );
+  };
+
+  const onFormSubmitSucceed = (event: any) => {
+    const [id] = event;
+    if (!value.includes(id)) {
+      triggerChange(value.concat(id).filter((item) => item !== undefined));
+      fetchData();
+    } else {
+      setFormIsSaving(false);
+      setFormHasChanges(false);
+    }
+  };
+
+  const onFormModalSubmitSucceed = (event: any) => {
+    const [id] = event;
+    if (!value.includes(id)) {
+      triggerChange(value.concat(id));
+    }
+
+    setShowFormModal(false);
+    fetchData();
+  };
+
+  const onTreeRowClicked = (event: any) => {
+    const { id } = event;
+    setModalItemId(id);
+    setShowFormModal(true);
   };
 
   const content = () => {
@@ -284,18 +331,7 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
           model={relation}
           id={value[itemIndex]}
           onCancel={() => {}}
-          onSubmitSucceed={(event: any) => {
-            const [id] = event;
-            if (!value.includes(id)) {
-              triggerChange(
-                value.concat(id).filter((item) => item !== undefined)
-              );
-              fetchData();
-            } else {
-              setFormIsSaving(false);
-              setFormHasChanges(false);
-            }
-          }}
+          onSubmitSucceed={onFormSubmitSucceed}
           onSubmitError={() => {
             setFormIsSaving(false);
           }}
@@ -312,11 +348,7 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
         ids={value as Array<number>}
         formView={views.get("form")}
         treeView={views.get("tree")}
-        onRowClicked={(event: any) => {
-          const { id } = event;
-          setModalItemId(id);
-          setShowFormModal(true);
-        }}
+        onRowClicked={onTreeRowClicked}
       />
     );
   };
@@ -337,15 +369,7 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
         model={relation}
         id={modalItemId}
         visible={showFormModal}
-        onSubmitSucceed={(event: any) => {
-          const [id] = event;
-          if (!value.includes(id)) {
-            triggerChange(value.concat(id));
-          }
-
-          setShowFormModal(false);
-          fetchData();
-        }}
+        onSubmitSucceed={onFormModalSubmitSucceed}
         onCancel={() => {
           setShowFormModal(false);
         }}
