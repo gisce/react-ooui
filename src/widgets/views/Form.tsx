@@ -16,16 +16,14 @@ import {
   Modal,
 } from "antd";
 import useDimensions from "react-cool-dimensions";
-import {
-  CheckOutlined,
-  CloseOutlined,
-} from "@ant-design/icons";
+import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 
 import Container from "@/widgets/containers/Container";
 import { processValues, getTouchedValues } from "@/helpers/formHelper";
 import { FormView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
+import getErpValues from "@/helpers/erpWriteHelper";
 
 type Props = {
   model: string;
@@ -62,6 +60,7 @@ function Form(props: Props, ref: any): React.ReactElement {
   const [loading, setLoading] = useState<boolean>(false);
   const [form, setForm] = useState<FormViewAndOoui>();
   const [antForm] = AntForm.useForm();
+  const [originalValues, setOriginalValues] = useState<any>();
 
   const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
     breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
@@ -131,7 +130,7 @@ function Form(props: Props, ref: any): React.ReactElement {
           payload: Object.keys(view.fields),
         });
       }
-
+      setOriginalValues({ ..._values });
       const valuesProcessed = processValues(_values, view.fields);
 
       const mustClearFieldsFirst =
@@ -161,6 +160,11 @@ function Form(props: Props, ref: any): React.ReactElement {
     setIsSubmitting(true);
     try {
       const touchedValues = getTouchedValues(antForm);
+      const erpTouchedValues = getErpValues({
+        values: originalValues,
+        fields: form?.view.fields,
+        touchedValues,
+      });
 
       let objectId = id;
 
@@ -169,12 +173,12 @@ function Form(props: Props, ref: any): React.ReactElement {
           await ConnectionProvider.getHandler().update({
             model,
             id,
-            values: touchedValues,
+            values: erpTouchedValues,
           });
         } else {
           const newId = await ConnectionProvider.getHandler().create({
             model,
-            values: touchedValues,
+            values: erpTouchedValues,
           });
           objectId = newId;
         }

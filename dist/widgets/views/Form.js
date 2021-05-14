@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -67,6 +78,7 @@ var Container_1 = __importDefault(require("@/widgets/containers/Container"));
 var formHelper_1 = require("@/helpers/formHelper");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"));
+var erpWriteHelper_1 = __importDefault(require("@/helpers/erpWriteHelper"));
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
@@ -76,10 +88,11 @@ function Form(props, ref) {
     var _e = react_1.useState(false), loading = _e[0], setLoading = _e[1];
     var _f = react_1.useState(), form = _f[0], setForm = _f[1];
     var antForm = antd_1.Form.useForm()[0];
-    var _g = react_cool_dimensions_1.default({
+    var _g = react_1.useState(), originalValues = _g[0], setOriginalValues = _g[1];
+    var _h = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _g.width, containerRef = _g.ref;
+    }), width = _h.width, containerRef = _h.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
@@ -150,6 +163,7 @@ function Form(props, ref) {
                     _values = _a.sent();
                     _a.label = 6;
                 case 6:
+                    setOriginalValues(__assign({}, _values));
                     valuesProcessed = formHelper_1.processValues(_values, view.fields);
                     mustClearFieldsFirst = Object.keys(antForm.getFieldsValue(true)).length > 0;
                     if (mustClearFieldsFirst) {
@@ -175,7 +189,7 @@ function Form(props, ref) {
         return Object.keys(formHelper_1.getTouchedValues(antForm)).length !== 0;
     };
     var submitForm = function () { return __awaiter(_this, void 0, void 0, function () {
-        var touchedValues, objectId, newId, value, err_2;
+        var touchedValues, erpTouchedValues, objectId, newId, value, err_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -184,20 +198,25 @@ function Form(props, ref) {
                 case 1:
                     _a.trys.push([1, 7, 8, 9]);
                     touchedValues = formHelper_1.getTouchedValues(antForm);
+                    erpTouchedValues = erpWriteHelper_1.default({
+                        values: originalValues,
+                        fields: form === null || form === void 0 ? void 0 : form.view.fields,
+                        touchedValues: touchedValues,
+                    });
                     objectId = id;
                     if (!(Object.keys(touchedValues).length !== 0)) return [3 /*break*/, 5];
                     if (!id) return [3 /*break*/, 3];
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().update({
                             model: model,
                             id: id,
-                            values: touchedValues,
+                            values: erpTouchedValues,
                         })];
                 case 2:
                     _a.sent();
                     return [3 /*break*/, 5];
                 case 3: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().create({
                         model: model,
-                        values: touchedValues,
+                        values: erpTouchedValues,
                     })];
                 case 4:
                     newId = _a.sent();
