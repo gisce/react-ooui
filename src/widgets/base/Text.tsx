@@ -12,7 +12,8 @@ type Props = {
 const Text = (props: Props) => {
   const { ooui } = props;
   const { readOnly, required } = ooui;
-  const requiredClass = required ? Config.requiredClass : undefined;
+  const requiredClass =
+    required && !readOnly ? Config.requiredClass : undefined;
 
   return (
     <Field {...props}>

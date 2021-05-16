@@ -7,7 +7,8 @@ import Config from "@/Config";
 export const Integer = (props: WidgetProps) => {
   const { ooui } = props;
   const { id, readOnly, required } = ooui;
-  const requiredClass = required ? Config.requiredClass : undefined;
+  const requiredClass =
+    required && !readOnly ? Config.requiredClass : undefined;
 
   return (
     <Field {...props}>

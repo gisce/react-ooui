@@ -8,7 +8,7 @@ import Config from "@/Config";
 export const Char = (props: WidgetProps) => {
   const { ooui } = props;
   const { id, readOnly, isPassword, required } = ooui as CharOoui;
-  const requiredClass = required ? Config.requiredClass : undefined;
+  const requiredClass = required && !readOnly ? Config.requiredClass : undefined;
 
   return (
     <Field {...props}>

@@ -44,7 +44,8 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
 ) => {
   const { value, onChange, ooui } = props;
   const { required, relation, readOnly } = ooui;
-  const requiredClass = required ? Config.requiredClass : undefined;
+  const requiredClass =
+    required && !readOnly ? Config.requiredClass : undefined;
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(false);

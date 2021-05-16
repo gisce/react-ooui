@@ -7,8 +7,9 @@ import Config from "@/Config";
 
 export const Float = (props: WidgetProps) => {
   const { ooui } = props;
-  const { id, decimalDigits, readOnly, required} = ooui as FloatOoui;
-  const requiredClass = required ? Config.requiredClass : undefined;
+  const { id, decimalDigits, readOnly, required } = ooui as FloatOoui;
+  const requiredClass =
+    required && !readOnly ? Config.requiredClass : undefined;
 
   return (
     <Field {...props}>
