@@ -235,7 +235,7 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
       <Button
         icon={icon}
         onClick={saveItem}
-        disabled={!formHasChanges || formIsSaving}
+        disabled={!formHasChanges || formIsSaving || readOnly}
       />
     );
   };
@@ -262,7 +262,12 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
       return null;
     }
 
-    return <Button icon={<DeleteOutlined onClick={showRemoveConfirm} />} />;
+    return (
+      <Button
+        icon={<DeleteOutlined onClick={showRemoveConfirm} />}
+        disabled={readOnly}
+      />
+    );
   };
 
   const itemBrowser = () => {
@@ -285,7 +290,10 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
       <div className="flex mb-2">
         {title()}
         <div className="h-8 flex-none pl-2">
-          <Button icon={<FileAddOutlined onClick={createItem} />} />
+          <Button
+            icon={<FileAddOutlined onClick={createItem} />}
+            disabled={readOnly}
+          />
           {separator()}
           {saveButton()}
           {deleteButton()}
@@ -338,6 +346,7 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
           onFieldsChange={() => {
             setFormHasChanges(true);
           }}
+          readOnly={readOnly}
         />
       );
     }
@@ -373,6 +382,7 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
         onCancel={() => {
           setShowFormModal(false);
         }}
+        readOnly={readOnly}
       />
     </>
   );

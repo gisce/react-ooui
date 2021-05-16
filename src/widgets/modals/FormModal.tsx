@@ -11,6 +11,7 @@ type FormModalProps = {
   onCancel?: () => void;
   onSubmitSucceed?: (updatedObject: any) => void;
   title?: string;
+  readOnly?: boolean;
 };
 
 export const FormModal = (props: FormModalProps) => {
@@ -22,6 +23,7 @@ export const FormModal = (props: FormModalProps) => {
     model,
     title = id ? "Detail" : "New",
     getDataFromAction,
+    readOnly = false,
   } = props;
 
   const { modalWidth } = useModalWidthDimensions();
@@ -43,6 +45,7 @@ export const FormModal = (props: FormModalProps) => {
         onCancel={onCancel}
         onSubmitSucceed={onSubmitSucceed}
         showFooter
+        readOnly={readOnly}
       />
     </Modal>
   );

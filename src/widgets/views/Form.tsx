@@ -34,6 +34,7 @@ type Props = {
   showFooter?: boolean;
   getDataFromAction?: boolean;
   onFieldsChange?: () => void;
+  readOnly?: boolean;
 };
 
 const WIDTH_BREAKPOINT = 1000;
@@ -53,6 +54,7 @@ function Form(props: Props, ref: any): React.ReactElement {
     getDataFromAction = false,
     onFieldsChange,
     onSubmitError,
+    readOnly = false,
   } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -111,7 +113,7 @@ function Form(props: Props, ref: any): React.ReactElement {
       const view = await getFormView();
 
       const ooui = new FormOoui(view.fields);
-      ooui.parse(view.arch);
+      ooui.parse(view.arch, readOnly);
       setForm({ ooui, view });
 
       let _values = {};
@@ -231,7 +233,7 @@ function Form(props: Props, ref: any): React.ReactElement {
               Cancel
             </Button>
             <Button
-              disabled={isSubmitting || loading}
+              disabled={isSubmitting || loading || readOnly}
               loading={isSubmitting}
               icon={<CheckOutlined />}
               onClick={submitForm}
