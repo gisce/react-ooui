@@ -39,7 +39,7 @@ var DatePicker = function (props) {
 var DatePickerInput = function (props) {
     var value = props.value, onChange = props.onChange, ooui = props.ooui, showTime = props.showTime;
     var _a = ooui, id = _a.id, readOnly = _a.readOnly, required = _a.required;
-    var requiredClass = required ? Config_1.default.requiredClass : undefined;
+    var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
     var mode = showTime ? "time" : "date";
     var triggerChange = function (changedValue) {
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);

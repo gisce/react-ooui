@@ -35,7 +35,7 @@ var Selection = function (props) {
             var key = entry[0], value = entry[1];
             return (react_1.default.createElement(Option, { key: key, value: key }, value));
         });
-    var CustomSelect = required ? RequiredSelect : antd_1.Select;
+    var CustomSelect = required && !readOnly ? RequiredSelect : antd_1.Select;
     return (react_1.default.createElement(Field_1.default, __assign({}, props),
         react_1.default.createElement(CustomSelect, { disabled: readOnly }, options)));
 };

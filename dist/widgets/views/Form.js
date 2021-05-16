@@ -82,17 +82,17 @@ var erpWriteHelper_1 = __importDefault(require("@/helpers/erpWriteHelper"));
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
-    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError;
-    var _c = react_1.useState(false), isSubmitting = _c[0], setIsSubmitting = _c[1];
-    var _d = react_1.useState(), error = _d[0], setError = _d[1];
-    var _e = react_1.useState(false), loading = _e[0], setLoading = _e[1];
-    var _f = react_1.useState(), form = _f[0], setForm = _f[1];
+    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c;
+    var _d = react_1.useState(false), isSubmitting = _d[0], setIsSubmitting = _d[1];
+    var _e = react_1.useState(), error = _e[0], setError = _e[1];
+    var _f = react_1.useState(false), loading = _f[0], setLoading = _f[1];
+    var _g = react_1.useState(), form = _g[0], setForm = _g[1];
     var antForm = antd_1.Form.useForm()[0];
-    var _g = react_1.useState(), originalValues = _g[0], setOriginalValues = _g[1];
-    var _h = react_cool_dimensions_1.default({
+    var _h = react_1.useState(), originalValues = _h[0], setOriginalValues = _h[1];
+    var _j = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _h.width, containerRef = _h.ref;
+    }), width = _j.width, containerRef = _j.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
@@ -142,7 +142,7 @@ function Form(props, ref) {
                 case 2:
                     view = _a.sent();
                     ooui = new ooui_1.Form(view.fields);
-                    ooui.parse(view.arch);
+                    ooui.parse(view.arch, readOnly);
                     setForm({ ooui: ooui, view: view });
                     _values = {};
                     if (!id) return [3 /*break*/, 4];
@@ -255,7 +255,7 @@ function Form(props, ref) {
             react_1.default.createElement(antd_1.Row, { justify: "end" },
                 react_1.default.createElement(antd_1.Space, null,
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), disabled: isSubmitting || loading, onClick: cancel }, "Cancel"),
-                    react_1.default.createElement(antd_1.Button, { disabled: isSubmitting || loading, loading: isSubmitting, icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: submitForm }, "OK")))));
+                    react_1.default.createElement(antd_1.Button, { disabled: isSubmitting || loading || readOnly, loading: isSubmitting, icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: submitForm }, "OK")))));
     };
     return (react_1.default.createElement("div", { ref: containerRef },
         error && react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true }),

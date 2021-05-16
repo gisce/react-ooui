@@ -8,6 +8,7 @@ declare type Props = {
     showFooter?: boolean;
     getDataFromAction?: boolean;
     onFieldsChange?: () => void;
+    readOnly?: boolean;
 };
 declare const _default: React.ForwardRefExoticComponent<Props & React.RefAttributes<unknown>>;
 export default _default;

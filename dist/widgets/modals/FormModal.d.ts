@@ -7,6 +7,7 @@ declare type FormModalProps = {
     onCancel?: () => void;
     onSubmitSucceed?: (updatedObject: any) => void;
     title?: string;
+    readOnly?: boolean;
 };
 export declare const FormModal: (props: FormModalProps) => JSX.Element;
 export {};

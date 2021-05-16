@@ -88,7 +88,7 @@ var SEARCH_BUTTON_TAPPED_FLAG = false;
 var Many2oneInput = function (props) {
     var value = props.value, onChange = props.onChange, ooui = props.ooui;
     var required = ooui.required, relation = ooui.relation, readOnly = ooui.readOnly;
-    var requiredClass = required ? Config_1.default.requiredClass : undefined;
+    var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
     var _a = react_1.useState(false), showSearchModal = _a[0], setShowSearchModal = _a[1];
     var _b = react_1.useState(false), showFormModal = _b[0], setShowFormModal = _b[1];
     var _c = react_1.useState(false), searching = _c[0], setSearching = _c[1];

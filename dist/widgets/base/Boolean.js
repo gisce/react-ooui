@@ -27,11 +27,12 @@ var Config_1 = __importDefault(require("@/Config"));
 var Boolean = function (props) {
     var ooui = props.ooui;
     var id = ooui.id, readOnly = ooui.readOnly, required = ooui.required;
+    var CustomCheckbox = required && !readOnly ? RequiredCheckbox : antd_1.Checkbox;
     return (react_1.default.createElement(Field_1.default, __assign({}, props, { valuePropName: "checked" }),
         react_1.default.createElement("div", { className: "flex flex-row" },
-            react_1.default.createElement(RequiredCheckbox, { disabled: readOnly, id: id }))));
+            react_1.default.createElement(CustomCheckbox, { disabled: readOnly, id: id }))));
 };
 exports.Boolean = Boolean;
-var RequiredCheckbox = styled_components_1.default(antd_1.Checkbox)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  .ant-checkbox-inner {\n    background-color: ", ";\n  }\n\n  .ant-checkbox-checked .ant-checkbox-inner {\n    background-color: #089CFF;\n  }\n"], ["\n  .ant-checkbox-inner {\n    background-color: ", ";\n  }\n\n  .ant-checkbox-checked .ant-checkbox-inner {\n    background-color: #089CFF;\n  }\n"])), Config_1.default.requiredColor);
+var RequiredCheckbox = styled_components_1.default(antd_1.Checkbox)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  .ant-checkbox-inner {\n    background-color: ", ";\n  }\n\n  .ant-checkbox-checked .ant-checkbox-inner {\n    background-color: #089cff;\n  }\n"], ["\n  .ant-checkbox-inner {\n    background-color: ", ";\n  }\n\n  .ant-checkbox-checked .ant-checkbox-inner {\n    background-color: #089cff;\n  }\n"])), Config_1.default.requiredColor);
 var templateObject_1;
 //# sourceMappingURL=Boolean.js.map

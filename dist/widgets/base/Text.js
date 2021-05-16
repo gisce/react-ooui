@@ -22,7 +22,7 @@ var TextArea = antd_1.Input.TextArea;
 var Text = function (props) {
     var ooui = props.ooui;
     var readOnly = ooui.readOnly, required = ooui.required;
-    var requiredClass = required ? Config_1.default.requiredClass : undefined;
+    var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
     return (react_1.default.createElement(Field_1.default, __assign({}, props),
         react_1.default.createElement(TextArea, { disabled: readOnly, className: requiredClass, rows: 4 })));
 };

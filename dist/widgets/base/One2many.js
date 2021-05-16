@@ -296,7 +296,7 @@ var One2manyInput = function (props) {
             return null;
         }
         var icon = formIsSaving ? react_1.default.createElement(icons_1.LoadingOutlined, null) : react_1.default.createElement(icons_1.SaveOutlined, null);
-        return (react_1.default.createElement(antd_1.Button, { icon: icon, onClick: saveItem, disabled: !formHasChanges || formIsSaving }));
+        return (react_1.default.createElement(antd_1.Button, { icon: icon, onClick: saveItem, disabled: !formHasChanges || formIsSaving || readOnly }));
     };
     var getTitle = function () {
         var type = currentView === "form" ? ooui_1.Form : ooui_1.Tree;
@@ -313,7 +313,7 @@ var One2manyInput = function (props) {
         if (currentView !== "form") {
             return null;
         }
-        return react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.DeleteOutlined, { onClick: showRemoveConfirm }) });
+        return (react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.DeleteOutlined, { onClick: showRemoveConfirm }), disabled: readOnly }));
     };
     var itemBrowser = function () {
         if (currentView !== "form") {
@@ -330,7 +330,7 @@ var One2manyInput = function (props) {
         return (react_1.default.createElement("div", { className: "flex mb-2" },
             title(),
             react_1.default.createElement("div", { className: "h-8 flex-none pl-2" },
-                react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FileAddOutlined, { onClick: createItem }) }),
+                react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FileAddOutlined, { onClick: createItem }), disabled: readOnly }),
                 separator(),
                 saveButton(),
                 deleteButton(),
@@ -367,7 +367,7 @@ var One2manyInput = function (props) {
                     setFormIsSaving(false);
                 }, onFieldsChange: function () {
                     setFormHasChanges(true);
-                } }));
+                }, readOnly: readOnly }));
         }
         return (react_1.default.createElement(index_2.SimpleTree, { model: relation, ids: value, formView: views.get("form"), treeView: views.get("tree"), onRowClicked: onTreeRowClicked }));
     };
@@ -382,6 +382,6 @@ var One2manyInput = function (props) {
         content(),
         react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: modalItemId, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, onCancel: function () {
                 setShowFormModal(false);
-            } })));
+            }, readOnly: readOnly })));
 };
 //# sourceMappingURL=One2many.js.map
