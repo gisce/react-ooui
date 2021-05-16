@@ -10,10 +10,13 @@ export const Boolean = (props: WidgetProps) => {
   const { ooui } = props;
   const { id, readOnly, required } = ooui;
 
+  const CustomCheckbox: any =
+    required && !readOnly ? RequiredCheckbox : AntCheckbox;
+
   return (
     <Field {...props} valuePropName="checked">
       <div className="flex flex-row">
-        <RequiredCheckbox disabled={readOnly} id={id} />
+        <CustomCheckbox disabled={readOnly} id={id} />
       </div>
     </Field>
   );
@@ -25,6 +28,6 @@ const RequiredCheckbox = styled(AntCheckbox)`
   }
 
   .ant-checkbox-checked .ant-checkbox-inner {
-    background-color: #089CFF;
+    background-color: #089cff;
   }
 `;
