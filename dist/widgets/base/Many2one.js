@@ -94,7 +94,7 @@ var Many2oneInput = function (props) {
     var _c = react_1.useState(false), searching = _c[0], setSearching = _c[1];
     var _d = react_1.useState(), searchText = _d[0], setSearchText = _d[1];
     var triggerChange = function (changedValue) {
-        onChange === null || onChange === void 0 ? void 0 : onChange(__assign(__assign({}, value), changedValue));
+        onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
     };
     var onValueStringChange = function (e) {
         triggerChange([undefined, e.target.value]);

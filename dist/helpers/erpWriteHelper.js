@@ -9,7 +9,9 @@ var getErpValues = function (_a) {
     var processedTouchedValues = {};
     Object.entries(touchedValues).forEach(function (item) {
         var name = item[0], value = item[1];
-        if (fields[name] && fields[name].type === "one2many") {
+        if (fields[name] &&
+            fields[name].type === "many2one" &&
+            Array.isArray(value)) {
             processedTouchedValues[name] = value[0];
             return;
         }

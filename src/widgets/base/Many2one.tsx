@@ -51,7 +51,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
   const [searchText, setSearchText] = useState<string>();
 
   const triggerChange = (changedValue: any[]) => {
-    onChange?.({ ...value, ...changedValue });
+    onChange?.(changedValue);
   };
 
   const onValueStringChange = (e: React.ChangeEvent<HTMLInputElement>) => {
