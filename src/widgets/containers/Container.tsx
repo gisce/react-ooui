@@ -41,10 +41,6 @@ const Container = (props: Props): React.ReactElement => {
     });
 
     return rowWithEmptiesToFit.map((item: Widget, j: number) => {
-      // TODO: Review this behaviour if it's needed
-      if (item instanceof NotebookOoui) {
-        item.colspan = 4;
-      }
       return (
         <div
           key={`${i.toString()}-${j.toString()}`}

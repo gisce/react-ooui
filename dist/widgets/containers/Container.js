@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(require("react"));
-var ooui_1 = require("ooui");
 var WidgetFactory_1 = require("@/widgets/WidgetFactory");
 var containerHelper_1 = require("@/helpers/containerHelper");
 var Container = function (props) {
@@ -25,10 +24,6 @@ var Container = function (props) {
             mustFillWithEmpties: responsiveBehaviour,
         });
         return rowWithEmptiesToFit.map(function (item, j) {
-            // TODO: Review this behaviour if it's needed
-            if (item instanceof ooui_1.Notebook) {
-                item.colspan = 4;
-            }
             return (react_1.default.createElement("div", { key: i.toString() + "-" + j.toString(), className: "self-center p-2", style: containerHelper_1.getSpanStyleForItem({ item: item, responsiveBehaviour: responsiveBehaviour }) }, WidgetFactory_1.createReactWidget({
                 ooui: item,
                 responsiveBehaviour: responsiveBehaviour,
