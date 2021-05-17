@@ -85,11 +85,15 @@ function Tree(props: Props): React.ReactElement {
     <>
       {pagination()}
       <Table
+        scroll={{ x: true }}
         columns={columns}
         dataSource={items}
         pagination={false}
         loading={loading}
         rowClassName="cursor-pointer select-none"
+        rowKey={(item) => {
+          return item.id;
+        }}
         onRow={(record) => {
           return {
             onDoubleClick: () => {

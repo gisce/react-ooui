@@ -61,7 +61,9 @@ function Tree(props) {
     };
     return (react_1.default.createElement(react_1.default.Fragment, null,
         pagination(),
-        react_1.default.createElement(antd_1.Table, { columns: columns, dataSource: items, pagination: false, loading: loading, rowClassName: "cursor-pointer select-none", onRow: function (record) {
+        react_1.default.createElement(antd_1.Table, { scroll: { x: true }, columns: columns, dataSource: items, pagination: false, loading: loading, rowClassName: "cursor-pointer select-none", rowKey: function (item) {
+                return item.id;
+            }, onRow: function (record) {
                 return {
                     onDoubleClick: function () {
                         if (onRowClicked)
