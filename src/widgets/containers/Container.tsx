@@ -1,5 +1,5 @@
 import React from "react";
-import { Container as ContainerOoui, Widget } from "ooui";
+import { Container as ContainerOoui, Field, Widget, Button, Label } from "ooui";
 import { createReactWidget } from "@/widgets/WidgetFactory";
 
 import {
@@ -28,6 +28,8 @@ const Container = (props: Props): React.ReactElement => {
     columns = maxColspanForRows;
   }
 
+  let fieldInRows = false;
+
   const content = rows.map((row: Widget[], i) => {
     const rowWithoutInvisibleFields = row.filter((widget) => {
       return !widget.invisible;
@@ -45,6 +47,13 @@ const Container = (props: Props): React.ReactElement => {
     });
 
     return rowWithEmptiesToFit.map((item: Widget, j: number) => {
+      // We check if we have any label+field inside the container.
+      // In this scenario, we must format the grid accordingly
+      // Otherwise, the grid will divide uniformly
+      if (item instanceof Label && (item as Label).fieldForLabel) {
+        fieldInRows = true;
+      }
+
       return (
         <div
           key={`${i.toString()}-${j.toString()}`}
@@ -60,7 +69,7 @@ const Container = (props: Props): React.ReactElement => {
     });
   });
 
-  const templateColumns = getTemplateColumns(columns);
+  const templateColumns = getTemplateColumns(columns, fieldInRows);
   const gridStyle = {
     display: "grid",
     gridTemplateColumns: responsiveBehaviour ? "auto" : templateColumns,

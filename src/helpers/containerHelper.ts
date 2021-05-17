@@ -1,10 +1,4 @@
-import { Widget, Label, One2many, Many2many } from "ooui";
-
-const clone = function clone<T>(instance: T): T {
-  const copy = new ((instance as any).constructor as { new (): T })();
-  Object.assign(copy, instance);
-  return copy;
-};
+import { Widget, Label, Field } from "ooui";
 
 const getSpanStyleForItem = ({
   item,
@@ -30,15 +24,26 @@ const fillRowWithEmptiesToFit = ({
   const rowWithEmptiesToFit: any = [];
   let totalColSpan = 0;
 
-  row.map((item: Widget, columnIndex: number) => {
-    totalColSpan += item.colspan;
-    rowWithEmptiesToFit.push(item);
-
-    if (
+  const isLastItemAndMustFit = (columnIndex: number) => {
+    return (
       columnIndex + 1 === row.length &&
       totalColSpan < numberOfColumns &&
       !mustFillWithEmpties
-    ) {
+    );
+  };
+
+  row.map((item: Widget, columnIndex: number) => {
+    totalColSpan += item.colspan;
+
+    if (isLastItemAndMustFit(columnIndex)) {
+      const gapsToAdjust = numberOfColumns - totalColSpan;
+      item.colspan = item.colspan + gapsToAdjust;
+      totalColSpan += gapsToAdjust;
+    }
+
+    rowWithEmptiesToFit.push(item);
+
+    if (isLastItemAndMustFit(columnIndex)) {
       const gapsToFill = numberOfColumns - totalColSpan;
       for (let i = 0; i < gapsToFill; i += 1) {
         rowWithEmptiesToFit.push(new Label({ string: "" }));
@@ -65,8 +70,11 @@ const expandWidgetsIfNeeded = ({
   });
 };
 
-const getTemplateColumns = (columns: number) => {
-  const odd = "1fr";
+const getTemplateColumns = (columns: number, fieldInRows: boolean) => {
+  // We check if we have any label+field inside (fieldInRows) the container.
+  // In this scenario, we must format the grid accordingly
+  // Otherwise, the grid will divide uniformly (auto)
+  const odd = fieldInRows ? "1fr" : "auto";
   const even = "auto";
   let templateColumns = "";
   for (let i = 0; i < columns; i++) {
@@ -89,10 +97,25 @@ const getMaxColspanForRows = (rows: Widget[][]) => {
   });
 };
 
+const rowsHaveAnyField = (rows: Widget[][]) => {
+  let found = false;
+
+  rows.map((row: Widget[]) => {
+    row.map((item: Widget) => {
+      if (item instanceof Field) {
+        found = true;
+      }
+    });
+  });
+
+  return found;
+};
+
 export {
   getTemplateColumns,
   fillRowWithEmptiesToFit,
   getSpanStyleForItem,
   expandWidgetsIfNeeded,
   getMaxColspanForRows,
+  rowsHaveAnyField,
 };
