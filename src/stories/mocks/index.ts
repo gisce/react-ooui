@@ -3,8 +3,9 @@ import partner from "./models/partner";
 import butlleti from "./models/butlleti";
 import polisses from "./models/polisses";
 import hist_autoconsum from "./models/hist_autoconsum";
+import signatura from "./models/signatura";
 
-const allModels = [cups, partner, butlleti, polisses, hist_autoconsum];
+const allModels = [cups, partner, butlleti, polisses, hist_autoconsum, signatura];
 
 const getMock = (model: string) => {
   const found = allModels.find((item) => {
