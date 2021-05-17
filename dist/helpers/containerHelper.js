@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.expandWidgetsIfNeeded = exports.getSpanStyleForItem = exports.fillRowWithEmptiesToFit = exports.getTemplateColumns = void 0;
+exports.getMaxColspanForRows = exports.expandWidgetsIfNeeded = exports.getSpanStyleForItem = exports.fillRowWithEmptiesToFit = exports.getTemplateColumns = void 0;
 var ooui_1 = require("ooui");
 var clone = function clone(instance) {
     var copy = new instance.constructor();
@@ -50,11 +50,22 @@ var getTemplateColumns = function (columns) {
     var templateColumns = "";
     for (var i = 0; i < columns; i++) {
         templateColumns += i % 2 ? odd : even;
-        if (i < columns) {
+        if (i + 1 < columns) {
             templateColumns += " ";
         }
     }
     return templateColumns;
 };
 exports.getTemplateColumns = getTemplateColumns;
+var getMaxColspanForRows = function (rows) {
+    var maxColspan = rows.map(function (row) {
+        return row.reduce(function (prev, current) {
+            return prev + current.colspan;
+        }, 0);
+    });
+    return maxColspan.reduce(function (a, b) {
+        return Math.max(a, b);
+    });
+};
+exports.getMaxColspanForRows = getMaxColspanForRows;
 //# sourceMappingURL=containerHelper.js.map

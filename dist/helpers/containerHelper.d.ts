@@ -15,5 +15,6 @@ declare const expandWidgetsIfNeeded: ({ row, numberOfColumns, }: {
     numberOfColumns: number;
 }) => any;
 declare const getTemplateColumns: (columns: number) => string;
-export { getTemplateColumns, fillRowWithEmptiesToFit, getSpanStyleForItem, expandWidgetsIfNeeded };
+declare const getMaxColspanForRows: (rows: Widget[][]) => number;
+export { getTemplateColumns, fillRowWithEmptiesToFit, getSpanStyleForItem, expandWidgetsIfNeeded, getMaxColspanForRows, };
 //# sourceMappingURL=containerHelper.d.ts.map

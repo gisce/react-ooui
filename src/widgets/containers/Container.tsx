@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  Container as ContainerOoui,
-  Widget,
-  Notebook as NotebookOoui,
-} from "ooui";
+import { Container as ContainerOoui, Widget } from "ooui";
 import { createReactWidget } from "@/widgets/WidgetFactory";
 
 import {
@@ -11,18 +7,26 @@ import {
   fillRowWithEmptiesToFit,
   getSpanStyleForItem,
   expandWidgetsIfNeeded,
+  getMaxColspanForRows,
 } from "@/helpers/containerHelper";
 
 type Props = {
   container: ContainerOoui;
-  formWrapper?: boolean;
   responsiveBehaviour: boolean;
 };
 
 const Container = (props: Props): React.ReactElement => {
-  const { container, formWrapper = false, responsiveBehaviour } = props;
+  const { container, responsiveBehaviour } = props;
   const { rows } = container;
   let { columns } = container;
+
+  // We check for the largest colspan for each row
+  // And if the value is smaller than the columns value
+  // We adjust the columns value
+  const maxColspanForRows = getMaxColspanForRows(rows);
+  if (maxColspanForRows < columns) {
+    columns = maxColspanForRows;
+  }
 
   const content = rows.map((row: Widget[], i) => {
     const rowWithoutInvisibleFields = row.filter((widget) => {
@@ -55,12 +59,6 @@ const Container = (props: Props): React.ReactElement => {
       );
     });
   });
-
-  // TODO: Review this behaviour if it's needed
-  if (formWrapper) {
-    columns = 4;
-    // return content as any;
-  }
 
   const templateColumns = getTemplateColumns(columns);
   const gridStyle = {

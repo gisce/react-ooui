@@ -211,7 +211,6 @@ function Form(props: Props, ref: any): React.ReactElement {
         {form && (
           <Container
             container={form.ooui.container}
-            formWrapper
             responsiveBehaviour={responsiveBehaviour}
           />
         )}

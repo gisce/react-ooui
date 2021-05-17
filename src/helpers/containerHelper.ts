@@ -71,11 +71,28 @@ const getTemplateColumns = (columns: number) => {
   let templateColumns = "";
   for (let i = 0; i < columns; i++) {
     templateColumns += i % 2 ? odd : even;
-    if (i < columns) {
+    if (i + 1 < columns) {
       templateColumns += " ";
     }
   }
   return templateColumns;
 };
 
-export { getTemplateColumns, fillRowWithEmptiesToFit, getSpanStyleForItem, expandWidgetsIfNeeded};
+const getMaxColspanForRows = (rows: Widget[][]) => {
+  const maxColspan = rows.map((row: Widget[]) => {
+    return row.reduce((prev, current) => {
+      return prev + current.colspan;
+    }, 0);
+  });
+  return maxColspan.reduce((a, b) => {
+    return Math.max(a, b);
+  });
+};
+
+export {
+  getTemplateColumns,
+  fillRowWithEmptiesToFit,
+  getSpanStyleForItem,
+  expandWidgetsIfNeeded,
+  getMaxColspanForRows,
+};

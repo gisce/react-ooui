@@ -7,9 +7,16 @@ var react_1 = __importDefault(require("react"));
 var WidgetFactory_1 = require("@/widgets/WidgetFactory");
 var containerHelper_1 = require("@/helpers/containerHelper");
 var Container = function (props) {
-    var container = props.container, _a = props.formWrapper, formWrapper = _a === void 0 ? false : _a, responsiveBehaviour = props.responsiveBehaviour;
+    var container = props.container, responsiveBehaviour = props.responsiveBehaviour;
     var rows = container.rows;
     var columns = container.columns;
+    // We check for the largest colspan for each row
+    // And if the value is smaller than the columns value
+    // We adjust the columns value
+    var maxColspanForRows = containerHelper_1.getMaxColspanForRows(rows);
+    if (maxColspanForRows < columns) {
+        columns = maxColspanForRows;
+    }
     var content = rows.map(function (row, i) {
         var rowWithoutInvisibleFields = row.filter(function (widget) {
             return !widget.invisible;
@@ -30,11 +37,6 @@ var Container = function (props) {
             })));
         });
     });
-    // TODO: Review this behaviour if it's needed
-    if (formWrapper) {
-        columns = 4;
-        // return content as any;
-    }
     var templateColumns = containerHelper_1.getTemplateColumns(columns);
     var gridStyle = {
         display: "grid",
