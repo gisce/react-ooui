@@ -98,7 +98,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
   };
 
   return (
-    <Row gutter={8} className="pt-1 pb-1">
+    <Row gutter={8} >
       <Col flex="auto">
         <Input
           type="text"

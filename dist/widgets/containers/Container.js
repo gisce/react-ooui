@@ -39,7 +39,7 @@ var Container = function (props) {
             if (item instanceof ooui_1.Label && item.fieldForLabel) {
                 fieldInRows = true;
             }
-            return (react_1.default.createElement("div", { key: i.toString() + "-" + j.toString(), className: "self-center p-2", style: containerHelper_1.getSpanStyleForItem({ item: item, responsiveBehaviour: responsiveBehaviour }) }, WidgetFactory_1.createReactWidget({
+            return (react_1.default.createElement("div", { key: i.toString() + "-" + j.toString(), style: containerHelper_1.getSpanStyleForItem({ item: item, responsiveBehaviour: responsiveBehaviour }) }, WidgetFactory_1.createReactWidget({
                 ooui: item,
                 responsiveBehaviour: responsiveBehaviour,
             })));
@@ -49,6 +49,7 @@ var Container = function (props) {
     var gridStyle = {
         display: "grid",
         gridTemplateColumns: responsiveBehaviour ? "auto" : templateColumns,
+        gap: "1rem"
     };
     return react_1.default.createElement("div", { style: gridStyle }, content);
 };

@@ -24,7 +24,7 @@ const Label = (props: Props) => {
   const labelAlgin = align ? align : fieldForLabel ? responsiveAlign : "left";
 
   return (
-    <div className={`flex flex-row items-center pb-1 ${alignClass[labelAlgin]}`}>
+    <div className={`flex flex-row items-center pb-1 pt-1 ${alignClass[labelAlgin]}`}>
       {tooltip && (
         <Tooltip title={tooltip}>
           <QuestionCircleOutlined className="text-xs text-blue-400 pr-1" />

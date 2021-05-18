@@ -57,7 +57,6 @@ const Container = (props: Props): React.ReactElement => {
       return (
         <div
           key={`${i.toString()}-${j.toString()}`}
-          className="self-center p-2"
           style={getSpanStyleForItem({ item, responsiveBehaviour })}
         >
           {createReactWidget({
@@ -73,6 +72,7 @@ const Container = (props: Props): React.ReactElement => {
   const gridStyle = {
     display: "grid",
     gridTemplateColumns: responsiveBehaviour ? "auto" : templateColumns,
+    gap: "1rem"
   };
 
   return <div style={gridStyle}>{content}</div>;

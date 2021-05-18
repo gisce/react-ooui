@@ -10,7 +10,7 @@ const Fieldset = (props: Props): React.ReactElement => {
 
   return (
     // TODO: change in-line styles to TailWind classes
-    <fieldset className="pl-2 pr-2 border-gray-400 border border-solid  font-sans">
+    <fieldset className="p-2 border-gray-400 border border-solid  font-sans">
       <legend
         style={{
           all: "initial",

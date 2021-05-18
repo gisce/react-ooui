@@ -18,7 +18,7 @@ var Label = function (props) {
     var labelText = addColon && label.length > 1 ? label + " :" : label;
     var responsiveAlign = responsiveBehaviour ? "left" : "right";
     var labelAlgin = align ? align : fieldForLabel ? responsiveAlign : "left";
-    return (react_1.default.createElement("div", { className: "flex flex-row items-center pb-1 " + alignClass[labelAlgin] },
+    return (react_1.default.createElement("div", { className: "flex flex-row items-center pb-1 pt-1 " + alignClass[labelAlgin] },
         tooltip && (react_1.default.createElement(antd_1.Tooltip, { title: tooltip },
             react_1.default.createElement(icons_1.QuestionCircleOutlined, { className: "text-xs text-blue-400 pr-1" }))),
         react_1.default.createElement("span", { className: "pr-2" }, labelText)));

@@ -3,7 +3,7 @@ import React from "react";
 import { Form } from "../..";
 
 export default {
-  title: "Components/Widgets/Forms/Polisses",
+  title: "Components/Widgets/Forms/ModContract",
 };
 
 export const Default = (): React.ReactElement => {

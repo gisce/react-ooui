@@ -257,7 +257,7 @@ function Form(props, ref) {
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), disabled: isSubmitting || loading, onClick: cancel }, "Cancel"),
                     react_1.default.createElement(antd_1.Button, { disabled: isSubmitting || loading || readOnly, loading: isSubmitting, icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: submitForm }, "OK")))));
     };
-    return (react_1.default.createElement("div", { ref: containerRef },
+    return (react_1.default.createElement("div", { ref: containerRef, className: "pb-2" },
         error && react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true }),
         loading ? react_1.default.createElement(antd_1.Spin, null) : content(),
         showFooter && footer()));

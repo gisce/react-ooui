@@ -246,7 +246,7 @@ function Form(props: Props, ref: any): React.ReactElement {
   };
 
   return (
-    <div ref={containerRef}>
+    <div ref={containerRef} className="pb-2">
       {error && <Alert className="mt-10" message={error} type="error" banner />}
       {loading ? <Spin /> : content()}
       {showFooter && footer()}
