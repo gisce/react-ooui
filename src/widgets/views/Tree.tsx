@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Table, Pagination, Checkbox } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
+import useDimensions from "react-cool-dimensions";
 
 import { Strings, TreeView, Column } from "@/types";
 import { getLocalizedString } from "@/context/LocalesContext";
@@ -37,6 +38,8 @@ function Tree(props: Props): React.ReactElement {
 
   const [items, setItems] = useState<Array<any>>([]);
   const [columns, setColumns] = useState<Array<Column>>([]);
+
+  const { width, ref: containerRef } = useDimensions<HTMLDivElement>();
 
   useEffect(() => {
     const tree = getTree(treeView);
@@ -82,9 +85,10 @@ function Tree(props: Props): React.ReactElement {
   };
 
   return (
-    <>
+    <div ref={containerRef}>
       {pagination()}
       <Table
+        style={{ width }}
         scroll={{ x: true }}
         columns={columns}
         dataSource={items}
@@ -102,7 +106,7 @@ function Tree(props: Props): React.ReactElement {
           };
         }}
       />
-    </>
+    </div>
   );
 }
 

@@ -18,10 +18,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var treeHelper_1 = require("@/helpers/treeHelper");
+var react_cool_dimensions_1 = __importDefault(require("react-cool-dimensions"));
 var LocalesContext_1 = require("@/context/LocalesContext");
 var strings = {
     no_results: "No results",
@@ -31,6 +35,7 @@ function Tree(props) {
     var _a = props.page, page = _a === void 0 ? 1 : _a, limit = props.limit, total = props.total, treeView = props.treeView, results = props.results, onRequestPageChange = props.onRequestPageChange, loading = props.loading, onRowClicked = props.onRowClicked, _b = props.showPagination, showPagination = _b === void 0 ? true : _b;
     var _c = react_1.useState([]), items = _c[0], setItems = _c[1];
     var _d = react_1.useState([]), columns = _d[0], setColumns = _d[1];
+    var _e = react_cool_dimensions_1.default(), width = _e.width, containerRef = _e.ref;
     react_1.useEffect(function () {
         var tree = treeHelper_1.getTree(treeView);
         var booleanComponentFn = function (booleanField) {
@@ -59,9 +64,9 @@ function Tree(props) {
             summary,
             react_1.default.createElement(antd_1.Pagination, { total: total, pageSize: limit, current: page, className: "pb-5 pt-5", showSizeChanger: false, onChange: onRequestPageChange })));
     };
-    return (react_1.default.createElement(react_1.default.Fragment, null,
+    return (react_1.default.createElement("div", { ref: containerRef },
         pagination(),
-        react_1.default.createElement(antd_1.Table, { scroll: { x: true }, columns: columns, dataSource: items, pagination: false, loading: loading, rowClassName: "cursor-pointer select-none", rowKey: function (item) {
+        react_1.default.createElement(antd_1.Table, { style: { width: width }, scroll: { x: true }, columns: columns, dataSource: items, pagination: false, loading: loading, rowClassName: "cursor-pointer select-none", rowKey: function (item) {
                 return item.id;
             }, onRow: function (record) {
                 return {
