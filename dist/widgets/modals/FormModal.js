@@ -11,7 +11,7 @@ var useModalWidthDimensions_1 = __importDefault(require("@/hooks/useModalWidthDi
 var FormModal = function (props) {
     var visible = props.visible, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, id = props.id, model = props.model, _a = props.title, title = _a === void 0 ? id ? "Detail" : "New" : _a, getDataFromAction = props.getDataFromAction, _b = props.readOnly, readOnly = _b === void 0 ? false : _b;
     var modalWidth = useModalWidthDimensions_1.default().modalWidth;
-    return (react_1.default.createElement(antd_1.Modal, { title: title, centered: true, width: modalWidth, visible: visible, closable: false, onCancel: onCancel, footer: null },
+    return (react_1.default.createElement(antd_1.Modal, { title: title, centered: true, width: modalWidth, visible: visible, closable: false, footer: null },
         react_1.default.createElement(Form_1.default, { id: id, model: model, getDataFromAction: getDataFromAction, onCancel: onCancel, onSubmitSucceed: onSubmitSucceed, showFooter: true, readOnly: readOnly })));
 };
 exports.FormModal = FormModal;

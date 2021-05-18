@@ -353,8 +353,6 @@ var One2manyInput = function (props) {
         if (!value.includes(id)) {
             triggerChange(value.concat(id));
         }
-        setShowFormModal(false);
-        fetchData();
     };
     var onTreeRowClicked = function (event) {
         var id = event.id;
@@ -380,7 +378,10 @@ var One2manyInput = function (props) {
     return (react_1.default.createElement(react_1.default.Fragment, null,
         topBar(),
         content(),
-        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: modalItemId, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, onCancel: function () {
+        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: modalItemId, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, onCancel: function (succeedSavedObjects) {
+                if (succeedSavedObjects > 0) {
+                    fetchData();
+                }
                 setShowFormModal(false);
             }, readOnly: readOnly })));
 };

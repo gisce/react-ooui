@@ -89,10 +89,11 @@ function Form(props, ref) {
     var _g = react_1.useState(), form = _g[0], setForm = _g[1];
     var antForm = antd_1.Form.useForm()[0];
     var _h = react_1.useState(), originalValues = _h[0], setOriginalValues = _h[1];
-    var _j = react_cool_dimensions_1.default({
+    var _j = react_1.useState(0), succeedSavedObjects = _j[0], setSucceedSavedObjects = _j[1];
+    var _k = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _j.width, containerRef = _j.ref;
+    }), width = _k.width, containerRef = _k.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
@@ -100,7 +101,7 @@ function Form(props, ref) {
     var showConfirm = function () {
         UnsavedChangesDialog_1.default({
             onOk: function () {
-                onCancel === null || onCancel === void 0 ? void 0 : onCancel();
+                onCancel === null || onCancel === void 0 ? void 0 : onCancel(succeedSavedObjects);
             },
         });
     };
@@ -109,7 +110,7 @@ function Form(props, ref) {
             showConfirm();
             return;
         }
-        onCancel === null || onCancel === void 0 ? void 0 : onCancel();
+        onCancel === null || onCancel === void 0 ? void 0 : onCancel(succeedSavedObjects);
     };
     var getFormView = function () { return __awaiter(_this, void 0, void 0, function () {
         var action, viewsForAction;
@@ -229,7 +230,9 @@ function Form(props, ref) {
                     })];
                 case 6:
                     value = _a.sent();
+                    setSucceedSavedObjects(succeedSavedObjects + 1);
                     onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(value[0]);
+                    antForm.resetFields();
                     return [3 /*break*/, 9];
                 case 7:
                     err_2 = _a.sent();
