@@ -19,6 +19,7 @@ var Container = function (props) {
         columns = maxColspanForRows;
     }
     var fieldInRows = false;
+    var firstRow = [];
     var content = rows.map(function (row, i) {
         var rowWithoutInvisibleFields = row.filter(function (widget) {
             return !widget.invisible;
@@ -32,6 +33,9 @@ var Container = function (props) {
             numberOfColumns: columns,
             mustFillWithEmpties: responsiveBehaviour,
         });
+        if (i === 0) {
+            firstRow = firstRow.concat(rowWithEmptiesToFit);
+        }
         return rowWithEmptiesToFit.map(function (item, j) {
             // We check if we have any label+field inside the container.
             // In this scenario, we must format the grid accordingly
@@ -45,11 +49,13 @@ var Container = function (props) {
             })));
         });
     });
-    var templateColumns = containerHelper_1.getTemplateColumns(columns, fieldInRows);
+    var templateColumns = rows.length === 1
+        ? containerHelper_1.getSingleRowTemplateColumns(firstRow, columns)
+        : containerHelper_1.getTemplateColumns(columns, fieldInRows);
     var gridStyle = {
         display: "grid",
         gridTemplateColumns: responsiveBehaviour ? "auto" : templateColumns,
-        gap: "1rem"
+        gap: "1rem",
     };
     return react_1.default.createElement("div", { style: gridStyle }, content);
 };

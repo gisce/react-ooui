@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rowsHaveAnyField = exports.getMaxColspanForRows = exports.expandWidgetsIfNeeded = exports.getSpanStyleForItem = exports.fillRowWithEmptiesToFit = exports.getTemplateColumns = void 0;
+exports.getTemplateColumns = exports.getSingleRowTemplateColumns = exports.rowsHaveAnyField = exports.getMaxColspanForRows = exports.expandWidgetsIfNeeded = exports.getSpanStyleForItem = exports.fillRowWithEmptiesToFit = void 0;
 var ooui_1 = require("ooui");
 var getSpanStyleForItem = function (_a) {
     var item = _a.item, responsiveBehaviour = _a.responsiveBehaviour;
@@ -47,6 +47,25 @@ var expandWidgetsIfNeeded = function (_a) {
     });
 };
 exports.expandWidgetsIfNeeded = expandWidgetsIfNeeded;
+var getSingleRowTemplateColumns = function (row, numberOfColumns) {
+    var gridOptions = row.map(function (item) {
+        if (item instanceof ooui_1.Label && item.fieldForLabel) {
+            return "auto";
+        }
+        if (item instanceof ooui_1.Container) {
+            return "auto";
+        }
+        return "1fr";
+    });
+    if (gridOptions.length < numberOfColumns) {
+        var columnsToAdd = numberOfColumns - gridOptions.length;
+        for (var i = 0; i < columnsToAdd; i++) {
+            gridOptions.push("1fr");
+        }
+    }
+    return gridOptions.join(" ");
+};
+exports.getSingleRowTemplateColumns = getSingleRowTemplateColumns;
 var getTemplateColumns = function (columns, fieldInRows) {
     // We check if we have any label+field inside (fieldInRows) the container.
     // In this scenario, we must format the grid accordingly

@@ -1,4 +1,4 @@
-import { Widget, Label, Field } from "ooui";
+import { Widget, Label, Field, Container } from "ooui";
 
 const getSpanStyleForItem = ({
   item,
@@ -70,6 +70,26 @@ const expandWidgetsIfNeeded = ({
   });
 };
 
+const getSingleRowTemplateColumns = (row: Widget[], numberOfColumns: number) => {
+  const gridOptions = row.map((item: Widget) => {
+    if (item instanceof Label && (item as Label).fieldForLabel) {
+      return "auto";
+    }
+    if (item instanceof Container) {
+      return "auto";
+    }
+    return "1fr";
+  });
+
+  if (gridOptions.length < numberOfColumns) {
+    const columnsToAdd = numberOfColumns - gridOptions.length;
+    for (let i = 0; i < columnsToAdd; i++) {
+      gridOptions.push("1fr");
+    }
+  }
+  return gridOptions.join(" ");
+};
+
 const getTemplateColumns = (columns: number, fieldInRows: boolean) => {
   // We check if we have any label+field inside (fieldInRows) the container.
   // In this scenario, we must format the grid accordingly
@@ -112,10 +132,11 @@ const rowsHaveAnyField = (rows: Widget[][]) => {
 };
 
 export {
-  getTemplateColumns,
   fillRowWithEmptiesToFit,
   getSpanStyleForItem,
   expandWidgetsIfNeeded,
   getMaxColspanForRows,
   rowsHaveAnyField,
+  getSingleRowTemplateColumns,
+  getTemplateColumns,
 };

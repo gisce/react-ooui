@@ -8,6 +8,7 @@ import {
   getSpanStyleForItem,
   expandWidgetsIfNeeded,
   getMaxColspanForRows,
+  getSingleRowTemplateColumns,
 } from "@/helpers/containerHelper";
 
 type Props = {
@@ -29,6 +30,7 @@ const Container = (props: Props): React.ReactElement => {
   }
 
   let fieldInRows = false;
+  let firstRow: Widget[] = [];
 
   const content = rows.map((row: Widget[], i) => {
     const rowWithoutInvisibleFields = row.filter((widget) => {
@@ -45,6 +47,10 @@ const Container = (props: Props): React.ReactElement => {
       numberOfColumns: columns,
       mustFillWithEmpties: responsiveBehaviour,
     });
+
+    if (i === 0) {
+      firstRow = firstRow.concat(rowWithEmptiesToFit);
+    }
 
     return rowWithEmptiesToFit.map((item: Widget, j: number) => {
       // We check if we have any label+field inside the container.
@@ -68,11 +74,14 @@ const Container = (props: Props): React.ReactElement => {
     });
   });
 
-  const templateColumns = getTemplateColumns(columns, fieldInRows);
+  const templateColumns =
+    rows.length === 1
+      ? getSingleRowTemplateColumns(firstRow, columns)
+      : getTemplateColumns(columns, fieldInRows);
   const gridStyle = {
     display: "grid",
     gridTemplateColumns: responsiveBehaviour ? "auto" : templateColumns,
-    gap: "1rem"
+    gap: "1rem",
   };
 
   return <div style={gridStyle}>{content}</div>;
