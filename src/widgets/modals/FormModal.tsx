@@ -8,7 +8,7 @@ type FormModalProps = {
   model: string;
   id?: number;
   getDataFromAction?: boolean;
-  onCancel?: () => void;
+  onCancel?: (succeedSavedObjects: number) => void;
   onSubmitSucceed?: (updatedObject: any) => void;
   title?: string;
   readOnly?: boolean;
@@ -35,7 +35,6 @@ export const FormModal = (props: FormModalProps) => {
       width={modalWidth}
       visible={visible}
       closable={false}
-      onCancel={onCancel}
       footer={null}
     >
       <Form

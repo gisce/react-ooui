@@ -320,9 +320,6 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     if (!value.includes(id)) {
       triggerChange(value.concat(id));
     }
-
-    setShowFormModal(false);
-    fetchData();
   };
 
   const onTreeRowClicked = (event: any) => {
@@ -379,7 +376,10 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
         id={modalItemId}
         visible={showFormModal}
         onSubmitSucceed={onFormModalSubmitSucceed}
-        onCancel={() => {
+        onCancel={(succeedSavedObjects: number) => {
+          if (succeedSavedObjects > 0) {
+            fetchData();
+          }
           setShowFormModal(false);
         }}
         readOnly={readOnly}

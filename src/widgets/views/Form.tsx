@@ -13,7 +13,6 @@ import {
   Row,
   Alert,
   Spin,
-  Modal,
 } from "antd";
 import useDimensions from "react-cool-dimensions";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
@@ -30,7 +29,7 @@ type Props = {
   id?: number;
   onSubmitSucceed?: (updatedObject: any) => void;
   onSubmitError?: (error: any) => void;
-  onCancel?: () => void;
+  onCancel?: (succeedSavedObjects: number) => void;
   showFooter?: boolean;
   getDataFromAction?: boolean;
   onFieldsChange?: () => void;
@@ -63,6 +62,7 @@ function Form(props: Props, ref: any): React.ReactElement {
   const [form, setForm] = useState<FormViewAndOoui>();
   const [antForm] = AntForm.useForm();
   const [originalValues, setOriginalValues] = useState<any>();
+  const [succeedSavedObjects, setSucceedSavedObjects] = useState<number>(0);
 
   const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
     breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
@@ -77,7 +77,7 @@ function Form(props: Props, ref: any): React.ReactElement {
   const showConfirm = () => {
     showUnsavedChangesDialog({
       onOk: () => {
-        onCancel?.();
+        onCancel?.(succeedSavedObjects);
       },
     });
   };
@@ -88,7 +88,7 @@ function Form(props: Props, ref: any): React.ReactElement {
       return;
     }
 
-    onCancel?.();
+    onCancel?.(succeedSavedObjects);
   };
 
   const getFormView = async (): Promise<FormView> => {
@@ -192,7 +192,10 @@ function Form(props: Props, ref: any): React.ReactElement {
         model,
       });
 
+      setSucceedSavedObjects(succeedSavedObjects + 1);
+
       onSubmitSucceed?.(value[0]);
+      antForm.resetFields();
     } catch (err) {
       onSubmitError?.(err);
       setError(err);
