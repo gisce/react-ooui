@@ -4,7 +4,7 @@ declare type Props = {
     id?: number;
     onSubmitSucceed?: (updatedObject: any) => void;
     onSubmitError?: (error: any) => void;
-    onCancel?: (succeedSavedObjects: number) => void;
+    onCancel?: () => void;
     showFooter?: boolean;
     getDataFromAction?: boolean;
     onFieldsChange?: () => void;

@@ -376,10 +376,7 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
         id={modalItemId}
         visible={showFormModal}
         onSubmitSucceed={onFormModalSubmitSucceed}
-        onCancel={(succeedSavedObjects: number) => {
-          if (succeedSavedObjects > 0) {
-            fetchData();
-          }
+        onCancel={() => {
           setShowFormModal(false);
         }}
         readOnly={readOnly}

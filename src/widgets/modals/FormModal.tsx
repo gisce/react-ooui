@@ -8,7 +8,7 @@ type FormModalProps = {
   model: string;
   id?: number;
   getDataFromAction?: boolean;
-  onCancel?: (succeedSavedObjects: number) => void;
+  onCancel?: () => void;
   onSubmitSucceed?: (updatedObject: any) => void;
   title?: string;
   readOnly?: boolean;

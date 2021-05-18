@@ -378,10 +378,7 @@ var One2manyInput = function (props) {
     return (react_1.default.createElement(react_1.default.Fragment, null,
         topBar(),
         content(),
-        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: modalItemId, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, onCancel: function (succeedSavedObjects) {
-                if (succeedSavedObjects > 0) {
-                    fetchData();
-                }
+        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: modalItemId, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, onCancel: function () {
                 setShowFormModal(false);
             }, readOnly: readOnly })));
 };
