@@ -12,6 +12,7 @@ type FormModalProps = {
   onSubmitSucceed?: (updatedObject: any) => void;
   title?: string;
   readOnly?: boolean;
+  mustClearAfterSave?: boolean;
 };
 
 export const FormModal = (props: FormModalProps) => {
@@ -24,6 +25,7 @@ export const FormModal = (props: FormModalProps) => {
     title = id ? "Detail" : "New",
     getDataFromAction,
     readOnly = false,
+    mustClearAfterSave = false,
   } = props;
 
   const { modalWidth } = useModalWidthDimensions();
@@ -45,6 +47,7 @@ export const FormModal = (props: FormModalProps) => {
         onSubmitSucceed={onSubmitSucceed}
         showFooter
         readOnly={readOnly}
+        mustClearAfterSave={mustClearAfterSave}
       />
     </Modal>
   );

@@ -9,6 +9,7 @@ declare type Props = {
     getDataFromAction?: boolean;
     onFieldsChange?: () => void;
     readOnly?: boolean;
+    mustClearAfterSave?: boolean;
 };
 declare const _default: React.ForwardRefExoticComponent<Props & React.RefAttributes<unknown>>;
 export default _default;

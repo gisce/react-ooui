@@ -82,17 +82,17 @@ var erpWriteHelper_1 = __importDefault(require("@/helpers/erpWriteHelper"));
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
-    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c;
-    var _d = react_1.useState(false), isSubmitting = _d[0], setIsSubmitting = _d[1];
-    var _e = react_1.useState(), error = _e[0], setError = _e[1];
-    var _f = react_1.useState(false), loading = _f[0], setLoading = _f[1];
-    var _g = react_1.useState(), form = _g[0], setForm = _g[1];
+    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d;
+    var _e = react_1.useState(false), isSubmitting = _e[0], setIsSubmitting = _e[1];
+    var _f = react_1.useState(), error = _f[0], setError = _f[1];
+    var _g = react_1.useState(false), loading = _g[0], setLoading = _g[1];
+    var _h = react_1.useState(), form = _h[0], setForm = _h[1];
     var antForm = antd_1.Form.useForm()[0];
-    var _h = react_1.useState(), originalValues = _h[0], setOriginalValues = _h[1];
-    var _j = react_cool_dimensions_1.default({
+    var _j = react_1.useState(), originalValues = _j[0], setOriginalValues = _j[1];
+    var _k = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _j.width, containerRef = _j.ref;
+    }), width = _k.width, containerRef = _k.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
@@ -230,7 +230,8 @@ function Form(props, ref) {
                 case 6:
                     value = _a.sent();
                     onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(value[0]);
-                    antForm.resetFields();
+                    if (mustClearAfterSave)
+                        antForm.resetFields();
                     return [3 /*break*/, 9];
                 case 7:
                     err_2 = _a.sent();

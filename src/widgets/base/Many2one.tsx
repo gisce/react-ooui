@@ -98,7 +98,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
   };
 
   return (
-    <Row gutter={8} >
+    <Row gutter={8}>
       <Col flex="auto">
         <Input
           type="text"
@@ -156,6 +156,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
         onCancel={() => {
           setShowFormModal(false);
         }}
+        mustClearAfterSave={true}
       />
     </Row>
   );

@@ -34,6 +34,7 @@ type Props = {
   getDataFromAction?: boolean;
   onFieldsChange?: () => void;
   readOnly?: boolean;
+  mustClearAfterSave?: boolean;
 };
 
 const WIDTH_BREAKPOINT = 1000;
@@ -54,6 +55,7 @@ function Form(props: Props, ref: any): React.ReactElement {
     onFieldsChange,
     onSubmitError,
     readOnly = false,
+    mustClearAfterSave = false,
   } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -192,7 +194,7 @@ function Form(props: Props, ref: any): React.ReactElement {
       });
 
       onSubmitSucceed?.(value[0]);
-      antForm.resetFields();
+      if (mustClearAfterSave) antForm.resetFields();
     } catch (err) {
       onSubmitError?.(err);
       setError(err);
