@@ -207,7 +207,7 @@ function Form(props: Props, ref: any): React.ReactElement {
     }
 
     return (
-      <AntForm form={antForm} onFieldsChange={onFieldsChange}>
+      <AntForm form={antForm} onFieldsChange={onFieldsChange} component={false}>
         {form && (
           <Container
             container={form.ooui.container}

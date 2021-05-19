@@ -248,7 +248,7 @@ function Form(props, ref) {
         if (!form) {
             return null;
         }
-        return (react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: onFieldsChange }, form && (react_1.default.createElement(Container_1.default, { container: form.ooui.container, responsiveBehaviour: responsiveBehaviour }))));
+        return (react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: onFieldsChange, component: false }, form && (react_1.default.createElement(Container_1.default, { container: form.ooui.container, responsiveBehaviour: responsiveBehaviour }))));
     };
     var footer = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
