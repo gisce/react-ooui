@@ -48,6 +48,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
         )}
         {visible && (
           <SearchTree
+            key={Math.random() * 10000} // This forces the component to be unique each time
             model={model}
             nameSearch={nameSearch}
             onRowClicked={onRowClicked}
