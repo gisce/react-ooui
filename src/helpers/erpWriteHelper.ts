@@ -21,7 +21,7 @@ const getErpValues = ({
       fields[name].type === "many2one" &&
       Array.isArray(value)
     ) {
-      processedTouchedValues[name] = value[0];
+      processedTouchedValues[name] = value[0] || null;
       return;
     }
 

@@ -12,7 +12,7 @@ var getErpValues = function (_a) {
         if (fields[name] &&
             fields[name].type === "many2one" &&
             Array.isArray(value)) {
-            processedTouchedValues[name] = value[0];
+            processedTouchedValues[name] = value[0] || null;
             return;
         }
         processedTouchedValues[name] = value;
