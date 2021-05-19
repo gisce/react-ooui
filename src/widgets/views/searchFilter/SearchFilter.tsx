@@ -76,7 +76,6 @@ function SearchFilter(props: Props): React.ReactElement {
   };
 
   useEffect(() => {
-    form.resetFields();
     setAdvancedFilter(false);
     const sfo = new SearchFilterOoui(searchFields, fields);
     sfo.parse();
