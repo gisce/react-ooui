@@ -19,7 +19,16 @@ const init = () => {
       return "ir.actions.act_window,6";
     },
     getViewsForAction: async (action: string) => {
-      return { limit: 0, model: "", views: null };
+      const model = "giscedata.facturacio.factura";
+      const views = new Map<string, any>();
+      views.set("tree", (getMock(model) as any).tree);
+      views.set("form", (getMock(model) as any).form);
+
+      return {
+        limit: 0,
+        model,
+        views,
+      };
     },
     getView: async (model: string, type: "tree" | "form") => {
       await new Promise((resolve) => setTimeout(resolve, timeout));
