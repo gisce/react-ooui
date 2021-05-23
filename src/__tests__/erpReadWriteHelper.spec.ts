@@ -1,4 +1,4 @@
-import getErpValues from "../helpers/erpWriteHelper";
+import { getErpValues } from "../helpers/erpReadWriteHelper";
 
 describe("A ErpWriteHelper instance", () => {
   test.only("should return the proper One2many format when saving", () => {
