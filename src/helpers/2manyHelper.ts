@@ -31,4 +31,46 @@ const getTemporalIdNumber = ({ ids }: { ids: number[] }): number => {
   return newId!;
 };
 
-export { addOrUpdateItem, getTemporalIdNumber };
+const getItemToUpdate = ({
+  id,
+  items,
+  touchedValues,
+}: {
+  id: number;
+  touchedValues: any;
+  items: Item[];
+}): Item => {
+  let itemToUpdate: Item;
+
+  if (!id) {
+    const newId = getTemporalIdNumber({
+      ids: items.map((item) => item.id) as number[],
+    });
+
+    itemToUpdate = {
+      operation: "create",
+      id: newId,
+      values: { ...touchedValues, id: newId },
+    };
+  } else {
+    const item = items.find((it) => {
+      return it.id === id;
+    });
+
+    if (Object.keys(touchedValues).length > 0) {
+      const newOperationStatus =
+        item?.operation !== "create" ? "modify" : "create";
+      itemToUpdate = {
+        operation: newOperationStatus,
+        id: item?.id,
+        values: { ...item?.values, ...touchedValues },
+        touchedValues,
+      };
+    } else {
+      itemToUpdate = item!;
+    }
+  }
+  return itemToUpdate;
+};
+
+export { addOrUpdateItem, getTemporalIdNumber, getItemToUpdate };
