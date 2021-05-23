@@ -47,8 +47,11 @@ const getErpValues = ({
         if (item.operation === "modify") {
           return [1, item.id, item.touchedValues];
         }
-        if (item.operation === "remove") {
+        if (item.operation === "remove" && fields[name].type === "one2many") {
           return [2, item.id];
+        }
+        if (item.operation === "remove" && fields[name].type === "many2many") {
+          return [3, item.id];
         }
       });
       return;
