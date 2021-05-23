@@ -1,14 +1,8 @@
 /// <reference types="react" />
-declare type FormModalProps = {
+import { FormProps } from "@/widgets/views/Form";
+declare type FormModalProps = FormProps & {
     visible: boolean;
-    model: string;
-    id?: number;
-    getDataFromAction?: boolean;
-    onCancel?: () => void;
-    onSubmitSucceed?: (updatedObject: any) => void;
     title?: string;
-    readOnly?: boolean;
-    mustClearAfterSave?: boolean;
 };
 export declare const FormModal: (props: FormModalProps) => JSX.Element;
 export {};

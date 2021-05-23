@@ -78,21 +78,21 @@ var Container_1 = __importDefault(require("@/widgets/containers/Container"));
 var formHelper_1 = require("@/helpers/formHelper");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"));
-var erpWriteHelper_1 = __importDefault(require("@/helpers/erpWriteHelper"));
+var erpReadWriteHelper_1 = require("@/helpers/erpReadWriteHelper");
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
-    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d;
-    var _e = react_1.useState(false), isSubmitting = _e[0], setIsSubmitting = _e[1];
-    var _f = react_1.useState(), error = _f[0], setError = _f[1];
-    var _g = react_1.useState(false), loading = _g[0], setLoading = _g[1];
-    var _h = react_1.useState(), form = _h[0], setForm = _h[1];
+    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, values = props.values;
+    var _f = react_1.useState(false), isSubmitting = _f[0], setIsSubmitting = _f[1];
+    var _g = react_1.useState(), error = _g[0], setError = _g[1];
+    var _h = react_1.useState(false), loading = _h[0], setLoading = _h[1];
+    var _j = react_1.useState(), form = _j[0], setForm = _j[1];
     var antForm = antd_1.Form.useForm()[0];
-    var _j = react_1.useState(), originalValues = _j[0], setOriginalValues = _j[1];
-    var _k = react_cool_dimensions_1.default({
+    var _k = react_1.useState(), originalValues = _k[0], setOriginalValues = _k[1];
+    var _l = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _k.width, containerRef = _k.ref;
+    }), width = _l.width, containerRef = _l.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
@@ -129,8 +129,49 @@ function Form(props, ref) {
             }
         });
     }); };
-    var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
-        var view, ooui, _values, valuesProcessed, mustClearFieldsFirst, err_1;
+    var assignNewValuesToForm = function (newValues, view) {
+        setOriginalValues(__assign({}, newValues));
+        var valuesProcessed = formHelper_1.processValues(newValues, view.fields);
+        var mustClearFieldsFirst = Object.keys(antForm.getFieldsValue(true)).length > 0; // We check if it's a reused form and we already have values filled
+        if (mustClearFieldsFirst) {
+            antForm.resetFields();
+        }
+        antForm.setFieldsValue(valuesProcessed);
+    };
+    var fetchDataFromProps = function () { return __awaiter(_this, void 0, void 0, function () {
+        var view, ooui, _values, err_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    setLoading(true);
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, 4, 5]);
+                    return [4 /*yield*/, getFormView()];
+                case 2:
+                    view = _a.sent();
+                    ooui = new ooui_1.Form(view.fields);
+                    ooui.parse(view.arch, readOnly);
+                    setForm({ ooui: ooui, view: view });
+                    _values = erpReadWriteHelper_1.formatX2ManyValues({
+                        values: values,
+                        fields: view.fields,
+                    });
+                    assignNewValuesToForm(_values, view);
+                    return [3 /*break*/, 5];
+                case 3:
+                    err_1 = _a.sent();
+                    setError(err_1);
+                    return [3 /*break*/, 5];
+                case 4:
+                    setLoading(false);
+                    return [7 /*endfinally*/];
+                case 5: return [2 /*return*/];
+            }
+        });
+    }); };
+    var fetchDataFromApi = function () { return __awaiter(_this, void 0, void 0, function () {
+        var view, ooui, _values, erpValues, err_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -152,7 +193,11 @@ function Form(props, ref) {
                             ids: [id],
                         })];
                 case 3:
-                    _values = (_a.sent())[0];
+                    erpValues = (_a.sent())[0];
+                    _values = erpReadWriteHelper_1.formatX2ManyValues({
+                        values: erpValues,
+                        fields: view.fields,
+                    });
                     return [3 /*break*/, 6];
                 case 4: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
                         model: model,
@@ -163,17 +208,11 @@ function Form(props, ref) {
                     _values = _a.sent();
                     _a.label = 6;
                 case 6:
-                    setOriginalValues(__assign({}, _values));
-                    valuesProcessed = formHelper_1.processValues(_values, view.fields);
-                    mustClearFieldsFirst = Object.keys(antForm.getFieldsValue(true)).length > 0;
-                    if (mustClearFieldsFirst) {
-                        antForm.resetFields();
-                    }
-                    antForm.setFieldsValue(valuesProcessed);
+                    assignNewValuesToForm(_values, view);
                     return [3 /*break*/, 9];
                 case 7:
-                    err_1 = _a.sent();
-                    setError(err_1);
+                    err_2 = _a.sent();
+                    setError(err_2);
                     return [3 /*break*/, 9];
                 case 8:
                     setLoading(false);
@@ -183,65 +222,99 @@ function Form(props, ref) {
         });
     }); };
     react_1.useEffect(function () {
-        fetchData();
-    }, [id, model]);
+        if (values) {
+            fetchDataFromProps();
+        }
+        else {
+            fetchDataFromApi();
+        }
+    }, [id, model, values]);
     var formHasChanges = function () {
         return Object.keys(formHelper_1.getTouchedValues(antForm)).length !== 0;
     };
+    var submitApi = function () { return __awaiter(_this, void 0, void 0, function () {
+        var touchedValues, erpTouchedValues, objectId, newId, value;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    touchedValues = formHelper_1.getTouchedValues(antForm);
+                    erpTouchedValues = erpReadWriteHelper_1.getErpValues({
+                        fields: form === null || form === void 0 ? void 0 : form.view.fields,
+                        touchedValues: touchedValues,
+                    });
+                    objectId = id;
+                    if (!(Object.keys(touchedValues).length !== 0)) return [3 /*break*/, 4];
+                    if (!id) return [3 /*break*/, 2];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().update({
+                            model: model,
+                            id: id,
+                            values: erpTouchedValues,
+                        })];
+                case 1:
+                    _a.sent();
+                    return [3 /*break*/, 4];
+                case 2: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().create({
+                        model: model,
+                        values: erpTouchedValues,
+                    })];
+                case 3:
+                    newId = _a.sent();
+                    objectId = newId;
+                    _a.label = 4;
+                case 4: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
+                        action: "name_get",
+                        payload: [objectId],
+                        model: model,
+                    })];
+                case 5:
+                    value = _a.sent();
+                    onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed({
+                        id: value[0],
+                    });
+                    return [2 /*return*/];
+            }
+        });
+    }); };
+    var submitValues = function () { return __awaiter(_this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed({
+                id: id,
+                touchedValues: formHelper_1.getTouchedValues(antForm),
+            });
+            return [2 /*return*/];
+        });
+    }); };
     var submitForm = function () { return __awaiter(_this, void 0, void 0, function () {
-        var touchedValues, erpTouchedValues, objectId, newId, value, err_2;
+        var err_3;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     setIsSubmitting(true);
                     _a.label = 1;
                 case 1:
-                    _a.trys.push([1, 7, 8, 9]);
-                    touchedValues = formHelper_1.getTouchedValues(antForm);
-                    erpTouchedValues = erpWriteHelper_1.default({
-                        values: originalValues,
-                        fields: form === null || form === void 0 ? void 0 : form.view.fields,
-                        touchedValues: touchedValues,
-                    });
-                    objectId = id;
-                    if (!(Object.keys(touchedValues).length !== 0)) return [3 /*break*/, 5];
-                    if (!id) return [3 /*break*/, 3];
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().update({
-                            model: model,
-                            id: id,
-                            values: erpTouchedValues,
-                        })];
+                    _a.trys.push([1, 6, 7, 8]);
+                    if (!(submitMode === "api")) return [3 /*break*/, 3];
+                    return [4 /*yield*/, submitApi()];
                 case 2:
                     _a.sent();
                     return [3 /*break*/, 5];
-                case 3: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().create({
-                        model: model,
-                        values: erpTouchedValues,
-                    })];
+                case 3: return [4 /*yield*/, submitValues()];
                 case 4:
-                    newId = _a.sent();
-                    objectId = newId;
+                    _a.sent();
                     _a.label = 5;
-                case 5: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
-                        action: "name_get",
-                        payload: [objectId],
-                        model: model,
-                    })];
-                case 6:
-                    value = _a.sent();
-                    onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(value[0]);
+                case 5:
                     if (mustClearAfterSave)
                         antForm.resetFields();
-                    return [3 /*break*/, 9];
+                    return [3 /*break*/, 8];
+                case 6:
+                    err_3 = _a.sent();
+                    onSubmitError === null || onSubmitError === void 0 ? void 0 : onSubmitError(err_3);
+                    setError(err_3);
+                    return [3 /*break*/, 8];
                 case 7:
-                    err_2 = _a.sent();
-                    onSubmitError === null || onSubmitError === void 0 ? void 0 : onSubmitError(err_2);
-                    setError(err_2);
-                    return [3 /*break*/, 9];
-                case 8:
                     setIsSubmitting(false);
                     return [7 /*endfinally*/];
-                case 9: return [2 /*return*/];
+                case 8: return [2 /*return*/];
             }
         });
     }); };

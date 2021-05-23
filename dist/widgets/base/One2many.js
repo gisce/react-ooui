@@ -80,6 +80,7 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var FormModal_1 = require("@/widgets/modals/FormModal");
 var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"));
 var RemoveItemDialog_1 = __importDefault(require("@/ui/RemoveItemDialog"));
+var _2manyHelper_1 = require("@/helpers/2manyHelper");
 var icons_1 = require("@ant-design/icons");
 var One2many = function (props) {
     var ooui = props.ooui;
@@ -88,7 +89,8 @@ var One2many = function (props) {
 };
 exports.One2many = One2many;
 var One2manyInput = function (props) {
-    var _a = props.value, value = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui;
+    var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui;
+    var itemsToShow = items.filter(function (item) { return item.operation !== "remove"; });
     var formRef = react_1.useRef();
     var triggerChange = function (changedValue) {
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
@@ -100,12 +102,38 @@ var One2manyInput = function (props) {
     var _f = react_1.useState(true), isLoading = _f[0], setIsLoading = _f[1];
     var _g = react_1.useState(), error = _g[0], setError = _g[1];
     var _h = react_1.useState(false), showFormModal = _h[0], setShowFormModal = _h[1];
-    var _j = react_1.useState(), modalItemId = _j[0], setModalItemId = _j[1];
+    var _j = react_1.useState(), modalItem = _j[0], setModalItem = _j[1];
     var _k = react_1.useState(false), formHasChanges = _k[0], setFormHasChanges = _k[1];
     var _l = react_1.useState(false), formIsSaving = _l[0], setFormIsSaving = _l[1];
     react_1.useEffect(function () {
         fetchData();
     }, [ooui]);
+    var fetchOriginalItemsFromApi = function (treeView) { return __awaiter(void 0, void 0, void 0, function () {
+        var realItems, idsToFetch, values, itemsWithValues;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    realItems = items.filter(function (item) { return item.operation === "original" && item.id; });
+                    idsToFetch = realItems.map(function (item) { return item.id; });
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                            arch: treeView.arch,
+                            model: relation,
+                            ids: idsToFetch,
+                        })];
+                case 1:
+                    values = _a.sent();
+                    itemsWithValues = items.map(function (item) {
+                        var fetchedItemValues = values.find(function (itemValues) {
+                            console.log();
+                            return itemValues.id === item.id;
+                        });
+                        return __assign(__assign({}, item), { values: fetchedItemValues });
+                    });
+                    triggerChange(itemsWithValues);
+                    return [2 /*return*/];
+            }
+        });
+    }); };
     var fetchData = function () { return __awaiter(void 0, void 0, void 0, function () {
         var formView, treeView, err_1;
         return __generator(this, function (_a) {
@@ -117,7 +145,7 @@ var One2manyInput = function (props) {
                     setFormIsSaving(false);
                     _a.label = 1;
                 case 1:
-                    _a.trys.push([1, 4, , 5]);
+                    _a.trys.push([1, 5, , 6]);
                     if (mode && mode.length > 0) {
                         setCurrentView(mode[0]);
                     }
@@ -130,12 +158,15 @@ var One2manyInput = function (props) {
                     views.set("form", formView);
                     views.set("tree", treeView);
                     setViews(views);
-                    return [3 /*break*/, 5];
+                    return [4 /*yield*/, fetchOriginalItemsFromApi(treeView)];
                 case 4:
+                    _a.sent();
+                    return [3 /*break*/, 6];
+                case 5:
                     err_1 = _a.sent();
                     setError(err_1);
-                    return [3 /*break*/, 5];
-                case 5:
+                    return [3 /*break*/, 6];
+                case 6:
                     setIsLoading(false);
                     return [2 /*return*/];
             }
@@ -158,7 +189,7 @@ var One2manyInput = function (props) {
     };
     var index = function () {
         var itemToShow = "_";
-        if (value.length === 0) {
+        if (itemsToShow.length === 0) {
             itemToShow = "_";
         }
         else {
@@ -168,7 +199,7 @@ var One2manyInput = function (props) {
             "(",
             itemToShow,
             "/",
-            value.length,
+            itemsToShow.length,
             ")"));
     };
     var showRemoveConfirm = function () {
@@ -178,25 +209,16 @@ var One2manyInput = function (props) {
             },
         });
     };
-    var cleanBlankItems = function () {
-        triggerChange(value.filter(function (item) { return item !== undefined; }));
-    };
     var showFormChangesDialogIfNeeded = function (callback) {
         if (formHasChanges) {
             UnsavedChangesDialog_1.default({
                 onOk: function () {
-                    if (value[itemIndex] === undefined) {
-                        // We remove the new blank items
-                        cleanBlankItems();
-                    }
                     callback();
                     setFormHasChanges(false);
                 },
             });
         }
         else {
-            // We remove the new blank items
-            cleanBlankItems();
             callback();
         }
     };
@@ -223,7 +245,7 @@ var One2manyInput = function (props) {
         }
     };
     var nextItem = function () {
-        var totalItems = value.length;
+        var totalItems = itemsToShow.length;
         if (itemIndex < totalItems - 1) {
             if (currentView === "form") {
                 showFormChangesDialogIfNeeded(function () {
@@ -242,53 +264,60 @@ var One2manyInput = function (props) {
     var createItem = function () { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             if (currentView === "form") {
-                if (!value[itemIndex]) {
-                    // If we already have a new blank item, que ignore the action.
-                    return [2 /*return*/];
-                }
                 showFormChangesDialogIfNeeded(function () {
-                    triggerChange(value.concat(undefined));
-                    setItemIndex(value.length);
+                    var newId = _2manyHelper_1.getTemporalIdNumber({
+                        ids: items.map(function (item) { return item.id; }),
+                    });
+                    var updatedItems = _2manyHelper_1.addOrUpdateItem({
+                        itemToUpdate: {
+                            operation: "create",
+                            id: newId,
+                            values: { id: newId }, // We will have to remove this id inside values later
+                        },
+                        items: items,
+                    });
+                    triggerChange(updatedItems);
+                    var updatedItemsToShow = updatedItems.filter(function (item) { return item.operation !== "remove"; });
+                    setItemIndex(updatedItemsToShow.length - 1);
                 });
             }
             else {
-                setModalItemId(undefined);
+                setModalItem(undefined);
                 setShowFormModal(true);
             }
             return [2 /*return*/];
         });
     }); };
     var onConfirmRemove = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var err_2;
+        var updatedItems;
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    setIsLoading(true);
-                    setFormHasChanges(false);
-                    setError(undefined);
-                    _a.label = 1;
-                case 1:
-                    _a.trys.push([1, 4, , 5]);
-                    if (!value[itemIndex]) return [3 /*break*/, 3];
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().delete({
-                            model: relation,
-                            ids: [value[itemIndex]],
-                        })];
-                case 2:
-                    _a.sent();
-                    _a.label = 3;
-                case 3: return [3 /*break*/, 5];
-                case 4:
-                    err_2 = _a.sent();
-                    setError(err_2);
-                    return [3 /*break*/, 5];
-                case 5:
-                    setItemIndex(0);
-                    triggerChange(value.filter(function (id) { return id !== value[itemIndex]; }));
-                    setIsLoading(false);
-                    fetchData();
-                    return [2 /*return*/];
+            setIsLoading(true);
+            setFormHasChanges(false);
+            setError(undefined);
+            try {
+                // If the item isn't a new one, we must add a new Item record with "remove" operation
+                // in order to remove it from the API later.
+                if (itemsToShow[itemIndex].operation !== "create") {
+                    updatedItems = _2manyHelper_1.addOrUpdateItem({
+                        itemToUpdate: {
+                            operation: "remove",
+                            id: itemsToShow[itemIndex].id,
+                        },
+                        items: items,
+                    });
+                    triggerChange(updatedItems);
+                }
+                // If the item is a newly created one, we only have to remove it from the internal list
+                else {
+                    triggerChange(items.filter(function (item) { return item.id !== itemsToShow[itemIndex].id; }));
+                }
             }
+            catch (err) {
+                setError(err);
+            }
+            setItemIndex(0);
+            setIsLoading(false);
+            return [2 /*return*/];
         });
     }); };
     var saveButton = function () {
@@ -313,7 +342,7 @@ var One2manyInput = function (props) {
         if (currentView !== "form") {
             return null;
         }
-        return (react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.DeleteOutlined, { onClick: showRemoveConfirm }), disabled: readOnly }));
+        return (react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.DeleteOutlined, { onClick: showRemoveConfirm, disabled: itemsToShow.length === 0 }), disabled: readOnly }));
     };
     var itemBrowser = function () {
         if (currentView !== "form") {
@@ -337,37 +366,50 @@ var One2manyInput = function (props) {
                 itemBrowser(),
                 react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.AlignLeftOutlined, null), onClick: toggleViewMode }))));
     };
+    var updateFormEvent = function (event) {
+        var id = event.id, touchedValues = event.touchedValues;
+        var itemToUpdate = _2manyHelper_1.getItemToUpdate({
+            id: id,
+            touchedValues: touchedValues,
+            items: items,
+        });
+        var updatedItems = _2manyHelper_1.addOrUpdateItem({
+            itemToUpdate: itemToUpdate,
+            items: items,
+        });
+        triggerChange(updatedItems);
+    };
     var onFormSubmitSucceed = function (event) {
-        var id = event[0];
-        if (!value.includes(id)) {
-            triggerChange(value.concat(id).filter(function (item) { return item !== undefined; }));
-            fetchData();
-        }
-        else {
-            setFormIsSaving(false);
-            setFormHasChanges(false);
-        }
+        // TODO: must we save it to the API ?
+        updateFormEvent(event);
+        setFormIsSaving(false);
+        setFormHasChanges(false);
     };
     var onFormModalSubmitSucceed = function (event) {
-        var id = event[0];
-        if (!value.includes(id)) {
-            triggerChange(value.concat(id));
+        var id = event.id;
+        updateFormEvent(event);
+        // If we already have an id will mean the form modal is in edit mode and we're not in continuous mode
+        if (id) {
+            setShowFormModal(false);
         }
     };
-    var onTreeRowClicked = function (event) {
-        var id = event.id;
-        setModalItemId(id);
+    var onTreeRowClicked = function (itemId) {
+        setModalItem(items.find(function (item) { return item.id === itemId; }));
         setShowFormModal(true);
     };
     var content = function () {
         if (currentView === "form") {
-            return (react_1.default.createElement(index_1.Form, { ref: formRef, model: relation, id: value[itemIndex], onCancel: function () { }, onSubmitSucceed: onFormSubmitSucceed, onSubmitError: function () {
+            // If we have items to show, we return the proper value for the current item
+            // Else, we set it to undefined, since it will be a new item
+            var idToShow = itemsToShow.length > 0 ? itemsToShow[itemIndex].id : undefined;
+            var valuesToShow = itemsToShow.length > 0 ? itemsToShow[itemIndex].values : undefined;
+            return (react_1.default.createElement(index_1.Form, { ref: formRef, model: relation, id: idToShow, values: valuesToShow, onCancel: function () { }, onSubmitSucceed: onFormSubmitSucceed, onSubmitError: function () {
                     setFormIsSaving(false);
                 }, onFieldsChange: function () {
                     setFormHasChanges(true);
-                }, readOnly: readOnly }));
+                }, readOnly: readOnly, submitMode: "values" }));
         }
-        return (react_1.default.createElement(index_2.SimpleTree, { model: relation, ids: value, formView: views.get("form"), treeView: views.get("tree"), onRowClicked: onTreeRowClicked }));
+        return (react_1.default.createElement(index_2.Tree, { total: itemsToShow.length, limit: itemsToShow.length, treeView: views.get("tree"), results: itemsToShow.map(function (item) { return item.values; }), loading: false, onRowClicked: onTreeRowClicked, showPagination: false }));
     };
     if (isLoading) {
         return react_1.default.createElement(antd_1.Spin, null);
@@ -375,11 +417,16 @@ var One2manyInput = function (props) {
     if (error) {
         return react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true });
     }
+    // If we are in create mode we have to show the modal in continuous mode.
+    // This means the modal won't close after clicking OK, the modal will add the new item
+    // and will reset to defaults to let the user add a new item.
+    // If we don't have any id for the modal item, it will mean that we are in create mode.
+    var mustClearAfterSave = !(modalItem === null || modalItem === void 0 ? void 0 : modalItem.id);
     return (react_1.default.createElement(react_1.default.Fragment, null,
         topBar(),
         content(),
-        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: modalItemId, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, onCancel: function () {
+        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: modalItem === null || modalItem === void 0 ? void 0 : modalItem.id, values: modalItem === null || modalItem === void 0 ? void 0 : modalItem.values, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, onCancel: function () {
                 setShowFormModal(false);
-            }, readOnly: readOnly })));
+            }, readOnly: readOnly, submitMode: "values", mustClearAfterSave: mustClearAfterSave })));
 };
 //# sourceMappingURL=One2many.js.map
