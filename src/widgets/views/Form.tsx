@@ -22,9 +22,9 @@ import { processValues, getTouchedValues } from "@/helpers/formHelper";
 import { FormView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
-import getErpValues from "@/helpers/erpWriteHelper";
+import { getErpValues, formatX2ManyValues } from "@/helpers/erpReadWriteHelper";
 
-type Props = {
+export type FormProps = {
   model: string;
   id?: number;
   onSubmitSucceed?: (updatedObject: any) => void;
@@ -35,6 +35,8 @@ type Props = {
   onFieldsChange?: () => void;
   readOnly?: boolean;
   mustClearAfterSave?: boolean;
+  submitMode?: "api" | "values";
+  values?: any;
 };
 
 const WIDTH_BREAKPOINT = 1000;
@@ -44,7 +46,7 @@ type FormViewAndOoui = {
   view: FormView;
 };
 
-function Form(props: Props, ref: any): React.ReactElement {
+function Form(props: FormProps, ref: any): React.ReactElement {
   const {
     model,
     id,
@@ -56,6 +58,8 @@ function Form(props: Props, ref: any): React.ReactElement {
     onSubmitError,
     readOnly = false,
     mustClearAfterSave = false,
+    submitMode = "api",
+    values,
   } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -107,7 +111,44 @@ function Form(props: Props, ref: any): React.ReactElement {
     )) as FormView;
   };
 
-  const fetchData = async () => {
+  const assignNewValuesToForm = (newValues: any, view: FormView) => {
+    setOriginalValues({ ...newValues });
+    const valuesProcessed = processValues(newValues, view.fields);
+
+    const mustClearFieldsFirst =
+      Object.keys(antForm.getFieldsValue(true)).length > 0; // We check if it's a reused form and we already have values filled
+
+    if (mustClearFieldsFirst) {
+      antForm.resetFields();
+    }
+
+    antForm.setFieldsValue(valuesProcessed);
+  };
+
+  const fetchDataFromProps = async () => {
+    setLoading(true);
+
+    try {
+      const view = await getFormView();
+
+      const ooui = new FormOoui(view.fields);
+      ooui.parse(view.arch, readOnly);
+      setForm({ ooui, view });
+
+      const _values = formatX2ManyValues({
+        values,
+        fields: view.fields,
+      });
+
+      assignNewValuesToForm(_values, view);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchDataFromApi = async () => {
     setLoading(true);
 
     try {
@@ -119,13 +160,18 @@ function Form(props: Props, ref: any): React.ReactElement {
 
       let _values = {};
       if (id) {
-        _values = (
+        const erpValues = (
           await ConnectionProvider.getHandler().readObjects({
             arch: view!.arch,
             model,
             ids: [id],
           })
         )[0];
+
+        _values = formatX2ManyValues({
+          values: erpValues,
+          fields: view.fields,
+        });
       } else {
         _values = await ConnectionProvider.getHandler().execute({
           model,
@@ -133,17 +179,7 @@ function Form(props: Props, ref: any): React.ReactElement {
           payload: Object.keys(view.fields),
         });
       }
-      setOriginalValues({ ..._values });
-      const valuesProcessed = processValues(_values, view.fields);
-
-      const mustClearFieldsFirst =
-        Object.keys(antForm.getFieldsValue(true)).length > 0; // We check if it's a reused form and we already have values filled
-
-      if (mustClearFieldsFirst) {
-        antForm.resetFields();
-      }
-
-      antForm.setFieldsValue(valuesProcessed);
+      assignNewValuesToForm(_values, view);
     } catch (err) {
       setError(err);
     } finally {
@@ -152,48 +188,71 @@ function Form(props: Props, ref: any): React.ReactElement {
   };
 
   useEffect(() => {
-    fetchData();
-  }, [id, model]);
+    if (values) {
+      fetchDataFromProps();
+    } else {
+      fetchDataFromApi();
+    }
+  }, [id, model, values]);
 
   const formHasChanges = () => {
     return Object.keys(getTouchedValues(antForm)).length !== 0;
   };
 
+  const submitApi = async () => {
+    const touchedValues = getTouchedValues(antForm);
+
+    const erpTouchedValues = getErpValues({
+      values: originalValues,
+      fields: form?.view.fields,
+      touchedValues,
+    });
+
+    let objectId = id;
+
+    if (Object.keys(touchedValues).length !== 0) {
+      if (id) {
+        await ConnectionProvider.getHandler().update({
+          model,
+          id,
+          values: erpTouchedValues,
+        });
+      } else {
+        const newId = await ConnectionProvider.getHandler().create({
+          model,
+          values: erpTouchedValues,
+        });
+        objectId = newId;
+      }
+    }
+
+    const value = await ConnectionProvider.getHandler().execute({
+      action: "name_get",
+      payload: [objectId],
+      model,
+    });
+
+    onSubmitSucceed?.({
+      id: value[0],
+    });
+  };
+
+  const submitValues = async () => {
+    onSubmitSucceed?.({
+      id,
+      touchedValues: getTouchedValues(antForm),
+    });
+  };
+
   const submitForm = async () => {
     setIsSubmitting(true);
     try {
-      const touchedValues = getTouchedValues(antForm);
-      const erpTouchedValues = getErpValues({
-        values: originalValues,
-        fields: form?.view.fields,
-        touchedValues,
-      });
-
-      let objectId = id;
-
-      if (Object.keys(touchedValues).length !== 0) {
-        if (id) {
-          await ConnectionProvider.getHandler().update({
-            model,
-            id,
-            values: erpTouchedValues,
-          });
-        } else {
-          const newId = await ConnectionProvider.getHandler().create({
-            model,
-            values: erpTouchedValues,
-          });
-          objectId = newId;
-        }
+      if (submitMode === "api") {
+        await submitApi();
+      } else {
+        await submitValues();
       }
 
-      const value = await ConnectionProvider.getHandler().execute({
-        action: "name_get",
-        payload: [objectId],
-        model,
-      });
-
-      onSubmitSucceed?.(value[0]);
       if (mustClearAfterSave) antForm.resetFields();
     } catch (err) {
       onSubmitError?.(err);
@@ -251,7 +310,8 @@ function Form(props: Props, ref: any): React.ReactElement {
     <div ref={containerRef} className="pb-2">
       {error && <Alert className="mt-10" message={error} type="error" banner />}
       {loading ? <Spin /> : content()}
-      {showFooter && footer()}
+      {footer()}
+      {/*TODO - footer conditional showFooter */}
     </div>
   );
 }
