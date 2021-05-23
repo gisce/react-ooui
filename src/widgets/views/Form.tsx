@@ -203,7 +203,6 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     const touchedValues = getTouchedValues(antForm);
 
     const erpTouchedValues = getErpValues({
-      values: originalValues,
       fields: form?.view.fields,
       touchedValues,
     });

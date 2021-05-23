@@ -5,11 +5,9 @@ import { Item } from "@/widgets/base/One2many";
 // Is different than the one that we get when reading, we must convert certain fields
 //
 const getErpValues = ({
-  values,
   touchedValues,
   fields,
 }: {
-  values: any;
   touchedValues: any;
   fields: any;
 }): any => {
@@ -33,7 +31,16 @@ const getErpValues = ({
     ) {
       const items: Item[] = (value as unknown) as Item[];
 
-      processedTouchedValues[name] = items.map((item) => {
+      const itemsToUpdate = items.filter(
+        (item) => item.operation !== "original"
+      );
+
+      if (itemsToUpdate.length === 0) {
+        processedTouchedValues[name] = undefined;
+        return;
+      }
+
+      processedTouchedValues[name] = itemsToUpdate.map((item) => {
         if (item.operation === "create") {
           return [0, 0, { ...item.values, id: undefined }];
         }
