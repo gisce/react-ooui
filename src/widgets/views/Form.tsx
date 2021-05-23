@@ -309,8 +309,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     <div ref={containerRef} className="pb-2">
       {error && <Alert className="mt-10" message={error} type="error" banner />}
       {loading ? <Spin /> : content()}
-      {footer()}
-      {/*TODO - footer conditional showFooter */}
+      {showFooter && footer()}
     </div>
   );
 }
