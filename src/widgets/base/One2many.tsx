@@ -472,6 +472,7 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
         readOnly={readOnly}
         submitMode={"values"} // The form will return the touched values and it won't be making any API calls
         mustClearAfterSave={mustClearAfterSave}
+        showFooter={true}
       />
     </>
   );
