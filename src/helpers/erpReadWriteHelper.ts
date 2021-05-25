@@ -1,4 +1,4 @@
-import { Item } from "@/widgets/base/One2many";
+import { One2manyItem } from "@/widgets/base/One2manyInput";
 
 //
 // Since the format we have to send when we'll write an object (create or update)
@@ -29,7 +29,7 @@ const getErpValues = ({
       fields[name] &&
       (fields[name].type === "one2many" || fields[name].type === "many2many")
     ) {
-      const items: Item[] = (value as unknown) as Item[];
+      const items: One2manyItem[] = (value as unknown) as One2manyItem[];
 
       const itemsToUpdate = items.filter(
         (item) => item.operation !== "original"

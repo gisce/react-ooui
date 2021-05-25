@@ -1,17 +1,17 @@
-import { Item } from "@/widgets/base/One2many";
+import { One2manyItem } from "@/widgets/base/One2manyInput";
 
 const addOrUpdateItem = ({
   itemToUpdate,
   items,
 }: {
-  itemToUpdate: Item;
-  items: Array<Item>;
-}): Array<Item> => {
+  itemToUpdate: One2manyItem;
+  items: Array<One2manyItem>;
+}): Array<One2manyItem> => {
   if (!items.map((item) => item.id).includes(itemToUpdate.id)) {
     return [...items, itemToUpdate];
   }
 
-  return items.map((item: Item) => {
+  return items.map((item: One2manyItem) => {
     if (item.id === itemToUpdate.id) {
       return itemToUpdate;
     }
@@ -38,9 +38,9 @@ const getItemToUpdate = ({
 }: {
   id: number;
   touchedValues: any;
-  items: Item[];
-}): Item => {
-  let itemToUpdate: Item;
+  items: One2manyItem[];
+}): One2manyItem => {
+  let itemToUpdate: One2manyItem;
 
   if (!id) {
     const newId = getTemporalIdNumber({

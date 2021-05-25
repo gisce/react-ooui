@@ -229,12 +229,12 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       objectId = newId;
     }
 
+    // TODO: we must set is loading in root Form (create a new context provider for this purpose)
     // setLoading(true);
-
     try {
       await fetchValuesFromApi(form!.view);
     } catch (err) {
-      // setError(err);
+      setError(err);
     } finally {
       // setLoading(false);
     }
@@ -323,8 +323,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     <div ref={containerRef} className="pb-2">
       {error && <Alert className="mt-10" message={error} type="error" banner />}
       {loading ? <Spin /> : content()}
-      {/* {showFooter && footer()} */}
-      {footer()}
+      {showFooter && footer()}
     </div>
   );
 }
