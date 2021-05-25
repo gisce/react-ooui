@@ -4,11 +4,5 @@ declare type Props = {
     ooui: One2manyOoui;
 };
 export declare const One2many: (props: Props) => JSX.Element;
-export declare type Item = {
-    operation: "original" | "create" | "modify" | "remove";
-    id?: number;
-    values?: any;
-    touchedValues?: any;
-};
 export {};
 //# sourceMappingURL=One2many.d.ts.map

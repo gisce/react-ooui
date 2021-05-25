@@ -1,4 +1,6 @@
 import React from "react";
+import { Form as FormOoui } from "ooui";
+import { FormView } from "@/types/index";
 export declare type FormProps = {
     model: string;
     id?: number;
@@ -12,6 +14,11 @@ export declare type FormProps = {
     mustClearAfterSave?: boolean;
     submitMode?: "api" | "values";
     values?: any;
+    data?: FormViewAndOoui;
+};
+export declare type FormViewAndOoui = {
+    ooui: FormOoui;
+    view: FormView;
 };
 declare const _default: React.ForwardRefExoticComponent<FormProps & React.RefAttributes<unknown>>;
 export default _default;

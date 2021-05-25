@@ -73,105 +73,22 @@ exports.One2many = void 0;
 var react_1 = __importStar(require("react"));
 var Field_1 = __importDefault(require("@/common/Field"));
 var antd_1 = require("antd");
-var index_1 = require("@/index");
-var index_2 = require("@/index");
 var ooui_1 = require("ooui");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
-var FormModal_1 = require("@/widgets/modals/FormModal");
-var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"));
-var RemoveItemDialog_1 = __importDefault(require("@/ui/RemoveItemDialog"));
-var _2manyHelper_1 = require("@/helpers/2manyHelper");
-var icons_1 = require("@ant-design/icons");
+var One2manyContext_1 = __importDefault(require("@/context/One2manyContext"));
+var One2manyInput_1 = require("@/widgets/base/One2manyInput");
 var One2many = function (props) {
     var ooui = props.ooui;
-    return (react_1.default.createElement(Field_1.default, __assign({}, props),
-        react_1.default.createElement(One2manyInput, { ooui: ooui })));
-};
-exports.One2many = One2many;
-var One2manyInput = function (props) {
-    var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui;
-    var itemsToShow = items.filter(function (item) { return item.operation !== "remove"; });
-    var formRef = react_1.useRef();
-    var triggerChange = function (changedValue) {
-        onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
-    };
-    var _b = ooui, readOnly = _b.readOnly, relation = _b.relation, oouiViews = _b.views, mode = _b.mode;
+    var mode = ooui.mode, relation = ooui.relation, oouiViews = ooui.views;
+    var initialView;
+    var _a = react_1.useState(true), isLoading = _a[0], setIsLoading = _a[1];
+    var _b = react_1.useState(), error = _b[0], setError = _b[1];
     var _c = react_1.useState(new Map()), views = _c[0], setViews = _c[1];
-    var _d = react_1.useState("tree"), currentView = _d[0], setCurrentView = _d[1];
-    var _e = react_1.useState(0), itemIndex = _e[0], setItemIndex = _e[1];
-    var _f = react_1.useState(true), isLoading = _f[0], setIsLoading = _f[1];
-    var _g = react_1.useState(), error = _g[0], setError = _g[1];
-    var _h = react_1.useState(false), showFormModal = _h[0], setShowFormModal = _h[1];
-    var _j = react_1.useState(), modalItem = _j[0], setModalItem = _j[1];
-    var _k = react_1.useState(false), formHasChanges = _k[0], setFormHasChanges = _k[1];
-    var _l = react_1.useState(false), formIsSaving = _l[0], setFormIsSaving = _l[1];
+    var _d = react_1.useState(), form = _d[0], setForm = _d[1];
+    var _e = react_1.useState(), tree = _e[0], setTree = _e[1];
     react_1.useEffect(function () {
         fetchData();
     }, [ooui]);
-    var fetchOriginalItemsFromApi = function (treeView) { return __awaiter(void 0, void 0, void 0, function () {
-        var realItems, idsToFetch, values, itemsWithValues;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    realItems = items.filter(function (item) { return item.operation === "original" && item.id; });
-                    idsToFetch = realItems.map(function (item) { return item.id; });
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
-                            arch: treeView.arch,
-                            model: relation,
-                            ids: idsToFetch,
-                        })];
-                case 1:
-                    values = _a.sent();
-                    itemsWithValues = items.map(function (item) {
-                        var fetchedItemValues = values.find(function (itemValues) {
-                            console.log();
-                            return itemValues.id === item.id;
-                        });
-                        return __assign(__assign({}, item), { values: fetchedItemValues });
-                    });
-                    triggerChange(itemsWithValues);
-                    return [2 /*return*/];
-            }
-        });
-    }); };
-    var fetchData = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var formView, treeView, err_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    setIsLoading(true);
-                    setError(undefined);
-                    setFormHasChanges(false);
-                    setFormIsSaving(false);
-                    _a.label = 1;
-                case 1:
-                    _a.trys.push([1, 5, , 6]);
-                    if (mode && mode.length > 0) {
-                        setCurrentView(mode[0]);
-                    }
-                    return [4 /*yield*/, getViewData("form")];
-                case 2:
-                    formView = _a.sent();
-                    return [4 /*yield*/, getViewData("tree")];
-                case 3:
-                    treeView = _a.sent();
-                    views.set("form", formView);
-                    views.set("tree", treeView);
-                    setViews(views);
-                    return [4 /*yield*/, fetchOriginalItemsFromApi(treeView)];
-                case 4:
-                    _a.sent();
-                    return [3 /*break*/, 6];
-                case 5:
-                    err_1 = _a.sent();
-                    setError(err_1);
-                    return [3 /*break*/, 6];
-                case 6:
-                    setIsLoading(false);
-                    return [2 /*return*/];
-            }
-        });
-    }); };
     var getViewData = function (type) { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -184,249 +101,58 @@ var One2manyInput = function (props) {
             }
         });
     }); };
-    var separator = function () {
-        return react_1.default.createElement("div", { className: "inline-block w-3" });
-    };
-    var index = function () {
-        var itemToShow = "_";
-        if (itemsToShow.length === 0) {
-            itemToShow = "_";
-        }
-        else {
-            itemToShow = (itemIndex + 1).toString();
-        }
-        return (react_1.default.createElement("span", { className: "pl-1 pr-1" },
-            "(",
-            itemToShow,
-            "/",
-            itemsToShow.length,
-            ")"));
-    };
-    var showRemoveConfirm = function () {
-        RemoveItemDialog_1.default({
-            onOk: function () {
-                onConfirmRemove();
-            },
-        });
-    };
-    var showFormChangesDialogIfNeeded = function (callback) {
-        if (formHasChanges) {
-            UnsavedChangesDialog_1.default({
-                onOk: function () {
-                    callback();
-                    setFormHasChanges(false);
-                },
-            });
-        }
-        else {
-            callback();
-        }
-    };
-    var toggleViewMode = function () {
-        if (currentView === "form" && views.get("tree")) {
-            showFormChangesDialogIfNeeded(function () {
-                setCurrentView("tree");
-            });
-        }
-        else if (currentView === "tree" && views.get("form")) {
-            setCurrentView("form");
-        }
-    };
-    var previousItem = function () {
-        if (itemIndex > 0) {
-            if (currentView === "form") {
-                showFormChangesDialogIfNeeded(function () {
-                    setItemIndex(itemIndex - 1);
-                });
-            }
-            else {
-                setItemIndex(itemIndex - 1);
-            }
-        }
-    };
-    var nextItem = function () {
-        var totalItems = itemsToShow.length;
-        if (itemIndex < totalItems - 1) {
-            if (currentView === "form") {
-                showFormChangesDialogIfNeeded(function () {
-                    setItemIndex(itemIndex + 1);
-                });
-            }
-            else {
-                setItemIndex(itemIndex + 1);
-            }
-        }
-    };
-    var saveItem = function () {
-        setFormIsSaving(true);
-        formRef.current.submitForm();
-    };
-    var createItem = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var fetchData = function () { return __awaiter(void 0, void 0, void 0, function () {
+        var formView, treeView, formOoui, treeOoui, err_1;
         return __generator(this, function (_a) {
-            if (currentView === "form") {
-                showFormChangesDialogIfNeeded(function () {
-                    var newId = _2manyHelper_1.getTemporalIdNumber({
-                        ids: items.map(function (item) { return item.id; }),
-                    });
-                    var updatedItems = _2manyHelper_1.addOrUpdateItem({
-                        itemToUpdate: {
-                            operation: "create",
-                            id: newId,
-                            values: { id: newId }, // We will have to remove this id inside values later
-                        },
-                        items: items,
-                    });
-                    triggerChange(updatedItems);
-                    var updatedItemsToShow = updatedItems.filter(function (item) { return item.operation !== "remove"; });
-                    setItemIndex(updatedItemsToShow.length - 1);
-                });
+            switch (_a.label) {
+                case 0:
+                    setIsLoading(true);
+                    setError(undefined);
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 4, 5, 6]);
+                    return [4 /*yield*/, getViewData("form")];
+                case 2:
+                    formView = _a.sent();
+                    return [4 /*yield*/, getViewData("tree")];
+                case 3:
+                    treeView = _a.sent();
+                    views.set("form", formView);
+                    views.set("tree", treeView);
+                    setViews(views);
+                    formOoui = new ooui_1.Form(formView.fields);
+                    formOoui.parse(formView.arch);
+                    setForm(formOoui);
+                    treeOoui = new ooui_1.Tree(treeView.fields);
+                    treeOoui.parse(treeView.arch);
+                    setTree(treeOoui);
+                    return [3 /*break*/, 6];
+                case 4:
+                    err_1 = _a.sent();
+                    setError(err_1);
+                    return [3 /*break*/, 6];
+                case 5:
+                    setIsLoading(false);
+                    return [7 /*endfinally*/];
+                case 6: return [2 /*return*/];
             }
-            else {
-                setModalItem(undefined);
-                setShowFormModal(true);
-            }
-            return [2 /*return*/];
         });
     }); };
-    var onConfirmRemove = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var updatedItems;
-        return __generator(this, function (_a) {
-            setIsLoading(true);
-            setFormHasChanges(false);
-            setError(undefined);
-            try {
-                // If the item isn't a new one, we must add a new Item record with "remove" operation
-                // in order to remove it from the API later.
-                if (itemsToShow[itemIndex].operation !== "create") {
-                    updatedItems = _2manyHelper_1.addOrUpdateItem({
-                        itemToUpdate: {
-                            operation: "remove",
-                            id: itemsToShow[itemIndex].id,
-                        },
-                        items: items,
-                    });
-                    triggerChange(updatedItems);
-                }
-                // If the item is a newly created one, we only have to remove it from the internal list
-                else {
-                    triggerChange(items.filter(function (item) { return item.id !== itemsToShow[itemIndex].id; }));
-                }
-            }
-            catch (err) {
-                setError(err);
-            }
-            setItemIndex(0);
-            setIsLoading(false);
-            return [2 /*return*/];
-        });
-    }); };
-    var saveButton = function () {
-        if (currentView !== "form") {
-            return null;
-        }
-        var icon = formIsSaving ? react_1.default.createElement(icons_1.LoadingOutlined, null) : react_1.default.createElement(icons_1.SaveOutlined, null);
-        return (react_1.default.createElement(antd_1.Button, { icon: icon, onClick: saveItem, disabled: !formHasChanges || formIsSaving || readOnly }));
-    };
-    var getTitle = function () {
-        var type = currentView === "form" ? ooui_1.Form : ooui_1.Tree;
-        var ooui = new type(views.get(currentView).fields);
-        ooui.parse(views.get(currentView).arch);
-        return ooui.string;
-    };
-    var title = function () {
-        return (react_1.default.createElement("div", { className: "h-8 flex flex-grow bg-gray-700 text-gray-200" },
-            react_1.default.createElement("div", { className: "h-full flex flex-col justify-center items-center" },
-                react_1.default.createElement("span", { className: "pl-2 font-bold" }, getTitle()))));
-    };
-    var deleteButton = function () {
-        if (currentView !== "form") {
-            return null;
-        }
-        return (react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.DeleteOutlined, { onClick: showRemoveConfirm, disabled: itemsToShow.length === 0 }), disabled: readOnly }));
-    };
-    var itemBrowser = function () {
-        if (currentView !== "form") {
-            return null;
-        }
-        return (react_1.default.createElement(react_1.default.Fragment, null,
-            separator(),
-            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.LeftOutlined, null), onClick: previousItem }),
-            index(),
-            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.RightOutlined, null), onClick: nextItem }),
-            separator()));
-    };
-    var topBar = function () {
-        return (react_1.default.createElement("div", { className: "flex mb-2" },
-            title(),
-            react_1.default.createElement("div", { className: "h-8 flex-none pl-2" },
-                react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FileAddOutlined, { onClick: createItem }), disabled: readOnly }),
-                separator(),
-                saveButton(),
-                deleteButton(),
-                itemBrowser(),
-                react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.AlignLeftOutlined, null), onClick: toggleViewMode }))));
-    };
-    var updateFormEvent = function (event) {
-        var id = event.id, touchedValues = event.touchedValues;
-        var itemToUpdate = _2manyHelper_1.getItemToUpdate({
-            id: id,
-            touchedValues: touchedValues,
-            items: items,
-        });
-        var updatedItems = _2manyHelper_1.addOrUpdateItem({
-            itemToUpdate: itemToUpdate,
-            items: items,
-        });
-        triggerChange(updatedItems);
-    };
-    var onFormSubmitSucceed = function (event) {
-        // TODO: must we save it to the API ?
-        updateFormEvent(event);
-        setFormIsSaving(false);
-        setFormHasChanges(false);
-    };
-    var onFormModalSubmitSucceed = function (event) {
-        var id = event.id;
-        updateFormEvent(event);
-        // If we already have an id will mean the form modal is in edit mode and we're not in continuous mode
-        if (id) {
-            setShowFormModal(false);
-        }
-    };
-    var onTreeRowClicked = function (itemId) {
-        setModalItem(items.find(function (item) { return item.id === itemId; }));
-        setShowFormModal(true);
-    };
-    var content = function () {
-        if (currentView === "form") {
-            // If we have items to show, we return the proper value for the current item
-            // Else, we set it to undefined, since it will be a new item
-            var idToShow = itemsToShow.length > 0 ? itemsToShow[itemIndex].id : undefined;
-            var valuesToShow = itemsToShow.length > 0 ? itemsToShow[itemIndex].values : undefined;
-            return (react_1.default.createElement(index_1.Form, { ref: formRef, model: relation, id: idToShow, values: valuesToShow, onCancel: function () { }, onSubmitSucceed: onFormSubmitSucceed, onSubmitError: function () {
-                    setFormIsSaving(false);
-                }, onFieldsChange: function () {
-                    setFormHasChanges(true);
-                }, readOnly: readOnly, submitMode: "values" }));
-        }
-        return (react_1.default.createElement(index_2.Tree, { total: itemsToShow.length, limit: itemsToShow.length, treeView: views.get("tree"), results: itemsToShow.map(function (item) { return item.values; }), loading: false, onRowClicked: onTreeRowClicked, showPagination: false }));
-    };
+    if (mode && mode.length > 0) {
+        initialView = mode[0];
+    }
+    else {
+        initialView = "tree";
+    }
     if (isLoading) {
         return react_1.default.createElement(antd_1.Spin, null);
     }
     if (error) {
         return react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true });
     }
-    // If we are in create mode we have to show the modal in continuous mode.
-    // This means the modal won't close after clicking OK, the modal will add the new item
-    // and will reset to defaults to let the user add a new item.
-    // If we don't have any id for the modal item, it will mean that we are in create mode.
-    var mustClearAfterSave = !(modalItem === null || modalItem === void 0 ? void 0 : modalItem.id);
-    return (react_1.default.createElement(react_1.default.Fragment, null,
-        topBar(),
-        content(),
-        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: modalItem === null || modalItem === void 0 ? void 0 : modalItem.id, values: modalItem === null || modalItem === void 0 ? void 0 : modalItem.values, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, onCancel: function () {
-                setShowFormModal(false);
-            }, readOnly: readOnly, submitMode: "values", mustClearAfterSave: mustClearAfterSave })));
+    return (react_1.default.createElement(One2manyContext_1.default, { initialView: initialView },
+        react_1.default.createElement(Field_1.default, __assign({}, props),
+            react_1.default.createElement(One2manyInput_1.One2manyInput, { ooui: ooui, views: views, formOoui: form, treeOoui: tree }))));
 };
+exports.One2many = One2many;
 //# sourceMappingURL=One2many.js.map
