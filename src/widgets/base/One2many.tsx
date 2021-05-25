@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { One2many as One2manyOoui } from "ooui";
 import Field from "@/common/Field";
 import { Button, Spin, Alert } from "antd";
@@ -15,6 +15,7 @@ import {
   getTemporalIdNumber,
   getItemToUpdate,
 } from "@/helpers/2manyHelper";
+import One2manyProvider, {One2manyContext, One2manyContextType} from "@/context/One2manyContext";
 
 import {
   FileAddOutlined,
@@ -32,9 +33,20 @@ type Props = {
 
 export const One2many = (props: Props) => {
   const { ooui } = props;
+  const { mode } = ooui;
+  let initialView: "tree" | "form";
+
+  if (mode && mode.length > 0) {
+    initialView = mode[0] as "tree" | "form";
+  } else {
+    initialView = "tree";
+  }
+
   return (
     <Field {...props}>
-      <One2manyInput ooui={ooui} />
+      <One2manyProvider initialView={initialView}>
+        <One2manyInput ooui={ooui} />
+      </One2manyProvider>
     </Field>
   );
 };
@@ -59,16 +71,15 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
   const itemsToShow = items.filter((item) => item.operation !== "remove");
 
   const formRef = useRef();
+  const { currentView, setCurrentView } = useContext(One2manyContext) as One2manyContextType;
 
   const triggerChange = (changedValue: Array<Item>) => {
     onChange?.(changedValue);
   };
 
-  const { readOnly, relation, views: oouiViews, mode } = ooui as One2manyOoui;
+  const { readOnly, relation, views: oouiViews } = ooui as One2manyOoui;
 
   const [views, setViews] = useState<Views>(new Map<string, any>());
-
-  const [currentView, setCurrentView] = useState<string>("tree");
   const [itemIndex, setItemIndex] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>();
@@ -111,10 +122,6 @@ const One2manyInput: React.FC<One2ManyInputProps> = (
     setFormIsSaving(false);
 
     try {
-      if (mode && mode.length > 0) {
-        setCurrentView(mode[0]);
-      }
-
       const formView = await getViewData("form");
       const treeView = await getViewData("tree");
       views.set("form", formView);
