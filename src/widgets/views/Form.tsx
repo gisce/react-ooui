@@ -67,7 +67,6 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   const [loading, setLoading] = useState<boolean>(false);
   const [form, setForm] = useState<FormViewAndOoui>();
   const [antForm] = AntForm.useForm();
-  const [originalValues, setOriginalValues] = useState<any>();
 
   const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
     breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
@@ -112,7 +111,6 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   };
 
   const assignNewValuesToForm = (newValues: any, view: FormView) => {
-    setOriginalValues({ ...newValues });
     const valuesProcessed = processValues(newValues, view.fields);
 
     const mustClearFieldsFirst =
@@ -125,15 +123,45 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     antForm.setFieldsValue(valuesProcessed);
   };
 
-  const fetchDataFromProps = async () => {
+  const fetchAndParseForm = async () => {
+    const view = await getFormView();
+
+    const ooui = new FormOoui(view.fields);
+    ooui.parse(view.arch, readOnly);
+    setForm({ ooui, view });
+    return view;
+  };
+
+  const fetchValuesFromApi = async (view: FormView) => {
+    let _values = {};
+    if (id) {
+      const erpValues = (
+        await ConnectionProvider.getHandler().readObjects({
+          arch: view!.arch,
+          model,
+          ids: [id],
+        })
+      )[0];
+
+      _values = formatX2ManyValues({
+        values: erpValues,
+        fields: view.fields,
+      });
+    } else {
+      _values = await ConnectionProvider.getHandler().execute({
+        model,
+        action: "default_get",
+        payload: Object.keys(view.fields),
+      });
+    }
+    assignNewValuesToForm(_values, view);
+  };
+
+  const fetchFormAndDataFromProps = async () => {
     setLoading(true);
 
     try {
-      const view = await getFormView();
-
-      const ooui = new FormOoui(view.fields);
-      ooui.parse(view.arch, readOnly);
-      setForm({ ooui, view });
+      const view = await fetchAndParseForm();
 
       const _values = formatX2ManyValues({
         values,
@@ -148,38 +176,12 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     }
   };
 
-  const fetchDataFromApi = async () => {
+  const fetchFormAndValuesFromApi = async () => {
     setLoading(true);
 
     try {
-      const view = await getFormView();
-
-      const ooui = new FormOoui(view.fields);
-      ooui.parse(view.arch, readOnly);
-      setForm({ ooui, view });
-
-      let _values = {};
-      if (id) {
-        const erpValues = (
-          await ConnectionProvider.getHandler().readObjects({
-            arch: view!.arch,
-            model,
-            ids: [id],
-          })
-        )[0];
-
-        _values = formatX2ManyValues({
-          values: erpValues,
-          fields: view.fields,
-        });
-      } else {
-        _values = await ConnectionProvider.getHandler().execute({
-          model,
-          action: "default_get",
-          payload: Object.keys(view.fields),
-        });
-      }
-      assignNewValuesToForm(_values, view);
+      const view = await fetchAndParseForm();
+      await fetchValuesFromApi(view);
     } catch (err) {
       setError(err);
     } finally {
@@ -189,9 +191,9 @@ function Form(props: FormProps, ref: any): React.ReactElement {
 
   useEffect(() => {
     if (values) {
-      fetchDataFromProps();
+      fetchFormAndDataFromProps();
     } else {
-      fetchDataFromApi();
+      fetchFormAndValuesFromApi();
     }
   }, [id, model, values]);
 
@@ -207,22 +209,34 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       touchedValues,
     });
 
+    if (Object.keys(erpTouchedValues).length === 0) {
+      return;
+    }
+
     let objectId = id;
 
-    if (Object.keys(touchedValues).length !== 0) {
-      if (id) {
-        await ConnectionProvider.getHandler().update({
-          model,
-          id,
-          values: erpTouchedValues,
-        });
-      } else {
-        const newId = await ConnectionProvider.getHandler().create({
-          model,
-          values: erpTouchedValues,
-        });
-        objectId = newId;
-      }
+    if (id) {
+      await ConnectionProvider.getHandler().update({
+        model,
+        id,
+        values: erpTouchedValues,
+      });
+    } else {
+      const newId = await ConnectionProvider.getHandler().create({
+        model,
+        values: erpTouchedValues,
+      });
+      objectId = newId;
+    }
+
+    // setLoading(true);
+
+    try {
+      await fetchValuesFromApi(form!.view);
+    } catch (err) {
+      // setError(err);
+    } finally {
+      // setLoading(false);
     }
 
     const value = await ConnectionProvider.getHandler().execute({
