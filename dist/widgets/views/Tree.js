@@ -32,7 +32,7 @@ var strings = {
     summary: "Showing registers from {from} to {to} of {total} registers",
 };
 function Tree(props) {
-    var _a = props.page, page = _a === void 0 ? 1 : _a, limit = props.limit, total = props.total, treeView = props.treeView, results = props.results, onRequestPageChange = props.onRequestPageChange, loading = props.loading, onRowClicked = props.onRowClicked, _b = props.showPagination, showPagination = _b === void 0 ? true : _b;
+    var _a = props.page, page = _a === void 0 ? 1 : _a, limit = props.limit, total = props.total, treeView = props.treeView, results = props.results, onRequestPageChange = props.onRequestPageChange, loading = props.loading, onRowClicked = props.onRowClicked, _b = props.showPagination, showPagination = _b === void 0 ? true : _b, rowSelection = props.rowSelection;
     var _c = react_1.useState([]), items = _c[0], setItems = _c[1];
     var _d = react_1.useState([]), columns = _d[0], setColumns = _d[1];
     var _e = react_cool_dimensions_1.default(), width = _e.width, containerRef = _e.ref;
@@ -75,7 +75,7 @@ function Tree(props) {
                             onRowClicked(record.id);
                     },
                 };
-            } })));
+            }, rowSelection: rowSelection })));
 }
 exports.default = Tree;
 //# sourceMappingURL=Tree.js.map

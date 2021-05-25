@@ -91,12 +91,14 @@ var One2manyInput = function (props) {
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
     };
     var _c = ooui, readOnly = _c.readOnly, relation = _c.relation;
+    var isMany2many = ooui.type === "many2many";
     var _d = react_1.useState(false), isLoading = _d[0], setIsLoading = _d[1];
     var _e = react_1.useState(), error = _e[0], setError = _e[1];
     var _f = react_1.useState(false), showFormModal = _f[0], setShowFormModal = _f[1];
     var _g = react_1.useState(), modalItem = _g[0], setModalItem = _g[1];
     var _h = react_1.useState(false), formHasChanges = _h[0], setFormHasChanges = _h[1];
     var _j = react_1.useState(false), formIsSaving = _j[0], setFormIsSaving = _j[1];
+    var _k = react_1.useState([]), selectedRowKeys = _k[0], setSelectedRowKeys = _k[1];
     var fetchData = function () { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -299,11 +301,44 @@ var One2manyInput = function (props) {
             react_1.default.createElement("div", { className: "h-full flex flex-col justify-center items-center" },
                 react_1.default.createElement("span", { className: "pl-2 font-bold" }, getTitle()))));
     };
+    var removeSelectedItems = function () {
+        var itemsToRemove = itemsToShow.filter(function (item) {
+            return selectedRowKeys.includes(item.id);
+        });
+        setIsLoading(true);
+        setFormHasChanges(false);
+        setError(undefined);
+        try {
+            var updatedItems_1 = items;
+            itemsToRemove.forEach(function (item) {
+                if (item.operation !== "create") {
+                    // If the item isn't a new one, we must add a new Item record with "remove" operation
+                    // in order to remove it from the API later.
+                    updatedItems_1 = _2manyHelper_1.addOrUpdateItem({
+                        itemToUpdate: {
+                            operation: "remove",
+                            id: item.id,
+                        },
+                        items: updatedItems_1,
+                    });
+                } // If the item is a newly created one, we only have to remove it from the internal list
+                else {
+                    updatedItems_1 = updatedItems_1.filter(function (item) { return !selectedRowKeys.includes(item.id); });
+                }
+            });
+            triggerChange(updatedItems_1);
+        }
+        catch (err) {
+            setError(err);
+        }
+        setItemIndex(0);
+        setIsLoading(false);
+    };
     var deleteButton = function () {
-        if (currentView !== "form") {
+        if (currentView !== "form" && !isMany2many) {
             return null;
         }
-        return (react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.DeleteOutlined, { onClick: showRemoveConfirm, disabled: itemsToShow.length === 0 }), disabled: readOnly }));
+        return (react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.DeleteOutlined, { onClick: isMany2many ? removeSelectedItems : showRemoveConfirm, disabled: itemsToShow.length === 0 }), disabled: readOnly }));
     };
     var itemBrowser = function () {
         if (currentView !== "form") {
@@ -313,8 +348,7 @@ var One2manyInput = function (props) {
             separator(),
             react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.LeftOutlined, null), onClick: previousItem }),
             index(),
-            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.RightOutlined, null), onClick: nextItem }),
-            separator()));
+            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.RightOutlined, null), onClick: nextItem })));
     };
     var topBar = function () {
         return (react_1.default.createElement("div", { className: "flex mb-2" },
@@ -325,6 +359,7 @@ var One2manyInput = function (props) {
                 saveButton(),
                 deleteButton(),
                 itemBrowser(),
+                separator(),
                 react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.AlignLeftOutlined, null), onClick: toggleViewMode }))));
     };
     var updateFormEvent = function (event) {
@@ -370,7 +405,12 @@ var One2manyInput = function (props) {
                     setFormHasChanges(true);
                 }, readOnly: readOnly, submitMode: "values" }));
         }
-        return (react_1.default.createElement(index_2.Tree, { total: itemsToShow.length, limit: itemsToShow.length, treeView: views.get("tree"), results: itemsToShow.map(function (item) { return item.values; }), loading: false, onRowClicked: onTreeRowClicked, showPagination: false }));
+        return (react_1.default.createElement(index_2.Tree, { total: itemsToShow.length, limit: itemsToShow.length, treeView: views.get("tree"), results: itemsToShow.map(function (item) { return item.values; }), loading: false, onRowClicked: onTreeRowClicked, showPagination: false, rowSelection: isMany2many
+                ? {
+                    selectedRowKeys: selectedRowKeys,
+                    onChange: setSelectedRowKeys,
+                }
+                : undefined }));
     };
     if (isLoading) {
         return react_1.default.createElement(antd_1.Spin, null);

@@ -10,6 +10,7 @@ declare type Props = {
     showPagination?: boolean;
     onRequestPageChange?: (page: number, pageSize?: number) => void;
     onRowClicked?: (id: number) => void;
+    rowSelection?: any;
 };
 declare function Tree(props: Props): React.ReactElement;
 export default Tree;
