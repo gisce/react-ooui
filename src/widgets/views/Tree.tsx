@@ -16,6 +16,7 @@ type Props = {
   showPagination?: boolean;
   onRequestPageChange?: (page: number, pageSize?: number) => void;
   onRowClicked?: (id: number) => void;
+  rowSelection?: any;
 };
 
 const strings: Strings = {
@@ -34,6 +35,7 @@ function Tree(props: Props): React.ReactElement {
     loading,
     onRowClicked,
     showPagination = true,
+    rowSelection,
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
@@ -105,6 +107,7 @@ function Tree(props: Props): React.ReactElement {
             },
           };
         }}
+        rowSelection={rowSelection}
       />
     </div>
   );

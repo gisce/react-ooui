@@ -76,6 +76,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   };
 
   const { readOnly, relation } = ooui as One2manyOoui;
+  const isMany2many = ooui.type === "many2many";
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
@@ -83,6 +84,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const [modalItem, setModalItem] = useState<One2manyItem>();
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
 
   const fetchData = async () => {
     if (!manualTrigger) {
@@ -293,8 +295,49 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     );
   };
 
+  const removeSelectedItems = () => {
+    const itemsToRemove = itemsToShow.filter((item) => {
+      return selectedRowKeys.includes(item.id);
+    });
+
+    setIsLoading(true);
+    setFormHasChanges(false);
+    setError(undefined);
+
+    try {
+      let updatedItems = items;
+
+      itemsToRemove.forEach((item) => {
+        if (item.operation !== "create") {
+          // If the item isn't a new one, we must add a new Item record with "remove" operation
+          // in order to remove it from the API later.
+
+          updatedItems = addOrUpdateItem({
+            itemToUpdate: {
+              operation: "remove",
+              id: item.id,
+            },
+            items: updatedItems,
+          });
+        } // If the item is a newly created one, we only have to remove it from the internal list
+        else {
+          updatedItems = updatedItems.filter(
+            (item) => !selectedRowKeys.includes(item.id)
+          );
+        }
+      });
+
+      triggerChange(updatedItems);
+    } catch (err) {
+      setError(err);
+    }
+
+    setItemIndex(0);
+    setIsLoading(false);
+  };
+
   const deleteButton = () => {
-    if (currentView !== "form") {
+    if (currentView !== "form" && !isMany2many) {
       return null;
     }
 
@@ -302,7 +345,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       <Button
         icon={
           <DeleteOutlined
-            onClick={showRemoveConfirm}
+            onClick={isMany2many ? removeSelectedItems : showRemoveConfirm}
             disabled={itemsToShow.length === 0}
           />
         }
@@ -321,7 +364,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         <Button icon={<LeftOutlined />} onClick={previousItem} />
         {index()}
         <Button icon={<RightOutlined />} onClick={nextItem} />
-        {separator()}
       </>
     );
   };
@@ -339,6 +381,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           {saveButton()}
           {deleteButton()}
           {itemBrowser()}
+          {separator()}
           <Button icon={<AlignLeftOutlined />} onClick={toggleViewMode} />
         </div>
       </div>
@@ -424,6 +467,14 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         loading={false}
         onRowClicked={onTreeRowClicked}
         showPagination={false}
+        rowSelection={
+          isMany2many
+            ? {
+                selectedRowKeys,
+                onChange: setSelectedRowKeys,
+              }
+            : undefined
+        }
       />
     );
   };
