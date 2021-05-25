@@ -37,11 +37,12 @@ export type FormProps = {
   mustClearAfterSave?: boolean;
   submitMode?: "api" | "values";
   values?: any;
+  data?: FormViewAndOoui;
 };
 
 const WIDTH_BREAKPOINT = 1000;
 
-type FormViewAndOoui = {
+export type FormViewAndOoui = {
   ooui: FormOoui;
   view: FormView;
 };
@@ -60,6 +61,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     mustClearAfterSave = false,
     submitMode = "api",
     values,
+    data,
   } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -157,31 +159,33 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     assignNewValuesToForm(_values, view);
   };
 
-  const fetchFormAndDataFromProps = async () => {
-    setLoading(true);
+  const fetchValuesFromProps = (view: FormView) => {
+    const _values = formatX2ManyValues({
+      values,
+      fields: view.fields,
+    });
 
-    try {
-      const view = await fetchAndParseForm();
-
-      const _values = formatX2ManyValues({
-        values,
-        fields: view.fields,
-      });
-
-      assignNewValuesToForm(_values, view);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
+    assignNewValuesToForm(_values, view);
   };
 
-  const fetchFormAndValuesFromApi = async () => {
+  const fetchData = async () => {
     setLoading(true);
 
+    let view: FormView;
+
     try {
-      const view = await fetchAndParseForm();
-      await fetchValuesFromApi(view);
+      if (data) {
+        setForm(data);
+        view = data.view;
+      } else {
+        view = await fetchAndParseForm();
+      }
+
+      if (values) {
+        fetchValuesFromProps(view!);
+      } else {
+        await fetchValuesFromApi(view!);
+      }
     } catch (err) {
       setError(err);
     } finally {
@@ -190,12 +194,8 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   };
 
   useEffect(() => {
-    if (values) {
-      fetchFormAndDataFromProps();
-    } else {
-      fetchFormAndValuesFromApi();
-    }
-  }, [id, model, values]);
+    fetchData();
+  }, [id, model, values, data]);
 
   const formHasChanges = () => {
     return Object.keys(getTouchedValues(antForm)).length !== 0;
@@ -323,7 +323,8 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     <div ref={containerRef} className="pb-2">
       {error && <Alert className="mt-10" message={error} type="error" banner />}
       {loading ? <Spin /> : content()}
-      {showFooter && footer()}
+      {/* {showFooter && footer()} */}
+      {footer()}
     </div>
   );
 }
