@@ -84,7 +84,6 @@ var icons_1 = require("@ant-design/icons");
 var One2manyInput = function (props) {
     var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui, views = props.views, formOoui = props.formOoui, treeOoui = props.treeOoui;
     var itemsToShow = items.filter(function (item) { return item.operation !== "remove" && item.values; });
-    var formRef = react_1.useRef();
     var _b = react_1.useContext(One2manyContext_1.One2manyContext), currentView = _b.currentView, setCurrentView = _b.setCurrentView, itemIndex = _b.itemIndex, setItemIndex = _b.setItemIndex, manualTriggerChange = _b.manualTriggerChange, setManualTriggerChange = _b.setManualTriggerChange;
     var triggerChange = function (changedValue) {
         setManualTriggerChange(true);
@@ -92,13 +91,14 @@ var One2manyInput = function (props) {
     };
     var _c = ooui, readOnly = _c.readOnly, relation = _c.relation;
     var isMany2many = ooui.type === "many2many";
+    var formRef = react_1.useRef();
+    var formHasChangesRef = react_1.useRef(false);
     var _d = react_1.useState(false), isLoading = _d[0], setIsLoading = _d[1];
     var _e = react_1.useState(), error = _e[0], setError = _e[1];
     var _f = react_1.useState(false), showFormModal = _f[0], setShowFormModal = _f[1];
     var _g = react_1.useState(), modalItem = _g[0], setModalItem = _g[1];
-    var _h = react_1.useState(false), formHasChanges = _h[0], setFormHasChanges = _h[1];
-    var _j = react_1.useState(false), formIsSaving = _j[0], setFormIsSaving = _j[1];
-    var _k = react_1.useState([]), selectedRowKeys = _k[0], setSelectedRowKeys = _k[1];
+    var _h = react_1.useState(false), formIsSaving = _h[0], setFormIsSaving = _h[1];
+    var _j = react_1.useState([]), selectedRowKeys = _j[0], setSelectedRowKeys = _j[1];
     var fetchData = function () { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -126,7 +126,7 @@ var One2manyInput = function (props) {
             switch (_a.label) {
                 case 0:
                     setIsLoading(true);
-                    setFormHasChanges(false);
+                    formHasChangesRef.current = false;
                     setError(undefined);
                     _a.label = 1;
                 case 1:
@@ -191,11 +191,11 @@ var One2manyInput = function (props) {
         });
     };
     var showFormChangesDialogIfNeeded = function (callback) {
-        if (formHasChanges) {
+        if (formHasChangesRef.current) {
             UnsavedChangesDialog_1.default({
                 onOk: function () {
                     callback();
-                    setFormHasChanges(false);
+                    formHasChangesRef.current = false;
                 },
             });
         }
@@ -273,7 +273,7 @@ var One2manyInput = function (props) {
         var updatedItems;
         return __generator(this, function (_a) {
             setIsLoading(true);
-            setFormHasChanges(false);
+            formHasChangesRef.current = false;
             setError(undefined);
             try {
                 // If the item isn't a new one, we must add a new Item record with "remove" operation
@@ -307,7 +307,7 @@ var One2manyInput = function (props) {
         }
         var icon = formIsSaving ? react_1.default.createElement(icons_1.LoadingOutlined, null) : react_1.default.createElement(icons_1.SaveOutlined, null);
         return (react_1.default.createElement(react_1.default.Fragment, null,
-            react_1.default.createElement(antd_1.Button, { icon: icon, onClick: saveItem, disabled: !formHasChanges || formIsSaving || readOnly })));
+            react_1.default.createElement(antd_1.Button, { icon: icon, onClick: saveItem, disabled: !formHasChangesRef.current || formIsSaving || readOnly })));
     };
     var getTitle = function () {
         return currentView === "form" ? formOoui.string : treeOoui.string;
@@ -322,7 +322,7 @@ var One2manyInput = function (props) {
             return selectedRowKeys.includes(item.id);
         });
         setIsLoading(true);
-        setFormHasChanges(false);
+        formHasChangesRef.current = false;
         setError(undefined);
         try {
             var updatedItems_1 = items;
@@ -392,7 +392,7 @@ var One2manyInput = function (props) {
         // TODO: must we save it to the API ?
         updateFormEvent(event);
         setFormIsSaving(false);
-        setFormHasChanges(false);
+        formHasChangesRef.current = false;
     };
     var onFormModalSubmitSucceed = function (event) {
         var id = event.id;
@@ -416,7 +416,7 @@ var One2manyInput = function (props) {
             return (react_1.default.createElement(index_1.Form, { data: { ooui: formOoui, view: views.get("form") }, values: valuesToShow, ref: formRef, model: relation, id: idToShow, onSubmitSucceed: onFormSubmitSucceed, onSubmitError: function () {
                     setFormIsSaving(false);
                 }, onFieldsChange: function () {
-                    setFormHasChanges(true);
+                    formHasChangesRef.current = true;
                 }, readOnly: readOnly, submitMode: "values" }));
         }
         return (react_1.default.createElement(index_2.Tree, { total: itemsToShow.length, limit: itemsToShow.length, treeView: views.get("tree"), results: itemsToShow.map(function (item) { return item.values; }), loading: isLoading, onRowClicked: onTreeRowClicked, showPagination: false, rowSelection: {

@@ -60,7 +60,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     (item) => item.operation !== "remove" && item.values
   );
 
-  const formRef = useRef();
   const {
     currentView,
     setCurrentView,
@@ -78,11 +77,13 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const { readOnly, relation } = ooui as One2manyOoui;
   const isMany2many = ooui.type === "many2many";
 
+  const formRef = useRef();
+  const formHasChangesRef = useRef<boolean>(false);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
   const [modalItem, setModalItem] = useState<One2manyItem>();
-  const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
 
@@ -103,7 +104,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
   const fetchOriginalItemsFromApi = async (treeView: TreeView) => {
     setIsLoading(true);
-    setFormHasChanges(false);
+    formHasChangesRef.current = false;
     setError(undefined);
 
     try {
@@ -165,11 +166,11 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   };
 
   const showFormChangesDialogIfNeeded = (callback: () => void) => {
-    if (formHasChanges) {
+    if (formHasChangesRef.current) {
       showUnsavedChangesDialog({
         onOk: () => {
           callback();
-          setFormHasChanges(false);
+          formHasChangesRef.current = false;
         },
       });
     } else {
@@ -247,7 +248,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
   const onConfirmRemove = async () => {
     setIsLoading(true);
-    setFormHasChanges(false);
+    formHasChangesRef.current = false;
     setError(undefined);
 
     try {
@@ -289,7 +290,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         <Button
           icon={icon}
           onClick={saveItem}
-          disabled={!formHasChanges || formIsSaving || readOnly}
+          disabled={!formHasChangesRef.current || formIsSaving || readOnly}
         />
       </>
     );
@@ -315,7 +316,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     });
 
     setIsLoading(true);
-    setFormHasChanges(false);
+    formHasChangesRef.current = false;
     setError(undefined);
 
     try {
@@ -419,7 +420,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     // TODO: must we save it to the API ?
     updateFormEvent(event);
     setFormIsSaving(false);
-    setFormHasChanges(false);
+    formHasChangesRef.current = false;
   };
 
   const onFormModalSubmitSucceed = (event: any) => {
@@ -459,7 +460,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
             setFormIsSaving(false);
           }}
           onFieldsChange={() => {
-            setFormHasChanges(true);
+            formHasChangesRef.current = true;
           }}
           readOnly={readOnly}
           submitMode={"values"}
