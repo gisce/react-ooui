@@ -3,8 +3,6 @@ import React, { useState } from "react";
 export type One2manyContextType = {
   currentView: "tree" | "form";
   setCurrentView: (view: "tree" | "form") => void;
-  manualTrigger: boolean;
-  setManualTrigger: (value: boolean) => void;
   itemIndex: number;
   setItemIndex: (value: number) => void;
 };
@@ -21,7 +19,6 @@ const One2manyProvider = ({
   initialView: "tree" | "form";
 }): any => {
   const [currentView, setCurrentView] = useState<"tree" | "form">(initialView);
-  const [manualTrigger, setManualTrigger] = useState<boolean>(false);
   const [itemIndex, setItemIndex] = useState<number>(0);
 
   return (
@@ -29,8 +26,6 @@ const One2manyProvider = ({
       value={{
         currentView,
         setCurrentView,
-        manualTrigger,
-        setManualTrigger,
         itemIndex,
         setItemIndex,
       }}

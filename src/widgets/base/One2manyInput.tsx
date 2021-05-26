@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { One2many as One2manyOoui } from "ooui";
-import { Button, Spin, Alert } from "antd";
+import { Button, Alert } from "antd";
 import { Form } from "@/index";
 import { Tree } from "@/index";
 import { Form as FormOoui, Tree as TreeOoui } from "ooui";
@@ -61,17 +61,11 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   );
 
   const formRef = useRef();
-  const {
-    currentView,
-    setCurrentView,
-    itemIndex,
-    setItemIndex,
-    manualTrigger,
-    setManualTrigger,
-  } = useContext(One2manyContext) as One2manyContextType;
+  const { currentView, setCurrentView, itemIndex, setItemIndex } = useContext(
+    One2manyContext
+  ) as One2manyContextType;
 
   const triggerChange = (changedValue: Array<One2manyItem>) => {
-    setManualTrigger(true);
     onChange?.(changedValue);
   };
 
@@ -87,43 +81,44 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
 
   const fetchData = async () => {
-    if (!manualTrigger) {
-      await fetchOriginalItemsFromApi(views.get("tree"));
-    } else {
-      setManualTrigger(false);
-    }
-    if (itemIndex > itemsToShow.length - 1 && itemIndex !== 0) {
-      setItemIndex(0);
-    }
+    await fetchOriginalItemsFromApi(views.get("tree"));
   };
 
   useEffect(() => {
-    if (items && items.length > 0) {
-      fetchData();
-    }
-  }, [items]);
+    fetchData();
+  }, [ooui]);
 
   const fetchOriginalItemsFromApi = async (treeView: TreeView) => {
-    const realItems: One2manyItem[] = items.filter(
-      (item) => item.operation === "original" && item.id
-    );
-    const idsToFetch = realItems.map((item) => item.id) as number[];
+    setIsLoading(true);
+    setFormHasChanges(false);
+    setError(undefined);
 
-    const values = await ConnectionProvider.getHandler().readObjects({
-      arch: treeView.arch,
-      model: relation,
-      ids: idsToFetch,
-    });
+    try {
+      const realItems: One2manyItem[] = items.filter(
+        (item) => item.operation === "original" && item.id
+      );
+      const idsToFetch = realItems.map((item) => item.id) as number[];
 
-    const itemsWithValues = items.map((item) => {
-      const fetchedItemValues = values.find((itemValues: any) => {
-        console.log();
-        return itemValues.id === item.id;
+      const values = await ConnectionProvider.getHandler().readObjects({
+        arch: treeView.arch,
+        model: relation,
+        ids: idsToFetch,
       });
-      return { ...item, values: fetchedItemValues };
-    });
 
-    triggerChange(itemsWithValues);
+      const itemsWithValues = items.map((item) => {
+        const fetchedItemValues = values.find((itemValues: any) => {
+          console.log();
+          return itemValues.id === item.id;
+        });
+        return { ...item, values: fetchedItemValues };
+      });
+
+      triggerChange(itemsWithValues);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const separator = () => {
@@ -273,11 +268,15 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
     const icon = formIsSaving ? <LoadingOutlined /> : <SaveOutlined />;
     return (
-      <Button
-        icon={icon}
-        onClick={saveItem}
-        disabled={!formHasChanges || formIsSaving || readOnly}
-      />
+      <>
+        {separator()}
+
+        <Button
+          icon={icon}
+          onClick={saveItem}
+          disabled={!formHasChanges || formIsSaving || readOnly}
+        />
+      </>
     );
   };
 
@@ -377,7 +376,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
             icon={<FileAddOutlined onClick={createItem} />}
             disabled={readOnly}
           />
-          {separator()}
           {saveButton()}
           {deleteButton()}
           {itemBrowser()}
@@ -464,7 +462,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         limit={itemsToShow.length}
         treeView={views.get("tree")}
         results={itemsToShow.map((item) => item.values)}
-        loading={false}
+        loading={isLoading}
         onRowClicked={onTreeRowClicked}
         showPagination={false}
         rowSelection={
@@ -478,10 +476,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       />
     );
   };
-
-  if (isLoading) {
-    return <Spin />;
-  }
 
   if (error) {
     return <Alert className="mt-10" message={error} type="error" banner />;
