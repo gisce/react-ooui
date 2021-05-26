@@ -259,6 +259,11 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   };
 
   const submitForm = async () => {
+    if (!formHasChanges()) {
+      onCancel?.();
+      return;
+    }
+    
     setIsSubmitting(true);
     try {
       if (submitMode === "api") {
