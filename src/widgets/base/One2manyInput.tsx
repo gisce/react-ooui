@@ -155,7 +155,11 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const showRemoveConfirm = () => {
     showRemoveItemDialog({
       onOk: () => {
-        onConfirmRemove();
+        if (currentView === "form") {
+          onConfirmRemove();
+        } else {
+          removeSelectedItems();
+        }
       },
     });
   };
@@ -351,9 +355,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       <Button
         icon={
           <DeleteOutlined
-            onClick={
-              currentView === "form" ? showRemoveConfirm : removeSelectedItems
-            }
+            onClick={showRemoveConfirm}
             disabled={itemsToShow.length === 0}
           />
         }

@@ -237,9 +237,6 @@ function Form(props, ref) {
                         fields: form === null || form === void 0 ? void 0 : form.view.fields,
                         touchedValues: touchedValues,
                     });
-                    if (Object.keys(erpTouchedValues).length === 0) {
-                        return [2 /*return*/];
-                    }
                     objectId = id;
                     if (!id) return [3 /*break*/, 2];
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().update({
@@ -347,7 +344,7 @@ function Form(props, ref) {
     return (react_1.default.createElement("div", { ref: containerRef, className: "pb-2" },
         error && react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true }),
         loading ? react_1.default.createElement(antd_1.Spin, null) : content(),
-        footer()));
+        showFooter && footer()));
 }
 exports.default = react_1.forwardRef(Form);
 //# sourceMappingURL=Form.js.map

@@ -181,7 +181,12 @@ var One2manyInput = function (props) {
     var showRemoveConfirm = function () {
         RemoveItemDialog_1.default({
             onOk: function () {
-                onConfirmRemove();
+                if (currentView === "form") {
+                    onConfirmRemove();
+                }
+                else {
+                    removeSelectedItems();
+                }
             },
         });
     };
@@ -346,7 +351,7 @@ var One2manyInput = function (props) {
         setIsLoading(false);
     };
     var deleteButton = function () {
-        return (react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.DeleteOutlined, { onClick: currentView === "form" ? showRemoveConfirm : removeSelectedItems, disabled: itemsToShow.length === 0 }), disabled: readOnly }));
+        return (react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.DeleteOutlined, { onClick: showRemoveConfirm, disabled: itemsToShow.length === 0 }), disabled: readOnly }));
     };
     var itemBrowser = function () {
         if (currentView !== "form") {

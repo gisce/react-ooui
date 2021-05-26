@@ -217,10 +217,6 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       touchedValues,
     });
 
-    if (Object.keys(erpTouchedValues).length === 0) {
-      return;
-    }
-
     let objectId = id;
 
     if (id) {
