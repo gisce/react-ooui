@@ -276,13 +276,23 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     }
   };
 
+  const checkFieldsChanges = () => {
+    if (onFieldsChange && formHasChanges()) {
+      onFieldsChange();
+    }
+  };
+
   const content = () => {
     if (!form) {
       return null;
     }
 
     return (
-      <AntForm form={antForm} onFieldsChange={onFieldsChange} component={false}>
+      <AntForm
+        form={antForm}
+        onFieldsChange={checkFieldsChanges}
+        component={false}
+      >
         {form && (
           <Container
             container={form.ooui.container}
