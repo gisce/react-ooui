@@ -413,7 +413,7 @@ var One2manyInput = function (props) {
             // Else, we set it to undefined, since it will be a new item
             var idToShow = itemsToShow.length > 0 ? (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.id : undefined;
             var valuesToShow = itemsToShow.length > 0 ? (_b = itemsToShow[itemIndex]) === null || _b === void 0 ? void 0 : _b.values : undefined;
-            return (react_1.default.createElement(index_1.Form, { data: { ooui: formOoui, view: views.get("form") }, values: valuesToShow, ref: formRef, model: relation, id: idToShow, onCancel: function () { }, onSubmitSucceed: onFormSubmitSucceed, onSubmitError: function () {
+            return (react_1.default.createElement(index_1.Form, { data: { ooui: formOoui, view: views.get("form") }, values: valuesToShow, ref: formRef, model: relation, id: idToShow, onSubmitSucceed: onFormSubmitSucceed, onSubmitError: function () {
                     setFormIsSaving(false);
                 }, onFieldsChange: function () {
                     setFormHasChanges(true);

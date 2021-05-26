@@ -121,9 +121,10 @@ function Form(props, ref) {
         var formIsAlreadyFilledUp = Object.keys(antForm.getFieldsValue(true)).length > 0; // We check if it's a reused form and we already have values filled
         // If the newvalues only contains an empty object with an id
         // This is a new blank item, so we must clear the form if we already have the form filled up
-        if (formIsAlreadyFilledUp &&
-            Object.keys(newValues).length === 1 &&
-            newValues.id) {
+        if (!id ||
+            (formIsAlreadyFilledUp &&
+                Object.keys(newValues).length === 1 &&
+                newValues.id)) {
             antForm.resetFields();
             return;
         }

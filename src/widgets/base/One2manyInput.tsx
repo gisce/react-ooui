@@ -454,7 +454,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           ref={formRef}
           model={relation}
           id={idToShow}
-          onCancel={() => {}}
           onSubmitSucceed={onFormSubmitSucceed}
           onSubmitError={() => {
             setFormIsSaving(false);

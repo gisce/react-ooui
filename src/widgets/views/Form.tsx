@@ -119,9 +119,10 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     // If the newvalues only contains an empty object with an id
     // This is a new blank item, so we must clear the form if we already have the form filled up
     if (
-      formIsAlreadyFilledUp &&
-      Object.keys(newValues).length === 1 &&
-      newValues.id
+      !id ||
+      (formIsAlreadyFilledUp &&
+        Object.keys(newValues).length === 1 &&
+        newValues.id)
     ) {
       antForm.resetFields();
       return;
@@ -259,7 +260,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       onCancel?.();
       return;
     }
-    
+
     setIsSubmitting(true);
     try {
       if (submitMode === "api") {
