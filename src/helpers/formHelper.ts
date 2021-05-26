@@ -26,8 +26,9 @@ export const getTouchedValues = (antForm: FormInstance, fields: any) => {
   const values = antForm.getFieldsValue(true);
   const touchedValues: any = {};
   Object.keys(values).map((key) => {
-    const is2Many =
-      fields[key].type === "one2many" || fields[key].type === "many2many";
+    const is2Many = fields[key]
+      ? fields[key].type === "one2many" || fields[key].type === "many2many"
+      : false;
 
     if (antForm.isFieldTouched(key) && is2Many) {
       // We ensure the field is really touched by filtering by original items

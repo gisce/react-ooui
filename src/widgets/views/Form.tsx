@@ -113,14 +113,20 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   };
 
   const assignNewValuesToForm = (newValues: any, view: FormView) => {
-    const valuesProcessed = processValues(newValues, view.fields);
-
-    const mustClearFieldsFirst =
+    const formIsAlreadyFilledUp =
       Object.keys(antForm.getFieldsValue(true)).length > 0; // We check if it's a reused form and we already have values filled
 
-    if (mustClearFieldsFirst) {
+    // If the newvalues only contains an empty object with an id
+    // This is a new blank item, so we must clear the form if we already have the form filled up
+    if (
+      formIsAlreadyFilledUp &&
+      Object.keys(newValues).length === 1 &&
+      newValues.id
+    ) {
       antForm.resetFields();
+      return;
     }
+    const valuesProcessed = processValues(newValues, view.fields);
 
     antForm.setFieldsValue(valuesProcessed);
   };
