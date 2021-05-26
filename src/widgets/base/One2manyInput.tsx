@@ -352,7 +352,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         icon={
           <DeleteOutlined
             onClick={
-              currentView !== "form" ? showRemoveConfirm : removeSelectedItems
+              currentView === "form" ? showRemoveConfirm : removeSelectedItems
             }
             disabled={itemsToShow.length === 0}
           />
