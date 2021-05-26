@@ -292,6 +292,10 @@ function Form(props, ref) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    if (!formHasChanges()) {
+                        onCancel === null || onCancel === void 0 ? void 0 : onCancel();
+                        return [2 /*return*/];
+                    }
                     setIsSubmitting(true);
                     _a.label = 1;
                 case 1:
