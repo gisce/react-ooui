@@ -61,11 +61,17 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   );
 
   const formRef = useRef();
-  const { currentView, setCurrentView, itemIndex, setItemIndex } = useContext(
-    One2manyContext
-  ) as One2manyContextType;
+  const {
+    currentView,
+    setCurrentView,
+    itemIndex,
+    setItemIndex,
+    manualTriggerChange,
+    setManualTriggerChange,
+  } = useContext(One2manyContext) as One2manyContextType;
 
   const triggerChange = (changedValue: Array<One2manyItem>) => {
+    setManualTriggerChange(true);
     onChange?.(changedValue);
   };
 
@@ -81,12 +87,19 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
 
   const fetchData = async () => {
-    await fetchOriginalItemsFromApi(views.get("tree"));
+    if (manualTriggerChange) {
+      setManualTriggerChange(false);
+    } else {
+      await fetchOriginalItemsFromApi(views.get("tree"));
+      if (itemIndex > itemsToShow.length - 1 && itemIndex !== 0) {
+        setItemIndex(0);
+      }
+    }
   };
 
   useEffect(() => {
     fetchData();
-  }, [ooui]);
+  }, [items]);
 
   const fetchOriginalItemsFromApi = async (treeView: TreeView) => {
     setIsLoading(true);
@@ -431,9 +444,9 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       // If we have items to show, we return the proper value for the current item
       // Else, we set it to undefined, since it will be a new item
       const idToShow =
-        itemsToShow.length > 0 ? itemsToShow[itemIndex].id : undefined;
+        itemsToShow.length > 0 ? itemsToShow[itemIndex]?.id : undefined;
       const valuesToShow =
-        itemsToShow.length > 0 ? itemsToShow[itemIndex].values : undefined;
+        itemsToShow.length > 0 ? itemsToShow[itemIndex]?.values : undefined;
 
       return (
         <Form

@@ -5,6 +5,8 @@ export type One2manyContextType = {
   setCurrentView: (view: "tree" | "form") => void;
   itemIndex: number;
   setItemIndex: (value: number) => void;
+  manualTriggerChange: boolean;
+  setManualTriggerChange: (value: boolean) => void;
 };
 
 export const One2manyContext = React.createContext<One2manyContextType | null>(
@@ -20,6 +22,9 @@ const One2manyProvider = ({
 }): any => {
   const [currentView, setCurrentView] = useState<"tree" | "form">(initialView);
   const [itemIndex, setItemIndex] = useState<number>(0);
+  const [manualTriggerChange, setManualTriggerChange] = useState<boolean>(
+    false
+  );
 
   return (
     <One2manyContext.Provider
@@ -28,6 +33,8 @@ const One2manyProvider = ({
         setCurrentView,
         itemIndex,
         setItemIndex,
+        manualTriggerChange,
+        setManualTriggerChange,
       }}
     >
       {children}

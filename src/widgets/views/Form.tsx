@@ -237,15 +237,8 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       objectId = newId;
     }
 
-    // TODO: we must set is loading in root Form (create a new context provider for this purpose)
-    // setLoading(true);
-    // try {
-    //   await fetchValuesFromApi(form!.view);
-    // } catch (err) {
-    //   setError(err);
-    // } finally {
-    // setLoading(false);
-    // }
+    // TODO: This maybe will be unnecessary sometimes, we might do it conditionally with a new input prop mustRefreshAfterSave?
+    await fetchValuesFromApi(form!.view);
 
     const value = await ConnectionProvider.getHandler().execute({
       action: "name_get",
