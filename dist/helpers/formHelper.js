@@ -19,11 +19,21 @@ var processValues = function (values, fields) {
     return filterBooleans;
 };
 exports.processValues = processValues;
-var getTouchedValues = function (antForm) {
+var getTouchedValues = function (antForm, fields) {
     var values = antForm.getFieldsValue(true);
     var touchedValues = {};
     Object.keys(values).map(function (key) {
-        if (antForm.isFieldTouched(key)) {
+        var is2Many = fields[key]
+            ? fields[key].type === "one2many" || fields[key].type === "many2many"
+            : false;
+        if (antForm.isFieldTouched(key) && is2Many) {
+            // We ensure the field is really touched by filtering by original items
+            var nonOriginalItems = values[key].filter(function (item) { return item.operation !== "original"; });
+            if (nonOriginalItems.length > 0) {
+                touchedValues[key] = values[key];
+            }
+        }
+        else if (antForm.isFieldTouched(key)) {
             touchedValues[key] = values[key];
         }
     });

@@ -118,11 +118,16 @@ function Form(props, ref) {
         });
     }); };
     var assignNewValuesToForm = function (newValues, view) {
-        var valuesProcessed = formHelper_1.processValues(newValues, view.fields);
-        var mustClearFieldsFirst = Object.keys(antForm.getFieldsValue(true)).length > 0; // We check if it's a reused form and we already have values filled
-        if (mustClearFieldsFirst) {
+        var formIsAlreadyFilledUp = Object.keys(antForm.getFieldsValue(true)).length > 0; // We check if it's a reused form and we already have values filled
+        // If the newvalues only contains an empty object with an id
+        // This is a new blank item, so we must clear the form if we already have the form filled up
+        if (formIsAlreadyFilledUp &&
+            Object.keys(newValues).length === 1 &&
+            newValues.id) {
             antForm.resetFields();
+            return;
         }
+        var valuesProcessed = formHelper_1.processValues(newValues, view.fields);
         antForm.setFieldsValue(valuesProcessed);
     };
     var fetchAndParseForm = function () { return __awaiter(_this, void 0, void 0, function () {
@@ -220,14 +225,14 @@ function Form(props, ref) {
         fetchData();
     }, [id, model, values, data]);
     var formHasChanges = function () {
-        return Object.keys(formHelper_1.getTouchedValues(antForm)).length !== 0;
+        return (Object.keys(formHelper_1.getTouchedValues(antForm, form === null || form === void 0 ? void 0 : form.view.fields)).length !== 0);
     };
     var submitApi = function () { return __awaiter(_this, void 0, void 0, function () {
-        var touchedValues, erpTouchedValues, objectId, newId, err_2, value;
+        var touchedValues, erpTouchedValues, objectId, newId, value;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    touchedValues = formHelper_1.getTouchedValues(antForm);
+                    touchedValues = formHelper_1.getTouchedValues(antForm, form === null || form === void 0 ? void 0 : form.view.fields);
                     erpTouchedValues = erpReadWriteHelper_1.getErpValues({
                         fields: form === null || form === void 0 ? void 0 : form.view.fields,
                         touchedValues: touchedValues,
@@ -253,23 +258,18 @@ function Form(props, ref) {
                     newId = _a.sent();
                     objectId = newId;
                     _a.label = 4;
-                case 4:
-                    _a.trys.push([4, 6, 7, 8]);
-                    return [4 /*yield*/, fetchValuesFromApi(form.view)];
+                case 4: 
+                // TODO: This maybe will be unnecessary sometimes, we might do it conditionally with a new input prop mustRefreshAfterSave?
+                return [4 /*yield*/, fetchValuesFromApi(form.view)];
                 case 5:
+                    // TODO: This maybe will be unnecessary sometimes, we might do it conditionally with a new input prop mustRefreshAfterSave?
                     _a.sent();
-                    return [3 /*break*/, 8];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
+                            action: "name_get",
+                            payload: [objectId],
+                            model: model,
+                        })];
                 case 6:
-                    err_2 = _a.sent();
-                    setError(err_2);
-                    return [3 /*break*/, 8];
-                case 7: return [7 /*endfinally*/];
-                case 8: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
-                        action: "name_get",
-                        payload: [objectId],
-                        model: model,
-                    })];
-                case 9:
                     value = _a.sent();
                     onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed({
                         id: value[0],
@@ -282,13 +282,13 @@ function Form(props, ref) {
         return __generator(this, function (_a) {
             onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed({
                 id: id,
-                touchedValues: formHelper_1.getTouchedValues(antForm),
+                touchedValues: formHelper_1.getTouchedValues(antForm, form === null || form === void 0 ? void 0 : form.view.fields),
             });
             return [2 /*return*/];
         });
     }); };
     var submitForm = function () { return __awaiter(_this, void 0, void 0, function () {
-        var err_3;
+        var err_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -310,9 +310,9 @@ function Form(props, ref) {
                         antForm.resetFields();
                     return [3 /*break*/, 8];
                 case 6:
-                    err_3 = _a.sent();
-                    onSubmitError === null || onSubmitError === void 0 ? void 0 : onSubmitError(err_3);
-                    setError(err_3);
+                    err_2 = _a.sent();
+                    onSubmitError === null || onSubmitError === void 0 ? void 0 : onSubmitError(err_2);
+                    setError(err_2);
                     return [3 /*break*/, 8];
                 case 7:
                     setIsSubmitting(false);
@@ -321,11 +321,16 @@ function Form(props, ref) {
             }
         });
     }); };
+    var checkFieldsChanges = function () {
+        if (onFieldsChange && formHasChanges()) {
+            onFieldsChange();
+        }
+    };
     var content = function () {
         if (!form) {
             return null;
         }
-        return (react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: onFieldsChange, component: false }, form && (react_1.default.createElement(Container_1.default, { container: form.ooui.container, responsiveBehaviour: responsiveBehaviour }))));
+        return (react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: checkFieldsChanges, component: false }, form && (react_1.default.createElement(Container_1.default, { container: form.ooui.container, responsiveBehaviour: responsiveBehaviour }))));
     };
     var footer = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
@@ -338,7 +343,7 @@ function Form(props, ref) {
     return (react_1.default.createElement("div", { ref: containerRef, className: "pb-2" },
         error && react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true }),
         loading ? react_1.default.createElement(antd_1.Spin, null) : content(),
-        showFooter && footer()));
+        footer()));
 }
 exports.default = react_1.forwardRef(Form);
 //# sourceMappingURL=Form.js.map

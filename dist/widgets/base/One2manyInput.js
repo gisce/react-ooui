@@ -85,9 +85,9 @@ var One2manyInput = function (props) {
     var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui, views = props.views, formOoui = props.formOoui, treeOoui = props.treeOoui;
     var itemsToShow = items.filter(function (item) { return item.operation !== "remove" && item.values; });
     var formRef = react_1.useRef();
-    var _b = react_1.useContext(One2manyContext_1.One2manyContext), currentView = _b.currentView, setCurrentView = _b.setCurrentView, itemIndex = _b.itemIndex, setItemIndex = _b.setItemIndex, manualTrigger = _b.manualTrigger, setManualTrigger = _b.setManualTrigger;
+    var _b = react_1.useContext(One2manyContext_1.One2manyContext), currentView = _b.currentView, setCurrentView = _b.setCurrentView, itemIndex = _b.itemIndex, setItemIndex = _b.setItemIndex, manualTriggerChange = _b.manualTriggerChange, setManualTriggerChange = _b.setManualTriggerChange;
     var triggerChange = function (changedValue) {
-        setManualTrigger(true);
+        setManualTriggerChange(true);
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
     };
     var _c = ooui, readOnly = _c.readOnly, relation = _c.relation;
@@ -103,32 +103,34 @@ var One2manyInput = function (props) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!!manualTrigger) return [3 /*break*/, 2];
-                    return [4 /*yield*/, fetchOriginalItemsFromApi(views.get("tree"))];
-                case 1:
-                    _a.sent();
+                    if (!manualTriggerChange) return [3 /*break*/, 1];
+                    setManualTriggerChange(false);
                     return [3 /*break*/, 3];
+                case 1: return [4 /*yield*/, fetchOriginalItemsFromApi(views.get("tree"))];
                 case 2:
-                    setManualTrigger(false);
-                    _a.label = 3;
-                case 3:
+                    _a.sent();
                     if (itemIndex > itemsToShow.length - 1 && itemIndex !== 0) {
                         setItemIndex(0);
                     }
-                    return [2 /*return*/];
+                    _a.label = 3;
+                case 3: return [2 /*return*/];
             }
         });
     }); };
     react_1.useEffect(function () {
-        if (items && items.length > 0) {
-            fetchData();
-        }
+        fetchData();
     }, [items]);
     var fetchOriginalItemsFromApi = function (treeView) { return __awaiter(void 0, void 0, void 0, function () {
-        var realItems, idsToFetch, values, itemsWithValues;
+        var realItems, idsToFetch, values_1, itemsWithValues, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    setIsLoading(true);
+                    setFormHasChanges(false);
+                    setError(undefined);
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, 4, 5]);
                     realItems = items.filter(function (item) { return item.operation === "original" && item.id; });
                     idsToFetch = realItems.map(function (item) { return item.id; });
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
@@ -136,17 +138,25 @@ var One2manyInput = function (props) {
                             model: relation,
                             ids: idsToFetch,
                         })];
-                case 1:
-                    values = _a.sent();
+                case 2:
+                    values_1 = _a.sent();
                     itemsWithValues = items.map(function (item) {
-                        var fetchedItemValues = values.find(function (itemValues) {
+                        var fetchedItemValues = values_1.find(function (itemValues) {
                             console.log();
                             return itemValues.id === item.id;
                         });
                         return __assign(__assign({}, item), { values: fetchedItemValues });
                     });
                     triggerChange(itemsWithValues);
-                    return [2 /*return*/];
+                    return [3 /*break*/, 5];
+                case 3:
+                    err_1 = _a.sent();
+                    setError(err_1);
+                    return [3 /*break*/, 5];
+                case 4:
+                    setIsLoading(false);
+                    return [7 /*endfinally*/];
+                case 5: return [2 /*return*/];
             }
         });
     }); };
@@ -291,7 +301,8 @@ var One2manyInput = function (props) {
             return null;
         }
         var icon = formIsSaving ? react_1.default.createElement(icons_1.LoadingOutlined, null) : react_1.default.createElement(icons_1.SaveOutlined, null);
-        return (react_1.default.createElement(antd_1.Button, { icon: icon, onClick: saveItem, disabled: !formHasChanges || formIsSaving || readOnly }));
+        return (react_1.default.createElement(react_1.default.Fragment, null,
+            react_1.default.createElement(antd_1.Button, { icon: icon, onClick: saveItem, disabled: !formHasChanges || formIsSaving || readOnly })));
     };
     var getTitle = function () {
         return currentView === "form" ? formOoui.string : treeOoui.string;
@@ -335,10 +346,7 @@ var One2manyInput = function (props) {
         setIsLoading(false);
     };
     var deleteButton = function () {
-        if (currentView !== "form" && !isMany2many) {
-            return null;
-        }
-        return (react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.DeleteOutlined, { onClick: isMany2many ? removeSelectedItems : showRemoveConfirm, disabled: itemsToShow.length === 0 }), disabled: readOnly }));
+        return (react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.DeleteOutlined, { onClick: currentView !== "form" ? showRemoveConfirm : removeSelectedItems, disabled: itemsToShow.length === 0 }), disabled: readOnly }));
     };
     var itemBrowser = function () {
         if (currentView !== "form") {
@@ -394,27 +402,23 @@ var One2manyInput = function (props) {
         setShowFormModal(true);
     };
     var content = function () {
+        var _a, _b;
         if (currentView === "form") {
             // If we have items to show, we return the proper value for the current item
             // Else, we set it to undefined, since it will be a new item
-            var idToShow = itemsToShow.length > 0 ? itemsToShow[itemIndex].id : undefined;
-            var valuesToShow = itemsToShow.length > 0 ? itemsToShow[itemIndex].values : undefined;
+            var idToShow = itemsToShow.length > 0 ? (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.id : undefined;
+            var valuesToShow = itemsToShow.length > 0 ? (_b = itemsToShow[itemIndex]) === null || _b === void 0 ? void 0 : _b.values : undefined;
             return (react_1.default.createElement(index_1.Form, { data: { ooui: formOoui, view: views.get("form") }, values: valuesToShow, ref: formRef, model: relation, id: idToShow, onCancel: function () { }, onSubmitSucceed: onFormSubmitSucceed, onSubmitError: function () {
                     setFormIsSaving(false);
                 }, onFieldsChange: function () {
                     setFormHasChanges(true);
                 }, readOnly: readOnly, submitMode: "values" }));
         }
-        return (react_1.default.createElement(index_2.Tree, { total: itemsToShow.length, limit: itemsToShow.length, treeView: views.get("tree"), results: itemsToShow.map(function (item) { return item.values; }), loading: false, onRowClicked: onTreeRowClicked, showPagination: false, rowSelection: isMany2many
-                ? {
-                    selectedRowKeys: selectedRowKeys,
-                    onChange: setSelectedRowKeys,
-                }
-                : undefined }));
+        return (react_1.default.createElement(index_2.Tree, { total: itemsToShow.length, limit: itemsToShow.length, treeView: views.get("tree"), results: itemsToShow.map(function (item) { return item.values; }), loading: isLoading, onRowClicked: onTreeRowClicked, showPagination: false, rowSelection: {
+                selectedRowKeys: selectedRowKeys,
+                onChange: setSelectedRowKeys,
+            } }));
     };
-    if (isLoading) {
-        return react_1.default.createElement(antd_1.Spin, null);
-    }
     if (error) {
         return react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true });
     }

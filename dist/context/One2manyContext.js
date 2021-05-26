@@ -25,15 +25,15 @@ exports.One2manyContext = react_1.default.createContext(null);
 var One2manyProvider = function (_a) {
     var children = _a.children, initialView = _a.initialView;
     var _b = react_1.useState(initialView), currentView = _b[0], setCurrentView = _b[1];
-    var _c = react_1.useState(false), manualTrigger = _c[0], setManualTrigger = _c[1];
-    var _d = react_1.useState(0), itemIndex = _d[0], setItemIndex = _d[1];
+    var _c = react_1.useState(0), itemIndex = _c[0], setItemIndex = _c[1];
+    var _d = react_1.useState(false), manualTriggerChange = _d[0], setManualTriggerChange = _d[1];
     return (react_1.default.createElement(exports.One2manyContext.Provider, { value: {
             currentView: currentView,
             setCurrentView: setCurrentView,
-            manualTrigger: manualTrigger,
-            setManualTrigger: setManualTrigger,
             itemIndex: itemIndex,
             setItemIndex: setItemIndex,
+            manualTriggerChange: manualTriggerChange,
+            setManualTriggerChange: setManualTriggerChange,
         } }, children));
 };
 exports.default = One2manyProvider;
