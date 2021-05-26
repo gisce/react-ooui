@@ -282,8 +282,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     const icon = formIsSaving ? <LoadingOutlined /> : <SaveOutlined />;
     return (
       <>
-        {separator()}
-
         <Button
           icon={icon}
           onClick={saveItem}
@@ -349,15 +347,13 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   };
 
   const deleteButton = () => {
-    if (currentView !== "form" && !isMany2many) {
-      return null;
-    }
-
     return (
       <Button
         icon={
           <DeleteOutlined
-            onClick={isMany2many ? removeSelectedItems : showRemoveConfirm}
+            onClick={
+              currentView !== "form" ? showRemoveConfirm : removeSelectedItems
+            }
             disabled={itemsToShow.length === 0}
           />
         }
@@ -389,6 +385,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
             icon={<FileAddOutlined onClick={createItem} />}
             disabled={readOnly}
           />
+          {separator()}
           {saveButton()}
           {deleteButton()}
           {itemBrowser()}
@@ -478,14 +475,10 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         loading={isLoading}
         onRowClicked={onTreeRowClicked}
         showPagination={false}
-        rowSelection={
-          isMany2many
-            ? {
-                selectedRowKeys,
-                onChange: setSelectedRowKeys,
-              }
-            : undefined
-        }
+        rowSelection={{
+          selectedRowKeys,
+          onChange: setSelectedRowKeys,
+        }}
       />
     );
   };
