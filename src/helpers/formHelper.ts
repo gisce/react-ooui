@@ -1,3 +1,4 @@
+import { One2manyItem } from "@/widgets/base/One2manyInput";
 import { FormInstance } from "antd";
 
 const filteredValues = (values: any, fields: any) => {
@@ -21,11 +22,22 @@ export const processValues = (values: any, fields: any) => {
   return filterBooleans;
 };
 
-export const getTouchedValues = (antForm: FormInstance) => {
+export const getTouchedValues = (antForm: FormInstance, fields: any) => {
   const values = antForm.getFieldsValue(true);
   const touchedValues: any = {};
   Object.keys(values).map((key) => {
-    if (antForm.isFieldTouched(key)) {
+    const is2Many =
+      fields[key].type === "one2many" || fields[key].type === "many2many";
+
+    if (antForm.isFieldTouched(key) && is2Many) {
+      // We ensure the field is really touched by filtering by original items
+      const nonOriginalItems = values[key].filter(
+        (item: One2manyItem) => item.operation !== "original"
+      );
+      if (nonOriginalItems.length > 0) {
+        touchedValues[key] = values[key];
+      }
+    } else if (antForm.isFieldTouched(key)) {
       touchedValues[key] = values[key];
     }
   });

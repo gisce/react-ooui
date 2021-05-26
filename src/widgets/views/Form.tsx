@@ -198,11 +198,13 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   }, [id, model, values, data]);
 
   const formHasChanges = () => {
-    return Object.keys(getTouchedValues(antForm)).length !== 0;
+    return (
+      Object.keys(getTouchedValues(antForm, form?.view.fields)).length !== 0
+    );
   };
 
   const submitApi = async () => {
-    const touchedValues = getTouchedValues(antForm);
+    const touchedValues = getTouchedValues(antForm, form?.view.fields);
 
     const erpTouchedValues = getErpValues({
       fields: form?.view.fields,
@@ -231,13 +233,13 @@ function Form(props: FormProps, ref: any): React.ReactElement {
 
     // TODO: we must set is loading in root Form (create a new context provider for this purpose)
     // setLoading(true);
-    try {
-      await fetchValuesFromApi(form!.view);
-    } catch (err) {
-      setError(err);
-    } finally {
-      // setLoading(false);
-    }
+    // try {
+    //   await fetchValuesFromApi(form!.view);
+    // } catch (err) {
+    //   setError(err);
+    // } finally {
+    // setLoading(false);
+    // }
 
     const value = await ConnectionProvider.getHandler().execute({
       action: "name_get",
@@ -253,7 +255,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   const submitValues = async () => {
     onSubmitSucceed?.({
       id,
-      touchedValues: getTouchedValues(antForm),
+      touchedValues: getTouchedValues(antForm, form?.view.fields),
     });
   };
 
