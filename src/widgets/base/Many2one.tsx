@@ -112,7 +112,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
       <Col flex="32px">
         <Button
           icon={<FolderOpenOutlined />}
-          disabled={readOnly || id === undefined}
+          disabled={id === undefined}
           onClick={() => {
             setShowFormModal(true);
           }}
@@ -157,6 +157,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
           setShowFormModal(false);
         }}
         mustClearAfterSave={true}
+        readOnly={readOnly}
       />
     </Row>
   );
