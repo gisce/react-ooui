@@ -114,23 +114,16 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   };
 
   const assignNewValuesToForm = (newValues: any, view: FormView) => {
-    const formIsAlreadyFilledUp =
-      Object.keys(antForm.getFieldsValue(true)).length > 0; // We check if it's a reused form and we already have values filled
-
-    // If the newvalues only contains an empty object with an id
-    // This is a new blank item, so we must clear the form if we already have the form filled up
-    if (
-      !id ||
-      (formIsAlreadyFilledUp &&
-        Object.keys(newValues).length === 1 &&
-        newValues.id)
-    ) {
-      antForm.resetFields();
-      return;
-    }
     const valuesProcessed = processValues(newValues, view.fields);
+    const fieldsToUpdate = Object.keys(view.fields).map((fieldName) => {
+      return {
+        name: fieldName,
+        touched: false,
+        value: valuesProcessed[fieldName] || undefined,
+      };
+    });
 
-    antForm.setFieldsValue(valuesProcessed);
+    antForm.setFields(fieldsToUpdate);
   };
 
   const fetchAndParseForm = async () => {
@@ -270,7 +263,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         await submitValues();
       }
 
-      if (mustClearAfterSave) antForm.resetFields();
+      if (mustClearAfterSave) assignNewValuesToForm({}, form?.view.fields);
     } catch (err) {
       onSubmitError?.(err);
       setError(err);
