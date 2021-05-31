@@ -224,24 +224,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const createItem = async () => {
     if (currentView === "form") {
       showFormChangesDialogIfNeeded(() => {
-        const newId = getTemporalIdNumber({
-          ids: items.map((item) => item.id) as number[],
-        });
-        const updatedItems = addOrUpdateItem({
-          itemToUpdate: {
-            operation: "create",
-            id: newId,
-            values: { id: newId }, // We will have to remove this id inside values later
-          },
-          items,
-        });
-
-        triggerChange(updatedItems);
-
-        const updatedItemsToShow = updatedItems.filter(
-          (item) => item.operation !== "remove"
-        );
-        setItemIndex(updatedItemsToShow.length - 1);
+        setModalItem(undefined);
+        setShowFormModal(true);
       });
     } else {
       setModalItem(undefined);

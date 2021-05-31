@@ -307,7 +307,7 @@ function Form(props, ref) {
                     _a.label = 5;
                 case 5:
                     if (mustClearAfterSave)
-                        assignNewValuesToForm({}, form === null || form === void 0 ? void 0 : form.view.fields);
+                        assignNewValuesToForm({}, form === null || form === void 0 ? void 0 : form.view);
                     return [3 /*break*/, 8];
                 case 6:
                     err_2 = _a.sent();

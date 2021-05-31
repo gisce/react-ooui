@@ -263,7 +263,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         await submitValues();
       }
 
-      if (mustClearAfterSave) assignNewValuesToForm({}, form?.view.fields);
+      if (mustClearAfterSave) assignNewValuesToForm({}, form?.view!);
     } catch (err) {
       onSubmitError?.(err);
       setError(err);

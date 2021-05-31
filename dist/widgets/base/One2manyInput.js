@@ -246,20 +246,8 @@ var One2manyInput = function (props) {
         return __generator(this, function (_a) {
             if (currentView === "form") {
                 showFormChangesDialogIfNeeded(function () {
-                    var newId = _2manyHelper_1.getTemporalIdNumber({
-                        ids: items.map(function (item) { return item.id; }),
-                    });
-                    var updatedItems = _2manyHelper_1.addOrUpdateItem({
-                        itemToUpdate: {
-                            operation: "create",
-                            id: newId,
-                            values: { id: newId }, // We will have to remove this id inside values later
-                        },
-                        items: items,
-                    });
-                    triggerChange(updatedItems);
-                    var updatedItemsToShow = updatedItems.filter(function (item) { return item.operation !== "remove"; });
-                    setItemIndex(updatedItemsToShow.length - 1);
+                    setModalItem(undefined);
+                    setShowFormModal(true);
                 });
             }
             else {
