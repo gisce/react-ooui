@@ -31,10 +31,11 @@ var antd_1 = require("antd");
 var Form_1 = __importDefault(require("@/widgets/views/Form"));
 var useModalWidthDimensions_1 = __importDefault(require("@/hooks/useModalWidthDimensions"));
 var FormModal = function (props) {
-    var visible = props.visible, id = props.id, _a = props.title, title = _a === void 0 ? id ? "Detail" : "New" : _a, rest = __rest(props, ["visible", "id", "title"]);
+    var visible = props.visible, id = props.id, _a = props.title, title = _a === void 0 ? id ? "Detail" : "New" : _a, _b = props.noReuse, noReuse = _b === void 0 ? false : _b, rest = __rest(props, ["visible", "id", "title", "noReuse"]);
     var modalWidth = useModalWidthDimensions_1.default().modalWidth;
+    var key = noReuse ? Math.random() * 10000 : undefined; // This forces the component to be unique each time if we set noReuse = true
     return (react_1.default.createElement(antd_1.Modal, { title: title, centered: true, width: modalWidth, visible: visible, closable: false, footer: null },
-        react_1.default.createElement(Form_1.default, __assign({ id: id, showFooter: true }, rest))));
+        react_1.default.createElement(Form_1.default, __assign({ key: key, id: id, showFooter: true }, rest))));
 };
 exports.FormModal = FormModal;
 //# sourceMappingURL=FormModal.js.map

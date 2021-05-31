@@ -488,6 +488,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       {topBar()}
       {content()}
       <FormModal
+        noReuse={true}
         data={{ ooui: formOoui, view: views.get("form") }}
         model={relation}
         id={modalItem?.id}
