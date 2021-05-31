@@ -203,7 +203,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
 
   useEffect(() => {
     fetchData();
-  }, [id, model, values, data]);
+  }, [id, model, values]);
 
   const formHasChanges = () => {
     return (
