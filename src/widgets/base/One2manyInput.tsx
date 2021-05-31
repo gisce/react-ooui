@@ -388,8 +388,9 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         {title()}
         <div className="h-8 flex-none pl-2">
           <Button
-            icon={<FileAddOutlined onClick={createItem} />}
+            icon={<FileAddOutlined />}
             disabled={readOnly}
+            onClick={createItem}
           />
           {separator()}
           {saveButton()}
