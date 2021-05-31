@@ -158,7 +158,6 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
         }}
         mustClearAfterSave={true}
         readOnly={readOnly}
-        showFooter={true}
       />
     </Row>
   );

@@ -34,7 +34,7 @@ var FormModal = function (props) {
     var visible = props.visible, id = props.id, _a = props.title, title = _a === void 0 ? id ? "Detail" : "New" : _a, rest = __rest(props, ["visible", "id", "title"]);
     var modalWidth = useModalWidthDimensions_1.default().modalWidth;
     return (react_1.default.createElement(antd_1.Modal, { title: title, centered: true, width: modalWidth, visible: visible, closable: false, footer: null },
-        react_1.default.createElement(Form_1.default, __assign({ id: id }, rest))));
+        react_1.default.createElement(Form_1.default, __assign({ id: id, showFooter: true }, rest))));
 };
 exports.FormModal = FormModal;
 //# sourceMappingURL=FormModal.js.map

@@ -173,6 +173,6 @@ var Many2oneInput = function (props) {
                 setShowFormModal(false);
             }, onCancel: function () {
                 setShowFormModal(false);
-            }, mustClearAfterSave: true, readOnly: readOnly, showFooter: true })));
+            }, mustClearAfterSave: true, readOnly: readOnly })));
 };
 //# sourceMappingURL=Many2one.js.map

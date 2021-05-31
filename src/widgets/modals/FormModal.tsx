@@ -22,7 +22,7 @@ export const FormModal = (props: FormModalProps) => {
       closable={false}
       footer={null}
     >
-      <Form id={id} {...rest} />
+      <Form id={id} showFooter={true} {...rest} />
     </Modal>
   );
 };
