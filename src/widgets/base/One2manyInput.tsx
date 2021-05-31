@@ -18,6 +18,7 @@ import {
   One2manyContext,
   One2manyContextType,
 } from "@/context/One2manyContext";
+import { FormContext, FormContextType } from "@/context/FormContext";
 
 import {
   FileAddOutlined,
@@ -56,6 +57,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     formOoui,
     treeOoui,
   } = props;
+  const { id: fieldName } = ooui;
+
   const itemsToShow = items.filter(
     (item) => item.operation !== "remove" && item.values
   );
@@ -68,6 +71,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     manualTriggerChange,
     setManualTriggerChange,
   } = useContext(One2manyContext) as One2manyContextType;
+  const { parentId } = useContext(FormContext) as FormContextType;
 
   const triggerChange = (changedValue: Array<One2manyItem>) => {
     setManualTriggerChange(true);

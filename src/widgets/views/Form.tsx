@@ -23,6 +23,7 @@ import { FormView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import { getErpValues, formatX2ManyValues } from "@/helpers/erpReadWriteHelper";
+import FormProvider from "@/context/FormContext";
 
 export type FormProps = {
   model: string;
@@ -290,18 +291,20 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     }
 
     return (
-      <AntForm
-        form={antForm}
-        onFieldsChange={checkFieldsChanges}
-        component={false}
-      >
-        {form && (
-          <Container
-            container={form.ooui.container}
-            responsiveBehaviour={responsiveBehaviour}
-          />
-        )}
-      </AntForm>
+      <FormProvider parentId={id}>
+        <AntForm
+          form={antForm}
+          onFieldsChange={checkFieldsChanges}
+          component={false}
+        >
+          {form && (
+            <Container
+              container={form.ooui.container}
+              responsiveBehaviour={responsiveBehaviour}
+            />
+          )}
+        </AntForm>
+      </FormProvider>
     );
   };
 
