@@ -119,18 +119,15 @@ function Form(props, ref) {
         });
     }); };
     var assignNewValuesToForm = function (newValues, view) {
-        var formIsAlreadyFilledUp = Object.keys(antForm.getFieldsValue(true)).length > 0; // We check if it's a reused form and we already have values filled
-        // If the newvalues only contains an empty object with an id
-        // This is a new blank item, so we must clear the form if we already have the form filled up
-        if (!id ||
-            (formIsAlreadyFilledUp &&
-                Object.keys(newValues).length === 1 &&
-                newValues.id)) {
-            antForm.resetFields();
-            return;
-        }
         var valuesProcessed = formHelper_1.processValues(newValues, view.fields);
-        antForm.setFieldsValue(valuesProcessed);
+        var fieldsToUpdate = Object.keys(view.fields).map(function (fieldName) {
+            return {
+                name: fieldName,
+                touched: false,
+                value: valuesProcessed[fieldName] || undefined,
+            };
+        });
+        antForm.setFields(fieldsToUpdate);
     };
     var fetchAndParseForm = function () { return __awaiter(_this, void 0, void 0, function () {
         var view, ooui;
@@ -310,7 +307,7 @@ function Form(props, ref) {
                     _a.label = 5;
                 case 5:
                     if (mustClearAfterSave)
-                        antForm.resetFields();
+                        assignNewValuesToForm({}, form === null || form === void 0 ? void 0 : form.view.fields);
                     return [3 /*break*/, 8];
                 case 6:
                     err_2 = _a.sent();

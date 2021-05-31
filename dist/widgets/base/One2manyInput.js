@@ -367,7 +367,7 @@ var One2manyInput = function (props) {
         return (react_1.default.createElement("div", { className: "flex mb-2" },
             title(),
             react_1.default.createElement("div", { className: "h-8 flex-none pl-2" },
-                react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FileAddOutlined, { onClick: createItem }), disabled: readOnly }),
+                react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FileAddOutlined, null), disabled: readOnly, onClick: createItem }),
                 separator(),
                 saveButton(),
                 deleteButton(),
