@@ -124,10 +124,9 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       });
 
       const itemsWithValues = items.map((item) => {
-        const fetchedItemValues = values.find((itemValues: any) => {
-          console.log();
-          return itemValues.id === item.id;
-        });
+        const fetchedItemValues = values.find(
+          (itemValues: any) => itemValues.id === item.id
+        );
         return { ...item, values: fetchedItemValues };
       });
 
