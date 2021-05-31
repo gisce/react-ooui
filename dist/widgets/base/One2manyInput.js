@@ -80,11 +80,14 @@ var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"
 var RemoveItemDialog_1 = __importDefault(require("@/ui/RemoveItemDialog"));
 var _2manyHelper_1 = require("@/helpers/2manyHelper");
 var One2manyContext_1 = require("@/context/One2manyContext");
+var FormContext_1 = require("@/context/FormContext");
 var icons_1 = require("@ant-design/icons");
 var One2manyInput = function (props) {
     var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui, views = props.views, formOoui = props.formOoui, treeOoui = props.treeOoui;
+    var fieldName = ooui.id;
     var itemsToShow = items.filter(function (item) { return item.operation !== "remove" && item.values; });
     var _b = react_1.useContext(One2manyContext_1.One2manyContext), currentView = _b.currentView, setCurrentView = _b.setCurrentView, itemIndex = _b.itemIndex, setItemIndex = _b.setItemIndex, manualTriggerChange = _b.manualTriggerChange, setManualTriggerChange = _b.setManualTriggerChange;
+    var parentId = react_1.useContext(FormContext_1.FormContext).parentId;
     var triggerChange = function (changedValue) {
         setManualTriggerChange(true);
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
@@ -141,10 +144,7 @@ var One2manyInput = function (props) {
                 case 2:
                     values_1 = _a.sent();
                     itemsWithValues = items.map(function (item) {
-                        var fetchedItemValues = values_1.find(function (itemValues) {
-                            console.log();
-                            return itemValues.id === item.id;
-                        });
+                        var fetchedItemValues = values_1.find(function (itemValues) { return itemValues.id === item.id; });
                         return __assign(__assign({}, item), { values: fetchedItemValues });
                     });
                     triggerChange(itemsWithValues);

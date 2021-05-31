@@ -68,6 +68,7 @@ var formHelper_1 = require("@/helpers/formHelper");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"));
 var erpReadWriteHelper_1 = require("@/helpers/erpReadWriteHelper");
+var FormContext_1 = __importDefault(require("@/context/FormContext"));
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
@@ -224,7 +225,7 @@ function Form(props, ref) {
     }); };
     react_1.useEffect(function () {
         fetchData();
-    }, [id, model, values, data]);
+    }, [id, model, values]);
     var formHasChanges = function () {
         return (Object.keys(formHelper_1.getTouchedValues(antForm, form === null || form === void 0 ? void 0 : form.view.fields)).length !== 0);
     };
@@ -332,7 +333,8 @@ function Form(props, ref) {
         if (!form) {
             return null;
         }
-        return (react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: checkFieldsChanges, component: false }, form && (react_1.default.createElement(Container_1.default, { container: form.ooui.container, responsiveBehaviour: responsiveBehaviour }))));
+        return (react_1.default.createElement(FormContext_1.default, { parentId: id },
+            react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: checkFieldsChanges, component: false }, form && (react_1.default.createElement(Container_1.default, { container: form.ooui.container, responsiveBehaviour: responsiveBehaviour })))));
     };
     var footer = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,

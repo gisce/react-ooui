@@ -151,7 +151,7 @@ var Many2oneInput = function (props) {
         react_1.default.createElement(antd_1.Col, { flex: "auto" },
             react_1.default.createElement(antd_1.Input, { type: "text", value: text, onChange: onValueStringChange, disabled: readOnly, className: requiredClass, onBlur: onElementLostFocus })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
-            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: readOnly || id === undefined, onClick: function () {
+            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: id === undefined, onClick: function () {
                     setShowFormModal(true);
                 }, tabIndex: -1 })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
@@ -173,6 +173,6 @@ var Many2oneInput = function (props) {
                 setShowFormModal(false);
             }, onCancel: function () {
                 setShowFormModal(false);
-            }, mustClearAfterSave: true })));
+            }, mustClearAfterSave: true, readOnly: readOnly, showFooter: true })));
 };
 //# sourceMappingURL=Many2one.js.map
