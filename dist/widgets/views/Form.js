@@ -268,7 +268,8 @@ function Form(props, ref) {
                 case 6:
                     value = _a.sent();
                     onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed({
-                        id: value[0],
+                        id: objectId,
+                        name: value[0][1]
                     });
                     return [2 /*return*/];
             }

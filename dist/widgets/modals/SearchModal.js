@@ -90,7 +90,7 @@ var SearchModal = function (props) {
                         })];
                 case 2:
                     value = _a.sent();
-                    onSelectValue(value[0]);
+                    onSelectValue({ id: id, name: value[0][1] });
                     return [3 /*break*/, 5];
                 case 3:
                     err_1 = _a.sent();
@@ -118,10 +118,10 @@ var SearchModal = function (props) {
     return (react_1.default.createElement(react_1.default.Fragment, null,
         react_1.default.createElement(antd_1.Modal, { title: "Search", centered: true, width: modalWidth, visible: visible && !showCreateModal, closable: true, onCancel: onCloseModal, footer: null },
             react_1.default.createElement("div", null, loading ? react_1.default.createElement(antd_1.Spin, null) : content())),
-        react_1.default.createElement(FormModal_1.FormModal, { model: model, visible: showCreateModal, onSubmitSucceed: function (value) {
+        react_1.default.createElement(FormModal_1.FormModal, { model: model, visible: showCreateModal, onSubmitSucceed: function (event) {
                 setShowCreateModal(false);
                 onCloseModal();
-                onSelectValue(value);
+                onSelectValue(event);
             }, onCancel: function () {
                 setShowCreateModal(false);
                 onCloseModal();

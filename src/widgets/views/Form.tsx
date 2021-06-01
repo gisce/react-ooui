@@ -238,7 +238,8 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     });
 
     onSubmitSucceed?.({
-      id: value[0],
+      id: objectId,
+      name: value[0][1]
     });
   };
 

@@ -32,7 +32,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
         payload: [id],
         model,
       });
-      onSelectValue(value[0]);
+      onSelectValue({ id, name: value[0][1] });
     } catch (err) {
       setError(err);
     } finally {
@@ -95,10 +95,10 @@ export const SearchModal = (props: SearchSelectionProps) => {
       <FormModal
         model={model}
         visible={showCreateModal}
-        onSubmitSucceed={(value) => {
+        onSubmitSucceed={(event) => {
           setShowCreateModal(false);
           onCloseModal();
-          onSelectValue(value);
+          onSelectValue(event);
         }}
         onCancel={() => {
           setShowCreateModal(false);

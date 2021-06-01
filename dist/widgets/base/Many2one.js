@@ -160,16 +160,16 @@ var Many2oneInput = function (props) {
                     setSearchText(text);
                     setShowSearchModal(true);
                 }, tabIndex: -1 })),
-        react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValue: function (value) {
-                triggerChange(value);
+        react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValue: function (event) {
+                triggerChange([event.id, event.name]);
                 setShowSearchModal(false);
                 SEARCH_BUTTON_TAPPED_FLAG = false;
             }, onCloseModal: function () {
                 setShowSearchModal(false);
                 SEARCH_BUTTON_TAPPED_FLAG = false;
             } }),
-        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: value && value[0], visible: showFormModal, onSubmitSucceed: function (value) {
-                triggerChange(value);
+        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: value && value[0], visible: showFormModal, onSubmitSucceed: function (event) {
+                triggerChange([event.id, event.name]);
                 setShowFormModal(false);
             }, onCancel: function () {
                 setShowFormModal(false);

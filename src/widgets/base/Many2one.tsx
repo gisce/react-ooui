@@ -135,8 +135,8 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
         model={relation}
         visible={showSearchModal}
         nameSearch={!id ? searchText : undefined}
-        onSelectValue={(value) => {
-          triggerChange(value);
+        onSelectValue={(event) => {
+          triggerChange([event.id, event.name]);
           setShowSearchModal(false);
           SEARCH_BUTTON_TAPPED_FLAG = false;
         }}
@@ -149,8 +149,8 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
         model={relation}
         id={value && value[0]}
         visible={showFormModal}
-        onSubmitSucceed={(value: any) => {
-          triggerChange(value);
+        onSubmitSucceed={(event: any) => {
+          triggerChange([event.id, event.name]);
           setShowFormModal(false);
         }}
         onCancel={() => {
