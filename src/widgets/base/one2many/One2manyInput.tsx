@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { One2many as One2manyOoui } from "ooui";
-import { Button, Alert, Spin } from "antd";
+import { Alert, Spin } from "antd";
 import { Form } from "@/index";
 import { Tree } from "@/index";
 import { Form as FormOoui, Tree as TreeOoui } from "ooui";
@@ -14,16 +14,12 @@ import {
   One2manyContextType,
 } from "@/context/One2manyContext";
 import { FormContext, FormContextType } from "@/context/FormContext";
-
+import { One2manyTopBar } from "@/widgets/base/one2many/One2manyTopBar";
 import {
-  FileAddOutlined,
-  SaveOutlined,
-  DeleteOutlined,
-  LeftOutlined,
-  RightOutlined,
-  AlignLeftOutlined,
-  LoadingOutlined,
-} from "@ant-design/icons";
+  readObjectValues,
+  removeItems,
+  linkItem,
+} from "@/helpers/one2manyHelper";
 
 type One2manyItem = {
   operation: "original" | "pendingLink";
@@ -51,9 +47,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     formOoui,
     treeOoui,
   } = props;
-  const { id: fieldName } = ooui;
-
-  const itemsToShow = items.filter((item) => item.values);
 
   const {
     currentView,
@@ -65,14 +58,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   } = useContext(One2manyContext) as One2manyContextType;
   const { parentId, parentModel } = useContext(FormContext) as FormContextType;
 
-  const triggerChange = (changedValue: Array<One2manyItem>) => {
-    setManualTriggerChange(true);
-    onChange?.(changedValue);
-  };
-
-  const { readOnly, relation } = ooui as One2manyOoui;
-  const isMany2many = ooui.type === "many2many";
-
   const formRef = useRef();
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -82,7 +67,25 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
 
+  const { readOnly, relation } = ooui as One2manyOoui;
+  const isMany2many = ooui.type === "many2many";
+  const { id: fieldName } = ooui;
+  const itemsToShow = items.filter((item) => item.values);
+
+  useEffect(() => {
+    fetchData();
+  }, [items]);
+
+  const triggerChange = (changedValue: Array<One2manyItem>) => {
+    setManualTriggerChange(true);
+    onChange?.(changedValue);
+  };
+
   const fetchData = async () => {
+    // We need a value (manualTriggerChange) to differ whenever the value is changed manually
+    // or the values come from the AntForm (first render or refreshing)
+    // This way when we trigger a change when we add/delete an item we avoid fetching again from the API
+    // And entering in a infinite loop
     if (manualTriggerChange) {
       setManualTriggerChange(false);
     } else {
@@ -93,33 +96,17 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [items]);
-
   const fetchOriginalItemsFromApi = async () => {
     setIsLoading(true);
     setFormHasChanges(false);
     setError(undefined);
 
     try {
-      const realItems: One2manyItem[] = items.filter(
-        (item) => item.operation === "original" && item.id
-      );
-      const idsToFetch = realItems.map((item) => item.id) as number[];
-
-      const values = await ConnectionProvider.getHandler().readObjects({
+      const itemsWithValues = await readObjectValues({
         arch: views.get("tree").arch,
         model: relation,
-        ids: idsToFetch,
         fields: views.get("tree").fields,
-      });
-
-      const itemsWithValues = items.map((item) => {
-        const fetchedItemValues = values.find(
-          (itemValues: any) => itemValues.id === item.id
-        );
-        return { ...item, values: fetchedItemValues };
+        items,
       });
 
       triggerChange(itemsWithValues);
@@ -127,49 +114,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       setError(err);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const separator = () => {
-    return <div className="inline-block w-3" />;
-  };
-
-  const index = () => {
-    let itemToShow = "_";
-    if (itemsToShow.length === 0) {
-      itemToShow = "_";
-    } else {
-      itemToShow = (itemIndex + 1).toString();
-    }
-    return (
-      <span className="pl-1 pr-1">
-        ({itemToShow}/{itemsToShow.length})
-      </span>
-    );
-  };
-
-  const showRemoveConfirm = () => {
-    showRemoveItemDialog({
-      onOk: () => {
-        if (currentView === "form") {
-          onConfirmRemove();
-        } else {
-          removeSelectedItems();
-        }
-      },
-    });
-  };
-
-  const showFormChangesDialogIfNeeded = (callback: () => void) => {
-    if (formHasChanges) {
-      showUnsavedChangesDialog({
-        onOk: () => {
-          callback();
-          setFormHasChanges(false);
-        },
-      });
-    } else {
-      callback();
     }
   };
 
@@ -208,6 +152,31 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     }
   };
 
+  const showFormChangesDialogIfNeeded = (callback: () => void) => {
+    if (formHasChanges) {
+      showUnsavedChangesDialog({
+        onOk: () => {
+          callback();
+          setFormHasChanges(false);
+        },
+      });
+    } else {
+      callback();
+    }
+  };
+
+  const showRemoveConfirm = () => {
+    showRemoveItemDialog({
+      onOk: () => {
+        if (currentView === "form") {
+          removeCurrentItem();
+        } else {
+          removeSelectedItems();
+        }
+      },
+    });
+  };
+
   const saveItem = () => {
     setFormIsSaving(true);
     (formRef.current as any).submitForm();
@@ -225,24 +194,24 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     }
   };
 
-  const onConfirmRemove = async () => {
+  const removeCurrentItem = async () => {
     setIsLoading(true);
     setFormHasChanges(false);
     setError(undefined);
 
     try {
+      // If we have a parentId it means we can process the operation to the API
       if (parentId) {
-        const values: any = {};
-        values[fieldName] = [[2, itemsToShow[itemIndex].id]];
-
-        await ConnectionProvider.getHandler().update({
+        await removeItems({
+          parentId,
           model: parentModel,
-          id: parentId,
-          values,
+          idsToRemove: [itemsToShow[itemIndex].id!],
           fields: views.get("form").fields,
+          fieldName,
         });
       }
 
+      // We remove the item from the internal list
       triggerChange(
         items.filter((item) => item.id !== itemsToShow[itemIndex].id)
       );
@@ -252,37 +221,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
     setItemIndex(0);
     setIsLoading(false);
-  };
-
-  const saveButton = () => {
-    if (currentView !== "form") {
-      return null;
-    }
-
-    const icon = formIsSaving ? <LoadingOutlined /> : <SaveOutlined />;
-    return (
-      <>
-        <Button
-          icon={icon}
-          onClick={saveItem}
-          disabled={!formHasChanges || formIsSaving || readOnly}
-        />
-      </>
-    );
-  };
-
-  const getTitle = () => {
-    return currentView === "form" ? formOoui.string : treeOoui.string;
-  };
-
-  const title = () => {
-    return (
-      <div className="h-8 flex flex-grow bg-gray-700 text-gray-200">
-        <div className="h-full flex flex-col justify-center items-center">
-          <span className="pl-2 font-bold">{getTitle()}</span>
-        </div>
-      </div>
-    );
   };
 
   const removeSelectedItems = async () => {
@@ -295,23 +233,20 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     setError(undefined);
 
     try {
-      let updatedItems = items;
+      // If we have a parentId it means we can process the operation to the API
+      if (parentId) {
+        const idsToRemove: number[] = itemsToRemove.map((item) => item.id!);
 
-      for (const item of itemsToRemove) {
-        if (parentId) {
-          const values: any = {};
-          values[fieldName] = [[2, item.id]];
-
-          await ConnectionProvider.getHandler().update({
-            model: parentModel,
-            id: parentId,
-            values,
-            fields: views.get("form").fields,
-          });
-        }
+        await removeItems({
+          parentId,
+          model: parentModel,
+          idsToRemove: idsToRemove,
+          fields: views.get("form").fields,
+          fieldName,
+        });
       }
-
-      updatedItems = updatedItems.filter(
+      // We remove the items from the internal list
+      const updatedItems = items.filter(
         (item) => !selectedRowKeys.includes(item.id)
       );
       triggerChange(updatedItems);
@@ -323,57 +258,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     setIsLoading(false);
   };
 
-  const deleteButton = () => {
-    return (
-      <Button
-        icon={<DeleteOutlined />}
-        onClick={showRemoveConfirm}
-        disabled={itemsToShow.length === 0 || readOnly}
-      />
-    );
-  };
-
-  const itemBrowser = () => {
-    if (currentView !== "form") {
-      return null;
-    }
-    return (
-      <>
-        {separator()}
-        <Button icon={<LeftOutlined />} onClick={previousItem} />
-        {index()}
-        <Button icon={<RightOutlined />} onClick={nextItem} />
-      </>
-    );
-  };
-
-  const topBar = () => {
-    return (
-      <div className="flex mb-2">
-        {title()}
-        <div className="h-8 flex-none pl-2">
-          <Button
-            icon={<FileAddOutlined />}
-            disabled={readOnly}
-            onClick={createItem}
-          />
-          {separator()}
-          {saveButton()}
-          {deleteButton()}
-          {itemBrowser()}
-          {separator()}
-          <Button icon={<AlignLeftOutlined />} onClick={toggleViewMode} />
-        </div>
-      </div>
-    );
-  };
-
-  const onFormSubmitSucceed = async (id: number) => {
-    setFormIsSaving(false);
-    setFormHasChanges(false);
-  };
-
   const formPostSaveAction = async (id: number) => {
+    // We call the API for reading the updated object
     const updatedObject = (
       await ConnectionProvider.getHandler().readObjects({
         arch: views.get("form").arch,
@@ -382,19 +268,24 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         fields: views.get("form").fields,
       })
     )[0];
+
+    // Then we update the retrieved object with updated values inside our internal list with triggerChange
     const updatedItems: One2manyItem[] = items.map((item: One2manyItem) => {
       if (item.id === id) {
         return { ...item, values: updatedObject };
       }
       return item;
     });
+
     triggerChange(updatedItems);
   };
 
   const formModalPostSaveAction = async (id: number) => {
+    // We check wether the item is already in our internal list
     const itemAlreadyPresent =
       items.find((item) => item.id === id) !== undefined;
 
+    // We call the API for reading the updated object
     const updatedObject = (
       await ConnectionProvider.getHandler().readObjects({
         arch: views.get("form").arch,
@@ -405,70 +296,84 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     )[0];
 
     if (!itemAlreadyPresent) {
-      // Create
-      if (parentId) {
-        // Link
-        const values: any = {};
-        values[fieldName] = [[4, id]];
-
-        await ConnectionProvider.getHandler().update({
-          model: parentModel,
-          id: parentId,
-          values,
-          fields: views.get("form").fields,
-        });
-
-        // Set item as original in internal list
-        triggerChange(
-          items.concat({
-            id,
-            operation: "original",
-            values: updatedObject,
-          })
-        );
-      } else {
-        // New create item into internal list
-        triggerChange(
-          items.concat({
-            id,
-            operation: "pendingLink",
-            values: updatedObject,
-          })
-        );
-      }
+      await processNewItem({ id, values: updatedObject });
     } else {
-      // Modification
-      if (parentId) {
-        // Update item values and set item as original in internal list
-        const updatedItems: One2manyItem[] = items.map((item: One2manyItem) => {
-          if (item.id === id) {
-            return {
-              id,
-              operation: "original",
-              values: updatedObject,
-            };
-          }
-          return item;
-        });
-        triggerChange(updatedItems);
-      } else {
-        // New modification item into internal list
-        const updatedItems: One2manyItem[] = items.map((item: One2manyItem) => {
-          if (item.id === id) {
-            return {
-              id,
-              operation: "pendingLink",
-              values: updatedObject,
-            };
-          }
-          return item;
-        });
-        triggerChange(updatedItems);
-      }
+      await processUpdateItem({ id, values: updatedObject });
     }
   };
 
+  const processNewItem = async ({
+    id,
+    values,
+  }: {
+    id: number;
+    values: any;
+  }) => {
+    if (parentId) {
+      await linkItem({
+        model: parentModel,
+        parentId,
+        id,
+        fields: views.get("form").fields,
+        fieldName,
+      });
+
+      // It's a new item and we already have linked it with its parent, so we just only have to add it
+      // to our internal list as an original (server and client are synced)
+      triggerChange(
+        items.concat({
+          id,
+          operation: "original",
+          values,
+        })
+      );
+      return;
+    }
+
+    // Since we don't have a parentId to link with, we add the item as pendingLink
+    // The effective link will take place when the parent form is saved
+    triggerChange(
+      items.concat({
+        id,
+        operation: "pendingLink",
+        values,
+      })
+    );
+  };
+
+  const processUpdateItem = async ({
+    id,
+    values,
+  }: {
+    id: number;
+    values: any;
+  }) => {
+    // We iterate over our internal list in order to update the object values with the updated ones from the API
+    // If we have a parentId, we consider the item as original, because it's already saved and linked
+    // If we don't have a parentId, the item will have to be linked when the parent form is saved
+    const updatedItems: One2manyItem[] = items.map((item: One2manyItem) => {
+      if (item.id === id) {
+        return {
+          id,
+          operation: parentId ? "original" : "pendingLink",
+          values,
+        };
+      }
+      return item;
+    });
+
+    triggerChange(updatedItems);
+  };
+
+  // This is the callback called when we save the One2manyTopBar in form mode
+  const onFormSubmitSucceed = () => {
+    setFormIsSaving(false);
+    setFormHasChanges(false);
+  };
+
+  // This is the callback called when a modal is done saving the object
   const onFormModalSubmitSucceed = (id: number) => {
+    // TODO: Review this!!!
     // If we already have an id will mean the form modal is in edit mode and we're not in continuous mode
     if (id) {
       setShowFormModal(false);
@@ -476,6 +381,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   };
 
   const onTreeRowClicked = (itemId: number) => {
+    // We show the detail for the clicked item in a Form modal
     setModalItem(items.find((item) => item.id === itemId));
     setShowFormModal(true);
   };
@@ -527,6 +433,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     return <Alert className="mt-10" message={error} type="error" banner />;
   }
 
+  // TODO: Review this!!!
   // If we are in create mode we have to show the modal in continuous mode.
   // This means the modal won't close after clicking OK, the modal will add the new item
   // and will reset to defaults to let the user add a new item.
@@ -539,7 +446,22 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
   return (
     <>
-      {topBar()}
+      <One2manyTopBar
+        mode={currentView}
+        title={currentView === "form" ? formOoui.string! : treeOoui.string!}
+        readOnly={readOnly}
+        isMany2Many={isMany2many}
+        formHasChanges={formHasChanges}
+        formIsSaving={formIsSaving}
+        totalItems={itemsToShow.length}
+        currentItemIndex={itemIndex}
+        onSaveItem={saveItem}
+        onDelete={showRemoveConfirm}
+        onCreateItem={createItem}
+        onToggleViewMode={toggleViewMode}
+        onPreviousItem={previousItem}
+        onNextItem={nextItem}
+      />
       {content()}
       <FormModal
         noReuse={true}
