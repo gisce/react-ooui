@@ -28,7 +28,7 @@ import FormProvider from "@/context/FormContext";
 export type FormProps = {
   model: string;
   id?: number;
-  onSubmitSucceed?: (updatedObject: any) => void;
+  onSubmitSucceed?: (event: any) => void;
   onSubmitError?: (error: any) => void;
   onCancel?: () => void;
   showFooter?: boolean;
@@ -39,6 +39,7 @@ export type FormProps = {
   submitMode?: "api" | "values";
   values?: any;
   data?: FormViewAndOoui;
+  postSaveAction?: (event: any) => Promise<void>;
 };
 
 const WIDTH_BREAKPOINT = 1000;
@@ -63,6 +64,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     submitMode = "api",
     values,
     data,
+    postSaveAction,
   } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -228,19 +230,24 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       objectId = newId;
     }
 
-    // TODO: This maybe will be unnecessary sometimes, we might do it conditionally with a new input prop mustRefreshAfterSave?
-    await fetchValuesFromApi(form!.view);
-
     const value = await ConnectionProvider.getHandler().execute({
       action: "name_get",
       payload: [objectId],
       model,
     });
 
-    onSubmitSucceed?.({
+    const event = {
       id: objectId,
-      name: value[0][1]
-    });
+      name: value[0][1],
+    };
+
+    if (postSaveAction) {
+      await postSaveAction(event);
+      onSubmitSucceed?.(event);
+      return;
+    }
+
+    onSubmitSucceed?.(event);
   };
 
   const submitValues = async () => {
