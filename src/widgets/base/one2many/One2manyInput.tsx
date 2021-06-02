@@ -368,13 +368,12 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     );
   };
 
-  const onFormSubmitSucceed = async (event: any) => {
+  const onFormSubmitSucceed = async (id: number) => {
     setFormIsSaving(false);
     setFormHasChanges(false);
   };
 
-  const formPostSaveAction = async (event: any) => {
-    const { id } = event;
+  const formPostSaveAction = async (id: number) => {
     const updatedObject = (
       await ConnectionProvider.getHandler().readObjects({
         arch: views.get("form").arch,
@@ -392,8 +391,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     triggerChange(updatedItems);
   };
 
-  const formModalPostSaveAction = async (event: any) => {
-    const { id } = event;
+  const formModalPostSaveAction = async (id: number) => {
     const itemAlreadyPresent =
       items.find((item) => item.id === id) !== undefined;
 
@@ -470,9 +468,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     }
   };
 
-  const onFormModalSubmitSucceed = (event: any) => {
-    const { id } = event;
-
+  const onFormModalSubmitSucceed = (id: number) => {
     // If we already have an id will mean the form modal is in edit mode and we're not in continuous mode
     if (id) {
       setShowFormModal(false);

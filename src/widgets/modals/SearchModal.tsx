@@ -17,35 +17,17 @@ type SearchSelectionProps = {
 export const SearchModal = (props: SearchSelectionProps) => {
   const { visible, onCloseModal, onSelectValue, model, nameSearch } = props;
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>();
 
   const { modalWidth } = useModalWidthDimensions();
 
   const onRowClicked = async (event: any) => {
-    setLoading(true);
-    setError(undefined);
-    try {
-      const { id, model } = event;
-      const value = await ConnectionProvider.getHandler().execute({
-        action: "name_get",
-        payload: [id],
-        model,
-      });
-      onSelectValue({ id, name: value[0][1] });
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
+    const { id } = event;
+    onSelectValue(id);
   };
 
   const content = () => {
     return (
       <>
-        {error && (
-          <Alert className="mt-10" message={error} type="error" banner />
-        )}
         {visible && (
           <SearchTree
             key={Math.random() * 10000} // This forces the component to be unique each time
@@ -58,7 +40,6 @@ export const SearchModal = (props: SearchSelectionProps) => {
         <Row justify="end">
           <Space>
             <Button
-              disabled={loading}
               icon={<FileAddOutlined />}
               onClick={() => {
                 setShowCreateModal(true);
@@ -66,11 +47,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
             >
               New
             </Button>
-            <Button
-              disabled={loading}
-              icon={<CloseOutlined />}
-              onClick={onCloseModal}
-            >
+            <Button icon={<CloseOutlined />} onClick={onCloseModal}>
               Cancel
             </Button>
           </Space>
@@ -90,15 +67,15 @@ export const SearchModal = (props: SearchSelectionProps) => {
         onCancel={onCloseModal}
         footer={null}
       >
-        <div>{loading ? <Spin /> : content()}</div>
+        {content()}
       </Modal>
       <FormModal
         model={model}
         visible={showCreateModal}
-        onSubmitSucceed={(event) => {
+        onSubmitSucceed={(id: number) => {
           setShowCreateModal(false);
           onCloseModal();
-          onSelectValue(event);
+          onSelectValue(id);
         }}
         onCancel={() => {
           setShowCreateModal(false);

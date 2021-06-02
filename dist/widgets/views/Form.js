@@ -219,7 +219,7 @@ function Form(props, ref) {
         return (Object.keys(formHelper_1.getTouchedValues(antForm, form === null || form === void 0 ? void 0 : form.view.fields)).length !== 0);
     };
     var submitApi = function () { return __awaiter(_this, void 0, void 0, function () {
-        var touchedValues, objectId, newId, value, event;
+        var touchedValues, objectId, newId;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -244,25 +244,15 @@ function Form(props, ref) {
                     newId = _a.sent();
                     objectId = newId;
                     _a.label = 4;
-                case 4: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
-                        action: "name_get",
-                        payload: [objectId],
-                        model: model,
-                    })];
+                case 4:
+                    if (!postSaveAction) return [3 /*break*/, 6];
+                    return [4 /*yield*/, postSaveAction(objectId)];
                 case 5:
-                    value = _a.sent();
-                    event = {
-                        id: objectId,
-                        name: value[0][1],
-                    };
-                    if (!postSaveAction) return [3 /*break*/, 7];
-                    return [4 /*yield*/, postSaveAction(event)];
-                case 6:
                     _a.sent();
-                    onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(event);
+                    onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(objectId);
                     return [2 /*return*/];
-                case 7:
-                    onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(event);
+                case 6:
+                    onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(objectId);
                     return [2 /*return*/];
             }
         });

@@ -96,6 +96,24 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
     }
   };
 
+  const fetchNameAndUpdate = async (id: number) => {
+    setSearching(true);
+
+    try {
+      const value = await ConnectionProvider.getHandler().execute({
+        action: "name_get",
+        payload: [id],
+        model: relation,
+      });
+
+      triggerChange([id, value[0][1]]);
+    } catch (err) {
+      // TODO: handle error
+    } finally {
+      setSearching(false);
+    }
+  };
+
   return (
     <Row gutter={8}>
       <Col flex="auto">
@@ -134,9 +152,9 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
         model={relation}
         visible={showSearchModal}
         nameSearch={!id ? searchText : undefined}
-        onSelectValue={(event) => {
-          triggerChange([event.id, event.name]);
+        onSelectValue={(id: number) => {
           setShowSearchModal(false);
+          fetchNameAndUpdate(id);
           searchButtonTappedRef.current = false;
         }}
         onCloseModal={() => {
@@ -148,9 +166,9 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
         model={relation}
         id={value && value[0]}
         visible={showFormModal}
-        onSubmitSucceed={(event: any) => {
-          triggerChange([event.id, event.name]);
+        onSubmitSucceed={(id: number) => {
           setShowFormModal(false);
+          fetchNameAndUpdate(id);
         }}
         onCancel={() => {
           setShowFormModal(false);

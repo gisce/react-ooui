@@ -217,24 +217,13 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       objectId = newId;
     }
 
-    const value = await ConnectionProvider.getHandler().execute({
-      action: "name_get",
-      payload: [objectId],
-      model,
-    });
-
-    const event = {
-      id: objectId,
-      name: value[0][1],
-    };
-
     if (postSaveAction) {
-      await postSaveAction(event);
-      onSubmitSucceed?.(event);
+      await postSaveAction(objectId);
+      onSubmitSucceed?.(objectId);
       return;
     }
 
-    onSubmitSucceed?.(event);
+    onSubmitSucceed?.(objectId);
   };
 
   const submitValues = async () => {

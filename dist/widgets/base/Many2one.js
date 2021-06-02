@@ -147,6 +147,34 @@ var Many2oneInput = function (props) {
             }
         });
     }); };
+    var fetchNameAndUpdate = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+        var value_1, err_2;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    setSearching(true);
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, 4, 5]);
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
+                            action: "name_get",
+                            payload: [id],
+                            model: relation,
+                        })];
+                case 2:
+                    value_1 = _a.sent();
+                    triggerChange([id, value_1[0][1]]);
+                    return [3 /*break*/, 5];
+                case 3:
+                    err_2 = _a.sent();
+                    return [3 /*break*/, 5];
+                case 4:
+                    setSearching(false);
+                    return [7 /*endfinally*/];
+                case 5: return [2 /*return*/];
+            }
+        });
+    }); };
     return (react_1.default.createElement(antd_1.Row, { gutter: 8 },
         react_1.default.createElement(antd_1.Col, { flex: "auto" },
             react_1.default.createElement(antd_1.Input, { type: "text", value: text, onChange: onValueStringChange, disabled: readOnly, className: requiredClass, onBlur: onElementLostFocus })),
@@ -160,17 +188,17 @@ var Many2oneInput = function (props) {
                     setSearchText(text);
                     setShowSearchModal(true);
                 }, tabIndex: -1 })),
-        react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValue: function (event) {
-                triggerChange([event.id, event.name]);
+        react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValue: function (id) {
                 setShowSearchModal(false);
+                fetchNameAndUpdate(id);
                 searchButtonTappedRef.current = false;
             }, onCloseModal: function () {
                 setShowSearchModal(false);
                 searchButtonTappedRef.current = false;
             } }),
-        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: value && value[0], visible: showFormModal, onSubmitSucceed: function (event) {
-                triggerChange([event.id, event.name]);
+        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: value && value[0], visible: showFormModal, onSubmitSucceed: function (id) {
                 setShowFormModal(false);
+                fetchNameAndUpdate(id);
             }, onCancel: function () {
                 setShowFormModal(false);
             }, mustClearAfterSave: true, readOnly: readOnly })));

@@ -385,25 +385,23 @@ var One2manyInput = function (props) {
                 separator(),
                 react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.AlignLeftOutlined, null), onClick: toggleViewMode }))));
     };
-    var onFormSubmitSucceed = function (event) { return __awaiter(void 0, void 0, void 0, function () {
+    var onFormSubmitSucceed = function (id) { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             setFormIsSaving(false);
             setFormHasChanges(false);
             return [2 /*return*/];
         });
     }); };
-    var formPostSaveAction = function (event) { return __awaiter(void 0, void 0, void 0, function () {
-        var id, updatedObject, updatedItems;
+    var formPostSaveAction = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+        var updatedObject, updatedItems;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    id = event.id;
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
-                            arch: views.get("form").arch,
-                            model: relation,
-                            ids: [id],
-                            fields: views.get("form").fields,
-                        })];
+                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                        arch: views.get("form").arch,
+                        model: relation,
+                        ids: [id],
+                        fields: views.get("form").fields,
+                    })];
                 case 1:
                     updatedObject = (_a.sent())[0];
                     updatedItems = items.map(function (item) {
@@ -417,12 +415,11 @@ var One2manyInput = function (props) {
             }
         });
     }); };
-    var formModalPostSaveAction = function (event) { return __awaiter(void 0, void 0, void 0, function () {
-        var id, itemAlreadyPresent, updatedObject, values, updatedItems, updatedItems;
+    var formModalPostSaveAction = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+        var itemAlreadyPresent, updatedObject, values, updatedItems, updatedItems;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    id = event.id;
                     itemAlreadyPresent = items.find(function (item) { return item.id === id; }) !== undefined;
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
                             arch: views.get("form").arch,
@@ -493,8 +490,7 @@ var One2manyInput = function (props) {
             }
         });
     }); };
-    var onFormModalSubmitSucceed = function (event) {
-        var id = event.id;
+    var onFormModalSubmitSucceed = function (id) {
         // If we already have an id will mean the form modal is in edit mode and we're not in continuous mode
         if (id) {
             setShowFormModal(false);

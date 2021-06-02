@@ -63,65 +63,37 @@ var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var FormModal_1 = require("./FormModal");
 var SearchTree_1 = __importDefault(require("@/widgets/views/SearchTree"));
-var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var icons_1 = require("@ant-design/icons");
 var useModalWidthDimensions_1 = __importDefault(require("@/hooks/useModalWidthDimensions"));
 var SearchModal = function (props) {
     var visible = props.visible, onCloseModal = props.onCloseModal, onSelectValue = props.onSelectValue, model = props.model, nameSearch = props.nameSearch;
     var _a = react_1.useState(false), showCreateModal = _a[0], setShowCreateModal = _a[1];
-    var _b = react_1.useState(false), loading = _b[0], setLoading = _b[1];
-    var _c = react_1.useState(), error = _c[0], setError = _c[1];
     var modalWidth = useModalWidthDimensions_1.default().modalWidth;
     var onRowClicked = function (event) { return __awaiter(void 0, void 0, void 0, function () {
-        var id, model_1, value, err_1;
+        var id;
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    setLoading(true);
-                    setError(undefined);
-                    _a.label = 1;
-                case 1:
-                    _a.trys.push([1, 3, 4, 5]);
-                    id = event.id, model_1 = event.model;
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
-                            action: "name_get",
-                            payload: [id],
-                            model: model_1,
-                        })];
-                case 2:
-                    value = _a.sent();
-                    onSelectValue({ id: id, name: value[0][1] });
-                    return [3 /*break*/, 5];
-                case 3:
-                    err_1 = _a.sent();
-                    setError(err_1);
-                    return [3 /*break*/, 5];
-                case 4:
-                    setLoading(false);
-                    return [7 /*endfinally*/];
-                case 5: return [2 /*return*/];
-            }
+            id = event.id;
+            onSelectValue(id);
+            return [2 /*return*/];
         });
     }); };
     var content = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
-            error && (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true })),
             visible && (react_1.default.createElement(SearchTree_1.default, { key: Math.random() * 10000, model: model, nameSearch: nameSearch, onRowClicked: onRowClicked })),
             react_1.default.createElement(antd_1.Divider, null),
             react_1.default.createElement(antd_1.Row, { justify: "end" },
                 react_1.default.createElement(antd_1.Space, null,
-                    react_1.default.createElement(antd_1.Button, { disabled: loading, icon: react_1.default.createElement(icons_1.FileAddOutlined, null), onClick: function () {
+                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FileAddOutlined, null), onClick: function () {
                             setShowCreateModal(true);
                         } }, "New"),
-                    react_1.default.createElement(antd_1.Button, { disabled: loading, icon: react_1.default.createElement(icons_1.CloseOutlined, null), onClick: onCloseModal }, "Cancel")))));
+                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), onClick: onCloseModal }, "Cancel")))));
     };
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(antd_1.Modal, { title: "Search", centered: true, width: modalWidth, visible: visible && !showCreateModal, closable: true, onCancel: onCloseModal, footer: null },
-            react_1.default.createElement("div", null, loading ? react_1.default.createElement(antd_1.Spin, null) : content())),
-        react_1.default.createElement(FormModal_1.FormModal, { model: model, visible: showCreateModal, onSubmitSucceed: function (event) {
+        react_1.default.createElement(antd_1.Modal, { title: "Search", centered: true, width: modalWidth, visible: visible && !showCreateModal, closable: true, onCancel: onCloseModal, footer: null }, content()),
+        react_1.default.createElement(FormModal_1.FormModal, { model: model, visible: showCreateModal, onSubmitSucceed: function (id) {
                 setShowCreateModal(false);
                 onCloseModal();
-                onSelectValue(event);
+                onSelectValue(id);
             }, onCancel: function () {
                 setShowCreateModal(false);
                 onCloseModal();
