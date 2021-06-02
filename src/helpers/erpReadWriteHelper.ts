@@ -41,17 +41,8 @@ const getErpValues = ({
       }
 
       processedTouchedValues[name] = itemsToUpdate.map((item) => {
-        if (item.operation === "create") {
-          return [0, 0, { ...item.values, id: undefined }];
-        }
-        if (item.operation === "modify") {
-          return [1, item.id, item.touchedValues];
-        }
-        if (item.operation === "remove" && fields[name].type === "one2many") {
-          return [2, item.id];
-        }
-        if (item.operation === "remove" && fields[name].type === "many2many") {
-          return [3, item.id];
+        if (item.operation === "pendingLink") {
+          return [4, item.id];
         }
       });
       return;
