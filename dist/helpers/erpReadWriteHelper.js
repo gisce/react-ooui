@@ -1,15 +1,4 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.formatX2ManyValues = exports.getErpValues = void 0;
 //
@@ -36,17 +25,8 @@ var getErpValues = function (_a) {
                 return;
             }
             processedTouchedValues[name] = itemsToUpdate.map(function (item) {
-                if (item.operation === "create") {
-                    return [0, 0, __assign(__assign({}, item.values), { id: undefined })];
-                }
-                if (item.operation === "modify") {
-                    return [1, item.id, item.touchedValues];
-                }
-                if (item.operation === "remove" && fields[name].type === "one2many") {
-                    return [2, item.id];
-                }
-                if (item.operation === "remove" && fields[name].type === "many2many") {
-                    return [3, item.id];
+                if (item.operation === "pendingLink") {
+                    return [4, item.id];
                 }
             });
             return;

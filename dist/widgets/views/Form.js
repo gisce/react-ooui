@@ -72,7 +72,7 @@ var FormContext_1 = __importDefault(require("@/context/FormContext"));
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
-    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, values = props.values, data = props.data;
+    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, values = props.values, data = props.data, postSaveAction = props.postSaveAction;
     var _f = react_1.useState(false), isSubmitting = _f[0], setIsSubmitting = _f[1];
     var _g = react_1.useState(), error = _g[0], setError = _g[1];
     var _h = react_1.useState(false), loading = _h[0], setLoading = _h[1];
@@ -227,7 +227,7 @@ function Form(props, ref) {
         return (Object.keys(formHelper_1.getTouchedValues(antForm, form === null || form === void 0 ? void 0 : form.view.fields)).length !== 0);
     };
     var submitApi = function () { return __awaiter(_this, void 0, void 0, function () {
-        var touchedValues, erpTouchedValues, objectId, newId, value;
+        var touchedValues, erpTouchedValues, objectId, newId, value, event;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -254,23 +254,25 @@ function Form(props, ref) {
                     newId = _a.sent();
                     objectId = newId;
                     _a.label = 4;
-                case 4: 
-                // TODO: This maybe will be unnecessary sometimes, we might do it conditionally with a new input prop mustRefreshAfterSave?
-                return [4 /*yield*/, fetchValuesFromApi(form.view)];
+                case 4: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
+                        action: "name_get",
+                        payload: [objectId],
+                        model: model,
+                    })];
                 case 5:
-                    // TODO: This maybe will be unnecessary sometimes, we might do it conditionally with a new input prop mustRefreshAfterSave?
-                    _a.sent();
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
-                            action: "name_get",
-                            payload: [objectId],
-                            model: model,
-                        })];
-                case 6:
                     value = _a.sent();
-                    onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed({
+                    event = {
                         id: objectId,
-                        name: value[0][1]
-                    });
+                        name: value[0][1],
+                    };
+                    if (!postSaveAction) return [3 /*break*/, 7];
+                    return [4 /*yield*/, postSaveAction(event)];
+                case 6:
+                    _a.sent();
+                    onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(event);
+                    return [2 /*return*/];
+                case 7:
+                    onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(event);
                     return [2 /*return*/];
             }
         });
@@ -331,7 +333,7 @@ function Form(props, ref) {
         if (!form) {
             return null;
         }
-        return (react_1.default.createElement(FormContext_1.default, { parentId: id },
+        return (react_1.default.createElement(FormContext_1.default, { parentId: id, parentModel: model },
             react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: checkFieldsChanges, component: false }, form && (react_1.default.createElement(Container_1.default, { container: form.ooui.container, responsiveBehaviour: responsiveBehaviour })))));
     };
     var footer = function () {

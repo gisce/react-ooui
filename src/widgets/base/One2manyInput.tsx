@@ -490,13 +490,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
   const content = () => {
     if (currentView === "form") {
-      // // If we have items to show, we return the proper value for the current item
-      // // Else, we set it to undefined, since it will be a new item
-      // const idToShow =
-      //   itemsToShow.length > 0 ? itemsToShow[itemIndex]?.id : undefined;
-      // const valuesToShow =
-      //   itemsToShow.length > 0 ? itemsToShow[itemIndex]?.values : undefined;
-
       if (itemsToShow.length === 0) {
         return "No current entries";
       }

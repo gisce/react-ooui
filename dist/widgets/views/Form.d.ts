@@ -4,7 +4,7 @@ import { FormView } from "@/types/index";
 export declare type FormProps = {
     model: string;
     id?: number;
-    onSubmitSucceed?: (updatedObject: any) => void;
+    onSubmitSucceed?: (event: any) => void;
     onSubmitError?: (error: any) => void;
     onCancel?: () => void;
     showFooter?: boolean;
@@ -15,6 +15,7 @@ export declare type FormProps = {
     submitMode?: "api" | "values";
     values?: any;
     data?: FormViewAndOoui;
+    postSaveAction?: (event: any) => Promise<void>;
 };
 export declare type FormViewAndOoui = {
     ooui: FormOoui;

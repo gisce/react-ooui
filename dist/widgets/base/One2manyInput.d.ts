@@ -3,10 +3,9 @@ import { One2many as One2manyOoui } from "ooui";
 import { Form as FormOoui, Tree as TreeOoui } from "ooui";
 import { Views } from "@/types";
 declare type One2manyItem = {
-    operation: "original" | "create" | "modify" | "remove";
+    operation: "original" | "pendingLink";
     id?: number;
     values?: any;
-    touchedValues?: any;
 };
 interface One2manyInputProps {
     ooui: One2manyOoui;
