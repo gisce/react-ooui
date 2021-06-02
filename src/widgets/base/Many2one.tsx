@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Input, Button, Row, Col } from "antd";
 import {
   SearchOutlined,
@@ -37,8 +37,6 @@ interface Many2oneInputProps {
   onChange?: (value: any[]) => void;
 }
 
-let SEARCH_BUTTON_TAPPED_FLAG = false;
-
 const Many2oneInput: React.FC<Many2oneInputProps> = (
   props: Many2oneInputProps
 ) => {
@@ -50,6 +48,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>();
+  const searchButtonTappedRef = useRef<boolean>(false);
 
   const triggerChange = (changedValue: any[]) => {
     onChange?.(changedValue);
@@ -68,7 +67,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       // If the focus is lost because the user tapped the search button, we don't need to do nothing here
-      if (SEARCH_BUTTON_TAPPED_FLAG) {
+      if (searchButtonTappedRef.current) {
         triggerChange([undefined, ""]);
         return;
       }
@@ -124,7 +123,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
           icon={searching ? <LoadingOutlined /> : <SearchOutlined />}
           disabled={readOnly || searching}
           onClick={() => {
-            SEARCH_BUTTON_TAPPED_FLAG = true;
+            searchButtonTappedRef.current = true;
             setSearchText(text);
             setShowSearchModal(true);
           }}
@@ -138,11 +137,11 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
         onSelectValue={(event) => {
           triggerChange([event.id, event.name]);
           setShowSearchModal(false);
-          SEARCH_BUTTON_TAPPED_FLAG = false;
+          searchButtonTappedRef.current = false;
         }}
         onCloseModal={() => {
           setShowSearchModal(false);
-          SEARCH_BUTTON_TAPPED_FLAG = false;
+          searchButtonTappedRef.current = false;
         }}
       />
       <FormModal
