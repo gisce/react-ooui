@@ -285,7 +285,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     }
 
     return (
-      <FormProvider parentId={id}>
+      <FormProvider parentId={id} parentModel={model}>
         <AntForm
           form={antForm}
           onFieldsChange={checkFieldsChanges}
