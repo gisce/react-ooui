@@ -1,4 +1,4 @@
-import { One2manyItem } from "@/widgets/base/One2manyInput";
+import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
 
 //
 // Since the format we have to send when we'll write an object (create or update)

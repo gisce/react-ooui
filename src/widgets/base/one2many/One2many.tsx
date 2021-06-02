@@ -6,7 +6,7 @@ import { Form as FormOoui, Tree as TreeOoui } from "ooui";
 import { Views } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import One2manyProvider from "@/context/One2manyContext";
-import { One2manyInput } from "@/widgets/base/One2manyInput";
+import { One2manyInput } from "@/widgets/base/one2many/One2manyInput";
 
 type Props = {
   ooui: One2manyOoui;

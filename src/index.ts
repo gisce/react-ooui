@@ -3,7 +3,7 @@ import { Char } from "@/widgets/base/Char";
 import { Selection } from "@/widgets/base/Selection";
 import { Boolean } from "@/widgets/base/Boolean";
 import { Many2one } from "@/widgets/base/Many2one";
-import { One2many } from "@/widgets/base/One2many";
+import { One2many } from "@/widgets/base/one2many/One2many";
 import Tree from "@/widgets/views/Tree";
 import { Float } from "@/widgets/base/Float";
 import { Integer } from "@/widgets/base/Integer";

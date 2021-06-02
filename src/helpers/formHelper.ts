@@ -1,4 +1,4 @@
-import { One2manyItem } from "@/widgets/base/One2manyInput";
+import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
 import { FormInstance } from "antd";
 
 const filteredValues = (values: any, fields: any) => {
