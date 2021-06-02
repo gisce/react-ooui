@@ -47,6 +47,7 @@ type SearchRequest = {
 type CreateObjectRequest = {
   model: string;
   values: any;
+  fields: any;
 };
 
 type UpdateObjectRequest = CreateObjectRequest & {
@@ -69,6 +70,7 @@ type ExecuteRequest = {
 
 type ReadObjectsRequest = {
   arch: string;
+  fields: any;
   model: string;
   ids: number[];
 };
