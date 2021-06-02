@@ -34,6 +34,7 @@ function SimpleTree(props: Props) {
       arch: treeView.arch,
       model,
       ids,
+      fields: treeView.fields,
     });
 
     setResults(values);

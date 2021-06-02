@@ -74,6 +74,7 @@ function SearchTree(props: Props) {
         model: currentModel!,
         ids: resultsIds,
         arch: treeView?.arch!,
+        fields: treeView?.fields!,
       });
       setResults(resultsWithData);
     } else {

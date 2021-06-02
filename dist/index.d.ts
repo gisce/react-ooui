@@ -3,7 +3,7 @@ import { Char } from "@/widgets/base/Char";
 import { Selection } from "@/widgets/base/Selection";
 import { Boolean } from "@/widgets/base/Boolean";
 import { Many2one } from "@/widgets/base/Many2one";
-import { One2many } from "@/widgets/base/One2many";
+import { One2many } from "@/widgets/base/one2many/One2many";
 import Tree from "@/widgets/views/Tree";
 import { Float } from "@/widgets/base/Float";
 import { Integer } from "@/widgets/base/Integer";
@@ -20,7 +20,8 @@ import { SearchModal } from "@/widgets/modals/SearchModal";
 import SimpleTree from "@/widgets/views/SimpleTree";
 import Date from "@/widgets/base/Date";
 import DateTime from "@/widgets/base/DateTime";
+import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
 import { TreeView, SearchFields, FormView, ConnectionProviderType, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
-export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, FormModal, SearchModal, One2many, SimpleTree, Date, DateTime };
+export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, FormModal, SearchModal, One2many, One2manyItem, SimpleTree, Date, DateTime, };
 //# sourceMappingURL=index.d.ts.map

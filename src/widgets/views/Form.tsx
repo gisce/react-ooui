@@ -22,7 +22,6 @@ import { processValues, getTouchedValues } from "@/helpers/formHelper";
 import { FormView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
-import { getErpValues, formatX2ManyValues } from "@/helpers/erpReadWriteHelper";
 import FormProvider from "@/context/FormContext";
 
 export type FormProps = {
@@ -140,18 +139,14 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   const fetchValuesFromApi = async (view: FormView) => {
     let _values = {};
     if (id) {
-      const erpValues = (
+      _values = (
         await ConnectionProvider.getHandler().readObjects({
           arch: view!.arch,
           model,
           ids: [id],
+          fields: view!.fields,
         })
       )[0];
-
-      _values = formatX2ManyValues({
-        values: erpValues,
-        fields: view.fields,
-      });
     } else {
       _values = await ConnectionProvider.getHandler().execute({
         model,
@@ -163,12 +158,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   };
 
   const fetchValuesFromProps = (view: FormView) => {
-    const _values = formatX2ManyValues({
-      values,
-      fields: view.fields,
-    });
-
-    assignNewValuesToForm(_values, view);
+    assignNewValuesToForm(values, view);
   };
 
   const fetchData = async () => {
@@ -209,23 +199,20 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   const submitApi = async () => {
     const touchedValues = getTouchedValues(antForm, form?.view.fields);
 
-    const erpTouchedValues = getErpValues({
-      fields: form?.view.fields,
-      touchedValues,
-    });
-
     let objectId = id;
 
     if (id) {
       await ConnectionProvider.getHandler().update({
         model,
         id,
-        values: erpTouchedValues,
+        values: touchedValues,
+        fields: form?.view.fields,
       });
     } else {
       const newId = await ConnectionProvider.getHandler().create({
         model,
-        values: erpTouchedValues,
+        values: touchedValues,
+        fields: form?.view.fields,
       });
       objectId = newId;
     }

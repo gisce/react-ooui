@@ -80,7 +80,6 @@ var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"
 var RemoveItemDialog_1 = __importDefault(require("@/ui/RemoveItemDialog"));
 var One2manyContext_1 = require("@/context/One2manyContext");
 var FormContext_1 = require("@/context/FormContext");
-var erpReadWriteHelper_1 = require("@/helpers/erpReadWriteHelper");
 var icons_1 = require("@ant-design/icons");
 var One2manyInput = function (props) {
     var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui, views = props.views, formOoui = props.formOoui, treeOoui = props.treeOoui;
@@ -109,7 +108,7 @@ var One2manyInput = function (props) {
                     if (!manualTriggerChange) return [3 /*break*/, 1];
                     setManualTriggerChange(false);
                     return [3 /*break*/, 3];
-                case 1: return [4 /*yield*/, fetchOriginalItemsFromApi(views.get("tree"))];
+                case 1: return [4 /*yield*/, fetchOriginalItemsFromApi()];
                 case 2:
                     _a.sent();
                     if (itemIndex > itemsToShow.length - 1 && itemIndex !== 0) {
@@ -123,7 +122,7 @@ var One2manyInput = function (props) {
     react_1.useEffect(function () {
         fetchData();
     }, [items]);
-    var fetchOriginalItemsFromApi = function (treeView) { return __awaiter(void 0, void 0, void 0, function () {
+    var fetchOriginalItemsFromApi = function () { return __awaiter(void 0, void 0, void 0, function () {
         var realItems, idsToFetch, values_1, itemsWithValues, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -137,9 +136,10 @@ var One2manyInput = function (props) {
                     realItems = items.filter(function (item) { return item.operation === "original" && item.id; });
                     idsToFetch = realItems.map(function (item) { return item.id; });
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
-                            arch: treeView.arch,
+                            arch: views.get("tree").arch,
                             model: relation,
                             ids: idsToFetch,
+                            fields: views.get("tree").fields,
                         })];
                 case 2:
                     values_1 = _a.sent();
@@ -275,6 +275,7 @@ var One2manyInput = function (props) {
                             model: parentModel,
                             id: parentId,
                             values: values,
+                            fields: views.get("form").fields,
                         })];
                 case 2:
                     _a.sent();
@@ -336,6 +337,7 @@ var One2manyInput = function (props) {
                             model: parentModel,
                             id: parentId,
                             values: values,
+                            fields: views.get("form").fields,
                         })];
                 case 3:
                     _a.sent();
@@ -391,7 +393,7 @@ var One2manyInput = function (props) {
         });
     }); };
     var formPostSaveAction = function (event) { return __awaiter(void 0, void 0, void 0, function () {
-        var id, erpValues, updatedObject, updatedItems;
+        var id, updatedObject, updatedItems;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -400,13 +402,10 @@ var One2manyInput = function (props) {
                             arch: views.get("form").arch,
                             model: relation,
                             ids: [id],
+                            fields: views.get("form").fields,
                         })];
                 case 1:
-                    erpValues = (_a.sent())[0];
-                    updatedObject = erpReadWriteHelper_1.formatX2ManyValues({
-                        values: erpValues,
-                        fields: views.get("form").fields,
-                    });
+                    updatedObject = (_a.sent())[0];
                     updatedItems = items.map(function (item) {
                         if (item.id === id) {
                             return __assign(__assign({}, item), { values: updatedObject });
@@ -419,7 +418,7 @@ var One2manyInput = function (props) {
         });
     }); };
     var formModalPostSaveAction = function (event) { return __awaiter(void 0, void 0, void 0, function () {
-        var id, itemAlreadyPresent, erpValues, updatedObject, values, updatedItems, updatedItems;
+        var id, itemAlreadyPresent, updatedObject, values, updatedItems, updatedItems;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -429,13 +428,10 @@ var One2manyInput = function (props) {
                             arch: views.get("form").arch,
                             model: relation,
                             ids: [id],
+                            fields: views.get("form").fields,
                         })];
                 case 1:
-                    erpValues = (_a.sent())[0];
-                    updatedObject = erpReadWriteHelper_1.formatX2ManyValues({
-                        values: erpValues,
-                        fields: views.get("form").fields,
-                    });
+                    updatedObject = (_a.sent())[0];
                     if (!!itemAlreadyPresent) return [3 /*break*/, 5];
                     if (!parentId) return [3 /*break*/, 3];
                     values = {};
@@ -444,6 +440,7 @@ var One2manyInput = function (props) {
                             model: parentModel,
                             id: parentId,
                             values: values,
+                            fields: views.get("form").fields,
                         })];
                 case 2:
                     _a.sent();

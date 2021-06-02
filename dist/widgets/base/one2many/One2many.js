@@ -76,7 +76,7 @@ var antd_1 = require("antd");
 var ooui_1 = require("ooui");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var One2manyContext_1 = __importDefault(require("@/context/One2manyContext"));
-var One2manyInput_1 = require("@/widgets/base/One2manyInput");
+var One2manyInput_1 = require("@/widgets/base/one2many/One2manyInput");
 var One2many = function (props) {
     var ooui = props.ooui;
     var mode = ooui.mode, relation = ooui.relation, oouiViews = ooui.views;

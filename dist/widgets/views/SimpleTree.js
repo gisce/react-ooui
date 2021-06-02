@@ -76,6 +76,7 @@ function SimpleTree(props) {
                         arch: treeView.arch,
                         model: model,
                         ids: ids,
+                        fields: treeView.fields,
                     })];
                 case 1:
                     values = _a.sent();

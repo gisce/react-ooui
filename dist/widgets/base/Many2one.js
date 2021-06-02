@@ -84,7 +84,6 @@ var Many2one = function (props) {
         react_1.default.createElement(Many2oneInput, { ooui: ooui })));
 };
 exports.Many2one = Many2one;
-var SEARCH_BUTTON_TAPPED_FLAG = false;
 var Many2oneInput = function (props) {
     var value = props.value, onChange = props.onChange, ooui = props.ooui;
     var required = ooui.required, relation = ooui.relation, readOnly = ooui.readOnly;
@@ -93,6 +92,7 @@ var Many2oneInput = function (props) {
     var _b = react_1.useState(false), showFormModal = _b[0], setShowFormModal = _b[1];
     var _c = react_1.useState(false), searching = _c[0], setSearching = _c[1];
     var _d = react_1.useState(), searchText = _d[0], setSearchText = _d[1];
+    var searchButtonTappedRef = react_1.useRef(false);
     var triggerChange = function (changedValue) {
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
     };
@@ -113,7 +113,7 @@ var Many2oneInput = function (props) {
                     // Debounce this event to give time to the search button onClick to set the flag
                     _a.sent();
                     // If the focus is lost because the user tapped the search button, we don't need to do nothing here
-                    if (SEARCH_BUTTON_TAPPED_FLAG) {
+                    if (searchButtonTappedRef.current) {
                         triggerChange([undefined, ""]);
                         return [2 /*return*/];
                     }
@@ -156,17 +156,17 @@ var Many2oneInput = function (props) {
                 }, tabIndex: -1 })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
             react_1.default.createElement(antd_1.Button, { icon: searching ? react_1.default.createElement(icons_1.LoadingOutlined, null) : react_1.default.createElement(icons_1.SearchOutlined, null), disabled: readOnly || searching, onClick: function () {
-                    SEARCH_BUTTON_TAPPED_FLAG = true;
+                    searchButtonTappedRef.current = true;
                     setSearchText(text);
                     setShowSearchModal(true);
                 }, tabIndex: -1 })),
         react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValue: function (event) {
                 triggerChange([event.id, event.name]);
                 setShowSearchModal(false);
-                SEARCH_BUTTON_TAPPED_FLAG = false;
+                searchButtonTappedRef.current = false;
             }, onCloseModal: function () {
                 setShowSearchModal(false);
-                SEARCH_BUTTON_TAPPED_FLAG = false;
+                searchButtonTappedRef.current = false;
             } }),
         react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: value && value[0], visible: showFormModal, onSubmitSucceed: function (event) {
                 triggerChange([event.id, event.name]);

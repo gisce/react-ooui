@@ -67,7 +67,6 @@ var Container_1 = __importDefault(require("@/widgets/containers/Container"));
 var formHelper_1 = require("@/helpers/formHelper");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"));
-var erpReadWriteHelper_1 = require("@/helpers/erpReadWriteHelper");
 var FormContext_1 = __importDefault(require("@/context/FormContext"));
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
@@ -144,7 +143,7 @@ function Form(props, ref) {
         });
     }); };
     var fetchValuesFromApi = function (view) { return __awaiter(_this, void 0, void 0, function () {
-        var _values, erpValues;
+        var _values;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -154,13 +153,10 @@ function Form(props, ref) {
                             arch: view.arch,
                             model: model,
                             ids: [id],
+                            fields: view.fields,
                         })];
                 case 1:
-                    erpValues = (_a.sent())[0];
-                    _values = erpReadWriteHelper_1.formatX2ManyValues({
-                        values: erpValues,
-                        fields: view.fields,
-                    });
+                    _values = (_a.sent())[0];
                     return [3 /*break*/, 4];
                 case 2: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
                         model: model,
@@ -177,11 +173,7 @@ function Form(props, ref) {
         });
     }); };
     var fetchValuesFromProps = function (view) {
-        var _values = erpReadWriteHelper_1.formatX2ManyValues({
-            values: values,
-            fields: view.fields,
-        });
-        assignNewValuesToForm(_values, view);
+        assignNewValuesToForm(values, view);
     };
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
         var view, err_1;
@@ -227,28 +219,26 @@ function Form(props, ref) {
         return (Object.keys(formHelper_1.getTouchedValues(antForm, form === null || form === void 0 ? void 0 : form.view.fields)).length !== 0);
     };
     var submitApi = function () { return __awaiter(_this, void 0, void 0, function () {
-        var touchedValues, erpTouchedValues, objectId, newId, value, event;
+        var touchedValues, objectId, newId, value, event;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     touchedValues = formHelper_1.getTouchedValues(antForm, form === null || form === void 0 ? void 0 : form.view.fields);
-                    erpTouchedValues = erpReadWriteHelper_1.getErpValues({
-                        fields: form === null || form === void 0 ? void 0 : form.view.fields,
-                        touchedValues: touchedValues,
-                    });
                     objectId = id;
                     if (!id) return [3 /*break*/, 2];
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().update({
                             model: model,
                             id: id,
-                            values: erpTouchedValues,
+                            values: touchedValues,
+                            fields: form === null || form === void 0 ? void 0 : form.view.fields,
                         })];
                 case 1:
                     _a.sent();
                     return [3 /*break*/, 4];
                 case 2: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().create({
                         model: model,
-                        values: erpTouchedValues,
+                        values: touchedValues,
+                        fields: form === null || form === void 0 ? void 0 : form.view.fields,
                     })];
                 case 3:
                     newId = _a.sent();

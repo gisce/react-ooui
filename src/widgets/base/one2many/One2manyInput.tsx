@@ -4,7 +4,7 @@ import { Button, Alert, Spin } from "antd";
 import { Form } from "@/index";
 import { Tree } from "@/index";
 import { Form as FormOoui, Tree as TreeOoui } from "ooui";
-import { TreeView, Views } from "@/types";
+import { Views } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import { FormModal } from "@/widgets/modals/FormModal";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
@@ -14,7 +14,6 @@ import {
   One2manyContextType,
 } from "@/context/One2manyContext";
 import { FormContext, FormContextType } from "@/context/FormContext";
-import { formatX2ManyValues } from "@/helpers/erpReadWriteHelper";
 
 import {
   FileAddOutlined,
@@ -87,7 +86,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     if (manualTriggerChange) {
       setManualTriggerChange(false);
     } else {
-      await fetchOriginalItemsFromApi(views.get("tree"));
+      await fetchOriginalItemsFromApi();
       if (itemIndex > itemsToShow.length - 1 && itemIndex !== 0) {
         setItemIndex(0);
       }
@@ -98,7 +97,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     fetchData();
   }, [items]);
 
-  const fetchOriginalItemsFromApi = async (treeView: TreeView) => {
+  const fetchOriginalItemsFromApi = async () => {
     setIsLoading(true);
     setFormHasChanges(false);
     setError(undefined);
@@ -110,9 +109,10 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       const idsToFetch = realItems.map((item) => item.id) as number[];
 
       const values = await ConnectionProvider.getHandler().readObjects({
-        arch: treeView.arch,
+        arch: views.get("tree").arch,
         model: relation,
         ids: idsToFetch,
+        fields: views.get("tree").fields,
       });
 
       const itemsWithValues = items.map((item) => {
@@ -239,6 +239,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           model: parentModel,
           id: parentId,
           values,
+          fields: views.get("form").fields,
         });
       }
 
@@ -305,6 +306,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
             model: parentModel,
             id: parentId,
             values,
+            fields: views.get("form").fields,
           });
         }
       }
@@ -373,17 +375,14 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
   const formPostSaveAction = async (event: any) => {
     const { id } = event;
-    const erpValues = (
+    const updatedObject = (
       await ConnectionProvider.getHandler().readObjects({
         arch: views.get("form").arch,
         model: relation,
         ids: [id],
+        fields: views.get("form").fields,
       })
     )[0];
-    const updatedObject = formatX2ManyValues({
-      values: erpValues,
-      fields: views.get("form").fields,
-    });
     const updatedItems: One2manyItem[] = items.map((item: One2manyItem) => {
       if (item.id === id) {
         return { ...item, values: updatedObject };
@@ -398,18 +397,14 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     const itemAlreadyPresent =
       items.find((item) => item.id === id) !== undefined;
 
-    const erpValues = (
+    const updatedObject = (
       await ConnectionProvider.getHandler().readObjects({
         arch: views.get("form").arch,
         model: relation,
         ids: [id],
+        fields: views.get("form").fields,
       })
     )[0];
-
-    const updatedObject = formatX2ManyValues({
-      values: erpValues,
-      fields: views.get("form").fields,
-    });
 
     if (!itemAlreadyPresent) {
       // Create
@@ -422,6 +417,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           model: parentModel,
           id: parentId,
           values,
+          fields: views.get("form").fields,
         });
 
         // Set item as original in internal list

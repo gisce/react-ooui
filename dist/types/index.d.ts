@@ -38,6 +38,7 @@ declare type SearchRequest = {
 declare type CreateObjectRequest = {
     model: string;
     values: any;
+    fields: any;
 };
 declare type UpdateObjectRequest = CreateObjectRequest & {
     id: number;
@@ -55,6 +56,7 @@ declare type ExecuteRequest = {
 };
 declare type ReadObjectsRequest = {
     arch: string;
+    fields: any;
     model: string;
     ids: number[];
 };
