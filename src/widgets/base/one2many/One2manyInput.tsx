@@ -26,6 +26,7 @@ type One2manyItem = {
   operation: "original" | "pendingLink";
   id?: number;
   values?: any;
+  treeValues?: any;
 };
 
 interface One2manyInputProps {
@@ -108,9 +109,11 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
     try {
       const itemsWithValues = await readObjectValues({
-        arch: views.get("tree").arch,
+        treeArch: views.get("tree").arch,
+        treeFields: views.get("tree").fields,
+        formArch: views.get("form").arch,
+        formFields: views.get("form").fields,
         model: relation,
-        fields: views.get("tree").fields,
         items,
       });
 
@@ -279,7 +282,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
   const formPostSaveAction = async (id: number) => {
     // We call the API for reading the updated object
-    const updatedObject = (
+    const updatedFormObject = (
       await ConnectionProvider.getHandler().readObjects({
         arch: views.get("form").arch,
         model: relation,
@@ -287,11 +290,23 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         fields: views.get("form").fields,
       })
     )[0];
+    const updatedTreeObject = (
+      await ConnectionProvider.getHandler().readObjects({
+        arch: views.get("tree").arch,
+        model: relation,
+        ids: [id],
+        fields: views.get("tree").fields,
+      })
+    )[0];
 
     // Then we update the retrieved object with updated values inside our internal list with triggerChange
     const updatedItems: One2manyItem[] = items.map((item: One2manyItem) => {
       if (item.id === id) {
-        return { ...item, values: updatedObject };
+        return {
+          ...item,
+          values: updatedFormObject,
+          treeValues: updatedTreeObject,
+        };
       }
       return item;
     });
@@ -305,7 +320,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       items.find((item) => item.id === id) !== undefined;
 
     // We call the API for reading the updated object
-    const updatedObject = (
+    const updatedFormObject = (
       await ConnectionProvider.getHandler().readObjects({
         arch: views.get("form").arch,
         model: relation,
@@ -313,20 +328,38 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         fields: views.get("form").fields,
       })
     )[0];
+    const updatedTreeObject = (
+      await ConnectionProvider.getHandler().readObjects({
+        arch: views.get("tree").arch,
+        model: relation,
+        ids: [id],
+        fields: views.get("tree").fields,
+      })
+    )[0];
 
     if (!itemAlreadyPresent) {
-      await processNewItem({ id, values: updatedObject });
+      await processNewItem({
+        id,
+        values: updatedFormObject,
+        treeValues: updatedTreeObject,
+      });
     } else {
-      await processUpdateItem({ id, values: updatedObject });
+      await processUpdateItem({
+        id,
+        values: updatedFormObject,
+        treeValues: updatedTreeObject,
+      });
     }
   };
 
   const processNewItem = async ({
     id,
     values,
+    treeValues,
   }: {
     id: number;
     values: any;
+    treeValues: any;
   }) => {
     if (parentId) {
       await linkItem({
@@ -344,6 +377,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           id,
           operation: "original",
           values,
+          treeValues,
         })
       );
       return;
@@ -356,6 +390,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         id,
         operation: "pendingLink",
         values,
+        treeValues,
       })
     );
   };
@@ -363,9 +398,11 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const processUpdateItem = async ({
     id,
     values,
+    treeValues,
   }: {
     id: number;
     values: any;
+    treeValues: any;
   }) => {
     // We iterate over our internal list in order to update the object values with the updated ones from the API
     // If we have a parentId, we consider the item as original, because it's already saved and linked
@@ -376,6 +413,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           id,
           operation: parentId ? "original" : "pendingLink",
           values,
+          treeValues,
         };
       }
       return item;
@@ -447,7 +485,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         total={itemsToShow.length}
         limit={itemsToShow.length}
         treeView={views.get("tree")}
-        results={itemsToShow.map((item) => item.values)}
+        results={itemsToShow.map((item) => item.treeValues)}
         loading={isLoading}
         onRowClicked={onTreeRowClicked}
         showPagination={false}

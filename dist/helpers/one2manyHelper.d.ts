@@ -2,8 +2,10 @@ import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
 declare type ReadObjectValuesOptions = {
     items: One2manyItem[];
     model: string;
-    fields: any;
-    arch: string;
+    treeFields: any;
+    treeArch: string;
+    formFields: any;
+    formArch: string;
 };
 declare const readObjectValues: (options: ReadObjectValuesOptions) => Promise<One2manyItem[]>;
 declare type RemoveItemOptions = {

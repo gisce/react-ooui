@@ -6,6 +6,7 @@ declare type One2manyItem = {
     operation: "original" | "pendingLink";
     id?: number;
     values?: any;
+    treeValues?: any;
 };
 interface One2manyInputProps {
     ooui: One2manyOoui;

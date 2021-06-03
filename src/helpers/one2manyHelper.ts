@@ -4,31 +4,48 @@ import ConnectionProvider from "@/ConnectionProvider";
 type ReadObjectValuesOptions = {
   items: One2manyItem[];
   model: string;
-  fields: any;
-  arch: string;
+  treeFields: any;
+  treeArch: string;
+  formFields: any;
+  formArch: string;
 };
 
 const readObjectValues = async (
   options: ReadObjectValuesOptions
 ): Promise<One2manyItem[]> => {
-  const { items, model, fields, arch } = options;
+  const { items, model, formFields, formArch, treeFields, treeArch } = options;
 
   // We get a number array of id's
   const idsToFetch = items.map((item) => item.id) as number[];
 
-  const values = await ConnectionProvider.getHandler().readObjects({
-    arch,
+  const formValues = await ConnectionProvider.getHandler().readObjects({
+    arch: formArch,
     model,
     ids: idsToFetch,
-    fields,
+    fields: formFields,
+  });
+
+  const treeValues = await ConnectionProvider.getHandler().readObjects({
+    arch: treeArch,
+    model,
+    ids: idsToFetch,
+    fields: treeFields,
   });
 
   // We fill the values property of the One2manyItem with the retrieved values from the API
   return items.map((item) => {
-    const fetchedItemValues = values.find(
+    const fetchedFormItemValues = formValues.find(
       (itemValues: any) => itemValues.id === item.id
     );
-    return { ...item, values: fetchedItemValues };
+    const fetchedTreeItemValues = treeValues.find(
+      (itemValues: any) => itemValues.id === item.id
+    );
+
+    return {
+      ...item,
+      values: fetchedFormItemValues,
+      treeValues: fetchedTreeItemValues,
+    };
   });
 };
 

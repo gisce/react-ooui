@@ -138,9 +138,11 @@ var One2manyInput = function (props) {
                 case 1:
                     _a.trys.push([1, 3, 4, 5]);
                     return [4 /*yield*/, one2manyHelper_1.readObjectValues({
-                            arch: views.get("tree").arch,
+                            treeArch: views.get("tree").arch,
+                            treeFields: views.get("tree").fields,
+                            formArch: views.get("form").arch,
+                            formFields: views.get("form").fields,
                             model: relation,
-                            fields: views.get("tree").fields,
                             items: items,
                         })];
                 case 2:
@@ -333,7 +335,7 @@ var One2manyInput = function (props) {
         });
     }); };
     var formPostSaveAction = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-        var updatedObject, updatedItems;
+        var updatedFormObject, updatedTreeObject, updatedItems;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
@@ -343,10 +345,18 @@ var One2manyInput = function (props) {
                         fields: views.get("form").fields,
                     })];
                 case 1:
-                    updatedObject = (_a.sent())[0];
+                    updatedFormObject = (_a.sent())[0];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                            arch: views.get("tree").arch,
+                            model: relation,
+                            ids: [id],
+                            fields: views.get("tree").fields,
+                        })];
+                case 2:
+                    updatedTreeObject = (_a.sent())[0];
                     updatedItems = items.map(function (item) {
                         if (item.id === id) {
-                            return __assign(__assign({}, item), { values: updatedObject });
+                            return __assign(__assign({}, item), { values: updatedFormObject, treeValues: updatedTreeObject });
                         }
                         return item;
                     });
@@ -356,7 +366,7 @@ var One2manyInput = function (props) {
         });
     }); };
     var formModalPostSaveAction = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-        var itemAlreadyPresent, updatedObject;
+        var itemAlreadyPresent, updatedFormObject, updatedTreeObject;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -368,22 +378,38 @@ var One2manyInput = function (props) {
                             fields: views.get("form").fields,
                         })];
                 case 1:
-                    updatedObject = (_a.sent())[0];
-                    if (!!itemAlreadyPresent) return [3 /*break*/, 3];
-                    return [4 /*yield*/, processNewItem({ id: id, values: updatedObject })];
+                    updatedFormObject = (_a.sent())[0];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                            arch: views.get("tree").arch,
+                            model: relation,
+                            ids: [id],
+                            fields: views.get("tree").fields,
+                        })];
                 case 2:
+                    updatedTreeObject = (_a.sent())[0];
+                    if (!!itemAlreadyPresent) return [3 /*break*/, 4];
+                    return [4 /*yield*/, processNewItem({
+                            id: id,
+                            values: updatedFormObject,
+                            treeValues: updatedTreeObject,
+                        })];
+                case 3:
                     _a.sent();
-                    return [3 /*break*/, 5];
-                case 3: return [4 /*yield*/, processUpdateItem({ id: id, values: updatedObject })];
-                case 4:
+                    return [3 /*break*/, 6];
+                case 4: return [4 /*yield*/, processUpdateItem({
+                        id: id,
+                        values: updatedFormObject,
+                        treeValues: updatedTreeObject,
+                    })];
+                case 5:
                     _a.sent();
-                    _a.label = 5;
-                case 5: return [2 /*return*/];
+                    _a.label = 6;
+                case 6: return [2 /*return*/];
             }
         });
     }); };
     var processNewItem = function (_a) {
-        var id = _a.id, values = _a.values;
+        var id = _a.id, values = _a.values, treeValues = _a.treeValues;
         return __awaiter(void 0, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -404,6 +430,7 @@ var One2manyInput = function (props) {
                             id: id,
                             operation: "original",
                             values: values,
+                            treeValues: treeValues,
                         }));
                         return [2 /*return*/];
                     case 2:
@@ -413,6 +440,7 @@ var One2manyInput = function (props) {
                             id: id,
                             operation: "pendingLink",
                             values: values,
+                            treeValues: treeValues,
                         }));
                         return [2 /*return*/];
                 }
@@ -420,7 +448,7 @@ var One2manyInput = function (props) {
         });
     };
     var processUpdateItem = function (_a) {
-        var id = _a.id, values = _a.values;
+        var id = _a.id, values = _a.values, treeValues = _a.treeValues;
         return __awaiter(void 0, void 0, void 0, function () {
             var updatedItems;
             return __generator(this, function (_b) {
@@ -430,6 +458,7 @@ var One2manyInput = function (props) {
                             id: id,
                             operation: parentId ? "original" : "pendingLink",
                             values: values,
+                            treeValues: treeValues,
                         };
                     }
                     return item;
@@ -453,6 +482,7 @@ var One2manyInput = function (props) {
     var onTreeRowClicked = function (itemId) {
         // We show the detail for the clicked item in a Form modal
         setModalItem(items.find(function (item) { return item.id === itemId; }));
+        setContinuousEntryMode(false);
         setShowFormModal(true);
     };
     var onSearchModalSelectValue = function (id) { return __awaiter(void 0, void 0, void 0, function () {
@@ -491,7 +521,7 @@ var One2manyInput = function (props) {
                     setFormHasChanges(true);
                 }, readOnly: readOnly, postSaveAction: formPostSaveAction }));
         }
-        return (react_1.default.createElement(index_2.Tree, { total: itemsToShow.length, limit: itemsToShow.length, treeView: views.get("tree"), results: itemsToShow.map(function (item) { return item.values; }), loading: isLoading, onRowClicked: onTreeRowClicked, showPagination: false, rowSelection: {
+        return (react_1.default.createElement(index_2.Tree, { total: itemsToShow.length, limit: itemsToShow.length, treeView: views.get("tree"), results: itemsToShow.map(function (item) { return item.treeValues; }), loading: isLoading, onRowClicked: onTreeRowClicked, showPagination: false, rowSelection: {
                 selectedRowKeys: selectedRowKeys,
                 onChange: setSelectedRowKeys,
             } }));
