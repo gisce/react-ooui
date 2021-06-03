@@ -82,6 +82,7 @@ var One2manyContext_1 = require("@/context/One2manyContext");
 var FormContext_1 = require("@/context/FormContext");
 var One2manyTopBar_1 = require("@/widgets/base/one2many/One2manyTopBar");
 var one2manyHelper_1 = require("@/helpers/one2manyHelper");
+var SearchModal_1 = require("@/widgets/modals/SearchModal");
 var One2manyInput = function (props) {
     var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui, views = props.views, formOoui = props.formOoui, treeOoui = props.treeOoui;
     var _b = react_1.useContext(One2manyContext_1.One2manyContext), currentView = _b.currentView, setCurrentView = _b.setCurrentView, itemIndex = _b.itemIndex, setItemIndex = _b.setItemIndex, manualTriggerChange = _b.manualTriggerChange, setManualTriggerChange = _b.setManualTriggerChange;
@@ -91,10 +92,12 @@ var One2manyInput = function (props) {
     var _e = react_1.useState(false), isLoading = _e[0], setIsLoading = _e[1];
     var _f = react_1.useState(), error = _f[0], setError = _f[1];
     var _g = react_1.useState(false), showFormModal = _g[0], setShowFormModal = _g[1];
-    var _h = react_1.useState(), modalItem = _h[0], setModalItem = _h[1];
-    var _j = react_1.useState(false), formIsSaving = _j[0], setFormIsSaving = _j[1];
-    var _k = react_1.useState([]), selectedRowKeys = _k[0], setSelectedRowKeys = _k[1];
-    var _l = ooui, readOnly = _l.readOnly, relation = _l.relation;
+    var _h = react_1.useState(false), showSearchModal = _h[0], setShowSearchModal = _h[1];
+    var _j = react_1.useState(), modalItem = _j[0], setModalItem = _j[1];
+    var _k = react_1.useState(false), formIsSaving = _k[0], setFormIsSaving = _k[1];
+    var _l = react_1.useState([]), selectedRowKeys = _l[0], setSelectedRowKeys = _l[1];
+    var _m = react_1.useState(false), continuousEntryMode = _m[0], setContinuousEntryMode = _m[1];
+    var _o = ooui, readOnly = _o.readOnly, relation = _o.relation;
     var isMany2many = ooui.type === "many2many";
     var fieldName = ooui.id;
     var itemsToShow = items.filter(function (item) { return item.values; });
@@ -223,13 +226,28 @@ var One2manyInput = function (props) {
         return __generator(this, function (_a) {
             if (currentView === "form") {
                 showFormChangesDialogIfNeeded(function () {
+                    setContinuousEntryMode(true);
                     setModalItem(undefined);
                     setShowFormModal(true);
                 });
             }
             else {
+                setContinuousEntryMode(true);
                 setModalItem(undefined);
                 setShowFormModal(true);
+            }
+            return [2 /*return*/];
+        });
+    }); };
+    var searchItem = function () { return __awaiter(void 0, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            if (currentView === "form") {
+                showFormChangesDialogIfNeeded(function () {
+                    setShowSearchModal(true);
+                });
+            }
+            else {
+                setShowSearchModal(true);
             }
             return [2 /*return*/];
         });
@@ -252,6 +270,7 @@ var One2manyInput = function (props) {
                             idsToRemove: [itemsToShow[itemIndex].id],
                             fields: views.get("form").fields,
                             fieldName: fieldName,
+                            isMany2many: isMany2many,
                         })];
                 case 2:
                     _a.sent();
@@ -293,6 +312,7 @@ var One2manyInput = function (props) {
                             idsToRemove: idsToRemove,
                             fields: views.get("form").fields,
                             fieldName: fieldName,
+                            isMany2many: isMany2many,
                         })];
                 case 2:
                     _a.sent();
@@ -425,10 +445,8 @@ var One2manyInput = function (props) {
         setFormHasChanges(false);
     };
     // This is the callback called when a modal is done saving the object
-    var onFormModalSubmitSucceed = function (id) {
-        // TODO: Review this!!!
-        // If we already have an id will mean the form modal is in edit mode and we're not in continuous mode
-        if (id) {
+    var onFormModalSubmitSucceed = function () {
+        if (!continuousEntryMode) {
             setShowFormModal(false);
         }
     };
@@ -437,6 +455,30 @@ var One2manyInput = function (props) {
         setModalItem(items.find(function (item) { return item.id === itemId; }));
         setShowFormModal(true);
     };
+    var onSearchModalSelectValue = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+        var e_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    setIsLoading(true);
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, 4, 5]);
+                    return [4 /*yield*/, formModalPostSaveAction(id)];
+                case 2:
+                    _a.sent();
+                    return [3 /*break*/, 5];
+                case 3:
+                    e_1 = _a.sent();
+                    setError(e_1);
+                    return [3 /*break*/, 5];
+                case 4:
+                    setIsLoading(false);
+                    return [7 /*endfinally*/];
+                case 5: return [2 /*return*/];
+            }
+        });
+    }); };
     var content = function () {
         var _a, _b;
         if (currentView === "form") {
@@ -457,21 +499,26 @@ var One2manyInput = function (props) {
     if (error) {
         return react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true });
     }
-    // TODO: Review this!!!
     // If we are in create mode we have to show the modal in continuous mode.
     // This means the modal won't close after clicking OK, the modal will add the new item
     // and will reset to defaults to let the user add a new item.
-    // If we don't have any id for the modal item, it will mean that we are in create mode.
-    var mustClearAfterSave = !(modalItem === null || modalItem === void 0 ? void 0 : modalItem.id);
+    var mustClearAfterSave = continuousEntryMode;
     if (isLoading) {
         return react_1.default.createElement(antd_1.Spin, null);
     }
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(One2manyTopBar_1.One2manyTopBar, { mode: currentView, title: currentView === "form" ? formOoui.string : treeOoui.string, readOnly: readOnly, isMany2Many: isMany2many, formHasChanges: formHasChanges, formIsSaving: formIsSaving, totalItems: itemsToShow.length, currentItemIndex: itemIndex, onSaveItem: saveItem, onDelete: showRemoveConfirm, onCreateItem: createItem, onToggleViewMode: toggleViewMode, onPreviousItem: previousItem, onNextItem: nextItem }),
+        react_1.default.createElement(One2manyTopBar_1.One2manyTopBar, { mode: currentView, title: currentView === "form" ? formOoui.string : treeOoui.string, readOnly: readOnly, isMany2Many: isMany2many, formHasChanges: formHasChanges, formIsSaving: formIsSaving, totalItems: itemsToShow.length, currentItemIndex: itemIndex, onSaveItem: saveItem, onDelete: showRemoveConfirm, onCreateItem: createItem, onToggleViewMode: toggleViewMode, onPreviousItem: previousItem, onNextItem: nextItem, onSearchItem: searchItem }),
         content(),
         react_1.default.createElement(FormModal_1.FormModal, { noReuse: true, data: { ooui: formOoui, view: views.get("form") }, model: relation, id: modalItem === null || modalItem === void 0 ? void 0 : modalItem.id, values: modalItem === null || modalItem === void 0 ? void 0 : modalItem.values, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, onCancel: function () {
+                setContinuousEntryMode(false);
                 setShowFormModal(false);
-            }, readOnly: readOnly, mustClearAfterSave: mustClearAfterSave, postSaveAction: formModalPostSaveAction })));
+            }, readOnly: readOnly, mustClearAfterSave: mustClearAfterSave, postSaveAction: formModalPostSaveAction }),
+        react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, visible: showSearchModal, onSelectValue: function (id) {
+                setShowSearchModal(false);
+                onSearchModalSelectValue(id);
+            }, onCloseModal: function () {
+                setShowSearchModal(false);
+            } })));
 };
 exports.One2manyInput = One2manyInput;
 //# sourceMappingURL=One2manyInput.js.map

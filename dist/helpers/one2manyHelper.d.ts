@@ -12,6 +12,7 @@ declare type RemoveItemOptions = {
     fieldName: string;
     idsToRemove: number[];
     fields: any;
+    isMany2many: boolean;
 };
 declare const removeItems: (options: RemoveItemOptions) => Promise<void>;
 declare type LinkItemOptions = {

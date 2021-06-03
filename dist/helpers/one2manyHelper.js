@@ -77,16 +77,16 @@ var readObjectValues = function (options) { return __awaiter(void 0, void 0, voi
 }); };
 exports.readObjectValues = readObjectValues;
 var removeItems = function (options) { return __awaiter(void 0, void 0, void 0, function () {
-    var model, parentId, fieldName, idsToRemove, fields, values, _i, idsToRemove_1, idToRemove;
+    var model, parentId, fieldName, idsToRemove, fields, isMany2many, values, _i, idsToRemove_1, idToRemove;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                model = options.model, parentId = options.parentId, fieldName = options.fieldName, idsToRemove = options.idsToRemove, fields = options.fields;
+                model = options.model, parentId = options.parentId, fieldName = options.fieldName, idsToRemove = options.idsToRemove, fields = options.fields, isMany2many = options.isMany2many;
                 values = {};
                 values[fieldName] = [];
                 for (_i = 0, idsToRemove_1 = idsToRemove; _i < idsToRemove_1.length; _i++) {
                     idToRemove = idsToRemove_1[_i];
-                    values[fieldName].push([2, idToRemove]);
+                    values[fieldName].push([isMany2many ? 3 : 2, idToRemove]);
                 }
                 return [4 /*yield*/, ConnectionProvider_1.default.getHandler().update({
                         model: model,

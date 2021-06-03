@@ -8,7 +8,7 @@ var react_1 = __importDefault(require("react"));
 var antd_1 = require("antd");
 var icons_1 = require("@ant-design/icons");
 var One2manyTopBar = function (props) {
-    var titleString = props.title, readOnly = props.readOnly, onCreateItem = props.onCreateItem, onToggleViewMode = props.onToggleViewMode, mode = props.mode, formIsSaving = props.formIsSaving, onSaveItem = props.onSaveItem, formHasChanges = props.formHasChanges, onDelete = props.onDelete, totalItems = props.totalItems, currentItemIndex = props.currentItemIndex, onPreviousItem = props.onPreviousItem, onNextItem = props.onNextItem;
+    var titleString = props.title, readOnly = props.readOnly, onCreateItem = props.onCreateItem, onToggleViewMode = props.onToggleViewMode, mode = props.mode, formIsSaving = props.formIsSaving, onSaveItem = props.onSaveItem, formHasChanges = props.formHasChanges, onDelete = props.onDelete, totalItems = props.totalItems, currentItemIndex = props.currentItemIndex, onPreviousItem = props.onPreviousItem, onNextItem = props.onNextItem, isMany2Many = props.isMany2Many, onSearchItem = props.onSearchItem;
     function separator() {
         return react_1.default.createElement("div", { className: "inline-block w-3" });
     }
@@ -49,6 +49,7 @@ var One2manyTopBar = function (props) {
         title(),
         react_1.default.createElement("div", { className: "h-8 flex-none pl-2" },
             react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FileAddOutlined, null), disabled: readOnly, onClick: onCreateItem }),
+            isMany2Many && (react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.SearchOutlined, null), disabled: readOnly, onClick: onSearchItem })),
             separator(),
             mode === "form" && saveButton(),
             deleteButton(),

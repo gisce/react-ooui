@@ -14,6 +14,7 @@ declare type One2manyTopBarProps = {
     currentItemIndex: number;
     onPreviousItem: () => void;
     onNextItem: () => void;
+    onSearchItem: () => void;
 };
 export declare const One2manyTopBar: (props: One2manyTopBarProps) => JSX.Element;
 export {};
