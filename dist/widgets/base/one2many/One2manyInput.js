@@ -83,6 +83,7 @@ var FormContext_1 = require("@/context/FormContext");
 var One2manyTopBar_1 = require("@/widgets/base/one2many/One2manyTopBar");
 var one2manyHelper_1 = require("@/helpers/one2manyHelper");
 var SearchModal_1 = require("@/widgets/modals/SearchModal");
+var useModalWidthDimensions_1 = __importDefault(require("@/hooks/useModalWidthDimensions"));
 var One2manyInput = function (props) {
     var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui, views = props.views, formOoui = props.formOoui, treeOoui = props.treeOoui;
     var _b = react_1.useContext(One2manyContext_1.One2manyContext), currentView = _b.currentView, setCurrentView = _b.setCurrentView, itemIndex = _b.itemIndex, setItemIndex = _b.setItemIndex, manualTriggerChange = _b.manualTriggerChange, setManualTriggerChange = _b.setManualTriggerChange;
@@ -97,6 +98,7 @@ var One2manyInput = function (props) {
     var _k = react_1.useState(false), formIsSaving = _k[0], setFormIsSaving = _k[1];
     var _l = react_1.useState([]), selectedRowKeys = _l[0], setSelectedRowKeys = _l[1];
     var _m = react_1.useState(false), continuousEntryMode = _m[0], setContinuousEntryMode = _m[1];
+    var modalHeight = useModalWidthDimensions_1.default().modalHeight;
     var _o = ooui, readOnly = _o.readOnly, relation = _o.relation;
     var isMany2many = ooui.type === "many2many";
     var fieldName = ooui.id;
@@ -524,7 +526,7 @@ var One2manyInput = function (props) {
         return (react_1.default.createElement(index_2.Tree, { total: itemsToShow.length, limit: itemsToShow.length, treeView: views.get("tree"), results: itemsToShow.map(function (item) { return item.treeValues; }), loading: isLoading, onRowClicked: onTreeRowClicked, showPagination: false, rowSelection: {
                 selectedRowKeys: selectedRowKeys,
                 onChange: setSelectedRowKeys,
-            } }));
+            }, scrollY: modalHeight * 0.4 }));
     };
     if (error) {
         return react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true });

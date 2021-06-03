@@ -21,6 +21,7 @@ import {
   linkItem,
 } from "@/helpers/one2manyHelper";
 import { SearchModal } from "@/widgets/modals/SearchModal";
+import useModalWidthDimensions from "@/hooks/useModalWidthDimensions";
 
 type One2manyItem = {
   operation: "original" | "pendingLink";
@@ -72,6 +73,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const [continuousEntryMode, setContinuousEntryMode] = useState<boolean>(
     false
   );
+  const { modalHeight } = useModalWidthDimensions();
 
   const { readOnly, relation } = ooui as One2manyOoui;
   const isMany2many = ooui.type === "many2many";
@@ -493,6 +495,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           selectedRowKeys,
           onChange: setSelectedRowKeys,
         }}
+        scrollY={modalHeight * 0.4}
       />
     );
   };
