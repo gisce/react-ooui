@@ -17,7 +17,6 @@ import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import SearchTree from "@/widgets/views/SearchTree";
 import { FormModal } from "@/widgets/modals/FormModal";
 import { SearchModal } from "@/widgets/modals/SearchModal";
-import SimpleTree from "@/widgets/views/SimpleTree";
 import Date from "@/widgets/base/Date";
 import DateTime from "@/widgets/base/DateTime";
 import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
@@ -74,7 +73,6 @@ export {
   SearchModal,
   One2many,
   One2manyItem,
-  SimpleTree,
   Date,
   DateTime,
 };
