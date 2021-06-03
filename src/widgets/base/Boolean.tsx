@@ -10,15 +10,23 @@ export const Boolean = (props: WidgetProps) => {
   const { ooui } = props;
   const { id, readOnly, required } = ooui;
 
+  return (
+    <Field {...props} valuePropName="checked">
+      <BooleanInput id={id} readOnly={readOnly} required={required} />
+    </Field>
+  );
+};
+
+const BooleanInput = (props: any) => {
+  const { required, readOnly, ...restProps } = props;
+
   const CustomCheckbox: any =
     required && !readOnly ? RequiredCheckbox : AntCheckbox;
 
   return (
-    <Field {...props} valuePropName="checked">
-      <div className="flex flex-row">
-        <CustomCheckbox disabled={readOnly} id={id} />
-      </div>
-    </Field>
+    <div className="flex flex-row">
+      <CustomCheckbox disabled={readOnly} {...restProps} />
+    </div>
   );
 };
 

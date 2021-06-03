@@ -249,8 +249,7 @@ function Form(props, ref) {
                     return [4 /*yield*/, postSaveAction(objectId)];
                 case 5:
                     _a.sent();
-                    onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(objectId);
-                    return [2 /*return*/];
+                    _a.label = 6;
                 case 6:
                     onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(objectId);
                     return [2 /*return*/];
