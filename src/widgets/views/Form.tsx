@@ -219,8 +219,6 @@ function Form(props: FormProps, ref: any): React.ReactElement {
 
     if (postSaveAction) {
       await postSaveAction(objectId);
-      onSubmitSucceed?.(objectId);
-      return;
     }
 
     onSubmitSucceed?.(objectId);

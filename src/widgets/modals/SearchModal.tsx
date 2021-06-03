@@ -33,7 +33,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
             model={model}
             nameSearch={nameSearch}
             onRowClicked={onRowClicked}
-            treeScrollY={modalHeight * 0.4}
+            treeScrollY={modalHeight * 0.3}
           />
         )}
         <Divider />
