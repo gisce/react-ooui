@@ -17,6 +17,7 @@ type Props = {
   onRequestPageChange?: (page: number, pageSize?: number) => void;
   onRowClicked?: (id: number) => void;
   rowSelection?: any;
+  scrollY?: number;
 };
 
 const strings: Strings = {
@@ -36,6 +37,7 @@ function Tree(props: Props): React.ReactElement {
     onRowClicked,
     showPagination = true,
     rowSelection,
+    scrollY,
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
@@ -91,7 +93,7 @@ function Tree(props: Props): React.ReactElement {
       {pagination()}
       <Table
         style={{ width }}
-        scroll={{ x: true }}
+        scroll={{ x: true, y: scrollY }}
         columns={columns}
         dataSource={items}
         pagination={false}

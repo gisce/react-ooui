@@ -24,5 +24,5 @@ export default function useModalWidthDimensions() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  return { modalWidth: windowDimensions.width * MODAL_WIDTH_CONSTANT };
+  return { modalWidth: windowDimensions.width * MODAL_WIDTH_CONSTANT, modalHeight: windowDimensions.height};
 }

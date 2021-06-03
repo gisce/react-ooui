@@ -11,6 +11,7 @@ declare type Props = {
     onRequestPageChange?: (page: number, pageSize?: number) => void;
     onRowClicked?: (id: number) => void;
     rowSelection?: any;
+    scrollY?: number;
 };
 declare function Tree(props: Props): React.ReactElement;
 export default Tree;

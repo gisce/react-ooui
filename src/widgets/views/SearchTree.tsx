@@ -20,10 +20,11 @@ type Props = {
   model?: string;
   onRowClicked: (data: OnRowClickedData) => void;
   nameSearch?: string;
+  treeScrollY?: number;
 };
 
 function SearchTree(props: Props) {
-  const { action, model, onRowClicked, nameSearch } = props;
+  const { action, model, onRowClicked, nameSearch, treeScrollY } = props;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [initialFetchDone, setInitialFetchDone] = useState<boolean>(false);
@@ -70,12 +71,14 @@ function SearchTree(props: Props) {
       const resultsIds = searchResults.map((item: any) => {
         return item?.[0];
       });
-      const resultsWithData = await ConnectionProvider.getHandler().readObjects({
-        model: currentModel!,
-        ids: resultsIds,
-        arch: treeView?.arch!,
-        fields: treeView?.fields!,
-      });
+      const resultsWithData = await ConnectionProvider.getHandler().readObjects(
+        {
+          model: currentModel!,
+          ids: resultsIds,
+          arch: treeView?.arch!,
+          fields: treeView?.fields!,
+        }
+      );
       setResults(resultsWithData);
     } else {
       setResults([]);
@@ -242,6 +245,7 @@ function SearchTree(props: Props) {
           onRequestPageChange={onRequestPageChange}
           loading={tableRefreshing}
           onRowClicked={onRowClickedHandler}
+          scrollY={treeScrollY}
         />
       </>
     );

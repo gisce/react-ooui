@@ -18,7 +18,7 @@ function useModalWidthDimensions() {
         window.addEventListener("resize", handleResize);
         return function () { return window.removeEventListener("resize", handleResize); };
     }, []);
-    return { modalWidth: windowDimensions.width * MODAL_WIDTH_CONSTANT };
+    return { modalWidth: windowDimensions.width * MODAL_WIDTH_CONSTANT, modalHeight: windowDimensions.height };
 }
 exports.default = useModalWidthDimensions;
 //# sourceMappingURL=useModalWidthDimensions.js.map

@@ -77,7 +77,7 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var DEFAULT_SEARCH_LIMIT = 80;
 function SearchTree(props) {
     var _this = this;
-    var action = props.action, model = props.model, onRowClicked = props.onRowClicked, nameSearch = props.nameSearch;
+    var action = props.action, model = props.model, onRowClicked = props.onRowClicked, nameSearch = props.nameSearch, treeScrollY = props.treeScrollY;
     var _a = react_1.useState(false), isLoading = _a[0], setIsLoading = _a[1];
     var _b = react_1.useState(false), initialFetchDone = _b[0], setInitialFetchDone = _b[1];
     var _c = react_1.useState(false), searchNameGetDone = _c[0], setSearchNameGetDone = _c[1];
@@ -305,7 +305,7 @@ function SearchTree(props) {
             react_1.default.createElement(SearchFilter_1.default, { fields: __assign(__assign({}, treeView.fields), formView.fields), searchFields: formView.search_fields, onClear: onClear, limit: limit, offset: offset, isSearching: searchFilterLoading, onSubmit: onSubmit }),
             searchError && (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: searchError, type: "error", banner: true })),
             react_1.default.createElement("div", { className: "pb-10" }),
-            react_1.default.createElement(Tree_1.default, { total: totalItems, limit: limit, page: page, treeView: treeView, results: results, onRequestPageChange: onRequestPageChange, loading: tableRefreshing, onRowClicked: onRowClickedHandler })));
+            react_1.default.createElement(Tree_1.default, { total: totalItems, limit: limit, page: page, treeView: treeView, results: results, onRequestPageChange: onRequestPageChange, loading: tableRefreshing, onRowClicked: onRowClickedHandler, scrollY: treeScrollY })));
     };
     if (initialError) {
         return (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: initialError, type: "error", banner: true }));

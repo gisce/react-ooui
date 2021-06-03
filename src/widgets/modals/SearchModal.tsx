@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Modal, Button, Divider, Alert, Spin, Row, Space } from "antd";
 import { FormModal } from "./FormModal";
 import SearchTree from "@/widgets/views/SearchTree";
-import ConnectionProvider from "@/ConnectionProvider";
 import { FileAddOutlined, CloseOutlined } from "@ant-design/icons";
 import useModalWidthDimensions from "@/hooks/useModalWidthDimensions";
 
@@ -18,7 +17,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
   const { visible, onCloseModal, onSelectValue, model, nameSearch } = props;
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
 
-  const { modalWidth } = useModalWidthDimensions();
+  const { modalWidth, modalHeight } = useModalWidthDimensions();
 
   const onRowClicked = async (event: any) => {
     const { id } = event;
@@ -34,6 +33,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
             model={model}
             nameSearch={nameSearch}
             onRowClicked={onRowClicked}
+            treeScrollY={modalHeight * 0.4}
           />
         )}
         <Divider />

@@ -68,7 +68,7 @@ var useModalWidthDimensions_1 = __importDefault(require("@/hooks/useModalWidthDi
 var SearchModal = function (props) {
     var visible = props.visible, onCloseModal = props.onCloseModal, onSelectValue = props.onSelectValue, model = props.model, nameSearch = props.nameSearch;
     var _a = react_1.useState(false), showCreateModal = _a[0], setShowCreateModal = _a[1];
-    var modalWidth = useModalWidthDimensions_1.default().modalWidth;
+    var _b = useModalWidthDimensions_1.default(), modalWidth = _b.modalWidth, modalHeight = _b.modalHeight;
     var onRowClicked = function (event) { return __awaiter(void 0, void 0, void 0, function () {
         var id;
         return __generator(this, function (_a) {
@@ -79,7 +79,7 @@ var SearchModal = function (props) {
     }); };
     var content = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
-            visible && (react_1.default.createElement(SearchTree_1.default, { key: Math.random() * 10000, model: model, nameSearch: nameSearch, onRowClicked: onRowClicked })),
+            visible && (react_1.default.createElement(SearchTree_1.default, { key: Math.random() * 10000, model: model, nameSearch: nameSearch, onRowClicked: onRowClicked, treeScrollY: modalHeight * 0.4 })),
             react_1.default.createElement(antd_1.Divider, null),
             react_1.default.createElement(antd_1.Row, { justify: "end" },
                 react_1.default.createElement(antd_1.Space, null,
