@@ -38,16 +38,24 @@ type RemoveItemOptions = {
   fieldName: string;
   idsToRemove: number[];
   fields: any;
+  isMany2many: boolean;
 };
 
 const removeItems = async (options: RemoveItemOptions) => {
-  const { model, parentId, fieldName, idsToRemove, fields } = options;
+  const {
+    model,
+    parentId,
+    fieldName,
+    idsToRemove,
+    fields,
+    isMany2many,
+  } = options;
 
   const values: any = {};
   values[fieldName] = [];
 
   for (const idToRemove of idsToRemove) {
-    values[fieldName].push([2, idToRemove]);
+    values[fieldName].push([isMany2many ? 3 : 2, idToRemove]);
   }
 
   await ConnectionProvider.getHandler().update({

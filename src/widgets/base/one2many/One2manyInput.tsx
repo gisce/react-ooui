@@ -20,6 +20,7 @@ import {
   removeItems,
   linkItem,
 } from "@/helpers/one2manyHelper";
+import { SearchModal } from "@/widgets/modals/SearchModal";
 
 type One2manyItem = {
   operation: "original" | "pendingLink";
@@ -63,9 +64,13 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
+  const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
   const [modalItem, setModalItem] = useState<One2manyItem>();
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
+  const [continuousEntryMode, setContinuousEntryMode] = useState<boolean>(
+    false
+  );
 
   const { readOnly, relation } = ooui as One2manyOoui;
   const isMany2many = ooui.type === "many2many";
@@ -185,12 +190,24 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const createItem = async () => {
     if (currentView === "form") {
       showFormChangesDialogIfNeeded(() => {
+        setContinuousEntryMode(true);
         setModalItem(undefined);
         setShowFormModal(true);
       });
     } else {
+      setContinuousEntryMode(true);
       setModalItem(undefined);
       setShowFormModal(true);
+    }
+  };
+
+  const searchItem = async () => {
+    if (currentView === "form") {
+      showFormChangesDialogIfNeeded(() => {
+        setShowSearchModal(true);
+      });
+    } else {
+      setShowSearchModal(true);
     }
   };
 
@@ -208,6 +225,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           idsToRemove: [itemsToShow[itemIndex].id!],
           fields: views.get("form").fields,
           fieldName,
+          isMany2many,
         });
       }
 
@@ -243,6 +261,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           idsToRemove: idsToRemove,
           fields: views.get("form").fields,
           fieldName,
+          isMany2many,
         });
       }
       // We remove the items from the internal list
@@ -372,10 +391,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   };
 
   // This is the callback called when a modal is done saving the object
-  const onFormModalSubmitSucceed = (id: number) => {
-    // TODO: Review this!!!
-    // If we already have an id will mean the form modal is in edit mode and we're not in continuous mode
-    if (id) {
+  const onFormModalSubmitSucceed = () => {
+    if (!continuousEntryMode) {
       setShowFormModal(false);
     }
   };
@@ -383,7 +400,20 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const onTreeRowClicked = (itemId: number) => {
     // We show the detail for the clicked item in a Form modal
     setModalItem(items.find((item) => item.id === itemId));
+    setContinuousEntryMode(false);
     setShowFormModal(true);
+  };
+
+  const onSearchModalSelectValue = async (id: number) => {
+    setIsLoading(true);
+
+    try {
+      await formModalPostSaveAction(id);
+    } catch (e) {
+      setError(e);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const content = () => {
@@ -433,12 +463,10 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     return <Alert className="mt-10" message={error} type="error" banner />;
   }
 
-  // TODO: Review this!!!
   // If we are in create mode we have to show the modal in continuous mode.
   // This means the modal won't close after clicking OK, the modal will add the new item
   // and will reset to defaults to let the user add a new item.
-  // If we don't have any id for the modal item, it will mean that we are in create mode.
-  const mustClearAfterSave = !modalItem?.id;
+  const mustClearAfterSave = continuousEntryMode;
 
   if (isLoading) {
     return <Spin />;
@@ -461,6 +489,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         onToggleViewMode={toggleViewMode}
         onPreviousItem={previousItem}
         onNextItem={nextItem}
+        onSearchItem={searchItem}
       />
       {content()}
       <FormModal
@@ -472,11 +501,23 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         visible={showFormModal}
         onSubmitSucceed={onFormModalSubmitSucceed}
         onCancel={() => {
+          setContinuousEntryMode(false);
           setShowFormModal(false);
         }}
         readOnly={readOnly}
         mustClearAfterSave={mustClearAfterSave}
         postSaveAction={formModalPostSaveAction}
+      />
+      <SearchModal
+        model={relation}
+        visible={showSearchModal}
+        onSelectValue={(id: number) => {
+          setShowSearchModal(false);
+          onSearchModalSelectValue(id);
+        }}
+        onCloseModal={() => {
+          setShowSearchModal(false);
+        }}
       />
     </>
   );
