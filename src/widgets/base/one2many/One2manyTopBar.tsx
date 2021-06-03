@@ -8,6 +8,7 @@ import {
   RightOutlined,
   AlignLeftOutlined,
   LoadingOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 
 type One2manyTopBarProps = {
@@ -25,6 +26,7 @@ type One2manyTopBarProps = {
   currentItemIndex: number;
   onPreviousItem: () => void;
   onNextItem: () => void;
+  onSearchItem: () => void;
 };
 
 export const One2manyTopBar = (props: One2manyTopBarProps) => {
@@ -42,6 +44,8 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
     currentItemIndex,
     onPreviousItem,
     onNextItem,
+    isMany2Many,
+    onSearchItem,
   } = props;
 
   function separator() {
@@ -112,6 +116,13 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
           disabled={readOnly}
           onClick={onCreateItem}
         />
+        {isMany2Many && (
+          <Button
+            icon={<SearchOutlined />}
+            disabled={readOnly}
+            onClick={onSearchItem}
+          />
+        )}
         {separator()}
         {mode === "form" && saveButton()}
         {deleteButton()}
