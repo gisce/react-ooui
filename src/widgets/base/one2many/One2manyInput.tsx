@@ -108,9 +108,9 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
     try {
       const itemsWithValues = await readObjectValues({
-        arch: views.get("form").arch + views.get("tree").arch,
+        arch: views.get("tree").arch,
         model: relation,
-        fields: { ...views.get("form").fields, ...views.get("tree").fields },
+        fields: views.get("tree").fields,
         items,
       });
 
@@ -223,7 +223,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           parentId,
           model: parentModel,
           idsToRemove: [itemsToShow[itemIndex].id!],
-          fields: { ...views.get("form").fields, ...views.get("tree").fields },
+          fields: views.get("form").fields,
           fieldName,
           isMany2many,
         });
@@ -259,7 +259,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           parentId,
           model: parentModel,
           idsToRemove: idsToRemove,
-          fields: { ...views.get("form").fields, ...views.get("tree").fields },
+          fields: views.get("form").fields,
           fieldName,
           isMany2many,
         });
@@ -281,10 +281,10 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     // We call the API for reading the updated object
     const updatedObject = (
       await ConnectionProvider.getHandler().readObjects({
-        arch: views.get("form").arch + views.get("tree").arch,
+        arch: views.get("form").arch,
         model: relation,
         ids: [id],
-        fields: { ...views.get("form").fields, ...views.get("tree").fields },
+        fields: views.get("form").fields,
       })
     )[0];
 
@@ -307,10 +307,10 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     // We call the API for reading the updated object
     const updatedObject = (
       await ConnectionProvider.getHandler().readObjects({
-        arch: views.get("form").arch + views.get("tree").arch,
+        arch: views.get("form").arch,
         model: relation,
         ids: [id],
-        fields: { ...views.get("form").fields, ...views.get("tree").fields },
+        fields: views.get("form").fields,
       })
     )[0];
 

@@ -138,9 +138,9 @@ var One2manyInput = function (props) {
                 case 1:
                     _a.trys.push([1, 3, 4, 5]);
                     return [4 /*yield*/, one2manyHelper_1.readObjectValues({
-                            arch: views.get("form").arch + views.get("tree").arch,
+                            arch: views.get("tree").arch,
                             model: relation,
-                            fields: __assign(__assign({}, views.get("form").fields), views.get("tree").fields),
+                            fields: views.get("tree").fields,
                             items: items,
                         })];
                 case 2:
@@ -268,7 +268,7 @@ var One2manyInput = function (props) {
                             parentId: parentId,
                             model: parentModel,
                             idsToRemove: [itemsToShow[itemIndex].id],
-                            fields: __assign(__assign({}, views.get("form").fields), views.get("tree").fields),
+                            fields: views.get("form").fields,
                             fieldName: fieldName,
                             isMany2many: isMany2many,
                         })];
@@ -310,7 +310,7 @@ var One2manyInput = function (props) {
                             parentId: parentId,
                             model: parentModel,
                             idsToRemove: idsToRemove,
-                            fields: __assign(__assign({}, views.get("form").fields), views.get("tree").fields),
+                            fields: views.get("form").fields,
                             fieldName: fieldName,
                             isMany2many: isMany2many,
                         })];
@@ -337,10 +337,10 @@ var One2manyInput = function (props) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
-                        arch: views.get("form").arch + views.get("tree").arch,
+                        arch: views.get("form").arch,
                         model: relation,
                         ids: [id],
-                        fields: __assign(__assign({}, views.get("form").fields), views.get("tree").fields),
+                        fields: views.get("form").fields,
                     })];
                 case 1:
                     updatedObject = (_a.sent())[0];
@@ -362,10 +362,10 @@ var One2manyInput = function (props) {
                 case 0:
                     itemAlreadyPresent = items.find(function (item) { return item.id === id; }) !== undefined;
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
-                            arch: views.get("form").arch + views.get("tree").arch,
+                            arch: views.get("form").arch,
                             model: relation,
                             ids: [id],
-                            fields: __assign(__assign({}, views.get("form").fields), views.get("tree").fields),
+                            fields: views.get("form").fields,
                         })];
                 case 1:
                     updatedObject = (_a.sent())[0];
@@ -453,7 +453,6 @@ var One2manyInput = function (props) {
     var onTreeRowClicked = function (itemId) {
         // We show the detail for the clicked item in a Form modal
         setModalItem(items.find(function (item) { return item.id === itemId; }));
-        setContinuousEntryMode(false);
         setShowFormModal(true);
     };
     var onSearchModalSelectValue = function (id) { return __awaiter(void 0, void 0, void 0, function () {
