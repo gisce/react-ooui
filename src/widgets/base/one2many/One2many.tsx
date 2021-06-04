@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { One2many as One2manyOoui } from "ooui";
 import Field from "@/common/Field";
 import { Spin, Alert } from "antd";
-import { Form as FormOoui, Tree as TreeOoui } from "ooui";
 import { Views } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import One2manyProvider from "@/context/One2manyContext";
 import { One2manyInput } from "@/widgets/base/one2many/One2manyInput";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 type Props = {
   ooui: One2manyOoui;
@@ -20,10 +20,8 @@ export const One2many = (props: Props) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>();
   const [views, setViews] = useState<Views>(new Map<string, any>());
-  const [form, setForm] = useState<FormOoui>();
-  const [tree, setTree] = useState<TreeOoui>();
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     fetchData();
   }, [ooui]);
 
@@ -44,14 +42,6 @@ export const One2many = (props: Props) => {
       views.set("form", formView);
       views.set("tree", treeView);
       setViews(views);
-
-      const formOoui = new FormOoui(formView.fields);
-      formOoui.parse(formView.arch);
-      setForm(formOoui);
-
-      const treeOoui = new TreeOoui(treeView.fields);
-      treeOoui.parse(treeView.arch);
-      setTree(treeOoui);
     } catch (err) {
       setError(err);
     } finally {
@@ -79,8 +69,6 @@ export const One2many = (props: Props) => {
         <One2manyInput
           ooui={ooui}
           views={views}
-          formOoui={form!}
-          treeOoui={tree!}
         />
       </Field>
     </One2manyProvider>

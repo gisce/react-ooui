@@ -1,8 +1,8 @@
 import React, {
   useState,
-  useEffect,
   forwardRef,
   useImperativeHandle,
+  useEffect,
 } from "react";
 import { Form as FormOoui } from "ooui";
 import {
@@ -16,6 +16,7 @@ import {
 } from "antd";
 import useDimensions from "react-cool-dimensions";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import debounce from "lodash/debounce";
 
 import Container from "@/widgets/containers/Container";
 import { processValues, getTouchedValues } from "@/helpers/formHelper";
@@ -26,27 +27,23 @@ import FormProvider from "@/context/FormContext";
 
 export type FormProps = {
   model: string;
+  readOnly?: boolean;
   id?: number;
+  arch?: string;
+  fields?: any;
+  values?: any;
+  showFooter?: boolean;
+  getDataFromAction?: boolean;
+  mustClearAfterSave?: boolean;
+  submitMode?: "api" | "values";
   onSubmitSucceed?: (event: any) => void;
   onSubmitError?: (error: any) => void;
   onCancel?: () => void;
-  showFooter?: boolean;
-  getDataFromAction?: boolean;
-  onFieldsChange?: () => void;
-  readOnly?: boolean;
-  mustClearAfterSave?: boolean;
-  submitMode?: "api" | "values";
-  values?: any;
-  data?: FormViewAndOoui;
+  onFieldsChange?: (values: any) => void;
   postSaveAction?: (event: any) => Promise<void>;
 };
 
 const WIDTH_BREAKPOINT = 1000;
-
-export type FormViewAndOoui = {
-  ooui: FormOoui;
-  view: FormView;
-};
 
 function Form(props: FormProps, ref: any): React.ReactElement {
   const {
@@ -61,16 +58,19 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     readOnly = false,
     mustClearAfterSave = false,
     submitMode = "api",
-    values,
-    data,
+    values: valuesProps,
+    arch: archProps,
+    fields: fieldsProps,
     postSaveAction,
   } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
-  const [form, setForm] = useState<FormViewAndOoui>();
+  const [formOoui, setFormOoui] = useState<FormOoui>();
   const [antForm] = AntForm.useForm();
+  const [arch, setArch] = useState<string>();
+  const [fields, setFields] = useState<any>();
 
   const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
     breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
@@ -82,17 +82,49 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     submitForm,
   }));
 
-  const showConfirm = () => {
-    showUnsavedChangesDialog({
-      onOk: () => {
-        onCancel?.();
-      },
-    });
+  useEffect(() => {
+    fetchData();
+  }, [id, model, valuesProps, archProps, fieldsProps]);
+
+  const fetchData = async () => {
+    setLoading(true);
+
+    let view;
+    let values;
+
+    try {
+      if (archProps && fieldsProps) {
+        view = { arch: archProps, fields: fieldsProps };
+      } else {
+        view = await getFormView();
+      }
+
+      const { fields, arch } = view;
+      setFields(fields);
+      setArch(arch);
+
+      if (valuesProps) {
+        values = valuesProps;
+      } else {
+        values = await fetchValuesFromApi({ fields, arch });
+      }
+
+      assignNewValuesToForm({ values, fields });
+      parseForm({ fields, arch, values });
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const cancel = () => {
+  const cancelUnsavedChanges = () => {
     if (formHasChanges()) {
-      showConfirm();
+      showUnsavedChangesDialog({
+        onOk: () => {
+          onCancel?.();
+        },
+      });
       return;
     }
 
@@ -114,9 +146,17 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     )) as FormView;
   };
 
-  const assignNewValuesToForm = (newValues: any, view: FormView) => {
-    const valuesProcessed = processValues(newValues, view.fields);
-    const fieldsToUpdate = Object.keys(view.fields).map((fieldName) => {
+  const assignNewValuesToForm = ({
+    values: newValues,
+    fields,
+  }: {
+    values: any;
+    fields: any;
+  }) => {
+    const currentValues = antForm.getFieldsValue(true);
+    const mergedValues = { ...newValues, ...currentValues };
+    const valuesProcessed = processValues(mergedValues, fields);
+    const fieldsToUpdate = Object.keys(fields).map((fieldName) => {
       return {
         name: fieldName,
         touched: false,
@@ -127,77 +167,39 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     antForm.setFields(fieldsToUpdate);
   };
 
-  const fetchAndParseForm = async () => {
-    const view = await getFormView();
-
-    const ooui = new FormOoui(view.fields);
-    ooui.parse(view.arch, readOnly);
-    setForm({ ooui, view });
-    return view;
-  };
-
-  const fetchValuesFromApi = async (view: FormView) => {
-    let _values = {};
+  const fetchValuesFromApi = async ({
+    fields,
+    arch,
+  }: {
+    fields: any;
+    arch: string;
+  }) => {
+    let values = {};
     if (id) {
-      _values = (
+      values = (
         await ConnectionProvider.getHandler().readObjects({
-          arch: view!.arch,
+          arch,
           model,
           ids: [id],
-          fields: view!.fields,
+          fields,
         })
       )[0];
     } else {
-      _values = await ConnectionProvider.getHandler().execute({
+      values = await ConnectionProvider.getHandler().execute({
         model,
         action: "default_get",
-        payload: Object.keys(view.fields),
+        payload: Object.keys(fields),
       });
     }
-    assignNewValuesToForm(_values, view);
+    return values;
   };
-
-  const fetchValuesFromProps = (view: FormView) => {
-    assignNewValuesToForm(values, view);
-  };
-
-  const fetchData = async () => {
-    setLoading(true);
-
-    let view: FormView;
-
-    try {
-      if (data) {
-        setForm(data);
-        view = data.view;
-      } else {
-        view = await fetchAndParseForm();
-      }
-
-      if (values) {
-        fetchValuesFromProps(view!);
-      } else {
-        await fetchValuesFromApi(view!);
-      }
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [id, model, values]);
 
   const formHasChanges = () => {
-    return (
-      Object.keys(getTouchedValues(antForm, form?.view.fields)).length !== 0
-    );
+    return Object.keys(getTouchedValues(antForm, fields)).length !== 0;
   };
 
   const submitApi = async () => {
-    const touchedValues = getTouchedValues(antForm, form?.view.fields);
+    const touchedValues = getTouchedValues(antForm, fields);
 
     let objectId = id;
 
@@ -206,13 +208,13 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         model,
         id,
         values: touchedValues,
-        fields: form?.view.fields,
+        fields,
       });
     } else {
       const newId = await ConnectionProvider.getHandler().create({
         model,
         values: touchedValues,
-        fields: form?.view.fields,
+        fields,
       });
       objectId = newId;
     }
@@ -227,7 +229,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   const submitValues = async () => {
     onSubmitSucceed?.({
       id,
-      touchedValues: getTouchedValues(antForm, form?.view.fields),
+      touchedValues: getTouchedValues(antForm, fields),
     });
   };
 
@@ -245,7 +247,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         await submitValues();
       }
 
-      if (mustClearAfterSave) assignNewValuesToForm({}, form?.view!);
+      if (mustClearAfterSave) assignNewValuesToForm({ values: {}, fields });
     } catch (err) {
       onSubmitError?.(err);
       setError(err);
@@ -254,14 +256,33 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     }
   };
 
+  const parseForm = ({
+    fields,
+    arch,
+    values,
+  }: {
+    arch: string;
+    fields: any;
+    values: any;
+  }) => {
+    const ooui = new FormOoui(fields);
+    // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
+    ooui.parse(arch, readOnly);
+    setFormOoui(ooui);
+  };
+
+  const debouncedParseForm = debounce(parseForm, 300);
+
   const checkFieldsChanges = () => {
-    if (onFieldsChange && formHasChanges()) {
-      onFieldsChange();
+    if (formHasChanges()) {
+      const values = antForm.getFieldsValue(true);
+      onFieldsChange?.(values);
+      debouncedParseForm({ arch: arch!, fields, values });
     }
   };
 
   const content = () => {
-    if (!form) {
+    if (!formOoui) {
       return null;
     }
 
@@ -272,9 +293,9 @@ function Form(props: FormProps, ref: any): React.ReactElement {
           onFieldsChange={checkFieldsChanges}
           component={false}
         >
-          {form && (
+          {formOoui && (
             <Container
-              container={form.ooui.container}
+              container={formOoui.container}
               responsiveBehaviour={responsiveBehaviour}
             />
           )}
@@ -292,7 +313,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
             <Button
               icon={<CloseOutlined />}
               disabled={isSubmitting || loading}
-              onClick={cancel}
+              onClick={cancelUnsavedChanges}
             >
               Cancel
             </Button>

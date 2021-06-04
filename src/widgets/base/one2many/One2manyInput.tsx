@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useRef, useContext } from "react";
 import { One2many as One2manyOoui } from "ooui";
 import { Alert, Spin } from "antd";
 import { Form } from "@/index";
@@ -22,6 +22,7 @@ import {
 } from "@/helpers/one2manyHelper";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import useModalWidthDimensions from "@/hooks/useModalWidthDimensions";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 type One2manyItem = {
   operation: "original" | "pendingLink";
@@ -35,21 +36,12 @@ interface One2manyInputProps {
   value?: Array<One2manyItem>;
   onChange?: (value: any[]) => void;
   views: Views;
-  formOoui: FormOoui;
-  treeOoui: TreeOoui;
 }
 
 const One2manyInput: React.FC<One2manyInputProps> = (
   props: One2manyInputProps
 ) => {
-  const {
-    value: items = [],
-    onChange,
-    ooui,
-    views,
-    formOoui,
-    treeOoui,
-  } = props;
+  const { value: items = [], onChange, ooui, views } = props;
 
   const {
     currentView,
@@ -80,7 +72,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const { id: fieldName } = ooui;
   const itemsToShow = items.filter((item) => item.values);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     fetchData();
   }, [items]);
 
@@ -456,6 +448,14 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     }
   };
 
+  // TODO: improve this. Do we really have to parse the entire object just to get the title?
+  function getTitle() {
+    const ViewType = currentView === "form" ? FormOoui : TreeOoui;
+    const ooui = new ViewType(views.get(currentView).fields);
+    ooui.parse(views.get(currentView).arch);
+    return ooui.string!;
+  }
+
   const content = () => {
     if (currentView === "form") {
       if (itemsToShow.length === 0) {
@@ -464,7 +464,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
       return (
         <Form
-          data={{ ooui: formOoui, view: views.get("form") }}
+          arch={views.get("form").arch}
+          fields={views.get("form").fields}
           values={itemsToShow[itemIndex]?.values}
           ref={formRef}
           model={relation}
@@ -517,7 +518,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     <>
       <One2manyTopBar
         mode={currentView}
-        title={currentView === "form" ? formOoui.string! : treeOoui.string!}
+        title={getTitle()}
         readOnly={readOnly}
         isMany2Many={isMany2many}
         formHasChanges={formHasChanges}
@@ -535,7 +536,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       {content()}
       <FormModal
         noReuse={true}
-        data={{ ooui: formOoui, view: views.get("form") }}
+        arch={views.get("form").arch}
+        fields={views.get("form").fields}
         model={relation}
         id={modalItem?.id}
         values={modalItem?.values}
