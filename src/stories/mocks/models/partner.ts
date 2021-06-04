@@ -4,7 +4,10 @@ export default {
     active: true,
     address: [6, 10],
     bank_ids: [],
-    category_id: [12, 6],
+    category_id: [
+      { id: 12, operation: "original" },
+      { id: 6, operation: "original" },
+    ],
     child_ids: [],
     cifnif: "NI",
     city: "Taiwan",
