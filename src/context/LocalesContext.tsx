@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 import { Strings } from "@/types";
 
@@ -19,7 +20,7 @@ const LocalesProvider = ({
 }): any => {
   const [strings, setStrings] = useState<Strings>({});
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     setStrings(stringsProp);
   }, [stringsProp]);
 

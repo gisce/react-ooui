@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Alert, Spin } from "antd";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import Tree from "@/widgets/views/Tree";
@@ -118,7 +119,7 @@ function SearchTree(props: Props) {
     }
   };
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (!initialFetchDone) {
       return;
     }

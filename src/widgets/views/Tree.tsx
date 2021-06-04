@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Table, Pagination, Checkbox } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
 import useDimensions from "react-cool-dimensions";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 import { Strings, TreeView, Column } from "@/types";
 import { getLocalizedString } from "@/context/LocalesContext";
@@ -45,7 +46,7 @@ function Tree(props: Props): React.ReactElement {
 
   const { width, ref: containerRef } = useDimensions<HTMLDivElement>();
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     const tree = getTree(treeView);
     const booleanComponentFn = (booleanField: boolean): React.ReactElement => {
       return <Checkbox defaultChecked={booleanField} disabled />;

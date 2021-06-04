@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Form, Row, Col } from "antd";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 import "antd/dist/antd.css";
 import "@/tailwind.generated.css";
@@ -75,7 +76,7 @@ function SearchFilter(props: Props): React.ReactElement {
     });
   };
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     setAdvancedFilter(false);
     const sfo = new SearchFilterOoui(searchFields, fields);
     sfo.parse();
