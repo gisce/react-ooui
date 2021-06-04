@@ -1,25 +1,20 @@
 import React from "react";
-import { Form as FormOoui } from "ooui";
-import { FormView } from "@/types/index";
 export declare type FormProps = {
     model: string;
+    readOnly?: boolean;
     id?: number;
+    arch?: string;
+    fields?: any;
+    values?: any;
+    showFooter?: boolean;
+    getDataFromAction?: boolean;
+    mustClearAfterSave?: boolean;
+    submitMode?: "api" | "values";
     onSubmitSucceed?: (event: any) => void;
     onSubmitError?: (error: any) => void;
     onCancel?: () => void;
-    showFooter?: boolean;
-    getDataFromAction?: boolean;
-    onFieldsChange?: () => void;
-    readOnly?: boolean;
-    mustClearAfterSave?: boolean;
-    submitMode?: "api" | "values";
-    values?: any;
-    data?: FormViewAndOoui;
+    onFieldsChange?: (values: any) => void;
     postSaveAction?: (event: any) => Promise<void>;
-};
-export declare type FormViewAndOoui = {
-    ooui: FormOoui;
-    view: FormView;
 };
 declare const _default: React.ForwardRefExoticComponent<FormProps & React.RefAttributes<unknown>>;
 export default _default;

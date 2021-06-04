@@ -24,6 +24,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
+var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 require("antd/dist/antd.css");
 require("@/tailwind.generated.css");
 var ooui_1 = require("ooui");
@@ -61,7 +62,7 @@ function SearchFilter(props) {
             })));
         });
     };
-    react_1.useEffect(function () {
+    use_deep_compare_effect_1.default(function () {
         setAdvancedFilter(false);
         var sfo = new ooui_1.SearchFilter(searchFields, fields);
         sfo.parse();

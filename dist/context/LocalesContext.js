@@ -18,14 +18,18 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getLocalizedString = exports.LocalesContext = void 0;
 var react_1 = __importStar(require("react"));
+var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 exports.LocalesContext = react_1.default.createContext(null);
 var LocalesProvider = function (_a) {
     var children = _a.children, stringsProp = _a.strings;
     var _b = react_1.useState({}), strings = _b[0], setStrings = _b[1];
-    react_1.useEffect(function () {
+    use_deep_compare_effect_1.default(function () {
         setStrings(stringsProp);
     }, [stringsProp]);
     var getString = function (key) {

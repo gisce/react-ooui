@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { FormView, TreeView } from "@/types/index";
 declare type OnRowClickedData = {
     id: number;

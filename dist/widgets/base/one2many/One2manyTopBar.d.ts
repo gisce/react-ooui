@@ -1,4 +1,3 @@
-/// <reference types="react" />
 declare type One2manyTopBarProps = {
     title: string;
     mode: "tree" | "form";

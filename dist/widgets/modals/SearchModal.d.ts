@@ -1,4 +1,3 @@
-/// <reference types="react" />
 declare type SearchSelectionProps = {
     visible: boolean;
     model: string;

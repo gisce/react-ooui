@@ -71,6 +71,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
+var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 var SearchFilter_1 = __importDefault(require("@/widgets/views/searchFilter/SearchFilter"));
 var Tree_1 = __importDefault(require("@/widgets/views/Tree"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
@@ -183,7 +184,7 @@ function SearchTree(props) {
             }
         });
     }); };
-    react_1.useEffect(function () {
+    use_deep_compare_effect_1.default(function () {
         if (!initialFetchDone) {
             return;
         }

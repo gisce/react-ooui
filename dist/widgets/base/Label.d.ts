@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { WidgetProps } from "@/types";
 declare type Props = WidgetProps & {
     align?: "left" | "center" | "right";

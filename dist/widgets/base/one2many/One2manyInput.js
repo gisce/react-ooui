@@ -74,6 +74,7 @@ var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var index_1 = require("@/index");
 var index_2 = require("@/index");
+var ooui_1 = require("ooui");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var FormModal_1 = require("@/widgets/modals/FormModal");
 var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"));
@@ -84,8 +85,9 @@ var One2manyTopBar_1 = require("@/widgets/base/one2many/One2manyTopBar");
 var one2manyHelper_1 = require("@/helpers/one2manyHelper");
 var SearchModal_1 = require("@/widgets/modals/SearchModal");
 var useModalWidthDimensions_1 = __importDefault(require("@/hooks/useModalWidthDimensions"));
+var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 var One2manyInput = function (props) {
-    var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui, views = props.views, formOoui = props.formOoui, treeOoui = props.treeOoui;
+    var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui, views = props.views;
     var _b = react_1.useContext(One2manyContext_1.One2manyContext), currentView = _b.currentView, setCurrentView = _b.setCurrentView, itemIndex = _b.itemIndex, setItemIndex = _b.setItemIndex, manualTriggerChange = _b.manualTriggerChange, setManualTriggerChange = _b.setManualTriggerChange;
     var _c = react_1.useContext(FormContext_1.FormContext), parentId = _c.parentId, parentModel = _c.parentModel;
     var formRef = react_1.useRef();
@@ -103,7 +105,7 @@ var One2manyInput = function (props) {
     var isMany2many = ooui.type === "many2many";
     var fieldName = ooui.id;
     var itemsToShow = items.filter(function (item) { return item.values; });
-    react_1.useEffect(function () {
+    use_deep_compare_effect_1.default(function () {
         fetchData();
     }, [items]);
     var triggerChange = function (changedValue) {
@@ -511,13 +513,20 @@ var One2manyInput = function (props) {
             }
         });
     }); };
+    // TODO: improve this. Do we really have to parse the entire object just to get the title?
+    function getTitle() {
+        var ViewType = currentView === "form" ? ooui_1.Form : ooui_1.Tree;
+        var ooui = new ViewType(views.get(currentView).fields);
+        ooui.parse(views.get(currentView).arch);
+        return ooui.string;
+    }
     var content = function () {
         var _a, _b;
         if (currentView === "form") {
             if (itemsToShow.length === 0) {
                 return "No current entries";
             }
-            return (react_1.default.createElement(index_1.Form, { data: { ooui: formOoui, view: views.get("form") }, values: (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.values, ref: formRef, model: relation, id: (_b = itemsToShow[itemIndex]) === null || _b === void 0 ? void 0 : _b.id, onSubmitSucceed: onFormSubmitSucceed, onSubmitError: function () {
+            return (react_1.default.createElement(index_1.Form, { arch: views.get("form").arch, fields: views.get("form").fields, values: (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.values, ref: formRef, model: relation, id: (_b = itemsToShow[itemIndex]) === null || _b === void 0 ? void 0 : _b.id, onSubmitSucceed: onFormSubmitSucceed, onSubmitError: function () {
                     setFormIsSaving(false);
                 }, onFieldsChange: function () {
                     setFormHasChanges(true);
@@ -539,9 +548,9 @@ var One2manyInput = function (props) {
         return react_1.default.createElement(antd_1.Spin, null);
     }
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(One2manyTopBar_1.One2manyTopBar, { mode: currentView, title: currentView === "form" ? formOoui.string : treeOoui.string, readOnly: readOnly, isMany2Many: isMany2many, formHasChanges: formHasChanges, formIsSaving: formIsSaving, totalItems: itemsToShow.length, currentItemIndex: itemIndex, onSaveItem: saveItem, onDelete: showRemoveConfirm, onCreateItem: createItem, onToggleViewMode: toggleViewMode, onPreviousItem: previousItem, onNextItem: nextItem, onSearchItem: searchItem }),
+        react_1.default.createElement(One2manyTopBar_1.One2manyTopBar, { mode: currentView, title: getTitle(), readOnly: readOnly, isMany2Many: isMany2many, formHasChanges: formHasChanges, formIsSaving: formIsSaving, totalItems: itemsToShow.length, currentItemIndex: itemIndex, onSaveItem: saveItem, onDelete: showRemoveConfirm, onCreateItem: createItem, onToggleViewMode: toggleViewMode, onPreviousItem: previousItem, onNextItem: nextItem, onSearchItem: searchItem }),
         content(),
-        react_1.default.createElement(FormModal_1.FormModal, { noReuse: true, data: { ooui: formOoui, view: views.get("form") }, model: relation, id: modalItem === null || modalItem === void 0 ? void 0 : modalItem.id, values: modalItem === null || modalItem === void 0 ? void 0 : modalItem.values, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, onCancel: function () {
+        react_1.default.createElement(FormModal_1.FormModal, { noReuse: true, arch: views.get("form").arch, fields: views.get("form").fields, model: relation, id: modalItem === null || modalItem === void 0 ? void 0 : modalItem.id, values: modalItem === null || modalItem === void 0 ? void 0 : modalItem.values, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, onCancel: function () {
                 setContinuousEntryMode(false);
                 setShowFormModal(false);
             }, readOnly: readOnly, mustClearAfterSave: mustClearAfterSave, postSaveAction: formModalPostSaveAction }),

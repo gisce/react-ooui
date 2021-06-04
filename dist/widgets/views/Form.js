@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -63,6 +74,7 @@ var ooui_1 = require("ooui");
 var antd_1 = require("antd");
 var react_cool_dimensions_1 = __importDefault(require("react-cool-dimensions"));
 var icons_1 = require("@ant-design/icons");
+var debounce_1 = __importDefault(require("lodash/debounce"));
 var Container_1 = __importDefault(require("@/widgets/containers/Container"));
 var formHelper_1 = require("@/helpers/formHelper");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
@@ -71,30 +83,74 @@ var FormContext_1 = __importDefault(require("@/context/FormContext"));
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
-    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, values = props.values, data = props.data, postSaveAction = props.postSaveAction;
+    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, archProps = props.arch, fieldsProps = props.fields, postSaveAction = props.postSaveAction;
     var _f = react_1.useState(false), isSubmitting = _f[0], setIsSubmitting = _f[1];
     var _g = react_1.useState(), error = _g[0], setError = _g[1];
     var _h = react_1.useState(false), loading = _h[0], setLoading = _h[1];
-    var _j = react_1.useState(), form = _j[0], setForm = _j[1];
+    var _j = react_1.useState(), formOoui = _j[0], setFormOoui = _j[1];
     var antForm = antd_1.Form.useForm()[0];
-    var _k = react_cool_dimensions_1.default({
+    var _k = react_1.useState(), arch = _k[0], setArch = _k[1];
+    var _l = react_1.useState(), fields = _l[0], setFields = _l[1];
+    var _m = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _k.width, containerRef = _k.ref;
+    }), width = _m.width, containerRef = _m.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
     }); });
-    var showConfirm = function () {
-        UnsavedChangesDialog_1.default({
-            onOk: function () {
-                onCancel === null || onCancel === void 0 ? void 0 : onCancel();
-            },
+    react_1.useEffect(function () {
+        fetchData();
+    }, [id, model, valuesProps, archProps, fieldsProps]);
+    var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
+        var view, values, fields_1, arch_1, err_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    setLoading(true);
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 8, 9, 10]);
+                    if (!(archProps && fieldsProps)) return [3 /*break*/, 2];
+                    view = { arch: archProps, fields: fieldsProps };
+                    return [3 /*break*/, 4];
+                case 2: return [4 /*yield*/, getFormView()];
+                case 3:
+                    view = _a.sent();
+                    _a.label = 4;
+                case 4:
+                    fields_1 = view.fields, arch_1 = view.arch;
+                    setFields(fields_1);
+                    setArch(arch_1);
+                    if (!valuesProps) return [3 /*break*/, 5];
+                    values = valuesProps;
+                    return [3 /*break*/, 7];
+                case 5: return [4 /*yield*/, fetchValuesFromApi({ fields: fields_1, arch: arch_1 })];
+                case 6:
+                    values = _a.sent();
+                    _a.label = 7;
+                case 7:
+                    assignNewValuesToForm({ values: values, fields: fields_1 });
+                    parseForm({ fields: fields_1, arch: arch_1, values: values });
+                    return [3 /*break*/, 10];
+                case 8:
+                    err_1 = _a.sent();
+                    setError(err_1);
+                    return [3 /*break*/, 10];
+                case 9:
+                    setLoading(false);
+                    return [7 /*endfinally*/];
+                case 10: return [2 /*return*/];
+            }
         });
-    };
-    var cancel = function () {
+    }); };
+    var cancelUnsavedChanges = function () {
         if (formHasChanges()) {
-            showConfirm();
+            UnsavedChangesDialog_1.default({
+                onOk: function () {
+                    onCancel === null || onCancel === void 0 ? void 0 : onCancel();
+                },
+            });
             return;
         }
         onCancel === null || onCancel === void 0 ? void 0 : onCancel();
@@ -117,9 +173,12 @@ function Form(props, ref) {
             }
         });
     }); };
-    var assignNewValuesToForm = function (newValues, view) {
-        var valuesProcessed = formHelper_1.processValues(newValues, view.fields);
-        var fieldsToUpdate = Object.keys(view.fields).map(function (fieldName) {
+    var assignNewValuesToForm = function (_a) {
+        var newValues = _a.values, fields = _a.fields;
+        var currentValues = antForm.getFieldsValue(true);
+        var mergedValues = __assign(__assign({}, newValues), currentValues);
+        var valuesProcessed = formHelper_1.processValues(mergedValues, fields);
+        var fieldsToUpdate = Object.keys(fields).map(function (fieldName) {
             return {
                 name: fieldName,
                 touched: false,
@@ -128,109 +187,53 @@ function Form(props, ref) {
         });
         antForm.setFields(fieldsToUpdate);
     };
-    var fetchAndParseForm = function () { return __awaiter(_this, void 0, void 0, function () {
-        var view, ooui;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, getFormView()];
-                case 1:
-                    view = _a.sent();
-                    ooui = new ooui_1.Form(view.fields);
-                    ooui.parse(view.arch, readOnly);
-                    setForm({ ooui: ooui, view: view });
-                    return [2 /*return*/, view];
-            }
-        });
-    }); };
-    var fetchValuesFromApi = function (view) { return __awaiter(_this, void 0, void 0, function () {
-        var _values;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _values = {};
-                    if (!id) return [3 /*break*/, 2];
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
-                            arch: view.arch,
+    var fetchValuesFromApi = function (_a) {
+        var fields = _a.fields, arch = _a.arch;
+        return __awaiter(_this, void 0, void 0, function () {
+            var values;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        values = {};
+                        if (!id) return [3 /*break*/, 2];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                                arch: arch,
+                                model: model,
+                                ids: [id],
+                                fields: fields,
+                            })];
+                    case 1:
+                        values = (_b.sent())[0];
+                        return [3 /*break*/, 4];
+                    case 2: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
                             model: model,
-                            ids: [id],
-                            fields: view.fields,
+                            action: "default_get",
+                            payload: Object.keys(fields),
                         })];
-                case 1:
-                    _values = (_a.sent())[0];
-                    return [3 /*break*/, 4];
-                case 2: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
-                        model: model,
-                        action: "default_get",
-                        payload: Object.keys(view.fields),
-                    })];
-                case 3:
-                    _values = _a.sent();
-                    _a.label = 4;
-                case 4:
-                    assignNewValuesToForm(_values, view);
-                    return [2 /*return*/];
-            }
+                    case 3:
+                        values = _b.sent();
+                        _b.label = 4;
+                    case 4: return [2 /*return*/, values];
+                }
+            });
         });
-    }); };
-    var fetchValuesFromProps = function (view) {
-        assignNewValuesToForm(values, view);
     };
-    var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
-        var view, err_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    setLoading(true);
-                    _a.label = 1;
-                case 1:
-                    _a.trys.push([1, 8, 9, 10]);
-                    if (!data) return [3 /*break*/, 2];
-                    setForm(data);
-                    view = data.view;
-                    return [3 /*break*/, 4];
-                case 2: return [4 /*yield*/, fetchAndParseForm()];
-                case 3:
-                    view = _a.sent();
-                    _a.label = 4;
-                case 4:
-                    if (!values) return [3 /*break*/, 5];
-                    fetchValuesFromProps(view);
-                    return [3 /*break*/, 7];
-                case 5: return [4 /*yield*/, fetchValuesFromApi(view)];
-                case 6:
-                    _a.sent();
-                    _a.label = 7;
-                case 7: return [3 /*break*/, 10];
-                case 8:
-                    err_1 = _a.sent();
-                    setError(err_1);
-                    return [3 /*break*/, 10];
-                case 9:
-                    setLoading(false);
-                    return [7 /*endfinally*/];
-                case 10: return [2 /*return*/];
-            }
-        });
-    }); };
-    react_1.useEffect(function () {
-        fetchData();
-    }, [id, model, values]);
     var formHasChanges = function () {
-        return (Object.keys(formHelper_1.getTouchedValues(antForm, form === null || form === void 0 ? void 0 : form.view.fields)).length !== 0);
+        return Object.keys(formHelper_1.getTouchedValues(antForm, fields)).length !== 0;
     };
     var submitApi = function () { return __awaiter(_this, void 0, void 0, function () {
         var touchedValues, objectId, newId;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    touchedValues = formHelper_1.getTouchedValues(antForm, form === null || form === void 0 ? void 0 : form.view.fields);
+                    touchedValues = formHelper_1.getTouchedValues(antForm, fields);
                     objectId = id;
                     if (!id) return [3 /*break*/, 2];
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().update({
                             model: model,
                             id: id,
                             values: touchedValues,
-                            fields: form === null || form === void 0 ? void 0 : form.view.fields,
+                            fields: fields,
                         })];
                 case 1:
                     _a.sent();
@@ -238,7 +241,7 @@ function Form(props, ref) {
                 case 2: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().create({
                         model: model,
                         values: touchedValues,
-                        fields: form === null || form === void 0 ? void 0 : form.view.fields,
+                        fields: fields,
                     })];
                 case 3:
                     newId = _a.sent();
@@ -260,7 +263,7 @@ function Form(props, ref) {
         return __generator(this, function (_a) {
             onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed({
                 id: id,
-                touchedValues: formHelper_1.getTouchedValues(antForm, form === null || form === void 0 ? void 0 : form.view.fields),
+                touchedValues: formHelper_1.getTouchedValues(antForm, fields),
             });
             return [2 /*return*/];
         });
@@ -289,7 +292,7 @@ function Form(props, ref) {
                     _a.label = 5;
                 case 5:
                     if (mustClearAfterSave)
-                        assignNewValuesToForm({}, form === null || form === void 0 ? void 0 : form.view);
+                        assignNewValuesToForm({ values: {}, fields: fields });
                     return [3 /*break*/, 8];
                 case 6:
                     err_2 = _a.sent();
@@ -303,24 +306,34 @@ function Form(props, ref) {
             }
         });
     }); };
+    var parseForm = function (_a) {
+        var fields = _a.fields, arch = _a.arch, values = _a.values;
+        var ooui = new ooui_1.Form(fields);
+        // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
+        ooui.parse(arch, readOnly);
+        setFormOoui(ooui);
+    };
+    var debouncedParseForm = debounce_1.default(parseForm, 300);
     var checkFieldsChanges = function () {
-        if (onFieldsChange && formHasChanges()) {
-            onFieldsChange();
+        if (formHasChanges()) {
+            var values = antForm.getFieldsValue(true);
+            onFieldsChange === null || onFieldsChange === void 0 ? void 0 : onFieldsChange(values);
+            debouncedParseForm({ arch: arch, fields: fields, values: values });
         }
     };
     var content = function () {
-        if (!form) {
+        if (!formOoui) {
             return null;
         }
         return (react_1.default.createElement(FormContext_1.default, { parentId: id, parentModel: model },
-            react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: checkFieldsChanges, component: false }, form && (react_1.default.createElement(Container_1.default, { container: form.ooui.container, responsiveBehaviour: responsiveBehaviour })))));
+            react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: checkFieldsChanges, component: false }, formOoui && (react_1.default.createElement(Container_1.default, { container: formOoui.container, responsiveBehaviour: responsiveBehaviour })))));
     };
     var footer = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
             react_1.default.createElement(antd_1.Divider, null),
             react_1.default.createElement(antd_1.Row, { justify: "end" },
                 react_1.default.createElement(antd_1.Space, null,
-                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), disabled: isSubmitting || loading, onClick: cancel }, "Cancel"),
+                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), disabled: isSubmitting || loading, onClick: cancelUnsavedChanges }, "Cancel"),
                     react_1.default.createElement(antd_1.Button, { disabled: isSubmitting || loading || readOnly, loading: isSubmitting, icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: submitForm }, "OK")))));
     };
     return (react_1.default.createElement("div", { ref: containerRef, className: "pb-2" },

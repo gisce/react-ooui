@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { Field } from "ooui";
 declare type Props = {
     field: Field;

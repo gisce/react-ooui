@@ -73,10 +73,10 @@ exports.One2many = void 0;
 var react_1 = __importStar(require("react"));
 var Field_1 = __importDefault(require("@/common/Field"));
 var antd_1 = require("antd");
-var ooui_1 = require("ooui");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var One2manyContext_1 = __importDefault(require("@/context/One2manyContext"));
 var One2manyInput_1 = require("@/widgets/base/one2many/One2manyInput");
+var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 var One2many = function (props) {
     var ooui = props.ooui;
     var mode = ooui.mode, relation = ooui.relation, oouiViews = ooui.views;
@@ -84,9 +84,7 @@ var One2many = function (props) {
     var _a = react_1.useState(true), isLoading = _a[0], setIsLoading = _a[1];
     var _b = react_1.useState(), error = _b[0], setError = _b[1];
     var _c = react_1.useState(new Map()), views = _c[0], setViews = _c[1];
-    var _d = react_1.useState(), form = _d[0], setForm = _d[1];
-    var _e = react_1.useState(), tree = _e[0], setTree = _e[1];
-    react_1.useEffect(function () {
+    use_deep_compare_effect_1.default(function () {
         fetchData();
     }, [ooui]);
     var getViewData = function (type) { return __awaiter(void 0, void 0, void 0, function () {
@@ -102,7 +100,7 @@ var One2many = function (props) {
         });
     }); };
     var fetchData = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var formView, treeView, formOoui, treeOoui, err_1;
+        var formView, treeView, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -120,12 +118,6 @@ var One2many = function (props) {
                     views.set("form", formView);
                     views.set("tree", treeView);
                     setViews(views);
-                    formOoui = new ooui_1.Form(formView.fields);
-                    formOoui.parse(formView.arch);
-                    setForm(formOoui);
-                    treeOoui = new ooui_1.Tree(treeView.fields);
-                    treeOoui.parse(treeView.arch);
-                    setTree(treeOoui);
                     return [3 /*break*/, 6];
                 case 4:
                     err_1 = _a.sent();
@@ -152,7 +144,7 @@ var One2many = function (props) {
     }
     return (react_1.default.createElement(One2manyContext_1.default, { initialView: initialView },
         react_1.default.createElement(Field_1.default, __assign({}, props),
-            react_1.default.createElement(One2manyInput_1.One2manyInput, { ooui: ooui, views: views, formOoui: form, treeOoui: tree }))));
+            react_1.default.createElement(One2manyInput_1.One2manyInput, { ooui: ooui, views: views }))));
 };
 exports.One2many = One2many;
 //# sourceMappingURL=One2many.js.map

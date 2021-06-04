@@ -26,6 +26,7 @@ var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var treeHelper_1 = require("@/helpers/treeHelper");
 var react_cool_dimensions_1 = __importDefault(require("react-cool-dimensions"));
+var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 var LocalesContext_1 = require("@/context/LocalesContext");
 var strings = {
     no_results: "No results",
@@ -36,7 +37,7 @@ function Tree(props) {
     var _c = react_1.useState([]), items = _c[0], setItems = _c[1];
     var _d = react_1.useState([]), columns = _d[0], setColumns = _d[1];
     var _e = react_cool_dimensions_1.default(), width = _e.width, containerRef = _e.ref;
-    react_1.useEffect(function () {
+    use_deep_compare_effect_1.default(function () {
         var tree = treeHelper_1.getTree(treeView);
         var booleanComponentFn = function (booleanField) {
             return react_1.default.createElement(antd_1.Checkbox, { defaultChecked: booleanField, disabled: true });
