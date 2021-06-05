@@ -310,7 +310,7 @@ function Form(props, ref) {
         var fields = _a.fields, arch = _a.arch, values = _a.values;
         var ooui = new ooui_1.Form(fields);
         // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
-        ooui.parse(arch, readOnly);
+        ooui.parse(arch, { readOnly: readOnly, values: values });
         setFormOoui(ooui);
     };
     var debouncedParseForm = debounce_1.default(parseForm, 300);
