@@ -19,7 +19,11 @@ import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import debounce from "lodash/debounce";
 
 import Container from "@/widgets/containers/Container";
-import { processValues, getTouchedValues } from "@/helpers/formHelper";
+import {
+  processValues,
+  getTouchedValues,
+  checkFieldsType,
+} from "@/helpers/formHelper";
 import { FormView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
@@ -267,17 +271,30 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   }) => {
     const ooui = new FormOoui(fields);
     // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
-    ooui.parse(arch, readOnly);
+    ooui.parse(arch, { readOnly, values });
     setFormOoui(ooui);
   };
 
   const debouncedParseForm = debounce(parseForm, 300);
 
-  const checkFieldsChanges = () => {
+  const checkFieldsChanges = (changedFields: any) => {
     if (formHasChanges()) {
       const values = antForm.getFieldsValue(true);
       onFieldsChange?.(values);
-      debouncedParseForm({ arch: arch!, fields, values });
+
+      // We check if there are any field of type text, email, url or char inside the changed values
+      // in order to debounce the call
+      if (
+        checkFieldsType({
+          changedFields: changedFields.map((i: any) => i.name),
+          fields,
+          types: ["text", "email", "url", "char"],
+        })
+      ) {
+        debouncedParseForm({ arch: arch!, fields, values });
+      } else {
+        parseForm({ arch: arch!, fields, values });
+      }
     }
   };
 

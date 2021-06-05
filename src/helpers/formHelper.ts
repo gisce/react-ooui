@@ -44,3 +44,18 @@ export const getTouchedValues = (antForm: FormInstance, fields: any) => {
   });
   return touchedValues;
 };
+
+export const checkFieldsType = ({
+  changedFields,
+  fields,
+  types,
+}: {
+  changedFields: string[];
+  fields: any;
+  types: string[];
+}) => {
+  const valuesChecked = changedFields.map((key) => {
+    return types.includes(fields[key]?.type);
+  });
+  return valuesChecked.some((i) => i === true);
+};
