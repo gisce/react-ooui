@@ -15,7 +15,7 @@ function Notebook(props: Props): React.ReactElement {
   const tabs = [].concat.apply([], ooui!.container.rows);
   return (
     <Tabs defaultActiveKey="1">
-      {tabs.map((page: any, key: number) => {
+      {tabs.filter((page: any) => !page.invisible).map((page: any, key: number) => {
         const tabKey = (key + 1).toString();
 
         return (
