@@ -314,11 +314,22 @@ function Form(props, ref) {
         setFormOoui(ooui);
     };
     var debouncedParseForm = debounce_1.default(parseForm, 300);
-    var checkFieldsChanges = function () {
+    var checkFieldsChanges = function (changedFields) {
         if (formHasChanges()) {
             var values = antForm.getFieldsValue(true);
             onFieldsChange === null || onFieldsChange === void 0 ? void 0 : onFieldsChange(values);
-            debouncedParseForm({ arch: arch, fields: fields, values: values });
+            // We check if there are any field of type text, email, url or char inside the changed values
+            // in order to debounce the call
+            if (formHelper_1.checkFieldsType({
+                changedFields: changedFields.map(function (i) { return i.name; }),
+                fields: fields,
+                types: ["text", "email", "url", "char"],
+            })) {
+                debouncedParseForm({ arch: arch, fields: fields, values: values });
+            }
+            else {
+                parseForm({ arch: arch, fields: fields, values: values });
+            }
         }
     };
     var content = function () {

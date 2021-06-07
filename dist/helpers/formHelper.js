@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTouchedValues = exports.processValues = void 0;
+exports.checkFieldsType = exports.getTouchedValues = exports.processValues = void 0;
 var filteredValues = function (values, fields) {
     if (!fields) {
         return values;
@@ -40,4 +40,13 @@ var getTouchedValues = function (antForm, fields) {
     return touchedValues;
 };
 exports.getTouchedValues = getTouchedValues;
+var checkFieldsType = function (_a) {
+    var changedFields = _a.changedFields, fields = _a.fields, types = _a.types;
+    var valuesChecked = changedFields.map(function (key) {
+        var _a;
+        return types.includes((_a = fields[key]) === null || _a === void 0 ? void 0 : _a.type);
+    });
+    return valuesChecked.some(function (i) { return i === true; });
+};
+exports.checkFieldsType = checkFieldsType;
 //# sourceMappingURL=formHelper.js.map
