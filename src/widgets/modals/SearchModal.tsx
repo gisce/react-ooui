@@ -70,6 +70,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
         {content()}
       </Modal>
       <FormModal
+        noReuse={true}
         model={model}
         visible={showCreateModal}
         onSubmitSucceed={(id: number) => {

@@ -90,7 +90,7 @@ var SearchModal = function (props) {
     };
     return (react_1.default.createElement(react_1.default.Fragment, null,
         react_1.default.createElement(antd_1.Modal, { title: "Search", centered: true, width: modalWidth, visible: visible && !showCreateModal, closable: true, onCancel: onCloseModal, footer: null }, content()),
-        react_1.default.createElement(FormModal_1.FormModal, { model: model, visible: showCreateModal, onSubmitSucceed: function (id) {
+        react_1.default.createElement(FormModal_1.FormModal, { noReuse: true, model: model, visible: showCreateModal, onSubmitSucceed: function (id) {
                 setShowCreateModal(false);
                 onCloseModal();
                 onSelectValue(id);
