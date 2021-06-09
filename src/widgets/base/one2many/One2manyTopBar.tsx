@@ -1,5 +1,7 @@
 import React from "react";
 import { Button } from "antd";
+import ButtonWithTooltip from "@/common/ButtonWithTooltip";
+
 import {
   FileAddOutlined,
   SaveOutlined,
@@ -9,6 +11,7 @@ import {
   AlignLeftOutlined,
   LoadingOutlined,
   SearchOutlined,
+  ApiOutlined,
 } from "@ant-design/icons";
 
 type One2manyTopBarProps = {
@@ -64,7 +67,8 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
 
   function saveButton() {
     return (
-      <Button
+      <ButtonWithTooltip
+        tooltip={"Save"}
         icon={formIsSaving ? <LoadingOutlined /> : <SaveOutlined />}
         onClick={onSaveItem}
         disabled={!formHasChanges || formIsSaving || readOnly}
@@ -74,8 +78,9 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
 
   function deleteButton() {
     return (
-      <Button
-        icon={<DeleteOutlined />}
+      <ButtonWithTooltip
+        tooltip={isMany2Many ? "Unlink" : "Delete"}
+        icon={isMany2Many ? <ApiOutlined /> : <DeleteOutlined />}
         onClick={onDelete}
         disabled={totalItems === 0 || readOnly}
       />
@@ -100,9 +105,17 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
     return (
       <>
         {separator()}
-        <Button icon={<LeftOutlined />} onClick={onPreviousItem} />
+        <ButtonWithTooltip
+          tooltip={"Previous item"}
+          icon={<LeftOutlined />}
+          onClick={onPreviousItem}
+        />
         {index()}
-        <Button icon={<RightOutlined />} onClick={onNextItem} />
+        <ButtonWithTooltip
+          tooltip={"Next item"}
+          icon={<RightOutlined />}
+          onClick={onNextItem}
+        />
       </>
     );
   }
@@ -111,13 +124,15 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
     <div className="flex mb-2">
       {title()}
       <div className="h-8 flex-none pl-2">
-        <Button
+        <ButtonWithTooltip
+          tooltip={"Create new item"}
           icon={<FileAddOutlined />}
           disabled={readOnly}
           onClick={onCreateItem}
         />
         {isMany2Many && (
-          <Button
+          <ButtonWithTooltip
+            tooltip={"Search existing item"}
             icon={<SearchOutlined />}
             disabled={readOnly}
             onClick={onSearchItem}
@@ -128,7 +143,11 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
         {deleteButton()}
         {mode === "form" && itemBrowser()}
         {separator()}
-        <Button icon={<AlignLeftOutlined />} onClick={onToggleViewMode} />
+        <ButtonWithTooltip
+          tooltip={"Toggle view mode"}
+          icon={<AlignLeftOutlined />}
+          onClick={onToggleViewMode}
+        />
       </div>
     </div>
   );
