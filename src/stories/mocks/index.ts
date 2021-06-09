@@ -6,8 +6,19 @@ import hist_autoconsum from "./models/hist_autoconsum";
 import signatura from "./models/signatura";
 import polissa from "./models/polissa";
 import factura from "./models/factura";
+import lead from "./models/lead";
 
-const allModels = [cups, partner, butlleti, modcontractual, hist_autoconsum, signatura, polissa, factura];
+const allModels = [
+  cups,
+  partner,
+  butlleti,
+  modcontractual,
+  hist_autoconsum,
+  signatura,
+  polissa,
+  factura,
+  lead,
+];
 
 const getMock = (model: string) => {
   const found = allModels.find((item) => {
