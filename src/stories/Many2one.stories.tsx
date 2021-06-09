@@ -5,7 +5,7 @@ import { Many2one as Many2oneOoui } from "ooui";
 import "antd/dist/antd.css";
 
 export default {
-  title: "Components/Widgets/Base/ManyToOne",
+  title: "Components/Widgets/Base/Many2One",
 };
 
 export const Default = (): React.ReactElement => {
@@ -14,5 +14,17 @@ export const Default = (): React.ReactElement => {
     string: "Lorem ipsum",
     relation: "res.partners",
   });
-  return <Many2one ooui={ooui} showLabel />;
+  return (
+    <>
+      <div style={{ width: 200 }}>
+        <Many2one ooui={ooui} showLabel />
+      </div>
+      <div style={{ width: 300 }}>
+        <Many2one ooui={ooui} showLabel />
+      </div>
+      <div style={{ width: 500 }}>
+        <Many2one ooui={ooui} showLabel />
+      </div>
+    </>
+  );
 };

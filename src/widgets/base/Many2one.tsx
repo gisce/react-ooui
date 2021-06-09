@@ -115,7 +115,7 @@ const Many2oneInput: React.FC<Many2oneInputProps> = (
   };
 
   return (
-    <Row gutter={8}>
+    <Row gutter={8} wrap={false}>
       <Col flex="auto">
         <Input
           type="text"
