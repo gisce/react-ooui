@@ -79,6 +79,7 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var FormModal_1 = require("@/widgets/modals/FormModal");
 var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"));
 var RemoveItemDialog_1 = __importDefault(require("@/ui/RemoveItemDialog"));
+var UnlinkItemDialog_1 = __importDefault(require("@/ui/UnlinkItemDialog"));
 var One2manyContext_1 = require("@/context/One2manyContext");
 var FormContext_1 = require("@/context/FormContext");
 var One2manyTopBar_1 = require("@/widgets/base/one2many/One2manyTopBar");
@@ -213,6 +214,19 @@ var One2manyInput = function (props) {
         }
     };
     var showRemoveConfirm = function () {
+        if (isMany2many) {
+            UnlinkItemDialog_1.default({
+                onOk: function () {
+                    if (currentView === "form") {
+                        removeCurrentItem();
+                    }
+                    else {
+                        removeSelectedItems();
+                    }
+                },
+            });
+            return;
+        }
         RemoveItemDialog_1.default({
             onOk: function () {
                 if (currentView === "form") {
