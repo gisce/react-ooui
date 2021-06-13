@@ -20,6 +20,7 @@ import { SearchModal } from "@/widgets/modals/SearchModal";
 import Date from "@/widgets/base/Date";
 import DateTime from "@/widgets/base/DateTime";
 import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
+import { Reference } from "@/widgets/base/Reference";
 
 import {
   TreeView,
@@ -75,4 +76,5 @@ export {
   One2manyItem,
   Date,
   DateTime,
+  Reference
 };

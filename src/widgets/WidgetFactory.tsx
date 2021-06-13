@@ -18,6 +18,7 @@ import {
   Separator,
   Form,
   Tree,
+  Reference,
 } from "@/index";
 
 const getWidgetType = (type: string) => {
@@ -58,10 +59,12 @@ const getWidgetType = (type: string) => {
       return DateTime;
     case "one2many":
     case "one2many_list":
-    case "many2many": // TODO: this is provisional, just to test Many2Many
+    case "many2many":
       return One2many;
     case "separator":
       return Separator;
+    case "reference":
+      return Reference;
     default:
       return undefined;
   }
