@@ -37,7 +37,7 @@ interface Many2oneInputProps {
   onChange?: (value: any[]) => void;
 }
 
-const Many2oneInput: React.FC<Many2oneInputProps> = (
+export const Many2oneInput: React.FC<Many2oneInputProps> = (
   props: Many2oneInputProps
 ) => {
   const { value, onChange, ooui } = props;
