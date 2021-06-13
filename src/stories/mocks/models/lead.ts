@@ -1,6 +1,8 @@
 export default {
   model: "giscedata.crm.lead",
-  exampleValues: {},
+  exampleValues: {
+    ref: "product.product,5",
+  },
   tree: {
     arch:
       '<tree colors="red:date_deadline&lt;current_date and state==\'open\'" string="CRM Ofertes/Oportunitats">\n                    <field name="id" select="2"/>\n                    <field name="create_date" select="1"/>\n                    <field name="name" select="1"/>\n                    <field name="user_id" select="1"/>\n                    <field name="stage_id" select="1"/>\n                    <field name="state" select="1"/>\n                    <field name="polissa_id" select="1" string="Contrato"/>\n                    <field name="titular_vat" select="2" string="Nº Documento (Cliente)"/>\n                    <field name="titular_nom" select="2" string="Nombre (Cliente)"/>\n                    <field name="titular_cognom1" select="2" string="Apellido (Cliente)"/>\n                    <field name="titular_cognom2" select="2" string="2º Apellido (Cliente)"/>\n                    <field name="titular_email" select="2" string="Email (Cliente)"/>\n                    <field name="cups" select="1"/>\n                    <field name="tarifa" select="2"/>\n                    <field name="date" select="2"/>\n                    <field name="date_deadline" select="1"/>\n                    <field name="date_closed" select="2"/>\n                    <field name="comercialitzadora" select="2"/>\n                    <!-- Camps invisibles amb select 1 per poder buscar millor-->\n                    <field name="titular_search" select="1" invisible="1"/>\n                    <field name="titular_direccio_search" select="1" invisible="1"/>\n                    <field name="cups_direccio_search" select="1" invisible="1"/>\n                    <!-- Camps tornats a definir per treurelsi el select 1-->\n                    <field name="partner_id" select="2" invisible="1"/>\n                    <field name="create_uid" select="2" invisible="1"/>\n                </tree>',
@@ -264,7 +266,7 @@ export default {
   },
   form: {
     arch:
-      '<?xml version="1.0" encoding="UTF-8"?>\r\n<form string="Cases">\r\n  <separator string="Datos del Contrato" colspan="8" />\r\n  <group col="1" colspan="2">\r\n    <group string="Datos Tecnicos" col="2">\r\n        <field name="tarifa" on_change="onchange_generic(\'tarifa\', tarifa)" />\r\n        <field name="tensio_normalitzada" />\r\n        <field name="facturacio_potencia" />\r\n    </group>\r\n    <group col="4">\r\n        <field name="llista_preu" colspan="2" />\r\n        <button name="1681" string="Anexo de Precios" type="action" icon="gtk-print" readonly="0" />\r\n    </group>\r\n    <group string="Datos Administrativos" col="8">\r\n        <field name="cnae" colspan="8" />\r\n        <field name="contract_type" colspan="4" />\r\n        <field name="data_alta_prevista" colspan="3" />\r\n        <field name="autoconsumo" colspan="8" />\r\n    </group>\r\n  </group>\r\n  <group string="Potencias Contratadas (kW)" col="2" colspan="2">\r\n    <field name="potenciasContratadasEnKWP1" string="P1" />\r\n    <field name="potenciasContratadasEnKWP2" string="P2" />\r\n    <field name="potenciasContratadasEnKWP3" string="P3" />\r\n    <field name="potenciasContratadasEnKWP4" string="P4" />\r\n    <field name="potenciasContratadasEnKWP5" string="P5" />\r\n    <field name="potenciasContratadasEnKWP6" string="P6" />\r\n  </group>\r\n</form>',
+      '<?xml version="1.0" encoding="UTF-8"?>\r\n<form string="Cases">\r\n  <separator string="Datos del Contrato" colspan="8" />\r\n  <group col="1" colspan="2">\r\n    <field name="ref" /><group string="Datos Tecnicos" col="2">\r\n        <field name="tarifa" on_change="onchange_generic(\'tarifa\', tarifa)" />\r\n        <field name="tensio_normalitzada" />\r\n        <field name="facturacio_potencia" />\r\n    </group>\r\n    <group col="4">\r\n        <field name="llista_preu" colspan="2" />\r\n        <button name="1681" string="Anexo de Precios" type="action" icon="gtk-print" readonly="0" />\r\n    </group>\r\n    <group string="Datos Administrativos" col="8">\r\n        <field name="cnae" colspan="8" />\r\n        <field name="contract_type" colspan="4" />\r\n        <field name="data_alta_prevista" colspan="3" />\r\n        <field name="autoconsumo" colspan="8" />\r\n    </group>\r\n  </group>\r\n  <group string="Potencias Contratadas (kW)" col="2" colspan="2">\r\n    <field name="potenciasContratadasEnKWP1" string="P1" />\r\n    <field name="potenciasContratadasEnKWP2" string="P2" />\r\n    <field name="potenciasContratadasEnKWP3" string="P3" />\r\n    <field name="potenciasContratadasEnKWP4" string="P4" />\r\n    <field name="potenciasContratadasEnKWP5" string="P5" />\r\n    <field name="potenciasContratadasEnKWP6" string="P6" />\r\n  </group>\r\n</form>',
     field_parent: false,
     fields: {
       active: {
@@ -1137,9 +1139,7 @@ export default {
           ["account.invoice", "Invoice"],
           ["stock.production.lot", "Production Lot"],
           ["giscedata.polissa", "Pòlissa"],
-          ["giscedata.polissa", "Pólissa"],
           ["giscegas.polissa", "Contrato"],
-          ["giscedata.polissa", "Polissa"],
           ["giscedata.signatura.process", "Firma"],
           ["giscedata.crm.lead", "Oferta/Oportunidad"],
           ["crm.case", "Case"],
