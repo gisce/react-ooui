@@ -44,10 +44,12 @@ var getWidgetType = function (type) {
             return index_1.DateTime;
         case "one2many":
         case "one2many_list":
-        case "many2many": // TODO: this is provisional, just to test Many2Many
+        case "many2many":
             return index_1.One2many;
         case "separator":
             return index_1.Separator;
+        case "reference":
+            return index_1.Reference;
         default:
             return undefined;
     }

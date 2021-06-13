@@ -69,7 +69,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Many2one = void 0;
+exports.Many2oneInput = exports.Many2one = void 0;
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var icons_1 = require("@ant-design/icons");
@@ -81,7 +81,7 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var Many2one = function (props) {
     var ooui = props.ooui;
     return (react_1.default.createElement(Field_1.default, __assign({}, props),
-        react_1.default.createElement(Many2oneInput, { ooui: ooui })));
+        react_1.default.createElement(exports.Many2oneInput, { ooui: ooui })));
 };
 exports.Many2one = Many2one;
 var Many2oneInput = function (props) {
@@ -93,14 +93,19 @@ var Many2oneInput = function (props) {
     var _c = react_1.useState(false), searching = _c[0], setSearching = _c[1];
     var _d = react_1.useState(), searchText = _d[0], setSearchText = _d[1];
     var searchButtonTappedRef = react_1.useRef(false);
+    var id = value && value[0];
+    var text = (value && value[1]) || "";
+    react_1.useEffect(function () {
+        if (id && text.length === 0) {
+            fetchNameAndUpdate(id);
+        }
+    }, [value]);
     var triggerChange = function (changedValue) {
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
     };
     var onValueStringChange = function (e) {
         triggerChange([undefined, e.target.value]);
     };
-    var id = value && value[0];
-    var text = (value && value[1]) || "";
     var onElementLostFocus = function () { return __awaiter(void 0, void 0, void 0, function () {
         var results, err_1;
         return __generator(this, function (_a) {
@@ -179,7 +184,7 @@ var Many2oneInput = function (props) {
         react_1.default.createElement(antd_1.Col, { flex: "auto" },
             react_1.default.createElement(antd_1.Input, { type: "text", value: text, onChange: onValueStringChange, disabled: readOnly, className: requiredClass, onBlur: onElementLostFocus })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
-            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: id === undefined, onClick: function () {
+            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: id === undefined || text === "", onClick: function () {
                     setShowFormModal(true);
                 }, tabIndex: -1 })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
@@ -203,4 +208,5 @@ var Many2oneInput = function (props) {
                 setShowFormModal(false);
             }, mustClearAfterSave: true, readOnly: readOnly })));
 };
+exports.Many2oneInput = Many2oneInput;
 //# sourceMappingURL=Many2one.js.map

@@ -18,7 +18,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Selection = void 0;
+exports.SelectionInput = exports.Selection = void 0;
 var react_1 = __importDefault(require("react"));
 var antd_1 = require("antd");
 var styled_components_1 = __importDefault(require("styled-components"));
@@ -26,7 +26,12 @@ var Field_1 = __importDefault(require("@/common/Field"));
 var Config_1 = __importDefault(require("@/Config"));
 var Option = antd_1.Select.Option;
 var Selection = function (props) {
-    var ooui = props.ooui;
+    return (react_1.default.createElement(Field_1.default, __assign({}, props),
+        react_1.default.createElement(exports.SelectionInput, __assign({}, props))));
+};
+exports.Selection = Selection;
+var SelectionInput = function (props) {
+    var ooui = props.ooui, onChange = props.onChange, value = props.value;
     var _a = ooui, selectionValues = _a.selectionValues, readOnly = _a.readOnly, required = _a.required;
     var values = Array.from(selectionValues.entries());
     var options = values &&
@@ -36,10 +41,9 @@ var Selection = function (props) {
             return (react_1.default.createElement(Option, { key: key, value: key }, value));
         });
     var CustomSelect = required && !readOnly ? RequiredSelect : antd_1.Select;
-    return (react_1.default.createElement(Field_1.default, __assign({}, props),
-        react_1.default.createElement(CustomSelect, { disabled: readOnly }, options)));
+    return (react_1.default.createElement(CustomSelect, { disabled: readOnly, onChange: onChange, defaultValue: value }, options));
 };
-exports.Selection = Selection;
+exports.SelectionInput = SelectionInput;
 var RequiredSelect = styled_components_1.default(antd_1.Select)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  &.ant-select:not(.ant-select-customize-input) .ant-select-selector {\n    background-color: ", ";\n  }\n"], ["\n  &.ant-select:not(.ant-select-customize-input) .ant-select-selector {\n    background-color: ", ";\n  }\n"])), Config_1.default.requiredColor);
 var templateObject_1;
 //# sourceMappingURL=Selection.js.map
