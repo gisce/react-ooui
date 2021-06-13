@@ -10,7 +10,20 @@ import Config from "@/Config";
 const { Option } = Select;
 
 export const Selection = (props: WidgetProps) => {
-  const { ooui } = props;
+  return (
+    <Field {...props}>
+      <SelectionInput {...props} />
+    </Field>
+  );
+};
+
+type SelectionInputProps = WidgetProps & {
+  onChange?: (value: any) => void;
+  value?: string;
+};
+
+export const SelectionInput = (props: SelectionInputProps) => {
+  const { ooui, onChange, value } = props;
   const { selectionValues, readOnly, required } = ooui as SelectionOoui;
 
   const values = Array.from(selectionValues.entries());
@@ -30,9 +43,9 @@ export const Selection = (props: WidgetProps) => {
   const CustomSelect: any = required && !readOnly ? RequiredSelect : Select;
 
   return (
-    <Field {...props}>
-      <CustomSelect disabled={readOnly}>{options}</CustomSelect>
-    </Field>
+    <CustomSelect disabled={readOnly} onChange={onChange} defaultValue={value}>
+      {options}
+    </CustomSelect>
   );
 };
 
