@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Input, Button, Row, Col } from "antd";
 import {
   SearchOutlined,
@@ -50,6 +50,15 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const [searchText, setSearchText] = useState<string>();
   const searchButtonTappedRef = useRef<boolean>(false);
 
+  const id = value && value[0];
+  const text = (value && value[1]) || "";
+
+  useEffect(() => {
+    if (id && text.length === 0) {
+      fetchNameAndUpdate(id);
+    }
+  }, [value]);
+
   const triggerChange = (changedValue: any[]) => {
     onChange?.(changedValue);
   };
@@ -57,9 +66,6 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const onValueStringChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     triggerChange([undefined, e.target.value]);
   };
-
-  const id = value && value[0];
-  const text = (value && value[1]) || "";
 
   const onElementLostFocus = async () => {
     if (!id && !searching && text.trim().length > 0) {
@@ -129,7 +135,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       <Col flex="32px">
         <Button
           icon={<FolderOpenOutlined />}
-          disabled={id === undefined}
+          disabled={id === undefined || text === ""}
           onClick={() => {
             setShowFormModal(true);
           }}
