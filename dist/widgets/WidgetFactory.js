@@ -50,6 +50,8 @@ var getWidgetType = function (type) {
             return index_1.Separator;
         case "reference":
             return index_1.Reference;
+        case "binary":
+            return index_1.Binary;
         default:
             return undefined;
     }
