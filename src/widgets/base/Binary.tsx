@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Row, Col, Button, Input, Space } from "antd";
 import Field from "@/common/Field";
 import { Binary as BinaryOoui } from "ooui";
@@ -10,6 +10,13 @@ import {
   ClearOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
+
+import {
+  getFilesize,
+  getMimeType,
+  openBase64InNewTab,
+  toBase64
+} from "@/helpers/filesHelper";
 
 type Props = {
   ooui: BinaryOoui;
@@ -32,32 +39,95 @@ interface BinaryInputProps {
 }
 
 export const BinaryInput = (props: BinaryInputProps) => {
-  const { ooui } = props;
-  const { id, readOnly, required } = ooui as BinaryOoui;
+  const { ooui, value, onChange } = props;
+  const { readOnly, required } = ooui as BinaryOoui;
   const requiredClass =
     required && !readOnly ? Config.requiredClass : undefined;
+  const inputFile = useRef(null);
+
+  const filesize = value ? getFilesize(value) : "";
+
+  const triggerChange = (changedValue?: string) => {
+    onChange?.(changedValue);
+  };
+
+  async function downloadFile() {
+    const fileType = await getMimeType(value!);
+    const linkSource = `data:${fileType?.mime};base64,${value}`;
+    const downloadLink = document.createElement("a");
+    const fileName = `test.${fileType?.ext}`; // TODO: use filename value from from
+
+    downloadLink.href = linkSource;
+    downloadLink.download = fileName;
+    downloadLink.click();
+  }
+
+  async function openFile() {
+    const fileType: any = await getMimeType(value!);
+    openBase64InNewTab(value!, fileType.mime);
+  }
+
+  async function onChangeFile(event: any) {
+    event.stopPropagation();
+    event.preventDefault();
+    const file = event.target.files[0];
+    const b64: string = await toBase64(file);
+    triggerChange(b64);
+
+    const filename = file.name; // TODO: update filename in form values!
+  }
+
+  function clearFile() {
+    // TODO: update filename in form values
+    triggerChange(undefined);
+  }
 
   return (
     <Row gutter={8} wrap={false}>
       <Col flex="auto">
-        <Input type="text" disabled={true} className={requiredClass} />
+        <input
+          type="file"
+          id="file"
+          ref={inputFile}
+          style={{ display: "none" }}
+          onChange={onChangeFile}
+        />
+        <Input
+          type="text"
+          disabled={true}
+          className={requiredClass}
+          value={filesize}
+        />
       </Col>
       <Col flex="256px">
         <Space>
-          <Button icon={<FolderOpenOutlined />} disabled={readOnly}>
+          <Button
+            icon={<FolderOpenOutlined />}
+            disabled={readOnly}
+            onClick={() => {
+              const fileUploadField = inputFile.current as any;
+              fileUploadField.click();
+            }}
+          >
             Select
           </Button>
-          <Button icon={<EyeOutlined />} disabled={readOnly}>
+          <Button
+            icon={<EyeOutlined />}
+            disabled={readOnly || !value}
+            onClick={openFile}
+          >
             Open
           </Button>
           <ButtonWithTooltip
             tooltip={"Download"}
-            disabled={readOnly}
+            disabled={readOnly || !value}
+            onClick={downloadFile}
             icon={<DownloadOutlined />}
           />
           <ButtonWithTooltip
             tooltip={"Clear"}
             disabled={readOnly}
+            onClick={clearFile}
             icon={<ClearOutlined />}
           />
         </Space>
