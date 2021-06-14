@@ -332,11 +332,20 @@ function Form(props, ref) {
             }
         }
     };
+    var setFieldValue = function (field, value) {
+        var values = antForm.getFieldsValue(true);
+        values[field] = value;
+        antForm.setFieldsValue(values);
+    };
+    var getFieldValue = function (field) {
+        var values = antForm.getFieldsValue(true);
+        return values[field];
+    };
     var content = function () {
         if (!formOoui) {
             return null;
         }
-        return (react_1.default.createElement(FormContext_1.default, { parentId: id, parentModel: model },
+        return (react_1.default.createElement(FormContext_1.default, { parentId: id, parentModel: model, setFieldValue: setFieldValue, getFieldValue: getFieldValue },
             react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: checkFieldsChanges, component: false }, formOoui && (react_1.default.createElement(Container_1.default, { container: formOoui.container, responsiveBehaviour: responsiveBehaviour })))));
     };
     var footer = function () {

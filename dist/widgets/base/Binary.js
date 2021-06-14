@@ -76,6 +76,7 @@ var Field_1 = __importDefault(require("@/common/Field"));
 var Config_1 = __importDefault(require("@/Config"));
 var ButtonWithTooltip_1 = __importDefault(require("@/common/ButtonWithTooltip"));
 var icons_1 = require("@ant-design/icons");
+var FormContext_1 = require("@/context/FormContext");
 var filesHelper_1 = require("@/helpers/filesHelper");
 var Binary = function (props) {
     var ooui = props.ooui;
@@ -85,9 +86,10 @@ var Binary = function (props) {
 exports.Binary = Binary;
 var BinaryInput = function (props) {
     var ooui = props.ooui, value = props.value, onChange = props.onChange;
-    var _a = ooui, readOnly = _a.readOnly, required = _a.required;
+    var _a = ooui, readOnly = _a.readOnly, required = _a.required, filenameField = _a.filenameField;
     var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
     var inputFile = react_1.useRef(null);
+    var _b = react_1.useContext(FormContext_1.FormContext), setFieldValue = _b.setFieldValue, getFieldValue = _b.getFieldValue;
     var filesize = value ? filesHelper_1.getFilesize(value) : "";
     var triggerChange = function (changedValue) {
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
@@ -102,7 +104,7 @@ var BinaryInput = function (props) {
                         fileType = _a.sent();
                         linkSource = "data:" + (fileType === null || fileType === void 0 ? void 0 : fileType.mime) + ";base64," + value;
                         downloadLink = document.createElement("a");
-                        fileName = "test." + (fileType === null || fileType === void 0 ? void 0 : fileType.ext);
+                        fileName = getFieldValue(filenameField);
                         downloadLink.href = linkSource;
                         downloadLink.download = fileName;
                         downloadLink.click();
@@ -127,7 +129,7 @@ var BinaryInput = function (props) {
     }
     function onChangeFile(event) {
         return __awaiter(this, void 0, void 0, function () {
-            var file, b64, filename;
+            var file, b64;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -138,14 +140,14 @@ var BinaryInput = function (props) {
                     case 1:
                         b64 = _a.sent();
                         triggerChange(b64);
-                        filename = file.name;
+                        setFieldValue(filenameField, file.name);
                         return [2 /*return*/];
                 }
             });
         });
     }
     function clearFile() {
-        // TODO: update filename in form values
+        setFieldValue(filenameField, undefined);
         triggerChange(undefined);
     }
     return (react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false },
