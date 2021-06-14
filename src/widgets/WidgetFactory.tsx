@@ -19,6 +19,7 @@ import {
   Form,
   Tree,
   Reference,
+  Binary,
 } from "@/index";
 
 const getWidgetType = (type: string) => {
@@ -65,6 +66,8 @@ const getWidgetType = (type: string) => {
       return Separator;
     case "reference":
       return Reference;
+    case "binary":
+      return Binary;
     default:
       return undefined;
   }
