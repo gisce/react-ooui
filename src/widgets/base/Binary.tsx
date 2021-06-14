@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useContext } from "react";
 import { Row, Col, Button, Input, Space } from "antd";
 import Field from "@/common/Field";
 import { Binary as BinaryOoui } from "ooui";
@@ -10,12 +10,13 @@ import {
   ClearOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
+import { FormContext, FormContextType } from "@/context/FormContext";
 
 import {
   getFilesize,
   getMimeType,
   openBase64InNewTab,
-  toBase64
+  toBase64,
 } from "@/helpers/filesHelper";
 
 type Props = {
@@ -40,10 +41,13 @@ interface BinaryInputProps {
 
 export const BinaryInput = (props: BinaryInputProps) => {
   const { ooui, value, onChange } = props;
-  const { readOnly, required } = ooui as BinaryOoui;
+  const { readOnly, required, filenameField } = ooui as BinaryOoui;
   const requiredClass =
     required && !readOnly ? Config.requiredClass : undefined;
   const inputFile = useRef(null);
+  const { setFieldValue, getFieldValue } = useContext(
+    FormContext
+  ) as FormContextType;
 
   const filesize = value ? getFilesize(value) : "";
 
@@ -55,7 +59,7 @@ export const BinaryInput = (props: BinaryInputProps) => {
     const fileType = await getMimeType(value!);
     const linkSource = `data:${fileType?.mime};base64,${value}`;
     const downloadLink = document.createElement("a");
-    const fileName = `test.${fileType?.ext}`; // TODO: use filename value from from
+    const fileName = getFieldValue(filenameField);
 
     downloadLink.href = linkSource;
     downloadLink.download = fileName;
@@ -73,12 +77,11 @@ export const BinaryInput = (props: BinaryInputProps) => {
     const file = event.target.files[0];
     const b64: string = await toBase64(file);
     triggerChange(b64);
-
-    const filename = file.name; // TODO: update filename in form values!
+    setFieldValue(filenameField, file.name);
   }
 
   function clearFile() {
-    // TODO: update filename in form values
+    setFieldValue(filenameField, undefined);
     triggerChange(undefined);
   }
 
