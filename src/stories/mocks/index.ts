@@ -7,6 +7,7 @@ import signatura from "./models/signatura";
 import polissa from "./models/polissa";
 import factura from "./models/factura";
 import lead from "./models/lead";
+import document from "./models/document";
 
 const allModels = [
   cups,
@@ -18,6 +19,7 @@ const allModels = [
   polissa,
   factura,
   lead,
+  document,
 ];
 
 const getMock = (model: string) => {
