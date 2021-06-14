@@ -298,13 +298,29 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     }
   };
 
+  const setFieldValue = (field: string, value?: string) => {
+    const values = antForm.getFieldsValue(true);
+    values[field] = value;
+    antForm.setFieldsValue(values);
+  };
+
+  const getFieldValue = (field: string) => {
+    const values = antForm.getFieldsValue(true);
+    return values[field];
+  };
+
   const content = () => {
     if (!formOoui) {
       return null;
     }
 
     return (
-      <FormProvider parentId={id} parentModel={model}>
+      <FormProvider
+        parentId={id}
+        parentModel={model}
+        setFieldValue={setFieldValue}
+        getFieldValue={getFieldValue}
+      >
         <AntForm
           form={antForm}
           onFieldsChange={checkFieldsChanges}
