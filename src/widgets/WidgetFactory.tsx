@@ -21,6 +21,7 @@ import {
   Reference,
   Binary,
 } from "@/index";
+import { Image } from "./base/Image";
 
 const getWidgetType = (type: string) => {
   switch (type) {
@@ -68,6 +69,8 @@ const getWidgetType = (type: string) => {
       return Reference;
     case "binary":
       return Binary;
+    case "image":
+      return Image;
     default:
       return undefined;
   }

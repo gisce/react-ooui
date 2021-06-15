@@ -1,55 +1,40 @@
-import React, { useRef, useContext } from "react";
-import { Row, Col, Button, Input, Space } from "antd";
+import React, { useRef } from "react";
+import { Row, Col, Space } from "antd";
 import Field from "@/common/Field";
-import { Binary as BinaryOoui } from "ooui";
-import Config from "@/Config";
+import { Image as ImageOoui } from "ooui";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
 import {
   FolderOpenOutlined,
   DownloadOutlined,
   ClearOutlined,
-  EyeOutlined,
 } from "@ant-design/icons";
-import { FormContext, FormContextType } from "@/context/FormContext";
 
-import {
-  getFilesize,
-  getMimeType,
-  openBase64InNewTab,
-  toBase64,
-} from "@/helpers/filesHelper";
+import { toBase64, getMimeType } from "@/helpers/filesHelper";
 
 type Props = {
-  ooui: BinaryOoui;
+  ooui: ImageOoui;
 };
 
-export const Binary = (props: Props) => {
+export const Image = (props: Props) => {
   const { ooui } = props;
 
   return (
     <Field {...props}>
-      <BinaryInput ooui={ooui} />
+      <ImageInput ooui={ooui} />
     </Field>
   );
 };
 
-interface BinaryInputProps {
-  ooui: BinaryOoui;
+interface ImageInputProps {
+  ooui: ImageOoui;
   value?: string;
   onChange?: (value: string | undefined) => void;
 }
 
-export const BinaryInput = (props: BinaryInputProps) => {
+export const ImageInput = (props: ImageInputProps) => {
   const { ooui, value, onChange } = props;
-  const { readOnly, required, filenameField } = ooui as BinaryOoui;
-  const requiredClass =
-    required && !readOnly ? Config.requiredClass : undefined;
+  const { readOnly } = ooui as ImageOoui;
   const inputFile = useRef(null);
-  const { setFieldValue, getFieldValue } = useContext(
-    FormContext
-  ) as FormContextType;
-
-  const filesize = value ? getFilesize(value) : "";
 
   const triggerChange = (changedValue?: string) => {
     onChange?.(changedValue);
@@ -59,16 +44,10 @@ export const BinaryInput = (props: BinaryInputProps) => {
     const fileType = await getMimeType(value!);
     const linkSource = `data:${fileType?.mime};base64,${value}`;
     const downloadLink = document.createElement("a");
-    const fileName = getFieldValue(filenameField);
 
     downloadLink.href = linkSource;
-    downloadLink.download = fileName;
+    downloadLink.download = `image.${fileType?.ext}`;
     downloadLink.click();
-  }
-
-  async function openFile() {
-    const fileType: any = await getMimeType(value!);
-    openBase64InNewTab(value!, fileType.mime);
   }
 
   async function onChangeFile(event: any) {
@@ -77,50 +56,41 @@ export const BinaryInput = (props: BinaryInputProps) => {
     const file = event.target.files[0];
     const b64: string = await toBase64(file);
     triggerChange(b64);
-    setFieldValue(filenameField, file.name);
   }
 
   function clearFile() {
-    setFieldValue(filenameField, undefined);
     triggerChange(undefined);
   }
 
   return (
-    <Row gutter={8} wrap={false}>
-      <Col flex="auto">
+    <>
+      <Row gutter={8} wrap={false} justify="center">
+        {value && (
+          <img
+            src={`data:image/*;base64,${value}`}
+            style={{ maxWidth: "100px" }}
+          />
+        )}
         <input
           type="file"
           id="file"
           ref={inputFile}
+          accept="image/*"
           style={{ display: "none" }}
           onChange={onChangeFile}
         />
-        <Input
-          type="text"
-          disabled={true}
-          className={requiredClass}
-          value={filesize}
-        />
-      </Col>
-      <Col flex="256px">
+      </Row>
+      <Row gutter={8} wrap={false} justify="center" className="pt-5">
         <Space>
-          <Button
+          <ButtonWithTooltip
+            tooltip={"Upload new image"}
             icon={<FolderOpenOutlined />}
             disabled={readOnly}
             onClick={() => {
               const fileUploadField = inputFile.current as any;
               fileUploadField.click();
             }}
-          >
-            Select
-          </Button>
-          <Button
-            icon={<EyeOutlined />}
-            disabled={readOnly || !value}
-            onClick={openFile}
-          >
-            Open
-          </Button>
+          />
           <ButtonWithTooltip
             tooltip={"Download"}
             disabled={readOnly || !value}
@@ -134,7 +104,7 @@ export const BinaryInput = (props: BinaryInputProps) => {
             icon={<ClearOutlined />}
           />
         </Space>
-      </Col>
-    </Row>
+      </Row>
+    </>
   );
 };

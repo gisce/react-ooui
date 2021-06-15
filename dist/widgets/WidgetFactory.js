@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createReactWidget = void 0;
 var react_1 = __importDefault(require("react"));
 var index_1 = require("@/index");
+var Image_1 = require("./base/Image");
 var getWidgetType = function (type) {
     switch (type) {
         case "form":
@@ -52,6 +53,8 @@ var getWidgetType = function (type) {
             return index_1.Reference;
         case "binary":
             return index_1.Binary;
+        case "image":
+            return Image_1.Image;
         default:
             return undefined;
     }
