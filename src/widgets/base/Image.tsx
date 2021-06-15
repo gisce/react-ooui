@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Row, Col, Space } from "antd";
+import { Row, Space } from "antd";
 import Field from "@/common/Field";
 import { Image as ImageOoui } from "ooui";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
