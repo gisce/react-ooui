@@ -8,6 +8,7 @@ import polissa from "./models/polissa";
 import factura from "./models/factura";
 import lead from "./models/lead";
 import document from "./models/document";
+import company from "./models/company";
 
 const allModels = [
   cups,
@@ -20,6 +21,7 @@ const allModels = [
   factura,
   lead,
   document,
+  company,
 ];
 
 const getMock = (model: string) => {
