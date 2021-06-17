@@ -108,6 +108,11 @@ var iconMapping = {
     STOCK_PREFERENCES: Icons.SettingOutlined,
 };
 exports.default = (function (key) {
+    if (key.indexOf("gtk-") !== -1) {
+        var rootIcon = key.replace("gtk-", "");
+        var newKey = "STOCK_" + rootIcon.toUpperCase();
+        return iconMapping[newKey];
+    }
     return iconMapping[key];
 });
 //# sourceMappingURL=iconMapper.js.map
