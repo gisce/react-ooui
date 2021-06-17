@@ -396,7 +396,7 @@ function Form(props, ref) {
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
                                 model: model,
                                 action: action,
-                                payload: id,
+                                payload: [id],
                             })];
                     case 4:
                         _a.sent();
