@@ -114,7 +114,7 @@ function Form(props, ref) {
                     setError(undefined);
                     _a.label = 1;
                 case 1:
-                    _a.trys.push([1, 8, 9, 10]);
+                    _a.trys.push([1, 5, 6, 7]);
                     if (!(archProps && fieldsProps)) return [3 /*break*/, 2];
                     view = { arch: archProps, fields: fieldsProps };
                     return [3 /*break*/, 4];
@@ -126,25 +126,56 @@ function Form(props, ref) {
                     fields_1 = view.fields, arch_1 = view.arch;
                     setFields(fields_1);
                     setArch(arch_1);
-                    if (!valuesProps) return [3 /*break*/, 5];
-                    values = valuesProps;
+                    // if (valuesProps) {
+                    //   values = valuesProps;
+                    // } else {
+                    //   values = await fetchValuesFromApi({ fields, arch });
+                    // }
+                    // assignNewValuesToForm({ values, fields });
+                    // parseForm({ fields, arch, values });
+                    fetchValues({
+                        fields: fields_1,
+                        arch: arch_1,
+                    });
                     return [3 /*break*/, 7];
-                case 5: return [4 /*yield*/, fetchValuesFromApi({ fields: fields_1, arch: arch_1 })];
-                case 6:
-                    values = _a.sent();
-                    _a.label = 7;
-                case 7:
-                    assignNewValuesToForm({ values: values, fields: fields_1 });
-                    parseForm({ fields: fields_1, arch: arch_1, values: values });
-                    return [3 /*break*/, 10];
-                case 8:
+                case 5:
                     err_1 = _a.sent();
                     setError(err_1);
-                    return [3 /*break*/, 10];
-                case 9:
+                    return [3 /*break*/, 7];
+                case 6:
                     setLoading(false);
                     return [7 /*endfinally*/];
-                case 10: return [2 /*return*/];
+                case 7: return [2 /*return*/];
+            }
+        });
+    }); };
+    var fetchValues = function (options) { return __awaiter(_this, void 0, void 0, function () {
+        var values, _fields, _arch;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (options) {
+                        _fields = options.fields;
+                        _arch = options.arch;
+                    }
+                    else {
+                        _fields = fields;
+                        _arch = arch;
+                    }
+                    if (!valuesProps) return [3 /*break*/, 1];
+                    values = valuesProps;
+                    return [3 /*break*/, 3];
+                case 1: return [4 /*yield*/, fetchValuesFromApi({
+                        fields: _fields,
+                        arch: _arch,
+                    })];
+                case 2:
+                    values = _a.sent();
+                    _a.label = 3;
+                case 3:
+                    assignNewValuesToForm({ values: values, fields: _fields });
+                    parseForm({ fields: _fields, arch: _arch, values: values });
+                    return [2 /*return*/];
             }
         });
     }); };
@@ -180,7 +211,7 @@ function Form(props, ref) {
     var assignNewValuesToForm = function (_a) {
         var newValues = _a.values, fields = _a.fields;
         var currentValues = antForm.getFieldsValue(true);
-        var mergedValues = __assign(__assign({}, newValues), currentValues);
+        var mergedValues = __assign(__assign({}, currentValues), newValues);
         var valuesProcessed = formHelper_1.processValues(mergedValues, fields);
         var fieldsToUpdate = Object.keys(fields).map(function (fieldName) {
             return {
@@ -391,8 +422,8 @@ function Form(props, ref) {
                         mustCallSucceedAfterSubmit.current = true;
                         _a.label = 3;
                     case 3:
-                        _a.trys.push([3, 12, , 13]);
-                        if (!(type === "object")) return [3 /*break*/, 6];
+                        _a.trys.push([3, 10, , 11]);
+                        if (!(type === "object")) return [3 /*break*/, 5];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
                                 model: model,
                                 action: action,
@@ -400,33 +431,27 @@ function Form(props, ref) {
                             })];
                     case 4:
                         _a.sent();
-                        return [4 /*yield*/, fetchData()];
+                        return [3 /*break*/, 8];
                     case 5:
-                        _a.sent();
-                        return [3 /*break*/, 11];
-                    case 6:
-                        if (!(type === "workflow")) return [3 /*break*/, 9];
+                        if (!(type === "workflow")) return [3 /*break*/, 7];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().executeWorkflow({
                                 model: model,
                                 action: action,
                                 payload: id,
                             })];
-                    case 7:
+                    case 6:
                         _a.sent();
-                        return [4 /*yield*/, fetchData()];
-                    case 8:
+                        return [3 /*break*/, 8];
+                    case 7: return [2 /*return*/];
+                    case 8: return [4 /*yield*/, fetchValues()];
+                    case 9:
                         _a.sent();
                         return [3 /*break*/, 11];
-                    case 9: return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 2000); })];
                     case 10:
-                        _a.sent();
-                        _a.label = 11;
-                    case 11: return [3 /*break*/, 13];
-                    case 12:
                         err_3 = _a.sent();
                         GenericErrorDialog_1.default(err_3);
-                        return [3 /*break*/, 13];
-                    case 13: return [2 /*return*/];
+                        return [3 /*break*/, 11];
+                    case 11: return [2 /*return*/];
                 }
             });
         });
