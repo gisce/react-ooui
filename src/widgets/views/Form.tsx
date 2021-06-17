@@ -348,7 +348,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         await ConnectionProvider.getHandler().execute({
           model,
           action,
-          payload: id,
+          payload: [id],
         });
         await fetchData();
       } else {
