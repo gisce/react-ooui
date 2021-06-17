@@ -89,5 +89,10 @@ const iconMapping: { [key: string]: React.ElementType } = {
 };
 
 export default (key: string): React.ElementType => {
+  if (key.indexOf("gtk-") !== -1) {
+    const rootIcon = key.replace("gtk-", "");
+    const newKey = `STOCK_${rootIcon.toUpperCase()}`;
+    return iconMapping[newKey];
+  }
   return iconMapping[key];
 };
