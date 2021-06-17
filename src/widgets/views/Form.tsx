@@ -112,19 +112,54 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       setFields(fields);
       setArch(arch);
 
-      if (valuesProps) {
-        values = valuesProps;
-      } else {
-        values = await fetchValuesFromApi({ fields, arch });
-      }
+      // if (valuesProps) {
+      //   values = valuesProps;
+      // } else {
+      //   values = await fetchValuesFromApi({ fields, arch });
+      // }
 
-      assignNewValuesToForm({ values, fields });
-      parseForm({ fields, arch, values });
+      // assignNewValuesToForm({ values, fields });
+      // parseForm({ fields, arch, values });
+      fetchValues({
+        fields,
+        arch,
+      });
     } catch (err) {
       setError(err);
     } finally {
       setLoading(false);
     }
+  };
+
+  type FetchValuesOptions = {
+    fields?: any;
+    arch?: string;
+  };
+
+  const fetchValues = async (options?: FetchValuesOptions) => {
+    let values;
+    let _fields;
+    let _arch;
+
+    if (options) {
+      _fields = options.fields;
+      _arch = options.arch;
+    } else {
+      _fields = fields;
+      _arch = arch;
+    }
+
+    if (valuesProps) {
+      values = valuesProps;
+    } else {
+      values = await fetchValuesFromApi({
+        fields: _fields,
+        arch: _arch!,
+      });
+    }
+
+    assignNewValuesToForm({ values, fields: _fields });
+    parseForm({ fields: _fields, arch: _arch!, values });
   };
 
   const cancelUnsavedChanges = () => {
@@ -350,17 +385,16 @@ function Form(props: FormProps, ref: any): React.ReactElement {
           action,
           payload: [id],
         });
-        await fetchData();
       } else if (type === "workflow") {
         await ConnectionProvider.getHandler().executeWorkflow({
           model,
           action,
           payload: id,
         });
-        await fetchData();
       } else {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        return;
       }
+      await fetchValues();
     } catch (err) {
       showErrorDialog(err);
     }
