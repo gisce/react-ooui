@@ -9,13 +9,9 @@ export const Integer = (props: WidgetProps) => {
   const { id, readOnly, required } = ooui;
   const requiredClass =
     required && !readOnly ? Config.requiredClass : undefined;
-  const validator = async (_: any, value: any) => {
-    if (!value) throw new Error();
-    if (value.isNaN()) throw new Error();
-  };
 
   return (
-    <Field required={required} validator={validator} {...props}>
+    <Field required={required} type={"number"} {...props}>
       <InputNumber
         id={id}
         className={"w-full " + requiredClass}

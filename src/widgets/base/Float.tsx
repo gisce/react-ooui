@@ -10,13 +10,9 @@ export const Float = (props: WidgetProps) => {
   const { id, decimalDigits, readOnly, required } = ooui as FloatOoui;
   const requiredClass =
     required && !readOnly ? Config.requiredClass : undefined;
-  const validator = async (_: any, value: any) => {
-    if (!value) throw new Error();
-    if (value.isNaN()) throw new Error();
-  };
 
   return (
-    <Field required={required} validator={validator} {...props}>
+    <Field required={required} type={"number"} {...props}>
       <InputNumber
         disabled={readOnly}
         className={"w-full " + requiredClass}
