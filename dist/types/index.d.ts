@@ -74,6 +74,7 @@ declare type ConnectionProviderType = {
     delete: (options: DeleteObjectsRequest) => Promise<any>;
     execute: (options: ExecuteRequest) => Promise<any>;
     readObjects: (options: ReadObjectsRequest) => Promise<any>;
+    executeWorkflow: (options: ExecuteRequest) => Promise<any>;
 };
 export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, };
 //# sourceMappingURL=index.d.ts.map
