@@ -103,7 +103,7 @@ var Button = function (props) {
             return react_1.default.createElement(icons_1.LoadingOutlined, null);
         if (icon) {
             var Icon = iconMapper_1.default(icon);
-            return react_1.default.createElement(Icon, null);
+            return Icon && react_1.default.createElement(Icon, null);
         }
         return undefined;
     }
