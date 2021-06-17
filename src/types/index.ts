@@ -93,6 +93,7 @@ type ConnectionProviderType = {
   delete: (options: DeleteObjectsRequest) => Promise<any>;
   execute: (options: ExecuteRequest) => Promise<any>;
   readObjects: (options: ReadObjectsRequest) => Promise<any>;
+  executeWorkflow: (options: ExecuteRequest) => Promise<any>;
 };
 
 export type {

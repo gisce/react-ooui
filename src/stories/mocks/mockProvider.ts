@@ -54,6 +54,10 @@ const init = () => {
       await new Promise((resolve) => setTimeout(resolve, timeout));
       return [[1, "Alegría-Dulantzi"]];
     },
+    executeWorkflow: async (options: ExecuteRequest) => {
+      await new Promise((resolve) => setTimeout(resolve, timeout));
+      return [[1, "Alegría-Dulantzi"]];
+    },
     readObjects: async (options: ReadObjectsRequest) => {
       await new Promise((resolve) => setTimeout(resolve, timeout));
       const modelMock = getMock(options.model);
