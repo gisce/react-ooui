@@ -3,6 +3,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
   useEffect,
+  useRef,
 } from "react";
 import { Form as FormOoui } from "ooui";
 import {
@@ -27,6 +28,7 @@ import {
 import { FormView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
+import formErrorsDialog from "@/ui/FormErrorsDialog";
 import FormProvider from "@/context/FormContext";
 
 export type FormProps = {
@@ -75,6 +77,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   const [antForm] = AntForm.useForm();
   const [arch, setArch] = useState<string>();
   const [fields, setFields] = useState<any>();
+  const mustCallSucceedAfterSubmit = useRef<boolean>(true);
 
   const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
     breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
@@ -228,14 +231,18 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       await postSaveAction(objectId);
     }
 
-    onSubmitSucceed?.(objectId);
+    if (mustCallSucceedAfterSubmit.current) {
+      onSubmitSucceed?.(objectId);
+    }
   };
 
   const submitValues = async () => {
-    onSubmitSucceed?.({
-      id,
-      touchedValues: getTouchedValues(antForm, fields),
-    });
+    if (mustCallSucceedAfterSubmit.current) {
+      onSubmitSucceed?.({
+        id,
+        touchedValues: getTouchedValues(antForm, fields),
+      });
+    }
   };
 
   const submitForm = async () => {
@@ -312,11 +319,28 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     return values[field];
   };
 
+  async function checkIfFormHasErrors() {
+    try {
+      await antForm.validateFields();
+      return false;
+    } catch (verror) {
+      return true;
+    }
+  }
+
   async function executeButtonAction(type: string, action: string) {
-    // TODO: Validate form required fields
-    // TODO: Save form
     setError(undefined);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // We check for required fields
+    if (await checkIfFormHasErrors()) {
+      formErrorsDialog();
+      return;
+    }
+
+    // We save the form without calling the submitSucceed callback in the end
+    mustCallSucceedAfterSubmit.current = false;
+    await submitForm();
+    mustCallSucceedAfterSubmit.current = true;
 
     try {
       if (type === "object") {
@@ -325,6 +349,9 @@ function Form(props: FormProps, ref: any): React.ReactElement {
           action,
           payload: id,
         });
+        await fetchData();
+      } else {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       }
     } catch (err) {
       setError(err);
