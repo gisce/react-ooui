@@ -5,23 +5,24 @@ export type FormContextType = {
   parentModel: string;
   setFieldValue: (field: string, value?: string) => void;
   getFieldValue: (field: string) => string;
+  executeButtonAction: (type: string, action: string) => Promise<void>;
 };
 
 export const FormContext = React.createContext<FormContextType | null>(null);
 
-const FormProvider = ({
-  children,
-  parentId,
-  parentModel,
-  setFieldValue,
-  getFieldValue,
-}: {
+type FormProviderProps = FormContextType & {
   children: React.ReactNode;
-  parentId?: number;
-  parentModel: string;
-  setFieldValue: (field: string, value?: string) => void;
-  getFieldValue: (field: string) => string;
-}): any => {
+};
+
+const FormProvider = (props: FormProviderProps): any => {
+  const {
+    children,
+    parentId,
+    parentModel,
+    setFieldValue,
+    getFieldValue,
+    executeButtonAction,
+  } = props;
   return (
     <FormContext.Provider
       value={{
@@ -29,6 +30,7 @@ const FormProvider = ({
         parentModel,
         setFieldValue,
         getFieldValue,
+        executeButtonAction,
       }}
     >
       {children}

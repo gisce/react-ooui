@@ -92,6 +92,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
 
   const fetchData = async () => {
     setLoading(true);
+    setError(undefined);
 
     let view;
     let values;
@@ -238,6 +239,8 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   };
 
   const submitForm = async () => {
+    setError(undefined);
+
     if (!formHasChanges()) {
       onCancel?.();
       return;
@@ -309,6 +312,27 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     return values[field];
   };
 
+  async function executeButtonAction(type: string, action: string) {
+    // TODO: Validate form required fields
+    // TODO: Save form
+    setError(undefined);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    try {
+      if (type === "object") {
+        await ConnectionProvider.getHandler().execute({
+          model,
+          action,
+          payload: id,
+        });
+      }
+    } catch (err) {
+      setError(err);
+    }
+
+    return;
+  }
+
   const content = () => {
     if (!formOoui) {
       return null;
@@ -320,6 +344,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         parentModel={model}
         setFieldValue={setFieldValue}
         getFieldValue={getFieldValue}
+        executeButtonAction={executeButtonAction}
       >
         <AntForm
           form={antForm}
