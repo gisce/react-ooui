@@ -22,6 +22,7 @@ import DateTime from "@/widgets/base/DateTime";
 import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
 import { Reference } from "@/widgets/base/Reference";
 import { Binary } from "@/widgets/base/Binary";
+import iconMapper from "@/helpers/iconMapper";
 
 import {
   TreeView,
@@ -79,4 +80,5 @@ export {
   DateTime,
   Reference,
   Binary,
+  iconMapper,
 };
