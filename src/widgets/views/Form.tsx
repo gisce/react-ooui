@@ -163,7 +163,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     fields: any;
   }) => {
     const currentValues = antForm.getFieldsValue(true);
-    const mergedValues = { ...newValues, ...currentValues };
+    const mergedValues = { ...currentValues, ...newValues };
     const valuesProcessed = processValues(mergedValues, fields);
     const fieldsToUpdate = Object.keys(fields).map((fieldName) => {
       return {
