@@ -25,9 +25,10 @@ const DatePickerConfig = {
 };
 const DatePicker = (props: DatePickerProps) => {
   const { ooui, showTime = false } = props;
+  const { required } = ooui;
 
   return (
-    <Field {...props}>
+    <Field required={required} {...props}>
       <DatePickerInput ooui={ooui} showTime={showTime} />
     </Field>
   );
@@ -45,7 +46,8 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
 ) => {
   const { value, onChange, ooui, showTime } = props;
   const { id, readOnly, required } = ooui as DateOoui;
-  const requiredClass = required && !readOnly ? Config.requiredClass : undefined;
+  const requiredClass =
+    required && !readOnly ? Config.requiredClass : undefined;
 
   const mode = showTime ? "time" : "date";
 

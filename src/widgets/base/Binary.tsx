@@ -25,9 +25,10 @@ type Props = {
 
 export const Binary = (props: Props) => {
   const { ooui } = props;
+  const { required } = ooui;
 
   return (
-    <Field {...props}>
+    <Field required={required} {...props}>
       <BinaryInput ooui={ooui} />
     </Field>
   );

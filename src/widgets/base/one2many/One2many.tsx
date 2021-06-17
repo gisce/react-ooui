@@ -14,7 +14,7 @@ type Props = {
 
 export const One2many = (props: Props) => {
   const { ooui } = props;
-  const { mode, relation, views: oouiViews } = ooui;
+  const { mode, relation, views: oouiViews, required } = ooui;
 
   let initialView: "tree" | "form";
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -63,13 +63,21 @@ export const One2many = (props: Props) => {
     return <Alert className="mt-10" message={error} type="error" banner />;
   }
 
+  const validator = async (_: any, value: any) => {
+    if (!value) throw new Error();
+    if (!Array.isArray(value)) throw new Error();
+    if (value.length === 0) throw new Error();
+  };
+
   return (
     <One2manyProvider initialView={initialView}>
-      <Field {...props}>
-        <One2manyInput
-          ooui={ooui}
-          views={views}
-        />
+      <Field
+        required={required}
+        type={"array"}
+        validator={validator}
+        {...props}
+      >
+        <One2manyInput ooui={ooui} views={views} />
       </Field>
     </One2manyProvider>
   );

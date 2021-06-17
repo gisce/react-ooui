@@ -24,8 +24,15 @@ type Props = {
 
 export const Many2one = (props: Props) => {
   const { ooui } = props;
+  const { required } = ooui;
+  const validator = async (_: any, value: any) => {
+    if (!value) throw new Error();
+    if (!Array.isArray(value)) throw new Error();
+    if (Array.isArray(value) && !value[0]) throw new Error();
+  };
+
   return (
-    <Field {...props}>
+    <Field required={required} type={"array"} validator={validator} {...props}>
       <Many2oneInput ooui={ooui} />
     </Field>
   );

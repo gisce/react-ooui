@@ -17,9 +17,10 @@ type Props = {
 
 export const Image = (props: Props) => {
   const { ooui } = props;
+  const { required } = ooui;
 
   return (
-    <Field {...props}>
+    <Field required={required} {...props}>
       <ImageInput ooui={ooui} />
     </Field>
   );

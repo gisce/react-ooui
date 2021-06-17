@@ -21,8 +21,10 @@ type Props = {
 
 export const Reference = (props: Props) => {
   const { ooui } = props;
+  const { required } = ooui;
+
   return (
-    <Field {...props}>
+    <Field required={required} {...props}>
       <ReferenceInput ooui={ooui} />
     </Field>
   );

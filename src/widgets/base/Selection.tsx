@@ -10,8 +10,11 @@ import Config from "@/Config";
 const { Option } = Select;
 
 export const Selection = (props: WidgetProps) => {
+  const { ooui } = props;
+  const { required } = ooui;
+
   return (
-    <Field {...props}>
+    <Field required={required} {...props}>
       <SelectionInput {...props} />
     </Field>
   );

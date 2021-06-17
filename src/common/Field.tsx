@@ -10,6 +10,9 @@ export default function Field({
   valuePropName,
   showLabel = false,
   alignLabel = "left",
+  required = false,
+  type,
+  validator,
 }: {
   ooui: FieldOoui;
   children?: React.ReactNode;
@@ -17,11 +20,30 @@ export default function Field({
   valuePropName?: string;
   showLabel?: boolean;
   alignLabel?: "left" | "center" | "right";
+  required?: boolean;
+  type?: any;
+  validator?: any;
 }) {
   const { id, label, tooltip } = ooui;
 
+  const rules = required
+    ? [
+        {
+          required: true,
+          message: "Please fill this required field",
+          type,
+          validator,
+        },
+      ]
+    : undefined;
+
   const formItem = () => (
-    <Form.Item className="mb-0" name={id} valuePropName={valuePropName}>
+    <Form.Item
+      className="mb-0"
+      name={id}
+      valuePropName={valuePropName}
+      rules={rules}
+    >
       {children}
     </Form.Item>
   );

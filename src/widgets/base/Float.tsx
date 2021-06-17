@@ -12,7 +12,7 @@ export const Float = (props: WidgetProps) => {
     required && !readOnly ? Config.requiredClass : undefined;
 
   return (
-    <Field {...props}>
+    <Field required={required} type={"float"} {...props}>
       <InputNumber
         disabled={readOnly}
         className={"w-full " + requiredClass}

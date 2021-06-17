@@ -11,7 +11,7 @@ export const Integer = (props: WidgetProps) => {
     required && !readOnly ? Config.requiredClass : undefined;
 
   return (
-    <Field {...props}>
+    <Field required={required} type={"integer"} {...props}>
       <InputNumber
         id={id}
         className={"w-full " + requiredClass}

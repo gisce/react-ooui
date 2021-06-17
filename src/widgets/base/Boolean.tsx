@@ -11,7 +11,12 @@ export const Boolean = (props: WidgetProps) => {
   const { id, readOnly, required } = ooui;
 
   return (
-    <Field {...props} valuePropName="checked">
+    <Field
+      {...props}
+      required={required}
+      type={"boolean"}
+      valuePropName="checked"
+    >
       <BooleanInput id={id} readOnly={readOnly} required={required} />
     </Field>
   );

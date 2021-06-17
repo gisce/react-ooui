@@ -16,7 +16,7 @@ const Text = (props: Props) => {
     required && !readOnly ? Config.requiredClass : undefined;
 
   return (
-    <Field {...props}>
+    <Field required={required} {...props}>
       <TextArea disabled={readOnly} className={requiredClass} rows={4} />
     </Field>
   );
