@@ -4,14 +4,12 @@ export declare type FormContextType = {
     parentModel: string;
     setFieldValue: (field: string, value?: string) => void;
     getFieldValue: (field: string) => string;
+    executeButtonAction: (type: string, action: string) => Promise<void>;
 };
 export declare const FormContext: React.Context<FormContextType | null>;
-declare const FormProvider: ({ children, parentId, parentModel, setFieldValue, getFieldValue, }: {
+declare type FormProviderProps = FormContextType & {
     children: React.ReactNode;
-    parentId?: number | undefined;
-    parentModel: string;
-    setFieldValue: (field: string, value?: string | undefined) => void;
-    getFieldValue: (field: string) => string;
-}) => any;
+};
+declare const FormProvider: (props: FormProviderProps) => any;
 export default FormProvider;
 //# sourceMappingURL=FormContext.d.ts.map

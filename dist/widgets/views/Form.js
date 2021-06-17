@@ -341,11 +341,46 @@ function Form(props, ref) {
         var values = antForm.getFieldsValue(true);
         return values[field];
     };
+    function executeButtonAction(type, action) {
+        return __awaiter(this, void 0, void 0, function () {
+            var err_3;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: 
+                    // TODO: Validate form required fields
+                    // TODO: Save form
+                    return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 2000); })];
+                    case 1:
+                        // TODO: Validate form required fields
+                        // TODO: Save form
+                        _a.sent();
+                        _a.label = 2;
+                    case 2:
+                        _a.trys.push([2, 5, , 6]);
+                        if (!(type === "object")) return [3 /*break*/, 4];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
+                                model: model,
+                                action: action,
+                                payload: id,
+                            })];
+                    case 3:
+                        _a.sent();
+                        _a.label = 4;
+                    case 4: return [3 /*break*/, 6];
+                    case 5:
+                        err_3 = _a.sent();
+                        setError(err_3);
+                        return [3 /*break*/, 6];
+                    case 6: return [2 /*return*/];
+                }
+            });
+        });
+    }
     var content = function () {
         if (!formOoui) {
             return null;
         }
-        return (react_1.default.createElement(FormContext_1.default, { parentId: id, parentModel: model, setFieldValue: setFieldValue, getFieldValue: getFieldValue },
+        return (react_1.default.createElement(FormContext_1.default, { parentId: id, parentModel: model, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction },
             react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: checkFieldsChanges, component: false }, formOoui && (react_1.default.createElement(Container_1.default, { container: formOoui.container, responsiveBehaviour: responsiveBehaviour })))));
     };
     var footer = function () {

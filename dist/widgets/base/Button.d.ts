@@ -1,3 +1,7 @@
-import { WidgetProps } from "@/types";
-export declare const Button: (props: WidgetProps) => JSX.Element;
+import { Button as ButtonOoui } from "ooui";
+declare type Props = {
+    ooui: ButtonOoui;
+};
+export declare const Button: (props: Props) => JSX.Element;
+export {};
 //# sourceMappingURL=Button.d.ts.map
