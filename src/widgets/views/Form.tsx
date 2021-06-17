@@ -351,6 +351,13 @@ function Form(props: FormProps, ref: any): React.ReactElement {
           payload: [id],
         });
         await fetchData();
+      } else if (type === "workflow") {
+        await ConnectionProvider.getHandler().executeWorkflow({
+          model,
+          action,
+          payload: id,
+        });
+        await fetchData();
       } else {
         await new Promise((resolve) => setTimeout(resolve, 2000));
       }
