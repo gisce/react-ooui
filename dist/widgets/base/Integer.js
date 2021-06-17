@@ -23,7 +23,7 @@ var Integer = function (props) {
     var ooui = props.ooui;
     var id = ooui.id, readOnly = ooui.readOnly, required = ooui.required;
     var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
-    return (react_1.default.createElement(Field_1.default, __assign({ required: required, type: "integer" }, props),
+    return (react_1.default.createElement(Field_1.default, __assign({ required: required }, props),
         react_1.default.createElement(antd_1.InputNumber, { id: id, className: "w-full " + requiredClass, disabled: readOnly, formatter: function (value) {
                 return ("" + value).replace(/[^0-9]+/g, "");
             }, defaultValue: 0 })));

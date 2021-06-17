@@ -391,7 +391,7 @@ function Form(props, ref) {
                         mustCallSucceedAfterSubmit.current = true;
                         _a.label = 3;
                     case 3:
-                        _a.trys.push([3, 9, , 10]);
+                        _a.trys.push([3, 12, , 13]);
                         if (!(type === "object")) return [3 /*break*/, 6];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
                                 model: model,
@@ -403,17 +403,30 @@ function Form(props, ref) {
                         return [4 /*yield*/, fetchData()];
                     case 5:
                         _a.sent();
-                        return [3 /*break*/, 8];
-                    case 6: return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 2000); })];
+                        return [3 /*break*/, 11];
+                    case 6:
+                        if (!(type === "workflow")) return [3 /*break*/, 9];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().executeWorkflow({
+                                model: model,
+                                action: action,
+                                payload: id,
+                            })];
                     case 7:
                         _a.sent();
-                        _a.label = 8;
-                    case 8: return [3 /*break*/, 10];
-                    case 9:
+                        return [4 /*yield*/, fetchData()];
+                    case 8:
+                        _a.sent();
+                        return [3 /*break*/, 11];
+                    case 9: return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 2000); })];
+                    case 10:
+                        _a.sent();
+                        _a.label = 11;
+                    case 11: return [3 /*break*/, 13];
+                    case 12:
                         err_3 = _a.sent();
                         GenericErrorDialog_1.default(err_3);
-                        return [3 /*break*/, 10];
-                    case 10: return [2 /*return*/];
+                        return [3 /*break*/, 13];
+                    case 13: return [2 /*return*/];
                 }
             });
         });
