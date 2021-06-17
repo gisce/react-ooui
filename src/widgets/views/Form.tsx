@@ -29,6 +29,7 @@ import { FormView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import formErrorsDialog from "@/ui/FormErrorsDialog";
+import showErrorDialog from "@/ui/GenericErrorDialog";
 import FormProvider from "@/context/FormContext";
 
 export type FormProps = {
@@ -354,7 +355,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         await new Promise((resolve) => setTimeout(resolve, 2000));
       }
     } catch (err) {
-      setError(err);
+      showErrorDialog(err);
     }
 
     return;
