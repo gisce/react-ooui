@@ -74,11 +74,11 @@ var ReferenceInput = function (props) {
                     readOnly: readOnly,
                     required: required,
                 }), value: many2oneValue, onChange: function (changedValue) {
+                    setMany2oneValue(changedValue);
                     var referenceValue = selectionValue + "," + changedValue[0];
                     if (referenceValue === value) {
                         return;
                     }
-                    setMany2oneValue(changedValue);
                     onChange === null || onChange === void 0 ? void 0 : onChange(referenceValue);
                 } }))));
 };

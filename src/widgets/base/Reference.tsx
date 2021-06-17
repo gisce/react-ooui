@@ -82,11 +82,11 @@ export const ReferenceInput: React.FC<ReferenceInputProps> = (
           }
           value={many2oneValue}
           onChange={(changedValue: any[]) => {
+            setMany2oneValue(changedValue);
             const referenceValue = `${selectionValue},${changedValue[0]}`;
             if (referenceValue === value) {
               return;
             }
-            setMany2oneValue(changedValue);
             onChange?.(referenceValue);
           }}
         />
