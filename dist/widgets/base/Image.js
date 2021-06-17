@@ -78,7 +78,8 @@ var icons_1 = require("@ant-design/icons");
 var filesHelper_1 = require("@/helpers/filesHelper");
 var Image = function (props) {
     var ooui = props.ooui;
-    return (react_1.default.createElement(Field_1.default, __assign({}, props),
+    var required = ooui.required;
+    return (react_1.default.createElement(Field_1.default, __assign({ required: required }, props),
         react_1.default.createElement(exports.ImageInput, { ooui: ooui })));
 };
 exports.Image = Image;

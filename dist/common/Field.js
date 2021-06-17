@@ -8,9 +8,19 @@ var antd_1 = require("antd");
 var ooui_1 = require("ooui");
 var Label_1 = __importDefault(require("@/widgets/base/Label"));
 function Field(_a) {
-    var ooui = _a.ooui, children = _a.children, _b = _a.layout, layout = _b === void 0 ? "horizontal" : _b, valuePropName = _a.valuePropName, _c = _a.showLabel, showLabel = _c === void 0 ? false : _c, _d = _a.alignLabel, alignLabel = _d === void 0 ? "left" : _d;
+    var ooui = _a.ooui, children = _a.children, _b = _a.layout, layout = _b === void 0 ? "horizontal" : _b, valuePropName = _a.valuePropName, _c = _a.showLabel, showLabel = _c === void 0 ? false : _c, _d = _a.alignLabel, alignLabel = _d === void 0 ? "left" : _d, _e = _a.required, required = _e === void 0 ? false : _e, type = _a.type, validator = _a.validator;
     var id = ooui.id, label = ooui.label, tooltip = ooui.tooltip;
-    var formItem = function () { return (react_1.default.createElement(antd_1.Form.Item, { className: "mb-0", name: id, valuePropName: valuePropName }, children)); };
+    var rules = required
+        ? [
+            {
+                required: true,
+                message: "Please fill this required field",
+                type: type,
+                validator: validator,
+            },
+        ]
+        : undefined;
+    var formItem = function () { return (react_1.default.createElement(antd_1.Form.Item, { className: "mb-0", name: id, valuePropName: valuePropName, rules: rules }, children)); };
     if (!showLabel) {
         return formItem();
     }

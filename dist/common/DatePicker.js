@@ -33,7 +33,8 @@ var DatePickerConfig = {
 };
 var DatePicker = function (props) {
     var ooui = props.ooui, _a = props.showTime, showTime = _a === void 0 ? false : _a;
-    return (react_1.default.createElement(Field_1.default, __assign({}, props),
+    var required = ooui.required;
+    return (react_1.default.createElement(Field_1.default, __assign({ required: required }, props),
         react_1.default.createElement(DatePickerInput, { ooui: ooui, showTime: showTime })));
 };
 var DatePickerInput = function (props) {

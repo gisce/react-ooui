@@ -80,7 +80,8 @@ var FormContext_1 = require("@/context/FormContext");
 var filesHelper_1 = require("@/helpers/filesHelper");
 var Binary = function (props) {
     var ooui = props.ooui;
-    return (react_1.default.createElement(Field_1.default, __assign({}, props),
+    var required = ooui.required;
+    return (react_1.default.createElement(Field_1.default, __assign({ required: required }, props),
         react_1.default.createElement(exports.BinaryInput, { ooui: ooui })));
 };
 exports.Binary = Binary;

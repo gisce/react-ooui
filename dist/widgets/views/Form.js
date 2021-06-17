@@ -79,6 +79,7 @@ var Container_1 = __importDefault(require("@/widgets/containers/Container"));
 var formHelper_1 = require("@/helpers/formHelper");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"));
+var FormErrorsDialog_1 = __importDefault(require("@/ui/FormErrorsDialog"));
 var FormContext_1 = __importDefault(require("@/context/FormContext"));
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
@@ -91,6 +92,7 @@ function Form(props, ref) {
     var antForm = antd_1.Form.useForm()[0];
     var _k = react_1.useState(), arch = _k[0], setArch = _k[1];
     var _l = react_1.useState(), fields = _l[0], setFields = _l[1];
+    var mustCallSucceedAfterSubmit = react_1.useRef(true);
     var _m = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
@@ -108,6 +110,7 @@ function Form(props, ref) {
             switch (_a.label) {
                 case 0:
                     setLoading(true);
+                    setError(undefined);
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 8, 9, 10]);
@@ -254,17 +257,21 @@ function Form(props, ref) {
                     _a.sent();
                     _a.label = 6;
                 case 6:
-                    onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(objectId);
+                    if (mustCallSucceedAfterSubmit.current) {
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(objectId);
+                    }
                     return [2 /*return*/];
             }
         });
     }); };
     var submitValues = function () { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed({
-                id: id,
-                touchedValues: formHelper_1.getTouchedValues(antForm, fields),
-            });
+            if (mustCallSucceedAfterSubmit.current) {
+                onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed({
+                    id: id,
+                    touchedValues: formHelper_1.getTouchedValues(antForm, fields),
+                });
+            }
             return [2 /*return*/];
         });
     }); };
@@ -273,6 +280,7 @@ function Form(props, ref) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    setError(undefined);
                     if (!formHasChanges()) {
                         onCancel === null || onCancel === void 0 ? void 0 : onCancel();
                         return [2 /*return*/];
@@ -341,37 +349,70 @@ function Form(props, ref) {
         var values = antForm.getFieldsValue(true);
         return values[field];
     };
+    function checkIfFormHasErrors() {
+        return __awaiter(this, void 0, void 0, function () {
+            var verror_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, antForm.validateFields()];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/, false];
+                    case 2:
+                        verror_1 = _a.sent();
+                        return [2 /*return*/, true];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    }
     function executeButtonAction(type, action) {
         return __awaiter(this, void 0, void 0, function () {
             var err_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: 
-                    // TODO: Validate form required fields
-                    // TODO: Save form
-                    return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 2000); })];
+                    case 0:
+                        setError(undefined);
+                        return [4 /*yield*/, checkIfFormHasErrors()];
                     case 1:
-                        // TODO: Validate form required fields
-                        // TODO: Save form
-                        _a.sent();
-                        _a.label = 2;
+                        // We check for required fields
+                        if (_a.sent()) {
+                            FormErrorsDialog_1.default();
+                            return [2 /*return*/];
+                        }
+                        // We save the form without calling the submitSucceed callback in the end
+                        mustCallSucceedAfterSubmit.current = false;
+                        return [4 /*yield*/, submitForm()];
                     case 2:
-                        _a.trys.push([2, 5, , 6]);
-                        if (!(type === "object")) return [3 /*break*/, 4];
+                        _a.sent();
+                        mustCallSucceedAfterSubmit.current = true;
+                        _a.label = 3;
+                    case 3:
+                        _a.trys.push([3, 9, , 10]);
+                        if (!(type === "object")) return [3 /*break*/, 6];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
                                 model: model,
                                 action: action,
                                 payload: id,
                             })];
-                    case 3:
+                    case 4:
                         _a.sent();
-                        _a.label = 4;
-                    case 4: return [3 /*break*/, 6];
+                        return [4 /*yield*/, fetchData()];
                     case 5:
+                        _a.sent();
+                        return [3 /*break*/, 8];
+                    case 6: return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 2000); })];
+                    case 7:
+                        _a.sent();
+                        _a.label = 8;
+                    case 8: return [3 /*break*/, 10];
+                    case 9:
                         err_3 = _a.sent();
                         setError(err_3);
-                        return [3 /*break*/, 6];
-                    case 6: return [2 /*return*/];
+                        return [3 /*break*/, 10];
+                    case 10: return [2 /*return*/];
                 }
             });
         });

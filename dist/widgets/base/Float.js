@@ -23,7 +23,7 @@ var Float = function (props) {
     var ooui = props.ooui;
     var _a = ooui, id = _a.id, decimalDigits = _a.decimalDigits, readOnly = _a.readOnly, required = _a.required;
     var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
-    return (react_1.default.createElement(Field_1.default, __assign({}, props),
+    return (react_1.default.createElement(Field_1.default, __assign({ required: required, type: "float" }, props),
         react_1.default.createElement(antd_1.InputNumber, { disabled: readOnly, className: "w-full " + requiredClass, id: id, precision: decimalDigits, formatter: function (value) {
                 return ("" + value).replace(/[^0-9\.\-]+/g, "");
             }, defaultValue: 0, decimalSeparator: "." })));

@@ -38,7 +38,7 @@ var Config_1 = __importDefault(require("@/Config"));
 var Boolean = function (props) {
     var ooui = props.ooui;
     var id = ooui.id, readOnly = ooui.readOnly, required = ooui.required;
-    return (react_1.default.createElement(Field_1.default, __assign({}, props, { valuePropName: "checked" }),
+    return (react_1.default.createElement(Field_1.default, __assign({}, props, { required: required, type: "boolean", valuePropName: "checked" }),
         react_1.default.createElement(BooleanInput, { id: id, readOnly: readOnly, required: required })));
 };
 exports.Boolean = Boolean;

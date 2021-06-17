@@ -79,7 +79,7 @@ var One2manyInput_1 = require("@/widgets/base/one2many/One2manyInput");
 var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 var One2many = function (props) {
     var ooui = props.ooui;
-    var mode = ooui.mode, relation = ooui.relation, oouiViews = ooui.views;
+    var mode = ooui.mode, relation = ooui.relation, oouiViews = ooui.views, required = ooui.required;
     var initialView;
     var _a = react_1.useState(true), isLoading = _a[0], setIsLoading = _a[1];
     var _b = react_1.useState(), error = _b[0], setError = _b[1];
@@ -142,8 +142,19 @@ var One2many = function (props) {
     if (error) {
         return react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true });
     }
+    var validator = function (_, value) { return __awaiter(void 0, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            if (!value)
+                throw new Error();
+            if (!Array.isArray(value))
+                throw new Error();
+            if (value.length === 0)
+                throw new Error();
+            return [2 /*return*/];
+        });
+    }); };
     return (react_1.default.createElement(One2manyContext_1.default, { initialView: initialView },
-        react_1.default.createElement(Field_1.default, __assign({}, props),
+        react_1.default.createElement(Field_1.default, __assign({ required: required, type: "array", validator: validator }, props),
             react_1.default.createElement(One2manyInput_1.One2manyInput, { ooui: ooui, views: views }))));
 };
 exports.One2many = One2many;

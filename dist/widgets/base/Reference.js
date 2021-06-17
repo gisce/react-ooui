@@ -42,7 +42,8 @@ var Many2one_1 = require("./Many2one");
 var Selection_1 = require("./Selection");
 var Reference = function (props) {
     var ooui = props.ooui;
-    return (react_1.default.createElement(Field_1.default, __assign({}, props),
+    var required = ooui.required;
+    return (react_1.default.createElement(Field_1.default, __assign({ required: required }, props),
         react_1.default.createElement(exports.ReferenceInput, { ooui: ooui })));
 };
 exports.Reference = Reference;

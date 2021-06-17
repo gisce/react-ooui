@@ -23,7 +23,7 @@ var Char = function (props) {
     var ooui = props.ooui;
     var _a = ooui, id = _a.id, readOnly = _a.readOnly, isPassword = _a.isPassword, required = _a.required;
     var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
-    return (react_1.default.createElement(Field_1.default, __assign({}, props), isPassword ? (react_1.default.createElement(antd_1.Input.Password, { disabled: readOnly, id: id })) : (react_1.default.createElement(antd_1.Input, { disabled: readOnly, id: id, className: requiredClass }))));
+    return (react_1.default.createElement(Field_1.default, __assign({ required: required }, props), isPassword ? (react_1.default.createElement(antd_1.Input.Password, { disabled: readOnly, id: id })) : (react_1.default.createElement(antd_1.Input, { disabled: readOnly, id: id, className: requiredClass }))));
 };
 exports.Char = Char;
 //# sourceMappingURL=Char.js.map

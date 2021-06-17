@@ -26,7 +26,9 @@ var Field_1 = __importDefault(require("@/common/Field"));
 var Config_1 = __importDefault(require("@/Config"));
 var Option = antd_1.Select.Option;
 var Selection = function (props) {
-    return (react_1.default.createElement(Field_1.default, __assign({}, props),
+    var ooui = props.ooui;
+    var required = ooui.required;
+    return (react_1.default.createElement(Field_1.default, __assign({ required: required }, props),
         react_1.default.createElement(exports.SelectionInput, __assign({}, props))));
 };
 exports.Selection = Selection;

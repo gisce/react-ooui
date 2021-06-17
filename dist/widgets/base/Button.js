@@ -65,9 +65,10 @@ var antd_1 = require("antd");
 var ConfirmDialog_1 = __importDefault(require("@/ui/ConfirmDialog"));
 var FormContext_1 = require("@/context/FormContext");
 var icons_1 = require("@ant-design/icons");
+var iconMapper_1 = __importDefault(require("@/helpers/iconMapper"));
 var Button = function (props) {
     var ooui = props.ooui;
-    var id = ooui.id, label = ooui.label, activated = ooui.activated, buttonType = ooui.buttonType, confirmMessage = ooui.confirmMessage;
+    var id = ooui.id, label = ooui.label, activated = ooui.activated, buttonType = ooui.buttonType, confirmMessage = ooui.confirmMessage, icon = ooui.icon;
     var executeButtonAction = react_1.useContext(FormContext_1.FormContext).executeButtonAction;
     var _a = react_1.useState(false), isRunning = _a[0], setIsRunning = _a[1];
     function onClick_confirm() {
@@ -98,9 +99,16 @@ var Button = function (props) {
         onClick_confirm();
     }
     function getButtonIcon() {
+        if (isRunning)
+            return react_1.default.createElement(icons_1.LoadingOutlined, null);
+        if (icon) {
+            var Icon = iconMapper_1.default(icon);
+            return react_1.default.createElement(Icon, null);
+        }
+        return undefined;
     }
     return (react_1.default.createElement(Field_1.default, { ooui: ooui },
-        react_1.default.createElement(antd_1.Button, { className: "w-full", disabled: !activated, onClick: onClick, icon: isRunning ? react_1.default.createElement(icons_1.LoadingOutlined, null) : undefined }, label)));
+        react_1.default.createElement(antd_1.Button, { className: "w-full", disabled: !activated, onClick: onClick, icon: getButtonIcon() }, label)));
 };
 exports.Button = Button;
 //# sourceMappingURL=Button.js.map

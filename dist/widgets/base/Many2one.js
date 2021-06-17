@@ -80,7 +80,19 @@ var FormModal_1 = require("@/widgets/modals/FormModal");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var Many2one = function (props) {
     var ooui = props.ooui;
-    return (react_1.default.createElement(Field_1.default, __assign({}, props),
+    var required = ooui.required;
+    var validator = function (_, value) { return __awaiter(void 0, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            if (!value)
+                throw new Error();
+            if (!Array.isArray(value))
+                throw new Error();
+            if (Array.isArray(value) && !value[0])
+                throw new Error();
+            return [2 /*return*/];
+        });
+    }); };
+    return (react_1.default.createElement(Field_1.default, __assign({ required: required, type: "array", validator: validator }, props),
         react_1.default.createElement(exports.Many2oneInput, { ooui: ooui })));
 };
 exports.Many2one = Many2one;
