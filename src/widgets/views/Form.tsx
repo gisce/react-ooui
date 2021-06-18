@@ -397,7 +397,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     await ConnectionProvider.getHandler().executeWorkflow({
       model,
       action,
-      payload: [id],
+      payload: id,
     });
     await fetchValues();
   }

@@ -432,7 +432,7 @@ function Form(props, ref) {
                     case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().executeWorkflow({
                             model: model,
                             action: action,
-                            payload: [id],
+                            payload: id,
                         })];
                     case 1:
                         _b.sent();
