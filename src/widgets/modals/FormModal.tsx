@@ -7,6 +7,7 @@ type FormModalProps = FormProps & {
   visible: boolean;
   title?: string;
   noReuse?: boolean;
+  buttonModal?: boolean;
 };
 
 export const FormModal = (props: FormModalProps) => {
@@ -15,6 +16,7 @@ export const FormModal = (props: FormModalProps) => {
     id,
     title = id ? "Detail" : "New",
     noReuse = false,
+    buttonModal = false,
     ...rest
   } = props;
 
@@ -31,7 +33,13 @@ export const FormModal = (props: FormModalProps) => {
       closable={false}
       footer={null}
     >
-      <Form key={key} id={id} showFooter={true} {...rest} />
+      <Form
+        key={key}
+        id={id}
+        showFooter={true}
+        insideButtonModal={buttonModal}
+        {...rest}
+      />
     </Modal>
   );
 };

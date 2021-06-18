@@ -31,6 +31,7 @@ import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import formErrorsDialog from "@/ui/FormErrorsDialog";
 import showErrorDialog from "@/ui/GenericErrorDialog";
 import FormProvider from "@/context/FormContext";
+import { FormModal } from "@/index";
 
 export type FormProps = {
   model: string;
@@ -48,6 +49,7 @@ export type FormProps = {
   onCancel?: () => void;
   onFieldsChange?: (values: any) => void;
   postSaveAction?: (event: any) => Promise<void>;
+  insideButtonModal?: boolean;
 };
 
 const WIDTH_BREAKPOINT = 1000;
@@ -69,6 +71,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     arch: archProps,
     fields: fieldsProps,
     postSaveAction,
+    insideButtonModal = false,
   } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -79,6 +82,14 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   const [arch, setArch] = useState<string>();
   const [fields, setFields] = useState<any>();
   const mustCallSucceedAfterSubmit = useRef<boolean>(true);
+  const [buttonActionModalVisible, setButtonActionModalVisible] = useState<
+    boolean
+  >(false);
+  const [buttonActionModalArch, setButtonActionModalArch] = useState<string>();
+  const [buttonActionModalModel, setButtonActionModalModel] = useState<
+    string
+  >();
+  const [buttonActionModalFields, setButtonActionModalFields] = useState<any>();
 
   const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
     breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
@@ -99,7 +110,6 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     setError(undefined);
 
     let view;
-    let values;
 
     try {
       if (archProps && fieldsProps) {
@@ -112,14 +122,6 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       setFields(fields);
       setArch(arch);
 
-      // if (valuesProps) {
-      //   values = valuesProps;
-      // } else {
-      //   values = await fetchValuesFromApi({ fields, arch });
-      // }
-
-      // assignNewValuesToForm({ values, fields });
-      // parseForm({ fields, arch, values });
       fetchValues({
         fields,
         arch,
@@ -179,7 +181,9 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     if (getDataFromAction) {
       const action = await ConnectionProvider.getHandler().getAction(model);
       const viewsForAction = await ConnectionProvider.getHandler().getViewsForAction(
-        action
+        {
+          action,
+        }
       );
       return viewsForAction.views.get("form");
     }
@@ -364,8 +368,83 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     }
   }
 
-  async function executeButtonAction(type: string, action: string) {
-    setError(undefined);
+  async function runObjectButton({
+    action,
+    context,
+  }: {
+    action: string;
+    context: any;
+  }) {
+    await ConnectionProvider.getHandler().execute({
+      model,
+      action,
+      payload: [id],
+    });
+    if (insideButtonModal) {
+      onSubmitSucceed?.(id);
+    } else {
+      await fetchValues();
+    }
+  }
+
+  async function runWorkflowButton({
+    action,
+    context,
+  }: {
+    action: string;
+    context: any;
+  }) {
+    await ConnectionProvider.getHandler().executeWorkflow({
+      model,
+      action,
+      payload: [id],
+    });
+    await fetchValues();
+  }
+
+  async function runActionButton({
+    action,
+    context,
+  }: {
+    action: string;
+    context: any;
+  }) {
+    const actionData = (
+      await ConnectionProvider.getHandler().readObjects({
+        model: "ir.actions.actions",
+        ids: [parseInt(action)],
+      })
+    )[0];
+
+    if (actionData.type === "ir.actions.act_window") {
+      const viewData = await ConnectionProvider.getHandler().getViewsForAction({
+        action: `${actionData.type},${actionData.id}`,
+        context,
+      });
+      const form = viewData.views.get("form");
+      setButtonActionModalModel(viewData.model);
+      setButtonActionModalArch(form.arch);
+      setButtonActionModalFields(form.fields);
+      setButtonActionModalVisible(true);
+    } else {
+      // TODO: implement other types of action button responses
+    }
+  }
+
+  async function executeButtonAction({
+    type,
+    action,
+    context,
+  }: {
+    type: string;
+    action: string;
+    context?: any;
+  }) {
+    // If the type of the button it's a cancel, we just close our form
+    if (type === "cancel") {
+      onCancel?.();
+      return;
+    }
 
     // We check for required fields
     if (await checkIfFormHasErrors()) {
@@ -373,33 +452,24 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       return;
     }
 
-    // We save the form without calling the submitSucceed callback in the end
-    mustCallSucceedAfterSubmit.current = false;
-    await submitForm();
-    mustCallSucceedAfterSubmit.current = true;
+    if (!insideButtonModal) {
+      // We save the form without calling the submitSucceed callback in the end
+      mustCallSucceedAfterSubmit.current = false;
+      await submitForm();
+      mustCallSucceedAfterSubmit.current = true;
+    }
 
     try {
       if (type === "object") {
-        await ConnectionProvider.getHandler().execute({
-          model,
-          action,
-          payload: [id],
-        });
+        await runObjectButton({ action, context });
       } else if (type === "workflow") {
-        await ConnectionProvider.getHandler().executeWorkflow({
-          model,
-          action,
-          payload: id,
-        });
-      } else {
-        return;
+        await runWorkflowButton({ action, context });
+      } else if (type === "action") {
+        await runActionButton({ action, context });
       }
-      await fetchValues();
     } catch (err) {
       showErrorDialog(err);
     }
-
-    return;
   }
 
   const content = () => {
@@ -463,6 +533,23 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       {error && <Alert className="mt-10" message={error} type="error" banner />}
       {loading ? <Spin /> : content()}
       {showFooter && footer()}
+      <FormModal
+        buttonModal
+        noReuse
+        id={id}
+        model={buttonActionModalModel!}
+        arch={buttonActionModalArch}
+        fields={buttonActionModalFields}
+        visible={buttonActionModalVisible}
+        onSubmitSucceed={async () => {
+          setButtonActionModalVisible(false);
+          await fetchValues();
+        }}
+        onCancel={() => {
+          setButtonActionModalVisible(false);
+        }}
+        showFooter={false}
+      />
     </div>
   );
 }
