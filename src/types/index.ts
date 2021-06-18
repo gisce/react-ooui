@@ -69,8 +69,8 @@ type ExecuteRequest = {
 };
 
 type ReadObjectsRequest = {
-  arch: string;
-  fields: any;
+  arch?: string;
+  fields?: any;
   model: string;
   ids: number[];
 };
@@ -82,7 +82,13 @@ type DeleteObjectsRequest = {
 
 type ConnectionProviderType = {
   getAction: (model: string) => Promise<string>;
-  getViewsForAction: (action: string) => Promise<ViewData>;
+  getViewsForAction: ({
+    action,
+    context,
+  }: {
+    action: string;
+    context?: any;
+  }) => Promise<ViewData>;
   getView: (
     model: string,
     type: "tree" | "form"

@@ -148,7 +148,9 @@ function SearchTree(props: Props) {
 
   const fetchActionData = async () => {
     const dataForAction = await ConnectionProvider.getHandler().getViewsForAction(
-      action!
+      {
+        action: action!,
+      }
     );
     setFormView(dataForAction.views.get("form"));
     setTreeView(dataForAction.views.get("tree"));

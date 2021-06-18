@@ -18,7 +18,13 @@ const init = () => {
     getAction: async (model: string) => {
       return "ir.actions.act_window,6";
     },
-    getViewsForAction: async (action: string) => {
+    getViewsForAction: async ({
+      action,
+      context,
+    }: {
+      action: string;
+      context: any;
+    }) => {
       const model = "giscedata.facturacio.factura";
       const views = new Map<string, any>();
       views.set("tree", (getMock(model) as any).tree);
