@@ -14,7 +14,7 @@ export const Selection = (props: WidgetProps) => {
   const { required } = ooui;
 
   return (
-    <Field required={required} {...props}>
+    <Field required={required} type={"any"} {...props}>
       <SelectionInput {...props} />
     </Field>
   );
