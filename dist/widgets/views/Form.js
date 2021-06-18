@@ -82,22 +82,27 @@ var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"
 var FormErrorsDialog_1 = __importDefault(require("@/ui/FormErrorsDialog"));
 var GenericErrorDialog_1 = __importDefault(require("@/ui/GenericErrorDialog"));
 var FormContext_1 = __importDefault(require("@/context/FormContext"));
+var index_1 = require("@/index");
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
-    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, archProps = props.arch, fieldsProps = props.fields, postSaveAction = props.postSaveAction;
-    var _f = react_1.useState(false), isSubmitting = _f[0], setIsSubmitting = _f[1];
-    var _g = react_1.useState(), error = _g[0], setError = _g[1];
-    var _h = react_1.useState(false), loading = _h[0], setLoading = _h[1];
-    var _j = react_1.useState(), formOoui = _j[0], setFormOoui = _j[1];
+    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, archProps = props.arch, fieldsProps = props.fields, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f;
+    var _g = react_1.useState(false), isSubmitting = _g[0], setIsSubmitting = _g[1];
+    var _h = react_1.useState(), error = _h[0], setError = _h[1];
+    var _j = react_1.useState(false), loading = _j[0], setLoading = _j[1];
+    var _k = react_1.useState(), formOoui = _k[0], setFormOoui = _k[1];
     var antForm = antd_1.Form.useForm()[0];
-    var _k = react_1.useState(), arch = _k[0], setArch = _k[1];
-    var _l = react_1.useState(), fields = _l[0], setFields = _l[1];
+    var _l = react_1.useState(), arch = _l[0], setArch = _l[1];
+    var _m = react_1.useState(), fields = _m[0], setFields = _m[1];
     var mustCallSucceedAfterSubmit = react_1.useRef(true);
-    var _m = react_cool_dimensions_1.default({
+    var _o = react_1.useState(false), buttonActionModalVisible = _o[0], setButtonActionModalVisible = _o[1];
+    var _p = react_1.useState(), buttonActionModalArch = _p[0], setButtonActionModalArch = _p[1];
+    var _q = react_1.useState(), buttonActionModalModel = _q[0], setButtonActionModalModel = _q[1];
+    var _r = react_1.useState(), buttonActionModalFields = _r[0], setButtonActionModalFields = _r[1];
+    var _s = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _m.width, containerRef = _m.ref;
+    }), width = _s.width, containerRef = _s.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
@@ -106,7 +111,7 @@ function Form(props, ref) {
         fetchData();
     }, [id, model, valuesProps, archProps, fieldsProps]);
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
-        var view, values, fields_1, arch_1, err_1;
+        var view, fields_1, arch_1, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -126,13 +131,6 @@ function Form(props, ref) {
                     fields_1 = view.fields, arch_1 = view.arch;
                     setFields(fields_1);
                     setArch(arch_1);
-                    // if (valuesProps) {
-                    //   values = valuesProps;
-                    // } else {
-                    //   values = await fetchValuesFromApi({ fields, arch });
-                    // }
-                    // assignNewValuesToForm({ values, fields });
-                    // parseForm({ fields, arch, values });
                     fetchValues({
                         fields: fields_1,
                         arch: arch_1,
@@ -199,7 +197,9 @@ function Form(props, ref) {
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getAction(model)];
                 case 1:
                     action = _a.sent();
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getViewsForAction(action)];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getViewsForAction({
+                            action: action,
+                        })];
                 case 2:
                     viewsForAction = _a.sent();
                     return [2 /*return*/, viewsForAction.views.get("form")];
@@ -400,55 +400,129 @@ function Form(props, ref) {
             });
         });
     }
-    function executeButtonAction(type, action) {
+    function runObjectButton(_a) {
+        var action = _a.action, context = _a.context;
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
+                            model: model,
+                            action: action,
+                            payload: [id],
+                        })];
+                    case 1:
+                        _b.sent();
+                        if (!insideButtonModal) return [3 /*break*/, 2];
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id);
+                        return [3 /*break*/, 4];
+                    case 2: return [4 /*yield*/, fetchValues()];
+                    case 3:
+                        _b.sent();
+                        _b.label = 4;
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function runWorkflowButton(_a) {
+        var action = _a.action, context = _a.context;
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().executeWorkflow({
+                            model: model,
+                            action: action,
+                            payload: [id],
+                        })];
+                    case 1:
+                        _b.sent();
+                        return [4 /*yield*/, fetchValues()];
+                    case 2:
+                        _b.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function runActionButton(_a) {
+        var action = _a.action, context = _a.context;
+        return __awaiter(this, void 0, void 0, function () {
+            var actionData, viewData, form;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                            model: "ir.actions.actions",
+                            ids: [parseInt(action)],
+                        })];
+                    case 1:
+                        actionData = (_b.sent())[0];
+                        if (!(actionData.type === "ir.actions.act_window")) return [3 /*break*/, 3];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getViewsForAction({
+                                action: actionData.type + "," + actionData.id,
+                                context: context,
+                            })];
+                    case 2:
+                        viewData = _b.sent();
+                        form = viewData.views.get("form");
+                        setButtonActionModalModel(viewData.model);
+                        setButtonActionModalArch(form.arch);
+                        setButtonActionModalFields(form.fields);
+                        setButtonActionModalVisible(true);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function executeButtonAction(_a) {
+        var type = _a.type, action = _a.action, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
             var err_3;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        setError(undefined);
+                        // If the type of the button it's a cancel, we just close our form
+                        if (type === "cancel") {
+                            onCancel === null || onCancel === void 0 ? void 0 : onCancel();
+                            return [2 /*return*/];
+                        }
                         return [4 /*yield*/, checkIfFormHasErrors()];
                     case 1:
                         // We check for required fields
-                        if (_a.sent()) {
+                        if (_b.sent()) {
                             FormErrorsDialog_1.default();
                             return [2 /*return*/];
                         }
+                        if (!!insideButtonModal) return [3 /*break*/, 3];
                         // We save the form without calling the submitSucceed callback in the end
                         mustCallSucceedAfterSubmit.current = false;
                         return [4 /*yield*/, submitForm()];
                     case 2:
-                        _a.sent();
+                        _b.sent();
                         mustCallSucceedAfterSubmit.current = true;
-                        _a.label = 3;
+                        _b.label = 3;
                     case 3:
-                        _a.trys.push([3, 10, , 11]);
+                        _b.trys.push([3, 10, , 11]);
                         if (!(type === "object")) return [3 /*break*/, 5];
-                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
-                                model: model,
-                                action: action,
-                                payload: [id],
-                            })];
+                        return [4 /*yield*/, runObjectButton({ action: action, context: context })];
                     case 4:
-                        _a.sent();
-                        return [3 /*break*/, 8];
+                        _b.sent();
+                        return [3 /*break*/, 9];
                     case 5:
                         if (!(type === "workflow")) return [3 /*break*/, 7];
-                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().executeWorkflow({
-                                model: model,
-                                action: action,
-                                payload: id,
-                            })];
+                        return [4 /*yield*/, runWorkflowButton({ action: action, context: context })];
                     case 6:
-                        _a.sent();
-                        return [3 /*break*/, 8];
-                    case 7: return [2 /*return*/];
-                    case 8: return [4 /*yield*/, fetchValues()];
-                    case 9:
-                        _a.sent();
-                        return [3 /*break*/, 11];
+                        _b.sent();
+                        return [3 /*break*/, 9];
+                    case 7:
+                        if (!(type === "action")) return [3 /*break*/, 9];
+                        return [4 /*yield*/, runActionButton({ action: action, context: context })];
+                    case 8:
+                        _b.sent();
+                        _b.label = 9;
+                    case 9: return [3 /*break*/, 11];
                     case 10:
-                        err_3 = _a.sent();
+                        err_3 = _b.sent();
                         GenericErrorDialog_1.default(err_3);
                         return [3 /*break*/, 11];
                     case 11: return [2 /*return*/];
@@ -474,7 +548,21 @@ function Form(props, ref) {
     return (react_1.default.createElement("div", { ref: containerRef, className: "pb-2" },
         error && react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true }),
         loading ? react_1.default.createElement(antd_1.Spin, null) : content(),
-        showFooter && footer()));
+        showFooter && footer(),
+        react_1.default.createElement(index_1.FormModal, { buttonModal: true, noReuse: true, id: id, model: buttonActionModalModel, arch: buttonActionModalArch, fields: buttonActionModalFields, visible: buttonActionModalVisible, onSubmitSucceed: function () { return __awaiter(_this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            setButtonActionModalVisible(false);
+                            return [4 /*yield*/, fetchValues()];
+                        case 1:
+                            _a.sent();
+                            return [2 /*return*/];
+                    }
+                });
+            }); }, onCancel: function () {
+                setButtonActionModalVisible(false);
+            }, showFooter: false })));
 }
 exports.default = react_1.forwardRef(Form);
 //# sourceMappingURL=Form.js.map

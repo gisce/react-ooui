@@ -68,7 +68,7 @@ var icons_1 = require("@ant-design/icons");
 var iconMapper_1 = __importDefault(require("@/helpers/iconMapper"));
 var Button = function (props) {
     var ooui = props.ooui;
-    var id = ooui.id, label = ooui.label, activated = ooui.activated, buttonType = ooui.buttonType, confirmMessage = ooui.confirmMessage, icon = ooui.icon;
+    var id = ooui.id, label = ooui.label, activated = ooui.activated, buttonType = ooui.buttonType, confirmMessage = ooui.confirmMessage, icon = ooui.icon, context = ooui.context;
     var executeButtonAction = react_1.useContext(FormContext_1.FormContext).executeButtonAction;
     var _a = react_1.useState(false), isRunning = _a[0], setIsRunning = _a[1];
     function onClick_confirm() {
@@ -77,7 +77,7 @@ var Button = function (props) {
                 switch (_a.label) {
                     case 0:
                         setIsRunning(true);
-                        return [4 /*yield*/, executeButtonAction(buttonType, id)];
+                        return [4 /*yield*/, executeButtonAction({ type: buttonType, action: id, context: context })];
                     case 1:
                         _a.sent();
                         setIsRunning(false);

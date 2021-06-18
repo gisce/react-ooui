@@ -28,7 +28,7 @@ var Option = antd_1.Select.Option;
 var Selection = function (props) {
     var ooui = props.ooui;
     var required = ooui.required;
-    return (react_1.default.createElement(Field_1.default, __assign({ required: required }, props),
+    return (react_1.default.createElement(Field_1.default, __assign({ required: required, type: "any" }, props),
         react_1.default.createElement(exports.SelectionInput, __assign({}, props))));
 };
 exports.Selection = Selection;

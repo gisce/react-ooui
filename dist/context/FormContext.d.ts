@@ -4,7 +4,11 @@ export declare type FormContextType = {
     parentModel: string;
     setFieldValue: (field: string, value?: string) => void;
     getFieldValue: (field: string) => string;
-    executeButtonAction: (type: string, action: string) => Promise<void>;
+    executeButtonAction: ({ type, action, context, }: {
+        type: string;
+        action: string;
+        context?: any;
+    }) => Promise<void>;
 };
 export declare const FormContext: React.Context<FormContextType | null>;
 declare type FormProviderProps = FormContextType & {

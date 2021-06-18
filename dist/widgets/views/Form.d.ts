@@ -15,6 +15,7 @@ export declare type FormProps = {
     onCancel?: () => void;
     onFieldsChange?: (values: any) => void;
     postSaveAction?: (event: any) => Promise<void>;
+    insideButtonModal?: boolean;
 };
 declare const _default: React.ForwardRefExoticComponent<FormProps & React.RefAttributes<unknown>>;
 export default _default;

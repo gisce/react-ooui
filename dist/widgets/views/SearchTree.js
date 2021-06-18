@@ -228,7 +228,9 @@ function SearchTree(props) {
         var dataForAction;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getViewsForAction(action)];
+                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getViewsForAction({
+                        action: action,
+                    })];
                 case 1:
                     dataForAction = _a.sent();
                     setFormView(dataForAction.views.get("form"));
