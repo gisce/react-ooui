@@ -13,13 +13,21 @@ type Props = {
 
 export const Button = (props: Props) => {
   const { ooui } = props;
-  const { id, label, activated, buttonType, confirmMessage, icon } = ooui;
+  const {
+    id,
+    label,
+    activated,
+    buttonType,
+    confirmMessage,
+    icon,
+    context,
+  } = ooui;
   const { executeButtonAction } = useContext(FormContext) as FormContextType;
   const [isRunning, setIsRunning] = useState<boolean>(false);
 
   async function onClick_confirm() {
     setIsRunning(true);
-    await executeButtonAction(buttonType, id);
+    await executeButtonAction({ type: buttonType, action: id, context });
     setIsRunning(false);
   }
 

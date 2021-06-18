@@ -5,7 +5,15 @@ export type FormContextType = {
   parentModel: string;
   setFieldValue: (field: string, value?: string) => void;
   getFieldValue: (field: string) => string;
-  executeButtonAction: (type: string, action: string) => Promise<void>;
+  executeButtonAction: ({
+    type,
+    action,
+    context,
+  }: {
+    type: string;
+    action: string;
+    context?: any;
+  }) => Promise<void>;
 };
 
 export const FormContext = React.createContext<FormContextType | null>(null);
