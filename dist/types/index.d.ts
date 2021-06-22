@@ -53,6 +53,7 @@ declare type ExecuteRequest = {
     model: string;
     action: string;
     payload?: any;
+    context?: any;
 };
 declare type ReadObjectsRequest = {
     arch?: string;

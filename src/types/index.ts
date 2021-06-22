@@ -66,6 +66,7 @@ type ExecuteRequest = {
   model: string;
   action: string;
   payload?: any;
+  context?: any;
 };
 
 type ReadObjectsRequest = {
