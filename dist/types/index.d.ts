@@ -39,6 +39,7 @@ declare type CreateObjectRequest = {
     model: string;
     values: any;
     fields: any;
+    context?: any;
 };
 declare type UpdateObjectRequest = CreateObjectRequest & {
     id: number;

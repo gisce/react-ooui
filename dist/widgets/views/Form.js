@@ -280,6 +280,7 @@ function Form(props, ref) {
                             id: id,
                             values: touchedValues,
                             fields: fields,
+                            context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                         })];
                 case 1:
                     _a.sent();
@@ -290,6 +291,7 @@ function Form(props, ref) {
                             model: model,
                             values: currentValues,
                             fields: fields,
+                            context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                         })];
                 case 3:
                     newId = _a.sent();
@@ -451,7 +453,6 @@ function Form(props, ref) {
                             model: model,
                             action: action,
                             payload: id,
-                            context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                         })];
                     case 1:
                         _b.sent();

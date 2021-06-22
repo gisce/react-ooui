@@ -269,6 +269,10 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         id,
         values: touchedValues,
         fields,
+        context: {
+          ...parentContext,
+          ...formOoui?.context,
+        },
       });
     } else {
       const currentValues = processValues(antForm.getFieldsValue(true), fields);
@@ -277,6 +281,10 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         model,
         values: currentValues,
         fields,
+        context: {
+          ...parentContext,
+          ...formOoui?.context,
+        },
       });
       createdId.current = newId;
     }
@@ -421,7 +429,6 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       model,
       action,
       payload: id,
-      context: { ...context, ...parentContext, ...formOoui?.context },
     });
     await fetchValues();
   }
