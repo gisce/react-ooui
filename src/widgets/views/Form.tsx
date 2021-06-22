@@ -413,6 +413,11 @@ function Form(props: FormProps, ref: any): React.ReactElement {
 
     if (Object.keys(response).length === 0 && insideButtonModal) {
       onSubmitSucceed?.(id);
+    } else if (
+      response.type &&
+      response.type === "ir.actions.act_window_close"
+    ) {
+      onSubmitSucceed?.(id);
     } else {
       await fetchValues();
     }

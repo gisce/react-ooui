@@ -434,12 +434,17 @@ function Form(props, ref) {
                         response = _b.sent();
                         if (!(Object.keys(response).length === 0 && insideButtonModal)) return [3 /*break*/, 2];
                         onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id);
-                        return [3 /*break*/, 4];
-                    case 2: return [4 /*yield*/, fetchValues()];
-                    case 3:
+                        return [3 /*break*/, 5];
+                    case 2:
+                        if (!(response.type &&
+                            response.type === "ir.actions.act_window_close")) return [3 /*break*/, 3];
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id);
+                        return [3 /*break*/, 5];
+                    case 3: return [4 /*yield*/, fetchValues()];
+                    case 4:
                         _b.sent();
-                        _b.label = 4;
-                    case 4: return [2 /*return*/];
+                        _b.label = 5;
+                    case 5: return [2 /*return*/];
                 }
             });
         });
