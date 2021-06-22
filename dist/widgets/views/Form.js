@@ -366,7 +366,7 @@ function Form(props, ref) {
         var fields = _a.fields, arch = _a.arch, values = _a.values;
         var ooui = new ooui_1.Form(fields);
         // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
-        ooui.parse(arch, { readOnly: readOnly, values: values });
+        ooui.parse(arch, { readOnly: readOnly, values: __assign(__assign({}, values), { id: id }) });
         setFormOoui(ooui);
         if (formModalContext && ooui.string)
             (_b = formModalContext.setTitle) === null || _b === void 0 ? void 0 : _b.call(formModalContext, ooui.string);
@@ -570,8 +570,8 @@ function Form(props, ref) {
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            setButtonContext({});
                             setButtonActionModalVisible(false);
+                            setButtonContext({});
                             return [4 /*yield*/, fetchValues()];
                         case 1:
                             _a.sent();
@@ -579,8 +579,8 @@ function Form(props, ref) {
                     }
                 });
             }); }, onCancel: function () {
-                setButtonContext({});
                 setButtonActionModalVisible(false);
+                setButtonContext({});
             }, showFooter: false })));
 }
 exports.default = react_1.forwardRef(Form);

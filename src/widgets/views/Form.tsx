@@ -343,7 +343,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   }) => {
     const ooui = new FormOoui(fields);
     // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
-    ooui.parse(arch, { readOnly, values });
+    ooui.parse(arch, { readOnly, values: { ...values, id } });
     setFormOoui(ooui);
 
     if (formModalContext && ooui.string)
@@ -574,13 +574,13 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         fields={buttonActionModalFields}
         visible={buttonActionModalVisible}
         onSubmitSucceed={async () => {
-          setButtonContext({});
           setButtonActionModalVisible(false);
+          setButtonContext({});
           await fetchValues();
         }}
         onCancel={() => {
-          setButtonContext({});
           setButtonActionModalVisible(false);
+          setButtonContext({});
         }}
         showFooter={false}
       />
