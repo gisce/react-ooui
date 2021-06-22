@@ -86,23 +86,23 @@ var index_1 = require("@/index");
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
-    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, archProps = props.arch, fieldsProps = props.fields, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f;
-    var _g = react_1.useState(false), isSubmitting = _g[0], setIsSubmitting = _g[1];
-    var _h = react_1.useState(), error = _h[0], setError = _h[1];
-    var _j = react_1.useState(false), loading = _j[0], setLoading = _j[1];
-    var _k = react_1.useState(), formOoui = _k[0], setFormOoui = _k[1];
+    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, archProps = props.arch, fieldsProps = props.fields, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g;
+    var _h = react_1.useState(false), isSubmitting = _h[0], setIsSubmitting = _h[1];
+    var _j = react_1.useState(), error = _j[0], setError = _j[1];
+    var _k = react_1.useState(false), loading = _k[0], setLoading = _k[1];
+    var _l = react_1.useState(), formOoui = _l[0], setFormOoui = _l[1];
     var antForm = antd_1.Form.useForm()[0];
-    var _l = react_1.useState(), arch = _l[0], setArch = _l[1];
-    var _m = react_1.useState(), fields = _m[0], setFields = _m[1];
+    var _m = react_1.useState(), arch = _m[0], setArch = _m[1];
+    var _o = react_1.useState(), fields = _o[0], setFields = _o[1];
     var mustCallSucceedAfterSubmit = react_1.useRef(true);
-    var _o = react_1.useState(false), buttonActionModalVisible = _o[0], setButtonActionModalVisible = _o[1];
-    var _p = react_1.useState(), buttonActionModalArch = _p[0], setButtonActionModalArch = _p[1];
-    var _q = react_1.useState(), buttonActionModalModel = _q[0], setButtonActionModalModel = _q[1];
-    var _r = react_1.useState(), buttonActionModalFields = _r[0], setButtonActionModalFields = _r[1];
-    var _s = react_cool_dimensions_1.default({
+    var _p = react_1.useState(false), buttonActionModalVisible = _p[0], setButtonActionModalVisible = _p[1];
+    var _q = react_1.useState(), buttonActionModalArch = _q[0], setButtonActionModalArch = _q[1];
+    var _r = react_1.useState(), buttonActionModalModel = _r[0], setButtonActionModalModel = _r[1];
+    var _s = react_1.useState(), buttonActionModalFields = _s[0], setButtonActionModalFields = _s[1];
+    var _t = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _s.width, containerRef = _s.ref;
+    }), width = _t.width, containerRef = _t.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
@@ -162,15 +162,19 @@ function Form(props, ref) {
                     }
                     if (!valuesProps) return [3 /*break*/, 1];
                     values = valuesProps;
-                    return [3 /*break*/, 3];
+                    return [3 /*break*/, 4];
                 case 1: return [4 /*yield*/, fetchValuesFromApi({
                         fields: _fields,
                         arch: _arch,
                     })];
                 case 2:
                     values = _a.sent();
-                    _a.label = 3;
+                    if (!!values) return [3 /*break*/, 4];
+                    return [4 /*yield*/, getDefaultValues(_fields)];
                 case 3:
+                    values = _a.sent();
+                    _a.label = 4;
+                case 4:
                     assignNewValuesToForm({ values: values, fields: _fields });
                     parseForm({ fields: _fields, arch: _arch, values: values });
                     return [2 /*return*/];
@@ -240,11 +244,7 @@ function Form(props, ref) {
                     case 1:
                         values = (_b.sent())[0];
                         return [3 /*break*/, 4];
-                    case 2: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
-                            model: model,
-                            action: "default_get",
-                            payload: Object.keys(fields),
-                        })];
+                    case 2: return [4 /*yield*/, getDefaultValues(fields)];
                     case 3:
                         values = _b.sent();
                         _b.label = 4;
@@ -253,6 +253,19 @@ function Form(props, ref) {
             });
         });
     };
+    var getDefaultValues = function (fields) { return __awaiter(_this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
+                        model: model,
+                        action: "default_get",
+                        payload: Object.keys(fields),
+                        context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
+                    })];
+                case 1: return [2 /*return*/, _a.sent()];
+            }
+        });
+    }); };
     var formHasChanges = function () {
         return Object.keys(formHelper_1.getTouchedValues(antForm, fields)).length !== 0;
     };
@@ -409,6 +422,7 @@ function Form(props, ref) {
                             model: model,
                             action: action,
                             payload: [id],
+                            context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                         })];
                     case 1:
                         _b.sent();
@@ -433,6 +447,7 @@ function Form(props, ref) {
                             model: model,
                             action: action,
                             payload: id,
+                            context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                         })];
                     case 1:
                         _b.sent();
@@ -459,7 +474,7 @@ function Form(props, ref) {
                         if (!(actionData.type === "ir.actions.act_window")) return [3 /*break*/, 3];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getViewsForAction({
                                 action: actionData.type + "," + actionData.id,
-                                context: context,
+                                context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                             })];
                     case 2:
                         viewData = _b.sent();
@@ -549,7 +564,7 @@ function Form(props, ref) {
         error && react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true }),
         loading ? react_1.default.createElement(antd_1.Spin, null) : content(),
         showFooter && footer(),
-        react_1.default.createElement(index_1.FormModal, { buttonModal: true, noReuse: true, id: id, model: buttonActionModalModel, arch: buttonActionModalArch, fields: buttonActionModalFields, visible: buttonActionModalVisible, onSubmitSucceed: function () { return __awaiter(_this, void 0, void 0, function () {
+        react_1.default.createElement(index_1.FormModal, { buttonModal: true, noReuse: true, id: id, parentContext: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context), model: buttonActionModalModel, arch: buttonActionModalArch, fields: buttonActionModalFields, visible: buttonActionModalVisible, onSubmitSucceed: function () { return __awaiter(_this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:

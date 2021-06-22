@@ -50,6 +50,7 @@ export type FormProps = {
   onFieldsChange?: (values: any) => void;
   postSaveAction?: (event: any) => Promise<void>;
   insideButtonModal?: boolean;
+  parentContext?: any;
 };
 
 const WIDTH_BREAKPOINT = 1000;
@@ -72,6 +73,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     fields: fieldsProps,
     postSaveAction,
     insideButtonModal = false,
+    parentContext = {},
   } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -158,6 +160,9 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         fields: _fields,
         arch: _arch!,
       });
+      if (!values) {
+        values = await getDefaultValues(_fields);
+      }
     }
 
     assignNewValuesToForm({ values, fields: _fields });
@@ -233,13 +238,18 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         })
       )[0];
     } else {
-      values = await ConnectionProvider.getHandler().execute({
-        model,
-        action: "default_get",
-        payload: Object.keys(fields),
-      });
+      values = await getDefaultValues(fields);
     }
     return values;
+  };
+
+  const getDefaultValues = async (fields: any) => {
+    return await ConnectionProvider.getHandler().execute({
+      model,
+      action: "default_get",
+      payload: Object.keys(fields),
+      context: { ...parentContext, ...formOoui?.context },
+    });
   };
 
   const formHasChanges = () => {
@@ -379,6 +389,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       model,
       action,
       payload: [id],
+      context: { ...context, ...parentContext, ...formOoui?.context },
     });
     if (insideButtonModal) {
       onSubmitSucceed?.(id);
@@ -398,6 +409,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       model,
       action,
       payload: id,
+      context: { ...context, ...parentContext, ...formOoui?.context },
     });
     await fetchValues();
   }
@@ -419,7 +431,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     if (actionData.type === "ir.actions.act_window") {
       const viewData = await ConnectionProvider.getHandler().getViewsForAction({
         action: `${actionData.type},${actionData.id}`,
-        context,
+        context: { ...context, ...parentContext, ...formOoui?.context },
       });
       const form = viewData.views.get("form");
       setButtonActionModalModel(viewData.model);
@@ -537,6 +549,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         buttonModal
         noReuse
         id={id}
+        parentContext={{ ...parentContext, ...formOoui?.context }}
         model={buttonActionModalModel!}
         arch={buttonActionModalArch}
         fields={buttonActionModalFields}
