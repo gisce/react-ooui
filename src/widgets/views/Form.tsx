@@ -88,7 +88,6 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   const [antForm] = AntForm.useForm();
   const [arch, setArch] = useState<string>();
   const [fields, setFields] = useState<any>();
-  const mustCallSucceedAfterSubmit = useRef<boolean>(true);
   const [buttonActionModalVisible, setButtonActionModalVisible] = useState<
     boolean
   >(false);
@@ -98,6 +97,8 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   >();
   const [buttonActionModalFields, setButtonActionModalFields] = useState<any>();
   const formModalContext = useContext(FormModalContext) as FormModalContextType;
+  const [buttonContext, setButtonContext] = useState<any>({});
+  const createdId = useRef<number>();
 
   const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
     breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
@@ -166,9 +167,6 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         fields: _fields,
         arch: _arch!,
       });
-      if (!values) {
-        values = await getDefaultValues(_fields);
-      }
     }
 
     assignNewValuesToForm({ values, fields: _fields });
@@ -263,11 +261,9 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   };
 
   const submitApi = async () => {
-    const touchedValues = getTouchedValues(antForm, fields);
-
-    let objectId = id;
-
     if (id) {
+      const touchedValues = getTouchedValues(antForm, fields);
+
       await ConnectionProvider.getHandler().update({
         model,
         id,
@@ -275,25 +271,27 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         fields,
       });
     } else {
+      const currentValues = processValues(antForm.getFieldsValue(true), fields);
+
       const newId = await ConnectionProvider.getHandler().create({
         model,
-        values: touchedValues,
+        values: currentValues,
         fields,
       });
-      objectId = newId;
+      createdId.current = newId;
     }
 
     if (postSaveAction) {
-      await postSaveAction(objectId);
+      await postSaveAction(id || createdId.current);
     }
 
-    if (mustCallSucceedAfterSubmit.current) {
-      onSubmitSucceed?.(objectId);
+    if (!insideButtonModal) {
+      onSubmitSucceed?.(id || createdId.current);
     }
   };
 
   const submitValues = async () => {
-    if (mustCallSucceedAfterSubmit.current) {
+    if (!insideButtonModal) {
       onSubmitSucceed?.({
         id,
         touchedValues: getTouchedValues(antForm, fields),
@@ -304,7 +302,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   const submitForm = async () => {
     setError(undefined);
 
-    if (!formHasChanges()) {
+    if (!formHasChanges() && id) {
       onCancel?.();
       return;
     }
@@ -394,17 +392,18 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     action: string;
     context: any;
   }) {
-    await ConnectionProvider.getHandler().execute({
+    const response = await ConnectionProvider.getHandler().execute({
       model,
       action,
-      payload: [id],
+      payload: [id || createdId.current],
       context: {
         ...context,
         ...parentContext,
         ...formOoui?.context,
       },
     });
-    if (insideButtonModal) {
+
+    if (Object.keys(response).length === 0 && insideButtonModal) {
       onSubmitSucceed?.(id);
     } else {
       await fetchValues();
@@ -446,10 +445,12 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         action: `${actionData.type},${actionData.id}`,
         context: { ...context, ...parentContext, ...formOoui?.context },
       });
+
       const form = viewData.views.get("form");
       setButtonActionModalModel(viewData.model);
       setButtonActionModalArch(form.arch);
       setButtonActionModalFields(form.fields);
+      setButtonContext(context);
       setButtonActionModalVisible(true);
     } else {
       // TODO: implement other types of action button responses
@@ -477,12 +478,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       return;
     }
 
-    if (!insideButtonModal) {
-      // We save the form without calling the submitSucceed callback in the end
-      mustCallSucceedAfterSubmit.current = false;
-      await submitForm();
-      mustCallSucceedAfterSubmit.current = true;
-    }
+    await submitForm();
 
     try {
       if (type === "object") {
@@ -561,17 +557,22 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       <FormModal
         buttonModal
         noReuse
-        id={id}
-        parentContext={{ ...parentContext, ...formOoui?.context }}
+        parentContext={{
+          ...buttonContext,
+          ...parentContext,
+          ...formOoui?.context,
+        }}
         model={buttonActionModalModel!}
         arch={buttonActionModalArch}
         fields={buttonActionModalFields}
         visible={buttonActionModalVisible}
         onSubmitSucceed={async () => {
+          setButtonContext({});
           setButtonActionModalVisible(false);
           await fetchValues();
         }}
         onCancel={() => {
+          setButtonContext({});
           setButtonActionModalVisible(false);
         }}
         showFooter={false}

@@ -23,7 +23,7 @@ const init = () => {
       context,
     }: {
       action: string;
-      context: any;
+      context?: any;
     }) => {
       const model = "giscedata.facturacio.factura";
       const views = new Map<string, any>();
