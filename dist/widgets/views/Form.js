@@ -83,6 +83,7 @@ var FormErrorsDialog_1 = __importDefault(require("@/ui/FormErrorsDialog"));
 var GenericErrorDialog_1 = __importDefault(require("@/ui/GenericErrorDialog"));
 var FormContext_1 = __importDefault(require("@/context/FormContext"));
 var index_1 = require("@/index");
+var FormModalContext_1 = require("@/context/FormModalContext");
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
@@ -99,6 +100,7 @@ function Form(props, ref) {
     var _q = react_1.useState(), buttonActionModalArch = _q[0], setButtonActionModalArch = _q[1];
     var _r = react_1.useState(), buttonActionModalModel = _r[0], setButtonActionModalModel = _r[1];
     var _s = react_1.useState(), buttonActionModalFields = _s[0], setButtonActionModalFields = _s[1];
+    var formModalContext = react_1.useContext(FormModalContext_1.FormModalContext);
     var _t = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
@@ -360,11 +362,14 @@ function Form(props, ref) {
         });
     }); };
     var parseForm = function (_a) {
+        var _b;
         var fields = _a.fields, arch = _a.arch, values = _a.values;
         var ooui = new ooui_1.Form(fields);
         // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
         ooui.parse(arch, { readOnly: readOnly, values: values });
         setFormOoui(ooui);
+        if (formModalContext && ooui.string)
+            (_b = formModalContext.setTitle) === null || _b === void 0 ? void 0 : _b.call(formModalContext, ooui.string);
     };
     var debouncedParseForm = debounce_1.default(parseForm, 300);
     var checkFieldsChanges = function (changedFields) {

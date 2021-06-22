@@ -4,6 +4,7 @@ import React, {
   useImperativeHandle,
   useEffect,
   useRef,
+  useContext,
 } from "react";
 import { Form as FormOoui } from "ooui";
 import {
@@ -32,6 +33,10 @@ import formErrorsDialog from "@/ui/FormErrorsDialog";
 import showErrorDialog from "@/ui/GenericErrorDialog";
 import FormProvider from "@/context/FormContext";
 import { FormModal } from "@/index";
+import {
+  FormModalContext,
+  FormModalContextType,
+} from "@/context/FormModalContext";
 
 export type FormProps = {
   model: string;
@@ -92,6 +97,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     string
   >();
   const [buttonActionModalFields, setButtonActionModalFields] = useState<any>();
+  const formModalContext = useContext(FormModalContext) as FormModalContextType;
 
   const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
     breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
@@ -333,6 +339,9 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
     ooui.parse(arch, { readOnly, values });
     setFormOoui(ooui);
+
+    if (formModalContext && ooui.string)
+      formModalContext.setTitle?.(ooui.string);
   };
 
   const debouncedParseForm = debounce(parseForm, 300);
@@ -389,7 +398,11 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       model,
       action,
       payload: [id],
-      context: { ...context, ...parentContext, ...formOoui?.context },
+      context: {
+        ...context,
+        ...parentContext,
+        ...formOoui?.context,
+      },
     });
     if (insideButtonModal) {
       onSubmitSucceed?.(id);
