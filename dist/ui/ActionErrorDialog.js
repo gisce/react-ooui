@@ -6,16 +6,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(require("react"));
 var antd_1 = require("antd");
 var icons_1 = require("@ant-design/icons");
-var error = antd_1.Modal.error;
+var error = antd_1.Modal.error, warning = antd_1.Modal.warning;
 var showDialog = function (err) {
-    var splitted = err.split("\n\n");
-    var message = splitted[1];
-    var args = splitted[0].split(" ");
-    var type = args[0];
-    var title = args[2];
-    error({
-        title: "Error",
-        icon: react_1.default.createElement(icons_1.ExclamationCircleOutlined, null),
+    var message;
+    var type;
+    var title;
+    if (err.indexOf(" -- ") !== -1 && err.indexOf("\n\n") !== -1) {
+        var splitted = err.split("\n\n");
+        message = splitted[1];
+        var args = splitted[0].split(" ");
+        type = args[0];
+        title = args[2];
+    }
+    else {
+        message = err;
+        type = "error";
+        title = "Error";
+    }
+    var icon = type === "error" ? react_1.default.createElement(icons_1.ExclamationCircleOutlined, null) : react_1.default.createElement(icons_1.WarningOutlined, null);
+    var modalType = type === "error" ? error : warning;
+    modalType({
+        title: title,
+        icon: icon,
         centered: true,
         content: message,
     });
