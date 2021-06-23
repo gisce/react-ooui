@@ -13,8 +13,6 @@ export const Boolean = (props: WidgetProps) => {
   return (
     <Field
       {...props}
-      required={required}
-      type={"boolean"}
       valuePropName="checked"
     >
       <BooleanInput id={id} readOnly={readOnly} required={required} />
