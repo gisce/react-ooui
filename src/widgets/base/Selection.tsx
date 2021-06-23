@@ -46,7 +46,11 @@ export const SelectionInput = (props: SelectionInputProps) => {
   const CustomSelect: any = required && !readOnly ? RequiredSelect : Select;
 
   return (
-    <CustomSelect disabled={readOnly} onChange={onChange} defaultValue={value}>
+    <CustomSelect
+      disabled={readOnly}
+      onChange={onChange}
+      value={value}
+    >
       {options}
     </CustomSelect>
   );

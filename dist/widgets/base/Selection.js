@@ -43,7 +43,7 @@ var SelectionInput = function (props) {
             return (react_1.default.createElement(Option, { key: key, value: key }, value));
         });
     var CustomSelect = required && !readOnly ? RequiredSelect : antd_1.Select;
-    return (react_1.default.createElement(CustomSelect, { disabled: readOnly, onChange: onChange, defaultValue: value }, options));
+    return (react_1.default.createElement(CustomSelect, { disabled: readOnly, onChange: onChange, value: value }, options));
 };
 exports.SelectionInput = SelectionInput;
 var RequiredSelect = styled_components_1.default(antd_1.Select)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  &.ant-select:not(.ant-select-customize-input) .ant-select-selector {\n    background-color: ", ";\n  }\n"], ["\n  &.ant-select:not(.ant-select-customize-input) .ant-select-selector {\n    background-color: ", ";\n  }\n"])), Config_1.default.requiredColor);

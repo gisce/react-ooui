@@ -1,11 +1,14 @@
 import React from "react";
 
-import { Selection } from "..";
+import { SelectionInput } from "../widgets/base/Selection";
 import { Selection as SelectionOoui } from "ooui";
 import "antd/dist/antd.css";
 
+import { withKnobs, text } from "@storybook/addon-knobs";
+
 export default {
   title: "Components/Widgets/Base/Selection",
+  decorators: [withKnobs],
 };
 
 const selectionValues = [
@@ -20,6 +23,7 @@ export const Default = (): React.ReactElement => {
     string: "Lorem ipsum",
     selection: selectionValues,
   });
+  const value = text("value", "en_US") || undefined;
 
-  return <Selection ooui={ooui} showLabel />;
+  return <SelectionInput ooui={ooui} value={value} />;
 };
