@@ -30,7 +30,7 @@ import { FormView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import formErrorsDialog from "@/ui/FormErrorsDialog";
-import showErrorDialog from "@/ui/GenericErrorDialog";
+import showErrorDialog from "@/ui/ActionErrorDialog";
 import FormProvider from "@/context/FormContext";
 import { FormModal } from "@/index";
 import {

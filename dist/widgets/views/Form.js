@@ -80,7 +80,7 @@ var formHelper_1 = require("@/helpers/formHelper");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"));
 var FormErrorsDialog_1 = __importDefault(require("@/ui/FormErrorsDialog"));
-var GenericErrorDialog_1 = __importDefault(require("@/ui/GenericErrorDialog"));
+var ActionErrorDialog_1 = __importDefault(require("@/ui/ActionErrorDialog"));
 var FormContext_1 = __importDefault(require("@/context/FormContext"));
 var index_1 = require("@/index");
 var FormModalContext_1 = require("@/context/FormModalContext");
@@ -550,7 +550,7 @@ function Form(props, ref) {
                     case 9: return [3 /*break*/, 11];
                     case 10:
                         err_3 = _b.sent();
-                        GenericErrorDialog_1.default(err_3);
+                        ActionErrorDialog_1.default(err_3);
                         return [3 /*break*/, 11];
                     case 11: return [2 /*return*/];
                 }
