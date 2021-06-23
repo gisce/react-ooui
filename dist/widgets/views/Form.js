@@ -452,6 +452,7 @@ function Form(props, ref) {
     function runWorkflowButton(_a) {
         var action = _a.action, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
+            var response;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().executeWorkflow({
@@ -460,11 +461,15 @@ function Form(props, ref) {
                             payload: id,
                         })];
                     case 1:
+                        response = _b.sent();
+                        if (!(response.type && response.type === "ir.actions.act_window_close")) return [3 /*break*/, 2];
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id);
+                        return [3 /*break*/, 4];
+                    case 2: return [4 /*yield*/, fetchValues()];
+                    case 3:
                         _b.sent();
-                        return [4 /*yield*/, fetchValues()];
-                    case 2:
-                        _b.sent();
-                        return [2 /*return*/];
+                        _b.label = 4;
+                    case 4: return [2 /*return*/];
                 }
             });
         });
