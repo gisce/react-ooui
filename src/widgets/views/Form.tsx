@@ -430,12 +430,17 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     action: string;
     context: any;
   }) {
-    await ConnectionProvider.getHandler().executeWorkflow({
+    const response = await ConnectionProvider.getHandler().executeWorkflow({
       model,
       action,
       payload: id,
     });
-    await fetchValues();
+
+    if (response.type && response.type === "ir.actions.act_window_close") {
+      onSubmitSucceed?.(id);
+    } else {
+      await fetchValues();
+    }
   }
 
   async function runActionButton({
