@@ -38,6 +38,8 @@ import {
   ExecuteRequest,
   ReadObjectsRequest,
   DeleteObjectsRequest,
+  CreateReportRequest,
+  GetReportRequest,
 } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 
@@ -81,4 +83,6 @@ export {
   Reference,
   Binary,
   iconMapper,
+  CreateReportRequest,
+  GetReportRequest,
 };
