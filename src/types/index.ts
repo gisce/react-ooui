@@ -114,7 +114,7 @@ type ConnectionProviderType = {
   execute: (options: ExecuteRequest) => Promise<any>;
   readObjects: (options: ReadObjectsRequest) => Promise<any>;
   executeWorkflow: (options: ExecuteRequest) => Promise<any>;
-  createReport: (options: CreateReportRequest) => Promise<number>;
+  createReport: (options: CreateReportRequest) => Promise<any>;
   getReport: (options: GetReportRequest) => Promise<any>;
 };
 

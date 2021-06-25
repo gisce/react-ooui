@@ -90,7 +90,7 @@ declare type ConnectionProviderType = {
     execute: (options: ExecuteRequest) => Promise<any>;
     readObjects: (options: ReadObjectsRequest) => Promise<any>;
     executeWorkflow: (options: ExecuteRequest) => Promise<any>;
-    createReport: (options: CreateReportRequest) => Promise<number>;
+    createReport: (options: CreateReportRequest) => Promise<any>;
     getReport: (options: GetReportRequest) => Promise<any>;
 };
 export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, };
