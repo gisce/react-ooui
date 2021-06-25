@@ -82,6 +82,18 @@ type DeleteObjectsRequest = {
   ids: number[];
 };
 
+type CreateReportRequest = {
+  name: string;
+  model: string;
+  id: number;
+  contextReport: any;
+  context?: any;
+};
+
+type GetReportRequest = {
+  id: number;
+};
+
 type ConnectionProviderType = {
   getAction: (model: string) => Promise<string>;
   getViewsForAction: ({
@@ -102,6 +114,8 @@ type ConnectionProviderType = {
   execute: (options: ExecuteRequest) => Promise<any>;
   readObjects: (options: ReadObjectsRequest) => Promise<any>;
   executeWorkflow: (options: ExecuteRequest) => Promise<any>;
+  createReport: (options: CreateReportRequest) => Promise<number>;
+  getReport: (options: GetReportRequest) => Promise<any>;
 };
 
 export type {
@@ -121,4 +135,6 @@ export type {
   ExecuteRequest,
   ReadObjectsRequest,
   DeleteObjectsRequest,
+  CreateReportRequest,
+  GetReportRequest,
 };

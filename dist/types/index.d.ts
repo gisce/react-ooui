@@ -66,6 +66,16 @@ declare type DeleteObjectsRequest = {
     model: string;
     ids: number[];
 };
+declare type CreateReportRequest = {
+    name: string;
+    model: string;
+    id: number;
+    contextReport: any;
+    context?: any;
+};
+declare type GetReportRequest = {
+    id: number;
+};
 declare type ConnectionProviderType = {
     getAction: (model: string) => Promise<string>;
     getViewsForAction: ({ action, context, }: {
@@ -80,6 +90,8 @@ declare type ConnectionProviderType = {
     execute: (options: ExecuteRequest) => Promise<any>;
     readObjects: (options: ReadObjectsRequest) => Promise<any>;
     executeWorkflow: (options: ExecuteRequest) => Promise<any>;
+    createReport: (options: CreateReportRequest) => Promise<number>;
+    getReport: (options: GetReportRequest) => Promise<any>;
 };
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, };
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, };
 //# sourceMappingURL=index.d.ts.map
