@@ -424,7 +424,7 @@ function Form(props, ref) {
     function runObjectButton(_a) {
         var action = _a.action, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
-            var response, newReportId_1;
+            var response;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
@@ -445,26 +445,39 @@ function Form(props, ref) {
                         return [3 /*break*/, 7];
                     case 3:
                         if (!(response.type && response.type === "ir.actions.report.xml")) return [3 /*break*/, 5];
-                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().createReport({
-                                model: response.model,
-                                name: response.report_name,
-                                contextReport: response.datas.context,
-                                ids: response.datas.ids[0],
-                                context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
-                            })];
+                        return [4 /*yield*/, executeReportAction(response, context)];
                     case 4:
-                        newReportId_1 = _b.sent();
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id);
-                        setReportGenerating(true);
-                        reportInProgressInterval.current = setInterval(function () {
-                            evaluateReportStatus(newReportId_1);
-                        }, 1000);
+                        _b.sent();
                         return [3 /*break*/, 7];
                     case 5: return [4 /*yield*/, fetchValues()];
                     case 6:
                         _b.sent();
                         _b.label = 7;
                     case 7: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function executeReportAction(response, context) {
+        return __awaiter(this, void 0, void 0, function () {
+            var newReportId;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().createReport({
+                            model: response.model,
+                            name: response.report_name,
+                            contextReport: response.datas.context,
+                            ids: response.datas.ids[0],
+                            context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
+                        })];
+                    case 1:
+                        newReportId = _a.sent();
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id);
+                        setReportGenerating(true);
+                        reportInProgressInterval.current = setInterval(function () {
+                            evaluateReportStatus(newReportId);
+                        }, 1000);
+                        return [2 /*return*/];
                 }
             });
         });
@@ -542,8 +555,14 @@ function Form(props, ref) {
                         setButtonActionModalFields(form.fields);
                         setButtonContext(context);
                         setButtonActionModalVisible(true);
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
+                        return [3 /*break*/, 5];
+                    case 3:
+                        if (!(actionData.type === "ir.actions.report.xml")) return [3 /*break*/, 5];
+                        return [4 /*yield*/, executeReportAction(actionData, context)];
+                    case 4:
+                        _b.sent();
+                        _b.label = 5;
+                    case 5: return [2 /*return*/];
                 }
             });
         });

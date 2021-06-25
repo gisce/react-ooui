@@ -425,27 +425,31 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     ) {
       onSubmitSucceed?.(id);
     } else if (response.type && response.type === "ir.actions.report.xml") {
-      const newReportId = await ConnectionProvider.getHandler().createReport({
-        model: response.model,
-        name: response.report_name,
-        contextReport: response.datas.context,
-        ids: response.datas.ids[0],
-        context: {
-          ...context,
-          ...parentContext,
-          ...formOoui?.context,
-        },
-      });
-
-      onSubmitSucceed?.(id);
-      setReportGenerating(true);
-
-      reportInProgressInterval.current = setInterval(() => {
-        evaluateReportStatus(newReportId);
-      }, 1000);
+      await executeReportAction(response, context);
     } else {
       await fetchValues();
     }
+  }
+
+  async function executeReportAction(response: any, context: any) {
+    const newReportId = await ConnectionProvider.getHandler().createReport({
+      model: response.model,
+      name: response.report_name,
+      contextReport: response.datas.context,
+      ids: response.datas.ids[0],
+      context: {
+        ...context,
+        ...parentContext,
+        ...formOoui?.context,
+      },
+    });
+
+    onSubmitSucceed?.(id);
+    setReportGenerating(true);
+
+    reportInProgressInterval.current = setInterval(() => {
+      evaluateReportStatus(newReportId);
+    }, 1000);
   }
 
   async function evaluateReportStatus(id: any) {
@@ -506,8 +510,8 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       setButtonActionModalFields(form.fields);
       setButtonContext(context);
       setButtonActionModalVisible(true);
-    } else {
-      // TODO: implement other types of action button responses
+    } else if (actionData.type === "ir.actions.report.xml") {
+      await executeReportAction(actionData, context);
     }
   }
 
