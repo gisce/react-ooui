@@ -11,7 +11,9 @@ var showDialog = function (err) {
     var message;
     var type;
     var title;
-    if (err.indexOf(" -- ") !== -1 && err.indexOf("\n\n") !== -1) {
+    if (typeof err === "string" &&
+        err.indexOf(" -- ") !== -1 &&
+        err.indexOf("\n\n") !== -1) {
         var splitted = err.split("\n\n");
         message = splitted[1];
         var args = splitted[0].split(" ");

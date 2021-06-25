@@ -84,6 +84,7 @@ var ActionErrorDialog_1 = __importDefault(require("@/ui/ActionErrorDialog"));
 var FormContext_1 = __importDefault(require("@/context/FormContext"));
 var index_1 = require("@/index");
 var FormModalContext_1 = require("@/context/FormModalContext");
+var filesHelper_1 = require("@/helpers/filesHelper");
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
@@ -102,10 +103,12 @@ function Form(props, ref) {
     var formModalContext = react_1.useContext(FormModalContext_1.FormModalContext);
     var _t = react_1.useState({}), buttonContext = _t[0], setButtonContext = _t[1];
     var createdId = react_1.useRef();
-    var _u = react_cool_dimensions_1.default({
+    var reportInProgressInterval = react_1.useRef();
+    var _u = react_1.useState(false), reportGenerating = _u[0], setReportGenerating = _u[1];
+    var _v = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _u.width, containerRef = _u.ref;
+    }), width = _v.width, containerRef = _v.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
@@ -421,7 +424,7 @@ function Form(props, ref) {
     function runObjectButton(_a) {
         var action = _a.action, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
-            var response;
+            var response, newReportId_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
@@ -434,17 +437,57 @@ function Form(props, ref) {
                         response = _b.sent();
                         if (!(Object.keys(response).length === 0 && insideButtonModal)) return [3 /*break*/, 2];
                         onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id);
-                        return [3 /*break*/, 5];
+                        return [3 /*break*/, 7];
                     case 2:
                         if (!(response.type &&
                             response.type === "ir.actions.act_window_close")) return [3 /*break*/, 3];
                         onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id);
-                        return [3 /*break*/, 5];
-                    case 3: return [4 /*yield*/, fetchValues()];
+                        return [3 /*break*/, 7];
+                    case 3:
+                        if (!(response.type && response.type === "ir.actions.report.xml")) return [3 /*break*/, 5];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().createReport({
+                                model: response.model,
+                                name: response.report_name,
+                                contextReport: response.datas.context,
+                                ids: response.datas.ids[0],
+                                context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
+                            })];
                     case 4:
+                        newReportId_1 = _b.sent();
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id);
+                        setReportGenerating(true);
+                        reportInProgressInterval.current = setInterval(function () {
+                            evaluateReportStatus(newReportId_1);
+                        }, 1000);
+                        return [3 /*break*/, 7];
+                    case 5: return [4 /*yield*/, fetchValues()];
+                    case 6:
                         _b.sent();
-                        _b.label = 5;
-                    case 5: return [2 /*return*/];
+                        _b.label = 7;
+                    case 7: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function evaluateReportStatus(id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var reportState, fileType;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getReport({
+                            id: id,
+                        })];
+                    case 1:
+                        reportState = _a.sent();
+                        if (!reportState.state) return [3 /*break*/, 3];
+                        clearInterval(reportInProgressInterval.current);
+                        setReportGenerating(false);
+                        return [4 /*yield*/, filesHelper_1.getMimeType(reportState.result)];
+                    case 2:
+                        fileType = _a.sent();
+                        filesHelper_1.openBase64InNewTab(reportState.result, fileType.mime);
+                        _a.label = 3;
+                    case 3: return [2 /*return*/];
                 }
             });
         });
@@ -514,6 +557,7 @@ function Form(props, ref) {
                     case 0:
                         // If the type of the button it's a cancel, we just close our form
                         if (type === "cancel") {
+                            clearInterval(reportInProgressInterval.current);
                             onCancel === null || onCancel === void 0 ? void 0 : onCancel();
                             return [2 /*return*/];
                         }
@@ -591,7 +635,9 @@ function Form(props, ref) {
             }); }, onCancel: function () {
                 setButtonActionModalVisible(false);
                 setButtonContext({});
-            }, showFooter: false })));
+            }, showFooter: false }),
+        react_1.default.createElement(antd_1.Modal, { title: "Generating report...", visible: reportGenerating, footer: null, closable: false, centered: true },
+            react_1.default.createElement(antd_1.Spin, null))));
 }
 exports.default = react_1.forwardRef(Form);
 //# sourceMappingURL=Form.js.map

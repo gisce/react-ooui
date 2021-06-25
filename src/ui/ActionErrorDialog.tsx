@@ -9,7 +9,11 @@ const showDialog = (err: string) => {
   let type;
   let title;
 
-  if (err.indexOf(" -- ") !== -1 && err.indexOf("\n\n") !== -1) {
+  if (
+    typeof err === "string" &&
+    err.indexOf(" -- ") !== -1 &&
+    err.indexOf("\n\n") !== -1
+  ) {
     const splitted = err.split("\n\n");
     message = splitted[1];
     const args = splitted[0].split(" ");

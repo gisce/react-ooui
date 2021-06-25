@@ -15,6 +15,7 @@ import {
   Row,
   Alert,
   Spin,
+  Modal,
 } from "antd";
 import useDimensions from "react-cool-dimensions";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
@@ -37,6 +38,8 @@ import {
   FormModalContext,
   FormModalContextType,
 } from "@/context/FormModalContext";
+
+import { openBase64InNewTab, getMimeType } from "@/helpers/filesHelper";
 
 export type FormProps = {
   model: string;
@@ -99,6 +102,9 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   const formModalContext = useContext(FormModalContext) as FormModalContextType;
   const [buttonContext, setButtonContext] = useState<any>({});
   const createdId = useRef<number>();
+
+  const reportInProgressInterval = useRef<any>();
+  const [reportGenerating, setReportGenerating] = useState<boolean>(false);
 
   const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
     breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
@@ -418,8 +424,39 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       response.type === "ir.actions.act_window_close"
     ) {
       onSubmitSucceed?.(id);
+    } else if (response.type && response.type === "ir.actions.report.xml") {
+      const newReportId = await ConnectionProvider.getHandler().createReport({
+        model: response.model,
+        name: response.report_name,
+        contextReport: response.datas.context,
+        ids: response.datas.ids[0],
+        context: {
+          ...context,
+          ...parentContext,
+          ...formOoui?.context,
+        },
+      });
+
+      onSubmitSucceed?.(id);
+      setReportGenerating(true);
+
+      reportInProgressInterval.current = setInterval(() => {
+        evaluateReportStatus(newReportId);
+      }, 1000);
     } else {
       await fetchValues();
+    }
+  }
+
+  async function evaluateReportStatus(id: any) {
+    const reportState = await ConnectionProvider.getHandler().getReport({
+      id,
+    });
+    if (reportState.state) {
+      clearInterval(reportInProgressInterval.current);
+      setReportGenerating(false);
+      const fileType: any = await getMimeType(reportState.result);
+      openBase64InNewTab(reportState.result, fileType.mime);
     }
   }
 
@@ -485,6 +522,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   }) {
     // If the type of the button it's a cancel, we just close our form
     if (type === "cancel") {
+      clearInterval(reportInProgressInterval.current);
       onCancel?.();
       return;
     }
@@ -594,6 +632,15 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         }}
         showFooter={false}
       />
+      <Modal
+        title={"Generating report..."}
+        visible={reportGenerating}
+        footer={null}
+        closable={false}
+        centered
+      >
+        <Spin />
+      </Modal>
     </div>
   );
 }

@@ -69,7 +69,7 @@ declare type DeleteObjectsRequest = {
 declare type CreateReportRequest = {
     name: string;
     model: string;
-    id: number;
+    ids: number[];
     contextReport: any;
     context?: any;
 };
