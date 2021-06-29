@@ -464,13 +464,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     }
   }
 
-  async function runWorkflowButton({
-    action,
-    context,
-  }: {
-    action: string;
-    context: any;
-  }) {
+  async function runWorkflowButton({ action }: { action: string }) {
     const response = await ConnectionProvider.getHandler().executeWorkflow({
       model,
       action,
@@ -543,7 +537,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       if (type === "object") {
         await runObjectButton({ action, context });
       } else if (type === "workflow") {
-        await runWorkflowButton({ action, context });
+        await runWorkflowButton({ action });
       } else if (type === "action") {
         await runActionButton({ action, context });
       }
