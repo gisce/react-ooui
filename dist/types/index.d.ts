@@ -56,6 +56,13 @@ declare type ExecuteRequest = {
     payload?: any;
     context?: any;
 };
+declare type ExecuteOnChangeRequest = {
+    model: string;
+    action: string;
+    payload?: any;
+    context?: any;
+    ids: number[];
+};
 declare type ReadObjectsRequest = {
     arch?: string;
     fields?: any;
@@ -92,6 +99,7 @@ declare type ConnectionProviderType = {
     executeWorkflow: (options: ExecuteRequest) => Promise<any>;
     createReport: (options: CreateReportRequest) => Promise<any>;
     getReport: (options: GetReportRequest) => Promise<any>;
+    executeOnChange: (options: ExecuteOnChangeRequest) => Promise<any>;
 };
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, };
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, };
 //# sourceMappingURL=index.d.ts.map

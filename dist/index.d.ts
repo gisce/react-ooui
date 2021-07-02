@@ -23,7 +23,7 @@ import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
 import { Reference } from "@/widgets/base/Reference";
 import { Binary } from "@/widgets/base/Binary";
 import iconMapper from "@/helpers/iconMapper";
-import { TreeView, SearchFields, FormView, ConnectionProviderType, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest } from "@/types";
+import { TreeView, SearchFields, FormView, ConnectionProviderType, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
-export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, FormModal, SearchModal, One2many, One2manyItem, Date, DateTime, Reference, Binary, iconMapper, CreateReportRequest, GetReportRequest, };
+export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, FormModal, SearchModal, One2many, One2manyItem, Date, DateTime, Reference, Binary, iconMapper, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, };
 //# sourceMappingURL=index.d.ts.map

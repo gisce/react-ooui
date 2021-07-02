@@ -40,6 +40,7 @@ import {
   DeleteObjectsRequest,
   CreateReportRequest,
   GetReportRequest,
+  ExecuteOnChangeRequest,
 } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 
@@ -85,4 +86,5 @@ export {
   iconMapper,
   CreateReportRequest,
   GetReportRequest,
+  ExecuteOnChangeRequest,
 };

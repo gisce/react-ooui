@@ -375,24 +375,70 @@ function Form(props, ref) {
             (_b = formModalContext.setTitle) === null || _b === void 0 ? void 0 : _b.call(formModalContext, ooui.string);
     };
     var debouncedParseForm = debounce_1.default(parseForm, 300);
-    var checkFieldsChanges = function (changedFields) {
-        if (formHasChanges()) {
-            var values = antForm.getFieldsValue(true);
-            onFieldsChange === null || onFieldsChange === void 0 ? void 0 : onFieldsChange(values);
-            // We check if there are any field of type text, email, url or char inside the changed values
-            // in order to debounce the call
-            if (formHelper_1.checkFieldsType({
-                changedFields: changedFields.map(function (i) { return i.name; }),
-                fields: fields,
-                types: ["text", "email", "url", "char"],
-            })) {
-                debouncedParseForm({ arch: arch, fields: fields, values: values });
+    var checkFieldsChanges = function (changedFields) { return __awaiter(_this, void 0, void 0, function () {
+        var currentValues, values_1, changedFieldName, onChangeFieldAction, payload_1, response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!formHasChanges()) return [3 /*break*/, 3];
+                    currentValues = antForm.getFieldsValue(true);
+                    values_1 = formHelper_1.processValues(currentValues, fields);
+                    onFieldsChange === null || onFieldsChange === void 0 ? void 0 : onFieldsChange(values_1);
+                    changedFieldName = changedFields[0].name;
+                    onChangeFieldAction = formOoui === null || formOoui === void 0 ? void 0 : formOoui.onChangeFields[changedFieldName];
+                    if (!onChangeFieldAction) return [3 /*break*/, 2];
+                    payload_1 = {};
+                    onChangeFieldAction.args.forEach(function (arg) {
+                        if (values_1[arg]) {
+                            payload_1[arg] = values_1[arg];
+                        }
+                        else if (arg === "context") {
+                            payload_1.context = __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context);
+                        }
+                    });
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().executeOnChange({
+                            model: model,
+                            action: onChangeFieldAction.method,
+                            ids: [id || createdId.current],
+                            payload: formHelper_1.prepareWriteValues({ values: payload_1, fields: fields }),
+                            context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
+                        })];
+                case 1:
+                    response = _a.sent();
+                    if (response.value) {
+                        // TODO: implement
+                        assignNewValuesToForm({
+                            values: __assign(__assign({}, currentValues), response.value),
+                            fields: fields,
+                        });
+                    }
+                    else if (response.warning) {
+                        // TODO: implement
+                        console.log("on_change - warning");
+                    }
+                    else if (response.domain) {
+                        // TODO: implement
+                        console.log("on_change - domain");
+                    }
+                    _a.label = 2;
+                case 2:
+                    // We check if there are any field of type text, email, url or char inside the changed values
+                    // in order to debounce the call
+                    if (formHelper_1.checkFieldsType({
+                        changedFields: changedFields.map(function (i) { return i.name[0]; }),
+                        fields: fields,
+                        types: ["text", "email", "url", "char"],
+                    })) {
+                        debouncedParseForm({ arch: arch, fields: fields, values: values_1 });
+                    }
+                    else {
+                        parseForm({ arch: arch, fields: fields, values: values_1 });
+                    }
+                    _a.label = 3;
+                case 3: return [2 /*return*/];
             }
-            else {
-                parseForm({ arch: arch, fields: fields, values: values });
-            }
-        }
-    };
+        });
+    }); };
     var setFieldValue = function (field, value) {
         var values = antForm.getFieldsValue(true);
         values[field] = value;
@@ -506,7 +552,7 @@ function Form(props, ref) {
         });
     }
     function runWorkflowButton(_a) {
-        var action = _a.action, context = _a.context;
+        var action = _a.action;
         return __awaiter(this, void 0, void 0, function () {
             var response;
             return __generator(this, function (_b) {
@@ -600,7 +646,7 @@ function Form(props, ref) {
                         return [3 /*break*/, 9];
                     case 5:
                         if (!(type === "workflow")) return [3 /*break*/, 7];
-                        return [4 /*yield*/, runWorkflowButton({ action: action, context: context })];
+                        return [4 /*yield*/, runWorkflowButton({ action: action })];
                     case 6:
                         _b.sent();
                         return [3 /*break*/, 9];

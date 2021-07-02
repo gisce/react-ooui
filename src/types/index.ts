@@ -70,6 +70,14 @@ type ExecuteRequest = {
   context?: any;
 };
 
+type ExecuteOnChangeRequest = {
+  model: string;
+  action: string;
+  payload?: any;
+  context?: any;
+  ids: number[];
+};
+
 type ReadObjectsRequest = {
   arch?: string;
   fields?: any;
@@ -116,6 +124,7 @@ type ConnectionProviderType = {
   executeWorkflow: (options: ExecuteRequest) => Promise<any>;
   createReport: (options: CreateReportRequest) => Promise<any>;
   getReport: (options: GetReportRequest) => Promise<any>;
+  executeOnChange: (options: ExecuteOnChangeRequest) => Promise<any>;
 };
 
 export type {
@@ -137,4 +146,5 @@ export type {
   DeleteObjectsRequest,
   CreateReportRequest,
   GetReportRequest,
+  ExecuteOnChangeRequest,
 };

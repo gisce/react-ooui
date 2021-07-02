@@ -26,6 +26,7 @@ import {
   processValues,
   getTouchedValues,
   checkFieldsType,
+  prepareWriteValues,
 } from "@/helpers/formHelper";
 import { FormView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
@@ -358,16 +359,58 @@ function Form(props: FormProps, ref: any): React.ReactElement {
 
   const debouncedParseForm = debounce(parseForm, 300);
 
-  const checkFieldsChanges = (changedFields: any) => {
+  const checkFieldsChanges = async (changedFields: any) => {
     if (formHasChanges()) {
-      const values = antForm.getFieldsValue(true);
+      const currentValues = antForm.getFieldsValue(true);
+      const values = processValues(currentValues, fields);
+
       onFieldsChange?.(values);
+
+      // By design, we will only receive one changed field at a time inside changedFields
+      const changedFieldName = changedFields[0].name;
+      const onChangeFieldAction = formOoui?.onChangeFields[changedFieldName];
+      if (onChangeFieldAction) {
+        const payload: any = {};
+
+        onChangeFieldAction.args.forEach((arg: string) => {
+          if (values[arg]) {
+            payload[arg] = values[arg];
+          } else if (arg === "context") {
+            payload.context = { ...parentContext, ...formOoui?.context };
+          }
+        });
+
+        const response = await ConnectionProvider.getHandler().executeOnChange({
+          model,
+          action: onChangeFieldAction.method,
+          ids: [id || createdId.current!],
+          payload: prepareWriteValues({ values: payload, fields }),
+          context: {
+            ...parentContext,
+            ...formOoui?.context,
+          },
+        });
+
+        if (response.value) {
+          // TODO: implement
+          assignNewValuesToForm({
+            values: { ...currentValues, ...response.value },
+            fields: fields,
+          });
+        } else if (response.warning) {
+          // TODO: implement
+          console.log("on_change - warning");
+        } else if (response.domain) {
+          // TODO: implement
+          console.log("on_change - domain");
+        }
+      }
 
       // We check if there are any field of type text, email, url or char inside the changed values
       // in order to debounce the call
       if (
         checkFieldsType({
-          changedFields: changedFields.map((i: any) => i.name),
+          changedFields: changedFields.map((i: any) => i.name[0]),
           fields,
           types: ["text", "email", "url", "char"],
         })

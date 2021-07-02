@@ -6,4 +6,8 @@ export declare const checkFieldsType: ({ changedFields, fields, types, }: {
     fields: any;
     types: string[];
 }) => boolean;
+export declare const prepareWriteValues: ({ values, fields, }: {
+    values: any;
+    fields: any;
+}) => any;
 //# sourceMappingURL=formHelper.d.ts.map
