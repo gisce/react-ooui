@@ -357,54 +357,11 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       formModalContext.setTitle?.(ooui.string);
   };
 
-  const debouncedParseForm = debounce(parseForm, 300);
-
   const checkFieldsChanges = async (changedFields: any) => {
     if (formHasChanges()) {
-      const currentValues = antForm.getFieldsValue(true);
-      const values = processValues(currentValues, fields);
+      const values = antForm.getFieldsValue(true);
 
       onFieldsChange?.(values);
-
-      // By design, we will only receive one changed field at a time inside changedFields
-      const changedFieldName = changedFields[0].name;
-      const onChangeFieldAction = formOoui?.onChangeFields[changedFieldName];
-      if (onChangeFieldAction) {
-        const payload: any = {};
-
-        onChangeFieldAction.args.forEach((arg: string) => {
-          if (values[arg]) {
-            payload[arg] = values[arg];
-          } else if (arg === "context") {
-            payload.context = { ...parentContext, ...formOoui?.context };
-          }
-        });
-
-        const response = await ConnectionProvider.getHandler().executeOnChange({
-          model,
-          action: onChangeFieldAction.method,
-          ids: [id || createdId.current!],
-          payload: prepareWriteValues({ values: payload, fields }),
-          context: {
-            ...parentContext,
-            ...formOoui?.context,
-          },
-        });
-
-        if (response.value) {
-          // TODO: implement
-          assignNewValuesToForm({
-            values: { ...currentValues, ...response.value },
-            fields: fields,
-          });
-        } else if (response.warning) {
-          // TODO: implement
-          console.log("on_change - warning");
-        } else if (response.domain) {
-          // TODO: implement
-          console.log("on_change - domain");
-        }
-      }
 
       // We check if there are any field of type text, email, url or char inside the changed values
       // in order to debounce the call
@@ -415,12 +372,58 @@ function Form(props: FormProps, ref: any): React.ReactElement {
           types: ["text", "email", "url", "char"],
         })
       ) {
-        debouncedParseForm({ arch: arch!, fields, values });
+        debouncedEvaluateChanges(changedFields, values);
       } else {
-        parseForm({ arch: arch!, fields, values });
+        evaluateChanges(changedFields, values);
       }
     }
   };
+
+  const evaluateChanges = async (changedFields: any, values: any) => {
+    let finalValues = values;
+
+    // By design, we will only receive one changed field at a time inside changedFields
+    const changedFieldName = changedFields[0].name;
+
+    // We check if the form has onChange actions for the field
+    const onChangeFieldAction = formOoui?.onChangeFields[changedFieldName];
+    if (onChangeFieldAction) {
+      const payload: any = {};
+
+      onChangeFieldAction.args.forEach((arg: string) => {
+        if (values[arg]) {
+          payload[arg] = values[arg];
+        } else if (arg === "context") {
+          payload.context = { ...parentContext, ...formOoui?.context };
+        }
+      });
+
+      const response = await ConnectionProvider.getHandler().executeOnChange({
+        model,
+        action: onChangeFieldAction.method,
+        ids: [id || createdId.current!],
+        payload: prepareWriteValues({ values: payload, fields }),
+      });
+
+      if (response.value) {
+        finalValues = { ...values, ...response.value };
+        assignNewValuesToForm({
+          values: finalValues,
+          fields: fields,
+        });
+      } else if (response.warning) {
+        // TODO: implement
+        console.log("on_change - warning");
+      } else if (response.domain) {
+        // TODO: implement
+        console.log("on_change - domain");
+      }
+    }
+
+    parseForm({ arch: arch!, fields, values: finalValues });
+  };
+
+  const debouncedEvaluateChanges = debounce(evaluateChanges, 300);
 
   const setFieldValue = (field: string, value?: string) => {
     const values = antForm.getFieldsValue(true);

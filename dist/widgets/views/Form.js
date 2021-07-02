@@ -374,23 +374,41 @@ function Form(props, ref) {
         if (formModalContext && ooui.string)
             (_b = formModalContext.setTitle) === null || _b === void 0 ? void 0 : _b.call(formModalContext, ooui.string);
     };
-    var debouncedParseForm = debounce_1.default(parseForm, 300);
     var checkFieldsChanges = function (changedFields) { return __awaiter(_this, void 0, void 0, function () {
-        var currentValues, values_1, changedFieldName, onChangeFieldAction, payload_1, response;
+        var values;
+        return __generator(this, function (_a) {
+            if (formHasChanges()) {
+                values = antForm.getFieldsValue(true);
+                onFieldsChange === null || onFieldsChange === void 0 ? void 0 : onFieldsChange(values);
+                // We check if there are any field of type text, email, url or char inside the changed values
+                // in order to debounce the call
+                if (formHelper_1.checkFieldsType({
+                    changedFields: changedFields.map(function (i) { return i.name[0]; }),
+                    fields: fields,
+                    types: ["text", "email", "url", "char"],
+                })) {
+                    debouncedEvaluateChanges(changedFields, values);
+                }
+                else {
+                    evaluateChanges(changedFields, values);
+                }
+            }
+            return [2 /*return*/];
+        });
+    }); };
+    var evaluateChanges = function (changedFields, values) { return __awaiter(_this, void 0, void 0, function () {
+        var finalValues, changedFieldName, onChangeFieldAction, payload_1, response;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!formHasChanges()) return [3 /*break*/, 3];
-                    currentValues = antForm.getFieldsValue(true);
-                    values_1 = formHelper_1.processValues(currentValues, fields);
-                    onFieldsChange === null || onFieldsChange === void 0 ? void 0 : onFieldsChange(values_1);
+                    finalValues = values;
                     changedFieldName = changedFields[0].name;
                     onChangeFieldAction = formOoui === null || formOoui === void 0 ? void 0 : formOoui.onChangeFields[changedFieldName];
                     if (!onChangeFieldAction) return [3 /*break*/, 2];
                     payload_1 = {};
                     onChangeFieldAction.args.forEach(function (arg) {
-                        if (values_1[arg]) {
-                            payload_1[arg] = values_1[arg];
+                        if (values[arg]) {
+                            payload_1[arg] = values[arg];
                         }
                         else if (arg === "context") {
                             payload_1.context = __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context);
@@ -401,14 +419,13 @@ function Form(props, ref) {
                             action: onChangeFieldAction.method,
                             ids: [id || createdId.current],
                             payload: formHelper_1.prepareWriteValues({ values: payload_1, fields: fields }),
-                            context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                         })];
                 case 1:
                     response = _a.sent();
                     if (response.value) {
-                        // TODO: implement
+                        finalValues = __assign(__assign({}, values), response.value);
                         assignNewValuesToForm({
-                            values: __assign(__assign({}, currentValues), response.value),
+                            values: finalValues,
                             fields: fields,
                         });
                     }
@@ -422,23 +439,12 @@ function Form(props, ref) {
                     }
                     _a.label = 2;
                 case 2:
-                    // We check if there are any field of type text, email, url or char inside the changed values
-                    // in order to debounce the call
-                    if (formHelper_1.checkFieldsType({
-                        changedFields: changedFields.map(function (i) { return i.name[0]; }),
-                        fields: fields,
-                        types: ["text", "email", "url", "char"],
-                    })) {
-                        debouncedParseForm({ arch: arch, fields: fields, values: values_1 });
-                    }
-                    else {
-                        parseForm({ arch: arch, fields: fields, values: values_1 });
-                    }
-                    _a.label = 3;
-                case 3: return [2 /*return*/];
+                    parseForm({ arch: arch, fields: fields, values: finalValues });
+                    return [2 /*return*/];
             }
         });
     }); };
+    var debouncedEvaluateChanges = debounce_1.default(evaluateChanges, 300);
     var setFieldValue = function (field, value) {
         var values = antForm.getFieldsValue(true);
         values[field] = value;
