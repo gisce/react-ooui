@@ -76,6 +76,7 @@ type ExecuteOnChangeRequest = {
   payload?: any;
   context?: any;
   ids: number[];
+  fields: any;
 };
 
 type ReadObjectsRequest = {

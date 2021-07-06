@@ -62,6 +62,7 @@ declare type ExecuteOnChangeRequest = {
     payload?: any;
     context?: any;
     ids: number[];
+    fields: any;
 };
 declare type ReadObjectsRequest = {
     arch?: string;

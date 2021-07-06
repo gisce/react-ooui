@@ -26,13 +26,13 @@ import {
   processValues,
   getTouchedValues,
   checkFieldsType,
-  prepareWriteValues,
 } from "@/helpers/formHelper";
 import { FormView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import formErrorsDialog from "@/ui/FormErrorsDialog";
 import showErrorDialog from "@/ui/ActionErrorDialog";
+import showWarningDialog from "@/ui/WarningDialog";
 import FormProvider from "@/context/FormContext";
 import { FormModal } from "@/index";
 import {
@@ -357,6 +357,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       formModalContext.setTitle?.(ooui.string);
   };
 
+
   const checkFieldsChanges = async (changedFields: any) => {
     if (formHasChanges()) {
       const values = antForm.getFieldsValue(true);
@@ -379,6 +380,8 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     }
   };
 
+  const debouncedCheckFieldsChanges = debounce(checkFieldsChanges, 100);
+
   const evaluateChanges = async (changedFields: any, values: any) => {
     let finalValues = values;
 
@@ -393,8 +396,6 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       onChangeFieldAction.args.forEach((arg: string) => {
         if (values[arg]) {
           payload[arg] = values[arg];
-        } else if (arg === "context") {
-          payload.context = { ...parentContext, ...formOoui?.context };
         }
       });
 
@@ -402,7 +403,12 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         model,
         action: onChangeFieldAction.method,
         ids: [id || createdId.current!],
-        payload: prepareWriteValues({ values: payload, fields }),
+        payload,
+        context: {
+          ...parentContext,
+          ...formOoui?.context,
+        },
+        fields,
       });
 
       if (response.value) {
@@ -411,10 +417,14 @@ function Form(props: FormProps, ref: any): React.ReactElement {
           values: finalValues,
           fields: fields,
         });
-      } else if (response.warning) {
-        // TODO: implement
-        console.log("on_change - warning");
-      } else if (response.domain) {
+      } 
+      
+      if (response.warning) {
+        const { title, message } = response.warning;
+        showWarningDialog(title, message);
+      } 
+      
+      if (response.domain) {
         // TODO: implement
         console.log("on_change - domain");
       }
@@ -607,7 +617,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       >
         <AntForm
           form={antForm}
-          onFieldsChange={checkFieldsChanges}
+          onFieldsChange={debouncedCheckFieldsChanges}
           component={false}
         >
           {formOoui && (

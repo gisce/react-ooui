@@ -81,6 +81,7 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"));
 var FormErrorsDialog_1 = __importDefault(require("@/ui/FormErrorsDialog"));
 var ActionErrorDialog_1 = __importDefault(require("@/ui/ActionErrorDialog"));
+var WarningDialog_1 = __importDefault(require("@/ui/WarningDialog"));
 var FormContext_1 = __importDefault(require("@/context/FormContext"));
 var index_1 = require("@/index");
 var FormModalContext_1 = require("@/context/FormModalContext");
@@ -396,10 +397,11 @@ function Form(props, ref) {
             return [2 /*return*/];
         });
     }); };
+    var debouncedCheckFieldsChanges = debounce_1.default(checkFieldsChanges, 100);
     var evaluateChanges = function (changedFields, values) { return __awaiter(_this, void 0, void 0, function () {
-        var finalValues, changedFieldName, onChangeFieldAction, payload_1, response;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var finalValues, changedFieldName, onChangeFieldAction, payload_1, response, _a, title, message;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
                     finalValues = values;
                     changedFieldName = changedFields[0].name;
@@ -410,18 +412,17 @@ function Form(props, ref) {
                         if (values[arg]) {
                             payload_1[arg] = values[arg];
                         }
-                        else if (arg === "context") {
-                            payload_1.context = __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context);
-                        }
                     });
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().executeOnChange({
                             model: model,
                             action: onChangeFieldAction.method,
                             ids: [id || createdId.current],
-                            payload: formHelper_1.prepareWriteValues({ values: payload_1, fields: fields }),
+                            payload: payload_1,
+                            context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
+                            fields: fields,
                         })];
                 case 1:
-                    response = _a.sent();
+                    response = _b.sent();
                     if (response.value) {
                         finalValues = __assign(__assign({}, values), response.value);
                         assignNewValuesToForm({
@@ -429,15 +430,15 @@ function Form(props, ref) {
                             fields: fields,
                         });
                     }
-                    else if (response.warning) {
-                        // TODO: implement
-                        console.log("on_change - warning");
+                    if (response.warning) {
+                        _a = response.warning, title = _a.title, message = _a.message;
+                        WarningDialog_1.default(title, message);
                     }
-                    else if (response.domain) {
+                    if (response.domain) {
                         // TODO: implement
                         console.log("on_change - domain");
                     }
-                    _a.label = 2;
+                    _b.label = 2;
                 case 2:
                     parseForm({ arch: arch, fields: fields, values: finalValues });
                     return [2 /*return*/];
@@ -677,7 +678,7 @@ function Form(props, ref) {
             return null;
         }
         return (react_1.default.createElement(FormContext_1.default, { parentId: id, parentModel: model, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction },
-            react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: checkFieldsChanges, component: false }, formOoui && (react_1.default.createElement(Container_1.default, { container: formOoui.container, responsiveBehaviour: responsiveBehaviour })))));
+            react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: debouncedCheckFieldsChanges, component: false }, formOoui && (react_1.default.createElement(Container_1.default, { container: formOoui.container, responsiveBehaviour: responsiveBehaviour })))));
     };
     var footer = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
