@@ -386,7 +386,7 @@ function Form(props, ref) {
                 if (formHelper_1.checkFieldsType({
                     changedFields: changedFields.map(function (i) { return i.name[0]; }),
                     fields: fields,
-                    types: ["text", "email", "url", "char"],
+                    types: ["text", "email", "url", "char", "float", "integer", "many2one"],
                 })) {
                     debouncedEvaluateChanges(changedFields, values);
                 }
@@ -430,7 +430,9 @@ function Form(props, ref) {
                             fields: fields,
                         });
                     }
-                    if (response.warning) {
+                    if (response.warning &&
+                        response.warning.title &&
+                        response.warning.message) {
                         _a = response.warning, title = _a.title, message = _a.message;
                         WarningDialog_1.default(title, message);
                     }

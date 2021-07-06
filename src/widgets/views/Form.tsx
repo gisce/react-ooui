@@ -369,7 +369,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         checkFieldsType({
           changedFields: changedFields.map((i: any) => i.name[0]),
           fields,
-          types: ["text", "email", "url", "char"],
+          types: ["text", "email", "url", "char", "float", "integer", "many2one"],
         })
       ) {
         debouncedEvaluateChanges(changedFields, values);
