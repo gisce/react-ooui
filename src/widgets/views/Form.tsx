@@ -357,7 +357,6 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       formModalContext.setTitle?.(ooui.string);
   };
 
-
   const checkFieldsChanges = async (changedFields: any) => {
     if (formHasChanges()) {
       const values = antForm.getFieldsValue(true);
@@ -417,13 +416,17 @@ function Form(props: FormProps, ref: any): React.ReactElement {
           values: finalValues,
           fields: fields,
         });
-      } 
-      
-      if (response.warning) {
+      }
+
+      if (
+        response.warning &&
+        response.warning.title &&
+        response.warning.message
+      ) {
         const { title, message } = response.warning;
         showWarningDialog(title, message);
-      } 
-      
+      }
+
       if (response.domain) {
         // TODO: implement
         console.log("on_change - domain");
