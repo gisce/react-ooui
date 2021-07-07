@@ -106,6 +106,7 @@ function Form(props, ref) {
     var createdId = react_1.useRef();
     var reportInProgressInterval = react_1.useRef();
     var _u = react_1.useState(false), reportGenerating = _u[0], setReportGenerating = _u[1];
+    var warningIsShwon = react_1.useRef(false);
     var _v = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
@@ -432,9 +433,13 @@ function Form(props, ref) {
                     }
                     if (response.warning &&
                         response.warning.title &&
-                        response.warning.message) {
+                        response.warning.message &&
+                        !warningIsShwon.current) {
                         _a = response.warning, title = _a.title, message = _a.message;
-                        WarningDialog_1.default(title, message);
+                        warningIsShwon.current = true;
+                        WarningDialog_1.default(title, message, function () {
+                            warningIsShwon.current = false;
+                        });
                     }
                     if (response.domain) {
                         // TODO: implement
@@ -447,7 +452,7 @@ function Form(props, ref) {
             }
         });
     }); };
-    var debouncedEvaluateChanges = debounce_1.default(evaluateChanges, 300);
+    var debouncedEvaluateChanges = debounce_1.default(evaluateChanges, 800);
     var setFieldValue = function (field, value) {
         var values = antForm.getFieldsValue(true);
         values[field] = value;

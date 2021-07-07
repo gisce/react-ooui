@@ -106,6 +106,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
 
   const reportInProgressInterval = useRef<any>();
   const [reportGenerating, setReportGenerating] = useState<boolean>(false);
+  const warningIsShwon = useRef<boolean>(false);
 
   const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
     breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
@@ -421,10 +422,14 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       if (
         response.warning &&
         response.warning.title &&
-        response.warning.message
+        response.warning.message && 
+        !warningIsShwon.current
       ) {
         const { title, message } = response.warning;
-        showWarningDialog(title, message);
+        warningIsShwon.current = true;
+        showWarningDialog(title, message, () => {
+          warningIsShwon.current = false;
+        });
       }
 
       if (response.domain) {
@@ -436,7 +441,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     parseForm({ arch: arch!, fields, values: finalValues });
   };
 
-  const debouncedEvaluateChanges = debounce(evaluateChanges, 300);
+  const debouncedEvaluateChanges = debounce(evaluateChanges, 800);
 
   const setFieldValue = (field: string, value?: string) => {
     const values = antForm.getFieldsValue(true);

@@ -7,12 +7,13 @@ var react_1 = __importDefault(require("react"));
 var antd_1 = require("antd");
 var icons_1 = require("@ant-design/icons");
 var warning = antd_1.Modal.warning;
-var showDialog = function (title, message) {
+var showDialog = function (title, message, onOk) {
     warning({
         title: title,
         icon: react_1.default.createElement(icons_1.WarningOutlined, null),
         centered: true,
         content: message,
+        onOk: onOk,
     });
 };
 exports.default = showDialog;
