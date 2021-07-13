@@ -51,7 +51,7 @@ const readObjectValues = async (
 
 type RemoveItemOptions = {
   model: string;
-  parentId: number;
+  activeId: number;
   fieldName: string;
   idsToRemove: number[];
   fields: any;
@@ -61,7 +61,7 @@ type RemoveItemOptions = {
 const removeItems = async (options: RemoveItemOptions) => {
   const {
     model,
-    parentId,
+    activeId,
     fieldName,
     idsToRemove,
     fields,
@@ -77,7 +77,7 @@ const removeItems = async (options: RemoveItemOptions) => {
 
   await ConnectionProvider.getHandler().update({
     model,
-    id: parentId,
+    id: activeId,
     values,
     fields,
   });
@@ -85,21 +85,21 @@ const removeItems = async (options: RemoveItemOptions) => {
 
 type LinkItemOptions = {
   model: string;
-  parentId: number;
+  activeId: number;
   fieldName: string;
   id: number;
   fields: any;
 };
 
 const linkItem = async (options: LinkItemOptions) => {
-  const { model, parentId, fieldName, id, fields } = options;
+  const { model, activeId, fieldName, id, fields } = options;
 
   const values: any = {};
   values[fieldName] = [[4, id]];
 
   await ConnectionProvider.getHandler().update({
     model,
-    id: parentId,
+    id: activeId,
     values,
     fields,
   });

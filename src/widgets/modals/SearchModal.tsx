@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { Modal, Button, Divider, Alert, Spin, Row, Space } from "antd";
+import React, { useState, useContext } from "react";
+import { Modal, Button, Divider, Row, Space } from "antd";
 import { FormModal } from "./FormModal";
 import SearchTree from "@/widgets/views/SearchTree";
 import { FileAddOutlined, CloseOutlined } from "@ant-design/icons";
 import useModalWidthDimensions from "@/hooks/useModalWidthDimensions";
+import { FormContext, FormContextType } from "@/context/FormContext";
 
 type SearchSelectionProps = {
   visible: boolean;
@@ -18,6 +19,8 @@ export const SearchModal = (props: SearchSelectionProps) => {
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
 
   const { modalWidth, modalHeight } = useModalWidthDimensions();
+
+  const { domain } = useContext(FormContext) as FormContextType;
 
   const onRowClicked = async (event: any) => {
     const { id } = event;
@@ -34,6 +37,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
             nameSearch={nameSearch}
             onRowClicked={onRowClicked}
             treeScrollY={modalHeight * 0.3}
+            domain={domain}
           />
         )}
         <Divider />

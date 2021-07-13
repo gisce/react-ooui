@@ -22,10 +22,11 @@ type Props = {
   onRowClicked: (data: OnRowClickedData) => void;
   nameSearch?: string;
   treeScrollY?: number;
+  domain?: string;
 };
 
 function SearchTree(props: Props) {
-  const { action, model, onRowClicked, nameSearch, treeScrollY } = props;
+  const { action, model, onRowClicked, nameSearch, treeScrollY, domain } = props;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [initialFetchDone, setInitialFetchDone] = useState<boolean>(false);

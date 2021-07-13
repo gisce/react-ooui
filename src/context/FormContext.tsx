@@ -1,7 +1,7 @@
 import React from "react";
 
 export type FormContextType = {
-  parentId?: number;
+  activeId?: number;
   parentModel: string;
   setFieldValue: (field: string, value?: string) => void;
   getFieldValue: (field: string) => string;
@@ -14,6 +14,7 @@ export type FormContextType = {
     action: string;
     context?: any;
   }) => Promise<void>;
+  domain?: string;
 };
 
 export const FormContext = React.createContext<FormContextType | null>(null);
@@ -25,7 +26,7 @@ type FormProviderProps = FormContextType & {
 const FormProvider = (props: FormProviderProps): any => {
   const {
     children,
-    parentId,
+    activeId,
     parentModel,
     setFieldValue,
     getFieldValue,
@@ -34,7 +35,7 @@ const FormProvider = (props: FormProviderProps): any => {
   return (
     <FormContext.Provider
       value={{
-        parentId,
+        activeId,
         parentModel,
         setFieldValue,
         getFieldValue,

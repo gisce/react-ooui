@@ -52,7 +52,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     manualTriggerChange,
     setManualTriggerChange,
   } = useContext(One2manyContext) as One2manyContextType;
-  const { parentId, parentModel } = useContext(FormContext) as FormContextType;
+  const { activeId, parentModel } = useContext(FormContext) as FormContextType;
 
   const formRef = useRef();
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
@@ -228,10 +228,10 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     setError(undefined);
 
     try {
-      // If we have a parentId it means we can process the operation to the API
-      if (parentId) {
+      // If we have a activeId it means we can process the operation to the API
+      if (activeId) {
         await removeItems({
-          parentId,
+          activeId,
           model: parentModel,
           idsToRemove: [itemsToShow[itemIndex].id!],
           fields: views.get("form").fields,
@@ -262,12 +262,12 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     setError(undefined);
 
     try {
-      // If we have a parentId it means we can process the operation to the API
-      if (parentId) {
+      // If we have a activeId it means we can process the operation to the API
+      if (activeId) {
         const idsToRemove: number[] = itemsToRemove.map((item) => item.id!);
 
         await removeItems({
-          parentId,
+          activeId,
           model: parentModel,
           idsToRemove: idsToRemove,
           fields: views.get("form").fields,
@@ -369,10 +369,10 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     values: any;
     treeValues: any;
   }) => {
-    if (parentId) {
+    if (activeId) {
       await linkItem({
         model: parentModel,
-        parentId,
+        activeId,
         id,
         fields: views.get("form").fields,
         fieldName,
@@ -391,7 +391,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       return;
     }
 
-    // Since we don't have a parentId to link with, we add the item as pendingLink
+    // Since we don't have a activeId to link with, we add the item as pendingLink
     // The effective link will take place when the parent form is saved
     triggerChange(
       items.concat({
@@ -413,13 +413,13 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     treeValues: any;
   }) => {
     // We iterate over our internal list in order to update the object values with the updated ones from the API
-    // If we have a parentId, we consider the item as original, because it's already saved and linked
-    // If we don't have a parentId, the item will have to be linked when the parent form is saved
+    // If we have a activeId, we consider the item as original, because it's already saved and linked
+    // If we don't have a activeId, the item will have to be linked when the parent form is saved
     const updatedItems: One2manyItem[] = items.map((item: One2manyItem) => {
       if (item.id === id) {
         return {
           id,
-          operation: parentId ? "original" : "pendingLink",
+          operation: activeId ? "original" : "pendingLink",
           values,
           treeValues,
         };

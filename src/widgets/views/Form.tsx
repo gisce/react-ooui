@@ -351,7 +351,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   }) => {
     const ooui = new FormOoui(fields);
     // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
-    ooui.parse(arch, { readOnly, values: { ...values, id } });
+    ooui.parse(arch, { readOnly, values: { ...values, id, active_id: id } });
     setFormOoui(ooui);
 
     if (formModalContext && ooui.string)
@@ -370,7 +370,15 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         checkFieldsType({
           changedFields: changedFields.map((i: any) => i.name[0]),
           fields,
-          types: ["text", "email", "url", "char", "float", "integer", "many2one"],
+          types: [
+            "text",
+            "email",
+            "url",
+            "char",
+            "float",
+            "integer",
+            "many2one",
+          ],
         })
       ) {
         debouncedEvaluateChanges(changedFields, values);
@@ -422,7 +430,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       if (
         response.warning &&
         response.warning.title &&
-        response.warning.message && 
+        response.warning.message &&
         !warningIsShwon.current
       ) {
         const { title, message } = response.warning;
@@ -617,11 +625,12 @@ function Form(props: FormProps, ref: any): React.ReactElement {
 
     return (
       <FormProvider
-        parentId={id}
+        activeId={id}
         parentModel={model}
         setFieldValue={setFieldValue}
         getFieldValue={getFieldValue}
         executeButtonAction={executeButtonAction}
+        domain={formOoui.domain}
       >
         <AntForm
           form={antForm}
