@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Alert, Spin } from "antd";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
@@ -26,7 +26,14 @@ type Props = {
 };
 
 function SearchTree(props: Props) {
-  const { action, model, onRowClicked, nameSearch, treeScrollY, domain } = props;
+  const {
+    action,
+    model,
+    onRowClicked,
+    nameSearch,
+    treeScrollY,
+    domain,
+  } = props;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [initialFetchDone, setInitialFetchDone] = useState<boolean>(false);
@@ -53,6 +60,8 @@ function SearchTree(props: Props) {
   const [initialError, setInitialError] = useState<string>();
 
   const [tableRefreshing, setTableRefreshing] = useState<boolean>(false);
+
+  const actionDomain = useRef<string>();
 
   const onRequestPageChange = (page: number) => {
     setTableRefreshing(true);
@@ -90,6 +99,7 @@ function SearchTree(props: Props) {
   };
 
   const searchResults = async () => {
+    // TODO: Add domain to the search request: actionDomain.current || domain (from props)
     const {
       totalItems,
       results,
@@ -153,6 +163,7 @@ function SearchTree(props: Props) {
         action: action!,
       }
     );
+    actionDomain.current = dataForAction.domain;
     setFormView(dataForAction.views.get("form"));
     setTreeView(dataForAction.views.get("tree"));
     setCurrentModel(dataForAction.model);
