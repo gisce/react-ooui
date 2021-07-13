@@ -16,7 +16,6 @@ export type FormContextType = {
     action: string;
     context?: any;
   }) => Promise<void>;
-  domain?: string;
 };
 
 export const FormContext = React.createContext<FormContextType | null>(null);

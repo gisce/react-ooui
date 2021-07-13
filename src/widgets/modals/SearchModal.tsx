@@ -4,7 +4,6 @@ import { FormModal } from "./FormModal";
 import SearchTree from "@/widgets/views/SearchTree";
 import { FileAddOutlined, CloseOutlined } from "@ant-design/icons";
 import useModalWidthDimensions from "@/hooks/useModalWidthDimensions";
-import { FormContext, FormContextType } from "@/context/FormContext";
 
 type SearchSelectionProps = {
   visible: boolean;
@@ -12,15 +11,14 @@ type SearchSelectionProps = {
   nameSearch?: string;
   onSelectValue: (value: any) => void;
   onCloseModal: () => void;
+  domain?: any;
 };
 
 export const SearchModal = (props: SearchSelectionProps) => {
-  const { visible, onCloseModal, onSelectValue, model, nameSearch } = props;
+  const { visible, onCloseModal, onSelectValue, model, nameSearch, domain } = props;
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
 
   const { modalWidth, modalHeight } = useModalWidthDimensions();
-
-  const { domain } = useContext(FormContext) as FormContextType;
 
   const onRowClicked = async (event: any) => {
     const { id } = event;

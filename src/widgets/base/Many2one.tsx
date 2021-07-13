@@ -48,7 +48,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   props: Many2oneInputProps
 ) => {
   const { value, onChange, ooui } = props;
-  const { required, relation, readOnly } = ooui;
+  const { required, relation, readOnly, domain } = ooui;
   const requiredClass =
     required && !readOnly ? Config.requiredClass : undefined;
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
@@ -163,6 +163,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       </Col>
       <SearchModal
         model={relation}
+        domain={domain}
         visible={showSearchModal}
         nameSearch={!id ? searchText : undefined}
         onSelectValue={(id: number) => {

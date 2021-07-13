@@ -22,7 +22,7 @@ type Props = {
   onRowClicked: (data: OnRowClickedData) => void;
   nameSearch?: string;
   treeScrollY?: number;
-  domain?: string;
+  domain?: any;
 };
 
 function SearchTree(props: Props) {
@@ -32,7 +32,7 @@ function SearchTree(props: Props) {
     onRowClicked,
     nameSearch,
     treeScrollY,
-    domain,
+    domain = [],
   } = props;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -61,7 +61,7 @@ function SearchTree(props: Props) {
 
   const [tableRefreshing, setTableRefreshing] = useState<boolean>(false);
 
-  const actionDomain = useRef<string>();
+  const actionDomain = useRef<any>([]);
 
   const onRequestPageChange = (page: number) => {
     setTableRefreshing(true);
@@ -99,12 +99,14 @@ function SearchTree(props: Props) {
   };
 
   const searchResults = async () => {
-    // TODO: Add domain to the search request: actionDomain.current || domain (from props)
+    const domainParams =
+      actionDomain.current.length > 0 ? actionDomain.current : domain;
+
     const {
       totalItems,
       results,
     } = await ConnectionProvider.getHandler().search({
-      params,
+      params: domainParams.concat(params),
       limit,
       offset,
       model: currentModel!,

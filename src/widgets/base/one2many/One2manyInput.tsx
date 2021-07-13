@@ -68,7 +68,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   );
   const { modalHeight } = useModalWidthDimensions();
 
-  const { readOnly, relation } = ooui as One2manyOoui;
+  const { readOnly, relation, domain } = ooui as One2manyOoui;
   const isMany2many = ooui.type === "many2many";
   const { id: fieldName } = ooui;
   const itemsToShow = items.filter((item) => item.values);
@@ -566,6 +566,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         postSaveAction={formModalPostSaveAction}
       />
       <SearchModal
+        domain={domain}
         model={relation}
         visible={showSearchModal}
         onSelectValue={(id: number) => {

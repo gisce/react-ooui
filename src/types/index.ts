@@ -61,7 +61,7 @@ type ViewData = {
   views: Views;
   limit: number;
   model: string;
-  domain?: string;
+  domain?: any;
 };
 
 type ExecuteRequest = {

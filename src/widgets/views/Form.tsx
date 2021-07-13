@@ -642,7 +642,6 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         setFieldValue={setFieldValue}
         getFieldValue={getFieldValue}
         executeButtonAction={executeButtonAction}
-        domain={formOoui.domain}
       >
         <AntForm
           form={antForm}
