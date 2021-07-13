@@ -33,7 +33,10 @@ import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import formErrorsDialog from "@/ui/FormErrorsDialog";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import showWarningDialog from "@/ui/WarningDialog";
-import FormProvider from "@/context/FormContext";
+import FormProvider, {
+  FormContext,
+  FormContextType,
+} from "@/context/FormContext";
 import { FormModal } from "@/index";
 import {
   FormModalContext,
@@ -113,6 +116,10 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     updateOnBreakpointChange: true,
   });
   const responsiveBehaviour = width < WIDTH_BREAKPOINT;
+
+  const formContext = useContext(FormContext) as FormContextType;
+
+  const { activeId: parentId, activeModel: parentModel } = formContext || {};
 
   useImperativeHandle(ref, () => ({
     submitForm,
@@ -351,7 +358,10 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   }) => {
     const ooui = new FormOoui(fields);
     // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
-    ooui.parse(arch, { readOnly, values: { ...values, id, active_id: id } });
+    ooui.parse(arch, {
+      readOnly,
+      values: { ...values, id, active_id: id, parent_id: parentId },
+    });
     setFormOoui(ooui);
 
     if (formModalContext && ooui.string)
@@ -626,7 +636,9 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     return (
       <FormProvider
         activeId={id}
-        parentModel={model}
+        activeModel={model}
+        parentId={parentId}
+        parentModel={parentModel}
         setFieldValue={setFieldValue}
         getFieldValue={getFieldValue}
         executeButtonAction={executeButtonAction}

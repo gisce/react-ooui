@@ -52,7 +52,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     manualTriggerChange,
     setManualTriggerChange,
   } = useContext(One2manyContext) as One2manyContextType;
-  const { activeId, parentModel } = useContext(FormContext) as FormContextType;
+  const { activeId, activeModel } = useContext(FormContext) as FormContextType;
 
   const formRef = useRef();
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
@@ -232,7 +232,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       if (activeId) {
         await removeItems({
           activeId,
-          model: parentModel,
+          model: activeModel,
           idsToRemove: [itemsToShow[itemIndex].id!],
           fields: views.get("form").fields,
           fieldName,
@@ -268,7 +268,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
         await removeItems({
           activeId,
-          model: parentModel,
+          model: activeModel,
           idsToRemove: idsToRemove,
           fields: views.get("form").fields,
           fieldName,
@@ -371,7 +371,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   }) => {
     if (activeId) {
       await linkItem({
-        model: parentModel,
+        model: activeModel,
         activeId,
         id,
         fields: views.get("form").fields,
