@@ -11,7 +11,6 @@ export declare type FormContextType = {
         action: string;
         context?: any;
     }) => Promise<void>;
-    domain?: string;
 };
 export declare const FormContext: React.Context<FormContextType | null>;
 declare type FormProviderProps = FormContextType & {

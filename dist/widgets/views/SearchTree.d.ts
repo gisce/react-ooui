@@ -11,7 +11,7 @@ declare type Props = {
     onRowClicked: (data: OnRowClickedData) => void;
     nameSearch?: string;
     treeScrollY?: number;
-    domain?: string;
+    domain?: any;
 };
 declare function SearchTree(props: Props): JSX.Element | null;
 export default SearchTree;

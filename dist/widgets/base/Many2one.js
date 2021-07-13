@@ -98,7 +98,7 @@ var Many2one = function (props) {
 exports.Many2one = Many2one;
 var Many2oneInput = function (props) {
     var value = props.value, onChange = props.onChange, ooui = props.ooui;
-    var required = ooui.required, relation = ooui.relation, readOnly = ooui.readOnly;
+    var required = ooui.required, relation = ooui.relation, readOnly = ooui.readOnly, domain = ooui.domain;
     var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
     var _a = react_1.useState(false), showSearchModal = _a[0], setShowSearchModal = _a[1];
     var _b = react_1.useState(false), showFormModal = _b[0], setShowFormModal = _b[1];
@@ -205,7 +205,7 @@ var Many2oneInput = function (props) {
                     setSearchText(text);
                     setShowSearchModal(true);
                 }, tabIndex: -1 })),
-        react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValue: function (id) {
+        react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, domain: domain, visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValue: function (id) {
                 setShowSearchModal(false);
                 fetchNameAndUpdate(id);
                 searchButtonTappedRef.current = false;

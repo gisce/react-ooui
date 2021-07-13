@@ -65,12 +65,10 @@ var FormModal_1 = require("./FormModal");
 var SearchTree_1 = __importDefault(require("@/widgets/views/SearchTree"));
 var icons_1 = require("@ant-design/icons");
 var useModalWidthDimensions_1 = __importDefault(require("@/hooks/useModalWidthDimensions"));
-var FormContext_1 = require("@/context/FormContext");
 var SearchModal = function (props) {
-    var visible = props.visible, onCloseModal = props.onCloseModal, onSelectValue = props.onSelectValue, model = props.model, nameSearch = props.nameSearch;
+    var visible = props.visible, onCloseModal = props.onCloseModal, onSelectValue = props.onSelectValue, model = props.model, nameSearch = props.nameSearch, domain = props.domain;
     var _a = react_1.useState(false), showCreateModal = _a[0], setShowCreateModal = _a[1];
     var _b = useModalWidthDimensions_1.default(), modalWidth = _b.modalWidth, modalHeight = _b.modalHeight;
-    var domain = react_1.useContext(FormContext_1.FormContext).domain;
     var onRowClicked = function (event) { return __awaiter(void 0, void 0, void 0, function () {
         var id;
         return __generator(this, function (_a) {

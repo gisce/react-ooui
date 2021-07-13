@@ -102,7 +102,7 @@ var One2manyInput = function (props) {
     var _l = react_1.useState([]), selectedRowKeys = _l[0], setSelectedRowKeys = _l[1];
     var _m = react_1.useState(false), continuousEntryMode = _m[0], setContinuousEntryMode = _m[1];
     var modalHeight = useModalWidthDimensions_1.default().modalHeight;
-    var _o = ooui, readOnly = _o.readOnly, relation = _o.relation;
+    var _o = ooui, readOnly = _o.readOnly, relation = _o.relation, domain = _o.domain;
     var isMany2many = ooui.type === "many2many";
     var fieldName = ooui.id;
     var itemsToShow = items.filter(function (item) { return item.values; });
@@ -568,7 +568,7 @@ var One2manyInput = function (props) {
                 setContinuousEntryMode(false);
                 setShowFormModal(false);
             }, readOnly: readOnly, mustClearAfterSave: mustClearAfterSave, postSaveAction: formModalPostSaveAction }),
-        react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, visible: showSearchModal, onSelectValue: function (id) {
+        react_1.default.createElement(SearchModal_1.SearchModal, { domain: domain, model: relation, visible: showSearchModal, onSelectValue: function (id) {
                 setShowSearchModal(false);
                 onSearchModalSelectValue(id);
             }, onCloseModal: function () {

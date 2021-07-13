@@ -78,25 +78,25 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var DEFAULT_SEARCH_LIMIT = 80;
 function SearchTree(props) {
     var _this = this;
-    var action = props.action, model = props.model, onRowClicked = props.onRowClicked, nameSearch = props.nameSearch, treeScrollY = props.treeScrollY, domain = props.domain;
-    var _a = react_1.useState(false), isLoading = _a[0], setIsLoading = _a[1];
-    var _b = react_1.useState(false), initialFetchDone = _b[0], setInitialFetchDone = _b[1];
-    var _c = react_1.useState(false), searchNameGetDone = _c[0], setSearchNameGetDone = _c[1];
-    var _d = react_1.useState(), currentModel = _d[0], setCurrentModel = _d[1];
-    var _e = react_1.useState(), treeView = _e[0], setTreeView = _e[1];
-    var _f = react_1.useState(), formView = _f[0], setFormView = _f[1];
-    var _g = react_1.useState(1), page = _g[0], setPage = _g[1];
-    var _h = react_1.useState(0), offset = _h[0], setOffset = _h[1];
-    var _j = react_1.useState(DEFAULT_SEARCH_LIMIT), limit = _j[0], setLimit = _j[1];
-    var _k = react_1.useState(), limitFromAction = _k[0], setLimitFromAction = _k[1];
-    var _l = react_1.useState([]), params = _l[0], setParams = _l[1];
-    var _m = react_1.useState(0), totalItems = _m[0], setTotalItems = _m[1];
-    var _o = react_1.useState([]), results = _o[0], setResults = _o[1];
-    var _p = react_1.useState(false), searchFilterLoading = _p[0], setSearchFilterLoading = _p[1];
-    var _q = react_1.useState(), searchError = _q[0], setSearchError = _q[1];
-    var _r = react_1.useState(), initialError = _r[0], setInitialError = _r[1];
-    var _s = react_1.useState(false), tableRefreshing = _s[0], setTableRefreshing = _s[1];
-    var actionDomain = react_1.useRef();
+    var action = props.action, model = props.model, onRowClicked = props.onRowClicked, nameSearch = props.nameSearch, treeScrollY = props.treeScrollY, _a = props.domain, domain = _a === void 0 ? [] : _a;
+    var _b = react_1.useState(false), isLoading = _b[0], setIsLoading = _b[1];
+    var _c = react_1.useState(false), initialFetchDone = _c[0], setInitialFetchDone = _c[1];
+    var _d = react_1.useState(false), searchNameGetDone = _d[0], setSearchNameGetDone = _d[1];
+    var _e = react_1.useState(), currentModel = _e[0], setCurrentModel = _e[1];
+    var _f = react_1.useState(), treeView = _f[0], setTreeView = _f[1];
+    var _g = react_1.useState(), formView = _g[0], setFormView = _g[1];
+    var _h = react_1.useState(1), page = _h[0], setPage = _h[1];
+    var _j = react_1.useState(0), offset = _j[0], setOffset = _j[1];
+    var _k = react_1.useState(DEFAULT_SEARCH_LIMIT), limit = _k[0], setLimit = _k[1];
+    var _l = react_1.useState(), limitFromAction = _l[0], setLimitFromAction = _l[1];
+    var _m = react_1.useState([]), params = _m[0], setParams = _m[1];
+    var _o = react_1.useState(0), totalItems = _o[0], setTotalItems = _o[1];
+    var _p = react_1.useState([]), results = _p[0], setResults = _p[1];
+    var _q = react_1.useState(false), searchFilterLoading = _q[0], setSearchFilterLoading = _q[1];
+    var _r = react_1.useState(), searchError = _r[0], setSearchError = _r[1];
+    var _s = react_1.useState(), initialError = _s[0], setInitialError = _s[1];
+    var _t = react_1.useState(false), tableRefreshing = _t[0], setTableRefreshing = _t[1];
+    var actionDomain = react_1.useRef([]);
     var onRequestPageChange = function (page) {
         setTableRefreshing(true);
         setPage(page);
@@ -138,16 +138,18 @@ function SearchTree(props) {
         });
     }); };
     var searchResults = function () { return __awaiter(_this, void 0, void 0, function () {
-        var _a, totalItems, results;
+        var domainParams, _a, totalItems, results;
         return __generator(this, function (_b) {
             switch (_b.label) {
-                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().search({
-                        params: params,
-                        limit: limit,
-                        offset: offset,
-                        model: currentModel,
-                        fields: treeView.fields,
-                    })];
+                case 0:
+                    domainParams = actionDomain.current.length > 0 ? actionDomain.current : domain;
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().search({
+                            params: domainParams.concat(params),
+                            limit: limit,
+                            offset: offset,
+                            model: currentModel,
+                            fields: treeView.fields,
+                        })];
                 case 1:
                     _a = _b.sent(), totalItems = _a.totalItems, results = _a.results;
                     setTotalItems(totalItems);

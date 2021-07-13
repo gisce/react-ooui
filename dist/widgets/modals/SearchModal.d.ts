@@ -4,6 +4,7 @@ declare type SearchSelectionProps = {
     nameSearch?: string;
     onSelectValue: (value: any) => void;
     onCloseModal: () => void;
+    domain?: any;
 };
 export declare const SearchModal: (props: SearchSelectionProps) => JSX.Element;
 export {};
