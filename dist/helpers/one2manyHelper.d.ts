@@ -10,7 +10,7 @@ declare type ReadObjectValuesOptions = {
 declare const readObjectValues: (options: ReadObjectValuesOptions) => Promise<One2manyItem[]>;
 declare type RemoveItemOptions = {
     model: string;
-    parentId: number;
+    activeId: number;
     fieldName: string;
     idsToRemove: number[];
     fields: any;
@@ -19,7 +19,7 @@ declare type RemoveItemOptions = {
 declare const removeItems: (options: RemoveItemOptions) => Promise<void>;
 declare type LinkItemOptions = {
     model: string;
-    parentId: number;
+    activeId: number;
     fieldName: string;
     id: number;
     fields: any;

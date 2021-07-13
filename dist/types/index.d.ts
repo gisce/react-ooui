@@ -49,6 +49,7 @@ declare type ViewData = {
     views: Views;
     limit: number;
     model: string;
+    domain?: string;
 };
 declare type ExecuteRequest = {
     model: string;

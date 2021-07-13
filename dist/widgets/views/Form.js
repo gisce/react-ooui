@@ -82,7 +82,7 @@ var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"
 var FormErrorsDialog_1 = __importDefault(require("@/ui/FormErrorsDialog"));
 var ActionErrorDialog_1 = __importDefault(require("@/ui/ActionErrorDialog"));
 var WarningDialog_1 = __importDefault(require("@/ui/WarningDialog"));
-var FormContext_1 = __importDefault(require("@/context/FormContext"));
+var FormContext_1 = __importStar(require("@/context/FormContext"));
 var index_1 = require("@/index");
 var FormModalContext_1 = require("@/context/FormModalContext");
 var filesHelper_1 = require("@/helpers/filesHelper");
@@ -112,6 +112,8 @@ function Form(props, ref) {
         updateOnBreakpointChange: true,
     }), width = _v.width, containerRef = _v.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
+    var formContext = react_1.useContext(FormContext_1.FormContext);
+    var _w = formContext || {}, parentId = _w.activeId, parentModel = _w.activeModel;
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
     }); });
@@ -371,7 +373,10 @@ function Form(props, ref) {
         var fields = _a.fields, arch = _a.arch, values = _a.values;
         var ooui = new ooui_1.Form(fields);
         // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
-        ooui.parse(arch, { readOnly: readOnly, values: __assign(__assign({}, values), { id: id }) });
+        ooui.parse(arch, {
+            readOnly: readOnly,
+            values: __assign(__assign({}, values), { id: id, active_id: id, parent_id: parentId }),
+        });
         setFormOoui(ooui);
         if (formModalContext && ooui.string)
             (_b = formModalContext.setTitle) === null || _b === void 0 ? void 0 : _b.call(formModalContext, ooui.string);
@@ -387,7 +392,15 @@ function Form(props, ref) {
                 if (formHelper_1.checkFieldsType({
                     changedFields: changedFields.map(function (i) { return i.name[0]; }),
                     fields: fields,
-                    types: ["text", "email", "url", "char", "float", "integer", "many2one"],
+                    types: [
+                        "text",
+                        "email",
+                        "url",
+                        "char",
+                        "float",
+                        "integer",
+                        "many2one",
+                    ],
                 })) {
                     debouncedEvaluateChanges(changedFields, values);
                 }
@@ -684,7 +697,7 @@ function Form(props, ref) {
         if (!formOoui) {
             return null;
         }
-        return (react_1.default.createElement(FormContext_1.default, { parentId: id, parentModel: model, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction },
+        return (react_1.default.createElement(FormContext_1.default, { activeId: id, activeModel: model, parentId: parentId, parentModel: parentModel, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction, domain: formOoui.domain },
             react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: debouncedCheckFieldsChanges, component: false }, formOoui && (react_1.default.createElement(Container_1.default, { container: formOoui.container, responsiveBehaviour: responsiveBehaviour })))));
     };
     var footer = function () {

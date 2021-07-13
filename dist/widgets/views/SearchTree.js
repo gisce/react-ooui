@@ -78,7 +78,7 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var DEFAULT_SEARCH_LIMIT = 80;
 function SearchTree(props) {
     var _this = this;
-    var action = props.action, model = props.model, onRowClicked = props.onRowClicked, nameSearch = props.nameSearch, treeScrollY = props.treeScrollY;
+    var action = props.action, model = props.model, onRowClicked = props.onRowClicked, nameSearch = props.nameSearch, treeScrollY = props.treeScrollY, domain = props.domain;
     var _a = react_1.useState(false), isLoading = _a[0], setIsLoading = _a[1];
     var _b = react_1.useState(false), initialFetchDone = _b[0], setInitialFetchDone = _b[1];
     var _c = react_1.useState(false), searchNameGetDone = _c[0], setSearchNameGetDone = _c[1];
@@ -96,6 +96,7 @@ function SearchTree(props) {
     var _q = react_1.useState(), searchError = _q[0], setSearchError = _q[1];
     var _r = react_1.useState(), initialError = _r[0], setInitialError = _r[1];
     var _s = react_1.useState(false), tableRefreshing = _s[0], setTableRefreshing = _s[1];
+    var actionDomain = react_1.useRef();
     var onRequestPageChange = function (page) {
         setTableRefreshing(true);
         setPage(page);
@@ -233,6 +234,7 @@ function SearchTree(props) {
                     })];
                 case 1:
                     dataForAction = _a.sent();
+                    actionDomain.current = dataForAction.domain;
                     setFormView(dataForAction.views.get("form"));
                     setTreeView(dataForAction.views.get("tree"));
                     setCurrentModel(dataForAction.model);

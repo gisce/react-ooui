@@ -90,7 +90,7 @@ var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect
 var One2manyInput = function (props) {
     var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui, views = props.views;
     var _b = react_1.useContext(One2manyContext_1.One2manyContext), currentView = _b.currentView, setCurrentView = _b.setCurrentView, itemIndex = _b.itemIndex, setItemIndex = _b.setItemIndex, manualTriggerChange = _b.manualTriggerChange, setManualTriggerChange = _b.setManualTriggerChange;
-    var _c = react_1.useContext(FormContext_1.FormContext), parentId = _c.parentId, parentModel = _c.parentModel;
+    var _c = react_1.useContext(FormContext_1.FormContext), activeId = _c.activeId, activeModel = _c.activeModel;
     var formRef = react_1.useRef();
     var _d = react_1.useState(false), formHasChanges = _d[0], setFormHasChanges = _d[1];
     var _e = react_1.useState(false), isLoading = _e[0], setIsLoading = _e[1];
@@ -283,10 +283,10 @@ var One2manyInput = function (props) {
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 4, , 5]);
-                    if (!parentId) return [3 /*break*/, 3];
+                    if (!activeId) return [3 /*break*/, 3];
                     return [4 /*yield*/, one2manyHelper_1.removeItems({
-                            parentId: parentId,
-                            model: parentModel,
+                            activeId: activeId,
+                            model: activeModel,
                             idsToRemove: [itemsToShow[itemIndex].id],
                             fields: views.get("form").fields,
                             fieldName: fieldName,
@@ -324,11 +324,11 @@ var One2manyInput = function (props) {
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 4, , 5]);
-                    if (!parentId) return [3 /*break*/, 3];
+                    if (!activeId) return [3 /*break*/, 3];
                     idsToRemove = itemsToRemove.map(function (item) { return item.id; });
                     return [4 /*yield*/, one2manyHelper_1.removeItems({
-                            parentId: parentId,
-                            model: parentModel,
+                            activeId: activeId,
+                            model: activeModel,
                             idsToRemove: idsToRemove,
                             fields: views.get("form").fields,
                             fieldName: fieldName,
@@ -432,10 +432,10 @@ var One2manyInput = function (props) {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        if (!parentId) return [3 /*break*/, 2];
+                        if (!activeId) return [3 /*break*/, 2];
                         return [4 /*yield*/, one2manyHelper_1.linkItem({
-                                model: parentModel,
-                                parentId: parentId,
+                                model: activeModel,
+                                activeId: activeId,
                                 id: id,
                                 fields: views.get("form").fields,
                                 fieldName: fieldName,
@@ -452,7 +452,7 @@ var One2manyInput = function (props) {
                         }));
                         return [2 /*return*/];
                     case 2:
-                        // Since we don't have a parentId to link with, we add the item as pendingLink
+                        // Since we don't have a activeId to link with, we add the item as pendingLink
                         // The effective link will take place when the parent form is saved
                         triggerChange(items.concat({
                             id: id,
@@ -474,7 +474,7 @@ var One2manyInput = function (props) {
                     if (item.id === id) {
                         return {
                             id: id,
-                            operation: parentId ? "original" : "pendingLink",
+                            operation: activeId ? "original" : "pendingLink",
                             values: values,
                             treeValues: treeValues,
                         };

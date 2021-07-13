@@ -86,11 +86,11 @@ var readObjectValues = function (options) { return __awaiter(void 0, void 0, voi
 }); };
 exports.readObjectValues = readObjectValues;
 var removeItems = function (options) { return __awaiter(void 0, void 0, void 0, function () {
-    var model, parentId, fieldName, idsToRemove, fields, isMany2many, values, _i, idsToRemove_1, idToRemove;
+    var model, activeId, fieldName, idsToRemove, fields, isMany2many, values, _i, idsToRemove_1, idToRemove;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                model = options.model, parentId = options.parentId, fieldName = options.fieldName, idsToRemove = options.idsToRemove, fields = options.fields, isMany2many = options.isMany2many;
+                model = options.model, activeId = options.activeId, fieldName = options.fieldName, idsToRemove = options.idsToRemove, fields = options.fields, isMany2many = options.isMany2many;
                 values = {};
                 values[fieldName] = [];
                 for (_i = 0, idsToRemove_1 = idsToRemove; _i < idsToRemove_1.length; _i++) {
@@ -99,7 +99,7 @@ var removeItems = function (options) { return __awaiter(void 0, void 0, void 0, 
                 }
                 return [4 /*yield*/, ConnectionProvider_1.default.getHandler().update({
                         model: model,
-                        id: parentId,
+                        id: activeId,
                         values: values,
                         fields: fields,
                     })];
@@ -111,16 +111,16 @@ var removeItems = function (options) { return __awaiter(void 0, void 0, void 0, 
 }); };
 exports.removeItems = removeItems;
 var linkItem = function (options) { return __awaiter(void 0, void 0, void 0, function () {
-    var model, parentId, fieldName, id, fields, values;
+    var model, activeId, fieldName, id, fields, values;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                model = options.model, parentId = options.parentId, fieldName = options.fieldName, id = options.id, fields = options.fields;
+                model = options.model, activeId = options.activeId, fieldName = options.fieldName, id = options.id, fields = options.fields;
                 values = {};
                 values[fieldName] = [[4, id]];
                 return [4 /*yield*/, ConnectionProvider_1.default.getHandler().update({
                         model: model,
-                        id: parentId,
+                        id: activeId,
                         values: values,
                         fields: fields,
                     })];
