@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkFieldsType = exports.getTouchedValues = exports.processValues = void 0;
+exports.mergeFieldsDomain = exports.checkFieldsType = exports.getTouchedValues = exports.processValues = void 0;
 var filteredValues = function (values, fields) {
     if (!fields) {
         return values;
@@ -49,4 +49,16 @@ var checkFieldsType = function (_a) {
     return valuesChecked.some(function (i) { return i === true; });
 };
 exports.checkFieldsType = checkFieldsType;
+var mergeFieldsDomain = function (_a) {
+    var fieldsDomain = _a.fieldsDomain, fields = _a.fields;
+    var output = {};
+    Object.keys(fields).forEach(function (key) {
+        output[key] = fields[key];
+        if (fieldsDomain[key]) {
+            output[key].domain = fieldsDomain[key];
+        }
+    });
+    return output;
+};
+exports.mergeFieldsDomain = mergeFieldsDomain;
 //# sourceMappingURL=formHelper.js.map

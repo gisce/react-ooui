@@ -26,6 +26,7 @@ import {
   processValues,
   getTouchedValues,
   checkFieldsType,
+  mergeFieldsDomain,
 } from "@/helpers/formHelper";
 import { FormView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
@@ -402,6 +403,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
 
   const evaluateChanges = async (changedFields: any, values: any) => {
     let finalValues = values;
+    let finalFields = fields;
 
     // By design, we will only receive one changed field at a time inside changedFields
     const changedFieldName = changedFields[0].name;
@@ -451,12 +453,15 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       }
 
       if (response.domain) {
-        // TODO: implement
-        console.log("on_change - domain");
+        finalFields = mergeFieldsDomain({
+          fieldsDomain: response.domain,
+          fields,
+        });
+        setFields(finalFields);
       }
     }
 
-    parseForm({ arch: arch!, fields, values: finalValues });
+    parseForm({ arch: arch!, fields: finalFields, values: finalValues });
   };
 
   const debouncedEvaluateChanges = debounce(evaluateChanges, 800);

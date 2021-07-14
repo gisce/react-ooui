@@ -413,11 +413,12 @@ function Form(props, ref) {
     }); };
     var debouncedCheckFieldsChanges = debounce_1.default(checkFieldsChanges, 100);
     var evaluateChanges = function (changedFields, values) { return __awaiter(_this, void 0, void 0, function () {
-        var finalValues, changedFieldName, onChangeFieldAction, payload_1, response, _a, title, message;
+        var finalValues, finalFields, changedFieldName, onChangeFieldAction, payload_1, response, _a, title, message;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     finalValues = values;
+                    finalFields = fields;
                     changedFieldName = changedFields[0].name;
                     onChangeFieldAction = formOoui === null || formOoui === void 0 ? void 0 : formOoui.onChangeFields[changedFieldName];
                     if (!onChangeFieldAction) return [3 /*break*/, 2];
@@ -455,12 +456,15 @@ function Form(props, ref) {
                         });
                     }
                     if (response.domain) {
-                        // TODO: implement
-                        console.log("on_change - domain");
+                        finalFields = formHelper_1.mergeFieldsDomain({
+                            fieldsDomain: response.domain,
+                            fields: fields,
+                        });
+                        setFields(finalFields);
                     }
                     _b.label = 2;
                 case 2:
-                    parseForm({ arch: arch, fields: fields, values: finalValues });
+                    parseForm({ arch: arch, fields: finalFields, values: finalValues });
                     return [2 /*return*/];
             }
         });

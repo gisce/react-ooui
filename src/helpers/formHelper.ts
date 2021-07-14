@@ -59,3 +59,23 @@ export const checkFieldsType = ({
   });
   return valuesChecked.some((i) => i === true);
 };
+
+export const mergeFieldsDomain = ({
+  fieldsDomain,
+  fields,
+}: {
+  fieldsDomain: any;
+  fields: any;
+}) => {
+  const output: any = {};
+
+  Object.keys(fields).forEach((key) => {
+    output[key] = fields[key];
+
+    if (fieldsDomain[key]) {
+      output[key].domain = fieldsDomain[key];
+    }
+  });
+
+  return output;
+};
