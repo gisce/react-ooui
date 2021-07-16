@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { Input, Button, Row, Col } from "antd";
 import {
   SearchOutlined,
@@ -11,6 +11,7 @@ import Config from "@/Config";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import { FormModal } from "@/widgets/modals/FormModal";
 import ConnectionProvider from "@/ConnectionProvider";
+import { FormContext, FormContextType } from "@/context/FormContext";
 
 type Props = {
   ooui: Many2oneOoui;
@@ -56,9 +57,46 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const [searching, setSearching] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>();
   const searchButtonTappedRef = useRef<boolean>(false);
+  const formContext = useContext(FormContext) as FormContextType;
+  const { activeId } = formContext || {};
 
   const id = value && value[0];
   const text = (value && value[1]) || "";
+
+  useEffect(() => {
+    const mustTryFillWithFirstResult =
+      activeId === undefined && domain && required;
+
+    if (mustTryFillWithFirstResult) {
+      fillWithFirstResult();
+    }
+  }, []);
+
+  async function fillWithFirstResult() {
+    try {
+      const treeView = await ConnectionProvider.getHandler().getView(
+        relation,
+        "tree"
+      );
+
+      const {
+        totalItems,
+        results,
+      } = await ConnectionProvider.getHandler().search({
+        params: domain,
+        limit: 1,
+        offset: 1,
+        model: relation,
+        fields: treeView!.fields,
+      });
+
+      if (totalItems === 1) {
+        fetchNameAndUpdate(results[0]);
+      }
+    } catch (err) {
+      // TODO: handle error
+    }
+  }
 
   useEffect(() => {
     if (id && text.length === 0) {
