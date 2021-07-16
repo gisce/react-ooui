@@ -78,6 +78,7 @@ var Config_1 = __importDefault(require("@/Config"));
 var SearchModal_1 = require("@/widgets/modals/SearchModal");
 var FormModal_1 = require("@/widgets/modals/FormModal");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
+var FormContext_1 = require("@/context/FormContext");
 var Many2one = function (props) {
     var ooui = props.ooui;
     var required = ooui.required;
@@ -105,8 +106,47 @@ var Many2oneInput = function (props) {
     var _c = react_1.useState(false), searching = _c[0], setSearching = _c[1];
     var _d = react_1.useState(), searchText = _d[0], setSearchText = _d[1];
     var searchButtonTappedRef = react_1.useRef(false);
+    var formContext = react_1.useContext(FormContext_1.FormContext);
+    var activeId = (formContext || {}).activeId;
     var id = value && value[0];
     var text = (value && value[1]) || "";
+    react_1.useEffect(function () {
+        var mustTryFillWithFirstResult = activeId === undefined && domain && required;
+        if (mustTryFillWithFirstResult) {
+            fillWithFirstResult();
+        }
+    }, []);
+    function fillWithFirstResult() {
+        return __awaiter(this, void 0, void 0, function () {
+            var treeView, _a, totalItems, results, err_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 3, , 4]);
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(relation, "tree")];
+                    case 1:
+                        treeView = _b.sent();
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().search({
+                                params: domain,
+                                limit: 1,
+                                offset: 1,
+                                model: relation,
+                                fields: treeView.fields,
+                            })];
+                    case 2:
+                        _a = _b.sent(), totalItems = _a.totalItems, results = _a.results;
+                        if (totalItems === 1) {
+                            fetchNameAndUpdate(results[0]);
+                        }
+                        return [3 /*break*/, 4];
+                    case 3:
+                        err_1 = _b.sent();
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    }
     react_1.useEffect(function () {
         if (id && text.length === 0) {
             fetchNameAndUpdate(id);
@@ -119,7 +159,7 @@ var Many2oneInput = function (props) {
         triggerChange([undefined, e.target.value]);
     };
     var onElementLostFocus = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var results, err_1;
+        var results, err_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -155,7 +195,7 @@ var Many2oneInput = function (props) {
                     }
                     return [3 /*break*/, 6];
                 case 4:
-                    err_1 = _a.sent();
+                    err_2 = _a.sent();
                     return [3 /*break*/, 6];
                 case 5:
                     setSearching(false);
@@ -165,7 +205,7 @@ var Many2oneInput = function (props) {
         });
     }); };
     var fetchNameAndUpdate = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-        var value_1, err_2;
+        var value_1, err_3;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -183,7 +223,7 @@ var Many2oneInput = function (props) {
                     triggerChange([id, value_1[0][1]]);
                     return [3 /*break*/, 5];
                 case 3:
-                    err_2 = _a.sent();
+                    err_3 = _a.sent();
                     return [3 /*break*/, 5];
                 case 4:
                     setSearching(false);

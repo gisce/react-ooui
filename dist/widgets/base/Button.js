@@ -69,7 +69,8 @@ var iconMapper_1 = __importDefault(require("@/helpers/iconMapper"));
 var Button = function (props) {
     var ooui = props.ooui;
     var id = ooui.id, label = ooui.label, activated = ooui.activated, buttonType = ooui.buttonType, confirmMessage = ooui.confirmMessage, icon = ooui.icon, context = ooui.context;
-    var executeButtonAction = react_1.useContext(FormContext_1.FormContext).executeButtonAction;
+    var formContext = react_1.useContext(FormContext_1.FormContext);
+    var executeButtonAction = (formContext || {}).executeButtonAction;
     var _a = react_1.useState(false), isRunning = _a[0], setIsRunning = _a[1];
     function onClick_confirm() {
         return __awaiter(this, void 0, void 0, function () {
