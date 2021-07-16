@@ -52,7 +52,9 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     manualTriggerChange,
     setManualTriggerChange,
   } = useContext(One2manyContext) as One2manyContextType;
-  const { activeId, activeModel } = useContext(FormContext) as FormContextType;
+
+  const formContext = useContext(FormContext) as FormContextType;
+  const { activeId, activeModel } = formContext || {};
 
   const formRef = useRef();
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);

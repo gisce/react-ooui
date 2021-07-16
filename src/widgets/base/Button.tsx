@@ -22,7 +22,8 @@ export const Button = (props: Props) => {
     icon,
     context,
   } = ooui;
-  const { executeButtonAction } = useContext(FormContext) as FormContextType;
+  const formContext = useContext(FormContext) as FormContextType;
+  const { executeButtonAction } = formContext || {};
   const [isRunning, setIsRunning] = useState<boolean>(false);
 
   async function onClick_confirm() {
