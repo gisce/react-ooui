@@ -6,7 +6,7 @@ import React, {
   useRef,
   useContext,
 } from "react";
-import { Form as FormOoui } from "ooui";
+import { Form as FormOoui, parseDomain } from "ooui";
 import {
   Form as AntForm,
   Button,
@@ -27,6 +27,7 @@ import {
   getTouchedValues,
   checkFieldsType,
   mergeFieldsDomain,
+  getValuesForDomain,
 } from "@/helpers/formHelper";
 import { FormView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
@@ -64,6 +65,7 @@ export type FormProps = {
   postSaveAction?: (event: any) => Promise<void>;
   insideButtonModal?: boolean;
   parentContext?: any;
+  actionDomain?: any;
 };
 
 const WIDTH_BREAKPOINT = 1000;
@@ -87,6 +89,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     postSaveAction,
     insideButtonModal = false,
     parentContext = {},
+    actionDomain,
   } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -106,6 +109,8 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   const [buttonActionModalFields, setButtonActionModalFields] = useState<any>();
   const formModalContext = useContext(FormModalContext) as FormModalContextType;
   const [buttonContext, setButtonContext] = useState<any>({});
+  const [actionDomainModal, setActionDomainModal] = useState<any>();
+
   const createdId = useRef<number>();
 
   const reportInProgressInterval = useRef<any>();
@@ -183,6 +188,10 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         fields: _fields,
         arch: _arch!,
       });
+    }
+
+    if (actionDomain) {
+      values = { ...values, ...getValuesForDomain(actionDomain) };
     }
 
     assignNewValuesToForm({ values, fields: _fields });
@@ -580,12 +589,28 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     )[0];
 
     if (actionData.type === "ir.actions.act_window") {
+      const actionWindowData = (
+        await ConnectionProvider.getHandler().readObjects({
+          model: "ir.actions.act_window",
+          ids: [parseInt(action)],
+        })
+      )[0];
+
       const viewData = await ConnectionProvider.getHandler().getViewsForAction({
         action: `${actionData.type},${actionData.id}`,
         context: { ...context, ...parentContext, ...formOoui?.context },
       });
 
       const form = viewData.views.get("form");
+      const parsedDomain = parseDomain({
+        domainValue: actionWindowData.domain,
+        values: {
+          active_id: id,
+        },
+        fields: {},
+      });
+
+      setActionDomainModal(parsedDomain);
       setButtonActionModalModel(viewData.model);
       setButtonActionModalArch(form.arch);
       setButtonActionModalFields(form.fields);
@@ -718,6 +743,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
           setButtonContext({});
         }}
         showFooter={false}
+        actionDomain={actionDomainModal}
       />
       <Modal
         title={"Generating report..."}

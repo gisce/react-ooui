@@ -79,3 +79,15 @@ export const mergeFieldsDomain = ({
 
   return output;
 };
+
+export const getValuesForDomain = (domain: any[]) => {
+  const values: any = {};
+
+  domain.forEach((entry) => {
+    if (entry[1] === "=") {
+      values[entry[0]] = entry[2];
+    }
+  });
+
+  return values;
+};
