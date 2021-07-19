@@ -17,6 +17,7 @@ export declare type FormProps = {
     postSaveAction?: (event: any) => Promise<void>;
     insideButtonModal?: boolean;
     parentContext?: any;
+    actionDomain?: any;
 };
 declare const _default: React.ForwardRefExoticComponent<FormProps & React.RefAttributes<unknown>>;
 export default _default;

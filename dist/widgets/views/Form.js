@@ -89,7 +89,7 @@ var filesHelper_1 = require("@/helpers/filesHelper");
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
-    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, archProps = props.arch, fieldsProps = props.fields, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g;
+    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, archProps = props.arch, fieldsProps = props.fields, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g, actionDomain = props.actionDomain;
     var _h = react_1.useState(false), isSubmitting = _h[0], setIsSubmitting = _h[1];
     var _j = react_1.useState(), error = _j[0], setError = _j[1];
     var _k = react_1.useState(false), loading = _k[0], setLoading = _k[1];
@@ -103,17 +103,18 @@ function Form(props, ref) {
     var _s = react_1.useState(), buttonActionModalFields = _s[0], setButtonActionModalFields = _s[1];
     var formModalContext = react_1.useContext(FormModalContext_1.FormModalContext);
     var _t = react_1.useState({}), buttonContext = _t[0], setButtonContext = _t[1];
+    var _u = react_1.useState(), actionDomainModal = _u[0], setActionDomainModal = _u[1];
     var createdId = react_1.useRef();
     var reportInProgressInterval = react_1.useRef();
-    var _u = react_1.useState(false), reportGenerating = _u[0], setReportGenerating = _u[1];
+    var _v = react_1.useState(false), reportGenerating = _v[0], setReportGenerating = _v[1];
     var warningIsShwon = react_1.useRef(false);
-    var _v = react_cool_dimensions_1.default({
+    var _w = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _v.width, containerRef = _v.ref;
+    }), width = _w.width, containerRef = _w.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     var formContext = react_1.useContext(FormContext_1.FormContext);
-    var _w = formContext || {}, parentId = _w.activeId, parentModel = _w.activeModel;
+    var _x = formContext || {}, parentId = _x.activeId, parentModel = _x.activeModel;
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
     }); });
@@ -181,6 +182,9 @@ function Form(props, ref) {
                     values = _a.sent();
                     _a.label = 3;
                 case 3:
+                    if (actionDomain) {
+                        values = __assign(__assign({}, values), formHelper_1.getValuesForDomain(actionDomain));
+                    }
                     assignNewValuesToForm({ values: values, fields: _fields });
                     parseForm({ fields: _fields, arch: _arch, values: values });
                     return [2 /*return*/];
@@ -610,7 +614,7 @@ function Form(props, ref) {
     function runActionButton(_a) {
         var action = _a.action, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
-            var actionData, viewData, form;
+            var actionData, actionWindowData, viewData, form, parsedDomain;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
@@ -619,27 +623,41 @@ function Form(props, ref) {
                         })];
                     case 1:
                         actionData = (_b.sent())[0];
-                        if (!(actionData.type === "ir.actions.act_window")) return [3 /*break*/, 3];
+                        if (!(actionData.type === "ir.actions.act_window")) return [3 /*break*/, 4];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                                model: "ir.actions.act_window",
+                                ids: [parseInt(action)],
+                            })];
+                    case 2:
+                        actionWindowData = (_b.sent())[0];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getViewsForAction({
                                 action: actionData.type + "," + actionData.id,
                                 context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                             })];
-                    case 2:
+                    case 3:
                         viewData = _b.sent();
                         form = viewData.views.get("form");
+                        parsedDomain = ooui_1.parseDomain({
+                            domainValue: actionWindowData.domain,
+                            values: {
+                                active_id: id,
+                            },
+                            fields: {},
+                        });
+                        setActionDomainModal(parsedDomain);
                         setButtonActionModalModel(viewData.model);
                         setButtonActionModalArch(form.arch);
                         setButtonActionModalFields(form.fields);
                         setButtonContext(context);
                         setButtonActionModalVisible(true);
-                        return [3 /*break*/, 5];
-                    case 3:
-                        if (!(actionData.type === "ir.actions.report.xml")) return [3 /*break*/, 5];
-                        return [4 /*yield*/, executeReportAction(actionData, context)];
+                        return [3 /*break*/, 6];
                     case 4:
+                        if (!(actionData.type === "ir.actions.report.xml")) return [3 /*break*/, 6];
+                        return [4 /*yield*/, executeReportAction(actionData, context)];
+                    case 5:
                         _b.sent();
-                        _b.label = 5;
-                    case 5: return [2 /*return*/];
+                        _b.label = 6;
+                    case 6: return [2 /*return*/];
                 }
             });
         });
@@ -731,7 +749,7 @@ function Form(props, ref) {
             }); }, onCancel: function () {
                 setButtonActionModalVisible(false);
                 setButtonContext({});
-            }, showFooter: false }),
+            }, showFooter: false, actionDomain: actionDomainModal }),
         react_1.default.createElement(antd_1.Modal, { title: "Generating report...", visible: reportGenerating, footer: null, closable: false, centered: true },
             react_1.default.createElement(antd_1.Spin, null))));
 }
