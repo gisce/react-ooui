@@ -29,24 +29,24 @@ var PairFields_1 = require("./PairFields");
 var LocalesContext_1 = require("@/context/LocalesContext");
 var ooui_1 = require("ooui");
 var types = {
-    text: "Text",
-    many2one: "Many2one",
-    char: "Char",
-    boolean: "Boolean",
-    selection: "Selection",
-    float: "Float",
-    float_time: "FloatTime",
-    progressbar: "ProgressBar",
-    integer: "Integer",
-    date: "Date",
-    datetime: "DateTime",
+    text: "text",
+    many2one: "many2one",
+    char: "char",
+    boolean: "boolean",
+    selection: "selection",
+    float: "float",
+    float_time: "float_time",
+    progressbar: "progressbar",
+    integer: "integer",
+    date: "date",
+    datetime: "datetime",
 };
 function SearchField(props) {
     var field = props.field;
     field.readOnly = false;
     field.required = false;
     var getString = react_1.useContext(LocalesContext_1.LocalesContext).getString;
-    var widgetType = field.constructor.name;
+    var widgetType = field.type;
     switch (widgetType) {
         case types.boolean: {
             var ooui = new ooui_1.Selection({
