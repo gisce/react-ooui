@@ -137,6 +137,27 @@ function SearchTree(props) {
             }
         });
     }); };
+    var getUniqueFieldsForParams = function (params) {
+        var uniqueFields = {};
+        params.forEach(function (param) {
+            if (Array.isArray(param) && param[0]) {
+                uniqueFields[param[0]] = true;
+            }
+        });
+        return Object.keys(uniqueFields);
+    };
+    var mergeParams = function (searchParams, domainParams) {
+        var finalParams = searchParams;
+        var uniqueParams = getUniqueFieldsForParams(searchParams);
+        domainParams.forEach(function (element) {
+            if (Array.isArray(element) && element[0]) {
+                if (!uniqueParams.includes(element[0])) {
+                    finalParams.push(element);
+                }
+            }
+        });
+        return finalParams;
+    };
     var searchResults = function () { return __awaiter(_this, void 0, void 0, function () {
         var domainParams, _a, totalItems, results;
         return __generator(this, function (_b) {
@@ -144,7 +165,7 @@ function SearchTree(props) {
                 case 0:
                     domainParams = actionDomain.current.length > 0 ? actionDomain.current : domain;
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().search({
-                            params: domainParams.concat(params),
+                            params: mergeParams(params, domainParams),
                             limit: limit,
                             offset: offset,
                             model: currentModel,

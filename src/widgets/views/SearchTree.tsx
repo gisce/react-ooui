@@ -98,6 +98,33 @@ function SearchTree(props: Props) {
     setSearchNameGetDone(true);
   };
 
+  const getUniqueFieldsForParams = (params: any[]) => {
+    const uniqueFields: any = {};
+
+    params.forEach((param) => {
+      if (Array.isArray(param) && param[0]) {
+        uniqueFields[param[0]] = true;
+      }
+    });
+
+    return Object.keys(uniqueFields);
+  };
+
+  const mergeParams = (searchParams: any[], domainParams: any[]) => {
+    const finalParams = searchParams;
+    const uniqueParams = getUniqueFieldsForParams(searchParams);
+
+    domainParams.forEach((element) => {
+      if (Array.isArray(element) && element[0]) {
+        if (!uniqueParams.includes(element[0])) {
+          finalParams.push(element);
+        }
+      }
+    });
+
+    return finalParams;
+  };
+
   const searchResults = async () => {
     const domainParams =
       actionDomain.current.length > 0 ? actionDomain.current : domain;
@@ -106,7 +133,7 @@ function SearchTree(props: Props) {
       totalItems,
       results,
     } = await ConnectionProvider.getHandler().search({
-      params: domainParams.concat(params),
+      params: mergeParams(params, domainParams),
       limit,
       offset,
       model: currentModel!,
