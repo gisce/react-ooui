@@ -44,6 +44,11 @@ type SearchRequest = {
   fields: any;
 };
 
+type SearchCountRequest = {
+  params: Array<any>;
+  model: string;
+};
+
 type CreateObjectRequest = {
   model: string;
   values: any;
@@ -114,6 +119,7 @@ type ConnectionProviderType = {
     context?: any;
   }) => Promise<ViewData>;
   getView: (model: string, type: ViewType) => Promise<FormView | TreeView>;
+  searchCount: (options: SearchCountRequest) => Promise<SearchResponse>;
   search: (options: SearchRequest) => Promise<SearchResponse>;
   update: (options: UpdateObjectRequest) => Promise<any>;
   create: (options: CreateObjectRequest) => Promise<any>;
@@ -149,4 +155,5 @@ export type {
   GetReportRequest,
   ExecuteOnChangeRequest,
   ViewType,
+  SearchCountRequest,
 };

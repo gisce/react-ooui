@@ -86,13 +86,13 @@ function FormActionBar() {
     function onNextClick() {
         if (results && results.length > currentItemIndex + 1) {
             setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(currentItemIndex + 1);
-            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[currentItemIndex + 1].id);
+            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[currentItemIndex + 1]);
         }
     }
     function onPreviousClick() {
         if (results && currentItemIndex > 0) {
             setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(currentItemIndex - 1);
-            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[currentItemIndex - 1].id);
+            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[currentItemIndex - 1]);
         }
     }
     function tryDelete(callback) {
@@ -119,17 +119,17 @@ function FormActionBar() {
                         _a.sent();
                         newIndex = currentItemIndex;
                         itemIndex = results.findIndex(function (item) {
-                            return item.id === currentId;
+                            return item === currentId;
                         });
                         if (itemIndex > results.length - 1) {
                             newIndex = results.length - 1;
                         }
                         filteredResults = results === null || results === void 0 ? void 0 : results.filter(function (item) {
-                            return item.id !== currentId;
+                            return item !== currentId;
                         });
                         setResults === null || setResults === void 0 ? void 0 : setResults(filteredResults);
                         setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(newIndex);
-                        setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(filteredResults[newIndex].id);
+                        setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(filteredResults[newIndex]);
                         return [3 /*break*/, 4];
                     case 2:
                         e_1 = _a.sent();

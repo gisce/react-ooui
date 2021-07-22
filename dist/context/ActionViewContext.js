@@ -25,13 +25,12 @@ exports.ActionViewContext = react_1.default.createContext(null);
 var ActionViewProvider = function (props) {
     var _a = react_1.useState(false), formIsSaving = _a[0], setFormIsSaving = _a[1];
     var _b = react_1.useState(false), formHasChanges = _b[0], setFormHasChanges = _b[1];
-    var _c = react_1.useState(0), totalItems = _c[0], setTotalItems = _c[1];
-    var _d = react_1.useState(false), removingItem = _d[0], setRemovingItem = _d[1];
+    var _c = react_1.useState(false), removingItem = _c[0], setRemovingItem = _c[1];
     var children = props.children, currentView = props.currentView, title = props.title, setCurrentView = props.setCurrentView, availableViews = props.availableViews, formRef = props.formRef, onNewClicked = props.onNewClicked, currentId = props.currentId, setCurrentId = props.setCurrentId, setResults = props.setResults, results = props.results, currentItemIndex = props.currentItemIndex, setCurrentItemIndex = props.setCurrentItemIndex, currentModel = props.currentModel;
     react_1.useEffect(function () {
         if (results && results.length > 0 && !currentItemIndex) {
             setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(0);
-            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[0].id);
+            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[0]);
         }
     }, [results]);
     var callOnFormSave = function () {
@@ -52,8 +51,6 @@ var ActionViewProvider = function (props) {
             onNewClicked: onNewClicked,
             currentId: currentId,
             setCurrentId: setCurrentId,
-            totalItems: totalItems,
-            setTotalItems: setTotalItems,
             currentItemIndex: currentItemIndex,
             setCurrentItemIndex: setCurrentItemIndex,
             results: results,

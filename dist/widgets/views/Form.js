@@ -90,34 +90,34 @@ var ActionViewContext_1 = require("@/context/ActionViewContext");
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
-    var model = props.model, id = props.id, propsOnCancel = props.onCancel, propsOnSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, propsOnSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, archProps = props.arch, fieldsProps = props.fields, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g, actionDomain = props.actionDomain;
-    var _h = react_1.useState(false), isSubmitting = _h[0], setIsSubmitting = _h[1];
-    var _j = react_1.useState(), error = _j[0], setError = _j[1];
-    var _k = react_1.useState(false), loading = _k[0], setLoading = _k[1];
-    var _l = react_1.useState(), formOoui = _l[0], setFormOoui = _l[1];
+    var model = props.model, id = props.id, propsOnCancel = props.onCancel, propsOnSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, propsOnSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, archProps = props.arch, fieldsProps = props.fields, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g, actionDomain = props.actionDomain, _h = props.visible, visible = _h === void 0 ? true : _h;
+    var _j = react_1.useState(false), isSubmitting = _j[0], setIsSubmitting = _j[1];
+    var _k = react_1.useState(), error = _k[0], setError = _k[1];
+    var _l = react_1.useState(false), loading = _l[0], setLoading = _l[1];
+    var _m = react_1.useState(), formOoui = _m[0], setFormOoui = _m[1];
     var antForm = antd_1.Form.useForm()[0];
-    var _m = react_1.useState(), arch = _m[0], setArch = _m[1];
-    var _o = react_1.useState(), fields = _o[0], setFields = _o[1];
-    var _p = react_1.useState(false), buttonActionModalVisible = _p[0], setButtonActionModalVisible = _p[1];
-    var _q = react_1.useState(), buttonActionModalArch = _q[0], setButtonActionModalArch = _q[1];
-    var _r = react_1.useState(), buttonActionModalModel = _r[0], setButtonActionModalModel = _r[1];
-    var _s = react_1.useState(), buttonActionModalFields = _s[0], setButtonActionModalFields = _s[1];
+    var _o = react_1.useState(), arch = _o[0], setArch = _o[1];
+    var _p = react_1.useState(), fields = _p[0], setFields = _p[1];
+    var _q = react_1.useState(false), buttonActionModalVisible = _q[0], setButtonActionModalVisible = _q[1];
+    var _r = react_1.useState(), buttonActionModalArch = _r[0], setButtonActionModalArch = _r[1];
+    var _s = react_1.useState(), buttonActionModalModel = _s[0], setButtonActionModalModel = _s[1];
+    var _t = react_1.useState(), buttonActionModalFields = _t[0], setButtonActionModalFields = _t[1];
     var formModalContext = react_1.useContext(FormModalContext_1.FormModalContext);
-    var _t = react_1.useState({}), buttonContext = _t[0], setButtonContext = _t[1];
-    var _u = react_1.useState(), actionDomainModal = _u[0], setActionDomainModal = _u[1];
+    var _u = react_1.useState({}), buttonContext = _u[0], setButtonContext = _u[1];
+    var _v = react_1.useState(), actionDomainModal = _v[0], setActionDomainModal = _v[1];
     var createdId = react_1.useRef();
     var reportInProgressInterval = react_1.useRef();
-    var _v = react_1.useState(false), reportGenerating = _v[0], setReportGenerating = _v[1];
+    var _w = react_1.useState(false), reportGenerating = _w[0], setReportGenerating = _w[1];
     var warningIsShwon = react_1.useRef(false);
-    var _w = react_cool_dimensions_1.default({
+    var _x = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _w.width, containerRef = _w.ref;
+    }), width = _x.width, containerRef = _x.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     var formContext = react_1.useContext(FormContext_1.FormContext);
-    var _x = formContext || {}, parentId = _x.activeId, parentModel = _x.activeModel;
+    var _y = formContext || {}, parentId = _y.activeId, parentModel = _y.activeModel;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _y = actionViewContext || {}, setFormIsSaving = _y.setFormIsSaving, setFormHasChanges = _y.setFormHasChanges, setCurrentId = _y.setCurrentId;
+    var _z = actionViewContext || {}, setFormIsSaving = _z.setFormIsSaving, setFormHasChanges = _z.setFormHasChanges, setCurrentId = _z.setCurrentId;
     var onSubmitSucceed = function (payload) {
         setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
         setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
@@ -769,6 +769,9 @@ function Form(props, ref) {
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), disabled: isSubmitting || loading, onClick: cancelUnsavedChanges }, "Cancel"),
                     react_1.default.createElement(antd_1.Button, { disabled: isSubmitting || loading || readOnly, loading: isSubmitting, icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: submitForm }, "OK")))));
     };
+    if (!visible) {
+        return react_1.default.createElement("div", { ref: containerRef });
+    }
     return (react_1.default.createElement("div", { ref: containerRef, className: "pb-2" },
         error && (react_1.default.createElement(antd_1.Alert, { className: "mt-10 mb-20", message: JSON.stringify(error), type: "error", banner: true })),
         loading ? react_1.default.createElement(antd_1.Spin, null) : content(),

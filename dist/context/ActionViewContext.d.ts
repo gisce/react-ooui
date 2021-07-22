@@ -14,10 +14,8 @@ export declare type ActionViewContextType = {
     onNewClicked: () => void;
     currentId?: number;
     setCurrentId?: (id: number) => void;
-    totalItems?: number;
-    setTotalItems?: (value: number) => void;
     currentItemIndex?: number;
-    setCurrentItemIndex?: (value: number) => void;
+    setCurrentItemIndex?: (value?: number) => void;
     results?: any[];
     setResults?: (value: any[]) => void;
     currentModel?: string;

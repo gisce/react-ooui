@@ -134,11 +134,9 @@ function ActionView(props) {
         if (isLoading) {
             return react_1.default.createElement(antd_1.Spin, null);
         }
-        if (currentView === "form") {
-            return (react_1.default.createElement(Form_1.default, { ref: formRef, model: currentModel, arch: formView === null || formView === void 0 ? void 0 : formView.arch, fields: formView === null || formView === void 0 ? void 0 : formView.fields, id: currentId }));
-        }
-        else {
-            return (react_1.default.createElement(SearchTree_1.default, { model: currentModel, domain: domain, onRowClicked: function (event) {
+        return (react_1.default.createElement(react_1.default.Fragment, null,
+            react_1.default.createElement(Form_1.default, { visible: currentView === "form", ref: formRef, model: currentModel, arch: formView === null || formView === void 0 ? void 0 : formView.arch, fields: formView === null || formView === void 0 ? void 0 : formView.fields, id: currentId }),
+            react_1.default.createElement(SearchTree_1.default, { visible: currentView === "tree", model: currentModel, domain: domain, onRowClicked: function (event) {
                     var id = event.id;
                     setCurrentId(id);
                     var itemIndex = results.findIndex(function (item) {
@@ -146,8 +144,7 @@ function ActionView(props) {
                     });
                     setCurrentItemIndex(itemIndex);
                     setCurrentView("form");
-                } }));
-        }
+                } })));
     }
     function onNewClicked() {
         setCurrentId(undefined);

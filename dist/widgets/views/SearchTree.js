@@ -79,27 +79,27 @@ var ActionViewContext_1 = require("@/context/ActionViewContext");
 var DEFAULT_SEARCH_LIMIT = 80;
 function SearchTree(props) {
     var _this = this;
-    var action = props.action, model = props.model, onRowClicked = props.onRowClicked, nameSearch = props.nameSearch, treeScrollY = props.treeScrollY, _a = props.domain, domain = _a === void 0 ? [] : _a;
-    var _b = react_1.useState(false), isLoading = _b[0], setIsLoading = _b[1];
-    var _c = react_1.useState(false), initialFetchDone = _c[0], setInitialFetchDone = _c[1];
-    var _d = react_1.useState(false), searchNameGetDone = _d[0], setSearchNameGetDone = _d[1];
-    var _e = react_1.useState(), currentModel = _e[0], setCurrentModel = _e[1];
-    var _f = react_1.useState(), treeView = _f[0], setTreeView = _f[1];
-    var _g = react_1.useState(), formView = _g[0], setFormView = _g[1];
-    var _h = react_1.useState(1), page = _h[0], setPage = _h[1];
-    var _j = react_1.useState(0), offset = _j[0], setOffset = _j[1];
-    var _k = react_1.useState(DEFAULT_SEARCH_LIMIT), limit = _k[0], setLimit = _k[1];
-    var _l = react_1.useState(), limitFromAction = _l[0], setLimitFromAction = _l[1];
-    var _m = react_1.useState([]), params = _m[0], setParams = _m[1];
-    var _o = react_1.useState(0), totalItems = _o[0], setTotalItems = _o[1];
-    var _p = react_1.useState([]), results = _p[0], setResults = _p[1];
-    var _q = react_1.useState(false), searchFilterLoading = _q[0], setSearchFilterLoading = _q[1];
-    var _r = react_1.useState(), searchError = _r[0], setSearchError = _r[1];
-    var _s = react_1.useState(), initialError = _s[0], setInitialError = _s[1];
-    var _t = react_1.useState(false), tableRefreshing = _t[0], setTableRefreshing = _t[1];
+    var action = props.action, model = props.model, onRowClicked = props.onRowClicked, nameSearch = props.nameSearch, treeScrollY = props.treeScrollY, _a = props.domain, domain = _a === void 0 ? [] : _a, _b = props.visible, visible = _b === void 0 ? true : _b;
+    var _c = react_1.useState(false), isLoading = _c[0], setIsLoading = _c[1];
+    var _d = react_1.useState(false), initialFetchDone = _d[0], setInitialFetchDone = _d[1];
+    var _e = react_1.useState(false), searchNameGetDone = _e[0], setSearchNameGetDone = _e[1];
+    var _f = react_1.useState(), currentModel = _f[0], setCurrentModel = _f[1];
+    var _g = react_1.useState(), treeView = _g[0], setTreeView = _g[1];
+    var _h = react_1.useState(), formView = _h[0], setFormView = _h[1];
+    var _j = react_1.useState(1), page = _j[0], setPage = _j[1];
+    var _k = react_1.useState(0), offset = _k[0], setOffset = _k[1];
+    var _l = react_1.useState(DEFAULT_SEARCH_LIMIT), limit = _l[0], setLimit = _l[1];
+    var _m = react_1.useState(), limitFromAction = _m[0], setLimitFromAction = _m[1];
+    var _o = react_1.useState([]), params = _o[0], setParams = _o[1];
+    var _p = react_1.useState(0), totalItems = _p[0], setTotalItems = _p[1];
+    var _q = react_1.useState([]), results = _q[0], setResults = _q[1];
+    var _r = react_1.useState(false), searchFilterLoading = _r[0], setSearchFilterLoading = _r[1];
+    var _s = react_1.useState(), searchError = _s[0], setSearchError = _s[1];
+    var _t = react_1.useState(), initialError = _t[0], setInitialError = _t[1];
+    var _u = react_1.useState(false), tableRefreshing = _u[0], setTableRefreshing = _u[1];
     var actionDomain = react_1.useRef([]);
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _u = actionViewContext || {}, setTotalItemsActionView = _u.setTotalItems, setResultsActionView = _u.setResults;
+    var _v = actionViewContext || {}, setResultsActionView = _v.setResults, setCurrentItemIndex = _v.setCurrentItemIndex;
     var onRequestPageChange = function (page) {
         setTableRefreshing(true);
         setPage(page);
@@ -117,7 +117,6 @@ function SearchTree(props) {
                 case 1:
                     searchResults = _a.sent();
                     setTotalItems(searchResults.length);
-                    setTotalItemsActionView === null || setTotalItemsActionView === void 0 ? void 0 : setTotalItemsActionView(searchResults.length);
                     if (!(searchResults.length > 0)) return [3 /*break*/, 3];
                     resultsIds = searchResults.map(function (item) {
                         return item === null || item === void 0 ? void 0 : item[0];
@@ -132,10 +131,17 @@ function SearchTree(props) {
                     resultsWithData = _a.sent();
                     setResults(resultsWithData);
                     setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView(resultsWithData);
+                    if (resultsWithData.length > 0) {
+                        setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(0);
+                    }
+                    else {
+                        setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(undefined);
+                    }
                     return [3 /*break*/, 4];
                 case 3:
                     setResults([]);
                     setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView([]);
+                    setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(undefined);
                     _a.label = 4;
                 case 4:
                     setSearchNameGetDone(true);
@@ -165,13 +171,14 @@ function SearchTree(props) {
         return finalParams;
     };
     var searchResults = function () { return __awaiter(_this, void 0, void 0, function () {
-        var domainParams, _a, totalItems, results;
+        var domainParams, searchParams, _a, totalItems, results, resultIds;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     domainParams = actionDomain.current.length > 0 ? actionDomain.current : domain;
+                    searchParams = mergeParams(params, domainParams);
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().search({
-                            params: mergeParams(params, domainParams),
+                            params: searchParams,
                             limit: limit,
                             offset: offset,
                             model: currentModel,
@@ -180,9 +187,20 @@ function SearchTree(props) {
                 case 1:
                     _a = _b.sent(), totalItems = _a.totalItems, results = _a.results;
                     setTotalItems(totalItems);
-                    setTotalItemsActionView === null || setTotalItemsActionView === void 0 ? void 0 : setTotalItemsActionView(totalItems);
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchCount({
+                            params: searchParams,
+                            model: currentModel,
+                        })];
+                case 2:
+                    resultIds = (_b.sent()).results;
+                    if (results.length > 0) {
+                        setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(0);
+                    }
+                    else {
+                        setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(undefined);
+                    }
                     setResults(results);
-                    setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView(results);
+                    setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView(resultIds);
                     return [2 /*return*/];
             }
         });
@@ -345,6 +363,9 @@ function SearchTree(props) {
     };
     if (initialError) {
         return (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: initialError, type: "error", banner: true }));
+    }
+    if (!visible) {
+        return null;
     }
     return isLoading ? react_1.default.createElement(antd_1.Spin, null) : content();
 }

@@ -15,10 +15,8 @@ export type ActionViewContextType = {
   onNewClicked: () => void;
   currentId?: number;
   setCurrentId?: (id: number) => void;
-  totalItems?: number;
-  setTotalItems?: (value: number) => void;
   currentItemIndex?: number;
-  setCurrentItemIndex?: (value: number) => void;
+  setCurrentItemIndex?: (value?: number) => void;
   results?: any[];
   setResults?: (value: any[]) => void;
   currentModel?: string;
@@ -37,7 +35,6 @@ type ActionViewProviderProps = ActionViewContextType & {
 const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
-  const [totalItems, setTotalItems] = useState<number>(0);
   const [removingItem, setRemovingItem] = useState<boolean>(false);
 
   const {
@@ -60,7 +57,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   useEffect(() => {
     if (results && results.length > 0 && !currentItemIndex) {
       setCurrentItemIndex?.(0);
-      setCurrentId?.(results[0].id);
+      setCurrentId?.(results[0]);
     }
   }, [results]);
 
@@ -84,8 +81,6 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         onNewClicked,
         currentId,
         setCurrentId,
-        totalItems,
-        setTotalItems,
         currentItemIndex,
         setCurrentItemIndex,
         results,

@@ -75,19 +75,18 @@ function ActionView(props: Props) {
       return <Spin />;
     }
 
-    if (currentView === "form") {
-      return (
+    return (
+      <>
         <Form
+          visible={currentView === "form"}
           ref={formRef}
           model={currentModel!}
           arch={formView?.arch}
           fields={formView?.fields}
           id={currentId}
         />
-      );
-    } else {
-      return (
         <SearchTree
+          visible={currentView === "tree"}
           model={currentModel!}
           domain={domain}
           onRowClicked={(event: any) => {
@@ -100,8 +99,8 @@ function ActionView(props: Props) {
             setCurrentView("form");
           }}
         />
-      );
-    }
+      </>
+    );
   }
 
   function onNewClicked() {

@@ -18,6 +18,7 @@ export declare type FormProps = {
     insideButtonModal?: boolean;
     parentContext?: any;
     actionDomain?: any;
+    visible?: boolean;
 };
 declare const _default: React.ForwardRefExoticComponent<FormProps & React.RefAttributes<unknown>>;
 export default _default;

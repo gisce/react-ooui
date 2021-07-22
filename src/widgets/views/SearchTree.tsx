@@ -28,6 +28,7 @@ type Props = {
   nameSearch?: string;
   treeScrollY?: number;
   domain?: any;
+  visible?: boolean;
 };
 
 function SearchTree(props: Props) {
@@ -38,6 +39,7 @@ function SearchTree(props: Props) {
     nameSearch,
     treeScrollY,
     domain = [],
+    visible = true,
   } = props;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -72,8 +74,8 @@ function SearchTree(props: Props) {
     ActionViewContext
   ) as ActionViewContextType;
   const {
-    setTotalItems: setTotalItemsActionView,
     setResults: setResultsActionView,
+    setCurrentItemIndex,
   } = actionViewContext || {};
 
   const onRequestPageChange = (page: number) => {
@@ -90,7 +92,6 @@ function SearchTree(props: Props) {
     });
 
     setTotalItems(searchResults.length);
-    setTotalItemsActionView?.(searchResults.length);
 
     if (searchResults.length > 0) {
       const resultsIds = searchResults.map((item: any) => {
@@ -106,9 +107,15 @@ function SearchTree(props: Props) {
       );
       setResults(resultsWithData);
       setResultsActionView?.(resultsWithData);
+      if (resultsWithData.length > 0) {
+        setCurrentItemIndex?.(0);
+      } else {
+        setCurrentItemIndex?.(undefined);
+      }
     } else {
       setResults([]);
       setResultsActionView?.([]);
+      setCurrentItemIndex?.(undefined);
     }
 
     setSearchNameGetDone(true);
@@ -145,20 +152,34 @@ function SearchTree(props: Props) {
     const domainParams =
       actionDomain.current.length > 0 ? actionDomain.current : domain;
 
+    const searchParams = mergeParams(params, domainParams);
+
     const {
       totalItems,
       results,
     } = await ConnectionProvider.getHandler().search({
-      params: mergeParams(params, domainParams),
+      params: searchParams,
       limit,
       offset,
       model: currentModel!,
       fields: treeView!.fields,
     });
     setTotalItems(totalItems);
-    setTotalItemsActionView?.(totalItems);
+    const {
+      results: resultIds,
+    } = await ConnectionProvider.getHandler().searchCount({
+      params: searchParams,
+      model: currentModel!,
+    });
+
+    if (results.length > 0) {
+      setCurrentItemIndex?.(0);
+    } else {
+      setCurrentItemIndex?.(undefined);
+    }
+
     setResults(results);
-    setResultsActionView?.(results);
+    setResultsActionView?.(resultIds);
   };
 
   const fetchResults = async () => {
@@ -319,6 +340,10 @@ function SearchTree(props: Props) {
     );
   }
 
+  if (!visible) {
+    return null;
+  }
+  
   return isLoading ? <Spin /> : content();
 }
 

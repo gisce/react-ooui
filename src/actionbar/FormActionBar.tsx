@@ -58,14 +58,14 @@ function FormActionBar() {
   function onNextClick() {
     if (results && results.length > currentItemIndex! + 1) {
       setCurrentItemIndex?.(currentItemIndex! + 1);
-      setCurrentId?.(results[currentItemIndex! + 1].id);
+      setCurrentId?.(results[currentItemIndex! + 1]);
     }
   }
 
   function onPreviousClick() {
     if (results && currentItemIndex! > 0) {
       setCurrentItemIndex?.(currentItemIndex! - 1);
-      setCurrentId?.(results[currentItemIndex! - 1].id);
+      setCurrentId?.(results[currentItemIndex! - 1]);
     }
   }
 
@@ -89,7 +89,7 @@ function FormActionBar() {
 
       let newIndex = currentItemIndex!;
       const itemIndex = results!.findIndex((item: any) => {
-        return item.id === currentId;
+        return item === currentId;
       });
 
       if (itemIndex > results!.length - 1) {
@@ -97,12 +97,12 @@ function FormActionBar() {
       }
 
       const filteredResults = results?.filter((item: any) => {
-        return item.id !== currentId;
+        return item !== currentId;
       });
 
       setResults?.(filteredResults!);
       setCurrentItemIndex?.(newIndex);
-      setCurrentId?.(filteredResults![newIndex].id);
+      setCurrentId?.(filteredResults![newIndex]);
     } catch (e) {
       showErrorDialog(JSON.stringify(e));
     } finally {

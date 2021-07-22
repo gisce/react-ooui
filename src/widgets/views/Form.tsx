@@ -71,11 +71,12 @@ export type FormProps = {
   insideButtonModal?: boolean;
   parentContext?: any;
   actionDomain?: any;
+  visible?: boolean;
 };
 
 const WIDTH_BREAKPOINT = 1000;
 
-function Form(props: FormProps, ref: any): React.ReactElement {
+function Form(props: FormProps, ref: any) {
   const {
     model,
     id,
@@ -95,6 +96,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     insideButtonModal = false,
     parentContext = {},
     actionDomain,
+    visible = true,
   } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -765,6 +767,10 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       </>
     );
   };
+
+  if (!visible) {
+    return <div ref={containerRef} />;
+  }
 
   return (
     <div ref={containerRef} className="pb-2">

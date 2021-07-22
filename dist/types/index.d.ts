@@ -35,6 +35,10 @@ declare type SearchRequest = {
     model: string;
     fields: any;
 };
+declare type SearchCountRequest = {
+    params: Array<any>;
+    model: string;
+};
 declare type CreateObjectRequest = {
     model: string;
     values: any;
@@ -92,6 +96,7 @@ declare type ConnectionProviderType = {
         context?: any;
     }) => Promise<ViewData>;
     getView: (model: string, type: ViewType) => Promise<FormView | TreeView>;
+    searchCount: (options: SearchCountRequest) => Promise<SearchResponse>;
     search: (options: SearchRequest) => Promise<SearchResponse>;
     update: (options: UpdateObjectRequest) => Promise<any>;
     create: (options: CreateObjectRequest) => Promise<any>;
@@ -104,5 +109,5 @@ declare type ConnectionProviderType = {
     executeOnChange: (options: ExecuteOnChangeRequest) => Promise<any>;
 };
 declare type ViewType = "tree" | "form";
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, };
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, };
 //# sourceMappingURL=index.d.ts.map
