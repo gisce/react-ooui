@@ -159,10 +159,6 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   }));
 
   useEffect(() => {
-    if (!id && fields) {
-      resetValues({ fields });
-    }
-
     fetchData();
   }, [id, model, valuesProps, archProps, fieldsProps]);
 
@@ -182,6 +178,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       const { fields, arch } = view;
       setFields(fields);
       setArch(arch);
+      resetValues({ fields });
 
       fetchValues({
         fields,

@@ -75,6 +75,7 @@ var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect
 var SearchFilter_1 = __importDefault(require("@/widgets/views/searchFilter/SearchFilter"));
 var Tree_1 = __importDefault(require("@/widgets/views/Tree"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
+var ActionViewContext_1 = require("@/context/ActionViewContext");
 var DEFAULT_SEARCH_LIMIT = 80;
 function SearchTree(props) {
     var _this = this;
@@ -97,6 +98,8 @@ function SearchTree(props) {
     var _s = react_1.useState(), initialError = _s[0], setInitialError = _s[1];
     var _t = react_1.useState(false), tableRefreshing = _t[0], setTableRefreshing = _t[1];
     var actionDomain = react_1.useRef([]);
+    var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
+    var _u = actionViewContext || {}, setTotalItemsActionView = _u.setTotalItems, setResultsActionView = _u.setResults;
     var onRequestPageChange = function (page) {
         setTableRefreshing(true);
         setPage(page);
@@ -114,6 +117,7 @@ function SearchTree(props) {
                 case 1:
                     searchResults = _a.sent();
                     setTotalItems(searchResults.length);
+                    setTotalItemsActionView === null || setTotalItemsActionView === void 0 ? void 0 : setTotalItemsActionView(searchResults.length);
                     if (!(searchResults.length > 0)) return [3 /*break*/, 3];
                     resultsIds = searchResults.map(function (item) {
                         return item === null || item === void 0 ? void 0 : item[0];
@@ -127,9 +131,11 @@ function SearchTree(props) {
                 case 2:
                     resultsWithData = _a.sent();
                     setResults(resultsWithData);
+                    setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView(resultsWithData);
                     return [3 /*break*/, 4];
                 case 3:
                     setResults([]);
+                    setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView([]);
                     _a.label = 4;
                 case 4:
                     setSearchNameGetDone(true);
@@ -174,7 +180,9 @@ function SearchTree(props) {
                 case 1:
                     _a = _b.sent(), totalItems = _a.totalItems, results = _a.results;
                     setTotalItems(totalItems);
+                    setTotalItemsActionView === null || setTotalItemsActionView === void 0 ? void 0 : setTotalItemsActionView(totalItems);
                     setResults(results);
+                    setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView(results);
                     return [2 /*return*/];
             }
         });

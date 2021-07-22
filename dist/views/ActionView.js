@@ -79,13 +79,9 @@ function ActionView(props) {
     var _f = react_1.useState(), domain = _f[0], setDomain = _f[1];
     var _g = react_1.useState(false), isLoading = _g[0], setIsLoading = _g[1];
     var _h = react_1.useState(), currentId = _h[0], setCurrentId = _h[1];
-    var _j = react_1.useState(false), formIsSaving = _j[0], setFormIsSaving = _j[1];
-    var _k = react_1.useState(false), formHasChanges = _k[0], setFormHasChanges = _k[1];
+    var _j = react_1.useState(), currentItemIndex = _j[0], setCurrentItemIndex = _j[1];
+    var _k = react_1.useState([]), results = _k[0], setResults = _k[1];
     var formRef = react_1.useRef();
-    var saveItem = function () {
-        setFormIsSaving(true);
-        formRef.current.submitForm();
-    };
     var fetchActionData = function () { return __awaiter(_this, void 0, void 0, function () {
         var dataForAction, parsedDomain;
         return __generator(this, function (_a) {
@@ -145,6 +141,10 @@ function ActionView(props) {
             return (react_1.default.createElement(SearchTree_1.default, { model: currentModel, domain: domain, onRowClicked: function (event) {
                     var id = event.id;
                     setCurrentId(id);
+                    var itemIndex = results.findIndex(function (item) {
+                        return item.id === id;
+                    });
+                    setCurrentItemIndex(itemIndex);
                     setCurrentView("form");
                 } }));
         }
@@ -153,7 +153,7 @@ function ActionView(props) {
         setCurrentId(undefined);
         setCurrentView("form");
     }
-    return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId },
+    return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId, setCurrentItemIndex: setCurrentItemIndex, currentItemIndex: currentItemIndex, results: results, setResults: setResults, currentModel: currentModel },
         react_1.default.createElement(TitleHeader_1.default, null, currentView === "form" ? (react_1.default.createElement(FormActionBar_1.default, { key: Math.random() * 10000 })) : (react_1.default.createElement(TreeActionBar_1.default, null))),
         content()));
 }

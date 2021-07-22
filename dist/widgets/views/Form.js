@@ -136,9 +136,6 @@ function Form(props, ref) {
         submitForm: submitForm,
     }); });
     react_1.useEffect(function () {
-        if (!id && fields) {
-            resetValues({ fields: fields });
-        }
         fetchData();
     }, [id, model, valuesProps, archProps, fieldsProps]);
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
@@ -162,6 +159,7 @@ function Form(props, ref) {
                     fields_1 = view.fields, arch_1 = view.arch;
                     setFields(fields_1);
                     setArch(arch_1);
+                    resetValues({ fields: fields_1 });
                     fetchValues({
                         fields: fields_1,
                         arch: arch_1,

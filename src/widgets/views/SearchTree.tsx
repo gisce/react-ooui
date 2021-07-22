@@ -7,6 +7,11 @@ import Tree from "@/widgets/views/Tree";
 import { FormView, TreeView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 
+import {
+  ActionViewContext,
+  ActionViewContextType,
+} from "@/context/ActionViewContext";
+
 const DEFAULT_SEARCH_LIMIT = 80;
 
 type OnRowClickedData = {
@@ -63,6 +68,14 @@ function SearchTree(props: Props) {
 
   const actionDomain = useRef<any>([]);
 
+  const actionViewContext = useContext(
+    ActionViewContext
+  ) as ActionViewContextType;
+  const {
+    setTotalItems: setTotalItemsActionView,
+    setResults: setResultsActionView,
+  } = actionViewContext || {};
+
   const onRequestPageChange = (page: number) => {
     setTableRefreshing(true);
     setPage(page);
@@ -77,6 +90,7 @@ function SearchTree(props: Props) {
     });
 
     setTotalItems(searchResults.length);
+    setTotalItemsActionView?.(searchResults.length);
 
     if (searchResults.length > 0) {
       const resultsIds = searchResults.map((item: any) => {
@@ -91,8 +105,10 @@ function SearchTree(props: Props) {
         }
       );
       setResults(resultsWithData);
+      setResultsActionView?.(resultsWithData);
     } else {
       setResults([]);
+      setResultsActionView?.([]);
     }
 
     setSearchNameGetDone(true);
@@ -140,7 +156,9 @@ function SearchTree(props: Props) {
       fields: treeView!.fields,
     });
     setTotalItems(totalItems);
+    setTotalItemsActionView?.(totalItems);
     setResults(results);
+    setResultsActionView?.(results);
   };
 
   const fetchResults = async () => {

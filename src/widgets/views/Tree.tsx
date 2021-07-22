@@ -87,9 +87,7 @@ function Tree(props: Props): React.ReactElement {
         />
       </>
     );
-  };
-
-  return (
+  };  return (
     <div ref={containerRef}>
       {pagination()}
       <Table

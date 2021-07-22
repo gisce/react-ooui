@@ -29,16 +29,10 @@ function ActionView(props: Props) {
   const [domain, setDomain] = useState<any>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentId, setCurrentId] = useState<number>();
-
-  const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
-  const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
+  const [currentItemIndex, setCurrentItemIndex] = useState<number>();
+  const [results, setResults] = useState<any>([]);
 
   const formRef = useRef();
-
-  const saveItem = () => {
-    setFormIsSaving(true);
-    (formRef.current as any).submitForm();
-  };
 
   const fetchActionData = async () => {
     const dataForAction = await ConnectionProvider.getHandler().getViewsForAction(
@@ -99,6 +93,10 @@ function ActionView(props: Props) {
           onRowClicked={(event: any) => {
             const { id } = event;
             setCurrentId(id);
+            const itemIndex = results.findIndex((item: any) => {
+              return item.id === id;
+            });
+            setCurrentItemIndex(itemIndex);
             setCurrentView("form");
           }}
         />
@@ -121,6 +119,11 @@ function ActionView(props: Props) {
       onNewClicked={onNewClicked}
       currentId={currentId}
       setCurrentId={setCurrentId}
+      setCurrentItemIndex={setCurrentItemIndex}
+      currentItemIndex={currentItemIndex}
+      results={results}
+      setResults={setResults}
+      currentModel={currentModel}
     >
       <TitleHeader>
         {currentView === "form" ? (
