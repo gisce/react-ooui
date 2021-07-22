@@ -87,7 +87,7 @@ function SearchFilter(props) {
         onSubmit({ params: newParams, offset: offset, limit: limit });
     };
     return (react_1.default.createElement(LocalesContext_1.default, { strings: strings },
-        react_1.default.createElement(antd_1.Form, { className: "bg-gray-100 rounded p-3", form: form, onFinish: onFinish, initialValues: { offset: offset, limit: limit } },
+        react_1.default.createElement(antd_1.Form, { className: "bg-gray-50 rounded p-3 shadow-md", form: form, onFinish: onFinish, initialValues: { offset: offset, limit: limit } },
             rows,
             advancedFilter && react_1.default.createElement(SearchParams_1.SearchParams, null),
             react_1.default.createElement(SearchBottomBar_1.SearchBottomBar, { advancedFilter: advancedFilter, onAdvancedFilterToggle: function () {

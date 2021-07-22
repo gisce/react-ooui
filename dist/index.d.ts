@@ -23,7 +23,7 @@ import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
 import { Reference } from "@/widgets/base/Reference";
 import { Binary } from "@/widgets/base/Binary";
 import iconMapper from "@/helpers/iconMapper";
-import ActionBar from "@/actionbar/ActionBar";
+import ActionBar from "@/actionbar/FormActionBar";
 import { TreeView, SearchFields, FormView, ConnectionProviderType, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import ActionView from "./views/ActionView";

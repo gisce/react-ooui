@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
 
-import { Divider, Spin, Typography } from "antd";
+import { Spin } from "antd";
 
-import { FormView, TreeView } from "@/types/index";
+import { FormView, TreeView, ViewType } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
-import ActionBar from "@/actionbar/ActionBar";
 import Form from "@/widgets/views/Form";
 import SearchTree from "@/widgets/views/SearchTree";
 import { parseDomain } from "ooui";
 
-const { Title } = Typography;
+import ActionViewProvider from "@/context/ActionViewContext";
+import TitleHeader from "@/ui/TitleHeader";
+import FormActionBar from "@/actionbar/FormActionBar";
+import TreeActionBar from "@/actionbar/TreeActionBar";
 
 type Props = {
   action: string;
@@ -18,16 +20,18 @@ type Props = {
 
 function ActionView(props: Props) {
   const { action, title } = props;
-  const [currentView, setCurrentView] = useState<"form" | "tree">("tree");
-  const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
-  const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
-  const [limit, setLimit] = useState<number>();
+  const [currentView, setCurrentView] = useState<ViewType>("tree");
+  const [availableViews, setAvailableViews] = useState<ViewType[]>([]);
+
   const [currentModel, setCurrentModel] = useState<string>();
   const [treeView, setTreeView] = useState<TreeView>();
   const [formView, setFormView] = useState<FormView>();
   const [domain, setDomain] = useState<any>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentId, setCurrentId] = useState<number>();
+
+  const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
+  const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
 
   const formRef = useRef();
 
@@ -51,7 +55,6 @@ function ActionView(props: Props) {
     setFormView(dataForAction.views.get("form"));
     setTreeView(dataForAction.views.get("tree"));
     setCurrentModel(dataForAction.model);
-    setLimit(dataForAction.limit);
     return dataForAction;
   };
 
@@ -64,6 +67,8 @@ function ActionView(props: Props) {
     } else {
       setCurrentView("form");
     }
+
+    setAvailableViews(Array.from(actionData.views.keys()) as ViewType[]);
     setIsLoading(false);
   }
 
@@ -84,19 +89,6 @@ function ActionView(props: Props) {
           arch={formView?.arch}
           fields={formView?.fields}
           id={currentId}
-          onSubmitSucceed={() => {
-            setFormIsSaving(false);
-            setFormHasChanges(false);
-          }}
-          onSubmitError={() => {
-            setFormIsSaving(false);
-          }}
-          onCancel={() => {
-            setFormIsSaving(false);
-          }}
-          onFieldsChange={() => {
-            setFormHasChanges(true);
-          }}
         />
       );
     } else {
@@ -114,31 +106,31 @@ function ActionView(props: Props) {
     }
   }
 
-  function toggleView() {
-    if (currentView === "form") {
-      setCurrentView("tree");
-    } else {
-      setCurrentView("form");
-    }
+  function onNewClicked() {
+    setCurrentId(undefined);
+    setCurrentView("form");
   }
 
   return (
-    <>
-      <Title level={3}>{title}</Title>
-      <Divider />
-      <ActionBar
-        saveButtonHidden={currentView !== "form"}
-        saveButtonCallback={saveItem}
-        saveButtonLoading={formIsSaving}
-        saveButtonDisabled={!formHasChanges || formIsSaving}
-        showFormButtonCallback={toggleView}
-        showTreeButtonCallback={toggleView}
-        showFormButtonHidden={currentView === "form"}
-        showTreeButtonHidden={currentView === "tree"}
-      />
-      <Divider />
+    <ActionViewProvider
+      title={title}
+      currentView={currentView}
+      setCurrentView={setCurrentView}
+      availableViews={availableViews}
+      formRef={formRef}
+      onNewClicked={onNewClicked}
+      currentId={currentId}
+      setCurrentId={setCurrentId}
+    >
+      <TitleHeader>
+        {currentView === "form" ? (
+          <FormActionBar key={Math.random() * 10000} />
+        ) : (
+          <TreeActionBar />
+        )}
+      </TitleHeader>
       {content()}
-    </>
+    </ActionViewProvider>
   );
 }
 

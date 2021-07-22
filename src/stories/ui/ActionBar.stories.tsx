@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ActionBar } from "..";
+import { ActionBar } from "../..";
 
 import "antd/dist/antd.css";
 

@@ -91,7 +91,7 @@ declare type ConnectionProviderType = {
         action: string;
         context?: any;
     }) => Promise<ViewData>;
-    getView: (model: string, type: "tree" | "form") => Promise<FormView | TreeView>;
+    getView: (model: string, type: ViewType) => Promise<FormView | TreeView>;
     search: (options: SearchRequest) => Promise<SearchResponse>;
     update: (options: UpdateObjectRequest) => Promise<any>;
     create: (options: CreateObjectRequest) => Promise<any>;
@@ -103,5 +103,6 @@ declare type ConnectionProviderType = {
     getReport: (options: GetReportRequest) => Promise<any>;
     executeOnChange: (options: ExecuteOnChangeRequest) => Promise<any>;
 };
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, };
+declare type ViewType = "tree" | "form";
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, };
 //# sourceMappingURL=index.d.ts.map

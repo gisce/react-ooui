@@ -86,10 +86,11 @@ var FormContext_1 = __importStar(require("@/context/FormContext"));
 var index_1 = require("@/index");
 var FormModalContext_1 = require("@/context/FormModalContext");
 var filesHelper_1 = require("@/helpers/filesHelper");
+var ActionViewContext_1 = require("@/context/ActionViewContext");
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
-    var model = props.model, id = props.id, onCancel = props.onCancel, onSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, onSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, archProps = props.arch, fieldsProps = props.fields, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g, actionDomain = props.actionDomain;
+    var model = props.model, id = props.id, propsOnCancel = props.onCancel, propsOnSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, propsOnSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, archProps = props.arch, fieldsProps = props.fields, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g, actionDomain = props.actionDomain;
     var _h = react_1.useState(false), isSubmitting = _h[0], setIsSubmitting = _h[1];
     var _j = react_1.useState(), error = _j[0], setError = _j[1];
     var _k = react_1.useState(false), loading = _k[0], setLoading = _k[1];
@@ -115,10 +116,29 @@ function Form(props, ref) {
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     var formContext = react_1.useContext(FormContext_1.FormContext);
     var _x = formContext || {}, parentId = _x.activeId, parentModel = _x.activeModel;
+    var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
+    var _y = actionViewContext || {}, setFormIsSaving = _y.setFormIsSaving, setFormHasChanges = _y.setFormHasChanges, setCurrentId = _y.setCurrentId;
+    var onSubmitSucceed = function (payload) {
+        setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
+        setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
+        propsOnSubmitSucceed === null || propsOnSubmitSucceed === void 0 ? void 0 : propsOnSubmitSucceed(payload);
+        setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(payload);
+    };
+    var onCancel = function () {
+        setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
+        propsOnCancel === null || propsOnCancel === void 0 ? void 0 : propsOnCancel();
+    };
+    var onSubmitError = function (error) {
+        setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
+        propsOnSubmitError === null || propsOnSubmitError === void 0 ? void 0 : propsOnSubmitError(error);
+    };
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
     }); });
     react_1.useEffect(function () {
+        if (!id) {
+            resetValues({ fields: fields });
+        }
         fetchData();
     }, [id, model, valuesProps, archProps, fieldsProps]);
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
@@ -152,6 +172,7 @@ function Form(props, ref) {
                     setError(err_1);
                     return [3 /*break*/, 7];
                 case 6:
+                    setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
                     setLoading(false);
                     return [7 /*endfinally*/];
                 case 7: return [2 /*return*/];
@@ -232,6 +253,17 @@ function Form(props, ref) {
                 name: fieldName,
                 touched: false,
                 value: valuesProcessed[fieldName] || undefined,
+            };
+        });
+        antForm.setFields(fieldsToUpdate);
+    };
+    var resetValues = function (_a) {
+        var fields = _a.fields;
+        var fieldsToUpdate = Object.keys(fields).map(function (fieldName) {
+            return {
+                name: fieldName,
+                touched: false,
+                value: undefined,
             };
         });
         antForm.setFields(fieldsToUpdate);
@@ -344,6 +376,7 @@ function Form(props, ref) {
                         return [2 /*return*/];
                     }
                     setIsSubmitting(true);
+                    setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(true);
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 6, 7, 8]);
@@ -388,9 +421,10 @@ function Form(props, ref) {
     var checkFieldsChanges = function (changedFields) { return __awaiter(_this, void 0, void 0, function () {
         var values;
         return __generator(this, function (_a) {
-            if (formHasChanges()) {
+            if (formHasChanges() && !loading) {
                 values = antForm.getFieldsValue(true);
                 onFieldsChange === null || onFieldsChange === void 0 ? void 0 : onFieldsChange(values);
+                setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(true);
                 // We check if there are any field of type text, email, url or char inside the changed values
                 // in order to debounce the call
                 if (formHelper_1.checkFieldsType({
@@ -717,10 +751,11 @@ function Form(props, ref) {
     }
     var content = function () {
         if (!formOoui) {
-            return null;
+            return react_1.default.createElement(antd_1.Spin, null);
         }
-        return (react_1.default.createElement(FormContext_1.default, { activeId: id, activeModel: model, parentId: parentId, parentModel: parentModel, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction },
-            react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: debouncedCheckFieldsChanges, component: false }, formOoui && (react_1.default.createElement(Container_1.default, { container: formOoui.container, responsiveBehaviour: responsiveBehaviour })))));
+        return (react_1.default.createElement(react_1.default.Fragment, null,
+            react_1.default.createElement(FormContext_1.default, { activeId: id, activeModel: model, parentId: parentId, parentModel: parentModel, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction },
+                react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: debouncedCheckFieldsChanges, component: false }, formOoui && (react_1.default.createElement(Container_1.default, { container: formOoui.container, responsiveBehaviour: responsiveBehaviour }))))));
     };
     var footer = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,

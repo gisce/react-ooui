@@ -109,7 +109,7 @@ function SearchFilter(props: Props): React.ReactElement {
   return (
     <LocalesProvider strings={strings}>
       <Form
-        className="bg-gray-100 rounded p-3"
+        className="bg-gray-50 rounded p-3 shadow-md"
         form={form}
         onFinish={onFinish}
         initialValues={{ offset, limit }}

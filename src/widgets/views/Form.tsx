@@ -47,6 +47,11 @@ import {
 
 import { openBase64InNewTab, getMimeType } from "@/helpers/filesHelper";
 
+import {
+  ActionViewContext,
+  ActionViewContextType,
+} from "@/context/ActionViewContext";
+
 export type FormProps = {
   model: string;
   readOnly?: boolean;
@@ -74,12 +79,12 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   const {
     model,
     id,
-    onCancel,
-    onSubmitSucceed,
+    onCancel: propsOnCancel,
+    onSubmitSucceed: propsOnSubmitSucceed,
     showFooter = false,
     getDataFromAction = false,
     onFieldsChange,
-    onSubmitError,
+    onSubmitError: propsOnSubmitError,
     readOnly = false,
     mustClearAfterSave = false,
     submitMode = "api",
@@ -124,14 +129,40 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   const responsiveBehaviour = width < WIDTH_BREAKPOINT;
 
   const formContext = useContext(FormContext) as FormContextType;
-
   const { activeId: parentId, activeModel: parentModel } = formContext || {};
+
+  const actionViewContext = useContext(
+    ActionViewContext
+  ) as ActionViewContextType;
+  const { setFormIsSaving, setFormHasChanges, setCurrentId } =
+    actionViewContext || {};
+
+  const onSubmitSucceed = (payload: any) => {
+    setFormHasChanges?.(false);
+    setFormIsSaving?.(false);
+    propsOnSubmitSucceed?.(payload);
+    setCurrentId?.(payload);
+  };
+
+  const onCancel = () => {
+    setFormIsSaving?.(false);
+    propsOnCancel?.();
+  };
+
+  const onSubmitError = (error: any) => {
+    setFormIsSaving?.(false);
+    propsOnSubmitError?.(error);
+  };
 
   useImperativeHandle(ref, () => ({
     submitForm,
   }));
 
   useEffect(() => {
+    if (!id && fields) {
+      resetValues({ fields });
+    }
+
     fetchData();
   }, [id, model, valuesProps, archProps, fieldsProps]);
 
@@ -159,6 +190,7 @@ function Form(props: FormProps, ref: any): React.ReactElement {
     } catch (err) {
       setError(err);
     } finally {
+      setFormHasChanges?.(false);
       setLoading(false);
     }
   };
@@ -243,6 +275,18 @@ function Form(props: FormProps, ref: any): React.ReactElement {
         name: fieldName,
         touched: false,
         value: valuesProcessed[fieldName] || undefined,
+      };
+    });
+
+    antForm.setFields(fieldsToUpdate);
+  };
+
+  const resetValues = ({ fields }: { fields: any }) => {
+    const fieldsToUpdate = Object.keys(fields).map((fieldName) => {
+      return {
+        name: fieldName,
+        touched: false,
+        value: undefined,
       };
     });
 
@@ -334,13 +378,14 @@ function Form(props: FormProps, ref: any): React.ReactElement {
 
   const submitForm = async () => {
     setError(undefined);
-
     if (!formHasChanges() && id) {
       onCancel?.();
       return;
     }
 
     setIsSubmitting(true);
+    setFormIsSaving?.(true);
+
     try {
       if (submitMode === "api") {
         await submitApi();
@@ -379,10 +424,11 @@ function Form(props: FormProps, ref: any): React.ReactElement {
   };
 
   const checkFieldsChanges = async (changedFields: any) => {
-    if (formHasChanges()) {
+    if (formHasChanges() && !loading) {
       const values = antForm.getFieldsValue(true);
 
       onFieldsChange?.(values);
+      setFormHasChanges?.(true);
 
       // We check if there are any field of type text, email, url or char inside the changed values
       // in order to debounce the call
@@ -660,32 +706,34 @@ function Form(props: FormProps, ref: any): React.ReactElement {
 
   const content = () => {
     if (!formOoui) {
-      return null;
+      return <Spin />;
     }
 
     return (
-      <FormProvider
-        activeId={id}
-        activeModel={model}
-        parentId={parentId}
-        parentModel={parentModel}
-        setFieldValue={setFieldValue}
-        getFieldValue={getFieldValue}
-        executeButtonAction={executeButtonAction}
-      >
-        <AntForm
-          form={antForm}
-          onFieldsChange={debouncedCheckFieldsChanges}
-          component={false}
+      <>
+        <FormProvider
+          activeId={id}
+          activeModel={model}
+          parentId={parentId}
+          parentModel={parentModel}
+          setFieldValue={setFieldValue}
+          getFieldValue={getFieldValue}
+          executeButtonAction={executeButtonAction}
         >
-          {formOoui && (
-            <Container
-              container={formOoui.container}
-              responsiveBehaviour={responsiveBehaviour}
-            />
-          )}
-        </AntForm>
-      </FormProvider>
+          <AntForm
+            form={antForm}
+            onFieldsChange={debouncedCheckFieldsChanges}
+            component={false}
+          >
+            {formOoui && (
+              <Container
+                container={formOoui.container}
+                responsiveBehaviour={responsiveBehaviour}
+              />
+            )}
+          </AntForm>
+        </FormProvider>
+      </>
     );
   };
 

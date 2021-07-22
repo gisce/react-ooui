@@ -113,10 +113,7 @@ type ConnectionProviderType = {
     action: string;
     context?: any;
   }) => Promise<ViewData>;
-  getView: (
-    model: string,
-    type: "tree" | "form"
-  ) => Promise<FormView | TreeView>;
+  getView: (model: string, type: ViewType) => Promise<FormView | TreeView>;
   search: (options: SearchRequest) => Promise<SearchResponse>;
   update: (options: UpdateObjectRequest) => Promise<any>;
   create: (options: CreateObjectRequest) => Promise<any>;
@@ -128,6 +125,8 @@ type ConnectionProviderType = {
   getReport: (options: GetReportRequest) => Promise<any>;
   executeOnChange: (options: ExecuteOnChangeRequest) => Promise<any>;
 };
+
+type ViewType = "tree" | "form";
 
 export type {
   Strings,
@@ -149,4 +148,5 @@ export type {
   CreateReportRequest,
   GetReportRequest,
   ExecuteOnChangeRequest,
+  ViewType,
 };

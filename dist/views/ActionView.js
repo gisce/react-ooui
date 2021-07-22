@@ -61,24 +61,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
-var ActionBar_1 = __importDefault(require("@/actionbar/ActionBar"));
 var Form_1 = __importDefault(require("@/widgets/views/Form"));
 var SearchTree_1 = __importDefault(require("@/widgets/views/SearchTree"));
 var ooui_1 = require("ooui");
-var Title = antd_1.Typography.Title;
+var ActionViewContext_1 = __importDefault(require("@/context/ActionViewContext"));
+var TitleHeader_1 = __importDefault(require("@/ui/TitleHeader"));
+var FormActionBar_1 = __importDefault(require("@/actionbar/FormActionBar"));
+var TreeActionBar_1 = __importDefault(require("@/actionbar/TreeActionBar"));
 function ActionView(props) {
     var _this = this;
     var action = props.action, title = props.title;
     var _a = react_1.useState("tree"), currentView = _a[0], setCurrentView = _a[1];
-    var _b = react_1.useState(false), formIsSaving = _b[0], setFormIsSaving = _b[1];
-    var _c = react_1.useState(false), formHasChanges = _c[0], setFormHasChanges = _c[1];
-    var _d = react_1.useState(), limit = _d[0], setLimit = _d[1];
-    var _e = react_1.useState(), currentModel = _e[0], setCurrentModel = _e[1];
-    var _f = react_1.useState(), treeView = _f[0], setTreeView = _f[1];
-    var _g = react_1.useState(), formView = _g[0], setFormView = _g[1];
-    var _h = react_1.useState(), domain = _h[0], setDomain = _h[1];
-    var _j = react_1.useState(false), isLoading = _j[0], setIsLoading = _j[1];
-    var _k = react_1.useState(), currentId = _k[0], setCurrentId = _k[1];
+    var _b = react_1.useState([]), availableViews = _b[0], setAvailableViews = _b[1];
+    var _c = react_1.useState(), currentModel = _c[0], setCurrentModel = _c[1];
+    var _d = react_1.useState(), treeView = _d[0], setTreeView = _d[1];
+    var _e = react_1.useState(), formView = _e[0], setFormView = _e[1];
+    var _f = react_1.useState(), domain = _f[0], setDomain = _f[1];
+    var _g = react_1.useState(false), isLoading = _g[0], setIsLoading = _g[1];
+    var _h = react_1.useState(), currentId = _h[0], setCurrentId = _h[1];
+    var _j = react_1.useState(false), formIsSaving = _j[0], setFormIsSaving = _j[1];
+    var _k = react_1.useState(false), formHasChanges = _k[0], setFormHasChanges = _k[1];
     var formRef = react_1.useRef();
     var saveItem = function () {
         setFormIsSaving(true);
@@ -102,7 +104,6 @@ function ActionView(props) {
                     setFormView(dataForAction.views.get("form"));
                     setTreeView(dataForAction.views.get("tree"));
                     setCurrentModel(dataForAction.model);
-                    setLimit(dataForAction.limit);
                     return [2 /*return*/, dataForAction];
             }
         });
@@ -123,6 +124,7 @@ function ActionView(props) {
                         else {
                             setCurrentView("form");
                         }
+                        setAvailableViews(Array.from(actionData.views.keys()));
                         setIsLoading(false);
                         return [2 /*return*/];
                 }
@@ -137,16 +139,7 @@ function ActionView(props) {
             return react_1.default.createElement(antd_1.Spin, null);
         }
         if (currentView === "form") {
-            return (react_1.default.createElement(Form_1.default, { ref: formRef, model: currentModel, arch: formView === null || formView === void 0 ? void 0 : formView.arch, fields: formView === null || formView === void 0 ? void 0 : formView.fields, id: currentId, onSubmitSucceed: function () {
-                    setFormIsSaving(false);
-                    setFormHasChanges(false);
-                }, onSubmitError: function () {
-                    setFormIsSaving(false);
-                }, onCancel: function () {
-                    setFormIsSaving(false);
-                }, onFieldsChange: function () {
-                    setFormHasChanges(true);
-                } }));
+            return (react_1.default.createElement(Form_1.default, { ref: formRef, model: currentModel, arch: formView === null || formView === void 0 ? void 0 : formView.arch, fields: formView === null || formView === void 0 ? void 0 : formView.fields, id: currentId }));
         }
         else {
             return (react_1.default.createElement(SearchTree_1.default, { model: currentModel, domain: domain, onRowClicked: function (event) {
@@ -156,19 +149,12 @@ function ActionView(props) {
                 } }));
         }
     }
-    function toggleView() {
-        if (currentView === "form") {
-            setCurrentView("tree");
-        }
-        else {
-            setCurrentView("form");
-        }
+    function onNewClicked() {
+        setCurrentId(undefined);
+        setCurrentView("form");
     }
-    return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(Title, { level: 3 }, title),
-        react_1.default.createElement(antd_1.Divider, null),
-        react_1.default.createElement(ActionBar_1.default, { saveButtonHidden: currentView !== "form", saveButtonCallback: saveItem, saveButtonLoading: formIsSaving, saveButtonDisabled: !formHasChanges || formIsSaving, showFormButtonCallback: toggleView, showTreeButtonCallback: toggleView, showFormButtonHidden: currentView === "form", showTreeButtonHidden: currentView === "tree" }),
-        react_1.default.createElement(antd_1.Divider, null),
+    return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId },
+        react_1.default.createElement(TitleHeader_1.default, null, currentView === "form" ? (react_1.default.createElement(FormActionBar_1.default, { key: Math.random() * 10000 })) : (react_1.default.createElement(TreeActionBar_1.default, null))),
         content()));
 }
 exports.default = ActionView;
