@@ -383,6 +383,11 @@ function Form(props: FormProps, ref: any): React.ReactElement {
       return;
     }
 
+    if (await checkIfFormHasErrors()) {
+      formErrorsDialog();
+      return;
+    }
+
     setIsSubmitting(true);
     setFormIsSaving?.(true);
 
@@ -766,7 +771,14 @@ function Form(props: FormProps, ref: any): React.ReactElement {
 
   return (
     <div ref={containerRef} className="pb-2">
-      {error && <Alert className="mt-10" message={error} type="error" banner />}
+      {error && (
+        <Alert
+          className="mt-10 mb-20"
+          message={JSON.stringify(error)}
+          type="error"
+          banner
+        />
+      )}
       {loading ? <Spin /> : content()}
       {showFooter && footer()}
       <FormModal

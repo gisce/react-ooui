@@ -375,33 +375,39 @@ function Form(props, ref) {
                         onCancel === null || onCancel === void 0 ? void 0 : onCancel();
                         return [2 /*return*/];
                     }
+                    return [4 /*yield*/, checkIfFormHasErrors()];
+                case 1:
+                    if (_a.sent()) {
+                        FormErrorsDialog_1.default();
+                        return [2 /*return*/];
+                    }
                     setIsSubmitting(true);
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(true);
-                    _a.label = 1;
-                case 1:
-                    _a.trys.push([1, 6, 7, 8]);
-                    if (!(submitMode === "api")) return [3 /*break*/, 3];
-                    return [4 /*yield*/, submitApi()];
+                    _a.label = 2;
                 case 2:
+                    _a.trys.push([2, 7, 8, 9]);
+                    if (!(submitMode === "api")) return [3 /*break*/, 4];
+                    return [4 /*yield*/, submitApi()];
+                case 3:
                     _a.sent();
-                    return [3 /*break*/, 5];
-                case 3: return [4 /*yield*/, submitValues()];
-                case 4:
-                    _a.sent();
-                    _a.label = 5;
+                    return [3 /*break*/, 6];
+                case 4: return [4 /*yield*/, submitValues()];
                 case 5:
+                    _a.sent();
+                    _a.label = 6;
+                case 6:
                     if (mustClearAfterSave)
                         assignNewValuesToForm({ values: {}, fields: fields });
-                    return [3 /*break*/, 8];
-                case 6:
+                    return [3 /*break*/, 9];
+                case 7:
                     err_2 = _a.sent();
                     onSubmitError === null || onSubmitError === void 0 ? void 0 : onSubmitError(err_2);
                     setError(err_2);
-                    return [3 /*break*/, 8];
-                case 7:
+                    return [3 /*break*/, 9];
+                case 8:
                     setIsSubmitting(false);
                     return [7 /*endfinally*/];
-                case 8: return [2 /*return*/];
+                case 9: return [2 /*return*/];
             }
         });
     }); };
@@ -766,7 +772,7 @@ function Form(props, ref) {
                     react_1.default.createElement(antd_1.Button, { disabled: isSubmitting || loading || readOnly, loading: isSubmitting, icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: submitForm }, "OK")))));
     };
     return (react_1.default.createElement("div", { ref: containerRef, className: "pb-2" },
-        error && react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true }),
+        error && (react_1.default.createElement(antd_1.Alert, { className: "mt-10 mb-20", message: JSON.stringify(error), type: "error", banner: true })),
         loading ? react_1.default.createElement(antd_1.Spin, null) : content(),
         showFooter && footer(),
         react_1.default.createElement(index_1.FormModal, { buttonModal: true, noReuse: true, parentContext: __assign(__assign(__assign({}, buttonContext), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context), model: buttonActionModalModel, arch: buttonActionModalArch, fields: buttonActionModalFields, visible: buttonActionModalVisible, onSubmitSucceed: function () { return __awaiter(_this, void 0, void 0, function () {
