@@ -136,7 +136,7 @@ function Form(props, ref) {
         submitForm: submitForm,
     }); });
     react_1.useEffect(function () {
-        if (!id) {
+        if (!id && fields) {
             resetValues({ fields: fields });
         }
         fetchData();
