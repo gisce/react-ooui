@@ -73,10 +73,8 @@ function SearchTree(props: Props) {
   const actionViewContext = useContext(
     ActionViewContext
   ) as ActionViewContextType;
-  const {
-    setResults: setResultsActionView,
-    setCurrentItemIndex,
-  } = actionViewContext || {};
+  const { setResults: setResultsActionView, setCurrentItemIndex } =
+    actionViewContext || {};
 
   const onRequestPageChange = (page: number) => {
     setTableRefreshing(true);
@@ -203,8 +201,10 @@ function SearchTree(props: Props) {
       return;
     }
 
-    fetchResults();
-  }, [page, limit, offset, params, initialFetchDone]);
+    if (visible) {
+      fetchResults();
+    }
+  }, [page, limit, offset, params, initialFetchDone, visible]);
 
   const fetchData = async (type: "action" | "model") => {
     setInitialFetchDone(false);
@@ -343,7 +343,7 @@ function SearchTree(props: Props) {
   if (!visible) {
     return null;
   }
-  
+
   return isLoading ? <Spin /> : content();
 }
 

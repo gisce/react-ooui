@@ -238,8 +238,10 @@ function SearchTree(props) {
         if (!initialFetchDone) {
             return;
         }
-        fetchResults();
-    }, [page, limit, offset, params, initialFetchDone]);
+        if (visible) {
+            fetchResults();
+        }
+    }, [page, limit, offset, params, initialFetchDone, visible]);
     var fetchData = function (type) { return __awaiter(_this, void 0, void 0, function () {
         var error_2;
         return __generator(this, function (_a) {

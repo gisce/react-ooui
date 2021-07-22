@@ -84,6 +84,16 @@ function ActionView(props: Props) {
           arch={formView?.arch}
           fields={formView?.fields}
           id={currentId}
+          onSubmitSucceed={(id) => {
+            const itemIndex = results!.findIndex((item: any) => {
+              return item === id;
+            });
+            if (itemIndex === -1) {
+              results!.push(id);
+              setResults(results);
+              setCurrentItemIndex(results!.length - 1);
+            }
+          }}
         />
         <SearchTree
           visible={currentView === "tree"}
