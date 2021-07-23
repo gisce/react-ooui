@@ -11,6 +11,8 @@ function NewButton() {
   const {
     formHasChanges,
     formIsSaving,
+    formIsLoading,
+    removingItem,
     onNewClicked: onNewClickedProps,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
@@ -32,7 +34,7 @@ function NewButton() {
       icon={<FileAddOutlined />}
       tooltip={"New"}
       onClick={onNewClicked}
-      disabled={formIsSaving}
+      disabled={formIsSaving || formIsLoading || removingItem}
     />
   );
 }

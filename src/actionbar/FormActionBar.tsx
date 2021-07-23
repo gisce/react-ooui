@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Space } from "antd";
+import { Space, Spin } from "antd";
 import {
   SaveOutlined,
   RightOutlined,
@@ -40,6 +40,7 @@ function FormActionBar() {
     setRemovingItem,
     removingItem,
     setResults,
+    formIsLoading,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   function tryNavigate(callback: any) {
@@ -110,20 +111,34 @@ function FormActionBar() {
     }
   }
 
+  const mustDisableButtons = formIsSaving || removingItem || formIsLoading;
+
   return (
     <Space>
+      {formIsLoading && (
+        <>
+          <Spin />
+          {separator()}
+          {separator()}
+        </>
+      )}
       <NewButton />
       <ActionButton
         icon={<SaveOutlined />}
         tooltip={"Save"}
-        disabled={!formHasChanges || formIsSaving || removingItem}
+        disabled={!formHasChanges || mustDisableButtons}
         loading={formIsSaving}
         onClick={onFormSave}
       />
       <ActionButton
         icon={<DeleteOutlined />}
         tooltip={"Delete"}
-        disabled={formIsSaving || currentId === undefined || removingItem}
+        disabled={
+          formIsSaving ||
+          currentId === undefined ||
+          removingItem ||
+          formIsLoading
+        }
         loading={removingItem}
         onClick={tryDelete}
       />
@@ -131,7 +146,7 @@ function FormActionBar() {
       <ActionButton
         icon={<LeftOutlined />}
         tooltip={"Previous"}
-        disabled={formIsSaving || removingItem}
+        disabled={mustDisableButtons}
         loading={false}
         onClick={() => {
           tryNavigate(onPreviousClick);
@@ -140,7 +155,7 @@ function FormActionBar() {
       <ActionButton
         icon={<RightOutlined />}
         tooltip={"Next"}
-        disabled={formIsSaving || removingItem}
+        disabled={mustDisableButtons}
         loading={false}
         onClick={() => {
           tryNavigate(onNextClick);
@@ -151,12 +166,12 @@ function FormActionBar() {
         currentView={currentView}
         availableViews={availableViews}
         onChangeView={setCurrentView}
-        disabled={formIsSaving || removingItem}
+        disabled={mustDisableButtons}
       />
       {separator()}
       <DropdownButton
         icon={<ThunderboltOutlined />}
-        disabled={formIsSaving || removingItem}
+        disabled={mustDisableButtons}
         tooltip="Actions"
         items={[
           "Test action 1",
@@ -168,21 +183,21 @@ function FormActionBar() {
       />
       <DropdownButton
         icon={<PrinterOutlined />}
-        disabled={formIsSaving || removingItem}
+        disabled={mustDisableButtons}
         tooltip="Reports"
         items={["Report 1", "Report 2"]}
         onItemClick={() => {}}
       />
       <DropdownButton
         icon={<EnterOutlined />}
-        disabled={formIsSaving || removingItem}
+        disabled={mustDisableButtons}
         tooltip="Related"
         items={["Related 1", "Related 2"]}
         onItemClick={() => {}}
       />
       <DropdownButton
         icon={<LinkOutlined />}
-        disabled={formIsSaving || removingItem}
+        disabled={mustDisableButtons}
         label={"(2)"}
         tooltip="Attachments"
         items={["Attachment 1", "Attachment 2"]}

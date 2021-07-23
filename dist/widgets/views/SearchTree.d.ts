@@ -13,6 +13,7 @@ declare type Props = {
     treeScrollY?: number;
     domain?: any;
     visible?: boolean;
+    rootTree?: boolean;
 };
 declare function SearchTree(props: Props): JSX.Element | null;
 export default SearchTree;

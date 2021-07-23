@@ -78,6 +78,7 @@ function ActionView(props: Props) {
     return (
       <>
         <Form
+          rootForm={true}
           visible={currentView === "form"}
           ref={formRef}
           model={currentModel!}
@@ -97,6 +98,7 @@ function ActionView(props: Props) {
         />
         <SearchTree
           visible={currentView === "tree"}
+          rootTree={true}
           model={currentModel!}
           domain={domain}
           onRowClicked={(event: any) => {

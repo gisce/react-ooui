@@ -135,7 +135,7 @@ function ActionView(props) {
             return react_1.default.createElement(antd_1.Spin, null);
         }
         return (react_1.default.createElement(react_1.default.Fragment, null,
-            react_1.default.createElement(Form_1.default, { visible: currentView === "form", ref: formRef, model: currentModel, arch: formView === null || formView === void 0 ? void 0 : formView.arch, fields: formView === null || formView === void 0 ? void 0 : formView.fields, id: currentId, onSubmitSucceed: function (id) {
+            react_1.default.createElement(Form_1.default, { rootForm: true, visible: currentView === "form", ref: formRef, model: currentModel, arch: formView === null || formView === void 0 ? void 0 : formView.arch, fields: formView === null || formView === void 0 ? void 0 : formView.fields, id: currentId, onSubmitSucceed: function (id) {
                     var itemIndex = results.findIndex(function (item) {
                         return item === id;
                     });
@@ -145,7 +145,7 @@ function ActionView(props) {
                         setCurrentItemIndex(results.length - 1);
                     }
                 } }),
-            react_1.default.createElement(SearchTree_1.default, { visible: currentView === "tree", model: currentModel, domain: domain, onRowClicked: function (event) {
+            react_1.default.createElement(SearchTree_1.default, { visible: currentView === "tree", rootTree: true, model: currentModel, domain: domain, onRowClicked: function (event) {
                     var id = event.id;
                     setCurrentId(id);
                     var itemIndex = results.findIndex(function (item) {

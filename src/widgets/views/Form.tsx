@@ -72,6 +72,7 @@ export type FormProps = {
   parentContext?: any;
   actionDomain?: any;
   visible?: boolean;
+  rootForm?: boolean;
 };
 
 const WIDTH_BREAKPOINT = 1000;
@@ -97,6 +98,7 @@ function Form(props: FormProps, ref: any) {
     parentContext = {},
     actionDomain,
     visible = true,
+    rootForm = false,
   } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -136,8 +138,12 @@ function Form(props: FormProps, ref: any) {
   const actionViewContext = useContext(
     ActionViewContext
   ) as ActionViewContextType;
-  const { setFormIsSaving, setFormHasChanges, setCurrentId } =
-    actionViewContext || {};
+  const {
+    setFormIsSaving = undefined,
+    setFormHasChanges = undefined,
+    setCurrentId = undefined,
+    setFormIsLoading = undefined,
+  } = (rootForm ? actionViewContext : {}) || {};
 
   const onSubmitSucceed = (payload: any) => {
     setFormHasChanges?.(false);
@@ -161,6 +167,10 @@ function Form(props: FormProps, ref: any) {
   }));
 
   useEffect(() => {
+    if (!model && !archProps && !fieldsProps) {
+      return;
+    }
+
     fetchData();
   }, [id, model, valuesProps, archProps, fieldsProps]);
 
@@ -180,7 +190,6 @@ function Form(props: FormProps, ref: any) {
       const { fields, arch } = view;
       setFields(fields);
       setArch(arch);
-      resetValues({ fields });
 
       fetchValues({
         fields,
@@ -188,6 +197,7 @@ function Form(props: FormProps, ref: any) {
       });
     } catch (err) {
       setError(err);
+      setFormIsLoading?.(false);
     } finally {
       setFormHasChanges?.(false);
       setLoading(false);
@@ -203,6 +213,8 @@ function Form(props: FormProps, ref: any) {
     let values;
     let _fields;
     let _arch;
+
+    setFormIsLoading?.(true);
 
     if (options) {
       _fields = options.fields;
@@ -225,8 +237,9 @@ function Form(props: FormProps, ref: any) {
       values = { ...values, ...getValuesForDomain(actionDomain) };
     }
 
-    assignNewValuesToForm({ values, fields: _fields });
+    assignNewValuesToForm({ values, fields: _fields, reset: true });
     parseForm({ fields: _fields, arch: _arch!, values });
+    setFormIsLoading?.(false);
   };
 
   const cancelUnsavedChanges = () => {
@@ -262,11 +275,13 @@ function Form(props: FormProps, ref: any) {
   const assignNewValuesToForm = ({
     values: newValues,
     fields,
+    reset,
   }: {
     values: any;
     fields: any;
+    reset: boolean;
   }) => {
-    const currentValues = antForm.getFieldsValue(true);
+    const currentValues = reset ? {} : antForm.getFieldsValue(true);
     const mergedValues = { ...currentValues, ...newValues };
     const valuesProcessed = processValues(mergedValues, fields);
     const fieldsToUpdate = Object.keys(fields).map((fieldName) => {
@@ -274,18 +289,6 @@ function Form(props: FormProps, ref: any) {
         name: fieldName,
         touched: false,
         value: valuesProcessed[fieldName] || undefined,
-      };
-    });
-
-    antForm.setFields(fieldsToUpdate);
-  };
-
-  const resetValues = ({ fields }: { fields: any }) => {
-    const fieldsToUpdate = Object.keys(fields).map((fieldName) => {
-      return {
-        name: fieldName,
-        touched: false,
-        value: undefined,
       };
     });
 
@@ -397,7 +400,8 @@ function Form(props: FormProps, ref: any) {
         await submitValues();
       }
 
-      if (mustClearAfterSave) assignNewValuesToForm({ values: {}, fields });
+      if (mustClearAfterSave)
+        assignNewValuesToForm({ values: {}, fields, reset: true });
     } catch (err) {
       onSubmitError?.(err);
       setError(err);
@@ -495,6 +499,7 @@ function Form(props: FormProps, ref: any) {
         assignNewValuesToForm({
           values: finalValues,
           fields: fields,
+          reset: false,
         });
       }
 

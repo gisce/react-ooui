@@ -22,6 +22,8 @@ export type ActionViewContextType = {
   currentModel?: string;
   removingItem?: boolean;
   setRemovingItem?: (value: boolean) => void;
+  formIsLoading?: boolean;
+  setFormIsLoading?: (value: boolean) => void;
 };
 
 export const ActionViewContext = React.createContext<ActionViewContextType | null>(
@@ -36,6 +38,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
   const [removingItem, setRemovingItem] = useState<boolean>(false);
+  const [formIsLoading, setFormIsLoading] = useState<boolean>(false);
 
   const {
     children,
@@ -88,6 +91,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         currentModel,
         removingItem,
         setRemovingItem,
+        formIsLoading,
+        setFormIsLoading,
       }}
     >
       {children}

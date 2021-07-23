@@ -29,6 +29,7 @@ type Props = {
   treeScrollY?: number;
   domain?: any;
   visible?: boolean;
+  rootTree?: boolean;
 };
 
 function SearchTree(props: Props) {
@@ -40,6 +41,7 @@ function SearchTree(props: Props) {
     treeScrollY,
     domain = [],
     visible = true,
+    rootTree = false,
   } = props;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -73,8 +75,12 @@ function SearchTree(props: Props) {
   const actionViewContext = useContext(
     ActionViewContext
   ) as ActionViewContextType;
-  const { setResults: setResultsActionView, setCurrentItemIndex } =
-    actionViewContext || {};
+  const {
+    setResults: setResultsActionView = undefined,
+    setCurrentItemIndex = undefined,
+    currentId = undefined,
+    results: resultsActionView = undefined,
+  } = (rootTree ? actionViewContext : {}) || {};
 
   const onRequestPageChange = (page: number) => {
     setTableRefreshing(true);
@@ -170,14 +176,20 @@ function SearchTree(props: Props) {
       model: currentModel!,
     });
 
-    if (results.length > 0) {
-      setCurrentItemIndex?.(0);
+    setResults(results);
+    setResultsActionView?.(resultIds);
+
+    if (resultsActionView && resultIds.length > 0) {
+      const newCurrentItemIndex = resultIds.findIndex((id) => currentId === id);
+
+      if (newCurrentItemIndex === -1) {
+        setCurrentItemIndex?.(0);
+      } else {
+        setCurrentItemIndex?.(newCurrentItemIndex);
+      }
     } else {
       setCurrentItemIndex?.(undefined);
     }
-
-    setResults(results);
-    setResultsActionView?.(resultIds);
   };
 
   const fetchResults = async () => {
@@ -258,7 +270,7 @@ function SearchTree(props: Props) {
   useEffect(() => {
     if (action) {
       fetchData("action");
-    } else {
+    } else if (model) {
       fetchData("model");
     }
   }, [action, model]);

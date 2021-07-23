@@ -90,34 +90,34 @@ var ActionViewContext_1 = require("@/context/ActionViewContext");
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
-    var model = props.model, id = props.id, propsOnCancel = props.onCancel, propsOnSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, propsOnSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, archProps = props.arch, fieldsProps = props.fields, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g, actionDomain = props.actionDomain, _h = props.visible, visible = _h === void 0 ? true : _h;
-    var _j = react_1.useState(false), isSubmitting = _j[0], setIsSubmitting = _j[1];
-    var _k = react_1.useState(), error = _k[0], setError = _k[1];
-    var _l = react_1.useState(false), loading = _l[0], setLoading = _l[1];
-    var _m = react_1.useState(), formOoui = _m[0], setFormOoui = _m[1];
+    var model = props.model, id = props.id, propsOnCancel = props.onCancel, propsOnSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, propsOnSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, archProps = props.arch, fieldsProps = props.fields, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g, actionDomain = props.actionDomain, _h = props.visible, visible = _h === void 0 ? true : _h, _j = props.rootForm, rootForm = _j === void 0 ? false : _j;
+    var _k = react_1.useState(false), isSubmitting = _k[0], setIsSubmitting = _k[1];
+    var _l = react_1.useState(), error = _l[0], setError = _l[1];
+    var _m = react_1.useState(false), loading = _m[0], setLoading = _m[1];
+    var _o = react_1.useState(), formOoui = _o[0], setFormOoui = _o[1];
     var antForm = antd_1.Form.useForm()[0];
-    var _o = react_1.useState(), arch = _o[0], setArch = _o[1];
-    var _p = react_1.useState(), fields = _p[0], setFields = _p[1];
-    var _q = react_1.useState(false), buttonActionModalVisible = _q[0], setButtonActionModalVisible = _q[1];
-    var _r = react_1.useState(), buttonActionModalArch = _r[0], setButtonActionModalArch = _r[1];
-    var _s = react_1.useState(), buttonActionModalModel = _s[0], setButtonActionModalModel = _s[1];
-    var _t = react_1.useState(), buttonActionModalFields = _t[0], setButtonActionModalFields = _t[1];
+    var _p = react_1.useState(), arch = _p[0], setArch = _p[1];
+    var _q = react_1.useState(), fields = _q[0], setFields = _q[1];
+    var _r = react_1.useState(false), buttonActionModalVisible = _r[0], setButtonActionModalVisible = _r[1];
+    var _s = react_1.useState(), buttonActionModalArch = _s[0], setButtonActionModalArch = _s[1];
+    var _t = react_1.useState(), buttonActionModalModel = _t[0], setButtonActionModalModel = _t[1];
+    var _u = react_1.useState(), buttonActionModalFields = _u[0], setButtonActionModalFields = _u[1];
     var formModalContext = react_1.useContext(FormModalContext_1.FormModalContext);
-    var _u = react_1.useState({}), buttonContext = _u[0], setButtonContext = _u[1];
-    var _v = react_1.useState(), actionDomainModal = _v[0], setActionDomainModal = _v[1];
+    var _v = react_1.useState({}), buttonContext = _v[0], setButtonContext = _v[1];
+    var _w = react_1.useState(), actionDomainModal = _w[0], setActionDomainModal = _w[1];
     var createdId = react_1.useRef();
     var reportInProgressInterval = react_1.useRef();
-    var _w = react_1.useState(false), reportGenerating = _w[0], setReportGenerating = _w[1];
+    var _x = react_1.useState(false), reportGenerating = _x[0], setReportGenerating = _x[1];
     var warningIsShwon = react_1.useRef(false);
-    var _x = react_cool_dimensions_1.default({
+    var _y = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _x.width, containerRef = _x.ref;
+    }), width = _y.width, containerRef = _y.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     var formContext = react_1.useContext(FormContext_1.FormContext);
-    var _y = formContext || {}, parentId = _y.activeId, parentModel = _y.activeModel;
+    var _z = formContext || {}, parentId = _z.activeId, parentModel = _z.activeModel;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _z = actionViewContext || {}, setFormIsSaving = _z.setFormIsSaving, setFormHasChanges = _z.setFormHasChanges, setCurrentId = _z.setCurrentId;
+    var _0 = (rootForm ? actionViewContext : {}) || {}, _1 = _0.setFormIsSaving, setFormIsSaving = _1 === void 0 ? undefined : _1, _2 = _0.setFormHasChanges, setFormHasChanges = _2 === void 0 ? undefined : _2, _3 = _0.setCurrentId, setCurrentId = _3 === void 0 ? undefined : _3, _4 = _0.setFormIsLoading, setFormIsLoading = _4 === void 0 ? undefined : _4;
     var onSubmitSucceed = function (payload) {
         setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
         setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
@@ -136,6 +136,9 @@ function Form(props, ref) {
         submitForm: submitForm,
     }); });
     react_1.useEffect(function () {
+        if (!model && !archProps && !fieldsProps) {
+            return;
+        }
         fetchData();
     }, [id, model, valuesProps, archProps, fieldsProps]);
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
@@ -159,7 +162,6 @@ function Form(props, ref) {
                     fields_1 = view.fields, arch_1 = view.arch;
                     setFields(fields_1);
                     setArch(arch_1);
-                    resetValues({ fields: fields_1 });
                     fetchValues({
                         fields: fields_1,
                         arch: arch_1,
@@ -168,6 +170,7 @@ function Form(props, ref) {
                 case 5:
                     err_1 = _a.sent();
                     setError(err_1);
+                    setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(false);
                     return [3 /*break*/, 7];
                 case 6:
                     setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
@@ -182,6 +185,7 @@ function Form(props, ref) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(true);
                     if (options) {
                         _fields = options.fields;
                         _arch = options.arch;
@@ -204,8 +208,9 @@ function Form(props, ref) {
                     if (actionDomain) {
                         values = __assign(__assign({}, values), formHelper_1.getValuesForDomain(actionDomain));
                     }
-                    assignNewValuesToForm({ values: values, fields: _fields });
+                    assignNewValuesToForm({ values: values, fields: _fields, reset: true });
                     parseForm({ fields: _fields, arch: _arch, values: values });
+                    setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(false);
                     return [2 /*return*/];
             }
         });
@@ -242,8 +247,8 @@ function Form(props, ref) {
         });
     }); };
     var assignNewValuesToForm = function (_a) {
-        var newValues = _a.values, fields = _a.fields;
-        var currentValues = antForm.getFieldsValue(true);
+        var newValues = _a.values, fields = _a.fields, reset = _a.reset;
+        var currentValues = reset ? {} : antForm.getFieldsValue(true);
         var mergedValues = __assign(__assign({}, currentValues), newValues);
         var valuesProcessed = formHelper_1.processValues(mergedValues, fields);
         var fieldsToUpdate = Object.keys(fields).map(function (fieldName) {
@@ -251,17 +256,6 @@ function Form(props, ref) {
                 name: fieldName,
                 touched: false,
                 value: valuesProcessed[fieldName] || undefined,
-            };
-        });
-        antForm.setFields(fieldsToUpdate);
-    };
-    var resetValues = function (_a) {
-        var fields = _a.fields;
-        var fieldsToUpdate = Object.keys(fields).map(function (fieldName) {
-            return {
-                name: fieldName,
-                touched: false,
-                value: undefined,
             };
         });
         antForm.setFields(fieldsToUpdate);
@@ -395,7 +389,7 @@ function Form(props, ref) {
                     _a.label = 6;
                 case 6:
                     if (mustClearAfterSave)
-                        assignNewValuesToForm({ values: {}, fields: fields });
+                        assignNewValuesToForm({ values: {}, fields: fields, reset: true });
                     return [3 /*break*/, 9];
                 case 7:
                     err_2 = _a.sent();
@@ -485,6 +479,7 @@ function Form(props, ref) {
                         assignNewValuesToForm({
                             values: finalValues,
                             fields: fields,
+                            reset: false,
                         });
                     }
                     if (response.warning &&
