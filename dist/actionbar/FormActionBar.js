@@ -71,7 +71,7 @@ var ConfirmDialog_1 = __importDefault(require("@/ui/ConfirmDialog"));
 var GenericErrorDialog_1 = __importDefault(require("@/ui/GenericErrorDialog"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 function FormActionBar() {
-    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, onFormSave = _a.onFormSave, formHasChanges = _a.formHasChanges, formIsSaving = _a.formIsSaving, currentId = _a.currentId, results = _a.results, setCurrentItemIndex = _a.setCurrentItemIndex, currentItemIndex = _a.currentItemIndex, setCurrentId = _a.setCurrentId, currentModel = _a.currentModel, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, setResults = _a.setResults, formIsLoading = _a.formIsLoading;
+    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, onFormSave = _a.onFormSave, formHasChanges = _a.formHasChanges, formIsSaving = _a.formIsSaving, currentId = _a.currentId, results = _a.results, setCurrentItemIndex = _a.setCurrentItemIndex, currentItemIndex = _a.currentItemIndex, setCurrentId = _a.setCurrentId, currentModel = _a.currentModel, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, setResults = _a.setResults, formIsLoading = _a.formIsLoading, toolbar = _a.toolbar, attachments = _a.attachments;
     function tryNavigate(callback) {
         if (formHasChanges) {
             UnsavedChangesDialog_1.default({
@@ -122,8 +122,7 @@ function FormActionBar() {
                         });
                         setResults === null || setResults === void 0 ? void 0 : setResults(filteredResults);
                         newIndex = 0;
-                        if (currentItemIndex > 0 &&
-                            currentItemIndex <= results.length - 1) {
+                        if (currentItemIndex > 0 && currentItemIndex <= results.length - 1) {
                             newIndex = currentItemIndex - 1;
                         }
                         if (!(filteredResults === null || filteredResults === void 0 ? void 0 : filteredResults[newIndex])) {
@@ -169,15 +168,10 @@ function FormActionBar() {
         separator(),
         react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews, onChangeView: setCurrentView, disabled: mustDisableButtons }),
         separator(),
-        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null), disabled: mustDisableButtons, tooltip: "Actions", items: [
-                "Test action 1",
-                "Test action 2",
-                "Test action 3",
-                "Test action 4",
-            ], onItemClick: function () { } }),
-        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.PrinterOutlined, null), disabled: mustDisableButtons, tooltip: "Reports", items: ["Report 1", "Report 2"], onItemClick: function () { } }),
-        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.EnterOutlined, null), disabled: mustDisableButtons, tooltip: "Related", items: ["Related 1", "Related 2"], onItemClick: function () { } }),
-        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.LinkOutlined, null), disabled: mustDisableButtons, label: "(2)", tooltip: "Attachments", items: ["Attachment 1", "Attachment 2"], onItemClick: function () { } })));
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null), disabled: mustDisableButtons, tooltip: "Actions", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.action, onItemClick: function () { } }),
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.PrinterOutlined, null), disabled: mustDisableButtons, tooltip: "Reports", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.print, onItemClick: function () { } }),
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.EnterOutlined, null), disabled: mustDisableButtons, tooltip: "Related", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.relate, onItemClick: function () { } }),
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.LinkOutlined, null), disabled: mustDisableButtons || !attachments || (attachments === null || attachments === void 0 ? void 0 : attachments.length) === 0, label: "(" + attachments.length + ")", tooltip: "Attachments", items: attachments, onItemClick: function () { } })));
 }
 function separator() {
     return react_1.default.createElement("div", { className: "inline-block w-2" });

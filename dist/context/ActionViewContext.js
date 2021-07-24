@@ -27,7 +27,8 @@ var ActionViewProvider = function (props) {
     var _b = react_1.useState(false), formHasChanges = _b[0], setFormHasChanges = _b[1];
     var _c = react_1.useState(false), removingItem = _c[0], setRemovingItem = _c[1];
     var _d = react_1.useState(false), formIsLoading = _d[0], setFormIsLoading = _d[1];
-    var children = props.children, currentView = props.currentView, title = props.title, setCurrentView = props.setCurrentView, availableViews = props.availableViews, formRef = props.formRef, onNewClicked = props.onNewClicked, currentId = props.currentId, setCurrentId = props.setCurrentId, setResults = props.setResults, results = props.results, currentItemIndex = props.currentItemIndex, setCurrentItemIndex = props.setCurrentItemIndex, currentModel = props.currentModel;
+    var _e = react_1.useState([]), attachments = _e[0], setAttachments = _e[1];
+    var children = props.children, currentView = props.currentView, title = props.title, setCurrentView = props.setCurrentView, availableViews = props.availableViews, formRef = props.formRef, onNewClicked = props.onNewClicked, currentId = props.currentId, setCurrentId = props.setCurrentId, setResults = props.setResults, results = props.results, currentItemIndex = props.currentItemIndex, setCurrentItemIndex = props.setCurrentItemIndex, currentModel = props.currentModel, toolbar = props.toolbar, setToolbar = props.setToolbar;
     react_1.useEffect(function () {
         if (results && results.length > 0 && !currentItemIndex) {
             setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(0);
@@ -61,6 +62,10 @@ var ActionViewProvider = function (props) {
             setRemovingItem: setRemovingItem,
             formIsLoading: formIsLoading,
             setFormIsLoading: setFormIsLoading,
+            toolbar: toolbar,
+            setToolbar: setToolbar,
+            attachments: attachments,
+            setAttachments: setAttachments,
         } }, children));
 };
 exports.default = ActionViewProvider;

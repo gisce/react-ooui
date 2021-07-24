@@ -30,10 +30,10 @@ declare type SearchResponse = {
 };
 declare type SearchRequest = {
     params: Array<any>;
-    limit: number;
-    offset: number;
+    limit?: number;
+    offset?: number;
     model: string;
-    fields: any;
+    fields?: any;
 };
 declare type SearchCountRequest = {
     params: Array<any>;

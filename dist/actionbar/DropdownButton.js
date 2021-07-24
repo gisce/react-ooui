@@ -9,8 +9,8 @@ var icons_1 = require("@ant-design/icons");
 function DropdownButton(props) {
     var icon = props.icon, tooltip = props.tooltip, items = props.items, onItemClick = props.onItemClick, label = props.label, _a = props.disabled, disabled = _a === void 0 ? false : _a;
     function getMenu() {
-        var menuItems = items.map(function (item, i) {
-            return react_1.default.createElement(antd_1.Menu.Item, { key: i }, item);
+        var menuItems = items.map(function (item) {
+            return react_1.default.createElement(antd_1.Menu.Item, { key: item.id }, item.name);
         });
         return (react_1.default.createElement(antd_1.Menu, { onClick: handleMenuClick },
             react_1.default.createElement(antd_1.Menu.ItemGroup, { title: tooltip }, menuItems)));
@@ -19,7 +19,7 @@ function DropdownButton(props) {
         console.log();
         onItemClick();
     }
-    return (react_1.default.createElement(antd_1.Dropdown, { overlay: getMenu(), disabled: disabled },
+    return (react_1.default.createElement(antd_1.Dropdown, { overlay: getMenu(), disabled: disabled || !items || items.length === 0 },
         react_1.default.createElement(antd_1.Button, null,
             icon,
             " ",

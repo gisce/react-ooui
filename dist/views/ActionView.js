@@ -81,9 +81,10 @@ function ActionView(props) {
     var _h = react_1.useState(), currentId = _h[0], setCurrentId = _h[1];
     var _j = react_1.useState(), currentItemIndex = _j[0], setCurrentItemIndex = _j[1];
     var _k = react_1.useState([]), results = _k[0], setResults = _k[1];
+    var _l = react_1.useState(), toolbar = _l[0], setToolbar = _l[1];
     var formRef = react_1.useRef();
     var fetchActionData = function () { return __awaiter(_this, void 0, void 0, function () {
-        var dataForAction, parsedDomain;
+        var dataForAction, parsedDomain, formView;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getViewsForAction({
@@ -97,7 +98,9 @@ function ActionView(props) {
                         fields: {},
                     });
                     setDomain(parsedDomain);
-                    setFormView(dataForAction.views.get("form"));
+                    formView = dataForAction.views.get("form");
+                    setFormView(formView);
+                    setToolbar(formView === null || formView === void 0 ? void 0 : formView.toolbar);
                     setTreeView(dataForAction.views.get("tree"));
                     setCurrentModel(dataForAction.model);
                     return [2 /*return*/, dataForAction];
@@ -159,7 +162,7 @@ function ActionView(props) {
         setCurrentId(undefined);
         setCurrentView("form");
     }
-    return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId, setCurrentItemIndex: setCurrentItemIndex, currentItemIndex: currentItemIndex, results: results, setResults: setResults, currentModel: currentModel },
+    return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId, setCurrentItemIndex: setCurrentItemIndex, currentItemIndex: currentItemIndex, results: results, setResults: setResults, currentModel: currentModel, toolbar: toolbar, setToolbar: setToolbar },
         react_1.default.createElement(TitleHeader_1.default, null, currentView === "form" ? (react_1.default.createElement(FormActionBar_1.default, { key: Math.random() * 10000 })) : (react_1.default.createElement(TreeActionBar_1.default, null))),
         content()));
 }

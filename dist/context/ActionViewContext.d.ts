@@ -23,6 +23,10 @@ export declare type ActionViewContextType = {
     setRemovingItem?: (value: boolean) => void;
     formIsLoading?: boolean;
     setFormIsLoading?: (value: boolean) => void;
+    toolbar?: any;
+    setToolbar?: (value: any) => void;
+    attachments?: any;
+    setAttachments?: (value: any) => void;
 };
 export declare const ActionViewContext: React.Context<ActionViewContextType | null>;
 declare type ActionViewProviderProps = ActionViewContextType & {

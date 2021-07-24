@@ -1,6 +1,6 @@
 declare type Props = {
     onItemClick: () => void;
-    items: string[];
+    items: any[];
     tooltip: string;
     icon: any;
     label?: string;

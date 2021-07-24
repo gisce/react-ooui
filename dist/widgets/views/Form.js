@@ -117,7 +117,7 @@ function Form(props, ref) {
     var formContext = react_1.useContext(FormContext_1.FormContext);
     var _z = formContext || {}, parentId = _z.activeId, parentModel = _z.activeModel;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _0 = (rootForm ? actionViewContext : {}) || {}, _1 = _0.setFormIsSaving, setFormIsSaving = _1 === void 0 ? undefined : _1, _2 = _0.setFormHasChanges, setFormHasChanges = _2 === void 0 ? undefined : _2, _3 = _0.setCurrentId, setCurrentId = _3 === void 0 ? undefined : _3, _4 = _0.setFormIsLoading, setFormIsLoading = _4 === void 0 ? undefined : _4;
+    var _0 = (rootForm ? actionViewContext : {}) || {}, _1 = _0.setFormIsSaving, setFormIsSaving = _1 === void 0 ? undefined : _1, _2 = _0.setFormHasChanges, setFormHasChanges = _2 === void 0 ? undefined : _2, _3 = _0.setCurrentId, setCurrentId = _3 === void 0 ? undefined : _3, _4 = _0.setFormIsLoading, setFormIsLoading = _4 === void 0 ? undefined : _4, _5 = _0.setAttachments, setAttachments = _5 === void 0 ? undefined : _5;
     var onSubmitSucceed = function (payload) {
         setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
         setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
@@ -263,12 +263,12 @@ function Form(props, ref) {
     var fetchValuesFromApi = function (_a) {
         var fields = _a.fields, arch = _a.arch;
         return __awaiter(_this, void 0, void 0, function () {
-            var values;
+            var values, results;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         values = {};
-                        if (!id) return [3 /*break*/, 2];
+                        if (!id) return [3 /*break*/, 3];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
                                 arch: arch,
                                 model: model,
@@ -277,12 +277,22 @@ function Form(props, ref) {
                             })];
                     case 1:
                         values = (_b.sent())[0];
-                        return [3 /*break*/, 4];
-                    case 2: return [4 /*yield*/, getDefaultValues(fields)];
-                    case 3:
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().search({
+                                params: [
+                                    ["res_model", "=", model],
+                                    ["res_id", "=", id],
+                                ],
+                                model: "ir.attachment",
+                            })];
+                    case 2:
+                        results = (_b.sent()).results;
+                        setAttachments === null || setAttachments === void 0 ? void 0 : setAttachments(results);
+                        return [3 /*break*/, 5];
+                    case 3: return [4 /*yield*/, getDefaultValues(fields)];
+                    case 4:
                         values = _b.sent();
-                        _b.label = 4;
-                    case 4: return [2 /*return*/, values];
+                        _b.label = 5;
+                    case 5: return [2 /*return*/, values];
                 }
             });
         });
