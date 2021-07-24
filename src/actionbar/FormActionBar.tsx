@@ -41,6 +41,7 @@ function FormActionBar() {
     removingItem,
     setResults,
     formIsLoading,
+    toolbar,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   function tryNavigate(callback: any) {
@@ -95,10 +96,7 @@ function FormActionBar() {
 
       let newIndex = 0;
 
-      if (
-        currentItemIndex! > 0 &&
-        currentItemIndex! <= results!.length - 1
-      ) {
+      if (currentItemIndex! > 0 && currentItemIndex! <= results!.length - 1) {
         newIndex = currentItemIndex! - 1;
       }
 
@@ -178,26 +176,21 @@ function FormActionBar() {
         icon={<ThunderboltOutlined />}
         disabled={mustDisableButtons}
         tooltip="Actions"
-        items={[
-          "Test action 1",
-          "Test action 2",
-          "Test action 3",
-          "Test action 4",
-        ]}
+        items={toolbar.action}
         onItemClick={() => {}}
       />
       <DropdownButton
         icon={<PrinterOutlined />}
         disabled={mustDisableButtons}
         tooltip="Reports"
-        items={["Report 1", "Report 2"]}
+        items={toolbar.print}
         onItemClick={() => {}}
       />
       <DropdownButton
         icon={<EnterOutlined />}
         disabled={mustDisableButtons}
         tooltip="Related"
-        items={["Related 1", "Related 2"]}
+        items={toolbar.relate}
         onItemClick={() => {}}
       />
       <DropdownButton

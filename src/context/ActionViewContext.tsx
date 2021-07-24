@@ -24,6 +24,8 @@ export type ActionViewContextType = {
   setRemovingItem?: (value: boolean) => void;
   formIsLoading?: boolean;
   setFormIsLoading?: (value: boolean) => void;
+  toolbar?: any;
+  setToolbar?: (value: any) => void;
 };
 
 export const ActionViewContext = React.createContext<ActionViewContextType | null>(
@@ -55,6 +57,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     currentItemIndex,
     setCurrentItemIndex,
     currentModel,
+    toolbar,
+    setToolbar,
   } = props;
 
   useEffect(() => {
@@ -93,6 +97,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setRemovingItem,
         formIsLoading,
         setFormIsLoading,
+        toolbar,
+        setToolbar,
       }}
     >
       {children}

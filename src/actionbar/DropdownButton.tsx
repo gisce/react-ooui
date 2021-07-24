@@ -4,7 +4,7 @@ import { DownOutlined } from "@ant-design/icons";
 
 type Props = {
   onItemClick: () => void;
-  items: string[];
+  items: any[];
   tooltip: string;
   icon: any;
   label?: string;
@@ -15,8 +15,8 @@ function DropdownButton(props: Props) {
   const { icon, tooltip, items, onItemClick, label, disabled = false } = props;
 
   function getMenu() {
-    const menuItems = items.map((item, i) => {
-      return <Menu.Item key={i}>{item}</Menu.Item>;
+    const menuItems = items.map((item) => {
+      return <Menu.Item key={item.id}>{item.name}</Menu.Item>;
     });
 
     return (
@@ -32,7 +32,7 @@ function DropdownButton(props: Props) {
   }
 
   return (
-    <Dropdown overlay={getMenu()} disabled={disabled}>
+    <Dropdown overlay={getMenu()} disabled={disabled || !items}>
       <Button>
         {icon} {label} <DownOutlined />
       </Button>

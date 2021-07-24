@@ -31,6 +31,7 @@ function ActionView(props: Props) {
   const [currentId, setCurrentId] = useState<number>();
   const [currentItemIndex, setCurrentItemIndex] = useState<number>();
   const [results, setResults] = useState<any>([]);
+  const [toolbar, setToolbar] = useState<any>();
 
   const formRef = useRef();
 
@@ -46,7 +47,9 @@ function ActionView(props: Props) {
       fields: {},
     });
     setDomain(parsedDomain);
-    setFormView(dataForAction.views.get("form"));
+    const formView = dataForAction.views.get("form");
+    setFormView(formView);
+    setToolbar(formView.toolbar);
     setTreeView(dataForAction.views.get("tree"));
     setCurrentModel(dataForAction.model);
     return dataForAction;
@@ -135,6 +138,8 @@ function ActionView(props: Props) {
       results={results}
       setResults={setResults}
       currentModel={currentModel}
+      toolbar={toolbar}
+      setToolbar={setToolbar}
     >
       <TitleHeader>
         {currentView === "form" ? (
