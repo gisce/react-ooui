@@ -88,22 +88,27 @@ function FormActionBar() {
         ids: [currentId!],
       });
 
-      let newIndex = currentItemIndex!;
-      const itemIndex = results!.findIndex((item: any) => {
-        return item === currentId;
-      });
-
-      if (itemIndex > results!.length - 1) {
-        newIndex = results!.length - 1;
-      }
-
       const filteredResults = results?.filter((item: any) => {
         return item !== currentId;
       });
-
       setResults?.(filteredResults!);
-      setCurrentItemIndex?.(newIndex);
-      setCurrentId?.(filteredResults![newIndex]);
+
+      let newIndex = 0;
+
+      if (
+        currentItemIndex! > 0 &&
+        currentItemIndex! <= results!.length - 1
+      ) {
+        newIndex = currentItemIndex! - 1;
+      }
+
+      if (!filteredResults?.[newIndex]) {
+        setCurrentId?.(undefined);
+        setCurrentItemIndex?.(undefined);
+      } else {
+        setCurrentId?.(filteredResults?.[newIndex]);
+        setCurrentItemIndex?.(newIndex);
+      }
     } catch (e) {
       showErrorDialog(JSON.stringify(e));
     } finally {
