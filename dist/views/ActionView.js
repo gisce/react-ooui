@@ -149,7 +149,7 @@ function ActionView(props) {
                     var id = event.id;
                     setCurrentId(id);
                     var itemIndex = results.findIndex(function (item) {
-                        return item.id === id;
+                        return item === id;
                     });
                     setCurrentItemIndex(itemIndex);
                     setCurrentView("form");

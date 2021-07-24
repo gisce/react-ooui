@@ -105,7 +105,7 @@ function FormActionBar() {
     }
     function remove() {
         return __awaiter(this, void 0, void 0, function () {
-            var newIndex, itemIndex, filteredResults, e_1;
+            var filteredResults, newIndex, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -117,19 +117,23 @@ function FormActionBar() {
                             })];
                     case 1:
                         _a.sent();
-                        newIndex = currentItemIndex;
-                        itemIndex = results.findIndex(function (item) {
-                            return item === currentId;
-                        });
-                        if (itemIndex > results.length - 1) {
-                            newIndex = results.length - 1;
-                        }
                         filteredResults = results === null || results === void 0 ? void 0 : results.filter(function (item) {
                             return item !== currentId;
                         });
                         setResults === null || setResults === void 0 ? void 0 : setResults(filteredResults);
-                        setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(newIndex);
-                        setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(filteredResults[newIndex]);
+                        newIndex = 0;
+                        if (currentItemIndex > 0 &&
+                            currentItemIndex <= results.length - 1) {
+                            newIndex = currentItemIndex - 1;
+                        }
+                        if (!(filteredResults === null || filteredResults === void 0 ? void 0 : filteredResults[newIndex])) {
+                            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(undefined);
+                            setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(undefined);
+                        }
+                        else {
+                            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(filteredResults === null || filteredResults === void 0 ? void 0 : filteredResults[newIndex]);
+                            setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(newIndex);
+                        }
                         return [3 /*break*/, 4];
                     case 2:
                         e_1 = _a.sent();

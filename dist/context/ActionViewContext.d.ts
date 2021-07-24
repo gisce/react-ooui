@@ -13,7 +13,7 @@ export declare type ActionViewContextType = {
     formRef?: any;
     onNewClicked: () => void;
     currentId?: number;
-    setCurrentId?: (id: number) => void;
+    setCurrentId?: (id?: number) => void;
     currentItemIndex?: number;
     setCurrentItemIndex?: (value?: number) => void;
     results?: any[];
