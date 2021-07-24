@@ -49,7 +49,7 @@ function ActionView(props: Props) {
     setDomain(parsedDomain);
     const formView = dataForAction.views.get("form");
     setFormView(formView);
-    setToolbar(formView.toolbar);
+    setToolbar(formView?.toolbar);
     setTreeView(dataForAction.views.get("tree"));
     setCurrentModel(dataForAction.model);
     return dataForAction;
