@@ -143,6 +143,7 @@ function Form(props: FormProps, ref: any) {
     setFormHasChanges = undefined,
     setCurrentId = undefined,
     setFormIsLoading = undefined,
+    setAttachments = undefined,
   } = (rootForm ? actionViewContext : {}) || {};
 
   const onSubmitSucceed = (payload: any) => {
@@ -312,6 +313,17 @@ function Form(props: FormProps, ref: any) {
           fields,
         })
       )[0];
+
+      const {
+        results,
+      } = await ConnectionProvider.getHandler().search({
+        params: [
+          ["res_model", "=", model],
+          ["res_id", "=", id],
+        ],
+        model: "ir.attachment",
+      });
+      setAttachments?.(results);
     } else {
       values = await getDefaultValues(fields);
     }

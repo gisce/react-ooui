@@ -26,6 +26,8 @@ export type ActionViewContextType = {
   setFormIsLoading?: (value: boolean) => void;
   toolbar?: any;
   setToolbar?: (value: any) => void;
+  attachments?: any;
+  setAttachments?: (value: any) => void;
 };
 
 export const ActionViewContext = React.createContext<ActionViewContextType | null>(
@@ -41,6 +43,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
   const [removingItem, setRemovingItem] = useState<boolean>(false);
   const [formIsLoading, setFormIsLoading] = useState<boolean>(false);
+  const [attachments, setAttachments] = useState<any>([]);
 
   const {
     children,
@@ -99,6 +102,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setFormIsLoading,
         toolbar,
         setToolbar,
+        attachments,
+        setAttachments,
       }}
     >
       {children}
