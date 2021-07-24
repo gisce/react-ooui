@@ -42,6 +42,7 @@ function FormActionBar() {
     setResults,
     formIsLoading,
     toolbar,
+    attachments,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   function tryNavigate(callback: any) {
@@ -176,29 +177,29 @@ function FormActionBar() {
         icon={<ThunderboltOutlined />}
         disabled={mustDisableButtons}
         tooltip="Actions"
-        items={toolbar.action}
+        items={toolbar?.action}
         onItemClick={() => {}}
       />
       <DropdownButton
         icon={<PrinterOutlined />}
         disabled={mustDisableButtons}
         tooltip="Reports"
-        items={toolbar.print}
+        items={toolbar?.print}
         onItemClick={() => {}}
       />
       <DropdownButton
         icon={<EnterOutlined />}
         disabled={mustDisableButtons}
         tooltip="Related"
-        items={toolbar.relate}
+        items={toolbar?.relate}
         onItemClick={() => {}}
       />
       <DropdownButton
         icon={<LinkOutlined />}
         disabled={mustDisableButtons}
-        label={"(2)"}
+        label={`(${attachments.length})`}
         tooltip="Attachments"
-        items={["Attachment 1", "Attachment 2"]}
+        items={attachments}
         onItemClick={() => {}}
       />
     </Space>
