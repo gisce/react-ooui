@@ -105,7 +105,7 @@ function ActionView(props: Props) {
             const { id } = event;
             setCurrentId(id);
             const itemIndex = results.findIndex((item: any) => {
-              return item.id === id;
+              return item === id;
             });
             setCurrentItemIndex(itemIndex);
             setCurrentView("form");
