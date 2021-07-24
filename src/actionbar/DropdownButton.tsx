@@ -32,7 +32,7 @@ function DropdownButton(props: Props) {
   }
 
   return (
-    <Dropdown overlay={getMenu()} disabled={disabled || !items}>
+    <Dropdown overlay={getMenu()} disabled={disabled || !items || items.length === 0}>
       <Button>
         {icon} {label} <DownOutlined />
       </Button>
