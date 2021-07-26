@@ -3,7 +3,7 @@ import { Menu, Dropdown, Button } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 
 type Props = {
-  onItemClick: () => void;
+  onItemClick: (event: any) => void;
   items: any[];
   tooltip: string;
   icon: any;
@@ -27,8 +27,7 @@ function DropdownButton(props: Props) {
   }
 
   function handleMenuClick(event: any) {
-    console.log();
-    onItemClick();
+    onItemClick(event);
   }
 
   return (

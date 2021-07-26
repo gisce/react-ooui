@@ -7,14 +7,16 @@ import {
 } from "@/context/ActionViewContext";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 
-function NewButton() {
-  const {
-    formHasChanges,
-    formIsSaving,
-    formIsLoading,
-    removingItem,
-    onNewClicked: onNewClickedProps,
-  } = useContext(ActionViewContext) as ActionViewContextType;
+type Props = {
+  disabled?: boolean;
+};
+
+function NewButton(props: Props) {
+  const { disabled = false } = props;
+
+  const { formHasChanges, onNewClicked: onNewClickedProps } = useContext(
+    ActionViewContext
+  ) as ActionViewContextType;
 
   const onNewClicked = () => {
     if (formHasChanges) {
@@ -34,7 +36,7 @@ function NewButton() {
       icon={<FileAddOutlined />}
       tooltip={"New"}
       onClick={onNewClicked}
-      disabled={formIsSaving || formIsLoading || removingItem}
+      disabled={disabled}
     />
   );
 }

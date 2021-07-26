@@ -134,6 +134,7 @@ function Form(props, ref) {
     };
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
+        generateReport: generateReport,
     }); });
     react_1.useEffect(function () {
         if (!model && !archProps && !fieldsProps) {
@@ -584,16 +585,36 @@ function Form(props, ref) {
     }
     function executeReportAction(response, context) {
         return __awaiter(this, void 0, void 0, function () {
-            var newReportId;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().createReport({
+                    case 0: return [4 /*yield*/, generateReport({
                             model: response.model,
                             name: response.report_name,
                             contextReport: response.datas.context,
                             ids: response.datas.ids[0],
-                            context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
+                            context: context,
                         })];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function generateReport(options) {
+        return __awaiter(this, void 0, void 0, function () {
+            var ids, context, model, contextReport, name, newReportId;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        ids = options.ids, context = options.context, model = options.model, contextReport = options.contextReport, name = options.name;
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().createReport({
+                                model: model,
+                                name: name,
+                                contextReport: contextReport,
+                                ids: ids,
+                                context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
+                            })];
                     case 1:
                         newReportId = _a.sent();
                         onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id);

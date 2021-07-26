@@ -29,7 +29,7 @@ import {
   mergeFieldsDomain,
   getValuesForDomain,
 } from "@/helpers/formHelper";
-import { FormView } from "@/types/index";
+import { CreateReportRequest, FormView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import formErrorsDialog from "@/ui/FormErrorsDialog";
@@ -165,6 +165,7 @@ function Form(props: FormProps, ref: any) {
 
   useImperativeHandle(ref, () => ({
     submitForm,
+    generateReport,
   }));
 
   useEffect(() => {
@@ -314,9 +315,7 @@ function Form(props: FormProps, ref: any) {
         })
       )[0];
 
-      const {
-        results,
-      } = await ConnectionProvider.getHandler().search({
+      const { results } = await ConnectionProvider.getHandler().search({
         params: [
           ["res_model", "=", model],
           ["res_id", "=", id],
@@ -594,12 +593,24 @@ function Form(props: FormProps, ref: any) {
     }
   }
 
-  async function executeReportAction(response: any, context: any) {
-    const newReportId = await ConnectionProvider.getHandler().createReport({
+  async function executeReportAction(response: any, context?: any) {
+    await generateReport({
       model: response.model,
       name: response.report_name,
       contextReport: response.datas.context,
       ids: response.datas.ids[0],
+      context,
+    });
+  }
+
+  async function generateReport(options: CreateReportRequest) {
+    const { ids, context, model, contextReport, name } = options;
+
+    const newReportId = await ConnectionProvider.getHandler().createReport({
+      model,
+      name,
+      contextReport,
+      ids,
       context: {
         ...context,
         ...parentContext,

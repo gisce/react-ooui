@@ -43,6 +43,7 @@ function FormActionBar() {
     formIsLoading,
     toolbar,
     attachments,
+    formRef,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   function tryNavigate(callback: any) {
@@ -126,7 +127,7 @@ function FormActionBar() {
           {separator()}
         </>
       )}
-      <NewButton />
+      <NewButton disabled={formIsSaving || formIsLoading || removingItem} />
       <ActionButton
         icon={<SaveOutlined />}
         tooltip={"Save"}
@@ -185,7 +186,25 @@ function FormActionBar() {
         disabled={mustDisableButtons}
         tooltip="Reports"
         items={toolbar?.print}
-        onItemClick={() => {}}
+        onItemClick={(event: any) => {
+          const report = toolbar?.print?.find((item: any) => {
+            return item.id === parseInt(event.key);
+          });
+
+          if (!report) {
+            return;
+          }
+
+          const { report_name, model, context } = report;
+
+          (formRef.current as any).generateReport({
+            model,
+            name: report_name,
+            ids: [currentId],
+            contextReport: context ? JSON.parse(context) : {},
+            context: {},
+          });
+        }}
       />
       <DropdownButton
         icon={<EnterOutlined />}

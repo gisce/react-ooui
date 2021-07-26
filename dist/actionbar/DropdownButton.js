@@ -16,8 +16,7 @@ function DropdownButton(props) {
             react_1.default.createElement(antd_1.Menu.ItemGroup, { title: tooltip }, menuItems)));
     }
     function handleMenuClick(event) {
-        console.log();
-        onItemClick();
+        onItemClick(event);
     }
     return (react_1.default.createElement(antd_1.Dropdown, { overlay: getMenu(), disabled: disabled || !items || items.length === 0 },
         react_1.default.createElement(antd_1.Button, null,
