@@ -135,6 +135,7 @@ function Form(props, ref) {
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
         generateReport: generateReport,
+        runAction: runAction,
     }); });
     react_1.useEffect(function () {
         if (!model && !archProps && !fieldsProps) {
@@ -678,7 +679,7 @@ function Form(props, ref) {
     function runActionButton(_a) {
         var action = _a.action, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
-            var actionData, actionWindowData, viewData, form, parsedDomain;
+            var actionData;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
@@ -687,19 +688,34 @@ function Form(props, ref) {
                         })];
                     case 1:
                         actionData = (_b.sent())[0];
-                        if (!(actionData.type === "ir.actions.act_window")) return [3 /*break*/, 4];
+                        return [4 /*yield*/, runAction(actionData, context)];
+                    case 2:
+                        _b.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function runAction(actionData, context) {
+        return __awaiter(this, void 0, void 0, function () {
+            var actionWindowData, viewData, form, parsedDomain;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(true);
+                        if (!(actionData.type === "ir.actions.act_window")) return [3 /*break*/, 3];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
                                 model: "ir.actions.act_window",
-                                ids: [parseInt(action)],
+                                ids: [parseInt(actionData.id)],
                             })];
-                    case 2:
-                        actionWindowData = (_b.sent())[0];
+                    case 1:
+                        actionWindowData = (_a.sent())[0];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getViewsForAction({
                                 action: actionData.type + "," + actionData.id,
                                 context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                             })];
-                    case 3:
-                        viewData = _b.sent();
+                    case 2:
+                        viewData = _a.sent();
                         form = viewData.views.get("form");
                         parsedDomain = ooui_1.parseDomain({
                             domainValue: actionWindowData.domain,
@@ -714,14 +730,16 @@ function Form(props, ref) {
                         setButtonActionModalFields(form.fields);
                         setButtonContext(context);
                         setButtonActionModalVisible(true);
-                        return [3 /*break*/, 6];
-                    case 4:
-                        if (!(actionData.type === "ir.actions.report.xml")) return [3 /*break*/, 6];
+                        return [3 /*break*/, 5];
+                    case 3:
+                        if (!(actionData.type === "ir.actions.report.xml")) return [3 /*break*/, 5];
                         return [4 /*yield*/, executeReportAction(actionData, context)];
+                    case 4:
+                        _a.sent();
+                        _a.label = 5;
                     case 5:
-                        _b.sent();
-                        _b.label = 6;
-                    case 6: return [2 /*return*/];
+                        setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(false);
+                        return [2 /*return*/];
                 }
             });
         });

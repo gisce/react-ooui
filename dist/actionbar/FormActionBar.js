@@ -170,7 +170,16 @@ function FormActionBar() {
         separator(),
         react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews, onChangeView: setCurrentView, disabled: mustDisableButtons }),
         separator(),
-        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null), disabled: mustDisableButtons, tooltip: "Actions", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.action, onItemClick: function () { } }),
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null), disabled: mustDisableButtons, tooltip: "Actions", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.action, onItemClick: function (event) {
+                var _a;
+                var action = (_a = toolbar === null || toolbar === void 0 ? void 0 : toolbar.action) === null || _a === void 0 ? void 0 : _a.find(function (item) {
+                    return item.id === parseInt(event.key);
+                });
+                if (!action) {
+                    return;
+                }
+                formRef.current.runAction(action, {});
+            } }),
         react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.PrinterOutlined, null), disabled: mustDisableButtons, tooltip: "Reports", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.print, onItemClick: function (event) {
                 var _a;
                 var report = (_a = toolbar === null || toolbar === void 0 ? void 0 : toolbar.print) === null || _a === void 0 ? void 0 : _a.find(function (item) {

@@ -181,7 +181,17 @@ function FormActionBar() {
         disabled={mustDisableButtons}
         tooltip="Actions"
         items={toolbar?.action}
-        onItemClick={() => {}}
+        onItemClick={(event: any) => {
+          const action = toolbar?.action?.find((item: any) => {
+            return item.id === parseInt(event.key);
+          });
+
+          if (!action) {
+            return;
+          }
+
+          (formRef.current as any).runAction(action, {});
+        }}
       />
       <DropdownButton
         icon={<PrinterOutlined />}

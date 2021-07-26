@@ -166,6 +166,7 @@ function Form(props: FormProps, ref: any) {
   useImperativeHandle(ref, () => ({
     submitForm,
     generateReport,
+    runAction,
   }));
 
   useEffect(() => {
@@ -666,11 +667,17 @@ function Form(props: FormProps, ref: any) {
       })
     )[0];
 
+    await runAction(actionData, context);
+  }
+
+  async function runAction(actionData: any, context: any) {
+    setFormIsLoading?.(true);
+
     if (actionData.type === "ir.actions.act_window") {
       const actionWindowData = (
         await ConnectionProvider.getHandler().readObjects({
           model: "ir.actions.act_window",
-          ids: [parseInt(action)],
+          ids: [parseInt(actionData.id)],
         })
       )[0];
 
@@ -697,6 +704,8 @@ function Form(props: FormProps, ref: any) {
     } else if (actionData.type === "ir.actions.report.xml") {
       await executeReportAction(actionData, context);
     }
+    
+    setFormIsLoading?.(false);
   }
 
   async function executeButtonAction({
