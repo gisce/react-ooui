@@ -1,3 +1,6 @@
-declare function NewButton(): JSX.Element;
+declare type Props = {
+    disabled?: boolean;
+};
+declare function NewButton(props: Props): JSX.Element;
 export default NewButton;
 //# sourceMappingURL=NewButton.d.ts.map

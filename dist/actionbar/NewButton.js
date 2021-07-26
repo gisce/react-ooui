@@ -27,8 +27,9 @@ var icons_1 = require("@ant-design/icons");
 var ActionButton_1 = __importDefault(require("./ActionButton"));
 var ActionViewContext_1 = require("@/context/ActionViewContext");
 var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"));
-function NewButton() {
-    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), formHasChanges = _a.formHasChanges, formIsSaving = _a.formIsSaving, formIsLoading = _a.formIsLoading, removingItem = _a.removingItem, onNewClickedProps = _a.onNewClicked;
+function NewButton(props) {
+    var _a = props.disabled, disabled = _a === void 0 ? false : _a;
+    var _b = react_1.useContext(ActionViewContext_1.ActionViewContext), formHasChanges = _b.formHasChanges, onNewClickedProps = _b.onNewClicked;
     var onNewClicked = function () {
         if (formHasChanges) {
             UnsavedChangesDialog_1.default({
@@ -40,7 +41,7 @@ function NewButton() {
         }
         onNewClickedProps();
     };
-    return (react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.FileAddOutlined, null), tooltip: "New", onClick: onNewClicked, disabled: formIsSaving || formIsLoading || removingItem }));
+    return (react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.FileAddOutlined, null), tooltip: "New", onClick: onNewClicked, disabled: disabled }));
 }
 exports.default = NewButton;
 //# sourceMappingURL=NewButton.js.map

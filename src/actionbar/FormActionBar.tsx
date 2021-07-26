@@ -23,6 +23,8 @@ import showConfirmDialog from "@/ui/ConfirmDialog";
 import showErrorDialog from "@/ui/GenericErrorDialog";
 import ConnectionProvider from "@/ConnectionProvider";
 
+import { getMimeType, openBase64InNewTab } from "@/helpers/filesHelper";
+
 function FormActionBar() {
   const {
     availableViews,
@@ -219,7 +221,18 @@ function FormActionBar() {
         label={`(${attachments.length})`}
         tooltip="Attachments"
         items={attachments}
-        onItemClick={() => {}}
+        onItemClick={async (event: any) => {
+          const attachment = attachments.find((item: any) => {
+            return item.id === parseInt(event.key);
+          });
+
+          if (!attachment) {
+            return;
+          }
+
+          const fileType: any = await getMimeType(attachment.datas!);
+          openBase64InNewTab(attachment.datas, fileType.mime);
+        }}
       />
     </Space>
   );

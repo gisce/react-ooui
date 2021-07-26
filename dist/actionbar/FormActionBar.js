@@ -70,7 +70,9 @@ var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"
 var ConfirmDialog_1 = __importDefault(require("@/ui/ConfirmDialog"));
 var GenericErrorDialog_1 = __importDefault(require("@/ui/GenericErrorDialog"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
+var filesHelper_1 = require("@/helpers/filesHelper");
 function FormActionBar() {
+    var _this = this;
     var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, onFormSave = _a.onFormSave, formHasChanges = _a.formHasChanges, formIsSaving = _a.formIsSaving, currentId = _a.currentId, results = _a.results, setCurrentItemIndex = _a.setCurrentItemIndex, currentItemIndex = _a.currentItemIndex, setCurrentId = _a.setCurrentId, currentModel = _a.currentModel, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, setResults = _a.setResults, formIsLoading = _a.formIsLoading, toolbar = _a.toolbar, attachments = _a.attachments, formRef = _a.formRef;
     function tryNavigate(callback) {
         if (formHasChanges) {
@@ -152,7 +154,7 @@ function FormActionBar() {
             react_1.default.createElement(antd_1.Spin, null),
             separator(),
             separator())),
-        react_1.default.createElement(NewButton_1.default, null),
+        react_1.default.createElement(NewButton_1.default, { disabled: formIsSaving || formIsLoading || removingItem }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.SaveOutlined, null), tooltip: "Save", disabled: !formHasChanges || mustDisableButtons, loading: formIsSaving, onClick: onFormSave }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.DeleteOutlined, null), tooltip: "Delete", disabled: formIsSaving ||
                 currentId === undefined ||
@@ -187,7 +189,25 @@ function FormActionBar() {
                 });
             } }),
         react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.EnterOutlined, null), disabled: mustDisableButtons, tooltip: "Related", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.relate, onItemClick: function () { } }),
-        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.LinkOutlined, null), disabled: mustDisableButtons, label: "(" + attachments.length + ")", tooltip: "Attachments", items: attachments, onItemClick: function () { } })));
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.LinkOutlined, null), disabled: mustDisableButtons, label: "(" + attachments.length + ")", tooltip: "Attachments", items: attachments, onItemClick: function (event) { return __awaiter(_this, void 0, void 0, function () {
+                var attachment, fileType;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            attachment = attachments.find(function (item) {
+                                return item.id === parseInt(event.key);
+                            });
+                            if (!attachment) {
+                                return [2 /*return*/];
+                            }
+                            return [4 /*yield*/, filesHelper_1.getMimeType(attachment.datas)];
+                        case 1:
+                            fileType = _a.sent();
+                            filesHelper_1.openBase64InNewTab(attachment.datas, fileType.mime);
+                            return [2 /*return*/];
+                    }
+                });
+            }); } })));
 }
 function separator() {
     return react_1.default.createElement("div", { className: "inline-block w-2" });
