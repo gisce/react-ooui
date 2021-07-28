@@ -100,7 +100,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           payload: text,
         });
 
-        if (results.length > 0) {
+        if (results.length === 1) {
           triggerChange(results[0]);
         } else {
           setSearchText(text);
@@ -133,6 +133,14 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     }
   };
 
+  async function onKeyUp(event: any) {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      event.stopPropagation();
+      await onElementLostFocus();
+    }
+  }
+
   return (
     <Row gutter={8} wrap={false}>
       <Col flex="auto">
@@ -143,6 +151,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           disabled={readOnly}
           className={requiredClass}
           onBlur={onElementLostFocus}
+          onKeyUp={onKeyUp}
         />
       </Col>
       <Col flex="32px">
