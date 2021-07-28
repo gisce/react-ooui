@@ -16,9 +16,9 @@ const showDialog = (err: string) => {
   ) {
     const splitted = err.split("\n\n");
     message = splitted[1];
-    const args = splitted[0].split(" ");
+    const args = splitted[0].split(" -- ");
     type = args[0];
-    title = args[2];
+    title = args[1];
   } else {
     message = err;
     type = "error";

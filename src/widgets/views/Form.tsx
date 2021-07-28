@@ -628,14 +628,21 @@ function Form(props: FormProps, ref: any) {
   }
 
   async function evaluateReportStatus(id: any) {
-    const reportState = await ConnectionProvider.getHandler().getReport({
-      id,
-    });
-    if (reportState.state) {
+    let reportState;
+    try {
+      reportState = await ConnectionProvider.getHandler().getReport({
+        id,
+      });
+      if (reportState.state) {
+        clearInterval(reportInProgressInterval.current);
+        setReportGenerating(false);
+        const fileType: any = await getMimeType(reportState.result);
+        openBase64InNewTab(reportState.result, fileType.mime);
+      }
+    } catch (error) {
       clearInterval(reportInProgressInterval.current);
       setReportGenerating(false);
-      const fileType: any = await getMimeType(reportState.result);
-      openBase64InNewTab(reportState.result, fileType.mime);
+      showErrorDialog(error.exception || error);
     }
   }
 
