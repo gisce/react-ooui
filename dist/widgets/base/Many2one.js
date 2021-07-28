@@ -150,7 +150,7 @@ var Many2oneInput = function (props) {
                         })];
                 case 3:
                     results = _a.sent();
-                    if (results.length > 0) {
+                    if (results.length === 1) {
                         triggerChange(results[0]);
                     }
                     else {
@@ -198,13 +198,21 @@ var Many2oneInput = function (props) {
         });
     }); };
     function onKeyUp(event) {
-        if (event.keyCode === 13) {
-            event.preventDefault();
-            event.stopPropagation();
-            searchButtonTappedRef.current = true;
-            setSearchText(text);
-            setShowSearchModal(true);
-        }
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!(event.keyCode === 13)) return [3 /*break*/, 2];
+                        event.preventDefault();
+                        event.stopPropagation();
+                        return [4 /*yield*/, onElementLostFocus()];
+                    case 1:
+                        _a.sent();
+                        _a.label = 2;
+                    case 2: return [2 /*return*/];
+                }
+            });
+        });
     }
     return (react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false },
         react_1.default.createElement(antd_1.Col, { flex: "auto" },

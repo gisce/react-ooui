@@ -161,8 +161,8 @@ var BinaryInput = function (props) {
                         var fileUploadField = inputFile.current;
                         fileUploadField.click();
                     } }, "Select"),
-                react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.EyeOutlined, null), disabled: readOnly || !value, onClick: openFile }, "Open"),
-                react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Download", disabled: readOnly || !value, onClick: downloadFile, icon: react_1.default.createElement(icons_1.DownloadOutlined, null) }),
+                react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.EyeOutlined, null), disabled: !value, onClick: openFile }, "Open"),
+                react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Download", disabled: !value, onClick: downloadFile, icon: react_1.default.createElement(icons_1.DownloadOutlined, null) }),
                 react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Clear", disabled: readOnly || !value, onClick: clearFile, icon: react_1.default.createElement(icons_1.ClearOutlined, null) })))));
 };
 exports.BinaryInput = BinaryInput;

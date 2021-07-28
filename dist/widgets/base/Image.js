@@ -139,7 +139,7 @@ var ImageInput = function (props) {
                         var fileUploadField = inputFile.current;
                         fileUploadField.click();
                     } }),
-                react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Download", disabled: readOnly || !value, onClick: downloadFile, icon: react_1.default.createElement(icons_1.DownloadOutlined, null) }),
+                react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Download", disabled: !value, onClick: downloadFile, icon: react_1.default.createElement(icons_1.DownloadOutlined, null) }),
                 react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Clear", disabled: readOnly || !value, onClick: clearFile, icon: react_1.default.createElement(icons_1.ClearOutlined, null) })))));
 };
 exports.ImageInput = ImageInput;

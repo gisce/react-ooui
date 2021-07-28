@@ -94,7 +94,7 @@ export const ImageInput = (props: ImageInputProps) => {
           />
           <ButtonWithTooltip
             tooltip={"Download"}
-            disabled={readOnly || !value}
+            disabled={!value}
             onClick={downloadFile}
             icon={<DownloadOutlined />}
           />

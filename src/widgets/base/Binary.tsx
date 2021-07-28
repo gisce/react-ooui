@@ -117,14 +117,14 @@ export const BinaryInput = (props: BinaryInputProps) => {
           </Button>
           <Button
             icon={<EyeOutlined />}
-            disabled={readOnly || !value}
+            disabled={!value}
             onClick={openFile}
           >
             Open
           </Button>
           <ButtonWithTooltip
             tooltip={"Download"}
-            disabled={readOnly || !value}
+            disabled={!value}
             onClick={downloadFile}
             icon={<DownloadOutlined />}
           />
