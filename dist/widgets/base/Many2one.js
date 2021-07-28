@@ -197,9 +197,18 @@ var Many2oneInput = function (props) {
             }
         });
     }); };
+    function onKeyUp(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            event.stopPropagation();
+            searchButtonTappedRef.current = true;
+            setSearchText(text);
+            setShowSearchModal(true);
+        }
+    }
     return (react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false },
         react_1.default.createElement(antd_1.Col, { flex: "auto" },
-            react_1.default.createElement(antd_1.Input, { type: "text", value: text, onChange: onValueStringChange, disabled: readOnly, className: requiredClass, onBlur: onElementLostFocus })),
+            react_1.default.createElement(antd_1.Input, { type: "text", value: text, onChange: onValueStringChange, disabled: readOnly, className: requiredClass, onBlur: onElementLostFocus, onKeyUp: onKeyUp })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
             react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: id === undefined || text === "", onClick: function () {
                     setShowFormModal(true);

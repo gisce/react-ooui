@@ -630,12 +630,14 @@ function Form(props, ref) {
     }
     function evaluateReportStatus(id) {
         return __awaiter(this, void 0, void 0, function () {
-            var reportState, fileType;
+            var reportState, fileType, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getReport({
-                            id: id,
-                        })];
+                    case 0:
+                        _a.trys.push([0, 4, , 5]);
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getReport({
+                                id: id,
+                            })];
                     case 1:
                         reportState = _a.sent();
                         if (!reportState.state) return [3 /*break*/, 3];
@@ -646,7 +648,14 @@ function Form(props, ref) {
                         fileType = _a.sent();
                         filesHelper_1.openBase64InNewTab(reportState.result, fileType.mime);
                         _a.label = 3;
-                    case 3: return [2 /*return*/];
+                    case 3: return [3 /*break*/, 5];
+                    case 4:
+                        error_1 = _a.sent();
+                        clearInterval(reportInProgressInterval.current);
+                        setReportGenerating(false);
+                        ActionErrorDialog_1.default(error_1.exception || error_1);
+                        return [3 /*break*/, 5];
+                    case 5: return [2 /*return*/];
                 }
             });
         });
