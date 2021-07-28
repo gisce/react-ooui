@@ -21,6 +21,7 @@ export const Button = (props: Props) => {
     confirmMessage,
     icon,
     context,
+    readOnly,
   } = ooui;
   const formContext = useContext(FormContext) as FormContextType;
   const { executeButtonAction } = formContext || {};
@@ -59,7 +60,7 @@ export const Button = (props: Props) => {
     <Field ooui={ooui}>
       <AntButton
         className="w-full"
-        disabled={!activated}
+        disabled={!activated || readOnly}
         onClick={onClick}
         icon={getButtonIcon()}
       >

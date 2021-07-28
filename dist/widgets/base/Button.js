@@ -68,7 +68,7 @@ var icons_1 = require("@ant-design/icons");
 var iconMapper_1 = __importDefault(require("@/helpers/iconMapper"));
 var Button = function (props) {
     var ooui = props.ooui;
-    var id = ooui.id, label = ooui.label, activated = ooui.activated, buttonType = ooui.buttonType, confirmMessage = ooui.confirmMessage, icon = ooui.icon, context = ooui.context;
+    var id = ooui.id, label = ooui.label, activated = ooui.activated, buttonType = ooui.buttonType, confirmMessage = ooui.confirmMessage, icon = ooui.icon, context = ooui.context, readOnly = ooui.readOnly;
     var formContext = react_1.useContext(FormContext_1.FormContext);
     var executeButtonAction = (formContext || {}).executeButtonAction;
     var _a = react_1.useState(false), isRunning = _a[0], setIsRunning = _a[1];
@@ -109,7 +109,7 @@ var Button = function (props) {
         return undefined;
     }
     return (react_1.default.createElement(Field_1.default, { ooui: ooui },
-        react_1.default.createElement(antd_1.Button, { className: "w-full", disabled: !activated, onClick: onClick, icon: getButtonIcon() }, label)));
+        react_1.default.createElement(antd_1.Button, { className: "w-full", disabled: !activated || readOnly, onClick: onClick, icon: getButtonIcon() }, label)));
 };
 exports.Button = Button;
 //# sourceMappingURL=Button.js.map
