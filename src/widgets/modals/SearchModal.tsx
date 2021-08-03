@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef, useEffect } from "react";
 import { Modal, Button, Divider, Row, Space } from "antd";
 import { FormModal } from "./FormModal";
 import SearchTree from "@/widgets/views/SearchTree";
@@ -15,10 +15,34 @@ type SearchSelectionProps = {
 };
 
 export const SearchModal = (props: SearchSelectionProps) => {
-  const { visible, onCloseModal, onSelectValue, model, nameSearch, domain } = props;
+  const {
+    visible,
+    onCloseModal: onCloseModalProps,
+    onSelectValue,
+    model,
+    nameSearch,
+    domain,
+  } = props;
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
 
   const { modalWidth, modalHeight } = useModalWidthDimensions();
+  const uniqueComponentId = useRef<number>(Math.random() * 10000);
+
+  const [searchTreeVisible, setSearchTreeVisible] = useState<boolean>(
+    !showCreateModal
+  );
+
+  const onCloseModal = async () => {
+    setSearchTreeVisible(false);
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    onCloseModalProps();
+  };
+
+  useEffect(() => {
+    if (visible) {
+      setSearchTreeVisible(true);
+    }
+  }, [visible]);
 
   const onRowClicked = async (event: any) => {
     const { id } = event;
@@ -28,16 +52,14 @@ export const SearchModal = (props: SearchSelectionProps) => {
   const content = () => {
     return (
       <>
-        {visible && (
-          <SearchTree
-            key={Math.random() * 10000} // This forces the component to be unique each time
-            model={model}
-            nameSearch={nameSearch}
-            onRowClicked={onRowClicked}
-            treeScrollY={modalHeight * 0.3}
-            domain={domain}
-          />
-        )}
+        <SearchTree
+          visible={searchTreeVisible}
+          model={model}
+          nameSearch={nameSearch}
+          onRowClicked={onRowClicked}
+          treeScrollY={modalHeight * 0.3}
+          domain={domain}
+        />
         <Divider />
         <Row justify="end">
           <Space>
