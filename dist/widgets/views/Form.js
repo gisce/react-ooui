@@ -289,7 +289,9 @@ function Form(props, ref) {
                         results = (_b.sent()).results;
                         setAttachments === null || setAttachments === void 0 ? void 0 : setAttachments(results);
                         return [3 /*break*/, 5];
-                    case 3: return [4 /*yield*/, getDefaultValues(fields)];
+                    case 3:
+                        setAttachments === null || setAttachments === void 0 ? void 0 : setAttachments([]);
+                        return [4 /*yield*/, getDefaultValues(fields)];
                     case 4:
                         values = _b.sent();
                         _b.label = 5;

@@ -163,7 +163,7 @@ function ActionView(props) {
         setCurrentView("form");
     }
     return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId, setCurrentItemIndex: setCurrentItemIndex, currentItemIndex: currentItemIndex, results: results, setResults: setResults, currentModel: currentModel, toolbar: toolbar, setToolbar: setToolbar },
-        react_1.default.createElement(TitleHeader_1.default, null, currentView === "form" ? (react_1.default.createElement(FormActionBar_1.default, { key: Math.random() * 10000 })) : (react_1.default.createElement(TreeActionBar_1.default, null))),
+        react_1.default.createElement(TitleHeader_1.default, null, currentView === "form" ? react_1.default.createElement(FormActionBar_1.default, null) : react_1.default.createElement(TreeActionBar_1.default, null)),
         content()));
 }
 exports.default = ActionView;
