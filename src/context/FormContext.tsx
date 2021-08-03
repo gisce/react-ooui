@@ -3,8 +3,6 @@ import React from "react";
 export type FormContextType = {
   activeId?: number;
   activeModel: string;
-  parentId?: number;
-  parentModel?: string;
   setFieldValue: (field: string, value?: string) => void;
   getFieldValue: (field: string) => string;
   executeButtonAction: ({
@@ -32,8 +30,6 @@ const FormProvider = (props: FormProviderProps): any => {
     setFieldValue,
     getFieldValue,
     executeButtonAction,
-    parentId,
-    parentModel,
   } = props;
   return (
     <FormContext.Provider
@@ -43,8 +39,6 @@ const FormProvider = (props: FormProviderProps): any => {
         setFieldValue,
         getFieldValue,
         executeButtonAction,
-        parentId,
-        parentModel,
       }}
     >
       {children}
