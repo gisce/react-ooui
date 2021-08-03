@@ -47,6 +47,7 @@ type SearchRequest = {
 type SearchCountRequest = {
   params: Array<any>;
   model: string;
+  totalItems: number;
 };
 
 type CreateObjectRequest = {
@@ -119,7 +120,7 @@ type ConnectionProviderType = {
     context?: any;
   }) => Promise<ViewData>;
   getView: (model: string, type: ViewType) => Promise<FormView | TreeView>;
-  searchCount: (options: SearchCountRequest) => Promise<SearchResponse>;
+  searchAllIds: (options: SearchCountRequest) => Promise<number[]>;
   search: (options: SearchRequest) => Promise<SearchResponse>;
   update: (options: UpdateObjectRequest) => Promise<any>;
   create: (options: CreateObjectRequest) => Promise<any>;

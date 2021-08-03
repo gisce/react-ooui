@@ -187,12 +187,13 @@ function SearchTree(props) {
                 case 1:
                     _a = _b.sent(), totalItems = _a.totalItems, results = _a.results;
                     setTotalItems(totalItems);
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchCount({
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchAllIds({
                             params: searchParams,
                             model: currentModel,
+                            totalItems: totalItems,
                         })];
                 case 2:
-                    resultIds = (_b.sent()).results;
+                    resultIds = _b.sent();
                     setResults(results);
                     setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView(resultIds);
                     if (resultsActionView && resultIds.length > 0) {

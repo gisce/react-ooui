@@ -173,11 +173,10 @@ function SearchTree(props: Props) {
       fields: treeView!.fields,
     });
     setTotalItems(totalItems);
-    const {
-      results: resultIds,
-    } = await ConnectionProvider.getHandler().searchCount({
+    const resultIds = await ConnectionProvider.getHandler().searchAllIds({
       params: searchParams,
       model: currentModel!,
+      totalItems,
     });
 
     setResults(results);
@@ -270,7 +269,10 @@ function SearchTree(props: Props) {
     let _treeView = treeViewProps;
 
     if (!treeViewProps) {
-      _treeView = await ConnectionProvider.getHandler().getView(model!, "tree") as TreeView;
+      _treeView = (await ConnectionProvider.getHandler().getView(
+        model!,
+        "tree"
+      )) as TreeView;
     }
 
     setFormView(_formView as FormView);
