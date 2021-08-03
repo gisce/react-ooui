@@ -22,7 +22,7 @@ declare type TreeView = {
     fields: any;
 };
 declare type FormView = TreeView & {
-    search_fields: SearchFields;
+    search_fields?: SearchFields;
 };
 declare type SearchResponse = {
     totalItems: number;

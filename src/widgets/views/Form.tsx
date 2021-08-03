@@ -56,8 +56,7 @@ export type FormProps = {
   model: string;
   readOnly?: boolean;
   id?: number;
-  arch?: string;
-  fields?: any;
+  formView?: FormView;
   values?: any;
   showFooter?: boolean;
   getDataFromAction?: boolean;
@@ -91,8 +90,7 @@ function Form(props: FormProps, ref: any) {
     mustClearAfterSave = false,
     submitMode = "api",
     values: valuesProps,
-    arch: archProps,
-    fields: fieldsProps,
+    formView: formViewProps,
     postSaveAction,
     insideButtonModal = false,
     parentContext = {},
@@ -111,11 +109,12 @@ function Form(props: FormProps, ref: any) {
   const [buttonActionModalVisible, setButtonActionModalVisible] = useState<
     boolean
   >(false);
-  const [buttonActionModalArch, setButtonActionModalArch] = useState<string>();
+  const [buttonActionModalFormView, setButtonActionModalFormView] = useState<
+    FormView
+  >();
   const [buttonActionModalModel, setButtonActionModalModel] = useState<
     string
   >();
-  const [buttonActionModalFields, setButtonActionModalFields] = useState<any>();
   const formModalContext = useContext(FormModalContext) as FormModalContextType;
   const [buttonContext, setButtonContext] = useState<any>({});
   const [actionDomainModal, setActionDomainModal] = useState<any>();
@@ -170,12 +169,12 @@ function Form(props: FormProps, ref: any) {
   }));
 
   useEffect(() => {
-    if (!model && !archProps && !fieldsProps) {
+    if (!model && !formViewProps) {
       return;
     }
 
     fetchData();
-  }, [id, model, valuesProps, archProps, fieldsProps]);
+  }, [id, model, valuesProps, formViewProps]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -184,8 +183,8 @@ function Form(props: FormProps, ref: any) {
     let view;
 
     try {
-      if (archProps && fieldsProps) {
-        view = { arch: archProps, fields: fieldsProps };
+      if (formViewProps) {
+        view = { arch: formViewProps.arch, fields: formViewProps.fields };
       } else {
         view = await getFormView();
       }
@@ -704,14 +703,13 @@ function Form(props: FormProps, ref: any) {
 
       setActionDomainModal(parsedDomain);
       setButtonActionModalModel(viewData.model);
-      setButtonActionModalArch(form.arch);
-      setButtonActionModalFields(form.fields);
+      setButtonActionModalFormView(form);
       setButtonContext(context);
       setButtonActionModalVisible(true);
     } else if (actionData.type === "ir.actions.report.xml") {
       await executeReportAction(actionData, context);
     }
-    
+
     setFormIsLoading?.(false);
   }
 
@@ -835,8 +833,7 @@ function Form(props: FormProps, ref: any) {
           ...formOoui?.context,
         }}
         model={buttonActionModalModel!}
-        arch={buttonActionModalArch}
-        fields={buttonActionModalFields}
+        formView={buttonActionModalFormView}
         visible={buttonActionModalVisible}
         onSubmitSucceed={async () => {
           setButtonActionModalVisible(false);

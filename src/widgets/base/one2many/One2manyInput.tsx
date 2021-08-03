@@ -183,7 +183,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       });
       return;
     }
-    
+
     showRemoveItemDialog({
       onOk: () => {
         if (currentView === "form") {
@@ -480,8 +480,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
       return (
         <Form
-          arch={views.get("form").arch}
-          fields={views.get("form").fields}
+          formView={views.get("form")}
           values={itemsToShow[itemIndex]?.values}
           ref={formRef}
           model={relation}
@@ -552,8 +551,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       {content()}
       <FormModal
         noReuse={true}
-        arch={views.get("form").arch}
-        fields={views.get("form").fields}
+        formView={views.get("form")}
         model={relation}
         id={modalItem?.id}
         values={modalItem?.values}

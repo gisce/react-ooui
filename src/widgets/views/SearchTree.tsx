@@ -332,7 +332,7 @@ function SearchTree(props: Props) {
       <>
         <SearchFilter
           fields={{ ...treeView.fields, ...formView.fields }}
-          searchFields={formView.search_fields}
+          searchFields={formView.search_fields!}
           onClear={onClear}
           limit={limit}
           offset={offset}

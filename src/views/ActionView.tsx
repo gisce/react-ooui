@@ -85,8 +85,7 @@ function ActionView(props: Props) {
           visible={currentView === "form"}
           ref={formRef}
           model={currentModel!}
-          arch={formView?.arch}
-          fields={formView?.fields}
+          formView={formView}
           id={currentId}
           onSubmitSucceed={(id) => {
             const itemIndex = results!.findIndex((item: any) => {

@@ -28,7 +28,7 @@ type TreeView = {
 };
 
 type FormView = TreeView & {
-  search_fields: SearchFields;
+  search_fields?: SearchFields;
 };
 
 type SearchResponse = {

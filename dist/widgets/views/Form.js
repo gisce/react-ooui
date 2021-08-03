@@ -90,7 +90,7 @@ var ActionViewContext_1 = require("@/context/ActionViewContext");
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
-    var model = props.model, id = props.id, propsOnCancel = props.onCancel, propsOnSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, propsOnSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, archProps = props.arch, fieldsProps = props.fields, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g, actionDomain = props.actionDomain, _h = props.visible, visible = _h === void 0 ? true : _h, _j = props.rootForm, rootForm = _j === void 0 ? false : _j;
+    var model = props.model, id = props.id, propsOnCancel = props.onCancel, propsOnSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, propsOnSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, formViewProps = props.formView, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g, actionDomain = props.actionDomain, _h = props.visible, visible = _h === void 0 ? true : _h, _j = props.rootForm, rootForm = _j === void 0 ? false : _j;
     var _k = react_1.useState(false), isSubmitting = _k[0], setIsSubmitting = _k[1];
     var _l = react_1.useState(), error = _l[0], setError = _l[1];
     var _m = react_1.useState(false), loading = _m[0], setLoading = _m[1];
@@ -99,25 +99,24 @@ function Form(props, ref) {
     var _p = react_1.useState(), arch = _p[0], setArch = _p[1];
     var _q = react_1.useState(), fields = _q[0], setFields = _q[1];
     var _r = react_1.useState(false), buttonActionModalVisible = _r[0], setButtonActionModalVisible = _r[1];
-    var _s = react_1.useState(), buttonActionModalArch = _s[0], setButtonActionModalArch = _s[1];
+    var _s = react_1.useState(), buttonActionModalFormView = _s[0], setButtonActionModalFormView = _s[1];
     var _t = react_1.useState(), buttonActionModalModel = _t[0], setButtonActionModalModel = _t[1];
-    var _u = react_1.useState(), buttonActionModalFields = _u[0], setButtonActionModalFields = _u[1];
     var formModalContext = react_1.useContext(FormModalContext_1.FormModalContext);
-    var _v = react_1.useState({}), buttonContext = _v[0], setButtonContext = _v[1];
-    var _w = react_1.useState(), actionDomainModal = _w[0], setActionDomainModal = _w[1];
+    var _u = react_1.useState({}), buttonContext = _u[0], setButtonContext = _u[1];
+    var _v = react_1.useState(), actionDomainModal = _v[0], setActionDomainModal = _v[1];
     var createdId = react_1.useRef();
     var reportInProgressInterval = react_1.useRef();
-    var _x = react_1.useState(false), reportGenerating = _x[0], setReportGenerating = _x[1];
+    var _w = react_1.useState(false), reportGenerating = _w[0], setReportGenerating = _w[1];
     var warningIsShwon = react_1.useRef(false);
-    var _y = react_cool_dimensions_1.default({
+    var _x = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _y.width, containerRef = _y.ref;
+    }), width = _x.width, containerRef = _x.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     var formContext = react_1.useContext(FormContext_1.FormContext);
-    var _z = formContext || {}, parentId = _z.activeId, parentModel = _z.activeModel;
+    var _y = formContext || {}, parentId = _y.activeId, parentModel = _y.activeModel;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _0 = (rootForm ? actionViewContext : {}) || {}, _1 = _0.setFormIsSaving, setFormIsSaving = _1 === void 0 ? undefined : _1, _2 = _0.setFormHasChanges, setFormHasChanges = _2 === void 0 ? undefined : _2, _3 = _0.setCurrentId, setCurrentId = _3 === void 0 ? undefined : _3, _4 = _0.setFormIsLoading, setFormIsLoading = _4 === void 0 ? undefined : _4, _5 = _0.setAttachments, setAttachments = _5 === void 0 ? undefined : _5;
+    var _z = (rootForm ? actionViewContext : {}) || {}, _0 = _z.setFormIsSaving, setFormIsSaving = _0 === void 0 ? undefined : _0, _1 = _z.setFormHasChanges, setFormHasChanges = _1 === void 0 ? undefined : _1, _2 = _z.setCurrentId, setCurrentId = _2 === void 0 ? undefined : _2, _3 = _z.setFormIsLoading, setFormIsLoading = _3 === void 0 ? undefined : _3, _4 = _z.setAttachments, setAttachments = _4 === void 0 ? undefined : _4;
     var onSubmitSucceed = function (payload) {
         setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
         setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
@@ -138,11 +137,11 @@ function Form(props, ref) {
         runAction: runAction,
     }); });
     react_1.useEffect(function () {
-        if (!model && !archProps && !fieldsProps) {
+        if (!model && !formViewProps) {
             return;
         }
         fetchData();
-    }, [id, model, valuesProps, archProps, fieldsProps]);
+    }, [id, model, valuesProps, formViewProps]);
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
         var view, fields_1, arch_1, err_1;
         return __generator(this, function (_a) {
@@ -153,8 +152,8 @@ function Form(props, ref) {
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 5, 6, 7]);
-                    if (!(archProps && fieldsProps)) return [3 /*break*/, 2];
-                    view = { arch: archProps, fields: fieldsProps };
+                    if (!formViewProps) return [3 /*break*/, 2];
+                    view = { arch: formViewProps.arch, fields: formViewProps.fields };
                     return [3 /*break*/, 4];
                 case 2: return [4 /*yield*/, getFormView()];
                 case 3:
@@ -735,8 +734,7 @@ function Form(props, ref) {
                         });
                         setActionDomainModal(parsedDomain);
                         setButtonActionModalModel(viewData.model);
-                        setButtonActionModalArch(form.arch);
-                        setButtonActionModalFields(form.fields);
+                        setButtonActionModalFormView(form);
                         setButtonContext(context);
                         setButtonActionModalVisible(true);
                         return [3 /*break*/, 5];
@@ -829,7 +827,7 @@ function Form(props, ref) {
         error && (react_1.default.createElement(antd_1.Alert, { className: "mt-10 mb-20", message: JSON.stringify(error), type: "error", banner: true })),
         loading ? react_1.default.createElement(antd_1.Spin, null) : content(),
         showFooter && footer(),
-        react_1.default.createElement(index_1.FormModal, { buttonModal: true, noReuse: true, parentContext: __assign(__assign(__assign({}, buttonContext), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context), model: buttonActionModalModel, arch: buttonActionModalArch, fields: buttonActionModalFields, visible: buttonActionModalVisible, onSubmitSucceed: function () { return __awaiter(_this, void 0, void 0, function () {
+        react_1.default.createElement(index_1.FormModal, { buttonModal: true, noReuse: true, parentContext: __assign(__assign(__assign({}, buttonContext), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context), model: buttonActionModalModel, formView: buttonActionModalFormView, visible: buttonActionModalVisible, onSubmitSucceed: function () { return __awaiter(_this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:

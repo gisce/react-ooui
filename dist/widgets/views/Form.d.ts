@@ -1,10 +1,10 @@
 import React from "react";
+import { FormView } from "@/types/index";
 export declare type FormProps = {
     model: string;
     readOnly?: boolean;
     id?: number;
-    arch?: string;
-    fields?: any;
+    formView?: FormView;
     values?: any;
     showFooter?: boolean;
     getDataFromAction?: boolean;
