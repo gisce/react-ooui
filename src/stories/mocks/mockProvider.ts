@@ -41,12 +41,17 @@ const init = () => {
       const data = getMock(model);
       return data[type];
     },
-    searchCount: async (model: string, domain: any[]) => {
+    searchAllIds: async ({
+      params,
+      model,
+      totalItems,
+    }: {
+      params: any;
+      model: string;
+      totalItems: number;
+    }) => {
       await new Promise((resolve) => setTimeout(resolve, timeout));
-      return {
-        totalItems: 1,
-        results: [6],
-      };
+      return [6];
     },
     search: async (options: SearchRequest) => {
       await new Promise((resolve) => setTimeout(resolve, timeout));
