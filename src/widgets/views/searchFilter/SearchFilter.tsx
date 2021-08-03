@@ -86,18 +86,7 @@ function SearchFilter(props: Props): React.ReactElement {
 
   const rows = getRowsAndCols();
 
-  const areFieldsTouched = () => {
-    const touchedValues = Object.keys(form.getFieldsValue(true)).map((key) => {
-      return form.isFieldTouched(key);
-    });
-    return touchedValues.some((item) => item === true);
-  };
-
   const onFinish = (values: any) => {
-    if (!areFieldsTouched()) {
-      return;
-    }
-
     const { limit, offset } = values;
     delete values.offset;
     delete values.limit;
