@@ -8,6 +8,8 @@ declare type OnRowClickedData = {
 declare type Props = {
     action?: string;
     model?: string;
+    formView?: FormView;
+    treeView?: TreeView;
     onRowClicked: (data: OnRowClickedData) => void;
     nameSearch?: string;
     treeScrollY?: number;

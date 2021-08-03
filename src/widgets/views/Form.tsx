@@ -762,8 +762,6 @@ function Form(props: FormProps, ref: any) {
         <FormProvider
           activeId={id}
           activeModel={model}
-          parentId={parentId}
-          parentModel={parentModel}
           setFieldValue={setFieldValue}
           getFieldValue={getFieldValue}
           executeButtonAction={executeButtonAction}

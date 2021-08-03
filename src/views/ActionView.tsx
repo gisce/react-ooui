@@ -103,6 +103,8 @@ function ActionView(props: Props) {
           visible={currentView === "tree"}
           rootTree={true}
           model={currentModel!}
+          formView={formView}
+          treeView={treeView}
           domain={domain}
           onRowClicked={(event: any) => {
             const { id } = event;

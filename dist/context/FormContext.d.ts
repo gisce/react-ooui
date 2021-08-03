@@ -2,8 +2,6 @@ import React from "react";
 export declare type FormContextType = {
     activeId?: number;
     activeModel: string;
-    parentId?: number;
-    parentModel?: string;
     setFieldValue: (field: string, value?: string) => void;
     getFieldValue: (field: string) => string;
     executeButtonAction: ({ type, action, context, }: {

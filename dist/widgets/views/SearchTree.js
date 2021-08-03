@@ -79,7 +79,7 @@ var ActionViewContext_1 = require("@/context/ActionViewContext");
 var DEFAULT_SEARCH_LIMIT = 80;
 function SearchTree(props) {
     var _this = this;
-    var action = props.action, model = props.model, onRowClicked = props.onRowClicked, nameSearch = props.nameSearch, treeScrollY = props.treeScrollY, _a = props.domain, domain = _a === void 0 ? [] : _a, _b = props.visible, visible = _b === void 0 ? true : _b, _c = props.rootTree, rootTree = _c === void 0 ? false : _c;
+    var action = props.action, model = props.model, formViewProps = props.formView, treeViewProps = props.treeView, onRowClicked = props.onRowClicked, nameSearch = props.nameSearch, treeScrollY = props.treeScrollY, _a = props.domain, domain = _a === void 0 ? [] : _a, _b = props.visible, visible = _b === void 0 ? true : _b, _c = props.rootTree, rootTree = _c === void 0 ? false : _c;
     var _d = react_1.useState(false), isLoading = _d[0], setIsLoading = _d[1];
     var _e = react_1.useState(false), initialFetchDone = _e[0], setInitialFetchDone = _e[1];
     var _f = react_1.useState(false), searchNameGetDone = _f[0], setSearchNameGetDone = _f[1];
@@ -307,12 +307,20 @@ function SearchTree(props) {
             switch (_a.label) {
                 case 0:
                     setCurrentModel(model);
+                    _formView = formViewProps;
+                    if (!!formViewProps) return [3 /*break*/, 2];
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(model, "form")];
                 case 1:
-                    _formView = _a.sent();
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(model, "tree")];
+                    _formView = (_a.sent());
+                    _a.label = 2;
                 case 2:
-                    _treeView = _a.sent();
+                    _treeView = treeViewProps;
+                    if (!!treeViewProps) return [3 /*break*/, 4];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(model, "tree")];
+                case 3:
+                    _treeView = (_a.sent());
+                    _a.label = 4;
+                case 4:
                     setFormView(_formView);
                     setTreeView(_treeView);
                     setLimitFromAction(undefined);

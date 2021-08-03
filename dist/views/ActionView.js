@@ -148,7 +148,7 @@ function ActionView(props) {
                         setCurrentItemIndex(results.length - 1);
                     }
                 } }),
-            react_1.default.createElement(SearchTree_1.default, { visible: currentView === "tree", rootTree: true, model: currentModel, domain: domain, onRowClicked: function (event) {
+            react_1.default.createElement(SearchTree_1.default, { visible: currentView === "tree", rootTree: true, model: currentModel, formView: formView, treeView: treeView, domain: domain, onRowClicked: function (event) {
                     var id = event.id;
                     setCurrentId(id);
                     var itemIndex = results.findIndex(function (item) {

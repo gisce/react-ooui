@@ -24,6 +24,8 @@ type OnRowClickedData = {
 type Props = {
   action?: string;
   model?: string;
+  formView?: FormView;
+  treeView?: TreeView;
   onRowClicked: (data: OnRowClickedData) => void;
   nameSearch?: string;
   treeScrollY?: number;
@@ -36,6 +38,8 @@ function SearchTree(props: Props) {
   const {
     action,
     model,
+    formView: formViewProps,
+    treeView: treeViewProps,
     onRowClicked,
     nameSearch,
     treeScrollY,
@@ -253,14 +257,22 @@ function SearchTree(props: Props) {
 
   const fetchModelData = async () => {
     setCurrentModel(model);
-    const _formView = await ConnectionProvider.getHandler().getView(
-      model!,
-      "form"
-    );
-    const _treeView = await ConnectionProvider.getHandler().getView(
-      model!,
-      "tree"
-    );
+
+    let _formView = formViewProps;
+
+    if (!formViewProps) {
+      _formView = (await ConnectionProvider.getHandler().getView(
+        model!,
+        "form"
+      )) as FormView;
+    }
+
+    let _treeView = treeViewProps;
+
+    if (!treeViewProps) {
+      _treeView = await ConnectionProvider.getHandler().getView(model!, "tree") as TreeView;
+    }
+
     setFormView(_formView as FormView);
     setTreeView(_treeView as TreeView);
     setLimitFromAction(undefined);
