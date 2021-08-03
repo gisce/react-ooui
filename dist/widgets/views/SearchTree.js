@@ -71,7 +71,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
-var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 var SearchFilter_1 = __importDefault(require("@/widgets/views/searchFilter/SearchFilter"));
 var Tree_1 = __importDefault(require("@/widgets/views/Tree"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
@@ -82,24 +81,25 @@ function SearchTree(props) {
     var action = props.action, model = props.model, formViewProps = props.formView, treeViewProps = props.treeView, onRowClicked = props.onRowClicked, nameSearch = props.nameSearch, treeScrollY = props.treeScrollY, _a = props.domain, domain = _a === void 0 ? [] : _a, _b = props.visible, visible = _b === void 0 ? true : _b, _c = props.rootTree, rootTree = _c === void 0 ? false : _c;
     var _d = react_1.useState(false), isLoading = _d[0], setIsLoading = _d[1];
     var _e = react_1.useState(false), initialFetchDone = _e[0], setInitialFetchDone = _e[1];
-    var _f = react_1.useState(false), searchNameGetDone = _f[0], setSearchNameGetDone = _f[1];
-    var _g = react_1.useState(), currentModel = _g[0], setCurrentModel = _g[1];
-    var _h = react_1.useState(), treeView = _h[0], setTreeView = _h[1];
-    var _j = react_1.useState(), formView = _j[0], setFormView = _j[1];
-    var _k = react_1.useState(1), page = _k[0], setPage = _k[1];
-    var _l = react_1.useState(0), offset = _l[0], setOffset = _l[1];
-    var _m = react_1.useState(DEFAULT_SEARCH_LIMIT), limit = _m[0], setLimit = _m[1];
-    var _o = react_1.useState(), limitFromAction = _o[0], setLimitFromAction = _o[1];
-    var _p = react_1.useState([]), params = _p[0], setParams = _p[1];
-    var _q = react_1.useState(0), totalItems = _q[0], setTotalItems = _q[1];
-    var _r = react_1.useState([]), results = _r[0], setResults = _r[1];
-    var _s = react_1.useState(false), searchFilterLoading = _s[0], setSearchFilterLoading = _s[1];
-    var _t = react_1.useState(), searchError = _t[0], setSearchError = _t[1];
-    var _u = react_1.useState(), initialError = _u[0], setInitialError = _u[1];
-    var _v = react_1.useState(false), tableRefreshing = _v[0], setTableRefreshing = _v[1];
+    var searchNameGetDoneRef = react_1.useRef(false);
+    var _f = react_1.useState(), currentModel = _f[0], setCurrentModel = _f[1];
+    var _g = react_1.useState(), treeView = _g[0], setTreeView = _g[1];
+    var _h = react_1.useState(), formView = _h[0], setFormView = _h[1];
+    var _j = react_1.useState(1), page = _j[0], setPage = _j[1];
+    var _k = react_1.useState(0), offset = _k[0], setOffset = _k[1];
+    var _l = react_1.useState(DEFAULT_SEARCH_LIMIT), limit = _l[0], setLimit = _l[1];
+    var _m = react_1.useState(), limitFromAction = _m[0], setLimitFromAction = _m[1];
+    var paramsRef = react_1.useRef([]);
+    var _o = react_1.useState(0), totalItems = _o[0], setTotalItems = _o[1];
+    var _p = react_1.useState([]), results = _p[0], setResults = _p[1];
+    var _q = react_1.useState(false), searchFilterLoading = _q[0], setSearchFilterLoading = _q[1];
+    var _r = react_1.useState(), searchError = _r[0], setSearchError = _r[1];
+    var _s = react_1.useState(), initialError = _s[0], setInitialError = _s[1];
+    var _t = react_1.useState(false), tableRefreshing = _t[0], setTableRefreshing = _t[1];
     var actionDomain = react_1.useRef([]);
+    var uniqueComponentId = react_1.useRef(Math.random() * 10000);
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _w = (rootTree ? actionViewContext : {}) || {}, _x = _w.setResults, setResultsActionView = _x === void 0 ? undefined : _x, _y = _w.setCurrentItemIndex, setCurrentItemIndex = _y === void 0 ? undefined : _y, _z = _w.currentId, currentId = _z === void 0 ? undefined : _z, _0 = _w.results, resultsActionView = _0 === void 0 ? undefined : _0;
+    var _u = (rootTree ? actionViewContext : {}) || {}, _v = _u.setResults, setResultsActionView = _v === void 0 ? undefined : _v, _w = _u.setCurrentItemIndex, setCurrentItemIndex = _w === void 0 ? undefined : _w, _x = _u.currentId, currentId = _x === void 0 ? undefined : _x, _y = _u.results, resultsActionView = _y === void 0 ? undefined : _y;
     var onRequestPageChange = function (page) {
         setTableRefreshing(true);
         setPage(page);
@@ -144,7 +144,7 @@ function SearchTree(props) {
                     setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(undefined);
                     _a.label = 4;
                 case 4:
-                    setSearchNameGetDone(true);
+                    searchNameGetDoneRef.current = true;
                     return [2 /*return*/];
             }
         });
@@ -176,7 +176,7 @@ function SearchTree(props) {
             switch (_b.label) {
                 case 0:
                     domainParams = actionDomain.current.length > 0 ? actionDomain.current : domain;
-                    searchParams = mergeParams(params, domainParams);
+                    searchParams = mergeParams(paramsRef.current, domainParams);
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().search({
                             params: searchParams,
                             limit: limit,
@@ -219,7 +219,7 @@ function SearchTree(props) {
                 case 0:
                     _a.trys.push([0, 5, 6, 7]);
                     setTableRefreshing(true);
-                    if (!(!searchNameGetDone && nameSearch)) return [3 /*break*/, 2];
+                    if (!(nameSearch && !searchNameGetDoneRef.current)) return [3 /*break*/, 2];
                     return [4 /*yield*/, searchByNameSearch()];
                 case 1:
                     _a.sent();
@@ -241,14 +241,15 @@ function SearchTree(props) {
             }
         });
     }); };
-    use_deep_compare_effect_1.default(function () {
+    react_1.useEffect(function () {
         if (!initialFetchDone) {
             return;
         }
         if (visible) {
+            searchNameGetDoneRef.current = false;
             fetchResults();
         }
-    }, [page, limit, offset, params, initialFetchDone, visible]);
+    }, [page, limit, offset, initialFetchDone, visible]);
     var fetchData = function (type) { return __awaiter(_this, void 0, void 0, function () {
         var error_2;
         return __generator(this, function (_a) {
@@ -342,7 +343,7 @@ function SearchTree(props) {
         if (tableRefreshing)
             return;
         setSearchError(undefined);
-        setParams([]);
+        paramsRef.current = [];
         setOffset(0);
         setPage(1);
         setLimit(limitFromAction || DEFAULT_SEARCH_LIMIT);
@@ -358,7 +359,8 @@ function SearchTree(props) {
             setLimit(newLimit);
         if (newOffset)
             setOffset(newOffset);
-        setParams(newParams);
+        paramsRef.current = newParams;
+        fetchResults();
     };
     var onRowClickedHandler = function (id) {
         onRowClicked({

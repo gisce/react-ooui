@@ -70,16 +70,7 @@ function SearchFilter(props) {
         setAdvancedSearchFields(sfo._advancedSearchContainer);
     }, [fields, searchFields]);
     var rows = getRowsAndCols();
-    var areFieldsTouched = function () {
-        var touchedValues = Object.keys(form.getFieldsValue(true)).map(function (key) {
-            return form.isFieldTouched(key);
-        });
-        return touchedValues.some(function (item) { return item === true; });
-    };
     var onFinish = function (values) {
-        if (!areFieldsTouched()) {
-            return;
-        }
         var limit = values.limit, offset = values.offset;
         delete values.offset;
         delete values.limit;
