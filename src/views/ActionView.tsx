@@ -143,11 +143,7 @@ function ActionView(props: Props) {
       setToolbar={setToolbar}
     >
       <TitleHeader>
-        {currentView === "form" ? (
-          <FormActionBar key={Math.random() * 10000} />
-        ) : (
-          <TreeActionBar />
-        )}
+        {currentView === "form" ? <FormActionBar /> : <TreeActionBar />}
       </TitleHeader>
       {content()}
     </ActionViewProvider>

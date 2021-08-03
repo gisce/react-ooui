@@ -324,6 +324,7 @@ function Form(props: FormProps, ref: any) {
       });
       setAttachments?.(results);
     } else {
+      setAttachments?.([]);
       values = await getDefaultValues(fields);
     }
     return values;
