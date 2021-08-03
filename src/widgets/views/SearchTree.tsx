@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import { Alert, Spin } from "antd";
-import useDeepCompareEffect from "use-deep-compare-effect";
 
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import Tree from "@/widgets/views/Tree";
@@ -50,7 +49,8 @@ function SearchTree(props: Props) {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [initialFetchDone, setInitialFetchDone] = useState<boolean>(false);
-  const [searchNameGetDone, setSearchNameGetDone] = useState<boolean>(false);
+
+  const searchNameGetDoneRef = useRef(false);
 
   const [currentModel, setCurrentModel] = useState<string>();
   const [treeView, setTreeView] = useState<TreeView>();
@@ -61,7 +61,7 @@ function SearchTree(props: Props) {
   const [limit, setLimit] = useState<number>(DEFAULT_SEARCH_LIMIT);
   const [limitFromAction, setLimitFromAction] = useState<number>();
 
-  const [params, setParams] = useState<Array<any>>([]);
+  const paramsRef = useRef<Array<any>>([]);
 
   const [totalItems, setTotalItems] = useState<number>(0);
   const [results, setResults] = useState<any>([]);
@@ -75,6 +75,8 @@ function SearchTree(props: Props) {
   const [tableRefreshing, setTableRefreshing] = useState<boolean>(false);
 
   const actionDomain = useRef<any>([]);
+
+  const uniqueComponentId = useRef<number>(Math.random() * 10000);
 
   const actionViewContext = useContext(
     ActionViewContext
@@ -126,7 +128,7 @@ function SearchTree(props: Props) {
       setCurrentItemIndex?.(undefined);
     }
 
-    setSearchNameGetDone(true);
+    searchNameGetDoneRef.current = true;
   };
 
   const getUniqueFieldsForParams = (params: any[]) => {
@@ -160,7 +162,7 @@ function SearchTree(props: Props) {
     const domainParams =
       actionDomain.current.length > 0 ? actionDomain.current : domain;
 
-    const searchParams = mergeParams(params, domainParams);
+    const searchParams = mergeParams(paramsRef.current, domainParams);
 
     const {
       totalItems,
@@ -198,7 +200,7 @@ function SearchTree(props: Props) {
   const fetchResults = async () => {
     try {
       setTableRefreshing(true);
-      if (!searchNameGetDone && nameSearch) {
+      if (nameSearch && !searchNameGetDoneRef.current) {
         await searchByNameSearch();
       } else {
         await searchResults();
@@ -211,15 +213,16 @@ function SearchTree(props: Props) {
     }
   };
 
-  useDeepCompareEffect(() => {
+  useEffect(() => {
     if (!initialFetchDone) {
       return;
     }
 
     if (visible) {
+      searchNameGetDoneRef.current = false;
       fetchResults();
     }
-  }, [page, limit, offset, params, initialFetchDone, visible]);
+  }, [page, limit, offset, initialFetchDone, visible]);
 
   const fetchData = async (type: "action" | "model") => {
     setInitialFetchDone(false);
@@ -292,7 +295,7 @@ function SearchTree(props: Props) {
   const onClear = () => {
     if (tableRefreshing) return;
     setSearchError(undefined);
-    setParams([]);
+    paramsRef.current = [];
     setOffset(0);
     setPage(1);
     setLimit(limitFromAction || DEFAULT_SEARCH_LIMIT);
@@ -313,7 +316,8 @@ function SearchTree(props: Props) {
     setPage(1);
     if (newLimit) setLimit(newLimit);
     if (newOffset) setOffset(newOffset);
-    setParams(newParams);
+    paramsRef.current = newParams;
+    fetchResults();
   };
 
   const onRowClickedHandler = (id: number) => {
