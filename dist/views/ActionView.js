@@ -131,6 +131,7 @@ function ActionView(props) {
         });
     }
     react_1.useEffect(function () {
+        setCurrentView("tree");
         setCurrentId(undefined);
         setCurrentItemIndex(undefined);
         fetchData();

@@ -589,9 +589,36 @@ function Form(props: FormProps, ref: any) {
       onSubmitSucceed?.(id);
     } else if (response.type && response.type === "ir.actions.report.xml") {
       await executeReportAction(response, context);
+    } else if (response.type === "ir.actions.act_window") {
+      const formView = (await ConnectionProvider.getHandler().getView(
+        response.res_model,
+        "form"
+      )) as FormView;
+
+      setActionDomainModal([]);
+      setButtonActionModalModel(response.res_model);
+      setButtonActionModalFormView(formView);
+      setButtonContext(parseSimpleContext(response.context));
+      setButtonActionModalVisible(true);
     } else {
       await fetchValues();
     }
+  }
+
+  function parseSimpleContext(context: any) {
+    let parsedContext = {};
+
+    try {
+      if (typeof context === "string") {
+        parsedContext = JSON.parse(context.replace(/\'/g, "\""));
+      } else if (typeof context === "object") {
+        parsedContext = context;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    return parsedContext;
   }
 
   async function executeReportAction(response: any, context?: any) {
@@ -705,7 +732,7 @@ function Form(props: FormProps, ref: any) {
       setActionDomainModal(parsedDomain);
       setButtonActionModalModel(viewData.model);
       setButtonActionModalFormView(form);
-      setButtonContext(context);
+      setButtonContext(parseSimpleContext(context));
       setButtonActionModalVisible(true);
     } else if (actionData.type === "ir.actions.report.xml") {
       await executeReportAction(actionData, context);

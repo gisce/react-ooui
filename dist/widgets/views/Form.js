@@ -114,9 +114,9 @@ function Form(props, ref) {
     }), width = _x.width, containerRef = _x.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     var formContext = react_1.useContext(FormContext_1.FormContext);
-    var _y = formContext || {}, parentId = _y.activeId, parentModel = _y.activeModel;
+    var parentId = (formContext || {}).activeId;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _z = (rootForm ? actionViewContext : {}) || {}, _0 = _z.setFormIsSaving, setFormIsSaving = _0 === void 0 ? undefined : _0, _1 = _z.setFormHasChanges, setFormHasChanges = _1 === void 0 ? undefined : _1, _2 = _z.setCurrentId, setCurrentId = _2 === void 0 ? undefined : _2, _3 = _z.setFormIsLoading, setFormIsLoading = _3 === void 0 ? undefined : _3, _4 = _z.setAttachments, setAttachments = _4 === void 0 ? undefined : _4;
+    var _y = (rootForm ? actionViewContext : {}) || {}, _z = _y.setFormIsSaving, setFormIsSaving = _z === void 0 ? undefined : _z, _0 = _y.setFormHasChanges, setFormHasChanges = _0 === void 0 ? undefined : _0, _1 = _y.setCurrentId, setCurrentId = _1 === void 0 ? undefined : _1, _2 = _y.setFormIsLoading, setFormIsLoading = _2 === void 0 ? undefined : _2, _3 = _y.setAttachments, setAttachments = _3 === void 0 ? undefined : _3;
     var onSubmitSucceed = function (payload) {
         setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
         setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
@@ -551,7 +551,7 @@ function Form(props, ref) {
     function runObjectButton(_a) {
         var action = _a.action, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
-            var response;
+            var response, formView;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
@@ -564,26 +564,52 @@ function Form(props, ref) {
                         response = _b.sent();
                         if (!(Object.keys(response).length === 0 && insideButtonModal)) return [3 /*break*/, 2];
                         onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id);
-                        return [3 /*break*/, 7];
+                        return [3 /*break*/, 9];
                     case 2:
                         if (!(response.type &&
                             response.type === "ir.actions.act_window_close")) return [3 /*break*/, 3];
                         onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id);
-                        return [3 /*break*/, 7];
+                        return [3 /*break*/, 9];
                     case 3:
                         if (!(response.type && response.type === "ir.actions.report.xml")) return [3 /*break*/, 5];
                         return [4 /*yield*/, executeReportAction(response, context)];
                     case 4:
                         _b.sent();
-                        return [3 /*break*/, 7];
-                    case 5: return [4 /*yield*/, fetchValues()];
+                        return [3 /*break*/, 9];
+                    case 5:
+                        if (!(response.type === "ir.actions.act_window")) return [3 /*break*/, 7];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(response.res_model, "form")];
                     case 6:
+                        formView = (_b.sent());
+                        setActionDomainModal([]);
+                        setButtonActionModalModel(response.res_model);
+                        setButtonActionModalFormView(formView);
+                        setButtonContext(parseSimpleContext(response.context));
+                        setButtonActionModalVisible(true);
+                        return [3 /*break*/, 9];
+                    case 7: return [4 /*yield*/, fetchValues()];
+                    case 8:
                         _b.sent();
-                        _b.label = 7;
-                    case 7: return [2 /*return*/];
+                        _b.label = 9;
+                    case 9: return [2 /*return*/];
                 }
             });
         });
+    }
+    function parseSimpleContext(context) {
+        var parsedContext = {};
+        try {
+            if (typeof context === "string") {
+                parsedContext = JSON.parse(context.replace(/\'/g, "\""));
+            }
+            else if (typeof context === "object") {
+                parsedContext = context;
+            }
+        }
+        catch (e) {
+            console.error(e);
+        }
+        return parsedContext;
     }
     function executeReportAction(response, context) {
         return __awaiter(this, void 0, void 0, function () {
@@ -737,7 +763,7 @@ function Form(props, ref) {
                         setActionDomainModal(parsedDomain);
                         setButtonActionModalModel(viewData.model);
                         setButtonActionModalFormView(form);
-                        setButtonContext(context);
+                        setButtonContext(parseSimpleContext(context));
                         setButtonActionModalVisible(true);
                         return [3 /*break*/, 5];
                     case 3:
