@@ -90,11 +90,7 @@ var SearchModal = function (props) {
     }); };
     var content = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
-            react_1.default.createElement(SearchTree_1.default
-            // visible={searchTreeVisible}
-            , { 
-                // visible={searchTreeVisible}
-                model: model, nameSearch: nameSearch, onRowClicked: onRowClicked, treeScrollY: modalHeight * 0.3, domain: domain }),
+            react_1.default.createElement(SearchTree_1.default, { model: model, nameSearch: nameSearch, onRowClicked: onRowClicked, treeScrollY: modalHeight * 0.3, domain: domain }),
             react_1.default.createElement(antd_1.Divider, null),
             react_1.default.createElement(antd_1.Row, { justify: "end" },
                 react_1.default.createElement(antd_1.Space, null,

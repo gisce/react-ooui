@@ -70,6 +70,8 @@ function ActionView(props: Props) {
   }
 
   useEffect(() => {
+    setCurrentId(undefined);
+    setCurrentItemIndex(undefined);
     fetchData();
   }, [action]);
 

@@ -131,6 +131,8 @@ function ActionView(props) {
         });
     }
     react_1.useEffect(function () {
+        setCurrentId(undefined);
+        setCurrentItemIndex(undefined);
         fetchData();
     }, [action]);
     function content() {
