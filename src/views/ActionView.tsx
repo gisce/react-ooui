@@ -70,6 +70,7 @@ function ActionView(props: Props) {
   }
 
   useEffect(() => {
+    setCurrentView("tree");
     setCurrentId(undefined);
     setCurrentItemIndex(undefined);
     fetchData();
