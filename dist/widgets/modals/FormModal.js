@@ -51,16 +51,19 @@ var Form_1 = __importDefault(require("@/widgets/views/Form"));
 var useModalWidthDimensions_1 = __importDefault(require("@/hooks/useModalWidthDimensions"));
 var FormModalContext_1 = __importDefault(require("@/context/FormModalContext"));
 var FormModal = function (props) {
-    var visible = props.visible, id = props.id, title = props.title, _a = props.noReuse, noReuse = _a === void 0 ? false : _a, _b = props.buttonModal, buttonModal = _b === void 0 ? false : _b, rest = __rest(props, ["visible", "id", "title", "noReuse", "buttonModal"]);
+    var visible = props.visible, id = props.id, title = props.title, _a = props.buttonModal, buttonModal = _a === void 0 ? false : _a, rest = __rest(props, ["visible", "id", "title", "buttonModal"]);
     var modalWidth = useModalWidthDimensions_1.default().modalWidth;
-    var _c = react_1.useState(title), formTitle = _c[0], setFormTitle = _c[1];
-    var key = noReuse ? Math.random() * 10000 : undefined; // This forces the component to be unique each time if we set noReuse = true
+    var _b = react_1.useState(title), formTitle = _b[0], setFormTitle = _b[1];
     function onTitleChange(newTitle) {
         setFormTitle(newTitle);
     }
     return (react_1.default.createElement(FormModalContext_1.default, { setTitle: onTitleChange },
-        react_1.default.createElement(antd_1.Modal, { title: formTitle, centered: true, width: modalWidth, visible: visible, closable: false, footer: null },
-            react_1.default.createElement(Form_1.default, __assign({ key: key, id: id, showFooter: true, insideButtonModal: buttonModal }, rest)))));
+        react_1.default.createElement(antd_1.Modal, { title: formTitle, centered: true, width: modalWidth, visible: visible, closable: false, footer: null, destroyOnClose: true },
+            react_1.default.createElement(Form_1.default
+            // key={key}
+            , __assign({ 
+                // key={key}
+                id: id, showFooter: true, insideButtonModal: buttonModal }, rest)))));
 };
 exports.FormModal = FormModal;
 //# sourceMappingURL=FormModal.js.map

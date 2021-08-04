@@ -769,6 +769,7 @@ function Form(props: FormProps, ref: any) {
             form={antForm}
             onFieldsChange={debouncedCheckFieldsChanges}
             component={false}
+            preserve={false}
           >
             {formOoui && (
               <Container
@@ -827,7 +828,6 @@ function Form(props: FormProps, ref: any) {
       {showFooter && footer()}
       <FormModal
         buttonModal
-        noReuse
         parentContext={{
           ...buttonContext,
           ...parentContext,

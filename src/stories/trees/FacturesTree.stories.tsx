@@ -7,10 +7,5 @@ export default {
 };
 
 export const Default = (): React.ReactElement => {
-  return (
-    <SearchTree
-      key={Math.random() * 10000} // This forces the component to be unique each time
-      action={"factures"}
-    />
-  );
+  return <SearchTree action={"factures"} />;
 };

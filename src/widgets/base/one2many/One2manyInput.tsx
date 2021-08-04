@@ -550,7 +550,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       />
       {content()}
       <FormModal
-        noReuse={true}
         formView={views.get("form")}
         model={relation}
         id={modalItem?.id}

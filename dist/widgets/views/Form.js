@@ -812,7 +812,7 @@ function Form(props, ref) {
         }
         return (react_1.default.createElement(react_1.default.Fragment, null,
             react_1.default.createElement(FormContext_1.default, { activeId: id, activeModel: model, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction },
-                react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: debouncedCheckFieldsChanges, component: false }, formOoui && (react_1.default.createElement(Container_1.default, { container: formOoui.container, responsiveBehaviour: responsiveBehaviour }))))));
+                react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: debouncedCheckFieldsChanges, component: false, preserve: false }, formOoui && (react_1.default.createElement(Container_1.default, { container: formOoui.container, responsiveBehaviour: responsiveBehaviour }))))));
     };
     var footer = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
@@ -829,7 +829,7 @@ function Form(props, ref) {
         error && (react_1.default.createElement(antd_1.Alert, { className: "mt-10 mb-20", message: JSON.stringify(error), type: "error", banner: true })),
         loading ? react_1.default.createElement(antd_1.Spin, null) : content(),
         showFooter && footer(),
-        react_1.default.createElement(index_1.FormModal, { buttonModal: true, noReuse: true, parentContext: __assign(__assign(__assign({}, buttonContext), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context), model: buttonActionModalModel, formView: buttonActionModalFormView, visible: buttonActionModalVisible, onSubmitSucceed: function () { return __awaiter(_this, void 0, void 0, function () {
+        react_1.default.createElement(index_1.FormModal, { buttonModal: true, parentContext: __assign(__assign(__assign({}, buttonContext), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context), model: buttonActionModalModel, formView: buttonActionModalFormView, visible: buttonActionModalVisible, onSubmitSucceed: function () { return __awaiter(_this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:

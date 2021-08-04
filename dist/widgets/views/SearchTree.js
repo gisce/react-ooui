@@ -97,7 +97,6 @@ function SearchTree(props) {
     var _s = react_1.useState(), initialError = _s[0], setInitialError = _s[1];
     var _t = react_1.useState(false), tableRefreshing = _t[0], setTableRefreshing = _t[1];
     var actionDomain = react_1.useRef([]);
-    var uniqueComponentId = react_1.useRef(Math.random() * 10000);
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
     var _u = (rootTree ? actionViewContext : {}) || {}, _v = _u.setResults, setResultsActionView = _v === void 0 ? undefined : _v, _w = _u.setCurrentItemIndex, setCurrentItemIndex = _w === void 0 ? undefined : _w, _x = _u.currentId, currentId = _x === void 0 ? undefined : _x, _y = _u.results, resultsActionView = _y === void 0 ? undefined : _y;
     var onRequestPageChange = function (page) {

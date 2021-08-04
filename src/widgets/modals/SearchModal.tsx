@@ -27,21 +27,10 @@ export const SearchModal = (props: SearchSelectionProps) => {
 
   const { modalWidth, modalHeight } = useModalWidthDimensions();
 
-  const [searchTreeVisible, setSearchTreeVisible] = useState<boolean>(
-    !showCreateModal
-  );
-
   const onCloseModal = async () => {
-    setSearchTreeVisible(false);
     await new Promise((resolve) => setTimeout(resolve, 5));
     onCloseModalProps();
   };
-
-  useEffect(() => {
-    if (visible) {
-      setSearchTreeVisible(true);
-    }
-  }, [visible]);
 
   const onRowClicked = async (event: any) => {
     const { id } = event;
@@ -52,7 +41,6 @@ export const SearchModal = (props: SearchSelectionProps) => {
     return (
       <>
         <SearchTree
-          visible={searchTreeVisible}
           model={model}
           nameSearch={nameSearch}
           onRowClicked={onRowClicked}
@@ -89,11 +77,11 @@ export const SearchModal = (props: SearchSelectionProps) => {
         closable={true}
         onCancel={onCloseModal}
         footer={null}
+        destroyOnClose
       >
         {content()}
       </Modal>
       <FormModal
-        noReuse={true}
         model={model}
         visible={showCreateModal}
         onSubmitSucceed={(id: number) => {

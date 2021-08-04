@@ -565,7 +565,7 @@ var One2manyInput = function (props) {
     return (react_1.default.createElement(react_1.default.Fragment, null,
         react_1.default.createElement(One2manyTopBar_1.One2manyTopBar, { mode: currentView, title: getTitle(), readOnly: readOnly, isMany2Many: isMany2many, formHasChanges: formHasChanges, formIsSaving: formIsSaving, totalItems: itemsToShow.length, currentItemIndex: itemIndex, onSaveItem: saveItem, onDelete: showRemoveConfirm, onCreateItem: createItem, onToggleViewMode: toggleViewMode, onPreviousItem: previousItem, onNextItem: nextItem, onSearchItem: searchItem }),
         content(),
-        react_1.default.createElement(FormModal_1.FormModal, { noReuse: true, formView: views.get("form"), model: relation, id: modalItem === null || modalItem === void 0 ? void 0 : modalItem.id, values: modalItem === null || modalItem === void 0 ? void 0 : modalItem.values, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, onCancel: function () {
+        react_1.default.createElement(FormModal_1.FormModal, { formView: views.get("form"), model: relation, id: modalItem === null || modalItem === void 0 ? void 0 : modalItem.id, values: modalItem === null || modalItem === void 0 ? void 0 : modalItem.values, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, onCancel: function () {
                 setContinuousEntryMode(false);
                 setShowFormModal(false);
             }, readOnly: readOnly, mustClearAfterSave: mustClearAfterSave, postSaveAction: formModalPostSaveAction }),

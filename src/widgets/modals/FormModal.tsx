@@ -7,24 +7,14 @@ import FormModalProvider from "@/context/FormModalContext";
 type FormModalProps = FormProps & {
   visible: boolean;
   title?: string;
-  noReuse?: boolean;
   buttonModal?: boolean;
 };
 
 export const FormModal = (props: FormModalProps) => {
-  const {
-    visible,
-    id,
-    title,
-    noReuse = false,
-    buttonModal = false,
-    ...rest
-  } = props;
+  const { visible, id, title, buttonModal = false, ...rest } = props;
 
   const { modalWidth } = useModalWidthDimensions();
   const [formTitle, setFormTitle] = useState<string>(title!);
-
-  const key = noReuse ? Math.random() * 10000 : undefined; // This forces the component to be unique each time if we set noReuse = true
 
   function onTitleChange(newTitle: string) {
     setFormTitle(newTitle);
@@ -39,9 +29,9 @@ export const FormModal = (props: FormModalProps) => {
         visible={visible}
         closable={false}
         footer={null}
+        destroyOnClose
       >
         <Form
-          key={key}
           id={id}
           showFooter={true}
           insideButtonModal={buttonModal}
