@@ -26,7 +26,6 @@ export const SearchModal = (props: SearchSelectionProps) => {
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
 
   const { modalWidth, modalHeight } = useModalWidthDimensions();
-  const uniqueComponentId = useRef<number>(Math.random() * 10000);
 
   const [searchTreeVisible, setSearchTreeVisible] = useState<boolean>(
     !showCreateModal

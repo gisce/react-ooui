@@ -76,8 +76,6 @@ function SearchTree(props: Props) {
 
   const actionDomain = useRef<any>([]);
 
-  const uniqueComponentId = useRef<number>(Math.random() * 10000);
-
   const actionViewContext = useContext(
     ActionViewContext
   ) as ActionViewContextType;
