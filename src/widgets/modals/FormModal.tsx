@@ -11,7 +11,7 @@ type FormModalProps = FormProps & {
 };
 
 export const FormModal = (props: FormModalProps) => {
-  const { visible, id, title, buttonModal = false, ...rest } = props;
+  const { visible, id, title, buttonModal = false, onCancel, ...rest } = props;
 
   const { modalWidth } = useModalWidthDimensions();
   const [formTitle, setFormTitle] = useState<string>(title!);
@@ -27,9 +27,9 @@ export const FormModal = (props: FormModalProps) => {
         centered
         width={modalWidth}
         visible={visible}
-        closable={false}
         footer={null}
         destroyOnClose
+        onCancel={onCancel}
       >
         <Form
           id={id}
