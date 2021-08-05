@@ -35,6 +35,7 @@ export const FormModal = (props: FormModalProps) => {
           id={id}
           showFooter={true}
           insideButtonModal={buttonModal}
+          onCancel={onCancel}
           {...rest}
         />
       </Modal>
