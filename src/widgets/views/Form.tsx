@@ -72,6 +72,17 @@ export type FormProps = {
   actionDomain?: any;
   visible?: boolean;
   rootForm?: boolean;
+  parentOpenNewActionModal?: ({
+    domain,
+    model,
+    formView,
+    context,
+  }: {
+    domain: any;
+    model: string;
+    formView: FormView;
+    context: any;
+  }) => void;
 };
 
 const WIDTH_BREAKPOINT = 1000;
@@ -97,6 +108,7 @@ function Form(props: FormProps, ref: any) {
     actionDomain,
     visible = true,
     rootForm = false,
+    parentOpenNewActionModal,
   } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -595,14 +607,61 @@ function Form(props: FormProps, ref: any) {
         "form"
       )) as FormView;
 
-      setActionDomainModal([]);
-      setButtonActionModalModel(response.res_model);
-      setButtonActionModalFormView(formView);
-      setButtonContext(parseSimpleContext(response.context));
-      setButtonActionModalVisible(true);
+      const options = {
+        domain: [],
+        model: response.res_model,
+        formView,
+        context: parseSimpleContext(response.context),
+      };
+
+      if (insideButtonModal && parentOpenNewActionModal) {
+        parentOpenNewActionModal(options);
+      } else {
+        openActionModal(options);
+      }
     } else {
       await fetchValues();
     }
+  }
+
+  function openActionModal({
+    domain,
+    model,
+    formView,
+    context,
+  }: {
+    domain: any;
+    model: string;
+    formView: FormView;
+    context: any;
+  }) {
+    setActionDomainModal(domain);
+    setButtonActionModalModel(model);
+    setButtonActionModalFormView(formView);
+    setButtonContext(context);
+    setButtonActionModalVisible(true);
+  }
+
+  async function openNewActionModal({
+    domain,
+    model,
+    formView,
+    context,
+  }: {
+    domain: any;
+    model: string;
+    formView: FormView;
+    context: any;
+  }) {
+    setButtonActionModalVisible(false);
+    setFormIsLoading?.(true);
+    setButtonContext({});
+    setActionDomainModal([]);
+    setButtonActionModalModel(undefined);
+    setButtonActionModalFormView(undefined);
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    setFormIsLoading?.(false);
+    openActionModal({ domain, model, formView, context });
   }
 
   function parseSimpleContext(context: any) {
@@ -610,7 +669,7 @@ function Form(props: FormProps, ref: any) {
 
     try {
       if (typeof context === "string") {
-        parsedContext = JSON.parse(context.replace(/\'/g, "\""));
+        parsedContext = JSON.parse(context.replace(/\'/g, '"'));
       } else if (typeof context === "object") {
         parsedContext = context;
       }
@@ -720,7 +779,7 @@ function Form(props: FormProps, ref: any) {
         context: { ...context, ...parentContext, ...formOoui?.context },
       });
 
-      const form = viewData.views.get("form");
+      const formView = viewData.views.get("form");
       const parsedDomain = parseDomain({
         domainValue: actionWindowData.domain,
         values: {
@@ -729,11 +788,12 @@ function Form(props: FormProps, ref: any) {
         fields: {},
       });
 
-      setActionDomainModal(parsedDomain);
-      setButtonActionModalModel(viewData.model);
-      setButtonActionModalFormView(form);
-      setButtonContext(parseSimpleContext(context));
-      setButtonActionModalVisible(true);
+      openActionModal({
+        domain: parsedDomain,
+        model: viewData.model,
+        formView,
+        context: parseSimpleContext(context),
+      });
     } else if (actionData.type === "ir.actions.report.xml") {
       await executeReportAction(actionData, context);
     }
@@ -781,6 +841,10 @@ function Form(props: FormProps, ref: any) {
   const content = () => {
     if (!formOoui) {
       return <Spin />;
+    }
+
+    if (!model && !formViewProps) {
+      return null;
     }
 
     return (
@@ -874,6 +938,7 @@ function Form(props: FormProps, ref: any) {
         }}
         showFooter={false}
         actionDomain={actionDomainModal}
+        parentOpenNewActionModal={openNewActionModal}
       />
       <Modal
         title={"Generating report..."}

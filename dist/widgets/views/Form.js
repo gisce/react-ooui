@@ -90,7 +90,7 @@ var ActionViewContext_1 = require("@/context/ActionViewContext");
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
-    var model = props.model, id = props.id, propsOnCancel = props.onCancel, propsOnSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, propsOnSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, formViewProps = props.formView, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g, actionDomain = props.actionDomain, _h = props.visible, visible = _h === void 0 ? true : _h, _j = props.rootForm, rootForm = _j === void 0 ? false : _j;
+    var model = props.model, id = props.id, propsOnCancel = props.onCancel, propsOnSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, propsOnSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, formViewProps = props.formView, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g, actionDomain = props.actionDomain, _h = props.visible, visible = _h === void 0 ? true : _h, _j = props.rootForm, rootForm = _j === void 0 ? false : _j, parentOpenNewActionModal = props.parentOpenNewActionModal;
     var _k = react_1.useState(false), isSubmitting = _k[0], setIsSubmitting = _k[1];
     var _l = react_1.useState(), error = _l[0], setError = _l[1];
     var _m = react_1.useState(false), loading = _m[0], setLoading = _m[1];
@@ -551,7 +551,7 @@ function Form(props, ref) {
     function runObjectButton(_a) {
         var action = _a.action, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
-            var response, formView;
+            var response, formView, options;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
@@ -581,11 +581,18 @@ function Form(props, ref) {
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(response.res_model, "form")];
                     case 6:
                         formView = (_b.sent());
-                        setActionDomainModal([]);
-                        setButtonActionModalModel(response.res_model);
-                        setButtonActionModalFormView(formView);
-                        setButtonContext(parseSimpleContext(response.context));
-                        setButtonActionModalVisible(true);
+                        options = {
+                            domain: [],
+                            model: response.res_model,
+                            formView: formView,
+                            context: parseSimpleContext(response.context),
+                        };
+                        if (insideButtonModal && parentOpenNewActionModal) {
+                            parentOpenNewActionModal(options);
+                        }
+                        else {
+                            openActionModal(options);
+                        }
                         return [3 /*break*/, 9];
                     case 7: return [4 /*yield*/, fetchValues()];
                     case 8:
@@ -596,11 +603,41 @@ function Form(props, ref) {
             });
         });
     }
+    function openActionModal(_a) {
+        var domain = _a.domain, model = _a.model, formView = _a.formView, context = _a.context;
+        setActionDomainModal(domain);
+        setButtonActionModalModel(model);
+        setButtonActionModalFormView(formView);
+        setButtonContext(context);
+        setButtonActionModalVisible(true);
+    }
+    function openNewActionModal(_a) {
+        var domain = _a.domain, model = _a.model, formView = _a.formView, context = _a.context;
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        setButtonActionModalVisible(false);
+                        setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(true);
+                        setButtonContext({});
+                        setActionDomainModal([]);
+                        setButtonActionModalModel(undefined);
+                        setButtonActionModalFormView(undefined);
+                        return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 300); })];
+                    case 1:
+                        _b.sent();
+                        setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(false);
+                        openActionModal({ domain: domain, model: model, formView: formView, context: context });
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
     function parseSimpleContext(context) {
         var parsedContext = {};
         try {
             if (typeof context === "string") {
-                parsedContext = JSON.parse(context.replace(/\'/g, "\""));
+                parsedContext = JSON.parse(context.replace(/\'/g, '"'));
             }
             else if (typeof context === "object") {
                 parsedContext = context;
@@ -734,7 +771,7 @@ function Form(props, ref) {
     }
     function runAction(actionData, context) {
         return __awaiter(this, void 0, void 0, function () {
-            var actionWindowData, viewData, form, parsedDomain;
+            var actionWindowData, viewData, formView, parsedDomain;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -752,7 +789,7 @@ function Form(props, ref) {
                             })];
                     case 2:
                         viewData = _a.sent();
-                        form = viewData.views.get("form");
+                        formView = viewData.views.get("form");
                         parsedDomain = ooui_1.parseDomain({
                             domainValue: actionWindowData.domain,
                             values: {
@@ -760,11 +797,12 @@ function Form(props, ref) {
                             },
                             fields: {},
                         });
-                        setActionDomainModal(parsedDomain);
-                        setButtonActionModalModel(viewData.model);
-                        setButtonActionModalFormView(form);
-                        setButtonContext(parseSimpleContext(context));
-                        setButtonActionModalVisible(true);
+                        openActionModal({
+                            domain: parsedDomain,
+                            model: viewData.model,
+                            formView: formView,
+                            context: parseSimpleContext(context),
+                        });
                         return [3 /*break*/, 5];
                     case 3:
                         if (!(actionData.type === "ir.actions.report.xml")) return [3 /*break*/, 5];
@@ -836,6 +874,9 @@ function Form(props, ref) {
         if (!formOoui) {
             return react_1.default.createElement(antd_1.Spin, null);
         }
+        if (!model && !formViewProps) {
+            return null;
+        }
         return (react_1.default.createElement(react_1.default.Fragment, null,
             react_1.default.createElement(FormContext_1.default, { activeId: id, activeModel: model, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction },
                 react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: debouncedCheckFieldsChanges, component: false, preserve: false }, formOoui && (react_1.default.createElement(Container_1.default, { container: formOoui.container, responsiveBehaviour: responsiveBehaviour }))))));
@@ -870,7 +911,7 @@ function Form(props, ref) {
             }); }, onCancel: function () {
                 setButtonActionModalVisible(false);
                 setButtonContext({});
-            }, showFooter: false, actionDomain: actionDomainModal }),
+            }, showFooter: false, actionDomain: actionDomainModal, parentOpenNewActionModal: openNewActionModal }),
         react_1.default.createElement(antd_1.Modal, { title: "Generating report...", visible: reportGenerating, footer: null, closable: false, centered: true },
             react_1.default.createElement(antd_1.Spin, null))));
 }

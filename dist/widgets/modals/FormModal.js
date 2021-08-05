@@ -59,7 +59,7 @@ var FormModal = function (props) {
     }
     return (react_1.default.createElement(FormModalContext_1.default, { setTitle: onTitleChange },
         react_1.default.createElement(antd_1.Modal, { title: formTitle, centered: true, width: modalWidth, visible: visible, footer: null, destroyOnClose: true, onCancel: onCancel },
-            react_1.default.createElement(Form_1.default, __assign({ id: id, showFooter: true, insideButtonModal: buttonModal }, rest)))));
+            react_1.default.createElement(Form_1.default, __assign({ id: id, showFooter: true, insideButtonModal: buttonModal, onCancel: onCancel }, rest)))));
 };
 exports.FormModal = FormModal;
 //# sourceMappingURL=FormModal.js.map
