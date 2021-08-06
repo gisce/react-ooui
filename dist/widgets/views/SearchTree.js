@@ -310,14 +310,20 @@ function SearchTree(props) {
                     setCurrentModel(model);
                     _formView = formViewProps;
                     if (!!formViewProps) return [3 /*break*/, 2];
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(model, "form")];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
+                            model: model,
+                            type: "form",
+                        })];
                 case 1:
                     _formView = (_a.sent());
                     _a.label = 2;
                 case 2:
                     _treeView = treeViewProps;
                     if (!!treeViewProps) return [3 /*break*/, 4];
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(model, "tree")];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
+                            model: model,
+                            type: "tree",
+                        })];
                 case 3:
                     _treeView = (_a.sent());
                     _a.label = 4;

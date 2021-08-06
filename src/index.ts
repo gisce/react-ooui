@@ -42,6 +42,7 @@ import {
   CreateReportRequest,
   GetReportRequest,
   ExecuteOnChangeRequest,
+  GetViewRequest,
 } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import ActionView from "./views/ActionView";
@@ -91,4 +92,5 @@ export {
   ExecuteOnChangeRequest,
   ActionBar,
   ActionView,
+  GetViewRequest,
 };

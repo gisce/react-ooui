@@ -102,12 +102,18 @@ type CreateReportRequest = {
   name: string;
   model: string;
   ids: number[];
-  contextReport: any;
+  datas: any;
   context?: any;
 };
 
 type GetReportRequest = {
   id: number;
+};
+
+type GetViewRequest = {
+  model: string;
+  type: ViewType;
+  context?: any;
 };
 
 type ConnectionProviderType = {
@@ -119,7 +125,7 @@ type ConnectionProviderType = {
     action: string;
     context?: any;
   }) => Promise<ViewData>;
-  getView: (model: string, type: ViewType) => Promise<FormView | TreeView>;
+  getView: (options: GetViewRequest) => Promise<FormView | TreeView>;
   searchAllIds: (options: SearchCountRequest) => Promise<number[]>;
   search: (options: SearchRequest) => Promise<SearchResponse>;
   update: (options: UpdateObjectRequest) => Promise<any>;
@@ -157,4 +163,5 @@ export type {
   ExecuteOnChangeRequest,
   ViewType,
   SearchCountRequest,
+  GetViewRequest
 };

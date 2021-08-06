@@ -261,19 +261,19 @@ function SearchTree(props: Props) {
     let _formView = formViewProps;
 
     if (!formViewProps) {
-      _formView = (await ConnectionProvider.getHandler().getView(
-        model!,
-        "form"
-      )) as FormView;
+      _formView = (await ConnectionProvider.getHandler().getView({
+        model: model!,
+        type: "form",
+      })) as FormView;
     }
 
     let _treeView = treeViewProps;
 
     if (!treeViewProps) {
-      _treeView = (await ConnectionProvider.getHandler().getView(
-        model!,
-        "tree"
-      )) as TreeView;
+      _treeView = (await ConnectionProvider.getHandler().getView({
+        model: model!,
+        type: "tree",
+      })) as TreeView;
     }
 
     setFormView(_formView as FormView);

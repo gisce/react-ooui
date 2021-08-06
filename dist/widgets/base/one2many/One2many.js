@@ -94,7 +94,10 @@ var One2many = function (props) {
                     if (oouiViews && oouiViews[type]) {
                         return [2 /*return*/, oouiViews[type]];
                     }
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(relation, type)];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
+                            model: relation,
+                            type: type,
+                        })];
                 case 1: return [2 /*return*/, _a.sent()];
             }
         });

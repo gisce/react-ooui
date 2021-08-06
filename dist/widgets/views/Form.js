@@ -65,6 +65,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -242,7 +253,10 @@ function Form(props, ref) {
                 case 2:
                     viewsForAction = _a.sent();
                     return [2 /*return*/, viewsForAction.views.get("form")];
-                case 3: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(model, "form")];
+                case 3: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
+                        model: model,
+                        type: "form",
+                    })];
                 case 4: return [2 /*return*/, (_a.sent())];
             }
         });
@@ -269,11 +283,11 @@ function Form(props, ref) {
                 switch (_b.label) {
                     case 0:
                         values = {};
-                        if (!id) return [3 /*break*/, 3];
+                        if (!getCurrentId()) return [3 /*break*/, 3];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
                                 arch: arch,
                                 model: model,
-                                ids: [id],
+                                ids: [getCurrentId()],
                                 fields: fields,
                             })];
                     case 1:
@@ -281,7 +295,7 @@ function Form(props, ref) {
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().search({
                                 params: [
                                     ["res_model", "=", model],
-                                    ["res_id", "=", id],
+                                    ["res_id", "=", getCurrentId()],
                                 ],
                                 model: "ir.attachment",
                             })];
@@ -321,11 +335,11 @@ function Form(props, ref) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!id) return [3 /*break*/, 2];
+                    if (!getCurrentId()) return [3 /*break*/, 2];
                     touchedValues = formHelper_1.getTouchedValues(antForm, fields);
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().update({
                             model: model,
-                            id: id,
+                            id: getCurrentId(),
                             values: touchedValues,
                             fields: fields,
                             context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
@@ -347,13 +361,13 @@ function Form(props, ref) {
                     _a.label = 4;
                 case 4:
                     if (!postSaveAction) return [3 /*break*/, 6];
-                    return [4 /*yield*/, postSaveAction(id || createdId.current)];
+                    return [4 /*yield*/, postSaveAction(getCurrentId())];
                 case 5:
                     _a.sent();
                     _a.label = 6;
                 case 6:
                     if (!insideButtonModal) {
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id || createdId.current);
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
                     }
                     return [2 /*return*/];
             }
@@ -363,7 +377,7 @@ function Form(props, ref) {
         return __generator(this, function (_a) {
             if (!insideButtonModal) {
                 onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed({
-                    id: id,
+                    id: getCurrentId(),
                     touchedValues: formHelper_1.getTouchedValues(antForm, fields),
                 });
             }
@@ -376,7 +390,7 @@ function Form(props, ref) {
             switch (_a.label) {
                 case 0:
                     setError(undefined);
-                    if (!formHasChanges() && id) {
+                    if (!formHasChanges() && getCurrentId()) {
                         onCancel === null || onCancel === void 0 ? void 0 : onCancel();
                         return [2 /*return*/];
                     }
@@ -423,7 +437,7 @@ function Form(props, ref) {
         // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
         ooui.parse(arch, {
             readOnly: readOnly,
-            values: __assign(__assign({}, values), { id: id, active_id: id, parent_id: parentId }),
+            values: __assign(__assign({}, values), { id: getCurrentId(), active_id: getCurrentId(), parent_id: parentId }),
         });
         setFormOoui(ooui);
         if (formModalContext && ooui.string)
@@ -480,7 +494,7 @@ function Form(props, ref) {
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().executeOnChange({
                             model: model,
                             action: onChangeFieldAction.method,
-                            ids: [id || createdId.current],
+                            ids: [getCurrentId()],
                             payload: payload_1,
                             context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                             fields: fields,
@@ -551,18 +565,21 @@ function Form(props, ref) {
     function runObjectButton(_a) {
         var action = _a.action, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
-            var response, formView, options;
+            var response, formView, mergedContext, options;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
                             model: model,
                             action: action,
-                            payload: [id || createdId.current],
+                            payload: [getCurrentId()],
                             context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                         })];
                     case 1:
                         response = _b.sent();
-                        if (!(Object.keys(response).length === 0 && insideButtonModal)) return [3 /*break*/, 2];
+                        if (!(typeof response === "object" &&
+                            response !== null &&
+                            Object.keys(response).length === 0 &&
+                            insideButtonModal)) return [3 /*break*/, 2];
                         onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id);
                         return [3 /*break*/, 9];
                     case 2:
@@ -577,22 +594,22 @@ function Form(props, ref) {
                         _b.sent();
                         return [3 /*break*/, 9];
                     case 5:
-                        if (!(response.type === "ir.actions.act_window")) return [3 /*break*/, 7];
-                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView(response.res_model, "form")];
+                        if (!(response.type && response.type === "ir.actions.act_window")) return [3 /*break*/, 7];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
+                                model: response.res_model,
+                                type: "form",
+                                context: context,
+                            })];
                     case 6:
                         formView = (_b.sent());
+                        mergedContext = __assign(__assign(__assign(__assign({}, parseSimpleContext(response.context)), context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context);
                         options = {
                             domain: [],
                             model: response.res_model,
                             formView: formView,
-                            context: parseSimpleContext(response.context),
+                            context: mergedContext,
                         };
-                        if (insideButtonModal && parentOpenNewActionModal) {
-                            parentOpenNewActionModal(options);
-                        }
-                        else {
-                            openActionModal(options);
-                        }
+                        openActionModal(options);
                         return [3 /*break*/, 9];
                     case 7: return [4 /*yield*/, fetchValues()];
                     case 8:
@@ -605,11 +622,16 @@ function Form(props, ref) {
     }
     function openActionModal(_a) {
         var domain = _a.domain, model = _a.model, formView = _a.formView, context = _a.context;
-        setActionDomainModal(domain);
-        setButtonActionModalModel(model);
-        setButtonActionModalFormView(formView);
-        setButtonContext(context);
-        setButtonActionModalVisible(true);
+        if (insideButtonModal && parentOpenNewActionModal) {
+            parentOpenNewActionModal({ domain: domain, model: model, formView: formView, context: context });
+        }
+        else {
+            setActionDomainModal(domain);
+            setButtonActionModalModel(model);
+            setButtonActionModalFormView(formView);
+            setButtonContext(context);
+            setButtonActionModalVisible(true);
+        }
     }
     function openNewActionModal(_a) {
         var domain = _a.domain, model = _a.model, formView = _a.formView, context = _a.context;
@@ -650,33 +672,56 @@ function Form(props, ref) {
     }
     function executeReportAction(response, context) {
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, generateReport({
+            var _a, ids, datasource, idsToExecute, results;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = response.datas, ids = _a.ids, datasource = __rest(_a, ["ids"]);
+                        idsToExecute = ids;
+                        if (!!ids) return [3 /*break*/, 2];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchAllIds({
+                                params: [],
+                                model: datasource.model || response.model,
+                                totalItems: 1,
+                            })];
+                    case 1:
+                        results = _b.sent();
+                        if (results.length === 0) {
+                            setReportGenerating(false);
+                            ActionErrorDialog_1.default("Nothing to print");
+                            return [2 /*return*/];
+                        }
+                        idsToExecute = results;
+                        datasource.id = results[0];
+                        _b.label = 2;
+                    case 2: return [4 /*yield*/, generateReport({
                             model: response.model,
                             name: response.report_name,
-                            contextReport: response.datas.context,
-                            ids: response.datas.ids[0],
+                            datas: datasource,
+                            ids: idsToExecute,
                             context: context,
                         })];
-                    case 1:
-                        _a.sent();
+                    case 3:
+                        _b.sent();
                         return [2 /*return*/];
                 }
             });
         });
     }
+    function getCurrentId() {
+        return id || createdId.current;
+    }
     function generateReport(options) {
         return __awaiter(this, void 0, void 0, function () {
-            var ids, context, model, contextReport, name, newReportId;
+            var ids, context, model, datas, name, newReportId;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        ids = options.ids, context = options.context, model = options.model, contextReport = options.contextReport, name = options.name;
+                        ids = options.ids, context = options.context, model = options.model, datas = options.datas, name = options.name;
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().createReport({
                                 model: model,
                                 name: name,
-                                contextReport: contextReport,
+                                datas: datas,
                                 ids: ids,
                                 context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                             })];
@@ -733,7 +778,7 @@ function Form(props, ref) {
                     case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().executeWorkflow({
                             model: model,
                             action: action,
-                            payload: id,
+                            payload: getCurrentId(),
                         })];
                     case 1:
                         response = _b.sent();
@@ -793,7 +838,7 @@ function Form(props, ref) {
                         parsedDomain = ooui_1.parseDomain({
                             domainValue: actionWindowData.domain,
                             values: {
-                                active_id: id,
+                                active_id: getCurrentId(),
                             },
                             fields: {},
                         });

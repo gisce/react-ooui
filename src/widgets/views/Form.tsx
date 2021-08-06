@@ -280,10 +280,10 @@ function Form(props: FormProps, ref: any) {
       return viewsForAction.views.get("form");
     }
 
-    return (await ConnectionProvider.getHandler().getView(
+    return (await ConnectionProvider.getHandler().getView({
       model,
-      "form"
-    )) as FormView;
+      type: "form",
+    })) as FormView;
   };
 
   const assignNewValuesToForm = ({
@@ -317,12 +317,12 @@ function Form(props: FormProps, ref: any) {
     arch: string;
   }) => {
     let values = {};
-    if (id) {
+    if (getCurrentId()!) {
       values = (
         await ConnectionProvider.getHandler().readObjects({
           arch,
           model,
-          ids: [id],
+          ids: [getCurrentId()!],
           fields,
         })
       )[0];
@@ -330,7 +330,7 @@ function Form(props: FormProps, ref: any) {
       const { results } = await ConnectionProvider.getHandler().search({
         params: [
           ["res_model", "=", model],
-          ["res_id", "=", id],
+          ["res_id", "=", getCurrentId()!],
         ],
         model: "ir.attachment",
       });
@@ -356,12 +356,12 @@ function Form(props: FormProps, ref: any) {
   };
 
   const submitApi = async () => {
-    if (id) {
+    if (getCurrentId()) {
       const touchedValues = getTouchedValues(antForm, fields);
 
       await ConnectionProvider.getHandler().update({
         model,
-        id,
+        id: getCurrentId()!,
         values: touchedValues,
         fields,
         context: {
@@ -385,18 +385,18 @@ function Form(props: FormProps, ref: any) {
     }
 
     if (postSaveAction) {
-      await postSaveAction(id || createdId.current);
+      await postSaveAction(getCurrentId());
     }
 
     if (!insideButtonModal) {
-      onSubmitSucceed?.(id || createdId.current);
+      onSubmitSucceed?.(getCurrentId());
     }
   };
 
   const submitValues = async () => {
     if (!insideButtonModal) {
       onSubmitSucceed?.({
-        id,
+        id: getCurrentId()!,
         touchedValues: getTouchedValues(antForm, fields),
       });
     }
@@ -404,7 +404,7 @@ function Form(props: FormProps, ref: any) {
 
   const submitForm = async () => {
     setError(undefined);
-    if (!formHasChanges() && id) {
+    if (!formHasChanges() && getCurrentId()!) {
       onCancel?.();
       return;
     }
@@ -447,7 +447,12 @@ function Form(props: FormProps, ref: any) {
     // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
     ooui.parse(arch, {
       readOnly,
-      values: { ...values, id, active_id: id, parent_id: parentId },
+      values: {
+        ...values,
+        id: getCurrentId()!,
+        active_id: getCurrentId()!,
+        parent_id: parentId,
+      },
     });
     setFormOoui(ooui);
 
@@ -509,7 +514,7 @@ function Form(props: FormProps, ref: any) {
       const response = await ConnectionProvider.getHandler().executeOnChange({
         model,
         action: onChangeFieldAction.method,
-        ids: [id || createdId.current!],
+        ids: [getCurrentId()!],
         payload,
         context: {
           ...parentContext,
@@ -584,7 +589,7 @@ function Form(props: FormProps, ref: any) {
     const response = await ConnectionProvider.getHandler().execute({
       model,
       action,
-      payload: [id || createdId.current],
+      payload: [getCurrentId()!],
       context: {
         ...context,
         ...parentContext,
@@ -592,7 +597,12 @@ function Form(props: FormProps, ref: any) {
       },
     });
 
-    if (Object.keys(response).length === 0 && insideButtonModal) {
+    if (
+      typeof response === "object" &&
+      response !== null &&
+      Object.keys(response).length === 0 &&
+      insideButtonModal
+    ) {
       onSubmitSucceed?.(id);
     } else if (
       response.type &&
@@ -601,24 +611,28 @@ function Form(props: FormProps, ref: any) {
       onSubmitSucceed?.(id);
     } else if (response.type && response.type === "ir.actions.report.xml") {
       await executeReportAction(response, context);
-    } else if (response.type === "ir.actions.act_window") {
-      const formView = (await ConnectionProvider.getHandler().getView(
-        response.res_model,
-        "form"
-      )) as FormView;
+    } else if (response.type && response.type === "ir.actions.act_window") {
+      const formView = (await ConnectionProvider.getHandler().getView({
+        model: response.res_model,
+        type: "form",
+        context,
+      })) as FormView;
+
+      const mergedContext = {
+        ...parseSimpleContext(response.context),
+        ...context,
+        ...parentContext,
+        ...formOoui?.context,
+      };
 
       const options = {
         domain: [],
         model: response.res_model,
         formView,
-        context: parseSimpleContext(response.context),
+        context: mergedContext,
       };
 
-      if (insideButtonModal && parentOpenNewActionModal) {
-        parentOpenNewActionModal(options);
-      } else {
-        openActionModal(options);
-      }
+      openActionModal(options);
     } else {
       await fetchValues();
     }
@@ -635,11 +649,15 @@ function Form(props: FormProps, ref: any) {
     formView: FormView;
     context: any;
   }) {
-    setActionDomainModal(domain);
-    setButtonActionModalModel(model);
-    setButtonActionModalFormView(formView);
-    setButtonContext(context);
-    setButtonActionModalVisible(true);
+    if (insideButtonModal && parentOpenNewActionModal) {
+      parentOpenNewActionModal({ domain, model, formView, context });
+    } else {
+      setActionDomainModal(domain);
+      setButtonActionModalModel(model);
+      setButtonActionModalFormView(formView);
+      setButtonContext(context);
+      setButtonActionModalVisible(true);
+    }
   }
 
   async function openNewActionModal({
@@ -681,22 +699,46 @@ function Form(props: FormProps, ref: any) {
   }
 
   async function executeReportAction(response: any, context?: any) {
+    const { ids, ...datasource } = response.datas;
+    let idsToExecute = ids;
+
+    if (!ids) {
+      const results = await ConnectionProvider.getHandler().searchAllIds({
+        params: [],
+        model: datasource.model || response.model,
+        totalItems: 1,
+      });
+
+      if (results.length === 0) {
+        setReportGenerating(false);
+        showErrorDialog("Nothing to print");
+        return;
+      }
+
+      idsToExecute = results;
+      datasource.id = results[0];
+    }
+
     await generateReport({
       model: response.model,
       name: response.report_name,
-      contextReport: response.datas.context,
-      ids: response.datas.ids[0],
+      datas: datasource,
+      ids: idsToExecute,
       context,
     });
   }
 
+  function getCurrentId() {
+    return id || createdId.current;
+  }
+
   async function generateReport(options: CreateReportRequest) {
-    const { ids, context, model, contextReport, name } = options;
+    const { ids, context, model, datas, name } = options;
 
     const newReportId = await ConnectionProvider.getHandler().createReport({
       model,
       name,
-      contextReport,
+      datas,
       ids,
       context: {
         ...context,
@@ -736,7 +778,7 @@ function Form(props: FormProps, ref: any) {
     const response = await ConnectionProvider.getHandler().executeWorkflow({
       model,
       action,
-      payload: id,
+      payload: getCurrentId()!,
     });
 
     if (response.type && response.type === "ir.actions.act_window_close") {
@@ -783,7 +825,7 @@ function Form(props: FormProps, ref: any) {
       const parsedDomain = parseDomain({
         domainValue: actionWindowData.domain,
         values: {
-          active_id: id,
+          active_id: getCurrentId()!,
         },
         fields: {},
       });

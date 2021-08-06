@@ -29,7 +29,10 @@ export const One2many = (props: Props) => {
     if (oouiViews && oouiViews[type]) {
       return oouiViews[type];
     }
-    return await ConnectionProvider.getHandler().getView(relation, type);
+    return await ConnectionProvider.getHandler().getView({
+      model: relation,
+      type,
+    });
   };
 
   const fetchData = async () => {
