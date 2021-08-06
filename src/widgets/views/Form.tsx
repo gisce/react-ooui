@@ -511,10 +511,12 @@ function Form(props: FormProps, ref: any) {
         }
       });
 
+      const ids = getCurrentId()! ? [getCurrentId()!] : [];
+
       const response = await ConnectionProvider.getHandler().executeOnChange({
         model,
         action: onChangeFieldAction.method,
-        ids: [getCurrentId()!],
+        ids,
         payload,
         context: {
           ...parentContext,
