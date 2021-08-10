@@ -95,6 +95,11 @@ declare type GetViewRequest = {
     type: ViewType;
     context?: any;
 };
+declare type DefaultGetRequest = {
+    model: string;
+    fields?: any;
+    context?: any;
+};
 declare type ConnectionProviderType = {
     getAction: (model: string) => Promise<string>;
     getViewsForAction: ({ action, context, }: {
@@ -113,7 +118,8 @@ declare type ConnectionProviderType = {
     createReport: (options: CreateReportRequest) => Promise<any>;
     getReport: (options: GetReportRequest) => Promise<any>;
     executeOnChange: (options: ExecuteOnChangeRequest) => Promise<any>;
+    defaultGet: (options: DefaultGetRequest) => Promise<any>;
 };
 declare type ViewType = "tree" | "form";
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest };
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest, DefaultGetRequest };
 //# sourceMappingURL=index.d.ts.map

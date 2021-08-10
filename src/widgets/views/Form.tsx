@@ -343,10 +343,9 @@ function Form(props: FormProps, ref: any) {
   };
 
   const getDefaultValues = async (fields: any) => {
-    return await ConnectionProvider.getHandler().execute({
+    return await ConnectionProvider.getHandler().defaultGet({
       model,
-      action: "default_get",
-      payload: Object.keys(fields),
+      fields,
       context: { ...parentContext, ...formOoui?.context },
     });
   };

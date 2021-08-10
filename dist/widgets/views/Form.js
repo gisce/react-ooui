@@ -317,10 +317,9 @@ function Form(props, ref) {
     var getDefaultValues = function (fields) { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
+                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().defaultGet({
                         model: model,
-                        action: "default_get",
-                        payload: Object.keys(fields),
+                        fields: fields,
                         context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                     })];
                 case 1: return [2 /*return*/, _a.sent()];
@@ -476,7 +475,7 @@ function Form(props, ref) {
     }); };
     var debouncedCheckFieldsChanges = debounce_1.default(checkFieldsChanges, 100);
     var evaluateChanges = function (changedFields, values) { return __awaiter(_this, void 0, void 0, function () {
-        var finalValues, finalFields, changedFieldName, onChangeFieldAction, payload_1, response, _a, title, message;
+        var finalValues, finalFields, changedFieldName, onChangeFieldAction, payload_1, ids, response, _a, title, message;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -491,10 +490,11 @@ function Form(props, ref) {
                             payload_1[arg] = values[arg];
                         }
                     });
+                    ids = getCurrentId() ? [getCurrentId()] : [];
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().executeOnChange({
                             model: model,
                             action: onChangeFieldAction.method,
-                            ids: [getCurrentId()],
+                            ids: ids,
                             payload: payload_1,
                             context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                             fields: fields,
