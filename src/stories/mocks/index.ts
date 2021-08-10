@@ -9,6 +9,7 @@ import factura from "./models/factura";
 import lead from "./models/lead";
 import document from "./models/document";
 import company from "./models/company";
+import switching from "./models/switching";
 
 const allModels = [
   cups,
@@ -22,6 +23,7 @@ const allModels = [
   lead,
   document,
   company,
+  switching,
 ];
 
 const getMock = (model: string) => {

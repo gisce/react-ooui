@@ -36,7 +36,15 @@ const init = () => {
         views,
       };
     },
-    getView: async (model: string, type: "tree" | "form") => {
+    getView: async ({
+      model,
+      type,
+      context,
+    }: {
+      model: string;
+      type: "tree" | "form";
+      context: any;
+    }) => {
       await new Promise((resolve) => setTimeout(resolve, timeout));
       const data = getMock(model);
       return data[type];
