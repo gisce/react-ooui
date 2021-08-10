@@ -507,6 +507,8 @@ function Form(props: FormProps, ref: any) {
       onChangeFieldAction.args.forEach((arg: string) => {
         if (values[arg]) {
           payload[arg] = values[arg];
+        } else {
+          payload[arg] = false;
         }
       });
 

@@ -489,6 +489,9 @@ function Form(props, ref) {
                         if (values[arg]) {
                             payload_1[arg] = values[arg];
                         }
+                        else {
+                            payload_1[arg] = false;
+                        }
                     });
                     ids = getCurrentId() ? [getCurrentId()] : [];
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().executeOnChange({
