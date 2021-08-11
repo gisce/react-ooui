@@ -151,8 +151,11 @@ function Form(props, ref) {
         if (!model && !formViewProps) {
             return;
         }
+        if (!visible) {
+            return;
+        }
         fetchData();
-    }, [id, model, valuesProps, formViewProps]);
+    }, [id, model, valuesProps, formViewProps, visible]);
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
         var view, fields_1, arch_1, err_1;
         return __generator(this, function (_a) {

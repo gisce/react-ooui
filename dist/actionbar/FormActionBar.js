@@ -97,7 +97,7 @@ function FormActionBar() {
             setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[currentItemIndex - 1]);
         }
     }
-    function tryDelete(callback) {
+    function tryDelete() {
         ConfirmDialog_1.default({
             confirmMessage: "Are you sure to remove this item?",
             onOk: function () {

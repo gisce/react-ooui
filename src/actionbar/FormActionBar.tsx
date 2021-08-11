@@ -75,7 +75,7 @@ function FormActionBar() {
     }
   }
 
-  function tryDelete(callback: any) {
+  function tryDelete() {
     showConfirmDialog({
       confirmMessage: "Are you sure to remove this item?",
       onOk: () => {

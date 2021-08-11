@@ -185,8 +185,12 @@ function Form(props: FormProps, ref: any) {
       return;
     }
 
+    if (!visible) {
+      return;
+    }
+
     fetchData();
-  }, [id, model, valuesProps, formViewProps]);
+  }, [id, model, valuesProps, formViewProps, visible]);
 
   const fetchData = async () => {
     setLoading(true);
