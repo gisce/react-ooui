@@ -868,9 +868,9 @@ function Form(props: FormProps, ref: any) {
       return;
     }
 
-    await submitForm();
-
     try {
+      await submitForm();
+
       if (type === "object") {
         await runObjectButton({ action, context });
       } else if (type === "workflow") {
