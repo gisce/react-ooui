@@ -883,6 +883,17 @@ function Form(props: FormProps, ref: any) {
     }
   }
 
+  async function onFormModalSucceed() {
+    setButtonActionModalVisible(false);
+    setButtonContext({});
+
+    try {
+      await fetchValues();
+    } catch (err) {
+      showErrorDialog(err);
+    }
+  }
+
   const content = () => {
     if (!formOoui) {
       return <Spin />;
@@ -972,11 +983,7 @@ function Form(props: FormProps, ref: any) {
         model={buttonActionModalModel!}
         formView={buttonActionModalFormView}
         visible={buttonActionModalVisible}
-        onSubmitSucceed={async () => {
-          setButtonActionModalVisible(false);
-          setButtonContext({});
-          await fetchValues();
-        }}
+        onSubmitSucceed={onFormModalSucceed}
         onCancel={() => {
           setButtonActionModalVisible(false);
           setButtonContext({});
