@@ -144,8 +144,8 @@ function Form(props, ref) {
     };
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
-        generateReport: generateReport,
-        runAction: runAction,
+        generateReport: tryGenerateReport,
+        runAction: tryRunAction,
     }); });
     react_1.useEffect(function () {
         if (!model && !formViewProps) {
@@ -475,10 +475,11 @@ function Form(props, ref) {
     }); };
     var debouncedCheckFieldsChanges = debounce_1.default(checkFieldsChanges, 100);
     var evaluateChanges = function (changedFields, values) { return __awaiter(_this, void 0, void 0, function () {
-        var finalValues, finalFields, changedFieldName, onChangeFieldAction, payload_1, ids, response, _a, title, message;
+        var finalValues, finalFields, changedFieldName, onChangeFieldAction, payload_1, ids, response, _a, title, message, err_3;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
+                    _b.trys.push([0, 3, , 4]);
                     finalValues = values;
                     finalFields = fields;
                     changedFieldName = changedFields[0].name;
@@ -532,7 +533,12 @@ function Form(props, ref) {
                     _b.label = 2;
                 case 2:
                     parseForm({ arch: arch, fields: finalFields, values: finalValues });
-                    return [2 /*return*/];
+                    return [3 /*break*/, 4];
+                case 3:
+                    err_3 = _b.sent();
+                    ActionErrorDialog_1.default(err_3);
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
             }
         });
     }); };
@@ -714,6 +720,26 @@ function Form(props, ref) {
     function getCurrentId() {
         return id || createdId.current;
     }
+    function tryGenerateReport(options) {
+        return __awaiter(this, void 0, void 0, function () {
+            var err_4;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, generateReport(options)];
+                    case 1:
+                        _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        err_4 = _a.sent();
+                        ActionErrorDialog_1.default(err_4);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    }
     function generateReport(options) {
         return __awaiter(this, void 0, void 0, function () {
             var ids, context, model, datas, name, newReportId;
@@ -817,6 +843,26 @@ function Form(props, ref) {
             });
         });
     }
+    function tryRunAction(actionData, context) {
+        return __awaiter(this, void 0, void 0, function () {
+            var err_5;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, runAction(actionData, context)];
+                    case 1:
+                        _a.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        err_5 = _a.sent();
+                        ActionErrorDialog_1.default(err_5);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    }
     function runAction(actionData, context) {
         return __awaiter(this, void 0, void 0, function () {
             var actionWindowData, viewData, formView, parsedDomain;
@@ -868,7 +914,7 @@ function Form(props, ref) {
     function executeButtonAction(_a) {
         var type = _a.type, action = _a.action, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
-            var err_3;
+            var err_6;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -885,12 +931,12 @@ function Form(props, ref) {
                             FormErrorsDialog_1.default();
                             return [2 /*return*/];
                         }
-                        return [4 /*yield*/, submitForm()];
+                        _b.label = 2;
                     case 2:
-                        _b.sent();
-                        _b.label = 3;
+                        _b.trys.push([2, 10, , 11]);
+                        return [4 /*yield*/, submitForm()];
                     case 3:
-                        _b.trys.push([3, 10, , 11]);
+                        _b.sent();
                         if (!(type === "object")) return [3 /*break*/, 5];
                         return [4 /*yield*/, runObjectButton({ action: action, context: context })];
                     case 4:
@@ -910,10 +956,34 @@ function Form(props, ref) {
                         _b.label = 9;
                     case 9: return [3 /*break*/, 11];
                     case 10:
-                        err_3 = _b.sent();
-                        ActionErrorDialog_1.default(err_3);
+                        err_6 = _b.sent();
+                        ActionErrorDialog_1.default(err_6);
                         return [3 /*break*/, 11];
                     case 11: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function onFormModalSucceed() {
+        return __awaiter(this, void 0, void 0, function () {
+            var err_7;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        setButtonActionModalVisible(false);
+                        setButtonContext({});
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, fetchValues()];
+                    case 2:
+                        _a.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        err_7 = _a.sent();
+                        ActionErrorDialog_1.default(err_7);
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
                 }
             });
         });
@@ -944,19 +1014,7 @@ function Form(props, ref) {
         error && (react_1.default.createElement(antd_1.Alert, { className: "mt-10 mb-20", message: JSON.stringify(error), type: "error", banner: true })),
         loading ? react_1.default.createElement(antd_1.Spin, null) : content(),
         showFooter && footer(),
-        react_1.default.createElement(index_1.FormModal, { buttonModal: true, parentContext: __assign(__assign(__assign({}, buttonContext), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context), model: buttonActionModalModel, formView: buttonActionModalFormView, visible: buttonActionModalVisible, onSubmitSucceed: function () { return __awaiter(_this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            setButtonActionModalVisible(false);
-                            setButtonContext({});
-                            return [4 /*yield*/, fetchValues()];
-                        case 1:
-                            _a.sent();
-                            return [2 /*return*/];
-                    }
-                });
-            }); }, onCancel: function () {
+        react_1.default.createElement(index_1.FormModal, { buttonModal: true, parentContext: __assign(__assign(__assign({}, buttonContext), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context), model: buttonActionModalModel, formView: buttonActionModalFormView, visible: buttonActionModalVisible, onSubmitSucceed: onFormModalSucceed, onCancel: function () {
                 setButtonActionModalVisible(false);
                 setButtonContext({});
             }, showFooter: false, actionDomain: actionDomainModal, parentOpenNewActionModal: openNewActionModal }),

@@ -176,8 +176,8 @@ function Form(props: FormProps, ref: any) {
 
   useImperativeHandle(ref, () => ({
     submitForm,
-    generateReport,
-    runAction,
+    generateReport: tryGenerateReport,
+    runAction: tryRunAction,
   }));
 
   useEffect(() => {
@@ -493,71 +493,75 @@ function Form(props: FormProps, ref: any) {
   const debouncedCheckFieldsChanges = debounce(checkFieldsChanges, 100);
 
   const evaluateChanges = async (changedFields: any, values: any) => {
-    let finalValues = values;
-    let finalFields = fields;
+    try {
+      let finalValues = values;
+      let finalFields = fields;
 
-    // By design, we will only receive one changed field at a time inside changedFields
-    const changedFieldName = changedFields[0].name;
+      // By design, we will only receive one changed field at a time inside changedFields
+      const changedFieldName = changedFields[0].name;
 
-    // We check if the form has onChange actions for the field
-    const onChangeFieldAction = formOoui?.onChangeFields[changedFieldName];
-    if (onChangeFieldAction) {
-      const payload: any = {};
+      // We check if the form has onChange actions for the field
+      const onChangeFieldAction = formOoui?.onChangeFields[changedFieldName];
+      if (onChangeFieldAction) {
+        const payload: any = {};
 
-      onChangeFieldAction.args.forEach((arg: string) => {
-        if (values[arg]) {
-          payload[arg] = values[arg];
-        } else {
-          payload[arg] = false;
-        }
-      });
-
-      const ids = getCurrentId()! ? [getCurrentId()!] : [];
-
-      const response = await ConnectionProvider.getHandler().executeOnChange({
-        model,
-        action: onChangeFieldAction.method,
-        ids,
-        payload,
-        context: {
-          ...parentContext,
-          ...formOoui?.context,
-        },
-        fields,
-      });
-
-      if (response.value) {
-        finalValues = { ...values, ...response.value };
-        assignNewValuesToForm({
-          values: finalValues,
-          fields: fields,
-          reset: false,
+        onChangeFieldAction.args.forEach((arg: string) => {
+          if (values[arg]) {
+            payload[arg] = values[arg];
+          } else {
+            payload[arg] = false;
+          }
         });
-      }
 
-      if (
-        response.warning &&
-        response.warning.title &&
-        response.warning.message &&
-        !warningIsShwon.current
-      ) {
-        const { title, message } = response.warning;
-        warningIsShwon.current = true;
-        showWarningDialog(title, message, () => {
-          warningIsShwon.current = false;
-        });
-      }
+        const ids = getCurrentId()! ? [getCurrentId()!] : [];
 
-      if (response.domain) {
-        finalFields = mergeFieldsDomain({
-          fieldsDomain: response.domain,
+        const response = await ConnectionProvider.getHandler().executeOnChange({
+          model,
+          action: onChangeFieldAction.method,
+          ids,
+          payload,
+          context: {
+            ...parentContext,
+            ...formOoui?.context,
+          },
           fields,
         });
-        setFields(finalFields);
-      }
-    }
 
-    parseForm({ arch: arch!, fields: finalFields, values: finalValues });
+        if (response.value) {
+          finalValues = { ...values, ...response.value };
+          assignNewValuesToForm({
+            values: finalValues,
+            fields: fields,
+            reset: false,
+          });
+        }
+
+        if (
+          response.warning &&
+          response.warning.title &&
+          response.warning.message &&
+          !warningIsShwon.current
+        ) {
+          const { title, message } = response.warning;
+          warningIsShwon.current = true;
+          showWarningDialog(title, message, () => {
+            warningIsShwon.current = false;
+          });
+        }
+
+        if (response.domain) {
+          finalFields = mergeFieldsDomain({
+            fieldsDomain: response.domain,
+            fields,
+          });
+          setFields(finalFields);
+        }
+      }
+
+      parseForm({ arch: arch!, fields: finalFields, values: finalValues });
+    } catch (err) {
+      showErrorDialog(err);
+    }
   };
 
   const debouncedEvaluateChanges = debounce(evaluateChanges, 800);
@@ -708,7 +712,7 @@ function Form(props: FormProps, ref: any) {
     if (!ids) {
       const results = await ConnectionProvider.getHandler().searchAllIds({
         params: [],
-        model: datasource.model || response.model,
+        model: datasource.model || response.model,
         totalItems: 1,
       });
 
@@ -733,6 +737,14 @@ function Form(props: FormProps, ref: any) {
 
   function getCurrentId() {
     return id || createdId.current;
+  }
+
+  async function tryGenerateReport(options: CreateReportRequest) {
+    try {
+      await generateReport(options);
+    } catch (err) {
+      showErrorDialog(err);
+    }
   }
 
   async function generateReport(options: CreateReportRequest) {
@@ -806,6 +818,14 @@ function Form(props: FormProps, ref: any) {
     )[0];
 
     await runAction(actionData, context);
+  }
+
+  async function tryRunAction(actionData: any, context: any) {
+    try {
+      await runAction(actionData, context);
+    } catch (err) {
+      showErrorDialog(err);
+    }
   }
 
   async function runAction(actionData: any, context: any) {
