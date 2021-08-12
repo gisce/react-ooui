@@ -53,28 +53,37 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.linkItem = exports.removeItems = exports.readObjectValues = void 0;
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var readObjectValues = function (options) { return __awaiter(void 0, void 0, void 0, function () {
-    var items, model, formFields, formArch, treeFields, treeArch, idsToFetch, formValues, treeValues;
+    var items, model, formFields, treeFields, idsToFetch, values, formValues, treeValues;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                items = options.items, model = options.model, formFields = options.formFields, formArch = options.formArch, treeFields = options.treeFields, treeArch = options.treeArch;
+                items = options.items, model = options.model, formFields = options.formFields, treeFields = options.treeFields;
                 idsToFetch = items.map(function (item) { return item.id; });
                 return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
-                        arch: formArch,
                         model: model,
                         ids: idsToFetch,
-                        fields: formFields,
+                        fields: __assign(__assign({}, formFields), treeFields),
                     })];
             case 1:
-                formValues = _a.sent();
-                return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
-                        arch: treeArch,
-                        model: model,
-                        ids: idsToFetch,
-                        fields: treeFields,
-                    })];
-            case 2:
-                treeValues = _a.sent();
+                values = _a.sent();
+                formValues = values.map(function (result) {
+                    var resultFormValues = {};
+                    Object.keys(result).forEach(function (key) {
+                        if (formFields.hasOwnProperty(key) || key === "id") {
+                            resultFormValues[key] = result[key];
+                        }
+                    });
+                    return resultFormValues;
+                });
+                treeValues = values.map(function (result) {
+                    var resultTreeValues = {};
+                    Object.keys(result).forEach(function (key) {
+                        if (treeFields.hasOwnProperty(key) || key === "id") {
+                            resultTreeValues[key] = result[key];
+                        }
+                    });
+                    return resultTreeValues;
+                });
                 // We fill the values property of the One2manyItem with the retrieved values from the API
                 return [2 /*return*/, items.map(function (item) {
                         var fetchedFormItemValues = formValues.find(function (itemValues) { return itemValues.id === item.id; });

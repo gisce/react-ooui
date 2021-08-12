@@ -3,9 +3,7 @@ declare type ReadObjectValuesOptions = {
     items: One2manyItem[];
     model: string;
     treeFields: any;
-    treeArch: string;
     formFields: any;
-    formArch: string;
 };
 declare const readObjectValues: (options: ReadObjectValuesOptions) => Promise<One2manyItem[]>;
 declare type RemoveItemOptions = {

@@ -121,7 +121,9 @@ var One2manyInput = function (props) {
                     if (!manualTriggerChange) return [3 /*break*/, 1];
                     setManualTriggerChange(false);
                     return [3 /*break*/, 3];
-                case 1: return [4 /*yield*/, fetchOriginalItemsFromApi()];
+                case 1:
+                    if (!(items.length > 0)) return [3 /*break*/, 3];
+                    return [4 /*yield*/, fetchOriginalItemsFromApi()];
                 case 2:
                     _a.sent();
                     if (itemIndex > itemsToShow.length - 1 && itemIndex !== 0) {
@@ -144,9 +146,7 @@ var One2manyInput = function (props) {
                 case 1:
                     _a.trys.push([1, 3, 4, 5]);
                     return [4 /*yield*/, one2manyHelper_1.readObjectValues({
-                            treeArch: views.get("tree").arch,
                             treeFields: views.get("tree").fields,
-                            formArch: views.get("form").arch,
                             formFields: views.get("form").fields,
                             model: relation,
                             items: items,

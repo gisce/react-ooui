@@ -152,6 +152,7 @@ function Form(props, ref) {
             return;
         }
         if (!visible) {
+            setFormOoui(undefined);
             return;
         }
         fetchData();
@@ -996,6 +997,9 @@ function Form(props, ref) {
             return react_1.default.createElement(antd_1.Spin, null);
         }
         if (!model && !formViewProps) {
+            return null;
+        }
+        if (!visible) {
             return null;
         }
         return (react_1.default.createElement(react_1.default.Fragment, null,
