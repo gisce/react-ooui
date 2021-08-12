@@ -186,6 +186,7 @@ function Form(props: FormProps, ref: any) {
     }
 
     if (!visible) {
+      setFormOoui(undefined);
       return;
     }
 
@@ -924,6 +925,10 @@ function Form(props: FormProps, ref: any) {
     }
 
     if (!model && !formViewProps) {
+      return null;
+    }
+
+    if (!visible) {
       return null;
     }
 
