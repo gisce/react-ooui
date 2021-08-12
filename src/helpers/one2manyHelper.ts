@@ -5,31 +5,41 @@ type ReadObjectValuesOptions = {
   items: One2manyItem[];
   model: string;
   treeFields: any;
-  treeArch: string;
   formFields: any;
-  formArch: string;
 };
 
 const readObjectValues = async (
   options: ReadObjectValuesOptions
 ): Promise<One2manyItem[]> => {
-  const { items, model, formFields, formArch, treeFields, treeArch } = options;
+  const { items, model, formFields, treeFields } = options;
 
   // We get a number array of id's
   const idsToFetch = items.map((item) => item.id) as number[];
 
-  const formValues = await ConnectionProvider.getHandler().readObjects({
-    arch: formArch,
+  const values = await ConnectionProvider.getHandler().readObjects({
     model,
     ids: idsToFetch,
-    fields: formFields,
+    fields: { ...formFields, ...treeFields },
   });
 
-  const treeValues = await ConnectionProvider.getHandler().readObjects({
-    arch: treeArch,
-    model,
-    ids: idsToFetch,
-    fields: treeFields,
+  const formValues = values.map((result: any) => {
+    const resultFormValues: any = {};
+    Object.keys(result).forEach((key) => {
+      if (formFields.hasOwnProperty(key) || key === "id") {
+        resultFormValues[key] = result[key];
+      }
+    });
+    return resultFormValues;
+  });
+
+  const treeValues = values.map((result: any) => {
+    const resultTreeValues: any = {};
+    Object.keys(result).forEach((key) => {
+      if (treeFields.hasOwnProperty(key) || key === "id") {
+        resultTreeValues[key] = result[key];
+      }
+    });
+    return resultTreeValues;
   });
 
   // We fill the values property of the One2manyItem with the retrieved values from the API

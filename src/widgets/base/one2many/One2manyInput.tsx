@@ -91,7 +91,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     // And entering in a infinite loop
     if (manualTriggerChange) {
       setManualTriggerChange(false);
-    } else {
+    } else if (items.length > 0) {
       await fetchOriginalItemsFromApi();
       if (itemIndex > itemsToShow.length - 1 && itemIndex !== 0) {
         setItemIndex(0);
@@ -106,9 +106,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
     try {
       const itemsWithValues = await readObjectValues({
-        treeArch: views.get("tree").arch,
         treeFields: views.get("tree").fields,
-        formArch: views.get("form").arch,
         formFields: views.get("form").fields,
         model: relation,
         items,
