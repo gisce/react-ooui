@@ -213,8 +213,7 @@ function FormActionBar() {
             model,
             name: report_name,
             ids: [currentId],
-            contextReport: context ? JSON.parse(context) : {},
-            context: {},
+            context,
           });
         }}
       />

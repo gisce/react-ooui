@@ -6,7 +6,7 @@ import React, {
   useRef,
   useContext,
 } from "react";
-import { Form as FormOoui, parseDomain } from "ooui";
+import { Form as FormOoui, parseContext, parseDomain } from "ooui";
 import {
   Form as AntForm,
   Button,
@@ -312,6 +312,11 @@ function Form(props: FormProps, ref: any) {
     });
 
     antForm.setFields(fieldsToUpdate);
+  };
+
+  const getCurrentValues = (fields: any) => {
+    const currentValues = antForm.getFieldsValue(true);
+    return processValues(currentValues, fields);
   };
 
   const fetchValuesFromApi = async ({
@@ -630,8 +635,14 @@ function Form(props: FormProps, ref: any) {
         context,
       })) as FormView;
 
+      const responseContext = parseContext({
+        context: response.context,
+        fields,
+        values: getCurrentValues(fields),
+      });
+
       const mergedContext = {
-        ...parseSimpleContext(response.context),
+        ...responseContext,
         ...context,
         ...parentContext,
         ...formOoui?.context,
@@ -694,22 +705,6 @@ function Form(props: FormProps, ref: any) {
     openActionModal({ domain, model, formView, context });
   }
 
-  function parseSimpleContext(context: any) {
-    let parsedContext = {};
-
-    try {
-      if (typeof context === "string") {
-        parsedContext = JSON.parse(context.replace(/\'/g, '"'));
-      } else if (typeof context === "object") {
-        parsedContext = context;
-      }
-    } catch (e) {
-      console.error(e);
-    }
-
-    return parsedContext;
-  }
-
   async function executeReportAction(response: any, context?: any) {
     const { ids, ...datasource } = response.datas;
     let idsToExecute = ids;
@@ -755,13 +750,22 @@ function Form(props: FormProps, ref: any) {
   async function generateReport(options: CreateReportRequest) {
     const { ids, context, model, datas, name } = options;
 
+    const reportContext =
+      typeof context === "string"
+        ? parseContext({
+            context,
+            fields,
+            values: getCurrentValues(fields),
+          })
+        : context;
+
     const newReportId = await ConnectionProvider.getHandler().createReport({
       model,
       name,
       datas,
       ids,
       context: {
-        ...context,
+        ...reportContext,
         ...parentContext,
         ...formOoui?.context,
       },
@@ -858,14 +862,22 @@ function Form(props: FormProps, ref: any) {
         fields: {},
       });
 
+      const mergedContext = {
+        ...context,
+        ...parentContext,
+        ...formOoui?.context,
+      };
+
       openActionModal({
         domain: parsedDomain,
         model: viewData.model,
         formView,
-        context: parseSimpleContext(context),
+        context: mergedContext,
       });
     } else if (actionData.type === "ir.actions.report.xml") {
       await executeReportAction(actionData, context);
+    } else if (actionData.type === "ir.actions.wizard") {
+      showErrorDialog("Wizard actions not supported");
     }
 
     setFormIsLoading?.(false);

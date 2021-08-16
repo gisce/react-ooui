@@ -193,8 +193,7 @@ function FormActionBar() {
                     model: model,
                     name: report_name,
                     ids: [currentId],
-                    contextReport: context ? JSON.parse(context) : {},
-                    context: {},
+                    context: context,
                 });
             } }),
         react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.EnterOutlined, null), disabled: mustDisableButtons, tooltip: "Related", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.relate, onItemClick: function () { } }),

@@ -279,6 +279,10 @@ function Form(props, ref) {
         });
         antForm.setFields(fieldsToUpdate);
     };
+    var getCurrentValues = function (fields) {
+        var currentValues = antForm.getFieldsValue(true);
+        return formHelper_1.processValues(currentValues, fields);
+    };
     var fetchValuesFromApi = function (_a) {
         var fields = _a.fields, arch = _a.arch;
         return __awaiter(_this, void 0, void 0, function () {
@@ -578,7 +582,7 @@ function Form(props, ref) {
     function runObjectButton(_a) {
         var action = _a.action, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
-            var response, formView, mergedContext, options;
+            var response, formView, responseContext, mergedContext, options;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
@@ -615,7 +619,12 @@ function Form(props, ref) {
                             })];
                     case 6:
                         formView = (_b.sent());
-                        mergedContext = __assign(__assign(__assign(__assign({}, parseSimpleContext(response.context)), context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context);
+                        responseContext = ooui_1.parseContext({
+                            context: response.context,
+                            fields: fields,
+                            values: getCurrentValues(fields),
+                        });
+                        mergedContext = __assign(__assign(__assign(__assign({}, responseContext), context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context);
                         options = {
                             domain: [],
                             model: response.res_model,
@@ -667,21 +676,6 @@ function Form(props, ref) {
                 }
             });
         });
-    }
-    function parseSimpleContext(context) {
-        var parsedContext = {};
-        try {
-            if (typeof context === "string") {
-                parsedContext = JSON.parse(context.replace(/\'/g, '"'));
-            }
-            else if (typeof context === "object") {
-                parsedContext = context;
-            }
-        }
-        catch (e) {
-            console.error(e);
-        }
-        return parsedContext;
     }
     function executeReportAction(response, context) {
         return __awaiter(this, void 0, void 0, function () {
@@ -746,17 +740,24 @@ function Form(props, ref) {
     }
     function generateReport(options) {
         return __awaiter(this, void 0, void 0, function () {
-            var ids, context, model, datas, name, newReportId;
+            var ids, context, model, datas, name, reportContext, newReportId;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         ids = options.ids, context = options.context, model = options.model, datas = options.datas, name = options.name;
+                        reportContext = typeof context === "string"
+                            ? ooui_1.parseContext({
+                                context: context,
+                                fields: fields,
+                                values: getCurrentValues(fields),
+                            })
+                            : context;
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().createReport({
                                 model: model,
                                 name: name,
                                 datas: datas,
                                 ids: ids,
-                                context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
+                                context: __assign(__assign(__assign({}, reportContext), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                             })];
                     case 1:
                         newReportId = _a.sent();
@@ -869,7 +870,7 @@ function Form(props, ref) {
     }
     function runAction(actionData, context) {
         return __awaiter(this, void 0, void 0, function () {
-            var actionWindowData, viewData, formView, parsedDomain;
+            var actionWindowData, viewData, formView, parsedDomain, mergedContext;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -895,20 +896,26 @@ function Form(props, ref) {
                             },
                             fields: {},
                         });
+                        mergedContext = __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context);
                         openActionModal({
                             domain: parsedDomain,
                             model: viewData.model,
                             formView: formView,
-                            context: parseSimpleContext(context),
+                            context: mergedContext,
                         });
-                        return [3 /*break*/, 5];
+                        return [3 /*break*/, 6];
                     case 3:
                         if (!(actionData.type === "ir.actions.report.xml")) return [3 /*break*/, 5];
                         return [4 /*yield*/, executeReportAction(actionData, context)];
                     case 4:
                         _a.sent();
-                        _a.label = 5;
+                        return [3 /*break*/, 6];
                     case 5:
+                        if (actionData.type === "ir.actions.wizard") {
+                            ActionErrorDialog_1.default("Wizard actions not supported");
+                        }
+                        _a.label = 6;
+                    case 6:
                         setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(false);
                         return [2 /*return*/];
                 }
