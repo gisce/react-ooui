@@ -10,7 +10,7 @@ export declare type FormProps = {
     getDataFromAction?: boolean;
     mustClearAfterSave?: boolean;
     submitMode?: "api" | "values";
-    onSubmitSucceed?: (event: any) => void;
+    onSubmitSucceed?: (id?: number) => void;
     onSubmitError?: (error: any) => void;
     onCancel?: () => void;
     onFieldsChange?: (values: any) => void;

@@ -62,7 +62,7 @@ export type FormProps = {
   getDataFromAction?: boolean;
   mustClearAfterSave?: boolean;
   submitMode?: "api" | "values";
-  onSubmitSucceed?: (event: any) => void;
+  onSubmitSucceed?: (id?: number) => void;
   onSubmitError?: (error: any) => void;
   onCancel?: () => void;
   onFieldsChange?: (values: any) => void;
@@ -157,11 +157,11 @@ function Form(props: FormProps, ref: any) {
     setAttachments = undefined,
   } = (rootForm ? actionViewContext : {}) || {};
 
-  const onSubmitSucceed = (payload: any) => {
+  const onSubmitSucceed = (id?: number) => {
     setFormHasChanges?.(false);
     setFormIsSaving?.(false);
-    propsOnSubmitSucceed?.(payload);
-    setCurrentId?.(payload);
+    propsOnSubmitSucceed?.(id);
+    setCurrentId?.(id);
   };
 
   const onCancel = () => {
@@ -404,10 +404,7 @@ function Form(props: FormProps, ref: any) {
 
   const submitValues = async () => {
     if (!insideButtonModal) {
-      onSubmitSucceed?.({
-        id: getCurrentId()!,
-        touchedValues: getTouchedValues(antForm, fields),
-      });
+      onSubmitSucceed?.(getCurrentId());
     }
   };
 
@@ -620,12 +617,12 @@ function Form(props: FormProps, ref: any) {
       Object.keys(response).length === 0 &&
       insideButtonModal
     ) {
-      onSubmitSucceed?.(id);
+      onSubmitSucceed?.(getCurrentId());
     } else if (
       response.type &&
       response.type === "ir.actions.act_window_close"
     ) {
-      onSubmitSucceed?.(id);
+      onSubmitSucceed?.(getCurrentId());
     } else if (response.type && response.type === "ir.actions.report.xml") {
       await executeReportAction(response, context);
     } else if (response.type && response.type === "ir.actions.act_window") {
@@ -771,7 +768,7 @@ function Form(props: FormProps, ref: any) {
       },
     });
 
-    onSubmitSucceed?.(id);
+    onSubmitSucceed?.(getCurrentId());
     setReportGenerating(true);
 
     reportInProgressInterval.current = setInterval(() => {
@@ -806,7 +803,7 @@ function Form(props: FormProps, ref: any) {
     });
 
     if (response.type && response.type === "ir.actions.act_window_close") {
-      onSubmitSucceed?.(id);
+      onSubmitSucceed?.(getCurrentId());
     } else {
       await fetchValues();
     }

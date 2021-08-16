@@ -195,9 +195,9 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
         model={relation}
         id={value && value[0]}
         visible={showFormModal}
-        onSubmitSucceed={(id: number) => {
+        onSubmitSucceed={(id?: number) => {
           setShowFormModal(false);
-          fetchNameAndUpdate(id);
+          fetchNameAndUpdate(id!);
         }}
         onCancel={() => {
           setShowFormModal(false);

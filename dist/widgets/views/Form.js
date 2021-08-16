@@ -128,11 +128,11 @@ function Form(props, ref) {
     var parentId = (formContext || {}).activeId;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
     var _y = (rootForm ? actionViewContext : {}) || {}, _z = _y.setFormIsSaving, setFormIsSaving = _z === void 0 ? undefined : _z, _0 = _y.setFormHasChanges, setFormHasChanges = _0 === void 0 ? undefined : _0, _1 = _y.setCurrentId, setCurrentId = _1 === void 0 ? undefined : _1, _2 = _y.setFormIsLoading, setFormIsLoading = _2 === void 0 ? undefined : _2, _3 = _y.setAttachments, setAttachments = _3 === void 0 ? undefined : _3;
-    var onSubmitSucceed = function (payload) {
+    var onSubmitSucceed = function (id) {
         setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
         setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
-        propsOnSubmitSucceed === null || propsOnSubmitSucceed === void 0 ? void 0 : propsOnSubmitSucceed(payload);
-        setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(payload);
+        propsOnSubmitSucceed === null || propsOnSubmitSucceed === void 0 ? void 0 : propsOnSubmitSucceed(id);
+        setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(id);
     };
     var onCancel = function () {
         setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
@@ -383,10 +383,7 @@ function Form(props, ref) {
     var submitValues = function () { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             if (!insideButtonModal) {
-                onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed({
-                    id: getCurrentId(),
-                    touchedValues: formHelper_1.getTouchedValues(antForm, fields),
-                });
+                onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
             }
             return [2 /*return*/];
         });
@@ -597,12 +594,12 @@ function Form(props, ref) {
                             response !== null &&
                             Object.keys(response).length === 0 &&
                             insideButtonModal)) return [3 /*break*/, 2];
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id);
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
                         return [3 /*break*/, 9];
                     case 2:
                         if (!(response.type &&
                             response.type === "ir.actions.act_window_close")) return [3 /*break*/, 3];
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id);
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
                         return [3 /*break*/, 9];
                     case 3:
                         if (!(response.type && response.type === "ir.actions.report.xml")) return [3 /*break*/, 5];
@@ -761,7 +758,7 @@ function Form(props, ref) {
                             })];
                     case 1:
                         newReportId = _a.sent();
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id);
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
                         setReportGenerating(true);
                         reportInProgressInterval.current = setInterval(function () {
                             evaluateReportStatus(newReportId);
@@ -817,7 +814,7 @@ function Form(props, ref) {
                     case 1:
                         response = _b.sent();
                         if (!(response.type && response.type === "ir.actions.act_window_close")) return [3 /*break*/, 2];
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(id);
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
                         return [3 /*break*/, 4];
                     case 2: return [4 /*yield*/, fetchValues()];
                     case 3:
