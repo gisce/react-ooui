@@ -24,6 +24,7 @@ import { Reference } from "@/widgets/base/Reference";
 import { Binary } from "@/widgets/base/Binary";
 import iconMapper from "@/helpers/iconMapper";
 import ActionBar from "@/actionbar/FormActionBar";
+import { Url } from "@/widgets/base/Url";
 
 import {
   TreeView,
@@ -97,4 +98,5 @@ export {
   GetViewRequest,
   DefaultGetRequest,
   TabManager,
+  Url,
 };

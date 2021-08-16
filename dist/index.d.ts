@@ -24,8 +24,10 @@ import { Reference } from "@/widgets/base/Reference";
 import { Binary } from "@/widgets/base/Binary";
 import iconMapper from "@/helpers/iconMapper";
 import ActionBar from "@/actionbar/FormActionBar";
+import { Url } from "@/widgets/base/Url";
 import { TreeView, SearchFields, FormView, ConnectionProviderType, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, GetViewRequest, DefaultGetRequest } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import ActionView from "./views/ActionView";
-export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, FormModal, SearchModal, One2many, One2manyItem, Date, DateTime, Reference, Binary, iconMapper, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ActionBar, ActionView, GetViewRequest, DefaultGetRequest, };
+import TabManager from "./views/TabManager";
+export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, FormModal, SearchModal, One2many, One2manyItem, Date, DateTime, Reference, Binary, iconMapper, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ActionBar, ActionView, GetViewRequest, DefaultGetRequest, TabManager, Url, };
 //# sourceMappingURL=index.d.ts.map
