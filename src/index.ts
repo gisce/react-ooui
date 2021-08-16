@@ -47,6 +47,7 @@ import {
 } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import ActionView from "./views/ActionView";
+import TabManager from "./views/TabManager";
 
 export {
   Button,
@@ -95,4 +96,5 @@ export {
   ActionView,
   GetViewRequest,
   DefaultGetRequest,
+  TabManager,
 };
