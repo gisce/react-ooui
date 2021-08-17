@@ -73,6 +73,6 @@ function UrlInput(props) {
                 if (value && isURL_1.default(value)) {
                     setEditMode(false);
                 }
-            } })) : (react_1.default.createElement("a", { href: value, target: "_blank" }, value)))));
+            } })) : (react_1.default.createElement("a", { href: value, style: { color: "#1890ff" }, target: "_blank" }, value)))));
 }
 //# sourceMappingURL=Url.js.map

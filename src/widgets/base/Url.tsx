@@ -75,7 +75,7 @@ function UrlInput(props: UrlProps) {
             }}
           />
         ) : (
-          <a href={value} target="_blank">
+          <a href={value} style={{ color: "#1890ff" }} target="_blank">
             {value}
           </a>
         )}
