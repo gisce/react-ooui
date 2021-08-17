@@ -13,7 +13,7 @@ function TreeActionBar() {
   ) as ActionViewContextType;
 
   return (
-    <Space>
+    <Space wrap={true}>
       <NewButton />
       {separator()}
       <ChangeViewButton

@@ -121,7 +121,7 @@ function FormActionBar() {
   const mustDisableButtons = formIsSaving || removingItem || formIsLoading;
 
   return (
-    <Space>
+    <Space wrap={true}>
       {formIsLoading && (
         <>
           <Spin />
@@ -150,24 +150,26 @@ function FormActionBar() {
         onClick={tryDelete}
       />
       {separator()}
-      <ActionButton
-        icon={<LeftOutlined />}
-        tooltip={"Previous"}
-        disabled={mustDisableButtons}
-        loading={false}
-        onClick={() => {
-          tryNavigate(onPreviousClick);
-        }}
-      />
-      <ActionButton
-        icon={<RightOutlined />}
-        tooltip={"Next"}
-        disabled={mustDisableButtons}
-        loading={false}
-        onClick={() => {
-          tryNavigate(onNextClick);
-        }}
-      />
+      <Space>
+        <ActionButton
+          icon={<LeftOutlined />}
+          tooltip={"Previous"}
+          disabled={mustDisableButtons}
+          loading={false}
+          onClick={() => {
+            tryNavigate(onPreviousClick);
+          }}
+        />
+        <ActionButton
+          icon={<RightOutlined />}
+          tooltip={"Next"}
+          disabled={mustDisableButtons}
+          loading={false}
+          onClick={() => {
+            tryNavigate(onNextClick);
+          }}
+        />
+      </Space>
       {separator()}
       <ChangeViewButton
         currentView={currentView}

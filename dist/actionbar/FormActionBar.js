@@ -149,7 +149,7 @@ function FormActionBar() {
         });
     }
     var mustDisableButtons = formIsSaving || removingItem || formIsLoading;
-    return (react_1.default.createElement(antd_1.Space, null,
+    return (react_1.default.createElement(antd_1.Space, { wrap: true },
         formIsLoading && (react_1.default.createElement(react_1.default.Fragment, null,
             react_1.default.createElement(antd_1.Spin, null),
             separator(),
@@ -161,12 +161,13 @@ function FormActionBar() {
                 removingItem ||
                 formIsLoading, loading: removingItem, onClick: tryDelete }),
         separator(),
-        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.LeftOutlined, null), tooltip: "Previous", disabled: mustDisableButtons, loading: false, onClick: function () {
-                tryNavigate(onPreviousClick);
-            } }),
-        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.RightOutlined, null), tooltip: "Next", disabled: mustDisableButtons, loading: false, onClick: function () {
-                tryNavigate(onNextClick);
-            } }),
+        react_1.default.createElement(antd_1.Space, null,
+            react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.LeftOutlined, null), tooltip: "Previous", disabled: mustDisableButtons, loading: false, onClick: function () {
+                    tryNavigate(onPreviousClick);
+                } }),
+            react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.RightOutlined, null), tooltip: "Next", disabled: mustDisableButtons, loading: false, onClick: function () {
+                    tryNavigate(onNextClick);
+                } })),
         separator(),
         react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews, onChangeView: setCurrentView, disabled: mustDisableButtons }),
         separator(),

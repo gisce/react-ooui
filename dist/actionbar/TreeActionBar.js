@@ -29,7 +29,7 @@ var ActionViewContext_1 = require("@/context/ActionViewContext");
 var NewButton_1 = __importDefault(require("./NewButton"));
 function TreeActionBar() {
     var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView;
-    return (react_1.default.createElement(antd_1.Space, null,
+    return (react_1.default.createElement(antd_1.Space, { wrap: true },
         react_1.default.createElement(NewButton_1.default, null),
         separator(),
         react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews, onChangeView: setCurrentView })));
