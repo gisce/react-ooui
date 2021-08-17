@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Input } from "antd";
+import { Input, Button, Row, Col } from "antd";
 import Field from "@/common/Field";
 import { Char as CharOoui } from "ooui";
 import { WidgetProps } from "@/types";
 import Config from "@/Config";
+import { EditOutlined, CheckOutlined } from "@ant-design/icons";
 import isURL from "validator/lib/isURL";
 
 export const Url = (props: WidgetProps) => {
@@ -20,24 +21,16 @@ export const Url = (props: WidgetProps) => {
 interface UrlProps {
   ooui: CharOoui;
   value?: string;
+  onChange?: (value: string) => void;
 }
 
 function UrlInput(props: UrlProps) {
-  const { ooui, value } = props;
+  const { ooui, value, onChange } = props;
   const { id, readOnly, required } = ooui as CharOoui;
   const requiredClass =
     required && !readOnly ? Config.requiredClass : undefined;
 
   const [editMode, setEditMode] = useState(false);
-
-  function handleClick(e: any) {
-    e.preventDefault();
-    if (readOnly) {
-      window.open(value, "_blank");
-    } else {
-      setEditMode(true);
-    }
-  }
 
   let showInput = editMode;
 
@@ -45,26 +38,48 @@ function UrlInput(props: UrlProps) {
     showInput = false;
   }
 
-  if (!isURL(value!) && !editMode) {
+  if (!value && !readOnly) {
     showInput = true;
   }
 
+  const onValueStringChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange?.(e.target.value);
+  };
+
   return (
-    <Field required={required} {...props}>
-      {showInput ? (
-        <Input
-          id={id}
-          className={requiredClass}
-          value={value}
-          onBlur={() => {
-            setEditMode(false);
-          }}
-        />
-      ) : (
-        <a href={value} onClick={handleClick}>
-          {value}
-        </a>
-      )}
-    </Field>
+    <Row gutter={8} wrap={false} align="middle">
+      {!readOnly ? (
+        <Col flex="32px">
+          <Button
+            icon={editMode ? <CheckOutlined /> : <EditOutlined />}
+            onClick={() => {
+              if (value && isURL(value!)) {
+                setEditMode(!editMode);
+              }
+            }}
+            tabIndex={-1}
+          />
+        </Col>
+      ) : null}
+      <Col flex="auto">
+        {showInput ? (
+          <Input
+            id={id}
+            onChange={onValueStringChange}
+            className={requiredClass}
+            value={value}
+            onBlur={() => {
+              if (value && isURL(value!)) {
+                setEditMode(false);
+              }
+            }}
+          />
+        ) : (
+          <a href={value} target="_blank">
+            {value}
+          </a>
+        )}
+      </Col>
+    </Row>
   );
 }

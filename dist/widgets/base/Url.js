@@ -38,6 +38,7 @@ var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var Field_1 = __importDefault(require("@/common/Field"));
 var Config_1 = __importDefault(require("@/Config"));
+var icons_1 = require("@ant-design/icons");
 var isURL_1 = __importDefault(require("validator/lib/isURL"));
 var Url = function (props) {
     var ooui = props.ooui;
@@ -47,28 +48,31 @@ var Url = function (props) {
 };
 exports.Url = Url;
 function UrlInput(props) {
-    var ooui = props.ooui, value = props.value;
+    var ooui = props.ooui, value = props.value, onChange = props.onChange;
     var _a = ooui, id = _a.id, readOnly = _a.readOnly, required = _a.required;
     var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
     var _b = react_1.useState(false), editMode = _b[0], setEditMode = _b[1];
-    function handleClick(e) {
-        e.preventDefault();
-        if (readOnly) {
-            window.open(value, "_blank");
-        }
-        else {
-            setEditMode(true);
-        }
-    }
     var showInput = editMode;
     if (readOnly && !editMode) {
         showInput = false;
     }
-    if (!isURL_1.default(value) && !editMode) {
+    if (!value && !readOnly) {
         showInput = true;
     }
-    return (react_1.default.createElement(Field_1.default, __assign({ required: required }, props), showInput ? (react_1.default.createElement(antd_1.Input, { id: id, className: requiredClass, value: value, onBlur: function () {
-            setEditMode(false);
-        } })) : (react_1.default.createElement("a", { href: value, onClick: handleClick }, value))));
+    var onValueStringChange = function (e) {
+        onChange === null || onChange === void 0 ? void 0 : onChange(e.target.value);
+    };
+    return (react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false, align: "middle" },
+        !readOnly ? (react_1.default.createElement(antd_1.Col, { flex: "32px" },
+            react_1.default.createElement(antd_1.Button, { icon: editMode ? react_1.default.createElement(icons_1.CheckOutlined, null) : react_1.default.createElement(icons_1.EditOutlined, null), onClick: function () {
+                    if (value && isURL_1.default(value)) {
+                        setEditMode(!editMode);
+                    }
+                }, tabIndex: -1 }))) : null,
+        react_1.default.createElement(antd_1.Col, { flex: "auto" }, showInput ? (react_1.default.createElement(antd_1.Input, { id: id, onChange: onValueStringChange, className: requiredClass, value: value, onBlur: function () {
+                if (value && isURL_1.default(value)) {
+                    setEditMode(false);
+                }
+            } })) : (react_1.default.createElement("a", { href: value, target: "_blank" }, value)))));
 }
 //# sourceMappingURL=Url.js.map

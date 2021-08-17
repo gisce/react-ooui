@@ -13,7 +13,7 @@ export const Default = (): React.ReactElement => {
       id={6}
       formView={{
         arch: '<form string="test"><field name="url" /></form>',
-        fields: { url: { type: "url" } },
+        fields: { url: { type: "url"} },
       }}
       values={{ url: "http://www.google.com" }}
       onCancel={() => {
