@@ -14,21 +14,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Url = void 0;
+exports.Email = void 0;
 var react_1 = __importDefault(require("react"));
-var isURL_1 = __importDefault(require("validator/lib/isURL"));
+var isEmail_1 = __importDefault(require("validator/lib/isEmail"));
 var Field_1 = __importDefault(require("@/common/Field"));
 var Link_1 = require("./Link");
-var Url = function (props) {
+var Email = function (props) {
     var ooui = props.ooui;
     var required = ooui.required;
     return (react_1.default.createElement(Field_1.default, __assign({ required: required }, props),
-        react_1.default.createElement(Link_1.LinkInput, { ooui: ooui, valueValidator: function (value) {
+        react_1.default.createElement(Link_1.LinkInput, { ooui: ooui, linkPrefix: "mailto:", valueValidator: function (value) {
                 if (!value) {
                     return false;
                 }
-                return isURL_1.default(value);
+                return isEmail_1.default(value);
             } })));
 };
-exports.Url = Url;
-//# sourceMappingURL=Url.js.map
+exports.Email = Email;
+//# sourceMappingURL=Email.js.map

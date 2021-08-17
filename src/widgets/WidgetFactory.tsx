@@ -21,6 +21,7 @@ import {
   Reference,
   Binary,
   Url,
+  Email,
 } from "@/index";
 import { Image } from "./base/Image";
 
@@ -37,7 +38,6 @@ const getWidgetType = (type: string) => {
     case "label":
       return Label;
     case "char":
-    case "email":
       return Char;
     case "text":
       return Text;
@@ -73,6 +73,8 @@ const getWidgetType = (type: string) => {
       return Image;
     case "url":
       return Url;
+    case "email":
+      return Email;
     default:
       return undefined;
   }

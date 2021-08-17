@@ -3,7 +3,7 @@ import React from "react";
 import { Form } from "../..";
 
 export default {
-  title: "Components/Widgets/Forms/FormWithUrl",
+  title: "Components/Widgets/Forms/FormWithLinks",
 };
 
 export const Default = (): React.ReactElement => {
@@ -12,10 +12,11 @@ export const Default = (): React.ReactElement => {
       model={"test"}
       id={6}
       formView={{
-        arch: '<form string="test"><field name="url" /></form>',
-        fields: { url: { type: "url"} },
+        arch:
+          '<form string="test"><field name="url" /><field name="email" /></form>',
+        fields: { url: { type: "url" }, email: { type: "email" } },
       }}
-      values={{ url: "http://www.google.com" }}
+      values={{ url: "http://www.google.com", email: "test@test.net" }}
       onCancel={() => {
         console.log();
       }}

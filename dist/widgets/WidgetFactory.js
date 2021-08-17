@@ -20,7 +20,6 @@ var getWidgetType = function (type) {
         case "label":
             return index_1.Label;
         case "char":
-        case "email":
             return index_1.Char;
         case "text":
             return index_1.Text;
@@ -56,6 +55,8 @@ var getWidgetType = function (type) {
             return Image_1.Image;
         case "url":
             return index_1.Url;
+        case "email":
+            return index_1.Email;
         default:
             return undefined;
     }

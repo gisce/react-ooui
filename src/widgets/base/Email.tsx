@@ -1,12 +1,12 @@
 import React from "react";
-import isURL from "validator/lib/isURL";
+import isEmail from "validator/lib/isEmail";
 import Field from "@/common/Field";
 
 import { WidgetProps } from "@/types";
 import { LinkInput } from "./Link";
 import { Char as CharOoui } from "ooui";
 
-export const Url = (props: WidgetProps) => {
+export const Email = (props: WidgetProps) => {
   const { ooui } = props;
   const { required } = ooui as CharOoui;
 
@@ -14,11 +14,12 @@ export const Url = (props: WidgetProps) => {
     <Field required={required} {...props}>
       <LinkInput
         ooui={ooui as CharOoui}
+        linkPrefix={"mailto:"}
         valueValidator={(value) => {
           if (!value) {
             return false;
           }
-          return isURL(value);
+          return isEmail(value);
         }}
       />
     </Field>
