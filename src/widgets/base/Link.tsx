@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { Input, Button, Row, Col } from "antd";
-import Field from "@/common/Field";
 import { Char as CharOoui } from "ooui";
-import { WidgetProps } from "@/types";
 import Config from "@/Config";
 import { EditOutlined, CheckOutlined } from "@ant-design/icons";
 
