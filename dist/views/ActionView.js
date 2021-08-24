@@ -61,113 +61,53 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
-var Form_1 = __importDefault(require("@/widgets/views/Form"));
-var SearchTree_1 = __importDefault(require("@/widgets/views/SearchTree"));
 var ooui_1 = require("ooui");
-var ActionViewContext_1 = __importDefault(require("@/context/ActionViewContext"));
-var TitleHeader_1 = __importDefault(require("@/ui/TitleHeader"));
-var FormActionBar_1 = __importDefault(require("@/actionbar/FormActionBar"));
-var TreeActionBar_1 = __importDefault(require("@/actionbar/TreeActionBar"));
+var ActionViewExplicit_1 = __importDefault(require("./ActionViewExplicit"));
 function ActionView(props) {
     var _this = this;
     var action = props.action, title = props.title;
-    var _a = react_1.useState("tree"), currentView = _a[0], setCurrentView = _a[1];
-    var _b = react_1.useState([]), availableViews = _b[0], setAvailableViews = _b[1];
-    var _c = react_1.useState(), currentModel = _c[0], setCurrentModel = _c[1];
-    var _d = react_1.useState(), treeView = _d[0], setTreeView = _d[1];
-    var _e = react_1.useState(), formView = _e[0], setFormView = _e[1];
-    var _f = react_1.useState(), domain = _f[0], setDomain = _f[1];
-    var _g = react_1.useState(false), isLoading = _g[0], setIsLoading = _g[1];
-    var _h = react_1.useState(), currentId = _h[0], setCurrentId = _h[1];
-    var _j = react_1.useState(), currentItemIndex = _j[0], setCurrentItemIndex = _j[1];
-    var _k = react_1.useState([]), results = _k[0], setResults = _k[1];
-    var _l = react_1.useState(), toolbar = _l[0], setToolbar = _l[1];
-    var formRef = react_1.useRef();
-    var fetchActionData = function () { return __awaiter(_this, void 0, void 0, function () {
-        var dataForAction, parsedDomain, formView;
+    var _a = react_1.useState(), actionData = _a[0], setActionData = _a[1];
+    var _b = react_1.useState(true), isLoading = _b[0], setIsLoading = _b[1];
+    var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
+        var dataForAction, parsedDomain, parsedContext, model, views;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getViewsForAction({
-                        action: action,
-                    })];
+                case 0:
+                    setIsLoading(true);
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getActionData(action)];
                 case 1:
                     dataForAction = _a.sent();
-                    parsedDomain = ooui_1.parseDomain({
-                        domainValue: dataForAction.domain,
+                    parsedDomain = dataForAction.domain
+                        ? ooui_1.parseDomain({
+                            domainValue: dataForAction.domain,
+                            values: {},
+                            fields: {},
+                        })
+                        : [];
+                    parsedContext = ooui_1.parseContext({
+                        context: dataForAction.context,
                         values: {},
                         fields: {},
                     });
-                    setDomain(parsedDomain);
-                    formView = dataForAction.views.get("form");
-                    setFormView(formView);
-                    setToolbar(formView === null || formView === void 0 ? void 0 : formView.toolbar);
-                    setTreeView(dataForAction.views.get("tree"));
-                    setCurrentModel(dataForAction.model);
-                    return [2 /*return*/, dataForAction];
+                    model = dataForAction.res_model, views = dataForAction.views;
+                    setActionData({
+                        model: model,
+                        views: views,
+                        context: parsedContext,
+                        domain: parsedDomain,
+                    });
+                    setIsLoading(false);
+                    return [2 /*return*/];
             }
         });
     }); };
-    function fetchData() {
-        return __awaiter(this, void 0, void 0, function () {
-            var actionData;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        setIsLoading(true);
-                        return [4 /*yield*/, fetchActionData()];
-                    case 1:
-                        actionData = _a.sent();
-                        if (actionData.views.has("tree")) {
-                            setCurrentView("tree");
-                        }
-                        else {
-                            setCurrentView("form");
-                        }
-                        setAvailableViews(Array.from(actionData.views.keys()));
-                        setIsLoading(false);
-                        return [2 /*return*/];
-                }
-            });
-        });
-    }
     react_1.useEffect(function () {
-        setCurrentView("tree");
-        setCurrentId(undefined);
-        setCurrentItemIndex(undefined);
         fetchData();
     }, [action]);
-    function content() {
-        if (isLoading) {
-            return react_1.default.createElement(antd_1.Spin, null);
-        }
-        return (react_1.default.createElement(react_1.default.Fragment, null,
-            react_1.default.createElement(Form_1.default, { rootForm: true, visible: currentView === "form", ref: formRef, model: currentModel, formView: formView, id: currentId, onSubmitSucceed: function (id) {
-                    var itemIndex = results.findIndex(function (item) {
-                        return item === id;
-                    });
-                    if (itemIndex === -1) {
-                        results.push(id);
-                        setResults(results);
-                        setCurrentItemIndex(results.length - 1);
-                    }
-                } }),
-            react_1.default.createElement(SearchTree_1.default, { visible: currentView === "tree", rootTree: true, model: currentModel, formView: formView, treeView: treeView, domain: domain, onRowClicked: function (event) {
-                    var id = event.id;
-                    setCurrentId(id);
-                    var itemIndex = results.findIndex(function (item) {
-                        return item === id;
-                    });
-                    setCurrentItemIndex(itemIndex);
-                    setCurrentView("form");
-                } })));
+    if (isLoading) {
+        return react_1.default.createElement(antd_1.Spin, null);
     }
-    function onNewClicked() {
-        setCurrentId(undefined);
-        setCurrentView("form");
-    }
-    return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId, setCurrentItemIndex: setCurrentItemIndex, currentItemIndex: currentItemIndex, results: results, setResults: setResults, currentModel: currentModel, toolbar: toolbar, setToolbar: setToolbar },
-        react_1.default.createElement(TitleHeader_1.default, null, currentView === "form" ? react_1.default.createElement(FormActionBar_1.default, null) : react_1.default.createElement(TreeActionBar_1.default, null)),
-        content()));
+    return (react_1.default.createElement(ActionViewExplicit_1.default, { title: title, model: actionData.model, views: actionData.views, context: actionData.context, domain: actionData.domain }));
 }
 exports.default = ActionView;
 //# sourceMappingURL=ActionView.js.map

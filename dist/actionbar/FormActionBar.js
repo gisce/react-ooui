@@ -171,21 +171,13 @@ function FormActionBar() {
         separator(),
         react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews, onChangeView: setCurrentView, disabled: mustDisableButtons }),
         separator(),
-        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null), disabled: mustDisableButtons, tooltip: "Actions", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.action, onItemClick: function (event) {
-                var _a;
-                var action = (_a = toolbar === null || toolbar === void 0 ? void 0 : toolbar.action) === null || _a === void 0 ? void 0 : _a.find(function (item) {
-                    return item.id === parseInt(event.key);
-                });
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null), disabled: mustDisableButtons, tooltip: "Actions", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.action, onItemClick: function (action) {
                 if (!action) {
                     return;
                 }
                 formRef.current.runAction(action, {});
             } }),
-        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.PrinterOutlined, null), disabled: mustDisableButtons, tooltip: "Reports", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.print, onItemClick: function (event) {
-                var _a;
-                var report = (_a = toolbar === null || toolbar === void 0 ? void 0 : toolbar.print) === null || _a === void 0 ? void 0 : _a.find(function (item) {
-                    return item.id === parseInt(event.key);
-                });
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.PrinterOutlined, null), disabled: mustDisableButtons, tooltip: "Reports", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.print, onItemClick: function (report) {
                 if (!report) {
                     return;
                 }
@@ -197,15 +189,20 @@ function FormActionBar() {
                     context: context,
                 });
             } }),
-        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.EnterOutlined, null), disabled: mustDisableButtons, tooltip: "Related", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.relate, onItemClick: function () { } }),
-        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.LinkOutlined, null), disabled: mustDisableButtons, label: "(" + attachments.length + ")", tooltip: "Attachments", items: attachments, onItemClick: function (event) { return __awaiter(_this, void 0, void 0, function () {
-                var attachment, fileType;
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.EnterOutlined, null), disabled: mustDisableButtons, tooltip: "Related", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.relate, onItemClick: function (relate) { return __awaiter(_this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    if (!relate) {
+                        return [2 /*return*/];
+                    }
+                    console.log();
+                    return [2 /*return*/];
+                });
+            }); } }),
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.LinkOutlined, null), disabled: mustDisableButtons, label: "(" + attachments.length + ")", tooltip: "Attachments", items: attachments, onItemClick: function (attachment) { return __awaiter(_this, void 0, void 0, function () {
+                var fileType;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            attachment = attachments.find(function (item) {
-                                return item.id === parseInt(event.key);
-                            });
                             if (!attachment) {
                                 return [2 /*return*/];
                             }

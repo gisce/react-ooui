@@ -248,7 +248,7 @@ function Form(props, ref) {
             switch (_a.label) {
                 case 0:
                     if (!getDataFromAction) return [3 /*break*/, 3];
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getAction(model)];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getActionStringForModel(model)];
                 case 1:
                     action = _a.sent();
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getViewsForAction({
