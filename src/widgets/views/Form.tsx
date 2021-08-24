@@ -276,7 +276,7 @@ function Form(props: FormProps, ref: any) {
 
   const getFormView = async (): Promise<FormView> => {
     if (getDataFromAction) {
-      const action = await ConnectionProvider.getHandler().getAction(model);
+      const action = await ConnectionProvider.getHandler().getActionStringForModel(model);
       const viewsForAction = await ConnectionProvider.getHandler().getViewsForAction(
         {
           action,

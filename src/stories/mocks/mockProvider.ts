@@ -11,11 +11,16 @@ import {
   ExecuteRequest,
   ReadObjectsRequest,
   DeleteObjectsRequest,
+  GetViewRequest,
+  CreateReportRequest,
+  GetReportRequest,
+  ExecuteOnChangeRequest,
+  DefaultGetRequest,
 } from "../../types/index";
 
 const init = () => {
   const handler: ConnectionProviderType = {
-    getAction: async (model: string) => {
+    getActionStringForModel: async (model: string) => {
       return "ir.actions.act_window,6";
     },
     getViewsForAction: async ({
@@ -36,15 +41,8 @@ const init = () => {
         views,
       };
     },
-    getView: async ({
-      model,
-      type,
-      context,
-    }: {
-      model: string;
-      type: "tree" | "form";
-      context: any;
-    }) => {
+    getView: async (options: GetViewRequest) => {
+      const { model, type } = options;
       await new Promise((resolve) => setTimeout(resolve, timeout));
       const data = getMock(model);
       return data[type];
@@ -104,6 +102,21 @@ const init = () => {
     },
     delete: async (options: DeleteObjectsRequest) => {
       return true;
+    },
+    createReport: (options: CreateReportRequest) => {
+      return null;
+    },
+    getReport: (options: GetReportRequest) => {
+      return null;
+    },
+    executeOnChange: (options: ExecuteOnChangeRequest) => {
+      return null;
+    },
+    defaultGet: (options: DefaultGetRequest) => {
+      return null;
+    },
+    getActionData: (action: string) => {
+      return null;
     },
   };
 

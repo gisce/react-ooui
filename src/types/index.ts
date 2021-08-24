@@ -68,6 +68,7 @@ type ViewData = {
   limit: number;
   model: string;
   domain?: any;
+  context?: any;
 };
 
 type ExecuteRequest = {
@@ -123,7 +124,7 @@ type DefaultGetRequest = {
 };
 
 type ConnectionProviderType = {
-  getAction: (model: string) => Promise<string>;
+  getActionStringForModel: (model: string) => Promise<string>;
   getViewsForAction: ({
     action,
     context,
@@ -144,6 +145,7 @@ type ConnectionProviderType = {
   getReport: (options: GetReportRequest) => Promise<any>;
   executeOnChange: (options: ExecuteOnChangeRequest) => Promise<any>;
   defaultGet: (options: DefaultGetRequest) => Promise<any>;
+  getActionData: (action: string) => Promise<any>;
 };
 
 type ViewType = "tree" | "form";
@@ -171,5 +173,5 @@ export type {
   ViewType,
   SearchCountRequest,
   GetViewRequest,
-  DefaultGetRequest
+  DefaultGetRequest,
 };
