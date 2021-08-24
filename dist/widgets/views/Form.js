@@ -146,6 +146,12 @@ function Form(props, ref) {
         submitForm: submitForm,
         generateReport: tryGenerateReport,
         runAction: tryRunAction,
+        getFields: function () {
+            return fields;
+        },
+        getValues: function () {
+            return __assign(__assign({}, getCurrentValues(fields)), { id: getCurrentId(), active_id: getCurrentId(), parent_id: parentId });
+        },
     }); });
     react_1.useEffect(function () {
         if (!model && !formViewProps) {

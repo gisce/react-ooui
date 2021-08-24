@@ -81,56 +81,56 @@ function ActionViewExplicit(props) {
     var _j = react_1.useState(), toolbar = _j[0], setToolbar = _j[1];
     var formRef = react_1.useRef();
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
-        var availableViews;
-        var _this = this;
-        return __generator(this, function (_a) {
-            setIsLoading(true);
-            views.forEach(function (viewArray) { return __awaiter(_this, void 0, void 0, function () {
-                var id, viewType, viewData;
-                var _a;
-                return __generator(this, function (_b) {
-                    switch (_b.label) {
-                        case 0:
-                            id = viewArray[0], viewType = viewArray[1];
-                            if (!id) {
-                                return [2 /*return*/];
-                            }
-                            return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
-                                    model: model,
-                                    type: viewType,
-                                    context: context,
-                                })];
-                        case 1:
-                            viewData = _b.sent();
-                            if (viewType === "tree") {
-                                setTreeView(viewData);
-                            }
-                            if (viewType === "form") {
-                                setFormView(viewData);
-                                setToolbar((_a = viewData) === null || _a === void 0 ? void 0 : _a.toolbar);
-                            }
-                            return [2 /*return*/];
+        var availableViews, _i, views_1, viewArray, viewType, viewData, err_1;
+        var _a;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    setIsLoading(true);
+                    availableViews = [];
+                    _i = 0, views_1 = views;
+                    _b.label = 1;
+                case 1:
+                    if (!(_i < views_1.length)) return [3 /*break*/, 6];
+                    viewArray = views_1[_i];
+                    viewType = viewArray[1];
+                    _b.label = 2;
+                case 2:
+                    _b.trys.push([2, 4, , 5]);
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
+                            model: model,
+                            type: viewType,
+                            context: context,
+                        })];
+                case 3:
+                    viewData = _b.sent();
+                    if (viewType === "tree") {
+                        setTreeView(viewData);
                     }
-                });
-            }); });
-            availableViews = views
-                .filter(function (_a) {
-                var id = _a[0];
-                return id !== false;
-            })
-                .map(function (_a) {
-                var viewType = _a[1];
-                return viewType;
-            });
-            if (availableViews.includes("tree")) {
-                setCurrentView("tree");
+                    if (viewType === "form") {
+                        setFormView(viewData);
+                        setToolbar((_a = viewData) === null || _a === void 0 ? void 0 : _a.toolbar);
+                    }
+                    availableViews.push(viewType);
+                    return [3 /*break*/, 5];
+                case 4:
+                    err_1 = _b.sent();
+                    console.error(model + " - " + viewType + "\u00A0- " + JSON.stringify(err_1, null, 2));
+                    return [3 /*break*/, 5];
+                case 5:
+                    _i++;
+                    return [3 /*break*/, 1];
+                case 6:
+                    if (availableViews.includes("tree")) {
+                        setCurrentView("tree");
+                    }
+                    else {
+                        setCurrentView("form");
+                    }
+                    setAvailableViews(availableViews);
+                    setIsLoading(false);
+                    return [2 /*return*/];
             }
-            else {
-                setCurrentView("form");
-            }
-            setAvailableViews(availableViews);
-            setIsLoading(false);
-            return [2 /*return*/];
         });
     }); };
     react_1.useEffect(function () {

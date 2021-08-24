@@ -33,6 +33,8 @@ var __1 = require("..");
 var TabPane = antd_1.Tabs.TabPane;
 var uuid_1 = require("uuid");
 var Welcome_1 = __importDefault(require("./Welcome"));
+var TabManagerContext_1 = __importDefault(require("@/context/TabManagerContext"));
+var ActionViewExplicit_1 = __importDefault(require("./ActionViewExplicit"));
 function TabManager(props, ref) {
     var _a = react_1.useState(), activeKey = _a[0], setActiveKey = _a[1];
     var _b = react_1.useState([
@@ -60,6 +62,13 @@ function TabManager(props, ref) {
     }
     function openNewTab(_a) {
         var title = _a.title, action = _a.action;
+        addNewTab({
+            title: title,
+            content: react_1.default.createElement(__1.ActionView, { title: title, action: action }),
+        });
+    }
+    function addNewTab(_a) {
+        var title = _a.title, content = _a.content;
         var newTabs = __spreadArray([], tabs);
         if (tabs.length === 1 && tabs[0].key === "welcome") {
             newTabs = __spreadArray([], tabs.filter(function (tab) { return tab.key !== "welcome"; }));
@@ -70,20 +79,30 @@ function TabManager(props, ref) {
                 title: title,
                 key: key,
                 closable: true,
-                content: react_1.default.createElement(__1.ActionView, { title: title, action: action }),
+                content: content,
             },
         ]));
         setActiveKey(key);
     }
-    return (react_1.default.createElement(antd_1.Tabs, { activeKey: activeKey, hideAdd: true, type: "editable-card", onChange: function (activeKey) {
-            setActiveKey(activeKey);
-        }, onEdit: function (targetKey, action) {
-            if (action === "remove") {
-                remove(targetKey);
-            }
-        } }, tabs.map(function (tab) {
-        return (react_1.default.createElement(TabPane, { key: tab.key, closable: tab.closable, tab: tab.title }, tab.content));
-    })));
+    function openAction(_a) {
+        // if (target === "current") {
+        var domain = _a.domain, context = _a.context, model = _a.model, views = _a.views, title = _a.title, target = _a.target;
+        // }
+        addNewTab({
+            title: title,
+            content: (react_1.default.createElement(ActionViewExplicit_1.default, { title: title, views: views, model: model, context: context, domain: domain })),
+        });
+    }
+    return (react_1.default.createElement(TabManagerContext_1.default, { openAction: openAction },
+        react_1.default.createElement(antd_1.Tabs, { activeKey: activeKey, hideAdd: true, type: "editable-card", onChange: function (activeKey) {
+                setActiveKey(activeKey);
+            }, onEdit: function (targetKey, action) {
+                if (action === "remove") {
+                    remove(targetKey);
+                }
+            } }, tabs.map(function (tab) {
+            return (react_1.default.createElement(TabPane, { key: tab.key, closable: tab.closable, tab: tab.title }, tab.content));
+        }))));
 }
 exports.default = react_1.forwardRef(TabManager);
 //# sourceMappingURL=TabManager.js.map
