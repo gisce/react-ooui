@@ -183,11 +183,7 @@ function FormActionBar() {
         disabled={mustDisableButtons}
         tooltip="Actions"
         items={toolbar?.action}
-        onItemClick={(event: any) => {
-          const action = toolbar?.action?.find((item: any) => {
-            return item.id === parseInt(event.key);
-          });
-
+        onItemClick={(action: any) => {
           if (!action) {
             return;
           }
@@ -200,11 +196,7 @@ function FormActionBar() {
         disabled={mustDisableButtons}
         tooltip="Reports"
         items={toolbar?.print}
-        onItemClick={(event: any) => {
-          const report = toolbar?.print?.find((item: any) => {
-            return item.id === parseInt(event.key);
-          });
-
+        onItemClick={(report: any) => {
           if (!report) {
             return;
           }
@@ -224,7 +216,13 @@ function FormActionBar() {
         disabled={mustDisableButtons}
         tooltip="Related"
         items={toolbar?.relate}
-        onItemClick={() => {}}
+        onItemClick={async (relate: any) => {
+          if (!relate) {
+            return;
+          }
+
+          console.log();
+        }}
       />
       <DropdownButton
         icon={<LinkOutlined />}
@@ -232,11 +230,7 @@ function FormActionBar() {
         label={`(${attachments.length})`}
         tooltip="Attachments"
         items={attachments}
-        onItemClick={async (event: any) => {
-          const attachment = attachments.find((item: any) => {
-            return item.id === parseInt(event.key);
-          });
-
+        onItemClick={async (attachment: any) => {
           if (!attachment) {
             return;
           }

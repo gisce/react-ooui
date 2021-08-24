@@ -27,7 +27,11 @@ function DropdownButton(props: Props) {
   }
 
   function handleMenuClick(event: any) {
-    onItemClick(event);
+    const itemClicked = items.find((item: any) => {
+      return item.id === parseInt(event.key);
+    });
+
+    onItemClick(itemClicked);
   }
 
   return (
