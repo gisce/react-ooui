@@ -178,6 +178,17 @@ function Form(props: FormProps, ref: any) {
     submitForm,
     generateReport: tryGenerateReport,
     runAction: tryRunAction,
+    getFields: () => {
+      return fields;
+    },
+    getValues: () => {
+      return {
+        ...getCurrentValues(fields),
+        id: getCurrentId()!,
+        active_id: getCurrentId()!,
+        parent_id: parentId,
+      };
+    },
   }));
 
   useEffect(() => {
@@ -276,7 +287,9 @@ function Form(props: FormProps, ref: any) {
 
   const getFormView = async (): Promise<FormView> => {
     if (getDataFromAction) {
-      const action = await ConnectionProvider.getHandler().getActionStringForModel(model);
+      const action = await ConnectionProvider.getHandler().getActionStringForModel(
+        model
+      );
       const viewsForAction = await ConnectionProvider.getHandler().getViewsForAction(
         {
           action,

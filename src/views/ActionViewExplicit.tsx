@@ -38,32 +38,32 @@ function ActionViewExplicit(props: Props) {
   const fetchData = async () => {
     setIsLoading(true);
 
-    views.forEach(async (viewArray) => {
-      const [id, viewType] = viewArray;
-      if (!id) {
-        return;
-      }
+    const availableViews = [];
 
-      const viewData = await ConnectionProvider.getHandler().getView({
-        model,
-        type: viewType,
-        context,
-      });
+    for (const viewArray of views) {
+      const [, viewType] = viewArray;
 
-      if (viewType === "tree") {
-        setTreeView(viewData);
-      }
-      if (viewType === "form") {
-        setFormView(viewData);
-        setToolbar((viewData as any)?.toolbar);
-      }
-    });
+      try {
+        const viewData = await ConnectionProvider.getHandler().getView({
+          model,
+          type: viewType,
+          context,
+        });
 
-    const availableViews = views
-      .filter(([id]) => {
-        return id !== false;
-      })
-      .map(([, viewType]) => viewType);
+        if (viewType === "tree") {
+          setTreeView(viewData);
+        }
+        if (viewType === "form") {
+          setFormView(viewData);
+          setToolbar((viewData as any)?.toolbar);
+        }
+        availableViews.push(viewType);
+      } catch (err) {
+        console.error(
+          `${model} - ${viewType} - ${JSON.stringify(err, null, 2)}`
+        );
+      }
+    }
 
     if (availableViews.includes("tree")) {
       setCurrentView("tree");

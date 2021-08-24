@@ -24,6 +24,11 @@ import showErrorDialog from "@/ui/GenericErrorDialog";
 import ConnectionProvider from "@/ConnectionProvider";
 
 import { getMimeType, openBase64InNewTab } from "@/helpers/filesHelper";
+import {
+  TabManagerContext,
+  TabManagerContextType,
+} from "@/context/TabManagerContext";
+import { parseContext, parseDomain } from "ooui";
 
 function FormActionBar() {
   const {
@@ -47,6 +52,11 @@ function FormActionBar() {
     attachments,
     formRef,
   } = useContext(ActionViewContext) as ActionViewContextType;
+
+  const tabManagerContext = useContext(
+    TabManagerContext
+  ) as TabManagerContextType;
+  const { openAction } = tabManagerContext || {};
 
   function tryNavigate(callback: any) {
     if (formHasChanges) {
@@ -221,7 +231,37 @@ function FormActionBar() {
             return;
           }
 
-          console.log();
+          const {
+            res_model: model,
+            context,
+            domain,
+            views,
+            target,
+            string: title,
+          } = relate;
+
+          const parsedDomain = domain
+            ? parseDomain({
+                domainValue: domain,
+                values: (formRef.current as any).getValues(),
+                fields: (formRef.current as any).getFields(),
+              })
+            : [];
+
+          const parsedContext = parseContext({
+            context: context,
+            values: (formRef.current as any).getValues(),
+            fields: (formRef.current as any).getFields(),
+          });
+
+          openAction?.({
+            model,
+            target,
+            views,
+            context: parsedContext,
+            domain: parsedDomain,
+            title,
+          });
         }}
       />
       <DropdownButton
