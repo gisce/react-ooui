@@ -1,0 +1,162 @@
+import React, { useEffect, useState, useRef } from "react";
+
+import { Spin } from "antd";
+
+import { FormView, TreeView, ViewType } from "@/types/index";
+import ConnectionProvider from "@/ConnectionProvider";
+import Form from "@/widgets/views/Form";
+import SearchTree from "@/widgets/views/SearchTree";
+
+import ActionViewProvider from "@/context/ActionViewContext";
+import TitleHeader from "@/ui/TitleHeader";
+import FormActionBar from "@/actionbar/FormActionBar";
+import TreeActionBar from "@/actionbar/TreeActionBar";
+
+type Props = {
+  domain: any;
+  context: any;
+  model: string;
+  views: Array<any>;
+  title: string;
+};
+
+function ActionViewExplicit(props: Props) {
+  const { domain, model, context, views, title } = props;
+  const [currentView, setCurrentView] = useState<ViewType>("tree");
+  const [availableViews, setAvailableViews] = useState<ViewType[]>([]);
+
+  const [treeView, setTreeView] = useState<TreeView>();
+  const [formView, setFormView] = useState<FormView>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [currentId, setCurrentId] = useState<number>();
+  const [currentItemIndex, setCurrentItemIndex] = useState<number>();
+  const [results, setResults] = useState<any>([]);
+  const [toolbar, setToolbar] = useState<any>();
+
+  const formRef = useRef();
+
+  const fetchData = async () => {
+    setIsLoading(true);
+
+    views.forEach(async (viewArray) => {
+      const [id, viewType] = viewArray;
+      if (!id) {
+        return;
+      }
+
+      const viewData = await ConnectionProvider.getHandler().getView({
+        model,
+        type: viewType,
+        context,
+      });
+
+      if (viewType === "tree") {
+        setTreeView(viewData);
+      }
+      if (viewType === "form") {
+        setFormView(viewData);
+        setToolbar((viewData as any)?.toolbar);
+      }
+    });
+
+    const availableViews = views
+      .filter(([id]) => {
+        return id !== false;
+      })
+      .map(([, viewType]) => viewType);
+
+    if (availableViews.includes("tree")) {
+      setCurrentView("tree");
+    } else {
+      setCurrentView("form");
+    }
+
+    setAvailableViews(availableViews);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    setCurrentView("tree");
+    setCurrentId(undefined);
+    setCurrentItemIndex(undefined);
+    fetchData();
+  }, [model, views]);
+
+  function content() {
+    if (isLoading) {
+      return <Spin />;
+    }
+
+    return (
+      <>
+        <Form
+          rootForm={true}
+          visible={currentView === "form"}
+          ref={formRef}
+          model={model}
+          formView={formView}
+          id={currentId}
+          onSubmitSucceed={(id) => {
+            const itemIndex = results!.findIndex((item: any) => {
+              return item === id;
+            });
+            if (itemIndex === -1) {
+              results!.push(id);
+              setResults(results);
+              setCurrentItemIndex(results!.length - 1);
+            }
+          }}
+        />
+        <SearchTree
+          visible={currentView === "tree"}
+          rootTree={true}
+          model={model}
+          formView={formView}
+          treeView={treeView}
+          domain={domain}
+          onRowClicked={(event: any) => {
+            const { id } = event;
+            setCurrentId(id);
+            const itemIndex = results.findIndex((item: any) => {
+              return item === id;
+            });
+            setCurrentItemIndex(itemIndex);
+            setCurrentView("form");
+          }}
+        />
+      </>
+    );
+  }
+
+  function onNewClicked() {
+    setCurrentId(undefined);
+    setCurrentView("form");
+  }
+
+  return (
+    <ActionViewProvider
+      title={title}
+      currentView={currentView}
+      setCurrentView={setCurrentView}
+      availableViews={availableViews}
+      formRef={formRef}
+      onNewClicked={onNewClicked}
+      currentId={currentId}
+      setCurrentId={setCurrentId}
+      setCurrentItemIndex={setCurrentItemIndex}
+      currentItemIndex={currentItemIndex}
+      results={results}
+      setResults={setResults}
+      currentModel={model}
+      toolbar={toolbar}
+      setToolbar={setToolbar}
+    >
+      <TitleHeader>
+        {currentView === "form" ? <FormActionBar /> : <TreeActionBar />}
+      </TitleHeader>
+      {content()}
+    </ActionViewProvider>
+  );
+}
+
+export default ActionViewExplicit;
