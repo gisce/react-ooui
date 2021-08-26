@@ -221,7 +221,7 @@ function Form(props: FormProps, ref: any) {
       setFields(fields);
       setArch(arch);
 
-      fetchValues({
+      await fetchValues({
         fields,
         arch,
       });
@@ -942,7 +942,7 @@ function Form(props: FormProps, ref: any) {
   }
 
   const content = () => {
-    if (!formOoui) {
+    if (!formOoui && !error) {
       return <Spin />;
     }
 

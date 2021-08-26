@@ -172,7 +172,7 @@ function Form(props, ref) {
                     setError(undefined);
                     _a.label = 1;
                 case 1:
-                    _a.trys.push([1, 5, 6, 7]);
+                    _a.trys.push([1, 6, 7, 8]);
                     if (!formViewProps) return [3 /*break*/, 2];
                     view = { arch: formViewProps.arch, fields: formViewProps.fields };
                     return [3 /*break*/, 4];
@@ -184,21 +184,23 @@ function Form(props, ref) {
                     fields_1 = view.fields, arch_1 = view.arch;
                     setFields(fields_1);
                     setArch(arch_1);
-                    fetchValues({
-                        fields: fields_1,
-                        arch: arch_1,
-                    });
-                    return [3 /*break*/, 7];
+                    return [4 /*yield*/, fetchValues({
+                            fields: fields_1,
+                            arch: arch_1,
+                        })];
                 case 5:
+                    _a.sent();
+                    return [3 /*break*/, 8];
+                case 6:
                     err_1 = _a.sent();
                     setError(err_1);
                     setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(false);
-                    return [3 /*break*/, 7];
-                case 6:
+                    return [3 /*break*/, 8];
+                case 7:
                     setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
                     setLoading(false);
                     return [7 /*endfinally*/];
-                case 7: return [2 /*return*/];
+                case 8: return [2 /*return*/];
             }
         });
     }); };
@@ -1003,7 +1005,7 @@ function Form(props, ref) {
         });
     }
     var content = function () {
-        if (!formOoui) {
+        if (!formOoui && !error) {
             return react_1.default.createElement(antd_1.Spin, null);
         }
         if (!model && !formViewProps) {
