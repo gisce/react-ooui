@@ -43,12 +43,13 @@ var LinkInput = function (props) {
         onChange === null || onChange === void 0 ? void 0 : onChange(e.target.value);
     };
     return (react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false, align: "middle" },
-        !readOnly ? (react_1.default.createElement(antd_1.Col, { flex: "32px" },
-            react_1.default.createElement(antd_1.Button, { icon: editMode ? react_1.default.createElement(icons_1.CheckOutlined, null) : react_1.default.createElement(icons_1.EditOutlined, null), onClick: function () {
-                    if (valueValidator(value)) {
-                        setEditMode(!editMode);
-                    }
-                }, tabIndex: -1 }))) : null,
+        !readOnly ? (react_1.default.createElement(antd_1.Col, { flex: "32px" }, editMode ? (react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: function () {
+                if (valueValidator(value)) {
+                    setEditMode(!editMode);
+                }
+            }, tabIndex: -1 })) : (react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.EditOutlined, null), onClick: function () {
+                setEditMode(true);
+            }, tabIndex: -1 })))) : null,
         react_1.default.createElement(antd_1.Col, { flex: "auto" }, showInput ? (react_1.default.createElement(antd_1.Input, { id: id, onChange: onValueStringChange, className: requiredClass, value: value, onBlur: function () {
                 if (valueValidator(value)) {
                     setEditMode(false);
@@ -56,4 +57,4 @@ var LinkInput = function (props) {
             } })) : (react_1.default.createElement("a", { href: "" + linkPrefix + value, style: { color: "#1890ff" }, target: "_blank" }, value)))));
 };
 exports.LinkInput = LinkInput;
-//# sourceMappingURL=Link.js.map
+//# sourceMappingURL=LinkInput.js.map

@@ -8,4 +8,4 @@ interface LinkInputProps {
 }
 export declare const LinkInput: (props: LinkInputProps) => JSX.Element;
 export {};
-//# sourceMappingURL=Link.d.ts.map
+//# sourceMappingURL=LinkInput.d.ts.map

@@ -3,7 +3,7 @@ import isURL from "validator/lib/isURL";
 import Field from "@/common/Field";
 
 import { WidgetProps } from "@/types";
-import { LinkInput } from "./Link";
+import { LinkInput } from "./LinkInput";
 import { Char as CharOoui } from "ooui";
 
 export const Url = (props: WidgetProps) => {

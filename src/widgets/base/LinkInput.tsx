@@ -38,15 +38,25 @@ export const LinkInput = (props: LinkInputProps) => {
     <Row gutter={8} wrap={false} align="middle">
       {!readOnly ? (
         <Col flex="32px">
-          <Button
-            icon={editMode ? <CheckOutlined /> : <EditOutlined />}
-            onClick={() => {
-              if (valueValidator(value)) {
-                setEditMode(!editMode);
-              }
-            }}
-            tabIndex={-1}
-          />
+          {editMode ? (
+            <Button
+              icon={<CheckOutlined />}
+              onClick={() => {
+                if (valueValidator(value)) {
+                  setEditMode(!editMode);
+                }
+              }}
+              tabIndex={-1}
+            />
+          ) : (
+            <Button
+              icon={<EditOutlined />}
+              onClick={() => {
+                setEditMode(true);
+              }}
+              tabIndex={-1}
+            />
+          )}
         </Col>
       ) : null}
       <Col flex="auto">

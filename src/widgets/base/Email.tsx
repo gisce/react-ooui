@@ -3,7 +3,7 @@ import isEmail from "validator/lib/isEmail";
 import Field from "@/common/Field";
 
 import { WidgetProps } from "@/types";
-import { LinkInput } from "./Link";
+import { LinkInput } from "./LinkInput";
 import { Char as CharOoui } from "ooui";
 
 export const Email = (props: WidgetProps) => {
