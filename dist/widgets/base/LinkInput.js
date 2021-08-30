@@ -32,27 +32,33 @@ var LinkInput = function (props) {
     var _b = ooui, id = _b.id, readOnly = _b.readOnly, required = _b.required;
     var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
     var _c = react_1.useState(false), editMode = _c[0], setEditMode = _c[1];
-    var showInput = editMode;
-    if (readOnly && !editMode) {
-        showInput = false;
-    }
-    if (!value && !readOnly) {
-        showInput = true;
-    }
+    var _d = react_1.useState(false), showInput = _d[0], setShowInput = _d[1];
+    react_1.useEffect(function () {
+        if (readOnly && !editMode) {
+            setShowInput(false);
+        }
+        if (!value && !readOnly) {
+            setEditMode(true);
+            setShowInput(true);
+        }
+    }, [editMode, readOnly]);
     var onValueStringChange = function (e) {
         onChange === null || onChange === void 0 ? void 0 : onChange(e.target.value);
     };
     return (react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false, align: "middle" },
         !readOnly ? (react_1.default.createElement(antd_1.Col, { flex: "32px" }, editMode ? (react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: function () {
                 if (valueValidator(value)) {
-                    setEditMode(!editMode);
+                    setEditMode(false);
+                    setShowInput(false);
                 }
             }, tabIndex: -1 })) : (react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.EditOutlined, null), onClick: function () {
                 setEditMode(true);
+                setShowInput(true);
             }, tabIndex: -1 })))) : null,
         react_1.default.createElement(antd_1.Col, { flex: "auto" }, showInput ? (react_1.default.createElement(antd_1.Input, { id: id, onChange: onValueStringChange, className: requiredClass, value: value, onBlur: function () {
                 if (valueValidator(value)) {
                     setEditMode(false);
+                    setShowInput(false);
                 }
             } })) : (react_1.default.createElement("a", { href: "" + linkPrefix + value, style: { color: "#1890ff" }, target: "_blank" }, value)))));
 };

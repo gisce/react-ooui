@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input, Button, Row, Col } from "antd";
 import { Char as CharOoui } from "ooui";
 import Config from "@/Config";
@@ -19,16 +19,18 @@ export const LinkInput = (props: LinkInputProps) => {
     required && !readOnly ? Config.requiredClass : undefined;
 
   const [editMode, setEditMode] = useState(false);
+  const [showInput, setShowInput] = useState(false);
 
-  let showInput = editMode;
+  useEffect(() => {
+    if (readOnly && !editMode) {
+      setShowInput(false);
+    }
 
-  if (readOnly && !editMode) {
-    showInput = false;
-  }
-
-  if (!value && !readOnly) {
-    showInput = true;
-  }
+    if (!value && !readOnly) {
+      setEditMode(true);
+      setShowInput(true);
+    }
+  }, [editMode, readOnly]);
 
   const onValueStringChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange?.(e.target.value);
@@ -43,7 +45,8 @@ export const LinkInput = (props: LinkInputProps) => {
               icon={<CheckOutlined />}
               onClick={() => {
                 if (valueValidator(value)) {
-                  setEditMode(!editMode);
+                  setEditMode(false);
+                  setShowInput(false);
                 }
               }}
               tabIndex={-1}
@@ -53,6 +56,7 @@ export const LinkInput = (props: LinkInputProps) => {
               icon={<EditOutlined />}
               onClick={() => {
                 setEditMode(true);
+                setShowInput(true);
               }}
               tabIndex={-1}
             />
@@ -69,6 +73,7 @@ export const LinkInput = (props: LinkInputProps) => {
             onBlur={() => {
               if (valueValidator(value)) {
                 setEditMode(false);
+                setShowInput(false);
               }
             }}
           />
