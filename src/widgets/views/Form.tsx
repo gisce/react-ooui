@@ -51,6 +51,10 @@ import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
+import {
+  TabManagerContext,
+  TabManagerContextType,
+} from "@/context/TabManagerContext";
 
 export type FormProps = {
   model: string;
@@ -157,6 +161,11 @@ function Form(props: FormProps, ref: any) {
     setAttachments = undefined,
   } = (rootForm ? actionViewContext : {}) || {};
 
+  const tabManagerContext = useContext(
+    TabManagerContext
+  ) as TabManagerContextType;
+  const { openAction } = tabManagerContext || {};
+
   const onSubmitSucceed = (id?: number) => {
     setFormHasChanges?.(false);
     setFormIsSaving?.(false);
@@ -181,14 +190,7 @@ function Form(props: FormProps, ref: any) {
     getFields: () => {
       return fields;
     },
-    getValues: () => {
-      return {
-        ...getCurrentValues(fields),
-        id: getCurrentId()!,
-        active_id: getCurrentId()!,
-        parent_id: parentId,
-      };
-    },
+    getValues,
   }));
 
   useEffect(() => {
@@ -203,6 +205,15 @@ function Form(props: FormProps, ref: any) {
 
     fetchData();
   }, [id, model, valuesProps, formViewProps, visible]);
+
+  function getValues() {
+    return {
+      ...getCurrentValues(fields),
+      id: getCurrentId()!,
+      active_id: getCurrentId()!,
+      parent_id: parentId,
+    };
+  }
 
   const fetchData = async () => {
     setLoading(true);
@@ -639,12 +650,6 @@ function Form(props: FormProps, ref: any) {
     } else if (response.type && response.type === "ir.actions.report.xml") {
       await executeReportAction(response, context);
     } else if (response.type && response.type === "ir.actions.act_window") {
-      const formView = (await ConnectionProvider.getHandler().getView({
-        model: response.res_model,
-        type: "form",
-        context,
-      })) as FormView;
-
       const responseContext = parseContext({
         context: response.context,
         fields,
@@ -658,14 +663,41 @@ function Form(props: FormProps, ref: any) {
         ...formOoui?.context,
       };
 
-      const options = {
-        domain: [],
-        model: response.res_model,
-        formView,
-        context: mergedContext,
-      };
+      const parsedDomain = response.domain
+        ? parseDomain({
+            domainValue: response.domain,
+            values: getValues(),
+            fields,
+          })
+        : [];
 
-      openActionModal(options);
+      if (response.target === "new") {
+        const formView = (await ConnectionProvider.getHandler().getView({
+          model: response.res_model,
+          type: "form",
+          context,
+        })) as FormView;
+
+        openActionModal({
+          domain: parsedDomain,
+          model: response.res_model,
+          formView,
+          context: mergedContext,
+        });
+      } else {
+        onSubmitSucceed?.(getCurrentId());
+
+        openAction?.({
+          target: "current",
+          context: mergedContext,
+          domain: parsedDomain,
+          model: response.res_model,
+          views: response.view_mode
+            .split(",")
+            .map((view: string) => [false, view]),
+          title: response.name,
+        });
+      }
     } else {
       await fetchValues();
     }

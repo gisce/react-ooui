@@ -98,6 +98,7 @@ var index_1 = require("@/index");
 var FormModalContext_1 = require("@/context/FormModalContext");
 var filesHelper_1 = require("@/helpers/filesHelper");
 var ActionViewContext_1 = require("@/context/ActionViewContext");
+var TabManagerContext_1 = require("@/context/TabManagerContext");
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
@@ -128,6 +129,8 @@ function Form(props, ref) {
     var parentId = (formContext || {}).activeId;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
     var _y = (rootForm ? actionViewContext : {}) || {}, _z = _y.setFormIsSaving, setFormIsSaving = _z === void 0 ? undefined : _z, _0 = _y.setFormHasChanges, setFormHasChanges = _0 === void 0 ? undefined : _0, _1 = _y.setCurrentId, setCurrentId = _1 === void 0 ? undefined : _1, _2 = _y.setFormIsLoading, setFormIsLoading = _2 === void 0 ? undefined : _2, _3 = _y.setAttachments, setAttachments = _3 === void 0 ? undefined : _3;
+    var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
+    var openAction = (tabManagerContext || {}).openAction;
     var onSubmitSucceed = function (id) {
         setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
         setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
@@ -149,9 +152,7 @@ function Form(props, ref) {
         getFields: function () {
             return fields;
         },
-        getValues: function () {
-            return __assign(__assign({}, getCurrentValues(fields)), { id: getCurrentId(), active_id: getCurrentId(), parent_id: parentId });
-        },
+        getValues: getValues,
     }); });
     react_1.useEffect(function () {
         if (!model && !formViewProps) {
@@ -163,6 +164,9 @@ function Form(props, ref) {
         }
         fetchData();
     }, [id, model, valuesProps, formViewProps, visible]);
+    function getValues() {
+        return __assign(__assign({}, getCurrentValues(fields)), { id: getCurrentId(), active_id: getCurrentId(), parent_id: parentId });
+    }
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
         var view, fields_1, arch_1, err_1;
         return __generator(this, function (_a) {
@@ -587,7 +591,7 @@ function Form(props, ref) {
     function runObjectButton(_a) {
         var action = _a.action, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
-            var response, formView, responseContext, mergedContext, options;
+            var response, responseContext, mergedContext, parsedDomain, formView;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
@@ -603,20 +607,34 @@ function Form(props, ref) {
                             Object.keys(response).length === 0 &&
                             insideButtonModal)) return [3 /*break*/, 2];
                         onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
-                        return [3 /*break*/, 9];
+                        return [3 /*break*/, 11];
                     case 2:
                         if (!(response.type &&
                             response.type === "ir.actions.act_window_close")) return [3 /*break*/, 3];
                         onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
-                        return [3 /*break*/, 9];
+                        return [3 /*break*/, 11];
                     case 3:
                         if (!(response.type && response.type === "ir.actions.report.xml")) return [3 /*break*/, 5];
                         return [4 /*yield*/, executeReportAction(response, context)];
                     case 4:
                         _b.sent();
-                        return [3 /*break*/, 9];
+                        return [3 /*break*/, 11];
                     case 5:
-                        if (!(response.type && response.type === "ir.actions.act_window")) return [3 /*break*/, 7];
+                        if (!(response.type && response.type === "ir.actions.act_window")) return [3 /*break*/, 9];
+                        responseContext = ooui_1.parseContext({
+                            context: response.context,
+                            fields: fields,
+                            values: getCurrentValues(fields),
+                        });
+                        mergedContext = __assign(__assign(__assign(__assign({}, responseContext), context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context);
+                        parsedDomain = response.domain
+                            ? ooui_1.parseDomain({
+                                domainValue: response.domain,
+                                values: getValues(),
+                                fields: fields,
+                            })
+                            : [];
+                        if (!(response.target === "new")) return [3 /*break*/, 7];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
                                 model: response.res_model,
                                 type: "form",
@@ -624,25 +642,32 @@ function Form(props, ref) {
                             })];
                     case 6:
                         formView = (_b.sent());
-                        responseContext = ooui_1.parseContext({
-                            context: response.context,
-                            fields: fields,
-                            values: getCurrentValues(fields),
-                        });
-                        mergedContext = __assign(__assign(__assign(__assign({}, responseContext), context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context);
-                        options = {
-                            domain: [],
+                        openActionModal({
+                            domain: parsedDomain,
                             model: response.res_model,
                             formView: formView,
                             context: mergedContext,
-                        };
-                        openActionModal(options);
-                        return [3 /*break*/, 9];
-                    case 7: return [4 /*yield*/, fetchValues()];
-                    case 8:
+                        });
+                        return [3 /*break*/, 8];
+                    case 7:
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
+                        openAction === null || openAction === void 0 ? void 0 : openAction({
+                            target: "current",
+                            context: mergedContext,
+                            domain: parsedDomain,
+                            model: response.res_model,
+                            views: response.view_mode
+                                .split(",")
+                                .map(function (view) { return [false, view]; }),
+                            title: response.name,
+                        });
+                        _b.label = 8;
+                    case 8: return [3 /*break*/, 11];
+                    case 9: return [4 /*yield*/, fetchValues()];
+                    case 10:
                         _b.sent();
-                        _b.label = 9;
-                    case 9: return [2 /*return*/];
+                        _b.label = 11;
+                    case 11: return [2 /*return*/];
                 }
             });
         });
