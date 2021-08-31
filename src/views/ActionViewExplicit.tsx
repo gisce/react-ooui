@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 
 import { Spin } from "antd";
 
@@ -18,10 +24,12 @@ type Props = {
   model: string;
   views: Array<any>;
   title: string;
+  tabKey: string;
+  setCanWeClose: (f: any) => void;
 };
 
-function ActionViewExplicit(props: Props) {
-  const { domain, model, context, views, title } = props;
+function ActionViewExplicit(props: Props, ref: any) {
+  const { domain, model, context, views, title, setCanWeClose, tabKey } = props;
   const [currentView, setCurrentView] = useState<ViewType>("tree");
   const [availableViews, setAvailableViews] = useState<ViewType[]>([]);
 
@@ -34,6 +42,10 @@ function ActionViewExplicit(props: Props) {
   const [toolbar, setToolbar] = useState<any>();
 
   const formRef = useRef();
+
+  useImperativeHandle(ref, () => ({
+    canWeClose,
+  }));
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -75,12 +87,22 @@ function ActionViewExplicit(props: Props) {
     setIsLoading(false);
   };
 
+  setCanWeClose({ tabKey, canWeClose });
+
   useEffect(() => {
     setCurrentView("tree");
     setCurrentId(undefined);
     setCurrentItemIndex(undefined);
     fetchData();
   }, [model, views]);
+
+  async function canWeClose() {
+    if (currentView === "form") {
+      return await (formRef.current as any).cancelUnsavedChanges();
+    } else {
+      return true;
+    }
+  }
 
   function content() {
     if (isLoading) {
@@ -159,4 +181,4 @@ function ActionViewExplicit(props: Props) {
   );
 }
 
-export default ActionViewExplicit;
+export default forwardRef(ActionViewExplicit);

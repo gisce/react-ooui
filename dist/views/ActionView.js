@@ -63,11 +63,15 @@ var antd_1 = require("antd");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var ooui_1 = require("ooui");
 var ActionViewExplicit_1 = __importDefault(require("./ActionViewExplicit"));
-function ActionView(props) {
+function ActionView(props, ref) {
     var _this = this;
-    var action = props.action, title = props.title;
+    var action = props.action, title = props.title, setCanWeClose = props.setCanWeClose, tabKey = props.tabKey;
     var _a = react_1.useState(), actionData = _a[0], setActionData = _a[1];
     var _b = react_1.useState(true), isLoading = _b[0], setIsLoading = _b[1];
+    var actionViewExplicit = react_1.useRef();
+    react_1.useImperativeHandle(ref, function () { return ({
+        canWeClose: actionViewExplicit.current.canWeClose,
+    }); });
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
         var dataForAction, parsedDomain, parsedContext, model, views;
         return __generator(this, function (_a) {
@@ -107,7 +111,7 @@ function ActionView(props) {
     if (isLoading) {
         return react_1.default.createElement(antd_1.Spin, null);
     }
-    return (react_1.default.createElement(ActionViewExplicit_1.default, { title: title, model: actionData.model, views: actionData.views, context: actionData.context, domain: actionData.domain }));
+    return (react_1.default.createElement(ActionViewExplicit_1.default, { ref: actionViewExplicit, tabKey: tabKey, title: title, model: actionData.model, views: actionData.views, context: actionData.context, domain: actionData.domain, setCanWeClose: setCanWeClose }));
 }
-exports.default = ActionView;
+exports.default = react_1.forwardRef(ActionView);
 //# sourceMappingURL=ActionView.js.map

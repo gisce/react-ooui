@@ -1,10 +1,13 @@
+import React from "react";
 declare type Props = {
     domain: any;
     context: any;
     model: string;
     views: Array<any>;
     title: string;
+    tabKey: string;
+    setCanWeClose: (f: any) => void;
 };
-declare function ActionViewExplicit(props: Props): JSX.Element;
-export default ActionViewExplicit;
+declare const _default: React.ForwardRefExoticComponent<Props & React.RefAttributes<unknown>>;
+export default _default;
 //# sourceMappingURL=ActionViewExplicit.d.ts.map

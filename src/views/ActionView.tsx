@@ -1,4 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 
 import { Spin } from "antd";
 
@@ -10,6 +16,8 @@ import ActionViewExplicit from "./ActionViewExplicit";
 type Props = {
   action: string;
   title: string;
+  tabKey: string;
+  setCanWeClose: (f: any) => void;
 };
 
 type ActionData = {
@@ -19,10 +27,16 @@ type ActionData = {
   views: Array<any>;
 };
 
-function ActionView(props: Props) {
-  const { action, title } = props;
+function ActionView(props: Props, ref: any) {
+  const { action, title, setCanWeClose, tabKey } = props;
   const [actionData, setActionData] = useState<ActionData>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const actionViewExplicit = useRef();
+
+  useImperativeHandle(ref, () => ({
+    canWeClose: (actionViewExplicit.current as any).canWeClose,
+  }));
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -66,13 +80,16 @@ function ActionView(props: Props) {
 
   return (
     <ActionViewExplicit
+      ref={actionViewExplicit}
+      tabKey={tabKey}
       title={title}
       model={actionData!.model}
       views={actionData!.views}
       context={actionData!.context}
       domain={actionData!.domain}
+      setCanWeClose={setCanWeClose}
     />
   );
 }
 
-export default ActionView;
+export default forwardRef(ActionView);

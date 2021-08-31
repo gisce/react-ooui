@@ -191,6 +191,7 @@ function Form(props: FormProps, ref: any) {
       return fields;
     },
     getValues,
+    cancelUnsavedChanges,
   }));
 
   useEffect(() => {
@@ -283,17 +284,22 @@ function Form(props: FormProps, ref: any) {
     setFormIsLoading?.(false);
   };
 
-  const cancelUnsavedChanges = () => {
+  const cancelUnsavedChanges = async (callback?: (canClose: boolean) => void) => {
     if (formHasChanges()) {
       showUnsavedChangesDialog({
         onOk: () => {
           onCancel?.();
+          callback?.(true);
         },
+        onCancel: () => {
+          callback?.(false);
+        }
       });
       return;
     }
 
     onCancel?.();
+    callback?.(true);
   };
 
   const getFormView = async (): Promise<FormView> => {
@@ -1022,7 +1028,9 @@ function Form(props: FormProps, ref: any) {
             <Button
               icon={<CloseOutlined />}
               disabled={isSubmitting || loading}
-              onClick={cancelUnsavedChanges}
+              onClick={async () => {
+                await cancelUnsavedChanges();
+              }}
             >
               Cancel
             </Button>

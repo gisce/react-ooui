@@ -4,7 +4,13 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 const { confirm } = Modal;
 
-const showDialog = ({ onOk }: { onOk: () => void }) => {
+const showDialog = ({
+  onOk,
+  onCancel,
+}: {
+  onOk: () => void;
+  onCancel?: () => void;
+}) => {
   confirm({
     title: "There are unsaved changes",
     icon: <ExclamationCircleOutlined />,
@@ -12,6 +18,7 @@ const showDialog = ({ onOk }: { onOk: () => void }) => {
     content: "Do you really want to close this window without saving?",
     okText: "Close without saving",
     onOk,
+    onCancel,
   });
 };
 

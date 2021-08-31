@@ -153,6 +153,7 @@ function Form(props, ref) {
             return fields;
         },
         getValues: getValues,
+        cancelUnsavedChanges: cancelUnsavedChanges,
     }); });
     react_1.useEffect(function () {
         if (!model && !formViewProps) {
@@ -243,17 +244,25 @@ function Form(props, ref) {
             }
         });
     }); };
-    var cancelUnsavedChanges = function () {
-        if (formHasChanges()) {
-            UnsavedChangesDialog_1.default({
-                onOk: function () {
-                    onCancel === null || onCancel === void 0 ? void 0 : onCancel();
-                },
-            });
-            return;
-        }
-        onCancel === null || onCancel === void 0 ? void 0 : onCancel();
-    };
+    var cancelUnsavedChanges = function (callback) { return __awaiter(_this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            if (formHasChanges()) {
+                UnsavedChangesDialog_1.default({
+                    onOk: function () {
+                        onCancel === null || onCancel === void 0 ? void 0 : onCancel();
+                        callback === null || callback === void 0 ? void 0 : callback(true);
+                    },
+                    onCancel: function () {
+                        callback === null || callback === void 0 ? void 0 : callback(false);
+                    }
+                });
+                return [2 /*return*/];
+            }
+            onCancel === null || onCancel === void 0 ? void 0 : onCancel();
+            callback === null || callback === void 0 ? void 0 : callback(true);
+            return [2 /*return*/];
+        });
+    }); };
     var getFormView = function () { return __awaiter(_this, void 0, void 0, function () {
         var action, viewsForAction;
         return __generator(this, function (_a) {
@@ -1048,7 +1057,16 @@ function Form(props, ref) {
             react_1.default.createElement(antd_1.Divider, null),
             react_1.default.createElement(antd_1.Row, { justify: "end" },
                 react_1.default.createElement(antd_1.Space, null,
-                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), disabled: isSubmitting || loading, onClick: cancelUnsavedChanges }, "Cancel"),
+                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), disabled: isSubmitting || loading, onClick: function () { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, cancelUnsavedChanges()];
+                                    case 1:
+                                        _a.sent();
+                                        return [2 /*return*/];
+                                }
+                            });
+                        }); } }, "Cancel"),
                     react_1.default.createElement(antd_1.Button, { disabled: isSubmitting || loading || readOnly, loading: isSubmitting, icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: submitForm }, "OK")))));
     };
     if (!visible) {

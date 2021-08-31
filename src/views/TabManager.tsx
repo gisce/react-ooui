@@ -1,4 +1,9 @@
-import React, { useState, forwardRef, useImperativeHandle } from "react";
+import React, {
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+} from "react";
 import { Tabs } from "antd";
 import { ActionView } from "..";
 const { TabPane } = Tabs;
@@ -17,6 +22,7 @@ function TabManager(props: any, ref: any) {
       content: <Welcome />,
     },
   ]);
+  const tabViewsCloseFunctions = useRef(new Map<string, any>());
 
   useImperativeHandle(ref, () => ({
     openNewTab,
@@ -35,23 +41,50 @@ function TabManager(props: any, ref: any) {
     }
 
     setTabs(tabs.filter((tab: any) => tab.key !== key));
+    tabViewsCloseFunctions.current.delete(key);
+  }
+
+  function registerViewCloseFn({
+    tabKey,
+    canWeClose,
+  }: {
+    tabKey: string;
+    canWeClose: any;
+  }) {
+    tabViewsCloseFunctions.current.set(tabKey, canWeClose);
   }
 
   function openNewTab({ title, action }: { title: string; action: string }) {
+    const key = uuidv4();
+
     addNewTab({
       title,
-      content: <ActionView title={title} action={action} />,
+      content: (
+        <ActionView
+          title={title}
+          action={action}
+          setCanWeClose={registerViewCloseFn}
+          tabKey={key}
+        />
+      ),
+      key,
     });
   }
 
-  function addNewTab({ title, content }: { title: string; content: any }) {
+  function addNewTab({
+    title,
+    content,
+    key,
+  }: {
+    title: string;
+    content: any;
+    key: string;
+  }) {
     let newTabs = [...tabs];
 
     if (tabs.length === 1 && tabs[0].key === "welcome") {
       newTabs = [...tabs.filter((tab: any) => tab.key !== "welcome")];
     }
-
-    const key = uuidv4();
 
     setTabs([
       ...newTabs,
@@ -84,18 +117,22 @@ function TabManager(props: any, ref: any) {
     // if (target === "current") {
 
     // }
+    const key = uuidv4();
 
     addNewTab({
       title,
       content: (
         <ActionViewExplicit
+          tabKey={key}
           title={title}
           views={views}
           model={model}
           context={context}
           domain={domain}
+          setCanWeClose={registerViewCloseFn}
         />
       ),
+      key,
     });
   }
 
@@ -108,9 +145,16 @@ function TabManager(props: any, ref: any) {
         onChange={(activeKey) => {
           setActiveKey(activeKey);
         }}
-        onEdit={(targetKey, action) => {
+        onEdit={async (targetKey, action) => {
           if (action === "remove") {
-            remove(targetKey as string);
+            const canWeCloseFn = tabViewsCloseFunctions.current.get(
+              targetKey as string
+            );
+            const canWeClose = await canWeCloseFn();
+
+            if (canWeClose) {
+              remove(targetKey as string);
+            }
           }
         }}
       >

@@ -1,7 +1,10 @@
+import React from "react";
 declare type Props = {
     action: string;
     title: string;
+    tabKey: string;
+    setCanWeClose: (f: any) => void;
 };
-declare function ActionView(props: Props): JSX.Element;
-export default ActionView;
+declare const _default: React.ForwardRefExoticComponent<Props & React.RefAttributes<unknown>>;
+export default _default;
 //# sourceMappingURL=ActionView.d.ts.map

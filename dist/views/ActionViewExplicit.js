@@ -67,9 +67,9 @@ var ActionViewContext_1 = __importDefault(require("@/context/ActionViewContext")
 var TitleHeader_1 = __importDefault(require("@/ui/TitleHeader"));
 var FormActionBar_1 = __importDefault(require("@/actionbar/FormActionBar"));
 var TreeActionBar_1 = __importDefault(require("@/actionbar/TreeActionBar"));
-function ActionViewExplicit(props) {
+function ActionViewExplicit(props, ref) {
     var _this = this;
-    var domain = props.domain, model = props.model, context = props.context, views = props.views, title = props.title;
+    var domain = props.domain, model = props.model, context = props.context, views = props.views, title = props.title, setCanWeClose = props.setCanWeClose, tabKey = props.tabKey;
     var _a = react_1.useState("tree"), currentView = _a[0], setCurrentView = _a[1];
     var _b = react_1.useState([]), availableViews = _b[0], setAvailableViews = _b[1];
     var _c = react_1.useState(), treeView = _c[0], setTreeView = _c[1];
@@ -80,6 +80,9 @@ function ActionViewExplicit(props) {
     var _h = react_1.useState([]), results = _h[0], setResults = _h[1];
     var _j = react_1.useState(), toolbar = _j[0], setToolbar = _j[1];
     var formRef = react_1.useRef();
+    react_1.useImperativeHandle(ref, function () { return ({
+        canWeClose: canWeClose,
+    }); });
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
         var availableViews, _i, views_1, viewArray, viewType, viewData, err_1;
         var _a;
@@ -133,12 +136,26 @@ function ActionViewExplicit(props) {
             }
         });
     }); };
+    setCanWeClose({ tabKey: tabKey, canWeClose: canWeClose });
     react_1.useEffect(function () {
         setCurrentView("tree");
         setCurrentId(undefined);
         setCurrentItemIndex(undefined);
         fetchData();
     }, [model, views]);
+    function canWeClose() {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!(currentView === "form")) return [3 /*break*/, 2];
+                        return [4 /*yield*/, formRef.current.cancelUnsavedChanges()];
+                    case 1: return [2 /*return*/, _a.sent()];
+                    case 2: return [2 /*return*/, true];
+                }
+            });
+        });
+    }
     function content() {
         if (isLoading) {
             return react_1.default.createElement(antd_1.Spin, null);
@@ -172,5 +189,5 @@ function ActionViewExplicit(props) {
         react_1.default.createElement(TitleHeader_1.default, null, currentView === "form" ? react_1.default.createElement(FormActionBar_1.default, null) : react_1.default.createElement(TreeActionBar_1.default, null)),
         content()));
 }
-exports.default = ActionViewExplicit;
+exports.default = react_1.forwardRef(ActionViewExplicit);
 //# sourceMappingURL=ActionViewExplicit.js.map
