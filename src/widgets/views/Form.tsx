@@ -284,22 +284,23 @@ function Form(props: FormProps, ref: any) {
     setFormIsLoading?.(false);
   };
 
-  const cancelUnsavedChanges = async (callback?: (canClose: boolean) => void) => {
-    if (formHasChanges()) {
-      showUnsavedChangesDialog({
-        onOk: () => {
-          onCancel?.();
-          callback?.(true);
-        },
-        onCancel: () => {
-          callback?.(false);
-        }
-      });
-      return;
-    }
-
-    onCancel?.();
-    callback?.(true);
+  const cancelUnsavedChanges = async () => {
+    return new Promise(async (resolve) => {
+      if (formHasChanges()) {
+        showUnsavedChangesDialog({
+          onOk: () => {
+            onCancel?.();
+            resolve(true);
+          },
+          onCancel: () => {
+            resolve(false);
+          },
+        });
+      } else {
+        onCancel?.();
+        resolve(true);
+      }
+    });
   };
 
   const getFormView = async (): Promise<FormView> => {

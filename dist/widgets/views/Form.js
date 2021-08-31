@@ -244,23 +244,29 @@ function Form(props, ref) {
             }
         });
     }); };
-    var cancelUnsavedChanges = function (callback) { return __awaiter(_this, void 0, void 0, function () {
+    var cancelUnsavedChanges = function () { return __awaiter(_this, void 0, void 0, function () {
+        var _this = this;
         return __generator(this, function (_a) {
-            if (formHasChanges()) {
-                UnsavedChangesDialog_1.default({
-                    onOk: function () {
-                        onCancel === null || onCancel === void 0 ? void 0 : onCancel();
-                        callback === null || callback === void 0 ? void 0 : callback(true);
-                    },
-                    onCancel: function () {
-                        callback === null || callback === void 0 ? void 0 : callback(false);
-                    }
-                });
-                return [2 /*return*/];
-            }
-            onCancel === null || onCancel === void 0 ? void 0 : onCancel();
-            callback === null || callback === void 0 ? void 0 : callback(true);
-            return [2 /*return*/];
+            return [2 /*return*/, new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        if (formHasChanges()) {
+                            UnsavedChangesDialog_1.default({
+                                onOk: function () {
+                                    onCancel === null || onCancel === void 0 ? void 0 : onCancel();
+                                    resolve(true);
+                                },
+                                onCancel: function () {
+                                    resolve(false);
+                                },
+                            });
+                        }
+                        else {
+                            onCancel === null || onCancel === void 0 ? void 0 : onCancel();
+                            resolve(true);
+                        }
+                        return [2 /*return*/];
+                    });
+                }); })];
         });
     }); };
     var getFormView = function () { return __awaiter(_this, void 0, void 0, function () {

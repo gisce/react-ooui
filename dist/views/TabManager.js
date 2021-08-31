@@ -149,10 +149,10 @@ function TabManager(props, ref) {
                         case 0:
                             if (!(action === "remove")) return [3 /*break*/, 2];
                             canWeCloseFn = tabViewsCloseFunctions.current.get(targetKey);
-                            return [4 /*yield*/, canWeCloseFn()];
+                            return [4 /*yield*/, (canWeCloseFn === null || canWeCloseFn === void 0 ? void 0 : canWeCloseFn())];
                         case 1:
                             canWeClose = _a.sent();
-                            if (canWeClose) {
+                            if (canWeClose || targetKey === "welcome") {
                                 remove(targetKey);
                             }
                             _a.label = 2;

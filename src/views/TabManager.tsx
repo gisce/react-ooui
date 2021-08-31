@@ -150,9 +150,9 @@ function TabManager(props: any, ref: any) {
             const canWeCloseFn = tabViewsCloseFunctions.current.get(
               targetKey as string
             );
-            const canWeClose = await canWeCloseFn();
+            const canWeClose = await canWeCloseFn?.();
 
-            if (canWeClose) {
+            if (canWeClose || targetKey === "welcome") {
               remove(targetKey as string);
             }
           }
