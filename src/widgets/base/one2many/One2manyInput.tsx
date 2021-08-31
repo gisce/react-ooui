@@ -26,7 +26,7 @@ import useModalWidthDimensions from "@/hooks/useModalWidthDimensions";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
 type One2manyItem = {
-  operation: "original" | "pendingLink";
+  operation: "original" | "pendingLink" | "pendingUpdate";
   id?: number;
   values?: any;
   treeValues?: any;
@@ -360,6 +360,29 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     }
   };
 
+  const setItemSaved = async ({
+    id,
+    saved,
+  }: {
+    id: number;
+    saved: boolean;
+  }) => {
+    if (!id) {
+      return;
+    }
+    const updatedItems = items.map((item: One2manyItem) => {
+      if (item.id === id) {
+        return {
+          ...item,
+          operation: (saved ? "original" : "pendingUpdate") as any,
+        };
+      }
+      return item;
+    });
+
+    triggerChange(updatedItems);
+  };
+
   const processNewItem = async ({
     id,
     values,
@@ -434,6 +457,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const onFormSubmitSucceed = () => {
     setFormIsSaving(false);
     setFormHasChanges(false);
+    setItemSaved({ id: itemsToShow[itemIndex]?.id!, saved: true });
   };
 
   // This is the callback called when a modal is done saving the object
@@ -488,6 +512,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
             setFormIsSaving(false);
           }}
           onFieldsChange={() => {
+            setItemSaved({ id: itemsToShow[itemIndex]?.id!, saved: false });
             setFormHasChanges(true);
           }}
           readOnly={readOnly}

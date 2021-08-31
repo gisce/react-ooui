@@ -427,6 +427,25 @@ var One2manyInput = function (props) {
             }
         });
     }); };
+    var setItemSaved = function (_a) {
+        var id = _a.id, saved = _a.saved;
+        return __awaiter(void 0, void 0, void 0, function () {
+            var updatedItems;
+            return __generator(this, function (_b) {
+                if (!id) {
+                    return [2 /*return*/];
+                }
+                updatedItems = items.map(function (item) {
+                    if (item.id === id) {
+                        return __assign(__assign({}, item), { operation: (saved ? "original" : "pendingUpdate") });
+                    }
+                    return item;
+                });
+                triggerChange(updatedItems);
+                return [2 /*return*/];
+            });
+        });
+    };
     var processNewItem = function (_a) {
         var id = _a.id, values = _a.values, treeValues = _a.treeValues;
         return __awaiter(void 0, void 0, void 0, function () {
@@ -489,8 +508,10 @@ var One2manyInput = function (props) {
     };
     // This is the callback called when we save the One2manyTopBar in form mode
     var onFormSubmitSucceed = function () {
+        var _a;
         setFormIsSaving(false);
         setFormHasChanges(false);
+        setItemSaved({ id: (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.id, saved: true });
     };
     // This is the callback called when a modal is done saving the object
     var onFormModalSubmitSucceed = function () {
@@ -544,6 +565,8 @@ var One2manyInput = function (props) {
             return (react_1.default.createElement(index_1.Form, { formView: views.get("form"), values: (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.values, ref: formRef, model: relation, id: (_b = itemsToShow[itemIndex]) === null || _b === void 0 ? void 0 : _b.id, onSubmitSucceed: onFormSubmitSucceed, onSubmitError: function () {
                     setFormIsSaving(false);
                 }, onFieldsChange: function () {
+                    var _a;
+                    setItemSaved({ id: (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.id, saved: false });
                     setFormHasChanges(true);
                 }, readOnly: readOnly, postSaveAction: formPostSaveAction }));
         }
