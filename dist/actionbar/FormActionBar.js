@@ -72,7 +72,6 @@ var GenericErrorDialog_1 = __importDefault(require("@/ui/GenericErrorDialog"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var filesHelper_1 = require("@/helpers/filesHelper");
 var TabManagerContext_1 = require("@/context/TabManagerContext");
-var ooui_1 = require("ooui");
 function FormActionBar() {
     var _this = this;
     var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, onFormSave = _a.onFormSave, formHasChanges = _a.formHasChanges, formIsSaving = _a.formIsSaving, currentId = _a.currentId, results = _a.results, setCurrentItemIndex = _a.setCurrentItemIndex, currentItemIndex = _a.currentItemIndex, setCurrentId = _a.setCurrentId, currentModel = _a.currentModel, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, setResults = _a.setResults, formIsLoading = _a.formIsLoading, toolbar = _a.toolbar, attachments = _a.attachments, formRef = _a.formRef;
@@ -194,32 +193,11 @@ function FormActionBar() {
                 });
             } }),
         react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.EnterOutlined, null), disabled: mustDisableButtons, tooltip: "Related", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.relate, onItemClick: function (relate) { return __awaiter(_this, void 0, void 0, function () {
-                var model, context, domain, views, target, title, parsedDomain, parsedContext;
                 return __generator(this, function (_a) {
                     if (!relate) {
                         return [2 /*return*/];
                     }
-                    model = relate.res_model, context = relate.context, domain = relate.domain, views = relate.views, target = relate.target, title = relate.string;
-                    parsedDomain = domain
-                        ? ooui_1.parseDomain({
-                            domainValue: domain,
-                            values: formRef.current.getValues(),
-                            fields: formRef.current.getFields(),
-                        })
-                        : [];
-                    parsedContext = ooui_1.parseContext({
-                        context: context,
-                        values: formRef.current.getValues(),
-                        fields: formRef.current.getFields(),
-                    });
-                    openAction === null || openAction === void 0 ? void 0 : openAction({
-                        model: model,
-                        target: target,
-                        views: views,
-                        context: parsedContext,
-                        domain: parsedDomain,
-                        title: title,
-                    });
+                    formRef.current.openRelateAction(relate);
                     return [2 /*return*/];
                 });
             }); } }),

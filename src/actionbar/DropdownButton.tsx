@@ -12,10 +12,10 @@ type Props = {
 };
 
 function DropdownButton(props: Props) {
-  const { icon, tooltip, items, onItemClick, label, disabled = false } = props;
+  const { icon, tooltip, items = [], onItemClick, label, disabled = false } = props;
 
   function getMenu() {
-    const menuItems = items.map((item) => {
+    const menuItems = items?.map((item) => {
       return <Menu.Item key={item.id}>{item.name}</Menu.Item>;
     });
 

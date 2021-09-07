@@ -23,6 +23,7 @@ declare type TreeView = {
 };
 declare type FormView = TreeView & {
     search_fields?: SearchFields;
+    toolbar?: any;
 };
 declare type SearchResponse = {
     totalItems: number;

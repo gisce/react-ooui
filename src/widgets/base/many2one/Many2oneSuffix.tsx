@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { RightCircleOutlined } from "@ant-design/icons";
 import { Menu, Dropdown } from "antd";
 import {
@@ -7,6 +7,7 @@ import {
 } from "@/context/TabManagerContext";
 import { parseContext, parseDomain } from "ooui";
 import { FormView } from "@/types";
+import { Many2oneSuffixModal } from "./Many2oneSuffixModal";
 
 type Props = {
   id: number;
@@ -16,6 +17,8 @@ type Props = {
 
 export const Many2oneSuffix = (props: Props) => {
   const { id, formView, targetValues } = props;
+  const [actionModalVisible, setActionModalVisible] = useState<boolean>(false);
+  const [printModalVisible, setPrintModalVisible] = useState<boolean>(false);
 
   const tabManagerContext = useContext(
     TabManagerContext
@@ -34,8 +37,22 @@ export const Many2oneSuffix = (props: Props) => {
     return (
       <Menu onClick={handleMenuClick}>
         {[
-          <Menu.Item key="action">Acció</Menu.Item>,
-          <Menu.Item key="report">Informe</Menu.Item>,
+          <Menu.Item
+            key="action"
+            disabled={
+              !formView!.toolbar.action || formView!.toolbar.action.length === 0
+            }
+          >
+            Acció
+          </Menu.Item>,
+          <Menu.Item
+            key="print"
+            disabled={
+              !formView!.toolbar.print || formView!.toolbar.print.length === 0
+            }
+          >
+            Informe
+          </Menu.Item>,
           <Menu.Divider />,
           ...relateItems,
         ]}
@@ -45,7 +62,9 @@ export const Many2oneSuffix = (props: Props) => {
 
   function handleMenuClick(event: any) {
     if (event.key === "action") {
-    } else if (event.key === "report") {
+      setActionModalVisible(true);
+    } else if (event.key === "print") {
+      setPrintModalVisible(true);
     } else {
       const relateItemClicked = formView!.toolbar.relate.find((item: any) => {
         return item.id === parseInt(event.key);
@@ -88,12 +107,34 @@ export const Many2oneSuffix = (props: Props) => {
     }
   }
 
+  function onActionItemClicked() {
+    setActionModalVisible(false);
+  }
+
+  function onPrintItemClicked() {
+    setPrintModalVisible(false);
+  }
+
   return (
-    <Dropdown overlay={menu()} trigger={["click"]}>
-      <RightCircleOutlined
-        style={{ color: "rgba(0,0,0,.45)" }}
-        onClick={(e) => e.preventDefault()}
+    <>
+      <Dropdown overlay={menu()} trigger={["click"]}>
+        <RightCircleOutlined
+          style={{ color: "rgba(0,0,0,.45)" }}
+          onClick={(e) => e.preventDefault()}
+        />
+      </Dropdown>
+      <Many2oneSuffixModal
+        visible={actionModalVisible}
+        items={formView!.toolbar.action}
+        onItemClicked={onActionItemClicked}
+        onCancel={() => setActionModalVisible(false)}
       />
-    </Dropdown>
+      <Many2oneSuffixModal
+        visible={printModalVisible}
+        items={formView!.toolbar.print}
+        onItemClicked={onPrintItemClicked}
+        onCancel={() => setPrintModalVisible(false)}
+      />
+    </>
   );
 };

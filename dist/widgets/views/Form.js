@@ -154,6 +154,7 @@ function Form(props, ref) {
         },
         getValues: getValues,
         cancelUnsavedChanges: cancelUnsavedChanges,
+        openRelateAction: openRelateAction,
     }); });
     react_1.useEffect(function () {
         if (!model && !formViewProps) {
@@ -244,6 +245,35 @@ function Form(props, ref) {
             }
         });
     }); };
+    function openRelateAction(relate) {
+        return __awaiter(this, void 0, void 0, function () {
+            var model, context, domain, views, target, title, parsedDomain, parsedContext;
+            return __generator(this, function (_a) {
+                model = relate.res_model, context = relate.context, domain = relate.domain, views = relate.views, target = relate.target, title = relate.string;
+                parsedDomain = domain
+                    ? ooui_1.parseDomain({
+                        domainValue: domain,
+                        values: getValues(),
+                        fields: fields,
+                    })
+                    : [];
+                parsedContext = ooui_1.parseContext({
+                    context: context,
+                    values: getValues(),
+                    fields: fields,
+                });
+                openAction === null || openAction === void 0 ? void 0 : openAction({
+                    model: model,
+                    target: target,
+                    views: views,
+                    context: parsedContext,
+                    domain: parsedDomain,
+                    title: title,
+                });
+                return [2 /*return*/];
+            });
+        });
+    }
     var cancelUnsavedChanges = function () { return __awaiter(_this, void 0, void 0, function () {
         var _this = this;
         return __generator(this, function (_a) {

@@ -1,4 +1,8 @@
 "use strict";
+var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -73,11 +77,14 @@ exports.Many2oneInput = exports.Many2one = void 0;
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var icons_1 = require("@ant-design/icons");
+var styled_components_1 = __importDefault(require("styled-components"));
 var Field_1 = __importDefault(require("@/common/Field"));
 var Config_1 = __importDefault(require("@/Config"));
 var SearchModal_1 = require("@/widgets/modals/SearchModal");
 var FormModal_1 = require("@/widgets/modals/FormModal");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
+var Many2oneSuffix_1 = require("./Many2oneSuffix");
+var formHelper_1 = require("@/helpers/formHelper");
 var Many2one = function (props) {
     var ooui = props.ooui;
     var required = ooui.required;
@@ -105,6 +112,8 @@ var Many2oneInput = function (props) {
     var _c = react_1.useState(false), searching = _c[0], setSearching = _c[1];
     var _d = react_1.useState(), searchText = _d[0], setSearchText = _d[1];
     var searchButtonTappedRef = react_1.useRef(false);
+    var _e = react_1.useState(), formView = _e[0], setFormView = _e[1];
+    var _f = react_1.useState(), targetValues = _f[0], setTargetValues = _f[1];
     var id = value && value[0];
     var text = (value && value[1]) || "";
     react_1.useEffect(function () {
@@ -117,6 +126,12 @@ var Many2oneInput = function (props) {
             fetchNameAndUpdate(id);
         }
     }, [value]);
+    react_1.useEffect(function () {
+        if (!id) {
+            return;
+        }
+        fetchFormData();
+    }, [id]);
     var triggerChange = function (changedValue) {
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
     };
@@ -169,6 +184,33 @@ var Many2oneInput = function (props) {
             }
         });
     }); };
+    function fetchFormData() {
+        return __awaiter(this, void 0, void 0, function () {
+            var formView, fields, arch, values;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
+                            model: relation,
+                            type: "form",
+                        })];
+                    case 1:
+                        formView = _a.sent();
+                        setFormView(formView);
+                        fields = formView.fields, arch = formView.arch;
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                                arch: arch,
+                                model: relation,
+                                ids: [id],
+                                fields: fields,
+                            })];
+                    case 2:
+                        values = (_a.sent())[0];
+                        setTargetValues(__assign(__assign({}, formHelper_1.processValues(values, fields)), { active_id: id }));
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
     var fetchNameAndUpdate = function (id) { return __awaiter(void 0, void 0, void 0, function () {
         var value_1, err_2;
         return __generator(this, function (_a) {
@@ -214,9 +256,10 @@ var Many2oneInput = function (props) {
             });
         });
     }
+    var CustomInput = required && !readOnly ? RequiredInput : antd_1.Input;
     return (react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false },
         react_1.default.createElement(antd_1.Col, { flex: "auto" },
-            react_1.default.createElement(antd_1.Input, { type: "text", value: text, onChange: onValueStringChange, disabled: readOnly, className: requiredClass, onBlur: onElementLostFocus, onKeyUp: onKeyUp })),
+            react_1.default.createElement(CustomInput, { type: "text", value: text, onChange: onValueStringChange, disabled: readOnly, className: requiredClass, onBlur: onElementLostFocus, onKeyUp: onKeyUp, suffix: react_1.default.createElement(Many2oneSuffix_1.Many2oneSuffix, { id: id, formView: formView, targetValues: targetValues }) })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
             react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: id === undefined || text === "", onClick: function () {
                     setShowFormModal(true);
@@ -243,4 +286,6 @@ var Many2oneInput = function (props) {
             }, mustClearAfterSave: true, readOnly: readOnly })));
 };
 exports.Many2oneInput = Many2oneInput;
+var RequiredInput = styled_components_1.default(antd_1.Input)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  .ant-input {\n    background-color: ", ";\n  }\n"], ["\n  .ant-input {\n    background-color: ", ";\n  }\n"])), Config_1.default.requiredColor);
+var templateObject_1;
 //# sourceMappingURL=Many2one.js.map
