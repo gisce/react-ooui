@@ -6,7 +6,7 @@ import {
   Many2one as Many2oneOoui,
 } from "ooui";
 import Field from "@/common/Field";
-import { Many2oneInput } from "./Many2one";
+import { Many2oneInput } from "./many2one/Many2one";
 import { SelectionInput } from "./Selection";
 
 type Props = {

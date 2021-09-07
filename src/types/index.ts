@@ -29,6 +29,7 @@ type TreeView = {
 
 type FormView = TreeView & {
   search_fields?: SearchFields;
+  toolbar?: any;
 };
 
 type SearchResponse = {
