@@ -5,6 +5,8 @@ import {
   FolderOpenOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
+import styled from "styled-components";
+
 import { Many2one as Many2oneOoui } from "ooui";
 import Field from "@/common/Field";
 import Config from "@/Config";
@@ -13,7 +15,6 @@ import { FormModal } from "@/widgets/modals/FormModal";
 import ConnectionProvider from "@/ConnectionProvider";
 import { Many2oneSuffix } from "./Many2oneSuffix";
 import { FormView } from "@/types/index";
-import { Form as FormOoui } from "ooui";
 import { processValues } from "@/helpers/formHelper";
 
 type Props = {
@@ -175,10 +176,12 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     }
   }
 
+  const CustomInput: any = required && !readOnly ? RequiredInput : Input;
+
   return (
     <Row gutter={8} wrap={false}>
       <Col flex="auto">
-        <Input
+        <CustomInput
           type="text"
           value={text}
           onChange={onValueStringChange}
@@ -249,3 +252,9 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     </Row>
   );
 };
+
+const RequiredInput = styled(Input)`
+  .ant-input {
+    background-color: ${Config.requiredColor};
+  }
+`;
