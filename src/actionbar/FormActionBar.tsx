@@ -28,7 +28,6 @@ import {
   TabManagerContext,
   TabManagerContextType,
 } from "@/context/TabManagerContext";
-import { parseContext, parseDomain } from "ooui";
 
 function FormActionBar() {
   const {
@@ -231,37 +230,7 @@ function FormActionBar() {
             return;
           }
 
-          const {
-            res_model: model,
-            context,
-            domain,
-            views,
-            target,
-            string: title,
-          } = relate;
-
-          const parsedDomain = domain
-            ? parseDomain({
-                domainValue: domain,
-                values: (formRef.current as any).getValues(),
-                fields: (formRef.current as any).getFields(),
-              })
-            : [];
-
-          const parsedContext = parseContext({
-            context: context,
-            values: (formRef.current as any).getValues(),
-            fields: (formRef.current as any).getFields(),
-          });
-
-          openAction?.({
-            model,
-            target,
-            views,
-            context: parsedContext,
-            domain: parsedDomain,
-            title,
-          });
+          (formRef.current as any).openRelateAction(relate);
         }}
       />
       <DropdownButton

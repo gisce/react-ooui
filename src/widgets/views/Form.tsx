@@ -192,6 +192,7 @@ function Form(props: FormProps, ref: any) {
     },
     getValues,
     cancelUnsavedChanges,
+    openRelateAction,
   }));
 
   useEffect(() => {
@@ -283,6 +284,40 @@ function Form(props: FormProps, ref: any) {
     parseForm({ fields: _fields, arch: _arch!, values });
     setFormIsLoading?.(false);
   };
+
+  async function openRelateAction(relate: any) {
+    const {
+      res_model: model,
+      context,
+      domain,
+      views,
+      target,
+      string: title,
+    } = relate;
+
+    const parsedDomain = domain
+      ? parseDomain({
+          domainValue: domain,
+          values: getValues(),
+          fields,
+        })
+      : [];
+
+    const parsedContext = parseContext({
+      context: context,
+      values: getValues(),
+      fields,
+    });
+
+    openAction?.({
+      model,
+      target,
+      views,
+      context: parsedContext,
+      domain: parsedDomain,
+      title,
+    });
+  }
 
   const cancelUnsavedChanges = async () => {
     return new Promise(async (resolve) => {
@@ -1001,6 +1036,7 @@ function Form(props: FormProps, ref: any) {
           setFieldValue={setFieldValue}
           getFieldValue={getFieldValue}
           executeButtonAction={executeButtonAction}
+          openRelateAction={openRelateAction}
         >
           <AntForm
             form={antForm}
