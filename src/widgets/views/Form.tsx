@@ -1036,7 +1036,6 @@ function Form(props: FormProps, ref: any) {
           setFieldValue={setFieldValue}
           getFieldValue={getFieldValue}
           executeButtonAction={executeButtonAction}
-          openRelateAction={openRelateAction}
         >
           <AntForm
             form={antForm}
