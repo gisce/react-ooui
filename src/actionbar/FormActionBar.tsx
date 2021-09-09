@@ -29,6 +29,11 @@ import {
   TabManagerContextType,
 } from "@/context/TabManagerContext";
 
+import {
+  ContentRootContext,
+  ContentRootContextType,
+} from "@/context/ContentRootContext";
+
 function FormActionBar() {
   const {
     availableViews,
@@ -50,8 +55,12 @@ function FormActionBar() {
     toolbar,
     attachments,
     formRef,
-    generateReport,
   } = useContext(ActionViewContext) as ActionViewContextType;
+  
+  const contentRootContext = useContext(
+    ContentRootContext
+  ) as ContentRootContextType;
+  const { generateReport } = contentRootContext;
 
   const tabManagerContext = useContext(
     TabManagerContext

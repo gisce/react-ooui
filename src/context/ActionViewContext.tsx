@@ -28,7 +28,6 @@ export type ActionViewContextType = {
   setToolbar?: (value: any) => void;
   attachments?: any;
   setAttachments?: (value: any) => void;
-  generateReport: (options: GenerateReportOptions) => Promise<void>;
 };
 
 export const ActionViewContext = React.createContext<ActionViewContextType | null>(
@@ -63,7 +62,6 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     currentModel,
     toolbar,
     setToolbar,
-    generateReport,
   } = props;
 
   useEffect(() => {
@@ -106,7 +104,6 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setToolbar,
         attachments,
         setAttachments,
-        generateReport,
       }}
     >
       {children}

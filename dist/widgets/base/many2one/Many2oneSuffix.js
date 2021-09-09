@@ -30,15 +30,15 @@ var icons_1 = require("@ant-design/icons");
 var antd_1 = require("antd");
 var TabManagerContext_1 = require("@/context/TabManagerContext");
 var Many2oneSuffixModal_1 = require("./Many2oneSuffixModal");
-var ActionViewContext_1 = require("@/context/ActionViewContext");
+var ContentRootContext_1 = require("@/context/ContentRootContext");
 var Many2oneSuffix = function (props) {
     var id = props.id, formView = props.formView, targetValues = props.targetValues;
     var _a = react_1.useState(false), actionModalVisible = _a[0], setActionModalVisible = _a[1];
     var _b = react_1.useState(false), printModalVisible = _b[0], setPrintModalVisible = _b[1];
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
     var openRelate = (tabManagerContext || {}).openRelate;
-    var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var generateReport = actionViewContext.generateReport;
+    var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
+    var generateReport = contentRootContext.generateReport;
     if (!id || !(formView === null || formView === void 0 ? void 0 : formView.toolbar)) {
         return null;
     }

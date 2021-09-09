@@ -87,6 +87,7 @@ var index_1 = require("@/index");
 var FormModalContext_1 = require("@/context/FormModalContext");
 var ActionViewContext_1 = require("@/context/ActionViewContext");
 var TabManagerContext_1 = require("@/context/TabManagerContext");
+var ContentRootContext_1 = require("@/context/ContentRootContext");
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
@@ -115,7 +116,8 @@ function Form(props, ref) {
     var parentId = (formContext || {}).activeId;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
     var _x = (rootForm ? actionViewContext : {}) || {}, _y = _x.setFormIsSaving, setFormIsSaving = _y === void 0 ? undefined : _y, _z = _x.setFormHasChanges, setFormHasChanges = _z === void 0 ? undefined : _z, _0 = _x.setCurrentId, setCurrentId = _0 === void 0 ? undefined : _0, _1 = _x.setFormIsLoading, setFormIsLoading = _1 === void 0 ? undefined : _1, _2 = _x.setAttachments, setAttachments = _2 === void 0 ? undefined : _2;
-    var generateReport = actionViewContext.generateReport;
+    var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
+    var generateReport = contentRootContext.generateReport;
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
     var openAction = (tabManagerContext || {}).openAction;
     var onSubmitSucceed = function (id) {

@@ -72,9 +72,12 @@ var GenericErrorDialog_1 = __importDefault(require("@/ui/GenericErrorDialog"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var filesHelper_1 = require("@/helpers/filesHelper");
 var TabManagerContext_1 = require("@/context/TabManagerContext");
+var ContentRootContext_1 = require("@/context/ContentRootContext");
 function FormActionBar() {
     var _this = this;
-    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, onFormSave = _a.onFormSave, formHasChanges = _a.formHasChanges, formIsSaving = _a.formIsSaving, currentId = _a.currentId, results = _a.results, setCurrentItemIndex = _a.setCurrentItemIndex, currentItemIndex = _a.currentItemIndex, setCurrentId = _a.setCurrentId, currentModel = _a.currentModel, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, setResults = _a.setResults, formIsLoading = _a.formIsLoading, toolbar = _a.toolbar, attachments = _a.attachments, formRef = _a.formRef, generateReport = _a.generateReport;
+    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, onFormSave = _a.onFormSave, formHasChanges = _a.formHasChanges, formIsSaving = _a.formIsSaving, currentId = _a.currentId, results = _a.results, setCurrentItemIndex = _a.setCurrentItemIndex, currentItemIndex = _a.currentItemIndex, setCurrentId = _a.setCurrentId, currentModel = _a.currentModel, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, setResults = _a.setResults, formIsLoading = _a.formIsLoading, toolbar = _a.toolbar, attachments = _a.attachments, formRef = _a.formRef;
+    var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
+    var generateReport = contentRootContext.generateReport;
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
     var openRelate = (tabManagerContext || {}).openRelate;
     function tryNavigate(callback) {

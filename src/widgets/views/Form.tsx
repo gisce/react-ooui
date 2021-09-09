@@ -53,6 +53,11 @@ import {
   TabManagerContextType,
 } from "@/context/TabManagerContext";
 
+import {
+  ContentRootContext,
+  ContentRootContextType,
+} from "@/context/ContentRootContext";
+
 export type FormProps = {
   model: string;
   readOnly?: boolean;
@@ -155,7 +160,11 @@ function Form(props: FormProps, ref: any) {
     setFormIsLoading = undefined,
     setAttachments = undefined,
   } = (rootForm ? actionViewContext : {}) || {};
-  const { generateReport } = actionViewContext;
+
+  const contentRootContext = useContext(
+    ContentRootContext
+  ) as ContentRootContextType;
+  const { generateReport } = contentRootContext;
 
   const tabManagerContext = useContext(
     TabManagerContext

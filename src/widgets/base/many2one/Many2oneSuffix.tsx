@@ -5,13 +5,12 @@ import {
   TabManagerContext,
   TabManagerContextType,
 } from "@/context/TabManagerContext";
-import { parseContext, parseDomain } from "ooui";
 import { FormView } from "@/types";
 import { Many2oneSuffixModal } from "./Many2oneSuffixModal";
 import {
-  ActionViewContext,
-  ActionViewContextType,
-} from "@/context/ActionViewContext";
+  ContentRootContext,
+  ContentRootContextType,
+} from "@/context/ContentRootContext";
 
 type Props = {
   id: number;
@@ -27,13 +26,13 @@ export const Many2oneSuffix = (props: Props) => {
   const tabManagerContext = useContext(
     TabManagerContext
   ) as TabManagerContextType;
-  const { openRelate } = tabManagerContext || {};
-
-  const actionViewContext = useContext(
-    ActionViewContext
-  ) as ActionViewContextType;
-  const { generateReport } = actionViewContext;
-
+  const { openRelate } = tabManagerContext || {};  
+  
+  const contentRootContext = useContext(
+    ContentRootContext
+  ) as ContentRootContextType;
+  const { generateReport } = contentRootContext;
+  
   if (!id || !formView?.toolbar) {
     return null;
   }

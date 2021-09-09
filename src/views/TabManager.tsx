@@ -12,6 +12,7 @@ import Welcome from "./Welcome";
 import TabManagerProvider from "@/context/TabManagerContext";
 import ActionViewExplicit from "./ActionViewExplicit";
 import { parseContext, parseDomain } from "ooui";
+import ContentRootProvider from "@/context/ContentRootContext";
 
 function TabManager(props: any, ref: any) {
   const [activeKey, setActiveKey] = useState<string>();
@@ -180,36 +181,38 @@ function TabManager(props: any, ref: any) {
   }
 
   return (
-    <TabManagerProvider openAction={openAction} openRelate={openRelate}>
-      <Tabs
-        activeKey={activeKey}
-        hideAdd
-        type="editable-card"
-        onChange={(activeKey) => {
-          setActiveKey(activeKey);
-        }}
-        onEdit={async (targetKey, action) => {
-          if (action === "remove") {
-            const canWeCloseFn = tabViewsCloseFunctions.current.get(
-              targetKey as string
-            );
-            const canWeClose = await canWeCloseFn?.();
+    <ContentRootProvider>
+      <TabManagerProvider openAction={openAction} openRelate={openRelate}>
+        <Tabs
+          activeKey={activeKey}
+          hideAdd
+          type="editable-card"
+          onChange={(activeKey) => {
+            setActiveKey(activeKey);
+          }}
+          onEdit={async (targetKey, action) => {
+            if (action === "remove") {
+              const canWeCloseFn = tabViewsCloseFunctions.current.get(
+                targetKey as string
+              );
+              const canWeClose = await canWeCloseFn?.();
 
-            if (canWeClose || targetKey === "welcome") {
-              remove(targetKey as string);
+              if (canWeClose || targetKey === "welcome") {
+                remove(targetKey as string);
+              }
             }
-          }
-        }}
-      >
-        {tabs.map((tab: any) => {
-          return (
-            <TabPane key={tab.key} closable={tab.closable} tab={tab.title}>
-              {tab.content}
-            </TabPane>
-          );
-        })}
-      </Tabs>
-    </TabManagerProvider>
+          }}
+        >
+          {tabs.map((tab: any) => {
+            return (
+              <TabPane key={tab.key} closable={tab.closable} tab={tab.title}>
+                {tab.content}
+              </TabPane>
+            );
+          })}
+        </Tabs>
+      </TabManagerProvider>
+    </ContentRootProvider>
   );
 }
 
