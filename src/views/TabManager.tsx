@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 import Welcome from "./Welcome";
 import TabManagerProvider from "@/context/TabManagerContext";
 import ActionViewExplicit from "./ActionViewExplicit";
+import { parseContext, parseDomain } from "ooui";
 
 function TabManager(props: any, ref: any) {
   const [activeKey, setActiveKey] = useState<string>();
@@ -99,6 +100,48 @@ function TabManager(props: any, ref: any) {
     setActiveKey(key);
   }
 
+  function openRelate({
+    relateData,
+    fields,
+    values,
+  }: {
+    relateData: any;
+    fields: any;
+    values: any;
+  }) {
+    const {
+      res_model: model,
+      context,
+      domain,
+      views,
+      target,
+      string: title,
+    } = relateData;
+
+    const parsedDomain = domain
+      ? parseDomain({
+          domainValue: domain,
+          values,
+          fields,
+        })
+      : [];
+
+    const parsedContext = parseContext({
+      context: context,
+      values,
+      fields,
+    });
+
+    openAction({
+      model,
+      target,
+      views,
+      context: parsedContext,
+      domain: parsedDomain,
+      title,
+    });
+  }
+
   function openAction({
     domain,
     context,
@@ -137,7 +180,7 @@ function TabManager(props: any, ref: any) {
   }
 
   return (
-    <TabManagerProvider openAction={openAction}>
+    <TabManagerProvider openAction={openAction} openRelate={openRelate}>
       <Tabs
         activeKey={activeKey}
         hideAdd

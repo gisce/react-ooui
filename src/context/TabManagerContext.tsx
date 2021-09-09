@@ -1,7 +1,7 @@
 import React from "react";
 
 export type TabManagerContextType = {
-  openAction?: ({
+  openAction: ({
     domain,
     context,
     model,
@@ -16,6 +16,15 @@ export type TabManagerContextType = {
     title: string;
     target: string;
   }) => void;
+  openRelate: ({
+    relateData,
+    fields,
+    values,
+  }: {
+    relateData: any;
+    fields: any;
+    values: any;
+  }) => void;
 };
 
 export const TabManagerContext = React.createContext<TabManagerContextType | null>(
@@ -27,12 +36,13 @@ type TabManagerProviderProps = TabManagerContextType & {
 };
 
 const TabManagerProvider = (props: TabManagerProviderProps): any => {
-  const { children, openAction } = props;
+  const { children, openAction, openRelate } = props;
 
   return (
     <TabManagerContext.Provider
       value={{
         openAction,
+        openRelate,
       }}
     >
       {children}

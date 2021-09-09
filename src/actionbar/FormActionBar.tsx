@@ -56,7 +56,7 @@ function FormActionBar() {
   const tabManagerContext = useContext(
     TabManagerContext
   ) as TabManagerContextType;
-  const { openAction } = tabManagerContext || {};
+  const { openRelate } = tabManagerContext || {};
 
   function tryNavigate(callback: any) {
     if (formHasChanges) {
@@ -229,7 +229,11 @@ function FormActionBar() {
             return;
           }
 
-          (formRef.current as any).openRelateAction(relate);
+          openRelate({
+            relateData: relate,
+            values: (formRef.current as any).getValues(),
+            fields: (formRef.current as any).getFields(),
+          });
         }}
       />
       <DropdownButton

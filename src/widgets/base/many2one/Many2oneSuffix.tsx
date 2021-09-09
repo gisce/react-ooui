@@ -27,7 +27,7 @@ export const Many2oneSuffix = (props: Props) => {
   const tabManagerContext = useContext(
     TabManagerContext
   ) as TabManagerContextType;
-  const { openAction } = tabManagerContext || {};
+  const { openRelate } = tabManagerContext || {};
 
   const actionViewContext = useContext(
     ActionViewContext
@@ -82,36 +82,10 @@ export const Many2oneSuffix = (props: Props) => {
         return;
       }
 
-      const {
-        res_model: model,
-        context,
-        domain,
-        views,
-        target,
-        string: title,
-      } = relateItemClicked;
-
-      const parsedDomain = domain
-        ? parseDomain({
-            domainValue: domain,
-            values: targetValues,
-            fields: formView!.fields,
-          })
-        : [];
-
-      const parsedContext = parseContext({
-        context: context,
+      openRelate({
+        relateData: relateItemClicked,
         values: targetValues,
         fields: formView!.fields,
-      });
-
-      openAction?.({
-        model,
-        target,
-        views,
-        context: parsedContext,
-        domain: parsedDomain,
-        title,
       });
     }
   }

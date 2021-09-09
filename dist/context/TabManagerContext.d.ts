@@ -1,12 +1,17 @@
 import React from "react";
 export declare type TabManagerContextType = {
-    openAction?: ({ domain, context, model, views, title, target, }: {
+    openAction: ({ domain, context, model, views, title, target, }: {
         domain: any;
         context: any;
         model: string;
         views: Array<any>;
         title: string;
         target: string;
+    }) => void;
+    openRelate: ({ relateData, fields, values, }: {
+        relateData: any;
+        fields: any;
+        values: any;
     }) => void;
 };
 export declare const TabManagerContext: React.Context<TabManagerContextType | null>;

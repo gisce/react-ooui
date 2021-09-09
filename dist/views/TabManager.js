@@ -71,6 +71,7 @@ var uuid_1 = require("uuid");
 var Welcome_1 = __importDefault(require("./Welcome"));
 var TabManagerContext_1 = __importDefault(require("@/context/TabManagerContext"));
 var ActionViewExplicit_1 = __importDefault(require("./ActionViewExplicit"));
+var ooui_1 = require("ooui");
 function TabManager(props, ref) {
     var _this = this;
     var _a = react_1.useState(), activeKey = _a[0], setActiveKey = _a[1];
@@ -128,6 +129,30 @@ function TabManager(props, ref) {
         ]));
         setActiveKey(key);
     }
+    function openRelate(_a) {
+        var relateData = _a.relateData, fields = _a.fields, values = _a.values;
+        var model = relateData.res_model, context = relateData.context, domain = relateData.domain, views = relateData.views, target = relateData.target, title = relateData.string;
+        var parsedDomain = domain
+            ? ooui_1.parseDomain({
+                domainValue: domain,
+                values: values,
+                fields: fields,
+            })
+            : [];
+        var parsedContext = ooui_1.parseContext({
+            context: context,
+            values: values,
+            fields: fields,
+        });
+        openAction({
+            model: model,
+            target: target,
+            views: views,
+            context: parsedContext,
+            domain: parsedDomain,
+            title: title,
+        });
+    }
     function openAction(_a) {
         // if (target === "current") {
         var domain = _a.domain, context = _a.context, model = _a.model, views = _a.views, title = _a.title, target = _a.target;
@@ -139,7 +164,7 @@ function TabManager(props, ref) {
             key: key,
         });
     }
-    return (react_1.default.createElement(TabManagerContext_1.default, { openAction: openAction },
+    return (react_1.default.createElement(TabManagerContext_1.default, { openAction: openAction, openRelate: openRelate },
         react_1.default.createElement(antd_1.Tabs, { activeKey: activeKey, hideAdd: true, type: "editable-card", onChange: function (activeKey) {
                 setActiveKey(activeKey);
             }, onEdit: function (targetKey, action) { return __awaiter(_this, void 0, void 0, function () {
