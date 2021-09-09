@@ -86,7 +86,14 @@ declare type CreateReportRequest = {
     name: string;
     model: string;
     ids: number[];
-    datas: any;
+    datas?: any;
+    context?: any;
+};
+declare type GenerateReportOptions = {
+    reportData: any;
+    ids?: number[];
+    fields: any;
+    values: any;
     context?: any;
 };
 declare type GetReportRequest = {
@@ -124,5 +131,5 @@ declare type ConnectionProviderType = {
     getActionData: (action: string) => Promise<any>;
 };
 declare type ViewType = "tree" | "form";
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest, DefaultGetRequest, };
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, };
 //# sourceMappingURL=index.d.ts.map

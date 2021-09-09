@@ -1,5 +1,5 @@
 import React from "react";
-import { FormView } from "@/types/index";
+import { FormView } from "@/index";
 export declare type FormProps = {
     model: string;
     readOnly?: boolean;

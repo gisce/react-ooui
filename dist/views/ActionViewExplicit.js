@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -54,6 +65,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -67,6 +89,9 @@ var ActionViewContext_1 = __importDefault(require("@/context/ActionViewContext")
 var TitleHeader_1 = __importDefault(require("@/ui/TitleHeader"));
 var FormActionBar_1 = __importDefault(require("@/actionbar/FormActionBar"));
 var TreeActionBar_1 = __importDefault(require("@/actionbar/TreeActionBar"));
+var ActionErrorDialog_1 = __importDefault(require("@/ui/ActionErrorDialog"));
+var filesHelper_1 = require("@/helpers/filesHelper");
+var ooui_1 = require("ooui");
 function ActionViewExplicit(props, ref) {
     var _this = this;
     var domain = props.domain, model = props.model, context = props.context, views = props.views, title = props.title, setCanWeClose = props.setCanWeClose, tabKey = props.tabKey;
@@ -79,6 +104,8 @@ function ActionViewExplicit(props, ref) {
     var _g = react_1.useState(), currentItemIndex = _g[0], setCurrentItemIndex = _g[1];
     var _h = react_1.useState([]), results = _h[0], setResults = _h[1];
     var _j = react_1.useState(), toolbar = _j[0], setToolbar = _j[1];
+    var reportInProgressInterval = react_1.useRef();
+    var _k = react_1.useState(false), reportGenerating = _k[0], setReportGenerating = _k[1];
     var formRef = react_1.useRef();
     react_1.useImperativeHandle(ref, function () { return ({
         canWeClose: canWeClose,
@@ -185,9 +212,104 @@ function ActionViewExplicit(props, ref) {
         setCurrentId(undefined);
         setCurrentView("form");
     }
-    return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId, setCurrentItemIndex: setCurrentItemIndex, currentItemIndex: currentItemIndex, results: results, setResults: setResults, currentModel: model, toolbar: toolbar, setToolbar: setToolbar },
+    function generateReport(options) {
+        return __awaiter(this, void 0, void 0, function () {
+            var reportData, explicitIds, fields, values, _a, context, reportContext, model, datas, report_name, _b, ids, datasource, idsToExecute, results_1, reportContextParsed, newReportId_1, err_2;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        reportData = options.reportData, explicitIds = options.ids, fields = options.fields, values = options.values, _a = options.context, context = _a === void 0 ? {} : _a;
+                        reportContext = reportData.context, model = reportData.model, datas = reportData.datas, report_name = reportData.report_name;
+                        _b = datas || {}, ids = _b.ids, datasource = __rest(_b, ["ids"]);
+                        idsToExecute = explicitIds || ids;
+                        if (!!idsToExecute) return [3 /*break*/, 2];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchAllIds({
+                                params: [],
+                                model: datasource.model || model,
+                                totalItems: 1,
+                            })];
+                    case 1:
+                        results_1 = _c.sent();
+                        if (results_1.length === 0) {
+                            ActionErrorDialog_1.default("Nothing to print");
+                            return [2 /*return*/];
+                        }
+                        idsToExecute = results_1;
+                        datas.id = results_1[0];
+                        _c.label = 2;
+                    case 2:
+                        reportContextParsed = typeof reportContext === "string"
+                            ? ooui_1.parseContext({
+                                context: reportContext,
+                                fields: fields,
+                                values: values,
+                            })
+                            : reportContext;
+                        _c.label = 3;
+                    case 3:
+                        _c.trys.push([3, 5, , 6]);
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().createReport({
+                                model: model,
+                                name: report_name,
+                                datas: datas,
+                                ids: idsToExecute,
+                                context: __assign(__assign({}, context), reportContextParsed),
+                            })];
+                    case 4:
+                        newReportId_1 = _c.sent();
+                        setReportGenerating(true);
+                        reportInProgressInterval.current = setInterval(function () {
+                            evaluateReportStatus(newReportId_1);
+                        }, 1000);
+                        return [3 /*break*/, 6];
+                    case 5:
+                        err_2 = _c.sent();
+                        ActionErrorDialog_1.default(err_2);
+                        setReportGenerating(false);
+                        clearInterval(reportInProgressInterval.current);
+                        return [3 /*break*/, 6];
+                    case 6: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function evaluateReportStatus(id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var reportState, fileType, error_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 4, , 5]);
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getReport({
+                                id: id,
+                            })];
+                    case 1:
+                        reportState = _a.sent();
+                        if (!reportState.state) return [3 /*break*/, 3];
+                        clearInterval(reportInProgressInterval.current);
+                        setReportGenerating(false);
+                        return [4 /*yield*/, filesHelper_1.getMimeType(reportState.result)];
+                    case 2:
+                        fileType = _a.sent();
+                        filesHelper_1.openBase64InNewTab(reportState.result, fileType.mime);
+                        _a.label = 3;
+                    case 3: return [3 /*break*/, 5];
+                    case 4:
+                        error_1 = _a.sent();
+                        clearInterval(reportInProgressInterval.current);
+                        setReportGenerating(false);
+                        ActionErrorDialog_1.default(error_1.exception || error_1);
+                        return [3 /*break*/, 5];
+                    case 5: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId, setCurrentItemIndex: setCurrentItemIndex, currentItemIndex: currentItemIndex, results: results, setResults: setResults, currentModel: model, toolbar: toolbar, setToolbar: setToolbar, generateReport: generateReport },
         react_1.default.createElement(TitleHeader_1.default, null, currentView === "form" ? react_1.default.createElement(FormActionBar_1.default, null) : react_1.default.createElement(TreeActionBar_1.default, null)),
-        content()));
+        content(),
+        react_1.default.createElement(antd_1.Modal, { title: "Generating report...", visible: reportGenerating, footer: null, closable: false, centered: true },
+            react_1.default.createElement(antd_1.Spin, null))));
 }
 exports.default = react_1.forwardRef(ActionViewExplicit);
 //# sourceMappingURL=ActionViewExplicit.js.map

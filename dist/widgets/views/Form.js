@@ -65,17 +65,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -96,7 +85,6 @@ var WarningDialog_1 = __importDefault(require("@/ui/WarningDialog"));
 var FormContext_1 = __importStar(require("@/context/FormContext"));
 var index_1 = require("@/index");
 var FormModalContext_1 = require("@/context/FormModalContext");
-var filesHelper_1 = require("@/helpers/filesHelper");
 var ActionViewContext_1 = require("@/context/ActionViewContext");
 var TabManagerContext_1 = require("@/context/TabManagerContext");
 var WIDTH_BREAKPOINT = 1000;
@@ -117,18 +105,17 @@ function Form(props, ref) {
     var _u = react_1.useState({}), buttonContext = _u[0], setButtonContext = _u[1];
     var _v = react_1.useState(), actionDomainModal = _v[0], setActionDomainModal = _v[1];
     var createdId = react_1.useRef();
-    var reportInProgressInterval = react_1.useRef();
-    var _w = react_1.useState(false), reportGenerating = _w[0], setReportGenerating = _w[1];
     var warningIsShwon = react_1.useRef(false);
-    var _x = react_cool_dimensions_1.default({
+    var _w = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _x.width, containerRef = _x.ref;
+    }), width = _w.width, containerRef = _w.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     var formContext = react_1.useContext(FormContext_1.FormContext);
     var parentId = (formContext || {}).activeId;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _y = (rootForm ? actionViewContext : {}) || {}, _z = _y.setFormIsSaving, setFormIsSaving = _z === void 0 ? undefined : _z, _0 = _y.setFormHasChanges, setFormHasChanges = _0 === void 0 ? undefined : _0, _1 = _y.setCurrentId, setCurrentId = _1 === void 0 ? undefined : _1, _2 = _y.setFormIsLoading, setFormIsLoading = _2 === void 0 ? undefined : _2, _3 = _y.setAttachments, setAttachments = _3 === void 0 ? undefined : _3;
+    var _x = (rootForm ? actionViewContext : {}) || {}, _y = _x.setFormIsSaving, setFormIsSaving = _y === void 0 ? undefined : _y, _z = _x.setFormHasChanges, setFormHasChanges = _z === void 0 ? undefined : _z, _0 = _x.setCurrentId, setCurrentId = _0 === void 0 ? undefined : _0, _1 = _x.setFormIsLoading, setFormIsLoading = _1 === void 0 ? undefined : _1, _2 = _x.setAttachments, setAttachments = _2 === void 0 ? undefined : _2;
+    var generateReport = actionViewContext.generateReport;
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
     var openAction = (tabManagerContext || {}).openAction;
     var onSubmitSucceed = function (id) {
@@ -147,7 +134,6 @@ function Form(props, ref) {
     };
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
-        generateReport: tryGenerateReport,
         runAction: tryRunAction,
         getFields: function () {
             return fields;
@@ -754,37 +740,17 @@ function Form(props, ref) {
     }
     function executeReportAction(response, context) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, ids, datasource, idsToExecute, results;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        _a = response.datas, ids = _a.ids, datasource = __rest(_a, ["ids"]);
-                        idsToExecute = ids;
-                        if (!!ids) return [3 /*break*/, 2];
-                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchAllIds({
-                                params: [],
-                                model: datasource.model || response.model,
-                                totalItems: 1,
-                            })];
-                    case 1:
-                        results = _b.sent();
-                        if (results.length === 0) {
-                            setReportGenerating(false);
-                            ActionErrorDialog_1.default("Nothing to print");
-                            return [2 /*return*/];
-                        }
-                        idsToExecute = results;
-                        datasource.id = results[0];
-                        _b.label = 2;
-                    case 2: return [4 /*yield*/, generateReport({
-                            model: response.model,
-                            name: response.report_name,
-                            datas: datasource,
-                            ids: idsToExecute,
-                            context: context,
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, generateReport({
+                            reportData: response,
+                            fields: fields,
+                            values: getCurrentValues(fields),
+                            context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                         })];
-                    case 3:
-                        _b.sent();
+                    case 1:
+                        _a.sent();
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
                         return [2 /*return*/];
                 }
             });
@@ -792,91 +758,6 @@ function Form(props, ref) {
     }
     function getCurrentId() {
         return id || createdId.current;
-    }
-    function tryGenerateReport(options) {
-        return __awaiter(this, void 0, void 0, function () {
-            var err_4;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, generateReport(options)];
-                    case 1:
-                        _a.sent();
-                        return [3 /*break*/, 3];
-                    case 2:
-                        err_4 = _a.sent();
-                        ActionErrorDialog_1.default(err_4);
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
-                }
-            });
-        });
-    }
-    function generateReport(options) {
-        return __awaiter(this, void 0, void 0, function () {
-            var ids, context, model, datas, name, reportContext, newReportId;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        ids = options.ids, context = options.context, model = options.model, datas = options.datas, name = options.name;
-                        reportContext = typeof context === "string"
-                            ? ooui_1.parseContext({
-                                context: context,
-                                fields: fields,
-                                values: getCurrentValues(fields),
-                            })
-                            : context;
-                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().createReport({
-                                model: model,
-                                name: name,
-                                datas: datas,
-                                ids: ids,
-                                context: __assign(__assign(__assign({}, reportContext), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
-                            })];
-                    case 1:
-                        newReportId = _a.sent();
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
-                        setReportGenerating(true);
-                        reportInProgressInterval.current = setInterval(function () {
-                            evaluateReportStatus(newReportId);
-                        }, 1000);
-                        return [2 /*return*/];
-                }
-            });
-        });
-    }
-    function evaluateReportStatus(id) {
-        return __awaiter(this, void 0, void 0, function () {
-            var reportState, fileType, error_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 4, , 5]);
-                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getReport({
-                                id: id,
-                            })];
-                    case 1:
-                        reportState = _a.sent();
-                        if (!reportState.state) return [3 /*break*/, 3];
-                        clearInterval(reportInProgressInterval.current);
-                        setReportGenerating(false);
-                        return [4 /*yield*/, filesHelper_1.getMimeType(reportState.result)];
-                    case 2:
-                        fileType = _a.sent();
-                        filesHelper_1.openBase64InNewTab(reportState.result, fileType.mime);
-                        _a.label = 3;
-                    case 3: return [3 /*break*/, 5];
-                    case 4:
-                        error_1 = _a.sent();
-                        clearInterval(reportInProgressInterval.current);
-                        setReportGenerating(false);
-                        ActionErrorDialog_1.default(error_1.exception || error_1);
-                        return [3 /*break*/, 5];
-                    case 5: return [2 /*return*/];
-                }
-            });
-        });
     }
     function runWorkflowButton(_a) {
         var action = _a.action;
@@ -925,7 +806,7 @@ function Form(props, ref) {
     }
     function tryRunAction(actionData, context) {
         return __awaiter(this, void 0, void 0, function () {
-            var err_5;
+            var err_4;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -935,8 +816,8 @@ function Form(props, ref) {
                         _a.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        err_5 = _a.sent();
-                        ActionErrorDialog_1.default(err_5);
+                        err_4 = _a.sent();
+                        ActionErrorDialog_1.default(err_4);
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }
@@ -1000,13 +881,12 @@ function Form(props, ref) {
     function executeButtonAction(_a) {
         var type = _a.type, action = _a.action, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
-            var err_6;
+            var err_5;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         // If the type of the button it's a cancel, we just close our form
                         if (type === "cancel") {
-                            clearInterval(reportInProgressInterval.current);
                             onCancel === null || onCancel === void 0 ? void 0 : onCancel();
                             return [2 /*return*/];
                         }
@@ -1042,8 +922,8 @@ function Form(props, ref) {
                         _b.label = 9;
                     case 9: return [3 /*break*/, 11];
                     case 10:
-                        err_6 = _b.sent();
-                        ActionErrorDialog_1.default(err_6);
+                        err_5 = _b.sent();
+                        ActionErrorDialog_1.default(err_5);
                         return [3 /*break*/, 11];
                     case 11: return [2 /*return*/];
                 }
@@ -1052,7 +932,7 @@ function Form(props, ref) {
     }
     function onFormModalSucceed() {
         return __awaiter(this, void 0, void 0, function () {
-            var err_7;
+            var err_6;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -1066,8 +946,8 @@ function Form(props, ref) {
                         _a.sent();
                         return [3 /*break*/, 4];
                     case 3:
-                        err_7 = _a.sent();
-                        ActionErrorDialog_1.default(err_7);
+                        err_6 = _a.sent();
+                        ActionErrorDialog_1.default(err_6);
                         return [3 /*break*/, 4];
                     case 4: return [2 /*return*/];
                 }
@@ -1115,9 +995,7 @@ function Form(props, ref) {
         react_1.default.createElement(index_1.FormModal, { buttonModal: true, parentContext: __assign(__assign(__assign({}, buttonContext), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context), model: buttonActionModalModel, formView: buttonActionModalFormView, visible: buttonActionModalVisible, onSubmitSucceed: onFormModalSucceed, onCancel: function () {
                 setButtonActionModalVisible(false);
                 setButtonContext({});
-            }, showFooter: false, actionDomain: actionDomainModal, parentOpenNewActionModal: openNewActionModal }),
-        react_1.default.createElement(antd_1.Modal, { title: "Generating report...", visible: reportGenerating, footer: null, closable: false, centered: true },
-            react_1.default.createElement(antd_1.Spin, null))));
+            }, showFooter: false, actionDomain: actionDomainModal, parentOpenNewActionModal: openNewActionModal })));
 }
 exports.default = react_1.forwardRef(Form);
 //# sourceMappingURL=Form.js.map

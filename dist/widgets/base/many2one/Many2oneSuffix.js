@@ -31,12 +31,15 @@ var antd_1 = require("antd");
 var TabManagerContext_1 = require("@/context/TabManagerContext");
 var ooui_1 = require("ooui");
 var Many2oneSuffixModal_1 = require("./Many2oneSuffixModal");
+var ActionViewContext_1 = require("@/context/ActionViewContext");
 var Many2oneSuffix = function (props) {
     var id = props.id, formView = props.formView, targetValues = props.targetValues;
     var _a = react_1.useState(false), actionModalVisible = _a[0], setActionModalVisible = _a[1];
     var _b = react_1.useState(false), printModalVisible = _b[0], setPrintModalVisible = _b[1];
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
     var openAction = (tabManagerContext || {}).openAction;
+    var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
+    var generateReport = actionViewContext.generateReport;
     if (!id || !(formView === null || formView === void 0 ? void 0 : formView.toolbar)) {
         return null;
     }
@@ -92,8 +95,14 @@ var Many2oneSuffix = function (props) {
     function onActionItemClicked() {
         setActionModalVisible(false);
     }
-    function onPrintItemClicked() {
+    function onPrintItemClicked(reportData) {
         setPrintModalVisible(false);
+        generateReport === null || generateReport === void 0 ? void 0 : generateReport({
+            reportData: reportData,
+            ids: [id],
+            values: targetValues,
+            fields: formView.fields,
+        });
     }
     return (react_1.default.createElement(react_1.default.Fragment, null,
         react_1.default.createElement(antd_1.Dropdown, { overlay: menu(), trigger: ["click"] },

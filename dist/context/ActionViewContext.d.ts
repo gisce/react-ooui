@@ -1,4 +1,4 @@
-import { ViewType } from "@/types";
+import { GenerateReportOptions, ViewType } from "@/types";
 import React from "react";
 export declare type ActionViewContextType = {
     title: string;
@@ -27,6 +27,7 @@ export declare type ActionViewContextType = {
     setToolbar?: (value: any) => void;
     attachments?: any;
     setAttachments?: (value: any) => void;
+    generateReport: (options: GenerateReportOptions) => Promise<void>;
 };
 export declare const ActionViewContext: React.Context<ActionViewContextType | null>;
 declare type ActionViewProviderProps = ActionViewContextType & {
