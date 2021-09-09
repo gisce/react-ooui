@@ -175,7 +175,12 @@ function ActionViewExplicit(props: Props, ref: any) {
       context = {},
     } = options;
 
-    const { context: reportContext, model, datas, report_name } = reportData;
+    const { context: reportContext, model, datas, report_name, type } = reportData;
+
+    if (type === "ir.actions.wizard") {
+      showErrorDialog("Wizard actions not supported");
+      return;
+    }
 
     const { ids, ...datasource } = datas || {};
 

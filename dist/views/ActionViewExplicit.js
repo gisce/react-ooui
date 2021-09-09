@@ -214,12 +214,16 @@ function ActionViewExplicit(props, ref) {
     }
     function generateReport(options) {
         return __awaiter(this, void 0, void 0, function () {
-            var reportData, explicitIds, fields, values, _a, context, reportContext, model, datas, report_name, _b, ids, datasource, idsToExecute, results_1, reportContextParsed, newReportId_1, err_2;
+            var reportData, explicitIds, fields, values, _a, context, reportContext, model, datas, report_name, type, _b, ids, datasource, idsToExecute, results_1, reportContextParsed, newReportId_1, err_2;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
                         reportData = options.reportData, explicitIds = options.ids, fields = options.fields, values = options.values, _a = options.context, context = _a === void 0 ? {} : _a;
-                        reportContext = reportData.context, model = reportData.model, datas = reportData.datas, report_name = reportData.report_name;
+                        reportContext = reportData.context, model = reportData.model, datas = reportData.datas, report_name = reportData.report_name, type = reportData.type;
+                        if (type === "ir.actions.wizard") {
+                            ActionErrorDialog_1.default("Wizard actions not supported");
+                            return [2 /*return*/];
+                        }
                         _b = datas || {}, ids = _b.ids, datasource = __rest(_b, ["ids"]);
                         idsToExecute = explicitIds || ids;
                         if (!!idsToExecute) return [3 /*break*/, 2];
