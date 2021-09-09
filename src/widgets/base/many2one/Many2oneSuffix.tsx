@@ -8,6 +8,10 @@ import {
 import { parseContext, parseDomain } from "ooui";
 import { FormView } from "@/types";
 import { Many2oneSuffixModal } from "./Many2oneSuffixModal";
+import {
+  ActionViewContext,
+  ActionViewContextType,
+} from "@/context/ActionViewContext";
 
 type Props = {
   id: number;
@@ -24,6 +28,11 @@ export const Many2oneSuffix = (props: Props) => {
     TabManagerContext
   ) as TabManagerContextType;
   const { openAction } = tabManagerContext || {};
+
+  const actionViewContext = useContext(
+    ActionViewContext
+  ) as ActionViewContextType;
+  const { generateReport } = actionViewContext;
 
   if (!id || !formView?.toolbar) {
     return null;
@@ -111,8 +120,14 @@ export const Many2oneSuffix = (props: Props) => {
     setActionModalVisible(false);
   }
 
-  function onPrintItemClicked() {
+  function onPrintItemClicked(reportData: any) {
     setPrintModalVisible(false);
+    generateReport?.({
+      reportData,
+      ids: [id],
+      values: targetValues,
+      fields: formView!.fields,
+    });
   }
 
   return (

@@ -6,9 +6,14 @@ import React, {
   useImperativeHandle,
 } from "react";
 
-import { Spin } from "antd";
+import { Modal, Spin } from "antd";
 
-import { FormView, TreeView, ViewType } from "@/types/index";
+import {
+  GenerateReportOptions,
+  FormView,
+  TreeView,
+  ViewType,
+} from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 import Form from "@/widgets/views/Form";
 import SearchTree from "@/widgets/views/SearchTree";
@@ -17,6 +22,9 @@ import ActionViewProvider from "@/context/ActionViewContext";
 import TitleHeader from "@/ui/TitleHeader";
 import FormActionBar from "@/actionbar/FormActionBar";
 import TreeActionBar from "@/actionbar/TreeActionBar";
+import showErrorDialog from "@/ui/ActionErrorDialog";
+import { openBase64InNewTab, getMimeType } from "@/helpers/filesHelper";
+import { parseContext } from "ooui";
 
 type Props = {
   domain: any;
@@ -40,6 +48,9 @@ function ActionViewExplicit(props: Props, ref: any) {
   const [currentItemIndex, setCurrentItemIndex] = useState<number>();
   const [results, setResults] = useState<any>([]);
   const [toolbar, setToolbar] = useState<any>();
+
+  const reportInProgressInterval = useRef<any>();
+  const [reportGenerating, setReportGenerating] = useState<boolean>(false);
 
   const formRef = useRef();
 
@@ -155,6 +166,86 @@ function ActionViewExplicit(props: Props, ref: any) {
     setCurrentView("form");
   }
 
+  async function generateReport(options: GenerateReportOptions) {
+    const {
+      reportData,
+      ids: explicitIds,
+      fields,
+      values,
+      context = {},
+    } = options;
+
+    const { context: reportContext, model, datas, report_name } = reportData;
+
+    const { ids, ...datasource } = datas || {};
+
+    let idsToExecute = explicitIds || ids;
+
+    if (!idsToExecute) {
+      const results = await ConnectionProvider.getHandler().searchAllIds({
+        params: [],
+        model: datasource.model || model,
+        totalItems: 1,
+      });
+
+      if (results.length === 0) {
+        showErrorDialog("Nothing to print");
+        return;
+      }
+
+      idsToExecute = results;
+      datas.id = results[0];
+    }
+
+    const reportContextParsed =
+      typeof reportContext === "string"
+        ? parseContext({
+            context: reportContext,
+            fields,
+            values,
+          })
+        : reportContext;
+
+    try {
+      const newReportId = await ConnectionProvider.getHandler().createReport({
+        model,
+        name: report_name,
+        datas,
+        ids: idsToExecute,
+        context: { ...context, ...reportContextParsed },
+      });
+
+      setReportGenerating(true);
+
+      reportInProgressInterval.current = setInterval(() => {
+        evaluateReportStatus(newReportId);
+      }, 1000);
+    } catch (err) {
+      showErrorDialog(err);
+      setReportGenerating(false);
+      clearInterval(reportInProgressInterval.current);
+    }
+  }
+
+  async function evaluateReportStatus(id: any) {
+    let reportState;
+    try {
+      reportState = await ConnectionProvider.getHandler().getReport({
+        id,
+      });
+      if (reportState.state) {
+        clearInterval(reportInProgressInterval.current);
+        setReportGenerating(false);
+        const fileType: any = await getMimeType(reportState.result);
+        openBase64InNewTab(reportState.result, fileType.mime);
+      }
+    } catch (error) {
+      clearInterval(reportInProgressInterval.current);
+      setReportGenerating(false);
+      showErrorDialog(error.exception || error);
+    }
+  }
+
   return (
     <ActionViewProvider
       title={title}
@@ -172,11 +263,21 @@ function ActionViewExplicit(props: Props, ref: any) {
       currentModel={model}
       toolbar={toolbar}
       setToolbar={setToolbar}
+      generateReport={generateReport}
     >
       <TitleHeader>
         {currentView === "form" ? <FormActionBar /> : <TreeActionBar />}
       </TitleHeader>
       {content()}
+      <Modal
+        title={"Generating report..."}
+        visible={reportGenerating}
+        footer={null}
+        closable={false}
+        centered
+      >
+        <Spin />
+      </Modal>
     </ActionViewProvider>
   );
 }

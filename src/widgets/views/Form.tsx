@@ -29,7 +29,6 @@ import {
   mergeFieldsDomain,
   getValuesForDomain,
 } from "@/helpers/formHelper";
-import { CreateReportRequest, FormView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import formErrorsDialog from "@/ui/FormErrorsDialog";
@@ -39,13 +38,11 @@ import FormProvider, {
   FormContext,
   FormContextType,
 } from "@/context/FormContext";
-import { FormModal } from "@/index";
+import { FormModal, FormView } from "@/index";
 import {
   FormModalContext,
   FormModalContextType,
 } from "@/context/FormModalContext";
-
-import { openBase64InNewTab, getMimeType } from "@/helpers/filesHelper";
 
 import {
   ActionViewContext,
@@ -137,8 +134,6 @@ function Form(props: FormProps, ref: any) {
 
   const createdId = useRef<number>();
 
-  const reportInProgressInterval = useRef<any>();
-  const [reportGenerating, setReportGenerating] = useState<boolean>(false);
   const warningIsShwon = useRef<boolean>(false);
 
   const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
@@ -160,6 +155,7 @@ function Form(props: FormProps, ref: any) {
     setFormIsLoading = undefined,
     setAttachments = undefined,
   } = (rootForm ? actionViewContext : {}) || {};
+  const { generateReport } = actionViewContext;
 
   const tabManagerContext = useContext(
     TabManagerContext
@@ -185,7 +181,6 @@ function Form(props: FormProps, ref: any) {
 
   useImperativeHandle(ref, () => ({
     submitForm,
-    generateReport: tryGenerateReport,
     runAction: tryRunAction,
     getFields: () => {
       return fields;
@@ -790,96 +785,20 @@ function Form(props: FormProps, ref: any) {
   }
 
   async function executeReportAction(response: any, context?: any) {
-    const { ids, ...datasource } = response.datas;
-    let idsToExecute = ids;
-
-    if (!ids) {
-      const results = await ConnectionProvider.getHandler().searchAllIds({
-        params: [],
-        model: datasource.model || response.model,
-        totalItems: 1,
-      });
-
-      if (results.length === 0) {
-        setReportGenerating(false);
-        showErrorDialog("Nothing to print");
-        return;
-      }
-
-      idsToExecute = results;
-      datasource.id = results[0];
-    }
-
     await generateReport({
-      model: response.model,
-      name: response.report_name,
-      datas: datasource,
-      ids: idsToExecute,
-      context,
-    });
-  }
-
-  function getCurrentId() {
-    return id || createdId.current;
-  }
-
-  async function tryGenerateReport(options: CreateReportRequest) {
-    try {
-      await generateReport(options);
-    } catch (err) {
-      showErrorDialog(err);
-    }
-  }
-
-  async function generateReport(options: CreateReportRequest) {
-    const { ids, context, model, datas, name } = options;
-
-    const reportContext =
-      typeof context === "string"
-        ? parseContext({
-            context,
-            fields,
-            values: getCurrentValues(fields),
-          })
-        : context;
-
-    const newReportId = await ConnectionProvider.getHandler().createReport({
-      model,
-      name,
-      datas,
-      ids,
+      reportData: response,
+      fields,
+      values: getCurrentValues(fields),
       context: {
-        ...reportContext,
         ...parentContext,
         ...formOoui?.context,
       },
     });
-
     onSubmitSucceed?.(getCurrentId());
-    setReportGenerating(true);
-
-    reportInProgressInterval.current = setInterval(() => {
-      evaluateReportStatus(newReportId);
-    }, 1000);
   }
 
-  async function evaluateReportStatus(id: any) {
-    let reportState;
-    try {
-      reportState = await ConnectionProvider.getHandler().getReport({
-        id,
-      });
-      if (reportState.state) {
-        clearInterval(reportInProgressInterval.current);
-        setReportGenerating(false);
-        const fileType: any = await getMimeType(reportState.result);
-        openBase64InNewTab(reportState.result, fileType.mime);
-      }
-    } catch (error) {
-      clearInterval(reportInProgressInterval.current);
-      setReportGenerating(false);
-      showErrorDialog(error.exception || error);
-    }
+  function getCurrentId() {
+    return id || createdId.current;
   }
 
   async function runWorkflowButton({ action }: { action: string }) {
@@ -978,7 +897,6 @@ function Form(props: FormProps, ref: any) {
   }) {
     // If the type of the button it's a cancel, we just close our form
     if (type === "cancel") {
-      clearInterval(reportInProgressInterval.current);
       onCancel?.();
       return;
     }
@@ -1119,15 +1037,6 @@ function Form(props: FormProps, ref: any) {
         actionDomain={actionDomainModal}
         parentOpenNewActionModal={openNewActionModal}
       />
-      <Modal
-        title={"Generating report..."}
-        visible={reportGenerating}
-        footer={null}
-        closable={false}
-        centered
-      >
-        <Spin />
-      </Modal>
     </div>
   );
 }

@@ -50,6 +50,7 @@ function FormActionBar() {
     toolbar,
     attachments,
     formRef,
+    generateReport,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   const tabManagerContext = useContext(
@@ -210,13 +211,11 @@ function FormActionBar() {
             return;
           }
 
-          const { report_name, model, context } = report;
-
-          (formRef.current as any).generateReport({
-            model,
-            name: report_name,
-            ids: [currentId],
-            context,
+          generateReport({
+            reportData: report,
+            ids: [currentId as number],
+            values: (formRef.current as any).getValues(),
+            fields: (formRef.current as any).getFields(),
           });
         }}
       />

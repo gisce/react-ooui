@@ -104,7 +104,15 @@ type CreateReportRequest = {
   name: string;
   model: string;
   ids: number[];
-  datas: any;
+  datas?: any;
+  context?: any;
+};
+
+type GenerateReportOptions = {
+  reportData: any;
+  ids?: number[];
+  fields: any;
+  values: any;
   context?: any;
 };
 
@@ -175,4 +183,5 @@ export type {
   SearchCountRequest,
   GetViewRequest,
   DefaultGetRequest,
+  GenerateReportOptions,
 };
