@@ -110,7 +110,6 @@ type CreateReportRequest = {
 
 type GenerateReportOptions = {
   reportData: any;
-  ids?: number[];
   fields: any;
   values: any;
   context?: any;

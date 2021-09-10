@@ -16,23 +16,24 @@ type Props = {
   id: number;
   formView?: FormView;
   targetValues: any;
+  readOnly: boolean;
 };
 
 export const Many2oneSuffix = (props: Props) => {
-  const { id, formView, targetValues } = props;
+  const { id, formView, targetValues, readOnly } = props;
   const [actionModalVisible, setActionModalVisible] = useState<boolean>(false);
   const [printModalVisible, setPrintModalVisible] = useState<boolean>(false);
 
   const tabManagerContext = useContext(
     TabManagerContext
   ) as TabManagerContextType;
-  const { openRelate } = tabManagerContext || {};  
-  
+  const { openRelate } = tabManagerContext || {};
+
   const contentRootContext = useContext(
     ContentRootContext
   ) as ContentRootContextType;
-  const { generateReport } = contentRootContext;
-  
+  const { processAction } = contentRootContext;
+
   if (!id || !formView?.toolbar) {
     return null;
   }
@@ -48,7 +49,9 @@ export const Many2oneSuffix = (props: Props) => {
           <Menu.Item
             key="action"
             disabled={
-              !formView!.toolbar.action || formView!.toolbar.action.length === 0
+              readOnly ||
+              !formView!.toolbar.action ||
+              formView!.toolbar.action.length === 0
             }
           >
             Acció
@@ -89,15 +92,23 @@ export const Many2oneSuffix = (props: Props) => {
     }
   }
 
-  function onActionItemClicked() {
+  function onActionItemClicked(actionData: any) {
     setActionModalVisible(false);
+    processAction?.({
+      actionData,
+      values: targetValues,
+      fields: formView!.fields,
+      context: { active_id: id, active_ids: [id] },
+    });
   }
 
   function onPrintItemClicked(reportData: any) {
     setPrintModalVisible(false);
-    generateReport?.({
-      reportData,
-      ids: [id],
+    processAction?.({
+      actionData: {
+        ...reportData,
+        datas: { ...(reportData.datas || {}), ids: [id] },
+      },
       values: targetValues,
       fields: formView!.fields,
     });

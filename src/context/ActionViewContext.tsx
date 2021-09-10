@@ -1,4 +1,4 @@
-import { GenerateReportOptions, ViewType } from "@/types";
+import { ViewType } from "@/types";
 import React, { useEffect, useState } from "react";
 
 export type ActionViewContextType = {

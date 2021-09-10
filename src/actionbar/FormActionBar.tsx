@@ -56,11 +56,11 @@ function FormActionBar() {
     attachments,
     formRef,
   } = useContext(ActionViewContext) as ActionViewContextType;
-  
+
   const contentRootContext = useContext(
     ContentRootContext
   ) as ContentRootContextType;
-  const { generateReport } = contentRootContext;
+  const { processAction } = contentRootContext;
 
   const tabManagerContext = useContext(
     TabManagerContext
@@ -207,7 +207,12 @@ function FormActionBar() {
             return;
           }
 
-          (formRef.current as any).runAction(action, {});
+          processAction({
+            actionData: action,
+            values: (formRef.current as any).getValues(),
+            fields: (formRef.current as any).getFields(),
+            context: (formRef.current as any).getContext(),
+          });
         }}
       />
       <DropdownButton
@@ -220,11 +225,14 @@ function FormActionBar() {
             return;
           }
 
-          generateReport({
-            reportData: report,
-            ids: [currentId as number],
+          processAction({
+            actionData: {
+              ...report,
+              datas: { ...(report.datas || {}), ids: [currentId as number] },
+            },
             values: (formRef.current as any).getValues(),
             fields: (formRef.current as any).getFields(),
+            context: (formRef.current as any).getContext(),
           });
         }}
       />

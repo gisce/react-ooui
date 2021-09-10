@@ -6,7 +6,7 @@ import React, {
   useRef,
   useContext,
 } from "react";
-import { Form as FormOoui, parseContext, parseDomain } from "ooui";
+import { Form as FormOoui } from "ooui";
 import {
   Form as AntForm,
   Button,
@@ -38,7 +38,7 @@ import FormProvider, {
   FormContext,
   FormContextType,
 } from "@/context/FormContext";
-import { FormModal, FormView } from "@/index";
+import { FormView } from "@/index";
 import {
   FormModalContext,
   FormModalContextType,
@@ -48,10 +48,6 @@ import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
-import {
-  TabManagerContext,
-  TabManagerContextType,
-} from "@/context/TabManagerContext";
 
 import {
   ContentRootContext,
@@ -78,17 +74,6 @@ export type FormProps = {
   actionDomain?: any;
   visible?: boolean;
   rootForm?: boolean;
-  parentOpenNewActionModal?: ({
-    domain,
-    model,
-    formView,
-    context,
-  }: {
-    domain: any;
-    model: string;
-    formView: FormView;
-    context: any;
-  }) => void;
 };
 
 const WIDTH_BREAKPOINT = 1000;
@@ -114,7 +99,6 @@ function Form(props: FormProps, ref: any) {
     actionDomain,
     visible = true,
     rootForm = false,
-    parentOpenNewActionModal,
   } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -124,18 +108,7 @@ function Form(props: FormProps, ref: any) {
   const [antForm] = AntForm.useForm();
   const [arch, setArch] = useState<string>();
   const [fields, setFields] = useState<any>();
-  const [buttonActionModalVisible, setButtonActionModalVisible] = useState<
-    boolean
-  >(false);
-  const [buttonActionModalFormView, setButtonActionModalFormView] = useState<
-    FormView
-  >();
-  const [buttonActionModalModel, setButtonActionModalModel] = useState<
-    string
-  >();
   const formModalContext = useContext(FormModalContext) as FormModalContextType;
-  const [buttonContext, setButtonContext] = useState<any>({});
-  const [actionDomainModal, setActionDomainModal] = useState<any>();
 
   const createdId = useRef<number>();
 
@@ -164,12 +137,32 @@ function Form(props: FormProps, ref: any) {
   const contentRootContext = useContext(
     ContentRootContext
   ) as ContentRootContextType;
-  const { generateReport } = contentRootContext;
+  const { processAction } = contentRootContext;
 
-  const tabManagerContext = useContext(
-    TabManagerContext
-  ) as TabManagerContextType;
-  const { openAction } = tabManagerContext || {};
+  useImperativeHandle(ref, () => ({
+    submitForm,
+    getFields: () => {
+      return fields;
+    },
+    getValues,
+    getContext: () => {
+      return { ...parentContext, ...formOoui?.context };
+    },
+    cancelUnsavedChanges,
+  }));
+
+  useEffect(() => {
+    if (!model && !formViewProps) {
+      return;
+    }
+
+    if (!visible) {
+      setFormOoui(undefined);
+      return;
+    }
+
+    fetchData();
+  }, [id, model, valuesProps, formViewProps, visible]);
 
   const onSubmitSucceed = (id?: number) => {
     setFormHasChanges?.(false);
@@ -188,28 +181,9 @@ function Form(props: FormProps, ref: any) {
     propsOnSubmitError?.(error);
   };
 
-  useImperativeHandle(ref, () => ({
-    submitForm,
-    runAction: tryRunAction,
-    getFields: () => {
-      return fields;
-    },
-    getValues,
-    cancelUnsavedChanges,
-  }));
-
-  useEffect(() => {
-    if (!model && !formViewProps) {
-      return;
-    }
-
-    if (!visible) {
-      setFormOoui(undefined);
-      return;
-    }
-
-    fetchData();
-  }, [id, model, valuesProps, formViewProps, visible]);
+  function getCurrentId() {
+    return id || createdId.current;
+  }
 
   function getValues() {
     return {
@@ -220,6 +194,42 @@ function Form(props: FormProps, ref: any) {
     };
   }
 
+  const getDefaultValues = async (fields: any) => {
+    return await ConnectionProvider.getHandler().defaultGet({
+      model,
+      fields,
+      context: { ...parentContext, ...formOoui?.context },
+    });
+  };
+
+  const formHasChanges = () => {
+    return Object.keys(getTouchedValues(antForm, fields)).length !== 0;
+  };
+
+  const getCurrentValues = (fields: any) => {
+    const currentValues = antForm.getFieldsValue(true);
+    return processValues(currentValues, fields);
+  };
+
+  const setFieldValue = (field: string, value?: string) => {
+    const values = antForm.getFieldsValue(true);
+    values[field] = value;
+    antForm.setFieldsValue(values);
+  };
+
+  const getFieldValue = (field: string) => {
+    const values = antForm.getFieldsValue(true);
+    return values[field];
+  };
+
+  async function checkIfFormHasErrors() {
+    try {
+      await antForm.validateFields();
+      return false;
+    } catch (verror) {
+      return true;
+    }
+  }
   const fetchData = async () => {
     setLoading(true);
     setError(undefined);
@@ -349,11 +359,6 @@ function Form(props: FormProps, ref: any) {
     antForm.setFields(fieldsToUpdate);
   };
 
-  const getCurrentValues = (fields: any) => {
-    const currentValues = antForm.getFieldsValue(true);
-    return processValues(currentValues, fields);
-  };
-
   const fetchValuesFromApi = async ({
     fields,
     arch,
@@ -385,18 +390,6 @@ function Form(props: FormProps, ref: any) {
       values = await getDefaultValues(fields);
     }
     return values;
-  };
-
-  const getDefaultValues = async (fields: any) => {
-    return await ConnectionProvider.getHandler().defaultGet({
-      model,
-      fields,
-      context: { ...parentContext, ...formOoui?.context },
-    });
-  };
-
-  const formHasChanges = () => {
-    return Object.keys(getTouchedValues(antForm, fields)).length !== 0;
   };
 
   const submitApi = async () => {
@@ -608,26 +601,6 @@ function Form(props: FormProps, ref: any) {
 
   const debouncedEvaluateChanges = debounce(evaluateChanges, 800);
 
-  const setFieldValue = (field: string, value?: string) => {
-    const values = antForm.getFieldsValue(true);
-    values[field] = value;
-    antForm.setFieldsValue(values);
-  };
-
-  const getFieldValue = (field: string) => {
-    const values = antForm.getFieldsValue(true);
-    return values[field];
-  };
-
-  async function checkIfFormHasErrors() {
-    try {
-      await antForm.validateFields();
-      return false;
-    } catch (verror) {
-      return true;
-    }
-  }
-
   async function runObjectButton({
     action,
     context,
@@ -658,121 +631,20 @@ function Form(props: FormProps, ref: any) {
       response.type === "ir.actions.act_window_close"
     ) {
       onSubmitSucceed?.(getCurrentId());
-    } else if (response.type && response.type === "ir.actions.report.xml") {
-      await executeReportAction(response, context);
-    } else if (response.type && response.type === "ir.actions.act_window") {
-      const responseContext = parseContext({
-        context: response.context,
+    } else if (response.type) {
+      processAction({
+        actionData: response,
         fields,
         values: getCurrentValues(fields),
+        context: {
+          ...context,
+          ...parentContext,
+          ...formOoui?.context,
+        },
       });
-
-      const mergedContext = {
-        ...responseContext,
-        ...context,
-        ...parentContext,
-        ...formOoui?.context,
-      };
-
-      const parsedDomain = response.domain
-        ? parseDomain({
-            domainValue: response.domain,
-            values: getValues(),
-            fields,
-          })
-        : [];
-
-      if (response.target === "new") {
-        const formView = (await ConnectionProvider.getHandler().getView({
-          model: response.res_model,
-          type: "form",
-          context,
-        })) as FormView;
-
-        openActionModal({
-          domain: parsedDomain,
-          model: response.res_model,
-          formView,
-          context: mergedContext,
-        });
-      } else {
-        onSubmitSucceed?.(getCurrentId());
-
-        openAction?.({
-          target: "current",
-          context: mergedContext,
-          domain: parsedDomain,
-          model: response.res_model,
-          views: response.view_mode
-            .split(",")
-            .map((view: string) => [false, view]),
-          title: response.name,
-        });
-      }
     } else {
       await fetchValues();
     }
-  }
-
-  function openActionModal({
-    domain,
-    model,
-    formView,
-    context,
-  }: {
-    domain: any;
-    model: string;
-    formView: FormView;
-    context: any;
-  }) {
-    if (insideButtonModal && parentOpenNewActionModal) {
-      parentOpenNewActionModal({ domain, model, formView, context });
-    } else {
-      setActionDomainModal(domain);
-      setButtonActionModalModel(model);
-      setButtonActionModalFormView(formView);
-      setButtonContext(context);
-      setButtonActionModalVisible(true);
-    }
-  }
-
-  async function openNewActionModal({
-    domain,
-    model,
-    formView,
-    context,
-  }: {
-    domain: any;
-    model: string;
-    formView: FormView;
-    context: any;
-  }) {
-    setButtonActionModalVisible(false);
-    setFormIsLoading?.(true);
-    setButtonContext({});
-    setActionDomainModal([]);
-    setButtonActionModalModel(undefined);
-    setButtonActionModalFormView(undefined);
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    setFormIsLoading?.(false);
-    openActionModal({ domain, model, formView, context });
-  }
-
-  async function executeReportAction(response: any, context?: any) {
-    await generateReport({
-      reportData: response,
-      fields,
-      values: getCurrentValues(fields),
-      context: {
-        ...parentContext,
-        ...formOoui?.context,
-      },
-    });
-    onSubmitSucceed?.(getCurrentId());
-  }
-
-  function getCurrentId() {
-    return id || createdId.current;
   }
 
   async function runWorkflowButton({ action }: { action: string }) {
@@ -803,61 +675,16 @@ function Form(props: FormProps, ref: any) {
       })
     )[0];
 
-    await runAction(actionData, context);
-  }
-
-  async function tryRunAction(actionData: any, context: any) {
-    try {
-      await runAction(actionData, context);
-    } catch (err) {
-      showErrorDialog(err);
-    }
-  }
-
-  async function runAction(actionData: any, context: any) {
-    setFormIsLoading?.(true);
-
-    if (actionData.type === "ir.actions.act_window") {
-      const actionWindowData = (
-        await ConnectionProvider.getHandler().readObjects({
-          model: "ir.actions.act_window",
-          ids: [parseInt(actionData.id)],
-        })
-      )[0];
-
-      const viewData = await ConnectionProvider.getHandler().getViewsForAction({
-        action: `${actionData.type},${actionData.id}`,
-        context: { ...context, ...parentContext, ...formOoui?.context },
-      });
-
-      const formView = viewData.views.get("form");
-      const parsedDomain = parseDomain({
-        domainValue: actionWindowData.domain,
-        values: {
-          active_id: getCurrentId()!,
-        },
-        fields: {},
-      });
-
-      const mergedContext = {
+    processAction({
+      actionData,
+      fields,
+      values: getCurrentValues(fields),
+      context: {
         ...context,
         ...parentContext,
         ...formOoui?.context,
-      };
-
-      openActionModal({
-        domain: parsedDomain,
-        model: viewData.model,
-        formView,
-        context: mergedContext,
-      });
-    } else if (actionData.type === "ir.actions.report.xml") {
-      await executeReportAction(actionData, context);
-    } else if (actionData.type === "ir.actions.wizard") {
-      showErrorDialog("Wizard actions not supported");
-    }
-
-    setFormIsLoading?.(false);
+      },
+    });
   }
 
   async function executeButtonAction({
@@ -891,17 +718,6 @@ function Form(props: FormProps, ref: any) {
       } else if (type === "action") {
         await runActionButton({ action, context });
       }
-    } catch (err) {
-      showErrorDialog(err);
-    }
-  }
-
-  async function onFormModalSucceed() {
-    setButtonActionModalVisible(false);
-    setButtonContext({});
-
-    try {
-      await fetchValues();
     } catch (err) {
       showErrorDialog(err);
     }
@@ -992,25 +808,6 @@ function Form(props: FormProps, ref: any) {
       )}
       {loading ? <Spin /> : content()}
       {showFooter && footer()}
-      <FormModal
-        buttonModal
-        parentContext={{
-          ...buttonContext,
-          ...parentContext,
-          ...formOoui?.context,
-        }}
-        model={buttonActionModalModel!}
-        formView={buttonActionModalFormView}
-        visible={buttonActionModalVisible}
-        onSubmitSucceed={onFormModalSucceed}
-        onCancel={() => {
-          setButtonActionModalVisible(false);
-          setButtonContext({});
-        }}
-        showFooter={false}
-        actionDomain={actionDomainModal}
-        parentOpenNewActionModal={openNewActionModal}
-      />
     </div>
   );
 }
