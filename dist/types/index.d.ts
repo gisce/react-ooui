@@ -91,7 +91,6 @@ declare type CreateReportRequest = {
 };
 declare type GenerateReportOptions = {
     reportData: any;
-    ids?: number[];
     fields: any;
     values: any;
     context?: any;

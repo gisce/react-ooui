@@ -1,7 +1,11 @@
-import { GenerateReportOptions } from "@/types";
 import React from "react";
 export declare type ContentRootContextType = {
-    generateReport: (options: GenerateReportOptions) => Promise<void>;
+    processAction: ({ actionData, fields, values, context, }: {
+        actionData: any;
+        fields: any;
+        values: any;
+        context?: any;
+    }) => void;
 };
 export declare const ContentRootContext: React.Context<ContentRootContextType | null>;
 declare type ContentRootProviderProps = {

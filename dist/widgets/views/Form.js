@@ -83,15 +83,13 @@ var FormErrorsDialog_1 = __importDefault(require("@/ui/FormErrorsDialog"));
 var ActionErrorDialog_1 = __importDefault(require("@/ui/ActionErrorDialog"));
 var WarningDialog_1 = __importDefault(require("@/ui/WarningDialog"));
 var FormContext_1 = __importStar(require("@/context/FormContext"));
-var index_1 = require("@/index");
 var FormModalContext_1 = require("@/context/FormModalContext");
 var ActionViewContext_1 = require("@/context/ActionViewContext");
-var TabManagerContext_1 = require("@/context/TabManagerContext");
 var ContentRootContext_1 = require("@/context/ContentRootContext");
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
-    var model = props.model, id = props.id, propsOnCancel = props.onCancel, propsOnSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, propsOnSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, formViewProps = props.formView, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g, actionDomain = props.actionDomain, _h = props.visible, visible = _h === void 0 ? true : _h, _j = props.rootForm, rootForm = _j === void 0 ? false : _j, parentOpenNewActionModal = props.parentOpenNewActionModal;
+    var model = props.model, id = props.id, propsOnCancel = props.onCancel, propsOnSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, propsOnSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, formViewProps = props.formView, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g, actionDomain = props.actionDomain, _h = props.visible, visible = _h === void 0 ? true : _h, _j = props.rootForm, rootForm = _j === void 0 ? false : _j;
     var _k = react_1.useState(false), isSubmitting = _k[0], setIsSubmitting = _k[1];
     var _l = react_1.useState(), error = _l[0], setError = _l[1];
     var _m = react_1.useState(false), loading = _m[0], setLoading = _m[1];
@@ -99,27 +97,41 @@ function Form(props, ref) {
     var antForm = antd_1.Form.useForm()[0];
     var _p = react_1.useState(), arch = _p[0], setArch = _p[1];
     var _q = react_1.useState(), fields = _q[0], setFields = _q[1];
-    var _r = react_1.useState(false), buttonActionModalVisible = _r[0], setButtonActionModalVisible = _r[1];
-    var _s = react_1.useState(), buttonActionModalFormView = _s[0], setButtonActionModalFormView = _s[1];
-    var _t = react_1.useState(), buttonActionModalModel = _t[0], setButtonActionModalModel = _t[1];
     var formModalContext = react_1.useContext(FormModalContext_1.FormModalContext);
-    var _u = react_1.useState({}), buttonContext = _u[0], setButtonContext = _u[1];
-    var _v = react_1.useState(), actionDomainModal = _v[0], setActionDomainModal = _v[1];
     var createdId = react_1.useRef();
     var warningIsShwon = react_1.useRef(false);
-    var _w = react_cool_dimensions_1.default({
+    var _r = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _w.width, containerRef = _w.ref;
+    }), width = _r.width, containerRef = _r.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     var formContext = react_1.useContext(FormContext_1.FormContext);
     var parentId = (formContext || {}).activeId;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _x = (rootForm ? actionViewContext : {}) || {}, _y = _x.setFormIsSaving, setFormIsSaving = _y === void 0 ? undefined : _y, _z = _x.setFormHasChanges, setFormHasChanges = _z === void 0 ? undefined : _z, _0 = _x.setCurrentId, setCurrentId = _0 === void 0 ? undefined : _0, _1 = _x.setFormIsLoading, setFormIsLoading = _1 === void 0 ? undefined : _1, _2 = _x.setAttachments, setAttachments = _2 === void 0 ? undefined : _2;
+    var _s = (rootForm ? actionViewContext : {}) || {}, _t = _s.setFormIsSaving, setFormIsSaving = _t === void 0 ? undefined : _t, _u = _s.setFormHasChanges, setFormHasChanges = _u === void 0 ? undefined : _u, _v = _s.setCurrentId, setCurrentId = _v === void 0 ? undefined : _v, _w = _s.setFormIsLoading, setFormIsLoading = _w === void 0 ? undefined : _w, _x = _s.setAttachments, setAttachments = _x === void 0 ? undefined : _x;
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
-    var generateReport = contentRootContext.generateReport;
-    var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
-    var openAction = (tabManagerContext || {}).openAction;
+    var processAction = contentRootContext.processAction;
+    react_1.useImperativeHandle(ref, function () { return ({
+        submitForm: submitForm,
+        getFields: function () {
+            return fields;
+        },
+        getValues: getValues,
+        getContext: function () {
+            return __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context);
+        },
+        cancelUnsavedChanges: cancelUnsavedChanges,
+    }); });
+    react_1.useEffect(function () {
+        if (!model && !formViewProps) {
+            return;
+        }
+        if (!visible) {
+            setFormOoui(undefined);
+            return;
+        }
+        fetchData();
+    }, [id, model, valuesProps, formViewProps, visible]);
     var onSubmitSucceed = function (id) {
         setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
         setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
@@ -134,27 +146,58 @@ function Form(props, ref) {
         setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
         propsOnSubmitError === null || propsOnSubmitError === void 0 ? void 0 : propsOnSubmitError(error);
     };
-    react_1.useImperativeHandle(ref, function () { return ({
-        submitForm: submitForm,
-        runAction: tryRunAction,
-        getFields: function () {
-            return fields;
-        },
-        getValues: getValues,
-        cancelUnsavedChanges: cancelUnsavedChanges,
-    }); });
-    react_1.useEffect(function () {
-        if (!model && !formViewProps) {
-            return;
-        }
-        if (!visible) {
-            setFormOoui(undefined);
-            return;
-        }
-        fetchData();
-    }, [id, model, valuesProps, formViewProps, visible]);
+    function getCurrentId() {
+        return id || createdId.current;
+    }
     function getValues() {
         return __assign(__assign({}, getCurrentValues(fields)), { id: getCurrentId(), active_id: getCurrentId(), parent_id: parentId });
+    }
+    var getDefaultValues = function (fields) { return __awaiter(_this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().defaultGet({
+                        model: model,
+                        fields: fields,
+                        context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
+                    })];
+                case 1: return [2 /*return*/, _a.sent()];
+            }
+        });
+    }); };
+    var formHasChanges = function () {
+        return Object.keys(formHelper_1.getTouchedValues(antForm, fields)).length !== 0;
+    };
+    var getCurrentValues = function (fields) {
+        var currentValues = antForm.getFieldsValue(true);
+        return formHelper_1.processValues(currentValues, fields);
+    };
+    var setFieldValue = function (field, value) {
+        var values = antForm.getFieldsValue(true);
+        values[field] = value;
+        antForm.setFieldsValue(values);
+    };
+    var getFieldValue = function (field) {
+        var values = antForm.getFieldsValue(true);
+        return values[field];
+    };
+    function checkIfFormHasErrors() {
+        return __awaiter(this, void 0, void 0, function () {
+            var verror_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, antForm.validateFields()];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/, false];
+                    case 2:
+                        verror_1 = _a.sent();
+                        return [2 /*return*/, true];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
     }
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
         var view, fields_1, arch_1, err_1;
@@ -294,10 +337,6 @@ function Form(props, ref) {
         });
         antForm.setFields(fieldsToUpdate);
     };
-    var getCurrentValues = function (fields) {
-        var currentValues = antForm.getFieldsValue(true);
-        return formHelper_1.processValues(currentValues, fields);
-    };
     var fetchValuesFromApi = function (_a) {
         var fields = _a.fields, arch = _a.arch;
         return __awaiter(_this, void 0, void 0, function () {
@@ -336,21 +375,6 @@ function Form(props, ref) {
                 }
             });
         });
-    };
-    var getDefaultValues = function (fields) { return __awaiter(_this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().defaultGet({
-                        model: model,
-                        fields: fields,
-                        context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
-                    })];
-                case 1: return [2 /*return*/, _a.sent()];
-            }
-        });
-    }); };
-    var formHasChanges = function () {
-        return Object.keys(formHelper_1.getTouchedValues(antForm, fields)).length !== 0;
     };
     var submitApi = function () { return __awaiter(_this, void 0, void 0, function () {
         var touchedValues, currentValues, newId;
@@ -563,38 +587,10 @@ function Form(props, ref) {
         });
     }); };
     var debouncedEvaluateChanges = debounce_1.default(evaluateChanges, 800);
-    var setFieldValue = function (field, value) {
-        var values = antForm.getFieldsValue(true);
-        values[field] = value;
-        antForm.setFieldsValue(values);
-    };
-    var getFieldValue = function (field) {
-        var values = antForm.getFieldsValue(true);
-        return values[field];
-    };
-    function checkIfFormHasErrors() {
-        return __awaiter(this, void 0, void 0, function () {
-            var verror_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, antForm.validateFields()];
-                    case 1:
-                        _a.sent();
-                        return [2 /*return*/, false];
-                    case 2:
-                        verror_1 = _a.sent();
-                        return [2 /*return*/, true];
-                    case 3: return [2 /*return*/];
-                }
-            });
-        });
-    }
     function runObjectButton(_a) {
         var action = _a.action, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
-            var response, responseContext, mergedContext, parsedDomain, formView;
+            var response;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
@@ -610,126 +606,29 @@ function Form(props, ref) {
                             Object.keys(response).length === 0 &&
                             insideButtonModal)) return [3 /*break*/, 2];
                         onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
-                        return [3 /*break*/, 11];
+                        return [3 /*break*/, 6];
                     case 2:
                         if (!(response.type &&
                             response.type === "ir.actions.act_window_close")) return [3 /*break*/, 3];
                         onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
-                        return [3 /*break*/, 11];
+                        return [3 /*break*/, 6];
                     case 3:
-                        if (!(response.type && response.type === "ir.actions.report.xml")) return [3 /*break*/, 5];
-                        return [4 /*yield*/, executeReportAction(response, context)];
-                    case 4:
-                        _b.sent();
-                        return [3 /*break*/, 11];
+                        if (!response.type) return [3 /*break*/, 4];
+                        processAction({
+                            actionData: response,
+                            fields: fields,
+                            values: getCurrentValues(fields),
+                            context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
+                        });
+                        return [3 /*break*/, 6];
+                    case 4: return [4 /*yield*/, fetchValues()];
                     case 5:
-                        if (!(response.type && response.type === "ir.actions.act_window")) return [3 /*break*/, 9];
-                        responseContext = ooui_1.parseContext({
-                            context: response.context,
-                            fields: fields,
-                            values: getCurrentValues(fields),
-                        });
-                        mergedContext = __assign(__assign(__assign(__assign({}, responseContext), context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context);
-                        parsedDomain = response.domain
-                            ? ooui_1.parseDomain({
-                                domainValue: response.domain,
-                                values: getValues(),
-                                fields: fields,
-                            })
-                            : [];
-                        if (!(response.target === "new")) return [3 /*break*/, 7];
-                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
-                                model: response.res_model,
-                                type: "form",
-                                context: context,
-                            })];
-                    case 6:
-                        formView = (_b.sent());
-                        openActionModal({
-                            domain: parsedDomain,
-                            model: response.res_model,
-                            formView: formView,
-                            context: mergedContext,
-                        });
-                        return [3 /*break*/, 8];
-                    case 7:
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
-                        openAction === null || openAction === void 0 ? void 0 : openAction({
-                            target: "current",
-                            context: mergedContext,
-                            domain: parsedDomain,
-                            model: response.res_model,
-                            views: response.view_mode
-                                .split(",")
-                                .map(function (view) { return [false, view]; }),
-                            title: response.name,
-                        });
-                        _b.label = 8;
-                    case 8: return [3 /*break*/, 11];
-                    case 9: return [4 /*yield*/, fetchValues()];
-                    case 10:
                         _b.sent();
-                        _b.label = 11;
-                    case 11: return [2 /*return*/];
+                        _b.label = 6;
+                    case 6: return [2 /*return*/];
                 }
             });
         });
-    }
-    function openActionModal(_a) {
-        var domain = _a.domain, model = _a.model, formView = _a.formView, context = _a.context;
-        if (insideButtonModal && parentOpenNewActionModal) {
-            parentOpenNewActionModal({ domain: domain, model: model, formView: formView, context: context });
-        }
-        else {
-            setActionDomainModal(domain);
-            setButtonActionModalModel(model);
-            setButtonActionModalFormView(formView);
-            setButtonContext(context);
-            setButtonActionModalVisible(true);
-        }
-    }
-    function openNewActionModal(_a) {
-        var domain = _a.domain, model = _a.model, formView = _a.formView, context = _a.context;
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        setButtonActionModalVisible(false);
-                        setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(true);
-                        setButtonContext({});
-                        setActionDomainModal([]);
-                        setButtonActionModalModel(undefined);
-                        setButtonActionModalFormView(undefined);
-                        return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 300); })];
-                    case 1:
-                        _b.sent();
-                        setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(false);
-                        openActionModal({ domain: domain, model: model, formView: formView, context: context });
-                        return [2 /*return*/];
-                }
-            });
-        });
-    }
-    function executeReportAction(response, context) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, generateReport({
-                            reportData: response,
-                            fields: fields,
-                            values: getCurrentValues(fields),
-                            context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
-                        })];
-                    case 1:
-                        _a.sent();
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
-                        return [2 /*return*/];
-                }
-            });
-        });
-    }
-    function getCurrentId() {
-        return id || createdId.current;
     }
     function runWorkflowButton(_a) {
         var action = _a.action;
@@ -768,83 +667,12 @@ function Form(props, ref) {
                         })];
                     case 1:
                         actionData = (_b.sent())[0];
-                        return [4 /*yield*/, runAction(actionData, context)];
-                    case 2:
-                        _b.sent();
-                        return [2 /*return*/];
-                }
-            });
-        });
-    }
-    function tryRunAction(actionData, context) {
-        return __awaiter(this, void 0, void 0, function () {
-            var err_4;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, runAction(actionData, context)];
-                    case 1:
-                        _a.sent();
-                        return [3 /*break*/, 3];
-                    case 2:
-                        err_4 = _a.sent();
-                        ActionErrorDialog_1.default(err_4);
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
-                }
-            });
-        });
-    }
-    function runAction(actionData, context) {
-        return __awaiter(this, void 0, void 0, function () {
-            var actionWindowData, viewData, formView, parsedDomain, mergedContext;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(true);
-                        if (!(actionData.type === "ir.actions.act_window")) return [3 /*break*/, 3];
-                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
-                                model: "ir.actions.act_window",
-                                ids: [parseInt(actionData.id)],
-                            })];
-                    case 1:
-                        actionWindowData = (_a.sent())[0];
-                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getViewsForAction({
-                                action: actionData.type + "," + actionData.id,
-                                context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
-                            })];
-                    case 2:
-                        viewData = _a.sent();
-                        formView = viewData.views.get("form");
-                        parsedDomain = ooui_1.parseDomain({
-                            domainValue: actionWindowData.domain,
-                            values: {
-                                active_id: getCurrentId(),
-                            },
-                            fields: {},
+                        processAction({
+                            actionData: actionData,
+                            fields: fields,
+                            values: getCurrentValues(fields),
+                            context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                         });
-                        mergedContext = __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context);
-                        openActionModal({
-                            domain: parsedDomain,
-                            model: viewData.model,
-                            formView: formView,
-                            context: mergedContext,
-                        });
-                        return [3 /*break*/, 6];
-                    case 3:
-                        if (!(actionData.type === "ir.actions.report.xml")) return [3 /*break*/, 5];
-                        return [4 /*yield*/, executeReportAction(actionData, context)];
-                    case 4:
-                        _a.sent();
-                        return [3 /*break*/, 6];
-                    case 5:
-                        if (actionData.type === "ir.actions.wizard") {
-                            ActionErrorDialog_1.default("Wizard actions not supported");
-                        }
-                        _a.label = 6;
-                    case 6:
-                        setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(false);
                         return [2 /*return*/];
                 }
             });
@@ -853,7 +681,7 @@ function Form(props, ref) {
     function executeButtonAction(_a) {
         var type = _a.type, action = _a.action, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
-            var err_5;
+            var err_4;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -894,34 +722,10 @@ function Form(props, ref) {
                         _b.label = 9;
                     case 9: return [3 /*break*/, 11];
                     case 10:
-                        err_5 = _b.sent();
-                        ActionErrorDialog_1.default(err_5);
+                        err_4 = _b.sent();
+                        ActionErrorDialog_1.default(err_4);
                         return [3 /*break*/, 11];
                     case 11: return [2 /*return*/];
-                }
-            });
-        });
-    }
-    function onFormModalSucceed() {
-        return __awaiter(this, void 0, void 0, function () {
-            var err_6;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        setButtonActionModalVisible(false);
-                        setButtonContext({});
-                        _a.label = 1;
-                    case 1:
-                        _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, fetchValues()];
-                    case 2:
-                        _a.sent();
-                        return [3 /*break*/, 4];
-                    case 3:
-                        err_6 = _a.sent();
-                        ActionErrorDialog_1.default(err_6);
-                        return [3 /*break*/, 4];
-                    case 4: return [2 /*return*/];
                 }
             });
         });
@@ -963,11 +767,7 @@ function Form(props, ref) {
     return (react_1.default.createElement("div", { ref: containerRef, className: "pb-2" },
         error && (react_1.default.createElement(antd_1.Alert, { className: "mt-10 mb-20", message: JSON.stringify(error), type: "error", banner: true })),
         loading ? react_1.default.createElement(antd_1.Spin, null) : content(),
-        showFooter && footer(),
-        react_1.default.createElement(index_1.FormModal, { buttonModal: true, parentContext: __assign(__assign(__assign({}, buttonContext), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context), model: buttonActionModalModel, formView: buttonActionModalFormView, visible: buttonActionModalVisible, onSubmitSucceed: onFormModalSucceed, onCancel: function () {
-                setButtonActionModalVisible(false);
-                setButtonContext({});
-            }, showFooter: false, actionDomain: actionDomainModal, parentOpenNewActionModal: openNewActionModal })));
+        showFooter && footer()));
 }
 exports.default = react_1.forwardRef(Form);
 //# sourceMappingURL=Form.js.map

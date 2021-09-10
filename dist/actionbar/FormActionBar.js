@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -77,7 +88,7 @@ function FormActionBar() {
     var _this = this;
     var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, onFormSave = _a.onFormSave, formHasChanges = _a.formHasChanges, formIsSaving = _a.formIsSaving, currentId = _a.currentId, results = _a.results, setCurrentItemIndex = _a.setCurrentItemIndex, currentItemIndex = _a.currentItemIndex, setCurrentId = _a.setCurrentId, currentModel = _a.currentModel, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, setResults = _a.setResults, formIsLoading = _a.formIsLoading, toolbar = _a.toolbar, attachments = _a.attachments, formRef = _a.formRef;
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
-    var generateReport = contentRootContext.generateReport;
+    var processAction = contentRootContext.processAction;
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
     var openRelate = (tabManagerContext || {}).openRelate;
     function tryNavigate(callback) {
@@ -181,17 +192,22 @@ function FormActionBar() {
                 if (!action) {
                     return;
                 }
-                formRef.current.runAction(action, {});
+                processAction({
+                    actionData: action,
+                    values: formRef.current.getValues(),
+                    fields: formRef.current.getFields(),
+                    context: formRef.current.getContext(),
+                });
             } }),
         react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.PrinterOutlined, null), disabled: mustDisableButtons, tooltip: "Reports", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.print, onItemClick: function (report) {
                 if (!report) {
                     return;
                 }
-                generateReport({
-                    reportData: report,
-                    ids: [currentId],
+                processAction({
+                    actionData: __assign(__assign({}, report), { datas: __assign(__assign({}, (report.datas || {})), { ids: [currentId] }) }),
                     values: formRef.current.getValues(),
                     fields: formRef.current.getFields(),
+                    context: formRef.current.getContext(),
                 });
             } }),
         react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.EnterOutlined, null), disabled: mustDisableButtons, tooltip: "Related", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.relate, onItemClick: function (relate) { return __awaiter(_this, void 0, void 0, function () {

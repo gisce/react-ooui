@@ -87,25 +87,34 @@ var filesHelper_1 = require("@/helpers/filesHelper");
 var ooui_1 = require("ooui");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var antd_1 = require("antd");
+var TabManagerContext_1 = require("@/context/TabManagerContext");
+var FormModal_1 = require("@/widgets/modals/FormModal");
 exports.ContentRootContext = react_1.default.createContext(null);
 var ContentRootProvider = function (props) {
     var children = props.children;
     var reportInProgressInterval = react_1.useRef();
     var _a = react_1.useState(false), reportGenerating = _a[0], setReportGenerating = _a[1];
+    var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
+    var openAction = (tabManagerContext || {}).openAction;
+    // Action modal state
+    var _b = react_1.useState(false), actionModalVisible = _b[0], setActionModalVisible = _b[1];
+    var _c = react_1.useState({
+        context: {},
+    }), actionModalOptions = _c[0], setActionModalOptions = _c[1];
     function generateReport(options) {
         return __awaiter(this, void 0, void 0, function () {
-            var reportData, explicitIds, fields, values, _a, context, reportContext, model, datas, report_name, type, _b, ids, datasource, idsToExecute, results, reportContextParsed, newReportId_1, err_1;
+            var reportData, fields, values, _a, context, reportContext, model, datas, report_name, type, _b, ids, datasource, idsToExecute, results, reportContextParsed, newReportId_1, err_1;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
-                        reportData = options.reportData, explicitIds = options.ids, fields = options.fields, values = options.values, _a = options.context, context = _a === void 0 ? {} : _a;
+                        reportData = options.reportData, fields = options.fields, values = options.values, _a = options.context, context = _a === void 0 ? {} : _a;
                         reportContext = reportData.context, model = reportData.model, datas = reportData.datas, report_name = reportData.report_name, type = reportData.type;
                         if (type !== "ir.actions.report.xml") {
-                            ActionErrorDialog_1.default(type + " actions not supported");
+                            ActionErrorDialog_1.default(type + " action not supported");
                             return [2 /*return*/];
                         }
                         _b = datas || {}, ids = _b.ids, datasource = __rest(_b, ["ids"]);
-                        idsToExecute = explicitIds || ids;
+                        idsToExecute = ids;
                         if (!!idsToExecute) return [3 /*break*/, 2];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchAllIds({
                                 params: [],
@@ -189,12 +198,146 @@ var ContentRootProvider = function (props) {
             });
         });
     }
+    function processAction(_a) {
+        var actionData = _a.actionData, fields = _a.fields, values = _a.values, context = _a.context;
+        return __awaiter(this, void 0, void 0, function () {
+            var type;
+            return __generator(this, function (_b) {
+                type = actionData.type;
+                if (type === "ir.actions.report.xml") {
+                    generateReport({
+                        reportData: actionData,
+                        fields: fields,
+                        values: values,
+                        context: context,
+                    });
+                }
+                else if (type === "ir.actions.act_window") {
+                    runAction({ actionData: actionData, fields: fields, values: values, context: context });
+                }
+                else {
+                    ActionErrorDialog_1.default(type + " action not supported");
+                }
+                return [2 /*return*/];
+            });
+        });
+    }
+    function runAction(_a) {
+        var actionData = _a.actionData, fields = _a.fields, values = _a.values, context = _a.context;
+        return __awaiter(this, void 0, void 0, function () {
+            var responseContext, mergedContext, parsedDomain, formView;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        responseContext = ooui_1.parseContext({
+                            context: actionData.context,
+                            fields: fields,
+                            values: values,
+                        });
+                        mergedContext = __assign(__assign({}, responseContext), context);
+                        parsedDomain = actionData.domain
+                            ? ooui_1.parseDomain({
+                                domainValue: actionData.domain,
+                                values: values,
+                                fields: fields,
+                            })
+                            : [];
+                        if (!(actionData.target === "new")) return [3 /*break*/, 2];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
+                                model: actionData.res_model,
+                                type: "form",
+                                context: context,
+                            })];
+                    case 1:
+                        formView = (_b.sent());
+                        openActionModal({
+                            domain: parsedDomain,
+                            model: actionData.res_model,
+                            formView: formView,
+                            context: mergedContext,
+                        });
+                        return [3 /*break*/, 3];
+                    case 2:
+                        openAction === null || openAction === void 0 ? void 0 : openAction({
+                            target: "current",
+                            context: mergedContext,
+                            domain: parsedDomain,
+                            model: actionData.res_model,
+                            views: actionData.view_mode
+                                .split(",")
+                                .map(function (view) { return [false, view]; }),
+                            title: actionData.name,
+                        });
+                        _b.label = 3;
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function openActionModal(_a) {
+        var domain = _a.domain, model = _a.model, formView = _a.formView, context = _a.context;
+        if (actionModalVisible) {
+            openNewActionModal({ domain: domain, model: model, formView: formView, context: context });
+        }
+        else {
+            setActionModalOptions({ domain: domain, model: model, context: context, formView: formView });
+            setActionModalVisible(true);
+        }
+    }
+    function openNewActionModal(_a) {
+        var domain = _a.domain, model = _a.model, formView = _a.formView, context = _a.context;
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        setActionModalOptions({
+                            domain: undefined,
+                            model: undefined,
+                            context: {},
+                            formView: undefined,
+                        });
+                        setActionModalVisible(false);
+                        return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 300); })];
+                    case 1:
+                        _b.sent();
+                        setActionModalOptions({ domain: domain, model: model, context: context, formView: formView });
+                        setActionModalVisible(true);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function onFormModalSucceed() {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                setActionModalVisible(false);
+                setActionModalOptions({
+                    domain: undefined,
+                    model: undefined,
+                    context: {},
+                    formView: undefined,
+                });
+                return [2 /*return*/];
+            });
+        });
+    }
     return (react_1.default.createElement(react_1.default.Fragment, null,
         react_1.default.createElement(exports.ContentRootContext.Provider, { value: {
-                generateReport: generateReport,
-            } }, children),
-        react_1.default.createElement(antd_1.Modal, { title: "Generating report...", visible: reportGenerating, footer: null, closable: false, centered: true },
-            react_1.default.createElement(antd_1.Spin, null))));
+                processAction: processAction,
+            } },
+            react_1.default.createElement(react_1.default.Fragment, null,
+                children,
+                react_1.default.createElement(antd_1.Modal, { title: "Generating report...", visible: reportGenerating, footer: null, closable: false, centered: true },
+                    react_1.default.createElement(antd_1.Spin, null)),
+                react_1.default.createElement(FormModal_1.FormModal, { buttonModal: true, parentContext: actionModalOptions.context, model: actionModalOptions.model, formView: actionModalOptions.formView, visible: actionModalVisible, onSubmitSucceed: onFormModalSucceed, onCancel: function () {
+                        setActionModalVisible(false);
+                        setActionModalOptions({
+                            domain: undefined,
+                            model: undefined,
+                            context: {},
+                            formView: undefined,
+                        });
+                    }, showFooter: false, actionDomain: actionModalOptions.domain })))));
 };
 exports.default = ContentRootProvider;
 //# sourceMappingURL=ContentRootContext.js.map

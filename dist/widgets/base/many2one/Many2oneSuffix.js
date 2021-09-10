@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -32,13 +43,13 @@ var TabManagerContext_1 = require("@/context/TabManagerContext");
 var Many2oneSuffixModal_1 = require("./Many2oneSuffixModal");
 var ContentRootContext_1 = require("@/context/ContentRootContext");
 var Many2oneSuffix = function (props) {
-    var id = props.id, formView = props.formView, targetValues = props.targetValues;
+    var id = props.id, formView = props.formView, targetValues = props.targetValues, readOnly = props.readOnly;
     var _a = react_1.useState(false), actionModalVisible = _a[0], setActionModalVisible = _a[1];
     var _b = react_1.useState(false), printModalVisible = _b[0], setPrintModalVisible = _b[1];
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
     var openRelate = (tabManagerContext || {}).openRelate;
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
-    var generateReport = contentRootContext.generateReport;
+    var processAction = contentRootContext.processAction;
     if (!id || !(formView === null || formView === void 0 ? void 0 : formView.toolbar)) {
         return null;
     }
@@ -49,7 +60,9 @@ var Many2oneSuffix = function (props) {
                 item.name);
         });
         return (react_1.default.createElement(antd_1.Menu, { onClick: handleMenuClick }, __spreadArray([
-            react_1.default.createElement(antd_1.Menu.Item, { key: "action", disabled: !formView.toolbar.action || formView.toolbar.action.length === 0 }, "Acci\u00F3"),
+            react_1.default.createElement(antd_1.Menu.Item, { key: "action", disabled: readOnly ||
+                    !formView.toolbar.action ||
+                    formView.toolbar.action.length === 0 }, "Acci\u00F3"),
             react_1.default.createElement(antd_1.Menu.Item, { key: "print", disabled: !formView.toolbar.print || formView.toolbar.print.length === 0 }, "Informe"),
             react_1.default.createElement(antd_1.Menu.Divider, null)
         ], relateItems)));
@@ -75,14 +88,19 @@ var Many2oneSuffix = function (props) {
             });
         }
     }
-    function onActionItemClicked() {
+    function onActionItemClicked(actionData) {
         setActionModalVisible(false);
+        processAction === null || processAction === void 0 ? void 0 : processAction({
+            actionData: actionData,
+            values: targetValues,
+            fields: formView.fields,
+            context: { active_id: id, active_ids: [id] },
+        });
     }
     function onPrintItemClicked(reportData) {
         setPrintModalVisible(false);
-        generateReport === null || generateReport === void 0 ? void 0 : generateReport({
-            reportData: reportData,
-            ids: [id],
+        processAction === null || processAction === void 0 ? void 0 : processAction({
+            actionData: __assign(__assign({}, reportData), { datas: __assign(__assign({}, (reportData.datas || {})), { ids: [id] }) }),
             values: targetValues,
             fields: formView.fields,
         });
