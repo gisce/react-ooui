@@ -192,7 +192,6 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           suffix={
             <Many2oneSuffix
               id={id}
-              readOnly={readOnly}
               formView={formView}
               targetValues={targetValues}
             />

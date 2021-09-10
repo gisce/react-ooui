@@ -16,11 +16,10 @@ type Props = {
   id: number;
   formView?: FormView;
   targetValues: any;
-  readOnly: boolean;
 };
 
 export const Many2oneSuffix = (props: Props) => {
-  const { id, formView, targetValues, readOnly } = props;
+  const { id, formView, targetValues } = props;
   const [actionModalVisible, setActionModalVisible] = useState<boolean>(false);
   const [printModalVisible, setPrintModalVisible] = useState<boolean>(false);
 
@@ -49,7 +48,6 @@ export const Many2oneSuffix = (props: Props) => {
           <Menu.Item
             key="action"
             disabled={
-              readOnly ||
               !formView!.toolbar.action ||
               formView!.toolbar.action.length === 0
             }
