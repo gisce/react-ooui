@@ -259,7 +259,7 @@ var Many2oneInput = function (props) {
     var CustomInput = required && !readOnly ? RequiredInput : antd_1.Input;
     return (react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false },
         react_1.default.createElement(antd_1.Col, { flex: "auto" },
-            react_1.default.createElement(CustomInput, { type: "text", value: text, onChange: onValueStringChange, disabled: readOnly, className: requiredClass, onBlur: onElementLostFocus, onKeyUp: onKeyUp, suffix: react_1.default.createElement(Many2oneSuffix_1.Many2oneSuffix, { id: id, readOnly: readOnly, formView: formView, targetValues: targetValues }) })),
+            react_1.default.createElement(CustomInput, { type: "text", value: text, onChange: onValueStringChange, disabled: readOnly, className: requiredClass, onBlur: onElementLostFocus, onKeyUp: onKeyUp, suffix: react_1.default.createElement(Many2oneSuffix_1.Many2oneSuffix, { id: id, formView: formView, targetValues: targetValues }) })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
             react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: id === undefined || text === "", onClick: function () {
                     setShowFormModal(true);

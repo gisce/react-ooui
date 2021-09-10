@@ -43,7 +43,7 @@ var TabManagerContext_1 = require("@/context/TabManagerContext");
 var Many2oneSuffixModal_1 = require("./Many2oneSuffixModal");
 var ContentRootContext_1 = require("@/context/ContentRootContext");
 var Many2oneSuffix = function (props) {
-    var id = props.id, formView = props.formView, targetValues = props.targetValues, readOnly = props.readOnly;
+    var id = props.id, formView = props.formView, targetValues = props.targetValues;
     var _a = react_1.useState(false), actionModalVisible = _a[0], setActionModalVisible = _a[1];
     var _b = react_1.useState(false), printModalVisible = _b[0], setPrintModalVisible = _b[1];
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
@@ -60,8 +60,7 @@ var Many2oneSuffix = function (props) {
                 item.name);
         });
         return (react_1.default.createElement(antd_1.Menu, { onClick: handleMenuClick }, __spreadArray([
-            react_1.default.createElement(antd_1.Menu.Item, { key: "action", disabled: readOnly ||
-                    !formView.toolbar.action ||
+            react_1.default.createElement(antd_1.Menu.Item, { key: "action", disabled: !formView.toolbar.action ||
                     formView.toolbar.action.length === 0 }, "Acci\u00F3"),
             react_1.default.createElement(antd_1.Menu.Item, { key: "print", disabled: !formView.toolbar.print || formView.toolbar.print.length === 0 }, "Informe"),
             react_1.default.createElement(antd_1.Menu.Divider, null)
