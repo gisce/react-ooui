@@ -50,6 +50,7 @@ import {
 import ConnectionProvider from "@/ConnectionProvider";
 import ActionView from "./views/ActionView";
 import TabManager from "./views/TabManager";
+import ContentRootProvider from "./context/ContentRootContext";
 
 export {
   Button,
@@ -101,4 +102,5 @@ export {
   TabManager,
   Url,
   Email,
+  ContentRootProvider
 };
