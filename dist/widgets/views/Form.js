@@ -376,11 +376,12 @@ function Form(props, ref) {
             });
         });
     };
-    var submitApi = function () { return __awaiter(_this, void 0, void 0, function () {
-        var touchedValues, currentValues, newId;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+    var submitApi = function (options) { return __awaiter(_this, void 0, void 0, function () {
+        var _a, callOnSubmitSucceed, touchedValues, currentValues, newId;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
+                    _a = (options || {}).callOnSubmitSucceed, callOnSubmitSucceed = _a === void 0 ? true : _a;
                     if (!getCurrentId()) return [3 /*break*/, 2];
                     touchedValues = formHelper_1.getTouchedValues(antForm, fields);
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().update({
@@ -391,7 +392,7 @@ function Form(props, ref) {
                             context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                         })];
                 case 1:
-                    _a.sent();
+                    _b.sent();
                     return [3 /*break*/, 4];
                 case 2:
                     currentValues = formHelper_1.processValues(antForm.getFieldsValue(true), fields);
@@ -402,67 +403,70 @@ function Form(props, ref) {
                             context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                         })];
                 case 3:
-                    newId = _a.sent();
+                    newId = _b.sent();
                     createdId.current = newId;
-                    _a.label = 4;
+                    _b.label = 4;
                 case 4:
                     if (!postSaveAction) return [3 /*break*/, 6];
                     return [4 /*yield*/, postSaveAction(getCurrentId())];
                 case 5:
-                    _a.sent();
-                    _a.label = 6;
+                    _b.sent();
+                    _b.label = 6;
                 case 6:
-                    if (!insideButtonModal) {
+                    if (!insideButtonModal && callOnSubmitSucceed) {
                         onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
                     }
                     return [2 /*return*/];
             }
         });
     }); };
-    var submitValues = function () { return __awaiter(_this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            if (!insideButtonModal) {
+    var submitValues = function (options) { return __awaiter(_this, void 0, void 0, function () {
+        var _a, callOnSubmitSucceed;
+        return __generator(this, function (_b) {
+            _a = (options || {}).callOnSubmitSucceed, callOnSubmitSucceed = _a === void 0 ? true : _a;
+            if (!insideButtonModal && callOnSubmitSucceed) {
                 onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
             }
             return [2 /*return*/];
         });
     }); };
-    var submitForm = function () { return __awaiter(_this, void 0, void 0, function () {
-        var err_2;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+    var submitForm = function (options) { return __awaiter(_this, void 0, void 0, function () {
+        var _a, callOnSubmitSucceed, err_2;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
+                    _a = (options || {}).callOnSubmitSucceed, callOnSubmitSucceed = _a === void 0 ? true : _a;
                     setError(undefined);
-                    if (!formHasChanges() && getCurrentId()) {
+                    if (!formHasChanges() && getCurrentId() && callOnSubmitSucceed) {
                         onCancel === null || onCancel === void 0 ? void 0 : onCancel();
                         return [2 /*return*/];
                     }
                     return [4 /*yield*/, checkIfFormHasErrors()];
                 case 1:
-                    if (_a.sent()) {
+                    if (_b.sent()) {
                         FormErrorsDialog_1.default();
                         return [2 /*return*/];
                     }
                     setIsSubmitting(true);
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(true);
-                    _a.label = 2;
+                    _b.label = 2;
                 case 2:
-                    _a.trys.push([2, 7, 8, 9]);
+                    _b.trys.push([2, 7, 8, 9]);
                     if (!(submitMode === "api")) return [3 /*break*/, 4];
-                    return [4 /*yield*/, submitApi()];
+                    return [4 /*yield*/, submitApi(options)];
                 case 3:
-                    _a.sent();
+                    _b.sent();
                     return [3 /*break*/, 6];
-                case 4: return [4 /*yield*/, submitValues()];
+                case 4: return [4 /*yield*/, submitValues(options)];
                 case 5:
-                    _a.sent();
-                    _a.label = 6;
+                    _b.sent();
+                    _b.label = 6;
                 case 6:
                     if (mustClearAfterSave)
                         assignNewValuesToForm({ values: {}, fields: fields, reset: true });
                     return [3 /*break*/, 9];
                 case 7:
-                    err_2 = _a.sent();
+                    err_2 = _b.sent();
                     onSubmitError === null || onSubmitError === void 0 ? void 0 : onSubmitError(err_2);
                     setError(err_2);
                     return [3 /*break*/, 9];
@@ -700,7 +704,7 @@ function Form(props, ref) {
                         _b.label = 2;
                     case 2:
                         _b.trys.push([2, 10, , 11]);
-                        return [4 /*yield*/, submitForm()];
+                        return [4 /*yield*/, submitForm({ callOnSubmitSucceed: false })];
                     case 3:
                         _b.sent();
                         if (!(type === "object")) return [3 /*break*/, 5];
@@ -759,7 +763,16 @@ function Form(props, ref) {
                                 }
                             });
                         }); } }, "Cancel"),
-                    react_1.default.createElement(antd_1.Button, { disabled: isSubmitting || loading || readOnly, loading: isSubmitting, icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: submitForm }, "OK")))));
+                    react_1.default.createElement(antd_1.Button, { disabled: isSubmitting || loading || readOnly, loading: isSubmitting, icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: function () { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, submitForm()];
+                                    case 1:
+                                        _a.sent();
+                                        return [2 /*return*/];
+                                }
+                            });
+                        }); } }, "OK")))));
     };
     if (!visible) {
         return react_1.default.createElement("div", { ref: containerRef });

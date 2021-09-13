@@ -171,7 +171,7 @@ const ContentRootProvider = (props: ContentRootProviderProps): any => {
   }
 
   async function runAction({
-    actionData,
+    actionData: _actionData,
     fields,
     values,
     context,
@@ -181,6 +181,17 @@ const ContentRootProvider = (props: ContentRootProviderProps): any => {
     values: any;
     context?: any;
   }) {
+    let actionData = _actionData;
+
+    if (!_actionData.res_model) {
+      actionData = (
+        await ConnectionProvider.getHandler().readObjects({
+          model: "ir.actions.act_window",
+          ids: [parseInt(_actionData.id)],
+        })
+      )[0];
+    }
+
     const responseContext = parseContext({
       context: actionData.context,
       fields,

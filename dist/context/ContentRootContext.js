@@ -223,12 +223,22 @@ var ContentRootProvider = function (props) {
         });
     }
     function runAction(_a) {
-        var actionData = _a.actionData, fields = _a.fields, values = _a.values, context = _a.context;
+        var _actionData = _a.actionData, fields = _a.fields, values = _a.values, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
-            var responseContext, mergedContext, parsedDomain, formView;
+            var actionData, responseContext, mergedContext, parsedDomain, formView;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
+                        actionData = _actionData;
+                        if (!!_actionData.res_model) return [3 /*break*/, 2];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                                model: "ir.actions.act_window",
+                                ids: [parseInt(_actionData.id)],
+                            })];
+                    case 1:
+                        actionData = (_b.sent())[0];
+                        _b.label = 2;
+                    case 2:
                         responseContext = ooui_1.parseContext({
                             context: actionData.context,
                             fields: fields,
@@ -242,13 +252,13 @@ var ContentRootProvider = function (props) {
                                 fields: fields,
                             })
                             : [];
-                        if (!(actionData.target === "new")) return [3 /*break*/, 2];
+                        if (!(actionData.target === "new")) return [3 /*break*/, 4];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
                                 model: actionData.res_model,
                                 type: "form",
                                 context: context,
                             })];
-                    case 1:
+                    case 3:
                         formView = (_b.sent());
                         openActionModal({
                             domain: parsedDomain,
@@ -256,8 +266,8 @@ var ContentRootProvider = function (props) {
                             formView: formView,
                             context: mergedContext,
                         });
-                        return [3 /*break*/, 3];
-                    case 2:
+                        return [3 /*break*/, 5];
+                    case 4:
                         openAction === null || openAction === void 0 ? void 0 : openAction({
                             target: "current",
                             context: mergedContext,
@@ -268,8 +278,8 @@ var ContentRootProvider = function (props) {
                                 .map(function (view) { return [false, view]; }),
                             title: actionData.name,
                         });
-                        _b.label = 3;
-                    case 3: return [2 /*return*/];
+                        _b.label = 5;
+                    case 5: return [2 /*return*/];
                 }
             });
         });

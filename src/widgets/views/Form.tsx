@@ -137,7 +137,7 @@ function Form(props: FormProps, ref: any) {
   const contentRootContext = useContext(
     ContentRootContext
   ) as ContentRootContextType;
-  const { processAction } = contentRootContext || {};
+  const { processAction } = contentRootContext || {};
 
   useImperativeHandle(ref, () => ({
     submitForm,
@@ -392,7 +392,9 @@ function Form(props: FormProps, ref: any) {
     return values;
   };
 
-  const submitApi = async () => {
+  const submitApi = async (options?: { callOnSubmitSucceed?: boolean }) => {
+    const { callOnSubmitSucceed = true } = options || {};
+
     if (getCurrentId()) {
       const touchedValues = getTouchedValues(antForm, fields);
 
@@ -425,20 +427,24 @@ function Form(props: FormProps, ref: any) {
       await postSaveAction(getCurrentId());
     }
 
-    if (!insideButtonModal) {
+    if (!insideButtonModal && callOnSubmitSucceed) {
       onSubmitSucceed?.(getCurrentId());
     }
   };
 
-  const submitValues = async () => {
-    if (!insideButtonModal) {
+  const submitValues = async (options?: { callOnSubmitSucceed?: boolean }) => {
+    const { callOnSubmitSucceed = true } = options || {};
+
+    if (!insideButtonModal && callOnSubmitSucceed) {
       onSubmitSucceed?.(getCurrentId());
     }
   };
 
-  const submitForm = async () => {
+  const submitForm = async (options?: { callOnSubmitSucceed?: boolean }) => {
+    const { callOnSubmitSucceed = true } = options || {};
+
     setError(undefined);
-    if (!formHasChanges() && getCurrentId()!) {
+    if (!formHasChanges() && getCurrentId()! && callOnSubmitSucceed) {
       onCancel?.();
       return;
     }
@@ -453,9 +459,9 @@ function Form(props: FormProps, ref: any) {
 
     try {
       if (submitMode === "api") {
-        await submitApi();
+        await submitApi(options);
       } else {
-        await submitValues();
+        await submitValues(options);
       }
 
       if (mustClearAfterSave)
@@ -709,7 +715,7 @@ function Form(props: FormProps, ref: any) {
     }
 
     try {
-      await submitForm();
+      await submitForm({ callOnSubmitSucceed: false });
 
       if (type === "object") {
         await runObjectButton({ action, context });
@@ -782,7 +788,9 @@ function Form(props: FormProps, ref: any) {
               disabled={isSubmitting || loading || readOnly}
               loading={isSubmitting}
               icon={<CheckOutlined />}
-              onClick={submitForm}
+              onClick={async () => {
+                await submitForm();
+              }}
             >
               OK
             </Button>
