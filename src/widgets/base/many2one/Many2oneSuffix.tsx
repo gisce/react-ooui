@@ -1,6 +1,6 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { RightCircleOutlined } from "@ant-design/icons";
-import { Menu, Dropdown } from "antd";
+import { Menu, Dropdown, Spin } from "antd";
 import {
   TabManagerContext,
   TabManagerContextType,
@@ -11,17 +11,22 @@ import {
   ContentRootContext,
   ContentRootContextType,
 } from "@/context/ContentRootContext";
+import ConnectionProvider from "@/ConnectionProvider";
+import { processValues } from "@/helpers/formHelper";
+import showErrorDialog from "@/ui/ActionErrorDialog";
 
 type Props = {
   id: number;
-  formView?: FormView;
-  targetValues: any;
+  model: string;
 };
 
 export const Many2oneSuffix = (props: Props) => {
-  const { id, formView, targetValues } = props;
+  const { id, model } = props;
   const [actionModalVisible, setActionModalVisible] = useState<boolean>(false);
   const [printModalVisible, setPrintModalVisible] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [formView, setFormView] = useState<FormView>();
+  const [targetValues, setTargetValues] = useState<any>();
 
   const tabManagerContext = useContext(
     TabManagerContext
@@ -31,14 +36,58 @@ export const Many2oneSuffix = (props: Props) => {
   const contentRootContext = useContext(
     ContentRootContext
   ) as ContentRootContextType;
-  const { processAction } = contentRootContext;
+  const { processAction } = contentRootContext || {};
 
-  if (!id || !formView?.toolbar) {
+  if (!id) {
     return null;
   }
 
+  async function fetchData() {
+    setIsLoading(true);
+
+    try {
+      const formView = await ConnectionProvider.getHandler().getView({
+        model,
+        type: "form",
+      });
+      setFormView(formView);
+      const { fields, arch } = formView;
+
+      const values = (
+        await ConnectionProvider.getHandler().readObjects({
+          arch,
+          model,
+          ids: [id],
+          fields,
+        })
+      )[0];
+
+      setTargetValues({ ...processValues(values, fields), active_id: id });
+
+      setIsLoading(false);
+    } catch (err) {
+      setIsLoading(false);
+      showErrorDialog(err);
+      return;
+    }
+  }
+
   function menu() {
-    const relateItems = formView!.toolbar.relate.map((item: any) => {
+    if (isLoading) {
+      return (
+        <Menu>
+          <div style={{ padding: 15 }}>
+            <Spin />
+          </div>
+        </Menu>
+      );
+    }
+
+    if (!formView || !formView.toolbar) {
+      return <Menu />;
+    }
+
+    const relateItems = formView?.toolbar?.relate.map((item: any) => {
       return <Menu.Item key={item.id}>... {item.name}</Menu.Item>;
     });
 
@@ -48,8 +97,7 @@ export const Many2oneSuffix = (props: Props) => {
           <Menu.Item
             key="action"
             disabled={
-              !formView!.toolbar.action ||
-              formView!.toolbar.action.length === 0
+              !formView!.toolbar.action || formView!.toolbar.action.length === 0
             }
           >
             Acció
@@ -117,18 +165,21 @@ export const Many2oneSuffix = (props: Props) => {
       <Dropdown overlay={menu()} trigger={["click"]}>
         <RightCircleOutlined
           style={{ color: "rgba(0,0,0,.45)" }}
-          onClick={(e) => e.preventDefault()}
+          onClick={(e) => {
+            e.preventDefault();
+            fetchData();
+          }}
         />
       </Dropdown>
       <Many2oneSuffixModal
         visible={actionModalVisible}
-        items={formView!.toolbar.action}
+        items={formView?.toolbar?.action}
         onItemClicked={onActionItemClicked}
         onCancel={() => setActionModalVisible(false)}
       />
       <Many2oneSuffixModal
         visible={printModalVisible}
-        items={formView!.toolbar.print}
+        items={formView?.toolbar?.print}
         onItemClicked={onPrintItemClicked}
         onCancel={() => setPrintModalVisible(false)}
       />

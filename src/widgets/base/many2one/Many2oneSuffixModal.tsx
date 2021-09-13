@@ -9,7 +9,7 @@ type Props = {
 };
 
 export const Many2oneSuffixModal = (props: Props) => {
-  const { visible, onCancel, items, onItemClicked } = props;
+  const { visible, onCancel, items = [], onItemClicked } = props;
 
   return (
     <Modal

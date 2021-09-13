@@ -14,8 +14,6 @@ import { SearchModal } from "@/widgets/modals/SearchModal";
 import { FormModal } from "@/widgets/modals/FormModal";
 import ConnectionProvider from "@/ConnectionProvider";
 import { Many2oneSuffix } from "./Many2oneSuffix";
-import { FormView } from "@/types/index";
-import { processValues } from "@/helpers/formHelper";
 
 type Props = {
   ooui: Many2oneOoui;
@@ -61,8 +59,6 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const [searching, setSearching] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>();
   const searchButtonTappedRef = useRef<boolean>(false);
-  const [formView, setFormView] = useState<FormView>();
-  const [targetValues, setTargetValues] = useState<any>();
 
   const id = value && value[0];
   const text = (value && value[1]) || "";
@@ -78,14 +74,6 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       fetchNameAndUpdate(id);
     }
   }, [value]);
-
-  useEffect(() => {
-    if (!id) {
-      return;
-    }
-
-    fetchFormData();
-  }, [id]);
 
   const triggerChange = (changedValue: any[]) => {
     onChange?.(changedValue);
@@ -130,26 +118,6 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     }
   };
 
-  async function fetchFormData() {
-    const formView = await ConnectionProvider.getHandler().getView({
-      model: relation,
-      type: "form",
-    });
-    setFormView(formView);
-    const { fields, arch } = formView;
-
-    const values = (
-      await ConnectionProvider.getHandler().readObjects({
-        arch,
-        model: relation,
-        ids: [id],
-        fields,
-      })
-    )[0];
-
-    setTargetValues({ ...processValues(values, fields), active_id: id });
-  }
-
   const fetchNameAndUpdate = async (id: number) => {
     setSearching(true);
 
@@ -189,13 +157,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           className={requiredClass}
           onBlur={onElementLostFocus}
           onKeyUp={onKeyUp}
-          suffix={
-            <Many2oneSuffix
-              id={id}
-              formView={formView}
-              targetValues={targetValues}
-            />
-          }
+          suffix={<Many2oneSuffix id={id} model={relation} />}
         />
       </Col>
       <Col flex="32px">

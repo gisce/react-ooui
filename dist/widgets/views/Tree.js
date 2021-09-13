@@ -28,6 +28,7 @@ var treeHelper_1 = require("@/helpers/treeHelper");
 var react_cool_dimensions_1 = __importDefault(require("react-cool-dimensions"));
 var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 var LocalesContext_1 = require("@/context/LocalesContext");
+var Many2oneSuffix_1 = require("../base/many2one/Many2oneSuffix");
 var strings = {
     no_results: "No results",
     summary: "Showing registers from {from} to {to} of {total} registers",
@@ -42,7 +43,15 @@ function Tree(props) {
         var booleanComponentFn = function (booleanField) {
             return react_1.default.createElement(antd_1.Checkbox, { defaultChecked: booleanField, disabled: true });
         };
-        var columns = treeHelper_1.getTableColumns(tree, booleanComponentFn);
+        var many2OneComponentFn = function (m2oField) {
+            return (react_1.default.createElement(antd_1.Space, null,
+                react_1.default.createElement(react_1.default.Fragment, null, m2oField.value),
+                react_1.default.createElement(Many2oneSuffix_1.Many2oneSuffix, { id: m2oField.id, model: m2oField.model })));
+        };
+        var columns = treeHelper_1.getTableColumns(tree, {
+            boolean: booleanComponentFn,
+            many2one: many2OneComponentFn,
+        });
         var items = treeHelper_1.getTableItems(tree, results);
         setColumns(columns);
         setItems(items);

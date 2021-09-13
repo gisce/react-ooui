@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { Table, Pagination, Checkbox } from "antd";
+import React, { useEffect, useState } from "react";
+import { Table, Pagination, Checkbox, Space } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
 import useDimensions from "react-cool-dimensions";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
 import { Strings, TreeView, Column } from "@/types";
 import { getLocalizedString } from "@/context/LocalesContext";
+import { Many2oneSuffix } from "../base/many2one/Many2oneSuffix";
 
 type Props = {
   total: number;
@@ -51,7 +52,20 @@ function Tree(props: Props): React.ReactElement {
     const booleanComponentFn = (booleanField: boolean): React.ReactElement => {
       return <Checkbox defaultChecked={booleanField} disabled />;
     };
-    const columns = getTableColumns(tree, booleanComponentFn);
+    const many2OneComponentFn = (m2oField: any): React.ReactElement => {
+      return (
+        <Space>
+          <>{m2oField.value}</>
+          <Many2oneSuffix id={m2oField.id} model={m2oField.model} />
+        </Space>
+      );
+    };
+
+    const columns = getTableColumns(tree, {
+      boolean: booleanComponentFn,
+      many2one: many2OneComponentFn,
+    });
+
     const items = getTableItems(tree, results);
 
     setColumns(columns);
@@ -87,7 +101,8 @@ function Tree(props: Props): React.ReactElement {
         />
       </>
     );
-  };  return (
+  };
+  return (
     <div ref={containerRef}>
       {pagination()}
       <Table

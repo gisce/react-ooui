@@ -110,7 +110,7 @@ function Form(props, ref) {
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
     var _s = (rootForm ? actionViewContext : {}) || {}, _t = _s.setFormIsSaving, setFormIsSaving = _t === void 0 ? undefined : _t, _u = _s.setFormHasChanges, setFormHasChanges = _u === void 0 ? undefined : _u, _v = _s.setCurrentId, setCurrentId = _v === void 0 ? undefined : _v, _w = _s.setFormIsLoading, setFormIsLoading = _w === void 0 ? undefined : _w, _x = _s.setAttachments, setAttachments = _x === void 0 ? undefined : _x;
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
-    var processAction = contentRootContext.processAction;
+    var processAction = (contentRootContext || {}).processAction;
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
         getFields: function () {
@@ -614,7 +614,7 @@ function Form(props, ref) {
                         return [3 /*break*/, 6];
                     case 3:
                         if (!response.type) return [3 /*break*/, 4];
-                        processAction({
+                        processAction === null || processAction === void 0 ? void 0 : processAction({
                             actionData: response,
                             fields: fields,
                             values: getCurrentValues(fields),
@@ -667,7 +667,7 @@ function Form(props, ref) {
                         })];
                     case 1:
                         actionData = (_b.sent())[0];
-                        processAction({
+                        processAction === null || processAction === void 0 ? void 0 : processAction({
                             actionData: actionData,
                             fields: fields,
                             values: getCurrentValues(fields),

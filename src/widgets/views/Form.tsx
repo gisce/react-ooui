@@ -137,7 +137,7 @@ function Form(props: FormProps, ref: any) {
   const contentRootContext = useContext(
     ContentRootContext
   ) as ContentRootContextType;
-  const { processAction } = contentRootContext;
+  const { processAction } = contentRootContext || {};
 
   useImperativeHandle(ref, () => ({
     submitForm,
@@ -632,7 +632,7 @@ function Form(props: FormProps, ref: any) {
     ) {
       onSubmitSucceed?.(getCurrentId());
     } else if (response.type) {
-      processAction({
+      processAction?.({
         actionData: response,
         fields,
         values: getCurrentValues(fields),
@@ -675,7 +675,7 @@ function Form(props: FormProps, ref: any) {
       })
     )[0];
 
-    processAction({
+    processAction?.({
       actionData,
       fields,
       values: getCurrentValues(fields),

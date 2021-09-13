@@ -10,20 +10,21 @@ var getTree = function (treeView) {
     return tree;
 };
 exports.getTree = getTree;
-var getTableColumns = function (tree, booleanComponent) {
+var getTableColumns = function (tree, components) {
     var tableColumns = tree.columns.map(function (column) {
-        var type = column.constructor.name;
+        var type = column.type;
         var key = column.id;
-        var render = type === "Boolean"
-            ? function (booleanField) {
-                return booleanComponent(booleanField);
-            }
-            : undefined;
+        var component = components === null || components === void 0 ? void 0 : components[type];
+        var render;
+        if (component) {
+            render = function (item) {
+                return component(item);
+            };
+        }
         return {
             key: key,
             dataIndex: key,
             title: column.label,
-            type: type,
             render: render,
             sorter: function (a, b) {
                 if (a[key] < b[key])
@@ -51,7 +52,13 @@ var getTableItems = function (treeOoui, results) {
                     parsedItem[key] = selection.selectionValues.get(item[key]);
                 }
                 else if (widget instanceof ooui_1.Many2one) {
-                    parsedItem[key] = item[key][1];
+                    parsedItem[key] = item[key] &&
+                        Array.isArray(item[key]) &&
+                        item[key].length === 2 && {
+                        model: widget.relation,
+                        id: item[key][0],
+                        value: item[key][1],
+                    };
                 }
                 else if (widget instanceof ooui_1.Boolean) {
                     parsedItem[key] = item[key];

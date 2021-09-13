@@ -1,8 +1,6 @@
-import { FormView } from "@/types";
 declare type Props = {
     id: number;
-    formView?: FormView;
-    targetValues: any;
+    model: string;
 };
 export declare const Many2oneSuffix: (props: Props) => JSX.Element | null;
 export {};

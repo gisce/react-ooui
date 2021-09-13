@@ -9,25 +9,23 @@ const getTree = (treeView: TreeView): TreeOoui => {
   return tree;
 };
 
-const getTableColumns = (
-  tree: TreeOoui,
-  booleanComponent: any
-): Array<Column> => {
+const getTableColumns = (tree: TreeOoui, components: any): Array<Column> => {
   const tableColumns = tree.columns.map((column) => {
-    const type = column.constructor.name;
+    const type = column.type;
     const key = column.id;
-    const render =
-      type === "Boolean"
-        ? (booleanField: boolean) => {
-            return booleanComponent(booleanField);
-          }
-        : undefined;
+    const component = components?.[type];
+    let render;
+
+    if (component) {
+      render = (item: any) => {
+        return component(item);
+      };
+    }
 
     return {
       key,
       dataIndex: key,
       title: column.label,
-      type,
       render,
       sorter: (a: any, b: any) => {
         if (a[key] < b[key]) return -1;
@@ -52,7 +50,13 @@ const getTableItems = (treeOoui: TreeOoui, results: Array<any>): Array<any> => {
           const selection = widget;
           parsedItem[key] = selection.selectionValues.get(item[key]);
         } else if (widget instanceof Many2one) {
-          parsedItem[key] = item[key][1];
+          parsedItem[key] = item[key] &&
+            Array.isArray(item[key]) &&
+            item[key].length === 2 && {
+              model: widget.relation,
+              id: item[key][0],
+              value: item[key][1],
+            };
         } else if (widget instanceof Boolean) {
           parsedItem[key] = item[key];
         } else if (widget) {

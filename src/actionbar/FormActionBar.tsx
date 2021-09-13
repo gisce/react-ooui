@@ -60,7 +60,7 @@ function FormActionBar() {
   const contentRootContext = useContext(
     ContentRootContext
   ) as ContentRootContextType;
-  const { processAction } = contentRootContext;
+  const { processAction } = contentRootContext || {};
 
   const tabManagerContext = useContext(
     TabManagerContext
@@ -207,7 +207,7 @@ function FormActionBar() {
             return;
           }
 
-          processAction({
+          processAction?.({
             actionData: action,
             values: (formRef.current as any).getValues(),
             fields: (formRef.current as any).getFields(),
@@ -225,7 +225,7 @@ function FormActionBar() {
             return;
           }
 
-          processAction({
+          processAction?.({
             actionData: {
               ...report,
               datas: { ...(report.datas || {}), ids: [currentId as number] },
