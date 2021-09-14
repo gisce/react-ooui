@@ -166,6 +166,17 @@ function FormActionBar() {
         });
     }
     var mustDisableButtons = formIsSaving || removingItem || formIsLoading;
+    function runAction(actionData) {
+        processAction === null || processAction === void 0 ? void 0 : processAction({
+            actionData: actionData,
+            values: formRef.current.getValues(),
+            fields: formRef.current.getFields(),
+            context: formRef.current.getContext(),
+            onRefreshParentValues: function () {
+                formRef.current.fetchValues();
+            },
+        });
+    }
     return (react_1.default.createElement(antd_1.Space, { wrap: true },
         formIsLoading && (react_1.default.createElement(react_1.default.Fragment, null,
             react_1.default.createElement(antd_1.Spin, null),
@@ -192,23 +203,13 @@ function FormActionBar() {
                 if (!action) {
                     return;
                 }
-                processAction === null || processAction === void 0 ? void 0 : processAction({
-                    actionData: action,
-                    values: formRef.current.getValues(),
-                    fields: formRef.current.getFields(),
-                    context: formRef.current.getContext(),
-                });
+                runAction(action);
             } }),
         react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.PrinterOutlined, null), disabled: mustDisableButtons, tooltip: "Reports", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.print, onItemClick: function (report) {
                 if (!report) {
                     return;
                 }
-                processAction === null || processAction === void 0 ? void 0 : processAction({
-                    actionData: __assign(__assign({}, report), { datas: __assign(__assign({}, (report.datas || {})), { ids: [currentId] }) }),
-                    values: formRef.current.getValues(),
-                    fields: formRef.current.getFields(),
-                    context: formRef.current.getContext(),
-                });
+                runAction(__assign(__assign({}, report), { datas: __assign(__assign({}, (report.datas || {})), { ids: [currentId] }) }));
             } }),
         react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.EnterOutlined, null), disabled: mustDisableButtons, tooltip: "Related", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.relate, onItemClick: function (relate) { return __awaiter(_this, void 0, void 0, function () {
                 return __generator(this, function (_a) {

@@ -15,7 +15,6 @@ import {
   Row,
   Alert,
   Spin,
-  Modal,
 } from "antd";
 import useDimensions from "react-cool-dimensions";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
@@ -148,6 +147,7 @@ function Form(props: FormProps, ref: any) {
     getContext: () => {
       return { ...parentContext, ...formOoui?.context };
     },
+    fetchValues,
     cancelUnsavedChanges,
   }));
 
@@ -467,9 +467,12 @@ function Form(props: FormProps, ref: any) {
       if (mustClearAfterSave)
         assignNewValuesToForm({ values: {}, fields, reset: true });
     } catch (err) {
+      setIsSubmitting(false);
+      setFormIsSaving?.(false);
       onSubmitError?.(err);
       setError(err);
     } finally {
+      setFormIsSaving?.(false);
       setIsSubmitting(false);
     }
   };
@@ -546,9 +549,17 @@ function Form(props: FormProps, ref: any) {
       if (onChangeFieldAction) {
         const payload: any = {};
 
+        const valuesWithContext = {
+          ...values,
+          context: {
+            ...parentContext,
+            ...formOoui?.context,
+          },
+        };
+
         onChangeFieldAction.args.forEach((arg: string) => {
-          if (values[arg]) {
-            payload[arg] = values[arg];
+          if (valuesWithContext[arg]) {
+            payload[arg] = valuesWithContext[arg];
           } else {
             payload[arg] = false;
           }
@@ -561,10 +572,6 @@ function Form(props: FormProps, ref: any) {
           action: onChangeFieldAction.method,
           ids,
           payload,
-          context: {
-            ...parentContext,
-            ...formOoui?.context,
-          },
           fields,
         });
 
@@ -691,6 +698,9 @@ function Form(props: FormProps, ref: any) {
           ...context,
           ...parentContext,
           ...formOoui?.context,
+        },
+        onRefreshParentValues: () => {
+          fetchValues();
         },
       })) || {};
 

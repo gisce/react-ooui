@@ -60,7 +60,7 @@ function FormActionBar() {
   const contentRootContext = useContext(
     ContentRootContext
   ) as ContentRootContextType;
-  const { processAction } = contentRootContext || {};
+  const { processAction } = contentRootContext || {};
 
   const tabManagerContext = useContext(
     TabManagerContext
@@ -139,6 +139,18 @@ function FormActionBar() {
 
   const mustDisableButtons = formIsSaving || removingItem || formIsLoading;
 
+  function runAction(actionData: any) {
+    processAction?.({
+      actionData,
+      values: (formRef.current as any).getValues(),
+      fields: (formRef.current as any).getFields(),
+      context: (formRef.current as any).getContext(),
+      onRefreshParentValues: () => {
+        (formRef.current as any).fetchValues();
+      },
+    });
+  }
+
   return (
     <Space wrap={true}>
       {formIsLoading && (
@@ -207,12 +219,7 @@ function FormActionBar() {
             return;
           }
 
-          processAction?.({
-            actionData: action,
-            values: (formRef.current as any).getValues(),
-            fields: (formRef.current as any).getFields(),
-            context: (formRef.current as any).getContext(),
-          });
+          runAction(action);
         }}
       />
       <DropdownButton
@@ -225,14 +232,9 @@ function FormActionBar() {
             return;
           }
 
-          processAction?.({
-            actionData: {
-              ...report,
-              datas: { ...(report.datas || {}), ids: [currentId as number] },
-            },
-            values: (formRef.current as any).getValues(),
-            fields: (formRef.current as any).getFields(),
-            context: (formRef.current as any).getContext(),
+          runAction({
+            ...report,
+            datas: { ...(report.datas || {}), ids: [currentId as number] },
           });
         }}
       />

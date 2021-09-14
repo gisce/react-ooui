@@ -120,6 +120,7 @@ function Form(props, ref) {
         getContext: function () {
             return __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context);
         },
+        fetchValues: fetchValues,
         cancelUnsavedChanges: cancelUnsavedChanges,
     }); });
     react_1.useEffect(function () {
@@ -467,10 +468,13 @@ function Form(props, ref) {
                     return [3 /*break*/, 9];
                 case 7:
                     err_2 = _b.sent();
+                    setIsSubmitting(false);
+                    setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
                     onSubmitError === null || onSubmitError === void 0 ? void 0 : onSubmitError(err_2);
                     setError(err_2);
                     return [3 /*break*/, 9];
                 case 8:
+                    setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
                     setIsSubmitting(false);
                     return [7 /*endfinally*/];
                 case 9: return [2 /*return*/];
@@ -523,7 +527,7 @@ function Form(props, ref) {
     }); };
     var debouncedCheckFieldsChanges = debounce_1.default(checkFieldsChanges, 100);
     var evaluateChanges = function (changedFields, values) { return __awaiter(_this, void 0, void 0, function () {
-        var finalValues, finalFields, changedFieldName, onChangeFieldAction, payload_1, ids, response, _a, title, message, err_3;
+        var finalValues, finalFields, changedFieldName, onChangeFieldAction, payload_1, valuesWithContext_1, ids, response, _a, title, message, err_3;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -534,9 +538,10 @@ function Form(props, ref) {
                     onChangeFieldAction = formOoui === null || formOoui === void 0 ? void 0 : formOoui.onChangeFields[changedFieldName];
                     if (!onChangeFieldAction) return [3 /*break*/, 2];
                     payload_1 = {};
+                    valuesWithContext_1 = __assign(__assign({}, values), { context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context) });
                     onChangeFieldAction.args.forEach(function (arg) {
-                        if (values[arg]) {
-                            payload_1[arg] = values[arg];
+                        if (valuesWithContext_1[arg]) {
+                            payload_1[arg] = valuesWithContext_1[arg];
                         }
                         else {
                             payload_1[arg] = false;
@@ -548,7 +553,6 @@ function Form(props, ref) {
                             action: onChangeFieldAction.method,
                             ids: ids,
                             payload: payload_1,
-                            context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
                             fields: fields,
                         })];
                 case 1:
@@ -687,17 +691,16 @@ function Form(props, ref) {
                             fields: fields,
                             values: getValues(),
                             context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
+                            onRefreshParentValues: function () {
+                                fetchValues();
+                            },
                         }))];
                     case 1:
                         closeParent = ((_b.sent()) || {}).closeParent;
-                        if (!(!rootForm && closeParent)) return [3 /*break*/, 2];
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
-                        return [3 /*break*/, 4];
-                    case 2: return [4 /*yield*/, fetchValues()];
-                    case 3:
-                        _b.sent();
-                        _b.label = 4;
-                    case 4: return [2 /*return*/];
+                        if (!rootForm && closeParent) {
+                            onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
+                        }
+                        return [2 /*return*/];
                 }
             });
         });

@@ -96,6 +96,7 @@ var ContentRootProvider = function (props) {
     var _a = react_1.useState(false), reportGenerating = _a[0], setReportGenerating = _a[1];
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
     var openAction = (tabManagerContext || {}).openAction;
+    var onRefreshParentValues = react_1.useRef();
     // Action modal state
     var _b = react_1.useState(false), actionModalVisible = _b[0], setActionModalVisible = _b[1];
     var _c = react_1.useState({
@@ -199,13 +200,14 @@ var ContentRootProvider = function (props) {
         });
     }
     function processAction(_a) {
-        var actionData = _a.actionData, fields = _a.fields, values = _a.values, context = _a.context;
+        var actionData = _a.actionData, fields = _a.fields, values = _a.values, context = _a.context, onRefreshParentValuesFn = _a.onRefreshParentValues;
         return __awaiter(this, void 0, void 0, function () {
             var type;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         type = actionData.type;
+                        onRefreshParentValues.current = onRefreshParentValuesFn;
                         if (!(type === "ir.actions.report.xml")) return [3 /*break*/, 2];
                         return [4 /*yield*/, generateReport({
                                 reportData: actionData,
@@ -320,8 +322,10 @@ var ContentRootProvider = function (props) {
         });
     }
     function onFormModalSucceed() {
+        var _a;
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
+            return __generator(this, function (_b) {
+                (_a = onRefreshParentValues.current) === null || _a === void 0 ? void 0 : _a.call(onRefreshParentValues);
                 setActionModalVisible(false);
                 setActionModalOptions({
                     domain: undefined,

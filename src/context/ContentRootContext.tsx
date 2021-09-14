@@ -22,6 +22,7 @@ export type ContentRootContextType = {
     fields: any;
     values: any;
     context?: any;
+    onRefreshParentValues?: () => void;
   }) => Promise<any>;
 };
 
@@ -48,6 +49,7 @@ const ContentRootProvider = (props: ContentRootProviderProps): any => {
     TabManagerContext
   ) as TabManagerContextType;
   const { openAction } = tabManagerContext || {};
+  const onRefreshParentValues = useRef<any>();
 
   // Action modal state
   const [actionModalVisible, setActionModalVisible] = useState<boolean>(false);
@@ -148,13 +150,16 @@ const ContentRootProvider = (props: ContentRootProviderProps): any => {
     fields,
     values,
     context,
+    onRefreshParentValues: onRefreshParentValuesFn,
   }: {
     actionData: any;
     fields: any;
     values: any;
     context?: any;
+    onRefreshParentValues?: any;
   }) {
     const { type } = actionData;
+    onRefreshParentValues.current = onRefreshParentValuesFn;
 
     if (type === "ir.actions.report.xml") {
       return await generateReport({
@@ -290,6 +295,7 @@ const ContentRootProvider = (props: ContentRootProviderProps): any => {
   }
 
   async function onFormModalSucceed() {
+    onRefreshParentValues.current?.();
     setActionModalVisible(false);
     setActionModalOptions({
       domain: undefined,

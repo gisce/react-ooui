@@ -68,7 +68,6 @@ declare type ExecuteOnChangeRequest = {
     model: string;
     action: string;
     payload?: any;
-    context?: any;
     ids: number[];
     fields: any;
 };
