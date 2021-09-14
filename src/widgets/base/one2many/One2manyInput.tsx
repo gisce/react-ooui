@@ -380,7 +380,11 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       return item;
     });
 
-    triggerChange(updatedItems);
+    if (saved) {
+      onChange?.(updatedItems);
+    } else {
+      triggerChange(updatedItems);
+    }
   };
 
   const processNewItem = async ({
