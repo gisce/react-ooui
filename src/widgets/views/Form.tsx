@@ -102,7 +102,6 @@ function Form(props: FormProps, ref: any) {
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>();
-  const [loading, setLoading] = useState<boolean>(false);
   const [formOoui, setFormOoui] = useState<FormOoui>();
   const [antForm] = AntForm.useForm();
   const [arch, setArch] = useState<string>();
@@ -231,8 +230,8 @@ function Form(props: FormProps, ref: any) {
     }
   }
   const fetchData = async () => {
-    setLoading(true);
     setError(undefined);
+    setFormIsLoading?.(true);
 
     let view;
 
@@ -254,9 +253,10 @@ function Form(props: FormProps, ref: any) {
     } catch (err) {
       setError(err);
       setFormIsLoading?.(false);
+      // setLoading(false);
     } finally {
       setFormHasChanges?.(false);
-      setLoading(false);
+      setFormIsLoading?.(false);
     }
   };
 
@@ -504,7 +504,7 @@ function Form(props: FormProps, ref: any) {
   };
 
   const checkFieldsChanges = async (changedFields: any) => {
-    if (formHasChanges() && !loading) {
+    if (formHasChanges()) {
       const values = antForm.getFieldsValue(true);
 
       onFieldsChange?.(values);
@@ -793,7 +793,7 @@ function Form(props: FormProps, ref: any) {
           <Space>
             <Button
               icon={<CloseOutlined />}
-              disabled={isSubmitting || loading}
+              disabled={isSubmitting}
               onClick={async () => {
                 await cancelUnsavedChanges();
               }}
@@ -801,7 +801,7 @@ function Form(props: FormProps, ref: any) {
               Cancel
             </Button>
             <Button
-              disabled={isSubmitting || loading || readOnly}
+              disabled={isSubmitting || readOnly}
               loading={isSubmitting}
               icon={<CheckOutlined />}
               onClick={async () => {
@@ -830,7 +830,7 @@ function Form(props: FormProps, ref: any) {
           banner
         />
       )}
-      {loading ? <Spin /> : content()}
+      {content()}
       {showFooter && footer()}
     </div>
   );
