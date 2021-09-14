@@ -610,26 +610,23 @@ function Form(props, ref) {
                             Object.keys(response).length === 0 &&
                             insideButtonModal)) return [3 /*break*/, 2];
                         onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
-                        return [3 /*break*/, 6];
+                        return [3 /*break*/, 7];
                     case 2:
                         if (!(response.type &&
                             response.type === "ir.actions.act_window_close")) return [3 /*break*/, 3];
                         onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
-                        return [3 /*break*/, 6];
+                        return [3 /*break*/, 7];
                     case 3:
-                        if (!response.type) return [3 /*break*/, 4];
-                        processAction === null || processAction === void 0 ? void 0 : processAction({
-                            actionData: response,
-                            fields: fields,
-                            values: getCurrentValues(fields),
-                            context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
-                        });
-                        return [3 /*break*/, 6];
-                    case 4: return [4 /*yield*/, fetchValues()];
-                    case 5:
+                        if (!response.type) return [3 /*break*/, 5];
+                        return [4 /*yield*/, runAction({ actionData: response, context: context })];
+                    case 4:
                         _b.sent();
-                        _b.label = 6;
-                    case 6: return [2 /*return*/];
+                        return [3 /*break*/, 7];
+                    case 5: return [4 /*yield*/, fetchValues()];
+                    case 6:
+                        _b.sent();
+                        _b.label = 7;
+                    case 7: return [2 /*return*/];
                 }
             });
         });
@@ -671,13 +668,36 @@ function Form(props, ref) {
                         })];
                     case 1:
                         actionData = (_b.sent())[0];
-                        processAction === null || processAction === void 0 ? void 0 : processAction({
+                        return [4 /*yield*/, runAction({ actionData: actionData, context: context })];
+                    case 2:
+                        _b.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function runAction(_a) {
+        var actionData = _a.actionData, context = _a.context;
+        return __awaiter(this, void 0, void 0, function () {
+            var closeParent;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, (processAction === null || processAction === void 0 ? void 0 : processAction({
                             actionData: actionData,
                             fields: fields,
-                            values: getCurrentValues(fields),
+                            values: getValues(),
                             context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
-                        });
-                        return [2 /*return*/];
+                        }))];
+                    case 1:
+                        closeParent = ((_b.sent()) || {}).closeParent;
+                        if (!(!rootForm && closeParent)) return [3 /*break*/, 2];
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
+                        return [3 /*break*/, 4];
+                    case 2: return [4 /*yield*/, fetchValues()];
+                    case 3:
+                        _b.sent();
+                        _b.label = 4;
+                    case 4: return [2 /*return*/];
                 }
             });
         });

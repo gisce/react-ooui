@@ -638,16 +638,7 @@ function Form(props: FormProps, ref: any) {
     ) {
       onSubmitSucceed?.(getCurrentId());
     } else if (response.type) {
-      processAction?.({
-        actionData: response,
-        fields,
-        values: getCurrentValues(fields),
-        context: {
-          ...context,
-          ...parentContext,
-          ...formOoui?.context,
-        },
-      });
+      await runAction({ actionData: response, context });
     } else {
       await fetchValues();
     }
@@ -681,16 +672,31 @@ function Form(props: FormProps, ref: any) {
       })
     )[0];
 
-    processAction?.({
-      actionData,
-      fields,
-      values: getCurrentValues(fields),
-      context: {
-        ...context,
-        ...parentContext,
-        ...formOoui?.context,
-      },
-    });
+    await runAction({ actionData, context });
+  }
+
+  async function runAction({
+    actionData,
+    context,
+  }: {
+    actionData: any;
+    context: any;
+  }) {
+    const { closeParent } =
+      (await processAction?.({
+        actionData,
+        fields,
+        values: getValues(),
+        context: {
+          ...context,
+          ...parentContext,
+          ...formOoui?.context,
+        },
+      })) || {};
+
+    if (!rootForm && closeParent) {
+      onSubmitSucceed?.(getCurrentId());
+    }
   }
 
   async function executeButtonAction({

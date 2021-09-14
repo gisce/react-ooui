@@ -203,22 +203,25 @@ var ContentRootProvider = function (props) {
         return __awaiter(this, void 0, void 0, function () {
             var type;
             return __generator(this, function (_b) {
-                type = actionData.type;
-                if (type === "ir.actions.report.xml") {
-                    generateReport({
-                        reportData: actionData,
-                        fields: fields,
-                        values: values,
-                        context: context,
-                    });
+                switch (_b.label) {
+                    case 0:
+                        type = actionData.type;
+                        if (!(type === "ir.actions.report.xml")) return [3 /*break*/, 2];
+                        return [4 /*yield*/, generateReport({
+                                reportData: actionData,
+                                fields: fields,
+                                values: values,
+                                context: context,
+                            })];
+                    case 1: return [2 /*return*/, _b.sent()];
+                    case 2:
+                        if (!(type === "ir.actions.act_window")) return [3 /*break*/, 4];
+                        return [4 /*yield*/, runAction({ actionData: actionData, fields: fields, values: values, context: context })];
+                    case 3: return [2 /*return*/, _b.sent()];
+                    case 4:
+                        ActionErrorDialog_1.default(type + " action not supported");
+                        return [2 /*return*/, {}];
                 }
-                else if (type === "ir.actions.act_window") {
-                    runAction({ actionData: actionData, fields: fields, values: values, context: context });
-                }
-                else {
-                    ActionErrorDialog_1.default(type + " action not supported");
-                }
-                return [2 /*return*/];
             });
         });
     }
@@ -266,7 +269,7 @@ var ContentRootProvider = function (props) {
                             formView: formView,
                             context: mergedContext,
                         });
-                        return [3 /*break*/, 5];
+                        return [2 /*return*/, {}];
                     case 4:
                         openAction === null || openAction === void 0 ? void 0 : openAction({
                             target: "current",
@@ -278,8 +281,7 @@ var ContentRootProvider = function (props) {
                                 .map(function (view) { return [false, view]; }),
                             title: actionData.name,
                         });
-                        _b.label = 5;
-                    case 5: return [2 /*return*/];
+                        return [2 /*return*/, { closeParent: true }];
                 }
             });
         });

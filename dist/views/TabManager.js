@@ -74,6 +74,7 @@ var ActionViewExplicit_1 = __importDefault(require("./ActionViewExplicit"));
 var ooui_1 = require("ooui");
 function TabManager(props, ref) {
     var _this = this;
+    var children = props.children;
     var _a = react_1.useState(), activeKey = _a[0], setActiveKey = _a[1];
     var _b = react_1.useState([
         {
@@ -165,28 +166,30 @@ function TabManager(props, ref) {
         });
     }
     return (react_1.default.createElement(TabManagerContext_1.default, { openAction: openAction, openRelate: openRelate },
-        react_1.default.createElement(antd_1.Tabs, { activeKey: activeKey, hideAdd: true, type: "editable-card", onChange: function (activeKey) {
-                setActiveKey(activeKey);
-            }, onEdit: function (targetKey, action) { return __awaiter(_this, void 0, void 0, function () {
-                var canWeCloseFn, canWeClose;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            if (!(action === "remove")) return [3 /*break*/, 2];
-                            canWeCloseFn = tabViewsCloseFunctions.current.get(targetKey);
-                            return [4 /*yield*/, (canWeCloseFn === null || canWeCloseFn === void 0 ? void 0 : canWeCloseFn())];
-                        case 1:
-                            canWeClose = _a.sent();
-                            if (canWeClose || targetKey === "welcome") {
-                                remove(targetKey);
-                            }
-                            _a.label = 2;
-                        case 2: return [2 /*return*/];
-                    }
-                });
-            }); } }, tabs.map(function (tab) {
-            return (react_1.default.createElement(TabPane, { key: tab.key, closable: tab.closable, tab: tab.title }, tab.content));
-        }))));
+        react_1.default.createElement(__1.ContentRootProvider, null,
+            react_1.default.createElement(antd_1.Tabs, { activeKey: activeKey, hideAdd: true, type: "editable-card", onChange: function (activeKey) {
+                    setActiveKey(activeKey);
+                }, onEdit: function (targetKey, action) { return __awaiter(_this, void 0, void 0, function () {
+                    var canWeCloseFn, canWeClose;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (!(action === "remove")) return [3 /*break*/, 2];
+                                canWeCloseFn = tabViewsCloseFunctions.current.get(targetKey);
+                                return [4 /*yield*/, (canWeCloseFn === null || canWeCloseFn === void 0 ? void 0 : canWeCloseFn())];
+                            case 1:
+                                canWeClose = _a.sent();
+                                if (canWeClose || targetKey === "welcome") {
+                                    remove(targetKey);
+                                }
+                                _a.label = 2;
+                            case 2: return [2 /*return*/];
+                        }
+                    });
+                }); } }, tabs.map(function (tab) {
+                return (react_1.default.createElement(TabPane, { key: tab.key, closable: tab.closable, tab: tab.title }, tab.content));
+            })),
+            children)));
 }
 exports.default = react_1.forwardRef(TabManager);
 //# sourceMappingURL=TabManager.js.map

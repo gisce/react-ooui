@@ -5,7 +5,7 @@ export declare type ContentRootContextType = {
         fields: any;
         values: any;
         context?: any;
-    }) => void;
+    }) => Promise<any>;
 };
 export declare const ContentRootContext: React.Context<ContentRootContextType | null>;
 declare type ContentRootProviderProps = {

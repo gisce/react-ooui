@@ -22,7 +22,7 @@ export type ContentRootContextType = {
     fields: any;
     values: any;
     context?: any;
-  }) => void;
+  }) => Promise<any>;
 };
 
 type ActionModalOpts = {
@@ -157,16 +157,17 @@ const ContentRootProvider = (props: ContentRootProviderProps): any => {
     const { type } = actionData;
 
     if (type === "ir.actions.report.xml") {
-      generateReport({
+      return await generateReport({
         reportData: actionData,
         fields,
         values,
         context,
       });
     } else if (type === "ir.actions.act_window") {
-      runAction({ actionData, fields, values, context });
+      return await runAction({ actionData, fields, values, context });
     } else {
       showErrorDialog(`${type} action not supported`);
+      return {};
     }
   }
 
@@ -228,6 +229,8 @@ const ContentRootProvider = (props: ContentRootProviderProps): any => {
         formView,
         context: mergedContext,
       });
+
+      return {};
     } else {
       openAction?.({
         target: "current",
@@ -239,6 +242,8 @@ const ContentRootProvider = (props: ContentRootProviderProps): any => {
           .map((view: string) => [false, view]),
         title: actionData.name,
       });
+
+      return { closeParent: true };
     }
   }
 
