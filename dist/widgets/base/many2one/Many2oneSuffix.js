@@ -65,11 +65,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -149,15 +144,17 @@ var Many2oneSuffix = function (props) {
             return react_1.default.createElement(antd_1.Menu, null);
         }
         var relateItems = (_a = formView === null || formView === void 0 ? void 0 : formView.toolbar) === null || _a === void 0 ? void 0 : _a.relate.map(function (item) {
-            return react_1.default.createElement(antd_1.Menu.Item, { key: item.id },
-                "... ",
-                item.name);
+            return react_1.default.createElement(antd_1.Menu.Item, { key: item.id }, item.name);
         });
-        return (react_1.default.createElement(antd_1.Menu, { onClick: handleMenuClick }, __spreadArray([
-            react_1.default.createElement(antd_1.Menu.Item, { key: "action", disabled: !formView.toolbar.action || formView.toolbar.action.length === 0 }, "Acci\u00F3"),
-            react_1.default.createElement(antd_1.Menu.Item, { key: "print", disabled: !formView.toolbar.print || formView.toolbar.print.length === 0 }, "Informe"),
-            react_1.default.createElement(antd_1.Menu.Divider, null)
-        ], relateItems)));
+        return (react_1.default.createElement(antd_1.Menu, { onClick: handleMenuClick }, [
+            react_1.default.createElement(antd_1.Menu.Item, { key: "action", disabled: !formView.toolbar.action || formView.toolbar.action.length === 0, icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null) }, "Acci\u00F3"),
+            react_1.default.createElement(antd_1.Menu.Item, { key: "print", disabled: !formView.toolbar.print || formView.toolbar.print.length === 0, icon: react_1.default.createElement(icons_1.PrinterOutlined, null) }, "Informe"),
+            react_1.default.createElement(antd_1.Menu.Divider, null),
+            react_1.default.createElement(antd_1.Menu.ItemGroup, { title: react_1.default.createElement(react_1.default.Fragment, null,
+                    react_1.default.createElement(icons_1.EnterOutlined, null),
+                    " ",
+                    react_1.default.createElement("span", null, "Relacions")) }, relateItems)
+        ]));
     }
     function handleMenuClick(event) {
         if (event.key === "action") {
