@@ -85,8 +85,9 @@ function TabManager(props, ref) {
         },
     ]), tabs = _b[0], setTabs = _b[1];
     var tabViewsCloseFunctions = react_1.useRef(new Map());
+    var contentRootProvider = react_1.useRef();
     react_1.useImperativeHandle(ref, function () { return ({
-        openActionInNewTab: openActionInNewTab,
+        retrieveAndOpenAction: retrieveAndOpenAction,
     }); });
     function remove(key) {
         if (key === activeKey) {
@@ -105,14 +106,12 @@ function TabManager(props, ref) {
         var tabKey = _a.tabKey, canWeClose = _a.canWeClose;
         tabViewsCloseFunctions.current.set(tabKey, canWeClose);
     }
-    function openActionInNewTab(action) {
+    function retrieveAndOpenAction(action) {
         return __awaiter(this, void 0, void 0, function () {
-            var key, dataForAction, parsedDomain, parsedContext, model, views, title;
+            var dataForAction, parsedDomain, parsedContext, model, views, title, target;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        key = uuid_1.v4();
-                        return [4 /*yield*/, __1.ConnectionProvider.getHandler().getActionData(action)];
+                    case 0: return [4 /*yield*/, __1.ConnectionProvider.getHandler().getActionData(action)];
                     case 1:
                         dataForAction = _a.sent();
                         parsedDomain = dataForAction.domain
@@ -127,11 +126,14 @@ function TabManager(props, ref) {
                             values: {},
                             fields: {},
                         });
-                        model = dataForAction.res_model, views = dataForAction.views, title = dataForAction.name;
-                        addNewTab({
+                        model = dataForAction.res_model, views = dataForAction.views, title = dataForAction.name, target = dataForAction.target;
+                        openAction({
+                            domain: parsedDomain,
+                            context: parsedContext,
+                            model: model,
+                            views: views,
                             title: title,
-                            content: (react_1.default.createElement(ActionView_1.default, { tabKey: key, title: title, views: views, model: model, context: parsedContext, domain: parsedDomain, setCanWeClose: registerViewCloseFn })),
-                            key: key,
+                            target: target,
                         });
                         return [2 /*return*/];
                 }
@@ -179,18 +181,42 @@ function TabManager(props, ref) {
         });
     }
     function openAction(_a) {
-        // if (target === "current") {
         var domain = _a.domain, context = _a.context, model = _a.model, views = _a.views, title = _a.title, target = _a.target;
-        // }
-        var key = uuid_1.v4();
-        addNewTab({
-            title: title,
-            content: (react_1.default.createElement(ActionView_1.default, { tabKey: key, title: title, views: views, model: model, context: context, domain: domain, setCanWeClose: registerViewCloseFn })),
-            key: key,
+        return __awaiter(this, void 0, void 0, function () {
+            var key, formView;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        key = uuid_1.v4();
+                        if (!(target !== "current")) return [3 /*break*/, 2];
+                        return [4 /*yield*/, __1.ConnectionProvider.getHandler().getView({
+                                model: model,
+                                type: "form",
+                                context: context,
+                            })];
+                    case 1:
+                        formView = (_b.sent());
+                        contentRootProvider.current.openActionModal({
+                            domain: domain,
+                            model: model,
+                            formView: formView,
+                            context: context,
+                        });
+                        return [3 /*break*/, 3];
+                    case 2:
+                        addNewTab({
+                            title: title,
+                            content: (react_1.default.createElement(ActionView_1.default, { tabKey: key, title: title, views: views, model: model, context: context, domain: domain, setCanWeClose: registerViewCloseFn })),
+                            key: key,
+                        });
+                        _b.label = 3;
+                    case 3: return [2 /*return*/];
+                }
+            });
         });
     }
     return (react_1.default.createElement(TabManagerContext_1.default, { openAction: openAction, openRelate: openRelate },
-        react_1.default.createElement(__1.ContentRootProvider, null,
+        react_1.default.createElement(__1.ContentRootProvider, { ref: contentRootProvider },
             react_1.default.createElement(antd_1.Tabs, { activeKey: activeKey, hideAdd: true, type: "editable-card", onChange: function (activeKey) {
                     setActiveKey(activeKey);
                 }, onEdit: function (targetKey, action) { return __awaiter(_this, void 0, void 0, function () {

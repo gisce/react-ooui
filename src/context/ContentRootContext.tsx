@@ -1,5 +1,11 @@
 import { FormView, GenerateReportOptions } from "@/types";
-import React, { useContext, useRef, useState } from "react";
+import React, {
+  useContext,
+  useRef,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import { openBase64InNewTab, getMimeType } from "@/helpers/filesHelper";
 import { parseContext, parseDomain } from "ooui";
@@ -41,7 +47,10 @@ type ContentRootProviderProps = {
   children: React.ReactNode;
 };
 
-const ContentRootProvider = (props: ContentRootProviderProps): any => {
+const ContentRootProvider = (
+  props: ContentRootProviderProps,
+  ref: any
+): any => {
   const { children } = props;
   const reportInProgressInterval = useRef<any>();
   const [reportGenerating, setReportGenerating] = useState<boolean>(false);
@@ -50,6 +59,10 @@ const ContentRootProvider = (props: ContentRootProviderProps): any => {
   ) as TabManagerContextType;
   const { openAction } = tabManagerContext || {};
   const onRefreshParentValues = useRef<any>();
+
+  useImperativeHandle(ref, () => ({
+    openActionModal,
+  }));
 
   // Action modal state
   const [actionModalVisible, setActionModalVisible] = useState<boolean>(false);
@@ -178,13 +191,13 @@ const ContentRootProvider = (props: ContentRootProviderProps): any => {
 
   async function runAction({
     actionData: _actionData,
-    fields,
-    values,
-    context,
+    fields = {},
+    values = {},
+    context = {},
   }: {
     actionData: any;
-    fields: any;
-    values: any;
+    fields?: any;
+    values?: any;
     context?: any;
   }) {
     let actionData = _actionData;
@@ -348,4 +361,4 @@ const ContentRootProvider = (props: ContentRootProviderProps): any => {
   );
 };
 
-export default ContentRootProvider;
+export default forwardRef(ContentRootProvider);

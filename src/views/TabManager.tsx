@@ -5,7 +5,7 @@ import React, {
   useRef,
 } from "react";
 import { Tabs } from "antd";
-import { ConnectionProvider, ContentRootProvider } from "..";
+import { ConnectionProvider, ContentRootProvider, FormView } from "..";
 const { TabPane } = Tabs;
 import { v4 as uuidv4 } from "uuid";
 import Welcome from "./Welcome";
@@ -29,9 +29,10 @@ function TabManager(props: TabManagerProps, ref: any) {
     },
   ]);
   const tabViewsCloseFunctions = useRef(new Map<string, any>());
+  const contentRootProvider = useRef();
 
   useImperativeHandle(ref, () => ({
-    openActionInNewTab,
+    retrieveAndOpenAction,
   }));
 
   function remove(key: string) {
@@ -60,9 +61,7 @@ function TabManager(props: TabManagerProps, ref: any) {
     tabViewsCloseFunctions.current.set(tabKey, canWeClose);
   }
 
-  async function openActionInNewTab(action: string) {
-    const key = uuidv4();
-
+  async function retrieveAndOpenAction(action: string) {
     const dataForAction = await ConnectionProvider.getHandler().getActionData(
       action
     );
@@ -80,22 +79,15 @@ function TabManager(props: TabManagerProps, ref: any) {
       fields: {},
     });
 
-    const { res_model: model, views, name: title } = dataForAction;
+    const { res_model: model, views, name: title, target } = dataForAction;
 
-    addNewTab({
+    openAction({
+      domain: parsedDomain,
+      context: parsedContext,
+      model,
+      views,
       title,
-      content: (
-        <ActionView
-          tabKey={key}
-          title={title}
-          views={views}
-          model={model}
-          context={parsedContext}
-          domain={parsedDomain}
-          setCanWeClose={registerViewCloseFn}
-        />
-      ),
-      key,
+      target,
     });
   }
 
@@ -169,7 +161,7 @@ function TabManager(props: TabManagerProps, ref: any) {
     });
   }
 
-  function openAction({
+  async function openAction({
     domain,
     context,
     model,
@@ -184,31 +176,43 @@ function TabManager(props: TabManagerProps, ref: any) {
     title: string;
     target: string;
   }) {
-    // if (target === "current") {
-
-    // }
     const key = uuidv4();
 
-    addNewTab({
-      title,
-      content: (
-        <ActionView
-          tabKey={key}
-          title={title}
-          views={views}
-          model={model}
-          context={context}
-          domain={domain}
-          setCanWeClose={registerViewCloseFn}
-        />
-      ),
-      key,
-    });
+    if (target !== "current") {
+      const formView = (await ConnectionProvider.getHandler().getView({
+        model,
+        type: "form",
+        context,
+      })) as FormView;
+
+      (contentRootProvider.current as any).openActionModal({
+        domain,
+        model,
+        formView,
+        context,
+      });
+    } else {
+      addNewTab({
+        title,
+        content: (
+          <ActionView
+            tabKey={key}
+            title={title}
+            views={views}
+            model={model}
+            context={context}
+            domain={domain}
+            setCanWeClose={registerViewCloseFn}
+          />
+        ),
+        key,
+      });
+    }
   }
 
   return (
     <TabManagerProvider openAction={openAction} openRelate={openRelate}>
-      <ContentRootProvider>
+      <ContentRootProvider ref={contentRootProvider}>
         <Tabs
           activeKey={activeKey}
           hideAdd

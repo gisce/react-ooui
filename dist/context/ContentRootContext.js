@@ -90,13 +90,16 @@ var antd_1 = require("antd");
 var TabManagerContext_1 = require("@/context/TabManagerContext");
 var FormModal_1 = require("@/widgets/modals/FormModal");
 exports.ContentRootContext = react_1.default.createContext(null);
-var ContentRootProvider = function (props) {
+var ContentRootProvider = function (props, ref) {
     var children = props.children;
     var reportInProgressInterval = react_1.useRef();
     var _a = react_1.useState(false), reportGenerating = _a[0], setReportGenerating = _a[1];
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
     var openAction = (tabManagerContext || {}).openAction;
     var onRefreshParentValues = react_1.useRef();
+    react_1.useImperativeHandle(ref, function () { return ({
+        openActionModal: openActionModal,
+    }); });
     // Action modal state
     var _b = react_1.useState(false), actionModalVisible = _b[0], setActionModalVisible = _b[1];
     var _c = react_1.useState({
@@ -228,11 +231,11 @@ var ContentRootProvider = function (props) {
         });
     }
     function runAction(_a) {
-        var _actionData = _a.actionData, fields = _a.fields, values = _a.values, context = _a.context;
+        var _actionData = _a.actionData, _b = _a.fields, fields = _b === void 0 ? {} : _b, _c = _a.values, values = _c === void 0 ? {} : _c, _d = _a.context, context = _d === void 0 ? {} : _d;
         return __awaiter(this, void 0, void 0, function () {
             var actionData, responseContext, mergedContext, parsedDomain, formView;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            return __generator(this, function (_e) {
+                switch (_e.label) {
                     case 0:
                         actionData = _actionData;
                         if (!!_actionData.res_model) return [3 /*break*/, 2];
@@ -241,8 +244,8 @@ var ContentRootProvider = function (props) {
                                 ids: [parseInt(_actionData.id)],
                             })];
                     case 1:
-                        actionData = (_b.sent())[0];
-                        _b.label = 2;
+                        actionData = (_e.sent())[0];
+                        _e.label = 2;
                     case 2:
                         responseContext = ooui_1.parseContext({
                             context: actionData.context,
@@ -264,7 +267,7 @@ var ContentRootProvider = function (props) {
                                 context: context,
                             })];
                     case 3:
-                        formView = (_b.sent());
+                        formView = (_e.sent());
                         openActionModal({
                             domain: parsedDomain,
                             model: actionData.res_model,
@@ -355,5 +358,5 @@ var ContentRootProvider = function (props) {
                         });
                     }, showFooter: false, actionDomain: actionModalOptions.domain })))));
 };
-exports.default = ContentRootProvider;
+exports.default = react_1.forwardRef(ContentRootProvider);
 //# sourceMappingURL=ContentRootContext.js.map
