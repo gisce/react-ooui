@@ -28,8 +28,7 @@ import { Url } from "@/widgets/base/Url";
 import { Email } from "@/widgets/base/Email";
 import { TreeView, SearchFields, FormView, ConnectionProviderType, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, GetViewRequest, DefaultGetRequest } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
-import ActionView from "./views/ActionView";
 import TabManager from "./views/TabManager";
 import ContentRootProvider from "./context/ContentRootContext";
-export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, FormModal, SearchModal, One2many, One2manyItem, Date, DateTime, Reference, Binary, iconMapper, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ActionBar, ActionView, GetViewRequest, DefaultGetRequest, TabManager, Url, Email, ContentRootProvider };
+export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, FormModal, SearchModal, One2many, One2manyItem, Date, DateTime, Reference, Binary, iconMapper, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ActionBar, GetViewRequest, DefaultGetRequest, TabManager, Url, Email, ContentRootProvider };
 //# sourceMappingURL=index.d.ts.map

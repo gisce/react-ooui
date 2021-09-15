@@ -48,7 +48,6 @@ import {
   DefaultGetRequest,
 } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
-import ActionView from "./views/ActionView";
 import TabManager from "./views/TabManager";
 import ContentRootProvider from "./context/ContentRootContext";
 
@@ -96,7 +95,6 @@ export {
   GetReportRequest,
   ExecuteOnChangeRequest,
   ActionBar,
-  ActionView,
   GetViewRequest,
   DefaultGetRequest,
   TabManager,

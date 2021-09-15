@@ -70,7 +70,7 @@ var TabPane = antd_1.Tabs.TabPane;
 var uuid_1 = require("uuid");
 var Welcome_1 = __importDefault(require("./Welcome"));
 var TabManagerContext_1 = __importDefault(require("@/context/TabManagerContext"));
-var ActionViewExplicit_1 = __importDefault(require("./ActionViewExplicit"));
+var ActionView_1 = __importDefault(require("./ActionView"));
 var ooui_1 = require("ooui");
 function TabManager(props, ref) {
     var _this = this;
@@ -86,7 +86,7 @@ function TabManager(props, ref) {
     ]), tabs = _b[0], setTabs = _b[1];
     var tabViewsCloseFunctions = react_1.useRef(new Map());
     react_1.useImperativeHandle(ref, function () { return ({
-        openNewTab: openNewTab,
+        openActionInNewTab: openActionInNewTab,
     }); });
     function remove(key) {
         if (key === activeKey) {
@@ -105,13 +105,37 @@ function TabManager(props, ref) {
         var tabKey = _a.tabKey, canWeClose = _a.canWeClose;
         tabViewsCloseFunctions.current.set(tabKey, canWeClose);
     }
-    function openNewTab(_a) {
-        var title = _a.title, action = _a.action;
-        var key = uuid_1.v4();
-        addNewTab({
-            title: title,
-            content: (react_1.default.createElement(__1.ActionView, { title: title, action: action, setCanWeClose: registerViewCloseFn, tabKey: key })),
-            key: key,
+    function openActionInNewTab(action) {
+        return __awaiter(this, void 0, void 0, function () {
+            var key, dataForAction, parsedDomain, parsedContext, model, views, title;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        key = uuid_1.v4();
+                        return [4 /*yield*/, __1.ConnectionProvider.getHandler().getActionData(action)];
+                    case 1:
+                        dataForAction = _a.sent();
+                        parsedDomain = dataForAction.domain
+                            ? ooui_1.parseDomain({
+                                domainValue: dataForAction.domain,
+                                values: {},
+                                fields: {},
+                            })
+                            : [];
+                        parsedContext = ooui_1.parseContext({
+                            context: dataForAction.context,
+                            values: {},
+                            fields: {},
+                        });
+                        model = dataForAction.res_model, views = dataForAction.views, title = dataForAction.name;
+                        addNewTab({
+                            title: title,
+                            content: (react_1.default.createElement(ActionView_1.default, { tabKey: key, title: title, views: views, model: model, context: parsedContext, domain: parsedDomain, setCanWeClose: registerViewCloseFn })),
+                            key: key,
+                        });
+                        return [2 /*return*/];
+                }
+            });
         });
     }
     function addNewTab(_a) {
@@ -161,7 +185,7 @@ function TabManager(props, ref) {
         var key = uuid_1.v4();
         addNewTab({
             title: title,
-            content: (react_1.default.createElement(ActionViewExplicit_1.default, { tabKey: key, title: title, views: views, model: model, context: context, domain: domain, setCanWeClose: registerViewCloseFn })),
+            content: (react_1.default.createElement(ActionView_1.default, { tabKey: key, title: title, views: views, model: model, context: context, domain: domain, setCanWeClose: registerViewCloseFn })),
             key: key,
         });
     }

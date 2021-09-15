@@ -1,6 +1,9 @@
 import React from "react";
 declare type Props = {
-    action: string;
+    domain: any;
+    context: any;
+    model: string;
+    views: Array<any>;
     title: string;
     tabKey: string;
     setCanWeClose: (f: any) => void;

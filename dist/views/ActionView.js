@@ -61,57 +61,133 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
-var ooui_1 = require("ooui");
-var ActionViewExplicit_1 = __importDefault(require("./ActionViewExplicit"));
+var Form_1 = __importDefault(require("@/widgets/views/Form"));
+var SearchTree_1 = __importDefault(require("@/widgets/views/SearchTree"));
+var ActionViewContext_1 = __importDefault(require("@/context/ActionViewContext"));
+var TitleHeader_1 = __importDefault(require("@/ui/TitleHeader"));
+var FormActionBar_1 = __importDefault(require("@/actionbar/FormActionBar"));
+var TreeActionBar_1 = __importDefault(require("@/actionbar/TreeActionBar"));
 function ActionView(props, ref) {
     var _this = this;
-    var action = props.action, title = props.title, setCanWeClose = props.setCanWeClose, tabKey = props.tabKey;
-    var _a = react_1.useState(), actionData = _a[0], setActionData = _a[1];
-    var _b = react_1.useState(true), isLoading = _b[0], setIsLoading = _b[1];
-    var actionViewExplicit = react_1.useRef();
+    var domain = props.domain, model = props.model, context = props.context, views = props.views, title = props.title, setCanWeClose = props.setCanWeClose, tabKey = props.tabKey;
+    var _a = react_1.useState("tree"), currentView = _a[0], setCurrentView = _a[1];
+    var _b = react_1.useState([]), availableViews = _b[0], setAvailableViews = _b[1];
+    var _c = react_1.useState(), treeView = _c[0], setTreeView = _c[1];
+    var _d = react_1.useState(), formView = _d[0], setFormView = _d[1];
+    var _e = react_1.useState(false), isLoading = _e[0], setIsLoading = _e[1];
+    var _f = react_1.useState(), currentId = _f[0], setCurrentId = _f[1];
+    var _g = react_1.useState(), currentItemIndex = _g[0], setCurrentItemIndex = _g[1];
+    var _h = react_1.useState([]), results = _h[0], setResults = _h[1];
+    var _j = react_1.useState(), toolbar = _j[0], setToolbar = _j[1];
+    var formRef = react_1.useRef();
     react_1.useImperativeHandle(ref, function () { return ({
-        canWeClose: actionViewExplicit.current.canWeClose,
+        canWeClose: canWeClose,
     }); });
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
-        var dataForAction, parsedDomain, parsedContext, model, views;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var availableViews, _i, views_1, viewArray, viewType, viewData, err_1;
+        var _a;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
                     setIsLoading(true);
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getActionData(action)];
+                    availableViews = [];
+                    _i = 0, views_1 = views;
+                    _b.label = 1;
                 case 1:
-                    dataForAction = _a.sent();
-                    parsedDomain = dataForAction.domain
-                        ? ooui_1.parseDomain({
-                            domainValue: dataForAction.domain,
-                            values: {},
-                            fields: {},
-                        })
-                        : [];
-                    parsedContext = ooui_1.parseContext({
-                        context: dataForAction.context,
-                        values: {},
-                        fields: {},
-                    });
-                    model = dataForAction.res_model, views = dataForAction.views;
-                    setActionData({
-                        model: model,
-                        views: views,
-                        context: parsedContext,
-                        domain: parsedDomain,
-                    });
+                    if (!(_i < views_1.length)) return [3 /*break*/, 6];
+                    viewArray = views_1[_i];
+                    viewType = viewArray[1];
+                    _b.label = 2;
+                case 2:
+                    _b.trys.push([2, 4, , 5]);
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
+                            model: model,
+                            type: viewType,
+                            context: context,
+                        })];
+                case 3:
+                    viewData = _b.sent();
+                    if (viewType === "tree") {
+                        setTreeView(viewData);
+                    }
+                    if (viewType === "form") {
+                        setFormView(viewData);
+                        setToolbar((_a = viewData) === null || _a === void 0 ? void 0 : _a.toolbar);
+                    }
+                    availableViews.push(viewType);
+                    return [3 /*break*/, 5];
+                case 4:
+                    err_1 = _b.sent();
+                    console.error(model + " - " + viewType + "\u00A0- " + JSON.stringify(err_1, null, 2));
+                    return [3 /*break*/, 5];
+                case 5:
+                    _i++;
+                    return [3 /*break*/, 1];
+                case 6:
+                    if (availableViews.includes("tree")) {
+                        setCurrentView("tree");
+                    }
+                    else {
+                        setCurrentView("form");
+                    }
+                    setAvailableViews(availableViews);
                     setIsLoading(false);
                     return [2 /*return*/];
             }
         });
     }); };
+    setCanWeClose({ tabKey: tabKey, canWeClose: canWeClose });
     react_1.useEffect(function () {
+        setCurrentView("tree");
+        setCurrentId(undefined);
+        setCurrentItemIndex(undefined);
         fetchData();
-    }, [action]);
-    if (isLoading) {
-        return react_1.default.createElement(antd_1.Spin, null);
+    }, [model, views]);
+    function canWeClose() {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!(currentView === "form")) return [3 /*break*/, 2];
+                        return [4 /*yield*/, formRef.current.cancelUnsavedChanges()];
+                    case 1: return [2 /*return*/, _a.sent()];
+                    case 2: return [2 /*return*/, true];
+                }
+            });
+        });
     }
-    return (react_1.default.createElement(ActionViewExplicit_1.default, { ref: actionViewExplicit, tabKey: tabKey, title: title, model: actionData.model, views: actionData.views, context: actionData.context, domain: actionData.domain, setCanWeClose: setCanWeClose }));
+    function content() {
+        if (isLoading) {
+            return react_1.default.createElement(antd_1.Spin, null);
+        }
+        return (react_1.default.createElement(react_1.default.Fragment, null,
+            react_1.default.createElement(Form_1.default, { rootForm: true, visible: currentView === "form", ref: formRef, model: model, formView: formView, id: currentId, onSubmitSucceed: function (id) {
+                    var itemIndex = results.findIndex(function (item) {
+                        return item === id;
+                    });
+                    if (itemIndex === -1) {
+                        results.push(id);
+                        setResults(results);
+                        setCurrentItemIndex(results.length - 1);
+                    }
+                } }),
+            react_1.default.createElement(SearchTree_1.default, { visible: currentView === "tree", rootTree: true, model: model, formView: formView, treeView: treeView, domain: domain, onRowClicked: function (event) {
+                    var id = event.id;
+                    setCurrentId(id);
+                    var itemIndex = results.findIndex(function (item) {
+                        return item === id;
+                    });
+                    setCurrentItemIndex(itemIndex);
+                    setCurrentView("form");
+                } })));
+    }
+    function onNewClicked() {
+        setCurrentId(undefined);
+        setCurrentView("form");
+    }
+    return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId, setCurrentItemIndex: setCurrentItemIndex, currentItemIndex: currentItemIndex, results: results, setResults: setResults, currentModel: model, toolbar: toolbar, setToolbar: setToolbar },
+        react_1.default.createElement(TitleHeader_1.default, null, currentView === "form" ? react_1.default.createElement(FormActionBar_1.default, null) : react_1.default.createElement(TreeActionBar_1.default, null)),
+        content()));
 }
 exports.default = react_1.forwardRef(ActionView);
 //# sourceMappingURL=ActionView.js.map

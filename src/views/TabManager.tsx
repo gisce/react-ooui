@@ -5,12 +5,12 @@ import React, {
   useRef,
 } from "react";
 import { Tabs } from "antd";
-import { ActionView, ContentRootProvider } from "..";
+import { ConnectionProvider, ContentRootProvider } from "..";
 const { TabPane } = Tabs;
 import { v4 as uuidv4 } from "uuid";
 import Welcome from "./Welcome";
 import TabManagerProvider from "@/context/TabManagerContext";
-import ActionViewExplicit from "./ActionViewExplicit";
+import ActionView from "./ActionView";
 import { parseContext, parseDomain } from "ooui";
 
 type TabManagerProps = {
@@ -31,7 +31,7 @@ function TabManager(props: TabManagerProps, ref: any) {
   const tabViewsCloseFunctions = useRef(new Map<string, any>());
 
   useImperativeHandle(ref, () => ({
-    openNewTab,
+    openActionInNewTab,
   }));
 
   function remove(key: string) {
@@ -60,17 +60,39 @@ function TabManager(props: TabManagerProps, ref: any) {
     tabViewsCloseFunctions.current.set(tabKey, canWeClose);
   }
 
-  function openNewTab({ title, action }: { title: string; action: string }) {
+  async function openActionInNewTab(action: string) {
     const key = uuidv4();
+
+    const dataForAction = await ConnectionProvider.getHandler().getActionData(
+      action
+    );
+    const parsedDomain = dataForAction.domain
+      ? parseDomain({
+          domainValue: dataForAction.domain,
+          values: {},
+          fields: {},
+        })
+      : [];
+
+    const parsedContext = parseContext({
+      context: dataForAction.context,
+      values: {},
+      fields: {},
+    });
+
+    const { res_model: model, views, name: title } = dataForAction;
 
     addNewTab({
       title,
       content: (
         <ActionView
-          title={title}
-          action={action}
-          setCanWeClose={registerViewCloseFn}
           tabKey={key}
+          title={title}
+          views={views}
+          model={model}
+          context={parsedContext}
+          domain={parsedDomain}
+          setCanWeClose={registerViewCloseFn}
         />
       ),
       key,
@@ -170,7 +192,7 @@ function TabManager(props: TabManagerProps, ref: any) {
     addNewTab({
       title,
       content: (
-        <ActionViewExplicit
+        <ActionView
           tabKey={key}
           title={title}
           views={views}
