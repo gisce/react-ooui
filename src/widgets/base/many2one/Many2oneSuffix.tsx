@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { RightCircleOutlined } from "@ant-design/icons";
+import { RightCircleOutlined, PrinterOutlined, ThunderboltOutlined, EnterOutlined } from "@ant-design/icons";
 import { Menu, Dropdown, Spin } from "antd";
 import {
   TabManagerContext,
@@ -88,7 +88,7 @@ export const Many2oneSuffix = (props: Props) => {
     }
 
     const relateItems = formView?.toolbar?.relate.map((item: any) => {
-      return <Menu.Item key={item.id}>... {item.name}</Menu.Item>;
+      return <Menu.Item key={item.id}>{item.name}</Menu.Item>;
     });
 
     return (
@@ -99,6 +99,7 @@ export const Many2oneSuffix = (props: Props) => {
             disabled={
               !formView!.toolbar.action || formView!.toolbar.action.length === 0
             }
+            icon={<ThunderboltOutlined/>}
           >
             Acció
           </Menu.Item>,
@@ -107,11 +108,16 @@ export const Many2oneSuffix = (props: Props) => {
             disabled={
               !formView!.toolbar.print || formView!.toolbar.print.length === 0
             }
+            icon={<PrinterOutlined/>}
           >
             Informe
           </Menu.Item>,
           <Menu.Divider />,
-          ...relateItems,
+          <Menu.ItemGroup
+            title={<><EnterOutlined /> <span>Relacions</span></>}
+          >
+          {relateItems}
+          </Menu.ItemGroup>
         ]}
       </Menu>
     );
