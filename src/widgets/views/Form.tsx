@@ -445,6 +445,7 @@ function Form(props: FormProps, ref: any) {
 
     setError(undefined);
     if (!formHasChanges() && getCurrentId()! && callOnSubmitSucceed) {
+      setFormHasChanges?.(false);
       onCancel?.();
       return;
     }

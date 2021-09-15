@@ -438,6 +438,7 @@ function Form(props, ref) {
                     _a = (options || {}).callOnSubmitSucceed, callOnSubmitSucceed = _a === void 0 ? true : _a;
                     setError(undefined);
                     if (!formHasChanges() && getCurrentId() && callOnSubmitSucceed) {
+                        setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
                         onCancel === null || onCancel === void 0 ? void 0 : onCancel();
                         return [2 /*return*/];
                     }

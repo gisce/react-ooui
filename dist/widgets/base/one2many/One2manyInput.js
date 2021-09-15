@@ -515,8 +515,8 @@ var One2manyInput = function (props) {
     var onFormSubmitSucceed = function () {
         var _a;
         setFormIsSaving(false);
-        setItemSaved({ id: (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.id, saved: true });
         setFormHasChanges(false);
+        setItemSaved({ id: (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.id, saved: true });
     };
     // This is the callback called when a modal is done saving the object
     var onFormModalSubmitSucceed = function () {
