@@ -1,1 +1,1 @@
-{"version":3,"file":"TabManager.d.ts","sourceRoot":"","sources":["../../src/views/TabManager.tsx"],"names":[],"mappings":"AAAA,OAAO,KAKN,MAAM,OAAO,CAAC;AAUf,aAAK,eAAe,GAAG;IACrB,QAAQ,EAAE,KAAK,CAAC,SAAS,CAAC;IAC1B,YAAY,CAAC,EAAE,GAAG,CAAC;CACpB,CAAC;;AAwOF,wBAAsC"}
+{"version":3,"file":"TabManager.d.ts","sourceRoot":"","sources":["../../src/views/TabManager.tsx"],"names":[],"mappings":"AAAA,OAAO,KAKN,MAAM,OAAO,CAAC;AAUf,aAAK,eAAe,GAAG;IACrB,QAAQ,EAAE,KAAK,CAAC,SAAS,CAAC;IAC1B,YAAY,CAAC,EAAE,GAAG,CAAC;CACpB,CAAC;;AA2OF,wBAAsC"}

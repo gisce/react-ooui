@@ -141,14 +141,14 @@ function TabManager(props: TabManagerProps, ref: any) {
     const parsedDomain = domain
       ? parseDomain({
           domainValue: domain,
-          values: globalValues,
+          values: { ...values, ...globalValues },
           fields,
         })
       : [];
 
     const parsedContext = parseContext({
       context: context,
-      values,
+      values: { ...values, ...globalValues },
       fields,
     });
 
@@ -213,7 +213,10 @@ function TabManager(props: TabManagerProps, ref: any) {
 
   return (
     <TabManagerProvider openAction={openAction} openRelate={openRelate}>
-      <ContentRootProvider ref={contentRootProvider} globalValues={globalValues} >
+      <ContentRootProvider
+        ref={contentRootProvider}
+        globalValues={globalValues}
+      >
         <Tabs
           activeKey={activeKey}
           hideAdd
