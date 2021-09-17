@@ -109,7 +109,7 @@ function Form(props, ref) {
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
     var _r = (rootForm ? actionViewContext : {}) || {}, _s = _r.setFormIsSaving, setFormIsSaving = _s === void 0 ? undefined : _s, _t = _r.setFormHasChanges, setFormHasChanges = _t === void 0 ? undefined : _t, _u = _r.setCurrentId, setCurrentId = _u === void 0 ? undefined : _u, _v = _r.setFormIsLoading, setFormIsLoading = _v === void 0 ? undefined : _v, _w = _r.setAttachments, setAttachments = _w === void 0 ? undefined : _w;
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
-    var processAction = (contentRootContext || {}).processAction;
+    var _x = contentRootContext || {}, processAction = _x.processAction, globalValues = _x.globalValues;
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
         getFields: function () {
@@ -150,7 +150,10 @@ function Form(props, ref) {
         return id || createdId.current;
     }
     function getValues() {
-        return __assign(__assign({}, getCurrentValues(fields)), { id: getCurrentId(), active_id: getCurrentId(), parent_id: parentId });
+        return __assign(__assign({}, getCurrentValues(fields)), getExtraValues());
+    }
+    function getExtraValues() {
+        return __assign({ id: getCurrentId(), active_id: getCurrentId(), parent_id: parentId }, globalValues);
     }
     var getDefaultValues = function (fields) { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
@@ -488,7 +491,7 @@ function Form(props, ref) {
         // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
         ooui.parse(arch, {
             readOnly: readOnly,
-            values: __assign(__assign({}, values), { id: getCurrentId(), active_id: getCurrentId(), parent_id: parentId }),
+            values: __assign(__assign({}, values), getExtraValues()),
         });
         setFormOoui(ooui);
         if (formModalContext && ooui.string)

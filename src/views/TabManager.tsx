@@ -15,10 +15,11 @@ import { parseContext, parseDomain } from "ooui";
 
 type TabManagerProps = {
   children: React.ReactNode;
+  globalValues?: any;
 };
 
 function TabManager(props: TabManagerProps, ref: any) {
-  const { children } = props;
+  const { children, globalValues = {} } = props;
   const [activeKey, setActiveKey] = useState<string>();
   const [tabs, setTabs] = useState<any>([
     {
@@ -68,14 +69,14 @@ function TabManager(props: TabManagerProps, ref: any) {
     const parsedDomain = dataForAction.domain
       ? parseDomain({
           domainValue: dataForAction.domain,
-          values: {},
+          values: globalValues,
           fields: {},
         })
       : [];
 
     const parsedContext = parseContext({
       context: dataForAction.context,
-      values: {},
+      values: globalValues,
       fields: {},
     });
 
@@ -140,7 +141,7 @@ function TabManager(props: TabManagerProps, ref: any) {
     const parsedDomain = domain
       ? parseDomain({
           domainValue: domain,
-          values,
+          values: globalValues,
           fields,
         })
       : [];
@@ -212,7 +213,7 @@ function TabManager(props: TabManagerProps, ref: any) {
 
   return (
     <TabManagerProvider openAction={openAction} openRelate={openRelate}>
-      <ContentRootProvider ref={contentRootProvider}>
+      <ContentRootProvider ref={contentRootProvider} globalValues={globalValues} >
         <Tabs
           activeKey={activeKey}
           hideAdd

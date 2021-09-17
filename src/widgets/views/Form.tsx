@@ -135,7 +135,7 @@ function Form(props: FormProps, ref: any) {
   const contentRootContext = useContext(
     ContentRootContext
   ) as ContentRootContextType;
-  const { processAction } = contentRootContext || {};
+  const { processAction, globalValues } = contentRootContext || {};
 
   useImperativeHandle(ref, () => ({
     submitForm,
@@ -187,9 +187,16 @@ function Form(props: FormProps, ref: any) {
   function getValues() {
     return {
       ...getCurrentValues(fields),
+      ...getExtraValues(),
+    };
+  }
+
+  function getExtraValues() {
+    return {
       id: getCurrentId()!,
       active_id: getCurrentId()!,
       parent_id: parentId,
+      ...globalValues,
     };
   }
 
@@ -493,9 +500,7 @@ function Form(props: FormProps, ref: any) {
       readOnly,
       values: {
         ...values,
-        id: getCurrentId()!,
-        active_id: getCurrentId()!,
-        parent_id: parentId,
+        ...getExtraValues(),
       },
     });
     setFormOoui(ooui);

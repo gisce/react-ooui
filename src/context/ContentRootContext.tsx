@@ -30,6 +30,7 @@ export type ContentRootContextType = {
     context?: any;
     onRefreshParentValues?: () => void;
   }) => Promise<any>;
+  globalValues?: any;
 };
 
 type ActionModalOpts = {
@@ -45,13 +46,14 @@ export const ContentRootContext = React.createContext<ContentRootContextType | n
 
 type ContentRootProviderProps = {
   children: React.ReactNode;
+  globalValues?: any;
 };
 
 const ContentRootProvider = (
   props: ContentRootProviderProps,
   ref: any
 ): any => {
-  const { children } = props;
+  const { children, globalValues = {} } = props;
   const reportInProgressInterval = useRef<any>();
   const [reportGenerating, setReportGenerating] = useState<boolean>(false);
   const tabManagerContext = useContext(
@@ -214,7 +216,7 @@ const ContentRootProvider = (
     const responseContext = parseContext({
       context: actionData.context,
       fields,
-      values,
+      values: { ...values, ...globalValues },
     });
 
     const mergedContext = {
@@ -225,7 +227,7 @@ const ContentRootProvider = (
     const parsedDomain = actionData.domain
       ? parseDomain({
           domainValue: actionData.domain,
-          values: values,
+          values: { ...values, ...globalValues },
           fields,
         })
       : [];
@@ -323,6 +325,7 @@ const ContentRootProvider = (
       <ContentRootContext.Provider
         value={{
           processAction,
+          globalValues,
         }}
       >
         <>

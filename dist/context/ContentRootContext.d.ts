@@ -7,10 +7,12 @@ export declare type ContentRootContextType = {
         context?: any;
         onRefreshParentValues?: () => void;
     }) => Promise<any>;
+    globalValues?: any;
 };
 export declare const ContentRootContext: React.Context<ContentRootContextType | null>;
 declare type ContentRootProviderProps = {
     children: React.ReactNode;
+    globalValues?: any;
 };
 declare const _default: React.ForwardRefExoticComponent<ContentRootProviderProps & React.RefAttributes<unknown>>;
 export default _default;

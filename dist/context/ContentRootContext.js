@@ -91,9 +91,9 @@ var TabManagerContext_1 = require("@/context/TabManagerContext");
 var FormModal_1 = require("@/widgets/modals/FormModal");
 exports.ContentRootContext = react_1.default.createContext(null);
 var ContentRootProvider = function (props, ref) {
-    var children = props.children;
+    var children = props.children, _a = props.globalValues, globalValues = _a === void 0 ? {} : _a;
     var reportInProgressInterval = react_1.useRef();
-    var _a = react_1.useState(false), reportGenerating = _a[0], setReportGenerating = _a[1];
+    var _b = react_1.useState(false), reportGenerating = _b[0], setReportGenerating = _b[1];
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
     var openAction = (tabManagerContext || {}).openAction;
     var onRefreshParentValues = react_1.useRef();
@@ -101,10 +101,10 @@ var ContentRootProvider = function (props, ref) {
         openActionModal: openActionModal,
     }); });
     // Action modal state
-    var _b = react_1.useState(false), actionModalVisible = _b[0], setActionModalVisible = _b[1];
-    var _c = react_1.useState({
+    var _c = react_1.useState(false), actionModalVisible = _c[0], setActionModalVisible = _c[1];
+    var _d = react_1.useState({
         context: {},
-    }), actionModalOptions = _c[0], setActionModalOptions = _c[1];
+    }), actionModalOptions = _d[0], setActionModalOptions = _d[1];
     function generateReport(options) {
         return __awaiter(this, void 0, void 0, function () {
             var reportData, fields, values, _a, context, reportContext, model, datas, report_name, type, _b, ids, datasource, idsToExecute, results, reportContextParsed, newReportId_1, err_1;
@@ -250,13 +250,13 @@ var ContentRootProvider = function (props, ref) {
                         responseContext = ooui_1.parseContext({
                             context: actionData.context,
                             fields: fields,
-                            values: values,
+                            values: __assign(__assign({}, values), globalValues),
                         });
                         mergedContext = __assign(__assign({}, responseContext), context);
                         parsedDomain = actionData.domain
                             ? ooui_1.parseDomain({
                                 domainValue: actionData.domain,
-                                values: values,
+                                values: __assign(__assign({}, values), globalValues),
                                 fields: fields,
                             })
                             : [];
@@ -343,6 +343,7 @@ var ContentRootProvider = function (props, ref) {
     return (react_1.default.createElement(react_1.default.Fragment, null,
         react_1.default.createElement(exports.ContentRootContext.Provider, { value: {
                 processAction: processAction,
+                globalValues: globalValues,
             } },
             react_1.default.createElement(react_1.default.Fragment, null,
                 children,

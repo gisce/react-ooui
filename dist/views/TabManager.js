@@ -74,16 +74,16 @@ var ActionView_1 = __importDefault(require("./ActionView"));
 var ooui_1 = require("ooui");
 function TabManager(props, ref) {
     var _this = this;
-    var children = props.children;
-    var _a = react_1.useState(), activeKey = _a[0], setActiveKey = _a[1];
-    var _b = react_1.useState([
+    var children = props.children, _a = props.globalValues, globalValues = _a === void 0 ? {} : _a;
+    var _b = react_1.useState(), activeKey = _b[0], setActiveKey = _b[1];
+    var _c = react_1.useState([
         {
             title: "Welcome",
             key: "welcome",
             closable: true,
             content: react_1.default.createElement(Welcome_1.default, null),
         },
-    ]), tabs = _b[0], setTabs = _b[1];
+    ]), tabs = _c[0], setTabs = _c[1];
     var tabViewsCloseFunctions = react_1.useRef(new Map());
     var contentRootProvider = react_1.useRef();
     react_1.useImperativeHandle(ref, function () { return ({
@@ -117,13 +117,13 @@ function TabManager(props, ref) {
                         parsedDomain = dataForAction.domain
                             ? ooui_1.parseDomain({
                                 domainValue: dataForAction.domain,
-                                values: {},
+                                values: globalValues,
                                 fields: {},
                             })
                             : [];
                         parsedContext = ooui_1.parseContext({
                             context: dataForAction.context,
-                            values: {},
+                            values: globalValues,
                             fields: {},
                         });
                         model = dataForAction.res_model, views = dataForAction.views, title = dataForAction.name, target = dataForAction.target;
@@ -162,7 +162,7 @@ function TabManager(props, ref) {
         var parsedDomain = domain
             ? ooui_1.parseDomain({
                 domainValue: domain,
-                values: values,
+                values: globalValues,
                 fields: fields,
             })
             : [];
@@ -216,7 +216,7 @@ function TabManager(props, ref) {
         });
     }
     return (react_1.default.createElement(TabManagerContext_1.default, { openAction: openAction, openRelate: openRelate },
-        react_1.default.createElement(__1.ContentRootProvider, { ref: contentRootProvider },
+        react_1.default.createElement(__1.ContentRootProvider, { ref: contentRootProvider, globalValues: globalValues },
             react_1.default.createElement(antd_1.Tabs, { activeKey: activeKey, hideAdd: true, type: "editable-card", onChange: function (activeKey) {
                     setActiveKey(activeKey);
                 }, onEdit: function (targetKey, action) { return __awaiter(_this, void 0, void 0, function () {
