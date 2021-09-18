@@ -116,9 +116,7 @@ function Form(props, ref) {
             return fields;
         },
         getValues: getValues,
-        getContext: function () {
-            return __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context);
-        },
+        getContext: getContext,
         fetchValues: fetchValues,
         cancelUnsavedChanges: cancelUnsavedChanges,
     }); });
@@ -151,6 +149,9 @@ function Form(props, ref) {
     }
     function getValues() {
         return __assign(__assign({}, getCurrentValues(fields)), getExtraValues());
+    }
+    function getContext() {
+        return __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context);
     }
     function getExtraValues() {
         return __assign({ id: getCurrentId(), active_id: getCurrentId(), parent_id: parentId }, globalValues);
@@ -771,7 +772,7 @@ function Form(props, ref) {
             return null;
         }
         return (react_1.default.createElement(react_1.default.Fragment, null,
-            react_1.default.createElement(FormContext_1.default, { activeId: id, activeModel: model, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction },
+            react_1.default.createElement(FormContext_1.default, { activeId: id, activeModel: model, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction, getContext: getContext },
                 react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: debouncedCheckFieldsChanges, component: false, preserve: false }, formOoui && (react_1.default.createElement(Container_1.default, { container: formOoui.container, responsiveBehaviour: responsiveBehaviour }))))));
     };
     var footer = function () {

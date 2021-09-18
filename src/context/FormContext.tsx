@@ -14,6 +14,7 @@ export type FormContextType = {
     action: string;
     context?: any;
   }) => Promise<void>;
+  getContext: () => Promise<any>;
 };
 
 export const FormContext = React.createContext<FormContextType | null>(null);
@@ -30,6 +31,7 @@ const FormProvider = (props: FormProviderProps): any => {
     setFieldValue,
     getFieldValue,
     executeButtonAction,
+    getContext,
   } = props;
   return (
     <FormContext.Provider
@@ -39,6 +41,7 @@ const FormProvider = (props: FormProviderProps): any => {
         setFieldValue,
         getFieldValue,
         executeButtonAction,
+        getContext,
       }}
     >
       {children}

@@ -24,9 +24,10 @@ import {
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import useModalWidthDimensions from "@/hooks/useModalWidthDimensions";
 import useDeepCompareEffect from "use-deep-compare-effect";
+import showErrorDialog from "@/ui/ActionErrorDialog";
 
 type One2manyItem = {
-  operation: "original" | "pendingLink" | "pendingUpdate";
+  operation?: "original" | "pendingLink" | "pendingUpdate";
   id?: number;
   values?: any;
   treeValues?: any;
@@ -54,7 +55,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   } = useContext(One2manyContext) as One2manyContextType;
 
   const formContext = useContext(FormContext) as FormContextType;
-  const { activeId, activeModel } = formContext || {};
+  const { activeId, activeModel, getContext } = formContext || {};
 
   const formRef = useRef();
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
@@ -68,6 +69,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const [continuousEntryMode, setContinuousEntryMode] = useState<boolean>(
     false
   );
+  const [creatingInProgress, setCreatingInProgress] = useState<boolean>(false);
+
   const { modalHeight } = useModalWidthDimensions();
 
   const { readOnly, relation, domain } = ooui as One2manyOoui;
@@ -199,15 +202,39 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   };
 
   const createItem = async () => {
+    console.log(ooui);
+
+    const { inv_field } = ooui;
+    let values: any;
+
+    if (inv_field) {
+      setCreatingInProgress(true);
+
+      try {
+        const defaultValues = await ConnectionProvider.getHandler().defaultGet({
+          model: relation,
+          fields: views.get("form").fields,
+          context: getContext?.(),
+        });
+
+        values = { ...defaultValues, [inv_field]: activeId };
+      } catch (err) {
+        showErrorDialog(err);
+        setCreatingInProgress(false);
+      }
+
+      setCreatingInProgress(false);
+    }
+
     if (currentView === "form") {
       showFormChangesDialogIfNeeded(() => {
         setContinuousEntryMode(true);
-        setModalItem(undefined);
+        setModalItem({ values });
         setShowFormModal(true);
       });
     } else {
       setContinuousEntryMode(true);
-      setModalItem(undefined);
+      setModalItem({ values });
       setShowFormModal(true);
     }
   };
@@ -574,6 +601,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         onPreviousItem={previousItem}
         onNextItem={nextItem}
         onSearchItem={searchItem}
+        creatingInProgress={creatingInProgress}
       />
       {content()}
       <FormModal

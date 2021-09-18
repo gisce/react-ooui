@@ -143,9 +143,7 @@ function Form(props: FormProps, ref: any) {
       return fields;
     },
     getValues,
-    getContext: () => {
-      return { ...parentContext, ...formOoui?.context };
-    },
+    getContext,
     fetchValues,
     cancelUnsavedChanges,
   }));
@@ -189,6 +187,10 @@ function Form(props: FormProps, ref: any) {
       ...getCurrentValues(fields),
       ...getExtraValues(),
     };
+  }
+
+  function getContext() {
+    return { ...parentContext, ...formOoui?.context };
   }
 
   function getExtraValues() {
@@ -772,6 +774,7 @@ function Form(props: FormProps, ref: any) {
           setFieldValue={setFieldValue}
           getFieldValue={getFieldValue}
           executeButtonAction={executeButtonAction}
+          getContext={getContext}
         >
           <AntForm
             form={antForm}

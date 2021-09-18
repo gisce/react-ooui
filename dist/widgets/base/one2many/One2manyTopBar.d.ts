@@ -5,6 +5,7 @@ declare type One2manyTopBarProps = {
     readOnly: boolean;
     formIsSaving: boolean;
     formHasChanges: boolean;
+    creatingInProgress: boolean;
     onToggleViewMode: () => void;
     onCreateItem: () => void;
     onSaveItem: () => void;
