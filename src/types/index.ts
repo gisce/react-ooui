@@ -128,6 +128,7 @@ type DefaultGetRequest = {
   model: string;
   fields?: any;
   context?: any;
+  extraValues?: any; // For inv_fields many2one's and other fields.
 };
 
 type ConnectionProviderType = {

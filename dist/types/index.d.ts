@@ -106,6 +106,7 @@ declare type DefaultGetRequest = {
     model: string;
     fields?: any;
     context?: any;
+    extraValues?: any;
 };
 declare type ConnectionProviderType = {
     getActionStringForModel: (model: string) => Promise<string>;

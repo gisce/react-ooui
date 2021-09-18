@@ -211,13 +211,12 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       setCreatingInProgress(true);
 
       try {
-        const defaultValues = await ConnectionProvider.getHandler().defaultGet({
+        values = await ConnectionProvider.getHandler().defaultGet({
           model: relation,
           fields: views.get("form").fields,
           context: getContext?.(),
+          extraValues: { [inv_field]: activeId },
         });
-
-        values = { ...defaultValues, [inv_field]: activeId };
       } catch (err) {
         showErrorDialog(err);
         setCreatingInProgress(false);

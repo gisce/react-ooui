@@ -246,7 +246,7 @@ var One2manyInput = function (props) {
         formRef.current.submitForm();
     };
     var createItem = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var inv_field, values, defaultValues, err_2;
+        var inv_field, values, err_2;
         var _a;
         return __generator(this, function (_b) {
             switch (_b.label) {
@@ -262,10 +262,10 @@ var One2manyInput = function (props) {
                             model: relation,
                             fields: views.get("form").fields,
                             context: getContext === null || getContext === void 0 ? void 0 : getContext(),
+                            extraValues: (_a = {}, _a[inv_field] = activeId, _a),
                         })];
                 case 2:
-                    defaultValues = _b.sent();
-                    values = __assign(__assign({}, defaultValues), (_a = {}, _a[inv_field] = activeId, _a));
+                    values = _b.sent();
                     return [3 /*break*/, 4];
                 case 3:
                     err_2 = _b.sent();
