@@ -119,7 +119,7 @@ function TabManager(props, ref) {
     }
     function retrieveAndOpenAction(action) {
         return __awaiter(this, void 0, void 0, function () {
-            var dataForAction, parsedDomain, parsedContext, model, views, title, target;
+            var dataForAction, parsedDomain, parsedContext, model, views, title, target, view_mode, initialViewType;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, __1.ConnectionProvider.getHandler().getActionData(action)];
@@ -137,7 +137,8 @@ function TabManager(props, ref) {
                             values: globalValues,
                             fields: {},
                         });
-                        model = dataForAction.res_model, views = dataForAction.views, title = dataForAction.name, target = dataForAction.target;
+                        model = dataForAction.res_model, views = dataForAction.views, title = dataForAction.name, target = dataForAction.target, view_mode = dataForAction.view_mode;
+                        initialViewType = view_mode.split(",")[0];
                         openAction({
                             domain: parsedDomain,
                             context: parsedContext,
@@ -145,6 +146,7 @@ function TabManager(props, ref) {
                             views: views,
                             title: title,
                             target: target,
+                            initialViewType: initialViewType,
                         });
                         return [2 /*return*/];
                 }
@@ -169,7 +171,7 @@ function TabManager(props, ref) {
     }
     function openRelate(_a) {
         var relateData = _a.relateData, fields = _a.fields, values = _a.values;
-        var model = relateData.res_model, context = relateData.context, domain = relateData.domain, views = relateData.views, target = relateData.target, title = relateData.string;
+        var model = relateData.res_model, context = relateData.context, domain = relateData.domain, views = relateData.views, target = relateData.target, title = relateData.string, view_mode = relateData.view_mode;
         var parsedDomain = domain
             ? ooui_1.parseDomain({
                 domainValue: domain,
@@ -177,6 +179,7 @@ function TabManager(props, ref) {
                 fields: fields,
             })
             : [];
+        var initialViewType = view_mode.split(",")[0];
         var parsedContext = ooui_1.parseContext({
             context: context,
             values: __assign(__assign({}, values), globalValues),
@@ -189,10 +192,11 @@ function TabManager(props, ref) {
             context: parsedContext,
             domain: parsedDomain,
             title: title,
+            initialViewType: initialViewType,
         });
     }
     function openAction(_a) {
-        var domain = _a.domain, context = _a.context, model = _a.model, views = _a.views, title = _a.title, target = _a.target;
+        var domain = _a.domain, context = _a.context, model = _a.model, views = _a.views, title = _a.title, target = _a.target, initialViewType = _a.initialViewType;
         return __awaiter(this, void 0, void 0, function () {
             var key, formView;
             return __generator(this, function (_b) {
@@ -217,7 +221,7 @@ function TabManager(props, ref) {
                     case 2:
                         addNewTab({
                             title: title,
-                            content: (react_1.default.createElement(ActionView_1.default, { tabKey: key, title: title, views: views, model: model, context: context, domain: domain, setCanWeClose: registerViewCloseFn })),
+                            content: (react_1.default.createElement(ActionView_1.default, { tabKey: key, title: title, views: views, model: model, context: context, domain: domain, setCanWeClose: registerViewCloseFn, initialViewType: initialViewType })),
                             key: key,
                         });
                         _b.label = 3;

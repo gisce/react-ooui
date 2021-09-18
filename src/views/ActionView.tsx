@@ -26,11 +26,21 @@ type Props = {
   title: string;
   tabKey: string;
   setCanWeClose: (f: any) => void;
+  initialViewType?: ViewType;
 };
 
 function ActionView(props: Props, ref: any) {
-  const { domain, model, context, views, title, setCanWeClose, tabKey } = props;
-  const [currentView, setCurrentView] = useState<ViewType>("tree");
+  const {
+    domain,
+    model,
+    context,
+    views,
+    title,
+    setCanWeClose,
+    tabKey,
+    initialViewType = "tree",
+  } = props;
+  const [currentView, setCurrentView] = useState<ViewType>(initialViewType);
   const [availableViews, setAvailableViews] = useState<ViewType[]>([]);
 
   const [treeView, setTreeView] = useState<TreeView>();
@@ -77,9 +87,10 @@ function ActionView(props: Props, ref: any) {
       }
     }
 
-    if (availableViews.includes("tree")) {
+    // TODO: We will have to improve this when more views are supported
+    if (!initialViewType && availableViews.includes("tree")) {
       setCurrentView("tree");
-    } else {
+    } else if (!initialViewType) {
       setCurrentView("form");
     }
 
@@ -90,7 +101,7 @@ function ActionView(props: Props, ref: any) {
   setCanWeClose({ tabKey, canWeClose });
 
   useEffect(() => {
-    setCurrentView("tree");
+    setCurrentView(initialViewType || "tree");
     setCurrentId(undefined);
     setCurrentItemIndex(undefined);
     fetchData();

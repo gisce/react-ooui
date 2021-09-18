@@ -1,4 +1,5 @@
 import React from "react";
+import { ViewType } from "@/types/index";
 declare type Props = {
     domain: any;
     context: any;
@@ -7,6 +8,7 @@ declare type Props = {
     title: string;
     tabKey: string;
     setCanWeClose: (f: any) => void;
+    initialViewType?: ViewType;
 };
 declare const _default: React.ForwardRefExoticComponent<Props & React.RefAttributes<unknown>>;
 export default _default;

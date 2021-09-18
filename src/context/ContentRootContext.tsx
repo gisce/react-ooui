@@ -252,6 +252,8 @@ const ContentRootProvider = (
 
       return {};
     } else {
+      const initialViewType = actionData.view_mode.split(",")[0];
+
       openAction?.({
         target: "current",
         context: mergedContext,
@@ -261,6 +263,7 @@ const ContentRootProvider = (
           .split(",")
           .map((view: string) => [false, view]),
         title: actionData.name,
+        initialViewType,
       });
 
       return { closeParent: true };

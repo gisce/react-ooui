@@ -12,6 +12,7 @@ import Welcome from "./Welcome";
 import TabManagerProvider from "@/context/TabManagerContext";
 import ActionView from "./ActionView";
 import { parseContext, parseDomain } from "ooui";
+import { ViewType } from "@/types";
 
 type TabManagerProps = {
   children: React.ReactNode;
@@ -80,7 +81,15 @@ function TabManager(props: TabManagerProps, ref: any) {
       fields: {},
     });
 
-    const { res_model: model, views, name: title, target } = dataForAction;
+    const {
+      res_model: model,
+      views,
+      name: title,
+      target,
+      view_mode,
+    } = dataForAction;
+
+    const initialViewType = view_mode.split(",")[0];
 
     openAction({
       domain: parsedDomain,
@@ -89,6 +98,7 @@ function TabManager(props: TabManagerProps, ref: any) {
       views,
       title,
       target,
+      initialViewType,
     });
   }
 
@@ -136,6 +146,7 @@ function TabManager(props: TabManagerProps, ref: any) {
       views,
       target,
       string: title,
+      view_mode,
     } = relateData;
 
     const parsedDomain = domain
@@ -145,6 +156,8 @@ function TabManager(props: TabManagerProps, ref: any) {
           fields,
         })
       : [];
+
+    const initialViewType = view_mode.split(",")[0];
 
     const parsedContext = parseContext({
       context: context,
@@ -159,6 +172,7 @@ function TabManager(props: TabManagerProps, ref: any) {
       context: parsedContext,
       domain: parsedDomain,
       title,
+      initialViewType,
     });
   }
 
@@ -169,6 +183,7 @@ function TabManager(props: TabManagerProps, ref: any) {
     views,
     title,
     target,
+    initialViewType,
   }: {
     domain: any;
     context: any;
@@ -176,6 +191,7 @@ function TabManager(props: TabManagerProps, ref: any) {
     views: Array<any>;
     title: string;
     target: string;
+    initialViewType?: ViewType;
   }) {
     const key = uuidv4();
 
@@ -204,6 +220,7 @@ function TabManager(props: TabManagerProps, ref: any) {
             context={context}
             domain={domain}
             setCanWeClose={registerViewCloseFn}
+            initialViewType={initialViewType}
           />
         ),
         key,

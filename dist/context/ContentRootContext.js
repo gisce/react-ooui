@@ -233,7 +233,7 @@ var ContentRootProvider = function (props, ref) {
     function runAction(_a) {
         var _actionData = _a.actionData, _b = _a.fields, fields = _b === void 0 ? {} : _b, _c = _a.values, values = _c === void 0 ? {} : _c, _d = _a.context, context = _d === void 0 ? {} : _d;
         return __awaiter(this, void 0, void 0, function () {
-            var actionData, responseContext, mergedContext, parsedDomain, formView;
+            var actionData, responseContext, mergedContext, parsedDomain, formView, initialViewType;
             return __generator(this, function (_e) {
                 switch (_e.label) {
                     case 0:
@@ -276,6 +276,7 @@ var ContentRootProvider = function (props, ref) {
                         });
                         return [2 /*return*/, {}];
                     case 4:
+                        initialViewType = actionData.view_mode.split(",")[0];
                         openAction === null || openAction === void 0 ? void 0 : openAction({
                             target: "current",
                             context: mergedContext,
@@ -285,6 +286,7 @@ var ContentRootProvider = function (props, ref) {
                                 .split(",")
                                 .map(function (view) { return [false, view]; }),
                             title: actionData.name,
+                            initialViewType: initialViewType,
                         });
                         return [2 /*return*/, { closeParent: true }];
                 }

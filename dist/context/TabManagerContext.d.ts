@@ -1,12 +1,14 @@
+import { ViewType } from "@/types";
 import React from "react";
 export declare type TabManagerContextType = {
-    openAction: ({ domain, context, model, views, title, target, }: {
+    openAction: ({ domain, context, model, views, title, target, initialViewType, }: {
         domain: any;
         context: any;
         model: string;
         views: Array<any>;
         title: string;
         target: string;
+        initialViewType?: ViewType;
     }) => void;
     openRelate: ({ relateData, fields, values, }: {
         relateData: any;

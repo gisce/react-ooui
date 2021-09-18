@@ -69,16 +69,16 @@ var FormActionBar_1 = __importDefault(require("@/actionbar/FormActionBar"));
 var TreeActionBar_1 = __importDefault(require("@/actionbar/TreeActionBar"));
 function ActionView(props, ref) {
     var _this = this;
-    var domain = props.domain, model = props.model, context = props.context, views = props.views, title = props.title, setCanWeClose = props.setCanWeClose, tabKey = props.tabKey;
-    var _a = react_1.useState("tree"), currentView = _a[0], setCurrentView = _a[1];
-    var _b = react_1.useState([]), availableViews = _b[0], setAvailableViews = _b[1];
-    var _c = react_1.useState(), treeView = _c[0], setTreeView = _c[1];
-    var _d = react_1.useState(), formView = _d[0], setFormView = _d[1];
-    var _e = react_1.useState(false), isLoading = _e[0], setIsLoading = _e[1];
-    var _f = react_1.useState(), currentId = _f[0], setCurrentId = _f[1];
-    var _g = react_1.useState(), currentItemIndex = _g[0], setCurrentItemIndex = _g[1];
-    var _h = react_1.useState([]), results = _h[0], setResults = _h[1];
-    var _j = react_1.useState(), toolbar = _j[0], setToolbar = _j[1];
+    var domain = props.domain, model = props.model, context = props.context, views = props.views, title = props.title, setCanWeClose = props.setCanWeClose, tabKey = props.tabKey, _a = props.initialViewType, initialViewType = _a === void 0 ? "tree" : _a;
+    var _b = react_1.useState(initialViewType), currentView = _b[0], setCurrentView = _b[1];
+    var _c = react_1.useState([]), availableViews = _c[0], setAvailableViews = _c[1];
+    var _d = react_1.useState(), treeView = _d[0], setTreeView = _d[1];
+    var _e = react_1.useState(), formView = _e[0], setFormView = _e[1];
+    var _f = react_1.useState(false), isLoading = _f[0], setIsLoading = _f[1];
+    var _g = react_1.useState(), currentId = _g[0], setCurrentId = _g[1];
+    var _h = react_1.useState(), currentItemIndex = _h[0], setCurrentItemIndex = _h[1];
+    var _j = react_1.useState([]), results = _j[0], setResults = _j[1];
+    var _k = react_1.useState(), toolbar = _k[0], setToolbar = _k[1];
     var formRef = react_1.useRef();
     react_1.useImperativeHandle(ref, function () { return ({
         canWeClose: canWeClose,
@@ -124,10 +124,11 @@ function ActionView(props, ref) {
                     _i++;
                     return [3 /*break*/, 1];
                 case 6:
-                    if (availableViews.includes("tree")) {
+                    // TODO: We will have to improve this when more views are supported
+                    if (!initialViewType && availableViews.includes("tree")) {
                         setCurrentView("tree");
                     }
-                    else {
+                    else if (!initialViewType) {
                         setCurrentView("form");
                     }
                     setAvailableViews(availableViews);
@@ -138,7 +139,7 @@ function ActionView(props, ref) {
     }); };
     setCanWeClose({ tabKey: tabKey, canWeClose: canWeClose });
     react_1.useEffect(function () {
-        setCurrentView("tree");
+        setCurrentView(initialViewType || "tree");
         setCurrentId(undefined);
         setCurrentItemIndex(undefined);
         fetchData();

@@ -1,3 +1,4 @@
+import { ViewType } from "@/types";
 import React from "react";
 
 export type TabManagerContextType = {
@@ -8,6 +9,7 @@ export type TabManagerContextType = {
     views,
     title,
     target,
+    initialViewType,
   }: {
     domain: any;
     context: any;
@@ -15,6 +17,7 @@ export type TabManagerContextType = {
     views: Array<any>;
     title: string;
     target: string;
+    initialViewType?: ViewType;
   }) => void;
   openRelate: ({
     relateData,
