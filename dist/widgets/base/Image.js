@@ -76,9 +76,14 @@ var Field_1 = __importDefault(require("@/common/Field"));
 var ButtonWithTooltip_1 = __importDefault(require("@/common/ButtonWithTooltip"));
 var icons_1 = require("@ant-design/icons");
 var filesHelper_1 = require("@/helpers/filesHelper");
+var iconMapper_1 = __importDefault(require("@/helpers/iconMapper"));
 var Image = function (props) {
     var ooui = props.ooui;
-    var required = ooui.required;
+    var required = ooui.required, id = ooui.id;
+    var Icon = iconMapper_1.default(id);
+    if (Icon) {
+        return react_1.default.createElement(Icon, null);
+    }
     return (react_1.default.createElement(Field_1.default, __assign({ required: required }, props),
         react_1.default.createElement(exports.ImageInput, { ooui: ooui })));
 };
