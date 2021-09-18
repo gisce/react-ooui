@@ -26,6 +26,7 @@ import iconMapper from "@/helpers/iconMapper";
 import ActionBar from "@/actionbar/FormActionBar";
 import { Url } from "@/widgets/base/Url";
 import { Email } from "@/widgets/base/Email";
+import { Image } from "@/widgets/base/Image";
 
 import {
   TreeView,
@@ -100,5 +101,6 @@ export {
   TabManager,
   Url,
   Email,
+  Image,
   ContentRootProvider
 };

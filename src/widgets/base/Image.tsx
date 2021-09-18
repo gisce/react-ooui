@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 
 import { toBase64, getMimeType } from "@/helpers/filesHelper";
+import iconMapper from "@/helpers/iconMapper";
 
 type Props = {
   ooui: ImageOoui;
@@ -17,7 +18,13 @@ type Props = {
 
 export const Image = (props: Props) => {
   const { ooui } = props;
-  const { required } = ooui;
+  const { required, id } = ooui;
+
+  const Icon: React.ElementType = iconMapper(id);
+
+  if (Icon) {
+    return <Icon />
+  }
 
   return (
     <Field required={required} {...props}>
