@@ -89,7 +89,7 @@ var ContentRootContext_1 = require("@/context/ContentRootContext");
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
-    var model = props.model, id = props.id, propsOnCancel = props.onCancel, propsOnSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, propsOnSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, formViewProps = props.formView, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g, actionDomain = props.actionDomain, _h = props.visible, visible = _h === void 0 ? true : _h, _j = props.rootForm, rootForm = _j === void 0 ? false : _j;
+    var model = props.model, id = props.id, propsOnCancel = props.onCancel, propsOnSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, propsOnSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, formViewProps = props.formView, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g, actionDomain = props.actionDomain, _h = props.visible, visible = _h === void 0 ? true : _h, _j = props.rootForm, rootForm = _j === void 0 ? false : _j, defaultValues = props.defaultValues;
     var _k = react_1.useState(false), isSubmitting = _k[0], setIsSubmitting = _k[1];
     var _l = react_1.useState(), error = _l[0], setError = _l[1];
     var _m = react_1.useState(), formOoui = _m[0], setFormOoui = _m[1];
@@ -148,12 +148,12 @@ function Form(props, ref) {
         return id || createdId.current;
     }
     function getValues() {
-        return __assign(__assign({}, getCurrentValues(fields)), getExtraValues());
+        return __assign(__assign({}, getCurrentValues(fields)), getAdditionalValues());
     }
     function getContext() {
         return __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context);
     }
-    function getExtraValues() {
+    function getAdditionalValues() {
         return __assign({ id: getCurrentId(), active_id: getCurrentId(), parent_id: parentId }, globalValues);
     }
     var getDefaultValues = function (fields) { return __awaiter(_this, void 0, void 0, function () {
@@ -163,6 +163,7 @@ function Form(props, ref) {
                         model: model,
                         fields: fields,
                         context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
+                        extraValues: defaultValues,
                     })];
                 case 1: return [2 /*return*/, _a.sent()];
             }
@@ -492,7 +493,7 @@ function Form(props, ref) {
         // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
         ooui.parse(arch, {
             readOnly: readOnly,
-            values: __assign(__assign({}, values), getExtraValues()),
+            values: __assign(__assign({}, values), getAdditionalValues()),
         });
         setFormOoui(ooui);
         if (formModalContext && ooui.string)

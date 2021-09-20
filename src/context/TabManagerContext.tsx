@@ -28,6 +28,17 @@ export type TabManagerContextType = {
     fields: any;
     values: any;
   }) => void;
+  openSpecificModelTab: ({
+    model,
+    values,
+    title,
+    initialViewType,
+  }: {
+    model: string;
+    values?: any;
+    title: string;
+    initialViewType?: ViewType;
+  }) => void;
 };
 
 export const TabManagerContext = React.createContext<TabManagerContextType | null>(
@@ -39,13 +50,14 @@ type TabManagerProviderProps = TabManagerContextType & {
 };
 
 const TabManagerProvider = (props: TabManagerProviderProps): any => {
-  const { children, openAction, openRelate } = props;
+  const { children, openAction, openRelate, openSpecificModelTab } = props;
 
   return (
     <TabManagerContext.Provider
       value={{
         openAction,
         openRelate,
+        openSpecificModelTab,
       }}
     >
       {children}

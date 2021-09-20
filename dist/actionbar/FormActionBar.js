@@ -81,16 +81,16 @@ var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"
 var ConfirmDialog_1 = __importDefault(require("@/ui/ConfirmDialog"));
 var GenericErrorDialog_1 = __importDefault(require("@/ui/GenericErrorDialog"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
-var filesHelper_1 = require("@/helpers/filesHelper");
 var TabManagerContext_1 = require("@/context/TabManagerContext");
 var ContentRootContext_1 = require("@/context/ContentRootContext");
+var AttachmentsButton_1 = __importDefault(require("./AttachmentsButton"));
 function FormActionBar() {
     var _this = this;
     var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, onFormSave = _a.onFormSave, formHasChanges = _a.formHasChanges, formIsSaving = _a.formIsSaving, currentId = _a.currentId, results = _a.results, setCurrentItemIndex = _a.setCurrentItemIndex, currentItemIndex = _a.currentItemIndex, setCurrentId = _a.setCurrentId, currentModel = _a.currentModel, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, setResults = _a.setResults, formIsLoading = _a.formIsLoading, toolbar = _a.toolbar, attachments = _a.attachments, formRef = _a.formRef;
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
     var processAction = (contentRootContext || {}).processAction;
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
-    var openRelate = (tabManagerContext || {}).openRelate;
+    var _b = tabManagerContext || {}, openRelate = _b.openRelate, openSpecificModelTab = _b.openSpecificModelTab;
     function tryNavigate(callback) {
         if (formHasChanges) {
             UnsavedChangesDialog_1.default({
@@ -189,6 +189,15 @@ function FormActionBar() {
                 removingItem ||
                 formIsLoading, loading: removingItem, onClick: tryDelete }),
         separator(),
+        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.ReloadOutlined, null), tooltip: "Rrefresh", disabled: formIsSaving ||
+                currentId === undefined ||
+                removingItem ||
+                formIsLoading, loading: false, onClick: function () {
+                tryNavigate(function () {
+                    formRef.current.fetchValues();
+                });
+            } }),
+        separator(),
         react_1.default.createElement(antd_1.Space, null,
             react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.LeftOutlined, null), tooltip: "Previous", disabled: mustDisableButtons, loading: false, onClick: function () {
                     tryNavigate(onPreviousClick);
@@ -224,22 +233,18 @@ function FormActionBar() {
                     return [2 /*return*/];
                 });
             }); } }),
-        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.LinkOutlined, null), disabled: mustDisableButtons, label: "(" + attachments.length + ")", tooltip: "Attachments", items: attachments, onItemClick: function (attachment) { return __awaiter(_this, void 0, void 0, function () {
-                var fileType;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            if (!attachment) {
-                                return [2 /*return*/];
-                            }
-                            return [4 /*yield*/, filesHelper_1.getMimeType(attachment.datas)];
-                        case 1:
-                            fileType = _a.sent();
-                            filesHelper_1.openBase64InNewTab(attachment.datas, fileType.mime);
-                            return [2 /*return*/];
-                    }
+        react_1.default.createElement(AttachmentsButton_1.default, { disabled: mustDisableButtons, attachments: attachments, onAddNewAttachment: function () {
+                var res_id = currentId;
+                var res_model = currentModel;
+                openSpecificModelTab({
+                    model: "ir.attachment",
+                    title: "Add new attachment",
+                    initialViewType: "form",
+                    values: {
+                        selection_associated_object: res_model + "," + res_id,
+                    },
                 });
-            }); } })));
+            } })));
 }
 function separator() {
     return react_1.default.createElement("div", { className: "inline-block w-2" });

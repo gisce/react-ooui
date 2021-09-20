@@ -20,6 +20,7 @@ export declare type FormProps = {
     actionDomain?: any;
     visible?: boolean;
     rootForm?: boolean;
+    defaultValues?: any;
 };
 declare const _default: React.ForwardRefExoticComponent<FormProps & React.RefAttributes<unknown>>;
 export default _default;

@@ -138,7 +138,7 @@ function TabManager(props, ref) {
                             fields: {},
                         });
                         model = dataForAction.res_model, views = dataForAction.views, title = dataForAction.name, target = dataForAction.target, view_mode = dataForAction.view_mode;
-                        initialViewType = view_mode.split(",")[0];
+                        initialViewType = views[0][1];
                         openAction({
                             domain: parsedDomain,
                             context: parsedContext,
@@ -179,7 +179,7 @@ function TabManager(props, ref) {
                 fields: fields,
             })
             : [];
-        var initialViewType = view_mode.split(",")[0];
+        var initialViewType = views[0][1];
         var parsedContext = ooui_1.parseContext({
             context: context,
             values: __assign(__assign({}, values), globalValues),
@@ -193,6 +193,24 @@ function TabManager(props, ref) {
             domain: parsedDomain,
             title: title,
             initialViewType: initialViewType,
+        });
+    }
+    function openSpecificModelTab(_a) {
+        var model = _a.model, values = _a.values, title = _a.title, initialViewType = _a.initialViewType;
+        return __awaiter(this, void 0, void 0, function () {
+            var key;
+            return __generator(this, function (_b) {
+                key = uuid_1.v4();
+                addNewTab({
+                    title: title,
+                    content: (react_1.default.createElement(ActionView_1.default, { tabKey: key, title: title, views: [
+                            [, "form"],
+                            [, "tree"],
+                        ], formDefaultValues: values, model: model, context: {}, domain: {}, setCanWeClose: registerViewCloseFn, initialViewType: initialViewType })),
+                    key: key,
+                });
+                return [2 /*return*/];
+            });
         });
     }
     function openAction(_a) {
@@ -230,7 +248,7 @@ function TabManager(props, ref) {
             });
         });
     }
-    return (react_1.default.createElement(TabManagerContext_1.default, { openAction: openAction, openRelate: openRelate },
+    return (react_1.default.createElement(TabManagerContext_1.default, { openAction: openAction, openRelate: openRelate, openSpecificModelTab: openSpecificModelTab },
         react_1.default.createElement(__1.ContentRootProvider, { ref: contentRootProvider, globalValues: globalValues },
             react_1.default.createElement(antd_1.Tabs, { activeKey: activeKey, hideAdd: true, type: "editable-card", onChange: function (activeKey) {
                     setActiveKey(activeKey);

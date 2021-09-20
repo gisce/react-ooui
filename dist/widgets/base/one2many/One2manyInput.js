@@ -87,7 +87,6 @@ var one2manyHelper_1 = require("@/helpers/one2manyHelper");
 var SearchModal_1 = require("@/widgets/modals/SearchModal");
 var useModalWidthDimensions_1 = __importDefault(require("@/hooks/useModalWidthDimensions"));
 var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
-var ActionErrorDialog_1 = __importDefault(require("@/ui/ActionErrorDialog"));
 var One2manyInput = function (props) {
     var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui, views = props.views;
     var _b = react_1.useContext(One2manyContext_1.One2manyContext), currentView = _b.currentView, setCurrentView = _b.setCurrentView, itemIndex = _b.itemIndex, setItemIndex = _b.setItemIndex, manualTriggerChange = _b.manualTriggerChange, setManualTriggerChange = _b.setManualTriggerChange;
@@ -103,9 +102,8 @@ var One2manyInput = function (props) {
     var _k = react_1.useState(false), formIsSaving = _k[0], setFormIsSaving = _k[1];
     var _l = react_1.useState([]), selectedRowKeys = _l[0], setSelectedRowKeys = _l[1];
     var _m = react_1.useState(false), continuousEntryMode = _m[0], setContinuousEntryMode = _m[1];
-    var _o = react_1.useState(false), creatingInProgress = _o[0], setCreatingInProgress = _o[1];
     var modalHeight = useModalWidthDimensions_1.default().modalHeight;
-    var _p = ooui, readOnly = _p.readOnly, relation = _p.relation, domain = _p.domain;
+    var _o = ooui, readOnly = _o.readOnly, relation = _o.relation, domain = _o.domain;
     var isMany2many = ooui.type === "many2many";
     var fieldName = ooui.id;
     var itemsToShow = items.filter(function (item) { return item.values; });
@@ -246,50 +244,27 @@ var One2manyInput = function (props) {
         formRef.current.submitForm();
     };
     var createItem = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var inv_field, values, err_2;
+        var inv_field, defaultValues;
         var _a;
         return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    console.log(ooui);
-                    inv_field = ooui.inv_field;
-                    if (!inv_field) return [3 /*break*/, 5];
-                    setCreatingInProgress(true);
-                    _b.label = 1;
-                case 1:
-                    _b.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().defaultGet({
-                            model: relation,
-                            fields: views.get("form").fields,
-                            context: getContext === null || getContext === void 0 ? void 0 : getContext(),
-                            extraValues: (_a = {}, _a[inv_field] = activeId, _a),
-                        })];
-                case 2:
-                    values = _b.sent();
-                    return [3 /*break*/, 4];
-                case 3:
-                    err_2 = _b.sent();
-                    ActionErrorDialog_1.default(err_2);
-                    setCreatingInProgress(false);
-                    return [3 /*break*/, 4];
-                case 4:
-                    setCreatingInProgress(false);
-                    _b.label = 5;
-                case 5:
-                    if (currentView === "form") {
-                        showFormChangesDialogIfNeeded(function () {
-                            setContinuousEntryMode(true);
-                            setModalItem({ values: values });
-                            setShowFormModal(true);
-                        });
-                    }
-                    else {
-                        setContinuousEntryMode(true);
-                        setModalItem({ values: values });
-                        setShowFormModal(true);
-                    }
-                    return [2 /*return*/];
+            console.log(ooui);
+            inv_field = ooui.inv_field;
+            if (inv_field) {
+                defaultValues = (_a = {}, _a[inv_field] = activeId, _a);
             }
+            if (currentView === "form") {
+                showFormChangesDialogIfNeeded(function () {
+                    setContinuousEntryMode(true);
+                    setModalItem({ defaultValues: defaultValues });
+                    setShowFormModal(true);
+                });
+            }
+            else {
+                setContinuousEntryMode(true);
+                setModalItem({ defaultValues: defaultValues });
+                setShowFormModal(true);
+            }
+            return [2 /*return*/];
         });
     }); };
     var searchItem = function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -306,7 +281,7 @@ var One2manyInput = function (props) {
         });
     }); };
     var removeCurrentItem = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var err_3;
+        var err_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -333,8 +308,8 @@ var One2manyInput = function (props) {
                     triggerChange(items.filter(function (item) { return item.id !== itemsToShow[itemIndex].id; }));
                     return [3 /*break*/, 5];
                 case 4:
-                    err_3 = _a.sent();
-                    setError(err_3);
+                    err_2 = _a.sent();
+                    setError(err_2);
                     return [3 /*break*/, 5];
                 case 5:
                     setItemIndex(0);
@@ -344,7 +319,7 @@ var One2manyInput = function (props) {
         });
     }); };
     var removeSelectedItems = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var itemsToRemove, idsToRemove, updatedItems, err_4;
+        var itemsToRemove, idsToRemove, updatedItems, err_3;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -375,8 +350,8 @@ var One2manyInput = function (props) {
                     triggerChange(updatedItems);
                     return [3 /*break*/, 5];
                 case 4:
-                    err_4 = _a.sent();
-                    setError(err_4);
+                    err_3 = _a.sent();
+                    setError(err_3);
                     return [3 /*break*/, 5];
                 case 5:
                     setItemIndex(0);
@@ -623,9 +598,9 @@ var One2manyInput = function (props) {
         return react_1.default.createElement(antd_1.Spin, null);
     }
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(One2manyTopBar_1.One2manyTopBar, { mode: currentView, title: getTitle(), readOnly: readOnly, isMany2Many: isMany2many, formHasChanges: formHasChanges, formIsSaving: formIsSaving, totalItems: itemsToShow.length, currentItemIndex: itemIndex, onSaveItem: saveItem, onDelete: showRemoveConfirm, onCreateItem: createItem, onToggleViewMode: toggleViewMode, onPreviousItem: previousItem, onNextItem: nextItem, onSearchItem: searchItem, creatingInProgress: creatingInProgress }),
+        react_1.default.createElement(One2manyTopBar_1.One2manyTopBar, { mode: currentView, title: getTitle(), readOnly: readOnly, isMany2Many: isMany2many, formHasChanges: formHasChanges, formIsSaving: formIsSaving, totalItems: itemsToShow.length, currentItemIndex: itemIndex, onSaveItem: saveItem, onDelete: showRemoveConfirm, onCreateItem: createItem, onToggleViewMode: toggleViewMode, onPreviousItem: previousItem, onNextItem: nextItem, onSearchItem: searchItem }),
         content(),
-        react_1.default.createElement(FormModal_1.FormModal, { formView: views.get("form"), model: relation, id: modalItem === null || modalItem === void 0 ? void 0 : modalItem.id, values: modalItem === null || modalItem === void 0 ? void 0 : modalItem.values, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, onCancel: function () {
+        react_1.default.createElement(FormModal_1.FormModal, { formView: views.get("form"), model: relation, id: modalItem === null || modalItem === void 0 ? void 0 : modalItem.id, values: modalItem === null || modalItem === void 0 ? void 0 : modalItem.values, defaultValues: modalItem === null || modalItem === void 0 ? void 0 : modalItem.defaultValues, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, onCancel: function () {
                 setContinuousEntryMode(false);
                 setShowFormModal(false);
             }, readOnly: readOnly, mustClearAfterSave: mustClearAfterSave, postSaveAction: formModalPostSaveAction }),

@@ -21,7 +21,6 @@ type One2manyTopBarProps = {
   readOnly: boolean;
   formIsSaving: boolean;
   formHasChanges: boolean;
-  creatingInProgress: boolean;
   onToggleViewMode: () => void;
   onCreateItem: () => void;
   onSaveItem: () => void;
@@ -50,7 +49,6 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
     onNextItem,
     isMany2Many,
     onSearchItem,
-    creatingInProgress,
   } = props;
 
   function separator() {
@@ -128,7 +126,7 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
       <div className="h-8 flex-none pl-2">
         <ButtonWithTooltip
           tooltip={"Create new item"}
-          icon={creatingInProgress ? <LoadingOutlined /> : <FileAddOutlined />}
+          icon={<FileAddOutlined />}
           disabled={readOnly}
           onClick={onCreateItem}
         />

@@ -69,7 +69,7 @@ var FormActionBar_1 = __importDefault(require("@/actionbar/FormActionBar"));
 var TreeActionBar_1 = __importDefault(require("@/actionbar/TreeActionBar"));
 function ActionView(props, ref) {
     var _this = this;
-    var domain = props.domain, model = props.model, context = props.context, views = props.views, title = props.title, setCanWeClose = props.setCanWeClose, tabKey = props.tabKey, _a = props.initialViewType, initialViewType = _a === void 0 ? "tree" : _a;
+    var domain = props.domain, model = props.model, context = props.context, views = props.views, title = props.title, setCanWeClose = props.setCanWeClose, tabKey = props.tabKey, _a = props.initialViewType, initialViewType = _a === void 0 ? "tree" : _a, formDefaultValues = props.formDefaultValues;
     var _b = react_1.useState(initialViewType), currentView = _b[0], setCurrentView = _b[1];
     var _c = react_1.useState([]), availableViews = _c[0], setAvailableViews = _c[1];
     var _d = react_1.useState(), treeView = _d[0], setTreeView = _d[1];
@@ -162,7 +162,7 @@ function ActionView(props, ref) {
             return react_1.default.createElement(antd_1.Spin, null);
         }
         return (react_1.default.createElement(react_1.default.Fragment, null,
-            react_1.default.createElement(Form_1.default, { rootForm: true, visible: currentView === "form", ref: formRef, model: model, formView: formView, id: currentId, onSubmitSucceed: function (id) {
+            react_1.default.createElement(Form_1.default, { rootForm: true, visible: currentView === "form", ref: formRef, model: model, defaultValues: formDefaultValues, formView: formView, id: currentId, onSubmitSucceed: function (id) {
                     var itemIndex = results.findIndex(function (item) {
                         return item === id;
                     });

@@ -1,0 +1,1 @@
+{"version":3,"file":"AttachmentsButton.d.ts","sourceRoot":"","sources":["../../src/actionbar/AttachmentsButton.tsx"],"names":[],"mappings":"AAMA,aAAK,sBAAsB,GAAG;IAC5B,WAAW,CAAC,EAAE,GAAG,CAAC;IAClB,QAAQ,CAAC,EAAE,OAAO,CAAC;IACnB,kBAAkB,EAAE,MAAM,IAAI,CAAC;CAChC,CAAC;AAEF,iBAAS,iBAAiB,CAAC,KAAK,EAAE,sBAAsB,eA6BvD;AAED,eAAe,iBAAiB,CAAC"}

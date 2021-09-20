@@ -89,7 +89,7 @@ function TabManager(props: TabManagerProps, ref: any) {
       view_mode,
     } = dataForAction;
 
-    const initialViewType = view_mode.split(",")[0];
+    const initialViewType = views[0][1];
 
     openAction({
       domain: parsedDomain,
@@ -157,7 +157,7 @@ function TabManager(props: TabManagerProps, ref: any) {
         })
       : [];
 
-    const initialViewType = view_mode.split(",")[0];
+    const initialViewType = views[0][1];
 
     const parsedContext = parseContext({
       context: context,
@@ -173,6 +173,41 @@ function TabManager(props: TabManagerProps, ref: any) {
       domain: parsedDomain,
       title,
       initialViewType,
+    });
+  }
+
+  async function openSpecificModelTab({
+    model,
+    values,
+    title,
+    initialViewType,
+  }: {
+    model: string;
+    values?: any;
+    title: string;
+    initialViewType?: ViewType;
+  }) {
+    const key = uuidv4();
+
+    addNewTab({
+      title,
+      content: (
+        <ActionView
+          tabKey={key}
+          title={title}
+          views={[
+            [, "form"],
+            [, "tree"],
+          ]}
+          formDefaultValues={values}
+          model={model}
+          context={{}}
+          domain={{}}
+          setCanWeClose={registerViewCloseFn}
+          initialViewType={initialViewType}
+        />
+      ),
+      key,
     });
   }
 
@@ -229,7 +264,11 @@ function TabManager(props: TabManagerProps, ref: any) {
   }
 
   return (
-    <TabManagerProvider openAction={openAction} openRelate={openRelate}>
+    <TabManagerProvider
+      openAction={openAction}
+      openRelate={openRelate}
+      openSpecificModelTab={openSpecificModelTab}
+    >
       <ContentRootProvider
         ref={contentRootProvider}
         globalValues={globalValues}

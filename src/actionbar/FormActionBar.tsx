@@ -6,9 +6,9 @@ import {
   LeftOutlined,
   DeleteOutlined,
   ThunderboltOutlined,
-  LinkOutlined,
   PrinterOutlined,
   EnterOutlined,
+  ReloadOutlined,
 } from "@ant-design/icons";
 import ChangeViewButton from "./ChangeViewButton";
 import DropdownButton from "./DropdownButton";
@@ -23,7 +23,6 @@ import showConfirmDialog from "@/ui/ConfirmDialog";
 import showErrorDialog from "@/ui/GenericErrorDialog";
 import ConnectionProvider from "@/ConnectionProvider";
 
-import { getMimeType, openBase64InNewTab } from "@/helpers/filesHelper";
 import {
   TabManagerContext,
   TabManagerContextType,
@@ -33,6 +32,7 @@ import {
   ContentRootContext,
   ContentRootContextType,
 } from "@/context/ContentRootContext";
+import AttachmentsButton from "./AttachmentsButton";
 
 function FormActionBar() {
   const {
@@ -65,7 +65,7 @@ function FormActionBar() {
   const tabManagerContext = useContext(
     TabManagerContext
   ) as TabManagerContextType;
-  const { openRelate } = tabManagerContext || {};
+  const { openRelate, openSpecificModelTab } = tabManagerContext || {};
 
   function tryNavigate(callback: any) {
     if (formHasChanges) {
@@ -181,6 +181,23 @@ function FormActionBar() {
         onClick={tryDelete}
       />
       {separator()}
+      <ActionButton
+        icon={<ReloadOutlined />}
+        tooltip={"Rrefresh"}
+        disabled={
+          formIsSaving ||
+          currentId === undefined ||
+          removingItem ||
+          formIsLoading
+        }
+        loading={false}
+        onClick={() => {
+          tryNavigate(() => {
+            (formRef.current as any).fetchValues();
+          });
+        }}
+      />
+      {separator()}
       <Space>
         <ActionButton
           icon={<LeftOutlined />}
@@ -255,19 +272,20 @@ function FormActionBar() {
           });
         }}
       />
-      <DropdownButton
-        icon={<LinkOutlined />}
+      <AttachmentsButton
         disabled={mustDisableButtons}
-        label={`(${attachments.length})`}
-        tooltip="Attachments"
-        items={attachments}
-        onItemClick={async (attachment: any) => {
-          if (!attachment) {
-            return;
-          }
-
-          const fileType: any = await getMimeType(attachment.datas!);
-          openBase64InNewTab(attachment.datas, fileType.mime);
+        attachments={attachments}
+        onAddNewAttachment={() => {
+          const res_id = currentId as number;
+          const res_model = currentModel as string;
+          openSpecificModelTab({
+            model: "ir.attachment",
+            title: "Add new attachment",
+            initialViewType: "form",
+            values: {
+              selection_associated_object: `${res_model},${res_id}`,
+            },
+          });
         }}
       />
     </Space>

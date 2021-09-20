@@ -73,6 +73,7 @@ export type FormProps = {
   actionDomain?: any;
   visible?: boolean;
   rootForm?: boolean;
+  defaultValues?: any;
 };
 
 const WIDTH_BREAKPOINT = 1000;
@@ -98,6 +99,7 @@ function Form(props: FormProps, ref: any) {
     actionDomain,
     visible = true,
     rootForm = false,
+    defaultValues,
   } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -185,7 +187,7 @@ function Form(props: FormProps, ref: any) {
   function getValues() {
     return {
       ...getCurrentValues(fields),
-      ...getExtraValues(),
+      ...getAdditionalValues(),
     };
   }
 
@@ -193,7 +195,7 @@ function Form(props: FormProps, ref: any) {
     return { ...parentContext, ...formOoui?.context };
   }
 
-  function getExtraValues() {
+  function getAdditionalValues() {
     return {
       id: getCurrentId()!,
       active_id: getCurrentId()!,
@@ -207,6 +209,7 @@ function Form(props: FormProps, ref: any) {
       model,
       fields,
       context: { ...parentContext, ...formOoui?.context },
+      extraValues: defaultValues,
     });
   };
 
@@ -502,7 +505,7 @@ function Form(props: FormProps, ref: any) {
       readOnly,
       values: {
         ...values,
-        ...getExtraValues(),
+        ...getAdditionalValues(),
       },
     });
     setFormOoui(ooui);

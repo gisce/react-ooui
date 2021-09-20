@@ -15,6 +15,12 @@ export declare type TabManagerContextType = {
         fields: any;
         values: any;
     }) => void;
+    openSpecificModelTab: ({ model, values, title, initialViewType, }: {
+        model: string;
+        values?: any;
+        title: string;
+        initialViewType?: ViewType;
+    }) => void;
 };
 export declare const TabManagerContext: React.Context<TabManagerContextType | null>;
 declare type TabManagerProviderProps = TabManagerContextType & {

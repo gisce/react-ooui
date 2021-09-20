@@ -27,6 +27,7 @@ type Props = {
   tabKey: string;
   setCanWeClose: (f: any) => void;
   initialViewType?: ViewType;
+  formDefaultValues?: any;
 };
 
 function ActionView(props: Props, ref: any) {
@@ -39,6 +40,7 @@ function ActionView(props: Props, ref: any) {
     setCanWeClose,
     tabKey,
     initialViewType = "tree",
+    formDefaultValues,
   } = props;
   const [currentView, setCurrentView] = useState<ViewType>(initialViewType);
   const [availableViews, setAvailableViews] = useState<ViewType[]>([]);
@@ -101,7 +103,7 @@ function ActionView(props: Props, ref: any) {
   setCanWeClose({ tabKey, canWeClose });
 
   useEffect(() => {
-    setCurrentView(initialViewType || "tree");
+    setCurrentView(initialViewType || "tree");
     setCurrentId(undefined);
     setCurrentItemIndex(undefined);
     fetchData();
@@ -127,6 +129,7 @@ function ActionView(props: Props, ref: any) {
           visible={currentView === "form"}
           ref={formRef}
           model={model}
+          defaultValues={formDefaultValues}
           formView={formView}
           id={currentId}
           onSubmitSucceed={(id) => {

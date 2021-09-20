@@ -31,6 +31,7 @@ type One2manyItem = {
   id?: number;
   values?: any;
   treeValues?: any;
+  defaultValues?: any;
 };
 
 interface One2manyInputProps {
@@ -69,7 +70,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const [continuousEntryMode, setContinuousEntryMode] = useState<boolean>(
     false
   );
-  const [creatingInProgress, setCreatingInProgress] = useState<boolean>(false);
 
   const { modalHeight } = useModalWidthDimensions();
 
@@ -205,35 +205,21 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     console.log(ooui);
 
     const { inv_field } = ooui;
-    let values: any;
+    let defaultValues: any;
 
     if (inv_field) {
-      setCreatingInProgress(true);
-
-      try {
-        values = await ConnectionProvider.getHandler().defaultGet({
-          model: relation,
-          fields: views.get("form").fields,
-          context: getContext?.(),
-          extraValues: { [inv_field]: activeId },
-        });
-      } catch (err) {
-        showErrorDialog(err);
-        setCreatingInProgress(false);
-      }
-
-      setCreatingInProgress(false);
+      defaultValues = { [inv_field]: activeId };
     }
 
     if (currentView === "form") {
       showFormChangesDialogIfNeeded(() => {
         setContinuousEntryMode(true);
-        setModalItem({ values });
+        setModalItem({ defaultValues });
         setShowFormModal(true);
       });
     } else {
       setContinuousEntryMode(true);
-      setModalItem({ values });
+      setModalItem({ defaultValues });
       setShowFormModal(true);
     }
   };
@@ -600,7 +586,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         onPreviousItem={previousItem}
         onNextItem={nextItem}
         onSearchItem={searchItem}
-        creatingInProgress={creatingInProgress}
       />
       {content()}
       <FormModal
@@ -608,6 +593,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         model={relation}
         id={modalItem?.id}
         values={modalItem?.values}
+        defaultValues={modalItem?.defaultValues}
         visible={showFormModal}
         onSubmitSucceed={onFormModalSubmitSucceed}
         onCancel={() => {

@@ -6,6 +6,7 @@ declare type One2manyItem = {
     id?: number;
     values?: any;
     treeValues?: any;
+    defaultValues?: any;
 };
 interface One2manyInputProps {
     ooui: One2manyOoui;

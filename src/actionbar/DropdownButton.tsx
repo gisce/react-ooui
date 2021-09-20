@@ -12,10 +12,20 @@ type Props = {
 };
 
 function DropdownButton(props: Props) {
-  const { icon, tooltip, items = [], onItemClick, label, disabled = false } = props;
+  const {
+    icon,
+    tooltip,
+    items = [],
+    onItemClick,
+    label,
+    disabled = false,
+  } = props;
 
   function getMenu() {
     const menuItems = items?.map((item) => {
+      if (item.name === "divider") {
+        return <Menu.Divider />;
+      }
       return <Menu.Item key={item.id}>{item.name}</Menu.Item>;
     });
 
@@ -28,14 +38,19 @@ function DropdownButton(props: Props) {
 
   function handleMenuClick(event: any) {
     const itemClicked = items.find((item: any) => {
-      return item.id === parseInt(event.key);
+      return !isNaN(event.key)
+        ? item.id === parseInt(event.key)
+        : item.id === event.key;
     });
 
     onItemClick(itemClicked);
   }
 
   return (
-    <Dropdown overlay={getMenu()} disabled={disabled || !items || items.length === 0}>
+    <Dropdown
+      overlay={getMenu()}
+      disabled={disabled || !items || items.length === 0}
+    >
       <Button>
         {icon} {label} <DownOutlined />
       </Button>
