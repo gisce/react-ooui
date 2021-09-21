@@ -307,8 +307,8 @@ function Form(props: FormProps, ref: any) {
       values = { ...values, ...getValuesForDomain(actionDomain) };
     }
 
-    assignNewValuesToForm({ values, fields: _fields, reset: true });
     parseForm({ fields: _fields, arch: _arch!, values });
+    assignNewValuesToForm({ values, fields: _fields, reset: true });
     setFormIsLoading?.(false);
   };
 

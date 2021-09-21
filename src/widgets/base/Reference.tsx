@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col } from "antd";
 import {
   Reference as ReferenceOoui,
@@ -43,12 +43,21 @@ export const ReferenceInput: React.FC<ReferenceInputProps> = (
   const { required, selectionValues, readOnly } = ooui;
 
   const splittedValue = value?.split(",");
-  const model = value && splittedValue && splittedValue[0];
-  const id =
-    value && splittedValue && splittedValue[1] && parseInt(splittedValue[1]);
 
-  const [many2oneValue, setMany2oneValue] = useState<any[]>([id, undefined]);
-  const [selectionValue, setSelectionValue] = useState<string>(model!);
+  const [many2oneValue, setMany2oneValue] = useState<any[]>([]);
+  const [selectionValue, setSelectionValue] = useState<string>();
+
+  useEffect(() => {
+    if (!value) {
+      return;
+    }
+
+    const model = value && splittedValue && splittedValue[0];
+    const id =
+      value && splittedValue && splittedValue[1] && parseInt(splittedValue[1]);
+    setMany2oneValue([id, undefined]);
+    setSelectionValue(model!);
+  }, [value]);
 
   return (
     <Row gutter={8} wrap={false}>

@@ -273,8 +273,8 @@ function Form(props, ref) {
                     if (actionDomain) {
                         values = __assign(__assign({}, values), formHelper_1.getValuesForDomain(actionDomain));
                     }
-                    assignNewValuesToForm({ values: values, fields: _fields, reset: true });
                     parseForm({ fields: _fields, arch: _arch, values: values });
+                    assignNewValuesToForm({ values: values, fields: _fields, reset: true });
                     setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(false);
                     return [2 /*return*/];
             }

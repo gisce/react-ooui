@@ -51,10 +51,17 @@ var ReferenceInput = function (props) {
     var value = props.value, onChange = props.onChange, ooui = props.ooui;
     var required = ooui.required, selectionValues = ooui.selectionValues, readOnly = ooui.readOnly;
     var splittedValue = value === null || value === void 0 ? void 0 : value.split(",");
-    var model = value && splittedValue && splittedValue[0];
-    var id = value && splittedValue && splittedValue[1] && parseInt(splittedValue[1]);
-    var _a = react_1.useState([id, undefined]), many2oneValue = _a[0], setMany2oneValue = _a[1];
-    var _b = react_1.useState(model), selectionValue = _b[0], setSelectionValue = _b[1];
+    var _a = react_1.useState([]), many2oneValue = _a[0], setMany2oneValue = _a[1];
+    var _b = react_1.useState(), selectionValue = _b[0], setSelectionValue = _b[1];
+    react_1.useEffect(function () {
+        if (!value) {
+            return;
+        }
+        var model = value && splittedValue && splittedValue[0];
+        var id = value && splittedValue && splittedValue[1] && parseInt(splittedValue[1]);
+        setMany2oneValue([id, undefined]);
+        setSelectionValue(model);
+    }, [value]);
     return (react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false },
         react_1.default.createElement(antd_1.Col, { flex: "1" },
             react_1.default.createElement(Selection_1.SelectionInput, { ooui: new ooui_1.Selection({
