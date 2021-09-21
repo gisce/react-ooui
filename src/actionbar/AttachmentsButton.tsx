@@ -29,12 +29,13 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
           return;
         }
 
-        if (!itemClicked.datas) {
+        if (itemClicked.id === "addNewAttachment") {
+          onAddNewAttachment();
           return;
         }
 
-        if (itemClicked.id === "addNewAttachment") {
-          onAddNewAttachment();
+        if (!itemClicked.datas) {
+          // TODO: maybe open a dialog message to inform that the attachment hasn't got data? or maybe open the attachment in a new form-tab?
           return;
         }
 
