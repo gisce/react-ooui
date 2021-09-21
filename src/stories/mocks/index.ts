@@ -10,6 +10,7 @@ import lead from "./models/lead";
 import document from "./models/document";
 import company from "./models/company";
 import switching from "./models/switching";
+import attachment from "./models/attachment";
 
 const allModels = [
   cups,
@@ -24,6 +25,7 @@ const allModels = [
   document,
   company,
   switching,
+  attachment,
 ];
 
 const getMock = (model: string) => {
