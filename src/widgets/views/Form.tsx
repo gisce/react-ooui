@@ -268,9 +268,6 @@ function Form(props: FormProps, ref: any) {
       setError(err);
       setFormIsLoading?.(false);
       // setLoading(false);
-    } finally {
-      setFormHasChanges?.(false);
-      setFormIsLoading?.(false);
     }
   };
 
@@ -310,6 +307,7 @@ function Form(props: FormProps, ref: any) {
     parseForm({ fields: _fields, arch: _arch!, values });
     assignNewValuesToForm({ values, fields: _fields, reset: true });
     setFormIsLoading?.(false);
+    setFormHasChanges?.(false);
   };
 
   const cancelUnsavedChanges = async () => {

@@ -213,7 +213,7 @@ function Form(props, ref) {
                     setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(true);
                     _a.label = 1;
                 case 1:
-                    _a.trys.push([1, 6, 7, 8]);
+                    _a.trys.push([1, 6, , 7]);
                     if (!formViewProps) return [3 /*break*/, 2];
                     view = { arch: formViewProps.arch, fields: formViewProps.fields };
                     return [3 /*break*/, 4];
@@ -231,17 +231,13 @@ function Form(props, ref) {
                         })];
                 case 5:
                     _a.sent();
-                    return [3 /*break*/, 8];
+                    return [3 /*break*/, 7];
                 case 6:
                     err_1 = _a.sent();
                     setError(err_1);
                     setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(false);
-                    return [3 /*break*/, 8];
-                case 7:
-                    setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
-                    setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(false);
-                    return [7 /*endfinally*/];
-                case 8: return [2 /*return*/];
+                    return [3 /*break*/, 7];
+                case 7: return [2 /*return*/];
             }
         });
     }); };
@@ -276,6 +272,7 @@ function Form(props, ref) {
                     parseForm({ fields: _fields, arch: _arch, values: values });
                     assignNewValuesToForm({ values: values, fields: _fields, reset: true });
                     setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(false);
+                    setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
                     return [2 /*return*/];
             }
         });
