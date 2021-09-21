@@ -78,7 +78,10 @@ export const BinaryInput = (props: BinaryInputProps) => {
     const file = event.target.files[0];
     const b64: string = await toBase64(file);
     triggerChange(b64);
-    setFieldValue(filenameField, file.name);
+
+    if (filenameField) {
+      setFieldValue(filenameField, file.name);
+    }
   }
 
   function clearFile() {

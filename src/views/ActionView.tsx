@@ -6,7 +6,7 @@ import React, {
   useImperativeHandle,
 } from "react";
 
-import { Modal, Spin } from "antd";
+import { Spin } from "antd";
 
 import { FormView, TreeView, ViewType } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
@@ -28,6 +28,7 @@ type Props = {
   setCanWeClose: (f: any) => void;
   initialViewType?: ViewType;
   formDefaultValues?: any;
+  formForcedValues?: any;
 };
 
 function ActionView(props: Props, ref: any) {
@@ -41,6 +42,7 @@ function ActionView(props: Props, ref: any) {
     tabKey,
     initialViewType = "tree",
     formDefaultValues,
+    formForcedValues = {},
   } = props;
   const [currentView, setCurrentView] = useState<ViewType>(initialViewType);
   const [availableViews, setAvailableViews] = useState<ViewType[]>([]);
@@ -130,6 +132,7 @@ function ActionView(props: Props, ref: any) {
           ref={formRef}
           model={model}
           defaultValues={formDefaultValues}
+          forcedValues={formForcedValues}
           formView={formView}
           id={currentId}
           onSubmitSucceed={(id) => {

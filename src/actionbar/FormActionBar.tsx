@@ -22,6 +22,7 @@ import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import showErrorDialog from "@/ui/GenericErrorDialog";
 import ConnectionProvider from "@/ConnectionProvider";
+import refreshChangesDialog from "@/ui/RefreshItemDialog";
 
 import {
   TabManagerContext,
@@ -66,6 +67,19 @@ function FormActionBar() {
     TabManagerContext
   ) as TabManagerContextType;
   const { openRelate, openSpecificModelTab } = tabManagerContext || {};
+
+  function tryRefresh(callback: any) {
+    if (formHasChanges) {
+      refreshChangesDialog({
+        onOk: () => {
+          callback();
+        },
+      });
+      return;
+    }
+
+    callback();
+  }
 
   function tryNavigate(callback: any) {
     if (formHasChanges) {
@@ -192,7 +206,7 @@ function FormActionBar() {
         }
         loading={false}
         onClick={() => {
-          tryNavigate(() => {
+          tryRefresh(() => {
             (formRef.current as any).fetchValues();
           });
         }}
@@ -284,6 +298,10 @@ function FormActionBar() {
             initialViewType: "form",
             values: {
               selection_associated_object: `${res_model},${res_id}`,
+            },
+            forcedValues: {
+              res_model,
+              res_id,
             },
           });
         }}

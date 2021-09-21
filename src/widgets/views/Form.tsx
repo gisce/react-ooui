@@ -74,6 +74,7 @@ export type FormProps = {
   visible?: boolean;
   rootForm?: boolean;
   defaultValues?: any;
+  forcedValues?: any;
 };
 
 const WIDTH_BREAKPOINT = 1000;
@@ -100,6 +101,7 @@ function Form(props: FormProps, ref: any) {
     visible = true,
     rootForm = false,
     defaultValues,
+    forcedValues = {},
   } = props;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -413,7 +415,7 @@ function Form(props: FormProps, ref: any) {
       await ConnectionProvider.getHandler().update({
         model,
         id: getCurrentId()!,
-        values: touchedValues,
+        values: { ...touchedValues, ...forcedValues },
         fields,
         context: {
           ...parentContext,
@@ -425,7 +427,7 @@ function Form(props: FormProps, ref: any) {
 
       const newId = await ConnectionProvider.getHandler().create({
         model,
-        values: currentValues,
+        values: { ...currentValues, ...forcedValues },
         fields,
         context: {
           ...parentContext,

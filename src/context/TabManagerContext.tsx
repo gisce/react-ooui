@@ -31,12 +31,14 @@ export type TabManagerContextType = {
   openSpecificModelTab: ({
     model,
     values,
+    forcedValues,
     title,
     initialViewType,
   }: {
     model: string;
     values?: any;
     title: string;
+    forcedValues?: any;
     initialViewType?: ViewType;
   }) => void;
 };

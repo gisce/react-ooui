@@ -179,11 +179,13 @@ function TabManager(props: TabManagerProps, ref: any) {
   async function openSpecificModelTab({
     model,
     values,
+    forcedValues,
     title,
     initialViewType,
   }: {
     model: string;
     values?: any;
+    forcedValues?: any;
     title: string;
     initialViewType?: ViewType;
   }) {
@@ -200,6 +202,7 @@ function TabManager(props: TabManagerProps, ref: any) {
             [, "tree"],
           ]}
           formDefaultValues={values}
+          formForcedValues={forcedValues}
           model={model}
           context={{}}
           domain={{}}
