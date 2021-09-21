@@ -81,6 +81,7 @@ var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"
 var ConfirmDialog_1 = __importDefault(require("@/ui/ConfirmDialog"));
 var GenericErrorDialog_1 = __importDefault(require("@/ui/GenericErrorDialog"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
+var RefreshItemDialog_1 = __importDefault(require("@/ui/RefreshItemDialog"));
 var TabManagerContext_1 = require("@/context/TabManagerContext");
 var ContentRootContext_1 = require("@/context/ContentRootContext");
 var AttachmentsButton_1 = __importDefault(require("./AttachmentsButton"));
@@ -91,6 +92,17 @@ function FormActionBar() {
     var processAction = (contentRootContext || {}).processAction;
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
     var _b = tabManagerContext || {}, openRelate = _b.openRelate, openSpecificModelTab = _b.openSpecificModelTab;
+    function tryRefresh(callback) {
+        if (formHasChanges) {
+            RefreshItemDialog_1.default({
+                onOk: function () {
+                    callback();
+                },
+            });
+            return;
+        }
+        callback();
+    }
     function tryNavigate(callback) {
         if (formHasChanges) {
             UnsavedChangesDialog_1.default({
@@ -193,7 +205,7 @@ function FormActionBar() {
                 currentId === undefined ||
                 removingItem ||
                 formIsLoading, loading: false, onClick: function () {
-                tryNavigate(function () {
+                tryRefresh(function () {
                     formRef.current.fetchValues();
                 });
             } }),

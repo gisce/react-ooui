@@ -66,6 +66,10 @@ function AttachmentsButton(props) {
                             onAddNewAttachment();
                             return [2 /*return*/];
                         }
+                        if (!itemClicked.datas) {
+                            // TODO: maybe open a dialog message to inform that the attachment hasn't got data? or maybe open the attachment in a new form-tab?
+                            return [2 /*return*/];
+                        }
                         return [4 /*yield*/, filesHelper_1.getMimeType(itemClicked.datas)];
                     case 1:
                         fileType = _a.sent();
