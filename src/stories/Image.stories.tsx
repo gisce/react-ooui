@@ -8,9 +8,13 @@ export default {
   title: "Components/Widgets/Base/Image",
 };
 
-export const Default = (): React.ReactElement => {
+export const StockIcon = ({name}): React.ReactElement => {
   const ooui = new ImageOoui({
-    name: "gtk-print",
+    name: name,
   });
   return <Image ooui={ooui} />;
+};
+
+StockIcon.args = {
+  name: "gtk-print"
 };
