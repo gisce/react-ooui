@@ -109,7 +109,7 @@ var iconMapping = {
 };
 exports.default = (function (key) {
     if (key.indexOf("gtk-") !== -1) {
-        var rootIcon = key.replace("gtk-", "");
+        var rootIcon = key.replace("gtk-", "").replace("-", "_");
         var newKey = "STOCK_" + rootIcon.toUpperCase();
         return iconMapping[newKey];
     }
