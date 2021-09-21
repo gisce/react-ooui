@@ -243,6 +243,10 @@ function FormActionBar() {
                     values: {
                         selection_associated_object: res_model + "," + res_id,
                     },
+                    forcedValues: {
+                        res_model: res_model,
+                        res_id: res_id,
+                    },
                 });
             } })));
 }

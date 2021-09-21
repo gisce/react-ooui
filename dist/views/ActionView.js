@@ -69,16 +69,16 @@ var FormActionBar_1 = __importDefault(require("@/actionbar/FormActionBar"));
 var TreeActionBar_1 = __importDefault(require("@/actionbar/TreeActionBar"));
 function ActionView(props, ref) {
     var _this = this;
-    var domain = props.domain, model = props.model, context = props.context, views = props.views, title = props.title, setCanWeClose = props.setCanWeClose, tabKey = props.tabKey, _a = props.initialViewType, initialViewType = _a === void 0 ? "tree" : _a, formDefaultValues = props.formDefaultValues;
-    var _b = react_1.useState(initialViewType), currentView = _b[0], setCurrentView = _b[1];
-    var _c = react_1.useState([]), availableViews = _c[0], setAvailableViews = _c[1];
-    var _d = react_1.useState(), treeView = _d[0], setTreeView = _d[1];
-    var _e = react_1.useState(), formView = _e[0], setFormView = _e[1];
-    var _f = react_1.useState(false), isLoading = _f[0], setIsLoading = _f[1];
-    var _g = react_1.useState(), currentId = _g[0], setCurrentId = _g[1];
-    var _h = react_1.useState(), currentItemIndex = _h[0], setCurrentItemIndex = _h[1];
-    var _j = react_1.useState([]), results = _j[0], setResults = _j[1];
-    var _k = react_1.useState(), toolbar = _k[0], setToolbar = _k[1];
+    var domain = props.domain, model = props.model, context = props.context, views = props.views, title = props.title, setCanWeClose = props.setCanWeClose, tabKey = props.tabKey, _a = props.initialViewType, initialViewType = _a === void 0 ? "tree" : _a, formDefaultValues = props.formDefaultValues, _b = props.formForcedValues, formForcedValues = _b === void 0 ? {} : _b;
+    var _c = react_1.useState(initialViewType), currentView = _c[0], setCurrentView = _c[1];
+    var _d = react_1.useState([]), availableViews = _d[0], setAvailableViews = _d[1];
+    var _e = react_1.useState(), treeView = _e[0], setTreeView = _e[1];
+    var _f = react_1.useState(), formView = _f[0], setFormView = _f[1];
+    var _g = react_1.useState(false), isLoading = _g[0], setIsLoading = _g[1];
+    var _h = react_1.useState(), currentId = _h[0], setCurrentId = _h[1];
+    var _j = react_1.useState(), currentItemIndex = _j[0], setCurrentItemIndex = _j[1];
+    var _k = react_1.useState([]), results = _k[0], setResults = _k[1];
+    var _l = react_1.useState(), toolbar = _l[0], setToolbar = _l[1];
     var formRef = react_1.useRef();
     react_1.useImperativeHandle(ref, function () { return ({
         canWeClose: canWeClose,
@@ -162,7 +162,7 @@ function ActionView(props, ref) {
             return react_1.default.createElement(antd_1.Spin, null);
         }
         return (react_1.default.createElement(react_1.default.Fragment, null,
-            react_1.default.createElement(Form_1.default, { rootForm: true, visible: currentView === "form", ref: formRef, model: model, defaultValues: formDefaultValues, formView: formView, id: currentId, onSubmitSucceed: function (id) {
+            react_1.default.createElement(Form_1.default, { rootForm: true, visible: currentView === "form", ref: formRef, model: model, defaultValues: formDefaultValues, forcedValues: formForcedValues, formView: formView, id: currentId, onSubmitSucceed: function (id) {
                     var itemIndex = results.findIndex(function (item) {
                         return item === id;
                     });

@@ -196,7 +196,7 @@ function TabManager(props, ref) {
         });
     }
     function openSpecificModelTab(_a) {
-        var model = _a.model, values = _a.values, title = _a.title, initialViewType = _a.initialViewType;
+        var model = _a.model, values = _a.values, forcedValues = _a.forcedValues, title = _a.title, initialViewType = _a.initialViewType;
         return __awaiter(this, void 0, void 0, function () {
             var key;
             return __generator(this, function (_b) {
@@ -206,7 +206,7 @@ function TabManager(props, ref) {
                     content: (react_1.default.createElement(ActionView_1.default, { tabKey: key, title: title, views: [
                             [, "form"],
                             [, "tree"],
-                        ], formDefaultValues: values, model: model, context: {}, domain: {}, setCanWeClose: registerViewCloseFn, initialViewType: initialViewType })),
+                        ], formDefaultValues: values, formForcedValues: forcedValues, model: model, context: {}, domain: {}, setCanWeClose: registerViewCloseFn, initialViewType: initialViewType })),
                     key: key,
                 });
                 return [2 /*return*/];

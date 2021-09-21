@@ -10,6 +10,7 @@ declare type Props = {
     setCanWeClose: (f: any) => void;
     initialViewType?: ViewType;
     formDefaultValues?: any;
+    formForcedValues?: any;
 };
 declare const _default: React.ForwardRefExoticComponent<Props & React.RefAttributes<unknown>>;
 export default _default;

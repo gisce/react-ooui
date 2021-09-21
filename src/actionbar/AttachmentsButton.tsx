@@ -29,6 +29,10 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
           return;
         }
 
+        if (!itemClicked.datas) {
+          return;
+        }
+
         if (itemClicked.id === "addNewAttachment") {
           onAddNewAttachment();
           return;

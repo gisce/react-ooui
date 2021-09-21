@@ -141,7 +141,9 @@ var BinaryInput = function (props) {
                     case 1:
                         b64 = _a.sent();
                         triggerChange(b64);
-                        setFieldValue(filenameField, file.name);
+                        if (filenameField) {
+                            setFieldValue(filenameField, file.name);
+                        }
                         return [2 /*return*/];
                 }
             });
