@@ -60,10 +60,14 @@ function Tree(props: Props): React.ReactElement {
         </Space>
       );
     };
+    const textComponentFn = (textField: any): React.ReactElement => {
+      return <div style={{ whiteSpace: "pre-line" }}>{textField}</div>;
+    };
 
     const columns = getTableColumns(tree, {
       boolean: booleanComponentFn,
       many2one: many2OneComponentFn,
+      text: textComponentFn,
     });
 
     const items = getTableItems(tree, results);

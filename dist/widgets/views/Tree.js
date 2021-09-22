@@ -48,9 +48,13 @@ function Tree(props) {
                 react_1.default.createElement(react_1.default.Fragment, null, m2oField.value),
                 react_1.default.createElement(Many2oneSuffix_1.Many2oneSuffix, { id: m2oField.id, model: m2oField.model })));
         };
+        var textComponentFn = function (textField) {
+            return react_1.default.createElement("div", { style: { whiteSpace: "pre-line" } }, textField);
+        };
         var columns = treeHelper_1.getTableColumns(tree, {
             boolean: booleanComponentFn,
             many2one: many2OneComponentFn,
+            text: textComponentFn,
         });
         var items = treeHelper_1.getTableItems(tree, results);
         setColumns(columns);
