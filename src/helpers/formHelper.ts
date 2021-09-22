@@ -47,11 +47,11 @@ export const getTouchedValues = ({
         if (nonOriginalItems.length > 0) {
           differences[key] = target[key];
         }
-      } else if(!source[key]) {
+      } else if (!source[key]) {
         differences[key] = target[key];
       } else {
         const sourceValue = JSON.stringify(source[key]);
-        const targetValue = JSON.stringify(source[key]);
+        const targetValue = JSON.stringify(target[key]);
         if (sourceValue !== targetValue) {
           differences[key] = target[key];
         }

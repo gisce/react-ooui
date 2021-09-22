@@ -41,7 +41,7 @@ var getTouchedValues = function (_a) {
             }
             else {
                 var sourceValue = JSON.stringify(source[key]);
-                var targetValue = JSON.stringify(source[key]);
+                var targetValue = JSON.stringify(target[key]);
                 if (sourceValue !== targetValue) {
                     differences[key] = target[key];
                 }
