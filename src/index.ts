@@ -27,6 +27,7 @@ import ActionBar from "@/actionbar/FormActionBar";
 import { Url } from "@/widgets/base/Url";
 import { Email } from "@/widgets/base/Email";
 import { Image } from "@/widgets/base/Image";
+import showConfirmDialog from "@/ui/ConfirmDialog";
 
 import {
   TreeView,
@@ -102,5 +103,6 @@ export {
   Url,
   Email,
   Image,
-  ContentRootProvider
+  ContentRootProvider,
+  showConfirmDialog
 };
