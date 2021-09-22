@@ -1,5 +1,4 @@
 import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
-import { FormInstance } from "antd";
 
 const filteredValues = (values: any, fields: any) => {
   if (!fields) {
@@ -22,27 +21,46 @@ export const processValues = (values: any, fields: any) => {
   return filterBooleans;
 };
 
-export const getTouchedValues = (antForm: FormInstance, fields: any) => {
-  const values = antForm.getFieldsValue(true);
-  const touchedValues: any = {};
-  Object.keys(values).map((key) => {
-    const is2Many = fields[key]
-      ? fields[key].type === "one2many" || fields[key].type === "many2many"
-      : false;
+export const getTouchedValues = ({
+  source,
+  target,
+  fields,
+}: {
+  source: any;
+  target: any;
+  fields: any;
+}) => {
+  const differences: any = {};
+  Object.keys(target).forEach((key) => {
+    if (!target[key]) {
+      return;
+    }
+    if (Array.isArray(target[key])) {
+      const is2Many = fields[key]
+        ? fields[key].type === "one2many" || fields[key].type === "many2many"
+        : false;
 
-    if (antForm.isFieldTouched(key) && is2Many) {
-      // We ensure the field is really touched by filtering by original items
-      const nonOriginalItems = values[key].filter(
-        (item: One2manyItem) => item.operation !== "original"
-      );
-      if (nonOriginalItems.length > 0) {
-        touchedValues[key] = values[key];
+      if (is2Many) {
+        const nonOriginalItems = target[key].filter(
+          (item: One2manyItem) => item.operation !== "original"
+        );
+        if (nonOriginalItems.length > 0) {
+          differences[key] = target[key];
+        }
+      } else if(!source[key]) {
+        differences[key] = target[key];
+      } else {
+        const sourceValue = JSON.stringify(source[key]);
+        const targetValue = JSON.stringify(source[key]);
+        if (sourceValue !== targetValue) {
+          differences[key] = target[key];
+        }
       }
-    } else if (antForm.isFieldTouched(key)) {
-      touchedValues[key] = values[key];
+    } else if (source[key] !== target[key]) {
+      differences[key] = target[key];
     }
   });
-  return touchedValues;
+  return differences;
 };
 
 export const checkFieldsType = ({

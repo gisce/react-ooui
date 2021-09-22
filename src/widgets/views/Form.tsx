@@ -113,6 +113,7 @@ function Form(props: FormProps, ref: any) {
   const formModalContext = useContext(FormModalContext) as FormModalContextType;
 
   const createdId = useRef<number>();
+  const originalFormValues = useRef<any>({});
 
   const warningIsShwon = useRef<boolean>(false);
 
@@ -216,7 +217,15 @@ function Form(props: FormProps, ref: any) {
   };
 
   const formHasChanges = () => {
-    return Object.keys(getTouchedValues(antForm, fields)).length !== 0;
+    return (
+      Object.keys(
+        getTouchedValues({
+          source: originalFormValues.current,
+          target: processValues(getCurrentValues(fields), fields),
+          fields,
+        })
+      ).length !== 0
+    );
   };
 
   const getCurrentValues = (fields: any) => {
@@ -303,6 +312,8 @@ function Form(props: FormProps, ref: any) {
     if (actionDomain) {
       values = { ...values, ...getValuesForDomain(actionDomain) };
     }
+
+    originalFormValues.current = processValues(values, _fields);
 
     parseForm({ fields: _fields, arch: _arch!, values });
     assignNewValuesToForm({ values, fields: _fields, reset: true });
@@ -408,7 +419,11 @@ function Form(props: FormProps, ref: any) {
     const { callOnSubmitSucceed = true } = options || {};
 
     if (getCurrentId()) {
-      const touchedValues = getTouchedValues(antForm, fields);
+      const touchedValues = getTouchedValues({
+        source: originalFormValues.current,
+        target: getCurrentValues(fields),
+        fields,
+      });
 
       await ConnectionProvider.getHandler().update({
         model,

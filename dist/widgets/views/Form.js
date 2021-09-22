@@ -98,6 +98,7 @@ function Form(props, ref) {
     var _q = react_1.useState(), fields = _q[0], setFields = _q[1];
     var formModalContext = react_1.useContext(FormModalContext_1.FormModalContext);
     var createdId = react_1.useRef();
+    var originalFormValues = react_1.useRef({});
     var warningIsShwon = react_1.useRef(false);
     var _r = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
@@ -170,7 +171,11 @@ function Form(props, ref) {
         });
     }); };
     var formHasChanges = function () {
-        return Object.keys(formHelper_1.getTouchedValues(antForm, fields)).length !== 0;
+        return (Object.keys(formHelper_1.getTouchedValues({
+            source: originalFormValues.current,
+            target: formHelper_1.processValues(getCurrentValues(fields), fields),
+            fields: fields,
+        })).length !== 0);
     };
     var getCurrentValues = function (fields) {
         var currentValues = antForm.getFieldsValue(true);
@@ -269,6 +274,7 @@ function Form(props, ref) {
                     if (actionDomain) {
                         values = __assign(__assign({}, values), formHelper_1.getValuesForDomain(actionDomain));
                     }
+                    originalFormValues.current = formHelper_1.processValues(values, _fields);
                     parseForm({ fields: _fields, arch: _arch, values: values });
                     assignNewValuesToForm({ values: values, fields: _fields, reset: true });
                     setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(false);
@@ -385,7 +391,11 @@ function Form(props, ref) {
                 case 0:
                     _a = (options || {}).callOnSubmitSucceed, callOnSubmitSucceed = _a === void 0 ? true : _a;
                     if (!getCurrentId()) return [3 /*break*/, 2];
-                    touchedValues = formHelper_1.getTouchedValues(antForm, fields);
+                    touchedValues = formHelper_1.getTouchedValues({
+                        source: originalFormValues.current,
+                        target: getCurrentValues(fields),
+                        fields: fields,
+                    });
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().update({
                             model: model,
                             id: getCurrentId(),

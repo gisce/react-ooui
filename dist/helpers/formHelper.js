@@ -19,25 +19,39 @@ var processValues = function (values, fields) {
     return filterBooleans;
 };
 exports.processValues = processValues;
-var getTouchedValues = function (antForm, fields) {
-    var values = antForm.getFieldsValue(true);
-    var touchedValues = {};
-    Object.keys(values).map(function (key) {
-        var is2Many = fields[key]
-            ? fields[key].type === "one2many" || fields[key].type === "many2many"
-            : false;
-        if (antForm.isFieldTouched(key) && is2Many) {
-            // We ensure the field is really touched by filtering by original items
-            var nonOriginalItems = values[key].filter(function (item) { return item.operation !== "original"; });
-            if (nonOriginalItems.length > 0) {
-                touchedValues[key] = values[key];
+var getTouchedValues = function (_a) {
+    var source = _a.source, target = _a.target, fields = _a.fields;
+    var differences = {};
+    Object.keys(target).forEach(function (key) {
+        if (!target[key]) {
+            return;
+        }
+        if (Array.isArray(target[key])) {
+            var is2Many = fields[key]
+                ? fields[key].type === "one2many" || fields[key].type === "many2many"
+                : false;
+            if (is2Many) {
+                var nonOriginalItems = target[key].filter(function (item) { return item.operation !== "original"; });
+                if (nonOriginalItems.length > 0) {
+                    differences[key] = target[key];
+                }
+            }
+            else if (!source[key]) {
+                differences[key] = target[key];
+            }
+            else {
+                var sourceValue = JSON.stringify(source[key]);
+                var targetValue = JSON.stringify(source[key]);
+                if (sourceValue !== targetValue) {
+                    differences[key] = target[key];
+                }
             }
         }
-        else if (antForm.isFieldTouched(key)) {
-            touchedValues[key] = values[key];
+        else if (source[key] !== target[key]) {
+            differences[key] = target[key];
         }
     });
-    return touchedValues;
+    return differences;
 };
 exports.getTouchedValues = getTouchedValues;
 var checkFieldsType = function (_a) {
