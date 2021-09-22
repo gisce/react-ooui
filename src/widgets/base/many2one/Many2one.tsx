@@ -14,6 +14,7 @@ import { SearchModal } from "@/widgets/modals/SearchModal";
 import { FormModal } from "@/widgets/modals/FormModal";
 import ConnectionProvider from "@/ConnectionProvider";
 import { Many2oneSuffix } from "./Many2oneSuffix";
+import showErrorDialog from "@/ui/GenericErrorDialog";
 
 type Props = {
   ooui: Many2oneOoui;
@@ -59,6 +60,8 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const [searching, setSearching] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>();
   const searchButtonTappedRef = useRef<boolean>(false);
+  const [inputText, setInputText] = useState<string>();
+  const inputTextRef = useRef<string>();
 
   const id = value && value[0];
   const text = (value && value[1]) || "";
@@ -72,6 +75,8 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   useEffect(() => {
     if (id && text.length === 0) {
       fetchNameAndUpdate(id);
+    } else if (id && text.length > 0) {
+      setInputText(text);
     }
   }, [value]);
 
@@ -80,11 +85,12 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   };
 
   const onValueStringChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    triggerChange([undefined, e.target.value]);
+    inputTextRef.current = e.target.value;
+    setInputText(inputTextRef.current);
   };
 
   const onElementLostFocus = async () => {
-    if (!id && !searching && text.trim().length > 0) {
+    if (!searching && (inputTextRef.current as string)?.trim().length > 0) {
       // Debounce this event to give time to the search button onClick to set the flag
       await new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -100,18 +106,18 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
         const results: any[] = await ConnectionProvider.getHandler().execute({
           model: relation,
           action: "name_search",
-          payload: text,
+          payload: inputTextRef.current as string,
         });
 
         if (results.length === 1) {
+          inputTextRef.current = undefined;
           triggerChange(results[0]);
         } else {
-          setSearchText(text);
+          setSearchText(inputTextRef.current as string);
           setShowSearchModal(true);
-          triggerChange([undefined, ""]);
         }
       } catch (err) {
-        // TODO: handle error
+        showErrorDialog(err);
       } finally {
         setSearching(false);
       }
@@ -130,7 +136,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
 
       triggerChange([id, value[0][1]]);
     } catch (err) {
-      // TODO: handle error
+      showErrorDialog(err);
     } finally {
       setSearching(false);
     }
@@ -151,9 +157,9 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       <Col flex="auto">
         <CustomInput
           type="text"
-          value={text}
-          onChange={onValueStringChange}
+          value={inputText}
           disabled={readOnly}
+          onChange={onValueStringChange}
           className={requiredClass}
           onBlur={onElementLostFocus}
           onKeyUp={onKeyUp}
@@ -191,6 +197,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           setShowSearchModal(false);
           fetchNameAndUpdate(id);
           searchButtonTappedRef.current = false;
+          inputTextRef.current = undefined;
         }}
         onCloseModal={() => {
           setShowSearchModal(false);

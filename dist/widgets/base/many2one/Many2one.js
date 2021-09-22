@@ -84,6 +84,7 @@ var SearchModal_1 = require("@/widgets/modals/SearchModal");
 var FormModal_1 = require("@/widgets/modals/FormModal");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var Many2oneSuffix_1 = require("./Many2oneSuffix");
+var GenericErrorDialog_1 = __importDefault(require("@/ui/GenericErrorDialog"));
 var Many2one = function (props) {
     var ooui = props.ooui;
     var required = ooui.required;
@@ -111,6 +112,8 @@ var Many2oneInput = function (props) {
     var _c = react_1.useState(false), searching = _c[0], setSearching = _c[1];
     var _d = react_1.useState(), searchText = _d[0], setSearchText = _d[1];
     var searchButtonTappedRef = react_1.useRef(false);
+    var _e = react_1.useState(), inputText = _e[0], setInputText = _e[1];
+    var inputTextRef = react_1.useRef();
     var id = value && value[0];
     var text = (value && value[1]) || "";
     react_1.useEffect(function () {
@@ -122,51 +125,57 @@ var Many2oneInput = function (props) {
         if (id && text.length === 0) {
             fetchNameAndUpdate(id);
         }
+        else if (id && text.length > 0) {
+            setInputText(text);
+        }
     }, [value]);
     var triggerChange = function (changedValue) {
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
     };
     var onValueStringChange = function (e) {
-        triggerChange([undefined, e.target.value]);
+        inputTextRef.current = e.target.value;
+        setInputText(inputTextRef.current);
     };
     var onElementLostFocus = function () { return __awaiter(void 0, void 0, void 0, function () {
         var results, err_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var _a;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
-                    if (!(!id && !searching && text.trim().length > 0)) return [3 /*break*/, 6];
+                    if (!(!searching && ((_a = inputTextRef.current) === null || _a === void 0 ? void 0 : _a.trim().length) > 0)) return [3 /*break*/, 6];
                     // Debounce this event to give time to the search button onClick to set the flag
                     return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 100); })];
                 case 1:
                     // Debounce this event to give time to the search button onClick to set the flag
-                    _a.sent();
+                    _b.sent();
                     // If the focus is lost because the user tapped the search button, we don't need to do nothing here
                     if (searchButtonTappedRef.current) {
                         triggerChange([undefined, ""]);
                         return [2 /*return*/];
                     }
                     setSearching(true);
-                    _a.label = 2;
+                    _b.label = 2;
                 case 2:
-                    _a.trys.push([2, 4, 5, 6]);
+                    _b.trys.push([2, 4, 5, 6]);
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
                             model: relation,
                             action: "name_search",
-                            payload: text,
+                            payload: inputTextRef.current,
                         })];
                 case 3:
-                    results = _a.sent();
+                    results = _b.sent();
                     if (results.length === 1) {
+                        inputTextRef.current = undefined;
                         triggerChange(results[0]);
                     }
                     else {
-                        setSearchText(text);
+                        setSearchText(inputTextRef.current);
                         setShowSearchModal(true);
-                        triggerChange([undefined, ""]);
                     }
                     return [3 /*break*/, 6];
                 case 4:
-                    err_1 = _a.sent();
+                    err_1 = _b.sent();
+                    GenericErrorDialog_1.default(err_1);
                     return [3 /*break*/, 6];
                 case 5:
                     setSearching(false);
@@ -195,6 +204,7 @@ var Many2oneInput = function (props) {
                     return [3 /*break*/, 5];
                 case 3:
                     err_2 = _a.sent();
+                    GenericErrorDialog_1.default(err_2);
                     return [3 /*break*/, 5];
                 case 4:
                     setSearching(false);
@@ -223,7 +233,7 @@ var Many2oneInput = function (props) {
     var CustomInput = required && !readOnly ? RequiredInput : antd_1.Input;
     return (react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false },
         react_1.default.createElement(antd_1.Col, { flex: "auto" },
-            react_1.default.createElement(CustomInput, { type: "text", value: text, onChange: onValueStringChange, disabled: readOnly, className: requiredClass, onBlur: onElementLostFocus, onKeyUp: onKeyUp, suffix: react_1.default.createElement(Many2oneSuffix_1.Many2oneSuffix, { id: id, model: relation }) })),
+            react_1.default.createElement(CustomInput, { type: "text", value: inputText, disabled: readOnly, onChange: onValueStringChange, className: requiredClass, onBlur: onElementLostFocus, onKeyUp: onKeyUp, suffix: react_1.default.createElement(Many2oneSuffix_1.Many2oneSuffix, { id: id, model: relation }) })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
             react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: id === undefined || text === "", onClick: function () {
                     setShowFormModal(true);
@@ -238,6 +248,7 @@ var Many2oneInput = function (props) {
                 setShowSearchModal(false);
                 fetchNameAndUpdate(id);
                 searchButtonTappedRef.current = false;
+                inputTextRef.current = undefined;
             }, onCloseModal: function () {
                 setShowSearchModal(false);
                 searchButtonTappedRef.current = false;
