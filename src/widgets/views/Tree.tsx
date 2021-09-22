@@ -49,8 +49,8 @@ function Tree(props: Props): React.ReactElement {
 
   useDeepCompareEffect(() => {
     const tree = getTree(treeView);
-    const booleanComponentFn = (booleanField: boolean): React.ReactElement => {
-      return <Checkbox defaultChecked={booleanField} disabled />;
+    const booleanComponentFn = (value: boolean): React.ReactElement => {
+      return <Checkbox defaultChecked={value} disabled />;
     };
     const many2OneComponentFn = (m2oField: any): React.ReactElement => {
       return (
@@ -60,14 +60,21 @@ function Tree(props: Props): React.ReactElement {
         </Space>
       );
     };
-    const textComponentFn = (textField: any): React.ReactElement => {
-      return <div style={{ whiteSpace: "pre-line" }}>{textField}</div>;
+    const textComponentFn = (value: any): React.ReactElement => {
+      return <div style={{ whiteSpace: "pre-line" }}>{value}</div>;
+    };
+
+    const one2ManyComponentFn = (value: any): React.ReactElement => {
+      const length = Array.isArray(value) ? value.length : 0;
+      return <>{`( ${length} )`}</>;
     };
 
     const columns = getTableColumns(tree, {
       boolean: booleanComponentFn,
       many2one: many2OneComponentFn,
       text: textComponentFn,
+      one2many: one2ManyComponentFn,
+      many2many: one2ManyComponentFn,
     });
 
     const items = getTableItems(tree, results);

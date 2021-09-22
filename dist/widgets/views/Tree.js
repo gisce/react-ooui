@@ -40,21 +40,27 @@ function Tree(props) {
     var _e = react_cool_dimensions_1.default(), width = _e.width, containerRef = _e.ref;
     use_deep_compare_effect_1.default(function () {
         var tree = treeHelper_1.getTree(treeView);
-        var booleanComponentFn = function (booleanField) {
-            return react_1.default.createElement(antd_1.Checkbox, { defaultChecked: booleanField, disabled: true });
+        var booleanComponentFn = function (value) {
+            return react_1.default.createElement(antd_1.Checkbox, { defaultChecked: value, disabled: true });
         };
         var many2OneComponentFn = function (m2oField) {
             return (react_1.default.createElement(antd_1.Space, null,
                 react_1.default.createElement(react_1.default.Fragment, null, m2oField.value),
                 react_1.default.createElement(Many2oneSuffix_1.Many2oneSuffix, { id: m2oField.id, model: m2oField.model })));
         };
-        var textComponentFn = function (textField) {
-            return react_1.default.createElement("div", { style: { whiteSpace: "pre-line" } }, textField);
+        var textComponentFn = function (value) {
+            return react_1.default.createElement("div", { style: { whiteSpace: "pre-line" } }, value);
+        };
+        var one2ManyComponentFn = function (value) {
+            var length = Array.isArray(value) ? value.length : 0;
+            return react_1.default.createElement(react_1.default.Fragment, null, "( " + length + " )");
         };
         var columns = treeHelper_1.getTableColumns(tree, {
             boolean: booleanComponentFn,
             many2one: many2OneComponentFn,
             text: textComponentFn,
+            one2many: one2ManyComponentFn,
+            many2many: one2ManyComponentFn,
         });
         var items = treeHelper_1.getTableItems(tree, results);
         setColumns(columns);
