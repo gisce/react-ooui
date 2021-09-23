@@ -274,7 +274,7 @@ function Form(props: FormProps, ref: any) {
         arch,
       });
     } catch (err) {
-      setError(err);
+      setError(JSON.stringify(err, null, 2));
       setFormIsLoading?.(false);
       // setLoading(false);
     }
