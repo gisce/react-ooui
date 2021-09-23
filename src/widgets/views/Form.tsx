@@ -234,9 +234,14 @@ function Form(props: FormProps, ref: any) {
   };
 
   const setFieldValue = (field: string, value?: string) => {
-    const values = antForm.getFieldsValue(true);
-    values[field] = value;
-    antForm.setFieldsValue(values);
+    assignNewValuesToForm({
+      values: {
+        ...processValues(antForm.getFieldsValue(true), fields),
+        [field]: value,
+      },
+      fields,
+      reset: false,
+    });
   };
 
   const getFieldValue = (field: string) => {
