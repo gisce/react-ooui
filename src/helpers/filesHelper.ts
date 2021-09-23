@@ -6,8 +6,18 @@ export function getFilesize(base64string: string) {
   return `${Math.round((inKbs + Number.EPSILON) * 100) / 100} KB`;
 }
 
-export function getMimeType(base64string: string) {
-  return FileType.fromBuffer(Buffer.from(base64string, "base64"));
+export async function getMimeType(base64string: string) {
+  const mimeInfo = await FileType.fromBuffer(
+    Buffer.from(base64string, "base64")
+  );
+  if (!mimeInfo) {
+    return {
+      mime: "text/plain",
+      ext: "txt",
+    };
+  }
+
+  return mimeInfo;
 }
 
 export const toBase64 = (file: File): Promise<string> =>
