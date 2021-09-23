@@ -27,6 +27,7 @@ import {
   checkFieldsType,
   mergeFieldsDomain,
   getValuesForDomain,
+  getOnChangePayload,
 } from "@/helpers/formHelper";
 import ConnectionProvider from "@/ConnectionProvider";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
@@ -114,8 +115,9 @@ function Form(props: FormProps, ref: any) {
 
   const createdId = useRef<number>();
   const originalFormValues = useRef<any>({});
-
-  const warningIsShwon = useRef<boolean>(false);
+  const lastAssignedValues = useRef<any>({});
+  const warningIsShown = useRef<boolean>(false);
+  const formSubmitting = useRef<boolean>(false);
 
   const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
     breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
@@ -384,6 +386,7 @@ function Form(props: FormProps, ref: any) {
       };
     });
 
+    lastAssignedValues.current = valuesProcessed;
     antForm.setFields(fieldsToUpdate);
   };
 
@@ -474,15 +477,18 @@ function Form(props: FormProps, ref: any) {
 
   const submitForm = async (options?: { callOnSubmitSucceed?: boolean }) => {
     const { callOnSubmitSucceed = true } = options || {};
+    formSubmitting.current = true;
 
     setError(undefined);
     if (!formHasChanges() && getCurrentId()! && callOnSubmitSucceed) {
+      formSubmitting.current = false;
       setFormHasChanges?.(false);
       onCancel?.();
       return;
     }
 
     if (await checkIfFormHasErrors()) {
+      formSubmitting.current = false;
       formErrorsDialog();
       return;
     }
@@ -500,11 +506,13 @@ function Form(props: FormProps, ref: any) {
       if (mustClearAfterSave)
         assignNewValuesToForm({ values: {}, fields, reset: true });
     } catch (err) {
+      formSubmitting.current = false;
       setIsSubmitting(false);
       setFormIsSaving?.(false);
       onSubmitError?.(err);
       setError(err);
     } finally {
+      formSubmitting.current = false;
       setFormIsSaving?.(false);
       setIsSubmitting(false);
     }
@@ -534,9 +542,19 @@ function Form(props: FormProps, ref: any) {
       formModalContext.setTitle?.(ooui.string);
   };
 
-  const checkFieldsChanges = async (changedFields: any) => {
-    if (formHasChanges()) {
-      const values = antForm.getFieldsValue(true);
+  const checkFieldsChanges = async () => {
+    if (formSubmitting.current) return;
+
+    const touchedValues = getTouchedValues({
+      source: lastAssignedValues.current,
+      target: processValues(getCurrentValues(fields), fields),
+      fields,
+    });
+
+    const changedFields = Object.keys(touchedValues);
+
+    if (changedFields.length !== 0) {
+      const values = processValues(antForm.getFieldsValue(true), fields);
 
       onFieldsChange?.(values);
       setFormHasChanges?.(true);
@@ -545,7 +563,7 @@ function Form(props: FormProps, ref: any) {
       // in order to debounce the call
       if (
         checkFieldsType({
-          changedFields: changedFields.map((i: any) => i.name[0]),
+          changedFields,
           fields,
           types: [
             "text",
@@ -558,88 +576,88 @@ function Form(props: FormProps, ref: any) {
           ],
         })
       ) {
-        debouncedEvaluateChanges(changedFields, values);
+        debouncedEvaluateChanges(changedFields);
       } else {
-        evaluateChanges(changedFields, values);
+        evaluateChanges(changedFields);
       }
     }
   };
 
   const debouncedCheckFieldsChanges = debounce(checkFieldsChanges, 100);
 
-  const evaluateChanges = async (changedFields: any, values: any) => {
+  const evaluateChanges = async (changedFields: any) => {
     try {
-      let finalValues = values;
-      let finalFields = fields;
-
-      // By design, we will only receive one changed field at a time inside changedFields
-      const changedFieldName = changedFields[0].name;
-
-      // We check if the form has onChange actions for the field
-      const onChangeFieldAction = formOoui?.onChangeFields[changedFieldName];
-      if (onChangeFieldAction) {
-        const payload: any = {};
-
-        const valuesWithContext = {
-          ...values,
-          context: {
-            ...parentContext,
-            ...formOoui?.context,
-          },
-        };
-
-        onChangeFieldAction.args.forEach((arg: string) => {
-          if (valuesWithContext[arg]) {
-            payload[arg] = valuesWithContext[arg];
-          } else {
-            payload[arg] = false;
-          }
-        });
-
-        const ids = getCurrentId()! ? [getCurrentId()!] : [];
-
-        const response = await ConnectionProvider.getHandler().executeOnChange({
-          model,
-          action: onChangeFieldAction.method,
-          ids,
-          payload,
-          fields,
-        });
-
-        if (response.value) {
-          finalValues = { ...values, ...response.value };
-          assignNewValuesToForm({
-            values: finalValues,
-            fields: fields,
-            reset: false,
-          });
-        }
-
-        if (
-          response.warning &&
-          response.warning.title &&
-          response.warning.message &&
-          !warningIsShwon.current
-        ) {
-          const { title, message } = response.warning;
-          warningIsShwon.current = true;
-          showWarningDialog(title, message, () => {
-            warningIsShwon.current = false;
-          });
-        }
-
-        if (response.domain) {
-          finalFields = mergeFieldsDomain({
-            fieldsDomain: response.domain,
-            fields,
-          });
-          setFields(finalFields);
-        }
+      for (let i = 0; i < changedFields.length; i += 1) {
+        const changedField = changedFields[i];
+        await processFieldOnChange(changedField);
       }
-
-      parseForm({ arch: arch!, fields: finalFields, values: finalValues });
     } catch (err) {
       showErrorDialog(err);
+    }
+  };
+
+  const processFieldOnChange = async (fieldName: string) => {
+    const onChangeFieldAction = formOoui?.onChangeFields[fieldName];
+    const currentValues = processValues(antForm.getFieldsValue(true), fields);
+
+    if (!onChangeFieldAction) {
+      return;
+    }
+
+    const payload = getOnChangePayload({
+      values: {
+        ...currentValues,
+        context: {
+          ...parentContext,
+          ...formOoui?.context,
+        },
+      },
+      onChangeFieldActionArgs: onChangeFieldAction.args,
+    });
+
+    const response = await ConnectionProvider.getHandler().executeOnChange({
+      model,
+      action: onChangeFieldAction.method,
+      ids: getCurrentId()! ? [getCurrentId()!] : [],
+      payload,
+      fields,
+    });
+
+    if (response.value) {
+      const processedValues = { ...currentValues, ...response.value };
+      parseForm({ fields, arch: arch!, values: processedValues });
+      assignNewValuesToForm({
+        values: processedValues,
+        fields: fields,
+        reset: false,
+      });
+    }
+
+    if (
+      response.warning &&
+      response.warning.title &&
+      response.warning.message &&
+      !warningIsShown.current
+    ) {
+      const { title, message } = response.warning;
+      warningIsShown.current = true;
+      showWarningDialog(title, message, () => {
+        warningIsShown.current = false;
+      });
+    }
+
+    if (response.domain) {
+      const proccessedFields = mergeFieldsDomain({
+        fieldsDomain: response.domain,
+        fields,
+      });
+
+      parseForm({
+        fields: proccessedFields,
+        arch: arch!,
+        values: currentValues,
+      });
+      setFields(proccessedFields);
     }
   };
 
