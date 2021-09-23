@@ -109,3 +109,21 @@ export const getValuesForDomain = (domain: any[]) => {
 
   return values;
 };
+
+export const getOnChangePayload = ({
+  onChangeFieldActionArgs,
+  values,
+}: {
+  onChangeFieldActionArgs: any[];
+  values: any;
+}) => {
+  const payload: any = {};
+  onChangeFieldActionArgs.forEach((arg: string) => {
+    if (values[arg]) {
+      payload[arg] = values[arg];
+    } else {
+      payload[arg] = false;
+    }
+  });
+  return payload;
+};
