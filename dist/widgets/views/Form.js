@@ -99,7 +99,9 @@ function Form(props, ref) {
     var formModalContext = react_1.useContext(FormModalContext_1.FormModalContext);
     var createdId = react_1.useRef();
     var originalFormValues = react_1.useRef({});
-    var warningIsShwon = react_1.useRef(false);
+    var lastAssignedValues = react_1.useRef({});
+    var warningIsShown = react_1.useRef(false);
+    var formSubmitting = react_1.useRef(false);
     var _r = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
@@ -182,9 +184,12 @@ function Form(props, ref) {
         return formHelper_1.processValues(currentValues, fields);
     };
     var setFieldValue = function (field, value) {
-        var values = antForm.getFieldsValue(true);
-        values[field] = value;
-        antForm.setFieldsValue(values);
+        var _a;
+        assignNewValuesToForm({
+            values: __assign(__assign({}, formHelper_1.processValues(antForm.getFieldsValue(true), fields)), (_a = {}, _a[field] = value, _a)),
+            fields: fields,
+            reset: false,
+        });
     };
     var getFieldValue = function (field) {
         var values = antForm.getFieldsValue(true);
@@ -239,7 +244,7 @@ function Form(props, ref) {
                     return [3 /*break*/, 7];
                 case 6:
                     err_1 = _a.sent();
-                    setError(err_1);
+                    setError(JSON.stringify(err_1, null, 2));
                     setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(false);
                     return [3 /*break*/, 7];
                 case 7: return [2 /*return*/];
@@ -343,6 +348,7 @@ function Form(props, ref) {
                 value: valuesProcessed[fieldName] || undefined,
             };
         });
+        lastAssignedValues.current = valuesProcessed;
         antForm.setFields(fieldsToUpdate);
     };
     var fetchValuesFromApi = function (_a) {
@@ -448,8 +454,10 @@ function Form(props, ref) {
             switch (_b.label) {
                 case 0:
                     _a = (options || {}).callOnSubmitSucceed, callOnSubmitSucceed = _a === void 0 ? true : _a;
+                    formSubmitting.current = true;
                     setError(undefined);
                     if (!formHasChanges() && getCurrentId() && callOnSubmitSucceed) {
+                        formSubmitting.current = false;
                         setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
                         onCancel === null || onCancel === void 0 ? void 0 : onCancel();
                         return [2 /*return*/];
@@ -457,6 +465,7 @@ function Form(props, ref) {
                     return [4 /*yield*/, checkIfFormHasErrors()];
                 case 1:
                     if (_b.sent()) {
+                        formSubmitting.current = false;
                         FormErrorsDialog_1.default();
                         return [2 /*return*/];
                     }
@@ -480,12 +489,14 @@ function Form(props, ref) {
                     return [3 /*break*/, 9];
                 case 7:
                     err_2 = _b.sent();
+                    formSubmitting.current = false;
                     setIsSubmitting(false);
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
                     onSubmitError === null || onSubmitError === void 0 ? void 0 : onSubmitError(err_2);
                     setError(err_2);
                     return [3 /*break*/, 9];
                 case 8:
+                    formSubmitting.current = false;
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
                     setIsSubmitting(false);
                     return [7 /*endfinally*/];
@@ -506,17 +517,25 @@ function Form(props, ref) {
         if (formModalContext && ooui.string)
             (_b = formModalContext.setTitle) === null || _b === void 0 ? void 0 : _b.call(formModalContext, ooui.string);
     };
-    var checkFieldsChanges = function (changedFields) { return __awaiter(_this, void 0, void 0, function () {
-        var values;
+    var checkFieldsChanges = function () { return __awaiter(_this, void 0, void 0, function () {
+        var touchedValues, changedFields, values;
         return __generator(this, function (_a) {
-            if (formHasChanges()) {
-                values = antForm.getFieldsValue(true);
+            if (formSubmitting.current)
+                return [2 /*return*/];
+            touchedValues = formHelper_1.getTouchedValues({
+                source: lastAssignedValues.current,
+                target: formHelper_1.processValues(getCurrentValues(fields), fields),
+                fields: fields,
+            });
+            changedFields = Object.keys(touchedValues);
+            if (changedFields.length !== 0) {
+                values = formHelper_1.processValues(antForm.getFieldsValue(true), fields);
                 onFieldsChange === null || onFieldsChange === void 0 ? void 0 : onFieldsChange(values);
                 setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(true);
                 // We check if there are any field of type text, email, url or char inside the changed values
                 // in order to debounce the call
                 if (formHelper_1.checkFieldsType({
-                    changedFields: changedFields.map(function (i) { return i.name[0]; }),
+                    changedFields: changedFields,
                     fields: fields,
                     types: [
                         "text",
@@ -528,51 +547,71 @@ function Form(props, ref) {
                         "many2one",
                     ],
                 })) {
-                    debouncedEvaluateChanges(changedFields, values);
+                    debouncedEvaluateChanges(changedFields);
                 }
                 else {
-                    evaluateChanges(changedFields, values);
+                    evaluateChanges(changedFields);
                 }
             }
             return [2 /*return*/];
         });
     }); };
     var debouncedCheckFieldsChanges = debounce_1.default(checkFieldsChanges, 100);
-    var evaluateChanges = function (changedFields, values) { return __awaiter(_this, void 0, void 0, function () {
-        var finalValues, finalFields, changedFieldName, onChangeFieldAction, payload_1, valuesWithContext_1, ids, response, _a, title, message, err_3;
+    var evaluateChanges = function (changedFields) { return __awaiter(_this, void 0, void 0, function () {
+        var i, changedField, err_3;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 5, , 6]);
+                    i = 0;
+                    _a.label = 1;
+                case 1:
+                    if (!(i < changedFields.length)) return [3 /*break*/, 4];
+                    changedField = changedFields[i];
+                    return [4 /*yield*/, processFieldOnChange(changedField)];
+                case 2:
+                    _a.sent();
+                    _a.label = 3;
+                case 3:
+                    i += 1;
+                    return [3 /*break*/, 1];
+                case 4: return [3 /*break*/, 6];
+                case 5:
+                    err_3 = _a.sent();
+                    ActionErrorDialog_1.default(err_3);
+                    return [3 /*break*/, 6];
+                case 6: return [2 /*return*/];
+            }
+        });
+    }); };
+    var processFieldOnChange = function (fieldName) { return __awaiter(_this, void 0, void 0, function () {
+        var onChangeFieldAction, currentValues, payload, response, processedValues, _a, title, message, proccessedFields;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 3, , 4]);
-                    finalValues = values;
-                    finalFields = fields;
-                    changedFieldName = changedFields[0].name;
-                    onChangeFieldAction = formOoui === null || formOoui === void 0 ? void 0 : formOoui.onChangeFields[changedFieldName];
-                    if (!onChangeFieldAction) return [3 /*break*/, 2];
-                    payload_1 = {};
-                    valuesWithContext_1 = __assign(__assign({}, values), { context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context) });
-                    onChangeFieldAction.args.forEach(function (arg) {
-                        if (valuesWithContext_1[arg]) {
-                            payload_1[arg] = valuesWithContext_1[arg];
-                        }
-                        else {
-                            payload_1[arg] = false;
-                        }
+                    onChangeFieldAction = formOoui === null || formOoui === void 0 ? void 0 : formOoui.onChangeFields[fieldName];
+                    currentValues = formHelper_1.processValues(antForm.getFieldsValue(true), fields);
+                    if (!onChangeFieldAction) {
+                        return [2 /*return*/];
+                    }
+                    payload = formHelper_1.getOnChangePayload({
+                        values: __assign(__assign({}, currentValues), { context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context) }),
+                        onChangeFieldActionArgs: onChangeFieldAction.args,
                     });
-                    ids = getCurrentId() ? [getCurrentId()] : [];
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().executeOnChange({
                             model: model,
                             action: onChangeFieldAction.method,
-                            ids: ids,
-                            payload: payload_1,
+                            ids: getCurrentId() ? [getCurrentId()] : [],
+                            payload: payload,
                             fields: fields,
                         })];
                 case 1:
                     response = _b.sent();
                     if (response.value) {
-                        finalValues = __assign(__assign({}, values), response.value);
+                        processedValues = __assign(__assign({}, currentValues), response.value);
+                        parseForm({ fields: fields, arch: arch, values: processedValues });
                         assignNewValuesToForm({
-                            values: finalValues,
+                            values: processedValues,
                             fields: fields,
                             reset: false,
                         });
@@ -580,29 +619,26 @@ function Form(props, ref) {
                     if (response.warning &&
                         response.warning.title &&
                         response.warning.message &&
-                        !warningIsShwon.current) {
+                        !warningIsShown.current) {
                         _a = response.warning, title = _a.title, message = _a.message;
-                        warningIsShwon.current = true;
+                        warningIsShown.current = true;
                         WarningDialog_1.default(title, message, function () {
-                            warningIsShwon.current = false;
+                            warningIsShown.current = false;
                         });
                     }
                     if (response.domain) {
-                        finalFields = formHelper_1.mergeFieldsDomain({
+                        proccessedFields = formHelper_1.mergeFieldsDomain({
                             fieldsDomain: response.domain,
                             fields: fields,
                         });
-                        setFields(finalFields);
+                        parseForm({
+                            fields: proccessedFields,
+                            arch: arch,
+                            values: currentValues,
+                        });
+                        setFields(proccessedFields);
                     }
-                    _b.label = 2;
-                case 2:
-                    parseForm({ arch: arch, fields: finalFields, values: finalValues });
-                    return [3 /*break*/, 4];
-                case 3:
-                    err_3 = _b.sent();
-                    ActionErrorDialog_1.default(err_3);
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
+                    return [2 /*return*/];
             }
         });
     }); };

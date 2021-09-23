@@ -14,4 +14,8 @@ export declare const mergeFieldsDomain: ({ fieldsDomain, fields, }: {
     fields: any;
 }) => any;
 export declare const getValuesForDomain: (domain: any[]) => any;
+export declare const getOnChangePayload: ({ onChangeFieldActionArgs, values, }: {
+    onChangeFieldActionArgs: any[];
+    values: any;
+}) => any;
 //# sourceMappingURL=formHelper.d.ts.map

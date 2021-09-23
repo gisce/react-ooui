@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getValuesForDomain = exports.mergeFieldsDomain = exports.checkFieldsType = exports.getTouchedValues = exports.processValues = void 0;
+exports.getOnChangePayload = exports.getValuesForDomain = exports.mergeFieldsDomain = exports.checkFieldsType = exports.getTouchedValues = exports.processValues = void 0;
 var filteredValues = function (values, fields) {
     if (!fields) {
         return values;
@@ -85,4 +85,18 @@ var getValuesForDomain = function (domain) {
     return values;
 };
 exports.getValuesForDomain = getValuesForDomain;
+var getOnChangePayload = function (_a) {
+    var onChangeFieldActionArgs = _a.onChangeFieldActionArgs, values = _a.values;
+    var payload = {};
+    onChangeFieldActionArgs.forEach(function (arg) {
+        if (values[arg]) {
+            payload[arg] = values[arg];
+        }
+        else {
+            payload[arg] = false;
+        }
+    });
+    return payload;
+};
+exports.getOnChangePayload = getOnChangePayload;
 //# sourceMappingURL=formHelper.js.map
