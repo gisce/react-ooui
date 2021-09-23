@@ -113,7 +113,7 @@ const init = () => {
       return null;
     },
     defaultGet: (options: DefaultGetRequest) => {
-      return null;
+      return {} as any;
     },
     getActionData: (action: string) => {
       return null;
