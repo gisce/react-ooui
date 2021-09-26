@@ -35,6 +35,7 @@ declare type SearchRequest = {
     offset?: number;
     model: string;
     fields?: any;
+    context?: any;
 };
 declare type SearchCountRequest = {
     params: Array<any>;
@@ -76,6 +77,7 @@ declare type ReadObjectsRequest = {
     fields?: any;
     model: string;
     ids: number[];
+    context?: any;
 };
 declare type DeleteObjectsRequest = {
     model: string;
@@ -127,7 +129,10 @@ declare type ConnectionProviderType = {
     getReport: (options: GetReportRequest) => Promise<any>;
     executeOnChange: (options: ExecuteOnChangeRequest) => Promise<any>;
     defaultGet: (options: DefaultGetRequest) => Promise<any>;
-    getActionData: (action: string) => Promise<any>;
+    getActionData: ({ action, context, }: {
+        action: string;
+        context?: any;
+    }) => Promise<any>;
 };
 declare type ViewType = "tree" | "form";
 export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, };

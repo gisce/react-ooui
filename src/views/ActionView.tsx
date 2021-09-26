@@ -135,6 +135,7 @@ function ActionView(props: Props, ref: any) {
           forcedValues={formForcedValues}
           formView={formView}
           id={currentId}
+          parentContext={context}
           onSubmitSucceed={(id) => {
             const itemIndex = results!.findIndex((item: any) => {
               return item === id;

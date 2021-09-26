@@ -355,6 +355,7 @@ function Form(props: FormProps, ref: any) {
       const viewsForAction = await ConnectionProvider.getHandler().getViewsForAction(
         {
           action,
+          context: parentContext,
         }
       );
       return viewsForAction.views.get("form");
@@ -363,6 +364,7 @@ function Form(props: FormProps, ref: any) {
     return (await ConnectionProvider.getHandler().getView({
       model,
       type: "form",
+      context: parentContext,
     })) as FormView;
   };
 
@@ -405,6 +407,7 @@ function Form(props: FormProps, ref: any) {
           model,
           ids: [getCurrentId()!],
           fields,
+          context: parentContext,
         })
       )[0];
 
@@ -725,6 +728,7 @@ function Form(props: FormProps, ref: any) {
       await ConnectionProvider.getHandler().readObjects({
         model: "ir.actions.actions",
         ids: [parseInt(action)],
+        context: parentContext,
       })
     )[0];
 

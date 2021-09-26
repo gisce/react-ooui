@@ -17,10 +17,11 @@ import { ViewType } from "@/types";
 type TabManagerProps = {
   children: React.ReactNode;
   globalValues?: any;
+  rootContext?: any;
 };
 
 function TabManager(props: TabManagerProps, ref: any) {
-  const { children, globalValues = {} } = props;
+  const { children, globalValues = {}, rootContext = {} } = props;
   const [activeKey, setActiveKey] = useState<string>();
   const [tabs, setTabs] = useState<any>([
     {
@@ -64,9 +65,10 @@ function TabManager(props: TabManagerProps, ref: any) {
   }
 
   async function retrieveAndOpenAction(action: string) {
-    const dataForAction = await ConnectionProvider.getHandler().getActionData(
-      action
-    );
+    const dataForAction = await ConnectionProvider.getHandler().getActionData({
+      action,
+      context: rootContext,
+    });
     const parsedDomain = dataForAction.domain
       ? parseDomain({
           domainValue: dataForAction.domain,
@@ -76,18 +78,12 @@ function TabManager(props: TabManagerProps, ref: any) {
       : [];
 
     const parsedContext = parseContext({
-      context: dataForAction.context,
+      context: { ...rootContext, ...dataForAction.context },
       values: globalValues,
       fields: {},
     });
 
-    const {
-      res_model: model,
-      views,
-      name: title,
-      target,
-      view_mode,
-    } = dataForAction;
+    const { res_model: model, views, name: title, target } = dataForAction;
 
     const initialViewType = views[0][1];
 
@@ -146,7 +142,6 @@ function TabManager(props: TabManagerProps, ref: any) {
       views,
       target,
       string: title,
-      view_mode,
     } = relateData;
 
     const parsedDomain = domain
@@ -169,7 +164,7 @@ function TabManager(props: TabManagerProps, ref: any) {
       model,
       target,
       views,
-      context: parsedContext,
+      context: { ...rootContext, ...parsedContext },
       domain: parsedDomain,
       title,
       initialViewType,
@@ -204,7 +199,7 @@ function TabManager(props: TabManagerProps, ref: any) {
           formDefaultValues={values}
           formForcedValues={forcedValues}
           model={model}
-          context={{}}
+          context={rootContext}
           domain={{}}
           setCanWeClose={registerViewCloseFn}
           initialViewType={initialViewType}
@@ -237,14 +232,14 @@ function TabManager(props: TabManagerProps, ref: any) {
       const formView = (await ConnectionProvider.getHandler().getView({
         model,
         type: "form",
-        context,
+        context: { ...rootContext, ...context },
       })) as FormView;
 
       (contentRootProvider.current as any).openActionModal({
         domain,
         model,
         formView,
-        context,
+        context: { ...rootContext, ...context },
       });
     } else {
       addNewTab({
@@ -255,7 +250,7 @@ function TabManager(props: TabManagerProps, ref: any) {
             title={title}
             views={views}
             model={model}
-            context={context}
+            context={{ ...rootContext, ...context }}
             domain={domain}
             setCanWeClose={registerViewCloseFn}
             initialViewType={initialViewType}

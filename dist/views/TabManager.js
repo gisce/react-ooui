@@ -85,16 +85,16 @@ var ActionView_1 = __importDefault(require("./ActionView"));
 var ooui_1 = require("ooui");
 function TabManager(props, ref) {
     var _this = this;
-    var children = props.children, _a = props.globalValues, globalValues = _a === void 0 ? {} : _a;
-    var _b = react_1.useState(), activeKey = _b[0], setActiveKey = _b[1];
-    var _c = react_1.useState([
+    var children = props.children, _a = props.globalValues, globalValues = _a === void 0 ? {} : _a, _b = props.rootContext, rootContext = _b === void 0 ? {} : _b;
+    var _c = react_1.useState(), activeKey = _c[0], setActiveKey = _c[1];
+    var _d = react_1.useState([
         {
             title: "Welcome",
             key: "welcome",
             closable: true,
             content: react_1.default.createElement(Welcome_1.default, null),
         },
-    ]), tabs = _c[0], setTabs = _c[1];
+    ]), tabs = _d[0], setTabs = _d[1];
     var tabViewsCloseFunctions = react_1.useRef(new Map());
     var contentRootProvider = react_1.useRef();
     react_1.useImperativeHandle(ref, function () { return ({
@@ -119,10 +119,13 @@ function TabManager(props, ref) {
     }
     function retrieveAndOpenAction(action) {
         return __awaiter(this, void 0, void 0, function () {
-            var dataForAction, parsedDomain, parsedContext, model, views, title, target, view_mode, initialViewType;
+            var dataForAction, parsedDomain, parsedContext, model, views, title, target, initialViewType;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, __1.ConnectionProvider.getHandler().getActionData(action)];
+                    case 0: return [4 /*yield*/, __1.ConnectionProvider.getHandler().getActionData({
+                            action: action,
+                            context: rootContext,
+                        })];
                     case 1:
                         dataForAction = _a.sent();
                         parsedDomain = dataForAction.domain
@@ -133,11 +136,11 @@ function TabManager(props, ref) {
                             })
                             : [];
                         parsedContext = ooui_1.parseContext({
-                            context: dataForAction.context,
+                            context: __assign(__assign({}, rootContext), dataForAction.context),
                             values: globalValues,
                             fields: {},
                         });
-                        model = dataForAction.res_model, views = dataForAction.views, title = dataForAction.name, target = dataForAction.target, view_mode = dataForAction.view_mode;
+                        model = dataForAction.res_model, views = dataForAction.views, title = dataForAction.name, target = dataForAction.target;
                         initialViewType = views[0][1];
                         openAction({
                             domain: parsedDomain,
@@ -171,7 +174,7 @@ function TabManager(props, ref) {
     }
     function openRelate(_a) {
         var relateData = _a.relateData, fields = _a.fields, values = _a.values;
-        var model = relateData.res_model, context = relateData.context, domain = relateData.domain, views = relateData.views, target = relateData.target, title = relateData.string, view_mode = relateData.view_mode;
+        var model = relateData.res_model, context = relateData.context, domain = relateData.domain, views = relateData.views, target = relateData.target, title = relateData.string;
         var parsedDomain = domain
             ? ooui_1.parseDomain({
                 domainValue: domain,
@@ -189,7 +192,7 @@ function TabManager(props, ref) {
             model: model,
             target: target,
             views: views,
-            context: parsedContext,
+            context: __assign(__assign({}, rootContext), parsedContext),
             domain: parsedDomain,
             title: title,
             initialViewType: initialViewType,
@@ -206,7 +209,7 @@ function TabManager(props, ref) {
                     content: (react_1.default.createElement(ActionView_1.default, { tabKey: key, title: title, views: [
                             [, "form"],
                             [, "tree"],
-                        ], formDefaultValues: values, formForcedValues: forcedValues, model: model, context: {}, domain: {}, setCanWeClose: registerViewCloseFn, initialViewType: initialViewType })),
+                        ], formDefaultValues: values, formForcedValues: forcedValues, model: model, context: rootContext, domain: {}, setCanWeClose: registerViewCloseFn, initialViewType: initialViewType })),
                     key: key,
                 });
                 return [2 /*return*/];
@@ -225,7 +228,7 @@ function TabManager(props, ref) {
                         return [4 /*yield*/, __1.ConnectionProvider.getHandler().getView({
                                 model: model,
                                 type: "form",
-                                context: context,
+                                context: __assign(__assign({}, rootContext), context),
                             })];
                     case 1:
                         formView = (_b.sent());
@@ -233,13 +236,13 @@ function TabManager(props, ref) {
                             domain: domain,
                             model: model,
                             formView: formView,
-                            context: context,
+                            context: __assign(__assign({}, rootContext), context),
                         });
                         return [3 /*break*/, 3];
                     case 2:
                         addNewTab({
                             title: title,
-                            content: (react_1.default.createElement(ActionView_1.default, { tabKey: key, title: title, views: views, model: model, context: context, domain: domain, setCanWeClose: registerViewCloseFn, initialViewType: initialViewType })),
+                            content: (react_1.default.createElement(ActionView_1.default, { tabKey: key, title: title, views: views, model: model, context: __assign(__assign({}, rootContext), context), domain: domain, setCanWeClose: registerViewCloseFn, initialViewType: initialViewType })),
                             key: key,
                         });
                         _b.label = 3;

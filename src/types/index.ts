@@ -43,6 +43,7 @@ type SearchRequest = {
   offset?: number;
   model: string;
   fields?: any;
+  context?: any;
 };
 
 type SearchCountRequest = {
@@ -92,6 +93,7 @@ type ReadObjectsRequest = {
   fields?: any;
   model: string;
   ids: number[];
+  context?: any;
 };
 
 type DeleteObjectsRequest = {
@@ -153,7 +155,13 @@ type ConnectionProviderType = {
   getReport: (options: GetReportRequest) => Promise<any>;
   executeOnChange: (options: ExecuteOnChangeRequest) => Promise<any>;
   defaultGet: (options: DefaultGetRequest) => Promise<any>;
-  getActionData: (action: string) => Promise<any>;
+  getActionData: ({
+    action,
+    context,
+  }: {
+    action: string;
+    context?: any;
+  }) => Promise<any>;
 };
 
 type ViewType = "tree" | "form";

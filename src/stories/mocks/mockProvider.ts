@@ -115,7 +115,7 @@ const init = () => {
     defaultGet: (options: DefaultGetRequest) => {
       return {} as any;
     },
-    getActionData: (action: string) => {
+    getActionData: ({ action, context }: { action: string; context?: any }) => {
       return null;
     },
   };

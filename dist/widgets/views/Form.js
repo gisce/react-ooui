@@ -324,6 +324,7 @@ function Form(props, ref) {
                     action = _a.sent();
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getViewsForAction({
                             action: action,
+                            context: parentContext,
                         })];
                 case 2:
                     viewsForAction = _a.sent();
@@ -331,6 +332,7 @@ function Form(props, ref) {
                 case 3: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
                         model: model,
                         type: "form",
+                        context: parentContext,
                     })];
                 case 4: return [2 /*return*/, (_a.sent())];
             }
@@ -365,6 +367,7 @@ function Form(props, ref) {
                                 model: model,
                                 ids: [getCurrentId()],
                                 fields: fields,
+                                context: parentContext,
                             })];
                     case 1:
                         values = (_b.sent())[0];
@@ -717,6 +720,7 @@ function Form(props, ref) {
                     case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
                             model: "ir.actions.actions",
                             ids: [parseInt(action)],
+                            context: parentContext,
                         })];
                     case 1:
                         actionData = (_b.sent())[0];
