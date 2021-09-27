@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Modal, Button, Space } from "antd";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 type Props = {
   visible: boolean;
@@ -10,10 +11,11 @@ type Props = {
 
 export const Many2oneSuffixModal = (props: Props) => {
   const { visible, onCancel, items = [], onItemClicked } = props;
+  const { t } = useContext(LocaleContext) as LocaleContextType;
 
   return (
     <Modal
-      title={"Seleccioneu la vostra acció"}
+      title={t("selectAction")}
       centered
       visible={visible}
       footer={null}

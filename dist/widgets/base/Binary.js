@@ -77,6 +77,7 @@ var Config_1 = __importDefault(require("@/Config"));
 var ButtonWithTooltip_1 = __importDefault(require("@/common/ButtonWithTooltip"));
 var icons_1 = require("@ant-design/icons");
 var FormContext_1 = require("@/context/FormContext");
+var LocaleContext_1 = require("@/context/LocaleContext");
 var filesHelper_1 = require("@/helpers/filesHelper");
 var Binary = function (props) {
     var ooui = props.ooui;
@@ -91,6 +92,7 @@ var BinaryInput = function (props) {
     var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
     var inputFile = react_1.useRef(null);
     var _b = react_1.useContext(FormContext_1.FormContext), setFieldValue = _b.setFieldValue, getFieldValue = _b.getFieldValue;
+    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var filesize = value ? filesHelper_1.getFilesize(value) : "";
     var triggerChange = function (changedValue) {
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
@@ -163,9 +165,9 @@ var BinaryInput = function (props) {
                         var fileUploadField = inputFile.current;
                         fileUploadField.click();
                     } }, "Select"),
-                react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.EyeOutlined, null), disabled: !value, onClick: openFile }, "Open"),
-                react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Download", disabled: !value, onClick: downloadFile, icon: react_1.default.createElement(icons_1.DownloadOutlined, null) }),
-                react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Clear", disabled: readOnly || !value, onClick: clearFile, icon: react_1.default.createElement(icons_1.ClearOutlined, null) })))));
+                react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.EyeOutlined, null), disabled: !value, onClick: openFile }, t("open")),
+                react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("download"), disabled: !value, onClick: downloadFile, icon: react_1.default.createElement(icons_1.DownloadOutlined, null) }),
+                react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("clear"), disabled: readOnly || !value, onClick: clearFile, icon: react_1.default.createElement(icons_1.ClearOutlined, null) })))));
 };
 exports.BinaryInput = BinaryInput;
 //# sourceMappingURL=Binary.js.map

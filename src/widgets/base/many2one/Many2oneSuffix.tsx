@@ -1,5 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
-import { RightCircleOutlined, PrinterOutlined, ThunderboltOutlined, EnterOutlined } from "@ant-design/icons";
+import {
+  RightCircleOutlined,
+  PrinterOutlined,
+  ThunderboltOutlined,
+  EnterOutlined,
+} from "@ant-design/icons";
 import { Menu, Dropdown, Spin } from "antd";
 import {
   TabManagerContext,
@@ -14,6 +19,7 @@ import {
 import ConnectionProvider from "@/ConnectionProvider";
 import { processValues } from "@/helpers/formHelper";
 import showErrorDialog from "@/ui/ActionErrorDialog";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 type Props = {
   id: number;
@@ -27,6 +33,7 @@ export const Many2oneSuffix = (props: Props) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formView, setFormView] = useState<FormView>();
   const [targetValues, setTargetValues] = useState<any>();
+  const { t } = useContext(LocaleContext) as LocaleContextType;
 
   const tabManagerContext = useContext(
     TabManagerContext
@@ -99,25 +106,29 @@ export const Many2oneSuffix = (props: Props) => {
             disabled={
               !formView!.toolbar.action || formView!.toolbar.action.length === 0
             }
-            icon={<ThunderboltOutlined/>}
+            icon={<ThunderboltOutlined />}
           >
-            Acció
+            {t("action")}
           </Menu.Item>,
           <Menu.Item
             key="print"
             disabled={
               !formView!.toolbar.print || formView!.toolbar.print.length === 0
             }
-            icon={<PrinterOutlined/>}
+            icon={<PrinterOutlined />}
           >
-            Informe
+            {t("report")}
           </Menu.Item>,
           <Menu.Divider />,
           <Menu.ItemGroup
-            title={<><EnterOutlined /> <span>Relacions</span></>}
+            title={
+              <>
+                <EnterOutlined /> <span> {t("related")}</span>
+              </>
+            }
           >
-          {relateItems}
-          </Menu.ItemGroup>
+            {relateItems}
+          </Menu.ItemGroup>,
         ]}
       </Menu>
     );

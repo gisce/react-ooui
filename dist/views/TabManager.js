@@ -84,13 +84,14 @@ var TabManagerContext_1 = __importDefault(require("@/context/TabManagerContext")
 var ActionView_1 = __importDefault(require("./ActionView"));
 var ooui_1 = require("ooui");
 var LocaleContext_1 = __importDefault(require("@/context/LocaleContext"));
+var LocaleContext_2 = require("@/context/LocaleContext");
 function TabManager(props, ref) {
     var _this = this;
     var children = props.children, _a = props.globalValues, globalValues = _a === void 0 ? {} : _a, _b = props.rootContext, rootContext = _b === void 0 ? {} : _b, lang = props.lang;
     var _c = react_1.useState(), activeKey = _c[0], setActiveKey = _c[1];
     var _d = react_1.useState([
         {
-            title: "Welcome",
+            title: LocaleContext_2.tForLang("welcome", lang),
             key: "welcome",
             closable: true,
             content: react_1.default.createElement(Welcome_1.default, null),

@@ -55,6 +55,9 @@ var FormModal = function (props) {
     var modalWidth = useModalWidthDimensions_1.default().modalWidth;
     var _b = react_1.useState(title), formTitle = _b[0], setFormTitle = _b[1];
     function onTitleChange(newTitle) {
+        if (formTitle) {
+            return;
+        }
         setFormTitle(newTitle);
     }
     return (react_1.default.createElement(FormModalContext_1.default, { setTitle: onTitleChange },

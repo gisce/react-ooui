@@ -36,14 +36,12 @@ export function SearchBottomBar(props: Props): React.ReactElement {
           ) : (
             <DownOutlined className="pr-1" />
           )}
-          {advancedFilter
-            ? t("simple_search")
-            : t("advanced_search")}
+          {advancedFilter ? t("simple_search") : t("advanced_search")}
         </a>
       </Col>
       <Col span={12} className="text-right pb-2">
         <Button className="mr-5" icon={<ClearOutlined />} onClick={onClear}>
-          Clear
+          {t("clear")}
         </Button>
         <Button
           icon={<SearchOutlined />}

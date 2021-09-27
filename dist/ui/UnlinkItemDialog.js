@@ -6,16 +6,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(require("react"));
 var antd_1 = require("antd");
 var icons_1 = require("@ant-design/icons");
+var LocaleContext_1 = require("@/context/LocaleContext");
 var confirm = antd_1.Modal.confirm;
 var showDialog = function (_a) {
-    var onOk = _a.onOk;
+    var onOk = _a.onOk, lang = _a.lang;
     confirm({
-        title: "Unlink item/s",
+        title: LocaleContext_1.tForLang("unlinkItems", lang),
         icon: react_1.default.createElement(icons_1.ExclamationCircleOutlined, null),
         centered: true,
-        content: "Are you sure you want to unlink the selected item/s?",
-        okText: "Yes, unlink",
+        content: LocaleContext_1.tForLang("confirmUnlink", lang),
+        okText: LocaleContext_1.tForLang("yesConfirmUnlink", lang),
         onOk: onOk,
+        cancelText: LocaleContext_1.tForLang("cancel", lang),
     });
 };
 exports.default = showDialog;

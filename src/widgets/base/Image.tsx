@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
 import { Row, Space } from "antd";
 import Field from "@/common/Field";
 import { Image as ImageOoui } from "ooui";
@@ -11,6 +11,7 @@ import {
 
 import { toBase64, getMimeType } from "@/helpers/filesHelper";
 import iconMapper from "@/helpers/iconMapper";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 type Props = {
   ooui: ImageOoui;
@@ -23,7 +24,7 @@ export const Image = (props: Props) => {
   const Icon: React.ElementType = iconMapper(id);
 
   if (Icon) {
-    return <Icon />
+    return <Icon />;
   }
 
   return (
@@ -43,6 +44,7 @@ export const ImageInput = (props: ImageInputProps) => {
   const { ooui, value, onChange } = props;
   const { readOnly } = ooui as ImageOoui;
   const inputFile = useRef(null);
+  const { t } = useContext(LocaleContext) as LocaleContextType;
 
   const triggerChange = (changedValue?: string) => {
     onChange?.(changedValue);
@@ -91,7 +93,7 @@ export const ImageInput = (props: ImageInputProps) => {
       <Row gutter={8} wrap={false} justify="center" className="pt-5">
         <Space>
           <ButtonWithTooltip
-            tooltip={"Upload new image"}
+            tooltip={t("uploadNewImage")}
             icon={<FolderOpenOutlined />}
             disabled={readOnly}
             onClick={() => {
@@ -100,13 +102,13 @@ export const ImageInput = (props: ImageInputProps) => {
             }}
           />
           <ButtonWithTooltip
-            tooltip={"Download"}
+            tooltip={t("download")}
             disabled={!value}
             onClick={downloadFile}
             icon={<DownloadOutlined />}
           />
           <ButtonWithTooltip
-            tooltip={"Clear"}
+            tooltip={t("clear")}
             disabled={readOnly || !value}
             onClick={clearFile}
             icon={<ClearOutlined />}

@@ -1,7 +1,7 @@
 import React from "react";
 import ca_ES from "@/locales/ca_ES";
 import en_US from "@/locales/en_US";
-import es_ES from "@/locales/en_US";
+import es_ES from "@/locales/es_ES";
 
 const localeStrings: any = {
   ca_ES,
@@ -10,7 +10,7 @@ const localeStrings: any = {
 };
 
 export type LocaleContextType = {
-  lang: string | undefined;
+  lang: string;
   t: (key: string) => string;
 };
 
@@ -27,8 +27,7 @@ const LocaleContextProvider = (props: LocaleContextProps): any => {
   const { children, lang } = props;
 
   function t(key: string): string {
-    const translated = localeStrings[lang!]?.[key];
-    return translated || key;
+    return tForLang(key, lang);
   }
 
   return (
@@ -41,6 +40,11 @@ const LocaleContextProvider = (props: LocaleContextProps): any => {
       {children}
     </LocaleContext.Provider>
   );
+};
+
+export const tForLang = (key: string, lang: string) => {
+  const translated = localeStrings[lang]?.[key];
+  return translated || key;
 };
 
 export default LocaleContextProvider;

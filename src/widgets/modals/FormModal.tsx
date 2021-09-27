@@ -17,6 +17,10 @@ export const FormModal = (props: FormModalProps) => {
   const [formTitle, setFormTitle] = useState<string>(title!);
 
   function onTitleChange(newTitle: string) {
+    if (formTitle) {
+      return;
+    }
+    
     setFormTitle(newTitle);
   }
 

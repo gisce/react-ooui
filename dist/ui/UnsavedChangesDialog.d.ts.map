@@ -1,1 +1,1 @@
-{"version":3,"file":"UnsavedChangesDialog.d.ts","sourceRoot":"","sources":["../../src/ui/UnsavedChangesDialog.tsx"],"names":[],"mappings":"AAMA,QAAA,MAAM,UAAU;UAIR,MAAM,IAAI;sBACC,IAAI;UAWtB,CAAC;AAEF,eAAe,UAAU,CAAC"}
+{"version":3,"file":"UnsavedChangesDialog.d.ts","sourceRoot":"","sources":["../../src/ui/UnsavedChangesDialog.tsx"],"names":[],"mappings":"AAOA,QAAA,MAAM,UAAU;UAKR,MAAM,IAAI;sBACC,IAAI;UACf,MAAM;UAYb,CAAC;AAEF,eAAe,UAAU,CAAC"}

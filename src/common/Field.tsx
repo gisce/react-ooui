@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Form, Row, Col } from "antd";
 import { Field as FieldOoui, Label as LabelOoui } from "ooui";
 import Label from "@/widgets/base/Label";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 export default function Field({
   ooui,
@@ -25,12 +26,13 @@ export default function Field({
   validator?: any;
 }) {
   const { id, label, tooltip } = ooui;
+  const { t } = useContext(LocaleContext) as LocaleContextType;
 
   const rules = required
     ? [
         {
           required: true,
-          message: "Please fill this required field",
+          message: t("fillRequiredField"),
           type,
           validator,
         },

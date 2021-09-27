@@ -1,1 +1,1 @@
-{"version":3,"file":"NewButton.d.ts","sourceRoot":"","sources":["../../src/actionbar/NewButton.tsx"],"names":[],"mappings":"AASA,aAAK,KAAK,GAAG;IACX,QAAQ,CAAC,EAAE,OAAO,CAAC;CACpB,CAAC;AAEF,iBAAS,SAAS,CAAC,KAAK,EAAE,KAAK,eA4B9B;AACD,eAAe,SAAS,CAAC"}
+{"version":3,"file":"NewButton.d.ts","sourceRoot":"","sources":["../../src/actionbar/NewButton.tsx"],"names":[],"mappings":"AAUA,aAAK,KAAK,GAAG;IACX,QAAQ,CAAC,EAAE,OAAO,CAAC;CACpB,CAAC;AAEF,iBAAS,SAAS,CAAC,KAAK,EAAE,KAAK,eA8B9B;AACD,eAAe,SAAS,CAAC"}

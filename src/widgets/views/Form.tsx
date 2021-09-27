@@ -53,6 +53,7 @@ import {
   ContentRootContext,
   ContentRootContextType,
 } from "@/context/ContentRootContext";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 export type FormProps = {
   model: string;
@@ -104,6 +105,7 @@ function Form(props: FormProps, ref: any) {
     defaultValues,
     forcedValues = {},
   } = props;
+  const { t, lang } = useContext(LocaleContext) as LocaleContextType;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>();
@@ -332,6 +334,7 @@ function Form(props: FormProps, ref: any) {
     return new Promise(async (resolve) => {
       if (formHasChanges()) {
         showUnsavedChangesDialog({
+          lang,
           onOk: () => {
             onCancel?.();
             resolve(true);
@@ -492,7 +495,7 @@ function Form(props: FormProps, ref: any) {
 
     if (await checkIfFormHasErrors()) {
       formSubmitting.current = false;
-      formErrorsDialog();
+      formErrorsDialog(lang);
       return;
     }
 
@@ -779,7 +782,7 @@ function Form(props: FormProps, ref: any) {
 
     // We check for required fields
     if (await checkIfFormHasErrors()) {
-      formErrorsDialog();
+      formErrorsDialog(lang);
       return;
     }
 

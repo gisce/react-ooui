@@ -86,33 +86,35 @@ var FormContext_1 = __importStar(require("@/context/FormContext"));
 var FormModalContext_1 = require("@/context/FormModalContext");
 var ActionViewContext_1 = require("@/context/ActionViewContext");
 var ContentRootContext_1 = require("@/context/ContentRootContext");
+var LocaleContext_1 = require("@/context/LocaleContext");
 var WIDTH_BREAKPOINT = 1000;
 function Form(props, ref) {
     var _this = this;
     var model = props.model, id = props.id, propsOnCancel = props.onCancel, propsOnSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, propsOnSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, formViewProps = props.formView, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g, actionDomain = props.actionDomain, _h = props.visible, visible = _h === void 0 ? true : _h, _j = props.rootForm, rootForm = _j === void 0 ? false : _j, defaultValues = props.defaultValues, _k = props.forcedValues, forcedValues = _k === void 0 ? {} : _k;
-    var _l = react_1.useState(false), isSubmitting = _l[0], setIsSubmitting = _l[1];
-    var _m = react_1.useState(), error = _m[0], setError = _m[1];
-    var _o = react_1.useState(), formOoui = _o[0], setFormOoui = _o[1];
+    var _l = react_1.useContext(LocaleContext_1.LocaleContext), t = _l.t, lang = _l.lang;
+    var _m = react_1.useState(false), isSubmitting = _m[0], setIsSubmitting = _m[1];
+    var _o = react_1.useState(), error = _o[0], setError = _o[1];
+    var _p = react_1.useState(), formOoui = _p[0], setFormOoui = _p[1];
     var antForm = antd_1.Form.useForm()[0];
-    var _p = react_1.useState(), arch = _p[0], setArch = _p[1];
-    var _q = react_1.useState(), fields = _q[0], setFields = _q[1];
+    var _q = react_1.useState(), arch = _q[0], setArch = _q[1];
+    var _r = react_1.useState(), fields = _r[0], setFields = _r[1];
     var formModalContext = react_1.useContext(FormModalContext_1.FormModalContext);
     var createdId = react_1.useRef();
     var originalFormValues = react_1.useRef({});
     var lastAssignedValues = react_1.useRef({});
     var warningIsShown = react_1.useRef(false);
     var formSubmitting = react_1.useRef(false);
-    var _r = react_cool_dimensions_1.default({
+    var _s = react_cool_dimensions_1.default({
         breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
         updateOnBreakpointChange: true,
-    }), width = _r.width, containerRef = _r.ref;
+    }), width = _s.width, containerRef = _s.ref;
     var responsiveBehaviour = width < WIDTH_BREAKPOINT;
     var formContext = react_1.useContext(FormContext_1.FormContext);
     var parentId = (formContext || {}).activeId;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _s = (rootForm ? actionViewContext : {}) || {}, _t = _s.setFormIsSaving, setFormIsSaving = _t === void 0 ? undefined : _t, _u = _s.setFormHasChanges, setFormHasChanges = _u === void 0 ? undefined : _u, _v = _s.setCurrentId, setCurrentId = _v === void 0 ? undefined : _v, _w = _s.setFormIsLoading, setFormIsLoading = _w === void 0 ? undefined : _w, _x = _s.setAttachments, setAttachments = _x === void 0 ? undefined : _x;
+    var _t = (rootForm ? actionViewContext : {}) || {}, _u = _t.setFormIsSaving, setFormIsSaving = _u === void 0 ? undefined : _u, _v = _t.setFormHasChanges, setFormHasChanges = _v === void 0 ? undefined : _v, _w = _t.setCurrentId, setCurrentId = _w === void 0 ? undefined : _w, _x = _t.setFormIsLoading, setFormIsLoading = _x === void 0 ? undefined : _x, _y = _t.setAttachments, setAttachments = _y === void 0 ? undefined : _y;
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
-    var _y = contentRootContext || {}, processAction = _y.processAction, globalValues = _y.globalValues;
+    var _z = contentRootContext || {}, processAction = _z.processAction, globalValues = _z.globalValues;
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
         getFields: function () {
@@ -295,6 +297,7 @@ function Form(props, ref) {
                     return __generator(this, function (_a) {
                         if (formHasChanges()) {
                             UnsavedChangesDialog_1.default({
+                                lang: lang,
                                 onOk: function () {
                                     onCancel === null || onCancel === void 0 ? void 0 : onCancel();
                                     resolve(true);
@@ -469,7 +472,7 @@ function Form(props, ref) {
                 case 1:
                     if (_b.sent()) {
                         formSubmitting.current = false;
-                        FormErrorsDialog_1.default();
+                        FormErrorsDialog_1.default(lang);
                         return [2 /*return*/];
                     }
                     setIsSubmitting(true);
@@ -773,7 +776,7 @@ function Form(props, ref) {
                     case 1:
                         // We check for required fields
                         if (_b.sent()) {
-                            FormErrorsDialog_1.default();
+                            FormErrorsDialog_1.default(lang);
                             return [2 /*return*/];
                         }
                         _b.label = 2;

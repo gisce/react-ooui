@@ -6,6 +6,7 @@ import showConfirmDialog from "@/ui/ConfirmDialog";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { LoadingOutlined } from "@ant-design/icons";
 import iconMapper from "@/helpers/iconMapper";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 type Props = {
   ooui: ButtonOoui;
@@ -24,8 +25,9 @@ export const Button = (props: Props) => {
     readOnly,
   } = ooui;
   const formContext = useContext(FormContext) as FormContextType;
-  const { executeButtonAction } = formContext || {};
+  const { executeButtonAction } = formContext || {};
   const [isRunning, setIsRunning] = useState<boolean>(false);
+  const { lang } = useContext(LocaleContext) as LocaleContextType;
 
   async function onClick_confirm() {
     setIsRunning(true);
@@ -37,6 +39,7 @@ export const Button = (props: Props) => {
     if (confirmMessage) {
       showConfirmDialog({
         confirmMessage,
+        lang,
         onOk: () => {
           onClick_confirm();
         },
@@ -60,7 +63,7 @@ export const Button = (props: Props) => {
     <Field ooui={ooui}>
       <AntButton
         className="w-full"
-        disabled={!activated || readOnly}
+        disabled={!activated || readOnly}
         onClick={onClick}
         icon={getButtonIcon()}
       >

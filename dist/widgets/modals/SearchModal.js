@@ -65,10 +65,12 @@ var FormModal_1 = require("./FormModal");
 var SearchTree_1 = __importDefault(require("@/widgets/views/SearchTree"));
 var icons_1 = require("@ant-design/icons");
 var useModalWidthDimensions_1 = __importDefault(require("@/hooks/useModalWidthDimensions"));
+var LocaleContext_1 = require("@/context/LocaleContext");
 var SearchModal = function (props) {
     var visible = props.visible, onCloseModalProps = props.onCloseModal, onSelectValue = props.onSelectValue, model = props.model, nameSearch = props.nameSearch, domain = props.domain;
     var _a = react_1.useState(false), showCreateModal = _a[0], setShowCreateModal = _a[1];
     var _b = useModalWidthDimensions_1.default(), modalWidth = _b.modalWidth, modalHeight = _b.modalHeight;
+    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var onCloseModal = function () { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -100,7 +102,7 @@ var SearchModal = function (props) {
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), onClick: onCloseModal }, "Cancel")))));
     };
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(antd_1.Modal, { title: "Search", centered: true, width: modalWidth, visible: visible && !showCreateModal, closable: true, onCancel: onCloseModal, footer: null, destroyOnClose: true }, content()),
+        react_1.default.createElement(antd_1.Modal, { title: t("search"), centered: true, width: modalWidth, visible: visible && !showCreateModal, closable: true, onCancel: onCloseModal, footer: null, destroyOnClose: true }, content()),
         react_1.default.createElement(FormModal_1.FormModal, { model: model, visible: showCreateModal, onSubmitSucceed: function (id) {
                 setShowCreateModal(false);
                 onCloseModal();

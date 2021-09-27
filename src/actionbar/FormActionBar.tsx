@@ -34,6 +34,7 @@ import {
   ContentRootContextType,
 } from "@/context/ContentRootContext";
 import AttachmentsButton from "./AttachmentsButton";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 function FormActionBar() {
   const {
@@ -57,6 +58,7 @@ function FormActionBar() {
     attachments,
     formRef,
   } = useContext(ActionViewContext) as ActionViewContextType;
+  const { t, lang } = useContext(LocaleContext) as LocaleContextType;
 
   const contentRootContext = useContext(
     ContentRootContext
@@ -71,6 +73,7 @@ function FormActionBar() {
   function tryRefresh(callback: any) {
     if (formHasChanges) {
       refreshChangesDialog({
+        lang,
         onOk: () => {
           callback();
         },
@@ -84,6 +87,7 @@ function FormActionBar() {
   function tryNavigate(callback: any) {
     if (formHasChanges) {
       showUnsavedChangesDialog({
+        lang,
         onOk: () => {
           callback();
         },
@@ -110,7 +114,8 @@ function FormActionBar() {
 
   function tryDelete() {
     showConfirmDialog({
-      confirmMessage: "Are you sure to remove this item?",
+      confirmMessage: t("confirmRemoveItem"),
+      lang,
       onOk: () => {
         remove();
       },
@@ -177,14 +182,14 @@ function FormActionBar() {
       <NewButton disabled={formIsSaving || formIsLoading || removingItem} />
       <ActionButton
         icon={<SaveOutlined />}
-        tooltip={"Save"}
+        tooltip={t("save")}
         disabled={!formHasChanges || mustDisableButtons}
         loading={formIsSaving}
         onClick={onFormSave}
       />
       <ActionButton
         icon={<DeleteOutlined />}
-        tooltip={"Delete"}
+        tooltip={t("delete")}
         disabled={
           formIsSaving ||
           currentId === undefined ||
@@ -197,7 +202,7 @@ function FormActionBar() {
       {separator()}
       <ActionButton
         icon={<ReloadOutlined />}
-        tooltip={"Rrefresh"}
+        tooltip={t("refresh")}
         disabled={
           formIsSaving ||
           currentId === undefined ||
@@ -215,7 +220,7 @@ function FormActionBar() {
       <Space>
         <ActionButton
           icon={<LeftOutlined />}
-          tooltip={"Previous"}
+          tooltip={t("previous")}
           disabled={mustDisableButtons}
           loading={false}
           onClick={() => {
@@ -224,7 +229,7 @@ function FormActionBar() {
         />
         <ActionButton
           icon={<RightOutlined />}
-          tooltip={"Next"}
+          tooltip={t("next")}
           disabled={mustDisableButtons}
           loading={false}
           onClick={() => {
@@ -243,7 +248,7 @@ function FormActionBar() {
       <DropdownButton
         icon={<ThunderboltOutlined />}
         disabled={mustDisableButtons}
-        tooltip="Actions"
+        tooltip={t("actions")}
         items={toolbar?.action}
         onItemClick={(action: any) => {
           if (!action) {
@@ -256,7 +261,7 @@ function FormActionBar() {
       <DropdownButton
         icon={<PrinterOutlined />}
         disabled={mustDisableButtons}
-        tooltip="Reports"
+        tooltip={t("reports")}
         items={toolbar?.print}
         onItemClick={(report: any) => {
           if (!report) {
@@ -272,7 +277,7 @@ function FormActionBar() {
       <DropdownButton
         icon={<EnterOutlined />}
         disabled={mustDisableButtons}
-        tooltip="Related"
+        tooltip={t("related")}
         items={toolbar?.relate}
         onItemClick={async (relate: any) => {
           if (!relate) {
@@ -294,7 +299,7 @@ function FormActionBar() {
           const res_model = currentModel as string;
           openSpecificModelTab({
             model: "ir.attachment",
-            title: "Add new attachment",
+            title: t("addNewAttachment"),
             initialViewType: "form",
             values: {
               selection_associated_object: `${res_model},${res_id}`,

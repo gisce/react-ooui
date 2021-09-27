@@ -4,6 +4,7 @@ import { FormModal } from "./FormModal";
 import SearchTree from "@/widgets/views/SearchTree";
 import { FileAddOutlined, CloseOutlined } from "@ant-design/icons";
 import useModalWidthDimensions from "@/hooks/useModalWidthDimensions";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 type SearchSelectionProps = {
   visible: boolean;
@@ -26,6 +27,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
 
   const { modalWidth, modalHeight } = useModalWidthDimensions();
+  const { t } = useContext(LocaleContext) as LocaleContextType;
 
   const onCloseModal = async () => {
     await new Promise((resolve) => setTimeout(resolve, 5));
@@ -70,7 +72,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
   return (
     <>
       <Modal
-        title="Search"
+        title={t("search")}
         centered
         width={modalWidth}
         visible={visible && !showCreateModal}

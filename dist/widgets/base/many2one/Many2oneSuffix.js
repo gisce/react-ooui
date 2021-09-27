@@ -79,6 +79,7 @@ var ContentRootContext_1 = require("@/context/ContentRootContext");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var formHelper_1 = require("@/helpers/formHelper");
 var ActionErrorDialog_1 = __importDefault(require("@/ui/ActionErrorDialog"));
+var LocaleContext_1 = require("@/context/LocaleContext");
 var Many2oneSuffix = function (props) {
     var _a, _b;
     var id = props.id, model = props.model;
@@ -87,6 +88,7 @@ var Many2oneSuffix = function (props) {
     var _e = react_1.useState(false), isLoading = _e[0], setIsLoading = _e[1];
     var _f = react_1.useState(), formView = _f[0], setFormView = _f[1];
     var _g = react_1.useState(), targetValues = _g[0], setTargetValues = _g[1];
+    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
     var openRelate = (tabManagerContext || {}).openRelate;
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
@@ -147,13 +149,15 @@ var Many2oneSuffix = function (props) {
             return react_1.default.createElement(antd_1.Menu.Item, { key: item.id }, item.name);
         });
         return (react_1.default.createElement(antd_1.Menu, { onClick: handleMenuClick }, [
-            react_1.default.createElement(antd_1.Menu.Item, { key: "action", disabled: !formView.toolbar.action || formView.toolbar.action.length === 0, icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null) }, "Acci\u00F3"),
-            react_1.default.createElement(antd_1.Menu.Item, { key: "print", disabled: !formView.toolbar.print || formView.toolbar.print.length === 0, icon: react_1.default.createElement(icons_1.PrinterOutlined, null) }, "Informe"),
+            react_1.default.createElement(antd_1.Menu.Item, { key: "action", disabled: !formView.toolbar.action || formView.toolbar.action.length === 0, icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null) }, t("action")),
+            react_1.default.createElement(antd_1.Menu.Item, { key: "print", disabled: !formView.toolbar.print || formView.toolbar.print.length === 0, icon: react_1.default.createElement(icons_1.PrinterOutlined, null) }, t("report")),
             react_1.default.createElement(antd_1.Menu.Divider, null),
             react_1.default.createElement(antd_1.Menu.ItemGroup, { title: react_1.default.createElement(react_1.default.Fragment, null,
                     react_1.default.createElement(icons_1.EnterOutlined, null),
                     " ",
-                    react_1.default.createElement("span", null, "Relacions")) }, relateItems)
+                    react_1.default.createElement("span", null,
+                        " ",
+                        t("related"))) }, relateItems),
         ]));
     }
     function handleMenuClick(event) {

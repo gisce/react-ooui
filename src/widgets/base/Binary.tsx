@@ -11,6 +11,7 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import { FormContext, FormContextType } from "@/context/FormContext";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 import {
   getFilesize,
@@ -49,6 +50,7 @@ export const BinaryInput = (props: BinaryInputProps) => {
   const { setFieldValue, getFieldValue } = useContext(
     FormContext
   ) as FormContextType;
+  const { t } = useContext(LocaleContext) as LocaleContextType;
 
   const filesize = value ? getFilesize(value) : "";
 
@@ -118,21 +120,17 @@ export const BinaryInput = (props: BinaryInputProps) => {
           >
             Select
           </Button>
-          <Button
-            icon={<EyeOutlined />}
-            disabled={!value}
-            onClick={openFile}
-          >
-            Open
+          <Button icon={<EyeOutlined />} disabled={!value} onClick={openFile}>
+            {t("open")}
           </Button>
           <ButtonWithTooltip
-            tooltip={"Download"}
+            tooltip={t("download")}
             disabled={!value}
             onClick={downloadFile}
             icon={<DownloadOutlined />}
           />
           <ButtonWithTooltip
-            tooltip={"Clear"}
+            tooltip={t("clear")}
             disabled={readOnly || !value}
             onClick={clearFile}
             icon={<ClearOutlined />}

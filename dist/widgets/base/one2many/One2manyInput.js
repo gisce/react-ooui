@@ -87,11 +87,13 @@ var one2manyHelper_1 = require("@/helpers/one2manyHelper");
 var SearchModal_1 = require("@/widgets/modals/SearchModal");
 var useModalWidthDimensions_1 = __importDefault(require("@/hooks/useModalWidthDimensions"));
 var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
+var LocaleContext_1 = require("@/context/LocaleContext");
 var One2manyInput = function (props) {
     var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui, views = props.views;
     var _b = react_1.useContext(One2manyContext_1.One2manyContext), currentView = _b.currentView, setCurrentView = _b.setCurrentView, itemIndex = _b.itemIndex, setItemIndex = _b.setItemIndex, manualTriggerChange = _b.manualTriggerChange, setManualTriggerChange = _b.setManualTriggerChange;
     var formContext = react_1.useContext(FormContext_1.FormContext);
     var _c = formContext || {}, activeId = _c.activeId, activeModel = _c.activeModel, getContext = _c.getContext;
+    var lang = react_1.useContext(LocaleContext_1.LocaleContext).lang;
     var formRef = react_1.useRef();
     var _d = react_1.useState(false), formHasChanges = _d[0], setFormHasChanges = _d[1];
     var _e = react_1.useState(false), isLoading = _e[0], setIsLoading = _e[1];
@@ -204,6 +206,7 @@ var One2manyInput = function (props) {
     var showFormChangesDialogIfNeeded = function (callback) {
         if (formHasChanges) {
             UnsavedChangesDialog_1.default({
+                lang: lang,
                 onOk: function () {
                     callback();
                     setFormHasChanges(false);
@@ -217,6 +220,7 @@ var One2manyInput = function (props) {
     var showRemoveConfirm = function () {
         if (isMany2many) {
             UnlinkItemDialog_1.default({
+                lang: lang,
                 onOk: function () {
                     if (currentView === "form") {
                         removeCurrentItem();
@@ -229,6 +233,7 @@ var One2manyInput = function (props) {
             return;
         }
         RemoveItemDialog_1.default({
+            lang: lang,
             onOk: function () {
                 if (currentView === "form") {
                     removeCurrentItem();

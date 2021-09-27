@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import { LinkOutlined } from "@ant-design/icons";
 import DropdownButton from "./DropdownButton";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 import { getMimeType, openBase64InNewTab } from "@/helpers/filesHelper";
 
@@ -12,15 +13,16 @@ type AttachmentsButtonProps = {
 
 function AttachmentsButton(props: AttachmentsButtonProps) {
   const { attachments, disabled, onAddNewAttachment } = props;
+  const { t } = useContext(LocaleContext) as LocaleContextType;
 
   return (
     <DropdownButton
       icon={<LinkOutlined />}
       disabled={disabled}
       label={`(${attachments.length})`}
-      tooltip="Attachments"
+      tooltip={t("attachments")}
       items={[
-        { id: "addNewAttachment", name: "Add new attachment" },
+        { id: "addNewAttachment", name: t("addNewAttachment") },
         { id: "divider0", name: "divider" },
         ...attachments,
       ]}

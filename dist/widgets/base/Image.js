@@ -77,6 +77,7 @@ var ButtonWithTooltip_1 = __importDefault(require("@/common/ButtonWithTooltip"))
 var icons_1 = require("@ant-design/icons");
 var filesHelper_1 = require("@/helpers/filesHelper");
 var iconMapper_1 = __importDefault(require("@/helpers/iconMapper"));
+var LocaleContext_1 = require("@/context/LocaleContext");
 var Image = function (props) {
     var ooui = props.ooui;
     var required = ooui.required, id = ooui.id;
@@ -92,6 +93,7 @@ var ImageInput = function (props) {
     var ooui = props.ooui, value = props.value, onChange = props.onChange;
     var readOnly = ooui.readOnly;
     var inputFile = react_1.useRef(null);
+    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var triggerChange = function (changedValue) {
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
     };
@@ -140,12 +142,12 @@ var ImageInput = function (props) {
             react_1.default.createElement("input", { type: "file", id: "file", ref: inputFile, accept: "image/*", style: { display: "none" }, onChange: onChangeFile })),
         react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false, justify: "center", className: "pt-5" },
             react_1.default.createElement(antd_1.Space, null,
-                react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Upload new image", icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: readOnly, onClick: function () {
+                react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("uploadNewImage"), icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: readOnly, onClick: function () {
                         var fileUploadField = inputFile.current;
                         fileUploadField.click();
                     } }),
-                react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Download", disabled: !value, onClick: downloadFile, icon: react_1.default.createElement(icons_1.DownloadOutlined, null) }),
-                react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Clear", disabled: readOnly || !value, onClick: clearFile, icon: react_1.default.createElement(icons_1.ClearOutlined, null) })))));
+                react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("download"), disabled: !value, onClick: downloadFile, icon: react_1.default.createElement(icons_1.DownloadOutlined, null) }),
+                react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("clear"), disabled: readOnly || !value, onClick: clearFile, icon: react_1.default.createElement(icons_1.ClearOutlined, null) })))));
 };
 exports.ImageInput = ImageInput;
 //# sourceMappingURL=Image.js.map

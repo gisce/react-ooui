@@ -85,16 +85,19 @@ var RefreshItemDialog_1 = __importDefault(require("@/ui/RefreshItemDialog"));
 var TabManagerContext_1 = require("@/context/TabManagerContext");
 var ContentRootContext_1 = require("@/context/ContentRootContext");
 var AttachmentsButton_1 = __importDefault(require("./AttachmentsButton"));
+var LocaleContext_1 = require("@/context/LocaleContext");
 function FormActionBar() {
     var _this = this;
     var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, onFormSave = _a.onFormSave, formHasChanges = _a.formHasChanges, formIsSaving = _a.formIsSaving, currentId = _a.currentId, results = _a.results, setCurrentItemIndex = _a.setCurrentItemIndex, currentItemIndex = _a.currentItemIndex, setCurrentId = _a.setCurrentId, currentModel = _a.currentModel, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, setResults = _a.setResults, formIsLoading = _a.formIsLoading, toolbar = _a.toolbar, attachments = _a.attachments, formRef = _a.formRef;
+    var _b = react_1.useContext(LocaleContext_1.LocaleContext), t = _b.t, lang = _b.lang;
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
     var processAction = (contentRootContext || {}).processAction;
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
-    var _b = tabManagerContext || {}, openRelate = _b.openRelate, openSpecificModelTab = _b.openSpecificModelTab;
+    var _c = tabManagerContext || {}, openRelate = _c.openRelate, openSpecificModelTab = _c.openSpecificModelTab;
     function tryRefresh(callback) {
         if (formHasChanges) {
             RefreshItemDialog_1.default({
+                lang: lang,
                 onOk: function () {
                     callback();
                 },
@@ -106,6 +109,7 @@ function FormActionBar() {
     function tryNavigate(callback) {
         if (formHasChanges) {
             UnsavedChangesDialog_1.default({
+                lang: lang,
                 onOk: function () {
                     callback();
                 },
@@ -128,7 +132,8 @@ function FormActionBar() {
     }
     function tryDelete() {
         ConfirmDialog_1.default({
-            confirmMessage: "Are you sure to remove this item?",
+            confirmMessage: t("confirmRemoveItem"),
+            lang: lang,
             onOk: function () {
                 remove();
             },
@@ -195,13 +200,13 @@ function FormActionBar() {
             separator(),
             separator())),
         react_1.default.createElement(NewButton_1.default, { disabled: formIsSaving || formIsLoading || removingItem }),
-        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.SaveOutlined, null), tooltip: "Save", disabled: !formHasChanges || mustDisableButtons, loading: formIsSaving, onClick: onFormSave }),
-        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.DeleteOutlined, null), tooltip: "Delete", disabled: formIsSaving ||
+        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.SaveOutlined, null), tooltip: t("save"), disabled: !formHasChanges || mustDisableButtons, loading: formIsSaving, onClick: onFormSave }),
+        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.DeleteOutlined, null), tooltip: t("delete"), disabled: formIsSaving ||
                 currentId === undefined ||
                 removingItem ||
                 formIsLoading, loading: removingItem, onClick: tryDelete }),
         separator(),
-        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.ReloadOutlined, null), tooltip: "Rrefresh", disabled: formIsSaving ||
+        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.ReloadOutlined, null), tooltip: t("refresh"), disabled: formIsSaving ||
                 currentId === undefined ||
                 removingItem ||
                 formIsLoading, loading: false, onClick: function () {
@@ -211,28 +216,28 @@ function FormActionBar() {
             } }),
         separator(),
         react_1.default.createElement(antd_1.Space, null,
-            react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.LeftOutlined, null), tooltip: "Previous", disabled: mustDisableButtons, loading: false, onClick: function () {
+            react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.LeftOutlined, null), tooltip: t("previous"), disabled: mustDisableButtons, loading: false, onClick: function () {
                     tryNavigate(onPreviousClick);
                 } }),
-            react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.RightOutlined, null), tooltip: "Next", disabled: mustDisableButtons, loading: false, onClick: function () {
+            react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.RightOutlined, null), tooltip: t("next"), disabled: mustDisableButtons, loading: false, onClick: function () {
                     tryNavigate(onNextClick);
                 } })),
         separator(),
         react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews, onChangeView: setCurrentView, disabled: mustDisableButtons }),
         separator(),
-        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null), disabled: mustDisableButtons, tooltip: "Actions", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.action, onItemClick: function (action) {
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null), disabled: mustDisableButtons, tooltip: t("actions"), items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.action, onItemClick: function (action) {
                 if (!action) {
                     return;
                 }
                 runAction(action);
             } }),
-        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.PrinterOutlined, null), disabled: mustDisableButtons, tooltip: "Reports", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.print, onItemClick: function (report) {
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.PrinterOutlined, null), disabled: mustDisableButtons, tooltip: t("reports"), items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.print, onItemClick: function (report) {
                 if (!report) {
                     return;
                 }
                 runAction(__assign(__assign({}, report), { datas: __assign(__assign({}, (report.datas || {})), { ids: [currentId] }) }));
             } }),
-        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.EnterOutlined, null), disabled: mustDisableButtons, tooltip: "Related", items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.relate, onItemClick: function (relate) { return __awaiter(_this, void 0, void 0, function () {
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.EnterOutlined, null), disabled: mustDisableButtons, tooltip: t("related"), items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.relate, onItemClick: function (relate) { return __awaiter(_this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     if (!relate) {
                         return [2 /*return*/];
@@ -250,7 +255,7 @@ function FormActionBar() {
                 var res_model = currentModel;
                 openSpecificModelTab({
                     model: "ir.attachment",
-                    title: "Add new attachment",
+                    title: t("addNewAttachment"),
                     initialViewType: "form",
                     values: {
                         selection_associated_object: res_model + "," + res_id,

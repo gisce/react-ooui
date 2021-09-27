@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Menu, Dropdown, Row, Col, Button } from "antd";
 import {
   DownOutlined,
@@ -7,6 +7,7 @@ import {
   CheckOutlined,
 } from "@ant-design/icons";
 import { ViewType } from "@/types";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 type Props = {
   onChangeView: (view: ViewType) => void;
@@ -26,6 +27,7 @@ function getIconForView(view: ViewType) {
 
 function ChangeViewButton(props: Props) {
   const { currentView, availableViews, onChangeView, disabled = false } = props;
+  const { t } = useContext(LocaleContext) as LocaleContextType;
 
   function getMenu() {
     const menuItems = availableViews.map((view) => {
@@ -49,7 +51,7 @@ function ChangeViewButton(props: Props) {
 
     return (
       <Menu onClick={handleMenuClick}>
-        <Menu.ItemGroup title="View as">{menuItems}</Menu.ItemGroup>
+        <Menu.ItemGroup title={t("viewAs")}>{menuItems}</Menu.ItemGroup>
       </Menu>
     );
   }
@@ -60,7 +62,7 @@ function ChangeViewButton(props: Props) {
   }
 
   return (
-    <Dropdown overlay={getMenu()} disabled={disabled} >
+    <Dropdown overlay={getMenu()} disabled={disabled}>
       <Button>
         {getIconForView(currentView)} <DownOutlined />
       </Button>

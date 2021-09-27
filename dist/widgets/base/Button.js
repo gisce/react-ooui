@@ -66,12 +66,14 @@ var ConfirmDialog_1 = __importDefault(require("@/ui/ConfirmDialog"));
 var FormContext_1 = require("@/context/FormContext");
 var icons_1 = require("@ant-design/icons");
 var iconMapper_1 = __importDefault(require("@/helpers/iconMapper"));
+var LocaleContext_1 = require("@/context/LocaleContext");
 var Button = function (props) {
     var ooui = props.ooui;
     var id = ooui.id, label = ooui.label, activated = ooui.activated, buttonType = ooui.buttonType, confirmMessage = ooui.confirmMessage, icon = ooui.icon, context = ooui.context, readOnly = ooui.readOnly;
     var formContext = react_1.useContext(FormContext_1.FormContext);
     var executeButtonAction = (formContext || {}).executeButtonAction;
     var _a = react_1.useState(false), isRunning = _a[0], setIsRunning = _a[1];
+    var lang = react_1.useContext(LocaleContext_1.LocaleContext).lang;
     function onClick_confirm() {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
@@ -91,6 +93,7 @@ var Button = function (props) {
         if (confirmMessage) {
             ConfirmDialog_1.default({
                 confirmMessage: confirmMessage,
+                lang: lang,
                 onOk: function () {
                     onClick_confirm();
                 },

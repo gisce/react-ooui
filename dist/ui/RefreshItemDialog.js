@@ -6,15 +6,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(require("react"));
 var antd_1 = require("antd");
 var icons_1 = require("@ant-design/icons");
+var LocaleContext_1 = require("@/context/LocaleContext");
 var confirm = antd_1.Modal.confirm;
 var showDialog = function (_a) {
-    var onOk = _a.onOk, onCancel = _a.onCancel;
+    var onOk = _a.onOk, onCancel = _a.onCancel, lang = _a.lang;
     confirm({
-        title: "There are unsaved changes",
+        title: LocaleContext_1.tForLang("unsavedChanges", lang),
         icon: react_1.default.createElement(icons_1.ExclamationCircleOutlined, null),
         centered: true,
-        content: "Do you really want to refresh this window without saving?",
-        okText: "Discard changes and refresh",
+        content: LocaleContext_1.tForLang("confirmRefreshWithoutSave", lang),
+        okText: LocaleContext_1.tForLang("discardAndRefresh", lang),
+        cancelText: LocaleContext_1.tForLang("cancel", lang),
         onOk: onOk,
         onCancel: onCancel,
     });

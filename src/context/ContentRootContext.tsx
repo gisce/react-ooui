@@ -16,6 +16,7 @@ import {
   TabManagerContextType,
 } from "@/context/TabManagerContext";
 import { FormModal } from "@/widgets/modals/FormModal";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 export type ContentRootContextType = {
   processAction: ({
@@ -61,6 +62,7 @@ const ContentRootProvider = (
   ) as TabManagerContextType;
   const { openAction } = tabManagerContext || {};
   const onRefreshParentValues = useRef<any>();
+  const { t } = useContext(LocaleContext) as LocaleContextType;
 
   useImperativeHandle(ref, () => ({
     openActionModal,
@@ -334,7 +336,7 @@ const ContentRootProvider = (
         <>
           {children}
           <Modal
-            title={"Generating report..."}
+            title={t("generatingReport")}
             visible={reportGenerating}
             footer={null}
             closable={false}

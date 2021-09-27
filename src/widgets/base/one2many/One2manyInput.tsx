@@ -24,7 +24,7 @@ import {
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import useModalWidthDimensions from "@/hooks/useModalWidthDimensions";
 import useDeepCompareEffect from "use-deep-compare-effect";
-import showErrorDialog from "@/ui/ActionErrorDialog";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 type One2manyItem = {
   operation?: "original" | "pendingLink" | "pendingUpdate";
@@ -57,6 +57,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
   const formContext = useContext(FormContext) as FormContextType;
   const { activeId, activeModel, getContext } = formContext || {};
+  const { lang } = useContext(LocaleContext) as LocaleContextType;
 
   const formRef = useRef();
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
@@ -161,6 +162,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const showFormChangesDialogIfNeeded = (callback: () => void) => {
     if (formHasChanges) {
       showUnsavedChangesDialog({
+        lang,
         onOk: () => {
           callback();
           setFormHasChanges(false);
@@ -174,6 +176,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const showRemoveConfirm = () => {
     if (isMany2many) {
       showUnlinkItemDialog({
+        lang,
         onOk: () => {
           if (currentView === "form") {
             removeCurrentItem();
@@ -186,6 +189,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     }
 
     showRemoveItemDialog({
+      lang,
       onOk: () => {
         if (currentView === "form") {
           removeCurrentItem();

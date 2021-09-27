@@ -89,6 +89,7 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var antd_1 = require("antd");
 var TabManagerContext_1 = require("@/context/TabManagerContext");
 var FormModal_1 = require("@/widgets/modals/FormModal");
+var LocaleContext_1 = require("@/context/LocaleContext");
 exports.ContentRootContext = react_1.default.createContext(null);
 var ContentRootProvider = function (props, ref) {
     var children = props.children, _a = props.globalValues, globalValues = _a === void 0 ? {} : _a;
@@ -97,6 +98,7 @@ var ContentRootProvider = function (props, ref) {
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
     var openAction = (tabManagerContext || {}).openAction;
     var onRefreshParentValues = react_1.useRef();
+    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     react_1.useImperativeHandle(ref, function () { return ({
         openActionModal: openActionModal,
     }); });
@@ -349,7 +351,7 @@ var ContentRootProvider = function (props, ref) {
             } },
             react_1.default.createElement(react_1.default.Fragment, null,
                 children,
-                react_1.default.createElement(antd_1.Modal, { title: "Generating report...", visible: reportGenerating, footer: null, closable: false, centered: true },
+                react_1.default.createElement(antd_1.Modal, { title: t("generatingReport"), visible: reportGenerating, footer: null, closable: false, centered: true },
                     react_1.default.createElement(antd_1.Spin, null)),
                 react_1.default.createElement(FormModal_1.FormModal, { buttonModal: true, parentContext: actionModalOptions.context, model: actionModalOptions.model, formView: actionModalOptions.formView, visible: actionModalVisible, onSubmitSucceed: onFormModalSucceed, onCancel: function () {
                         setActionModalVisible(false);

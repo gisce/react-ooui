@@ -14,6 +14,7 @@ import ActionView from "./ActionView";
 import { parseContext, parseDomain } from "ooui";
 import { ViewType } from "@/types";
 import LocaleContextProvider from "@/context/LocaleContext";
+import { tForLang } from "@/context/LocaleContext";
 
 type TabManagerProps = {
   children: React.ReactNode;
@@ -25,9 +26,10 @@ type TabManagerProps = {
 function TabManager(props: TabManagerProps, ref: any) {
   const { children, globalValues = {}, rootContext = {}, lang } = props;
   const [activeKey, setActiveKey] = useState<string>();
+
   const [tabs, setTabs] = useState<any>([
     {
-      title: "Welcome",
+      title: tForLang("welcome", lang),
       key: "welcome",
       closable: true,
       content: <Welcome />,
