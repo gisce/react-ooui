@@ -30,19 +30,8 @@ require("@/tailwind.generated.css");
 var ooui_1 = require("ooui");
 var SearchField_1 = require("./SearchField");
 var SearchBottomBar_1 = require("./SearchBottomBar");
-var LocalesContext_1 = __importDefault(require("@/context/LocalesContext"));
 var SearchParams_1 = require("./SearchParams");
 var searchFilterHelper_1 = require("@/helpers/searchFilterHelper");
-var strings = {
-    true: "Yes",
-    false: "No",
-    simple_search: "Simple search",
-    advanced_search: "Advanced search",
-    search: "Search",
-    parameters: "Parameters",
-    limit: "Limit",
-    first: "First",
-};
 function SearchFilter(props) {
     var fields = props.fields, searchFields = props.searchFields, onClear = props.onClear, onSubmit = props.onSubmit, isSearching = props.isSearching, offset = props.offset, limit = props.limit;
     var _a = react_1.useState(), simpleSearchFields = _a[0], setSimpleSearchFields = _a[1];
@@ -77,16 +66,15 @@ function SearchFilter(props) {
         var newParams = searchFilterHelper_1.getParamsForFields(values, fields);
         onSubmit({ params: newParams, offset: offset, limit: limit });
     };
-    return (react_1.default.createElement(LocalesContext_1.default, { strings: strings },
-        react_1.default.createElement(antd_1.Form, { className: "bg-gray-50 rounded p-3 shadow-md", form: form, onFinish: onFinish, initialValues: { offset: offset, limit: limit } },
-            rows,
-            advancedFilter && react_1.default.createElement(SearchParams_1.SearchParams, null),
-            react_1.default.createElement(SearchBottomBar_1.SearchBottomBar, { advancedFilter: advancedFilter, onAdvancedFilterToggle: function () {
-                    setAdvancedFilter(!advancedFilter);
-                }, onClear: function () {
-                    form.resetFields();
-                    onClear();
-                }, isSearching: isSearching }))));
+    return (react_1.default.createElement(antd_1.Form, { className: "bg-gray-50 rounded p-3 shadow-md", form: form, onFinish: onFinish, initialValues: { offset: offset, limit: limit } },
+        rows,
+        advancedFilter && react_1.default.createElement(SearchParams_1.SearchParams, null),
+        react_1.default.createElement(SearchBottomBar_1.SearchBottomBar, { advancedFilter: advancedFilter, onAdvancedFilterToggle: function () {
+                setAdvancedFilter(!advancedFilter);
+            }, onClear: function () {
+                form.resetFields();
+                onClear();
+            }, isSearching: isSearching })));
 }
 exports.default = SearchFilter;
 //# sourceMappingURL=SearchFilter.js.map

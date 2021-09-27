@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Table, Pagination, Checkbox, Space } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
 import useDimensions from "react-cool-dimensions";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
-import { Strings, TreeView, Column } from "@/types";
-import { getLocalizedString } from "@/context/LocalesContext";
+import { TreeView, Column } from "@/types";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { Many2oneSuffix } from "../base/many2one/Many2oneSuffix";
 
 type Props = {
@@ -20,11 +20,6 @@ type Props = {
   onRowClicked?: (id: number) => void;
   rowSelection?: any;
   scrollY?: number;
-};
-
-const strings: Strings = {
-  no_results: "No results",
-  summary: "Showing registers from {from} to {to} of {total} registers",
 };
 
 function Tree(props: Props): React.ReactElement {
@@ -46,6 +41,7 @@ function Tree(props: Props): React.ReactElement {
   const [columns, setColumns] = useState<Array<Column>>([]);
 
   const { width, ref: containerRef } = useDimensions<HTMLDivElement>();
+  const { t } = useContext(LocaleContext) as LocaleContextType;
 
   useDeepCompareEffect(() => {
     const tree = getTree(treeView);
@@ -88,8 +84,8 @@ function Tree(props: Props): React.ReactElement {
   const summary = loading
     ? null
     : total === 0
-    ? getLocalizedString("no_results", strings)
-    : getLocalizedString("summary", strings)
+    ? t("no_results")
+    : t("summary")
         .replace("{from}", from?.toString())
         .replace("{to}", to?.toString())
         .replace("{total}", total?.toString());

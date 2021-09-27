@@ -13,15 +13,17 @@ import TabManagerProvider from "@/context/TabManagerContext";
 import ActionView from "./ActionView";
 import { parseContext, parseDomain } from "ooui";
 import { ViewType } from "@/types";
+import LocaleContextProvider from "@/context/LocaleContext";
 
 type TabManagerProps = {
   children: React.ReactNode;
   globalValues?: any;
   rootContext?: any;
+  lang: string;
 };
 
 function TabManager(props: TabManagerProps, ref: any) {
-  const { children, globalValues = {}, rootContext = {} } = props;
+  const { children, globalValues = {}, rootContext = {}, lang } = props;
   const [activeKey, setActiveKey] = useState<string>();
   const [tabs, setTabs] = useState<any>([
     {
@@ -262,46 +264,48 @@ function TabManager(props: TabManagerProps, ref: any) {
   }
 
   return (
-    <TabManagerProvider
-      openAction={openAction}
-      openRelate={openRelate}
-      openSpecificModelTab={openSpecificModelTab}
-    >
-      <ContentRootProvider
-        ref={contentRootProvider}
-        globalValues={globalValues}
+    <LocaleContextProvider lang={lang}>
+      <TabManagerProvider
+        openAction={openAction}
+        openRelate={openRelate}
+        openSpecificModelTab={openSpecificModelTab}
       >
-        <Tabs
-          activeKey={activeKey}
-          hideAdd
-          type="editable-card"
-          onChange={(activeKey) => {
-            setActiveKey(activeKey);
-          }}
-          onEdit={async (targetKey, action) => {
-            if (action === "remove") {
-              const canWeCloseFn = tabViewsCloseFunctions.current.get(
-                targetKey as string
-              );
-              const canWeClose = await canWeCloseFn?.();
-
-              if (canWeClose || targetKey === "welcome") {
-                remove(targetKey as string);
-              }
-            }
-          }}
+        <ContentRootProvider
+          ref={contentRootProvider}
+          globalValues={globalValues}
         >
-          {tabs.map((tab: any) => {
-            return (
-              <TabPane key={tab.key} closable={tab.closable} tab={tab.title}>
-                {tab.content}
-              </TabPane>
-            );
-          })}
-        </Tabs>
-        {children}
-      </ContentRootProvider>
-    </TabManagerProvider>
+          <Tabs
+            activeKey={activeKey}
+            hideAdd
+            type="editable-card"
+            onChange={(activeKey) => {
+              setActiveKey(activeKey);
+            }}
+            onEdit={async (targetKey, action) => {
+              if (action === "remove") {
+                const canWeCloseFn = tabViewsCloseFunctions.current.get(
+                  targetKey as string
+                );
+                const canWeClose = await canWeCloseFn?.();
+
+                if (canWeClose || targetKey === "welcome") {
+                  remove(targetKey as string);
+                }
+              }
+            }}
+          >
+            {tabs.map((tab: any) => {
+              return (
+                <TabPane key={tab.key} closable={tab.closable} tab={tab.title}>
+                  {tab.content}
+                </TabPane>
+              );
+            })}
+          </Tabs>
+          {children}
+        </ContentRootProvider>
+      </TabManagerProvider>
+    </LocaleContextProvider>
   );
 }
 

@@ -26,7 +26,7 @@ var Selection_1 = require("@/widgets/base/Selection");
 var DateRangePicker_1 = require("./DateRangePicker");
 var DateTimeRangePicker_1 = require("./DateTimeRangePicker");
 var PairFields_1 = require("./PairFields");
-var LocalesContext_1 = require("@/context/LocalesContext");
+var LocaleContext_1 = require("@/context/LocaleContext");
 var ooui_1 = require("ooui");
 var types = {
     text: "text",
@@ -45,7 +45,7 @@ function SearchField(props) {
     var field = props.field;
     field.readOnly = false;
     field.required = false;
-    var getString = react_1.useContext(LocalesContext_1.LocalesContext).getString;
+    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var widgetType = field.type;
     switch (widgetType) {
         case types.boolean: {
@@ -53,8 +53,8 @@ function SearchField(props) {
                 name: field._id,
                 string: field.label,
                 selection: [
-                    ["true", getString("true")],
-                    ["false", getString("false")],
+                    ["true", t("true")],
+                    ["false", t("false")],
                 ],
             });
             return react_1.default.createElement(Selection_1.Selection, { layout: "vertical", ooui: ooui, showLabel: true });

@@ -6,7 +6,7 @@ import { DateRangePicker } from "./DateRangePicker";
 import { DateTimeRangePicker } from "./DateTimeRangePicker";
 import { PairFields } from "./PairFields";
 
-import { LocalesContext, LocalesContextType } from "@/context/LocalesContext";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 import { Field, Selection as SelectionOoui } from "ooui";
 
@@ -33,7 +33,7 @@ export function SearchField(props: Props) {
   field.readOnly = false;
   field.required = false;
 
-  const { getString } = useContext(LocalesContext) as LocalesContextType;
+  const { t } = useContext(LocaleContext) as LocaleContextType;
 
   const widgetType = field.type;
 
@@ -43,8 +43,8 @@ export function SearchField(props: Props) {
         name: field._id,
         string: field.label,
         selection: [
-          ["true", getString("true")],
-          ["false", getString("false")],
+          ["true", t("true")],
+          ["false", t("false")],
         ],
       });
 

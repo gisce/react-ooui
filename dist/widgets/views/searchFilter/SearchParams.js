@@ -24,17 +24,17 @@ var react_1 = __importStar(require("react"));
 var Integer_1 = require("@/widgets/base/Integer");
 var antd_1 = require("antd");
 var ooui_1 = require("ooui");
-var LocalesContext_1 = require("@/context/LocalesContext");
+var LocaleContext_1 = require("@/context/LocaleContext");
 function SearchParams() {
-    var getString = react_1.useContext(LocalesContext_1.LocalesContext).getString;
+    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var limitOoui = new ooui_1.Integer({ name: "limit" });
     var offsetOoui = new ooui_1.Integer({ name: "offset" });
     return (react_1.default.createElement("div", { className: "pl-2 pt-2" },
-        react_1.default.createElement(antd_1.Row, { key: "count_params" }, getString("parameters")),
+        react_1.default.createElement(antd_1.Row, { key: "count_params" }, t("parameters")),
         react_1.default.createElement(antd_1.Space, { align: "center" },
-            getString("limit") + " :",
+            t("limit") + " :",
             react_1.default.createElement(Integer_1.Integer, { ooui: limitOoui }),
-            getString("first") + " :",
+            t("first") + " :",
             react_1.default.createElement(Integer_1.Integer, { ooui: offsetOoui }))));
 }
 exports.SearchParams = SearchParams;

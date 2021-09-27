@@ -27,17 +27,14 @@ var antd_1 = require("antd");
 var treeHelper_1 = require("@/helpers/treeHelper");
 var react_cool_dimensions_1 = __importDefault(require("react-cool-dimensions"));
 var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
-var LocalesContext_1 = require("@/context/LocalesContext");
+var LocaleContext_1 = require("@/context/LocaleContext");
 var Many2oneSuffix_1 = require("../base/many2one/Many2oneSuffix");
-var strings = {
-    no_results: "No results",
-    summary: "Showing registers from {from} to {to} of {total} registers",
-};
 function Tree(props) {
     var _a = props.page, page = _a === void 0 ? 1 : _a, limit = props.limit, total = props.total, treeView = props.treeView, results = props.results, onRequestPageChange = props.onRequestPageChange, loading = props.loading, onRowClicked = props.onRowClicked, _b = props.showPagination, showPagination = _b === void 0 ? true : _b, rowSelection = props.rowSelection, scrollY = props.scrollY;
     var _c = react_1.useState([]), items = _c[0], setItems = _c[1];
     var _d = react_1.useState([]), columns = _d[0], setColumns = _d[1];
     var _e = react_cool_dimensions_1.default(), width = _e.width, containerRef = _e.ref;
+    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     use_deep_compare_effect_1.default(function () {
         var tree = treeHelper_1.getTree(treeView);
         var booleanComponentFn = function (value) {
@@ -71,8 +68,8 @@ function Tree(props) {
     var summary = loading
         ? null
         : total === 0
-            ? LocalesContext_1.getLocalizedString("no_results", strings)
-            : LocalesContext_1.getLocalizedString("summary", strings)
+            ? t("no_results")
+            : t("summary")
                 .replace("{from}", from === null || from === void 0 ? void 0 : from.toString())
                 .replace("{to}", to === null || to === void 0 ? void 0 : to.toString())
                 .replace("{total}", total === null || total === void 0 ? void 0 : total.toString());

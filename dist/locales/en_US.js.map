@@ -1,0 +1,1 @@
+{"version":3,"file":"en_US.js","sourceRoot":"","sources":["../../src/locales/en_US.tsx"],"names":[],"mappings":";;AAAA,kBAAe;IACb,IAAI,EAAE,KAAK;IACX,KAAK,EAAE,IAAI;IACX,aAAa,EAAE,eAAe;IAC9B,eAAe,EAAE,iBAAiB;IAClC,MAAM,EAAE,QAAQ;IAChB,UAAU,EAAE,YAAY;IACxB,KAAK,EAAE,OAAO;IACd,KAAK,EAAE,OAAO;IACd,UAAU,EAAE,YAAY;IACxB,OAAO,EAAE,4DAA4D;CACtE,CAAC"}

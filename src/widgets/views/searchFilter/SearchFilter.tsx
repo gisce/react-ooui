@@ -9,8 +9,7 @@ import { SearchFilter as SearchFilterOoui, Container, Field } from "ooui";
 
 import { SearchField } from "./SearchField";
 import { SearchBottomBar } from "./SearchBottomBar";
-import LocalesProvider from "@/context/LocalesContext";
-import { Strings, SearchFields } from "@/types";
+import { SearchFields } from "@/types";
 import { SearchParams } from "./SearchParams";
 
 import { getParamsForFields } from "@/helpers/searchFilterHelper";
@@ -23,17 +22,6 @@ type Props = {
   isSearching: boolean;
   limit: number;
   offset: number;
-};
-
-const strings: Strings = {
-  true: "Yes",
-  false: "No",
-  simple_search: "Simple search",
-  advanced_search: "Advanced search",
-  search: "Search",
-  parameters: "Parameters",
-  limit: "Limit",
-  first: "First",
 };
 
 function SearchFilter(props: Props): React.ReactElement {
@@ -96,28 +84,26 @@ function SearchFilter(props: Props): React.ReactElement {
   };
 
   return (
-    <LocalesProvider strings={strings}>
-      <Form
-        className="bg-gray-50 rounded p-3 shadow-md"
-        form={form}
-        onFinish={onFinish}
-        initialValues={{ offset, limit }}
-      >
-        {rows}
-        {advancedFilter && <SearchParams />}
-        <SearchBottomBar
-          advancedFilter={advancedFilter}
-          onAdvancedFilterToggle={() => {
-            setAdvancedFilter(!advancedFilter);
-          }}
-          onClear={() => {
-            form.resetFields();
-            onClear();
-          }}
-          isSearching={isSearching}
-        />
-      </Form>
-    </LocalesProvider>
+    <Form
+      className="bg-gray-50 rounded p-3 shadow-md"
+      form={form}
+      onFinish={onFinish}
+      initialValues={{ offset, limit }}
+    >
+      {rows}
+      {advancedFilter && <SearchParams />}
+      <SearchBottomBar
+        advancedFilter={advancedFilter}
+        onAdvancedFilterToggle={() => {
+          setAdvancedFilter(!advancedFilter);
+        }}
+        onClear={() => {
+          form.resetFields();
+          onClear();
+        }}
+        isSearching={isSearching}
+      />
+    </Form>
   );
 }
 

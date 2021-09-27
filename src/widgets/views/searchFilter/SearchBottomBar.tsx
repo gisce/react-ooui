@@ -8,10 +8,7 @@ import {
   ClearOutlined,
 } from "@ant-design/icons";
 
-import {
-  LocalesContext,
-  LocalesContextType,
-} from "@/context/LocalesContext";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 type Props = {
   advancedFilter: boolean;
@@ -28,7 +25,7 @@ export function SearchBottomBar(props: Props): React.ReactElement {
     isSearching,
   } = props;
 
-  const { getString } = useContext(LocalesContext) as LocalesContextType;
+  const { t } = useContext(LocaleContext) as LocaleContextType;
 
   return (
     <Row>
@@ -40,8 +37,8 @@ export function SearchBottomBar(props: Props): React.ReactElement {
             <DownOutlined className="pr-1" />
           )}
           {advancedFilter
-            ? getString("simple_search")
-            : getString("advanced_search")}
+            ? t("simple_search")
+            : t("advanced_search")}
         </a>
       </Col>
       <Col span={12} className="text-right pb-2">
@@ -55,7 +52,7 @@ export function SearchBottomBar(props: Props): React.ReactElement {
           type="primary"
           htmlType="submit"
         >
-          {getString("search")}
+          {t("search")}
         </Button>
       </Col>
     </Row>

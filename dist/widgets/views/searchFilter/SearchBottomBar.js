@@ -23,20 +23,20 @@ exports.SearchBottomBar = void 0;
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var icons_1 = require("@ant-design/icons");
-var LocalesContext_1 = require("@/context/LocalesContext");
+var LocaleContext_1 = require("@/context/LocaleContext");
 function SearchBottomBar(props) {
     var onAdvancedFilterToggle = props.onAdvancedFilterToggle, advancedFilter = props.advancedFilter, onClear = props.onClear, isSearching = props.isSearching;
-    var getString = react_1.useContext(LocalesContext_1.LocalesContext).getString;
+    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     return (react_1.default.createElement(antd_1.Row, null,
         react_1.default.createElement(antd_1.Col, { span: 12, className: "text-left pt-4 pb-2 pl-2" },
             react_1.default.createElement("a", { className: "text-xs", onClick: onAdvancedFilterToggle },
                 advancedFilter ? (react_1.default.createElement(icons_1.UpOutlined, { className: "pr-1" })) : (react_1.default.createElement(icons_1.DownOutlined, { className: "pr-1" })),
                 advancedFilter
-                    ? getString("simple_search")
-                    : getString("advanced_search"))),
+                    ? t("simple_search")
+                    : t("advanced_search"))),
         react_1.default.createElement(antd_1.Col, { span: 12, className: "text-right pb-2" },
             react_1.default.createElement(antd_1.Button, { className: "mr-5", icon: react_1.default.createElement(icons_1.ClearOutlined, null), onClick: onClear }, "Clear"),
-            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.SearchOutlined, null), loading: isSearching, className: "mr-2", type: "primary", htmlType: "submit" }, getString("search")))));
+            react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.SearchOutlined, null), loading: isSearching, className: "mr-2", type: "primary", htmlType: "submit" }, t("search")))));
 }
 exports.SearchBottomBar = SearchBottomBar;
 //# sourceMappingURL=SearchBottomBar.js.map
