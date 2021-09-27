@@ -31,11 +31,9 @@ function SearchBottomBar(props) {
         react_1.default.createElement(antd_1.Col, { span: 12, className: "text-left pt-4 pb-2 pl-2" },
             react_1.default.createElement("a", { className: "text-xs", onClick: onAdvancedFilterToggle },
                 advancedFilter ? (react_1.default.createElement(icons_1.UpOutlined, { className: "pr-1" })) : (react_1.default.createElement(icons_1.DownOutlined, { className: "pr-1" })),
-                advancedFilter
-                    ? t("simple_search")
-                    : t("advanced_search"))),
+                advancedFilter ? t("simple_search") : t("advanced_search"))),
         react_1.default.createElement(antd_1.Col, { span: 12, className: "text-right pb-2" },
-            react_1.default.createElement(antd_1.Button, { className: "mr-5", icon: react_1.default.createElement(icons_1.ClearOutlined, null), onClick: onClear }, "Clear"),
+            react_1.default.createElement(antd_1.Button, { className: "mr-5", icon: react_1.default.createElement(icons_1.ClearOutlined, null), onClick: onClear }, t("clear")),
             react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.SearchOutlined, null), loading: isSearching, className: "mr-2", type: "primary", htmlType: "submit" }, t("search")))));
 }
 exports.SearchBottomBar = SearchBottomBar;
