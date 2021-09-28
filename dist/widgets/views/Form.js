@@ -344,9 +344,6 @@ function Form(props, ref) {
     }); };
     var assignNewValuesToForm = function (_a) {
         var newValues = _a.values, fields = _a.fields, reset = _a.reset;
-        if (!fields) {
-            return;
-        }
         var currentValues = reset ? {} : antForm.getFieldsValue(true);
         var mergedValues = __assign(__assign({}, currentValues), newValues);
         var valuesProcessed = formHelper_1.processValues(mergedValues, fields);

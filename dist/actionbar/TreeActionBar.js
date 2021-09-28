@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -69,9 +80,13 @@ var LocaleContext_1 = require("@/context/LocaleContext");
 var ConfirmDialog_1 = __importDefault(require("@/ui/ConfirmDialog"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var GenericErrorDialog_1 = __importDefault(require("@/ui/GenericErrorDialog"));
+var DropdownButton_1 = __importDefault(require("./DropdownButton"));
+var ContentRootContext_1 = require("@/context/ContentRootContext");
 function TreeActionBar() {
-    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, selectedRowItems = _a.selectedRowItems, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, currentModel = _a.currentModel, searchTreeRef = _a.searchTreeRef, setCurrentId = _a.setCurrentId, setCurrentItemIndex = _a.setCurrentItemIndex;
+    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, selectedRowItems = _a.selectedRowItems, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, currentModel = _a.currentModel, searchTreeRef = _a.searchTreeRef, setCurrentId = _a.setCurrentId, setCurrentItemIndex = _a.setCurrentItemIndex, toolbar = _a.toolbar;
     var _b = react_1.useContext(LocaleContext_1.LocaleContext), t = _b.t, lang = _b.lang;
+    var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
+    var processAction = (contentRootContext || {}).processAction;
     function tryDelete() {
         ConfirmDialog_1.default({
             confirmMessage: t("confirmRemove"),
@@ -112,10 +127,34 @@ function TreeActionBar() {
             });
         });
     }
+    function runAction(actionData) {
+        processAction === null || processAction === void 0 ? void 0 : processAction({
+            actionData: actionData,
+            values: {},
+            fields: {},
+            context: {
+                active_id: selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.map(function (item) { return item.id; })[0],
+                active_ids: selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.map(function (item) { return item.id; }),
+            },
+        });
+    }
     return (react_1.default.createElement(antd_1.Space, { wrap: true },
         react_1.default.createElement(NewButton_1.default, null),
         separator(),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.DeleteOutlined, null), tooltip: t("delete"), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0), loading: removingItem, onClick: tryDelete }),
+        separator(),
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0), tooltip: t("actions"), items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.action, onItemClick: function (action) {
+                if (!action) {
+                    return;
+                }
+                runAction(action);
+            } }),
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.PrinterOutlined, null), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0), tooltip: t("reports"), items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.print, onItemClick: function (report) {
+                if (!report) {
+                    return;
+                }
+                runAction(__assign(__assign({}, report), { datas: __assign(__assign({}, (report.datas || {})), { ids: selectedRowItems.map(function (item) { return item.id; }) }) }));
+            } }),
         separator(),
         react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews, onChangeView: setCurrentView })));
 }
