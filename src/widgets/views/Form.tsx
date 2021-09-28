@@ -163,6 +163,7 @@ function Form(props: FormProps, ref: any) {
     }
 
     if (!visible) {
+      createdId.current = undefined;
       setFormOoui(undefined);
       return;
     }
