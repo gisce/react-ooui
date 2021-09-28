@@ -8,12 +8,14 @@ import {
 } from "@ant-design/icons";
 import { ViewType } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 
 type Props = {
   onChangeView: (view: ViewType) => void;
   currentView: ViewType;
   availableViews: ViewType[];
   disabled?: boolean;
+  formHasChanges?: boolean;
 };
 
 function getIconForView(view: ViewType) {
@@ -26,8 +28,14 @@ function getIconForView(view: ViewType) {
 }
 
 function ChangeViewButton(props: Props) {
-  const { currentView, availableViews, onChangeView, disabled = false } = props;
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const {
+    currentView,
+    availableViews,
+    onChangeView,
+    disabled = false,
+    formHasChanges = false,
+  } = props;
+  const { t, lang } = useContext(LocaleContext) as LocaleContextType;
 
   function getMenu() {
     const menuItems = availableViews.map((view) => {
@@ -56,9 +64,25 @@ function ChangeViewButton(props: Props) {
     );
   }
 
+  function tryNavigate(callback: any) {
+    if (formHasChanges) {
+      showUnsavedChangesDialog({
+        lang,
+        onOk: () => {
+          callback();
+        },
+      });
+      return;
+    }
+
+    callback();
+  }
+
   function handleMenuClick(event: any) {
-    const selectedView = event.key;
-    onChangeView(selectedView);
+    tryNavigate(() => {
+      const selectedView = event.key;
+      onChangeView(selectedView);
+    });
   }
 
   return (

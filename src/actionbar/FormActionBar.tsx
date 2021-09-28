@@ -57,6 +57,7 @@ function FormActionBar() {
     toolbar,
     attachments,
     formRef,
+    setFormHasChanges,
   } = useContext(ActionViewContext) as ActionViewContextType;
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
 
@@ -241,8 +242,12 @@ function FormActionBar() {
       <ChangeViewButton
         currentView={currentView}
         availableViews={availableViews}
-        onChangeView={setCurrentView}
+        onChangeView={(view: any) => {
+          setFormHasChanges?.(false);
+          setCurrentView?.(view);
+        }}
         disabled={mustDisableButtons}
+        formHasChanges={formHasChanges}
       />
       {separator()}
       <DropdownButton
