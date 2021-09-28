@@ -56,6 +56,7 @@ function ActionView(props: Props, ref: any) {
   const [toolbar, setToolbar] = useState<any>();
 
   const formRef = useRef();
+  const searchTreeRef = useRef();
 
   useImperativeHandle(ref, () => ({
     canWeClose,
@@ -149,6 +150,7 @@ function ActionView(props: Props, ref: any) {
         />
         <SearchTree
           visible={currentView === "tree"}
+          ref={searchTreeRef}
           rootTree={true}
           model={model}
           formView={formView}
@@ -180,6 +182,7 @@ function ActionView(props: Props, ref: any) {
       setCurrentView={setCurrentView}
       availableViews={availableViews}
       formRef={formRef}
+      searchTreeRef={searchTreeRef}
       onNewClicked={onNewClicked}
       currentId={currentId}
       setCurrentId={setCurrentId}

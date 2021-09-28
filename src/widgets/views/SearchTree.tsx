@@ -1,4 +1,11 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useContext,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import { Alert, Spin } from "antd";
 
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
@@ -33,7 +40,7 @@ type Props = {
   rootTree?: boolean;
 };
 
-function SearchTree(props: Props) {
+function SearchTree(props: Props, ref: any) {
   const {
     action,
     model,
@@ -73,6 +80,7 @@ function SearchTree(props: Props) {
   const [initialError, setInitialError] = useState<string>();
 
   const [tableRefreshing, setTableRefreshing] = useState<boolean>(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
 
   const actionDomain = useRef<any>([]);
 
@@ -84,7 +92,12 @@ function SearchTree(props: Props) {
     setCurrentItemIndex = undefined,
     currentId = undefined,
     results: resultsActionView = undefined,
+    setSelectedRowItems = undefined,
   } = (rootTree ? actionViewContext : {}) || {};
+
+  useImperativeHandle(ref, () => ({
+    refreshResults: fetchResults,
+  }));
 
   const onRequestPageChange = (page: number) => {
     setTableRefreshing(true);
@@ -327,6 +340,16 @@ function SearchTree(props: Props) {
     });
   };
 
+  function onChangeSelectedRowKeys(selectedRowKeys: number[]) {
+    setSelectedRowKeys(selectedRowKeys);
+
+    const items = results.filter((result: any) => {
+      return selectedRowKeys.includes(result.id);
+    });
+
+    setSelectedRowItems?.(items);
+  }
+
   const content = () => {
     if (!treeView || !formView) {
       return null;
@@ -357,6 +380,10 @@ function SearchTree(props: Props) {
           loading={tableRefreshing}
           onRowClicked={onRowClickedHandler}
           scrollY={treeScrollY}
+          rowSelection={{
+            selectedRowKeys,
+            onChange: onChangeSelectedRowKeys,
+          }}
         />
       </>
     );
@@ -375,4 +402,4 @@ function SearchTree(props: Props) {
   return isLoading ? <Spin /> : content();
 }
 
-export default SearchTree;
+export default forwardRef(SearchTree);

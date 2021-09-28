@@ -12,6 +12,7 @@ export type ActionViewContextType = {
   setFormHasChanges?: (value: boolean) => void;
   onFormSave?: () => void;
   formRef?: any;
+  searchTreeRef?: any;
   onNewClicked: () => void;
   currentId?: number;
   setCurrentId?: (id?: number) => void;
@@ -28,6 +29,8 @@ export type ActionViewContextType = {
   setToolbar?: (value: any) => void;
   attachments?: any;
   setAttachments?: (value: any) => void;
+  selectedRowItems?: any[];
+  setSelectedRowItems?: (value: any[]) => void;
 };
 
 export const ActionViewContext = React.createContext<ActionViewContextType | null>(
@@ -44,6 +47,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [removingItem, setRemovingItem] = useState<boolean>(false);
   const [formIsLoading, setFormIsLoading] = useState<boolean>(false);
   const [attachments, setAttachments] = useState<any>([]);
+  const [selectedRowItems, setSelectedRowItems] = useState<any[]>([]);
 
   const {
     children,
@@ -52,6 +56,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     setCurrentView,
     availableViews,
     formRef,
+    searchTreeRef,
     onNewClicked,
     currentId,
     setCurrentId,
@@ -87,6 +92,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         formHasChanges,
         setFormHasChanges,
         formRef,
+        searchTreeRef,
         onFormSave: callOnFormSave,
         onNewClicked,
         currentId,
@@ -104,6 +110,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setToolbar,
         attachments,
         setAttachments,
+        selectedRowItems,
+        setSelectedRowItems,
       }}
     >
       {children}
