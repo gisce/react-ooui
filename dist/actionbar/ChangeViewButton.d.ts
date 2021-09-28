@@ -4,6 +4,7 @@ declare type Props = {
     currentView: ViewType;
     availableViews: ViewType[];
     disabled?: boolean;
+    formHasChanges?: boolean;
 };
 declare function ChangeViewButton(props: Props): JSX.Element;
 export default ChangeViewButton;

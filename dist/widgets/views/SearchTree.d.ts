@@ -1,3 +1,4 @@
+import React from "react";
 import { FormView, TreeView } from "@/types/index";
 declare type OnRowClickedData = {
     id: number;
@@ -17,6 +18,6 @@ declare type Props = {
     visible?: boolean;
     rootTree?: boolean;
 };
-declare function SearchTree(props: Props): JSX.Element | null;
-export default SearchTree;
+declare const _default: React.ForwardRefExoticComponent<Props & React.RefAttributes<unknown>>;
+export default _default;
 //# sourceMappingURL=SearchTree.d.ts.map

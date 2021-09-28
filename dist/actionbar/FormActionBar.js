@@ -88,7 +88,7 @@ var AttachmentsButton_1 = __importDefault(require("./AttachmentsButton"));
 var LocaleContext_1 = require("@/context/LocaleContext");
 function FormActionBar() {
     var _this = this;
-    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, onFormSave = _a.onFormSave, formHasChanges = _a.formHasChanges, formIsSaving = _a.formIsSaving, currentId = _a.currentId, results = _a.results, setCurrentItemIndex = _a.setCurrentItemIndex, currentItemIndex = _a.currentItemIndex, setCurrentId = _a.setCurrentId, currentModel = _a.currentModel, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, setResults = _a.setResults, formIsLoading = _a.formIsLoading, toolbar = _a.toolbar, attachments = _a.attachments, formRef = _a.formRef;
+    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, onFormSave = _a.onFormSave, formHasChanges = _a.formHasChanges, formIsSaving = _a.formIsSaving, currentId = _a.currentId, results = _a.results, setCurrentItemIndex = _a.setCurrentItemIndex, currentItemIndex = _a.currentItemIndex, setCurrentId = _a.setCurrentId, currentModel = _a.currentModel, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, setResults = _a.setResults, formIsLoading = _a.formIsLoading, toolbar = _a.toolbar, attachments = _a.attachments, formRef = _a.formRef, setFormHasChanges = _a.setFormHasChanges;
     var _b = react_1.useContext(LocaleContext_1.LocaleContext), t = _b.t, lang = _b.lang;
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
     var processAction = (contentRootContext || {}).processAction;
@@ -223,7 +223,10 @@ function FormActionBar() {
                     tryNavigate(onNextClick);
                 } })),
         separator(),
-        react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews, onChangeView: setCurrentView, disabled: mustDisableButtons }),
+        react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews, onChangeView: function (view) {
+                setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
+                setCurrentView === null || setCurrentView === void 0 ? void 0 : setCurrentView(view);
+            }, disabled: mustDisableButtons, formHasChanges: formHasChanges }),
         separator(),
         react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null), disabled: mustDisableButtons, tooltip: t("actions"), items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.action, onItemClick: function (action) {
                 if (!action) {

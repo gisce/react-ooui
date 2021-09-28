@@ -76,7 +76,7 @@ var Tree_1 = __importDefault(require("@/widgets/views/Tree"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var ActionViewContext_1 = require("@/context/ActionViewContext");
 var DEFAULT_SEARCH_LIMIT = 80;
-function SearchTree(props) {
+function SearchTree(props, ref) {
     var _this = this;
     var action = props.action, model = props.model, formViewProps = props.formView, treeViewProps = props.treeView, onRowClicked = props.onRowClicked, nameSearch = props.nameSearch, treeScrollY = props.treeScrollY, _a = props.domain, domain = _a === void 0 ? [] : _a, _b = props.visible, visible = _b === void 0 ? true : _b, _c = props.rootTree, rootTree = _c === void 0 ? false : _c;
     var _d = react_1.useState(false), isLoading = _d[0], setIsLoading = _d[1];
@@ -96,9 +96,13 @@ function SearchTree(props) {
     var _r = react_1.useState(), searchError = _r[0], setSearchError = _r[1];
     var _s = react_1.useState(), initialError = _s[0], setInitialError = _s[1];
     var _t = react_1.useState(false), tableRefreshing = _t[0], setTableRefreshing = _t[1];
+    var _u = react_1.useState([]), selectedRowKeys = _u[0], setSelectedRowKeys = _u[1];
     var actionDomain = react_1.useRef([]);
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _u = (rootTree ? actionViewContext : {}) || {}, _v = _u.setResults, setResultsActionView = _v === void 0 ? undefined : _v, _w = _u.setCurrentItemIndex, setCurrentItemIndex = _w === void 0 ? undefined : _w, _x = _u.currentId, currentId = _x === void 0 ? undefined : _x, _y = _u.results, resultsActionView = _y === void 0 ? undefined : _y;
+    var _v = (rootTree ? actionViewContext : {}) || {}, _w = _v.setResults, setResultsActionView = _w === void 0 ? undefined : _w, _x = _v.setCurrentItemIndex, setCurrentItemIndex = _x === void 0 ? undefined : _x, _y = _v.currentId, currentId = _y === void 0 ? undefined : _y, _z = _v.results, resultsActionView = _z === void 0 ? undefined : _z, _0 = _v.setSelectedRowItems, setSelectedRowItems = _0 === void 0 ? undefined : _0;
+    react_1.useImperativeHandle(ref, function () { return ({
+        refreshResults: fetchResults,
+    }); });
     var onRequestPageChange = function (page) {
         setTableRefreshing(true);
         setPage(page);
@@ -375,6 +379,13 @@ function SearchTree(props) {
             treeView: treeView,
         });
     };
+    function onChangeSelectedRowKeys(selectedRowKeys) {
+        setSelectedRowKeys(selectedRowKeys);
+        var items = results.filter(function (result) {
+            return selectedRowKeys.includes(result.id);
+        });
+        setSelectedRowItems === null || setSelectedRowItems === void 0 ? void 0 : setSelectedRowItems(items);
+    }
     var content = function () {
         if (!treeView || !formView) {
             return null;
@@ -383,7 +394,10 @@ function SearchTree(props) {
             react_1.default.createElement(SearchFilter_1.default, { fields: __assign(__assign({}, treeView.fields), formView.fields), searchFields: formView.search_fields, onClear: onClear, limit: limit, offset: offset, isSearching: searchFilterLoading, onSubmit: onSubmit }),
             searchError && (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: searchError, type: "error", banner: true })),
             react_1.default.createElement("div", { className: "pb-10" }),
-            react_1.default.createElement(Tree_1.default, { total: totalItems, limit: limit, page: page, treeView: treeView, results: results, onRequestPageChange: onRequestPageChange, loading: tableRefreshing, onRowClicked: onRowClickedHandler, scrollY: treeScrollY })));
+            react_1.default.createElement(Tree_1.default, { total: totalItems, limit: limit, page: page, treeView: treeView, results: results, onRequestPageChange: onRequestPageChange, loading: tableRefreshing, onRowClicked: onRowClickedHandler, scrollY: treeScrollY, rowSelection: {
+                    selectedRowKeys: selectedRowKeys,
+                    onChange: onChangeSelectedRowKeys,
+                } })));
     };
     if (initialError) {
         return (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: initialError, type: "error", banner: true }));
@@ -393,5 +407,5 @@ function SearchTree(props) {
     }
     return isLoading ? react_1.default.createElement(antd_1.Spin, null) : content();
 }
-exports.default = SearchTree;
+exports.default = react_1.forwardRef(SearchTree);
 //# sourceMappingURL=SearchTree.js.map

@@ -11,6 +11,7 @@ export declare type ActionViewContextType = {
     setFormHasChanges?: (value: boolean) => void;
     onFormSave?: () => void;
     formRef?: any;
+    searchTreeRef?: any;
     onNewClicked: () => void;
     currentId?: number;
     setCurrentId?: (id?: number) => void;
@@ -27,6 +28,8 @@ export declare type ActionViewContextType = {
     setToolbar?: (value: any) => void;
     attachments?: any;
     setAttachments?: (value: any) => void;
+    selectedRowItems?: any[];
+    setSelectedRowItems?: (value: any[]) => void;
 };
 export declare const ActionViewContext: React.Context<ActionViewContextType | null>;
 declare type ActionViewProviderProps = ActionViewContextType & {

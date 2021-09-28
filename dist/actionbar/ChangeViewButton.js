@@ -18,11 +18,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var icons_1 = require("@ant-design/icons");
 var LocaleContext_1 = require("@/context/LocaleContext");
+var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"));
 function getIconForView(view) {
     if (view === "tree") {
         return react_1.default.createElement(icons_1.TableOutlined, null);
@@ -33,8 +37,8 @@ function getIconForView(view) {
     }
 }
 function ChangeViewButton(props) {
-    var currentView = props.currentView, availableViews = props.availableViews, onChangeView = props.onChangeView, _a = props.disabled, disabled = _a === void 0 ? false : _a;
-    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
+    var currentView = props.currentView, availableViews = props.availableViews, onChangeView = props.onChangeView, _a = props.disabled, disabled = _a === void 0 ? false : _a, _b = props.formHasChanges, formHasChanges = _b === void 0 ? false : _b;
+    var _c = react_1.useContext(LocaleContext_1.LocaleContext), t = _c.t, lang = _c.lang;
     function getMenu() {
         var menuItems = availableViews.map(function (view) {
             return (react_1.default.createElement(antd_1.Menu.Item, { key: view },
@@ -47,9 +51,23 @@ function ChangeViewButton(props) {
         return (react_1.default.createElement(antd_1.Menu, { onClick: handleMenuClick },
             react_1.default.createElement(antd_1.Menu.ItemGroup, { title: t("viewAs") }, menuItems)));
     }
+    function tryNavigate(callback) {
+        if (formHasChanges) {
+            UnsavedChangesDialog_1.default({
+                lang: lang,
+                onOk: function () {
+                    callback();
+                },
+            });
+            return;
+        }
+        callback();
+    }
     function handleMenuClick(event) {
-        var selectedView = event.key;
-        onChangeView(selectedView);
+        tryNavigate(function () {
+            var selectedView = event.key;
+            onChangeView(selectedView);
+        });
     }
     return (react_1.default.createElement(antd_1.Dropdown, { overlay: getMenu(), disabled: disabled },
         react_1.default.createElement(antd_1.Button, null,
