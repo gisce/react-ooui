@@ -62,6 +62,9 @@ export function SearchField(props: Props) {
     case types.datetime: {
       return <DateTimeRangePicker ooui={field} layout="vertical" showLabel />;
     }
+    case types.selection: {
+      return <Selection layout="vertical" ooui={field} showLabel />;
+    }
     default: {
       return <Char ooui={field} layout="vertical" showLabel />;
     }
