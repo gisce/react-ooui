@@ -537,6 +537,7 @@ function Form(props, ref) {
             changedFields = Object.keys(touchedValues);
             if (changedFields.length !== 0) {
                 values = formHelper_1.processValues(antForm.getFieldsValue(true), fields);
+                lastAssignedValues.current = values;
                 onFieldsChange === null || onFieldsChange === void 0 ? void 0 : onFieldsChange(values);
                 setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(true);
                 // We check if there are any field of type text, email, url or char inside the changed values
@@ -599,6 +600,11 @@ function Form(props, ref) {
                     onChangeFieldAction = formOoui === null || formOoui === void 0 ? void 0 : formOoui.onChangeFields[fieldName];
                     currentValues = formHelper_1.processValues(antForm.getFieldsValue(true), fields);
                     if (!onChangeFieldAction) {
+                        parseForm({
+                            fields: fields,
+                            arch: arch,
+                            values: currentValues,
+                        });
                         return [2 /*return*/];
                     }
                     payload = formHelper_1.getOnChangePayload({

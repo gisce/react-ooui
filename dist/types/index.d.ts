@@ -41,6 +41,7 @@ declare type SearchCountRequest = {
     params: Array<any>;
     model: string;
     totalItems: number;
+    context?: any;
 };
 declare type CreateObjectRequest = {
     model: string;

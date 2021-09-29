@@ -17,6 +17,7 @@ declare type Props = {
     domain?: any;
     visible?: boolean;
     rootTree?: boolean;
+    parentContext?: any;
 };
 declare const _default: React.ForwardRefExoticComponent<Props & React.RefAttributes<unknown>>;
 export default _default;

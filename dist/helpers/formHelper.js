@@ -23,7 +23,7 @@ var getTouchedValues = function (_a) {
     var source = _a.source, target = _a.target, fields = _a.fields;
     var differences = {};
     Object.keys(target).forEach(function (key) {
-        if (!target[key]) {
+        if (target[key] === undefined) {
             return;
         }
         if (Array.isArray(target[key])) {
@@ -36,7 +36,7 @@ var getTouchedValues = function (_a) {
                     differences[key] = target[key];
                 }
             }
-            else if (!source[key]) {
+            else if (source[key] === undefined) {
                 differences[key] = target[key];
             }
             else {

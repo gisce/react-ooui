@@ -78,28 +78,28 @@ var ActionViewContext_1 = require("@/context/ActionViewContext");
 var DEFAULT_SEARCH_LIMIT = 80;
 function SearchTree(props, ref) {
     var _this = this;
-    var action = props.action, model = props.model, formViewProps = props.formView, treeViewProps = props.treeView, onRowClicked = props.onRowClicked, nameSearch = props.nameSearch, treeScrollY = props.treeScrollY, _a = props.domain, domain = _a === void 0 ? [] : _a, _b = props.visible, visible = _b === void 0 ? true : _b, _c = props.rootTree, rootTree = _c === void 0 ? false : _c;
-    var _d = react_1.useState(false), isLoading = _d[0], setIsLoading = _d[1];
-    var _e = react_1.useState(false), initialFetchDone = _e[0], setInitialFetchDone = _e[1];
+    var action = props.action, model = props.model, formViewProps = props.formView, treeViewProps = props.treeView, onRowClicked = props.onRowClicked, nameSearch = props.nameSearch, treeScrollY = props.treeScrollY, _a = props.domain, domain = _a === void 0 ? [] : _a, _b = props.visible, visible = _b === void 0 ? true : _b, _c = props.rootTree, rootTree = _c === void 0 ? false : _c, _d = props.parentContext, parentContext = _d === void 0 ? {} : _d;
+    var _e = react_1.useState(false), isLoading = _e[0], setIsLoading = _e[1];
+    var _f = react_1.useState(false), initialFetchDone = _f[0], setInitialFetchDone = _f[1];
     var searchNameGetDoneRef = react_1.useRef(false);
-    var _f = react_1.useState(), currentModel = _f[0], setCurrentModel = _f[1];
-    var _g = react_1.useState(), treeView = _g[0], setTreeView = _g[1];
-    var _h = react_1.useState(), formView = _h[0], setFormView = _h[1];
-    var _j = react_1.useState(1), page = _j[0], setPage = _j[1];
-    var _k = react_1.useState(0), offset = _k[0], setOffset = _k[1];
-    var _l = react_1.useState(DEFAULT_SEARCH_LIMIT), limit = _l[0], setLimit = _l[1];
-    var _m = react_1.useState(), limitFromAction = _m[0], setLimitFromAction = _m[1];
+    var _g = react_1.useState(), currentModel = _g[0], setCurrentModel = _g[1];
+    var _h = react_1.useState(), treeView = _h[0], setTreeView = _h[1];
+    var _j = react_1.useState(), formView = _j[0], setFormView = _j[1];
+    var _k = react_1.useState(1), page = _k[0], setPage = _k[1];
+    var _l = react_1.useState(0), offset = _l[0], setOffset = _l[1];
+    var _m = react_1.useState(DEFAULT_SEARCH_LIMIT), limit = _m[0], setLimit = _m[1];
+    var _o = react_1.useState(), limitFromAction = _o[0], setLimitFromAction = _o[1];
     var paramsRef = react_1.useRef([]);
-    var _o = react_1.useState(0), totalItems = _o[0], setTotalItems = _o[1];
-    var _p = react_1.useState([]), results = _p[0], setResults = _p[1];
-    var _q = react_1.useState(false), searchFilterLoading = _q[0], setSearchFilterLoading = _q[1];
-    var _r = react_1.useState(), searchError = _r[0], setSearchError = _r[1];
-    var _s = react_1.useState(), initialError = _s[0], setInitialError = _s[1];
-    var _t = react_1.useState(false), tableRefreshing = _t[0], setTableRefreshing = _t[1];
-    var _u = react_1.useState([]), selectedRowKeys = _u[0], setSelectedRowKeys = _u[1];
+    var _p = react_1.useState(0), totalItems = _p[0], setTotalItems = _p[1];
+    var _q = react_1.useState([]), results = _q[0], setResults = _q[1];
+    var _r = react_1.useState(false), searchFilterLoading = _r[0], setSearchFilterLoading = _r[1];
+    var _s = react_1.useState(), searchError = _s[0], setSearchError = _s[1];
+    var _t = react_1.useState(), initialError = _t[0], setInitialError = _t[1];
+    var _u = react_1.useState(false), tableRefreshing = _u[0], setTableRefreshing = _u[1];
+    var _v = react_1.useState([]), selectedRowKeys = _v[0], setSelectedRowKeys = _v[1];
     var actionDomain = react_1.useRef([]);
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _v = (rootTree ? actionViewContext : {}) || {}, _w = _v.setResults, setResultsActionView = _w === void 0 ? undefined : _w, _x = _v.setCurrentItemIndex, setCurrentItemIndex = _x === void 0 ? undefined : _x, _y = _v.currentId, currentId = _y === void 0 ? undefined : _y, _z = _v.results, resultsActionView = _z === void 0 ? undefined : _z, _0 = _v.setSelectedRowItems, setSelectedRowItems = _0 === void 0 ? undefined : _0;
+    var _w = (rootTree ? actionViewContext : {}) || {}, _x = _w.setResults, setResultsActionView = _x === void 0 ? undefined : _x, _y = _w.setCurrentItemIndex, setCurrentItemIndex = _y === void 0 ? undefined : _y, _z = _w.currentId, currentId = _z === void 0 ? undefined : _z, _0 = _w.results, resultsActionView = _0 === void 0 ? undefined : _0, _1 = _w.setSelectedRowItems, setSelectedRowItems = _1 === void 0 ? undefined : _1;
     react_1.useImperativeHandle(ref, function () { return ({
         refreshResults: fetchResults,
     }); });
@@ -116,6 +116,7 @@ function SearchTree(props, ref) {
                         model: currentModel,
                         action: "name_search",
                         payload: nameSearch,
+                        context: parentContext,
                     })];
                 case 1:
                     searchResults = _a.sent();
@@ -129,6 +130,7 @@ function SearchTree(props, ref) {
                             ids: resultsIds,
                             arch: treeView === null || treeView === void 0 ? void 0 : treeView.arch,
                             fields: treeView === null || treeView === void 0 ? void 0 : treeView.fields,
+                            context: parentContext,
                         })];
                 case 2:
                     resultsWithData = _a.sent();
@@ -186,6 +188,7 @@ function SearchTree(props, ref) {
                             offset: offset,
                             model: currentModel,
                             fields: treeView.fields,
+                            context: parentContext,
                         })];
                 case 1:
                     _a = _b.sent(), totalItems = _a.totalItems, results = _a.results;
@@ -196,6 +199,7 @@ function SearchTree(props, ref) {
                             params: searchParams,
                             model: currentModel,
                             totalItems: totalItems,
+                            context: parentContext,
                         })];
                 case 2:
                     resultIds = _b.sent();
@@ -295,6 +299,7 @@ function SearchTree(props, ref) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getViewsForAction({
                         action: action,
+                        context: parentContext,
                     })];
                 case 1:
                     dataForAction = _a.sent();
@@ -319,6 +324,7 @@ function SearchTree(props, ref) {
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
                             model: model,
                             type: "form",
+                            context: parentContext,
                         })];
                 case 1:
                     _formView = (_a.sent());
@@ -329,6 +335,7 @@ function SearchTree(props, ref) {
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
                             model: model,
                             type: "tree",
+                            context: parentContext,
                         })];
                 case 3:
                     _treeView = (_a.sent());

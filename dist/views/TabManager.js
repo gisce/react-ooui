@@ -138,7 +138,7 @@ function TabManager(props, ref) {
                             })
                             : [];
                         parsedContext = ooui_1.parseContext({
-                            context: __assign(__assign({}, rootContext), dataForAction.context),
+                            context: dataForAction.context,
                             values: globalValues,
                             fields: {},
                         });
@@ -146,7 +146,7 @@ function TabManager(props, ref) {
                         initialViewType = views[0][1];
                         openAction({
                             domain: parsedDomain,
-                            context: parsedContext,
+                            context: __assign(__assign({}, rootContext), parsedContext),
                             model: model,
                             views: views,
                             title: title,
