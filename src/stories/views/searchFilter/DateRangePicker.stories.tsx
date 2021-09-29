@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Field as FieldOoui } from "ooui";
+import LocaleProvider from "../../../context/LocaleContext";
 
 import { DateRangePicker } from "../../../widgets/views/searchFilter/DateRangePicker";
 import "antd/dist/antd.css";
@@ -14,5 +15,9 @@ export const Default = (): React.ReactElement => {
     name: "field",
     string: "Lorem ipsum",
   });
-  return <DateRangePicker ooui={ooui} showLabel />;
+  return (
+    <LocaleProvider lang="en_GB">
+      <DateRangePicker ooui={ooui} showLabel />
+    </LocaleProvider>
+  );
 };

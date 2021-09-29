@@ -3,14 +3,18 @@ import React from "react";
 import { SearchFilter } from "../../../..";
 import "antd/dist/antd.css";
 import "@/tailwind.generated.css";
+import LocaleProvider from "../../../../context/LocaleContext";
 
 export default {
   component: SearchFilter,
   title: "Components/Widgets/Views/SearchFilter/Examples/PartnersSearchFilter",
 };
 
-const Template = (args: any) => <SearchFilter {...args} />;
-
+const Template = (args: any) => (
+  <LocaleProvider lang="en_GB">
+    <SearchFilter {...args} />
+  </LocaleProvider>
+);
 export const Default = Template.bind({});
 Default.args = {
   limit: 80,
