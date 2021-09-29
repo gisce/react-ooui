@@ -153,6 +153,7 @@ function ActionView(props: Props, ref: any) {
           ref={searchTreeRef}
           rootTree={true}
           model={model}
+          parentContext={context}
           formView={formView}
           treeView={treeView}
           domain={domain}

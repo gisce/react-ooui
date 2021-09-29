@@ -38,6 +38,7 @@ type Props = {
   domain?: any;
   visible?: boolean;
   rootTree?: boolean;
+  parentContext?: any;
 };
 
 function SearchTree(props: Props, ref: any) {
@@ -52,6 +53,7 @@ function SearchTree(props: Props, ref: any) {
     domain = [],
     visible = true,
     rootTree = false,
+    parentContext = {},
   } = props;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -110,6 +112,7 @@ function SearchTree(props: Props, ref: any) {
       model: currentModel!,
       action: "name_search",
       payload: nameSearch,
+      context: parentContext,
     });
 
     setTotalItems(searchResults.length);
@@ -124,6 +127,7 @@ function SearchTree(props: Props, ref: any) {
           ids: resultsIds,
           arch: treeView?.arch!,
           fields: treeView?.fields!,
+          context: parentContext,
         }
       );
       setResults(resultsWithData);
@@ -184,6 +188,7 @@ function SearchTree(props: Props, ref: any) {
       offset,
       model: currentModel!,
       fields: treeView!.fields,
+      context: parentContext,
     });
     setTotalItems(totalItems);
     const handler = ConnectionProvider.getHandler();
@@ -192,6 +197,7 @@ function SearchTree(props: Props, ref: any) {
       params: searchParams,
       model: currentModel!,
       totalItems,
+      context: parentContext,
     });
 
     setResults(results);
@@ -260,6 +266,7 @@ function SearchTree(props: Props, ref: any) {
     const dataForAction = await ConnectionProvider.getHandler().getViewsForAction(
       {
         action: action!,
+        context: parentContext,
       }
     );
     actionDomain.current = dataForAction.domain;
@@ -279,6 +286,7 @@ function SearchTree(props: Props, ref: any) {
       _formView = (await ConnectionProvider.getHandler().getView({
         model: model!,
         type: "form",
+        context: parentContext,
       })) as FormView;
     }
 
@@ -288,6 +296,7 @@ function SearchTree(props: Props, ref: any) {
       _treeView = (await ConnectionProvider.getHandler().getView({
         model: model!,
         type: "tree",
+        context: parentContext,
       })) as TreeView;
     }
 

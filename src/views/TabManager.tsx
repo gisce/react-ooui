@@ -82,7 +82,7 @@ function TabManager(props: TabManagerProps, ref: any) {
       : [];
 
     const parsedContext = parseContext({
-      context: { ...rootContext, ...dataForAction.context },
+      context: dataForAction.context,
       values: globalValues,
       fields: {},
     });
@@ -93,7 +93,7 @@ function TabManager(props: TabManagerProps, ref: any) {
 
     openAction({
       domain: parsedDomain,
-      context: parsedContext,
+      context: {...rootContext, ...parsedContext},
       model,
       views,
       title,
@@ -159,7 +159,7 @@ function TabManager(props: TabManagerProps, ref: any) {
     const initialViewType = views[0][1];
 
     const parsedContext = parseContext({
-      context: context,
+      context,
       values: { ...values, ...globalValues },
       fields,
     });
