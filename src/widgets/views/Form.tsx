@@ -562,6 +562,7 @@ function Form(props: FormProps, ref: any) {
 
     if (changedFields.length !== 0) {
       const values = processValues(antForm.getFieldsValue(true), fields);
+      lastAssignedValues.current = values;
 
       onFieldsChange?.(values);
       setFormHasChanges?.(true);
@@ -608,6 +609,11 @@ function Form(props: FormProps, ref: any) {
     const currentValues = processValues(antForm.getFieldsValue(true), fields);
 
     if (!onChangeFieldAction) {
+      parseForm({
+        fields,
+        arch: arch!,
+        values: currentValues,
+      });
       return;
     }
 

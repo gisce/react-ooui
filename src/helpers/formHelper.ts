@@ -32,7 +32,7 @@ export const getTouchedValues = ({
 }) => {
   const differences: any = {};
   Object.keys(target).forEach((key) => {
-    if (!target[key]) {
+    if (target[key] === undefined) {
       return;
     }
     if (Array.isArray(target[key])) {
@@ -47,7 +47,7 @@ export const getTouchedValues = ({
         if (nonOriginalItems.length > 0) {
           differences[key] = target[key];
         }
-      } else if (!source[key]) {
+      } else if (source[key] === undefined) {
         differences[key] = target[key];
       } else {
         const sourceValue = JSON.stringify(source[key]);
