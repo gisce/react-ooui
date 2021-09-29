@@ -50,6 +50,7 @@ type SearchCountRequest = {
   params: Array<any>;
   model: string;
   totalItems: number;
+  context?: any;
 };
 
 type CreateObjectRequest = {
