@@ -1,15 +1,15 @@
 import React from "react";
 
 import { Form } from "../..";
+import LocaleProvider from "../../context/LocaleContext";
 
 export default {
   title: "Components/Widgets/Forms/Polissa",
 };
 
 export const Default = (): React.ReactElement => {
-  
   return (
-    <div>
+    <LocaleProvider lang="en_GB">
       <Form
         model={"giscedata.polissa"}
         id={6}
@@ -20,6 +20,6 @@ export const Default = (): React.ReactElement => {
           console.log();
         }}
       />
-    </div>
+    </LocaleProvider>
   );
 };

@@ -3,6 +3,7 @@ import React from "react";
 import { SelectionInput } from "../widgets/base/Selection";
 import { Selection as SelectionOoui } from "ooui";
 import "antd/dist/antd.css";
+import LocaleProvider from "../context/LocaleContext";
 
 import { withKnobs, text } from "@storybook/addon-knobs";
 
@@ -25,5 +26,9 @@ export const Default = (): React.ReactElement => {
   });
   const value = text("value", "en_US") || undefined;
 
-  return <SelectionInput ooui={ooui} value={value} />;
+  return (
+    <LocaleProvider lang="en_GB">
+      <SelectionInput ooui={ooui} value={value} />
+    </LocaleProvider>
+  );
 };

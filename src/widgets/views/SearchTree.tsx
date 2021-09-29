@@ -186,6 +186,8 @@ function SearchTree(props: Props, ref: any) {
       fields: treeView!.fields,
     });
     setTotalItems(totalItems);
+    const handler = ConnectionProvider.getHandler();
+    console.log(handler);
     const resultIds = await ConnectionProvider.getHandler().searchAllIds({
       params: searchParams,
       model: currentModel!,

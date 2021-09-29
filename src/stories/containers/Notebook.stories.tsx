@@ -3,6 +3,7 @@ import "antd/dist/antd.css";
 import "@/tailwind.generated.css";
 
 import { withKnobs } from "@storybook/addon-knobs";
+import LocaleProvider from "../../context/LocaleContext";
 
 import { Form } from "antd";
 import { Form as FormOoui, Notebook as NotebookOoui } from "ooui";
@@ -40,8 +41,10 @@ export const Default = (): React.ReactElement => {
   const notebookOoui = formOoui.findById("notebook") as NotebookOoui;
 
   return (
-    <Form>
-      <Notebook ooui={notebookOoui} />
-    </Form>
+    <LocaleProvider lang="en_GB">
+      <Form>
+        <Notebook ooui={notebookOoui} />
+      </Form>
+    </LocaleProvider>
   );
 };

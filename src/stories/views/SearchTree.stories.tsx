@@ -4,6 +4,7 @@ import SearchTree from "../../widgets/views/SearchTree";
 import ConnectionProvider from "../../ConnectionProvider";
 
 import "antd/dist/antd.css";
+import LocaleProvider from "../../context/LocaleContext";
 
 export default {
   title: "Components/Widgets/Views/SearchTree",
@@ -456,11 +457,13 @@ export const Default = (): React.ReactElement => {
   });
 
   return (
-    <SearchTree
-      model={"res.partners"}
-      onRowClicked={(row) => {
-        console.log(row.id);
-      }}
-    />
+    <LocaleProvider lang="en_GB">
+      <SearchTree
+        model={"res.partners"}
+        onRowClicked={(row) => {
+          console.log(row.id);
+        }}
+      />
+    </LocaleProvider>
   );
 };

@@ -3,6 +3,7 @@ import React from "react";
 import { ReferenceInput } from "../widgets/base/Reference";
 import { Reference as ReferenceOoui } from "ooui";
 import "antd/dist/antd.css";
+import LocaleProvider from "../context/LocaleContext";
 
 export default {
   title: "Components/Widgets/Base/Reference",
@@ -29,12 +30,14 @@ export const Default = (): React.ReactElement => {
   });
 
   return (
-    <ReferenceInput
-      ooui={ooui}
-      value={"product.product,5"}
-      onChange={(newValue: any) => {
-        console.log(newValue);
-      }}
-    />
+    <LocaleProvider lang="en_GB">
+      <ReferenceInput
+        ooui={ooui}
+        value={"product.product,5"}
+        onChange={(newValue: any) => {
+          console.log(newValue);
+        }}
+      />
+    </LocaleProvider>
   );
 };

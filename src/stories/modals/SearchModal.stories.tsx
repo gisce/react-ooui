@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button } from "antd";
 
 import { SearchModal } from "../..";
+import LocaleProvider from "../../context/LocaleContext";
 
 export default {
   title: "Components/Widgets/Modals/SearchModal",
@@ -11,7 +12,7 @@ export const Default = (): React.ReactElement => {
   const [visible, setVisible] = useState<boolean>(false);
 
   return (
-    <>
+    <LocaleProvider lang="en_GB">
       <Button
         onClick={() => {
           setVisible(true);
@@ -31,6 +32,6 @@ export const Default = (): React.ReactElement => {
           setVisible(false);
         }}
       />
-    </>
+    </LocaleProvider>
   );
 };

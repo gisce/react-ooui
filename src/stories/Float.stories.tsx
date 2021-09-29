@@ -3,6 +3,7 @@ import React from "react";
 import { Float } from "..";
 import { Float as FloatOoui } from "ooui";
 import "antd/dist/antd.css";
+import LocaleProvider from "../context/LocaleContext";
 
 export default {
   title: "Components/Widgets/Base/Float",
@@ -13,5 +14,9 @@ export const Default = (): React.ReactElement => {
     name: "field",
     string: "Lorem ipsum",
   });
-  return <Float ooui={ooui} showLabel />;
+  return (
+    <LocaleProvider lang="en_GB">
+      <Float ooui={ooui} showLabel />
+    </LocaleProvider>
+  );
 };

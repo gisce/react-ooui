@@ -16,6 +16,7 @@ import {
   GetReportRequest,
   ExecuteOnChangeRequest,
   DefaultGetRequest,
+  SearchCountRequest,
 } from "../../types/index";
 
 const init = () => {
@@ -47,15 +48,7 @@ const init = () => {
       const data = getMock(model);
       return data[type];
     },
-    searchAllIds: async ({
-      params,
-      model,
-      totalItems,
-    }: {
-      params: any;
-      model: string;
-      totalItems: number;
-    }) => {
+    searchAllIds: async (options: SearchCountRequest) => {
       await new Promise((resolve) => setTimeout(resolve, timeout));
       return [6];
     },

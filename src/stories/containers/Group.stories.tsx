@@ -3,6 +3,7 @@ import "antd/dist/antd.css";
 import "@/tailwind.generated.css";
 
 import { withKnobs, number, text } from "@storybook/addon-knobs";
+import LocaleProvider from "../../context/LocaleContext";
 
 import { Form } from "antd";
 import { Form as FormOoui, Group as GroupOoui } from "ooui";
@@ -53,8 +54,10 @@ export const Default = (): React.ReactElement => {
   groupOoui.label = label;
 
   return (
-    <Form>
-      <Group ooui={groupOoui} />
-    </Form>
+    <LocaleProvider lang="en_GB">
+      <Form>
+        <Group ooui={groupOoui} />
+      </Form>
+    </LocaleProvider>
   );
 };

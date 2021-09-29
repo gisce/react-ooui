@@ -3,6 +3,7 @@ import React from "react";
 import { Many2one } from "..";
 import { Many2one as Many2oneOoui } from "ooui";
 import "antd/dist/antd.css";
+import LocaleProvider from "../context/LocaleContext";
 
 export default {
   title: "Components/Widgets/Base/Many2One",
@@ -15,7 +16,7 @@ export const Default = (): React.ReactElement => {
     relation: "res.partners",
   });
   return (
-    <>
+    <LocaleProvider lang="en_GB">
       <div style={{ width: 200 }}>
         <Many2one ooui={ooui} showLabel />
       </div>
@@ -25,6 +26,6 @@ export const Default = (): React.ReactElement => {
       <div style={{ width: 500 }}>
         <Many2one ooui={ooui} showLabel />
       </div>
-    </>
+    </LocaleProvider>
   );
 };

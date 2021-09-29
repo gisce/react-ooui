@@ -3,13 +3,18 @@ import React from "react";
 import { Form } from "../..";
 import "antd/dist/antd.css";
 import "@/tailwind.generated.css";
+import LocaleProvider from "../../context/LocaleContext";
 
 export default {
   component: Form,
   title: "Components/Widgets/Forms/Preferences",
 };
 
-const Template = (args: any) => <Form {...args} />;
+const Template = (args: any) => (
+  <LocaleProvider lang="en_GB">
+    <Form {...args} />
+  </LocaleProvider>
+);
 
 export const Default = Template.bind({});
 Default.args = {

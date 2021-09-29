@@ -3,13 +3,18 @@ import React from "react";
 import { Tree } from "../..";
 import "antd/dist/antd.css";
 import "@/tailwind.generated.css";
+import LocaleProvider from "../../context/LocaleContext";
 
 export default {
   component: Tree,
   title: "Components/Widgets/Views/Tree",
 };
 
-const Template = (args) => <Tree {...args} />;
+const Template = (args) => (
+  <LocaleProvider lang="en_GB">
+    <Tree {...args} />
+  </LocaleProvider>
+);
 
 export const Default = Template.bind({});
 Default.args = {

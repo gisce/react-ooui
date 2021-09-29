@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "..";
 import { Button as ButtonOoui } from "ooui";
 import "antd/dist/antd.css";
+import LocaleProvider from "../context/LocaleContext";
 
 export default {
   title: "Components/Widgets/Base/Button",
@@ -13,5 +14,9 @@ export const Default = (): React.ReactElement => {
     name: "button_field",
     string: "Lorem ipsum",
   });
-  return <Button ooui={ooui} />;
+  return (
+    <LocaleProvider lang="en_GB">
+      <Button ooui={ooui} />
+    </LocaleProvider>
+  );
 };

@@ -1,6 +1,7 @@
 import React from "react";
 
 import { ActionBar } from "../..";
+import LocaleProvider from "../../context/LocaleContext";
 
 import "antd/dist/antd.css";
 
@@ -10,11 +11,13 @@ export default {
 
 export const Default = (): React.ReactElement => {
   return (
-    <ActionBar
-      saveButtonHidden={false}
-      saveButtonCallback={() => {}}
-      saveButtonLoading={false}
-      saveButtonDisabled={false}
-    />
+    <LocaleProvider lang="en_GB">
+      <ActionBar
+        saveButtonHidden={false}
+        saveButtonCallback={() => {}}
+        saveButtonLoading={false}
+        saveButtonDisabled={false}
+      />
+    </LocaleProvider>
   );
 };

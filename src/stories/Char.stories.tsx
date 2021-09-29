@@ -3,6 +3,7 @@ import React from "react";
 import { Char } from "..";
 import { Char as CharOoui } from "ooui";
 import "antd/dist/antd.css";
+import LocaleProvider from "../context/LocaleContext";
 
 export default {
   title: "Components/Widgets/Base/Char",
@@ -11,17 +12,25 @@ export default {
 export const Default = (): React.ReactElement => {
   const ooui = new CharOoui({
     name: "field",
-    string: "Lorem ipsum"
+    string: "Lorem ipsum",
   });
-  return <Char ooui={ooui} showLabel />;
+  return (
+    <LocaleProvider lang="en_GB">
+      <Char ooui={ooui} showLabel />
+    </LocaleProvider>
+  );
 };
 
 export const Password = (): React.ReactElement => {
   const ooui = new CharOoui({
     name: "field",
     string: "Password",
-    nolabel: false
+    nolabel: false,
   });
   ooui.isPassword = true;
-  return <Char ooui={ooui} showLabel />;
+  return (
+    <LocaleProvider lang="en_GB">
+      <Char ooui={ooui} showLabel />
+    </LocaleProvider>
+  );
 };
