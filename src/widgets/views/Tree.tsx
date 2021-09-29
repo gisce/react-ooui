@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { Table, Pagination, Checkbox, Space } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
 import useDimensions from "react-cool-dimensions";
@@ -7,6 +7,8 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import { TreeView, Column } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { Many2oneSuffix } from "../base/many2one/Many2oneSuffix";
+import { getEvaluatedColor, Tree as TreeOoui } from "ooui";
+import showErrorDialog from "@/ui/GenericErrorDialog";
 
 type Props = {
   total: number;
@@ -40,11 +42,17 @@ function Tree(props: Props): React.ReactElement {
   const [items, setItems] = useState<Array<any>>([]);
   const [columns, setColumns] = useState<Array<Column>>([]);
 
+  const treeOouiRef = useRef<TreeOoui>();
+  const errorInParseColors = useRef<boolean>(false);
+
   const { width, ref: containerRef } = useDimensions<HTMLDivElement>();
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
   useDeepCompareEffect(() => {
     const tree = getTree(treeView);
+    treeOouiRef.current = tree;
+    errorInParseColors.current = false;
+
     const booleanComponentFn = (value: boolean): React.ReactElement => {
       return <Checkbox defaultChecked={value} disabled />;
     };
@@ -124,7 +132,38 @@ function Tree(props: Props): React.ReactElement {
           return item.id;
         }}
         onRow={(record) => {
+          let style = undefined;
+
+          if (
+            !errorInParseColors.current &&
+            (treeOouiRef.current as TreeOoui).colorExpressions
+          ) {
+            let color;
+            try {
+              color = getEvaluatedColor({
+                colorExpressions: (treeOouiRef.current as TreeOoui)
+                  .colorExpressions as [],
+                values: record,
+              });
+            } catch (err) {
+              errorInParseColors.current = true;
+              showErrorDialog(
+                `Cannot evaluate color expressions:\n ${JSON.stringify(
+                  (treeOouiRef.current as TreeOoui).colorExpressions,
+                  null,
+                  2
+                )}\n
+                ${JSON.stringify(err, null, 2)}`
+              );
+            }
+
+            if (color && color !== "default") {
+              style = { color: color };
+            }
+          }
+
           return {
+            style,
             onDoubleClick: () => {
               if (onRowClicked) onRowClicked(record.id);
             },
