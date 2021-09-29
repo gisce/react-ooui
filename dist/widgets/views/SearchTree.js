@@ -174,7 +174,7 @@ function SearchTree(props, ref) {
         return finalParams;
     };
     var searchResults = function () { return __awaiter(_this, void 0, void 0, function () {
-        var domainParams, searchParams, _a, totalItems, results, resultIds, newCurrentItemIndex;
+        var domainParams, searchParams, _a, totalItems, results, handler, resultIds, newCurrentItemIndex;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -190,6 +190,8 @@ function SearchTree(props, ref) {
                 case 1:
                     _a = _b.sent(), totalItems = _a.totalItems, results = _a.results;
                     setTotalItems(totalItems);
+                    handler = ConnectionProvider_1.default.getHandler();
+                    console.log(handler);
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchAllIds({
                             params: searchParams,
                             model: currentModel,

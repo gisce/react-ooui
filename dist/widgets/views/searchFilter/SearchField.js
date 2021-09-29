@@ -71,6 +71,9 @@ function SearchField(props) {
         case types.datetime: {
             return react_1.default.createElement(DateTimeRangePicker_1.DateTimeRangePicker, { ooui: field, layout: "vertical", showLabel: true });
         }
+        case types.selection: {
+            return react_1.default.createElement(Selection_1.Selection, { layout: "vertical", ooui: field, showLabel: true });
+        }
         default: {
             return react_1.default.createElement(Char_1.Char, { ooui: field, layout: "vertical", showLabel: true });
         }
