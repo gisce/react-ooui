@@ -529,6 +529,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         <Form
           formView={views.get("form")}
           values={itemsToShow[itemIndex]?.values}
+          parentContext={getContext?.()}
           ref={formRef}
           model={relation}
           id={itemsToShow[itemIndex]?.id}
@@ -605,6 +606,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         defaultValues={modalItem?.defaultValues}
         visible={showFormModal}
         onSubmitSucceed={onFormModalSubmitSucceed}
+        parentContext={getContext?.()}
         onCancel={() => {
           setContinuousEntryMode(false);
           setShowFormModal(false);
@@ -616,6 +618,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       <SearchModal
         domain={domain}
         model={relation}
+        context={getContext?.()}
         visible={showSearchModal}
         onSelectValue={(id: number) => {
           setShowSearchModal(false);

@@ -13,6 +13,7 @@ type SearchSelectionProps = {
   onSelectValue: (value: any) => void;
   onCloseModal: () => void;
   domain?: any;
+  context?: any;
 };
 
 export const SearchModal = (props: SearchSelectionProps) => {
@@ -23,6 +24,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
     model,
     nameSearch,
     domain,
+    context = {},
   } = props;
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
 
@@ -48,6 +50,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
           onRowClicked={onRowClicked}
           treeScrollY={modalHeight * 0.3}
           domain={domain}
+          parentContext={context}
         />
         <Divider />
         <Row justify="end">
@@ -86,6 +89,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
       <FormModal
         model={model}
         visible={showCreateModal}
+        parentContext={context}
         onSubmitSucceed={(id?: number) => {
           setShowCreateModal(false);
           onCloseModal();

@@ -196,6 +196,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       <SearchModal
         model={relation}
         domain={domain}
+        context={getContext?.()}
         visible={showSearchModal}
         nameSearch={!id ? searchText : undefined}
         onSelectValue={(id: number) => {
@@ -211,6 +212,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       />
       <FormModal
         model={relation}
+        parentContext={getContext?.()}
         id={value && value[0]}
         visible={showFormModal}
         onSubmitSucceed={(id?: number) => {
