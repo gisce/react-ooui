@@ -67,9 +67,9 @@ var icons_1 = require("@ant-design/icons");
 var useModalWidthDimensions_1 = __importDefault(require("@/hooks/useModalWidthDimensions"));
 var LocaleContext_1 = require("@/context/LocaleContext");
 var SearchModal = function (props) {
-    var visible = props.visible, onCloseModalProps = props.onCloseModal, onSelectValue = props.onSelectValue, model = props.model, nameSearch = props.nameSearch, domain = props.domain;
-    var _a = react_1.useState(false), showCreateModal = _a[0], setShowCreateModal = _a[1];
-    var _b = useModalWidthDimensions_1.default(), modalWidth = _b.modalWidth, modalHeight = _b.modalHeight;
+    var visible = props.visible, onCloseModalProps = props.onCloseModal, onSelectValue = props.onSelectValue, model = props.model, nameSearch = props.nameSearch, domain = props.domain, _a = props.context, context = _a === void 0 ? {} : _a;
+    var _b = react_1.useState(false), showCreateModal = _b[0], setShowCreateModal = _b[1];
+    var _c = useModalWidthDimensions_1.default(), modalWidth = _c.modalWidth, modalHeight = _c.modalHeight;
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var onCloseModal = function () { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
@@ -92,7 +92,7 @@ var SearchModal = function (props) {
     }); };
     var content = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
-            react_1.default.createElement(SearchTree_1.default, { model: model, nameSearch: nameSearch, onRowClicked: onRowClicked, treeScrollY: modalHeight * 0.3, domain: domain }),
+            react_1.default.createElement(SearchTree_1.default, { model: model, nameSearch: nameSearch, onRowClicked: onRowClicked, treeScrollY: modalHeight * 0.3, domain: domain, parentContext: context }),
             react_1.default.createElement(antd_1.Divider, null),
             react_1.default.createElement(antd_1.Row, { justify: "end" },
                 react_1.default.createElement(antd_1.Space, null,
@@ -103,7 +103,7 @@ var SearchModal = function (props) {
     };
     return (react_1.default.createElement(react_1.default.Fragment, null,
         react_1.default.createElement(antd_1.Modal, { title: t("search"), centered: true, width: modalWidth, visible: visible && !showCreateModal, closable: true, onCancel: onCloseModal, footer: null, destroyOnClose: true }, content()),
-        react_1.default.createElement(FormModal_1.FormModal, { model: model, visible: showCreateModal, onSubmitSucceed: function (id) {
+        react_1.default.createElement(FormModal_1.FormModal, { model: model, visible: showCreateModal, parentContext: context, onSubmitSucceed: function (id) {
                 setShowCreateModal(false);
                 onCloseModal();
                 onSelectValue(id);

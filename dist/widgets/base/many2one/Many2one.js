@@ -249,7 +249,7 @@ var Many2oneInput = function (props) {
                     setSearchText(text);
                     setShowSearchModal(true);
                 }, tabIndex: -1 })),
-        react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, domain: domain, visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValue: function (id) {
+        react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, domain: domain, context: getContext === null || getContext === void 0 ? void 0 : getContext(), visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValue: function (id) {
                 setShowSearchModal(false);
                 fetchNameAndUpdate(id);
                 searchButtonTappedRef.current = false;
@@ -258,7 +258,7 @@ var Many2oneInput = function (props) {
                 setShowSearchModal(false);
                 searchButtonTappedRef.current = false;
             } }),
-        react_1.default.createElement(FormModal_1.FormModal, { model: relation, id: value && value[0], visible: showFormModal, onSubmitSucceed: function (id) {
+        react_1.default.createElement(FormModal_1.FormModal, { model: relation, parentContext: getContext === null || getContext === void 0 ? void 0 : getContext(), id: value && value[0], visible: showFormModal, onSubmitSucceed: function (id) {
                 setShowFormModal(false);
                 fetchNameAndUpdate(id);
             }, onCancel: function () {
