@@ -58,10 +58,10 @@ export const SearchModal = (props: SearchSelectionProps) => {
                 setShowCreateModal(true);
               }}
             >
-              New
+              {t("new")}
             </Button>
             <Button icon={<CloseOutlined />} onClick={onCloseModal}>
-              Cancel
+              {t("cancel")}
             </Button>
           </Space>
         </Row>
