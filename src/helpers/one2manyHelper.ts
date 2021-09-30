@@ -6,12 +6,13 @@ type ReadObjectValuesOptions = {
   model: string;
   treeFields: any;
   formFields: any;
+  context?: any;
 };
 
 const readObjectValues = async (
   options: ReadObjectValuesOptions
 ): Promise<One2manyItem[]> => {
-  const { items, model, formFields, treeFields } = options;
+  const { items, model, formFields, treeFields, context = {}} = options;
 
   // We get a number array of id's
   const idsToFetch = items.map((item) => item.id) as number[];
@@ -20,6 +21,7 @@ const readObjectValues = async (
     model,
     ids: idsToFetch,
     fields: { ...formFields, ...treeFields },
+    context,
   });
 
   const formValues = values.map((result: any) => {

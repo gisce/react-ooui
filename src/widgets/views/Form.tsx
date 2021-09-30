@@ -420,6 +420,7 @@ function Form(props: FormProps, ref: any) {
           ["res_model", "=", model],
           ["res_id", "=", getCurrentId()!],
         ],
+        context: getContext(),
         model: "ir.attachment",
       });
       setAttachments?.(results);

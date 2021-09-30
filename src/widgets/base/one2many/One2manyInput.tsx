@@ -114,6 +114,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         formFields: views.get("form").fields,
         model: relation,
         items,
+        context: getContext?.(),
       });
 
       triggerChange(itemsWithValues);
@@ -312,6 +313,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         model: relation,
         ids: [id],
         fields: views.get("form").fields,
+        context: getContext?.(),
       })
     )[0];
     const updatedTreeObject = (
@@ -320,6 +322,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         model: relation,
         ids: [id],
         fields: views.get("tree").fields,
+        context: getContext?.(),
       })
     )[0];
 
@@ -350,6 +353,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         model: relation,
         ids: [id],
         fields: views.get("form").fields,
+        context: getContext?.(),
       })
     )[0];
     const updatedTreeObject = (
@@ -358,6 +362,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         model: relation,
         ids: [id],
         fields: views.get("tree").fields,
+        context: getContext?.(),
       })
     )[0];
 

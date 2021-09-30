@@ -97,11 +97,22 @@ const ContentRootProvider = (
 
     let idsToExecute = ids;
 
+    const reportContextParsed =
+      typeof reportContext === "string"
+        ? parseContext({
+            context: reportContext,
+            fields,
+            values,
+          })
+        : reportContext;
+
+
     if (!idsToExecute) {
       const results = await ConnectionProvider.getHandler().searchAllIds({
         params: [],
         model: datasource.model || model,
         totalItems: 1,
+        context: {...context, ...reportContextParsed},
       });
 
       if (results.length === 0) {
@@ -112,15 +123,6 @@ const ContentRootProvider = (
       idsToExecute = results;
       datas.id = results[0];
     }
-
-    const reportContextParsed =
-      typeof reportContext === "string"
-        ? parseContext({
-            context: reportContext,
-            fields,
-            values,
-          })
-        : reportContext;
 
     try {
       const newReportId = await ConnectionProvider.getHandler().createReport({
@@ -211,6 +213,7 @@ const ContentRootProvider = (
         await ConnectionProvider.getHandler().readObjects({
           model: "ir.actions.act_window",
           ids: [parseInt(_actionData.id)],
+          context,
         })
       )[0];
     }

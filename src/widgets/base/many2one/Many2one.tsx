@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { Input, Button, Row, Col } from "antd";
 import {
   SearchOutlined,
@@ -15,6 +15,7 @@ import { FormModal } from "@/widgets/modals/FormModal";
 import ConnectionProvider from "@/ConnectionProvider";
 import { Many2oneSuffix } from "./Many2oneSuffix";
 import showErrorDialog from "@/ui/GenericErrorDialog";
+import { FormContext, FormContextType } from "@/context/FormContext";
 
 type Props = {
   ooui: Many2oneOoui;
@@ -62,6 +63,8 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const searchButtonTappedRef = useRef<boolean>(false);
   const [inputText, setInputText] = useState<string>();
   const inputTextRef = useRef<string>();
+  const formContext = useContext(FormContext) as FormContextType;
+  const { getContext } = formContext || {};
 
   const id = value && value[0];
   const text = (value && value[1]) || "";
@@ -107,6 +110,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           model: relation,
           action: "name_search",
           payload: inputTextRef.current as string,
+          context: getContext?.(),
         });
 
         if (results.length === 1) {
@@ -132,6 +136,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
         action: "name_get",
         payload: [id],
         model: relation,
+        context: getContext?.(),
       });
 
       triggerChange([id, value[0][1]]);
@@ -163,7 +168,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           className={requiredClass}
           onBlur={onElementLostFocus}
           onKeyUp={onKeyUp}
-          suffix={<Many2oneSuffix id={id} model={relation} />}
+          suffix={<Many2oneSuffix id={id} model={relation} context={getContext?.()} />}
         />
       </Col>
       <Col flex="32px">

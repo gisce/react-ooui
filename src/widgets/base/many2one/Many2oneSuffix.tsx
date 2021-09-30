@@ -24,10 +24,11 @@ import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 type Props = {
   id: number;
   model: string;
+  context?: any;
 };
 
 export const Many2oneSuffix = (props: Props) => {
-  const { id, model } = props;
+  const { id, model, context = {} } = props;
   const [actionModalVisible, setActionModalVisible] = useState<boolean>(false);
   const [printModalVisible, setPrintModalVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -56,6 +57,7 @@ export const Many2oneSuffix = (props: Props) => {
       const formView = await ConnectionProvider.getHandler().getView({
         model,
         type: "form",
+        context,
       });
       setFormView(formView);
       const { fields, arch } = formView;
@@ -66,6 +68,7 @@ export const Many2oneSuffix = (props: Props) => {
           model,
           ids: [id],
           fields,
+          context,
         })
       )[0];
 

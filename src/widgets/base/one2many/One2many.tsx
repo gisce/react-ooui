@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { One2many as One2manyOoui } from "ooui";
 import Field from "@/common/Field";
 import { Spin, Alert } from "antd";
@@ -7,6 +7,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import One2manyProvider from "@/context/One2manyContext";
 import { One2manyInput } from "@/widgets/base/one2many/One2manyInput";
 import useDeepCompareEffect from "use-deep-compare-effect";
+import { FormContext, FormContextType } from "@/context/FormContext";
 
 type Props = {
   ooui: One2manyOoui;
@@ -20,6 +21,8 @@ export const One2many = (props: Props) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>();
   const [views, setViews] = useState<Views>(new Map<string, any>());
+  const formContext = useContext(FormContext) as FormContextType;
+  const { getContext } = formContext || {};
 
   useDeepCompareEffect(() => {
     fetchData();
@@ -32,6 +35,7 @@ export const One2many = (props: Props) => {
     return await ConnectionProvider.getHandler().getView({
       model: relation,
       type,
+      context: getContext?.(),
     });
   };
 
