@@ -82,12 +82,12 @@ var ActionErrorDialog_1 = __importDefault(require("@/ui/ActionErrorDialog"));
 var LocaleContext_1 = require("@/context/LocaleContext");
 var Many2oneSuffix = function (props) {
     var _a, _b;
-    var id = props.id, model = props.model;
-    var _c = react_1.useState(false), actionModalVisible = _c[0], setActionModalVisible = _c[1];
-    var _d = react_1.useState(false), printModalVisible = _d[0], setPrintModalVisible = _d[1];
-    var _e = react_1.useState(false), isLoading = _e[0], setIsLoading = _e[1];
-    var _f = react_1.useState(), formView = _f[0], setFormView = _f[1];
-    var _g = react_1.useState(), targetValues = _g[0], setTargetValues = _g[1];
+    var id = props.id, model = props.model, _c = props.context, context = _c === void 0 ? {} : _c;
+    var _d = react_1.useState(false), actionModalVisible = _d[0], setActionModalVisible = _d[1];
+    var _e = react_1.useState(false), printModalVisible = _e[0], setPrintModalVisible = _e[1];
+    var _f = react_1.useState(false), isLoading = _f[0], setIsLoading = _f[1];
+    var _g = react_1.useState(), formView = _g[0], setFormView = _g[1];
+    var _h = react_1.useState(), targetValues = _h[0], setTargetValues = _h[1];
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
     var openRelate = (tabManagerContext || {}).openRelate;
@@ -109,6 +109,7 @@ var Many2oneSuffix = function (props) {
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
                                 model: model,
                                 type: "form",
+                                context: context,
                             })];
                     case 2:
                         formView_1 = _a.sent();
@@ -119,6 +120,7 @@ var Many2oneSuffix = function (props) {
                                 model: model,
                                 ids: [id],
                                 fields: fields,
+                                context: context,
                             })];
                     case 3:
                         values = (_a.sent())[0];

@@ -4,6 +4,7 @@ declare type ReadObjectValuesOptions = {
     model: string;
     treeFields: any;
     formFields: any;
+    context?: any;
 };
 declare const readObjectValues: (options: ReadObjectValuesOptions) => Promise<One2manyItem[]>;
 declare type RemoveItemOptions = {

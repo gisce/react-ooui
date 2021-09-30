@@ -152,6 +152,7 @@ var One2manyInput = function (props) {
                             formFields: views.get("form").fields,
                             model: relation,
                             items: items,
+                            context: getContext === null || getContext === void 0 ? void 0 : getContext(),
                         })];
                 case 2:
                     itemsWithValues = _a.sent();
@@ -374,6 +375,7 @@ var One2manyInput = function (props) {
                         model: relation,
                         ids: [id],
                         fields: views.get("form").fields,
+                        context: getContext === null || getContext === void 0 ? void 0 : getContext(),
                     })];
                 case 1:
                     updatedFormObject = (_a.sent())[0];
@@ -382,6 +384,7 @@ var One2manyInput = function (props) {
                             model: relation,
                             ids: [id],
                             fields: views.get("tree").fields,
+                            context: getContext === null || getContext === void 0 ? void 0 : getContext(),
                         })];
                 case 2:
                     updatedTreeObject = (_a.sent())[0];
@@ -407,6 +410,7 @@ var One2manyInput = function (props) {
                             model: relation,
                             ids: [id],
                             fields: views.get("form").fields,
+                            context: getContext === null || getContext === void 0 ? void 0 : getContext(),
                         })];
                 case 1:
                     updatedFormObject = (_a.sent())[0];
@@ -415,6 +419,7 @@ var One2manyInput = function (props) {
                             model: relation,
                             ids: [id],
                             fields: views.get("tree").fields,
+                            context: getContext === null || getContext === void 0 ? void 0 : getContext(),
                         })];
                 case 2:
                     updatedTreeObject = (_a.sent())[0];

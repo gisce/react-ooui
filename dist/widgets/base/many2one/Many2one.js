@@ -85,6 +85,7 @@ var FormModal_1 = require("@/widgets/modals/FormModal");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var Many2oneSuffix_1 = require("./Many2oneSuffix");
 var GenericErrorDialog_1 = __importDefault(require("@/ui/GenericErrorDialog"));
+var FormContext_1 = require("@/context/FormContext");
 var Many2one = function (props) {
     var ooui = props.ooui;
     var required = ooui.required;
@@ -114,6 +115,8 @@ var Many2oneInput = function (props) {
     var searchButtonTappedRef = react_1.useRef(false);
     var _e = react_1.useState(), inputText = _e[0], setInputText = _e[1];
     var inputTextRef = react_1.useRef();
+    var formContext = react_1.useContext(FormContext_1.FormContext);
+    var getContext = (formContext || {}).getContext;
     var id = value && value[0];
     var text = (value && value[1]) || "";
     react_1.useEffect(function () {
@@ -161,6 +164,7 @@ var Many2oneInput = function (props) {
                             model: relation,
                             action: "name_search",
                             payload: inputTextRef.current,
+                            context: getContext === null || getContext === void 0 ? void 0 : getContext(),
                         })];
                 case 3:
                     results = _b.sent();
@@ -197,6 +201,7 @@ var Many2oneInput = function (props) {
                             action: "name_get",
                             payload: [id],
                             model: relation,
+                            context: getContext === null || getContext === void 0 ? void 0 : getContext(),
                         })];
                 case 2:
                     value_1 = _a.sent();
@@ -233,7 +238,7 @@ var Many2oneInput = function (props) {
     var CustomInput = required && !readOnly ? RequiredInput : antd_1.Input;
     return (react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false },
         react_1.default.createElement(antd_1.Col, { flex: "auto" },
-            react_1.default.createElement(CustomInput, { type: "text", value: inputText, disabled: readOnly, onChange: onValueStringChange, className: requiredClass, onBlur: onElementLostFocus, onKeyUp: onKeyUp, suffix: react_1.default.createElement(Many2oneSuffix_1.Many2oneSuffix, { id: id, model: relation }) })),
+            react_1.default.createElement(CustomInput, { type: "text", value: inputText, disabled: readOnly, onChange: onValueStringChange, className: requiredClass, onBlur: onElementLostFocus, onKeyUp: onKeyUp, suffix: react_1.default.createElement(Many2oneSuffix_1.Many2oneSuffix, { id: id, model: relation, context: getContext === null || getContext === void 0 ? void 0 : getContext() }) })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
             react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: id === undefined || text === "", onClick: function () {
                     setShowFormModal(true);

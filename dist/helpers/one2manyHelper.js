@@ -53,19 +53,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.linkItem = exports.removeItems = exports.readObjectValues = void 0;
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var readObjectValues = function (options) { return __awaiter(void 0, void 0, void 0, function () {
-    var items, model, formFields, treeFields, idsToFetch, values, formValues, treeValues;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var items, model, formFields, treeFields, _a, context, idsToFetch, values, formValues, treeValues;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
-                items = options.items, model = options.model, formFields = options.formFields, treeFields = options.treeFields;
+                items = options.items, model = options.model, formFields = options.formFields, treeFields = options.treeFields, _a = options.context, context = _a === void 0 ? {} : _a;
                 idsToFetch = items.map(function (item) { return item.id; });
                 return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
                         model: model,
                         ids: idsToFetch,
                         fields: __assign(__assign({}, formFields), treeFields),
+                        context: context,
                     })];
             case 1:
-                values = _a.sent();
+                values = _b.sent();
                 formValues = values.map(function (result) {
                     var resultFormValues = {};
                     Object.keys(result).forEach(function (key) {

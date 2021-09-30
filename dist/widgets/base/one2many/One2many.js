@@ -77,6 +77,7 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var One2manyContext_1 = __importDefault(require("@/context/One2manyContext"));
 var One2manyInput_1 = require("@/widgets/base/one2many/One2manyInput");
 var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
+var FormContext_1 = require("@/context/FormContext");
 var One2many = function (props) {
     var ooui = props.ooui;
     var mode = ooui.mode, relation = ooui.relation, oouiViews = ooui.views, required = ooui.required;
@@ -84,6 +85,8 @@ var One2many = function (props) {
     var _a = react_1.useState(true), isLoading = _a[0], setIsLoading = _a[1];
     var _b = react_1.useState(), error = _b[0], setError = _b[1];
     var _c = react_1.useState(new Map()), views = _c[0], setViews = _c[1];
+    var formContext = react_1.useContext(FormContext_1.FormContext);
+    var getContext = (formContext || {}).getContext;
     use_deep_compare_effect_1.default(function () {
         fetchData();
     }, [ooui]);
@@ -97,6 +100,7 @@ var One2many = function (props) {
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
                             model: relation,
                             type: type,
+                            context: getContext === null || getContext === void 0 ? void 0 : getContext(),
                         })];
                 case 1: return [2 /*return*/, _a.sent()];
             }

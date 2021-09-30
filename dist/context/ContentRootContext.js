@@ -109,7 +109,7 @@ var ContentRootProvider = function (props, ref) {
     }), actionModalOptions = _d[0], setActionModalOptions = _d[1];
     function generateReport(options) {
         return __awaiter(this, void 0, void 0, function () {
-            var reportData, fields, values, _a, context, reportContext, model, datas, report_name, type, _b, ids, datasource, idsToExecute, results, reportContextParsed, newReportId_1, err_1;
+            var reportData, fields, values, _a, context, reportContext, model, datas, report_name, type, _b, ids, datasource, idsToExecute, reportContextParsed, results, newReportId_1, err_1;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -121,11 +121,19 @@ var ContentRootProvider = function (props, ref) {
                         }
                         _b = datas || {}, ids = _b.ids, datasource = __rest(_b, ["ids"]);
                         idsToExecute = ids;
+                        reportContextParsed = typeof reportContext === "string"
+                            ? ooui_1.parseContext({
+                                context: reportContext,
+                                fields: fields,
+                                values: values,
+                            })
+                            : reportContext;
                         if (!!idsToExecute) return [3 /*break*/, 2];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchAllIds({
                                 params: [],
                                 model: datasource.model || model,
                                 totalItems: 1,
+                                context: __assign(__assign({}, context), reportContextParsed),
                             })];
                     case 1:
                         results = _c.sent();
@@ -137,16 +145,7 @@ var ContentRootProvider = function (props, ref) {
                         datas.id = results[0];
                         _c.label = 2;
                     case 2:
-                        reportContextParsed = typeof reportContext === "string"
-                            ? ooui_1.parseContext({
-                                context: reportContext,
-                                fields: fields,
-                                values: values,
-                            })
-                            : reportContext;
-                        _c.label = 3;
-                    case 3:
-                        _c.trys.push([3, 5, , 6]);
+                        _c.trys.push([2, 4, , 5]);
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().createReport({
                                 model: model,
                                 name: report_name,
@@ -154,20 +153,20 @@ var ContentRootProvider = function (props, ref) {
                                 ids: idsToExecute,
                                 context: __assign(__assign({}, context), reportContextParsed),
                             })];
-                    case 4:
+                    case 3:
                         newReportId_1 = _c.sent();
                         setReportGenerating(true);
                         reportInProgressInterval.current = setInterval(function () {
                             evaluateReportStatus(newReportId_1);
                         }, 1000);
-                        return [3 /*break*/, 6];
-                    case 5:
+                        return [3 /*break*/, 5];
+                    case 4:
                         err_1 = _c.sent();
                         ActionErrorDialog_1.default(err_1);
                         setReportGenerating(false);
                         clearInterval(reportInProgressInterval.current);
-                        return [3 /*break*/, 6];
-                    case 6: return [2 /*return*/];
+                        return [3 /*break*/, 5];
+                    case 5: return [2 /*return*/];
                 }
             });
         });
@@ -244,6 +243,7 @@ var ContentRootProvider = function (props, ref) {
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
                                 model: "ir.actions.act_window",
                                 ids: [parseInt(_actionData.id)],
+                                context: context,
                             })];
                     case 1:
                         actionData = (_e.sent())[0];

@@ -98,8 +98,8 @@ var SearchModal = function (props) {
                 react_1.default.createElement(antd_1.Space, null,
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FileAddOutlined, null), onClick: function () {
                             setShowCreateModal(true);
-                        } }, "New"),
-                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), onClick: onCloseModal }, "Cancel")))));
+                        } }, t("new")),
+                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), onClick: onCloseModal }, t("cancel"))))));
     };
     return (react_1.default.createElement(react_1.default.Fragment, null,
         react_1.default.createElement(antd_1.Modal, { title: t("search"), centered: true, width: modalWidth, visible: visible && !showCreateModal, closable: true, onCancel: onCloseModal, footer: null, destroyOnClose: true }, content()),
