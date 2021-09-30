@@ -102,10 +102,21 @@ function Tree(props) {
                                 .colorExpressions,
                             values: record,
                         });
+                        if (treeHelper_1.itemHasBooleans({ values: record, fields: treeView.fields }) &&
+                            color === "default") {
+                            color = ooui_1.getEvaluatedColor({
+                                colorExpressions: treeOouiRef.current
+                                    .colorExpressions,
+                                values: treeHelper_1.convertBooleansToNumeric({
+                                    values: record,
+                                    fields: treeView.fields,
+                                }),
+                            });
+                        }
                     }
                     catch (err) {
                         errorInParseColors.current = true;
-                        GenericErrorDialog_1.default("Cannot evaluate color expressions:\n " + JSON.stringify(treeOouiRef.current.colorExpressions, null, 2) + "\n\n                " + JSON.stringify(err, null, 2));
+                        GenericErrorDialog_1.default("Cannot evaluate color expressions:\n " + JSON.stringify(treeOouiRef.current.colorExpressions, null, 2) + "\n\n                " + (err === null || err === void 0 ? void 0 : err.message));
                     }
                     if (color && color !== "default") {
                         style = { color: color };

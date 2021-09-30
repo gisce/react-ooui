@@ -1,6 +1,17 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTree = exports.getTableItems = exports.getTableColumns = void 0;
+exports.itemHasBooleans = exports.convertBooleansToNumeric = exports.getTree = exports.getTableItems = exports.getTableColumns = void 0;
 var ooui_1 = require("ooui");
 var getTree = function (treeView) {
     var xml = treeView.arch;
@@ -73,4 +84,28 @@ var getTableItems = function (treeOoui, results) {
     return tableItems;
 };
 exports.getTableItems = getTableItems;
+function itemHasBooleans(_a) {
+    var values = _a.values, fields = _a.fields;
+    if (!fields) {
+        return false;
+    }
+    return Object.keys(values).some(function (key) {
+        return fields[key] !== undefined && fields[key].type === "boolean";
+    });
+}
+exports.itemHasBooleans = itemHasBooleans;
+function convertBooleansToNumeric(_a) {
+    var values = _a.values, fields = _a.fields;
+    if (!fields) {
+        return values;
+    }
+    var filteredValues = {};
+    Object.keys(values).forEach(function (key) {
+        if (fields[key] !== undefined && fields[key].type === "boolean") {
+            filteredValues[key] = values[key] === true ? 1 : 0;
+        }
+    });
+    return __assign(__assign({}, values), filteredValues);
+}
+exports.convertBooleansToNumeric = convertBooleansToNumeric;
 //# sourceMappingURL=treeHelper.js.map
