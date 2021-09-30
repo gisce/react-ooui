@@ -1,6 +1,12 @@
 import React, { useContext, useRef, useState } from "react";
 import { Table, Pagination, Checkbox, Space } from "antd";
-import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
+import {
+  getTree,
+  getTableColumns,
+  getTableItems,
+  itemHasBooleans,
+  convertBooleansToNumeric,
+} from "@/helpers/treeHelper";
 import useDimensions from "react-cool-dimensions";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
@@ -145,6 +151,20 @@ function Tree(props: Props): React.ReactElement {
                   .colorExpressions as [],
                 values: record,
               });
+
+              if (
+                itemHasBooleans({ values: record, fields: treeView.fields }) &&
+                color === "default"
+              ) {
+                color = getEvaluatedColor({
+                  colorExpressions: (treeOouiRef.current as TreeOoui)
+                    .colorExpressions as [],
+                  values: convertBooleansToNumeric({
+                    values: record,
+                    fields: treeView!.fields,
+                  }),
+                });
+              }
             } catch (err) {
               errorInParseColors.current = true;
               showErrorDialog(
@@ -153,7 +173,7 @@ function Tree(props: Props): React.ReactElement {
                   null,
                   2
                 )}\n
-                ${JSON.stringify(err, null, 2)}`
+                ${err?.message}`
               );
             }
 

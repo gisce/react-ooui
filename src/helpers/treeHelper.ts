@@ -70,4 +70,38 @@ const getTableItems = (treeOoui: TreeOoui, results: Array<any>): Array<any> => {
   return tableItems;
 };
 
-export { getTableColumns, getTableItems, getTree };
+function itemHasBooleans({ values, fields }: { values: any; fields: any }) {
+  if (!fields) {
+    return false;
+  }
+  return Object.keys(values).some((key) => {
+    return fields[key] !== undefined && fields[key].type === "boolean";
+  });
+}
+
+function convertBooleansToNumeric({
+  values,
+  fields,
+}: {
+  values: any;
+  fields: any;
+}) {
+  if (!fields) {
+    return values;
+  }
+  const filteredValues: any = {};
+  Object.keys(values).forEach((key) => {
+    if (fields[key] !== undefined && fields[key].type === "boolean") {
+      filteredValues[key] = values[key] === true ? 1 : 0;
+    }
+  });
+  return { ...values, ...filteredValues };
+}
+
+export {
+  getTableColumns,
+  getTableItems,
+  getTree,
+  convertBooleansToNumeric,
+  itemHasBooleans,
+};
