@@ -74,7 +74,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
   const { modalHeight } = useModalWidthDimensions();
 
-  const { readOnly, relation, domain } = ooui as One2manyOoui;
+  const { readOnly, relation, domain, context } = ooui as One2manyOoui;
   const isMany2many = ooui.type === "many2many";
   const { id: fieldName } = ooui;
   const itemsToShow = items.filter((item) => item.values);
@@ -114,7 +114,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         formFields: views.get("form").fields,
         model: relation,
         items,
-        context: getContext?.(),
+        context: { ...getContext?.(), ...context },
       });
 
       triggerChange(itemsWithValues);
@@ -313,7 +313,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         model: relation,
         ids: [id],
         fields: views.get("form").fields,
-        context: getContext?.(),
+        context: { ...getContext?.(), ...context },
       })
     )[0];
     const updatedTreeObject = (
@@ -322,7 +322,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         model: relation,
         ids: [id],
         fields: views.get("tree").fields,
-        context: getContext?.(),
+        context: { ...getContext?.(), ...context },
       })
     )[0];
 
@@ -353,7 +353,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         model: relation,
         ids: [id],
         fields: views.get("form").fields,
-        context: getContext?.(),
+        context: { ...getContext?.(), ...context },
       })
     )[0];
     const updatedTreeObject = (
@@ -362,7 +362,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         model: relation,
         ids: [id],
         fields: views.get("tree").fields,
-        context: getContext?.(),
+        context: { ...getContext?.(), ...context },
       })
     )[0];
 
@@ -529,7 +529,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         <Form
           formView={views.get("form")}
           values={itemsToShow[itemIndex]?.values}
-          parentContext={getContext?.()}
+          parentContext={{ ...getContext?.(), ...context }}
           ref={formRef}
           model={relation}
           id={itemsToShow[itemIndex]?.id}
@@ -606,7 +606,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         defaultValues={modalItem?.defaultValues}
         visible={showFormModal}
         onSubmitSucceed={onFormModalSubmitSucceed}
-        parentContext={getContext?.()}
+        parentContext={{ ...getContext?.(), ...context }}
         onCancel={() => {
           setContinuousEntryMode(false);
           setShowFormModal(false);
@@ -618,7 +618,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       <SearchModal
         domain={domain}
         model={relation}
-        context={getContext?.()}
+        context={{ ...getContext?.(), ...context }}
         visible={showSearchModal}
         onSelectValue={(id: number) => {
           setShowSearchModal(false);

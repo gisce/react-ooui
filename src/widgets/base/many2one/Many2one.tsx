@@ -53,7 +53,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   props: Many2oneInputProps
 ) => {
   const { value, onChange, ooui } = props;
-  const { required, relation, readOnly, domain } = ooui;
+  const { required, relation, readOnly, domain, context } = ooui;
   const requiredClass =
     required && !readOnly ? Config.requiredClass : undefined;
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
@@ -110,7 +110,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           model: relation,
           action: "name_search",
           payload: inputTextRef.current as string,
-          context: getContext?.(),
+          context: { ...getContext?.(), ...context },
         });
 
         if (results.length === 1) {
@@ -136,7 +136,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
         action: "name_get",
         payload: [id],
         model: relation,
-        context: getContext?.(),
+        context: { ...getContext?.(), ...context },
       });
 
       triggerChange([id, value[0][1]]);
@@ -168,7 +168,13 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           className={requiredClass}
           onBlur={onElementLostFocus}
           onKeyUp={onKeyUp}
-          suffix={<Many2oneSuffix id={id} model={relation} context={getContext?.()} />}
+          suffix={
+            <Many2oneSuffix
+              id={id}
+              model={relation}
+              context={{ ...getContext?.(), ...context }}
+            />
+          }
         />
       </Col>
       <Col flex="32px">
@@ -196,7 +202,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       <SearchModal
         model={relation}
         domain={domain}
-        context={getContext?.()}
+        context={{ ...getContext?.(), ...context }}
         visible={showSearchModal}
         nameSearch={!id ? searchText : undefined}
         onSelectValue={(id: number) => {
@@ -212,7 +218,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       />
       <FormModal
         model={relation}
-        parentContext={getContext?.()}
+        parentContext={{ ...getContext?.(), ...context }}
         id={value && value[0]}
         visible={showFormModal}
         onSubmitSucceed={(id?: number) => {

@@ -15,7 +15,7 @@ type Props = {
 
 export const One2many = (props: Props) => {
   const { ooui } = props;
-  const { mode, relation, views: oouiViews, required } = ooui;
+  const { mode, relation, views: oouiViews, required, context } = ooui;
 
   let initialView: "tree" | "form";
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -35,7 +35,7 @@ export const One2many = (props: Props) => {
     return await ConnectionProvider.getHandler().getView({
       model: relation,
       type,
-      context: getContext?.(),
+      context: { ...getContext?.(), ...context },
     });
   };
 
