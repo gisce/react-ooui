@@ -106,7 +106,7 @@ var Many2one = function (props) {
 exports.Many2one = Many2one;
 var Many2oneInput = function (props) {
     var value = props.value, onChange = props.onChange, ooui = props.ooui;
-    var required = ooui.required, relation = ooui.relation, readOnly = ooui.readOnly, domain = ooui.domain;
+    var required = ooui.required, relation = ooui.relation, readOnly = ooui.readOnly, domain = ooui.domain, context = ooui.context;
     var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
     var _a = react_1.useState(false), showSearchModal = _a[0], setShowSearchModal = _a[1];
     var _b = react_1.useState(false), showFormModal = _b[0], setShowFormModal = _b[1];
@@ -164,7 +164,7 @@ var Many2oneInput = function (props) {
                             model: relation,
                             action: "name_search",
                             payload: inputTextRef.current,
-                            context: getContext === null || getContext === void 0 ? void 0 : getContext(),
+                            context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
                         })];
                 case 3:
                     results = _b.sent();
@@ -201,7 +201,7 @@ var Many2oneInput = function (props) {
                             action: "name_get",
                             payload: [id],
                             model: relation,
-                            context: getContext === null || getContext === void 0 ? void 0 : getContext(),
+                            context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
                         })];
                 case 2:
                     value_1 = _a.sent();
@@ -238,7 +238,7 @@ var Many2oneInput = function (props) {
     var CustomInput = required && !readOnly ? RequiredInput : antd_1.Input;
     return (react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false },
         react_1.default.createElement(antd_1.Col, { flex: "auto" },
-            react_1.default.createElement(CustomInput, { type: "text", value: inputText, disabled: readOnly, onChange: onValueStringChange, className: requiredClass, onBlur: onElementLostFocus, onKeyUp: onKeyUp, suffix: react_1.default.createElement(Many2oneSuffix_1.Many2oneSuffix, { id: id, model: relation, context: getContext === null || getContext === void 0 ? void 0 : getContext() }) })),
+            react_1.default.createElement(CustomInput, { type: "text", value: inputText, disabled: readOnly, onChange: onValueStringChange, className: requiredClass, onBlur: onElementLostFocus, onKeyUp: onKeyUp, suffix: react_1.default.createElement(Many2oneSuffix_1.Many2oneSuffix, { id: id, model: relation, context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context) }) })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
             react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: id === undefined || text === "", onClick: function () {
                     setShowFormModal(true);
@@ -249,7 +249,7 @@ var Many2oneInput = function (props) {
                     setSearchText(text);
                     setShowSearchModal(true);
                 }, tabIndex: -1 })),
-        react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, domain: domain, context: getContext === null || getContext === void 0 ? void 0 : getContext(), visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValue: function (id) {
+        react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, domain: domain, context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValue: function (id) {
                 setShowSearchModal(false);
                 fetchNameAndUpdate(id);
                 searchButtonTappedRef.current = false;
@@ -258,7 +258,7 @@ var Many2oneInput = function (props) {
                 setShowSearchModal(false);
                 searchButtonTappedRef.current = false;
             } }),
-        react_1.default.createElement(FormModal_1.FormModal, { model: relation, parentContext: getContext === null || getContext === void 0 ? void 0 : getContext(), id: value && value[0], visible: showFormModal, onSubmitSucceed: function (id) {
+        react_1.default.createElement(FormModal_1.FormModal, { model: relation, parentContext: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), id: value && value[0], visible: showFormModal, onSubmitSucceed: function (id) {
                 setShowFormModal(false);
                 fetchNameAndUpdate(id);
             }, onCancel: function () {

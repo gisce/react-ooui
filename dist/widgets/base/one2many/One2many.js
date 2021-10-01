@@ -80,7 +80,7 @@ var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect
 var FormContext_1 = require("@/context/FormContext");
 var One2many = function (props) {
     var ooui = props.ooui;
-    var mode = ooui.mode, relation = ooui.relation, oouiViews = ooui.views, required = ooui.required;
+    var mode = ooui.mode, relation = ooui.relation, oouiViews = ooui.views, required = ooui.required, context = ooui.context;
     var initialView;
     var _a = react_1.useState(true), isLoading = _a[0], setIsLoading = _a[1];
     var _b = react_1.useState(), error = _b[0], setError = _b[1];
@@ -100,7 +100,7 @@ var One2many = function (props) {
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
                             model: relation,
                             type: type,
-                            context: getContext === null || getContext === void 0 ? void 0 : getContext(),
+                            context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
                         })];
                 case 1: return [2 /*return*/, _a.sent()];
             }

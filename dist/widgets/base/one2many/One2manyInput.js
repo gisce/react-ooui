@@ -105,7 +105,7 @@ var One2manyInput = function (props) {
     var _l = react_1.useState([]), selectedRowKeys = _l[0], setSelectedRowKeys = _l[1];
     var _m = react_1.useState(false), continuousEntryMode = _m[0], setContinuousEntryMode = _m[1];
     var modalHeight = useModalWidthDimensions_1.default().modalHeight;
-    var _o = ooui, readOnly = _o.readOnly, relation = _o.relation, domain = _o.domain;
+    var _o = ooui, readOnly = _o.readOnly, relation = _o.relation, domain = _o.domain, context = _o.context;
     var isMany2many = ooui.type === "many2many";
     var fieldName = ooui.id;
     var itemsToShow = items.filter(function (item) { return item.values; });
@@ -152,7 +152,7 @@ var One2manyInput = function (props) {
                             formFields: views.get("form").fields,
                             model: relation,
                             items: items,
-                            context: getContext === null || getContext === void 0 ? void 0 : getContext(),
+                            context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
                         })];
                 case 2:
                     itemsWithValues = _a.sent();
@@ -375,7 +375,7 @@ var One2manyInput = function (props) {
                         model: relation,
                         ids: [id],
                         fields: views.get("form").fields,
-                        context: getContext === null || getContext === void 0 ? void 0 : getContext(),
+                        context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
                     })];
                 case 1:
                     updatedFormObject = (_a.sent())[0];
@@ -384,7 +384,7 @@ var One2manyInput = function (props) {
                             model: relation,
                             ids: [id],
                             fields: views.get("tree").fields,
-                            context: getContext === null || getContext === void 0 ? void 0 : getContext(),
+                            context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
                         })];
                 case 2:
                     updatedTreeObject = (_a.sent())[0];
@@ -410,7 +410,7 @@ var One2manyInput = function (props) {
                             model: relation,
                             ids: [id],
                             fields: views.get("form").fields,
-                            context: getContext === null || getContext === void 0 ? void 0 : getContext(),
+                            context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
                         })];
                 case 1:
                     updatedFormObject = (_a.sent())[0];
@@ -419,7 +419,7 @@ var One2manyInput = function (props) {
                             model: relation,
                             ids: [id],
                             fields: views.get("tree").fields,
-                            context: getContext === null || getContext === void 0 ? void 0 : getContext(),
+                            context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
                         })];
                 case 2:
                     updatedTreeObject = (_a.sent())[0];
@@ -584,7 +584,7 @@ var One2manyInput = function (props) {
             if (itemsToShow.length === 0) {
                 return "No current entries";
             }
-            return (react_1.default.createElement(index_1.Form, { formView: views.get("form"), values: (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.values, parentContext: getContext === null || getContext === void 0 ? void 0 : getContext(), ref: formRef, model: relation, id: (_b = itemsToShow[itemIndex]) === null || _b === void 0 ? void 0 : _b.id, onSubmitSucceed: onFormSubmitSucceed, onSubmitError: function () {
+            return (react_1.default.createElement(index_1.Form, { formView: views.get("form"), values: (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.values, parentContext: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), ref: formRef, model: relation, id: (_b = itemsToShow[itemIndex]) === null || _b === void 0 ? void 0 : _b.id, onSubmitSucceed: onFormSubmitSucceed, onSubmitError: function () {
                     setFormIsSaving(false);
                 }, onFieldsChange: function () {
                     var _a;
@@ -610,11 +610,11 @@ var One2manyInput = function (props) {
     return (react_1.default.createElement(react_1.default.Fragment, null,
         react_1.default.createElement(One2manyTopBar_1.One2manyTopBar, { mode: currentView, title: getTitle(), readOnly: readOnly, isMany2Many: isMany2many, formHasChanges: formHasChanges, formIsSaving: formIsSaving, totalItems: itemsToShow.length, currentItemIndex: itemIndex, onSaveItem: saveItem, onDelete: showRemoveConfirm, onCreateItem: createItem, onToggleViewMode: toggleViewMode, onPreviousItem: previousItem, onNextItem: nextItem, onSearchItem: searchItem }),
         content(),
-        react_1.default.createElement(FormModal_1.FormModal, { formView: views.get("form"), model: relation, id: modalItem === null || modalItem === void 0 ? void 0 : modalItem.id, values: modalItem === null || modalItem === void 0 ? void 0 : modalItem.values, defaultValues: modalItem === null || modalItem === void 0 ? void 0 : modalItem.defaultValues, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, parentContext: getContext === null || getContext === void 0 ? void 0 : getContext(), onCancel: function () {
+        react_1.default.createElement(FormModal_1.FormModal, { formView: views.get("form"), model: relation, id: modalItem === null || modalItem === void 0 ? void 0 : modalItem.id, values: modalItem === null || modalItem === void 0 ? void 0 : modalItem.values, defaultValues: modalItem === null || modalItem === void 0 ? void 0 : modalItem.defaultValues, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, parentContext: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), onCancel: function () {
                 setContinuousEntryMode(false);
                 setShowFormModal(false);
             }, readOnly: readOnly, mustClearAfterSave: mustClearAfterSave, postSaveAction: formModalPostSaveAction }),
-        react_1.default.createElement(SearchModal_1.SearchModal, { domain: domain, model: relation, context: getContext === null || getContext === void 0 ? void 0 : getContext(), visible: showSearchModal, onSelectValue: function (id) {
+        react_1.default.createElement(SearchModal_1.SearchModal, { domain: domain, model: relation, context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), visible: showSearchModal, onSelectValue: function (id) {
                 setShowSearchModal(false);
                 onSearchModalSelectValue(id);
             }, onCloseModal: function () {
