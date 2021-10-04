@@ -75,6 +75,7 @@ var SearchFilter_1 = __importDefault(require("@/widgets/views/searchFilter/Searc
 var Tree_1 = __importDefault(require("@/widgets/views/Tree"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var ActionViewContext_1 = require("@/context/ActionViewContext");
+var treeHelper_1 = require("@/helpers/treeHelper");
 var DEFAULT_SEARCH_LIMIT = 80;
 function SearchTree(props, ref) {
     var _this = this;
@@ -92,14 +93,15 @@ function SearchTree(props, ref) {
     var paramsRef = react_1.useRef([]);
     var _p = react_1.useState(0), totalItems = _p[0], setTotalItems = _p[1];
     var _q = react_1.useState([]), results = _q[0], setResults = _q[1];
-    var _r = react_1.useState(false), searchFilterLoading = _r[0], setSearchFilterLoading = _r[1];
-    var _s = react_1.useState(), searchError = _s[0], setSearchError = _s[1];
-    var _t = react_1.useState(), initialError = _t[0], setInitialError = _t[1];
-    var _u = react_1.useState(false), tableRefreshing = _u[0], setTableRefreshing = _u[1];
-    var _v = react_1.useState([]), selectedRowKeys = _v[0], setSelectedRowKeys = _v[1];
+    var _r = react_1.useState(undefined), colorsForResults = _r[0], setColorsForResults = _r[1];
+    var _s = react_1.useState(false), searchFilterLoading = _s[0], setSearchFilterLoading = _s[1];
+    var _t = react_1.useState(), searchError = _t[0], setSearchError = _t[1];
+    var _u = react_1.useState(), initialError = _u[0], setInitialError = _u[1];
+    var _v = react_1.useState(false), tableRefreshing = _v[0], setTableRefreshing = _v[1];
+    var _w = react_1.useState([]), selectedRowKeys = _w[0], setSelectedRowKeys = _w[1];
     var actionDomain = react_1.useRef([]);
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _w = (rootTree ? actionViewContext : {}) || {}, _x = _w.setResults, setResultsActionView = _x === void 0 ? undefined : _x, _y = _w.setCurrentItemIndex, setCurrentItemIndex = _y === void 0 ? undefined : _y, _z = _w.currentId, currentId = _z === void 0 ? undefined : _z, _0 = _w.results, resultsActionView = _0 === void 0 ? undefined : _0, _1 = _w.setSelectedRowItems, setSelectedRowItems = _1 === void 0 ? undefined : _1;
+    var _x = (rootTree ? actionViewContext : {}) || {}, _y = _x.setResults, setResultsActionView = _y === void 0 ? undefined : _y, _z = _x.setCurrentItemIndex, setCurrentItemIndex = _z === void 0 ? undefined : _z, _0 = _x.currentId, currentId = _0 === void 0 ? undefined : _0, _1 = _x.results, resultsActionView = _1 === void 0 ? undefined : _1, _2 = _x.setSelectedRowItems, setSelectedRowItems = _2 === void 0 ? undefined : _2;
     react_1.useImperativeHandle(ref, function () { return ({
         refreshResults: fetchResults,
     }); });
@@ -109,7 +111,7 @@ function SearchTree(props, ref) {
         setOffset((page - 1) * limit);
     };
     var searchByNameSearch = function () { return __awaiter(_this, void 0, void 0, function () {
-        var searchResults, resultsIds, resultsWithData;
+        var searchResults, resultsIds, colors, resultsWithData, resultsData;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
@@ -124,16 +126,22 @@ function SearchTree(props, ref) {
                     resultsIds = searchResults.map(function (item) {
                         return item === null || item === void 0 ? void 0 : item[0];
                     });
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                    colors = treeHelper_1.getTree(treeView).colors;
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readEvalUiObjects({
                             model: currentModel,
                             ids: resultsIds,
                             arch: treeView === null || treeView === void 0 ? void 0 : treeView.arch,
                             fields: treeView === null || treeView === void 0 ? void 0 : treeView.fields,
                             context: parentContext,
+                            attrs: colors && {
+                                colors: colors,
+                            },
                         })];
                 case 2:
                     resultsWithData = _a.sent();
-                    setResults(resultsWithData);
+                    resultsData = resultsWithData[0];
+                    setColorsForResults(treeHelper_1.getColorMap(resultsWithData[1]));
+                    setResults(resultsData);
                     setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView(resultsWithData);
                     if (resultsWithData.length > 0) {
                         setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(0);
@@ -175,12 +183,13 @@ function SearchTree(props, ref) {
         return finalParams;
     };
     var searchResults = function () { return __awaiter(_this, void 0, void 0, function () {
-        var domainParams, searchParams, _a, totalItems, results, handler, resultIds, newCurrentItemIndex;
+        var domainParams, searchParams, colors, _a, totalItems, results, attrsEvaluated, resultIds, newCurrentItemIndex;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     domainParams = actionDomain.current.length > 0 ? actionDomain.current : domain;
                     searchParams = mergeParams(paramsRef.current, domainParams);
+                    colors = treeHelper_1.getTree(treeView).colors;
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().search({
                             params: searchParams,
                             limit: limit,
@@ -188,12 +197,12 @@ function SearchTree(props, ref) {
                             model: currentModel,
                             fields: treeView.fields,
                             context: parentContext,
+                            attrs: colors && { colors: colors },
                         })];
                 case 1:
-                    _a = _b.sent(), totalItems = _a.totalItems, results = _a.results;
+                    _a = _b.sent(), totalItems = _a.totalItems, results = _a.results, attrsEvaluated = _a.attrsEvaluated;
                     setTotalItems(totalItems);
-                    handler = ConnectionProvider_1.default.getHandler();
-                    console.log(handler);
+                    setColorsForResults(treeHelper_1.getColorMap(attrsEvaluated));
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchAllIds({
                             params: searchParams,
                             model: currentModel,
@@ -402,7 +411,7 @@ function SearchTree(props, ref) {
             react_1.default.createElement(SearchFilter_1.default, { fields: __assign(__assign({}, treeView.fields), formView.fields), searchFields: formView.search_fields, onClear: onClear, limit: limit, offset: offset, isSearching: searchFilterLoading, onSubmit: onSubmit }),
             searchError && (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: searchError, type: "error", banner: true })),
             react_1.default.createElement("div", { className: "pb-10" }),
-            react_1.default.createElement(Tree_1.default, { total: totalItems, limit: limit, page: page, treeView: treeView, results: results, onRequestPageChange: onRequestPageChange, loading: tableRefreshing, onRowClicked: onRowClickedHandler, scrollY: treeScrollY, rowSelection: {
+            react_1.default.createElement(Tree_1.default, { total: totalItems, limit: limit, page: page, treeView: treeView, results: results, onRequestPageChange: onRequestPageChange, loading: tableRefreshing, onRowClicked: onRowClickedHandler, scrollY: treeScrollY, colorsForResults: colorsForResults, rowSelection: {
                     selectedRowKeys: selectedRowKeys,
                     onChange: onChangeSelectedRowKeys,
                 } })));

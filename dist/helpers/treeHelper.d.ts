@@ -11,5 +11,6 @@ declare function convertBooleansToNumeric({ values, fields, }: {
     values: any;
     fields: any;
 }): any;
-export { getTableColumns, getTableItems, getTree, convertBooleansToNumeric, itemHasBooleans, };
+declare function getColorMap(colorsValue: any): any;
+export { getTableColumns, getTableItems, getTree, convertBooleansToNumeric, itemHasBooleans, getColorMap, };
 //# sourceMappingURL=treeHelper.d.ts.map

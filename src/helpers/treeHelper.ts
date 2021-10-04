@@ -98,10 +98,19 @@ function convertBooleansToNumeric({
   return { ...values, ...filteredValues };
 }
 
+function getColorMap(colorsValue: any) {
+  const map: any = {};
+  colorsValue.forEach((colorEntry: any) => {
+    map[colorEntry.id] = colorEntry.colors;
+  });
+  return map;
+}
+
 export {
   getTableColumns,
   getTableItems,
   getTree,
   convertBooleansToNumeric,
   itemHasBooleans,
+  getColorMap,
 };

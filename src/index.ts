@@ -48,6 +48,7 @@ import {
   ExecuteOnChangeRequest,
   GetViewRequest,
   DefaultGetRequest,
+  ReadEvalUiObjectsRequest,
 } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import TabManager from "./views/TabManager";
@@ -83,6 +84,7 @@ export {
   Views,
   ExecuteRequest,
   ReadObjectsRequest,
+  ReadEvalUiObjectsRequest,
   DeleteObjectsRequest,
   FormModal,
   SearchModal,

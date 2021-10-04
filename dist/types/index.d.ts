@@ -28,6 +28,7 @@ declare type FormView = TreeView & {
 declare type SearchResponse = {
     totalItems: number;
     results: any[];
+    attrsEvaluated?: any;
 };
 declare type SearchRequest = {
     params: Array<any>;
@@ -36,6 +37,7 @@ declare type SearchRequest = {
     model: string;
     fields?: any;
     context?: any;
+    attrs?: any;
 };
 declare type SearchCountRequest = {
     params: Array<any>;
@@ -79,6 +81,14 @@ declare type ReadObjectsRequest = {
     model: string;
     ids: number[];
     context?: any;
+};
+declare type ReadEvalUiObjectsRequest = {
+    arch?: string;
+    fields?: any;
+    model: string;
+    ids: number[];
+    context?: any;
+    attrs?: any;
 };
 declare type DeleteObjectsRequest = {
     model: string;
@@ -125,6 +135,7 @@ declare type ConnectionProviderType = {
     delete: (options: DeleteObjectsRequest) => Promise<any>;
     execute: (options: ExecuteRequest) => Promise<any>;
     readObjects: (options: ReadObjectsRequest) => Promise<any>;
+    readEvalUiObjects: (options: ReadEvalUiObjectsRequest) => Promise<any>;
     executeWorkflow: (options: ExecuteRequest) => Promise<any>;
     createReport: (options: CreateReportRequest) => Promise<any>;
     getReport: (options: GetReportRequest) => Promise<any>;
@@ -136,5 +147,5 @@ declare type ConnectionProviderType = {
     }) => Promise<any>;
 };
 declare type ViewType = "tree" | "form";
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, };
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, ReadEvalUiObjectsRequest, };
 //# sourceMappingURL=index.d.ts.map

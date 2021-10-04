@@ -11,7 +11,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.itemHasBooleans = exports.convertBooleansToNumeric = exports.getTree = exports.getTableItems = exports.getTableColumns = void 0;
+exports.getColorMap = exports.itemHasBooleans = exports.convertBooleansToNumeric = exports.getTree = exports.getTableItems = exports.getTableColumns = void 0;
 var ooui_1 = require("ooui");
 var getTree = function (treeView) {
     var xml = treeView.arch;
@@ -108,4 +108,12 @@ function convertBooleansToNumeric(_a) {
     return __assign(__assign({}, values), filteredValues);
 }
 exports.convertBooleansToNumeric = convertBooleansToNumeric;
+function getColorMap(colorsValue) {
+    var map = {};
+    colorsValue.forEach(function (colorEntry) {
+        map[colorEntry.id] = colorEntry.colors;
+    });
+    return map;
+}
+exports.getColorMap = getColorMap;
 //# sourceMappingURL=treeHelper.js.map

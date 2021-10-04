@@ -12,6 +12,9 @@ declare type Props = {
     onRowClicked?: (id: number) => void;
     rowSelection?: any;
     scrollY?: number;
+    colorsForResults?: {
+        [key: number]: string;
+    };
 };
 declare function Tree(props: Props): React.ReactElement;
 export default Tree;

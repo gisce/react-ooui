@@ -35,6 +35,7 @@ type FormView = TreeView & {
 type SearchResponse = {
   totalItems: number;
   results: any[];
+  attrsEvaluated?: any;
 };
 
 type SearchRequest = {
@@ -44,6 +45,7 @@ type SearchRequest = {
   model: string;
   fields?: any;
   context?: any;
+  attrs?: any;
 };
 
 type SearchCountRequest = {
@@ -95,6 +97,15 @@ type ReadObjectsRequest = {
   model: string;
   ids: number[];
   context?: any;
+};
+
+type ReadEvalUiObjectsRequest = {
+  arch?: string;
+  fields?: any;
+  model: string;
+  ids: number[];
+  context?: any;
+  attrs?: any;
 };
 
 type DeleteObjectsRequest = {
@@ -151,6 +162,7 @@ type ConnectionProviderType = {
   delete: (options: DeleteObjectsRequest) => Promise<any>;
   execute: (options: ExecuteRequest) => Promise<any>;
   readObjects: (options: ReadObjectsRequest) => Promise<any>;
+  readEvalUiObjects: (options: ReadEvalUiObjectsRequest) => Promise<any>;
   executeWorkflow: (options: ExecuteRequest) => Promise<any>;
   createReport: (options: CreateReportRequest) => Promise<any>;
   getReport: (options: GetReportRequest) => Promise<any>;
@@ -192,4 +204,5 @@ export type {
   GetViewRequest,
   DefaultGetRequest,
   GenerateReportOptions,
+  ReadEvalUiObjectsRequest,
 };

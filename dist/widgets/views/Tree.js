@@ -29,19 +29,15 @@ var react_cool_dimensions_1 = __importDefault(require("react-cool-dimensions"));
 var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 var LocaleContext_1 = require("@/context/LocaleContext");
 var Many2oneSuffix_1 = require("../base/many2one/Many2oneSuffix");
-var ooui_1 = require("ooui");
-var GenericErrorDialog_1 = __importDefault(require("@/ui/GenericErrorDialog"));
 function Tree(props) {
-    var _a = props.page, page = _a === void 0 ? 1 : _a, limit = props.limit, total = props.total, treeView = props.treeView, results = props.results, onRequestPageChange = props.onRequestPageChange, loading = props.loading, onRowClicked = props.onRowClicked, _b = props.showPagination, showPagination = _b === void 0 ? true : _b, rowSelection = props.rowSelection, scrollY = props.scrollY;
-    var _c = react_1.useState([]), items = _c[0], setItems = _c[1];
-    var _d = react_1.useState([]), columns = _d[0], setColumns = _d[1];
-    var treeOouiRef = react_1.useRef();
+    var _a = props.page, page = _a === void 0 ? 1 : _a, limit = props.limit, total = props.total, treeView = props.treeView, results = props.results, onRequestPageChange = props.onRequestPageChange, loading = props.loading, onRowClicked = props.onRowClicked, _b = props.showPagination, showPagination = _b === void 0 ? true : _b, rowSelection = props.rowSelection, scrollY = props.scrollY, _c = props.colorsForResults, colorsForResults = _c === void 0 ? {} : _c;
+    var _d = react_1.useState([]), items = _d[0], setItems = _d[1];
+    var _e = react_1.useState([]), columns = _e[0], setColumns = _e[1];
     var errorInParseColors = react_1.useRef(false);
-    var _e = react_cool_dimensions_1.default(), width = _e.width, containerRef = _e.ref;
+    var _f = react_cool_dimensions_1.default(), width = _f.width, containerRef = _f.ref;
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     use_deep_compare_effect_1.default(function () {
         var tree = treeHelper_1.getTree(treeView);
-        treeOouiRef.current = tree;
         errorInParseColors.current = false;
         var booleanComponentFn = function (value) {
             return react_1.default.createElement(antd_1.Checkbox, { defaultChecked: value, disabled: true });
@@ -93,34 +89,8 @@ function Tree(props) {
                 return item.id;
             }, onRow: function (record) {
                 var style = undefined;
-                if (!errorInParseColors.current &&
-                    treeOouiRef.current.colorExpressions) {
-                    var color = void 0;
-                    try {
-                        color = ooui_1.getEvaluatedColor({
-                            colorExpressions: treeOouiRef.current
-                                .colorExpressions,
-                            values: record,
-                        });
-                        if (treeHelper_1.itemHasBooleans({ values: record, fields: treeView.fields }) &&
-                            color === "default") {
-                            color = ooui_1.getEvaluatedColor({
-                                colorExpressions: treeOouiRef.current
-                                    .colorExpressions,
-                                values: treeHelper_1.convertBooleansToNumeric({
-                                    values: record,
-                                    fields: treeView.fields,
-                                }),
-                            });
-                        }
-                    }
-                    catch (err) {
-                        errorInParseColors.current = true;
-                        GenericErrorDialog_1.default("Cannot evaluate color expressions:\n " + JSON.stringify(treeOouiRef.current.colorExpressions, null, 2) + "\n\n                " + (err === null || err === void 0 ? void 0 : err.message));
-                    }
-                    if (color && color !== "default") {
-                        style = { color: color };
-                    }
+                if (colorsForResults[record.id]) {
+                    style = { color: colorsForResults[record.id] };
                 }
                 return {
                     style: style,

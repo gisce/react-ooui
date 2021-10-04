@@ -93,6 +93,24 @@ const init = () => {
           ]
         : [];
     },
+    readEvalUiObjects: async (options: ReadObjectsRequest) => {
+      await new Promise((resolve) => setTimeout(resolve, timeout));
+      const modelMock = getMock(options.model);
+      return modelMock.exampleValues
+        ? [
+            {
+              ...modelMock.exampleValues,
+              name: options.ids[0],
+              id: options.ids[0],
+            },
+            {
+              ...modelMock.exampleValues,
+              name: options.ids[1],
+              id: options.ids[1],
+            },
+          ]
+        : [];
+    },
     delete: async (options: DeleteObjectsRequest) => {
       return true;
     },

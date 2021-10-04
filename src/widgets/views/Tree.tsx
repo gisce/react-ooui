@@ -13,7 +13,7 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import { TreeView, Column } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { Many2oneSuffix } from "../base/many2one/Many2oneSuffix";
-import { getEvaluatedColor, Tree as TreeOoui } from "ooui";
+import { Tree as TreeOoui } from "ooui";
 import showErrorDialog from "@/ui/GenericErrorDialog";
 
 type Props = {
@@ -28,6 +28,7 @@ type Props = {
   onRowClicked?: (id: number) => void;
   rowSelection?: any;
   scrollY?: number;
+  colorsForResults?: { [key: number]: string };
 };
 
 function Tree(props: Props): React.ReactElement {
@@ -43,12 +44,12 @@ function Tree(props: Props): React.ReactElement {
     showPagination = true,
     rowSelection,
     scrollY,
+    colorsForResults = {},
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
   const [columns, setColumns] = useState<Array<Column>>([]);
 
-  const treeOouiRef = useRef<TreeOoui>();
   const errorInParseColors = useRef<boolean>(false);
 
   const { width, ref: containerRef } = useDimensions<HTMLDivElement>();
@@ -56,7 +57,6 @@ function Tree(props: Props): React.ReactElement {
 
   useDeepCompareEffect(() => {
     const tree = getTree(treeView);
-    treeOouiRef.current = tree;
     errorInParseColors.current = false;
 
     const booleanComponentFn = (value: boolean): React.ReactElement => {
@@ -140,46 +140,8 @@ function Tree(props: Props): React.ReactElement {
         onRow={(record) => {
           let style = undefined;
 
-          if (
-            !errorInParseColors.current &&
-            (treeOouiRef.current as TreeOoui).colorExpressions
-          ) {
-            let color;
-            try {
-              color = getEvaluatedColor({
-                colorExpressions: (treeOouiRef.current as TreeOoui)
-                  .colorExpressions as [],
-                values: record,
-              });
-
-              if (
-                itemHasBooleans({ values: record, fields: treeView.fields }) &&
-                color === "default"
-              ) {
-                color = getEvaluatedColor({
-                  colorExpressions: (treeOouiRef.current as TreeOoui)
-                    .colorExpressions as [],
-                  values: convertBooleansToNumeric({
-                    values: record,
-                    fields: treeView!.fields,
-                  }),
-                });
-              }
-            } catch (err) {
-              errorInParseColors.current = true;
-              showErrorDialog(
-                `Cannot evaluate color expressions:\n ${JSON.stringify(
-                  (treeOouiRef.current as TreeOoui).colorExpressions,
-                  null,
-                  2
-                )}\n
-                ${err?.message}`
-              );
-            }
-
-            if (color && color !== "default") {
-              style = { color: color };
-            }
+          if (colorsForResults![record.id]) {
+            style = { color: colorsForResults![record.id] };
           }
 
           return {

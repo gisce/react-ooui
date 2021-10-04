@@ -17,6 +17,7 @@ import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
+import { getColorMap, getTree } from "@/helpers/treeHelper";
 
 const DEFAULT_SEARCH_LIMIT = 80;
 
@@ -74,6 +75,7 @@ function SearchTree(props: Props, ref: any) {
 
   const [totalItems, setTotalItems] = useState<number>(0);
   const [results, setResults] = useState<any>([]);
+  const [colorsForResults, setColorsForResults] = useState<any>(undefined);
 
   const [searchFilterLoading, setSearchFilterLoading] = useState<boolean>(
     false
@@ -120,16 +122,26 @@ function SearchTree(props: Props, ref: any) {
       const resultsIds = searchResults.map((item: any) => {
         return item?.[0];
       });
-      const resultsWithData = await ConnectionProvider.getHandler().readObjects(
+
+      const { colors } = getTree(treeView!);
+
+      const resultsWithData = await ConnectionProvider.getHandler().readEvalUiObjects(
         {
           model: currentModel!,
           ids: resultsIds,
           arch: treeView?.arch!,
           fields: treeView?.fields!,
           context: parentContext,
+          attrs: colors && {
+            colors,
+          },
         }
       );
-      setResults(resultsWithData);
+      const resultsData = resultsWithData[0];
+
+      setColorsForResults(getColorMap(resultsWithData[1]));
+
+      setResults(resultsData);
       setResultsActionView?.(resultsWithData);
       if (resultsWithData.length > 0) {
         setCurrentItemIndex?.(0);
@@ -177,10 +189,12 @@ function SearchTree(props: Props, ref: any) {
       actionDomain.current.length > 0 ? actionDomain.current : domain;
 
     const searchParams = mergeParams(paramsRef.current, domainParams);
+    const { colors } = getTree(treeView!);
 
     const {
       totalItems,
       results,
+      attrsEvaluated,
     } = await ConnectionProvider.getHandler().search({
       params: searchParams,
       limit,
@@ -188,10 +202,11 @@ function SearchTree(props: Props, ref: any) {
       model: currentModel!,
       fields: treeView!.fields,
       context: parentContext,
+      attrs: colors && { colors },
     });
     setTotalItems(totalItems);
-    const handler = ConnectionProvider.getHandler();
-    console.log(handler);
+    setColorsForResults(getColorMap(attrsEvaluated));
+
     const resultIds = await ConnectionProvider.getHandler().searchAllIds({
       params: searchParams,
       model: currentModel!,
@@ -390,6 +405,7 @@ function SearchTree(props: Props, ref: any) {
           loading={tableRefreshing}
           onRowClicked={onRowClickedHandler}
           scrollY={treeScrollY}
+          colorsForResults={colorsForResults}
           rowSelection={{
             selectedRowKeys,
             onChange: onChangeSelectedRowKeys,
