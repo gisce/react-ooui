@@ -164,7 +164,6 @@ var Many2oneInput = function (props) {
                             model: relation,
                             action: "name_search",
                             payload: inputTextRef.current,
-                            context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
                         })];
                 case 3:
                     results = _b.sent();

@@ -112,7 +112,6 @@ function SearchTree(props: Props, ref: any) {
       model: currentModel!,
       action: "name_search",
       payload: nameSearch,
-      context: parentContext,
     });
 
     setTotalItems(searchResults.length);

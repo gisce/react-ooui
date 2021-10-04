@@ -110,7 +110,6 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           model: relation,
           action: "name_search",
           payload: inputTextRef.current as string,
-          context: { ...getContext?.(), ...context },
         });
 
         if (results.length === 1) {

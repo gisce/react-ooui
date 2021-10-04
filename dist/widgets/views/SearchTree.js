@@ -116,7 +116,6 @@ function SearchTree(props, ref) {
                         model: currentModel,
                         action: "name_search",
                         payload: nameSearch,
-                        context: parentContext,
                     })];
                 case 1:
                     searchResults = _a.sent();
