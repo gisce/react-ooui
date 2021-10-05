@@ -68,6 +68,13 @@ declare type ExecuteRequest = {
     payload?: any;
     context?: any;
 };
+declare type NameSearchRequest = {
+    model: string;
+    payload?: any;
+    context?: any;
+    attrs?: any;
+    operator?: string;
+};
 declare type ExecuteOnChangeRequest = {
     model: string;
     action: string;
@@ -145,7 +152,8 @@ declare type ConnectionProviderType = {
         action: string;
         context?: any;
     }) => Promise<any>;
+    nameSearch: (options: NameSearchRequest) => Promise<any>;
 };
 declare type ViewType = "tree" | "form";
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, ReadEvalUiObjectsRequest, };
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, ReadEvalUiObjectsRequest, NameSearchRequest, };
 //# sourceMappingURL=index.d.ts.map

@@ -114,10 +114,10 @@ function SearchTree(props, ref) {
         var searchResults, resultsIds, colors, resultsWithData, resultsData;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
+                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().nameSearch({
                         model: currentModel,
-                        action: "name_search",
                         payload: nameSearch,
+                        context: parentContext,
                     })];
                 case 1:
                     searchResults = _a.sent();

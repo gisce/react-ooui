@@ -160,10 +160,10 @@ var Many2oneInput = function (props) {
                     _b.label = 2;
                 case 2:
                     _b.trys.push([2, 4, 5, 6]);
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().execute({
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().nameSearch({
                             model: relation,
-                            action: "name_search",
                             payload: inputTextRef.current,
+                            context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
                         })];
                 case 3:
                     results = _b.sent();
