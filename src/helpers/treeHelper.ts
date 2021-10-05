@@ -99,6 +99,9 @@ function convertBooleansToNumeric({
 }
 
 function getColorMap(colorsValue: any) {
+  if (!colorsValue) {
+    return undefined;
+  }
   const map: any = {};
   colorsValue.forEach((colorEntry: any) => {
     map[colorEntry.id] = colorEntry.colors;
