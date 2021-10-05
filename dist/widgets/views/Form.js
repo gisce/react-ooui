@@ -457,7 +457,7 @@ function Form(props, ref) {
         });
     }); };
     var submitForm = function (options) { return __awaiter(_this, void 0, void 0, function () {
-        var _a, callOnSubmitSucceed, err_2;
+        var _a, callOnSubmitSucceed, values, err_2;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -481,7 +481,7 @@ function Form(props, ref) {
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(true);
                     _b.label = 2;
                 case 2:
-                    _b.trys.push([2, 7, 8, 9]);
+                    _b.trys.push([2, 9, 10, 11]);
                     if (!(submitMode === "api")) return [3 /*break*/, 4];
                     return [4 /*yield*/, submitApi(options)];
                 case 3:
@@ -492,23 +492,27 @@ function Form(props, ref) {
                     _b.sent();
                     _b.label = 6;
                 case 6:
-                    if (mustClearAfterSave)
-                        assignNewValuesToForm({ values: {}, fields: fields, reset: true });
-                    return [3 /*break*/, 9];
+                    if (!mustClearAfterSave) return [3 /*break*/, 8];
+                    return [4 /*yield*/, getDefaultValues(fields)];
                 case 7:
+                    values = _b.sent();
+                    assignNewValuesToForm({ values: values, fields: fields, reset: true });
+                    _b.label = 8;
+                case 8: return [3 /*break*/, 11];
+                case 9:
                     err_2 = _b.sent();
                     formSubmitting.current = false;
                     setIsSubmitting(false);
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
                     onSubmitError === null || onSubmitError === void 0 ? void 0 : onSubmitError(err_2);
                     setError(err_2);
-                    return [3 /*break*/, 9];
-                case 8:
+                    return [3 /*break*/, 11];
+                case 10:
                     formSubmitting.current = false;
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
                     setIsSubmitting(false);
                     return [7 /*endfinally*/];
-                case 9: return [2 /*return*/];
+                case 11: return [2 /*return*/];
             }
         });
     }); };

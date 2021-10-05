@@ -511,8 +511,10 @@ function Form(props: FormProps, ref: any) {
         await submitValues(options);
       }
 
-      if (mustClearAfterSave)
-        assignNewValuesToForm({ values: {}, fields, reset: true });
+      if (mustClearAfterSave) {
+        const values = await getDefaultValues(fields);
+        assignNewValuesToForm({ values, fields, reset: true });
+      }
     } catch (err) {
       formSubmitting.current = false;
       setIsSubmitting(false);
