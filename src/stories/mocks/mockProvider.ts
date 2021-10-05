@@ -17,6 +17,7 @@ import {
   ExecuteOnChangeRequest,
   DefaultGetRequest,
   SearchCountRequest,
+  NameSearchRequest,
 } from "../../types/index";
 
 const init = () => {
@@ -127,6 +128,9 @@ const init = () => {
       return {} as any;
     },
     getActionData: ({ action, context }: { action: string; context?: any }) => {
+      return null;
+    },
+    nameSearch: async (options: NameSearchRequest) => {
       return null;
     },
   };

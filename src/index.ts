@@ -49,6 +49,7 @@ import {
   GetViewRequest,
   DefaultGetRequest,
   ReadEvalUiObjectsRequest,
+  NameSearchRequest,
 } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import TabManager from "./views/TabManager";
@@ -106,5 +107,6 @@ export {
   Email,
   Image,
   ContentRootProvider,
-  showConfirmDialog
+  showConfirmDialog,
+  NameSearchRequest,
 };

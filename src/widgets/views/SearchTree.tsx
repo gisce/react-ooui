@@ -110,10 +110,10 @@ function SearchTree(props: Props, ref: any) {
   };
 
   const searchByNameSearch = async () => {
-    const searchResults = await ConnectionProvider.getHandler().execute({
+    const searchResults = await ConnectionProvider.getHandler().nameSearch({
       model: currentModel!,
-      action: "name_search",
       payload: nameSearch,
+      context: parentContext,
     });
 
     setTotalItems(searchResults.length);

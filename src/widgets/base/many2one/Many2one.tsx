@@ -106,11 +106,13 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       setSearching(true);
 
       try {
-        const results: any[] = await ConnectionProvider.getHandler().execute({
-          model: relation,
-          action: "name_search",
-          payload: inputTextRef.current as string,
-        });
+        const results: any[] = await ConnectionProvider.getHandler().nameSearch(
+          {
+            model: relation,
+            payload: inputTextRef.current as string,
+            context: { ...getContext?.(), ...context },
+          }
+        );
 
         if (results.length === 1) {
           inputTextRef.current = undefined;

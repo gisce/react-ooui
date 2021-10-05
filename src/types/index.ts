@@ -83,6 +83,14 @@ type ExecuteRequest = {
   context?: any;
 };
 
+type NameSearchRequest = {
+  model: string;
+  payload?: any;
+  context?: any;
+  attrs?: any;
+  operator?: string;
+};
+
 type ExecuteOnChangeRequest = {
   model: string;
   action: string;
@@ -175,6 +183,7 @@ type ConnectionProviderType = {
     action: string;
     context?: any;
   }) => Promise<any>;
+  nameSearch: (options: NameSearchRequest) => Promise<any>;
 };
 
 type ViewType = "tree" | "form";
@@ -205,4 +214,5 @@ export type {
   DefaultGetRequest,
   GenerateReportOptions,
   ReadEvalUiObjectsRequest,
+  NameSearchRequest,
 };
