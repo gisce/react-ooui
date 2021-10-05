@@ -493,6 +493,7 @@ function Form(props, ref) {
                     _b.label = 6;
                 case 6:
                     if (!mustClearAfterSave) return [3 /*break*/, 8];
+                    createdId.current = undefined;
                     return [4 /*yield*/, getDefaultValues(fields)];
                 case 7:
                     values = _b.sent();
