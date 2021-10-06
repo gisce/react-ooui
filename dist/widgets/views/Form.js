@@ -457,7 +457,7 @@ function Form(props, ref) {
         });
     }); };
     var submitForm = function (options) { return __awaiter(_this, void 0, void 0, function () {
-        var _a, callOnSubmitSucceed, values, err_2;
+        var _a, callOnSubmitSucceed, err_2;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -494,10 +494,10 @@ function Form(props, ref) {
                 case 6:
                     if (!mustClearAfterSave) return [3 /*break*/, 8];
                     createdId.current = undefined;
-                    return [4 /*yield*/, getDefaultValues(fields)];
+                    assignNewValuesToForm({ values: {}, fields: fields, reset: true });
+                    return [4 /*yield*/, fetchValues()];
                 case 7:
-                    values = _b.sent();
-                    assignNewValuesToForm({ values: values, fields: fields, reset: true });
+                    _b.sent();
                     _b.label = 8;
                 case 8: return [3 /*break*/, 11];
                 case 9:

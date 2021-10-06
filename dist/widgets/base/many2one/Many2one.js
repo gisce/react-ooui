@@ -131,6 +131,9 @@ var Many2oneInput = function (props) {
         else if (id && text.length > 0) {
             setInputText(text);
         }
+        else if (!id && !text) {
+            setInputText(undefined);
+        }
     }, [value]);
     var triggerChange = function (changedValue) {
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
