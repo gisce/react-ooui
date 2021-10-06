@@ -513,8 +513,8 @@ function Form(props: FormProps, ref: any) {
 
       if (mustClearAfterSave) {
         createdId.current = undefined;
-        const values = await getDefaultValues(fields);
-        assignNewValuesToForm({ values, fields, reset: true });
+        assignNewValuesToForm({ values: {}, fields, reset: true });
+        await fetchValues();
       }
     } catch (err) {
       formSubmitting.current = false;

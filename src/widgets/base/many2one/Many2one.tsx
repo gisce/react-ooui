@@ -80,6 +80,8 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       fetchNameAndUpdate(id);
     } else if (id && text.length > 0) {
       setInputText(text);
+    } else if (!id && !text) {
+      setInputText(undefined);
     }
   }, [value]);
 
