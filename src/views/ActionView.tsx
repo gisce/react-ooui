@@ -135,6 +135,7 @@ function ActionView(props: Props, ref: any) {
           defaultValues={formDefaultValues}
           forcedValues={formForcedValues}
           formView={formView}
+          actionDomain={domain}
           id={currentId}
           parentContext={context}
           onSubmitSucceed={(id) => {

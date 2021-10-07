@@ -163,7 +163,7 @@ function ActionView(props, ref) {
             return react_1.default.createElement(antd_1.Spin, null);
         }
         return (react_1.default.createElement(react_1.default.Fragment, null,
-            react_1.default.createElement(Form_1.default, { rootForm: true, visible: currentView === "form", ref: formRef, model: model, defaultValues: formDefaultValues, forcedValues: formForcedValues, formView: formView, id: currentId, parentContext: context, onSubmitSucceed: function (id) {
+            react_1.default.createElement(Form_1.default, { rootForm: true, visible: currentView === "form", ref: formRef, model: model, defaultValues: formDefaultValues, forcedValues: formForcedValues, formView: formView, actionDomain: domain, id: currentId, parentContext: context, onSubmitSucceed: function (id) {
                     var itemIndex = results.findIndex(function (item) {
                         return item === id;
                     });
