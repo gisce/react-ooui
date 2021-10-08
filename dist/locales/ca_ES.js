@@ -50,5 +50,6 @@ exports.default = {
     clear: "Neteja",
     open: "Obre",
     uploadNewImage: "Puja una nova imatge",
+    noCurrentEntries: "No hi ha registres"
 };
 //# sourceMappingURL=ca_ES.js.map

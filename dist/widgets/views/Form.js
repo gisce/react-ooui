@@ -525,6 +525,7 @@ function Form(props, ref) {
         ooui.parse(arch, {
             readOnly: readOnly,
             values: __assign(__assign({}, values), getAdditionalValues()),
+            domain: actionDomain,
         });
         setFormOoui(ooui);
         if (formModalContext && ooui.string)

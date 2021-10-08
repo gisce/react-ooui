@@ -93,19 +93,19 @@ var One2manyInput = function (props) {
     var _b = react_1.useContext(One2manyContext_1.One2manyContext), currentView = _b.currentView, setCurrentView = _b.setCurrentView, itemIndex = _b.itemIndex, setItemIndex = _b.setItemIndex, manualTriggerChange = _b.manualTriggerChange, setManualTriggerChange = _b.setManualTriggerChange;
     var formContext = react_1.useContext(FormContext_1.FormContext);
     var _c = formContext || {}, activeId = _c.activeId, activeModel = _c.activeModel, getContext = _c.getContext;
-    var lang = react_1.useContext(LocaleContext_1.LocaleContext).lang;
+    var _d = react_1.useContext(LocaleContext_1.LocaleContext), lang = _d.lang, t = _d.t;
     var formRef = react_1.useRef();
-    var _d = react_1.useState(false), formHasChanges = _d[0], setFormHasChanges = _d[1];
-    var _e = react_1.useState(false), isLoading = _e[0], setIsLoading = _e[1];
-    var _f = react_1.useState(), error = _f[0], setError = _f[1];
-    var _g = react_1.useState(false), showFormModal = _g[0], setShowFormModal = _g[1];
-    var _h = react_1.useState(false), showSearchModal = _h[0], setShowSearchModal = _h[1];
-    var _j = react_1.useState(), modalItem = _j[0], setModalItem = _j[1];
-    var _k = react_1.useState(false), formIsSaving = _k[0], setFormIsSaving = _k[1];
-    var _l = react_1.useState([]), selectedRowKeys = _l[0], setSelectedRowKeys = _l[1];
-    var _m = react_1.useState(false), continuousEntryMode = _m[0], setContinuousEntryMode = _m[1];
+    var _e = react_1.useState(false), formHasChanges = _e[0], setFormHasChanges = _e[1];
+    var _f = react_1.useState(false), isLoading = _f[0], setIsLoading = _f[1];
+    var _g = react_1.useState(), error = _g[0], setError = _g[1];
+    var _h = react_1.useState(false), showFormModal = _h[0], setShowFormModal = _h[1];
+    var _j = react_1.useState(false), showSearchModal = _j[0], setShowSearchModal = _j[1];
+    var _k = react_1.useState(), modalItem = _k[0], setModalItem = _k[1];
+    var _l = react_1.useState(false), formIsSaving = _l[0], setFormIsSaving = _l[1];
+    var _m = react_1.useState([]), selectedRowKeys = _m[0], setSelectedRowKeys = _m[1];
+    var _o = react_1.useState(false), continuousEntryMode = _o[0], setContinuousEntryMode = _o[1];
     var modalHeight = useModalWidthDimensions_1.default().modalHeight;
-    var _o = ooui, readOnly = _o.readOnly, relation = _o.relation, domain = _o.domain, context = _o.context;
+    var _p = ooui, readOnly = _p.readOnly, relation = _p.relation, domain = _p.domain, context = _p.context;
     var isMany2many = ooui.type === "many2many";
     var fieldName = ooui.id;
     var itemsToShow = items.filter(function (item) { return item.values; });
@@ -582,7 +582,7 @@ var One2manyInput = function (props) {
         var _a, _b;
         if (currentView === "form") {
             if (itemsToShow.length === 0) {
-                return "No current entries";
+                return t("noCurrentEntries");
             }
             return (react_1.default.createElement(index_1.Form, { formView: views.get("form"), values: (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.values, parentContext: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), ref: formRef, model: relation, id: (_b = itemsToShow[itemIndex]) === null || _b === void 0 ? void 0 : _b.id, onSubmitSucceed: onFormSubmitSucceed, onSubmitError: function () {
                     setFormIsSaving(false);
