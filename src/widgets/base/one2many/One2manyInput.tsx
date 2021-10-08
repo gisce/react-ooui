@@ -57,7 +57,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
   const formContext = useContext(FormContext) as FormContextType;
   const { activeId, activeModel, getContext } = formContext || {};
-  const { lang } = useContext(LocaleContext) as LocaleContextType;
+  const { lang, t } = useContext(LocaleContext) as LocaleContextType;
 
   const formRef = useRef();
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
@@ -522,7 +522,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const content = () => {
     if (currentView === "form") {
       if (itemsToShow.length === 0) {
-        return "No current entries";
+        return t("noCurrentEntries");
       }
 
       return (

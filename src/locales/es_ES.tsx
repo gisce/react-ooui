@@ -53,4 +53,5 @@ export default {
   clear: "Limpiar",
   open: "Abrir",
   uploadNewImage: "Subir una nueva imágen",
+  noCurrentEntries: "No hay registros",
 };
