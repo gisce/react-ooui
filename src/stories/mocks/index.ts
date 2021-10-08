@@ -11,6 +11,7 @@ import document from "./models/document";
 import company from "./models/company";
 import switching from "./models/switching";
 import attachment from "./models/attachment";
+import crm_case from "./models/crm_case";
 
 const allModels = [
   cups,
@@ -26,6 +27,7 @@ const allModels = [
   company,
   switching,
   attachment,
+  crm_case,
 ];
 
 const getMock = (model: string) => {
