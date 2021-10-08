@@ -95,7 +95,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   };
 
   const onElementLostFocus = async () => {
-    if (!searching && (inputTextRef.current as string)?.trim().length > 0) {
+    if (!searching && inputText !== text) {
       // Debounce this event to give time to the search button onClick to set the flag
       await new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -120,8 +120,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           inputTextRef.current = undefined;
           triggerChange(results[0]);
         } else {
-          setSearchText(inputTextRef.current as string);
-          setShowSearchModal(true);
+          tryFetchFirstResultOrShowSearch(inputTextRef.current as string);
         }
       } catch (err) {
         showErrorDialog(err);
@@ -129,6 +128,28 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
         setSearching(false);
       }
     }
+  };
+
+  const tryFetchFirstResultOrShowSearch = async (text: string) => {
+    if (domain && domain.length > 0) {
+      const resultIds = await ConnectionProvider.getHandler().searchAllIds({
+        params: domain,
+        model: relation,
+        context: { ...getContext?.(), ...context },
+        totalItems: 2,
+      });
+
+      if (resultIds.length === 1) {
+        fetchNameAndUpdate(resultIds[0]);
+      } else if (resultIds.length > 1) {
+        setSearchText(text);
+        setShowSearchModal(true);
+      }
+      return;
+    }
+
+    setSearchText(text);
+    setShowSearchModal(true);
   };
 
   const fetchNameAndUpdate = async (id: number) => {
@@ -196,8 +217,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           disabled={readOnly || searching}
           onClick={() => {
             searchButtonTappedRef.current = true;
-            setSearchText(text);
-            setShowSearchModal(true);
+            tryFetchFirstResultOrShowSearch(text);
           }}
           tabIndex={-1}
         />
