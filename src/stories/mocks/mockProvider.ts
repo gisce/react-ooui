@@ -131,7 +131,7 @@ const init = () => {
       return null;
     },
     nameSearch: async (options: NameSearchRequest) => {
-      return null;
+      return [];
     },
   };
 

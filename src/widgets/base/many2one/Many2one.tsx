@@ -81,7 +81,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     } else if (id && text.length > 0) {
       setInputText(text);
     } else if (!id && !text) {
-      setInputText(undefined);
+      setInputText(inputTextRef.current);
     }
   }, [value]);
 
@@ -91,7 +91,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
 
   const onValueStringChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     inputTextRef.current = e.target.value;
-    setInputText(inputTextRef.current);
+    triggerChange([undefined, ""]);
   };
 
   const onElementLostFocus = async () => {
@@ -183,7 +183,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       <Col flex="32px">
         <Button
           icon={<FolderOpenOutlined />}
-          disabled={id === undefined || text === ""}
+          disabled={id === undefined || text === "" || inputText === undefined}
           onClick={() => {
             setShowFormModal(true);
           }}
