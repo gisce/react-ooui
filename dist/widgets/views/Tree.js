@@ -54,12 +54,16 @@ function Tree(props) {
             var length = Array.isArray(value) ? value.length : 0;
             return react_1.default.createElement(react_1.default.Fragment, null, "( " + length + " )");
         };
+        var progressBarComponentFn = function (value) {
+            return react_1.default.createElement(antd_1.Progress, { percent: value });
+        };
         var columns = treeHelper_1.getTableColumns(tree, {
             boolean: booleanComponentFn,
             many2one: many2OneComponentFn,
             text: textComponentFn,
             one2many: one2ManyComponentFn,
             many2many: one2ManyComponentFn,
+            progressbar: progressBarComponentFn,
         });
         var items = treeHelper_1.getTableItems(tree, results);
         setColumns(columns);

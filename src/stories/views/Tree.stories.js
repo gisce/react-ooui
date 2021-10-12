@@ -32,6 +32,7 @@ Default.args = {
       ref: "0112",
       title: false,
       numeric: 30.1,
+      progressbar: 100,
     },
     {
       city: "Wavre",
@@ -42,6 +43,7 @@ Default.args = {
       ref: false,
       title: false,
       numeric: 30.1,
+      progressbar: 70,
     },
     {
       city: false,
@@ -52,6 +54,7 @@ Default.args = {
       ref: false,
       title: false,
       numeric: 30.32,
+      progressbar: 60,
     },
     {
       city: "Sevilla",
@@ -62,6 +65,7 @@ Default.args = {
       ref: "01",
       title: false,
       numeric: 30.1,
+      progressbar: 10,
     },
     {
       city: false,
@@ -72,6 +76,7 @@ Default.args = {
       ref: false,
       title: false,
       numeric: 30.1,
+      progressbar: 30,
     },
     {
       city: "Zaragoza",
@@ -82,12 +87,17 @@ Default.args = {
       ref: "02",
       title: false,
       numeric: 30.1,
+      progressbar: 20,
     },
   ],
   treeView: {
     arch:
-      '<tree string="Partners">\n                    <field name="numeric" sum="Numeric"/><field name="name"/>\n                    <field name="title"/>\n                    <field name="ref"/>\n                    <field name="city" select="2"/>\n                    <field name="country" select="2"/>\n                    <field name="lang"/>\n                </tree>',
+      '<tree string="Partners">\n<field name="numeric" sum="Numeric"/><field name="name"/>\n                    <field name="title"/>\n                    <field name="ref"/>\n                    <field name="city" select="2"/>\n                    <field name="country" select="2"/>\n                    <field name="lang"/>\n <field name="progressbar" string="Progress" />               </tree>',
     fields: {
+      progressbar: {
+        string: "Progress bar",
+        type: "progressbar",
+      },
       numeric: {
         digits: [16, 3],
         string: "Potència contractada (kW)",

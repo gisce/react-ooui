@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from "react";
-import { Table, Pagination, Checkbox, Space } from "antd";
+import { Table, Pagination, Checkbox, Space, Progress } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
 import useDimensions from "react-cool-dimensions";
 import useDeepCompareEffect from "use-deep-compare-effect";
@@ -7,7 +7,6 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import { TreeView, Column } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { Many2oneSuffix } from "../base/many2one/Many2oneSuffix";
-import { Tree as TreeOoui } from "ooui";
 
 type Props = {
   total: number;
@@ -72,12 +71,17 @@ function Tree(props: Props): React.ReactElement {
       return <>{`( ${length} )`}</>;
     };
 
+    const progressBarComponentFn = (value: any): React.ReactElement => {
+      return <Progress percent={value} />;
+    };
+
     const columns = getTableColumns(tree, {
       boolean: booleanComponentFn,
       many2one: many2OneComponentFn,
       text: textComponentFn,
       one2many: one2ManyComponentFn,
       many2many: one2ManyComponentFn,
+      progressbar: progressBarComponentFn,
     });
 
     const items = getTableItems(tree, results);
