@@ -31,6 +31,7 @@ Default.args = {
       name: "AGRI ENERGIA ELECTRICA, S.A.",
       ref: "0112",
       title: false,
+      numeric: 30.1,
     },
     {
       city: "Wavre",
@@ -40,6 +41,7 @@ Default.args = {
       name: "Agrolait",
       ref: false,
       title: false,
+      numeric: 30.1,
     },
     {
       city: false,
@@ -49,6 +51,7 @@ Default.args = {
       name: "ALCAZAR SANZ, GUSTAVO",
       ref: false,
       title: false,
+      numeric: 30.32,
     },
     {
       city: "Sevilla",
@@ -58,6 +61,7 @@ Default.args = {
       name: "Andalucía",
       ref: "01",
       title: false,
+      numeric: 30.1,
     },
     {
       city: false,
@@ -67,6 +71,7 @@ Default.args = {
       name: "Apellido2 Apellido2, Nombre",
       ref: false,
       title: false,
+      numeric: 30.1,
     },
     {
       city: "Zaragoza",
@@ -76,12 +81,18 @@ Default.args = {
       name: "Aragón",
       ref: "02",
       title: false,
+      numeric: 30.1,
     },
   ],
   treeView: {
     arch:
-      '<tree string="Partners">\n                    <field name="name"/>\n                    <field name="title"/>\n                    <field name="ref"/>\n                    <field name="city" select="2"/>\n                    <field name="country" select="2"/>\n                    <field name="lang"/>\n                </tree>',
+      '<tree string="Partners">\n                    <field name="numeric" sum="Numeric"/><field name="name"/>\n                    <field name="title"/>\n                    <field name="ref"/>\n                    <field name="city" select="2"/>\n                    <field name="country" select="2"/>\n                    <field name="lang"/>\n                </tree>',
     fields: {
+      numeric: {
+        digits: [16, 3],
+        string: "Potència contractada (kW)",
+        type: "float",
+      },
       city: {
         digits: [16, 2],
         string: "City",

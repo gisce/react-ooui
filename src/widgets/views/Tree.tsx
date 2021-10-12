@@ -1,12 +1,6 @@
 import React, { useContext, useRef, useState } from "react";
 import { Table, Pagination, Checkbox, Space } from "antd";
-import {
-  getTree,
-  getTableColumns,
-  getTableItems,
-  itemHasBooleans,
-  convertBooleansToNumeric,
-} from "@/helpers/treeHelper";
+import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
 import useDimensions from "react-cool-dimensions";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
@@ -14,7 +8,6 @@ import { TreeView, Column } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { Many2oneSuffix } from "../base/many2one/Many2oneSuffix";
 import { Tree as TreeOoui } from "ooui";
-import showErrorDialog from "@/ui/GenericErrorDialog";
 
 type Props = {
   total: number;
@@ -123,6 +116,33 @@ function Tree(props: Props): React.ReactElement {
       </>
     );
   };
+
+  function getSums() {
+    const tree = getTree(treeView);
+
+    const sumFields = tree.columns
+      .filter((it) => it.sum !== undefined)
+      .map((it) => {
+        return { label: it.sum, field: it.id };
+      });
+
+    if (!sumFields || sumFields.length === 0) {
+      return null;
+    }
+
+    let summary: string[] = [];
+
+    sumFields.forEach((sumField) => {
+      const total = items.reduce((prev, current) => {
+        return prev + current[sumField.field];
+      }, 0);
+
+      summary.push(`${sumField.label}: ${total}`);
+    });
+
+    return <div className="mt-5 p-2 bg-blueGray-100">{summary.join(", ")}</div>;
+  }
+
   return (
     <div ref={containerRef}>
       {pagination()}
@@ -153,6 +173,7 @@ function Tree(props: Props): React.ReactElement {
         }}
         rowSelection={rowSelection}
       />
+      {getSums()}
     </div>
   );
 }
