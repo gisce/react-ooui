@@ -83,6 +83,25 @@ function Tree(props) {
             summary,
             react_1.default.createElement(antd_1.Pagination, { total: total, pageSize: limit, current: page, className: "pb-5 pt-5", showSizeChanger: false, onChange: onRequestPageChange })));
     };
+    function getSums() {
+        var tree = treeHelper_1.getTree(treeView);
+        var sumFields = tree.columns
+            .filter(function (it) { return it.sum !== undefined; })
+            .map(function (it) {
+            return { label: it.sum, field: it.id };
+        });
+        if (!sumFields || sumFields.length === 0) {
+            return null;
+        }
+        var summary = [];
+        sumFields.forEach(function (sumField) {
+            var total = items.reduce(function (prev, current) {
+                return prev + current[sumField.field];
+            }, 0);
+            summary.push(sumField.label + ": " + total);
+        });
+        return react_1.default.createElement("div", { className: "mt-5 p-2 bg-blueGray-100" }, summary.join(", "));
+    }
     return (react_1.default.createElement("div", { ref: containerRef },
         pagination(),
         react_1.default.createElement(antd_1.Table, { style: { width: width }, scroll: { x: true, y: scrollY }, columns: columns, dataSource: items, pagination: false, loading: loading, rowClassName: "cursor-pointer select-none", rowKey: function (item) {
@@ -99,7 +118,8 @@ function Tree(props) {
                             onRowClicked(record.id);
                     },
                 };
-            }, rowSelection: rowSelection })));
+            }, rowSelection: rowSelection }),
+        getSums()));
 }
 exports.default = Tree;
 //# sourceMappingURL=Tree.js.map
