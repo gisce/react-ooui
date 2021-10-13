@@ -85,7 +85,7 @@ var FormContext_1 = require("@/context/FormContext");
 var One2manyTopBar_1 = require("@/widgets/base/one2many/One2manyTopBar");
 var one2manyHelper_1 = require("@/helpers/one2manyHelper");
 var SearchModal_1 = require("@/widgets/modals/SearchModal");
-var useModalWidthDimensions_1 = __importDefault(require("@/hooks/useModalWidthDimensions"));
+var useWindowDimensions_1 = __importDefault(require("@/hooks/useWindowDimensions"));
 var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 var LocaleContext_1 = require("@/context/LocaleContext");
 var One2manyInput = function (props) {
@@ -104,7 +104,7 @@ var One2manyInput = function (props) {
     var _l = react_1.useState(false), formIsSaving = _l[0], setFormIsSaving = _l[1];
     var _m = react_1.useState([]), selectedRowKeys = _m[0], setSelectedRowKeys = _m[1];
     var _o = react_1.useState(false), continuousEntryMode = _o[0], setContinuousEntryMode = _o[1];
-    var modalHeight = useModalWidthDimensions_1.default().modalHeight;
+    var modalHeight = useWindowDimensions_1.default().modalHeight;
     var _p = ooui, readOnly = _p.readOnly, relation = _p.relation, domain = _p.domain, context = _p.context;
     var isMany2many = ooui.type === "many2many";
     var fieldName = ooui.id;
@@ -253,7 +253,6 @@ var One2manyInput = function (props) {
         var inv_field, defaultValues;
         var _a;
         return __generator(this, function (_b) {
-            console.log(ooui);
             inv_field = ooui.inv_field;
             if (inv_field) {
                 defaultValues = (_a = {}, _a[inv_field] = activeId, _a);

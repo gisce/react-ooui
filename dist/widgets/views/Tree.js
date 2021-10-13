@@ -25,16 +25,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var treeHelper_1 = require("@/helpers/treeHelper");
-var react_cool_dimensions_1 = __importDefault(require("react-cool-dimensions"));
 var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 var LocaleContext_1 = require("@/context/LocaleContext");
 var Many2oneSuffix_1 = require("../base/many2one/Many2oneSuffix");
+var dynamicColumnsHelper_1 = require("@/helpers/dynamicColumnsHelper");
 function Tree(props) {
     var _a = props.page, page = _a === void 0 ? 1 : _a, limit = props.limit, total = props.total, treeView = props.treeView, results = props.results, onRequestPageChange = props.onRequestPageChange, loading = props.loading, onRowClicked = props.onRowClicked, _b = props.showPagination, showPagination = _b === void 0 ? true : _b, rowSelection = props.rowSelection, scrollY = props.scrollY, _c = props.colorsForResults, colorsForResults = _c === void 0 ? {} : _c;
     var _d = react_1.useState([]), items = _d[0], setItems = _d[1];
     var _e = react_1.useState([]), columns = _e[0], setColumns = _e[1];
     var errorInParseColors = react_1.useRef(false);
-    var _f = react_cool_dimensions_1.default(), width = _f.width, containerRef = _f.ref;
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     use_deep_compare_effect_1.default(function () {
         var tree = treeHelper_1.getTree(treeView);
@@ -84,8 +83,10 @@ function Tree(props) {
             return null;
         }
         return loading ? null : (react_1.default.createElement(react_1.default.Fragment, null,
-            summary,
-            react_1.default.createElement(antd_1.Pagination, { total: total, pageSize: limit, current: page, className: "pb-5 pt-5", showSizeChanger: false, onChange: onRequestPageChange })));
+            react_1.default.createElement(antd_1.Row, { align: "bottom", className: "pb-4" },
+                react_1.default.createElement(antd_1.Col, { span: 12 },
+                    react_1.default.createElement(antd_1.Pagination, { total: total, pageSize: limit, current: page, showSizeChanger: false, onChange: onRequestPageChange })),
+                react_1.default.createElement(antd_1.Col, { span: 12, className: "text-right" }, summary))));
     };
     function getSums() {
         var _a;
@@ -110,11 +111,15 @@ function Tree(props) {
             }, 0);
             summary.push(sumField.label + ": " + total);
         });
-        return react_1.default.createElement("div", { className: "mt-5 p-2 bg-blueGray-100" }, summary.join(", "));
+        return (react_1.default.createElement("div", { className: "mt-2 p-1 pl-2 mb-5 bg-gray-50" }, summary.join(", ")));
     }
-    return (react_1.default.createElement("div", { ref: containerRef },
+    var maxWidthPerCell = 600;
+    // This helper function helps to calculate the width for each column
+    // based on all table cells - column cell and source cell
+    var dataTable = dynamicColumnsHelper_1.calculateColumnsWidth(columns, items, maxWidthPerCell);
+    return (react_1.default.createElement("div", null,
         pagination(),
-        react_1.default.createElement(antd_1.Table, { style: { width: width }, scroll: { x: true, y: scrollY }, columns: columns, dataSource: items, pagination: false, loading: loading, rowClassName: "cursor-pointer select-none", rowKey: function (item) {
+        react_1.default.createElement(antd_1.Table, { columns: dataTable.columns, scroll: { x: dataTable.tableWidth, y: scrollY }, size: "small", dataSource: items, pagination: false, loading: loading, rowClassName: "cursor-pointer select-none", rowKey: function (item) {
                 return item.id;
             }, onRow: function (record) {
                 var style = undefined;

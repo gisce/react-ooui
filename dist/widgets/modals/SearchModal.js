@@ -64,12 +64,12 @@ var antd_1 = require("antd");
 var FormModal_1 = require("./FormModal");
 var SearchTree_1 = __importDefault(require("@/widgets/views/SearchTree"));
 var icons_1 = require("@ant-design/icons");
-var useModalWidthDimensions_1 = __importDefault(require("@/hooks/useModalWidthDimensions"));
+var useWindowDimensions_1 = __importDefault(require("@/hooks/useWindowDimensions"));
 var LocaleContext_1 = require("@/context/LocaleContext");
 var SearchModal = function (props) {
     var visible = props.visible, onCloseModalProps = props.onCloseModal, onSelectValue = props.onSelectValue, model = props.model, nameSearch = props.nameSearch, domain = props.domain, _a = props.context, context = _a === void 0 ? {} : _a;
     var _b = react_1.useState(false), showCreateModal = _b[0], setShowCreateModal = _b[1];
-    var _c = useModalWidthDimensions_1.default(), modalWidth = _c.modalWidth, modalHeight = _c.modalHeight;
+    var _c = useWindowDimensions_1.default(), modalWidth = _c.modalWidth, modalHeight = _c.modalHeight;
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var onCloseModal = function () { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {

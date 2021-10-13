@@ -32,7 +32,7 @@ function TitleHeader(props) {
                 react_1.default.createElement(Title, { level: 3, style: { marginBottom: 0 } }, title)),
             react_1.default.createElement(antd_1.Col, { flex: 3 },
                 react_1.default.createElement(antd_1.Row, { justify: "end" }, children))),
-        react_1.default.createElement(antd_1.Divider, null)));
+        react_1.default.createElement("div", { className: "pb-5" })));
 }
 exports.default = TitleHeader;
 //# sourceMappingURL=TitleHeader.js.map

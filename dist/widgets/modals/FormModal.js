@@ -48,11 +48,11 @@ exports.FormModal = void 0;
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var Form_1 = __importDefault(require("@/widgets/views/Form"));
-var useModalWidthDimensions_1 = __importDefault(require("@/hooks/useModalWidthDimensions"));
+var useWindowDimensions_1 = __importDefault(require("@/hooks/useWindowDimensions"));
 var FormModalContext_1 = __importDefault(require("@/context/FormModalContext"));
 var FormModal = function (props) {
     var visible = props.visible, id = props.id, title = props.title, _a = props.buttonModal, buttonModal = _a === void 0 ? false : _a, onCancel = props.onCancel, rest = __rest(props, ["visible", "id", "title", "buttonModal", "onCancel"]);
-    var modalWidth = useModalWidthDimensions_1.default().modalWidth;
+    var modalWidth = useWindowDimensions_1.default().modalWidth;
     var _b = react_1.useState(title), formTitle = _b[0], setFormTitle = _b[1];
     function onTitleChange(newTitle) {
         if (formTitle) {
