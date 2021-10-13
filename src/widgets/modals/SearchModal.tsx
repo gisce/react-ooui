@@ -3,7 +3,7 @@ import { Modal, Button, Divider, Row, Space } from "antd";
 import { FormModal } from "./FormModal";
 import SearchTree from "@/widgets/views/SearchTree";
 import { FileAddOutlined, CloseOutlined } from "@ant-design/icons";
-import useModalWidthDimensions from "@/hooks/useModalWidthDimensions";
+import useWindowDimensions from "@/hooks/useWindowDimensions";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 type SearchSelectionProps = {
@@ -28,7 +28,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
   } = props;
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
 
-  const { modalWidth, modalHeight } = useModalWidthDimensions();
+  const { modalWidth, modalHeight } = useWindowDimensions();
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
   const onCloseModal = async () => {

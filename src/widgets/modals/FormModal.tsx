@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal } from "antd";
 import Form, { FormProps } from "@/widgets/views/Form";
-import useModalWidthDimensions from "@/hooks/useModalWidthDimensions";
+import useWindowDimensions from "@/hooks/useWindowDimensions";
 import FormModalProvider from "@/context/FormModalContext";
 
 type FormModalProps = FormProps & {
@@ -13,14 +13,14 @@ type FormModalProps = FormProps & {
 export const FormModal = (props: FormModalProps) => {
   const { visible, id, title, buttonModal = false, onCancel, ...rest } = props;
 
-  const { modalWidth } = useModalWidthDimensions();
+  const { modalWidth } = useWindowDimensions();
   const [formTitle, setFormTitle] = useState<string>(title!);
 
   function onTitleChange(newTitle: string) {
     if (formTitle) {
       return;
     }
-    
+
     setFormTitle(newTitle);
   }
 

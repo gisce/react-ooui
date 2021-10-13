@@ -22,7 +22,7 @@ import {
   linkItem,
 } from "@/helpers/one2manyHelper";
 import { SearchModal } from "@/widgets/modals/SearchModal";
-import useModalWidthDimensions from "@/hooks/useModalWidthDimensions";
+import useWindowDimensions from "@/hooks/useWindowDimensions";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
@@ -72,7 +72,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     false
   );
 
-  const { modalHeight } = useModalWidthDimensions();
+  const { modalHeight } = useWindowDimensions();
 
   const { readOnly, relation, domain, context } = ooui as One2manyOoui;
   const isMany2many = ooui.type === "many2many";

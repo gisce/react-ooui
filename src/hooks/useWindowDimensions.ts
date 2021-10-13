@@ -10,7 +10,7 @@ function getWindowDimensions() {
   };
 }
 
-export default function useModalWidthDimensions() {
+export default function useWindowDimensions() {
   const [windowDimensions, setWindowDimensions] = useState(
     getWindowDimensions()
   );
@@ -24,5 +24,10 @@ export default function useModalWidthDimensions() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  return { modalWidth: windowDimensions.width * MODAL_WIDTH_CONSTANT, modalHeight: windowDimensions.height};
+  return {
+    modalWidth: windowDimensions.width * MODAL_WIDTH_CONSTANT,
+    modalHeight: windowDimensions.height,
+    width: windowDimensions.width,
+    height: windowDimensions.height,
+  };
 }
