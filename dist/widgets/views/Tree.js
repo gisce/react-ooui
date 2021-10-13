@@ -88,6 +88,7 @@ function Tree(props) {
             react_1.default.createElement(antd_1.Pagination, { total: total, pageSize: limit, current: page, className: "pb-5 pt-5", showSizeChanger: false, onChange: onRequestPageChange })));
     };
     function getSums() {
+        var _a;
         var tree = treeHelper_1.getTree(treeView);
         var sumFields = tree.columns
             .filter(function (it) { return it.sum !== undefined; })
@@ -98,8 +99,13 @@ function Tree(props) {
             return null;
         }
         var summary = [];
+        var sumItems = ((_a = rowSelection === null || rowSelection === void 0 ? void 0 : rowSelection.selectedRowKeys) === null || _a === void 0 ? void 0 : _a.length) > 0
+            ? items.filter(function (result) {
+                return rowSelection === null || rowSelection === void 0 ? void 0 : rowSelection.selectedRowKeys.includes(result.id);
+            })
+            : items;
         sumFields.forEach(function (sumField) {
-            var total = items.reduce(function (prev, current) {
+            var total = sumItems.reduce(function (prev, current) {
                 return prev + current[sumField.field];
             }, 0);
             summary.push(sumField.label + ": " + total);

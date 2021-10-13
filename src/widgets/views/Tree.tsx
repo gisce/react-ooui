@@ -135,9 +135,15 @@ function Tree(props: Props): React.ReactElement {
     }
 
     let summary: string[] = [];
+    let sumItems =
+      rowSelection?.selectedRowKeys?.length > 0
+        ? items.filter((result: any) => {
+            return rowSelection?.selectedRowKeys.includes(result.id);
+          })
+        : items;
 
     sumFields.forEach((sumField) => {
-      const total = items.reduce((prev, current) => {
+      const total = sumItems.reduce((prev, current) => {
         return prev + current[sumField.field];
       }, 0);
 
