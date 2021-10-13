@@ -18,6 +18,8 @@ import {
   ActionViewContextType,
 } from "@/context/ActionViewContext";
 import { getColorMap, getTree } from "@/helpers/treeHelper";
+import useWindowDimensions from "@/hooks/useWindowDimensions";
+import Measure from "react-measure";
 
 const DEFAULT_SEARCH_LIMIT = 80;
 
@@ -87,6 +89,9 @@ function SearchTree(props: Props, ref: any) {
   const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
 
   const actionDomain = useRef<any>([]);
+  const [searchFilterHeight, setSearchFilterHeight] = useState<number>(200);
+
+  const { height } = useWindowDimensions();
 
   const actionViewContext = useContext(
     ActionViewContext
@@ -375,6 +380,9 @@ function SearchTree(props: Props, ref: any) {
     setSelectedRowItems?.(items);
   }
 
+  function calculateTableHeight() {
+    return height - (searchFilterHeight + 360);
+  }
   const content = () => {
     if (!treeView || !formView) {
       return null;
@@ -382,19 +390,35 @@ function SearchTree(props: Props, ref: any) {
 
     return (
       <>
-        <SearchFilter
-          fields={{ ...treeView.fields, ...formView.fields }}
-          searchFields={formView.search_fields!}
-          onClear={onClear}
-          limit={limit}
-          offset={offset}
-          isSearching={searchFilterLoading}
-          onSubmit={onSubmit}
-        />
-        {searchError && (
-          <Alert className="mt-10" message={searchError} type="error" banner />
-        )}
-        <div className="pb-10" />
+        <Measure
+          bounds
+          onResize={(contentRect) => {
+            setSearchFilterHeight(contentRect.bounds?.height!);
+          }}
+        >
+          {({ measureRef }) => (
+            <div ref={measureRef}>
+              <SearchFilter
+                fields={{ ...treeView.fields, ...formView.fields }}
+                searchFields={formView.search_fields!}
+                onClear={onClear}
+                limit={limit}
+                offset={offset}
+                isSearching={searchFilterLoading}
+                onSubmit={onSubmit}
+              />
+              {searchError && (
+                <Alert
+                  className="mt-10"
+                  message={searchError}
+                  type="error"
+                  banner
+                />
+              )}
+              <div className="pb-5" />
+            </div>
+          )}
+        </Measure>
         <Tree
           total={totalItems}
           limit={limit}
@@ -404,7 +428,7 @@ function SearchTree(props: Props, ref: any) {
           onRequestPageChange={onRequestPageChange}
           loading={tableRefreshing}
           onRowClicked={onRowClickedHandler}
-          scrollY={treeScrollY}
+          scrollY={treeScrollY || calculateTableHeight()}
           colorsForResults={colorsForResults}
           rowSelection={{
             selectedRowKeys,

@@ -31,7 +31,7 @@ function TitleHeader(props: Props) {
           <Row justify="end">{children}</Row>
         </Col>
       </Row>
-      <Divider />
+      <div className="pb-5" />
     </>
   );
 }

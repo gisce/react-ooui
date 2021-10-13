@@ -1,12 +1,12 @@
 import React, { useContext, useRef, useState } from "react";
-import { Table, Pagination, Checkbox, Space, Progress } from "antd";
+import { Table, Pagination, Checkbox, Space, Progress, Row, Col } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
-import useDimensions from "react-cool-dimensions";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
 import { TreeView, Column } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { Many2oneSuffix } from "../base/many2one/Many2oneSuffix";
+import { calculateColumnsWidth } from "@/helpers/dynamicColumnsHelper";
 
 type Props = {
   total: number;
@@ -44,7 +44,6 @@ function Tree(props: Props): React.ReactElement {
 
   const errorInParseColors = useRef<boolean>(false);
 
-  const { width, ref: containerRef } = useDimensions<HTMLDivElement>();
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
   useDeepCompareEffect(() => {
@@ -108,15 +107,20 @@ function Tree(props: Props): React.ReactElement {
 
     return loading ? null : (
       <>
-        {summary}
-        <Pagination
-          total={total}
-          pageSize={limit}
-          current={page}
-          className="pb-5 pt-5"
-          showSizeChanger={false}
-          onChange={onRequestPageChange}
-        />
+        <Row align="bottom" className="pb-4">
+          <Col span={12}>
+            <Pagination
+              total={total}
+              pageSize={limit}
+              current={page}
+              showSizeChanger={false}
+              onChange={onRequestPageChange}
+            />
+          </Col>
+          <Col span={12} className="text-right">
+            {summary}
+          </Col>
+        </Row>
       </>
     );
   };
@@ -150,16 +154,24 @@ function Tree(props: Props): React.ReactElement {
       summary.push(`${sumField.label}: ${total}`);
     });
 
-    return <div className="mt-5 p-2 bg-blueGray-100">{summary.join(", ")}</div>;
+    return (
+      <div className="mt-2 p-1 pl-2 mb-5 bg-gray-50">{summary.join(", ")}</div>
+    );
   }
 
+  const maxWidthPerCell = 600;
+
+  // This helper function helps to calculate the width for each column
+  // based on all table cells - column cell and source cell
+  const dataTable = calculateColumnsWidth(columns, items, maxWidthPerCell);
+
   return (
-    <div ref={containerRef}>
+    <div>
       {pagination()}
       <Table
-        style={{ width }}
-        scroll={{ x: true, y: scrollY }}
-        columns={columns}
+        columns={dataTable.columns}
+        scroll={{ x: dataTable.tableWidth, y: scrollY }}
+        size="small"
         dataSource={items}
         pagination={false}
         loading={loading}

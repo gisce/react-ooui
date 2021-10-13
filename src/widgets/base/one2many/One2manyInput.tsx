@@ -207,8 +207,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   };
 
   const createItem = async () => {
-    console.log(ooui);
-
     const { inv_field } = ooui;
     let defaultValues: any;
 
