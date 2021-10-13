@@ -7,6 +7,9 @@ export default {
     category_id: [
       { id: 12, operation: "original" },
       { id: 6, operation: "original" },
+      { id: 13, operation: "original" },
+      { id: 14, operation: "original" },
+      { id: 16, operation: "original" },
     ],
     child_ids: [],
     cifnif: "NI",
@@ -279,7 +282,7 @@ export default {
           },
           tree: {
             arch:
-              '<tree string="Bank Details">\n                            <field name="state"/>\n                            <field name="bank"/>\n                            <field name="owner_name"/>\n                            <field name="acc_number"/>\n                        <field name="iban"/>\n                <field name="default_bank"/>\n            </tree>\n                    ',
+              '<tree string="Bank Details">\n                            <field name="test"/><field name="test1"/><field name="test2"/><field name="test3"/><field name="test4"/><field name="test5"/><field name="state"/>\n                            <field name="bank"/>\n                            <field name="owner_name"/>\n                            <field name="acc_number"/>\n                        <field name="iban"/>\n                <field name="default_bank"/>\n            </tree>\n                    ',
             fields: {
               acc_number: {
                 size: 64,
@@ -364,6 +367,36 @@ export default {
         views: {},
       },
       comment: {
+        string: "Notes",
+        type: "text",
+        views: {},
+      },
+      test: {
+        string: "Notes",
+        type: "text",
+        views: {},
+      },
+      test1: {
+        string: "Notes",
+        type: "text",
+        views: {},
+      },
+      test2: {
+        string: "Notes",
+        type: "text",
+        views: {},
+      },
+      test3: {
+        string: "Notes",
+        type: "text",
+        views: {},
+      },
+      test4: {
+        string: "Notes",
+        type: "text",
+        views: {},
+      },
+      test5: {
         string: "Notes",
         type: "text",
         views: {},
