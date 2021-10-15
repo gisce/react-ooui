@@ -75,7 +75,7 @@ var FloatTimeInput = function (props) {
         }
     }
     function parseFloatToString(num) {
-        if (!num) {
+        if (num === undefined) {
             return undefined;
         }
         var finalString;

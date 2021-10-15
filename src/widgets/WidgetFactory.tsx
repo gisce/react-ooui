@@ -23,6 +23,7 @@ import {
   Url,
   Email,
   FloatTime,
+  ProgressBar,
 } from "@/index";
 import { Image } from "./base/Image";
 
@@ -53,8 +54,9 @@ const getWidgetType = (type: string) => {
     case "integer":
       return Integer;
     case "float":
-    case "progressbar":
       return Float;
+    case "progressbar":
+      return ProgressBar;
     case "date":
       return Date;
     case "datetime":

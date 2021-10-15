@@ -34,8 +34,9 @@ var getWidgetType = function (type) {
         case "integer":
             return index_1.Integer;
         case "float":
-        case "progressbar":
             return index_1.Float;
+        case "progressbar":
+            return index_1.ProgressBar;
         case "date":
             return index_1.Date;
         case "datetime":
