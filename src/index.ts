@@ -6,6 +6,7 @@ import { Many2one } from "@/widgets/base/many2one/Many2one";
 import { One2many } from "@/widgets/base/one2many/One2many";
 import Tree from "@/widgets/views/Tree";
 import { Float } from "@/widgets/base/Float";
+import { FloatTime } from "@/widgets/base/FloatTime";
 import { Integer } from "@/widgets/base/Integer";
 import Group from "@/widgets/containers/Group";
 import Notebook from "@/widgets/containers/Notebook";
@@ -67,6 +68,7 @@ export {
   Form,
   Notebook,
   Float,
+  FloatTime,
   Integer,
   Label,
   Text,
