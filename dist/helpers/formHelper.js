@@ -42,6 +42,13 @@ var getTouchedValues = function (_a) {
                         differences[key] = target[key];
                     }
                 }
+                else {
+                    var sourceValue = JSON.stringify(source[key]);
+                    var targetValue = JSON.stringify(target[key]);
+                    if (sourceValue !== targetValue) {
+                        differences[key] = target[key];
+                    }
+                }
             }
             else if (is2Many) {
                 var nonOriginalItems = target[key].filter(function (item) { return item.operation !== "original"; });

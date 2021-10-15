@@ -50,6 +50,12 @@ export const getTouchedValues = ({
           if (numericId !== targetNumericId) {
             differences[key] = target[key];
           }
+        } else {
+          const sourceValue = JSON.stringify(source[key]);
+          const targetValue = JSON.stringify(target[key]);
+          if (sourceValue !== targetValue) {
+            differences[key] = target[key];
+          }
         }
       } else if (is2Many) {
         const nonOriginalItems = target[key].filter(
