@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ActionView } from "../..";
+import ActionView from "../../views/ActionView";
 import LocaleProvider from "../../context/LocaleContext";
 
 export default {
@@ -9,8 +9,20 @@ export default {
 
 export const Default = (): React.ReactElement => {
   return (
-    <LocaleProvider lang="en_GB">
-      <ActionView title={"Action view title"} action={"test"} />
+    <LocaleProvider lang="en_US">
+      <ActionView
+        domain={[]}
+        model="giscedata.polissa.modcontractual"
+        context={{ lang: "en_US" }}
+        views={[
+          [96, "tree"],
+          [97, "form"],
+        ]}
+        title="Test"
+        setCanWeClose={() => {}}
+        tabKey={"0"}
+        initialViewType={"tree"}
+      />
     </LocaleProvider>
   );
 };
