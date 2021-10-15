@@ -11,7 +11,7 @@ export default {
 };
 
 const Template = (args) => (
-  <LocaleProvider lang="en_GB">
+  <LocaleProvider lang="en_US">
     <Tree {...args} />
   </LocaleProvider>
 );

@@ -8,7 +8,7 @@ export default {
 
 export const Default = (): React.ReactElement => {
   return (
-    <TabManager lang="en_GB">
+    <TabManager lang="en_US">
       <></>
     </TabManager>
   );

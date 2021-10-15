@@ -11,7 +11,7 @@ export default {
 };
 
 const Template = (args: any) => (
-  <LocaleProvider lang="en_GB">
+  <LocaleProvider lang="en_US">
     <Form {...args} />
   </LocaleProvider>
 );

@@ -27,7 +27,7 @@ export const Default = (): React.ReactElement => {
   const value = text("value", "en_US") || undefined;
 
   return (
-    <LocaleProvider lang="en_GB">
+    <LocaleProvider lang="en_US">
       <SelectionInput ooui={ooui} value={value} />
     </LocaleProvider>
   );

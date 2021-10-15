@@ -9,7 +9,7 @@ export default {
 
 export const Default = (): React.ReactElement => {
   return (
-    <LocaleProvider lang="en_GB">
+    <LocaleProvider lang="en_US">
       <Form
         model={"crm.case"}
         id={6}

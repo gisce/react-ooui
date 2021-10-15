@@ -16,7 +16,7 @@ export const Default = (): React.ReactElement => {
     relation: "res.partners",
   });
   return (
-    <LocaleProvider lang="en_GB">
+    <LocaleProvider lang="en_US">
       <div style={{ width: 200 }}>
         <Many2one ooui={ooui} showLabel />
       </div>

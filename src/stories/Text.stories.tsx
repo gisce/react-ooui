@@ -15,7 +15,7 @@ export const Default = (): React.ReactElement => {
     string: "Lorem ipsum",
   });
   return (
-    <LocaleProvider lang="en_GB">
+    <LocaleProvider lang="en_US">
       <Text ooui={ooui} showLabel />
     </LocaleProvider>
   );

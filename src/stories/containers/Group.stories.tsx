@@ -54,7 +54,7 @@ export const Default = (): React.ReactElement => {
   groupOoui.label = label;
 
   return (
-    <LocaleProvider lang="en_GB">
+    <LocaleProvider lang="en_US">
       <Form>
         <Group ooui={groupOoui} />
       </Form>

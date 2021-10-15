@@ -41,7 +41,7 @@ export const Default = (): React.ReactElement => {
   const notebookOoui = formOoui.findById("notebook") as NotebookOoui;
 
   return (
-    <LocaleProvider lang="en_GB">
+    <LocaleProvider lang="en_US">
       <Form>
         <Notebook ooui={notebookOoui} />
       </Form>

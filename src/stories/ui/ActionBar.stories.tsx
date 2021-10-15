@@ -11,7 +11,7 @@ export default {
 
 export const Default = (): React.ReactElement => {
   return (
-    <LocaleProvider lang="en_GB">
+    <LocaleProvider lang="en_US">
       <ActionBar
         saveButtonHidden={false}
         saveButtonCallback={() => {}}

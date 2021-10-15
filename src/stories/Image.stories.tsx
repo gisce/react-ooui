@@ -14,7 +14,7 @@ export const StockIcon = ({ name }): React.ReactElement => {
     name: name,
   });
   return (
-    <LocaleProvider lang="en_GB">
+    <LocaleProvider lang="en_US">
       <Image ooui={ooui} />
     </LocaleProvider>
   );

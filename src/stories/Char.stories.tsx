@@ -15,7 +15,7 @@ export const Default = (): React.ReactElement => {
     string: "Lorem ipsum",
   });
   return (
-    <LocaleProvider lang="en_GB">
+    <LocaleProvider lang="en_US">
       <Char ooui={ooui} showLabel />
     </LocaleProvider>
   );
@@ -29,7 +29,7 @@ export const Password = (): React.ReactElement => {
   });
   ooui.isPassword = true;
   return (
-    <LocaleProvider lang="en_GB">
+    <LocaleProvider lang="en_US">
       <Char ooui={ooui} showLabel />
     </LocaleProvider>
   );

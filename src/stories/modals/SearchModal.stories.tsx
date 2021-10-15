@@ -12,7 +12,7 @@ export const Default = (): React.ReactElement => {
   const [visible, setVisible] = useState<boolean>(false);
 
   return (
-    <LocaleProvider lang="en_GB">
+    <LocaleProvider lang="en_US">
       <Button
         onClick={() => {
           setVisible(true);
