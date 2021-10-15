@@ -105,7 +105,7 @@ function Form(props: FormProps, ref: any) {
     defaultValues,
     forcedValues = {},
   } = props;
-  const { t, lang } = useContext(LocaleContext) as LocaleContextType;
+  const { lang } = useContext(LocaleContext) as LocaleContextType;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>();
@@ -330,6 +330,11 @@ function Form(props: FormProps, ref: any) {
     setFormIsLoading?.(false);
     setFormHasChanges?.(false);
   };
+
+  function setOriginalValue(field: string, value: any) {
+    originalFormValues.current[field] = value;
+    setFormHasChanges?.(formHasChanges());
+  }
 
   const cancelUnsavedChanges = async () => {
     return new Promise(async (resolve) => {
@@ -835,6 +840,7 @@ function Form(props: FormProps, ref: any) {
           getFieldValue={getFieldValue}
           executeButtonAction={executeButtonAction}
           getContext={getContext}
+          setOriginalValue={setOriginalValue}
         >
           <AntForm
             form={antForm}

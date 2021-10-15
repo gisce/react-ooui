@@ -64,7 +64,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const [inputText, setInputText] = useState<string>();
   const inputTextRef = useRef<string>();
   const formContext = useContext(FormContext) as FormContextType;
-  const { getContext } = formContext || {};
+  const { getContext, setOriginalValue } = formContext || {};
 
   const id = value && value[0];
   const text = (value && value[1]) || "";
@@ -140,7 +140,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       });
 
       if (resultIds.length === 1) {
-        fetchNameAndUpdate(resultIds[0]);
+        fetchNameAndUpdate(resultIds[0], true);
       } else if (resultIds.length > 1) {
         setSearchText(text);
         setShowSearchModal(true);
@@ -152,7 +152,10 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     setShowSearchModal(true);
   };
 
-  const fetchNameAndUpdate = async (id: number) => {
+  const fetchNameAndUpdate = async (
+    id: number,
+    mustUpdateOriginalForm?: boolean
+  ) => {
     setSearching(true);
 
     try {
@@ -164,6 +167,10 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       });
 
       triggerChange([id, value[0][1]]);
+
+      if (mustUpdateOriginalForm) {
+        setOriginalValue(ooui.id, [id, value[0][1]]);
+      }
     } catch (err) {
       showErrorDialog(err);
     } finally {

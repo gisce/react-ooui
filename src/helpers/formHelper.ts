@@ -40,15 +40,24 @@ export const getTouchedValues = ({
         ? fields[key].type === "one2many" || fields[key].type === "many2many"
         : false;
 
-      if (is2Many) {
+      if (source[key] === undefined) {
+        differences[key] = target[key];
+      } else if (fields[key].type === "many2one") {
+        if (!Array.isArray(source[key])) {
+          // This will mean the source many2one value is a numeric id
+          const numericId = source[key];
+          const [targetNumericId] = target[key];
+          if (numericId !== targetNumericId) {
+            differences[key] = target[key];
+          }
+        }
+      } else if (is2Many) {
         const nonOriginalItems = target[key].filter(
           (item: One2manyItem) => item.operation !== "original"
         );
         if (nonOriginalItems.length > 0) {
           differences[key] = target[key];
         }
-      } else if (source[key] === undefined) {
-        differences[key] = target[key];
       } else {
         const sourceValue = JSON.stringify(source[key]);
         const targetValue = JSON.stringify(target[key]);
