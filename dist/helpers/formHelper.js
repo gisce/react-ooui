@@ -30,14 +30,24 @@ var getTouchedValues = function (_a) {
             var is2Many = fields[key]
                 ? fields[key].type === "one2many" || fields[key].type === "many2many"
                 : false;
-            if (is2Many) {
+            if (source[key] === undefined) {
+                differences[key] = target[key];
+            }
+            else if (fields[key].type === "many2one") {
+                if (!Array.isArray(source[key])) {
+                    // This will mean the source many2one value is a numeric id
+                    var numericId = source[key];
+                    var targetNumericId = target[key][0];
+                    if (numericId !== targetNumericId) {
+                        differences[key] = target[key];
+                    }
+                }
+            }
+            else if (is2Many) {
                 var nonOriginalItems = target[key].filter(function (item) { return item.operation !== "original"; });
                 if (nonOriginalItems.length > 0) {
                     differences[key] = target[key];
                 }
-            }
-            else if (source[key] === undefined) {
-                differences[key] = target[key];
             }
             else {
                 var sourceValue = JSON.stringify(source[key]);

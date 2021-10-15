@@ -116,7 +116,7 @@ var Many2oneInput = function (props) {
     var _e = react_1.useState(), inputText = _e[0], setInputText = _e[1];
     var inputTextRef = react_1.useRef();
     var formContext = react_1.useContext(FormContext_1.FormContext);
-    var getContext = (formContext || {}).getContext;
+    var _f = formContext || {}, getContext = _f.getContext, setOriginalValue = _f.setOriginalValue;
     var id = value && value[0];
     var text = (value && value[1]) || "";
     react_1.useEffect(function () {
@@ -203,7 +203,7 @@ var Many2oneInput = function (props) {
                 case 1:
                     resultIds = _a.sent();
                     if (resultIds.length === 1) {
-                        fetchNameAndUpdate(resultIds[0]);
+                        fetchNameAndUpdate(resultIds[0], true);
                     }
                     else if (resultIds.length > 1) {
                         setSearchText(text);
@@ -217,7 +217,7 @@ var Many2oneInput = function (props) {
             }
         });
     }); };
-    var fetchNameAndUpdate = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+    var fetchNameAndUpdate = function (id, mustUpdateOriginalForm) { return __awaiter(void 0, void 0, void 0, function () {
         var value_1, err_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -235,6 +235,9 @@ var Many2oneInput = function (props) {
                 case 2:
                     value_1 = _a.sent();
                     triggerChange([id, value_1[0][1]]);
+                    if (mustUpdateOriginalForm) {
+                        setOriginalValue(ooui.id, [id, value_1[0][1]]);
+                    }
                     return [3 /*break*/, 5];
                 case 3:
                     err_2 = _a.sent();

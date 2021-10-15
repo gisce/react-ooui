@@ -10,6 +10,7 @@ export declare type FormContextType = {
         context?: any;
     }) => Promise<void>;
     getContext: () => Promise<any>;
+    setOriginalValue: (field: string, value: any) => void;
 };
 export declare const FormContext: React.Context<FormContextType | null>;
 declare type FormProviderProps = FormContextType & {
