@@ -6,6 +6,7 @@ import { Many2one } from "@/widgets/base/many2one/Many2one";
 import { One2many } from "@/widgets/base/one2many/One2many";
 import Tree from "@/widgets/views/Tree";
 import { Float } from "@/widgets/base/Float";
+import { FloatTime } from "@/widgets/base/FloatTime";
 import { Integer } from "@/widgets/base/Integer";
 import Group from "@/widgets/containers/Group";
 import Notebook from "@/widgets/containers/Notebook";
@@ -32,5 +33,5 @@ import { TreeView, SearchFields, FormView, ConnectionProviderType, SearchRequest
 import ConnectionProvider from "@/ConnectionProvider";
 import TabManager from "./views/TabManager";
 import ContentRootProvider from "./context/ContentRootContext";
-export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectsRequest, ReadEvalUiObjectsRequest, DeleteObjectsRequest, FormModal, SearchModal, One2many, One2manyItem, Date, DateTime, Reference, Binary, iconMapper, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ActionBar, GetViewRequest, DefaultGetRequest, TabManager, Url, Email, Image, ContentRootProvider, showConfirmDialog, NameSearchRequest, };
+export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, FloatTime, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectsRequest, ReadEvalUiObjectsRequest, DeleteObjectsRequest, FormModal, SearchModal, One2many, One2manyItem, Date, DateTime, Reference, Binary, iconMapper, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ActionBar, GetViewRequest, DefaultGetRequest, TabManager, Url, Email, Image, ContentRootProvider, showConfirmDialog, NameSearchRequest, };
 //# sourceMappingURL=index.d.ts.map
