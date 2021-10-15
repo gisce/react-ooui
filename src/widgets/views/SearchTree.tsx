@@ -445,11 +445,11 @@ function SearchTree(props: Props, ref: any) {
     );
   }
 
-  if (!visible) {
-    return null;
-  }
-
-  return isLoading ? <Spin /> : content();
+  return (
+    <div style={!visible ? { display: "none" } : {}}>
+      {isLoading ? <Spin /> : content()}
+    </div>
+  );
 }
 
 export default forwardRef(SearchTree);

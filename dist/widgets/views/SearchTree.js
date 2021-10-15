@@ -433,10 +433,10 @@ function SearchTree(props, ref) {
     if (initialError) {
         return (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: initialError, type: "error", banner: true }));
     }
-    if (!visible) {
-        return null;
-    }
-    return isLoading ? react_1.default.createElement(antd_1.Spin, null) : content();
+    // if (!visible) {
+    //   return null;
+    // }
+    return (react_1.default.createElement("div", { style: !visible ? { display: "none" } : {} }, isLoading ? react_1.default.createElement(antd_1.Spin, null) : content()));
 }
 exports.default = react_1.forwardRef(SearchTree);
 //# sourceMappingURL=SearchTree.js.map
