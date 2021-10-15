@@ -130,7 +130,10 @@ function TreeActionBar() {
     function runAction(actionData) {
         processAction === null || processAction === void 0 ? void 0 : processAction({
             actionData: actionData,
-            values: {},
+            values: {
+                active_id: selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.map(function (item) { return item.id; })[0],
+                active_ids: selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.map(function (item) { return item.id; }),
+            },
             fields: {},
             context: {
                 active_id: selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.map(function (item) { return item.id; })[0],

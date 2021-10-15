@@ -76,7 +76,10 @@ function TreeActionBar() {
   function runAction(actionData: any) {
     processAction?.({
       actionData,
-      values: {},
+      values: {
+        active_id: selectedRowItems?.map((item) => item.id)[0],
+        active_ids: selectedRowItems?.map((item) => item.id),
+      },
       fields: {},
       context: {
         active_id: selectedRowItems?.map((item) => item.id)[0],
