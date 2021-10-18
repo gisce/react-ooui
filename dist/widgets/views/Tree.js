@@ -114,15 +114,19 @@ function Tree(props) {
             }, 0);
             summary.push(sumField.label + ": " + Math.round(total * 100) / 100);
         });
-        return (react_1.default.createElement("div", { className: "mt-2 p-1 pl-2 mb-5 bg-gray-50" }, summary.join(", ")));
+        return (react_1.default.createElement("div", { className: "mt-2 p-1 pb-0 pl-2 bg-gray-50" }, summary.join(", ")));
     }
     var maxWidthPerCell = 600;
     // This helper function helps to calculate the width for each column
     // based on all table cells - column cell and source cell
     var dataTable = dynamicColumnsHelper_1.calculateColumnsWidth(columns, items, maxWidthPerCell);
+    var adjustedHeight = scrollY;
+    if (scrollY && treeHelper_1.getTree(treeView).columns.some(function (it) { return it.sum !== undefined; })) {
+        adjustedHeight = scrollY - 30;
+    }
     return (react_1.default.createElement("div", null,
         pagination(),
-        react_1.default.createElement(antd_1.Table, { columns: dataTable.columns, scroll: { x: dataTable.tableWidth, y: scrollY }, size: "small", dataSource: items, pagination: false, loading: loading, rowClassName: "cursor-pointer select-none", rowKey: function (item) {
+        react_1.default.createElement(antd_1.Table, { columns: dataTable.columns, scroll: { x: dataTable.tableWidth, y: adjustedHeight }, size: "small", dataSource: items, pagination: false, loading: loading, rowClassName: "cursor-pointer select-none", rowKey: function (item) {
                 return item.id;
             }, onRow: function (record) {
                 var style = undefined;

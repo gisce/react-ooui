@@ -157,7 +157,7 @@ function Tree(props: Props): React.ReactElement {
     });
 
     return (
-      <div className="mt-2 p-1 pl-2 mb-5 bg-gray-50">{summary.join(", ")}</div>
+      <div className="mt-2 p-1 pb-0 pl-2 bg-gray-50">{summary.join(", ")}</div>
     );
   }
 
@@ -167,12 +167,17 @@ function Tree(props: Props): React.ReactElement {
   // based on all table cells - column cell and source cell
   const dataTable = calculateColumnsWidth(columns, items, maxWidthPerCell);
 
+  let adjustedHeight = scrollY;
+  if (scrollY && getTree(treeView).columns.some((it) => it.sum !== undefined)) {
+    adjustedHeight = scrollY - 30;
+  }
+
   return (
     <div>
       {pagination()}
       <Table
         columns={dataTable.columns}
-        scroll={{ x: dataTable.tableWidth, y: scrollY }}
+        scroll={{ x: dataTable.tableWidth, y: adjustedHeight }}
         size="small"
         dataSource={items}
         pagination={false}
