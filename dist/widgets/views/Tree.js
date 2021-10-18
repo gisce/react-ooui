@@ -107,9 +107,12 @@ function Tree(props) {
             : items;
         sumFields.forEach(function (sumField) {
             var total = sumItems.reduce(function (prev, current) {
-                return prev + current[sumField.field];
+                if (current[sumField.field] && !isNaN(current[sumField.field]))
+                    return prev + current[sumField.field];
+                else
+                    return prev;
             }, 0);
-            summary.push(sumField.label + ": " + total);
+            summary.push(sumField.label + ": " + Math.round(total * 100) / 100);
         });
         return (react_1.default.createElement("div", { className: "mt-2 p-1 pl-2 mb-5 bg-gray-50" }, summary.join(", ")));
     }

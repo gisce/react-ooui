@@ -148,10 +148,12 @@ function Tree(props: Props): React.ReactElement {
 
     sumFields.forEach((sumField) => {
       const total = sumItems.reduce((prev, current) => {
-        return prev + current[sumField.field];
+        if (current[sumField.field] && !isNaN(current[sumField.field]))
+          return prev + current[sumField.field];
+        else return prev;
       }, 0);
 
-      summary.push(`${sumField.label}: ${total}`);
+      summary.push(`${sumField.label}: ${Math.round(total * 100) / 100}`);
     });
 
     return (
