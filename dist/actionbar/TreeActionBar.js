@@ -82,9 +82,10 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var GenericErrorDialog_1 = __importDefault(require("@/ui/GenericErrorDialog"));
 var DropdownButton_1 = __importDefault(require("./DropdownButton"));
 var ContentRootContext_1 = require("@/context/ContentRootContext");
-function TreeActionBar() {
-    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, selectedRowItems = _a.selectedRowItems, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, currentModel = _a.currentModel, searchTreeRef = _a.searchTreeRef, setCurrentId = _a.setCurrentId, setCurrentItemIndex = _a.setCurrentItemIndex, toolbar = _a.toolbar;
-    var _b = react_1.useContext(LocaleContext_1.LocaleContext), t = _b.t, lang = _b.lang;
+function TreeActionBar(props) {
+    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, selectedRowItems = _a.selectedRowItems, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, duplicatingItem = _a.duplicatingItem, setDuplicatingItem = _a.setDuplicatingItem, currentModel = _a.currentModel, searchTreeRef = _a.searchTreeRef, setCurrentId = _a.setCurrentId, setCurrentItemIndex = _a.setCurrentItemIndex, toolbar = _a.toolbar;
+    var _b = props.parentContext, parentContext = _b === void 0 ? {} : _b;
+    var _c = react_1.useContext(LocaleContext_1.LocaleContext), t = _c.t, lang = _c.lang;
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
     var processAction = (contentRootContext || {}).processAction;
     function tryDelete() {
@@ -127,6 +128,39 @@ function TreeActionBar() {
             });
         });
     }
+    function duplicate() {
+        var _a;
+        return __awaiter(this, void 0, void 0, function () {
+            var currentId, newId, e_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 2, 3, 4]);
+                        setDuplicatingItem === null || setDuplicatingItem === void 0 ? void 0 : setDuplicatingItem(true);
+                        currentId = selectedRowItems[0].id;
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().duplicate({
+                                id: currentId,
+                                model: currentModel,
+                                context: __assign({}, parentContext),
+                            })];
+                    case 1:
+                        newId = _b.sent();
+                        if (newId) {
+                            (_a = searchTreeRef === null || searchTreeRef === void 0 ? void 0 : searchTreeRef.current) === null || _a === void 0 ? void 0 : _a.refreshResults();
+                        }
+                        return [3 /*break*/, 4];
+                    case 2:
+                        e_2 = _b.sent();
+                        GenericErrorDialog_1.default(JSON.stringify(e_2));
+                        return [3 /*break*/, 4];
+                    case 3:
+                        setDuplicatingItem === null || setDuplicatingItem === void 0 ? void 0 : setDuplicatingItem(false);
+                        return [7 /*endfinally*/];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    }
     function runAction(actionData) {
         processAction === null || processAction === void 0 ? void 0 : processAction({
             actionData: actionData,
@@ -135,15 +169,13 @@ function TreeActionBar() {
                 active_ids: selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.map(function (item) { return item.id; }),
             },
             fields: {},
-            context: {
-                active_id: selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.map(function (item) { return item.id; })[0],
-                active_ids: selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.map(function (item) { return item.id; }),
-            },
+            context: __assign(__assign({}, parentContext), { active_id: selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.map(function (item) { return item.id; })[0], active_ids: selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.map(function (item) { return item.id; }) }),
         });
     }
     return (react_1.default.createElement(antd_1.Space, { wrap: true },
         react_1.default.createElement(NewButton_1.default, null),
         separator(),
+        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.CopyOutlined, null), tooltip: t("duplicate"), disabled: !selectedRowItems || (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) !== 1 || duplicatingItem, loading: duplicatingItem, onClick: duplicate }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.DeleteOutlined, null), tooltip: t("delete"), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0), loading: removingItem, onClick: tryDelete }),
         separator(),
         react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0), tooltip: t("actions"), items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.action, onItemClick: function (action) {

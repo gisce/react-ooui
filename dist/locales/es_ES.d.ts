@@ -49,6 +49,7 @@ declare const _default: {
     open: string;
     uploadNewImage: string;
     noCurrentEntries: string;
+    duplicate: string;
 };
 export default _default;
 //# sourceMappingURL=es_ES.d.ts.map

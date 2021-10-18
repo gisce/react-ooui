@@ -51,5 +51,6 @@ exports.default = {
     open: "Open",
     uploadNewImage: "Upload new image",
     noCurrentEntries: "No current entries",
+    duplicate: "Duplicate",
 };
 //# sourceMappingURL=en_US.js.map

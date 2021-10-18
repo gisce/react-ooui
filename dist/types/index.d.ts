@@ -128,6 +128,11 @@ declare type DefaultGetRequest = {
     context?: any;
     extraValues?: any;
 };
+declare type DuplicateRequest = {
+    id: number;
+    model: string;
+    context?: any;
+};
 declare type ConnectionProviderType = {
     getActionStringForModel: (model: string) => Promise<string>;
     getViewsForAction: ({ action, context, }: {
@@ -153,7 +158,8 @@ declare type ConnectionProviderType = {
         context?: any;
     }) => Promise<any>;
     nameSearch: (options: NameSearchRequest) => Promise<any>;
+    duplicate: (options: DuplicateRequest) => Promise<any>;
 };
 declare type ViewType = "tree" | "form";
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, ReadEvalUiObjectsRequest, NameSearchRequest, };
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, ReadEvalUiObjectsRequest, NameSearchRequest, DuplicateRequest, };
 //# sourceMappingURL=index.d.ts.map

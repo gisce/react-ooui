@@ -88,7 +88,7 @@ var AttachmentsButton_1 = __importDefault(require("./AttachmentsButton"));
 var LocaleContext_1 = require("@/context/LocaleContext");
 function FormActionBar() {
     var _this = this;
-    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, onFormSave = _a.onFormSave, formHasChanges = _a.formHasChanges, formIsSaving = _a.formIsSaving, currentId = _a.currentId, results = _a.results, setCurrentItemIndex = _a.setCurrentItemIndex, currentItemIndex = _a.currentItemIndex, setCurrentId = _a.setCurrentId, currentModel = _a.currentModel, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, setResults = _a.setResults, formIsLoading = _a.formIsLoading, toolbar = _a.toolbar, attachments = _a.attachments, formRef = _a.formRef, setFormHasChanges = _a.setFormHasChanges;
+    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, onFormSave = _a.onFormSave, formHasChanges = _a.formHasChanges, formIsSaving = _a.formIsSaving, currentId = _a.currentId, results = _a.results, setCurrentItemIndex = _a.setCurrentItemIndex, currentItemIndex = _a.currentItemIndex, setCurrentId = _a.setCurrentId, currentModel = _a.currentModel, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, duplicatingItem = _a.duplicatingItem, setDuplicatingItem = _a.setDuplicatingItem, setResults = _a.setResults, formIsLoading = _a.formIsLoading, toolbar = _a.toolbar, attachments = _a.attachments, formRef = _a.formRef, setFormHasChanges = _a.setFormHasChanges, searchTreeRef = _a.searchTreeRef;
     var _b = react_1.useContext(LocaleContext_1.LocaleContext), t = _b.t, lang = _b.lang;
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
     var processAction = (contentRootContext || {}).processAction;
@@ -182,6 +182,42 @@ function FormActionBar() {
             });
         });
     }
+    function duplicate() {
+        var _a;
+        return __awaiter(this, void 0, void 0, function () {
+            var newId, e_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _b.trys.push([0, 4, 5, 6]);
+                        setDuplicatingItem === null || setDuplicatingItem === void 0 ? void 0 : setDuplicatingItem(true);
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().duplicate({
+                                id: currentId,
+                                model: currentModel,
+                                context: formRef.current.getContext(),
+                            })];
+                    case 1:
+                        newId = _b.sent();
+                        if (!newId) return [3 /*break*/, 3];
+                        return [4 /*yield*/, ((_a = searchTreeRef === null || searchTreeRef === void 0 ? void 0 : searchTreeRef.current) === null || _a === void 0 ? void 0 : _a.refreshResults())];
+                    case 2:
+                        _b.sent();
+                        setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(newId);
+                        setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(currentItemIndex + 1);
+                        _b.label = 3;
+                    case 3: return [3 /*break*/, 6];
+                    case 4:
+                        e_2 = _b.sent();
+                        GenericErrorDialog_1.default(JSON.stringify(e_2));
+                        return [3 /*break*/, 6];
+                    case 5:
+                        setDuplicatingItem === null || setDuplicatingItem === void 0 ? void 0 : setDuplicatingItem(false);
+                        return [7 /*endfinally*/];
+                    case 6: return [2 /*return*/];
+                }
+            });
+        });
+    }
     var mustDisableButtons = formIsSaving || removingItem || formIsLoading;
     function runAction(actionData) {
         processAction === null || processAction === void 0 ? void 0 : processAction({
@@ -201,6 +237,11 @@ function FormActionBar() {
             separator())),
         react_1.default.createElement(NewButton_1.default, { disabled: formIsSaving || formIsLoading || removingItem }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.SaveOutlined, null), tooltip: t("save"), disabled: !formHasChanges || mustDisableButtons, loading: formIsSaving, onClick: onFormSave }),
+        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.CopyOutlined, null), tooltip: t("duplicate"), disabled: formHasChanges ||
+                formIsSaving ||
+                currentId === undefined ||
+                duplicatingItem ||
+                formIsLoading, loading: duplicatingItem, onClick: duplicate }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.DeleteOutlined, null), tooltip: t("delete"), disabled: formIsSaving ||
                 currentId === undefined ||
                 removingItem ||

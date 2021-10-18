@@ -30,6 +30,8 @@ export declare type ActionViewContextType = {
     setAttachments?: (value: any) => void;
     selectedRowItems?: any[];
     setSelectedRowItems?: (value: any[]) => void;
+    duplicatingItem?: boolean;
+    setDuplicatingItem?: (value: boolean) => void;
 };
 export declare const ActionViewContext: React.Context<ActionViewContextType | null>;
 declare type ActionViewProviderProps = ActionViewContextType & {
