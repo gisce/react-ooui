@@ -9,6 +9,7 @@ import {
   PrinterOutlined,
   EnterOutlined,
   ReloadOutlined,
+  CopyOutlined,
 } from "@ant-design/icons";
 import ChangeViewButton from "./ChangeViewButton";
 import DropdownButton from "./DropdownButton";
@@ -52,12 +53,15 @@ function FormActionBar() {
     currentModel,
     setRemovingItem,
     removingItem,
+    duplicatingItem,
+    setDuplicatingItem,
     setResults,
     formIsLoading,
     toolbar,
     attachments,
     formRef,
     setFormHasChanges,
+    searchTreeRef,
   } = useContext(ActionViewContext) as ActionViewContextType;
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
 
@@ -157,6 +161,28 @@ function FormActionBar() {
     }
   }
 
+  async function duplicate() {
+    try {
+      setDuplicatingItem?.(true);
+
+      const newId = await ConnectionProvider.getHandler().duplicate({
+        id: currentId!,
+        model: currentModel!,
+        context: (formRef.current as any).getContext(),
+      });
+
+      if (newId) {
+        await searchTreeRef?.current?.refreshResults();
+        setCurrentId?.(newId);
+        setCurrentItemIndex?.(currentItemIndex! + 1);
+      }
+    } catch (e) {
+      showErrorDialog(JSON.stringify(e));
+    } finally {
+      setDuplicatingItem?.(false);
+    }
+  }
+
   const mustDisableButtons = formIsSaving || removingItem || formIsLoading;
 
   function runAction(actionData: any) {
@@ -187,6 +213,19 @@ function FormActionBar() {
         disabled={!formHasChanges || mustDisableButtons}
         loading={formIsSaving}
         onClick={onFormSave}
+      />
+      <ActionButton
+        icon={<CopyOutlined />}
+        tooltip={t("duplicate")}
+        disabled={
+          formHasChanges ||
+          formIsSaving ||
+          currentId === undefined ||
+          duplicatingItem ||
+          formIsLoading
+        }
+        loading={duplicatingItem}
+        onClick={duplicate}
       />
       <ActionButton
         icon={<DeleteOutlined />}

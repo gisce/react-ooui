@@ -197,7 +197,11 @@ function ActionView(props: Props, ref: any) {
       setToolbar={setToolbar}
     >
       <TitleHeader>
-        {currentView === "form" ? <FormActionBar /> : <TreeActionBar />}
+        {currentView === "form" ? (
+          <FormActionBar />
+        ) : (
+          <TreeActionBar parentContext={context} />
+        )}
       </TitleHeader>
       {content()}
     </ActionViewProvider>

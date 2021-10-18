@@ -153,6 +153,12 @@ type DefaultGetRequest = {
   extraValues?: any; // For inv_fields many2one's and other fields.
 };
 
+type DuplicateRequest = {
+  id: number;
+  model: string;
+  context?: any;
+};
+
 type ConnectionProviderType = {
   getActionStringForModel: (model: string) => Promise<string>;
   getViewsForAction: ({
@@ -184,6 +190,7 @@ type ConnectionProviderType = {
     context?: any;
   }) => Promise<any>;
   nameSearch: (options: NameSearchRequest) => Promise<any>;
+  duplicate: (options: DuplicateRequest) => Promise<any>;
 };
 
 type ViewType = "tree" | "form";
@@ -215,4 +222,5 @@ export type {
   GenerateReportOptions,
   ReadEvalUiObjectsRequest,
   NameSearchRequest,
+  DuplicateRequest,
 };

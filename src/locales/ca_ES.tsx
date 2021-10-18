@@ -52,5 +52,6 @@ export default {
   clear: "Neteja",
   open: "Obre",
   uploadNewImage: "Puja una nova imatge",
-  noCurrentEntries: "No hi ha registres"
+  noCurrentEntries: "No hi ha registres",
+  duplicate: "Duplicar",
 };

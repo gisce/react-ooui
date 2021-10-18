@@ -11,6 +11,7 @@ import {
   DeleteOutlined,
   PrinterOutlined,
   ThunderboltOutlined,
+  CopyOutlined,
 } from "@ant-design/icons";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showConfirmDialog from "@/ui/ConfirmDialog";
@@ -22,7 +23,11 @@ import {
   ContentRootContextType,
 } from "@/context/ContentRootContext";
 
-function TreeActionBar() {
+type Props = {
+  parentContext?: any;
+};
+
+function TreeActionBar(props: Props) {
   const {
     availableViews,
     currentView,
@@ -30,12 +35,16 @@ function TreeActionBar() {
     selectedRowItems,
     setRemovingItem,
     removingItem,
+    duplicatingItem,
+    setDuplicatingItem,
     currentModel,
     searchTreeRef,
     setCurrentId,
     setCurrentItemIndex,
     toolbar,
   } = useContext(ActionViewContext) as ActionViewContextType;
+
+  const { parentContext = {} } = props;
 
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
   const contentRootContext = useContext(
@@ -73,6 +82,28 @@ function TreeActionBar() {
     }
   }
 
+  async function duplicate() {
+    try {
+      setDuplicatingItem?.(true);
+
+      const currentId = selectedRowItems![0].id;
+
+      const newId = await ConnectionProvider.getHandler().duplicate({
+        id: currentId,
+        model: currentModel!,
+        context: { ...parentContext },
+      });
+
+      if (newId) {
+        searchTreeRef?.current?.refreshResults();
+      }
+    } catch (e) {
+      showErrorDialog(JSON.stringify(e));
+    } finally {
+      setDuplicatingItem?.(false);
+    }
+  }
+
   function runAction(actionData: any) {
     processAction?.({
       actionData,
@@ -82,6 +113,7 @@ function TreeActionBar() {
       },
       fields: {},
       context: {
+        ...parentContext,
         active_id: selectedRowItems?.map((item) => item.id)[0],
         active_ids: selectedRowItems?.map((item) => item.id),
       },
@@ -92,6 +124,15 @@ function TreeActionBar() {
     <Space wrap={true}>
       <NewButton />
       {separator()}
+      <ActionButton
+        icon={<CopyOutlined />}
+        tooltip={t("duplicate")}
+        disabled={
+          !selectedRowItems || selectedRowItems?.length !== 1 || duplicatingItem
+        }
+        loading={duplicatingItem}
+        onClick={duplicate}
+      />
       <ActionButton
         icon={<DeleteOutlined />}
         tooltip={t("delete")}

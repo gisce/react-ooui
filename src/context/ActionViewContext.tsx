@@ -31,6 +31,8 @@ export type ActionViewContextType = {
   setAttachments?: (value: any) => void;
   selectedRowItems?: any[];
   setSelectedRowItems?: (value: any[]) => void;
+  duplicatingItem?: boolean;
+  setDuplicatingItem?: (value: boolean) => void;
 };
 
 export const ActionViewContext = React.createContext<ActionViewContextType | null>(
@@ -48,6 +50,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [formIsLoading, setFormIsLoading] = useState<boolean>(false);
   const [attachments, setAttachments] = useState<any>([]);
   const [selectedRowItems, setSelectedRowItems] = useState<any[]>([]);
+  const [duplicatingItem, setDuplicatingItem] = useState<boolean>(false);
 
   const {
     children,
@@ -112,6 +115,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setAttachments,
         selectedRowItems,
         setSelectedRowItems,
+        duplicatingItem,
+        setDuplicatingItem,
       }}
     >
       {children}
