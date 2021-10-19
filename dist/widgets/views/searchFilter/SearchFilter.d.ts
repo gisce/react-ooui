@@ -1,4 +1,3 @@
-import React from "react";
 import "antd/dist/antd.css";
 import "@/tailwind.generated.css";
 import { SearchFields } from "@/types";
@@ -11,6 +10,6 @@ declare type Props = {
     limit: number;
     offset: number;
 };
-declare function SearchFilter(props: Props): React.ReactElement;
+declare function SearchFilter(props: Props): JSX.Element;
 export default SearchFilter;
 //# sourceMappingURL=SearchFilter.d.ts.map

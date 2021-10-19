@@ -249,11 +249,13 @@ var ContentRootProvider = function (props, ref) {
                         actionData = (_e.sent())[0];
                         _e.label = 2;
                     case 2:
-                        responseContext = ooui_1.parseContext({
-                            context: actionData.context,
-                            fields: fields,
-                            values: __assign(__assign({}, values), globalValues),
-                        });
+                        responseContext = typeof (actionData === null || actionData === void 0 ? void 0 : actionData.context) === "string"
+                            ? ooui_1.parseContext({
+                                context: actionData.context,
+                                fields: fields,
+                                values: __assign(__assign({}, values), globalValues),
+                            })
+                            : actionData.context;
                         mergedContext = __assign(__assign({}, responseContext), context);
                         parsedDomain = actionData.domain
                             ? ooui_1.parseDomain({

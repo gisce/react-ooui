@@ -33,10 +33,10 @@ var SearchBottomBar_1 = require("./SearchBottomBar");
 var SearchParams_1 = require("./SearchParams");
 var searchFilterHelper_1 = require("@/helpers/searchFilterHelper");
 function SearchFilter(props) {
-    var fields = props.fields, searchFields = props.searchFields, onClear = props.onClear, onSubmit = props.onSubmit, isSearching = props.isSearching, offset = props.offset, limit = props.limit;
-    var _a = react_1.useState(), simpleSearchFields = _a[0], setSimpleSearchFields = _a[1];
-    var _b = react_1.useState(), advancedSearchFields = _b[0], setAdvancedSearchFields = _b[1];
-    var _c = react_1.useState(false), advancedFilter = _c[0], setAdvancedFilter = _c[1];
+    var fields = props.fields, _a = props.searchFields, searchFields = _a === void 0 ? { primary: [], secondary: [] } : _a, onClear = props.onClear, onSubmit = props.onSubmit, isSearching = props.isSearching, offset = props.offset, limit = props.limit;
+    var _b = react_1.useState(), simpleSearchFields = _b[0], setSimpleSearchFields = _b[1];
+    var _c = react_1.useState(), advancedSearchFields = _c[0], setAdvancedSearchFields = _c[1];
+    var _d = react_1.useState(false), advancedFilter = _d[0], setAdvancedFilter = _d[1];
     var form = antd_1.Form.useForm()[0];
     var getRowsAndCols = function () {
         if (!advancedSearchFields) {

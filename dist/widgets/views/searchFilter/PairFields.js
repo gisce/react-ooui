@@ -35,7 +35,7 @@ function PairFields(props) {
                 help: tooltip,
                 fieldForLabel: id,
             }), align: "left" })),
-        react_1.default.createElement(antd_1.Row, { align: "bottom", className: "mt-0" },
+        react_1.default.createElement(antd_1.Row, { align: "bottom", className: "mt-0", wrap: false },
             react_1.default.createElement(antd_1.Col, null, getWidget("#from")),
             react_1.default.createElement(antd_1.Col, { className: "pb-1" },
                 react_1.default.createElement("span", { className: "pl-2 pr-2 h-full" }, " - ")),
