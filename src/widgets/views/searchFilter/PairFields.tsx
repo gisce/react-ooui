@@ -44,7 +44,7 @@ export function PairFields(props: WidgetProps): React.ReactElement {
           align={"left"}
         />
       )}
-      <Row align={"bottom"} className="mt-0">
+      <Row align={"bottom"} className="mt-0" wrap={false}>
         <Col>{getWidget("#from")}</Col>
         <Col className="pb-1">
           <span className="pl-2 pr-2 h-full"> - </span>

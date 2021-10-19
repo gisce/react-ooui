@@ -38,7 +38,7 @@ export const DateTimeRangePicker = (props: WidgetProps) => {
           align={"left"}
         />
       )}
-      <Row align={"bottom"} className="p-0">
+      <Row align={"bottom"} className="p-0" wrap={false}>
         <Col className="mr-2">
           <Field {...props} ooui={fields[0]} showLabel={false}>
             <DatePicker.RangePicker
