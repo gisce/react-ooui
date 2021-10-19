@@ -24,10 +24,10 @@ type Props = {
   offset: number;
 };
 
-function SearchFilter(props: Props): React.ReactElement {
+function SearchFilter(props: Props) {
   const {
     fields,
-    searchFields,
+    searchFields = { primary: [], secondary: [] },
     onClear,
     onSubmit,
     isSearching,
