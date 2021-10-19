@@ -106,13 +106,12 @@ const ContentRootProvider = (
           })
         : reportContext;
 
-
     if (!idsToExecute) {
       const results = await ConnectionProvider.getHandler().searchAllIds({
         params: [],
         model: datasource.model || model,
         totalItems: 1,
-        context: {...context, ...reportContextParsed},
+        context: { ...context, ...reportContextParsed },
       });
 
       if (results.length === 0) {
@@ -218,11 +217,14 @@ const ContentRootProvider = (
       )[0];
     }
 
-    const responseContext = parseContext({
-      context: actionData.context,
-      fields,
-      values: { ...values, ...globalValues },
-    });
+    const responseContext =
+      typeof actionData?.context === "string"
+        ? parseContext({
+            context: actionData.context,
+            fields,
+            values: { ...values, ...globalValues },
+          })
+        : actionData.context;
 
     const mergedContext = {
       ...responseContext,
