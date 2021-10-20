@@ -284,7 +284,7 @@ function Form(props: FormProps, ref: any) {
         arch,
       });
     } catch (err) {
-      setError(JSON.stringify(err, null, 2));
+      setError(err?.message ? err.message + err.stack : err);
       setFormIsLoading?.(false);
       // setLoading(false);
     }
@@ -526,7 +526,7 @@ function Form(props: FormProps, ref: any) {
       setIsSubmitting(false);
       setFormIsSaving?.(false);
       onSubmitError?.(err);
-      setError(err);
+      setError(err?.message ? err.message : err);
     } finally {
       formSubmitting.current = false;
       setFormIsSaving?.(false);

@@ -247,7 +247,7 @@ function Form(props, ref) {
                     return [3 /*break*/, 7];
                 case 6:
                     err_1 = _a.sent();
-                    setError(JSON.stringify(err_1, null, 2));
+                    setError((err_1 === null || err_1 === void 0 ? void 0 : err_1.message) ? err_1.message + err_1.stack : err_1);
                     setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(false);
                     return [3 /*break*/, 7];
                 case 7: return [2 /*return*/];
@@ -510,7 +510,7 @@ function Form(props, ref) {
                     setIsSubmitting(false);
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
                     onSubmitError === null || onSubmitError === void 0 ? void 0 : onSubmitError(err_2);
-                    setError(err_2);
+                    setError((err_2 === null || err_2 === void 0 ? void 0 : err_2.message) ? err_2.message : err_2);
                     return [3 /*break*/, 11];
                 case 10:
                     formSubmitting.current = false;

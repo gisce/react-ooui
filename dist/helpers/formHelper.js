@@ -94,8 +94,11 @@ var mergeFieldsDomain = function (_a) {
 exports.mergeFieldsDomain = mergeFieldsDomain;
 var getValuesForDomain = function (domain) {
     var values = {};
+    if (!domain || !Array.isArray(domain) || (domain === null || domain === void 0 ? void 0 : domain.length) === 0) {
+        return {};
+    }
     domain.forEach(function (entry) {
-        if (entry[1] === "=") {
+        if ((entry === null || entry === void 0 ? void 0 : entry[1]) === "=") {
             values[entry[0]] = entry[2];
         }
     });
