@@ -124,6 +124,11 @@ function Form(props, ref) {
         getContext: getContext,
         fetchValues: fetchValues,
         cancelUnsavedChanges: cancelUnsavedChanges,
+        clearAndReload: function () {
+            createdId.current = undefined;
+            setFormOoui(undefined);
+            fetchData();
+        },
     }); });
     react_1.useEffect(function () {
         if (!model && !formViewProps) {
@@ -133,6 +138,11 @@ function Form(props, ref) {
             createdId.current = undefined;
             setFormOoui(undefined);
             return;
+        }
+        // In the case we set the id to undefined for creating a new item
+        if (id === undefined && fields) {
+            createdId.current = undefined;
+            setFormOoui(undefined);
         }
         fetchData();
     }, [id, model, valuesProps, formViewProps, visible]);
@@ -163,14 +173,17 @@ function Form(props, ref) {
         return __assign({ id: getCurrentId(), active_id: getCurrentId(), parent_id: parentId }, globalValues);
     }
     var getDefaultValues = function (fields) { return __awaiter(_this, void 0, void 0, function () {
+        var formContext;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().defaultGet({
-                        model: model,
-                        fields: fields,
-                        context: __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
-                        extraValues: defaultValues,
-                    })];
+                case 0:
+                    formContext = getCurrentId() ? formOoui === null || formOoui === void 0 ? void 0 : formOoui.context : {};
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().defaultGet({
+                            model: model,
+                            fields: fields,
+                            context: __assign(__assign({}, parentContext), formContext),
+                            extraValues: defaultValues,
+                        })];
                 case 1: return [2 /*return*/, _a.sent()];
             }
         });

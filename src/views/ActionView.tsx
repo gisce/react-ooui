@@ -175,6 +175,7 @@ function ActionView(props: Props, ref: any) {
   function onNewClicked() {
     setCurrentId(undefined);
     setCurrentView("form");
+    (formRef.current as any).clearAndReload();
   }
 
   return (

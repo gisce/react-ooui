@@ -218,7 +218,7 @@ function FormActionBar() {
             });
         });
     }
-    var mustDisableButtons = formIsSaving || removingItem || formIsLoading;
+    var mustDisableButtons = formIsSaving || removingItem || formIsLoading || duplicatingItem;
     function runAction(actionData) {
         processAction === null || processAction === void 0 ? void 0 : processAction({
             actionData: actionData,
@@ -235,7 +235,11 @@ function FormActionBar() {
             react_1.default.createElement(antd_1.Spin, null),
             separator(),
             separator())),
-        react_1.default.createElement(NewButton_1.default, { disabled: formIsSaving || formIsLoading || removingItem }),
+        react_1.default.createElement(NewButton_1.default, { disabled: formIsSaving ||
+                formIsLoading ||
+                removingItem ||
+                duplicatingItem ||
+                (currentId === undefined && !formHasChanges) }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.SaveOutlined, null), tooltip: t("save"), disabled: !formHasChanges || mustDisableButtons, loading: formIsSaving, onClick: onFormSave }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.CopyOutlined, null), tooltip: t("duplicate"), disabled: formHasChanges ||
                 formIsSaving ||
@@ -245,11 +249,13 @@ function FormActionBar() {
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.DeleteOutlined, null), tooltip: t("delete"), disabled: formIsSaving ||
                 currentId === undefined ||
                 removingItem ||
+                duplicatingItem ||
                 formIsLoading, loading: removingItem, onClick: tryDelete }),
         separator(),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.ReloadOutlined, null), tooltip: t("refresh"), disabled: formIsSaving ||
                 currentId === undefined ||
                 removingItem ||
+                duplicatingItem ||
                 formIsLoading, loading: false, onClick: function () {
                 tryRefresh(function () {
                     formRef.current.fetchValues();

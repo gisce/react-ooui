@@ -16,7 +16,7 @@ import {
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import ConnectionProvider from "@/ConnectionProvider";
-import showErrorDialog from "@/ui/GenericErrorDialog";
+import showErrorDialog from "@/ui/ActionErrorDialog";
 import DropdownButton from "./DropdownButton";
 import {
   ContentRootContext,
@@ -76,7 +76,7 @@ function TreeActionBar(props: Props) {
 
       searchTreeRef?.current?.refreshResults();
     } catch (e) {
-      showErrorDialog(JSON.stringify(e));
+      showErrorDialog(e);
     } finally {
       setRemovingItem?.(false);
     }
@@ -98,7 +98,7 @@ function TreeActionBar(props: Props) {
         searchTreeRef?.current?.refreshResults();
       }
     } catch (e) {
-      showErrorDialog(JSON.stringify(e));
+      showErrorDialog(e);
     } finally {
       setDuplicatingItem?.(false);
     }

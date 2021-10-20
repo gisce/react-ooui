@@ -183,7 +183,8 @@ function FormActionBar() {
     }
   }
 
-  const mustDisableButtons = formIsSaving || removingItem || formIsLoading;
+  const mustDisableButtons =
+    formIsSaving || removingItem || formIsLoading || duplicatingItem;
 
   function runAction(actionData: any) {
     processAction?.({
@@ -206,7 +207,15 @@ function FormActionBar() {
           {separator()}
         </>
       )}
-      <NewButton disabled={formIsSaving || formIsLoading || removingItem} />
+      <NewButton
+        disabled={
+          formIsSaving ||
+          formIsLoading ||
+          removingItem ||
+          duplicatingItem ||
+          (currentId === undefined && !formHasChanges)
+        }
+      />
       <ActionButton
         icon={<SaveOutlined />}
         tooltip={t("save")}
@@ -234,6 +243,7 @@ function FormActionBar() {
           formIsSaving ||
           currentId === undefined ||
           removingItem ||
+          duplicatingItem ||
           formIsLoading
         }
         loading={removingItem}
@@ -247,6 +257,7 @@ function FormActionBar() {
           formIsSaving ||
           currentId === undefined ||
           removingItem ||
+          duplicatingItem ||
           formIsLoading
         }
         loading={false}

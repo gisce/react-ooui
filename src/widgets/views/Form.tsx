@@ -155,6 +155,11 @@ function Form(props: FormProps, ref: any) {
     getContext,
     fetchValues,
     cancelUnsavedChanges,
+    clearAndReload: () => {
+      createdId.current = undefined;
+      setFormOoui(undefined);
+      fetchData();
+    },
   }));
 
   useEffect(() => {
@@ -166,6 +171,12 @@ function Form(props: FormProps, ref: any) {
       createdId.current = undefined;
       setFormOoui(undefined);
       return;
+    }
+
+    // In the case we set the id to undefined for creating a new item
+    if (id === undefined && fields) {
+      createdId.current = undefined;
+      setFormOoui(undefined);
     }
 
     fetchData();
@@ -213,10 +224,11 @@ function Form(props: FormProps, ref: any) {
   }
 
   const getDefaultValues = async (fields: any) => {
+    const formContext = getCurrentId() ? formOoui?.context : {};
     return await ConnectionProvider.getHandler().defaultGet({
       model,
       fields,
-      context: { ...parentContext, ...formOoui?.context },
+      context: { ...parentContext, ...formContext },
       extraValues: defaultValues,
     });
   };

@@ -79,7 +79,7 @@ var icons_1 = require("@ant-design/icons");
 var LocaleContext_1 = require("@/context/LocaleContext");
 var ConfirmDialog_1 = __importDefault(require("@/ui/ConfirmDialog"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
-var GenericErrorDialog_1 = __importDefault(require("@/ui/GenericErrorDialog"));
+var ActionErrorDialog_1 = __importDefault(require("@/ui/ActionErrorDialog"));
 var DropdownButton_1 = __importDefault(require("./DropdownButton"));
 var ContentRootContext_1 = require("@/context/ContentRootContext");
 function TreeActionBar(props) {
@@ -118,7 +118,7 @@ function TreeActionBar(props) {
                         return [3 /*break*/, 4];
                     case 2:
                         e_1 = _b.sent();
-                        GenericErrorDialog_1.default(JSON.stringify(e_1));
+                        ActionErrorDialog_1.default(e_1);
                         return [3 /*break*/, 4];
                     case 3:
                         setRemovingItem === null || setRemovingItem === void 0 ? void 0 : setRemovingItem(false);
@@ -151,7 +151,7 @@ function TreeActionBar(props) {
                         return [3 /*break*/, 4];
                     case 2:
                         e_2 = _b.sent();
-                        GenericErrorDialog_1.default(JSON.stringify(e_2));
+                        ActionErrorDialog_1.default(e_2);
                         return [3 /*break*/, 4];
                     case 3:
                         setDuplicatingItem === null || setDuplicatingItem === void 0 ? void 0 : setDuplicatingItem(false);
