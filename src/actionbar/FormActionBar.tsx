@@ -212,8 +212,7 @@ function FormActionBar() {
           formIsSaving ||
           formIsLoading ||
           removingItem ||
-          duplicatingItem ||
-          (currentId === undefined && !formHasChanges)
+          duplicatingItem
         }
       />
       <ActionButton

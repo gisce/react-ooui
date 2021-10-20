@@ -238,8 +238,7 @@ function FormActionBar() {
         react_1.default.createElement(NewButton_1.default, { disabled: formIsSaving ||
                 formIsLoading ||
                 removingItem ||
-                duplicatingItem ||
-                (currentId === undefined && !formHasChanges) }),
+                duplicatingItem }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.SaveOutlined, null), tooltip: t("save"), disabled: !formHasChanges || mustDisableButtons, loading: formIsSaving, onClick: onFormSave }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.CopyOutlined, null), tooltip: t("duplicate"), disabled: formHasChanges ||
                 formIsSaving ||

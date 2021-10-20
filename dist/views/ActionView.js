@@ -184,9 +184,13 @@ function ActionView(props, ref) {
                 } })));
     }
     function onNewClicked() {
-        setCurrentId(undefined);
-        setCurrentView("form");
-        formRef.current.clearAndReload();
+        if (currentId === undefined && currentView === "form") {
+            formRef.current.clearAndReload();
+        }
+        else {
+            setCurrentId(undefined);
+            setCurrentView("form");
+        }
     }
     return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, searchTreeRef: searchTreeRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId, setCurrentItemIndex: setCurrentItemIndex, currentItemIndex: currentItemIndex, results: results, setResults: setResults, currentModel: model, toolbar: toolbar, setToolbar: setToolbar },
         react_1.default.createElement(TitleHeader_1.default, null, currentView === "form" ? (react_1.default.createElement(FormActionBar_1.default, null)) : (react_1.default.createElement(TreeActionBar_1.default, { parentContext: context }))),

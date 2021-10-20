@@ -173,9 +173,12 @@ function ActionView(props: Props, ref: any) {
   }
 
   function onNewClicked() {
-    setCurrentId(undefined);
-    setCurrentView("form");
-    (formRef.current as any).clearAndReload();
+    if (currentId === undefined && currentView === "form") {
+      (formRef.current as any).clearAndReload();
+    } else {
+      setCurrentId(undefined);
+      setCurrentView("form");
+    }
   }
 
   return (
