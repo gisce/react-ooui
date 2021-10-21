@@ -558,7 +558,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           selectedRowKeys,
           onChange: setSelectedRowKeys,
         }}
-        scrollY={modalHeight * 0.4}
       />
     );
   };
