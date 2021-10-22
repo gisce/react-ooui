@@ -135,7 +135,7 @@ function SearchTree(props, ref) {
                             model: currentModel,
                             ids: resultsIds,
                             arch: treeView === null || treeView === void 0 ? void 0 : treeView.arch,
-                            fields: treeView === null || treeView === void 0 ? void 0 : treeView.fields,
+                            fields: Object.keys(treeView === null || treeView === void 0 ? void 0 : treeView.fields),
                             context: parentContext,
                             attrs: colors && {
                                 colors: colors,

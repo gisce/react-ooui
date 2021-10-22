@@ -135,7 +135,7 @@ function SearchTree(props: Props, ref: any) {
           model: currentModel!,
           ids: resultsIds,
           arch: treeView?.arch!,
-          fields: treeView?.fields!,
+          fields: Object.keys(treeView?.fields!),
           context: parentContext,
           attrs: colors && {
             colors,
