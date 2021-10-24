@@ -54,7 +54,9 @@ import {
   NameSearchRequest,
 } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
-import TabManager from "./views/TabManager";
+import RootView from "./views/RootView";
+import TabSelector from "./views/TabSelector";
+import CurrentTabContent from "./views/CurrentTabContent";
 import ContentRootProvider from "./context/ContentRootContext";
 
 export {
@@ -105,7 +107,9 @@ export {
   ActionBar,
   GetViewRequest,
   DefaultGetRequest,
-  TabManager,
+  RootView,
+  TabSelector,
+  CurrentTabContent,
   Url,
   Email,
   Image,
