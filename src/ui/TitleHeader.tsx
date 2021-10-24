@@ -19,7 +19,7 @@ function TitleHeader(props: Props) {
     <>
       <Row
         className="bg-blueGray-100 shadow-md rounded"
-        style={{ padding: "2em" }}
+        style={{ padding: "1em" }}
         align="middle"
       >
         <Col flex={2}>
