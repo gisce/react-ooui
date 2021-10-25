@@ -65,6 +65,7 @@ function Tab(props: TabProps) {
         <CloseOutlined
           style={{ color: isActive ? "#001529" : "#ADB0B3" }}
           onClick={(e) => {
+            e.stopPropagation();
             onClose(tabKey);
           }}
         />
