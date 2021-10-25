@@ -397,11 +397,12 @@ function Form(props, ref) {
                                     ["res_model", "=", model],
                                     ["res_id", "=", getCurrentId()],
                                 ],
+                                fields: ["id", "name"],
                                 context: getContext(),
                                 model: "ir.attachment",
                             })];
                     case 2:
-                        results = (_b.sent()).results;
+                        results = _b.sent();
                         setAttachments === null || setAttachments === void 0 ? void 0 : setAttachments(results);
                         return [3 /*break*/, 5];
                     case 3:

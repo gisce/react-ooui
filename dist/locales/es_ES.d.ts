@@ -50,6 +50,7 @@ declare const _default: {
     uploadNewImage: string;
     noCurrentEntries: string;
     duplicate: string;
+    downloadingAttachment: string;
 };
 export default _default;
 //# sourceMappingURL=es_ES.d.ts.map

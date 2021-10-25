@@ -68,37 +68,64 @@ var icons_1 = require("@ant-design/icons");
 var DropdownButton_1 = __importDefault(require("./DropdownButton"));
 var LocaleContext_1 = require("@/context/LocaleContext");
 var filesHelper_1 = require("@/helpers/filesHelper");
+var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
+var ActionViewContext_1 = require("@/context/ActionViewContext");
+var antd_1 = require("antd");
+var ActionErrorDialog_1 = __importDefault(require("@/ui/ActionErrorDialog"));
 function AttachmentsButton(props) {
     var _this = this;
     var attachments = props.attachments, disabled = props.disabled, onAddNewAttachment = props.onAddNewAttachment;
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
-    return (react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.LinkOutlined, null), disabled: disabled, label: "(" + attachments.length + ")", tooltip: t("attachments"), items: __spreadArray([
-            { id: "addNewAttachment", name: t("addNewAttachment") },
-            { id: "divider0", name: "divider" }
-        ], attachments), onItemClick: function (itemClicked) { return __awaiter(_this, void 0, void 0, function () {
-            var fileType;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!itemClicked) {
+    var formRef = react_1.useContext(ActionViewContext_1.ActionViewContext).formRef;
+    var _a = react_1.useState(false), downloading = _a[0], setDownloading = _a[1];
+    return (react_1.default.createElement(react_1.default.Fragment, null,
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.LinkOutlined, null), disabled: disabled, label: "(" + attachments.length + ")", tooltip: t("attachments"), items: __spreadArray([
+                { id: "addNewAttachment", name: t("addNewAttachment") },
+                { id: "divider0", name: "divider" }
+            ], attachments), onItemClick: function (itemClicked) { return __awaiter(_this, void 0, void 0, function () {
+                var result, fileType, error_1;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (!itemClicked) {
+                                return [2 /*return*/];
+                            }
+                            if (itemClicked.id === "addNewAttachment") {
+                                onAddNewAttachment();
+                                return [2 /*return*/];
+                            }
+                            setDownloading(true);
+                            _a.label = 1;
+                        case 1:
+                            _a.trys.push([1, 4, , 5]);
+                            return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                                    model: "ir.attachment",
+                                    ids: [itemClicked.id],
+                                    context: formRef.current.getContext(),
+                                })];
+                        case 2:
+                            result = (_a.sent())[0];
+                            if (!result.datas) {
+                                // TODO: maybe open a dialog message to inform that the attachment hasn't got data? or maybe open the attachment in a new form-tab?
+                                return [2 /*return*/];
+                            }
+                            return [4 /*yield*/, filesHelper_1.getMimeType(result.datas)];
+                        case 3:
+                            fileType = _a.sent();
+                            filesHelper_1.openBase64InNewTab(result.datas, fileType.mime);
+                            return [3 /*break*/, 5];
+                        case 4:
+                            error_1 = _a.sent();
+                            ActionErrorDialog_1.default(error_1);
+                            return [3 /*break*/, 5];
+                        case 5:
+                            setDownloading(false);
                             return [2 /*return*/];
-                        }
-                        if (itemClicked.id === "addNewAttachment") {
-                            onAddNewAttachment();
-                            return [2 /*return*/];
-                        }
-                        if (!itemClicked.datas) {
-                            // TODO: maybe open a dialog message to inform that the attachment hasn't got data? or maybe open the attachment in a new form-tab?
-                            return [2 /*return*/];
-                        }
-                        return [4 /*yield*/, filesHelper_1.getMimeType(itemClicked.datas)];
-                    case 1:
-                        fileType = _a.sent();
-                        filesHelper_1.openBase64InNewTab(itemClicked.datas, fileType.mime);
-                        return [2 /*return*/];
-                }
-            });
-        }); } }));
+                    }
+                });
+            }); } }),
+        react_1.default.createElement(antd_1.Modal, { title: t("downloadingAttachment"), visible: downloading, footer: null, closable: false, centered: true },
+            react_1.default.createElement(antd_1.Spin, null))));
 }
 exports.default = AttachmentsButton;
 //# sourceMappingURL=AttachmentsButton.js.map

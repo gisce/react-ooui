@@ -194,7 +194,7 @@ function SearchTree(props, ref) {
                     domainParams = actionDomain.current.length > 0 ? actionDomain.current : domain;
                     searchParams = mergeParams(paramsRef.current, domainParams);
                     colors = treeHelper_1.getTree(treeView).colors;
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().search({
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchForTree({
                             params: searchParams,
                             limit: limit,
                             offset: offset,

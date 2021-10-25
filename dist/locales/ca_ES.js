@@ -52,5 +52,6 @@ exports.default = {
     uploadNewImage: "Puja una nova imatge",
     noCurrentEntries: "No hi ha registres",
     duplicate: "Duplicar",
+    downloadingAttachment: "Descarregant adjunt...",
 };
 //# sourceMappingURL=ca_ES.js.map
