@@ -72,7 +72,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var ooui_1 = require("ooui");
 var antd_1 = require("antd");
-var react_cool_dimensions_1 = __importDefault(require("react-cool-dimensions"));
 var icons_1 = require("@ant-design/icons");
 var debounce_1 = __importDefault(require("lodash/debounce"));
 var Container_1 = __importDefault(require("@/widgets/containers/Container"));
@@ -104,17 +103,18 @@ function Form(props, ref) {
     var lastAssignedValues = react_1.useRef({});
     var warningIsShown = react_1.useRef(false);
     var formSubmitting = react_1.useRef(false);
-    var _r = react_cool_dimensions_1.default({
-        breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
-        updateOnBreakpointChange: true,
-    }), width = _r.width, containerRef = _r.ref;
-    var responsiveBehaviour = width < WIDTH_BREAKPOINT;
+    // const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
+    //   breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
+    //   updateOnBreakpointChange: true,
+    // });
+    // const responsiveBehaviour = width < WIDTH_BREAKPOINT;
+    var responsiveBehaviour = false;
     var formContext = react_1.useContext(FormContext_1.FormContext);
     var parentId = (formContext || {}).activeId;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _s = (rootForm ? actionViewContext : {}) || {}, _t = _s.setFormIsSaving, setFormIsSaving = _t === void 0 ? undefined : _t, _u = _s.setFormHasChanges, setFormHasChanges = _u === void 0 ? undefined : _u, _v = _s.setCurrentId, setCurrentId = _v === void 0 ? undefined : _v, _w = _s.setFormIsLoading, setFormIsLoading = _w === void 0 ? undefined : _w, _x = _s.setAttachments, setAttachments = _x === void 0 ? undefined : _x;
+    var _r = (rootForm ? actionViewContext : {}) || {}, _s = _r.setFormIsSaving, setFormIsSaving = _s === void 0 ? undefined : _s, _t = _r.setFormHasChanges, setFormHasChanges = _t === void 0 ? undefined : _t, _u = _r.setCurrentId, setCurrentId = _u === void 0 ? undefined : _u, _v = _r.setFormIsLoading, setFormIsLoading = _v === void 0 ? undefined : _v, _w = _r.setAttachments, setAttachments = _w === void 0 ? undefined : _w;
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
-    var _y = contentRootContext || {}, processAction = _y.processAction, globalValues = _y.globalValues;
+    var _x = contentRootContext || {}, processAction = _x.processAction, globalValues = _x.globalValues;
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
         getFields: function () {
@@ -884,9 +884,9 @@ function Form(props, ref) {
                         }); } }, "OK")))));
     };
     if (!visible) {
-        return react_1.default.createElement("div", { ref: containerRef });
+        return null;
     }
-    return (react_1.default.createElement("div", { ref: containerRef, className: "pb-2" },
+    return (react_1.default.createElement("div", { className: "pb-2" },
         error && (react_1.default.createElement(antd_1.Alert, { className: "mt-10 mb-20", message: JSON.stringify(error), type: "error", banner: true })),
         content(),
         showFooter && footer()));

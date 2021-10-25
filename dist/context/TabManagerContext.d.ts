@@ -22,6 +22,10 @@ export declare type TabManagerContextType = {
         forcedValues?: any;
         initialViewType?: ViewType;
     }) => void;
+    activeKey: string;
+    onChangeTab: (key: string) => void;
+    onRemoveTab: (key: string) => void;
+    tabs: any[];
 };
 export declare const TabManagerContext: React.Context<TabManagerContextType | null>;
 declare type TabManagerProviderProps = TabManagerContextType & {

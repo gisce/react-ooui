@@ -7,11 +7,15 @@ exports.TabManagerContext = void 0;
 var react_1 = __importDefault(require("react"));
 exports.TabManagerContext = react_1.default.createContext(null);
 var TabManagerProvider = function (props) {
-    var children = props.children, openAction = props.openAction, openRelate = props.openRelate, openSpecificModelTab = props.openSpecificModelTab;
+    var children = props.children, openAction = props.openAction, openRelate = props.openRelate, openSpecificModelTab = props.openSpecificModelTab, activeKey = props.activeKey, onChangeTab = props.onChangeTab, onRemoveTab = props.onRemoveTab, tabs = props.tabs;
     return (react_1.default.createElement(exports.TabManagerContext.Provider, { value: {
             openAction: openAction,
             openRelate: openRelate,
             openSpecificModelTab: openSpecificModelTab,
+            activeKey: activeKey,
+            onChangeTab: onChangeTab,
+            onRemoveTab: onRemoveTab,
+            tabs: tabs,
         } }, children));
 };
 exports.default = TabManagerProvider;

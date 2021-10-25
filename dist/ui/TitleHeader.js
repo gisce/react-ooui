@@ -27,7 +27,7 @@ function TitleHeader(props) {
     var children = props.children;
     var title = react_1.useContext(ActionViewContext_1.ActionViewContext).title;
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(antd_1.Row, { className: "bg-blueGray-100 shadow-md rounded", style: { padding: "2em" }, align: "middle" },
+        react_1.default.createElement(antd_1.Row, { className: "bg-blueGray-100 shadow-md rounded", style: { padding: "1em" }, align: "middle" },
             react_1.default.createElement(antd_1.Col, { flex: 2 },
                 react_1.default.createElement(Title, { level: 3, style: { marginBottom: 0 } }, title)),
             react_1.default.createElement(antd_1.Col, { flex: 3 },
