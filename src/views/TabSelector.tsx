@@ -16,6 +16,7 @@ function TabSelector() {
     <>
       {tabs.map((tab: any) => (
         <Tab
+          key={tab.key}
           tabKey={tab.key}
           label={tab.title}
           onClose={onRemoveTab}
