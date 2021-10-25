@@ -1,7 +1,16 @@
-import React, { useContext, useRef, useState } from "react";
-import { Table, Pagination, Checkbox, Space, Progress, Row, Col } from "antd";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import {
+  Table,
+  Pagination,
+  Checkbox,
+  Space,
+  Progress,
+  Row,
+  Col,
+  Spin,
+} from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
-import useDeepCompareEffect from "use-deep-compare-effect";
+import { Tree as TreeOoui } from "ooui";
 
 import { TreeView, Column } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
@@ -21,6 +30,30 @@ type Props = {
   rowSelection?: any;
   scrollY?: number;
   colorsForResults?: { [key: number]: string };
+};
+
+const booleanComponentFn = (value: boolean): React.ReactElement => {
+  return <Checkbox defaultChecked={value} disabled />;
+};
+const many2OneComponentFn = (m2oField: any): React.ReactElement => {
+  return (
+    <Space>
+      <>{m2oField.value}</>
+      <Many2oneSuffix id={m2oField.id} model={m2oField.model} />
+    </Space>
+  );
+};
+const textComponentFn = (value: any): React.ReactElement => {
+  return <div style={{ whiteSpace: "pre-line" }}>{value}</div>;
+};
+
+const one2ManyComponentFn = (value: any): React.ReactElement => {
+  const length = Array.isArray(value) ? value.length : 0;
+  return <>{`( ${length} )`}</>;
+};
+
+const progressBarComponentFn = (value: any): React.ReactElement => {
+  return <Progress percent={value} />;
 };
 
 function Tree(props: Props): React.ReactElement {
@@ -44,37 +77,14 @@ function Tree(props: Props): React.ReactElement {
 
   const errorInParseColors = useRef<boolean>(false);
 
+  const treeOoui = useRef<any>(null);
+
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
-  useDeepCompareEffect(() => {
-    const tree = getTree(treeView);
-    errorInParseColors.current = false;
+  useEffect(() => {
+    treeOoui.current = getTree(treeView);
 
-    const booleanComponentFn = (value: boolean): React.ReactElement => {
-      return <Checkbox defaultChecked={value} disabled />;
-    };
-    const many2OneComponentFn = (m2oField: any): React.ReactElement => {
-      return (
-        <Space>
-          <>{m2oField.value}</>
-          <Many2oneSuffix id={m2oField.id} model={m2oField.model} />
-        </Space>
-      );
-    };
-    const textComponentFn = (value: any): React.ReactElement => {
-      return <div style={{ whiteSpace: "pre-line" }}>{value}</div>;
-    };
-
-    const one2ManyComponentFn = (value: any): React.ReactElement => {
-      const length = Array.isArray(value) ? value.length : 0;
-      return <>{`( ${length} )`}</>;
-    };
-
-    const progressBarComponentFn = (value: any): React.ReactElement => {
-      return <Progress percent={value} />;
-    };
-
-    const columns = getTableColumns(tree, {
+    const columns = getTableColumns(treeOoui.current, {
       boolean: booleanComponentFn,
       many2one: many2OneComponentFn,
       text: textComponentFn,
@@ -82,12 +92,14 @@ function Tree(props: Props): React.ReactElement {
       many2many: one2ManyComponentFn,
       progressbar: progressBarComponentFn,
     });
-
-    const items = getTableItems(tree, results);
-
     setColumns(columns);
+  }, [treeView]);
+
+  useEffect(() => {
+    errorInParseColors.current = false;
+    const items = getTableItems(treeOoui.current, results);
     setItems(items);
-  }, [treeView, results]);
+  }, [results]);
 
   const from = (page - 1) * limit + 1;
   const to = from - 1 + items.length;
@@ -126,7 +138,7 @@ function Tree(props: Props): React.ReactElement {
   };
 
   function getSums() {
-    const tree = getTree(treeView);
+    const tree = treeOoui.current as TreeOoui;
 
     const sumFields = tree.columns
       .filter((it) => it.sum !== undefined)
@@ -161,20 +173,34 @@ function Tree(props: Props): React.ReactElement {
     );
   }
 
-  const maxWidthPerCell = 600;
+  let dataTable;
+  let adjustedHeight = scrollY;
 
   // This helper function helps to calculate the width for each column
   // based on all table cells - column cell and source cell
-  const dataTable = calculateColumnsWidth(columns, items, maxWidthPerCell);
+  if (treeOoui.current !== null) {
+    const maxWidthPerCell = 600;
+    dataTable = calculateColumnsWidth(columns, items, maxWidthPerCell);
+    const tree = treeOoui.current as TreeOoui;
 
-  let adjustedHeight = scrollY;
-  if (scrollY && getTree(treeView).columns.some((it) => it.sum !== undefined)) {
-    adjustedHeight = scrollY - 30;
+    if (scrollY && tree.columns.some((it) => it.sum !== undefined)) {
+      adjustedHeight = scrollY - 30;
+    }
   }
 
-  return (
+  return treeOoui.current === null ? (
+    <Spin />
+  ) : (
     <div>
       {pagination()}
+      {/* {results.map((result) => {
+        return (
+          <div key={result.id}>
+            <br />
+            <span>{result.name}</span>
+          </div>
+        );
+      })} */}
       <Table
         columns={dataTable.columns}
         scroll={{ x: dataTable.tableWidth, y: adjustedHeight }}
