@@ -54,4 +54,5 @@ export default {
   uploadNewImage: "Puja una nova imatge",
   noCurrentEntries: "No hi ha registres",
   duplicate: "Duplicar",
+  downloadingAttachment: "Descarregant adjunt...",
 };

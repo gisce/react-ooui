@@ -432,11 +432,12 @@ function Form(props: FormProps, ref: any) {
         })
       )[0];
 
-      const { results } = await ConnectionProvider.getHandler().search({
+      const results = await ConnectionProvider.getHandler().search({
         params: [
           ["res_model", "=", model],
           ["res_id", "=", getCurrentId()!],
         ],
+        fields: ["id", "name"],
         context: getContext(),
         model: "ir.attachment",
       });

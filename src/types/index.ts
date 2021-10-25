@@ -171,6 +171,7 @@ type ConnectionProviderType = {
   getView: (options: GetViewRequest) => Promise<FormView | TreeView>;
   searchAllIds: (options: SearchCountRequest) => Promise<number[]>;
   search: (options: SearchRequest) => Promise<SearchResponse>;
+  searchForTree: (options: SearchRequest) => Promise<SearchResponse>;
   update: (options: UpdateObjectRequest) => Promise<any>;
   create: (options: CreateObjectRequest) => Promise<any>;
   delete: (options: DeleteObjectsRequest) => Promise<any>;

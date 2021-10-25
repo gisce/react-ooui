@@ -200,7 +200,7 @@ function SearchTree(props: Props, ref: any) {
       totalItems,
       results,
       attrsEvaluated,
-    } = await ConnectionProvider.getHandler().search({
+    } = await ConnectionProvider.getHandler().searchForTree({
       params: searchParams,
       limit,
       offset,

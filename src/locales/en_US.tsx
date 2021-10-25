@@ -52,4 +52,5 @@ export default {
   uploadNewImage: "Upload new image",
   noCurrentEntries: "No current entries",
   duplicate: "Duplicate",
+  downloadingAttachment: "Downloading attachment...",
 };
