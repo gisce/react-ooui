@@ -22,9 +22,9 @@ function DropdownButton(props: Props) {
   } = props;
 
   function getMenu() {
-    const menuItems = items?.map((item) => {
+    const menuItems = items?.map((item, idx) => {
       if (item.name === "divider") {
-        return <Menu.Divider />;
+        return <Menu.Divider key={"divider" + idx} />;
       }
       return <Menu.Item key={item.id}>{item.name}</Menu.Item>;
     });

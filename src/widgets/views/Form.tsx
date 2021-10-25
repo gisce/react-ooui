@@ -121,11 +121,12 @@ function Form(props: FormProps, ref: any) {
   const warningIsShown = useRef<boolean>(false);
   const formSubmitting = useRef<boolean>(false);
 
-  const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
-    breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
-    updateOnBreakpointChange: true,
-  });
-  const responsiveBehaviour = width < WIDTH_BREAKPOINT;
+  // const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
+  //   breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
+  //   updateOnBreakpointChange: true,
+  // });
+  // const responsiveBehaviour = width < WIDTH_BREAKPOINT;
+  const responsiveBehaviour = false;
 
   const formContext = useContext(FormContext) as FormContextType;
   const { activeId: parentId } = formContext || {};
@@ -905,11 +906,11 @@ function Form(props: FormProps, ref: any) {
   };
 
   if (!visible) {
-    return <div ref={containerRef} />;
+    return null;
   }
 
   return (
-    <div ref={containerRef} className="pb-2">
+    <div className="pb-2">
       {error && (
         <Alert
           className="mt-10 mb-20"

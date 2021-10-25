@@ -6,7 +6,6 @@ import React, {
 } from "react";
 import { Tabs } from "antd";
 import { ConnectionProvider, ContentRootProvider, FormView } from "..";
-const { TabPane } = Tabs;
 import { v4 as uuidv4 } from "uuid";
 import Welcome from "./Welcome";
 import TabManagerProvider from "@/context/TabManagerContext";
@@ -16,16 +15,16 @@ import { ViewType } from "@/types";
 import LocaleContextProvider from "@/context/LocaleContext";
 import { tForLang } from "@/context/LocaleContext";
 
-type TabManagerProps = {
+type RootViewProps = {
   children: React.ReactNode;
   globalValues?: any;
   rootContext?: any;
   lang: string;
 };
 
-function TabManager(props: TabManagerProps, ref: any) {
+function RootView(props: RootViewProps, ref: any) {
   const { children, globalValues = {}, rootContext = {}, lang } = props;
-  const [activeKey, setActiveKey] = useState<string>();
+  const [activeKey, setActiveKey] = useState<string>("welcome");
 
   const [tabs, setTabs] = useState<any>([
     {
@@ -93,7 +92,7 @@ function TabManager(props: TabManagerProps, ref: any) {
 
     openAction({
       domain: parsedDomain,
-      context: {...rootContext, ...parsedContext},
+      context: { ...rootContext, ...parsedContext },
       model,
       views,
       title,
@@ -271,39 +270,17 @@ function TabManager(props: TabManagerProps, ref: any) {
         openAction={openAction}
         openRelate={openRelate}
         openSpecificModelTab={openSpecificModelTab}
+        tabs={tabs}
+        activeKey={activeKey}
+        onRemoveTab={remove}
+        onChangeTab={(key: string) => {
+          setActiveKey(key);
+        }}
       >
         <ContentRootProvider
           ref={contentRootProvider}
           globalValues={globalValues}
         >
-          <Tabs
-            activeKey={activeKey}
-            hideAdd
-            type="editable-card"
-            onChange={(activeKey) => {
-              setActiveKey(activeKey);
-            }}
-            onEdit={async (targetKey, action) => {
-              if (action === "remove") {
-                const canWeCloseFn = tabViewsCloseFunctions.current.get(
-                  targetKey as string
-                );
-                const canWeClose = await canWeCloseFn?.();
-
-                if (canWeClose || targetKey === "welcome") {
-                  remove(targetKey as string);
-                }
-              }
-            }}
-          >
-            {tabs.map((tab: any) => {
-              return (
-                <TabPane key={tab.key} closable={tab.closable} tab={tab.title}>
-                  {tab.content}
-                </TabPane>
-              );
-            })}
-          </Tabs>
           {children}
         </ContentRootProvider>
       </TabManagerProvider>
@@ -311,4 +288,4 @@ function TabManager(props: TabManagerProps, ref: any) {
   );
 }
 
-export default forwardRef(TabManager);
+export default forwardRef(RootView);

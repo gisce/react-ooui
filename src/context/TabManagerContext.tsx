@@ -41,6 +41,10 @@ export type TabManagerContextType = {
     forcedValues?: any;
     initialViewType?: ViewType;
   }) => void;
+  activeKey: string;
+  onChangeTab: (key: string) => void;
+  onRemoveTab: (key: string) => void;
+  tabs: any[];
 };
 
 export const TabManagerContext = React.createContext<TabManagerContextType | null>(
@@ -52,7 +56,16 @@ type TabManagerProviderProps = TabManagerContextType & {
 };
 
 const TabManagerProvider = (props: TabManagerProviderProps): any => {
-  const { children, openAction, openRelate, openSpecificModelTab } = props;
+  const {
+    children,
+    openAction,
+    openRelate,
+    openSpecificModelTab,
+    activeKey,
+    onChangeTab,
+    onRemoveTab,
+    tabs,
+  } = props;
 
   return (
     <TabManagerContext.Provider
@@ -60,6 +73,10 @@ const TabManagerProvider = (props: TabManagerProviderProps): any => {
         openAction,
         openRelate,
         openSpecificModelTab,
+        activeKey,
+        onChangeTab,
+        onRemoveTab,
+        tabs,
       }}
     >
       {children}
