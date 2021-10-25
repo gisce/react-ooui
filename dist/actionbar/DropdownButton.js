@@ -9,9 +9,9 @@ var icons_1 = require("@ant-design/icons");
 function DropdownButton(props) {
     var icon = props.icon, tooltip = props.tooltip, _a = props.items, items = _a === void 0 ? [] : _a, onItemClick = props.onItemClick, label = props.label, _b = props.disabled, disabled = _b === void 0 ? false : _b;
     function getMenu() {
-        var menuItems = items === null || items === void 0 ? void 0 : items.map(function (item) {
+        var menuItems = items === null || items === void 0 ? void 0 : items.map(function (item, idx) {
             if (item.name === "divider") {
-                return react_1.default.createElement(antd_1.Menu.Divider, null);
+                return react_1.default.createElement(antd_1.Menu.Divider, { key: "divider" + idx });
             }
             return react_1.default.createElement(antd_1.Menu.Item, { key: item.id }, item.name);
         });

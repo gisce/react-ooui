@@ -18,45 +18,41 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var treeHelper_1 = require("@/helpers/treeHelper");
-var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 var LocaleContext_1 = require("@/context/LocaleContext");
 var Many2oneSuffix_1 = require("../base/many2one/Many2oneSuffix");
 var dynamicColumnsHelper_1 = require("@/helpers/dynamicColumnsHelper");
+var booleanComponentFn = function (value) {
+    return react_1.default.createElement(antd_1.Checkbox, { defaultChecked: value, disabled: true });
+};
+var many2OneComponentFn = function (m2oField) {
+    return (react_1.default.createElement(antd_1.Space, null,
+        react_1.default.createElement(react_1.default.Fragment, null, m2oField.value),
+        react_1.default.createElement(Many2oneSuffix_1.Many2oneSuffix, { id: m2oField.id, model: m2oField.model })));
+};
+var textComponentFn = function (value) {
+    return react_1.default.createElement("div", { style: { whiteSpace: "pre-line" } }, value);
+};
+var one2ManyComponentFn = function (value) {
+    var length = Array.isArray(value) ? value.length : 0;
+    return react_1.default.createElement(react_1.default.Fragment, null, "( " + length + " )");
+};
+var progressBarComponentFn = function (value) {
+    return react_1.default.createElement(antd_1.Progress, { percent: value });
+};
 function Tree(props) {
     var _a = props.page, page = _a === void 0 ? 1 : _a, limit = props.limit, total = props.total, treeView = props.treeView, results = props.results, onRequestPageChange = props.onRequestPageChange, loading = props.loading, onRowClicked = props.onRowClicked, _b = props.showPagination, showPagination = _b === void 0 ? true : _b, rowSelection = props.rowSelection, scrollY = props.scrollY, _c = props.colorsForResults, colorsForResults = _c === void 0 ? {} : _c;
     var _d = react_1.useState([]), items = _d[0], setItems = _d[1];
     var _e = react_1.useState([]), columns = _e[0], setColumns = _e[1];
     var errorInParseColors = react_1.useRef(false);
+    var treeOoui = react_1.useRef(null);
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
-    use_deep_compare_effect_1.default(function () {
-        var tree = treeHelper_1.getTree(treeView);
-        errorInParseColors.current = false;
-        var booleanComponentFn = function (value) {
-            return react_1.default.createElement(antd_1.Checkbox, { defaultChecked: value, disabled: true });
-        };
-        var many2OneComponentFn = function (m2oField) {
-            return (react_1.default.createElement(antd_1.Space, null,
-                react_1.default.createElement(react_1.default.Fragment, null, m2oField.value),
-                react_1.default.createElement(Many2oneSuffix_1.Many2oneSuffix, { id: m2oField.id, model: m2oField.model })));
-        };
-        var textComponentFn = function (value) {
-            return react_1.default.createElement("div", { style: { whiteSpace: "pre-line" } }, value);
-        };
-        var one2ManyComponentFn = function (value) {
-            var length = Array.isArray(value) ? value.length : 0;
-            return react_1.default.createElement(react_1.default.Fragment, null, "( " + length + " )");
-        };
-        var progressBarComponentFn = function (value) {
-            return react_1.default.createElement(antd_1.Progress, { percent: value });
-        };
-        var columns = treeHelper_1.getTableColumns(tree, {
+    react_1.useEffect(function () {
+        treeOoui.current = treeHelper_1.getTree(treeView);
+        var columns = treeHelper_1.getTableColumns(treeOoui.current, {
             boolean: booleanComponentFn,
             many2one: many2OneComponentFn,
             text: textComponentFn,
@@ -64,10 +60,13 @@ function Tree(props) {
             many2many: one2ManyComponentFn,
             progressbar: progressBarComponentFn,
         });
-        var items = treeHelper_1.getTableItems(tree, results);
         setColumns(columns);
+    }, [treeView]);
+    react_1.useEffect(function () {
+        errorInParseColors.current = false;
+        var items = treeHelper_1.getTableItems(treeOoui.current, results);
         setItems(items);
-    }, [treeView, results]);
+    }, [results]);
     var from = (page - 1) * limit + 1;
     var to = from - 1 + items.length;
     var summary = loading
@@ -90,7 +89,7 @@ function Tree(props) {
     };
     function getSums() {
         var _a;
-        var tree = treeHelper_1.getTree(treeView);
+        var tree = treeOoui.current;
         var sumFields = tree.columns
             .filter(function (it) { return it.sum !== undefined; })
             .map(function (it) {
@@ -116,15 +115,19 @@ function Tree(props) {
         });
         return (react_1.default.createElement("div", { className: "mt-2 p-1 pb-0 pl-2 bg-gray-50" }, summary.join(", ")));
     }
-    var maxWidthPerCell = 600;
+    var dataTable;
+    var adjustedHeight = scrollY;
     // This helper function helps to calculate the width for each column
     // based on all table cells - column cell and source cell
-    var dataTable = dynamicColumnsHelper_1.calculateColumnsWidth(columns, items, maxWidthPerCell);
-    var adjustedHeight = scrollY;
-    if (scrollY && treeHelper_1.getTree(treeView).columns.some(function (it) { return it.sum !== undefined; })) {
-        adjustedHeight = scrollY - 30;
+    if (treeOoui.current !== null) {
+        var maxWidthPerCell = 600;
+        dataTable = dynamicColumnsHelper_1.calculateColumnsWidth(columns, items, maxWidthPerCell);
+        var tree = treeOoui.current;
+        if (scrollY && tree.columns.some(function (it) { return it.sum !== undefined; })) {
+            adjustedHeight = scrollY - 30;
+        }
     }
-    return (react_1.default.createElement("div", null,
+    return treeOoui.current === null ? (react_1.default.createElement(antd_1.Spin, null)) : (react_1.default.createElement("div", null,
         pagination(),
         react_1.default.createElement(antd_1.Table, { columns: dataTable.columns, scroll: { x: dataTable.tableWidth, y: adjustedHeight }, size: "small", dataSource: items, pagination: false, loading: loading, rowClassName: "cursor-pointer select-none", rowKey: function (item) {
                 return item.id;

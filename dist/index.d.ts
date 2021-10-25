@@ -32,7 +32,9 @@ import { Image } from "@/widgets/base/Image";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { TreeView, SearchFields, FormView, ConnectionProviderType, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, GetViewRequest, DefaultGetRequest, ReadEvalUiObjectsRequest, NameSearchRequest } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
-import TabManager from "./views/TabManager";
+import RootView from "./views/RootView";
+import TabSelector from "./views/TabSelector";
+import CurrentTabContent from "./views/CurrentTabContent";
 import ContentRootProvider from "./context/ContentRootContext";
-export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, FloatTime, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectsRequest, ReadEvalUiObjectsRequest, DeleteObjectsRequest, FormModal, SearchModal, One2many, One2manyItem, Date, DateTime, Reference, Binary, iconMapper, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ActionBar, GetViewRequest, DefaultGetRequest, TabManager, Url, Email, Image, ContentRootProvider, showConfirmDialog, NameSearchRequest, ProgressBar, };
+export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, FloatTime, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectsRequest, ReadEvalUiObjectsRequest, DeleteObjectsRequest, FormModal, SearchModal, One2many, One2manyItem, Date, DateTime, Reference, Binary, iconMapper, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ActionBar, GetViewRequest, DefaultGetRequest, RootView, TabSelector, CurrentTabContent, Url, Email, Image, ContentRootProvider, showConfirmDialog, NameSearchRequest, ProgressBar, };
 //# sourceMappingURL=index.d.ts.map
