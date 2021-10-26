@@ -74,7 +74,7 @@ function ActionView(props, ref) {
     var _d = react_1.useState([]), availableViews = _d[0], setAvailableViews = _d[1];
     var _e = react_1.useState(), treeView = _e[0], setTreeView = _e[1];
     var _f = react_1.useState(), formView = _f[0], setFormView = _f[1];
-    var _g = react_1.useState(false), isLoading = _g[0], setIsLoading = _g[1];
+    var _g = react_1.useState(true), isLoading = _g[0], setIsLoading = _g[1];
     var _h = react_1.useState(), currentId = _h[0], setCurrentId = _h[1];
     var _j = react_1.useState(), currentItemIndex = _j[0], setCurrentItemIndex = _j[1];
     var _k = react_1.useState([]), results = _k[0], setResults = _k[1];

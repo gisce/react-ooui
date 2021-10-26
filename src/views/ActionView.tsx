@@ -49,7 +49,7 @@ function ActionView(props: Props, ref: any) {
 
   const [treeView, setTreeView] = useState<TreeView>();
   const [formView, setFormView] = useState<FormView>();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentId, setCurrentId] = useState<number>();
   const [currentItemIndex, setCurrentItemIndex] = useState<number>();
   const [results, setResults] = useState<any>([]);
