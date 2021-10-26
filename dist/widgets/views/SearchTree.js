@@ -408,7 +408,7 @@ function SearchTree(props, ref) {
         setSelectedRowItems === null || setSelectedRowItems === void 0 ? void 0 : setSelectedRowItems(items);
     }
     function calculateTableHeight() {
-        return height - (searchFilterHeight + 360);
+        return height - (searchFilterHeight + 255);
     }
     var content = function () {
         if (!treeView || !formView) {

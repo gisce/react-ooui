@@ -381,7 +381,7 @@ function SearchTree(props: Props, ref: any) {
   }
 
   function calculateTableHeight() {
-    return height - (searchFilterHeight + 360);
+    return height - (searchFilterHeight + 255);
   }
   const content = () => {
     if (!treeView || !formView) {
