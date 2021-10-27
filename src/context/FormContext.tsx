@@ -15,6 +15,7 @@ export type FormContextType = {
     context?: any;
   }) => Promise<void>;
   getContext: () => Promise<any>;
+  getValues: () => Promise<any>;
   setOriginalValue: (field: string, value: any) => void;
   domain: any[];
 };
@@ -34,6 +35,7 @@ const FormProvider = (props: FormProviderProps): any => {
     getFieldValue,
     executeButtonAction,
     getContext,
+    getValues,
     setOriginalValue,
     domain,
   } = props;
@@ -41,6 +43,7 @@ const FormProvider = (props: FormProviderProps): any => {
     <FormContext.Provider
       value={{
         domain,
+        getValues,
         activeId,
         activeModel,
         setFieldValue,

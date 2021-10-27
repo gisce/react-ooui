@@ -91,7 +91,7 @@ var One2manyInput = function (props) {
     var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui, views = props.views;
     var _b = react_1.useContext(One2manyContext_1.One2manyContext), currentView = _b.currentView, setCurrentView = _b.setCurrentView, itemIndex = _b.itemIndex, setItemIndex = _b.setItemIndex, manualTriggerChange = _b.manualTriggerChange, setManualTriggerChange = _b.setManualTriggerChange;
     var formContext = react_1.useContext(FormContext_1.FormContext);
-    var _c = formContext || {}, activeId = _c.activeId, activeModel = _c.activeModel, getContext = _c.getContext, domain = _c.domain;
+    var _c = formContext || {}, activeId = _c.activeId, activeModel = _c.activeModel, getValues = _c.getValues, getContext = _c.getContext, domain = _c.domain;
     var _d = react_1.useContext(LocaleContext_1.LocaleContext), lang = _d.lang, t = _d.t;
     var formRef = react_1.useRef();
     var _e = react_1.useState(false), formHasChanges = _e[0], setFormHasChanges = _e[1];
@@ -103,13 +103,17 @@ var One2manyInput = function (props) {
     var _l = react_1.useState(false), formIsSaving = _l[0], setFormIsSaving = _l[1];
     var _m = react_1.useState([]), selectedRowKeys = _m[0], setSelectedRowKeys = _m[1];
     var _o = react_1.useState(false), continuousEntryMode = _o[0], setContinuousEntryMode = _o[1];
-    var _p = ooui, readOnly = _p.readOnly, relation = _p.relation, context = _p.context;
+    var transformedDomain = react_1.useRef([]);
+    var _p = ooui, readOnly = _p.readOnly, relation = _p.relation, context = _p.context, widgetDomain = _p.domain;
     var isMany2many = ooui.type === "many2many";
     var fieldName = ooui.id;
     var itemsToShow = items.filter(function (item) { return item.values; });
     use_deep_compare_effect_1.default(function () {
         fetchData();
     }, [items]);
+    react_1.useEffect(function () {
+        parseDomain();
+    }, [domain]);
     var triggerChange = function (changedValue) {
         setManualTriggerChange(true);
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
@@ -167,6 +171,39 @@ var One2manyInput = function (props) {
             }
         });
     }); };
+    function parseDomain() {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, _b;
+            var _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        if (!widgetDomain) return [3 /*break*/, 2];
+                        _a = transformedDomain;
+                        _b = ooui_1.transformDomainForChildWidget;
+                        _c = {};
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().evalDomain({
+                                domain: widgetDomain,
+                                values: getValues(),
+                                context: getContext(),
+                            })];
+                    case 1:
+                        _a.current = _b.apply(void 0, [(_c.domain = _d.sent(),
+                                _c.widgetFieldName = fieldName,
+                                _c)]);
+                        _d.label = 2;
+                    case 2:
+                        if (domain && domain.length > 0) {
+                            transformedDomain.current = transformedDomain.current.concat(ooui_1.transformDomainForChildWidget({
+                                domain: domain,
+                                widgetFieldName: fieldName,
+                            }));
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
     var toggleViewMode = function () {
         if (currentView === "form" && views.get("tree")) {
             showFormChangesDialogIfNeeded(function () {
@@ -611,11 +648,7 @@ var One2manyInput = function (props) {
                 setContinuousEntryMode(false);
                 setShowFormModal(false);
             }, readOnly: readOnly, mustClearAfterSave: mustClearAfterSave, postSaveAction: formModalPostSaveAction }),
-        react_1.default.createElement(SearchModal_1.SearchModal, { domain: domain &&
-                ooui_1.transformDomainForChildWidget({
-                    domain: domain,
-                    widgetFieldName: fieldName,
-                }), model: relation, context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), visible: showSearchModal, onSelectValue: function (id) {
+        react_1.default.createElement(SearchModal_1.SearchModal, { domain: transformedDomain.current, model: relation, context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), visible: showSearchModal, onSelectValue: function (id) {
                 setShowSearchModal(false);
                 onSearchModalSelectValue(id);
             }, onCloseModal: function () {

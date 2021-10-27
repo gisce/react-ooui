@@ -107,7 +107,7 @@ var Many2one = function (props) {
 exports.Many2one = Many2one;
 var Many2oneInput = function (props) {
     var value = props.value, onChange = props.onChange, ooui = props.ooui;
-    var required = ooui.required, relation = ooui.relation, readOnly = ooui.readOnly, context = ooui.context, fieldName = ooui.id;
+    var required = ooui.required, relation = ooui.relation, readOnly = ooui.readOnly, context = ooui.context, fieldName = ooui.id, widgetDomain = ooui.domain;
     var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
     var _a = react_1.useState(false), showSearchModal = _a[0], setShowSearchModal = _a[1];
     var _b = react_1.useState(false), showFormModal = _b[0], setShowFormModal = _b[1];
@@ -117,8 +117,8 @@ var Many2oneInput = function (props) {
     var _e = react_1.useState(), inputText = _e[0], setInputText = _e[1];
     var inputTextRef = react_1.useRef();
     var formContext = react_1.useContext(FormContext_1.FormContext);
-    var _f = formContext || {}, domain = _f.domain, getContext = _f.getContext, setOriginalValue = _f.setOriginalValue;
-    var transformedDomain = react_1.useRef();
+    var _f = formContext || {}, domain = _f.domain, getValues = _f.getValues, getContext = _f.getContext, setOriginalValue = _f.setOriginalValue;
+    var transformedDomain = react_1.useRef([]);
     var id = value && value[0];
     var text = (value && value[1]) || "";
     react_1.useEffect(function () {
@@ -137,6 +137,9 @@ var Many2oneInput = function (props) {
             setInputText(inputTextRef.current);
         }
     }, [value]);
+    react_1.useEffect(function () {
+        parseDomain();
+    }, [domain]);
     var triggerChange = function (changedValue) {
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
     };
@@ -164,12 +167,6 @@ var Many2oneInput = function (props) {
                     _a.label = 2;
                 case 2:
                     _a.trys.push([2, 6, 7, 8]);
-                    transformedDomain.current =
-                        domain &&
-                            ooui_1.transformDomainForChildWidget({
-                                domain: domain,
-                                widgetFieldName: fieldName,
-                            });
                     if (!(transformedDomain.current && transformedDomain.current.length > 0)) return [3 /*break*/, 3];
                     tryFetchFirstResultOrShowSearch(inputTextRef.current);
                     return [3 /*break*/, 5];
@@ -262,6 +259,39 @@ var Many2oneInput = function (props) {
             }
         });
     }); };
+    function parseDomain() {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, _b;
+            var _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        if (!widgetDomain) return [3 /*break*/, 2];
+                        _a = transformedDomain;
+                        _b = ooui_1.transformDomainForChildWidget;
+                        _c = {};
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().evalDomain({
+                                domain: widgetDomain,
+                                values: getValues(),
+                                context: getContext(),
+                            })];
+                    case 1:
+                        _a.current = _b.apply(void 0, [(_c.domain = _d.sent(),
+                                _c.widgetFieldName = fieldName,
+                                _c)]);
+                        _d.label = 2;
+                    case 2:
+                        if (domain && domain.length > 0) {
+                            transformedDomain.current = transformedDomain.current.concat(ooui_1.transformDomainForChildWidget({
+                                domain: domain,
+                                widgetFieldName: fieldName,
+                            }));
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
     function onKeyUp(event) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {

@@ -565,7 +565,6 @@ function Form(props: FormProps, ref: any) {
         ...values,
         ...getAdditionalValues(),
       },
-      domain: actionDomain,
     });
     setFormOoui(ooui);
 
@@ -848,6 +847,7 @@ function Form(props: FormProps, ref: any) {
     return (
       <>
         <FormProvider
+          getValues={getValues}
           domain={actionDomain}
           activeId={id}
           activeModel={model}

@@ -53,7 +53,14 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   props: Many2oneInputProps
 ) => {
   const { value, onChange, ooui } = props;
-  const { required, relation, readOnly, context, id: fieldName } = ooui;
+  const {
+    required,
+    relation,
+    readOnly,
+    context,
+    id: fieldName,
+    domain: widgetDomain,
+  } = ooui;
   const requiredClass =
     required && !readOnly ? Config.requiredClass : undefined;
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
@@ -64,8 +71,8 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const [inputText, setInputText] = useState<string>();
   const inputTextRef = useRef<string>();
   const formContext = useContext(FormContext) as FormContextType;
-  const { domain, getContext, setOriginalValue } = formContext || {};
-  const transformedDomain = useRef<any[]>();
+  const { domain, getValues, getContext, setOriginalValue } = formContext || {};
+  const transformedDomain = useRef<any[]>([]);
 
   const id = value && value[0];
   const text = (value && value[1]) || "";
@@ -85,6 +92,10 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       setInputText(inputTextRef.current);
     }
   }, [value]);
+
+  useEffect(() => {
+    parseDomain();
+  }, [domain]);
 
   const triggerChange = (changedValue: any[]) => {
     onChange?.(changedValue);
@@ -109,13 +120,6 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       setSearching(true);
 
       try {
-        transformedDomain.current =
-          domain &&
-          transformDomainForChildWidget({
-            domain,
-            widgetFieldName: fieldName,
-          });
-
         if (transformedDomain.current && transformedDomain.current.length > 0) {
           tryFetchFirstResultOrShowSearch(inputTextRef.current as string);
         } else {
@@ -189,6 +193,28 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       setSearching(false);
     }
   };
+
+  async function parseDomain() {
+    if (widgetDomain) {
+      transformedDomain.current = transformDomainForChildWidget({
+        domain: await ConnectionProvider.getHandler().evalDomain({
+          domain: widgetDomain,
+          values: getValues(),
+          context: getContext(),
+        }),
+        widgetFieldName: fieldName,
+      });
+    }
+
+    if (domain && domain.length > 0) {
+      transformedDomain.current = transformedDomain.current.concat(
+        transformDomainForChildWidget({
+          domain,
+          widgetFieldName: fieldName,
+        })
+      );
+    }
+  }
 
   async function onKeyUp(event: any) {
     if (event.keyCode === 13) {

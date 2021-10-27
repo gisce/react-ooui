@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import { One2many as One2manyOoui } from "ooui";
 import { Alert, Spin } from "antd";
 import { Form } from "@/index";
@@ -59,7 +59,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   } = useContext(One2manyContext) as One2manyContextType;
 
   const formContext = useContext(FormContext) as FormContextType;
-  const { activeId, activeModel, getContext, domain } = formContext || {};
+  const { activeId, activeModel, getValues, getContext, domain } =
+    formContext || {};
   const { lang, t } = useContext(LocaleContext) as LocaleContextType;
 
   const formRef = useRef();
@@ -74,8 +75,14 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const [continuousEntryMode, setContinuousEntryMode] = useState<boolean>(
     false
   );
+  const transformedDomain = useRef<any[]>([]);
 
-  const { readOnly, relation, context } = ooui as One2manyOoui;
+  const {
+    readOnly,
+    relation,
+    context,
+    domain: widgetDomain,
+  } = ooui as One2manyOoui;
   const isMany2many = ooui.type === "many2many";
   const { id: fieldName } = ooui;
   const itemsToShow = items.filter((item) => item.values);
@@ -83,6 +90,10 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   useDeepCompareEffect(() => {
     fetchData();
   }, [items]);
+
+  useEffect(() => {
+    parseDomain();
+  }, [domain]);
 
   const triggerChange = (changedValue: Array<One2manyItem>) => {
     setManualTriggerChange(true);
@@ -125,6 +136,28 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       setIsLoading(false);
     }
   };
+
+  async function parseDomain() {
+    if (widgetDomain) {
+      transformedDomain.current = transformDomainForChildWidget({
+        domain: await ConnectionProvider.getHandler().evalDomain({
+          domain: widgetDomain,
+          values: getValues(),
+          context: getContext(),
+        }),
+        widgetFieldName: fieldName,
+      });
+    }
+
+    if (domain && domain.length > 0) {
+      transformedDomain.current = transformedDomain.current.concat(
+        transformDomainForChildWidget({
+          domain,
+          widgetFieldName: fieldName,
+        })
+      );
+    }
+  }
 
   const toggleViewMode = () => {
     if (currentView === "form" && views.get("tree")) {
@@ -614,13 +647,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         postSaveAction={formModalPostSaveAction}
       />
       <SearchModal
-        domain={
-          domain &&
-          transformDomainForChildWidget({
-            domain,
-            widgetFieldName: fieldName,
-          })
-        }
+        domain={transformedDomain.current}
         model={relation}
         context={{ ...getContext?.(), ...context }}
         visible={showSearchModal}

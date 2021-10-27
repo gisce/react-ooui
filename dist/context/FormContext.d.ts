@@ -10,6 +10,7 @@ export declare type FormContextType = {
         context?: any;
     }) => Promise<void>;
     getContext: () => Promise<any>;
+    getValues: () => Promise<any>;
     setOriginalValue: (field: string, value: any) => void;
     domain: any[];
 };
