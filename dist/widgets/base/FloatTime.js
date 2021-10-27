@@ -38,6 +38,7 @@ var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var Field_1 = __importDefault(require("@/common/Field"));
 var Config_1 = __importDefault(require("@/Config"));
+var timeHelper_1 = require("@/helpers/timeHelper");
 var FloatTime = function (props) {
     var ooui = props.ooui;
     var required = ooui.required;
@@ -52,64 +53,17 @@ var FloatTimeInput = function (props) {
     var inputTextRef = react_1.useRef();
     var _b = react_1.useState(), inputText = _b[0], setInputText = _b[1];
     react_1.useEffect(function () {
-        setInputText(parseFloatToString(value));
+        setInputText(timeHelper_1.parseFloatToString(value));
     }, [value]);
     var triggerChange = function (changedValue) {
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
     };
-    function parseStringToFloat(text) {
-        if (!text) {
-            return undefined;
-        }
-        try {
-            if (text.includes(":")) {
-                var splitted = text.trim().split(":");
-                return (Math.round((parseInt(splitted[0]) + parseInt(splitted[1]) / 60.0) * 10000) / 10000);
-            }
-            else {
-                return parseFloat(text.trim());
-            }
-        }
-        catch (err) {
-            return 0;
-        }
-    }
-    function parseFloatToString(num) {
-        if (num === undefined) {
-            return undefined;
-        }
-        var finalString;
-        var hours = Math.floor(Math.abs(num));
-        var mins = Math.round((Math.abs(num) % 1) * 100) / 100;
-        if (mins >= 1) {
-            hours = hours + 1;
-            mins = 0.0;
-        }
-        else {
-            mins = mins * 60;
-        }
-        var hoursString = hours.toLocaleString("en-US", {
-            minimumIntegerDigits: 2,
-            maximumFractionDigits: 0,
-            useGrouping: false,
-        });
-        var minsStrings = mins.toLocaleString("en-US", {
-            minimumIntegerDigits: 2,
-            maximumFractionDigits: 0,
-            useGrouping: false,
-        });
-        finalString = hoursString + ":" + minsStrings;
-        if (num < 0) {
-            finalString = "-" + finalString;
-        }
-        return finalString;
-    }
     function onValueStringChange(e) {
         inputTextRef.current = e.target.value;
         setInputText(e.target.value);
     }
     function onElementLostFocus() {
-        triggerChange(parseStringToFloat(inputText));
+        triggerChange(timeHelper_1.parseStringToFloat(inputText));
     }
     return (react_1.default.createElement(antd_1.Input, { value: inputText, disabled: readOnly, className: "w-full " + requiredClass, id: id, placeholder: "00:00", onChange: onValueStringChange, onBlur: onElementLostFocus }));
 };

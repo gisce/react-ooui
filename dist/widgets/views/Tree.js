@@ -25,6 +25,7 @@ var treeHelper_1 = require("@/helpers/treeHelper");
 var LocaleContext_1 = require("@/context/LocaleContext");
 var Many2oneSuffix_1 = require("../base/many2one/Many2oneSuffix");
 var dynamicColumnsHelper_1 = require("@/helpers/dynamicColumnsHelper");
+var timeHelper_1 = require("@/helpers/timeHelper");
 var booleanComponentFn = function (value) {
     return react_1.default.createElement(antd_1.Checkbox, { defaultChecked: value, disabled: true });
 };
@@ -43,6 +44,9 @@ var one2ManyComponentFn = function (value) {
 var progressBarComponentFn = function (value) {
     return react_1.default.createElement(antd_1.Progress, { percent: value });
 };
+var floatTimeComponent = function (value) {
+    return react_1.default.createElement(react_1.default.Fragment, null, timeHelper_1.parseFloatToString(value));
+};
 function Tree(props) {
     var _a = props.page, page = _a === void 0 ? 1 : _a, limit = props.limit, total = props.total, treeView = props.treeView, results = props.results, onRequestPageChange = props.onRequestPageChange, loading = props.loading, onRowClicked = props.onRowClicked, _b = props.showPagination, showPagination = _b === void 0 ? true : _b, rowSelection = props.rowSelection, scrollY = props.scrollY, _c = props.colorsForResults, colorsForResults = _c === void 0 ? {} : _c;
     var _d = react_1.useState([]), items = _d[0], setItems = _d[1];
@@ -59,6 +63,7 @@ function Tree(props) {
             one2many: one2ManyComponentFn,
             many2many: one2ManyComponentFn,
             progressbar: progressBarComponentFn,
+            float_time: floatTimeComponent,
         });
         setColumns(columns);
     }, [treeView]);

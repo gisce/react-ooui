@@ -16,6 +16,7 @@ import { TreeView, Column } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { Many2oneSuffix } from "../base/many2one/Many2oneSuffix";
 import { calculateColumnsWidth } from "@/helpers/dynamicColumnsHelper";
+import { parseFloatToString } from "@/helpers/timeHelper";
 
 type Props = {
   total: number;
@@ -56,6 +57,10 @@ const progressBarComponentFn = (value: any): React.ReactElement => {
   return <Progress percent={value} />;
 };
 
+const floatTimeComponent = (value: number): React.ReactElement => {
+  return <>{parseFloatToString(value)}</>;
+};
+
 function Tree(props: Props): React.ReactElement {
   const {
     page = 1,
@@ -91,6 +96,7 @@ function Tree(props: Props): React.ReactElement {
       one2many: one2ManyComponentFn,
       many2many: one2ManyComponentFn,
       progressbar: progressBarComponentFn,
+      float_time: floatTimeComponent,
     });
     setColumns(columns);
   }, [treeView]);
