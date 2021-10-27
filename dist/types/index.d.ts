@@ -133,6 +133,11 @@ declare type DuplicateRequest = {
     model: string;
     context?: any;
 };
+declare type EvalDomainRequest = {
+    domain: string;
+    values: any;
+    context?: any;
+};
 declare type ConnectionProviderType = {
     getActionStringForModel: (model: string) => Promise<string>;
     getViewsForAction: ({ action, context, }: {
@@ -160,6 +165,7 @@ declare type ConnectionProviderType = {
     }) => Promise<any>;
     nameSearch: (options: NameSearchRequest) => Promise<any>;
     duplicate: (options: DuplicateRequest) => Promise<any>;
+    evalDomain: (options: EvalDomainRequest) => Promise<any>;
 };
 declare type ViewType = "tree" | "form";
 export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, ReadEvalUiObjectsRequest, NameSearchRequest, DuplicateRequest, };

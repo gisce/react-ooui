@@ -3,7 +3,11 @@ import { One2many as One2manyOoui } from "ooui";
 import { Alert, Spin } from "antd";
 import { Form } from "@/index";
 import { Tree } from "@/index";
-import { Form as FormOoui, Tree as TreeOoui } from "ooui";
+import {
+  Form as FormOoui,
+  Tree as TreeOoui,
+  transformDomainForChildWidget,
+} from "ooui";
 import { Views } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import { FormModal } from "@/widgets/modals/FormModal";
@@ -22,7 +26,6 @@ import {
   linkItem,
 } from "@/helpers/one2manyHelper";
 import { SearchModal } from "@/widgets/modals/SearchModal";
-import useWindowDimensions from "@/hooks/useWindowDimensions";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
@@ -56,7 +59,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   } = useContext(One2manyContext) as One2manyContextType;
 
   const formContext = useContext(FormContext) as FormContextType;
-  const { activeId, activeModel, getContext } = formContext || {};
+  const { activeId, activeModel, getContext, domain } = formContext || {};
   const { lang, t } = useContext(LocaleContext) as LocaleContextType;
 
   const formRef = useRef();
@@ -72,9 +75,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     false
   );
 
-  const { modalHeight } = useWindowDimensions();
-
-  const { readOnly, relation, domain, context } = ooui as One2manyOoui;
+  const { readOnly, relation, context } = ooui as One2manyOoui;
   const isMany2many = ooui.type === "many2many";
   const { id: fieldName } = ooui;
   const itemsToShow = items.filter((item) => item.values);
@@ -613,7 +614,13 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         postSaveAction={formModalPostSaveAction}
       />
       <SearchModal
-        domain={domain}
+        domain={
+          domain &&
+          transformDomainForChildWidget({
+            domain,
+            widgetFieldName: fieldName,
+          })
+        }
         model={relation}
         context={{ ...getContext?.(), ...context }}
         visible={showSearchModal}

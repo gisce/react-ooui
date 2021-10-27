@@ -257,20 +257,24 @@ var ContentRootProvider = function (props, ref) {
                             })
                             : actionData.context;
                         mergedContext = __assign(__assign({}, responseContext), context);
-                        parsedDomain = actionData.domain
-                            ? ooui_1.parseDomain({
-                                domainValue: actionData.domain,
+                        parsedDomain = [];
+                        if (!actionData.domain) return [3 /*break*/, 4];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().evalDomain({
+                                domain: actionData.domain,
                                 values: __assign(__assign({}, values), globalValues),
-                                fields: fields,
-                            })
-                            : [];
-                        if (!(actionData.target === "new")) return [3 /*break*/, 4];
+                                context: mergedContext,
+                            })];
+                    case 3:
+                        parsedDomain = _e.sent();
+                        _e.label = 4;
+                    case 4:
+                        if (!(actionData.target === "new")) return [3 /*break*/, 6];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
                                 model: actionData.res_model,
                                 type: "form",
                                 context: context,
                             })];
-                    case 3:
+                    case 5:
                         formView = (_e.sent());
                         openActionModal({
                             domain: parsedDomain,
@@ -279,7 +283,7 @@ var ContentRootProvider = function (props, ref) {
                             context: mergedContext,
                         });
                         return [2 /*return*/, {}];
-                    case 4:
+                    case 6:
                         initialViewType = actionData.view_mode.split(",")[0];
                         openAction === null || openAction === void 0 ? void 0 : openAction({
                             target: "current",

@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import { openBase64InNewTab, getMimeType } from "@/helpers/filesHelper";
-import { parseContext, parseDomain } from "ooui";
+import { parseContext } from "ooui";
 import ConnectionProvider from "@/ConnectionProvider";
 import { Modal, Spin } from "antd";
 import {
@@ -231,13 +231,15 @@ const ContentRootProvider = (
       ...context,
     };
 
-    const parsedDomain = actionData.domain
-      ? parseDomain({
-          domainValue: actionData.domain,
-          values: { ...values, ...globalValues },
-          fields,
-        })
-      : [];
+    let parsedDomain = [];
+
+    if (actionData.domain) {
+      parsedDomain = await ConnectionProvider.getHandler().evalDomain({
+        domain: actionData.domain,
+        values: { ...values, ...globalValues },
+        context: mergedContext,
+      });
+    }
 
     // -- Possible values for target property --
     // * new ==> modal

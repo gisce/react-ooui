@@ -848,6 +848,7 @@ function Form(props: FormProps, ref: any) {
     return (
       <>
         <FormProvider
+          domain={actionDomain}
           activeId={id}
           activeModel={model}
           setFieldValue={setFieldValue}

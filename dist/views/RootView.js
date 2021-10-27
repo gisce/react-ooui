@@ -118,27 +118,34 @@ function RootView(props, ref) {
     }
     function retrieveAndOpenAction(action) {
         return __awaiter(this, void 0, void 0, function () {
-            var dataForAction, parsedDomain, parsedContext, model, views, title, target, initialViewType;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var dataForAction, parsedContext, parsedDomain, _a, model, views, title, target, initialViewType;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0: return [4 /*yield*/, __1.ConnectionProvider.getHandler().getActionData({
                             action: action,
                             context: rootContext,
                         })];
                     case 1:
-                        dataForAction = _a.sent();
-                        parsedDomain = dataForAction.domain
-                            ? ooui_1.parseDomain({
-                                domainValue: dataForAction.domain,
-                                values: globalValues,
-                                fields: {},
-                            })
-                            : [];
+                        dataForAction = _b.sent();
                         parsedContext = ooui_1.parseContext({
                             context: dataForAction.context,
                             values: globalValues,
                             fields: {},
                         });
+                        if (!dataForAction.domain) return [3 /*break*/, 3];
+                        return [4 /*yield*/, __1.ConnectionProvider.getHandler().evalDomain({
+                                domain: dataForAction.domain,
+                                values: globalValues,
+                                context: __assign(__assign({}, rootContext), parsedContext),
+                            })];
+                    case 2:
+                        _a = _b.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        _a = [];
+                        _b.label = 4;
+                    case 4:
+                        parsedDomain = _a;
                         model = dataForAction.res_model, views = dataForAction.views, title = dataForAction.name, target = dataForAction.target;
                         initialViewType = views[0][1];
                         openAction({
@@ -173,28 +180,44 @@ function RootView(props, ref) {
     }
     function openRelate(_a) {
         var relateData = _a.relateData, fields = _a.fields, values = _a.values;
-        var model = relateData.res_model, context = relateData.context, domain = relateData.domain, views = relateData.views, target = relateData.target, title = relateData.string;
-        var parsedDomain = domain
-            ? ooui_1.parseDomain({
-                domainValue: domain,
-                values: __assign(__assign({}, values), globalValues),
-                fields: fields,
-            })
-            : [];
-        var initialViewType = views[0][1];
-        var parsedContext = ooui_1.parseContext({
-            context: context,
-            values: __assign(__assign({}, values), globalValues),
-            fields: fields,
-        });
-        openAction({
-            model: model,
-            target: target,
-            views: views,
-            context: __assign(__assign({}, rootContext), parsedContext),
-            domain: parsedDomain,
-            title: title,
-            initialViewType: initialViewType,
+        return __awaiter(this, void 0, void 0, function () {
+            var model, context, domain, views, target, title, initialViewType, parsedContext, parsedDomain, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        model = relateData.res_model, context = relateData.context, domain = relateData.domain, views = relateData.views, target = relateData.target, title = relateData.string;
+                        initialViewType = views[0][1];
+                        parsedContext = ooui_1.parseContext({
+                            context: context,
+                            values: __assign(__assign({}, values), globalValues),
+                            fields: fields,
+                        });
+                        if (!domain) return [3 /*break*/, 2];
+                        return [4 /*yield*/, __1.ConnectionProvider.getHandler().evalDomain({
+                                domain: domain,
+                                values: __assign(__assign({}, values), globalValues),
+                                context: __assign(__assign({}, rootContext), parsedContext),
+                            })];
+                    case 1:
+                        _b = _c.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        _b = [];
+                        _c.label = 3;
+                    case 3:
+                        parsedDomain = _b;
+                        openAction({
+                            model: model,
+                            target: target,
+                            views: views,
+                            context: __assign(__assign({}, rootContext), parsedContext),
+                            domain: parsedDomain,
+                            title: title,
+                            initialViewType: initialViewType,
+                        });
+                        return [2 /*return*/];
+                }
+            });
         });
     }
     function openSpecificModelTab(_a) {

@@ -7,7 +7,7 @@ import {
 } from "@ant-design/icons";
 import styled from "styled-components";
 
-import { Many2one as Many2oneOoui } from "ooui";
+import { Many2one as Many2oneOoui, transformDomainForChildWidget } from "ooui";
 import Field from "@/common/Field";
 import Config from "@/Config";
 import { SearchModal } from "@/widgets/modals/SearchModal";
@@ -53,7 +53,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   props: Many2oneInputProps
 ) => {
   const { value, onChange, ooui } = props;
-  const { required, relation, readOnly, domain, context } = ooui;
+  const { required, relation, readOnly, context, id: fieldName } = ooui;
   const requiredClass =
     required && !readOnly ? Config.requiredClass : undefined;
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
@@ -64,7 +64,8 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const [inputText, setInputText] = useState<string>();
   const inputTextRef = useRef<string>();
   const formContext = useContext(FormContext) as FormContextType;
-  const { getContext, setOriginalValue } = formContext || {};
+  const { domain, getContext, setOriginalValue } = formContext || {};
+  const transformedDomain = useRef<any[]>();
 
   const id = value && value[0];
   const text = (value && value[1]) || "";
@@ -108,19 +109,30 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       setSearching(true);
 
       try {
-        const results: any[] = await ConnectionProvider.getHandler().nameSearch(
-          {
-            model: relation,
-            payload: inputTextRef.current as string,
-            context: { ...getContext?.(), ...context },
-          }
-        );
+        transformedDomain.current =
+          domain &&
+          transformDomainForChildWidget({
+            domain,
+            widgetFieldName: fieldName,
+          });
 
-        if (results.length === 1) {
-          inputTextRef.current = undefined;
-          triggerChange(results[0]);
-        } else {
+        if (transformedDomain.current && transformedDomain.current.length > 0) {
           tryFetchFirstResultOrShowSearch(inputTextRef.current as string);
+        } else {
+          const results: any[] = await ConnectionProvider.getHandler().nameSearch(
+            {
+              model: relation,
+              payload: inputTextRef.current as string,
+              context: { ...getContext?.(), ...context },
+            }
+          );
+
+          if (results.length === 1) {
+            inputTextRef.current = undefined;
+            triggerChange(results[0]);
+          } else {
+            tryFetchFirstResultOrShowSearch(inputTextRef.current as string);
+          }
         }
       } catch (err) {
         showErrorDialog(err);
@@ -131,9 +143,9 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   };
 
   const tryFetchFirstResultOrShowSearch = async (text: string) => {
-    if (domain && domain.length > 0) {
+    if (transformedDomain.current && transformedDomain.current.length > 0) {
       const resultIds = await ConnectionProvider.getHandler().searchAllIds({
-        params: domain,
+        params: transformedDomain.current,
         model: relation,
         context: { ...getContext?.(), ...context },
         totalItems: 2,
@@ -231,7 +243,13 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       </Col>
       <SearchModal
         model={relation}
-        domain={domain}
+        domain={
+          domain &&
+          transformDomainForChildWidget({
+            domain,
+            widgetFieldName: fieldName,
+          })
+        }
         context={{ ...getContext?.(), ...context }}
         visible={showSearchModal}
         nameSearch={!id ? searchText : undefined}

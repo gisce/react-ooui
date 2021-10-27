@@ -159,6 +159,12 @@ type DuplicateRequest = {
   context?: any;
 };
 
+type EvalDomainRequest = {
+  domain: string;
+  values: any;
+  context?: any;
+};
+
 type ConnectionProviderType = {
   getActionStringForModel: (model: string) => Promise<string>;
   getViewsForAction: ({
@@ -192,6 +198,7 @@ type ConnectionProviderType = {
   }) => Promise<any>;
   nameSearch: (options: NameSearchRequest) => Promise<any>;
   duplicate: (options: DuplicateRequest) => Promise<any>;
+  evalDomain: (options: EvalDomainRequest) => Promise<any>;
 };
 
 type ViewType = "tree" | "form";

@@ -4,13 +4,12 @@ import React, {
   useImperativeHandle,
   useRef,
 } from "react";
-import { Tabs } from "antd";
 import { ConnectionProvider, ContentRootProvider, FormView } from "..";
 import { v4 as uuidv4 } from "uuid";
 import Welcome from "./Welcome";
 import TabManagerProvider from "@/context/TabManagerContext";
 import ActionView from "./ActionView";
-import { parseContext, parseDomain } from "ooui";
+import { parseContext } from "ooui";
 import { ViewType } from "@/types";
 import LocaleContextProvider from "@/context/LocaleContext";
 import { tForLang } from "@/context/LocaleContext";
@@ -72,19 +71,19 @@ function RootView(props: RootViewProps, ref: any) {
       action,
       context: rootContext,
     });
-    const parsedDomain = dataForAction.domain
-      ? parseDomain({
-          domainValue: dataForAction.domain,
-          values: globalValues,
-          fields: {},
-        })
-      : [];
-
     const parsedContext = parseContext({
       context: dataForAction.context,
       values: globalValues,
       fields: {},
     });
+
+    const parsedDomain = dataForAction.domain
+      ? await ConnectionProvider.getHandler().evalDomain({
+          domain: dataForAction.domain,
+          values: globalValues,
+          context: { ...rootContext, ...parsedContext },
+        })
+      : [];
 
     const { res_model: model, views, name: title, target } = dataForAction;
 
@@ -129,7 +128,7 @@ function RootView(props: RootViewProps, ref: any) {
     setActiveKey(key);
   }
 
-  function openRelate({
+  async function openRelate({
     relateData,
     fields,
     values,
@@ -147,14 +146,6 @@ function RootView(props: RootViewProps, ref: any) {
       string: title,
     } = relateData;
 
-    const parsedDomain = domain
-      ? parseDomain({
-          domainValue: domain,
-          values: { ...values, ...globalValues },
-          fields,
-        })
-      : [];
-
     const initialViewType = views[0][1];
 
     const parsedContext = parseContext({
@@ -162,6 +153,14 @@ function RootView(props: RootViewProps, ref: any) {
       values: { ...values, ...globalValues },
       fields,
     });
+
+    const parsedDomain = domain
+      ? await ConnectionProvider.getHandler().evalDomain({
+          domain: domain,
+          values: { ...values, ...globalValues },
+          context: { ...rootContext, ...parsedContext },
+        })
+      : [];
 
     openAction({
       model,
