@@ -27,6 +27,10 @@ const FavouriteButton = () => {
 
   const menu = (
     <Menu onClick={handleMenuClick}>
+      <div style={{ width: 300, padding: 5, paddingLeft: 15, color: "#ccc" }}>
+        {"Els meus favorits".toUpperCase()}
+      </div>
+      <Menu.Divider />
       <Menu.Item key="1">
         <FavouriteItem title="Empreses" type="tree" />
       </Menu.Item>
@@ -59,7 +63,14 @@ const FavouriteButton = () => {
   return (
     <>
       <Button
-        icon={isFavourite ? <StarFilled /> : <StarOutlined />}
+        type={isFavourite ? "primary" : "default"}
+        icon={
+          isFavourite ? (
+            <StarFilled style={{ color: "white" }} />
+          ) : (
+            <StarOutlined />
+          )
+        }
         style={{ width: 50 }}
         onClick={() => setIsFavourite(!isFavourite)}
       ></Button>
