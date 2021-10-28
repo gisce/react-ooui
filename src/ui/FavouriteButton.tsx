@@ -13,7 +13,7 @@ type Props = {
   isFavourite: boolean;
 };
 
-const FavouriteButton = (props: Props) => {
+const FavouriteButton = () => {
   // const { isFavourite } = props;
 
   const [isFavourite, setIsFavourite] = useState(false);

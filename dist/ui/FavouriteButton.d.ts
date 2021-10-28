@@ -1,6 +1,3 @@
-declare type Props = {
-    isFavourite: boolean;
-};
-declare const FavouriteButton: (props: Props) => JSX.Element;
+declare const FavouriteButton: () => JSX.Element;
 export default FavouriteButton;
 //# sourceMappingURL=FavouriteButton.d.ts.map

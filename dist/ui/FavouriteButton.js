@@ -23,7 +23,7 @@ var react_1 = __importStar(require("react"));
 var icons_1 = require("@ant-design/icons");
 var antd_1 = require("antd");
 var antd_2 = require("antd");
-var FavouriteButton = function (props) {
+var FavouriteButton = function () {
     // const { isFavourite } = props;
     var _a = react_1.useState(false), isFavourite = _a[0], setIsFavourite = _a[1];
     var _b = react_1.useState(false), dropdownVisible = _b[0], setDropdownVisible = _b[1];
