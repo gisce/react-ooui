@@ -58,6 +58,7 @@ import RootView from "./views/RootView";
 import TabSelector from "./views/TabSelector";
 import CurrentTabContent from "./views/CurrentTabContent";
 import ContentRootProvider from "./context/ContentRootContext";
+import FavouriteButton from "./ui/FavouriteButton";
 
 export {
   Button,
@@ -117,4 +118,5 @@ export {
   showConfirmDialog,
   NameSearchRequest,
   ProgressBar,
+  FavouriteButton,
 };
