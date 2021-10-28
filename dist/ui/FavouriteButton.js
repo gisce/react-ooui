@@ -32,6 +32,8 @@ var FavouriteButton = function () {
         setDropdownVisible(flag);
     }
     var menu = (react_1.default.createElement(antd_2.Menu, { onClick: handleMenuClick },
+        react_1.default.createElement("div", { style: { width: 300, padding: 5, paddingLeft: 15, color: "#ccc" } }, "Els meus favorits".toUpperCase()),
+        react_1.default.createElement(antd_2.Menu.Divider, null),
         react_1.default.createElement(antd_2.Menu.Item, { key: "1" },
             react_1.default.createElement(FavouriteItem, { title: "Empreses", type: "tree" })),
         react_1.default.createElement(antd_2.Menu.Item, { key: "2" },
@@ -46,7 +48,7 @@ var FavouriteButton = function () {
             react_1.default.createElement(antd_1.Col, { flex: "auto" }, title)));
     }
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(antd_1.Button, { icon: isFavourite ? react_1.default.createElement(icons_1.StarFilled, null) : react_1.default.createElement(icons_1.StarOutlined, null), style: { width: 50 }, onClick: function () { return setIsFavourite(!isFavourite); } }),
+        react_1.default.createElement(antd_1.Button, { type: isFavourite ? "primary" : "default", icon: isFavourite ? (react_1.default.createElement(icons_1.StarFilled, { style: { color: "white" } })) : (react_1.default.createElement(icons_1.StarOutlined, null)), style: { width: 50 }, onClick: function () { return setIsFavourite(!isFavourite); } }),
         react_1.default.createElement(antd_2.Dropdown, { overlay: menu, onVisibleChange: handleVisibleChange, visible: dropdownVisible },
             react_1.default.createElement(antd_1.Button, { style: { width: 25 }, icon: react_1.default.createElement(icons_1.DownOutlined, { style: { fontSize: "0.5em" } }), onClick: function (e) { return e.preventDefault(); } }))));
 };
