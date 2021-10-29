@@ -98,6 +98,7 @@ function RootView(props, ref) {
     var contentRootProvider = react_1.useRef();
     react_1.useImperativeHandle(ref, function () { return ({
         retrieveAndOpenAction: retrieveAndOpenAction,
+        openShortcut: openShortcut,
     }); });
     function remove(key) {
         if (key === activeKey) {
@@ -220,6 +221,20 @@ function RootView(props, ref) {
             });
         });
     }
+    function openShortcut(shortcut) {
+        return __awaiter(this, void 0, void 0, function () {
+            var resource, res_id, view_id;
+            return __generator(this, function (_a) {
+                resource = shortcut.resource, res_id = shortcut.res_id, view_id = shortcut.view_id;
+                if (view_id) {
+                }
+                else {
+                    retrieveAndOpenAction(resource + "," + res_id);
+                }
+                return [2 /*return*/];
+            });
+        });
+    }
     function openSpecificModelTab(_a) {
         var model = _a.model, values = _a.values, forcedValues = _a.forcedValues, title = _a.title, initialViewType = _a.initialViewType;
         return __awaiter(this, void 0, void 0, function () {
@@ -274,7 +289,7 @@ function RootView(props, ref) {
         });
     }
     return (react_1.default.createElement(LocaleContext_1.default, { lang: lang },
-        react_1.default.createElement(TabManagerContext_1.default, { openAction: openAction, openRelate: openRelate, openSpecificModelTab: openSpecificModelTab, tabs: tabs, activeKey: activeKey, onRemoveTab: remove, onChangeTab: function (key) {
+        react_1.default.createElement(TabManagerContext_1.default, { openShortcut: openShortcut, openAction: openAction, openRelate: openRelate, openSpecificModelTab: openSpecificModelTab, tabs: tabs, activeKey: activeKey, onRemoveTab: remove, onChangeTab: function (key) {
                 setActiveKey(key);
             } },
             react_1.default.createElement(__1.ContentRootProvider, { ref: contentRootProvider, globalValues: globalValues }, children))));

@@ -1,4 +1,5 @@
 import { ViewType } from "@/types";
+import { Shortcut } from "@/ui/FavouriteButton";
 import React from "react";
 export declare type TabManagerContextType = {
     openAction: ({ domain, context, model, views, title, target, initialViewType, }: {
@@ -25,6 +26,7 @@ export declare type TabManagerContextType = {
     activeKey: string;
     onChangeTab: (key: string) => void;
     onRemoveTab: (key: string) => void;
+    openShortcut: (shortcut: Shortcut) => void;
     tabs: any[];
 };
 export declare const TabManagerContext: React.Context<TabManagerContextType | null>;
