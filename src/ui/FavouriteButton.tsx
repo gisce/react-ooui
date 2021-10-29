@@ -61,6 +61,7 @@ const FavouriteButton = (props: Props) => {
     if (shortcut) {
       openShortcut(shortcut);
     }
+    setDropdownVisible(false);
   }
 
   function handleVisibleChange(flag: boolean) {
