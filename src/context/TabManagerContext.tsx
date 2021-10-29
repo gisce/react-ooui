@@ -1,4 +1,5 @@
 import { ViewType } from "@/types";
+import { Shortcut } from "@/ui/FavouriteButton";
 import React from "react";
 
 export type TabManagerContextType = {
@@ -44,6 +45,7 @@ export type TabManagerContextType = {
   activeKey: string;
   onChangeTab: (key: string) => void;
   onRemoveTab: (key: string) => void;
+  openShortcut: (shortcut: Shortcut) => void;
   tabs: any[];
 };
 
@@ -61,6 +63,7 @@ const TabManagerProvider = (props: TabManagerProviderProps): any => {
     openAction,
     openRelate,
     openSpecificModelTab,
+    openShortcut,
     activeKey,
     onChangeTab,
     onRemoveTab,
@@ -74,6 +77,7 @@ const TabManagerProvider = (props: TabManagerProviderProps): any => {
         openRelate,
         openSpecificModelTab,
         activeKey,
+        openShortcut,
         onChangeTab,
         onRemoveTab,
         tabs,

@@ -13,6 +13,7 @@ import { parseContext } from "ooui";
 import { ViewType } from "@/types";
 import LocaleContextProvider from "@/context/LocaleContext";
 import { tForLang } from "@/context/LocaleContext";
+import { Shortcut } from "@/ui/FavouriteButton";
 
 type RootViewProps = {
   children: React.ReactNode;
@@ -38,6 +39,7 @@ function RootView(props: RootViewProps, ref: any) {
 
   useImperativeHandle(ref, () => ({
     retrieveAndOpenAction,
+    openShortcut,
   }));
 
   function remove(key: string) {
@@ -173,6 +175,15 @@ function RootView(props: RootViewProps, ref: any) {
     });
   }
 
+  async function openShortcut(shortcut: Shortcut) {
+    const { resource, res_id, view_id } = shortcut;
+
+    if (view_id) {
+    } else {
+      retrieveAndOpenAction(`${resource},${res_id}`);
+    }
+  }
+
   async function openSpecificModelTab({
     model,
     values,
@@ -266,6 +277,7 @@ function RootView(props: RootViewProps, ref: any) {
   return (
     <LocaleContextProvider lang={lang}>
       <TabManagerProvider
+        openShortcut={openShortcut}
         openAction={openAction}
         openRelate={openRelate}
         openSpecificModelTab={openSpecificModelTab}
