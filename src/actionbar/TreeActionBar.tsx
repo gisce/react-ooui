@@ -12,6 +12,7 @@ import {
   PrinterOutlined,
   ThunderboltOutlined,
   CopyOutlined,
+  ReloadOutlined,
 } from "@ant-design/icons";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showConfirmDialog from "@/ui/ConfirmDialog";
@@ -141,6 +142,22 @@ function TreeActionBar(props: Props) {
         onClick={tryDelete}
       />
       {separator()}
+      <ActionButton
+        icon={<ReloadOutlined />}
+        tooltip={t("refresh")}
+        disabled={duplicatingItem || removingItem}
+        loading={false}
+        onClick={() => {
+          searchTreeRef?.current?.refreshResults();
+        }}
+      />
+      {separator()}
+      <ChangeViewButton
+        currentView={currentView}
+        availableViews={availableViews}
+        onChangeView={setCurrentView}
+      />
+      {separator()}
       <DropdownButton
         icon={<ThunderboltOutlined />}
         disabled={!(selectedRowItems && selectedRowItems?.length > 0)}
@@ -172,12 +189,6 @@ function TreeActionBar(props: Props) {
             },
           });
         }}
-      />
-      {separator()}
-      <ChangeViewButton
-        currentView={currentView}
-        availableViews={availableViews}
-        onChangeView={setCurrentView}
       />
     </Space>
   );

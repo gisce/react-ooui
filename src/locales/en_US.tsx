@@ -53,4 +53,6 @@ export default {
   noCurrentEntries: "No current entries",
   duplicate: "Duplicate",
   downloadingAttachment: "Downloading attachment...",
+  tree: "list",
+  form: "form",
 };

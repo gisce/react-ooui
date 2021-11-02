@@ -53,5 +53,7 @@ exports.default = {
     noCurrentEntries: "No hay registros",
     duplicate: "Duplicar",
     downloadingAttachment: "Descargando adjunto...",
+    tree: "lista",
+    form: "formulario",
 };
 //# sourceMappingURL=es_ES.js.map

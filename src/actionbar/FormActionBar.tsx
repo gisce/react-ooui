@@ -267,6 +267,17 @@ function FormActionBar() {
         }}
       />
       {separator()}
+      <ChangeViewButton
+        currentView={currentView}
+        availableViews={availableViews}
+        onChangeView={(view: any) => {
+          setFormHasChanges?.(false);
+          setCurrentView?.(view);
+        }}
+        disabled={mustDisableButtons}
+        formHasChanges={formHasChanges}
+      />
+      {separator()}
       <Space>
         <ActionButton
           icon={<LeftOutlined />}
@@ -287,17 +298,6 @@ function FormActionBar() {
           }}
         />
       </Space>
-      {separator()}
-      <ChangeViewButton
-        currentView={currentView}
-        availableViews={availableViews}
-        onChangeView={(view: any) => {
-          setFormHasChanges?.(false);
-          setCurrentView?.(view);
-        }}
-        disabled={mustDisableButtons}
-        formHasChanges={formHasChanges}
-      />
       {separator()}
       <DropdownButton
         icon={<ThunderboltOutlined />}

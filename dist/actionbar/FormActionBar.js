@@ -261,6 +261,11 @@ function FormActionBar() {
                 });
             } }),
         separator(),
+        react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews, onChangeView: function (view) {
+                setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
+                setCurrentView === null || setCurrentView === void 0 ? void 0 : setCurrentView(view);
+            }, disabled: mustDisableButtons, formHasChanges: formHasChanges }),
+        separator(),
         react_1.default.createElement(antd_1.Space, null,
             react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.LeftOutlined, null), tooltip: t("previous"), disabled: mustDisableButtons, loading: false, onClick: function () {
                     tryNavigate(onPreviousClick);
@@ -268,11 +273,6 @@ function FormActionBar() {
             react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.RightOutlined, null), tooltip: t("next"), disabled: mustDisableButtons, loading: false, onClick: function () {
                     tryNavigate(onNextClick);
                 } })),
-        separator(),
-        react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews, onChangeView: function (view) {
-                setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
-                setCurrentView === null || setCurrentView === void 0 ? void 0 : setCurrentView(view);
-            }, disabled: mustDisableButtons, formHasChanges: formHasChanges }),
         separator(),
         react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null), disabled: mustDisableButtons, tooltip: t("actions"), items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.action, onItemClick: function (action) {
                 if (!action) {

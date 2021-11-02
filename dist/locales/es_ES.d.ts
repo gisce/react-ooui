@@ -51,6 +51,8 @@ declare const _default: {
     noCurrentEntries: string;
     duplicate: string;
     downloadingAttachment: string;
+    tree: string;
+    form: string;
 };
 export default _default;
 //# sourceMappingURL=es_ES.d.ts.map

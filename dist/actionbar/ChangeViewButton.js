@@ -27,6 +27,7 @@ var antd_1 = require("antd");
 var icons_1 = require("@ant-design/icons");
 var LocaleContext_1 = require("@/context/LocaleContext");
 var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"));
+var ButtonWithTooltip_1 = __importDefault(require("@/common/ButtonWithTooltip"));
 function getIconForView(view) {
     if (view === "tree") {
         return react_1.default.createElement(icons_1.TableOutlined, null);
@@ -39,6 +40,10 @@ function getIconForView(view) {
 function ChangeViewButton(props) {
     var currentView = props.currentView, availableViews = props.availableViews, onChangeView = props.onChangeView, _a = props.disabled, disabled = _a === void 0 ? false : _a, _b = props.formHasChanges, formHasChanges = _b === void 0 ? false : _b;
     var _c = react_1.useContext(LocaleContext_1.LocaleContext), t = _c.t, lang = _c.lang;
+    var _d = react_1.useState("tree"), previousView = _d[0], setPreviousView = _d[1];
+    react_1.useEffect(function () {
+        setPreviousView(availableViews.filter(function (view) { return view !== currentView; })[0]);
+    }, [availableViews]);
     function getMenu() {
         var menuItems = availableViews.map(function (view) {
             return (react_1.default.createElement(antd_1.Menu.Item, { key: view },
@@ -65,15 +70,15 @@ function ChangeViewButton(props) {
     }
     function handleMenuClick(event) {
         tryNavigate(function () {
+            setPreviousView(currentView);
             var selectedView = event.key;
             onChangeView(selectedView);
         });
     }
-    return (react_1.default.createElement(antd_1.Dropdown, { overlay: getMenu(), disabled: disabled },
-        react_1.default.createElement(antd_1.Button, null,
-            getIconForView(currentView),
-            " ",
-            react_1.default.createElement(icons_1.DownOutlined, null))));
+    return (react_1.default.createElement(react_1.default.Fragment, null,
+        react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("viewAs") + " " + t(previousView), icon: getIconForView(previousView), style: { width: 50 }, onClick: function () { return onChangeView(previousView); }, disabled: disabled }),
+        react_1.default.createElement(antd_1.Dropdown, { overlay: getMenu(), disabled: disabled },
+            react_1.default.createElement(antd_1.Button, { style: { width: 25 }, icon: react_1.default.createElement(icons_1.DownOutlined, { style: { fontSize: "0.5em" } }), onClick: function (e) { return e.preventDefault(); } }))));
 }
 exports.default = ChangeViewButton;
 //# sourceMappingURL=ChangeViewButton.js.map

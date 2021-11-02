@@ -178,6 +178,13 @@ function TreeActionBar(props) {
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.CopyOutlined, null), tooltip: t("duplicate"), disabled: !selectedRowItems || (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) !== 1 || duplicatingItem, loading: duplicatingItem, onClick: duplicate }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.DeleteOutlined, null), tooltip: t("delete"), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0), loading: removingItem, onClick: tryDelete }),
         separator(),
+        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.ReloadOutlined, null), tooltip: t("refresh"), disabled: duplicatingItem || removingItem, loading: false, onClick: function () {
+                var _a;
+                (_a = searchTreeRef === null || searchTreeRef === void 0 ? void 0 : searchTreeRef.current) === null || _a === void 0 ? void 0 : _a.refreshResults();
+            } }),
+        separator(),
+        react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews, onChangeView: setCurrentView }),
+        separator(),
         react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0), tooltip: t("actions"), items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.action, onItemClick: function (action) {
                 if (!action) {
                     return;
@@ -189,9 +196,7 @@ function TreeActionBar(props) {
                     return;
                 }
                 runAction(__assign(__assign({}, report), { datas: __assign(__assign({}, (report.datas || {})), { ids: selectedRowItems.map(function (item) { return item.id; }) }) }));
-            } }),
-        separator(),
-        react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews, onChangeView: setCurrentView })));
+            } })));
 }
 function separator() {
     return react_1.default.createElement("div", { className: "inline-block w-2" });

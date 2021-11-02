@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Menu, Dropdown, Row, Col, Button } from "antd";
 import {
   DownOutlined,
@@ -9,6 +9,7 @@ import {
 import { ViewType } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
+import ButtonWithTooltip from "@/common/ButtonWithTooltip";
 
 type Props = {
   onChangeView: (view: ViewType) => void;
@@ -36,6 +37,12 @@ function ChangeViewButton(props: Props) {
     formHasChanges = false,
   } = props;
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
+
+  const [previousView, setPreviousView] = useState<ViewType>("tree");
+
+  useEffect(() => {
+    setPreviousView(availableViews.filter((view) => view !== currentView)[0]);
+  }, [availableViews]);
 
   function getMenu() {
     const menuItems = availableViews.map((view) => {
@@ -80,17 +87,29 @@ function ChangeViewButton(props: Props) {
 
   function handleMenuClick(event: any) {
     tryNavigate(() => {
+      setPreviousView(currentView);
       const selectedView = event.key;
       onChangeView(selectedView);
     });
   }
 
   return (
-    <Dropdown overlay={getMenu()} disabled={disabled}>
-      <Button>
-        {getIconForView(currentView)} <DownOutlined />
-      </Button>
-    </Dropdown>
+    <>
+      <ButtonWithTooltip
+        tooltip={t("viewAs") + " " + t(previousView)}
+        icon={getIconForView(previousView)}
+        style={{ width: 50 }}
+        onClick={() => onChangeView(previousView)}
+        disabled={disabled}
+      ></ButtonWithTooltip>
+      <Dropdown overlay={getMenu()} disabled={disabled}>
+        <Button
+          style={{ width: 25 }}
+          icon={<DownOutlined style={{ fontSize: "0.5em" }} />}
+          onClick={(e) => e.preventDefault()}
+        ></Button>
+      </Dropdown>
+    </>
   );
 }
 

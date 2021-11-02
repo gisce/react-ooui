@@ -61,6 +61,14 @@ const init = () => {
         results: [data.exampleValues],
       };
     },
+    searchForTree: async (options: SearchRequest) => {
+      await new Promise((resolve) => setTimeout(resolve, timeout));
+      const data = getMock(options.model);
+      return {
+        totalItems: 1,
+        results: [data.exampleValues],
+      };
+    },
     update: async (options: UpdateObjectRequest) => {
       await new Promise((resolve) => setTimeout(resolve, timeout));
     },
