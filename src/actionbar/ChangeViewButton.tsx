@@ -101,7 +101,7 @@ function ChangeViewButton(props: Props) {
         style={{ width: 50 }}
         onClick={() => onChangeView(previousView)}
         disabled={disabled}
-      ></ButtonWithTooltip>
+      />
       <Dropdown overlay={getMenu()} disabled={disabled}>
         <Button
           style={{ width: 25 }}

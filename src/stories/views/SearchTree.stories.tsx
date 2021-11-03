@@ -493,7 +493,7 @@ export const Default = (): React.ReactElement => {
         fields: data.fields,
       };
     },
-    search: async () => {
+    searchForTree: async () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       return {
         totalItems: 28,

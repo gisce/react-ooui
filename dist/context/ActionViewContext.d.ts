@@ -32,6 +32,10 @@ export declare type ActionViewContextType = {
     setSelectedRowItems?: (value: any[]) => void;
     duplicatingItem?: boolean;
     setDuplicatingItem?: (value: boolean) => void;
+    searchParams?: any[];
+    setSearchParams?: (value: any[]) => void;
+    searchVisible?: boolean;
+    setSearchVisible?: (value: boolean) => void;
 };
 export declare const ActionViewContext: React.Context<ActionViewContextType | null>;
 declare type ActionViewProviderProps = ActionViewContextType & {

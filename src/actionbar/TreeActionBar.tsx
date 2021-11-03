@@ -23,6 +23,7 @@ import {
   ContentRootContext,
   ContentRootContextType,
 } from "@/context/ContentRootContext";
+import ButtonWithBadge from "./ButtonWithBadge";
 
 type Props = {
   parentContext?: any;
@@ -43,6 +44,9 @@ function TreeActionBar(props: Props) {
     setCurrentId,
     setCurrentItemIndex,
     toolbar,
+    searchParams,
+    searchVisible,
+    setSearchVisible,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   const { parentContext = {} } = props;
@@ -142,6 +146,13 @@ function TreeActionBar(props: Props) {
         onClick={tryDelete}
       />
       {separator()}
+      <ButtonWithBadge
+        onClick={() => {
+          setSearchVisible?.(!searchVisible);
+        }}
+        disabled={duplicatingItem || removingItem}
+        badgeNumber={searchParams?.length}
+      />
       <ActionButton
         icon={<ReloadOutlined />}
         tooltip={t("refresh")}

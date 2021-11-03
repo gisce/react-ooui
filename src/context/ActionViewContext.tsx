@@ -33,6 +33,10 @@ export type ActionViewContextType = {
   setSelectedRowItems?: (value: any[]) => void;
   duplicatingItem?: boolean;
   setDuplicatingItem?: (value: boolean) => void;
+  searchParams?: any[];
+  setSearchParams?: (value: any[]) => void;
+  searchVisible?: boolean;
+  setSearchVisible?: (value: boolean) => void;
 };
 
 export const ActionViewContext = React.createContext<ActionViewContextType | null>(
@@ -51,6 +55,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [attachments, setAttachments] = useState<any>([]);
   const [selectedRowItems, setSelectedRowItems] = useState<any[]>([]);
   const [duplicatingItem, setDuplicatingItem] = useState<boolean>(false);
+  const [searchParams, setSearchParams] = useState<any[]>([]);
+  const [searchVisible, setSearchVisible] = useState<boolean>(false);
 
   const {
     children,
@@ -117,6 +123,10 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setSelectedRowItems,
         duplicatingItem,
         setDuplicatingItem,
+        setSearchParams,
+        searchParams,
+        searchVisible,
+        setSearchVisible,
       }}
     >
       {children}

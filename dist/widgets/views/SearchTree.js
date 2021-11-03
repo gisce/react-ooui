@@ -105,7 +105,7 @@ function SearchTree(props, ref) {
     var _x = react_1.useState(200), searchFilterHeight = _x[0], setSearchFilterHeight = _x[1];
     var height = useWindowDimensions_1.default().height;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _y = (rootTree ? actionViewContext : {}) || {}, _z = _y.setResults, setResultsActionView = _z === void 0 ? undefined : _z, _0 = _y.setCurrentItemIndex, setCurrentItemIndex = _0 === void 0 ? undefined : _0, _1 = _y.currentId, currentId = _1 === void 0 ? undefined : _1, _2 = _y.results, resultsActionView = _2 === void 0 ? undefined : _2, _3 = _y.setSelectedRowItems, setSelectedRowItems = _3 === void 0 ? undefined : _3;
+    var _y = (rootTree ? actionViewContext : {}) || {}, _z = _y.setResults, setResultsActionView = _z === void 0 ? undefined : _z, _0 = _y.setCurrentItemIndex, setCurrentItemIndex = _0 === void 0 ? undefined : _0, _1 = _y.currentId, currentId = _1 === void 0 ? undefined : _1, _2 = _y.results, resultsActionView = _2 === void 0 ? undefined : _2, _3 = _y.setSelectedRowItems, setSelectedRowItems = _3 === void 0 ? undefined : _3, _4 = _y.setSearchParams, setSearchParams = _4 === void 0 ? undefined : _4, _5 = _y.searchVisible, searchVisible = _5 === void 0 ? true : _5, _6 = _y.setSearchVisible, setSearchVisible = _6 === void 0 ? undefined : _6;
     react_1.useImperativeHandle(ref, function () { return ({
         refreshResults: fetchResults,
     }); });
@@ -372,8 +372,9 @@ function SearchTree(props, ref) {
     var onClear = function () {
         if (tableRefreshing)
             return;
-        setSearchError(undefined);
         paramsRef.current = [];
+        setSearchParams === null || setSearchParams === void 0 ? void 0 : setSearchParams([]);
+        setSearchError(undefined);
         setOffset(0);
         setPage(1);
         setLimit(limitFromAction || DEFAULT_SEARCH_LIMIT);
@@ -382,6 +383,9 @@ function SearchTree(props, ref) {
         var newParams = _a.params, newLimit = _a.limit, newOffset = _a.offset;
         if (tableRefreshing)
             return;
+        paramsRef.current = newParams;
+        setSearchParams === null || setSearchParams === void 0 ? void 0 : setSearchParams(newParams);
+        setSearchVisible === null || setSearchVisible === void 0 ? void 0 : setSearchVisible(false);
         setSearchFilterLoading(true);
         setSearchError(undefined);
         setPage(1);
@@ -389,7 +393,6 @@ function SearchTree(props, ref) {
             setLimit(newLimit);
         if (newOffset)
             setOffset(newOffset);
-        paramsRef.current = newParams;
         fetchResults();
     };
     var onRowClickedHandler = function (id) {
@@ -421,9 +424,10 @@ function SearchTree(props, ref) {
                 } }, function (_a) {
                 var measureRef = _a.measureRef;
                 return (react_1.default.createElement("div", { ref: measureRef },
-                    react_1.default.createElement(SearchFilter_1.default, { fields: __assign(__assign({}, treeView.fields), formView.fields), searchFields: formView.search_fields, onClear: onClear, limit: limit, offset: offset, isSearching: searchFilterLoading, onSubmit: onSubmit }),
-                    searchError && (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: searchError, type: "error", banner: true })),
-                    react_1.default.createElement("div", { className: "pb-5" })));
+                    react_1.default.createElement("div", { style: { display: searchVisible ? "block" : "none" } },
+                        react_1.default.createElement(SearchFilter_1.default, { fields: __assign(__assign({}, treeView.fields), formView.fields), searchFields: formView.search_fields, onClear: onClear, limit: limit, offset: offset, isSearching: searchFilterLoading, onSubmit: onSubmit }),
+                        searchError && (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: searchError, type: "error", banner: true })),
+                        react_1.default.createElement("div", { className: "pb-5" }))));
             }),
             react_1.default.createElement(Tree_1.default, { total: totalItems, limit: limit, page: page, treeView: treeView, results: results, onRequestPageChange: onRequestPageChange, loading: tableRefreshing, onRowClicked: onRowClickedHandler, scrollY: treeScrollY || calculateTableHeight(), colorsForResults: colorsForResults, rowSelection: {
                     selectedRowKeys: selectedRowKeys,

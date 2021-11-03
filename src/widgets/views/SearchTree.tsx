@@ -102,6 +102,9 @@ function SearchTree(props: Props, ref: any) {
     currentId = undefined,
     results: resultsActionView = undefined,
     setSelectedRowItems = undefined,
+    setSearchParams = undefined,
+    searchVisible = true,
+    setSearchVisible = undefined,
   } = (rootTree ? actionViewContext : {}) || {};
 
   useImperativeHandle(ref, () => ({
@@ -335,8 +338,9 @@ function SearchTree(props: Props, ref: any) {
 
   const onClear = () => {
     if (tableRefreshing) return;
-    setSearchError(undefined);
     paramsRef.current = [];
+    setSearchParams?.([]);
+    setSearchError(undefined);
     setOffset(0);
     setPage(1);
     setLimit(limitFromAction || DEFAULT_SEARCH_LIMIT);
@@ -352,12 +356,14 @@ function SearchTree(props: Props, ref: any) {
     offset: number;
   }) => {
     if (tableRefreshing) return;
+    paramsRef.current = newParams;
+    setSearchParams?.(newParams);
+    setSearchVisible?.(false);
     setSearchFilterLoading(true);
     setSearchError(undefined);
     setPage(1);
     if (newLimit) setLimit(newLimit);
     if (newOffset) setOffset(newOffset);
-    paramsRef.current = newParams;
     fetchResults();
   };
 
@@ -398,24 +404,26 @@ function SearchTree(props: Props, ref: any) {
         >
           {({ measureRef }) => (
             <div ref={measureRef}>
-              <SearchFilter
-                fields={{ ...treeView.fields, ...formView.fields }}
-                searchFields={formView.search_fields!}
-                onClear={onClear}
-                limit={limit}
-                offset={offset}
-                isSearching={searchFilterLoading}
-                onSubmit={onSubmit}
-              />
-              {searchError && (
-                <Alert
-                  className="mt-10"
-                  message={searchError}
-                  type="error"
-                  banner
+              <div style={{ display: searchVisible ? "block" : "none" }}>
+                <SearchFilter
+                  fields={{ ...treeView.fields, ...formView.fields }}
+                  searchFields={formView.search_fields!}
+                  onClear={onClear}
+                  limit={limit}
+                  offset={offset}
+                  isSearching={searchFilterLoading}
+                  onSubmit={onSubmit}
                 />
-              )}
-              <div className="pb-5" />
+                {searchError && (
+                  <Alert
+                    className="mt-10"
+                    message={searchError}
+                    type="error"
+                    banner
+                  />
+                )}
+                <div className="pb-5" />
+              </div>
             </div>
           )}
         </Measure>

@@ -82,8 +82,9 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var ActionErrorDialog_1 = __importDefault(require("@/ui/ActionErrorDialog"));
 var DropdownButton_1 = __importDefault(require("./DropdownButton"));
 var ContentRootContext_1 = require("@/context/ContentRootContext");
+var ButtonWithBadge_1 = __importDefault(require("./ButtonWithBadge"));
 function TreeActionBar(props) {
-    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, selectedRowItems = _a.selectedRowItems, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, duplicatingItem = _a.duplicatingItem, setDuplicatingItem = _a.setDuplicatingItem, currentModel = _a.currentModel, searchTreeRef = _a.searchTreeRef, setCurrentId = _a.setCurrentId, setCurrentItemIndex = _a.setCurrentItemIndex, toolbar = _a.toolbar;
+    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, selectedRowItems = _a.selectedRowItems, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, duplicatingItem = _a.duplicatingItem, setDuplicatingItem = _a.setDuplicatingItem, currentModel = _a.currentModel, searchTreeRef = _a.searchTreeRef, setCurrentId = _a.setCurrentId, setCurrentItemIndex = _a.setCurrentItemIndex, toolbar = _a.toolbar, searchParams = _a.searchParams, searchVisible = _a.searchVisible, setSearchVisible = _a.setSearchVisible;
     var _b = props.parentContext, parentContext = _b === void 0 ? {} : _b;
     var _c = react_1.useContext(LocaleContext_1.LocaleContext), t = _c.t, lang = _c.lang;
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
@@ -178,6 +179,9 @@ function TreeActionBar(props) {
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.CopyOutlined, null), tooltip: t("duplicate"), disabled: !selectedRowItems || (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) !== 1 || duplicatingItem, loading: duplicatingItem, onClick: duplicate }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.DeleteOutlined, null), tooltip: t("delete"), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0), loading: removingItem, onClick: tryDelete }),
         separator(),
+        react_1.default.createElement(ButtonWithBadge_1.default, { onClick: function () {
+                setSearchVisible === null || setSearchVisible === void 0 ? void 0 : setSearchVisible(!searchVisible);
+            }, disabled: duplicatingItem || removingItem, badgeNumber: searchParams === null || searchParams === void 0 ? void 0 : searchParams.length }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.ReloadOutlined, null), tooltip: t("refresh"), disabled: duplicatingItem || removingItem, loading: false, onClick: function () {
                 var _a;
                 (_a = searchTreeRef === null || searchTreeRef === void 0 ? void 0 : searchTreeRef.current) === null || _a === void 0 ? void 0 : _a.refreshResults();

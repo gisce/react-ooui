@@ -30,6 +30,8 @@ var ActionViewProvider = function (props) {
     var _e = react_1.useState([]), attachments = _e[0], setAttachments = _e[1];
     var _f = react_1.useState([]), selectedRowItems = _f[0], setSelectedRowItems = _f[1];
     var _g = react_1.useState(false), duplicatingItem = _g[0], setDuplicatingItem = _g[1];
+    var _h = react_1.useState([]), searchParams = _h[0], setSearchParams = _h[1];
+    var _j = react_1.useState(false), searchVisible = _j[0], setSearchVisible = _j[1];
     var children = props.children, currentView = props.currentView, title = props.title, setCurrentView = props.setCurrentView, availableViews = props.availableViews, formRef = props.formRef, searchTreeRef = props.searchTreeRef, onNewClicked = props.onNewClicked, currentId = props.currentId, setCurrentId = props.setCurrentId, setResults = props.setResults, results = props.results, currentItemIndex = props.currentItemIndex, setCurrentItemIndex = props.setCurrentItemIndex, currentModel = props.currentModel, toolbar = props.toolbar, setToolbar = props.setToolbar;
     react_1.useEffect(function () {
         if (results && results.length > 0 && !currentItemIndex) {
@@ -73,6 +75,10 @@ var ActionViewProvider = function (props) {
             setSelectedRowItems: setSelectedRowItems,
             duplicatingItem: duplicatingItem,
             setDuplicatingItem: setDuplicatingItem,
+            setSearchParams: setSearchParams,
+            searchParams: searchParams,
+            searchVisible: searchVisible,
+            setSearchVisible: setSearchVisible,
         } }, children));
 };
 exports.default = ActionViewProvider;
