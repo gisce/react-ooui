@@ -114,7 +114,7 @@ var Many2oneInput = function (props) {
     var _c = react_1.useState(false), searching = _c[0], setSearching = _c[1];
     var _d = react_1.useState(), searchText = _d[0], setSearchText = _d[1];
     var searchButtonTappedRef = react_1.useRef(false);
-    var _e = react_1.useState(), inputText = _e[0], setInputText = _e[1];
+    var _e = react_1.useState(""), inputText = _e[0], setInputText = _e[1];
     var inputTextRef = react_1.useRef();
     var formContext = react_1.useContext(FormContext_1.FormContext);
     var _f = formContext || {}, domain = _f.domain, getValues = _f.getValues, getContext = _f.getContext, setOriginalValue = _f.setOriginalValue;
@@ -134,7 +134,7 @@ var Many2oneInput = function (props) {
             setInputText(text);
         }
         else if (!id && !text) {
-            setInputText(inputTextRef.current);
+            setInputText(inputTextRef.current || "");
         }
     }, [value]);
     react_1.useEffect(function () {
