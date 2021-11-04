@@ -26,6 +26,7 @@ var LocaleContext_1 = require("@/context/LocaleContext");
 var Many2oneSuffix_1 = require("../base/many2one/Many2oneSuffix");
 var dynamicColumnsHelper_1 = require("@/helpers/dynamicColumnsHelper");
 var timeHelper_1 = require("@/helpers/timeHelper");
+var ProgressBar_1 = require("../base/ProgressBar");
 var booleanComponentFn = function (value) {
     return react_1.default.createElement(antd_1.Checkbox, { defaultChecked: value, disabled: true });
 };
@@ -42,7 +43,7 @@ var one2ManyComponentFn = function (value) {
     return react_1.default.createElement(react_1.default.Fragment, null, "( " + length + " )");
 };
 var progressBarComponentFn = function (value) {
-    return react_1.default.createElement(antd_1.Progress, { percent: value });
+    return react_1.default.createElement(ProgressBar_1.ProgressBarInput, { value: value });
 };
 var floatTimeComponent = function (value) {
     return react_1.default.createElement(react_1.default.Fragment, null, timeHelper_1.parseFloatToString(value));

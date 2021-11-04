@@ -30,15 +30,16 @@ var ProgressBar = function (props) {
 exports.ProgressBar = ProgressBar;
 var ProgressBarInput = function (_a) {
     var value = _a.value;
-    return (react_1.default.createElement(StyledProgress, { percent: value, format: function (percent) {
-            return (percent || 0).toLocaleString("en-US", {
-                minimumIntegerDigits: 1,
-                maximumFractionDigits: 4,
-                useGrouping: false,
-            }) + "%";
-        } }));
+    var textValue = (value || 0).toLocaleString("en-US", {
+        minimumIntegerDigits: 1,
+        maximumFractionDigits: 4,
+        useGrouping: false,
+    }) + "%";
+    return (react_1.default.createElement("div", { style: { flex: 1, display: "flex", alignItems: "center" } },
+        react_1.default.createElement(StyledProgress, { percent: value }),
+        react_1.default.createElement("div", { style: { flexGrow: 1, paddingLeft: 10 } }, textValue)));
 };
 exports.ProgressBarInput = ProgressBarInput;
-var StyledProgress = styled_components_1.default(antd_1.Progress)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  .ant-progress-outer {\n    margin-right: -72px;\n    padding-right: 72px;\n  }\n"], ["\n  .ant-progress-outer {\n    margin-right: -72px;\n    padding-right: 72px;\n  }\n"])));
+var StyledProgress = styled_components_1.default(antd_1.Progress)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  .ant-progress-outer {\n    margin-right: 0px;\n    padding-right: 0px;\n  }\n  .ant-progress-text {\n    display: none;\n  }\n"], ["\n  .ant-progress-outer {\n    margin-right: 0px;\n    padding-right: 0px;\n  }\n  .ant-progress-text {\n    display: none;\n  }\n"])));
 var templateObject_1;
 //# sourceMappingURL=ProgressBar.js.map

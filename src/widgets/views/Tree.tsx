@@ -4,7 +4,6 @@ import {
   Pagination,
   Checkbox,
   Space,
-  Progress,
   Row,
   Col,
   Spin,
@@ -17,6 +16,7 @@ import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { Many2oneSuffix } from "../base/many2one/Many2oneSuffix";
 import { calculateColumnsWidth } from "@/helpers/dynamicColumnsHelper";
 import { parseFloatToString } from "@/helpers/timeHelper";
+import { ProgressBarInput } from "../base/ProgressBar";
 
 type Props = {
   total: number;
@@ -54,7 +54,7 @@ const one2ManyComponentFn = (value: any): React.ReactElement => {
 };
 
 const progressBarComponentFn = (value: any): React.ReactElement => {
-  return <Progress percent={value} />;
+  return <ProgressBarInput value={value} />;
 };
 
 const floatTimeComponent = (value: number): React.ReactElement => {

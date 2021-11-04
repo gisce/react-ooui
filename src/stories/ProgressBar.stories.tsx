@@ -16,7 +16,7 @@ export const Default = (): React.ReactElement => {
   });
   return (
     <LocaleProvider lang="en_US">
-      <ProgressBarInput value={99.11111119} />
+      <ProgressBarInput value={50} />
     </LocaleProvider>
   );
 };

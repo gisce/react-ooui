@@ -13,23 +13,26 @@ export const ProgressBar = (props: WidgetProps) => {
 };
 
 export const ProgressBarInput = ({ value }: { value?: number }) => {
+  const textValue = `${(value || 0).toLocaleString("en-US", {
+    minimumIntegerDigits: 1,
+    maximumFractionDigits: 4,
+    useGrouping: false,
+  })}%`;
+
   return (
-    <StyledProgress
-      percent={value}
-      format={(percent: number | undefined) => {
-        return `${(percent || 0).toLocaleString("en-US", {
-          minimumIntegerDigits: 1,
-          maximumFractionDigits: 4,
-          useGrouping: false,
-        })}%`;
-      }}
-    />
+    <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
+      <StyledProgress percent={value} />
+      <div style={{ flexGrow: 1, paddingLeft: 10 }}>{textValue}</div>
+    </div>
   );
 };
 
 const StyledProgress = styled(Progress)`
   .ant-progress-outer {
-    margin-right: -72px;
-    padding-right: 72px;
+    margin-right: 0px;
+    padding-right: 0px;
+  }
+  .ant-progress-text {
+    display: none;
   }
 `;

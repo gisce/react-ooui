@@ -43,7 +43,7 @@ Default.args = {
       ref: false,
       title: false,
       numeric: 30.1,
-      progressbar: 70,
+      progressbar: 70.434331,
     },
     {
       city: false,
@@ -54,7 +54,7 @@ Default.args = {
       ref: false,
       title: false,
       numeric: 30.32,
-      progressbar: 60,
+      progressbar: 60.44433332,
     },
     {
       city: "Sevilla",
@@ -87,7 +87,7 @@ Default.args = {
       ref: "02",
       title: false,
       numeric: 30.1,
-      progressbar: 20,
+      progressbar: 20.01,
     },
   ],
   treeView: {
