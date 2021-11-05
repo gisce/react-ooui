@@ -85,7 +85,7 @@ function ActionView(props, ref) {
         canWeClose: canWeClose,
     }); });
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
-        var availableViews, _i, views_1, viewArray, viewType, viewData, err_1;
+        var availableViews, _i, views_1, viewArray, id, viewType, viewData, err_1;
         var _a;
         return __generator(this, function (_b) {
             switch (_b.label) {
@@ -97,13 +97,14 @@ function ActionView(props, ref) {
                 case 1:
                     if (!(_i < views_1.length)) return [3 /*break*/, 6];
                     viewArray = views_1[_i];
-                    viewType = viewArray[1];
+                    id = viewArray[0], viewType = viewArray[1];
                     _b.label = 2;
                 case 2:
                     _b.trys.push([2, 4, , 5]);
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
                             model: model,
                             type: viewType,
+                            id: id,
                             context: context,
                         })];
                 case 3:

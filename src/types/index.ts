@@ -142,6 +142,7 @@ type GetReportRequest = {
 
 type GetViewRequest = {
   model: string;
+  id?: number;
   type: ViewType;
   context?: any;
 };

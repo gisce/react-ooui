@@ -68,12 +68,13 @@ function ActionView(props: Props, ref: any) {
     const availableViews = [];
 
     for (const viewArray of views) {
-      const [, viewType] = viewArray;
+      const [id, viewType] = viewArray;
 
       try {
         const viewData = await ConnectionProvider.getHandler().getView({
           model,
           type: viewType,
+          id,
           context,
         });
 
