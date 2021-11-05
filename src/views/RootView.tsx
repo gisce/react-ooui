@@ -213,7 +213,7 @@ function RootView(props: RootViewProps, ref: any) {
           formForcedValues={forcedValues}
           model={model}
           context={rootContext}
-          domain={{}}
+          domain={[]}
           setCanWeClose={registerViewCloseFn}
           initialViewType={initialViewType}
         />

@@ -246,7 +246,7 @@ function RootView(props, ref) {
                     content: (react_1.default.createElement(ActionView_1.default, { tabKey: key, title: title, views: [
                             [, "form"],
                             [, "tree"],
-                        ], formDefaultValues: values, formForcedValues: forcedValues, model: model, context: rootContext, domain: {}, setCanWeClose: registerViewCloseFn, initialViewType: initialViewType })),
+                        ], formDefaultValues: values, formForcedValues: forcedValues, model: model, context: rootContext, domain: [], setCanWeClose: registerViewCloseFn, initialViewType: initialViewType })),
                     key: key,
                 });
                 return [2 /*return*/];
