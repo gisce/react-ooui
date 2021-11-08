@@ -99,7 +99,9 @@ function ChangeViewButton(props: Props) {
         tooltip={t("viewAs") + " " + t(previousView)}
         icon={getIconForView(previousView)}
         style={{ width: 50 }}
-        onClick={() => onChangeView(previousView)}
+        onClick={() => {
+          handleMenuClick({ key: previousView });
+        }}
         disabled={disabled}
       />
       <Dropdown overlay={getMenu()} disabled={disabled}>

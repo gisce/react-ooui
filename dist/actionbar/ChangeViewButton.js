@@ -76,7 +76,9 @@ function ChangeViewButton(props) {
         });
     }
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("viewAs") + " " + t(previousView), icon: getIconForView(previousView), style: { width: 50 }, onClick: function () { return onChangeView(previousView); }, disabled: disabled }),
+        react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("viewAs") + " " + t(previousView), icon: getIconForView(previousView), style: { width: 50 }, onClick: function () {
+                handleMenuClick({ key: previousView });
+            }, disabled: disabled }),
         react_1.default.createElement(antd_1.Dropdown, { overlay: getMenu(), disabled: disabled },
             react_1.default.createElement(antd_1.Button, { style: { width: 25 }, icon: react_1.default.createElement(icons_1.DownOutlined, { style: { fontSize: "0.5em" } }), onClick: function (e) { return e.preventDefault(); } }))));
 }

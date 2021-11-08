@@ -84,6 +84,7 @@ var ooui_1 = require("ooui");
 var LocaleContext_1 = __importDefault(require("@/context/LocaleContext"));
 var LocaleContext_2 = require("@/context/LocaleContext");
 function RootView(props, ref) {
+    var _this = this;
     var children = props.children, _a = props.globalValues, globalValues = _a === void 0 ? {} : _a, _b = props.rootContext, rootContext = _b === void 0 ? {} : _b, lang = props.lang;
     var _c = react_1.useState("welcome"), activeKey = _c[0], setActiveKey = _c[1];
     var _d = react_1.useState([
@@ -289,7 +290,22 @@ function RootView(props, ref) {
         });
     }
     return (react_1.default.createElement(LocaleContext_1.default, { lang: lang },
-        react_1.default.createElement(TabManagerContext_1.default, { openShortcut: openShortcut, openAction: openAction, openRelate: openRelate, openSpecificModelTab: openSpecificModelTab, tabs: tabs, activeKey: activeKey, onRemoveTab: remove, onChangeTab: function (key) {
+        react_1.default.createElement(TabManagerContext_1.default, { openShortcut: openShortcut, openAction: openAction, openRelate: openRelate, openSpecificModelTab: openSpecificModelTab, tabs: tabs, activeKey: activeKey, onRemoveTab: function () { return __awaiter(_this, void 0, void 0, function () {
+                var canWeCloseFn, canWeClose;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            canWeCloseFn = tabViewsCloseFunctions.current.get(activeKey);
+                            return [4 /*yield*/, (canWeCloseFn === null || canWeCloseFn === void 0 ? void 0 : canWeCloseFn())];
+                        case 1:
+                            canWeClose = _a.sent();
+                            if (canWeClose || activeKey === "welcome") {
+                                remove(activeKey);
+                            }
+                            return [2 /*return*/];
+                    }
+                });
+            }); }, onChangeTab: function (key) {
                 setActiveKey(key);
             } },
             react_1.default.createElement(__1.ContentRootProvider, { ref: contentRootProvider, globalValues: globalValues }, children))));
