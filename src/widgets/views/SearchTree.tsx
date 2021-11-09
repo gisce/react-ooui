@@ -357,6 +357,8 @@ function SearchTree(props: Props, ref: any) {
   }) => {
     if (tableRefreshing) return;
     paramsRef.current = newParams;
+    setSelectedRowKeys([]);
+    setSelectedRowItems?.([]);
     setSearchParams?.(newParams);
     setSearchVisible?.(false);
     setSearchFilterLoading(true);
