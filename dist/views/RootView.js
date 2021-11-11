@@ -290,17 +290,17 @@ function RootView(props, ref) {
         });
     }
     return (react_1.default.createElement(LocaleContext_1.default, { lang: lang },
-        react_1.default.createElement(TabManagerContext_1.default, { openShortcut: openShortcut, openAction: openAction, openRelate: openRelate, openSpecificModelTab: openSpecificModelTab, tabs: tabs, activeKey: activeKey, onRemoveTab: function () { return __awaiter(_this, void 0, void 0, function () {
+        react_1.default.createElement(TabManagerContext_1.default, { openShortcut: openShortcut, openAction: openAction, openRelate: openRelate, openSpecificModelTab: openSpecificModelTab, tabs: tabs, activeKey: activeKey, onRemoveTab: function (key) { return __awaiter(_this, void 0, void 0, function () {
                 var canWeCloseFn, canWeClose;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            canWeCloseFn = tabViewsCloseFunctions.current.get(activeKey);
+                            canWeCloseFn = tabViewsCloseFunctions.current.get(key);
                             return [4 /*yield*/, (canWeCloseFn === null || canWeCloseFn === void 0 ? void 0 : canWeCloseFn())];
                         case 1:
                             canWeClose = _a.sent();
                             if (canWeClose || activeKey === "welcome") {
-                                remove(activeKey);
+                                remove(key);
                             }
                             return [2 /*return*/];
                     }

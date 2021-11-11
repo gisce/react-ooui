@@ -283,14 +283,14 @@ function RootView(props: RootViewProps, ref: any) {
         openSpecificModelTab={openSpecificModelTab}
         tabs={tabs}
         activeKey={activeKey}
-        onRemoveTab={async () => {
+        onRemoveTab={async (key: string) => {
           const canWeCloseFn = tabViewsCloseFunctions.current.get(
-            activeKey as string
+            key as string
           );
           const canWeClose = await canWeCloseFn?.();
 
           if (canWeClose || activeKey === "welcome") {
-            remove(activeKey as string);
+            remove(key as string);
           }
         }}
         onChangeTab={(key: string) => {
