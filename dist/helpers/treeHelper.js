@@ -38,9 +38,15 @@ var getTableColumns = function (tree, components) {
             title: column.label,
             render: render,
             sorter: function (a, b) {
-                if (a[key] < b[key])
+                var _a, _b;
+                var aItem = a[key] || "", bItem = b[key] || "";
+                if (type === "many2one") {
+                    aItem = ((_a = a[key]) === null || _a === void 0 ? void 0 : _a.value) || "";
+                    bItem = ((_b = b[key]) === null || _b === void 0 ? void 0 : _b.value) || "";
+                }
+                if (aItem < bItem)
                     return -1;
-                if (a[key] > b[key])
+                if (aItem > bItem)
                     return 1;
                 return 0;
             },

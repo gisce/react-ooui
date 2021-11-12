@@ -160,6 +160,7 @@ var FavouriteButton = function (props) {
     function editFavourites() {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
+                setDropdownVisible(false);
                 openDefaultActionForModel === null || openDefaultActionForModel === void 0 ? void 0 : openDefaultActionForModel({ model: "ir.ui.view_sc" });
                 return [2 /*return*/];
             });

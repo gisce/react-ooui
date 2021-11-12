@@ -28,8 +28,16 @@ const getTableColumns = (tree: TreeOoui, components: any): Array<Column> => {
       title: column.label,
       render,
       sorter: (a: any, b: any) => {
-        if (a[key] < b[key]) return -1;
-        if (a[key] > b[key]) return 1;
+        let aItem = a[key] || "",
+          bItem = b[key] || "";
+
+        if (type === "many2one") {
+          aItem = a[key]?.value || "";
+          bItem = b[key]?.value || "";
+        }
+
+        if (aItem < bItem) return -1;
+        if (aItem > bItem) return 1;
         return 0;
       },
     };
