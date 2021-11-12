@@ -73,7 +73,7 @@ function FormActionBar() {
   const tabManagerContext = useContext(
     TabManagerContext
   ) as TabManagerContextType;
-  const { openRelate, openSpecificModelTab } = tabManagerContext || {};
+  const { openRelate, openDefaultActionForModel } = tabManagerContext || {};
 
   function tryRefresh(callback: any) {
     if (formHasChanges) {
@@ -198,6 +198,10 @@ function FormActionBar() {
     });
   }
 
+  if (!currentView) {
+    return null;
+  }
+
   return (
     <Space wrap={true}>
       {formIsLoading && (
@@ -209,10 +213,7 @@ function FormActionBar() {
       )}
       <NewButton
         disabled={
-          formIsSaving ||
-          formIsLoading ||
-          removingItem ||
-          duplicatingItem
+          formIsSaving || formIsLoading || removingItem || duplicatingItem
         }
       />
       <ActionButton
@@ -342,6 +343,8 @@ function FormActionBar() {
             relateData: relate,
             values: (formRef.current as any).getValues(),
             fields: (formRef.current as any).getFields(),
+            action_id: relate.id,
+            action_type: relate.type,
           });
         }}
       />
@@ -351,14 +354,12 @@ function FormActionBar() {
         onAddNewAttachment={() => {
           const res_id = currentId as number;
           const res_model = currentModel as string;
-          openSpecificModelTab({
+          openDefaultActionForModel({
             model: "ir.attachment",
-            title: t("addNewAttachment"),
-            initialViewType: "form",
             values: {
               selection_associated_object: `${res_model},${res_id}`,
             },
-            forcedValues: {
+            forced_values: {
               res_model,
               res_id,
             },

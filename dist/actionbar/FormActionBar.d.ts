@@ -1,3 +1,3 @@
-declare function FormActionBar(): JSX.Element;
+declare function FormActionBar(): JSX.Element | null;
 export default FormActionBar;
 //# sourceMappingURL=FormActionBar.d.ts.map

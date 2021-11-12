@@ -154,6 +154,8 @@ export const Many2oneSuffix = (props: Props) => {
         relateData: relateItemClicked,
         values: targetValues,
         fields: formView!.fields,
+        action_id: relateItemClicked.id,
+        action_type: relateItemClicked.type,
       });
     }
   }

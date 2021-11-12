@@ -125,6 +125,10 @@ function TreeActionBar(props: Props) {
     });
   }
 
+  if (!currentView) {
+    return null;
+  }
+
   return (
     <Space wrap={true}>
       <NewButton />

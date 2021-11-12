@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Menu, Dropdown, Row, Col, Button } from "antd";
 import {
   DownOutlined,
@@ -10,17 +10,22 @@ import { ViewType } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
+import { View } from "@/views/ActionView";
 
 type Props = {
-  onChangeView: (view: ViewType) => void;
-  currentView: ViewType;
-  availableViews: ViewType[];
+  onChangeView: (view: View) => void;
+  currentView: View;
+  availableViews: View[];
   disabled?: boolean;
   formHasChanges?: boolean;
 };
 
-function getIconForView(view: ViewType) {
-  if (view === "tree") {
+function getIconForView(view?: View) {
+  if (!view) {
+    return null;
+  }
+
+  if (view.type === "tree") {
     return <TableOutlined />;
   } else {
     // if (view === "form") {
@@ -38,16 +43,22 @@ function ChangeViewButton(props: Props) {
   } = props;
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
 
-  const [previousView, setPreviousView] = useState<ViewType>("tree");
+  const [previousView, setPreviousView] = useState<View>();
 
   useEffect(() => {
-    setPreviousView(availableViews.filter((view) => view !== currentView)[0]);
+    if (availableViews.length === 1) {
+      setPreviousView(availableViews[0]);
+    } else {
+      setPreviousView(
+        availableViews.filter((view) => view.id !== currentView.id)[0]
+      );
+    }
   }, [availableViews]);
 
   function getMenu() {
     const menuItems = availableViews.map((view) => {
       return (
-        <Menu.Item key={view}>
+        <Menu.Item key={view.id}>
           <Row wrap={false}>
             <Col flex="none" style={{ paddingRight: 20 }}>
               <CheckOutlined
@@ -56,7 +67,7 @@ function ChangeViewButton(props: Props) {
             </Col>
 
             <Col flex="auto" style={{ paddingRight: 20 }}>
-              {view.charAt(0).toUpperCase() + view.slice(1)}
+              {view.type.charAt(0).toUpperCase() + view.type.slice(1)}
             </Col>
             <Col flex="none">{getIconForView(view)}</Col>
           </Row>
@@ -93,18 +104,25 @@ function ChangeViewButton(props: Props) {
     });
   }
 
+  if (!currentView) {
+    return null;
+  }
+
   return (
     <>
       <ButtonWithTooltip
-        tooltip={t("viewAs") + " " + t(previousView)}
+        tooltip={previousView ? t("viewAs") + " " + t(previousView!.type) : ""}
         icon={getIconForView(previousView)}
         style={{ width: 50 }}
         onClick={() => {
           handleMenuClick({ key: previousView });
         }}
-        disabled={disabled}
+        disabled={disabled || availableViews.length === 1}
       />
-      <Dropdown overlay={getMenu()} disabled={disabled}>
+      <Dropdown
+        overlay={getMenu()}
+        disabled={disabled || availableViews.length === 1}
+      >
         <Button
           style={{ width: 25 }}
           icon={<DownOutlined style={{ fontSize: "0.5em" }} />}

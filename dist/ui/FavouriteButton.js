@@ -64,17 +64,23 @@ var antd_1 = require("antd");
 var antd_2 = require("antd");
 var ActionErrorDialog_1 = __importDefault(require("@/ui/ActionErrorDialog"));
 var TabManagerContext_1 = require("@/context/TabManagerContext");
+var LocaleContext_1 = require("@/context/LocaleContext");
 var FavouriteButton = function (props) {
-    var onRetrieveShortcuts = props.onRetrieveShortcuts;
+    var onRetrieveShortcuts = props.onRetrieveShortcuts, onCheckIsFavourite = props.onCheckIsFavourite, onAddFavourite = props.onAddFavourite, onRemoveFavourite = props.onRemoveFavourite;
     var _a = react_1.useState(false), isFavourite = _a[0], setIsFavourite = _a[1];
     var _b = react_1.useState(false), dropdownVisible = _b[0], setDropdownVisible = _b[1];
     var _c = react_1.useState([]), shortcuts = _c[0], setShortcuts = _c[1];
     var _d = react_1.useState(true), loading = _d[0], setLoading = _d[1];
+    var _e = react_1.useState(), currentShortcutId = _e[0], setCurrentShortcutId = _e[1];
+    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
-    var openShortcut = (tabManagerContext || {}).openShortcut;
+    var _f = tabManagerContext || {}, openShortcut = _f.openShortcut, tabs = _f.tabs, activeKey = _f.activeKey, currentView = _f.currentView, currentId = _f.currentId, openDefaultActionForModel = _f.openDefaultActionForModel;
     react_1.useEffect(function () {
         getShortcuts();
     }, []);
+    react_1.useEffect(function () {
+        checkFavourite();
+    }, [tabs, activeKey, currentView, currentId]);
     function getShortcuts() {
         return __awaiter(this, void 0, void 0, function () {
             var shortcuts_1, e_1;
@@ -82,6 +88,7 @@ var FavouriteButton = function (props) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, 3, 4]);
+                        setLoading(true);
                         return [4 /*yield*/, onRetrieveShortcuts()];
                     case 1:
                         shortcuts_1 = _a.sent();
@@ -102,6 +109,9 @@ var FavouriteButton = function (props) {
     function handleMenuClick(event) {
         var key = event.key;
         var shortcut = shortcuts.find(function (s) { return s.id === Number(key); });
+        if ((shortcut === null || shortcut === void 0 ? void 0 : shortcut.action_type) === "ir.actions.wizard") {
+            return;
+        }
         if (shortcut) {
             openShortcut(shortcut);
         }
@@ -110,11 +120,60 @@ var FavouriteButton = function (props) {
     function handleVisibleChange(flag) {
         setDropdownVisible(flag);
     }
+    function checkFavourite() {
+        return __awaiter(this, void 0, void 0, function () {
+            var currentTab, _a, action_id, action_type, view_id, res_id, result;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        if (!currentView) {
+                            return [2 /*return*/];
+                        }
+                        currentTab = tabs.find(function (t) { return t.key === activeKey; });
+                        _a = (currentTab === null || currentTab === void 0 ? void 0 : currentTab.action) || {}, action_id = _a.id, action_type = _a.type;
+                        if (!action_id || !action_type) {
+                            setIsFavourite(false);
+                            return [2 /*return*/];
+                        }
+                        view_id = currentView.id;
+                        res_id = false;
+                        if (currentView.type === "form") {
+                            res_id = currentId ? currentId : false;
+                        }
+                        return [4 /*yield*/, onCheckIsFavourite({
+                                action_id: action_id,
+                                action_type: action_type,
+                                view_id: view_id,
+                                res_id: res_id,
+                            })];
+                    case 1:
+                        result = _b.sent();
+                        if (result !== false) {
+                            setCurrentShortcutId(result);
+                        }
+                        setIsFavourite(result !== false);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function editFavourites() {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                openDefaultActionForModel === null || openDefaultActionForModel === void 0 ? void 0 : openDefaultActionForModel({ model: "ir.ui.view_sc" });
+                return [2 /*return*/];
+            });
+        });
+    }
     var menu = (react_1.default.createElement(antd_2.Menu, { onClick: handleMenuClick },
-        react_1.default.createElement("div", { style: { width: 300, padding: 5, paddingLeft: 15, color: "#ccc" } }, "Els meus favorits".toUpperCase()),
+        react_1.default.createElement("div", { style: { width: 300, padding: 5, display: "flex" } },
+            react_1.default.createElement("div", { style: { paddingLeft: 15, color: "#ccc" } }, t("favorites").toUpperCase()),
+            react_1.default.createElement("div", { style: { flexGrow: 1, paddingLeft: 10 } },
+                react_1.default.createElement(antd_1.Tooltip, { title: t("edit_favorites") },
+                    react_1.default.createElement(icons_1.EditOutlined, { style: { color: "#1890FF", cursor: "pointer" }, onClick: editFavourites })))),
         react_1.default.createElement(antd_2.Menu.Divider, null),
-        loading ? (react_1.default.createElement(antd_1.Spin, null)) : (react_1.default.createElement(react_1.default.Fragment, null, shortcuts.map(function (shortcut) { return (react_1.default.createElement(antd_2.Menu.Item, { key: shortcut.id },
-            react_1.default.createElement(FavouriteItem, { title: shortcut.name, type: shortcut.type }))); })))));
+        loading ? (react_1.default.createElement(antd_1.Spin, null)) : shortcuts.length > 0 ? (react_1.default.createElement(react_1.default.Fragment, null, shortcuts.map(function (shortcut) { return (react_1.default.createElement(antd_2.Menu.Item, { key: shortcut.id },
+            react_1.default.createElement(FavouriteItem, { title: shortcut.name, type: shortcut.view_type }))); }))) : (react_1.default.createElement("div", { style: { width: 300, padding: 5, paddingLeft: 15 } }, t("no_favorites")))));
     function FavouriteItem(_a) {
         var title = _a.title, type = _a.type;
         var icon = type === "tree" ? react_1.default.createElement(icons_1.TableOutlined, null) : react_1.default.createElement(icons_1.FormOutlined, null);
@@ -122,8 +181,52 @@ var FavouriteButton = function (props) {
             react_1.default.createElement(antd_1.Col, { flex: "none", style: { paddingRight: 20 } }, icon),
             react_1.default.createElement(antd_1.Col, { flex: "auto" }, title)));
     }
+    function toggleFavourite() {
+        return __awaiter(this, void 0, void 0, function () {
+            var currentTab, _a, action_id, action_type, view_id, res_id;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        if (!(isFavourite && currentShortcutId)) return [3 /*break*/, 2];
+                        return [4 /*yield*/, onRemoveFavourite(currentShortcutId)];
+                    case 1:
+                        _b.sent();
+                        return [3 /*break*/, 4];
+                    case 2:
+                        if (!currentView) {
+                            return [2 /*return*/];
+                        }
+                        currentTab = tabs.find(function (t) { return t.key === activeKey; });
+                        _a = (currentTab === null || currentTab === void 0 ? void 0 : currentTab.action) || {}, action_id = _a.id, action_type = _a.type;
+                        view_id = currentView.id;
+                        res_id = false;
+                        if (!action_id || !action_type) {
+                            setIsFavourite(false);
+                            return [2 /*return*/];
+                        }
+                        if (currentView.type === "form") {
+                            res_id = currentId ? currentId : false;
+                        }
+                        return [4 /*yield*/, onAddFavourite({
+                                action_id: action_id,
+                                action_type: action_type,
+                                view_id: view_id,
+                                res_id: res_id,
+                            })];
+                    case 3:
+                        _b.sent();
+                        _b.label = 4;
+                    case 4: return [4 /*yield*/, getShortcuts()];
+                    case 5:
+                        _b.sent();
+                        setIsFavourite(!isFavourite);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(antd_1.Button, { type: isFavourite ? "primary" : "default", icon: isFavourite ? (react_1.default.createElement(icons_1.StarFilled, { style: { color: "white" } })) : (react_1.default.createElement(icons_1.StarOutlined, null)), style: { width: 50 }, onClick: function () { return setIsFavourite(!isFavourite); } }),
+        react_1.default.createElement(antd_1.Button, { type: isFavourite ? "primary" : "default", icon: isFavourite ? (react_1.default.createElement(icons_1.StarFilled, { style: { color: "white" } })) : (react_1.default.createElement(icons_1.StarOutlined, null)), style: { width: 50 }, onClick: toggleFavourite }),
         react_1.default.createElement(antd_2.Dropdown, { overlay: menu, onVisibleChange: handleVisibleChange, visible: dropdownVisible },
             react_1.default.createElement(antd_1.Button, { style: { width: 25 }, icon: react_1.default.createElement(icons_1.DownOutlined, { style: { fontSize: "0.5em" } }), onClick: function (e) { return e.preventDefault(); } }))));
 };

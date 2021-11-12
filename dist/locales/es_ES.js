@@ -55,5 +55,8 @@ exports.default = {
     downloadingAttachment: "Descargando adjunto...",
     tree: "lista",
     form: "formulario",
+    favorites: "Mis favoritos",
+    edit_favorites: "Edita los favoritos",
+    no_favorites: "No tienes favoritos guardados",
 };
 //# sourceMappingURL=es_ES.js.map

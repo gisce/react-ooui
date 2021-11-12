@@ -1,10 +1,10 @@
-import { ViewType } from "@/types";
+import { View } from "@/views/ActionView";
 import React from "react";
 export declare type ActionViewContextType = {
     title: string;
-    availableViews: ViewType[];
-    currentView: ViewType;
-    setCurrentView: (view: ViewType) => void;
+    availableViews: View[];
+    currentView: View;
+    setCurrentView: (view: View) => void;
     formIsSaving?: boolean;
     setFormIsSaving?: (value: boolean) => void;
     formHasChanges?: boolean;

@@ -53,6 +53,9 @@ declare const _default: {
     downloadingAttachment: string;
     tree: string;
     form: string;
+    favorites: string;
+    edit_favorites: string;
+    no_favorites: string;
 };
 export default _default;
 //# sourceMappingURL=en_US.d.ts.map

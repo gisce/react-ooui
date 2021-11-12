@@ -234,7 +234,7 @@ var ContentRootProvider = function (props, ref) {
     function runAction(_a) {
         var _actionData = _a.actionData, _b = _a.fields, fields = _b === void 0 ? {} : _b, _c = _a.values, values = _c === void 0 ? {} : _c, _d = _a.context, context = _d === void 0 ? {} : _d;
         return __awaiter(this, void 0, void 0, function () {
-            var actionData, responseContext, mergedContext, parsedDomain, formView, initialViewType;
+            var actionData, responseContext, mergedContext, parsedDomain, formView, initialView, viewTypes, views, _i, viewTypes_1, viewType, viewData, type_1, retrievedViewId;
             return __generator(this, function (_e) {
                 switch (_e.label) {
                     case 0:
@@ -284,17 +284,51 @@ var ContentRootProvider = function (props, ref) {
                         });
                         return [2 /*return*/, {}];
                     case 6:
-                        initialViewType = actionData.view_mode.split(",")[0];
+                        initialView = void 0;
+                        viewTypes = actionData.view_mode.split(",");
+                        views = [];
+                        _i = 0, viewTypes_1 = viewTypes;
+                        _e.label = 7;
+                    case 7:
+                        if (!(_i < viewTypes_1.length)) return [3 /*break*/, 10];
+                        viewType = viewTypes_1[_i];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
+                                model: actionData.res_model,
+                                type: viewType,
+                                context: mergedContext,
+                            })];
+                    case 8:
+                        viewData = _e.sent();
+                        views.push([viewData.view_id, viewType]);
+                        _e.label = 9;
+                    case 9:
+                        _i++;
+                        return [3 /*break*/, 7];
+                    case 10:
+                        if (!actionData.view_id) {
+                            type_1 = actionData.view_mode.split(",")[0];
+                            retrievedViewId = views.find(function (_a) {
+                                var _ = _a[0], viewType = _a[1];
+                                return viewType === type_1;
+                            })[0];
+                            initialView = { id: retrievedViewId, type: type_1 };
+                        }
+                        else {
+                            initialView = {
+                                id: actionData.view_id,
+                                type: actionData.view_mode.split(",")[0],
+                            };
+                        }
                         openAction === null || openAction === void 0 ? void 0 : openAction({
                             target: "current",
                             context: mergedContext,
                             domain: parsedDomain,
                             model: actionData.res_model,
-                            views: actionData.view_mode
-                                .split(",")
-                                .map(function (view) { return [false, view]; }),
+                            views: views,
                             title: actionData.name,
-                            initialViewType: initialViewType,
+                            initialView: initialView,
+                            action_id: actionData.id,
+                            action_type: actionData.type,
                         });
                         return [2 /*return*/, { closeParent: true }];
                 }

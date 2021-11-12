@@ -29,7 +29,10 @@ var LocaleContext_1 = require("@/context/LocaleContext");
 var UnsavedChangesDialog_1 = __importDefault(require("@/ui/UnsavedChangesDialog"));
 var ButtonWithTooltip_1 = __importDefault(require("@/common/ButtonWithTooltip"));
 function getIconForView(view) {
-    if (view === "tree") {
+    if (!view) {
+        return null;
+    }
+    if (view.type === "tree") {
         return react_1.default.createElement(icons_1.TableOutlined, null);
     }
     else {
@@ -40,17 +43,22 @@ function getIconForView(view) {
 function ChangeViewButton(props) {
     var currentView = props.currentView, availableViews = props.availableViews, onChangeView = props.onChangeView, _a = props.disabled, disabled = _a === void 0 ? false : _a, _b = props.formHasChanges, formHasChanges = _b === void 0 ? false : _b;
     var _c = react_1.useContext(LocaleContext_1.LocaleContext), t = _c.t, lang = _c.lang;
-    var _d = react_1.useState("tree"), previousView = _d[0], setPreviousView = _d[1];
+    var _d = react_1.useState(), previousView = _d[0], setPreviousView = _d[1];
     react_1.useEffect(function () {
-        setPreviousView(availableViews.filter(function (view) { return view !== currentView; })[0]);
+        if (availableViews.length === 1) {
+            setPreviousView(availableViews[0]);
+        }
+        else {
+            setPreviousView(availableViews.filter(function (view) { return view.id !== currentView.id; })[0]);
+        }
     }, [availableViews]);
     function getMenu() {
         var menuItems = availableViews.map(function (view) {
-            return (react_1.default.createElement(antd_1.Menu.Item, { key: view },
+            return (react_1.default.createElement(antd_1.Menu.Item, { key: view.id },
                 react_1.default.createElement(antd_1.Row, { wrap: false },
                     react_1.default.createElement(antd_1.Col, { flex: "none", style: { paddingRight: 20 } },
                         react_1.default.createElement(icons_1.CheckOutlined, { style: { opacity: currentView === view ? 1 : 0 } })),
-                    react_1.default.createElement(antd_1.Col, { flex: "auto", style: { paddingRight: 20 } }, view.charAt(0).toUpperCase() + view.slice(1)),
+                    react_1.default.createElement(antd_1.Col, { flex: "auto", style: { paddingRight: 20 } }, view.type.charAt(0).toUpperCase() + view.type.slice(1)),
                     react_1.default.createElement(antd_1.Col, { flex: "none" }, getIconForView(view)))));
         });
         return (react_1.default.createElement(antd_1.Menu, { onClick: handleMenuClick },
@@ -75,11 +83,14 @@ function ChangeViewButton(props) {
             onChangeView(selectedView);
         });
     }
+    if (!currentView) {
+        return null;
+    }
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("viewAs") + " " + t(previousView), icon: getIconForView(previousView), style: { width: 50 }, onClick: function () {
+        react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: previousView ? t("viewAs") + " " + t(previousView.type) : "", icon: getIconForView(previousView), style: { width: 50 }, onClick: function () {
                 handleMenuClick({ key: previousView });
-            }, disabled: disabled }),
-        react_1.default.createElement(antd_1.Dropdown, { overlay: getMenu(), disabled: disabled },
+            }, disabled: disabled || availableViews.length === 1 }),
+        react_1.default.createElement(antd_1.Dropdown, { overlay: getMenu(), disabled: disabled || availableViews.length === 1 },
             react_1.default.createElement(antd_1.Button, { style: { width: 25 }, icon: react_1.default.createElement(icons_1.DownOutlined, { style: { fontSize: "0.5em" } }), onClick: function (e) { return e.preventDefault(); } }))));
 }
 exports.default = ChangeViewButton;

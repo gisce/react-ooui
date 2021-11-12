@@ -4,6 +4,7 @@ import React, {
   useRef,
   forwardRef,
   useImperativeHandle,
+  useContext,
 } from "react";
 
 import { Spin } from "antd";
@@ -17,6 +18,10 @@ import ActionViewProvider from "@/context/ActionViewContext";
 import TitleHeader from "@/ui/TitleHeader";
 import FormActionBar from "@/actionbar/FormActionBar";
 import TreeActionBar from "@/actionbar/TreeActionBar";
+import {
+  TabManagerContext,
+  TabManagerContextType,
+} from "@/context/TabManagerContext";
 
 type Props = {
   domain: any;
@@ -26,9 +31,15 @@ type Props = {
   title: string;
   tabKey: string;
   setCanWeClose: (f: any) => void;
-  initialViewType?: ViewType;
+  initialView: View;
   formDefaultValues?: any;
   formForcedValues?: any;
+  res_id?: number | boolean;
+};
+
+export type View = {
+  id: number;
+  type: ViewType;
 };
 
 function ActionView(props: Props, ref: any) {
@@ -40,23 +51,50 @@ function ActionView(props: Props, ref: any) {
     title,
     setCanWeClose,
     tabKey,
-    initialViewType = "tree",
+    initialView,
     formDefaultValues,
     formForcedValues = {},
+    res_id = false,
   } = props;
-  const [currentView, setCurrentView] = useState<ViewType>(initialViewType);
-  const [availableViews, setAvailableViews] = useState<ViewType[]>([]);
+  const [currentView, setCurrentViewInternal] = useState<View>();
+  const [availableViews, setAvailableViews] = useState<View[]>([]);
 
   const [treeView, setTreeView] = useState<TreeView>();
   const [formView, setFormView] = useState<FormView>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [currentId, setCurrentId] = useState<number>();
+  const res_id_parsed: number | undefined = res_id
+    ? (res_id as number)
+    : undefined;
+
+  const [currentId, setCurrentIdInternal] = useState<number | undefined>(
+    res_id_parsed
+  );
   const [currentItemIndex, setCurrentItemIndex] = useState<number>();
   const [results, setResults] = useState<any>([]);
   const [toolbar, setToolbar] = useState<any>();
 
   const formRef = useRef();
   const searchTreeRef = useRef();
+
+  const tabManagerContext = useContext(
+    TabManagerContext
+  ) as TabManagerContextType;
+  const {
+    setCurrentView: setCurrentViewTabContext,
+    setCurrentId: setCurrentIdTabContext,
+    tabs,
+    activeKey,
+  } = tabManagerContext || {};
+
+  function setCurrentId(id?: number) {
+    setCurrentIdInternal(id);
+    setCurrentIdTabContext?.(id);
+  }
+
+  function setCurrentView(view?: View) {
+    setCurrentViewInternal(view);
+    setCurrentViewTabContext?.(view);
+  }
 
   useImperativeHandle(ref, () => ({
     canWeClose,
@@ -85,7 +123,7 @@ function ActionView(props: Props, ref: any) {
           setFormView(viewData);
           setToolbar((viewData as any)?.toolbar);
         }
-        availableViews.push(viewType);
+        availableViews.push({ id, type: viewType });
       } catch (err) {
         console.error(
           `${model} - ${viewType} - ${JSON.stringify(err, null, 2)}`
@@ -94,10 +132,12 @@ function ActionView(props: Props, ref: any) {
     }
 
     // TODO: We will have to improve this when more views are supported
-    if (!initialViewType && availableViews.includes("tree")) {
-      setCurrentView("tree");
-    } else if (!initialViewType) {
-      setCurrentView("form");
+    if (!initialView && availableViews.find((v) => v.type === "tree")) {
+      setCurrentView(availableViews.find((v) => v.type === "tree"));
+    } else if (!initialView) {
+      setCurrentView(availableViews.find((v) => v.type === "form"));
+    } else {
+      setCurrentView(initialView);
     }
 
     setAvailableViews(availableViews);
@@ -107,14 +147,27 @@ function ActionView(props: Props, ref: any) {
   setCanWeClose({ tabKey, canWeClose });
 
   useEffect(() => {
-    setCurrentView(initialViewType || "tree");
-    setCurrentId(undefined);
-    setCurrentItemIndex(undefined);
+    setCurrentView(
+      initialView || availableViews.find((v) => v.type === "tree")
+    );
+    if (!res_id) {
+      setCurrentId(undefined);
+      setCurrentItemIndex(undefined);
+    } else {
+      setCurrentIdTabContext?.(res_id_parsed);
+    }
     fetchData();
-  }, [model, views]);
+  }, [model, views, res_id]);
+
+  useEffect(() => {
+    if (activeKey === tabKey) {
+      setCurrentIdTabContext?.(currentId);
+      setCurrentViewTabContext?.(currentView);
+    }
+  }, [tabs, activeKey]);
 
   async function canWeClose() {
-    if (currentView === "form") {
+    if (currentView!.type === "form") {
       return await (formRef.current as any).cancelUnsavedChanges();
     } else {
       return true;
@@ -130,7 +183,7 @@ function ActionView(props: Props, ref: any) {
       <>
         <Form
           rootForm={true}
-          visible={currentView === "form"}
+          visible={currentView!.type === "form"}
           ref={formRef}
           model={model}
           defaultValues={formDefaultValues}
@@ -151,7 +204,7 @@ function ActionView(props: Props, ref: any) {
           }}
         />
         <SearchTree
-          visible={currentView === "tree"}
+          visible={currentView!.type === "tree"}
           ref={searchTreeRef}
           rootTree={true}
           model={model}
@@ -166,7 +219,7 @@ function ActionView(props: Props, ref: any) {
               return item === id;
             });
             setCurrentItemIndex(itemIndex);
-            setCurrentView("form");
+            setCurrentView(availableViews.find((v) => v.type === "form"));
           }}
         />
       </>
@@ -174,12 +227,16 @@ function ActionView(props: Props, ref: any) {
   }
 
   function onNewClicked() {
-    if (currentId === undefined && currentView === "form") {
+    if (currentId === undefined && currentView!.type === "form") {
       (formRef.current as any).clearAndReload();
     } else {
       setCurrentId(undefined);
-      setCurrentView("form");
+      setCurrentView(availableViews.find((v) => v.type === "form"));
     }
+  }
+
+  if (!currentView) {
+    return null;
   }
 
   return (
@@ -202,7 +259,7 @@ function ActionView(props: Props, ref: any) {
       setToolbar={setToolbar}
     >
       <TitleHeader>
-        {currentView === "form" ? (
+        {currentView!.type === "form" ? (
           <FormActionBar />
         ) : (
           <TreeActionBar parentContext={context} />

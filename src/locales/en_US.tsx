@@ -55,4 +55,7 @@ export default {
   downloadingAttachment: "Downloading attachment...",
   tree: "list",
   form: "form",
+  favorites: "My shortcuts",
+  edit_favorites: "Edit shortcuts",
+  no_favorites: "You don't have any shortcuts saved yet",
 };

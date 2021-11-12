@@ -1,6 +1,6 @@
-import { ViewType } from "@/types";
-import { Shortcut } from "@/ui/FavouriteButton";
-import React from "react";
+import { ShortcutApi } from "@/ui/FavouriteButton";
+import { View } from "@/views/ActionView";
+import React, { useState } from "react";
 
 export type TabManagerContextType = {
   openAction: ({
@@ -10,7 +10,12 @@ export type TabManagerContextType = {
     views,
     title,
     target,
-    initialViewType,
+    initialView,
+    action_id,
+    action_type,
+    res_id,
+    values,
+    forced_values,
   }: {
     domain: any;
     context: any;
@@ -18,35 +23,44 @@ export type TabManagerContextType = {
     views: Array<any>;
     title: string;
     target: string;
-    initialViewType?: ViewType;
+    initialView: View;
+    action_id: number;
+    action_type: string;
+    res_id?: number | boolean;
+    values?: any;
+    forced_values?: any;
   }) => void;
   openRelate: ({
     relateData,
     fields,
     values,
+    action_id,
+    action_type,
   }: {
     relateData: any;
     fields: any;
     values: any;
+    action_id: number;
+    action_type: string;
   }) => void;
-  openSpecificModelTab: ({
+  openDefaultActionForModel: ({
     model,
     values,
-    forcedValues,
-    title,
-    initialViewType,
+    forced_values,
   }: {
     model: string;
     values?: any;
-    title: string;
-    forcedValues?: any;
-    initialViewType?: ViewType;
+    forced_values?: any;
   }) => void;
   activeKey: string;
   onChangeTab: (key: string) => void;
   onRemoveTab: (key: string) => void;
-  openShortcut: (shortcut: Shortcut) => void;
+  openShortcut: (shortcut: ShortcutApi) => void;
   tabs: any[];
+  currentView?: View;
+  setCurrentView?: (view?: View) => void;
+  currentId?: number;
+  setCurrentId?: (id?: number) => void;
 };
 
 export const TabManagerContext = React.createContext<TabManagerContextType | null>(
@@ -62,7 +76,7 @@ const TabManagerProvider = (props: TabManagerProviderProps): any => {
     children,
     openAction,
     openRelate,
-    openSpecificModelTab,
+    openDefaultActionForModel,
     openShortcut,
     activeKey,
     onChangeTab,
@@ -70,17 +84,24 @@ const TabManagerProvider = (props: TabManagerProviderProps): any => {
     tabs,
   } = props;
 
+  const [currentView, setCurrentView] = useState<View>();
+  const [currentId, setCurrentId] = useState<number>();
+
   return (
     <TabManagerContext.Provider
       value={{
         openAction,
         openRelate,
-        openSpecificModelTab,
+        openDefaultActionForModel,
         activeKey,
         openShortcut,
         onChangeTab,
         onRemoveTab,
         tabs,
+        currentId,
+        currentView,
+        setCurrentId,
+        setCurrentView,
       }}
     >
       {children}

@@ -56,5 +56,8 @@ export default {
   duplicate: "Duplicar",
   downloadingAttachment: "Descarregant adjunt...",
   tree: "llista",
-  form: "formulari"
+  form: "formulari",
+  favorites: "Els meus favorits",
+  edit_favorites: "Edita els favorits",
+  no_favorites: "No tens favorits guardats",
 };

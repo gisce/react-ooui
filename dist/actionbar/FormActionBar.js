@@ -93,7 +93,7 @@ function FormActionBar() {
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
     var processAction = (contentRootContext || {}).processAction;
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
-    var _c = tabManagerContext || {}, openRelate = _c.openRelate, openSpecificModelTab = _c.openSpecificModelTab;
+    var _c = tabManagerContext || {}, openRelate = _c.openRelate, openDefaultActionForModel = _c.openDefaultActionForModel;
     function tryRefresh(callback) {
         if (formHasChanges) {
             RefreshItemDialog_1.default({
@@ -230,15 +230,15 @@ function FormActionBar() {
             },
         });
     }
+    if (!currentView) {
+        return null;
+    }
     return (react_1.default.createElement(antd_1.Space, { wrap: true },
         formIsLoading && (react_1.default.createElement(react_1.default.Fragment, null,
             react_1.default.createElement(antd_1.Spin, null),
             separator(),
             separator())),
-        react_1.default.createElement(NewButton_1.default, { disabled: formIsSaving ||
-                formIsLoading ||
-                removingItem ||
-                duplicatingItem }),
+        react_1.default.createElement(NewButton_1.default, { disabled: formIsSaving || formIsLoading || removingItem || duplicatingItem }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.SaveOutlined, null), tooltip: t("save"), disabled: !formHasChanges || mustDisableButtons, loading: formIsSaving, onClick: onFormSave }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.CopyOutlined, null), tooltip: t("duplicate"), disabled: formHasChanges ||
                 formIsSaving ||
@@ -295,6 +295,8 @@ function FormActionBar() {
                         relateData: relate,
                         values: formRef.current.getValues(),
                         fields: formRef.current.getFields(),
+                        action_id: relate.id,
+                        action_type: relate.type,
                     });
                     return [2 /*return*/];
                 });
@@ -302,14 +304,12 @@ function FormActionBar() {
         react_1.default.createElement(AttachmentsButton_1.default, { disabled: mustDisableButtons, attachments: attachments, onAddNewAttachment: function () {
                 var res_id = currentId;
                 var res_model = currentModel;
-                openSpecificModelTab({
+                openDefaultActionForModel({
                     model: "ir.attachment",
-                    title: t("addNewAttachment"),
-                    initialViewType: "form",
                     values: {
                         selection_associated_object: res_model + "," + res_id,
                     },
-                    forcedValues: {
+                    forced_values: {
                         res_model: res_model,
                         res_id: res_id,
                     },

@@ -18,6 +18,7 @@ declare type SearchFields = {
     secondary: string[];
 };
 declare type TreeView = {
+    view_id: number;
     arch: string;
     fields: any;
 };

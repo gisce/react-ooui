@@ -8,18 +8,23 @@ import { ConnectionProvider, ContentRootProvider, FormView } from "..";
 import { v4 as uuidv4 } from "uuid";
 import Welcome from "./Welcome";
 import TabManagerProvider from "@/context/TabManagerContext";
-import ActionView from "./ActionView";
+import ActionView, { View } from "./ActionView";
 import { parseContext } from "ooui";
-import { ViewType } from "@/types";
 import LocaleContextProvider from "@/context/LocaleContext";
 import { tForLang } from "@/context/LocaleContext";
-import { Shortcut } from "@/ui/FavouriteButton";
+import { ShortcutApi } from "@/ui/FavouriteButton";
+import showErrorDialog from "@/ui/ActionErrorDialog";
 
 type RootViewProps = {
   children: React.ReactNode;
   globalValues?: any;
   rootContext?: any;
   lang: string;
+};
+
+export type ActionInfo = {
+  id: number;
+  type: string;
 };
 
 function RootView(props: RootViewProps, ref: any) {
@@ -68,11 +73,28 @@ function RootView(props: RootViewProps, ref: any) {
     tabViewsCloseFunctions.current.set(tabKey, canWeClose);
   }
 
-  async function retrieveAndOpenAction(action: string) {
+  async function retrieveAndOpenAction({
+    action,
+    values,
+    forced_values,
+  }: {
+    action: string;
+    values?: any;
+    forced_values?: any;
+  }) {
     const dataForAction = await ConnectionProvider.getHandler().getActionData({
       action,
       context: rootContext,
     });
+
+    if (dataForAction.type === "ir.actions.wizard") {
+      showErrorDialog("Action type not supported");
+      return;
+    }
+
+    const [action_type, action_id_string] = action.split(",");
+    const action_id = parseInt(action_id_string);
+
     const parsedContext = parseContext({
       context: dataForAction.context,
       values: globalValues,
@@ -89,7 +111,8 @@ function RootView(props: RootViewProps, ref: any) {
 
     const { res_model: model, views, name: title, target } = dataForAction;
 
-    const initialViewType = views[0][1];
+    const [id, type] = views[0];
+    const initialView = { id, type };
 
     openAction({
       domain: parsedDomain,
@@ -98,7 +121,9 @@ function RootView(props: RootViewProps, ref: any) {
       views,
       title,
       target,
-      initialViewType,
+      initialView,
+      action_type,
+      action_id,
     });
   }
 
@@ -106,10 +131,12 @@ function RootView(props: RootViewProps, ref: any) {
     title,
     content,
     key,
+    action,
   }: {
     title: string;
     content: any;
     key: string;
+    action?: ActionInfo;
   }) {
     let newTabs = [...tabs];
 
@@ -124,6 +151,7 @@ function RootView(props: RootViewProps, ref: any) {
         key,
         closable: true,
         content,
+        action,
       },
     ]);
 
@@ -134,10 +162,14 @@ function RootView(props: RootViewProps, ref: any) {
     relateData,
     fields,
     values,
+    action_id,
+    action_type,
   }: {
     relateData: any;
     fields: any;
     values: any;
+    action_id: number;
+    action_type: string;
   }) {
     const {
       res_model: model,
@@ -148,7 +180,8 @@ function RootView(props: RootViewProps, ref: any) {
       string: title,
     } = relateData;
 
-    const initialViewType = views[0][1];
+    const [id, type] = views[0];
+    const initialView = { id, type };
 
     const parsedContext = parseContext({
       context,
@@ -171,54 +204,71 @@ function RootView(props: RootViewProps, ref: any) {
       context: { ...rootContext, ...parsedContext },
       domain: parsedDomain,
       title,
-      initialViewType,
+      initialView,
+      action_id,
+      action_type,
     });
   }
 
-  async function openShortcut(shortcut: Shortcut) {
-    const { resource, res_id, view_id } = shortcut;
+  async function openShortcut(shortcut: ShortcutApi) {
+    const { action_id, action_type, res_id, view_id } = shortcut;
+    const action = `${action_type},${action_id}`;
 
-    if (view_id) {
-    } else {
-      retrieveAndOpenAction(`${resource},${res_id}`);
-    }
+    const dataForAction = await ConnectionProvider.getHandler().getActionData({
+      action,
+      context: rootContext,
+    });
+    const parsedContext = parseContext({
+      context: dataForAction.context,
+      values: globalValues,
+      fields: {},
+    });
+
+    const parsedDomain = dataForAction.domain
+      ? await ConnectionProvider.getHandler().evalDomain({
+          domain: dataForAction.domain,
+          values: globalValues,
+          context: { ...rootContext, ...parsedContext },
+        })
+      : [];
+
+    const { res_model: model, views, name: title, target } = dataForAction;
+
+    const [id, type] = views.find((view: any[]) => {
+      return view[0] === view_id;
+    });
+    const initialView = { id, type };
+
+    openAction({
+      domain: parsedDomain,
+      context: { ...rootContext, ...parsedContext },
+      model,
+      views,
+      title,
+      target,
+      initialView,
+      action_id,
+      action_type,
+      res_id,
+    });
   }
 
-  async function openSpecificModelTab({
+  async function openDefaultActionForModel({
     model,
     values,
-    forcedValues,
-    title,
-    initialViewType,
+    forced_values,
   }: {
     model: string;
     values?: any;
-    forcedValues?: any;
-    title: string;
-    initialViewType?: ViewType;
+    forced_values?: any;
   }) {
-    const key = uuidv4();
-
-    addNewTab({
-      title,
-      content: (
-        <ActionView
-          tabKey={key}
-          title={title}
-          views={[
-            [, "form"],
-            [, "tree"],
-          ]}
-          formDefaultValues={values}
-          formForcedValues={forcedValues}
-          model={model}
-          context={rootContext}
-          domain={[]}
-          setCanWeClose={registerViewCloseFn}
-          initialViewType={initialViewType}
-        />
-      ),
-      key,
+    const actionString = await ConnectionProvider.getHandler().getActionStringForModel(
+      model
+    );
+    await retrieveAndOpenAction({
+      action: actionString,
+      values,
+      forced_values,
     });
   }
 
@@ -229,7 +279,12 @@ function RootView(props: RootViewProps, ref: any) {
     views,
     title,
     target,
-    initialViewType,
+    initialView,
+    action_id,
+    action_type,
+    res_id,
+    values,
+    forced_values,
   }: {
     domain: any;
     context: any;
@@ -237,7 +292,12 @@ function RootView(props: RootViewProps, ref: any) {
     views: Array<any>;
     title: string;
     target: string;
-    initialViewType?: ViewType;
+    initialView: View;
+    action_id: number;
+    action_type: string;
+    res_id?: number | boolean;
+    values?: any;
+    forced_values?: any;
   }) {
     const key = uuidv4();
 
@@ -257,6 +317,10 @@ function RootView(props: RootViewProps, ref: any) {
     } else {
       addNewTab({
         title,
+        action: {
+          id: action_id,
+          type: action_type,
+        },
         content: (
           <ActionView
             tabKey={key}
@@ -266,7 +330,10 @@ function RootView(props: RootViewProps, ref: any) {
             context={{ ...rootContext, ...context }}
             domain={domain}
             setCanWeClose={registerViewCloseFn}
-            initialViewType={initialViewType}
+            initialView={initialView}
+            res_id={res_id}
+            formDefaultValues={values}
+            formForcedValues={forced_values}
           />
         ),
         key,
@@ -280,7 +347,7 @@ function RootView(props: RootViewProps, ref: any) {
         openShortcut={openShortcut}
         openAction={openAction}
         openRelate={openRelate}
-        openSpecificModelTab={openSpecificModelTab}
+        openDefaultActionForModel={openDefaultActionForModel}
         tabs={tabs}
         activeKey={activeKey}
         onRemoveTab={async (key: string) => {

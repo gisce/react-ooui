@@ -180,6 +180,8 @@ var Many2oneSuffix = function (props) {
                 relateData: relateItemClicked,
                 values: targetValues,
                 fields: formView.fields,
+                action_id: relateItemClicked.id,
+                action_type: relateItemClicked.type,
             });
         }
     }

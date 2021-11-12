@@ -1,11 +1,11 @@
-import { ViewType } from "@/types";
+import { View } from "@/views/ActionView";
 declare type Props = {
-    onChangeView: (view: ViewType) => void;
-    currentView: ViewType;
-    availableViews: ViewType[];
+    onChangeView: (view: View) => void;
+    currentView: View;
+    availableViews: View[];
     disabled?: boolean;
     formHasChanges?: boolean;
 };
-declare function ChangeViewButton(props: Props): JSX.Element;
+declare function ChangeViewButton(props: Props): JSX.Element | null;
 export default ChangeViewButton;
 //# sourceMappingURL=ChangeViewButton.d.ts.map

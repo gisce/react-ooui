@@ -173,6 +173,9 @@ function TreeActionBar(props) {
             context: __assign(__assign({}, parentContext), { active_id: selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.map(function (item) { return item.id; })[0], active_ids: selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.map(function (item) { return item.id; }) }),
         });
     }
+    if (!currentView) {
+        return null;
+    }
     return (react_1.default.createElement(antd_1.Space, { wrap: true },
         react_1.default.createElement(NewButton_1.default, null),
         separator(),

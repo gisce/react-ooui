@@ -83,6 +83,7 @@ var ActionView_1 = __importDefault(require("./ActionView"));
 var ooui_1 = require("ooui");
 var LocaleContext_1 = __importDefault(require("@/context/LocaleContext"));
 var LocaleContext_2 = require("@/context/LocaleContext");
+var ActionErrorDialog_1 = __importDefault(require("@/ui/ActionErrorDialog"));
 function RootView(props, ref) {
     var _this = this;
     var children = props.children, _a = props.globalValues, globalValues = _a === void 0 ? {} : _a, _b = props.rootContext, rootContext = _b === void 0 ? {} : _b, lang = props.lang;
@@ -118,17 +119,24 @@ function RootView(props, ref) {
         var tabKey = _a.tabKey, canWeClose = _a.canWeClose;
         tabViewsCloseFunctions.current.set(tabKey, canWeClose);
     }
-    function retrieveAndOpenAction(action) {
+    function retrieveAndOpenAction(_a) {
+        var action = _a.action, values = _a.values, forced_values = _a.forced_values;
         return __awaiter(this, void 0, void 0, function () {
-            var dataForAction, parsedContext, parsedDomain, _a, model, views, title, target, initialViewType;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var dataForAction, _b, action_type, action_id_string, action_id, parsedContext, parsedDomain, _c, model, views, title, target, _d, id, type, initialView;
+            return __generator(this, function (_e) {
+                switch (_e.label) {
                     case 0: return [4 /*yield*/, __1.ConnectionProvider.getHandler().getActionData({
                             action: action,
                             context: rootContext,
                         })];
                     case 1:
-                        dataForAction = _b.sent();
+                        dataForAction = _e.sent();
+                        if (dataForAction.type === "ir.actions.wizard") {
+                            ActionErrorDialog_1.default("Action type not supported");
+                            return [2 /*return*/];
+                        }
+                        _b = action.split(","), action_type = _b[0], action_id_string = _b[1];
+                        action_id = parseInt(action_id_string);
                         parsedContext = ooui_1.parseContext({
                             context: dataForAction.context,
                             values: globalValues,
@@ -141,15 +149,16 @@ function RootView(props, ref) {
                                 context: __assign(__assign({}, rootContext), parsedContext),
                             })];
                     case 2:
-                        _a = _b.sent();
+                        _c = _e.sent();
                         return [3 /*break*/, 4];
                     case 3:
-                        _a = [];
-                        _b.label = 4;
+                        _c = [];
+                        _e.label = 4;
                     case 4:
-                        parsedDomain = _a;
+                        parsedDomain = _c;
                         model = dataForAction.res_model, views = dataForAction.views, title = dataForAction.name, target = dataForAction.target;
-                        initialViewType = views[0][1];
+                        _d = views[0], id = _d[0], type = _d[1];
+                        initialView = { id: id, type: type };
                         openAction({
                             domain: parsedDomain,
                             context: __assign(__assign({}, rootContext), parsedContext),
@@ -157,7 +166,9 @@ function RootView(props, ref) {
                             views: views,
                             title: title,
                             target: target,
-                            initialViewType: initialViewType,
+                            initialView: initialView,
+                            action_type: action_type,
+                            action_id: action_id,
                         });
                         return [2 /*return*/];
                 }
@@ -165,7 +176,7 @@ function RootView(props, ref) {
         });
     }
     function addNewTab(_a) {
-        var title = _a.title, content = _a.content, key = _a.key;
+        var title = _a.title, content = _a.content, key = _a.key, action = _a.action;
         var newTabs = __spreadArray([], tabs);
         if (tabs.length === 1 && tabs[0].key === "welcome") {
             newTabs = __spreadArray([], tabs.filter(function (tab) { return tab.key !== "welcome"; }));
@@ -176,19 +187,21 @@ function RootView(props, ref) {
                 key: key,
                 closable: true,
                 content: content,
+                action: action,
             },
         ]));
         setActiveKey(key);
     }
     function openRelate(_a) {
-        var relateData = _a.relateData, fields = _a.fields, values = _a.values;
+        var relateData = _a.relateData, fields = _a.fields, values = _a.values, action_id = _a.action_id, action_type = _a.action_type;
         return __awaiter(this, void 0, void 0, function () {
-            var model, context, domain, views, target, title, initialViewType, parsedContext, parsedDomain, _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var model, context, domain, views, target, title, _b, id, type, initialView, parsedContext, parsedDomain, _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0:
                         model = relateData.res_model, context = relateData.context, domain = relateData.domain, views = relateData.views, target = relateData.target, title = relateData.string;
-                        initialViewType = views[0][1];
+                        _b = views[0], id = _b[0], type = _b[1];
+                        initialView = { id: id, type: type };
                         parsedContext = ooui_1.parseContext({
                             context: context,
                             values: __assign(__assign({}, values), globalValues),
@@ -201,13 +214,13 @@ function RootView(props, ref) {
                                 context: __assign(__assign({}, rootContext), parsedContext),
                             })];
                     case 1:
-                        _b = _c.sent();
+                        _c = _d.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        _b = [];
-                        _c.label = 3;
+                        _c = [];
+                        _d.label = 3;
                     case 3:
-                        parsedDomain = _b;
+                        parsedDomain = _c;
                         openAction({
                             model: model,
                             target: target,
@@ -215,7 +228,9 @@ function RootView(props, ref) {
                             context: __assign(__assign({}, rootContext), parsedContext),
                             domain: parsedDomain,
                             title: title,
-                            initialViewType: initialViewType,
+                            initialView: initialView,
+                            action_id: action_id,
+                            action_type: action_type,
                         });
                         return [2 /*return*/];
                 }
@@ -224,38 +239,82 @@ function RootView(props, ref) {
     }
     function openShortcut(shortcut) {
         return __awaiter(this, void 0, void 0, function () {
-            var resource, res_id, view_id;
-            return __generator(this, function (_a) {
-                resource = shortcut.resource, res_id = shortcut.res_id, view_id = shortcut.view_id;
-                if (view_id) {
+            var action_id, action_type, res_id, view_id, action, dataForAction, parsedContext, parsedDomain, _a, model, views, title, target, _b, id, type, initialView;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        action_id = shortcut.action_id, action_type = shortcut.action_type, res_id = shortcut.res_id, view_id = shortcut.view_id;
+                        action = action_type + "," + action_id;
+                        return [4 /*yield*/, __1.ConnectionProvider.getHandler().getActionData({
+                                action: action,
+                                context: rootContext,
+                            })];
+                    case 1:
+                        dataForAction = _c.sent();
+                        parsedContext = ooui_1.parseContext({
+                            context: dataForAction.context,
+                            values: globalValues,
+                            fields: {},
+                        });
+                        if (!dataForAction.domain) return [3 /*break*/, 3];
+                        return [4 /*yield*/, __1.ConnectionProvider.getHandler().evalDomain({
+                                domain: dataForAction.domain,
+                                values: globalValues,
+                                context: __assign(__assign({}, rootContext), parsedContext),
+                            })];
+                    case 2:
+                        _a = _c.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        _a = [];
+                        _c.label = 4;
+                    case 4:
+                        parsedDomain = _a;
+                        model = dataForAction.res_model, views = dataForAction.views, title = dataForAction.name, target = dataForAction.target;
+                        _b = views.find(function (view) {
+                            return view[0] === view_id;
+                        }), id = _b[0], type = _b[1];
+                        initialView = { id: id, type: type };
+                        openAction({
+                            domain: parsedDomain,
+                            context: __assign(__assign({}, rootContext), parsedContext),
+                            model: model,
+                            views: views,
+                            title: title,
+                            target: target,
+                            initialView: initialView,
+                            action_id: action_id,
+                            action_type: action_type,
+                            res_id: res_id,
+                        });
+                        return [2 /*return*/];
                 }
-                else {
-                    retrieveAndOpenAction(resource + "," + res_id);
-                }
-                return [2 /*return*/];
             });
         });
     }
-    function openSpecificModelTab(_a) {
-        var model = _a.model, values = _a.values, forcedValues = _a.forcedValues, title = _a.title, initialViewType = _a.initialViewType;
+    function openDefaultActionForModel(_a) {
+        var model = _a.model, values = _a.values, forced_values = _a.forced_values;
         return __awaiter(this, void 0, void 0, function () {
-            var key;
+            var actionString;
             return __generator(this, function (_b) {
-                key = uuid_1.v4();
-                addNewTab({
-                    title: title,
-                    content: (react_1.default.createElement(ActionView_1.default, { tabKey: key, title: title, views: [
-                            [, "form"],
-                            [, "tree"],
-                        ], formDefaultValues: values, formForcedValues: forcedValues, model: model, context: rootContext, domain: [], setCanWeClose: registerViewCloseFn, initialViewType: initialViewType })),
-                    key: key,
-                });
-                return [2 /*return*/];
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, __1.ConnectionProvider.getHandler().getActionStringForModel(model)];
+                    case 1:
+                        actionString = _b.sent();
+                        return [4 /*yield*/, retrieveAndOpenAction({
+                                action: actionString,
+                                values: values,
+                                forced_values: forced_values,
+                            })];
+                    case 2:
+                        _b.sent();
+                        return [2 /*return*/];
+                }
             });
         });
     }
     function openAction(_a) {
-        var domain = _a.domain, context = _a.context, model = _a.model, views = _a.views, title = _a.title, target = _a.target, initialViewType = _a.initialViewType;
+        var domain = _a.domain, context = _a.context, model = _a.model, views = _a.views, title = _a.title, target = _a.target, initialView = _a.initialView, action_id = _a.action_id, action_type = _a.action_type, res_id = _a.res_id, values = _a.values, forced_values = _a.forced_values;
         return __awaiter(this, void 0, void 0, function () {
             var key, formView;
             return __generator(this, function (_b) {
@@ -280,7 +339,11 @@ function RootView(props, ref) {
                     case 2:
                         addNewTab({
                             title: title,
-                            content: (react_1.default.createElement(ActionView_1.default, { tabKey: key, title: title, views: views, model: model, context: __assign(__assign({}, rootContext), context), domain: domain, setCanWeClose: registerViewCloseFn, initialViewType: initialViewType })),
+                            action: {
+                                id: action_id,
+                                type: action_type,
+                            },
+                            content: (react_1.default.createElement(ActionView_1.default, { tabKey: key, title: title, views: views, model: model, context: __assign(__assign({}, rootContext), context), domain: domain, setCanWeClose: registerViewCloseFn, initialView: initialView, res_id: res_id, formDefaultValues: values, formForcedValues: forced_values })),
                             key: key,
                         });
                         _b.label = 3;
@@ -290,7 +353,7 @@ function RootView(props, ref) {
         });
     }
     return (react_1.default.createElement(LocaleContext_1.default, { lang: lang },
-        react_1.default.createElement(TabManagerContext_1.default, { openShortcut: openShortcut, openAction: openAction, openRelate: openRelate, openSpecificModelTab: openSpecificModelTab, tabs: tabs, activeKey: activeKey, onRemoveTab: function (key) { return __awaiter(_this, void 0, void 0, function () {
+        react_1.default.createElement(TabManagerContext_1.default, { openShortcut: openShortcut, openAction: openAction, openRelate: openRelate, openDefaultActionForModel: openDefaultActionForModel, tabs: tabs, activeKey: activeKey, onRemoveTab: function (key) { return __awaiter(_this, void 0, void 0, function () {
                 var canWeCloseFn, canWeClose;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
