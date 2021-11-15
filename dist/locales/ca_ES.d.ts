@@ -59,6 +59,11 @@ declare const _default: {
     register: string;
     of: string;
     editingDocument: string;
+    showLogs: string;
+    createdBy: string;
+    creationDate: string;
+    lastUpdatedBy: string;
+    lastUpdatedDate: string;
 };
 export default _default;
 //# sourceMappingURL=ca_ES.d.ts.map

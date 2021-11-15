@@ -90,6 +90,11 @@ declare type ReadObjectsRequest = {
     ids: number[];
     context?: any;
 };
+declare type GetLogInfoRequest = {
+    model: string;
+    ids: number[];
+    context?: any;
+};
 declare type ReadEvalUiObjectsRequest = {
     arch?: string;
     fields?: any;
@@ -168,7 +173,8 @@ declare type ConnectionProviderType = {
     nameSearch: (options: NameSearchRequest) => Promise<any>;
     duplicate: (options: DuplicateRequest) => Promise<any>;
     evalDomain: (options: EvalDomainRequest) => Promise<any>;
+    getLogInfo: (options: GetLogInfoRequest) => Promise<any>;
 };
 declare type ViewType = "tree" | "form";
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, ReadEvalUiObjectsRequest, NameSearchRequest, DuplicateRequest, };
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, ReadEvalUiObjectsRequest, NameSearchRequest, DuplicateRequest, GetLogInfoRequest, };
 //# sourceMappingURL=index.d.ts.map

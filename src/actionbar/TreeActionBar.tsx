@@ -13,6 +13,7 @@ import {
   ThunderboltOutlined,
   CopyOutlined,
   ReloadOutlined,
+  InfoCircleOutlined,
 } from "@ant-design/icons";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showConfirmDialog from "@/ui/ConfirmDialog";
@@ -24,6 +25,7 @@ import {
   ContentRootContextType,
 } from "@/context/ContentRootContext";
 import ButtonWithBadge from "./ButtonWithBadge";
+import { showLogInfo } from "@/helpers/logInfoHelper";
 
 type Props = {
   parentContext?: any;
@@ -156,6 +158,15 @@ function TreeActionBar(props: Props) {
         }}
         disabled={duplicatingItem || removingItem}
         badgeNumber={searchParams?.length}
+      />
+      <ActionButton
+        icon={<InfoCircleOutlined />}
+        tooltip={t("showLogs")}
+        disabled={!(selectedRowItems && selectedRowItems?.length > 0)}
+        loading={false}
+        onClick={() => {
+          showLogInfo(currentModel!, selectedRowItems![0].id, t);
+        }}
       />
       <ActionButton
         icon={<ReloadOutlined />}

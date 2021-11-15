@@ -61,4 +61,9 @@ export default {
   register: "Register",
   of: "of",
   editingDocument: "Editing document",
+  showLogs: "Show logs",
+  createdBy: "Created by user",
+  creationDate: "Creation date",
+  lastUpdatedBy: "Last modified by",
+  lastUpdatedDate: "Date of last modification",
 };

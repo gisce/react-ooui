@@ -61,5 +61,10 @@ exports.default = {
     register: "Registro",
     of: "de",
     editingDocument: "Editando documento",
+    showLogs: "Ver logs",
+    createdBy: "Creado por el usuario",
+    creationDate: "Fecha creación",
+    lastUpdatedBy: "Última modificación por",
+    lastUpdatedDate: "Fecha última modificación",
 };
 //# sourceMappingURL=es_ES.js.map
