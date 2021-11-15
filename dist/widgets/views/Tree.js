@@ -49,7 +49,7 @@ var floatTimeComponent = function (value) {
     return react_1.default.createElement(react_1.default.Fragment, null, timeHelper_1.parseFloatToString(value));
 };
 function Tree(props) {
-    var _a = props.page, page = _a === void 0 ? 1 : _a, limit = props.limit, total = props.total, treeView = props.treeView, results = props.results, onRequestPageChange = props.onRequestPageChange, loading = props.loading, onRowClicked = props.onRowClicked, _b = props.showPagination, showPagination = _b === void 0 ? true : _b, rowSelection = props.rowSelection, scrollY = props.scrollY, _c = props.colorsForResults, colorsForResults = _c === void 0 ? {} : _c;
+    var _a = props.page, page = _a === void 0 ? 1 : _a, limit = props.limit, total = props.total, treeView = props.treeView, results = props.results, onRequestPageChange = props.onRequestPageChange, loading = props.loading, onRowClicked = props.onRowClicked, _b = props.showPagination, showPagination = _b === void 0 ? true : _b, rowSelection = props.rowSelection, scrollY = props.scrollY, _c = props.colorsForResults, colorsForResults = _c === void 0 ? {} : _c, onChangeSort = props.onChangeSort;
     var _d = react_1.useState([]), items = _d[0], setItems = _d[1];
     var _e = react_1.useState([]), columns = _e[0], setColumns = _e[1];
     var errorInParseColors = react_1.useRef(false);
@@ -149,8 +149,13 @@ function Tree(props) {
                             onRowClicked(record.id);
                     },
                 };
-            }, rowSelection: rowSelection, onChange: function (_, __, sorter, extra) {
-                console.log();
+            }, rowSelection: rowSelection, onChange: function (pagination, filters, sorter, extraInfo) {
+                if (!sorter.order) {
+                    onChangeSort === null || onChangeSort === void 0 ? void 0 : onChangeSort(undefined);
+                }
+                else {
+                    onChangeSort === null || onChangeSort === void 0 ? void 0 : onChangeSort(sorter);
+                }
             } }),
         getSums()));
 }

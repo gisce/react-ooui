@@ -83,10 +83,11 @@ function ActionView(props, ref) {
     var _j = react_1.useState(), currentItemIndex = _j[0], setCurrentItemIndex = _j[1];
     var _k = react_1.useState([]), results = _k[0], setResults = _k[1];
     var _l = react_1.useState(), toolbar = _l[0], setToolbar = _l[1];
+    var _m = react_1.useState(), sorter = _m[0], setSorter = _m[1];
     var formRef = react_1.useRef();
     var searchTreeRef = react_1.useRef();
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
-    var _m = tabManagerContext || {}, setCurrentViewTabContext = _m.setCurrentView, setCurrentIdTabContext = _m.setCurrentId, tabs = _m.tabs, activeKey = _m.activeKey;
+    var _o = tabManagerContext || {}, setCurrentViewTabContext = _o.setCurrentView, setCurrentIdTabContext = _o.setCurrentId, tabs = _o.tabs, activeKey = _o.activeKey;
     function setCurrentId(id) {
         setCurrentIdInternal(id);
         setCurrentIdTabContext === null || setCurrentIdTabContext === void 0 ? void 0 : setCurrentIdTabContext(id);
@@ -224,7 +225,7 @@ function ActionView(props, ref) {
     if (!currentView) {
         return null;
     }
-    return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, searchTreeRef: searchTreeRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId, setCurrentItemIndex: setCurrentItemIndex, currentItemIndex: currentItemIndex, results: results, setResults: setResults, currentModel: model, toolbar: toolbar, setToolbar: setToolbar },
+    return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, searchTreeRef: searchTreeRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId, setCurrentItemIndex: setCurrentItemIndex, currentItemIndex: currentItemIndex, results: results, setResults: setResults, currentModel: model, toolbar: toolbar, setToolbar: setToolbar, sorter: sorter, setSorter: setSorter },
         react_1.default.createElement(TitleHeader_1.default, null, currentView.type === "form" ? (react_1.default.createElement(FormActionBar_1.default, null)) : (react_1.default.createElement(TreeActionBar_1.default, { parentContext: context }))),
         content()));
 }

@@ -15,6 +15,7 @@ declare type Props = {
     colorsForResults?: {
         [key: number]: string;
     };
+    onChangeSort?: (results: any) => void;
 };
 declare function Tree(props: Props): React.ReactElement;
 export default Tree;

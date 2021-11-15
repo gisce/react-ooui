@@ -1,13 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import {
-  Table,
-  Pagination,
-  Checkbox,
-  Space,
-  Row,
-  Col,
-  Spin,
-} from "antd";
+import { Table, Pagination, Checkbox, Space, Row, Col, Spin } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "ooui";
 
@@ -31,6 +23,7 @@ type Props = {
   rowSelection?: any;
   scrollY?: number;
   colorsForResults?: { [key: number]: string };
+  onChangeSort?: (results: any) => void;
 };
 
 const booleanComponentFn = (value: boolean): React.ReactElement => {
@@ -75,6 +68,7 @@ function Tree(props: Props): React.ReactElement {
     rowSelection,
     scrollY,
     colorsForResults = {},
+    onChangeSort,
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
@@ -233,6 +227,13 @@ function Tree(props: Props): React.ReactElement {
           };
         }}
         rowSelection={rowSelection}
+        onChange={(pagination, filters, sorter, extraInfo) => {
+          if (!(sorter as any).order) {
+            onChangeSort?.(undefined);
+          } else {
+            onChangeSort?.(sorter);
+          }
+        }}
       />
       {getSums()}
     </div>
