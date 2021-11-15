@@ -122,7 +122,7 @@ function RootView(props, ref) {
     function retrieveAndOpenAction(_a) {
         var action = _a.action, values = _a.values, forced_values = _a.forced_values;
         return __awaiter(this, void 0, void 0, function () {
-            var dataForAction, _b, action_type, action_id_string, action_id, parsedContext, parsedDomain, _c, model, views, title, target, _d, id, type, initialView;
+            var dataForAction, _b, action_type, action_id_string, action_id, parsedContext, parsedDomain, _c, model, views, title, target, finalViews, _i, views_1, viewArray, id_1, viewType, view_id, _d, id, type, initialView;
             return __generator(this, function (_e) {
                 switch (_e.label) {
                     case 0: return [4 /*yield*/, __1.ConnectionProvider.getHandler().getActionData({
@@ -157,13 +157,38 @@ function RootView(props, ref) {
                     case 4:
                         parsedDomain = _c;
                         model = dataForAction.res_model, views = dataForAction.views, title = dataForAction.name, target = dataForAction.target;
-                        _d = views[0], id = _d[0], type = _d[1];
+                        finalViews = [];
+                        _i = 0, views_1 = views;
+                        _e.label = 5;
+                    case 5:
+                        if (!(_i < views_1.length)) return [3 /*break*/, 9];
+                        viewArray = views_1[_i];
+                        id_1 = viewArray[0], viewType = viewArray[1];
+                        if (!!id_1) return [3 /*break*/, 7];
+                        return [4 /*yield*/, __1.ConnectionProvider.getHandler().getView({
+                                model: model,
+                                type: viewType,
+                                id: id_1,
+                                context: __assign(__assign({}, rootContext), parsedContext),
+                            })];
+                    case 6:
+                        view_id = (_e.sent()).view_id;
+                        finalViews.push([view_id, viewType]);
+                        return [3 /*break*/, 8];
+                    case 7:
+                        finalViews.push(viewArray);
+                        _e.label = 8;
+                    case 8:
+                        _i++;
+                        return [3 /*break*/, 5];
+                    case 9:
+                        _d = finalViews[0], id = _d[0], type = _d[1];
                         initialView = { id: id, type: type };
                         openAction({
                             domain: parsedDomain,
                             context: __assign(__assign({}, rootContext), parsedContext),
                             model: model,
-                            views: views,
+                            views: finalViews,
                             title: title,
                             target: target,
                             initialView: initialView,
@@ -239,7 +264,7 @@ function RootView(props, ref) {
     }
     function openShortcut(shortcut) {
         return __awaiter(this, void 0, void 0, function () {
-            var action_id, action_type, res_id, view_id, action, dataForAction, parsedContext, parsedDomain, _a, model, views, title, target, _b, id, type, initialView;
+            var action_id, action_type, res_id, view_id, action, dataForAction, parsedContext, parsedDomain, _a, model, views, title, target, finalViews, _i, views_2, viewArray, id_2, viewType, view_id_1, _b, id, type, initialView;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -271,7 +296,32 @@ function RootView(props, ref) {
                     case 4:
                         parsedDomain = _a;
                         model = dataForAction.res_model, views = dataForAction.views, title = dataForAction.name, target = dataForAction.target;
-                        _b = views.find(function (view) {
+                        finalViews = [];
+                        _i = 0, views_2 = views;
+                        _c.label = 5;
+                    case 5:
+                        if (!(_i < views_2.length)) return [3 /*break*/, 9];
+                        viewArray = views_2[_i];
+                        id_2 = viewArray[0], viewType = viewArray[1];
+                        if (!!id_2) return [3 /*break*/, 7];
+                        return [4 /*yield*/, __1.ConnectionProvider.getHandler().getView({
+                                model: model,
+                                type: viewType,
+                                id: id_2,
+                                context: __assign(__assign({}, rootContext), parsedContext),
+                            })];
+                    case 6:
+                        view_id_1 = (_c.sent()).view_id;
+                        finalViews.push([view_id_1, viewType]);
+                        return [3 /*break*/, 8];
+                    case 7:
+                        finalViews.push(viewArray);
+                        _c.label = 8;
+                    case 8:
+                        _i++;
+                        return [3 /*break*/, 5];
+                    case 9:
+                        _b = finalViews.find(function (view) {
                             return view[0] === view_id;
                         }), id = _b[0], type = _b[1];
                         initialView = { id: id, type: type };
@@ -279,7 +329,7 @@ function RootView(props, ref) {
                             domain: parsedDomain,
                             context: __assign(__assign({}, rootContext), parsedContext),
                             model: model,
-                            views: views,
+                            views: finalViews,
                             title: title,
                             target: target,
                             initialView: initialView,

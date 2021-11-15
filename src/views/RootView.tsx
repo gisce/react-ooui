@@ -111,14 +111,32 @@ function RootView(props: RootViewProps, ref: any) {
 
     const { res_model: model, views, name: title, target } = dataForAction;
 
-    const [id, type] = views[0];
+    const finalViews = [];
+
+    for (const viewArray of views) {
+      const [id, viewType] = viewArray;
+
+      if (!id) {
+        const { view_id } = await ConnectionProvider.getHandler().getView({
+          model,
+          type: viewType,
+          id,
+          context: { ...rootContext, ...parsedContext },
+        });
+        finalViews.push([view_id, viewType]);
+      } else {
+        finalViews.push(viewArray);
+      }
+    }
+
+    const [id, type] = finalViews[0];
     const initialView = { id, type };
 
     openAction({
       domain: parsedDomain,
       context: { ...rootContext, ...parsedContext },
       model,
-      views,
+      views: finalViews,
       title,
       target,
       initialView,
@@ -234,7 +252,25 @@ function RootView(props: RootViewProps, ref: any) {
 
     const { res_model: model, views, name: title, target } = dataForAction;
 
-    const [id, type] = views.find((view: any[]) => {
+    const finalViews = [];
+
+    for (const viewArray of views) {
+      const [id, viewType] = viewArray;
+
+      if (!id) {
+        const { view_id } = await ConnectionProvider.getHandler().getView({
+          model,
+          type: viewType,
+          id,
+          context: { ...rootContext, ...parsedContext },
+        });
+        finalViews.push([view_id, viewType]);
+      } else {
+        finalViews.push(viewArray);
+      }
+    }
+
+    const [id, type] = finalViews.find((view: any[]) => {
       return view[0] === view_id;
     });
     const initialView = { id, type };
@@ -243,7 +279,7 @@ function RootView(props: RootViewProps, ref: any) {
       domain: parsedDomain,
       context: { ...rootContext, ...parsedContext },
       model,
-      views,
+      views: finalViews,
       title,
       target,
       initialView,

@@ -149,7 +149,9 @@ function Tree(props) {
                             onRowClicked(record.id);
                     },
                 };
-            }, rowSelection: rowSelection }),
+            }, rowSelection: rowSelection, onChange: function (_, __, sorter, extra) {
+                console.log();
+            } }),
         getSums()));
 }
 exports.default = Tree;
