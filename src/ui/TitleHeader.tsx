@@ -1,9 +1,10 @@
 import React, { useContext } from "react";
-import { Row, Col, Divider, Typography } from "antd";
+import { Row, Col, Typography } from "antd";
 import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 const { Title } = Typography;
 
@@ -13,8 +14,23 @@ type Props = {
 
 function TitleHeader(props: Props) {
   const { children } = props;
-  const { title } = useContext(ActionViewContext) as ActionViewContextType;
+  const {
+    title,
+    currentView,
+    currentId,
+    currentItemIndex,
+    results,
+    totalItems,
+  } = useContext(ActionViewContext) as ActionViewContextType;
+  const { t } = useContext(LocaleContext) as LocaleContextType;
 
+  function getSummary() {
+    return `${t("register")} ${
+      currentItemIndex === undefined ? 1 : currentItemIndex + 1
+    } / ${results!.length} ${t("of")} ${totalItems} - ${t(
+      "editingDocument"
+    )} (id: ${currentId})`;
+  }
   return (
     <>
       <Row
@@ -26,6 +42,7 @@ function TitleHeader(props: Props) {
           <Title level={3} style={{ marginBottom: 0 }}>
             {title}
           </Title>
+          {currentView?.type === "form" && getSummary()}
         </Col>
         <Col flex={3}>
           <Row justify="end">{children}</Row>

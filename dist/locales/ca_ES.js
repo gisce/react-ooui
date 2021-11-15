@@ -58,5 +58,8 @@ exports.default = {
     favorites: "Els meus favorits",
     edit_favorites: "Edita els favorits",
     no_favorites: "No tens favorits guardats",
+    register: "Registre",
+    of: "de",
+    editingDocument: "Editant document",
 };
 //# sourceMappingURL=ca_ES.js.map

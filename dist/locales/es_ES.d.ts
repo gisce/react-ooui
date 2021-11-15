@@ -56,6 +56,9 @@ declare const _default: {
     favorites: string;
     edit_favorites: string;
     no_favorites: string;
+    register: string;
+    of: string;
+    editingDocument: string;
 };
 export default _default;
 //# sourceMappingURL=es_ES.d.ts.map
