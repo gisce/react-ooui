@@ -142,6 +142,8 @@ function RootView(props: RootViewProps, ref: any) {
       initialView,
       action_type,
       action_id,
+      values,
+      forced_values,
     });
   }
 

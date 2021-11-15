@@ -194,6 +194,8 @@ function RootView(props, ref) {
                             initialView: initialView,
                             action_type: action_type,
                             action_id: action_id,
+                            values: values,
+                            forced_values: forced_values,
                         });
                         return [2 /*return*/];
                 }
