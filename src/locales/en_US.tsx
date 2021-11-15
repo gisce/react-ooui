@@ -58,4 +58,7 @@ export default {
   favorites: "My shortcuts",
   edit_favorites: "Edit shortcuts",
   no_favorites: "You don't have any shortcuts saved yet",
+  register: "Register",
+  of: "of",
+  editingDocument: "Editing document",
 };

@@ -22,14 +22,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var ActionViewContext_1 = require("@/context/ActionViewContext");
+var LocaleContext_1 = require("@/context/LocaleContext");
 var Title = antd_1.Typography.Title;
 function TitleHeader(props) {
     var children = props.children;
-    var title = react_1.useContext(ActionViewContext_1.ActionViewContext).title;
+    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), title = _a.title, currentView = _a.currentView, currentId = _a.currentId, currentItemIndex = _a.currentItemIndex, results = _a.results, totalItems = _a.totalItems;
+    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
+    function getSummary() {
+        return t("register") + " " + (currentItemIndex === undefined ? 1 : currentItemIndex + 1) + " / " + results.length + " " + t("of") + " " + totalItems + " - " + t("editingDocument") + " (id: " + currentId + ")";
+    }
     return (react_1.default.createElement(react_1.default.Fragment, null,
         react_1.default.createElement(antd_1.Row, { className: "bg-blueGray-100 shadow-md rounded", style: { padding: "1em" }, align: "middle" },
             react_1.default.createElement(antd_1.Col, { flex: 2 },
-                react_1.default.createElement(Title, { level: 3, style: { marginBottom: 0 } }, title)),
+                react_1.default.createElement(Title, { level: 3, style: { marginBottom: 0 } }, title),
+                (currentView === null || currentView === void 0 ? void 0 : currentView.type) === "form" && getSummary()),
             react_1.default.createElement(antd_1.Col, { flex: 3 },
                 react_1.default.createElement(antd_1.Row, { justify: "end" }, children))),
         react_1.default.createElement("div", { className: "pb-5" })));

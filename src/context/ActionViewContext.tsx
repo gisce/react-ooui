@@ -39,6 +39,8 @@ export type ActionViewContextType = {
   setSearchVisible?: (value: boolean) => void;
   sorter: any;
   setSorter: (sorter: any) => void;
+  totalItems: number;
+  setTotalItems: (totalItems: number) => void;
 };
 
 export const ActionViewContext = React.createContext<ActionViewContextType | null>(
@@ -80,6 +82,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     setToolbar,
     sorter,
     setSorter,
+    totalItems,
+    setTotalItems,
   } = props;
 
   useEffect(() => {
@@ -133,6 +137,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setSearchVisible,
         sorter,
         setSorter,
+        totalItems,
+        setTotalItems,
       }}
     >
       {children}

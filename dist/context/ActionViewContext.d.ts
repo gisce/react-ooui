@@ -38,6 +38,8 @@ export declare type ActionViewContextType = {
     setSearchVisible?: (value: boolean) => void;
     sorter: any;
     setSorter: (sorter: any) => void;
+    totalItems: number;
+    setTotalItems: (totalItems: number) => void;
 };
 export declare const ActionViewContext: React.Context<ActionViewContextType | null>;
 declare type ActionViewProviderProps = ActionViewContextType & {

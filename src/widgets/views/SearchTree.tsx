@@ -107,6 +107,7 @@ function SearchTree(props: Props, ref: any) {
     setSearchVisible = undefined,
     sorter = undefined,
     setSorter = undefined,
+    setTotalItems: setActionViewTotalItems = undefined,
   } = (rootTree ? actionViewContext : {}) || {};
 
   useImperativeHandle(ref, () => ({
@@ -127,6 +128,7 @@ function SearchTree(props: Props, ref: any) {
     });
 
     setTotalItems(searchResults.length);
+    setActionViewTotalItems?.(searchResults.length);
 
     if (searchResults.length > 0) {
       const resultsIds = searchResults.map((item: any) => {
@@ -219,6 +221,7 @@ function SearchTree(props: Props, ref: any) {
       attrs: colors && { colors },
     });
     setTotalItems(totalItems);
+    setActionViewTotalItems?.(totalItems);
     setColorsForResults(getColorMap(attrsEvaluated));
 
     setResults(results);
