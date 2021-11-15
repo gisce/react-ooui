@@ -82,6 +82,7 @@ var ConfirmDialog_1 = __importDefault(require("@/ui/ConfirmDialog"));
 var GenericErrorDialog_1 = __importDefault(require("@/ui/GenericErrorDialog"));
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var RefreshItemDialog_1 = __importDefault(require("@/ui/RefreshItemDialog"));
+var logInfoHelper_1 = require("@/helpers/logInfoHelper");
 var TabManagerContext_1 = require("@/context/TabManagerContext");
 var ContentRootContext_1 = require("@/context/ContentRootContext");
 var AttachmentsButton_1 = __importDefault(require("./AttachmentsButton"));
@@ -259,6 +260,13 @@ function FormActionBar() {
                 duplicatingItem ||
                 formIsLoading, loading: removingItem, onClick: tryDelete }),
         separator(),
+        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.InfoCircleOutlined, null), tooltip: t("showLogs"), disabled: formIsSaving ||
+                currentId === undefined ||
+                removingItem ||
+                duplicatingItem ||
+                formIsLoading, loading: false, onClick: function () {
+                logInfoHelper_1.showLogInfo(currentModel, currentId, t);
+            } }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.ReloadOutlined, null), tooltip: t("refresh"), disabled: formIsSaving ||
                 currentId === undefined ||
                 removingItem ||

@@ -108,6 +108,12 @@ type ReadObjectsRequest = {
   context?: any;
 };
 
+type GetLogInfoRequest = {
+  model: string;
+  ids: number[];
+  context?: any;
+};
+
 type ReadEvalUiObjectsRequest = {
   arch?: string;
   fields?: any;
@@ -201,6 +207,7 @@ type ConnectionProviderType = {
   nameSearch: (options: NameSearchRequest) => Promise<any>;
   duplicate: (options: DuplicateRequest) => Promise<any>;
   evalDomain: (options: EvalDomainRequest) => Promise<any>;
+  getLogInfo: (options: GetLogInfoRequest) => Promise<any>;
 };
 
 type ViewType = "tree" | "form";
@@ -233,4 +240,5 @@ export type {
   ReadEvalUiObjectsRequest,
   NameSearchRequest,
   DuplicateRequest,
+  GetLogInfoRequest,
 };

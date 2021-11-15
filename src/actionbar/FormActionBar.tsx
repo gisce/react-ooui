@@ -10,6 +10,7 @@ import {
   EnterOutlined,
   ReloadOutlined,
   CopyOutlined,
+  InfoCircleOutlined,
 } from "@ant-design/icons";
 import ChangeViewButton from "./ChangeViewButton";
 import DropdownButton from "./DropdownButton";
@@ -24,6 +25,7 @@ import showConfirmDialog from "@/ui/ConfirmDialog";
 import showErrorDialog from "@/ui/GenericErrorDialog";
 import ConnectionProvider from "@/ConnectionProvider";
 import refreshChangesDialog from "@/ui/RefreshItemDialog";
+import { showLogInfo } from "@/helpers/logInfoHelper";
 
 import {
   TabManagerContext,
@@ -256,6 +258,21 @@ function FormActionBar() {
         onClick={tryDelete}
       />
       {separator()}
+      <ActionButton
+        icon={<InfoCircleOutlined />}
+        tooltip={t("showLogs")}
+        disabled={
+          formIsSaving ||
+          currentId === undefined ||
+          removingItem ||
+          duplicatingItem ||
+          formIsLoading
+        }
+        loading={false}
+        onClick={() => {
+          showLogInfo(currentModel!, currentId!, t);
+        }}
+      />
       <ActionButton
         icon={<ReloadOutlined />}
         tooltip={t("refresh")}
