@@ -72,6 +72,7 @@ function ActionView(props: Props, ref: any) {
   const [currentItemIndex, setCurrentItemIndex] = useState<number>();
   const [results, setResults] = useState<any>([]);
   const [toolbar, setToolbar] = useState<any>();
+  const [sorter, setSorter] = useState<any>();
 
   const formRef = useRef();
   const searchTreeRef = useRef();
@@ -257,6 +258,8 @@ function ActionView(props: Props, ref: any) {
       currentModel={model}
       toolbar={toolbar}
       setToolbar={setToolbar}
+      sorter={sorter}
+      setSorter={setSorter}
     >
       <TitleHeader>
         {currentView!.type === "form" ? (

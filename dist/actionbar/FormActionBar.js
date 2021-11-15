@@ -123,11 +123,19 @@ function FormActionBar() {
             setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(currentItemIndex + 1);
             setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[currentItemIndex + 1]);
         }
+        else if (results && currentItemIndex + 1 === results.length) {
+            setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(0);
+            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[0]);
+        }
     }
     function onPreviousClick() {
         if (results && currentItemIndex > 0) {
             setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(currentItemIndex - 1);
             setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[currentItemIndex - 1]);
+        }
+        else if (results && currentItemIndex === 0) {
+            setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(results.length - 1);
+            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[results.length - 1]);
         }
     }
     function tryDelete() {

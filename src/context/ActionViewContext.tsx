@@ -1,4 +1,3 @@
-import { ViewType } from "@/types";
 import { View } from "@/views/ActionView";
 import React, { useEffect, useState } from "react";
 
@@ -38,6 +37,8 @@ export type ActionViewContextType = {
   setSearchParams?: (value: any[]) => void;
   searchVisible?: boolean;
   setSearchVisible?: (value: boolean) => void;
+  sorter: any;
+  setSorter: (sorter: any) => void;
 };
 
 export const ActionViewContext = React.createContext<ActionViewContextType | null>(
@@ -77,6 +78,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     currentModel,
     toolbar,
     setToolbar,
+    sorter,
+    setSorter,
   } = props;
 
   useEffect(() => {
@@ -128,6 +131,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         searchParams,
         searchVisible,
         setSearchVisible,
+        sorter,
+        setSorter,
       }}
     >
       {children}

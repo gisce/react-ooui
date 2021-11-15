@@ -32,7 +32,7 @@ var ActionViewProvider = function (props) {
     var _g = react_1.useState(false), duplicatingItem = _g[0], setDuplicatingItem = _g[1];
     var _h = react_1.useState([]), searchParams = _h[0], setSearchParams = _h[1];
     var _j = react_1.useState(false), searchVisible = _j[0], setSearchVisible = _j[1];
-    var children = props.children, currentView = props.currentView, title = props.title, setCurrentView = props.setCurrentView, availableViews = props.availableViews, formRef = props.formRef, searchTreeRef = props.searchTreeRef, onNewClicked = props.onNewClicked, currentId = props.currentId, setCurrentId = props.setCurrentId, setResults = props.setResults, results = props.results, currentItemIndex = props.currentItemIndex, setCurrentItemIndex = props.setCurrentItemIndex, currentModel = props.currentModel, toolbar = props.toolbar, setToolbar = props.setToolbar;
+    var children = props.children, currentView = props.currentView, title = props.title, setCurrentView = props.setCurrentView, availableViews = props.availableViews, formRef = props.formRef, searchTreeRef = props.searchTreeRef, onNewClicked = props.onNewClicked, currentId = props.currentId, setCurrentId = props.setCurrentId, setResults = props.setResults, results = props.results, currentItemIndex = props.currentItemIndex, setCurrentItemIndex = props.setCurrentItemIndex, currentModel = props.currentModel, toolbar = props.toolbar, setToolbar = props.setToolbar, sorter = props.sorter, setSorter = props.setSorter;
     react_1.useEffect(function () {
         if (results && results.length > 0 && !currentItemIndex) {
             setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(0);
@@ -79,6 +79,8 @@ var ActionViewProvider = function (props) {
             searchParams: searchParams,
             searchVisible: searchVisible,
             setSearchVisible: setSearchVisible,
+            sorter: sorter,
+            setSorter: setSorter,
         } }, children));
 };
 exports.default = ActionViewProvider;

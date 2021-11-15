@@ -105,7 +105,7 @@ function SearchTree(props, ref) {
     var _x = react_1.useState(200), searchFilterHeight = _x[0], setSearchFilterHeight = _x[1];
     var height = useWindowDimensions_1.default().height;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _y = (rootTree ? actionViewContext : {}) || {}, _z = _y.setResults, setResultsActionView = _z === void 0 ? undefined : _z, _0 = _y.setCurrentItemIndex, setCurrentItemIndex = _0 === void 0 ? undefined : _0, _1 = _y.currentId, currentId = _1 === void 0 ? undefined : _1, _2 = _y.results, resultsActionView = _2 === void 0 ? undefined : _2, _3 = _y.setSelectedRowItems, setSelectedRowItems = _3 === void 0 ? undefined : _3, _4 = _y.setSearchParams, setSearchParams = _4 === void 0 ? undefined : _4, _5 = _y.searchVisible, searchVisible = _5 === void 0 ? true : _5, _6 = _y.setSearchVisible, setSearchVisible = _6 === void 0 ? undefined : _6;
+    var _y = (rootTree ? actionViewContext : {}) || {}, _z = _y.setResults, setResultsActionView = _z === void 0 ? undefined : _z, _0 = _y.setCurrentItemIndex, setCurrentItemIndex = _0 === void 0 ? undefined : _0, _1 = _y.currentId, currentId = _1 === void 0 ? undefined : _1, _2 = _y.results, resultsActionView = _2 === void 0 ? undefined : _2, _3 = _y.setSelectedRowItems, setSelectedRowItems = _3 === void 0 ? undefined : _3, _4 = _y.setSearchParams, setSearchParams = _4 === void 0 ? undefined : _4, _5 = _y.searchVisible, searchVisible = _5 === void 0 ? true : _5, _6 = _y.setSearchVisible, setSearchVisible = _6 === void 0 ? undefined : _6, _7 = _y.sorter, sorter = _7 === void 0 ? undefined : _7, _8 = _y.setSorter, setSorter = _8 === void 0 ? undefined : _8;
     react_1.useImperativeHandle(ref, function () { return ({
         refreshResults: fetchResults,
     }); });
@@ -115,7 +115,7 @@ function SearchTree(props, ref) {
         setOffset((page - 1) * limit);
     };
     var searchByNameSearch = function () { return __awaiter(_this, void 0, void 0, function () {
-        var searchResults, resultsIds, colors, resultsWithData, resultsData;
+        var searchResults, resultsIds, colors, resultsWithData, resultsData, newResultIds, resultsSorted;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().nameSearch({
@@ -146,8 +146,10 @@ function SearchTree(props, ref) {
                     resultsData = resultsWithData[0];
                     setColorsForResults(treeHelper_1.getColorMap(resultsWithData[1]));
                     setResults(resultsData);
-                    setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView(resultsWithData);
-                    if (resultsWithData.length > 0) {
+                    newResultIds = resultsData.map(function (item) { return item.id; });
+                    resultsSorted = sortResults(resultsData, sorter);
+                    setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView(resultsSorted.map(function (item) { return item.id; }));
+                    if (newResultIds.length > 0) {
                         setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(0);
                     }
                     else {
@@ -187,7 +189,7 @@ function SearchTree(props, ref) {
         return finalParams;
     };
     var searchResults = function () { return __awaiter(_this, void 0, void 0, function () {
-        var domainParams, searchParams, colors, _a, totalItems, results, attrsEvaluated, resultIds, newCurrentItemIndex;
+        var domainParams, searchParams, colors, _a, totalItems, results, attrsEvaluated, resultsSorted, resultIds, newCurrentItemIndex;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -207,15 +209,9 @@ function SearchTree(props, ref) {
                     _a = _b.sent(), totalItems = _a.totalItems, results = _a.results, attrsEvaluated = _a.attrsEvaluated;
                     setTotalItems(totalItems);
                     setColorsForResults(treeHelper_1.getColorMap(attrsEvaluated));
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchAllIds({
-                            params: searchParams,
-                            model: currentModel,
-                            totalItems: totalItems,
-                            context: parentContext,
-                        })];
-                case 2:
-                    resultIds = _b.sent();
                     setResults(results);
+                    resultsSorted = sortResults(results, sorter);
+                    resultIds = resultsSorted.map(function (item) { return item.id; });
                     setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView(resultIds);
                     if (resultsActionView && resultIds.length > 0) {
                         newCurrentItemIndex = resultIds.findIndex(function (id) { return currentId === id; });
@@ -415,6 +411,30 @@ function SearchTree(props, ref) {
     function calculateTableHeight() {
         return height - (searchFilterHeight + 255);
     }
+    function sortResults(resultsToSort, sorter) {
+        if (!sorter) {
+            return resultsToSort;
+        }
+        var field = sorter.field, order = sorter.order;
+        var fields = __assign(__assign({}, treeView.fields), formView.fields);
+        var type = fields[field].type;
+        var sortFn = function (a, b) {
+            var _a, _b;
+            var aItem = a[field] || "", bItem = b[field] || "";
+            if (type === "many2one") {
+                aItem = ((_a = a[field]) === null || _a === void 0 ? void 0 : _a.value) || "";
+                bItem = ((_b = b[field]) === null || _b === void 0 ? void 0 : _b.value) || "";
+            }
+            if (aItem === bItem) {
+                return 0;
+            }
+            if (order === "ascend") {
+                return aItem > bItem ? 1 : -1;
+            }
+            return aItem < bItem ? 1 : -1;
+        };
+        return resultsToSort.sort(sortFn);
+    }
     var content = function () {
         if (!treeView || !formView) {
             return null;
@@ -434,6 +454,10 @@ function SearchTree(props, ref) {
             react_1.default.createElement(Tree_1.default, { total: totalItems, limit: limit, page: page, treeView: treeView, results: results, onRequestPageChange: onRequestPageChange, loading: tableRefreshing, onRowClicked: onRowClickedHandler, scrollY: treeScrollY || calculateTableHeight(), colorsForResults: colorsForResults, rowSelection: {
                     selectedRowKeys: selectedRowKeys,
                     onChange: onChangeSelectedRowKeys,
+                }, onChangeSort: function (newSorter) {
+                    setSorter === null || setSorter === void 0 ? void 0 : setSorter(newSorter);
+                    var sortedResults = sortResults(results, newSorter);
+                    setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView(sortedResults.map(function (item) { return item.id; }));
                 } })));
     };
     if (initialError) {

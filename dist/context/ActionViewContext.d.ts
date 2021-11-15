@@ -36,6 +36,8 @@ export declare type ActionViewContextType = {
     setSearchParams?: (value: any[]) => void;
     searchVisible?: boolean;
     setSearchVisible?: (value: boolean) => void;
+    sorter: any;
+    setSorter: (sorter: any) => void;
 };
 export declare const ActionViewContext: React.Context<ActionViewContextType | null>;
 declare type ActionViewProviderProps = ActionViewContextType & {
