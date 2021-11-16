@@ -39,6 +39,7 @@ type ActionModalOpts = {
   domain?: any;
   context: any;
   formView?: FormView;
+  actionData?: any;
 };
 
 export const ContentRootContext = React.createContext<ContentRootContextType | null>(
@@ -310,16 +311,18 @@ const ContentRootProvider = (
     model,
     formView,
     context,
+    actionData,
   }: {
     domain: any;
     model: string;
     formView: FormView;
     context: any;
+    actionData?: any;
   }) {
     if (actionModalVisible) {
-      openNewActionModal({ domain, model, formView, context });
+      openNewActionModal({ domain, model, formView, context, actionData });
     } else {
-      setActionModalOptions({ domain, model, context, formView });
+      setActionModalOptions({ domain, model, context, formView, actionData });
       setActionModalVisible(true);
     }
   }
@@ -329,21 +332,24 @@ const ContentRootProvider = (
     model,
     formView,
     context,
+    actionData,
   }: {
     domain: any;
     model: string;
     formView: FormView;
     context: any;
+    actionData?: any;
   }) {
     setActionModalOptions({
       domain: undefined,
       model: undefined,
       context: {},
       formView: undefined,
+      actionData: undefined,
     });
     setActionModalVisible(false);
     await new Promise((resolve) => setTimeout(resolve, 300));
-    setActionModalOptions({ domain, model, context, formView });
+    setActionModalOptions({ domain, model, context, formView, actionData });
     setActionModalVisible(true);
   }
 
@@ -355,6 +361,7 @@ const ContentRootProvider = (
       model: undefined,
       context: {},
       formView: undefined,
+      actionData: undefined,
     });
   }
 
@@ -391,10 +398,13 @@ const ContentRootProvider = (
                 model: undefined,
                 context: {},
                 formView: undefined,
+                actionData: undefined,
               });
             }}
             showFooter={false}
             actionDomain={actionModalOptions.domain}
+            isMenuAction={actionModalOptions?.actionData !== undefined}
+            actionData={actionModalOptions?.actionData}
           />
         </>
       </ContentRootContext.Provider>

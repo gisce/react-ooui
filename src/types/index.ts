@@ -173,6 +173,14 @@ type EvalDomainRequest = {
   context?: any;
 };
 
+type IsShortcutFavoriteOptions = {
+  action_id: number;
+  action_type: string;
+  res_id: number | boolean;
+  view_id: number;
+  context?: any;
+};
+
 type ConnectionProviderType = {
   getActionStringForModel: (model: string) => Promise<string>;
   getViewsForAction: ({
@@ -208,6 +216,11 @@ type ConnectionProviderType = {
   duplicate: (options: DuplicateRequest) => Promise<any>;
   evalDomain: (options: EvalDomainRequest) => Promise<any>;
   getLogInfo: (options: GetLogInfoRequest) => Promise<any>;
+  isShortcutFavorite: (
+    options: IsShortcutFavoriteOptions
+  ) => Promise<number | boolean>;
+  removeFavourite: ({ shortcut_id }: { shortcut_id: number }) => Promise<void>;
+  addFavourite: (options: IsShortcutFavoriteOptions) => Promise<void>;
 };
 
 type ViewType = "tree" | "form";
@@ -241,4 +254,5 @@ export type {
   NameSearchRequest,
   DuplicateRequest,
   GetLogInfoRequest,
+  IsShortcutFavoriteOptions,
 };

@@ -101,6 +101,9 @@ const FavouriteButton = (props: Props) => {
   }
 
   function handleVisibleChange(flag: boolean) {
+    if (flag) {
+      getShortcuts();
+    }
     setDropdownVisible(flag);
   }
 

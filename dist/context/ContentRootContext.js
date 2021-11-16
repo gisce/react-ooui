@@ -336,17 +336,17 @@ var ContentRootProvider = function (props, ref) {
         });
     }
     function openActionModal(_a) {
-        var domain = _a.domain, model = _a.model, formView = _a.formView, context = _a.context;
+        var domain = _a.domain, model = _a.model, formView = _a.formView, context = _a.context, actionData = _a.actionData;
         if (actionModalVisible) {
-            openNewActionModal({ domain: domain, model: model, formView: formView, context: context });
+            openNewActionModal({ domain: domain, model: model, formView: formView, context: context, actionData: actionData });
         }
         else {
-            setActionModalOptions({ domain: domain, model: model, context: context, formView: formView });
+            setActionModalOptions({ domain: domain, model: model, context: context, formView: formView, actionData: actionData });
             setActionModalVisible(true);
         }
     }
     function openNewActionModal(_a) {
-        var domain = _a.domain, model = _a.model, formView = _a.formView, context = _a.context;
+        var domain = _a.domain, model = _a.model, formView = _a.formView, context = _a.context, actionData = _a.actionData;
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -356,12 +356,13 @@ var ContentRootProvider = function (props, ref) {
                             model: undefined,
                             context: {},
                             formView: undefined,
+                            actionData: undefined,
                         });
                         setActionModalVisible(false);
                         return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 300); })];
                     case 1:
                         _b.sent();
-                        setActionModalOptions({ domain: domain, model: model, context: context, formView: formView });
+                        setActionModalOptions({ domain: domain, model: model, context: context, formView: formView, actionData: actionData });
                         setActionModalVisible(true);
                         return [2 /*return*/];
                 }
@@ -379,6 +380,7 @@ var ContentRootProvider = function (props, ref) {
                     model: undefined,
                     context: {},
                     formView: undefined,
+                    actionData: undefined,
                 });
                 return [2 /*return*/];
             });
@@ -400,8 +402,9 @@ var ContentRootProvider = function (props, ref) {
                             model: undefined,
                             context: {},
                             formView: undefined,
+                            actionData: undefined,
                         });
-                    }, showFooter: false, actionDomain: actionModalOptions.domain })))));
+                    }, showFooter: false, actionDomain: actionModalOptions.domain, isMenuAction: (actionModalOptions === null || actionModalOptions === void 0 ? void 0 : actionModalOptions.actionData) !== undefined, actionData: actionModalOptions === null || actionModalOptions === void 0 ? void 0 : actionModalOptions.actionData })))));
 };
 exports.default = react_1.forwardRef(ContentRootProvider);
 //# sourceMappingURL=ContentRootContext.js.map

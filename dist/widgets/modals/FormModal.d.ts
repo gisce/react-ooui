@@ -3,6 +3,8 @@ declare type FormModalProps = FormProps & {
     visible: boolean;
     title?: string;
     buttonModal?: boolean;
+    isMenuAction?: boolean;
+    actionData?: any;
 };
 export declare const FormModal: (props: FormModalProps) => JSX.Element;
 export {};
