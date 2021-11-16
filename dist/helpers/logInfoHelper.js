@@ -65,10 +65,10 @@ function showLogInfo(model, currentId, translateFn) {
                         translateFn("creationDate") + ": " + create_date,
                         " ",
                         react_1.default.createElement("br", null),
-                        translateFn("lastUpdatedBy") + ": " + write_date,
+                        translateFn("lastUpdatedBy") + ": " + write_uid[1],
                         " ",
                         react_1.default.createElement("br", null),
-                        translateFn("lastUpdatedDate") + ": " + write_uid[1]));
+                        translateFn("lastUpdatedDate") + ": " + write_date));
                     return [2 /*return*/];
             }
         });
