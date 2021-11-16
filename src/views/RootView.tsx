@@ -351,6 +351,12 @@ function RootView(props: RootViewProps, ref: any) {
         model,
         formView,
         context: { ...rootContext, ...context },
+        actionData: {
+          action_id,
+          action_type,
+          res_id,
+          view_id: formView.view_id,
+        },
       });
     } else {
       addNewTab({

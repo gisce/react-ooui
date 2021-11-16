@@ -145,6 +145,13 @@ declare type EvalDomainRequest = {
     values: any;
     context?: any;
 };
+declare type IsShortcutFavoriteOptions = {
+    action_id: number;
+    action_type: string;
+    res_id: number | boolean;
+    view_id: number;
+    context?: any;
+};
 declare type ConnectionProviderType = {
     getActionStringForModel: (model: string) => Promise<string>;
     getViewsForAction: ({ action, context, }: {
@@ -174,7 +181,12 @@ declare type ConnectionProviderType = {
     duplicate: (options: DuplicateRequest) => Promise<any>;
     evalDomain: (options: EvalDomainRequest) => Promise<any>;
     getLogInfo: (options: GetLogInfoRequest) => Promise<any>;
+    isShortcutFavorite: (options: IsShortcutFavoriteOptions) => Promise<number | boolean>;
+    removeFavourite: ({ shortcut_id }: {
+        shortcut_id: number;
+    }) => Promise<void>;
+    addFavourite: (options: IsShortcutFavoriteOptions) => Promise<void>;
 };
 declare type ViewType = "tree" | "form";
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, ReadEvalUiObjectsRequest, NameSearchRequest, DuplicateRequest, GetLogInfoRequest, };
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, ReadEvalUiObjectsRequest, NameSearchRequest, DuplicateRequest, GetLogInfoRequest, IsShortcutFavoriteOptions, };
 //# sourceMappingURL=index.d.ts.map

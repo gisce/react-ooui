@@ -386,6 +386,12 @@ function RootView(props, ref) {
                             model: model,
                             formView: formView,
                             context: __assign(__assign({}, rootContext), context),
+                            actionData: {
+                                action_id: action_id,
+                                action_type: action_type,
+                                res_id: res_id,
+                                view_id: formView.view_id,
+                            },
                         });
                         return [3 /*break*/, 3];
                     case 2:

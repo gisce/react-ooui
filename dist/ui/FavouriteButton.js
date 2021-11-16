@@ -118,6 +118,9 @@ var FavouriteButton = function (props) {
         setDropdownVisible(false);
     }
     function handleVisibleChange(flag) {
+        if (flag) {
+            getShortcuts();
+        }
         setDropdownVisible(flag);
     }
     function checkFavourite() {
