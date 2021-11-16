@@ -19,8 +19,8 @@ async function showLogInfo(
       {"ID: " + id} <br />
       {translateFn("createdBy") + ": " + create_uid[1]} <br />
       {translateFn("creationDate") + ": " + create_date} <br />
-      {translateFn("lastUpdatedBy") + ": " + write_date} <br />
-      {translateFn("lastUpdatedDate") + ": " + write_uid[1]}
+      {translateFn("lastUpdatedBy") + ": " + write_uid[1]} <br />
+      {translateFn("lastUpdatedDate") + ": " + write_date}
     </div>
   );
 }
