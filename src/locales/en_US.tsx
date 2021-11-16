@@ -66,4 +66,7 @@ export default {
   creationDate: "Creation date",
   lastUpdatedBy: "Last modified by",
   lastUpdatedDate: "Date of last modification",
+  goToResourceId: "Go to resource ID",
+  searchId: "Search ID:",
+  idNotFound: "Resource ID does not exist for this object!",
 };

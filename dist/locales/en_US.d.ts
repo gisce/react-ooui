@@ -64,6 +64,9 @@ declare const _default: {
     creationDate: string;
     lastUpdatedBy: string;
     lastUpdatedDate: string;
+    goToResourceId: string;
+    searchId: string;
+    idNotFound: string;
 };
 export default _default;
 //# sourceMappingURL=en_US.d.ts.map

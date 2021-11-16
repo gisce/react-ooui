@@ -22,6 +22,10 @@ import {
   TabManagerContext,
   TabManagerContextType,
 } from "@/context/TabManagerContext";
+import { useHotkeys } from "react-hotkeys-hook";
+import { GoToResourceModal } from "@/ui/GoToResourceModal";
+import showInfo from "@/ui/InfoDialog";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 type Props = {
   domain: any;
@@ -74,6 +78,10 @@ function ActionView(props: Props, ref: any) {
   const [toolbar, setToolbar] = useState<any>();
   const [sorter, setSorter] = useState<any>();
   const [totalItems, setTotalItems] = useState<number>(0);
+  const [gtResourceModalVisible, setGtResourceModalVisible] = useState<boolean>(
+    false
+  );
+  const { t } = useContext(LocaleContext) as LocaleContextType;
 
   const formRef = useRef();
   const searchTreeRef = useRef();
@@ -87,6 +95,15 @@ function ActionView(props: Props, ref: any) {
     tabs,
     activeKey,
   } = tabManagerContext || {};
+
+  useHotkeys(
+    "ctrl+g,command+g",
+    (event) => {
+      event.preventDefault();
+      handleGoToRecordShortcut();
+    },
+    [activeKey, tabs, currentView, currentItemIndex, results]
+  );
 
   function setCurrentId(id?: number) {
     setCurrentIdInternal(id);
@@ -174,6 +191,58 @@ function ActionView(props: Props, ref: any) {
     } else {
       return true;
     }
+  }
+
+  async function handleGoToRecordShortcut() {
+    if (activeKey !== tabKey) {
+      return;
+    }
+
+    setGtResourceModalVisible(true);
+  }
+
+  async function goToResourceId(id: number) {
+    const itemIndex = results!.findIndex((item: any) => {
+      return item === id;
+    });
+
+    if (itemIndex === -1) {
+      let resource;
+
+      try {
+        resource = (
+          await ConnectionProvider.getHandler().readObjects({
+            model,
+            ids: [id],
+            context,
+          })
+        )?.[0];
+      } catch (err) {}
+
+      if (!resource) {
+        setGtResourceModalVisible(false);
+        showInfo(t("idNotFound"));
+        return;
+      } else {
+        setResults([...results, resource]);
+        setCurrentId(resource.id);
+        setCurrentItemIndex(results.length);
+        setGtResourceModalVisible(false);
+        return;
+      }
+    }
+
+    if (currentView!.type === "form") {
+      const itemIndex = results!.findIndex((item: any) => {
+        return item === id;
+      });
+      setCurrentId(id);
+      setCurrentItemIndex(itemIndex);
+    } else {
+      // Clear selected items and try to select the new one
+    }
+
+    setGtResourceModalVisible(false);
   }
 
   function content() {
@@ -272,6 +341,13 @@ function ActionView(props: Props, ref: any) {
         )}
       </TitleHeader>
       {content()}
+      <GoToResourceModal
+        visible={gtResourceModalVisible}
+        onIdSubmitted={goToResourceId}
+        onCancel={() => {
+          setGtResourceModalVisible(false);
+        }}
+      />
     </ActionViewProvider>
   );
 }

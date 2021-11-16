@@ -54,6 +54,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -68,6 +73,10 @@ var TitleHeader_1 = __importDefault(require("@/ui/TitleHeader"));
 var FormActionBar_1 = __importDefault(require("@/actionbar/FormActionBar"));
 var TreeActionBar_1 = __importDefault(require("@/actionbar/TreeActionBar"));
 var TabManagerContext_1 = require("@/context/TabManagerContext");
+var react_hotkeys_hook_1 = require("react-hotkeys-hook");
+var GoToResourceModal_1 = require("@/ui/GoToResourceModal");
+var InfoDialog_1 = __importDefault(require("@/ui/InfoDialog"));
+var LocaleContext_1 = require("@/context/LocaleContext");
 function ActionView(props, ref) {
     var _this = this;
     var domain = props.domain, model = props.model, context = props.context, views = props.views, title = props.title, setCanWeClose = props.setCanWeClose, tabKey = props.tabKey, initialView = props.initialView, formDefaultValues = props.formDefaultValues, _a = props.formForcedValues, formForcedValues = _a === void 0 ? {} : _a, _b = props.res_id, res_id = _b === void 0 ? false : _b;
@@ -85,10 +94,16 @@ function ActionView(props, ref) {
     var _l = react_1.useState(), toolbar = _l[0], setToolbar = _l[1];
     var _m = react_1.useState(), sorter = _m[0], setSorter = _m[1];
     var _o = react_1.useState(0), totalItems = _o[0], setTotalItems = _o[1];
+    var _p = react_1.useState(false), gtResourceModalVisible = _p[0], setGtResourceModalVisible = _p[1];
+    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var formRef = react_1.useRef();
     var searchTreeRef = react_1.useRef();
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
-    var _p = tabManagerContext || {}, setCurrentViewTabContext = _p.setCurrentView, setCurrentIdTabContext = _p.setCurrentId, tabs = _p.tabs, activeKey = _p.activeKey;
+    var _q = tabManagerContext || {}, setCurrentViewTabContext = _q.setCurrentView, setCurrentIdTabContext = _q.setCurrentId, tabs = _q.tabs, activeKey = _q.activeKey;
+    react_hotkeys_hook_1.useHotkeys("ctrl+g,command+g", function (event) {
+        event.preventDefault();
+        handleGoToRecordShortcut();
+    }, [activeKey, tabs, currentView, currentItemIndex, results]);
     function setCurrentId(id) {
         setCurrentIdInternal(id);
         setCurrentIdTabContext === null || setCurrentIdTabContext === void 0 ? void 0 : setCurrentIdTabContext(id);
@@ -189,6 +204,74 @@ function ActionView(props, ref) {
             });
         });
     }
+    function handleGoToRecordShortcut() {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                if (activeKey !== tabKey) {
+                    return [2 /*return*/];
+                }
+                setGtResourceModalVisible(true);
+                return [2 /*return*/];
+            });
+        });
+    }
+    function goToResourceId(id) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function () {
+            var itemIndex, resource, err_2, itemIndex_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        itemIndex = results.findIndex(function (item) {
+                            return item === id;
+                        });
+                        if (!(itemIndex === -1)) return [3 /*break*/, 5];
+                        resource = void 0;
+                        _b.label = 1;
+                    case 1:
+                        _b.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                                model: model,
+                                ids: [id],
+                                context: context,
+                            })];
+                    case 2:
+                        resource = (_a = (_b.sent())) === null || _a === void 0 ? void 0 : _a[0];
+                        return [3 /*break*/, 4];
+                    case 3:
+                        err_2 = _b.sent();
+                        return [3 /*break*/, 4];
+                    case 4:
+                        if (!resource) {
+                            setGtResourceModalVisible(false);
+                            InfoDialog_1.default(t("idNotFound"));
+                            return [2 /*return*/];
+                        }
+                        else {
+                            setResults(__spreadArray(__spreadArray([], results), [resource]));
+                            setCurrentId(resource.id);
+                            setCurrentItemIndex(results.length);
+                            setGtResourceModalVisible(false);
+                            return [2 /*return*/];
+                        }
+                        _b.label = 5;
+                    case 5:
+                        if (currentView.type === "form") {
+                            itemIndex_1 = results.findIndex(function (item) {
+                                return item === id;
+                            });
+                            setCurrentId(id);
+                            setCurrentItemIndex(itemIndex_1);
+                        }
+                        else {
+                            // Clear selected items and try to select the new one
+                        }
+                        setGtResourceModalVisible(false);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
     function content() {
         if (isLoading) {
             return react_1.default.createElement(antd_1.Spin, null);
@@ -228,7 +311,10 @@ function ActionView(props, ref) {
     }
     return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, searchTreeRef: searchTreeRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId, setCurrentItemIndex: setCurrentItemIndex, currentItemIndex: currentItemIndex, results: results, setResults: setResults, currentModel: model, toolbar: toolbar, setToolbar: setToolbar, sorter: sorter, setSorter: setSorter, totalItems: totalItems, setTotalItems: setTotalItems },
         react_1.default.createElement(TitleHeader_1.default, null, currentView.type === "form" ? (react_1.default.createElement(FormActionBar_1.default, null)) : (react_1.default.createElement(TreeActionBar_1.default, { parentContext: context }))),
-        content()));
+        content(),
+        react_1.default.createElement(GoToResourceModal_1.GoToResourceModal, { visible: gtResourceModalVisible, onIdSubmitted: goToResourceId, onCancel: function () {
+                setGtResourceModalVisible(false);
+            } })));
 }
 exports.default = react_1.forwardRef(ActionView);
 //# sourceMappingURL=ActionView.js.map
