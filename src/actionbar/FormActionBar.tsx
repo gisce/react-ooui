@@ -108,20 +108,20 @@ function FormActionBar() {
   function onNextClick() {
     if (results && results.length > currentItemIndex! + 1) {
       setCurrentItemIndex?.(currentItemIndex! + 1);
-      setCurrentId?.(results[currentItemIndex! + 1]);
+      setCurrentId?.(results[currentItemIndex! + 1].id);
     } else if (results && currentItemIndex! + 1 === results.length) {
       setCurrentItemIndex?.(0);
-      setCurrentId?.(results[0]);
+      setCurrentId?.(results[0].id);
     }
   }
 
   function onPreviousClick() {
     if (results && currentItemIndex! > 0) {
       setCurrentItemIndex?.(currentItemIndex! - 1);
-      setCurrentId?.(results[currentItemIndex! - 1]);
+      setCurrentId?.(results[currentItemIndex! - 1].id);
     } else if (results && currentItemIndex === 0) {
       setCurrentItemIndex?.(results.length - 1);
-      setCurrentId?.(results[results.length - 1]);
+      setCurrentId?.(results[results.length - 1].id);
     }
   }
 
@@ -145,7 +145,7 @@ function FormActionBar() {
       });
 
       const filteredResults = results?.filter((item: any) => {
-        return item !== currentId;
+        return item.id !== currentId;
       });
       setResults?.(filteredResults!);
 
@@ -159,7 +159,7 @@ function FormActionBar() {
         setCurrentId?.(undefined);
         setCurrentItemIndex?.(undefined);
       } else {
-        setCurrentId?.(filteredResults?.[newIndex]);
+        setCurrentId?.(filteredResults?.[newIndex].id);
         setCurrentItemIndex?.(newIndex);
       }
     } catch (e) {

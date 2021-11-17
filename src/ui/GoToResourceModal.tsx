@@ -7,10 +7,11 @@ type Props = {
   visible: boolean;
   onIdSubmitted: (id: number) => void;
   onCancel: () => void;
+  isSearching: boolean;
 };
 
 export const GoToResourceModal = (props: Props) => {
-  const { visible, onIdSubmitted, onCancel } = props;
+  const { visible, onIdSubmitted, onCancel, isSearching } = props;
 
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
@@ -47,13 +48,16 @@ export const GoToResourceModal = (props: Props) => {
                 icon={<CloseOutlined />}
                 htmlType="button"
                 onClick={onCancel}
+                disabled={isSearching}
               >
                 {t("cancel")}
               </Button>
               <Button
+                loading={isSearching}
                 style={{ marginLeft: 15 }}
                 icon={<CheckOutlined />}
                 htmlType="submit"
+                disabled={isSearching}
               >
                 {t("ok")}
               </Button>

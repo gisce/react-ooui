@@ -122,21 +122,21 @@ function FormActionBar() {
     function onNextClick() {
         if (results && results.length > currentItemIndex + 1) {
             setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(currentItemIndex + 1);
-            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[currentItemIndex + 1]);
+            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[currentItemIndex + 1].id);
         }
         else if (results && currentItemIndex + 1 === results.length) {
             setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(0);
-            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[0]);
+            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[0].id);
         }
     }
     function onPreviousClick() {
         if (results && currentItemIndex > 0) {
             setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(currentItemIndex - 1);
-            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[currentItemIndex - 1]);
+            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[currentItemIndex - 1].id);
         }
         else if (results && currentItemIndex === 0) {
             setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(results.length - 1);
-            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[results.length - 1]);
+            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[results.length - 1].id);
         }
     }
     function tryDelete() {
@@ -163,7 +163,7 @@ function FormActionBar() {
                     case 1:
                         _a.sent();
                         filteredResults = results === null || results === void 0 ? void 0 : results.filter(function (item) {
-                            return item !== currentId;
+                            return item.id !== currentId;
                         });
                         setResults === null || setResults === void 0 ? void 0 : setResults(filteredResults);
                         newIndex = 0;
@@ -175,7 +175,7 @@ function FormActionBar() {
                             setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(undefined);
                         }
                         else {
-                            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(filteredResults === null || filteredResults === void 0 ? void 0 : filteredResults[newIndex]);
+                            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(filteredResults === null || filteredResults === void 0 ? void 0 : filteredResults[newIndex].id);
                             setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(newIndex);
                         }
                         return [3 /*break*/, 4];

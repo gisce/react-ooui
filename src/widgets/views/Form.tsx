@@ -65,7 +65,7 @@ export type FormProps = {
   getDataFromAction?: boolean;
   mustClearAfterSave?: boolean;
   submitMode?: "api" | "values";
-  onSubmitSucceed?: (id?: number) => void;
+  onSubmitSucceed?: (id?: number, values?: any) => void;
   onSubmitError?: (error: any) => void;
   onCancel?: () => void;
   onFieldsChange?: (values: any) => void;
@@ -183,10 +183,10 @@ function Form(props: FormProps, ref: any) {
     fetchData();
   }, [id, model, valuesProps, formViewProps, visible]);
 
-  const onSubmitSucceed = (id?: number) => {
+  const onSubmitSucceed = (id?: number, values?: any) => {
     setFormHasChanges?.(false);
     setFormIsSaving?.(false);
-    propsOnSubmitSucceed?.(id);
+    propsOnSubmitSucceed?.(id, values);
     setCurrentId?.(id);
   };
 
@@ -490,7 +490,7 @@ function Form(props: FormProps, ref: any) {
     }
 
     if (!insideButtonModal && callOnSubmitSucceed) {
-      onSubmitSucceed?.(getCurrentId());
+      onSubmitSucceed?.(getCurrentId(), getValues());
     }
   };
 
@@ -498,7 +498,7 @@ function Form(props: FormProps, ref: any) {
     const { callOnSubmitSucceed = true } = options || {};
 
     if (!insideButtonModal && callOnSubmitSucceed) {
-      onSubmitSucceed?.(getCurrentId());
+      onSubmitSucceed?.(getCurrentId(), getValues());
     }
   };
 
@@ -723,12 +723,12 @@ function Form(props: FormProps, ref: any) {
       Object.keys(response).length === 0 &&
       insideButtonModal
     ) {
-      onSubmitSucceed?.(getCurrentId());
+      onSubmitSucceed?.(getCurrentId(), getValues());
     } else if (
       response.type &&
       response.type === "ir.actions.act_window_close"
     ) {
-      onSubmitSucceed?.(getCurrentId());
+      onSubmitSucceed?.(getCurrentId(), getValues());
     } else if (response.type) {
       await runAction({ actionData: response, context });
     } else {
@@ -744,7 +744,7 @@ function Form(props: FormProps, ref: any) {
     });
 
     if (response.type && response.type === "ir.actions.act_window_close") {
-      onSubmitSucceed?.(getCurrentId());
+      onSubmitSucceed?.(getCurrentId(), getValues());
     } else {
       await fetchValues();
     }
@@ -791,7 +791,7 @@ function Form(props: FormProps, ref: any) {
       })) || {};
 
     if (!rootForm && closeParent) {
-      onSubmitSucceed?.(getCurrentId());
+      onSubmitSucceed?.(getCurrentId(), getValues());
     }
   }
 

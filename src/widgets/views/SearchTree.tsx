@@ -76,7 +76,7 @@ function SearchTree(props: Props, ref: any) {
   const paramsRef = useRef<Array<any>>([]);
 
   const [totalItems, setTotalItems] = useState<number>(0);
-  const [results, setResults] = useState<any>([]);
+  const [resultsInternal, setResultsInternal] = useState<any>([]);
   const [colorsForResults, setColorsForResults] = useState<any>(undefined);
 
   const [searchFilterLoading, setSearchFilterLoading] = useState<boolean>(
@@ -86,7 +86,6 @@ function SearchTree(props: Props, ref: any) {
   const [initialError, setInitialError] = useState<string>();
 
   const [tableRefreshing, setTableRefreshing] = useState<boolean>(false);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
 
   const actionDomain = useRef<any>([]);
   const [searchFilterHeight, setSearchFilterHeight] = useState<number>(200);
@@ -101,6 +100,7 @@ function SearchTree(props: Props, ref: any) {
     setCurrentItemIndex = undefined,
     currentId = undefined,
     results: resultsActionView = undefined,
+    selectedRowItems = undefined,
     setSelectedRowItems = undefined,
     setSearchParams = undefined,
     searchVisible = true,
@@ -119,6 +119,18 @@ function SearchTree(props: Props, ref: any) {
     setPage(page);
     setOffset((page - 1) * limit!);
   };
+
+  function setResults(results: any) {
+    setResultsActionView?.(results);
+    setResultsInternal(results);
+  }
+
+  function getResults() {
+    if (!resultsActionView) {
+      return resultsInternal;
+    }
+    return resultsActionView;
+  }
 
   const searchByNameSearch = async () => {
     const searchResults = await ConnectionProvider.getHandler().nameSearch({
@@ -157,7 +169,7 @@ function SearchTree(props: Props, ref: any) {
       const newResultIds = resultsData.map((item: any) => item.id);
 
       const resultsSorted = sortResults(resultsData, sorter);
-      setResultsActionView?.(resultsSorted.map((item) => item.id));
+      setResults(resultsSorted);
 
       if (newResultIds.length > 0) {
         setCurrentItemIndex?.(0);
@@ -166,7 +178,6 @@ function SearchTree(props: Props, ref: any) {
       }
     } else {
       setResults([]);
-      setResultsActionView?.([]);
       setCurrentItemIndex?.(undefined);
     }
 
@@ -224,14 +235,13 @@ function SearchTree(props: Props, ref: any) {
     setActionViewTotalItems?.(totalItems);
     setColorsForResults(getColorMap(attrsEvaluated));
 
-    setResults(results);
-
     const resultsSorted = sortResults(results, sorter);
-    const resultIds = resultsSorted.map((item: any) => item.id);
-    setResultsActionView?.(resultIds);
+    setResults(resultsSorted);
 
-    if (resultsActionView && resultIds.length > 0) {
-      const newCurrentItemIndex = resultIds.findIndex((id) => currentId === id);
+    if (resultsActionView && resultsSorted.length > 0) {
+      const newCurrentItemIndex = resultsSorted.findIndex(
+        (item) => currentId === item.id
+      );
 
       if (newCurrentItemIndex === -1) {
         setCurrentItemIndex?.(0);
@@ -362,7 +372,6 @@ function SearchTree(props: Props, ref: any) {
   }) => {
     if (tableRefreshing) return;
     paramsRef.current = newParams;
-    setSelectedRowKeys([]);
     setSelectedRowItems?.([]);
     setSearchParams?.(newParams);
     setSearchVisible?.(false);
@@ -384,9 +393,7 @@ function SearchTree(props: Props, ref: any) {
   };
 
   function onChangeSelectedRowKeys(selectedRowKeys: number[]) {
-    setSelectedRowKeys(selectedRowKeys);
-
-    const items = results.filter((result: any) => {
+    const items = getResults().filter((result: any) => {
       return selectedRowKeys.includes(result.id);
     });
 
@@ -472,20 +479,20 @@ function SearchTree(props: Props, ref: any) {
           limit={limit}
           page={page}
           treeView={treeView}
-          results={results}
+          results={getResults()}
           onRequestPageChange={onRequestPageChange}
           loading={tableRefreshing}
           onRowClicked={onRowClickedHandler}
           scrollY={treeScrollY || calculateTableHeight()}
           colorsForResults={colorsForResults}
           rowSelection={{
-            selectedRowKeys,
+            selectedRowKeys: selectedRowItems?.map((item) => item.id),
             onChange: onChangeSelectedRowKeys,
           }}
           onChangeSort={(newSorter) => {
             setSorter?.(newSorter);
-            const sortedResults = sortResults(results, newSorter);
-            setResultsActionView?.(sortedResults.map((item: any) => item.id));
+            const sortedResults = sortResults(getResults(), newSorter);
+            setResults(sortedResults);
           }}
         />
       </>

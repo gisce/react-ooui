@@ -26,6 +26,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { GoToResourceModal } from "@/ui/GoToResourceModal";
 import showInfo from "@/ui/InfoDialog";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import scrollIntoView from "scroll-into-view";
 
 type Props = {
   domain: any;
@@ -73,6 +74,7 @@ function ActionView(props: Props, ref: any) {
   const [currentId, setCurrentIdInternal] = useState<number | undefined>(
     res_id_parsed
   );
+  const [selectedRowItems, setSelectedRowItems] = useState<any[]>([]);
   const [currentItemIndex, setCurrentItemIndex] = useState<number>();
   const [results, setResults] = useState<any>([]);
   const [toolbar, setToolbar] = useState<any>();
@@ -81,6 +83,10 @@ function ActionView(props: Props, ref: any) {
   const [gtResourceModalVisible, setGtResourceModalVisible] = useState<boolean>(
     false
   );
+  const [searchingForResourceId, setSearchingForResourceId] = useState<boolean>(
+    false
+  );
+
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
   const formRef = useRef();
@@ -198,17 +204,35 @@ function ActionView(props: Props, ref: any) {
       return;
     }
 
+    if (currentView!.type === "form") {
+      const canWeClose = await (formRef.current as any).cancelUnsavedChanges();
+
+      if (!canWeClose) {
+        return;
+      }
+    }
+
     setGtResourceModalVisible(true);
   }
 
+  function scrollIntoTreeRowId(id: number) {
+    scrollIntoView((document as any).querySelector(`.record-row-${id}`), {
+      align: {
+        top: 0,
+      },
+    });
+  }
+
   async function goToResourceId(id: number) {
+    setSearchingForResourceId(true);
+
     const itemIndex = results!.findIndex((item: any) => {
-      return item === id;
+      return item.id === id;
     });
 
-    if (itemIndex === -1) {
-      let resource;
+    let resource;
 
+    if (itemIndex === -1) {
       try {
         resource = (
           await ConnectionProvider.getHandler().readObjects({
@@ -220,29 +244,31 @@ function ActionView(props: Props, ref: any) {
       } catch (err) {}
 
       if (!resource) {
+        setSearchingForResourceId(false);
         setGtResourceModalVisible(false);
         showInfo(t("idNotFound"));
         return;
-      } else {
-        setResults([...results, resource]);
-        setCurrentId(resource.id);
-        setCurrentItemIndex(results.length);
-        setGtResourceModalVisible(false);
-        return;
       }
-    }
-
-    if (currentView!.type === "form") {
-      const itemIndex = results!.findIndex((item: any) => {
-        return item === id;
-      });
-      setCurrentId(id);
-      setCurrentItemIndex(itemIndex);
     } else {
-      // Clear selected items and try to select the new one
+      resource = results[itemIndex];
     }
 
+    setCurrentId(resource.id);
+
+    if (itemIndex === -1) {
+      setCurrentItemIndex(results.length);
+      setResults([...results, resource]);
+    } else {
+      setCurrentItemIndex(itemIndex);
+    }
+
+    setSearchingForResourceId(false);
     setGtResourceModalVisible(false);
+
+    if (currentView!.type === "tree") {
+      setSelectedRowItems([resource]);
+      scrollIntoTreeRowId(resource.id);
+    }
   }
 
   function content() {
@@ -263,12 +289,12 @@ function ActionView(props: Props, ref: any) {
           actionDomain={domain}
           id={currentId}
           parentContext={context}
-          onSubmitSucceed={(id) => {
+          onSubmitSucceed={(id, values) => {
             const itemIndex = results!.findIndex((item: any) => {
-              return item === id;
+              return item.id === id;
             });
             if (itemIndex === -1) {
-              results!.push(id);
+              results!.push(values);
               setResults(results);
               setCurrentItemIndex(results!.length - 1);
             }
@@ -287,7 +313,7 @@ function ActionView(props: Props, ref: any) {
             const { id } = event;
             setCurrentId(id);
             const itemIndex = results.findIndex((item: any) => {
-              return item === id;
+              return item.id === id;
             });
             setCurrentItemIndex(itemIndex);
             setCurrentView(availableViews.find((v) => v.type === "form"));
@@ -332,6 +358,8 @@ function ActionView(props: Props, ref: any) {
       setSorter={setSorter}
       totalItems={totalItems}
       setTotalItems={setTotalItems}
+      selectedRowItems={selectedRowItems}
+      setSelectedRowItems={setSelectedRowItems}
     >
       <TitleHeader>
         {currentView!.type === "form" ? (
@@ -344,6 +372,7 @@ function ActionView(props: Props, ref: any) {
       <GoToResourceModal
         visible={gtResourceModalVisible}
         onIdSubmitted={goToResourceId}
+        isSearching={searchingForResourceId}
         onCancel={() => {
           setGtResourceModalVisible(false);
         }}

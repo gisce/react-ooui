@@ -208,7 +208,9 @@ function Tree(props: Props): React.ReactElement {
         dataSource={items}
         pagination={false}
         loading={loading}
-        rowClassName="cursor-pointer select-none"
+        rowClassName={(record) => {
+          return `cursor-pointer select-none record-row-${record.id}`;
+        }}
         rowKey={(item) => {
           return item.id;
         }}

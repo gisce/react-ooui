@@ -94,18 +94,17 @@ function SearchTree(props, ref) {
     var _o = react_1.useState(), limitFromAction = _o[0], setLimitFromAction = _o[1];
     var paramsRef = react_1.useRef([]);
     var _p = react_1.useState(0), totalItems = _p[0], setTotalItems = _p[1];
-    var _q = react_1.useState([]), results = _q[0], setResults = _q[1];
+    var _q = react_1.useState([]), resultsInternal = _q[0], setResultsInternal = _q[1];
     var _r = react_1.useState(undefined), colorsForResults = _r[0], setColorsForResults = _r[1];
     var _s = react_1.useState(false), searchFilterLoading = _s[0], setSearchFilterLoading = _s[1];
     var _t = react_1.useState(), searchError = _t[0], setSearchError = _t[1];
     var _u = react_1.useState(), initialError = _u[0], setInitialError = _u[1];
     var _v = react_1.useState(false), tableRefreshing = _v[0], setTableRefreshing = _v[1];
-    var _w = react_1.useState([]), selectedRowKeys = _w[0], setSelectedRowKeys = _w[1];
     var actionDomain = react_1.useRef([]);
-    var _x = react_1.useState(200), searchFilterHeight = _x[0], setSearchFilterHeight = _x[1];
+    var _w = react_1.useState(200), searchFilterHeight = _w[0], setSearchFilterHeight = _w[1];
     var height = useWindowDimensions_1.default().height;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _y = (rootTree ? actionViewContext : {}) || {}, _z = _y.setResults, setResultsActionView = _z === void 0 ? undefined : _z, _0 = _y.setCurrentItemIndex, setCurrentItemIndex = _0 === void 0 ? undefined : _0, _1 = _y.currentId, currentId = _1 === void 0 ? undefined : _1, _2 = _y.results, resultsActionView = _2 === void 0 ? undefined : _2, _3 = _y.setSelectedRowItems, setSelectedRowItems = _3 === void 0 ? undefined : _3, _4 = _y.setSearchParams, setSearchParams = _4 === void 0 ? undefined : _4, _5 = _y.searchVisible, searchVisible = _5 === void 0 ? true : _5, _6 = _y.setSearchVisible, setSearchVisible = _6 === void 0 ? undefined : _6, _7 = _y.sorter, sorter = _7 === void 0 ? undefined : _7, _8 = _y.setSorter, setSorter = _8 === void 0 ? undefined : _8, _9 = _y.setTotalItems, setActionViewTotalItems = _9 === void 0 ? undefined : _9;
+    var _x = (rootTree ? actionViewContext : {}) || {}, _y = _x.setResults, setResultsActionView = _y === void 0 ? undefined : _y, _z = _x.setCurrentItemIndex, setCurrentItemIndex = _z === void 0 ? undefined : _z, _0 = _x.currentId, currentId = _0 === void 0 ? undefined : _0, _1 = _x.results, resultsActionView = _1 === void 0 ? undefined : _1, _2 = _x.selectedRowItems, selectedRowItems = _2 === void 0 ? undefined : _2, _3 = _x.setSelectedRowItems, setSelectedRowItems = _3 === void 0 ? undefined : _3, _4 = _x.setSearchParams, setSearchParams = _4 === void 0 ? undefined : _4, _5 = _x.searchVisible, searchVisible = _5 === void 0 ? true : _5, _6 = _x.setSearchVisible, setSearchVisible = _6 === void 0 ? undefined : _6, _7 = _x.sorter, sorter = _7 === void 0 ? undefined : _7, _8 = _x.setSorter, setSorter = _8 === void 0 ? undefined : _8, _9 = _x.setTotalItems, setActionViewTotalItems = _9 === void 0 ? undefined : _9;
     react_1.useImperativeHandle(ref, function () { return ({
         refreshResults: fetchResults,
     }); });
@@ -114,6 +113,16 @@ function SearchTree(props, ref) {
         setPage(page);
         setOffset((page - 1) * limit);
     };
+    function setResults(results) {
+        setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView(results);
+        setResultsInternal(results);
+    }
+    function getResults() {
+        if (!resultsActionView) {
+            return resultsInternal;
+        }
+        return resultsActionView;
+    }
     var searchByNameSearch = function () { return __awaiter(_this, void 0, void 0, function () {
         var searchResults, resultsIds, colors, resultsWithData, resultsData, newResultIds, resultsSorted;
         return __generator(this, function (_a) {
@@ -149,7 +158,7 @@ function SearchTree(props, ref) {
                     setResults(resultsData);
                     newResultIds = resultsData.map(function (item) { return item.id; });
                     resultsSorted = sortResults(resultsData, sorter);
-                    setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView(resultsSorted.map(function (item) { return item.id; }));
+                    setResults(resultsSorted);
                     if (newResultIds.length > 0) {
                         setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(0);
                     }
@@ -159,7 +168,6 @@ function SearchTree(props, ref) {
                     return [3 /*break*/, 4];
                 case 3:
                     setResults([]);
-                    setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView([]);
                     setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(undefined);
                     _a.label = 4;
                 case 4:
@@ -190,7 +198,7 @@ function SearchTree(props, ref) {
         return finalParams;
     };
     var searchResults = function () { return __awaiter(_this, void 0, void 0, function () {
-        var domainParams, searchParams, colors, _a, totalItems, results, attrsEvaluated, resultsSorted, resultIds, newCurrentItemIndex;
+        var domainParams, searchParams, colors, _a, totalItems, results, attrsEvaluated, resultsSorted, newCurrentItemIndex;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -211,12 +219,10 @@ function SearchTree(props, ref) {
                     setTotalItems(totalItems);
                     setActionViewTotalItems === null || setActionViewTotalItems === void 0 ? void 0 : setActionViewTotalItems(totalItems);
                     setColorsForResults(treeHelper_1.getColorMap(attrsEvaluated));
-                    setResults(results);
                     resultsSorted = sortResults(results, sorter);
-                    resultIds = resultsSorted.map(function (item) { return item.id; });
-                    setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView(resultIds);
-                    if (resultsActionView && resultIds.length > 0) {
-                        newCurrentItemIndex = resultIds.findIndex(function (id) { return currentId === id; });
+                    setResults(resultsSorted);
+                    if (resultsActionView && resultsSorted.length > 0) {
+                        newCurrentItemIndex = resultsSorted.findIndex(function (item) { return currentId === item.id; });
                         if (newCurrentItemIndex === -1) {
                             setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(0);
                         }
@@ -382,7 +388,6 @@ function SearchTree(props, ref) {
         if (tableRefreshing)
             return;
         paramsRef.current = newParams;
-        setSelectedRowKeys([]);
         setSelectedRowItems === null || setSelectedRowItems === void 0 ? void 0 : setSelectedRowItems([]);
         setSearchParams === null || setSearchParams === void 0 ? void 0 : setSearchParams(newParams);
         setSearchVisible === null || setSearchVisible === void 0 ? void 0 : setSearchVisible(false);
@@ -404,8 +409,7 @@ function SearchTree(props, ref) {
         });
     };
     function onChangeSelectedRowKeys(selectedRowKeys) {
-        setSelectedRowKeys(selectedRowKeys);
-        var items = results.filter(function (result) {
+        var items = getResults().filter(function (result) {
             return selectedRowKeys.includes(result.id);
         });
         setSelectedRowItems === null || setSelectedRowItems === void 0 ? void 0 : setSelectedRowItems(items);
@@ -453,13 +457,13 @@ function SearchTree(props, ref) {
                         searchError && (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: searchError, type: "error", banner: true })),
                         react_1.default.createElement("div", { className: "pb-5" }))));
             }),
-            react_1.default.createElement(Tree_1.default, { total: totalItems, limit: limit, page: page, treeView: treeView, results: results, onRequestPageChange: onRequestPageChange, loading: tableRefreshing, onRowClicked: onRowClickedHandler, scrollY: treeScrollY || calculateTableHeight(), colorsForResults: colorsForResults, rowSelection: {
-                    selectedRowKeys: selectedRowKeys,
+            react_1.default.createElement(Tree_1.default, { total: totalItems, limit: limit, page: page, treeView: treeView, results: getResults(), onRequestPageChange: onRequestPageChange, loading: tableRefreshing, onRowClicked: onRowClickedHandler, scrollY: treeScrollY || calculateTableHeight(), colorsForResults: colorsForResults, rowSelection: {
+                    selectedRowKeys: selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.map(function (item) { return item.id; }),
                     onChange: onChangeSelectedRowKeys,
                 }, onChangeSort: function (newSorter) {
                     setSorter === null || setSorter === void 0 ? void 0 : setSorter(newSorter);
-                    var sortedResults = sortResults(results, newSorter);
-                    setResultsActionView === null || setResultsActionView === void 0 ? void 0 : setResultsActionView(sortedResults.map(function (item) { return item.id; }));
+                    var sortedResults = sortResults(getResults(), newSorter);
+                    setResults(sortedResults);
                 } })));
     };
     if (initialError) {
