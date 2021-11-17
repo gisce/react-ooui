@@ -80,7 +80,7 @@ export const LinkInput = (props: LinkInputProps) => {
         ) : (
           <a
             href={`${linkPrefix}${value}`}
-            style={{ color: "#1890ff" }}
+            style={{ color: "#1890ff", paddingRight: 15 }}
             target="_blank"
           >
             {value}

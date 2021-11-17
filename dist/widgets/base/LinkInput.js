@@ -60,7 +60,7 @@ var LinkInput = function (props) {
                     setEditMode(false);
                     setShowInput(false);
                 }
-            } })) : (react_1.default.createElement("a", { href: "" + linkPrefix + value, style: { color: "#1890ff" }, target: "_blank" }, value)))));
+            } })) : (react_1.default.createElement("a", { href: "" + linkPrefix + value, style: { color: "#1890ff", paddingRight: 15 }, target: "_blank" }, value)))));
 };
 exports.LinkInput = LinkInput;
 //# sourceMappingURL=LinkInput.js.map
