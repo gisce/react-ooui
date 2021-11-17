@@ -57,7 +57,6 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [removingItem, setRemovingItem] = useState<boolean>(false);
   const [formIsLoading, setFormIsLoading] = useState<boolean>(false);
   const [attachments, setAttachments] = useState<any>([]);
-  const [selectedRowItems, setSelectedRowItems] = useState<any[]>([]);
   const [duplicatingItem, setDuplicatingItem] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useState<any[]>([]);
   const [searchVisible, setSearchVisible] = useState<boolean>(false);
@@ -84,12 +83,14 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     setSorter,
     totalItems,
     setTotalItems,
+    setSelectedRowItems,
+    selectedRowItems,
   } = props;
 
   useEffect(() => {
     if (results && results.length > 0 && !currentItemIndex) {
       setCurrentItemIndex?.(0);
-      setCurrentId?.(results[0]);
+      setCurrentId?.(results[0].id);
     }
   }, [results]);
 

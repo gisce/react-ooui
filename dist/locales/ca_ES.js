@@ -66,5 +66,8 @@ exports.default = {
     creationDate: "Data creació",
     lastUpdatedBy: "Última modificació per",
     lastUpdatedDate: "Data última modificació",
+    goToResourceId: "Vés al recurs amb ID",
+    searchId: "ID de cerca:",
+    idNotFound: "No es troba aquesta id de recurs per l'objecte",
 };
 //# sourceMappingURL=ca_ES.js.map

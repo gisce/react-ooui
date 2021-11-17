@@ -135,7 +135,9 @@ function Tree(props) {
     }
     return treeOoui.current === null ? (react_1.default.createElement(antd_1.Spin, null)) : (react_1.default.createElement("div", null,
         pagination(),
-        react_1.default.createElement(antd_1.Table, { columns: dataTable.columns, scroll: { x: dataTable.tableWidth, y: adjustedHeight }, size: "small", dataSource: items, pagination: false, loading: loading, rowClassName: "cursor-pointer select-none", rowKey: function (item) {
+        react_1.default.createElement(antd_1.Table, { columns: dataTable.columns, scroll: { x: dataTable.tableWidth, y: adjustedHeight }, size: "small", dataSource: items, pagination: false, loading: loading, rowClassName: function (record) {
+                return "cursor-pointer select-none record-row-" + record.id;
+            }, rowKey: function (item) {
                 return item.id;
             }, onRow: function (record) {
                 var style = undefined;

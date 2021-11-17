@@ -28,15 +28,14 @@ var ActionViewProvider = function (props) {
     var _c = react_1.useState(false), removingItem = _c[0], setRemovingItem = _c[1];
     var _d = react_1.useState(false), formIsLoading = _d[0], setFormIsLoading = _d[1];
     var _e = react_1.useState([]), attachments = _e[0], setAttachments = _e[1];
-    var _f = react_1.useState([]), selectedRowItems = _f[0], setSelectedRowItems = _f[1];
-    var _g = react_1.useState(false), duplicatingItem = _g[0], setDuplicatingItem = _g[1];
-    var _h = react_1.useState([]), searchParams = _h[0], setSearchParams = _h[1];
-    var _j = react_1.useState(false), searchVisible = _j[0], setSearchVisible = _j[1];
-    var children = props.children, currentView = props.currentView, title = props.title, setCurrentView = props.setCurrentView, availableViews = props.availableViews, formRef = props.formRef, searchTreeRef = props.searchTreeRef, onNewClicked = props.onNewClicked, currentId = props.currentId, setCurrentId = props.setCurrentId, setResults = props.setResults, results = props.results, currentItemIndex = props.currentItemIndex, setCurrentItemIndex = props.setCurrentItemIndex, currentModel = props.currentModel, toolbar = props.toolbar, setToolbar = props.setToolbar, sorter = props.sorter, setSorter = props.setSorter, totalItems = props.totalItems, setTotalItems = props.setTotalItems;
+    var _f = react_1.useState(false), duplicatingItem = _f[0], setDuplicatingItem = _f[1];
+    var _g = react_1.useState([]), searchParams = _g[0], setSearchParams = _g[1];
+    var _h = react_1.useState(false), searchVisible = _h[0], setSearchVisible = _h[1];
+    var children = props.children, currentView = props.currentView, title = props.title, setCurrentView = props.setCurrentView, availableViews = props.availableViews, formRef = props.formRef, searchTreeRef = props.searchTreeRef, onNewClicked = props.onNewClicked, currentId = props.currentId, setCurrentId = props.setCurrentId, setResults = props.setResults, results = props.results, currentItemIndex = props.currentItemIndex, setCurrentItemIndex = props.setCurrentItemIndex, currentModel = props.currentModel, toolbar = props.toolbar, setToolbar = props.setToolbar, sorter = props.sorter, setSorter = props.setSorter, totalItems = props.totalItems, setTotalItems = props.setTotalItems, setSelectedRowItems = props.setSelectedRowItems, selectedRowItems = props.selectedRowItems;
     react_1.useEffect(function () {
         if (results && results.length > 0 && !currentItemIndex) {
             setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(0);
-            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[0]);
+            setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(results[0].id);
         }
     }, [results]);
     var callOnFormSave = function () {

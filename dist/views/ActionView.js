@@ -54,6 +54,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -68,6 +73,11 @@ var TitleHeader_1 = __importDefault(require("@/ui/TitleHeader"));
 var FormActionBar_1 = __importDefault(require("@/actionbar/FormActionBar"));
 var TreeActionBar_1 = __importDefault(require("@/actionbar/TreeActionBar"));
 var TabManagerContext_1 = require("@/context/TabManagerContext");
+var react_hotkeys_hook_1 = require("react-hotkeys-hook");
+var GoToResourceModal_1 = require("@/ui/GoToResourceModal");
+var InfoDialog_1 = __importDefault(require("@/ui/InfoDialog"));
+var LocaleContext_1 = require("@/context/LocaleContext");
+var scroll_into_view_1 = __importDefault(require("scroll-into-view"));
 function ActionView(props, ref) {
     var _this = this;
     var domain = props.domain, model = props.model, context = props.context, views = props.views, title = props.title, setCanWeClose = props.setCanWeClose, tabKey = props.tabKey, initialView = props.initialView, formDefaultValues = props.formDefaultValues, _a = props.formForcedValues, formForcedValues = _a === void 0 ? {} : _a, _b = props.res_id, res_id = _b === void 0 ? false : _b;
@@ -80,15 +90,23 @@ function ActionView(props, ref) {
         ? res_id
         : undefined;
     var _h = react_1.useState(res_id_parsed), currentId = _h[0], setCurrentIdInternal = _h[1];
-    var _j = react_1.useState(), currentItemIndex = _j[0], setCurrentItemIndex = _j[1];
-    var _k = react_1.useState([]), results = _k[0], setResults = _k[1];
-    var _l = react_1.useState(), toolbar = _l[0], setToolbar = _l[1];
-    var _m = react_1.useState(), sorter = _m[0], setSorter = _m[1];
-    var _o = react_1.useState(0), totalItems = _o[0], setTotalItems = _o[1];
+    var _j = react_1.useState([]), selectedRowItems = _j[0], setSelectedRowItems = _j[1];
+    var _k = react_1.useState(), currentItemIndex = _k[0], setCurrentItemIndex = _k[1];
+    var _l = react_1.useState([]), results = _l[0], setResults = _l[1];
+    var _m = react_1.useState(), toolbar = _m[0], setToolbar = _m[1];
+    var _o = react_1.useState(), sorter = _o[0], setSorter = _o[1];
+    var _p = react_1.useState(0), totalItems = _p[0], setTotalItems = _p[1];
+    var _q = react_1.useState(false), gtResourceModalVisible = _q[0], setGtResourceModalVisible = _q[1];
+    var _r = react_1.useState(false), searchingForResourceId = _r[0], setSearchingForResourceId = _r[1];
+    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var formRef = react_1.useRef();
     var searchTreeRef = react_1.useRef();
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
-    var _p = tabManagerContext || {}, setCurrentViewTabContext = _p.setCurrentView, setCurrentIdTabContext = _p.setCurrentId, tabs = _p.tabs, activeKey = _p.activeKey;
+    var _s = tabManagerContext || {}, setCurrentViewTabContext = _s.setCurrentView, setCurrentIdTabContext = _s.setCurrentId, tabs = _s.tabs, activeKey = _s.activeKey;
+    react_hotkeys_hook_1.useHotkeys("ctrl+g,command+g", function (event) {
+        event.preventDefault();
+        handleGoToRecordShortcut();
+    }, [activeKey, tabs, currentView, currentItemIndex, results]);
     function setCurrentId(id) {
         setCurrentIdInternal(id);
         setCurrentIdTabContext === null || setCurrentIdTabContext === void 0 ? void 0 : setCurrentIdTabContext(id);
@@ -189,17 +207,105 @@ function ActionView(props, ref) {
             });
         });
     }
+    function handleGoToRecordShortcut() {
+        return __awaiter(this, void 0, void 0, function () {
+            var canWeClose_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (activeKey !== tabKey) {
+                            return [2 /*return*/];
+                        }
+                        if (!(currentView.type === "form")) return [3 /*break*/, 2];
+                        return [4 /*yield*/, formRef.current.cancelUnsavedChanges()];
+                    case 1:
+                        canWeClose_1 = _a.sent();
+                        if (!canWeClose_1) {
+                            return [2 /*return*/];
+                        }
+                        _a.label = 2;
+                    case 2:
+                        setGtResourceModalVisible(true);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function scrollIntoTreeRowId(id) {
+        scroll_into_view_1.default(document.querySelector(".record-row-" + id), {
+            align: {
+                top: 0,
+            },
+        });
+    }
+    function goToResourceId(id) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function () {
+            var itemIndex, resource, err_2;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        setSearchingForResourceId(true);
+                        itemIndex = results.findIndex(function (item) {
+                            return item.id === id;
+                        });
+                        if (!(itemIndex === -1)) return [3 /*break*/, 5];
+                        _b.label = 1;
+                    case 1:
+                        _b.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                                model: model,
+                                ids: [id],
+                                context: context,
+                            })];
+                    case 2:
+                        resource = (_a = (_b.sent())) === null || _a === void 0 ? void 0 : _a[0];
+                        return [3 /*break*/, 4];
+                    case 3:
+                        err_2 = _b.sent();
+                        return [3 /*break*/, 4];
+                    case 4:
+                        if (!resource) {
+                            setSearchingForResourceId(false);
+                            setGtResourceModalVisible(false);
+                            InfoDialog_1.default(t("idNotFound"));
+                            return [2 /*return*/];
+                        }
+                        return [3 /*break*/, 6];
+                    case 5:
+                        resource = results[itemIndex];
+                        _b.label = 6;
+                    case 6:
+                        setCurrentId(resource.id);
+                        if (itemIndex === -1) {
+                            setCurrentItemIndex(results.length);
+                            setResults(__spreadArray(__spreadArray([], results), [resource]));
+                        }
+                        else {
+                            setCurrentItemIndex(itemIndex);
+                        }
+                        setSearchingForResourceId(false);
+                        setGtResourceModalVisible(false);
+                        if (currentView.type === "tree") {
+                            setSelectedRowItems([resource]);
+                            scrollIntoTreeRowId(resource.id);
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
     function content() {
         if (isLoading) {
             return react_1.default.createElement(antd_1.Spin, null);
         }
         return (react_1.default.createElement(react_1.default.Fragment, null,
-            react_1.default.createElement(Form_1.default, { rootForm: true, visible: currentView.type === "form", ref: formRef, model: model, defaultValues: formDefaultValues, forcedValues: formForcedValues, formView: formView, actionDomain: domain, id: currentId, parentContext: context, onSubmitSucceed: function (id) {
+            react_1.default.createElement(Form_1.default, { rootForm: true, visible: currentView.type === "form", ref: formRef, model: model, defaultValues: formDefaultValues, forcedValues: formForcedValues, formView: formView, actionDomain: domain, id: currentId, parentContext: context, onSubmitSucceed: function (id, values) {
                     var itemIndex = results.findIndex(function (item) {
-                        return item === id;
+                        return item.id === id;
                     });
                     if (itemIndex === -1) {
-                        results.push(id);
+                        results.push(values);
                         setResults(results);
                         setCurrentItemIndex(results.length - 1);
                     }
@@ -208,7 +314,7 @@ function ActionView(props, ref) {
                     var id = event.id;
                     setCurrentId(id);
                     var itemIndex = results.findIndex(function (item) {
-                        return item === id;
+                        return item.id === id;
                     });
                     setCurrentItemIndex(itemIndex);
                     setCurrentView(availableViews.find(function (v) { return v.type === "form"; }));
@@ -226,9 +332,12 @@ function ActionView(props, ref) {
     if (!currentView) {
         return null;
     }
-    return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, searchTreeRef: searchTreeRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId, setCurrentItemIndex: setCurrentItemIndex, currentItemIndex: currentItemIndex, results: results, setResults: setResults, currentModel: model, toolbar: toolbar, setToolbar: setToolbar, sorter: sorter, setSorter: setSorter, totalItems: totalItems, setTotalItems: setTotalItems },
+    return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, searchTreeRef: searchTreeRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId, setCurrentItemIndex: setCurrentItemIndex, currentItemIndex: currentItemIndex, results: results, setResults: setResults, currentModel: model, toolbar: toolbar, setToolbar: setToolbar, sorter: sorter, setSorter: setSorter, totalItems: totalItems, setTotalItems: setTotalItems, selectedRowItems: selectedRowItems, setSelectedRowItems: setSelectedRowItems },
         react_1.default.createElement(TitleHeader_1.default, null, currentView.type === "form" ? (react_1.default.createElement(FormActionBar_1.default, null)) : (react_1.default.createElement(TreeActionBar_1.default, { parentContext: context }))),
-        content()));
+        content(),
+        react_1.default.createElement(GoToResourceModal_1.GoToResourceModal, { visible: gtResourceModalVisible, onIdSubmitted: goToResourceId, isSearching: searchingForResourceId, onCancel: function () {
+                setGtResourceModalVisible(false);
+            } })));
 }
 exports.default = react_1.forwardRef(ActionView);
 //# sourceMappingURL=ActionView.js.map

@@ -25,6 +25,10 @@ function TitleHeader(props: Props) {
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
   function getSummary() {
+    if (!currentId) {
+      return "";
+    }
+
     return `${t("register")} ${
       currentItemIndex === undefined ? 1 : currentItemIndex + 1
     } / ${results!.length} ${t("of")} ${totalItems} - ${t(

@@ -29,6 +29,9 @@ function TitleHeader(props) {
     var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), title = _a.title, currentView = _a.currentView, currentId = _a.currentId, currentItemIndex = _a.currentItemIndex, results = _a.results, totalItems = _a.totalItems;
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     function getSummary() {
+        if (!currentId) {
+            return "";
+        }
         return t("register") + " " + (currentItemIndex === undefined ? 1 : currentItemIndex + 1) + " / " + results.length + " " + t("of") + " " + totalItems + " - " + t("editingDocument") + " (id: " + currentId + ")";
     }
     return (react_1.default.createElement(react_1.default.Fragment, null,

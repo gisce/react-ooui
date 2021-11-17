@@ -146,10 +146,10 @@ function Form(props, ref) {
         }
         fetchData();
     }, [id, model, valuesProps, formViewProps, visible]);
-    var onSubmitSucceed = function (id) {
+    var onSubmitSucceed = function (id, values) {
         setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
         setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
-        propsOnSubmitSucceed === null || propsOnSubmitSucceed === void 0 ? void 0 : propsOnSubmitSucceed(id);
+        propsOnSubmitSucceed === null || propsOnSubmitSucceed === void 0 ? void 0 : propsOnSubmitSucceed(id, values);
         setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(id);
     };
     var onCancel = function () {
@@ -458,7 +458,7 @@ function Form(props, ref) {
                     _b.label = 6;
                 case 6:
                     if (!insideButtonModal && callOnSubmitSucceed) {
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues());
                     }
                     return [2 /*return*/];
             }
@@ -469,7 +469,7 @@ function Form(props, ref) {
         return __generator(this, function (_b) {
             _a = (options || {}).callOnSubmitSucceed, callOnSubmitSucceed = _a === void 0 ? true : _a;
             if (!insideButtonModal && callOnSubmitSucceed) {
-                onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
+                onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues());
             }
             return [2 /*return*/];
         });
@@ -698,12 +698,12 @@ function Form(props, ref) {
                             response !== null &&
                             Object.keys(response).length === 0 &&
                             insideButtonModal)) return [3 /*break*/, 2];
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues());
                         return [3 /*break*/, 7];
                     case 2:
                         if (!(response.type &&
                             response.type === "ir.actions.act_window_close")) return [3 /*break*/, 3];
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues());
                         return [3 /*break*/, 7];
                     case 3:
                         if (!response.type) return [3 /*break*/, 5];
@@ -734,7 +734,7 @@ function Form(props, ref) {
                     case 1:
                         response = _b.sent();
                         if (!(response.type && response.type === "ir.actions.act_window_close")) return [3 /*break*/, 2];
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues());
                         return [3 /*break*/, 4];
                     case 2: return [4 /*yield*/, fetchValues()];
                     case 3:
@@ -784,7 +784,7 @@ function Form(props, ref) {
                     case 1:
                         closeParent = ((_b.sent()) || {}).closeParent;
                         if (!rootForm && closeParent) {
-                            onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId());
+                            onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues());
                         }
                         return [2 /*return*/];
                 }
