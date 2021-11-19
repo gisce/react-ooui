@@ -103,6 +103,13 @@ function Form(props, ref) {
     var lastAssignedValues = react_1.useRef({});
     var warningIsShown = react_1.useRef(false);
     var formSubmitting = react_1.useRef(false);
+    var unsavedOne2ManyChilds = react_1.useRef(new Map());
+    function addOne2ManyChild(key, child) {
+        unsavedOne2ManyChilds.current.set(key, child);
+    }
+    function removeOne2ManyChild(key) {
+        unsavedOne2ManyChilds.current.delete(key);
+    }
     // const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
     //   breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
     //   updateOnBreakpointChange: true,
@@ -475,7 +482,7 @@ function Form(props, ref) {
         });
     }); };
     var submitForm = function (options) { return __awaiter(_this, void 0, void 0, function () {
-        var _a, callOnSubmitSucceed, err_2;
+        var _a, callOnSubmitSucceed, o2m_childs, _i, o2m_childs_1, child, err_2;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -499,39 +506,54 @@ function Form(props, ref) {
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(true);
                     _b.label = 2;
                 case 2:
-                    _b.trys.push([2, 9, 10, 11]);
-                    if (!(submitMode === "api")) return [3 /*break*/, 4];
-                    return [4 /*yield*/, submitApi(options)];
+                    _b.trys.push([2, 13, 14, 15]);
+                    o2m_childs = Array.from(unsavedOne2ManyChilds.current.values());
+                    if (!(o2m_childs.length > 0)) return [3 /*break*/, 6];
+                    _i = 0, o2m_childs_1 = o2m_childs;
+                    _b.label = 3;
                 case 3:
+                    if (!(_i < o2m_childs_1.length)) return [3 /*break*/, 6];
+                    child = o2m_childs_1[_i];
+                    return [4 /*yield*/, child.submitForm()];
+                case 4:
                     _b.sent();
-                    return [3 /*break*/, 6];
-                case 4: return [4 /*yield*/, submitValues(options)];
+                    _b.label = 5;
                 case 5:
-                    _b.sent();
-                    _b.label = 6;
+                    _i++;
+                    return [3 /*break*/, 3];
                 case 6:
-                    if (!mustClearAfterSave) return [3 /*break*/, 8];
+                    if (!(submitMode === "api")) return [3 /*break*/, 8];
+                    return [4 /*yield*/, submitApi(options)];
+                case 7:
+                    _b.sent();
+                    return [3 /*break*/, 10];
+                case 8: return [4 /*yield*/, submitValues(options)];
+                case 9:
+                    _b.sent();
+                    _b.label = 10;
+                case 10:
+                    if (!mustClearAfterSave) return [3 /*break*/, 12];
                     createdId.current = undefined;
                     assignNewValuesToForm({ values: {}, fields: fields, reset: true });
                     return [4 /*yield*/, fetchValues()];
-                case 7:
+                case 11:
                     _b.sent();
-                    _b.label = 8;
-                case 8: return [3 /*break*/, 11];
-                case 9:
+                    _b.label = 12;
+                case 12: return [3 /*break*/, 15];
+                case 13:
                     err_2 = _b.sent();
                     formSubmitting.current = false;
                     setIsSubmitting(false);
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
                     onSubmitError === null || onSubmitError === void 0 ? void 0 : onSubmitError(err_2);
                     setError((err_2 === null || err_2 === void 0 ? void 0 : err_2.message) ? err_2.message : err_2);
-                    return [3 /*break*/, 11];
-                case 10:
+                    return [3 /*break*/, 15];
+                case 14:
                     formSubmitting.current = false;
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
                     setIsSubmitting(false);
                     return [7 /*endfinally*/];
-                case 11: return [2 /*return*/];
+                case 15: return [2 /*return*/];
             }
         });
     }); };
@@ -854,7 +876,7 @@ function Form(props, ref) {
             return null;
         }
         return (react_1.default.createElement(react_1.default.Fragment, null,
-            react_1.default.createElement(FormContext_1.default, { getValues: getValues, domain: actionDomain, activeId: id, activeModel: model, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction, getContext: getContext, setOriginalValue: setOriginalValue },
+            react_1.default.createElement(FormContext_1.default, { getValues: getValues, domain: actionDomain, activeId: id, activeModel: model, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction, getContext: getContext, setOriginalValue: setOriginalValue, unsavedOne2ManyChilds: unsavedOne2ManyChilds.current, addOne2ManyChild: addOne2ManyChild, removeOne2ManyChild: removeOne2ManyChild },
                 react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: debouncedCheckFieldsChanges, component: false, preserve: false }, formOoui && (react_1.default.createElement(Container_1.default, { container: formOoui.container, responsiveBehaviour: responsiveBehaviour }))))));
     };
     var footer = function () {

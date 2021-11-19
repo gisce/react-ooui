@@ -13,6 +13,9 @@ export declare type FormContextType = {
     getValues: () => Promise<any>;
     setOriginalValue: (field: string, value: any) => void;
     domain: any[];
+    unsavedOne2ManyChilds?: Map<string, any>;
+    addOne2ManyChild?: (key: string, child: any) => void;
+    removeOne2ManyChild?: (key: string) => void;
 };
 export declare const FormContext: React.Context<FormContextType | null>;
 declare type FormProviderProps = FormContextType & {
