@@ -29,6 +29,10 @@ function TitleHeader(props: Props) {
       return "";
     }
 
+    if (totalItems === 0) {
+      return `${t("editingDocument")} (id: ${currentId})`;
+    }
+
     return `${t("register")} ${
       currentItemIndex === undefined ? 1 : currentItemIndex + 1
     } / ${results!.length} ${t("of")} ${totalItems} - ${t(

@@ -386,6 +386,7 @@ function FormActionBar() {
               res_model,
               res_id,
             },
+            initialViewType: "form"
           });
         }}
       />

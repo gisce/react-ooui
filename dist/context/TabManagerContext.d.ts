@@ -23,10 +23,11 @@ export declare type TabManagerContextType = {
         action_id: number;
         action_type: string;
     }) => void;
-    openDefaultActionForModel: ({ model, values, forced_values, }: {
+    openDefaultActionForModel: ({ model, values, forced_values, initialViewType, }: {
         model: string;
         values?: any;
         forced_values?: any;
+        initialViewType?: "form" | "tree";
     }) => void;
     activeKey: string;
     onChangeTab: (key: string) => void;

@@ -77,10 +77,12 @@ function RootView(props: RootViewProps, ref: any) {
     action,
     values,
     forced_values,
+    initialViewType,
   }: {
     action: string;
     values?: any;
     forced_values?: any;
+    initialViewType?: "form" | "tree";
   }) {
     const dataForAction = await ConnectionProvider.getHandler().getActionData({
       action,
@@ -129,8 +131,17 @@ function RootView(props: RootViewProps, ref: any) {
       }
     }
 
-    const [id, type] = finalViews[0];
-    const initialView = { id, type };
+    let initialView;
+
+    if (initialViewType) {
+      const [id, type] = finalViews.find(
+        ([_, type]) => type === initialViewType
+      );
+      initialView = { id, type };
+    } else {
+      const [id, type] = finalViews[0];
+      initialView = { id, type };
+    }
 
     openAction({
       domain: parsedDomain,
@@ -295,10 +306,12 @@ function RootView(props: RootViewProps, ref: any) {
     model,
     values,
     forced_values,
+    initialViewType,
   }: {
     model: string;
     values?: any;
     forced_values?: any;
+    initialViewType?: "form" | "tree";
   }) {
     const actionString = await ConnectionProvider.getHandler().getActionStringForModel(
       model
@@ -307,6 +320,7 @@ function RootView(props: RootViewProps, ref: any) {
       action: actionString,
       values,
       forced_values,
+      initialViewType,
     });
   }
 
