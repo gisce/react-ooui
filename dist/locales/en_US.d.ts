@@ -67,6 +67,7 @@ declare const _default: {
     goToResourceId: string;
     searchId: string;
     idNotFound: string;
+    selectedRegisters: string;
 };
 export default _default;
 //# sourceMappingURL=en_US.d.ts.map

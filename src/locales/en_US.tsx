@@ -69,4 +69,5 @@ export default {
   goToResourceId: "Go to resource ID",
   searchId: "Search ID:",
   idNotFound: "Resource ID does not exist for this object!",
+  selectedRegisters: "selected registers",
 };

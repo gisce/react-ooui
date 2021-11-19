@@ -69,5 +69,6 @@ exports.default = {
     goToResourceId: "Ir al recurso con ID",
     searchId: "ID de búsqueda:",
     idNotFound: "No se encuentra ésta ID de recuros para el objeto",
+    selectedRegisters: "registros seleccionados",
 };
 //# sourceMappingURL=es_ES.js.map
