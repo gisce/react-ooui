@@ -21,23 +21,35 @@ function TitleHeader(props: Props) {
     currentItemIndex,
     results,
     totalItems,
+    selectedRowItems,
   } = useContext(ActionViewContext) as ActionViewContextType;
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
   function getSummary() {
-    if (!currentId) {
-      return "";
-    }
+    if (currentView?.type === "form") {
+      if (!currentId) {
+        return "";
+      }
 
-    if (totalItems === 0) {
-      return `${t("editingDocument")} (id: ${currentId})`;
-    }
+      if (totalItems === 0) {
+        return `${t("editingDocument")} (id: ${currentId})`;
+      }
 
-    return `${t("register")} ${
-      currentItemIndex === undefined ? 1 : currentItemIndex + 1
-    } / ${results!.length} ${t("of")} ${totalItems} - ${t(
-      "editingDocument"
-    )} (id: ${currentId})`;
+      return `${t("register")} ${
+        currentItemIndex === undefined ? 1 : currentItemIndex + 1
+      } / ${results!.length} ${t("of")} ${totalItems} - ${t(
+        "editingDocument"
+      )} (id: ${currentId})`;
+    } else if (currentView?.type === "tree" && selectedRowItems) {
+      if (selectedRowItems.length === 1) {
+        return `1 ${t("selectedRegisters")} - (id: ${
+          selectedRowItems[0].id
+        })`;
+      } else if (selectedRowItems.length > 1) {
+        return `${selectedRowItems.length} ${t("selectedRegisters")}`;
+      }
+    }
+    return null;
   }
   return (
     <>
@@ -50,7 +62,7 @@ function TitleHeader(props: Props) {
           <Title level={3} style={{ marginBottom: 0 }}>
             {title}
           </Title>
-          {currentView?.type === "form" && getSummary()}
+          {getSummary()}
         </Col>
         <Col flex={3}>
           <Row justify="end">{children}</Row>
