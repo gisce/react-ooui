@@ -28,6 +28,7 @@ import {
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { v4 as uuidv4 } from "uuid";
 
 type One2manyItem = {
   operation?: "original" | "pendingLink" | "pendingUpdate";
@@ -59,7 +60,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   } = useContext(One2manyContext) as One2manyContextType;
 
   const formContext = useContext(FormContext) as FormContextType;
-  const { activeId, activeModel, getValues, getContext, domain } =
+  const { activeId, activeModel, getValues, getContext, domain, addOne2ManyChild, removeOne2ManyChild } =
     formContext || {};
   const { lang, t } = useContext(LocaleContext) as LocaleContextType;
 
@@ -76,6 +77,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     false
   );
   const transformedDomain = useRef<any[]>([]);
+
+  const one2ManyUuid = useRef<string>(uuidv4());
 
   const {
     readOnly,
@@ -118,6 +121,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const fetchOriginalItemsFromApi = async () => {
     setIsLoading(true);
     setFormHasChanges(false);
+    removeOne2ManyChild?.(one2ManyUuid.current);
     setError(undefined);
 
     try {
@@ -201,6 +205,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         onOk: () => {
           callback();
           setFormHasChanges(false);
+          removeOne2ManyChild?.(one2ManyUuid.current);
         },
       });
     } else {
@@ -274,6 +279,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const removeCurrentItem = async () => {
     setIsLoading(true);
     setFormHasChanges(false);
+    removeOne2ManyChild?.(one2ManyUuid.current);
     setError(undefined);
 
     try {
@@ -308,6 +314,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
     setIsLoading(true);
     setFormHasChanges(false);
+    removeOne2ManyChild?.(one2ManyUuid.current);
     setError(undefined);
 
     try {
@@ -514,6 +521,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const onFormSubmitSucceed = () => {
     setFormIsSaving(false);
     setFormHasChanges(false);
+    removeOne2ManyChild?.(one2ManyUuid.current);
     setItemSaved({ id: itemsToShow[itemIndex]?.id!, saved: true });
   };
 
@@ -572,6 +580,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           onFieldsChange={() => {
             setItemSaved({ id: itemsToShow[itemIndex]?.id!, saved: false });
             setFormHasChanges(true);
+            addOne2ManyChild?.(one2ManyUuid.current, formRef.current);
           }}
           readOnly={readOnly}
           postSaveAction={formPostSaveAction}

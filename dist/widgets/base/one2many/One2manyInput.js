@@ -87,11 +87,12 @@ var one2manyHelper_1 = require("@/helpers/one2manyHelper");
 var SearchModal_1 = require("@/widgets/modals/SearchModal");
 var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 var LocaleContext_1 = require("@/context/LocaleContext");
+var uuid_1 = require("uuid");
 var One2manyInput = function (props) {
     var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui, views = props.views;
     var _b = react_1.useContext(One2manyContext_1.One2manyContext), currentView = _b.currentView, setCurrentView = _b.setCurrentView, itemIndex = _b.itemIndex, setItemIndex = _b.setItemIndex, manualTriggerChange = _b.manualTriggerChange, setManualTriggerChange = _b.setManualTriggerChange;
     var formContext = react_1.useContext(FormContext_1.FormContext);
-    var _c = formContext || {}, activeId = _c.activeId, activeModel = _c.activeModel, getValues = _c.getValues, getContext = _c.getContext, domain = _c.domain;
+    var _c = formContext || {}, activeId = _c.activeId, activeModel = _c.activeModel, getValues = _c.getValues, getContext = _c.getContext, domain = _c.domain, addOne2ManyChild = _c.addOne2ManyChild, removeOne2ManyChild = _c.removeOne2ManyChild;
     var _d = react_1.useContext(LocaleContext_1.LocaleContext), lang = _d.lang, t = _d.t;
     var formRef = react_1.useRef();
     var _e = react_1.useState(false), formHasChanges = _e[0], setFormHasChanges = _e[1];
@@ -104,6 +105,7 @@ var One2manyInput = function (props) {
     var _m = react_1.useState([]), selectedRowKeys = _m[0], setSelectedRowKeys = _m[1];
     var _o = react_1.useState(false), continuousEntryMode = _o[0], setContinuousEntryMode = _o[1];
     var transformedDomain = react_1.useRef([]);
+    var one2ManyUuid = react_1.useRef(uuid_1.v4());
     var _p = ooui, readOnly = _p.readOnly, relation = _p.relation, context = _p.context, widgetDomain = _p.domain;
     var isMany2many = ooui.type === "many2many";
     var fieldName = ooui.id;
@@ -145,6 +147,7 @@ var One2manyInput = function (props) {
                 case 0:
                     setIsLoading(true);
                     setFormHasChanges(false);
+                    removeOne2ManyChild === null || removeOne2ManyChild === void 0 ? void 0 : removeOne2ManyChild(one2ManyUuid.current);
                     setError(undefined);
                     _a.label = 1;
                 case 1:
@@ -246,6 +249,7 @@ var One2manyInput = function (props) {
                 onOk: function () {
                     callback();
                     setFormHasChanges(false);
+                    removeOne2ManyChild === null || removeOne2ManyChild === void 0 ? void 0 : removeOne2ManyChild(one2ManyUuid.current);
                 },
             });
         }
@@ -327,6 +331,7 @@ var One2manyInput = function (props) {
                 case 0:
                     setIsLoading(true);
                     setFormHasChanges(false);
+                    removeOne2ManyChild === null || removeOne2ManyChild === void 0 ? void 0 : removeOne2ManyChild(one2ManyUuid.current);
                     setError(undefined);
                     _a.label = 1;
                 case 1:
@@ -368,6 +373,7 @@ var One2manyInput = function (props) {
                     });
                     setIsLoading(true);
                     setFormHasChanges(false);
+                    removeOne2ManyChild === null || removeOne2ManyChild === void 0 ? void 0 : removeOne2ManyChild(one2ManyUuid.current);
                     setError(undefined);
                     _a.label = 1;
                 case 1:
@@ -567,6 +573,7 @@ var One2manyInput = function (props) {
         var _a;
         setFormIsSaving(false);
         setFormHasChanges(false);
+        removeOne2ManyChild === null || removeOne2ManyChild === void 0 ? void 0 : removeOne2ManyChild(one2ManyUuid.current);
         setItemSaved({ id: (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.id, saved: true });
     };
     // This is the callback called when a modal is done saving the object
@@ -624,6 +631,7 @@ var One2manyInput = function (props) {
                     var _a;
                     setItemSaved({ id: (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.id, saved: false });
                     setFormHasChanges(true);
+                    addOne2ManyChild === null || addOne2ManyChild === void 0 ? void 0 : addOne2ManyChild(one2ManyUuid.current, formRef.current);
                 }, readOnly: readOnly, postSaveAction: formPostSaveAction }));
         }
         return (react_1.default.createElement(index_2.Tree, { total: itemsToShow.length, limit: itemsToShow.length, treeView: views.get("tree"), results: itemsToShow.map(function (item) { return item.treeValues; }), loading: isLoading, onRowClicked: onTreeRowClicked, showPagination: false, rowSelection: {

@@ -121,6 +121,16 @@ function Form(props: FormProps, ref: any) {
   const warningIsShown = useRef<boolean>(false);
   const formSubmitting = useRef<boolean>(false);
 
+  const unsavedOne2ManyChilds = useRef(new Map<string, any>());
+
+  function addOne2ManyChild(key: string, child: any) {
+    unsavedOne2ManyChilds.current.set(key, child);
+  }
+
+  function removeOne2ManyChild(key: string) {
+    unsavedOne2ManyChilds.current.delete(key);
+  }
+
   // const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
   //   breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
   //   updateOnBreakpointChange: true,
@@ -524,6 +534,14 @@ function Form(props: FormProps, ref: any) {
     setFormIsSaving?.(true);
 
     try {
+      const o2m_childs = Array.from(unsavedOne2ManyChilds.current.values());
+
+      if (o2m_childs.length > 0) {
+        for (const child of o2m_childs) {
+          await child.submitForm();
+        }
+      }
+
       if (submitMode === "api") {
         await submitApi(options);
       } else {
@@ -856,6 +874,9 @@ function Form(props: FormProps, ref: any) {
           executeButtonAction={executeButtonAction}
           getContext={getContext}
           setOriginalValue={setOriginalValue}
+          unsavedOne2ManyChilds={unsavedOne2ManyChilds.current}
+          addOne2ManyChild={addOne2ManyChild}
+          removeOne2ManyChild={removeOne2ManyChild}
         >
           <AntForm
             form={antForm}
