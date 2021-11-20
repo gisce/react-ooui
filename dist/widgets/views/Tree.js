@@ -1,4 +1,8 @@
 "use strict";
+var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -18,6 +22,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
@@ -27,6 +34,8 @@ var Many2oneSuffix_1 = require("../base/many2one/Many2oneSuffix");
 var dynamicColumnsHelper_1 = require("@/helpers/dynamicColumnsHelper");
 var timeHelper_1 = require("@/helpers/timeHelper");
 var ProgressBar_1 = require("../base/ProgressBar");
+var styled_components_1 = __importDefault(require("styled-components"));
+var StyledTable = styled_components_1.default(antd_1.Table)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  .ant-table-body {\n    min-height: ", "px;\n  }\n"], ["\n  .ant-table-body {\n    min-height: ", "px;\n  }\n"])), function (props) { return props.minHeight; });
 var booleanComponentFn = function (value) {
     return react_1.default.createElement(antd_1.Checkbox, { defaultChecked: value, disabled: true });
 };
@@ -135,7 +144,7 @@ function Tree(props) {
     }
     return treeOoui.current === null ? (react_1.default.createElement(antd_1.Spin, null)) : (react_1.default.createElement("div", null,
         pagination(),
-        react_1.default.createElement(antd_1.Table, { columns: dataTable.columns, scroll: { x: dataTable.tableWidth, y: adjustedHeight }, size: "small", dataSource: items, pagination: false, loading: loading, rowClassName: function (record) {
+        react_1.default.createElement(StyledTable, { minHeight: adjustedHeight, columns: dataTable.columns, scroll: { x: dataTable.tableWidth, y: adjustedHeight }, size: "small", dataSource: items, pagination: false, loading: loading, rowClassName: function (record) {
                 return "cursor-pointer select-none record-row-" + record.id;
             }, rowKey: function (item) {
                 return item.id;
@@ -162,4 +171,5 @@ function Tree(props) {
         getSums()));
 }
 exports.default = Tree;
+var templateObject_1;
 //# sourceMappingURL=Tree.js.map

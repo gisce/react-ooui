@@ -9,6 +9,17 @@ import { Many2oneSuffix } from "../base/many2one/Many2oneSuffix";
 import { calculateColumnsWidth } from "@/helpers/dynamicColumnsHelper";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../base/ProgressBar";
+import styled from "styled-components";
+
+interface TableProps {
+  minHeight: number;
+}
+
+const StyledTable = styled(Table)`
+  .ant-table-body {
+    min-height: ${(props: TableProps) => props.minHeight}px;
+  }
+`;
 
 type Props = {
   total: number;
@@ -201,20 +212,21 @@ function Tree(props: Props): React.ReactElement {
           </div>
         );
       })} */}
-      <Table
+      <StyledTable
+        minHeight={adjustedHeight!}
         columns={dataTable.columns}
         scroll={{ x: dataTable.tableWidth, y: adjustedHeight }}
         size="small"
         dataSource={items}
         pagination={false}
         loading={loading}
-        rowClassName={(record) => {
+        rowClassName={(record: any) => {
           return `cursor-pointer select-none record-row-${record.id}`;
         }}
-        rowKey={(item) => {
+        rowKey={(item: any) => {
           return item.id;
         }}
-        onRow={(record) => {
+        onRow={(record: any) => {
           let style = undefined;
 
           if (colorsForResults![record.id]) {
