@@ -221,10 +221,13 @@ var ContentRootProvider = function (props, ref) {
                             })];
                     case 1: return [2 /*return*/, _b.sent()];
                     case 2:
-                        if (!(type === "ir.actions.act_window")) return [3 /*break*/, 4];
+                        if (!(type === "ir.actions.act_window")) return [3 /*break*/, 5];
                         return [4 /*yield*/, runAction({ actionData: actionData, fields: fields, values: values, context: context })];
-                    case 3: return [2 /*return*/, _b.sent()];
-                    case 4:
+                    case 3:
+                        _b.sent();
+                        return [4 /*yield*/, runAction({ actionData: actionData, fields: fields, values: values, context: context })];
+                    case 4: return [2 /*return*/, _b.sent()];
+                    case 5:
                         ActionErrorDialog_1.default(type + " action not supported");
                         return [2 /*return*/, {}];
                 }
@@ -396,6 +399,8 @@ var ContentRootProvider = function (props, ref) {
                 react_1.default.createElement(antd_1.Modal, { title: t("generatingReport"), visible: reportGenerating, footer: null, closable: false, centered: true },
                     react_1.default.createElement(antd_1.Spin, null)),
                 react_1.default.createElement(FormModal_1.FormModal, { buttonModal: true, parentContext: actionModalOptions.context, model: actionModalOptions.model, formView: actionModalOptions.formView, visible: actionModalVisible, onSubmitSucceed: onFormModalSucceed, onCancel: function () {
+                        var _a;
+                        (_a = onRefreshParentValues.current) === null || _a === void 0 ? void 0 : _a.call(onRefreshParentValues);
                         setActionModalVisible(false);
                         setActionModalOptions({
                             domain: undefined,

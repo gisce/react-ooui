@@ -172,6 +172,10 @@ function TreeActionBar(props) {
             },
             fields: {},
             context: __assign(__assign({}, parentContext), { active_id: selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.map(function (item) { return item.id; })[0], active_ids: selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.map(function (item) { return item.id; }) }),
+            onRefreshParentValues: function () {
+                var _a;
+                (_a = searchTreeRef === null || searchTreeRef === void 0 ? void 0 : searchTreeRef.current) === null || _a === void 0 ? void 0 : _a.refreshResults();
+            },
         });
     }
     if (!currentView) {

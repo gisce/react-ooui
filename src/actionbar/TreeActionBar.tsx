@@ -124,6 +124,9 @@ function TreeActionBar(props: Props) {
         active_id: selectedRowItems?.map((item) => item.id)[0],
         active_ids: selectedRowItems?.map((item) => item.id),
       },
+      onRefreshParentValues: () => {
+        searchTreeRef?.current?.refreshResults();
+      },
     });
   }
 

@@ -188,6 +188,7 @@ const ContentRootProvider = (
         context,
       });
     } else if (type === "ir.actions.act_window") {
+      await runAction({ actionData, fields, values, context });
       return await runAction({ actionData, fields, values, context });
     } else {
       showErrorDialog(`${type} action not supported`);
@@ -392,6 +393,7 @@ const ContentRootProvider = (
             visible={actionModalVisible}
             onSubmitSucceed={onFormModalSucceed}
             onCancel={() => {
+              onRefreshParentValues.current?.();
               setActionModalVisible(false);
               setActionModalOptions({
                 domain: undefined,
