@@ -11,13 +11,18 @@ type Props = {
 
 const Text = (props: Props) => {
   const { ooui } = props;
-  const { readOnly, required } = ooui;
+  const { readOnly, required, height } = ooui;
   const requiredClass =
     required && !readOnly ? Config.requiredClass : undefined;
 
   return (
     <Field required={required} {...props}>
-      <TextArea disabled={readOnly} className={requiredClass} rows={4} />
+      <TextArea
+        disabled={readOnly}
+        className={requiredClass}
+        style={{ height: height && height + "px", resize: "none" }}
+        rows={4}
+      />
     </Field>
   );
 };
