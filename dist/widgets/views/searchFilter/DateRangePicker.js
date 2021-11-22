@@ -20,7 +20,7 @@ var react_1 = __importDefault(require("react"));
 var Field_1 = __importDefault(require("@/common/Field"));
 var DateRangePicker = function (props) {
     return (react_1.default.createElement(Field_1.default, __assign({}, props, { layout: "vertical" }),
-        react_1.default.createElement(antd_1.DatePicker.RangePicker, { format: "DD/MM/YYYY" })));
+        react_1.default.createElement(antd_1.DatePicker.RangePicker, { allowEmpty: [true, true], format: "DD/MM/YYYY" })));
 };
 exports.DateRangePicker = DateRangePicker;
 //# sourceMappingURL=DateRangePicker.js.map

@@ -111,8 +111,12 @@ var ungroupDateValuesIfNeeded = function (values, fields) {
     var newValues = __assign({}, values);
     dateFields.forEach(function (key) {
         delete newValues[key];
-        newValues[key + "#from"] = values[key][0];
-        newValues[key + "#to"] = values[key][1];
+        if (values[key][0] !== null) {
+            newValues[key + "#from"] = values[key][0];
+        }
+        if (values[key][1] !== null) {
+            newValues[key + "#to"] = values[key][1];
+        }
     });
     return newValues;
 };

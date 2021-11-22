@@ -107,8 +107,13 @@ const ungroupDateValuesIfNeeded = (values: any, fields: any) => {
 
   dateFields.forEach((key) => {
     delete newValues[key];
-    newValues[key + "#from"] = values[key][0];
-    newValues[key + "#to"] = values[key][1];
+    if (values[key][0] !== null) {
+      newValues[key + "#from"] = values[key][0];
+    }
+
+    if (values[key][1] !== null) {
+      newValues[key + "#to"] = values[key][1];
+    }
   });
 
   return newValues;

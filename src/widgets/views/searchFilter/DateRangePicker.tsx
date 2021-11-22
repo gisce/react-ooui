@@ -7,7 +7,10 @@ import { WidgetProps } from "@/types";
 export const DateRangePicker = (props: WidgetProps) => {
   return (
     <Field {...props} layout={"vertical"}>
-      <DatePicker.RangePicker format={"DD/MM/YYYY"}></DatePicker.RangePicker>
+      <DatePicker.RangePicker
+        allowEmpty={[true, true]}
+        format={"DD/MM/YYYY"}
+      ></DatePicker.RangePicker>
     </Field>
   );
 };
