@@ -17,12 +17,14 @@ const getParamsForFields = (values: any, fields: any) => {
   ];
 
   // This is needed because in case of datetime we receive an array of arrays
-  return params.reduce((acc, curVal) => {
+  const paramsForFields = params.reduce((acc, curVal) => {
     if (Array.isArray(curVal[0])) {
       return acc.concat(curVal);
     }
     return [...acc, curVal];
   }, []);
+
+  return paramsForFields;
 };
 
 const getParamForField = (key: string, value: any, fields: any) => {
@@ -49,12 +51,14 @@ const getParamForField = (key: string, value: any, fields: any) => {
     const operator = key.indexOf("#from") !== -1 ? ">=" : "<=";
     return [filteredKey, operator, value.format("YYYY-MM-DD")];
   } else if (type === "datetime") {
-    const from = value[0];
-    const to = value[1];
-    return [
-      [filteredKey, ">=", from],
-      [filteredKey, "<=", to],
-    ];
+    const filteredValues = [];
+    if (value[0]) {
+      filteredValues.push([filteredKey, ">=", value[0]]);
+    }
+    if (value[1]) {
+      filteredValues.push([filteredKey, "<=", value[1]]);
+    }
+    return filteredValues;
   } else {
     return [key, "=", convertBooleanParamIfNeeded(value)];
   }
@@ -86,12 +90,21 @@ const groupDateTimeValuesIfNeeded = (values: any) => {
     const baseKey = field.split("#")[0];
     const timeKey = baseKey + "#time";
     const timePair = values[timeKey];
-    const dateValueFrom = datePair[0].format("YYYY-MM-DD");
-    const dateValueTo = datePair[1].format("YYYY-MM-DD");
-    const timeValueFrom = timePair[0].format("HH:mm");
-    const timeValueTo = timePair[1].format("HH:mm");
-    const from = dateValueFrom + " " + timeValueFrom;
-    const to = dateValueTo + " " + timeValueTo;
+
+    let from, to;
+
+    if (datePair[0] !== null) {
+      const dateValueFrom = datePair[0].format("YYYY-MM-DD");
+      const timeValueFrom = timePair[0].format("HH:mm");
+      from = dateValueFrom + " " + timeValueFrom;
+    }
+
+    if (datePair[1] !== null) {
+      const dateValueTo = datePair[1].format("YYYY-MM-DD");
+      const timeValueTo = timePair[1].format("HH:mm");
+      to = dateValueTo + " " + timeValueTo;
+    }
+
     newValues[baseKey + "#datetime"] = [from, to];
   });
 

@@ -31,12 +31,13 @@ var getParamsForFields = function (values, fields) {
         return getParamForField(key, groupedValues[key], fields);
     }));
     // This is needed because in case of datetime we receive an array of arrays
-    return params.reduce(function (acc, curVal) {
+    var paramsForFields = params.reduce(function (acc, curVal) {
         if (Array.isArray(curVal[0])) {
             return acc.concat(curVal);
         }
         return __spreadArray(__spreadArray([], acc), [curVal]);
     }, []);
+    return paramsForFields;
 };
 exports.getParamsForFields = getParamsForFields;
 var getParamForField = function (key, value, fields) {
@@ -61,12 +62,14 @@ var getParamForField = function (key, value, fields) {
         return [filteredKey, operator, value.format("YYYY-MM-DD")];
     }
     else if (type === "datetime") {
-        var from = value[0];
-        var to = value[1];
-        return [
-            [filteredKey, ">=", from],
-            [filteredKey, "<=", to],
-        ];
+        var filteredValues = [];
+        if (value[0]) {
+            filteredValues.push([filteredKey, ">=", value[0]]);
+        }
+        if (value[1]) {
+            filteredValues.push([filteredKey, "<=", value[1]]);
+        }
+        return filteredValues;
     }
     else {
         return [key, "=", convertBooleanParamIfNeeded(value)];
@@ -93,12 +96,17 @@ var groupDateTimeValuesIfNeeded = function (values) {
         var baseKey = field.split("#")[0];
         var timeKey = baseKey + "#time";
         var timePair = values[timeKey];
-        var dateValueFrom = datePair[0].format("YYYY-MM-DD");
-        var dateValueTo = datePair[1].format("YYYY-MM-DD");
-        var timeValueFrom = timePair[0].format("HH:mm");
-        var timeValueTo = timePair[1].format("HH:mm");
-        var from = dateValueFrom + " " + timeValueFrom;
-        var to = dateValueTo + " " + timeValueTo;
+        var from, to;
+        if (datePair[0] !== null) {
+            var dateValueFrom = datePair[0].format("YYYY-MM-DD");
+            var timeValueFrom = timePair[0].format("HH:mm");
+            from = dateValueFrom + " " + timeValueFrom;
+        }
+        if (datePair[1] !== null) {
+            var dateValueTo = datePair[1].format("YYYY-MM-DD");
+            var timeValueTo = timePair[1].format("HH:mm");
+            to = dateValueTo + " " + timeValueTo;
+        }
         newValues[baseKey + "#datetime"] = [from, to];
     });
     return newValues;

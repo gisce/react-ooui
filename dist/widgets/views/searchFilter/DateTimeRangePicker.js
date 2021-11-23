@@ -44,10 +44,10 @@ var DateTimeRangePicker = function (props) {
         react_1.default.createElement(antd_2.Row, { align: "bottom", className: "p-0" },
             react_1.default.createElement(antd_2.Col, { className: "mr-2" },
                 react_1.default.createElement(Field_1.default, __assign({}, props, { ooui: fields[0], showLabel: false }),
-                    react_1.default.createElement(antd_1.DatePicker.RangePicker, { className: "w-60", format: "DD/MM/YYYY" }))),
+                    react_1.default.createElement(antd_1.DatePicker.RangePicker, { className: "w-60", allowEmpty: [true, true], format: "DD/MM/YYYY" }))),
             react_1.default.createElement(antd_2.Col, null,
                 react_1.default.createElement(Field_1.default, __assign({}, props, { ooui: fields[1], showLabel: false }),
-                    react_1.default.createElement(antd_1.TimePicker.RangePicker, { className: "w-60", format: "HH:mm" }))))));
+                    react_1.default.createElement(antd_1.TimePicker.RangePicker, { className: "w-60", allowEmpty: [true, true], format: "HH:mm" }))))));
 };
 exports.DateTimeRangePicker = DateTimeRangePicker;
 //# sourceMappingURL=DateTimeRangePicker.js.map

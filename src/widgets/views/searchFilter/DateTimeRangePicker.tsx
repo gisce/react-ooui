@@ -43,6 +43,7 @@ export const DateTimeRangePicker = (props: WidgetProps) => {
           <Field {...props} ooui={fields[0]} showLabel={false}>
             <DatePicker.RangePicker
               className="w-60"
+              allowEmpty={[true, true]}
               format={"DD/MM/YYYY"}
             ></DatePicker.RangePicker>
           </Field>
@@ -51,6 +52,7 @@ export const DateTimeRangePicker = (props: WidgetProps) => {
           <Field {...props} ooui={fields[1]} showLabel={false}>
             <TimePicker.RangePicker
               className="w-60"
+              allowEmpty={[true, true]}
               format={"HH:mm"}
             ></TimePicker.RangePicker>
           </Field>
