@@ -56,6 +56,7 @@ var Container = function (props) {
         display: "grid",
         gridTemplateColumns: responsiveBehaviour ? "auto" : templateColumns,
         gap: "1rem",
+        height: "100%",
     };
     return react_1.default.createElement("div", { style: gridStyle }, content);
 };

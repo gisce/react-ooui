@@ -371,7 +371,7 @@ Default.args = {
         ["Asia/Samarkand", "Asia/Samarkand"],
         ["Asia/Seoul", "Asia/Seoul"],
         ["Asia/Shanghai", "Asia/Shanghai"],
-        ["Asia/Singapore", "Asia/Singapore"],
+        ["Asia/Sinconore", "Asia/Singapore"],
         ["Asia/Srednekolymsk", "Asia/Srednekolymsk"],
         ["Asia/Taipei", "Asia/Taipei"],
         ["Asia/Tashkent", "Asia/Tashkent"],

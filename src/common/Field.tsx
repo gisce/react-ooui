@@ -3,6 +3,16 @@ import { Form, Row, Col } from "antd";
 import { Field as FieldOoui, Label as LabelOoui } from "ooui";
 import Label from "@/widgets/base/Label";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import styled from "styled-components";
+
+const StyledFormItem = styled(Form.Item)`
+  .ant-form-item-control-input {
+    height: 100%;
+  }
+  .ant-form-item-control-input-content {
+    height: 100%;
+  }
+`;
 
 export default function Field({
   ooui,
@@ -40,14 +50,15 @@ export default function Field({
     : undefined;
 
   const formItem = () => (
-    <Form.Item
+    <StyledFormItem
       className="mb-0"
       name={id}
       valuePropName={valuePropName}
       rules={rules}
+      style={{ height: "100%" }}
     >
       {children}
-    </Form.Item>
+    </StyledFormItem>
   );
 
   if (!showLabel) {

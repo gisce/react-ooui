@@ -1,4 +1,8 @@
 "use strict";
+var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -27,6 +31,8 @@ var antd_1 = require("antd");
 var ooui_1 = require("ooui");
 var Label_1 = __importDefault(require("@/widgets/base/Label"));
 var LocaleContext_1 = require("@/context/LocaleContext");
+var styled_components_1 = __importDefault(require("styled-components"));
+var StyledFormItem = styled_components_1.default(antd_1.Form.Item)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  .ant-form-item-control-input {\n    height: 100%;\n  }\n  .ant-form-item-control-input-content {\n    height: 100%;\n  }\n"], ["\n  .ant-form-item-control-input {\n    height: 100%;\n  }\n  .ant-form-item-control-input-content {\n    height: 100%;\n  }\n"])));
 function Field(_a) {
     var ooui = _a.ooui, children = _a.children, _b = _a.layout, layout = _b === void 0 ? "horizontal" : _b, valuePropName = _a.valuePropName, _c = _a.showLabel, showLabel = _c === void 0 ? false : _c, _d = _a.alignLabel, alignLabel = _d === void 0 ? "left" : _d, _e = _a.required, required = _e === void 0 ? false : _e, type = _a.type, validator = _a.validator;
     var id = ooui.id, label = ooui.label, tooltip = ooui.tooltip;
@@ -41,7 +47,7 @@ function Field(_a) {
             },
         ]
         : undefined;
-    var formItem = function () { return (react_1.default.createElement(antd_1.Form.Item, { className: "mb-0", name: id, valuePropName: valuePropName, rules: rules }, children)); };
+    var formItem = function () { return (react_1.default.createElement(StyledFormItem, { className: "mb-0", name: id, valuePropName: valuePropName, rules: rules, style: { height: "100%" } }, children)); };
     if (!showLabel) {
         return formItem();
     }
@@ -65,4 +71,5 @@ function Field(_a) {
     return layout === "horizontal" ? horizontalMode() : verticalMode();
 }
 exports.default = Field;
+var templateObject_1;
 //# sourceMappingURL=Field.js.map

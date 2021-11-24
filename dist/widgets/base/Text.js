@@ -24,7 +24,7 @@ var Text = function (props) {
     var readOnly = ooui.readOnly, required = ooui.required, height = ooui.height;
     var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
     return (react_1.default.createElement(Field_1.default, __assign({ required: required }, props),
-        react_1.default.createElement(TextArea, { disabled: readOnly, className: requiredClass, style: { height: height && height + "px", resize: "none" }, rows: 4 })));
+        react_1.default.createElement(TextArea, { disabled: readOnly, className: requiredClass, style: { height: height ? height + "px" : "100%" }, rows: 4 })));
 };
 exports.default = Text;
 //# sourceMappingURL=Text.js.map

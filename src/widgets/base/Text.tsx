@@ -20,7 +20,7 @@ const Text = (props: Props) => {
       <TextArea
         disabled={readOnly}
         className={requiredClass}
-        style={{ height: height && height + "px", resize: "none" }}
+        style={{ height: height ? height + "px" : "100%" }}
         rows={4}
       />
     </Field>
