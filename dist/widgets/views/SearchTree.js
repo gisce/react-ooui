@@ -104,9 +104,12 @@ function SearchTree(props, ref) {
     var _w = react_1.useState(200), searchFilterHeight = _w[0], setSearchFilterHeight = _w[1];
     var height = useWindowDimensions_1.default().height;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _x = (rootTree ? actionViewContext : {}) || {}, _y = _x.setResults, setResultsActionView = _y === void 0 ? undefined : _y, _z = _x.setCurrentItemIndex, setCurrentItemIndex = _z === void 0 ? undefined : _z, _0 = _x.currentId, currentId = _0 === void 0 ? undefined : _0, _1 = _x.results, resultsActionView = _1 === void 0 ? undefined : _1, _2 = _x.selectedRowItems, selectedRowItems = _2 === void 0 ? undefined : _2, _3 = _x.setSelectedRowItems, setSelectedRowItems = _3 === void 0 ? undefined : _3, _4 = _x.setSearchParams, setSearchParams = _4 === void 0 ? undefined : _4, _5 = _x.searchVisible, searchVisible = _5 === void 0 ? true : _5, _6 = _x.setSearchVisible, setSearchVisible = _6 === void 0 ? undefined : _6, _7 = _x.sorter, sorter = _7 === void 0 ? undefined : _7, _8 = _x.setSorter, setSorter = _8 === void 0 ? undefined : _8, _9 = _x.setTotalItems, setActionViewTotalItems = _9 === void 0 ? undefined : _9;
+    var _x = (rootTree ? actionViewContext : {}) || {}, _y = _x.setResults, setResultsActionView = _y === void 0 ? undefined : _y, _z = _x.setCurrentItemIndex, setCurrentItemIndex = _z === void 0 ? undefined : _z, _0 = _x.currentId, currentId = _0 === void 0 ? undefined : _0, _1 = _x.results, resultsActionView = _1 === void 0 ? undefined : _1, _2 = _x.selectedRowItems, selectedRowItems = _2 === void 0 ? undefined : _2, _3 = _x.setSelectedRowItems, setSelectedRowItems = _3 === void 0 ? undefined : _3, _4 = _x.setSearchParams, setSearchParams = _4 === void 0 ? undefined : _4, _5 = _x.searchVisible, searchVisible = _5 === void 0 ? true : _5, _6 = _x.setSearchVisible, setSearchVisible = _6 === void 0 ? undefined : _6, _7 = _x.sorter, sorter = _7 === void 0 ? undefined : _7, _8 = _x.setSorter, setSorter = _8 === void 0 ? undefined : _8, _9 = _x.setTotalItems, setActionViewTotalItems = _9 === void 0 ? undefined : _9, _10 = _x.setSearchTreeNameSearch, setSearchTreeNameSearch = _10 === void 0 ? undefined : _10;
     react_1.useImperativeHandle(ref, function () { return ({
-        refreshResults: fetchResults,
+        refreshResults: function () {
+            searchNameGetDoneRef.current = false;
+            fetchResults();
+        },
     }); });
     var onRequestPageChange = function (page) {
         setTableRefreshing(true);
@@ -274,7 +277,7 @@ function SearchTree(props, ref) {
             searchNameGetDoneRef.current = false;
             fetchResults();
         }
-    }, [page, limit, offset, initialFetchDone, visible]);
+    }, [page, limit, offset, initialFetchDone, visible, nameSearch]);
     var fetchData = function (type) { return __awaiter(_this, void 0, void 0, function () {
         var error_2;
         return __generator(this, function (_a) {
@@ -376,6 +379,7 @@ function SearchTree(props, ref) {
     var onClear = function () {
         if (tableRefreshing)
             return;
+        setSearchTreeNameSearch === null || setSearchTreeNameSearch === void 0 ? void 0 : setSearchTreeNameSearch(undefined);
         paramsRef.current = [];
         setSearchParams === null || setSearchParams === void 0 ? void 0 : setSearchParams([]);
         setSearchError(undefined);
@@ -388,6 +392,7 @@ function SearchTree(props, ref) {
         if (tableRefreshing)
             return;
         paramsRef.current = newParams;
+        setSearchTreeNameSearch === null || setSearchTreeNameSearch === void 0 ? void 0 : setSearchTreeNameSearch(undefined);
         setSelectedRowItems === null || setSelectedRowItems === void 0 ? void 0 : setSelectedRowItems([]);
         setSearchParams === null || setSearchParams === void 0 ? void 0 : setSearchParams(newParams);
         setSearchVisible === null || setSearchVisible === void 0 ? void 0 : setSearchVisible(false);

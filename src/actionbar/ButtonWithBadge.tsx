@@ -34,7 +34,7 @@ function ButtonWithBadge(props: Props) {
         </div>
       )}
       <ButtonWithTooltip
-        tooltip={t("search")}
+        tooltip={t("advanced_search")}
         icon={<SearchOutlined />}
         onClick={onClick}
         disabled={disabled}

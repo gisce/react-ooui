@@ -40,6 +40,8 @@ export declare type ActionViewContextType = {
     setSorter: (sorter: any) => void;
     totalItems: number;
     setTotalItems: (totalItems: number) => void;
+    searchTreeNameSearch?: string;
+    setSearchTreeNameSearch?: (searchString?: string) => void;
 };
 export declare const ActionViewContext: React.Context<ActionViewContextType | null>;
 declare type ActionViewProviderProps = ActionViewContextType & {

@@ -108,10 +108,14 @@ function SearchTree(props: Props, ref: any) {
     sorter = undefined,
     setSorter = undefined,
     setTotalItems: setActionViewTotalItems = undefined,
+    setSearchTreeNameSearch = undefined,
   } = (rootTree ? actionViewContext : {}) || {};
 
   useImperativeHandle(ref, () => ({
-    refreshResults: fetchResults,
+    refreshResults: () => {
+      searchNameGetDoneRef.current = false;
+      fetchResults();
+    },
   }));
 
   const onRequestPageChange = (page: number) => {
@@ -278,7 +282,7 @@ function SearchTree(props: Props, ref: any) {
       searchNameGetDoneRef.current = false;
       fetchResults();
     }
-  }, [page, limit, offset, initialFetchDone, visible]);
+  }, [page, limit, offset, initialFetchDone, visible, nameSearch]);
 
   const fetchData = async (type: "action" | "model") => {
     setInitialFetchDone(false);
@@ -353,6 +357,7 @@ function SearchTree(props: Props, ref: any) {
 
   const onClear = () => {
     if (tableRefreshing) return;
+    setSearchTreeNameSearch?.(undefined);
     paramsRef.current = [];
     setSearchParams?.([]);
     setSearchError(undefined);
@@ -372,6 +377,7 @@ function SearchTree(props: Props, ref: any) {
   }) => {
     if (tableRefreshing) return;
     paramsRef.current = newParams;
+    setSearchTreeNameSearch?.(undefined);
     setSelectedRowItems?.([]);
     setSearchParams?.(newParams);
     setSearchVisible?.(false);

@@ -84,8 +84,9 @@ var DropdownButton_1 = __importDefault(require("./DropdownButton"));
 var ContentRootContext_1 = require("@/context/ContentRootContext");
 var ButtonWithBadge_1 = __importDefault(require("./ButtonWithBadge"));
 var logInfoHelper_1 = require("@/helpers/logInfoHelper");
+var SearchBar_1 = __importDefault(require("./SearchBar"));
 function TreeActionBar(props) {
-    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, selectedRowItems = _a.selectedRowItems, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, duplicatingItem = _a.duplicatingItem, setDuplicatingItem = _a.setDuplicatingItem, currentModel = _a.currentModel, searchTreeRef = _a.searchTreeRef, setCurrentId = _a.setCurrentId, setCurrentItemIndex = _a.setCurrentItemIndex, toolbar = _a.toolbar, searchParams = _a.searchParams, searchVisible = _a.searchVisible, setSearchVisible = _a.setSearchVisible;
+    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, selectedRowItems = _a.selectedRowItems, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, duplicatingItem = _a.duplicatingItem, setDuplicatingItem = _a.setDuplicatingItem, currentModel = _a.currentModel, searchTreeRef = _a.searchTreeRef, setCurrentId = _a.setCurrentId, setCurrentItemIndex = _a.setCurrentItemIndex, toolbar = _a.toolbar, searchParams = _a.searchParams, searchVisible = _a.searchVisible, setSearchVisible = _a.setSearchVisible, setSearchTreeNameSearch = _a.setSearchTreeNameSearch, searchTreeNameSearch = _a.searchTreeNameSearch;
     var _b = props.parentContext, parentContext = _b === void 0 ? {} : _b;
     var _c = react_1.useContext(LocaleContext_1.LocaleContext), t = _c.t, lang = _c.lang;
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
@@ -182,6 +183,15 @@ function TreeActionBar(props) {
         return null;
     }
     return (react_1.default.createElement(antd_1.Space, { wrap: true },
+        react_1.default.createElement(SearchBar_1.default, { disabled: duplicatingItem || removingItem, searchText: searchTreeNameSearch, onSearch: function (searchString) {
+                if (searchString && searchString.trim().length > 0) {
+                    setSearchTreeNameSearch === null || setSearchTreeNameSearch === void 0 ? void 0 : setSearchTreeNameSearch(searchString);
+                }
+                else {
+                    setSearchTreeNameSearch === null || setSearchTreeNameSearch === void 0 ? void 0 : setSearchTreeNameSearch(undefined);
+                }
+            } }),
+        separator(),
         react_1.default.createElement(NewButton_1.default, null),
         separator(),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.CopyOutlined, null), tooltip: t("duplicate"), disabled: !selectedRowItems || (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) !== 1 || duplicatingItem, loading: duplicatingItem, onClick: duplicate }),

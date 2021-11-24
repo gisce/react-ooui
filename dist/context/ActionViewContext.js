@@ -31,7 +31,7 @@ var ActionViewProvider = function (props) {
     var _f = react_1.useState(false), duplicatingItem = _f[0], setDuplicatingItem = _f[1];
     var _g = react_1.useState([]), searchParams = _g[0], setSearchParams = _g[1];
     var _h = react_1.useState(false), searchVisible = _h[0], setSearchVisible = _h[1];
-    var children = props.children, currentView = props.currentView, title = props.title, setCurrentView = props.setCurrentView, availableViews = props.availableViews, formRef = props.formRef, searchTreeRef = props.searchTreeRef, onNewClicked = props.onNewClicked, currentId = props.currentId, setCurrentId = props.setCurrentId, setResults = props.setResults, results = props.results, currentItemIndex = props.currentItemIndex, setCurrentItemIndex = props.setCurrentItemIndex, currentModel = props.currentModel, toolbar = props.toolbar, setToolbar = props.setToolbar, sorter = props.sorter, setSorter = props.setSorter, totalItems = props.totalItems, setTotalItems = props.setTotalItems, setSelectedRowItems = props.setSelectedRowItems, selectedRowItems = props.selectedRowItems;
+    var children = props.children, currentView = props.currentView, title = props.title, setCurrentView = props.setCurrentView, availableViews = props.availableViews, formRef = props.formRef, searchTreeRef = props.searchTreeRef, onNewClicked = props.onNewClicked, currentId = props.currentId, setCurrentId = props.setCurrentId, setResults = props.setResults, results = props.results, currentItemIndex = props.currentItemIndex, setCurrentItemIndex = props.setCurrentItemIndex, currentModel = props.currentModel, toolbar = props.toolbar, setToolbar = props.setToolbar, sorter = props.sorter, setSorter = props.setSorter, totalItems = props.totalItems, setTotalItems = props.setTotalItems, setSelectedRowItems = props.setSelectedRowItems, selectedRowItems = props.selectedRowItems, searchTreeNameSearch = props.searchTreeNameSearch, setSearchTreeNameSearch = props.setSearchTreeNameSearch;
     react_1.useEffect(function () {
         if (results && results.length > 0 && !currentItemIndex) {
             setCurrentItemIndex === null || setCurrentItemIndex === void 0 ? void 0 : setCurrentItemIndex(0);
@@ -82,6 +82,8 @@ var ActionViewProvider = function (props) {
             setSorter: setSorter,
             totalItems: totalItems,
             setTotalItems: setTotalItems,
+            searchTreeNameSearch: searchTreeNameSearch,
+            setSearchTreeNameSearch: setSearchTreeNameSearch,
         } }, children));
 };
 exports.default = ActionViewProvider;

@@ -86,6 +86,7 @@ function ActionView(props: Props, ref: any) {
   const [searchingForResourceId, setSearchingForResourceId] = useState<boolean>(
     false
   );
+  const [searchTreeNameSearch, setSearchTreeNameSearch] = useState<string>();
 
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
@@ -306,6 +307,7 @@ function ActionView(props: Props, ref: any) {
           rootTree={true}
           model={model}
           parentContext={context}
+          nameSearch={searchTreeNameSearch}
           formView={formView}
           treeView={treeView}
           domain={domain}
@@ -360,6 +362,8 @@ function ActionView(props: Props, ref: any) {
       setTotalItems={setTotalItems}
       selectedRowItems={selectedRowItems}
       setSelectedRowItems={setSelectedRowItems}
+      setSearchTreeNameSearch={setSearchTreeNameSearch}
+      searchTreeNameSearch={searchTreeNameSearch}
     >
       <TitleHeader>
         {currentView!.type === "form" ? (

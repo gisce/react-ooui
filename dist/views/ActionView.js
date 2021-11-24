@@ -98,11 +98,12 @@ function ActionView(props, ref) {
     var _p = react_1.useState(0), totalItems = _p[0], setTotalItems = _p[1];
     var _q = react_1.useState(false), gtResourceModalVisible = _q[0], setGtResourceModalVisible = _q[1];
     var _r = react_1.useState(false), searchingForResourceId = _r[0], setSearchingForResourceId = _r[1];
+    var _s = react_1.useState(), searchTreeNameSearch = _s[0], setSearchTreeNameSearch = _s[1];
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var formRef = react_1.useRef();
     var searchTreeRef = react_1.useRef();
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
-    var _s = tabManagerContext || {}, setCurrentViewTabContext = _s.setCurrentView, setCurrentIdTabContext = _s.setCurrentId, tabs = _s.tabs, activeKey = _s.activeKey;
+    var _t = tabManagerContext || {}, setCurrentViewTabContext = _t.setCurrentView, setCurrentIdTabContext = _t.setCurrentId, tabs = _t.tabs, activeKey = _t.activeKey;
     react_hotkeys_hook_1.useHotkeys("ctrl+g,command+g", function (event) {
         event.preventDefault();
         handleGoToRecordShortcut();
@@ -310,7 +311,7 @@ function ActionView(props, ref) {
                         setCurrentItemIndex(results.length - 1);
                     }
                 } }),
-            react_1.default.createElement(SearchTree_1.default, { visible: currentView.type === "tree", ref: searchTreeRef, rootTree: true, model: model, parentContext: context, formView: formView, treeView: treeView, domain: domain, onRowClicked: function (event) {
+            react_1.default.createElement(SearchTree_1.default, { visible: currentView.type === "tree", ref: searchTreeRef, rootTree: true, model: model, parentContext: context, nameSearch: searchTreeNameSearch, formView: formView, treeView: treeView, domain: domain, onRowClicked: function (event) {
                     var id = event.id;
                     setCurrentId(id);
                     var itemIndex = results.findIndex(function (item) {
@@ -332,7 +333,7 @@ function ActionView(props, ref) {
     if (!currentView) {
         return null;
     }
-    return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, searchTreeRef: searchTreeRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId, setCurrentItemIndex: setCurrentItemIndex, currentItemIndex: currentItemIndex, results: results, setResults: setResults, currentModel: model, toolbar: toolbar, setToolbar: setToolbar, sorter: sorter, setSorter: setSorter, totalItems: totalItems, setTotalItems: setTotalItems, selectedRowItems: selectedRowItems, setSelectedRowItems: setSelectedRowItems },
+    return (react_1.default.createElement(ActionViewContext_1.default, { title: title, currentView: currentView, setCurrentView: setCurrentView, availableViews: availableViews, formRef: formRef, searchTreeRef: searchTreeRef, onNewClicked: onNewClicked, currentId: currentId, setCurrentId: setCurrentId, setCurrentItemIndex: setCurrentItemIndex, currentItemIndex: currentItemIndex, results: results, setResults: setResults, currentModel: model, toolbar: toolbar, setToolbar: setToolbar, sorter: sorter, setSorter: setSorter, totalItems: totalItems, setTotalItems: setTotalItems, selectedRowItems: selectedRowItems, setSelectedRowItems: setSelectedRowItems, setSearchTreeNameSearch: setSearchTreeNameSearch, searchTreeNameSearch: searchTreeNameSearch },
         react_1.default.createElement(TitleHeader_1.default, null, currentView.type === "form" ? (react_1.default.createElement(FormActionBar_1.default, null)) : (react_1.default.createElement(TreeActionBar_1.default, { parentContext: context }))),
         content(),
         react_1.default.createElement(GoToResourceModal_1.GoToResourceModal, { visible: gtResourceModalVisible, onIdSubmitted: goToResourceId, isSearching: searchingForResourceId, onCancel: function () {

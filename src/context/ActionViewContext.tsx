@@ -41,6 +41,8 @@ export type ActionViewContextType = {
   setSorter: (sorter: any) => void;
   totalItems: number;
   setTotalItems: (totalItems: number) => void;
+  searchTreeNameSearch?: string;
+  setSearchTreeNameSearch?: (searchString?: string) => void;
 };
 
 export const ActionViewContext = React.createContext<ActionViewContextType | null>(
@@ -85,6 +87,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     setTotalItems,
     setSelectedRowItems,
     selectedRowItems,
+    searchTreeNameSearch,
+    setSearchTreeNameSearch,
   } = props;
 
   useEffect(() => {
@@ -140,6 +144,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setSorter,
         totalItems,
         setTotalItems,
+        searchTreeNameSearch,
+        setSearchTreeNameSearch,
       }}
     >
       {children}

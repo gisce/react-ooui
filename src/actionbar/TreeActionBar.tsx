@@ -26,6 +26,7 @@ import {
 } from "@/context/ContentRootContext";
 import ButtonWithBadge from "./ButtonWithBadge";
 import { showLogInfo } from "@/helpers/logInfoHelper";
+import SearchBar from "./SearchBar";
 
 type Props = {
   parentContext?: any;
@@ -49,6 +50,8 @@ function TreeActionBar(props: Props) {
     searchParams,
     searchVisible,
     setSearchVisible,
+    setSearchTreeNameSearch,
+    searchTreeNameSearch,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   const { parentContext = {} } = props;
@@ -136,6 +139,18 @@ function TreeActionBar(props: Props) {
 
   return (
     <Space wrap={true}>
+      <SearchBar
+        disabled={duplicatingItem || removingItem}
+        searchText={searchTreeNameSearch}
+        onSearch={(searchString?: string) => {
+          if (searchString && searchString.trim().length > 0) {
+            setSearchTreeNameSearch?.(searchString);
+          } else {
+            setSearchTreeNameSearch?.(undefined);
+          }
+        }}
+      />
+      {separator()}
       <NewButton />
       {separator()}
       <ActionButton
