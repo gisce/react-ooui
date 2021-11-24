@@ -82,7 +82,6 @@ const Container = (props: Props): React.ReactElement => {
     display: "grid",
     gridTemplateColumns: responsiveBehaviour ? "auto" : templateColumns,
     gap: "1rem",
-    height: "100%",
   };
 
   return <div style={gridStyle}>{content}</div>;
