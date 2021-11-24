@@ -95,14 +95,22 @@ const groupDateTimeValuesIfNeeded = (values: any) => {
 
     if (datePair[0] !== null) {
       const dateValueFrom = datePair[0].format("YYYY-MM-DD");
-      const timeValueFrom = timePair[0].format("HH:mm");
-      from = dateValueFrom + " " + timeValueFrom;
+      from = dateValueFrom;
+
+      if (timePair && timePair[0] !== null) {
+        const timeValueFrom = timePair[0].format("HH:mm");
+        from = from + " " + timeValueFrom;
+      }
     }
 
     if (datePair[1] !== null) {
       const dateValueTo = datePair[1].format("YYYY-MM-DD");
-      const timeValueTo = timePair[1].format("HH:mm");
-      to = dateValueTo + " " + timeValueTo;
+      to = dateValueTo;
+
+      if (timePair && timePair[1] !== null) {
+        const timeValueTo = timePair[1].format("HH:mm");
+        to = to + " " + timeValueTo;
+      }
     }
 
     newValues[baseKey + "#datetime"] = [from, to];

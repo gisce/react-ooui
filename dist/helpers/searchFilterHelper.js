@@ -99,13 +99,19 @@ var groupDateTimeValuesIfNeeded = function (values) {
         var from, to;
         if (datePair[0] !== null) {
             var dateValueFrom = datePair[0].format("YYYY-MM-DD");
-            var timeValueFrom = timePair[0].format("HH:mm");
-            from = dateValueFrom + " " + timeValueFrom;
+            from = dateValueFrom;
+            if (timePair && timePair[0] !== null) {
+                var timeValueFrom = timePair[0].format("HH:mm");
+                from = from + " " + timeValueFrom;
+            }
         }
         if (datePair[1] !== null) {
             var dateValueTo = datePair[1].format("YYYY-MM-DD");
-            var timeValueTo = timePair[1].format("HH:mm");
-            to = dateValueTo + " " + timeValueTo;
+            to = dateValueTo;
+            if (timePair && timePair[1] !== null) {
+                var timeValueTo = timePair[1].format("HH:mm");
+                to = to + " " + timeValueTo;
+            }
         }
         newValues[baseKey + "#datetime"] = [from, to];
     });
