@@ -133,6 +133,7 @@ function SearchTree(props, ref) {
                 case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().nameSearch({
                         model: currentModel,
                         payload: nameSearch,
+                        attrs: actionDomain.current.length > 0 ? actionDomain.current : domain,
                         context: parentContext,
                     })];
                 case 1:

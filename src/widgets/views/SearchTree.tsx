@@ -140,6 +140,7 @@ function SearchTree(props: Props, ref: any) {
     const searchResults = await ConnectionProvider.getHandler().nameSearch({
       model: currentModel!,
       payload: nameSearch,
+      attrs: actionDomain.current.length > 0 ? actionDomain.current : domain,
       context: parentContext,
     });
 
