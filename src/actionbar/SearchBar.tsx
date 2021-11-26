@@ -37,7 +37,6 @@ function SearchBar(props: Props) {
         <Col>
           <Form.Item name={"search"} noStyle>
             <Input
-              autoFocus
               disabled={disabled}
               onChange={(e) => {
                 setMustShowClearSuffix(e.target.value.length > 0);

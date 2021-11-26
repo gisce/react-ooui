@@ -43,7 +43,7 @@ function SearchBar(props) {
         react_1.default.createElement(antd_1.Row, { align: "middle", justify: "end" },
             react_1.default.createElement(antd_1.Col, null,
                 react_1.default.createElement(antd_1.Form.Item, { name: "search", noStyle: true },
-                    react_1.default.createElement(antd_1.Input, { autoFocus: true, disabled: disabled, onChange: function (e) {
+                    react_1.default.createElement(antd_1.Input, { disabled: disabled, onChange: function (e) {
                             setMustShowClearSuffix(e.target.value.length > 0);
                         }, suffix: (mustShowClearSuffix ||
                             (searchText && searchText.length > 0)) && (react_1.default.createElement(antd_1.Tooltip, { title: t("clear") },

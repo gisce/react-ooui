@@ -26,7 +26,6 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { GoToResourceModal } from "@/ui/GoToResourceModal";
 import showInfo from "@/ui/InfoDialog";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
-import scrollIntoView from "scroll-into-view";
 
 type Props = {
   domain: any;
@@ -40,6 +39,8 @@ type Props = {
   formDefaultValues?: any;
   formForcedValues?: any;
   res_id?: number | boolean;
+  action_id: number;
+  action_type: string;
 };
 
 export type View = {
@@ -60,6 +61,8 @@ function ActionView(props: Props, ref: any) {
     formDefaultValues,
     formForcedValues = {},
     res_id = false,
+    action_id,
+    action_type,
   } = props;
   const [currentView, setCurrentViewInternal] = useState<View>();
   const [availableViews, setAvailableViews] = useState<View[]>([]);
@@ -101,6 +104,7 @@ function ActionView(props: Props, ref: any) {
     setCurrentId: setCurrentIdTabContext,
     tabs,
     activeKey,
+    openAction,
   } = tabManagerContext || {};
 
   useHotkeys(
@@ -216,14 +220,6 @@ function ActionView(props: Props, ref: any) {
     setGtResourceModalVisible(true);
   }
 
-  function scrollIntoTreeRowId(id: number) {
-    scrollIntoView((document as any).querySelector(`.record-row-${id}`), {
-      align: {
-        top: 0,
-      },
-    });
-  }
-
   async function goToResourceId(id: number) {
     setSearchingForResourceId(true);
 
@@ -254,22 +250,23 @@ function ActionView(props: Props, ref: any) {
       resource = results[itemIndex];
     }
 
-    setCurrentId(resource.id);
-
-    if (itemIndex === -1) {
-      setCurrentItemIndex(results.length);
-      setResults([...results, resource]);
-    } else {
-      setCurrentItemIndex(itemIndex);
-    }
-
     setSearchingForResourceId(false);
     setGtResourceModalVisible(false);
 
-    if (currentView!.type === "tree") {
-      setSelectedRowItems([resource]);
-      scrollIntoTreeRowId(resource.id);
-    }
+    const viewForm = views.find((v) => v[1] === "form");
+
+    openAction({
+      domain,
+      context,
+      model,
+      views,
+      title,
+      target: "current",
+      initialView: { id: viewForm[0], type: "form" },
+      action_id,
+      action_type,
+      res_id: id,
+    });
   }
 
   function content() {

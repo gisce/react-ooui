@@ -54,11 +54,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -77,10 +72,9 @@ var react_hotkeys_hook_1 = require("react-hotkeys-hook");
 var GoToResourceModal_1 = require("@/ui/GoToResourceModal");
 var InfoDialog_1 = __importDefault(require("@/ui/InfoDialog"));
 var LocaleContext_1 = require("@/context/LocaleContext");
-var scroll_into_view_1 = __importDefault(require("scroll-into-view"));
 function ActionView(props, ref) {
     var _this = this;
-    var domain = props.domain, model = props.model, context = props.context, views = props.views, title = props.title, setCanWeClose = props.setCanWeClose, tabKey = props.tabKey, initialView = props.initialView, formDefaultValues = props.formDefaultValues, _a = props.formForcedValues, formForcedValues = _a === void 0 ? {} : _a, _b = props.res_id, res_id = _b === void 0 ? false : _b;
+    var domain = props.domain, model = props.model, context = props.context, views = props.views, title = props.title, setCanWeClose = props.setCanWeClose, tabKey = props.tabKey, initialView = props.initialView, formDefaultValues = props.formDefaultValues, _a = props.formForcedValues, formForcedValues = _a === void 0 ? {} : _a, _b = props.res_id, res_id = _b === void 0 ? false : _b, action_id = props.action_id, action_type = props.action_type;
     var _c = react_1.useState(), currentView = _c[0], setCurrentViewInternal = _c[1];
     var _d = react_1.useState([]), availableViews = _d[0], setAvailableViews = _d[1];
     var _e = react_1.useState(), treeView = _e[0], setTreeView = _e[1];
@@ -103,7 +97,7 @@ function ActionView(props, ref) {
     var formRef = react_1.useRef();
     var searchTreeRef = react_1.useRef();
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
-    var _t = tabManagerContext || {}, setCurrentViewTabContext = _t.setCurrentView, setCurrentIdTabContext = _t.setCurrentId, tabs = _t.tabs, activeKey = _t.activeKey;
+    var _t = tabManagerContext || {}, setCurrentViewTabContext = _t.setCurrentView, setCurrentIdTabContext = _t.setCurrentId, tabs = _t.tabs, activeKey = _t.activeKey, openAction = _t.openAction;
     react_hotkeys_hook_1.useHotkeys("ctrl+g,command+g", function (event) {
         event.preventDefault();
         handleGoToRecordShortcut();
@@ -232,17 +226,10 @@ function ActionView(props, ref) {
             });
         });
     }
-    function scrollIntoTreeRowId(id) {
-        scroll_into_view_1.default(document.querySelector(".record-row-" + id), {
-            align: {
-                top: 0,
-            },
-        });
-    }
     function goToResourceId(id) {
         var _a;
         return __awaiter(this, void 0, void 0, function () {
-            var itemIndex, resource, err_2;
+            var itemIndex, resource, err_2, viewForm;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -277,20 +264,21 @@ function ActionView(props, ref) {
                         resource = results[itemIndex];
                         _b.label = 6;
                     case 6:
-                        setCurrentId(resource.id);
-                        if (itemIndex === -1) {
-                            setCurrentItemIndex(results.length);
-                            setResults(__spreadArray(__spreadArray([], results), [resource]));
-                        }
-                        else {
-                            setCurrentItemIndex(itemIndex);
-                        }
                         setSearchingForResourceId(false);
                         setGtResourceModalVisible(false);
-                        if (currentView.type === "tree") {
-                            setSelectedRowItems([resource]);
-                            scrollIntoTreeRowId(resource.id);
-                        }
+                        viewForm = views.find(function (v) { return v[1] === "form"; });
+                        openAction({
+                            domain: domain,
+                            context: context,
+                            model: model,
+                            views: views,
+                            title: title,
+                            target: "current",
+                            initialView: { id: viewForm[0], type: "form" },
+                            action_id: action_id,
+                            action_type: action_type,
+                            res_id: id,
+                        });
                         return [2 /*return*/];
                 }
             });

@@ -411,7 +411,7 @@ function RootView(props, ref) {
                                 id: action_id,
                                 type: action_type,
                             },
-                            content: (react_1.default.createElement(ActionView_1.default, { tabKey: key, title: title, views: views, model: model, context: __assign(__assign({}, rootContext), context), domain: domain, setCanWeClose: registerViewCloseFn, initialView: initialView, res_id: res_id, formDefaultValues: values, formForcedValues: forced_values })),
+                            content: (react_1.default.createElement(ActionView_1.default, { action_id: action_id, action_type: action_type, tabKey: key, title: title, views: views, model: model, context: __assign(__assign({}, rootContext), context), domain: domain, setCanWeClose: registerViewCloseFn, initialView: initialView, res_id: res_id, formDefaultValues: values, formForcedValues: forced_values })),
                             key: key,
                         });
                         _b.label = 3;

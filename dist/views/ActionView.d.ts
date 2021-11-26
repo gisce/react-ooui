@@ -12,6 +12,8 @@ declare type Props = {
     formDefaultValues?: any;
     formForcedValues?: any;
     res_id?: number | boolean;
+    action_id: number;
+    action_type: string;
 };
 export declare type View = {
     id: number;

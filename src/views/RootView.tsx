@@ -381,6 +381,8 @@ function RootView(props: RootViewProps, ref: any) {
         },
         content: (
           <ActionView
+            action_id={action_id}
+            action_type={action_type}
             tabKey={key}
             title={title}
             views={views}
