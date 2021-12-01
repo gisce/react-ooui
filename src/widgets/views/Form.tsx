@@ -249,7 +249,7 @@ function Form(props: FormProps, ref: any) {
       Object.keys(
         getTouchedValues({
           source: originalFormValues.current,
-          target: processValues(getCurrentValues(fields), fields),
+          target: getCurrentValues(fields),
           fields,
         })
       ).length !== 0
@@ -413,10 +413,14 @@ function Form(props: FormProps, ref: any) {
     const mergedValues = { ...currentValues, ...newValues };
     const valuesProcessed = processValues(mergedValues, fields);
     const fieldsToUpdate = Object.keys(fields).map((fieldName) => {
+      const fieldValue =
+        valuesProcessed[fieldName] !== undefined
+          ? valuesProcessed[fieldName]
+          : undefined;
       return {
         name: fieldName,
         touched: false,
-        value: valuesProcessed[fieldName] || undefined,
+        value: fieldValue,
       };
     });
 
@@ -480,8 +484,9 @@ function Form(props: FormProps, ref: any) {
           ...formOoui?.context,
         },
       });
+      originalFormValues.current = getCurrentValues(fields);
     } else {
-      const currentValues = processValues(antForm.getFieldsValue(true), fields);
+      const currentValues = getCurrentValues(fields);
 
       const newId = await ConnectionProvider.getHandler().create({
         model,
@@ -493,6 +498,7 @@ function Form(props: FormProps, ref: any) {
         },
       });
       createdId.current = newId;
+      originalFormValues.current = currentValues;
     }
 
     if (postSaveAction) {
@@ -595,7 +601,7 @@ function Form(props: FormProps, ref: any) {
 
     const touchedValues = getTouchedValues({
       source: lastAssignedValues.current,
-      target: processValues(getCurrentValues(fields), fields),
+      target: getCurrentValues(fields),
       fields,
     });
 

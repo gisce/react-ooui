@@ -7,8 +7,26 @@ var filteredValues = function (values, fields) {
     }
     var filteredValues = {};
     Object.keys(values).forEach(function (key) {
-        if (values[key] !== false ||
-            (fields[key] && fields[key].type === "boolean")) {
+        if (fields[key] === undefined) {
+            // console.log(`${key} is not in fields`);
+            filteredValues[key] = values[key];
+        }
+        else if (values[key] === false && fields[key].type !== "boolean") {
+            // Do nothing - filter the field.
+        }
+        else if (fields[key].type === "boolean") {
+            var boolValue = values[key];
+            if (boolValue === 0) {
+                filteredValues[key] = false;
+            }
+            else if (boolValue === 1) {
+                filteredValues[key] = true;
+            }
+            else {
+                filteredValues[key] = values[key];
+            }
+        }
+        else {
             filteredValues[key] = values[key];
         }
     });
@@ -23,9 +41,6 @@ var getTouchedValues = function (_a) {
     var source = _a.source, target = _a.target, fields = _a.fields;
     var differences = {};
     Object.keys(target).forEach(function (key) {
-        if (target[key] === undefined) {
-            return;
-        }
         if (Array.isArray(target[key])) {
             var is2Many = fields[key]
                 ? fields[key].type === "one2many" || fields[key].type === "many2many"
@@ -65,7 +80,12 @@ var getTouchedValues = function (_a) {
             }
         }
         else if (source[key] !== target[key]) {
-            differences[key] = target[key];
+            if (target[key] === undefined) {
+                differences[key] = null;
+            }
+            else {
+                differences[key] = target[key];
+            }
         }
     });
     return differences;

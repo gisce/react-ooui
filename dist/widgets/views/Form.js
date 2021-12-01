@@ -198,7 +198,7 @@ function Form(props, ref) {
     var formHasChanges = function () {
         return (Object.keys(formHelper_1.getTouchedValues({
             source: originalFormValues.current,
-            target: formHelper_1.processValues(getCurrentValues(fields), fields),
+            target: getCurrentValues(fields),
             fields: fields,
         })).length !== 0);
     };
@@ -372,10 +372,13 @@ function Form(props, ref) {
         var mergedValues = __assign(__assign({}, currentValues), newValues);
         var valuesProcessed = formHelper_1.processValues(mergedValues, fields);
         var fieldsToUpdate = Object.keys(fields).map(function (fieldName) {
+            var fieldValue = valuesProcessed[fieldName] !== undefined
+                ? valuesProcessed[fieldName]
+                : undefined;
             return {
                 name: fieldName,
                 touched: false,
-                value: valuesProcessed[fieldName] || undefined,
+                value: fieldValue,
             };
         });
         lastAssignedValues.current = valuesProcessed;
@@ -444,9 +447,10 @@ function Form(props, ref) {
                         })];
                 case 1:
                     _b.sent();
+                    originalFormValues.current = getCurrentValues(fields);
                     return [3 /*break*/, 4];
                 case 2:
-                    currentValues = formHelper_1.processValues(antForm.getFieldsValue(true), fields);
+                    currentValues = getCurrentValues(fields);
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().create({
                             model: model,
                             values: __assign(__assign({}, currentValues), forcedValues),
@@ -456,6 +460,7 @@ function Form(props, ref) {
                 case 3:
                     newId = _b.sent();
                     createdId.current = newId;
+                    originalFormValues.current = currentValues;
                     _b.label = 4;
                 case 4:
                     if (!postSaveAction) return [3 /*break*/, 6];
@@ -577,7 +582,7 @@ function Form(props, ref) {
                 return [2 /*return*/];
             touchedValues = formHelper_1.getTouchedValues({
                 source: lastAssignedValues.current,
-                target: formHelper_1.processValues(getCurrentValues(fields), fields),
+                target: getCurrentValues(fields),
                 fields: fields,
             });
             changedFields = Object.keys(touchedValues);
