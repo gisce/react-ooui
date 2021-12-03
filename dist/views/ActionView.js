@@ -268,7 +268,7 @@ function ActionView(props, ref) {
                         setGtResourceModalVisible(false);
                         viewForm = views.find(function (v) { return v[1] === "form"; });
                         openAction({
-                            domain: domain,
+                            domain: [],
                             context: context,
                             model: model,
                             views: views,

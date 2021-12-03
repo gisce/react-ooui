@@ -256,7 +256,7 @@ function ActionView(props: Props, ref: any) {
     const viewForm = views.find((v) => v[1] === "form");
 
     openAction({
-      domain,
+      domain: [],
       context,
       model,
       views,
