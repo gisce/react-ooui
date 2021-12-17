@@ -300,7 +300,7 @@ function Form(props, ref) {
                     _a.label = 3;
                 case 3:
                     if (actionDomain) {
-                        values = __assign(__assign({}, values), formHelper_1.getValuesForDomain(actionDomain));
+                        values = __assign(__assign({}, formHelper_1.getValuesForDomain(actionDomain)), values);
                     }
                     originalFormValues.current = formHelper_1.processValues(values, _fields);
                     parseForm({ fields: _fields, arch: _arch, values: values });

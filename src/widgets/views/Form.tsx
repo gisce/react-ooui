@@ -343,7 +343,7 @@ function Form(props: FormProps, ref: any) {
     }
 
     if (actionDomain) {
-      values = { ...values, ...getValuesForDomain(actionDomain) };
+      values = { ...getValuesForDomain(actionDomain), ...values };
     }
 
     originalFormValues.current = processValues(values, _fields);
