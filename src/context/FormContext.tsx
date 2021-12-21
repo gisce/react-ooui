@@ -21,7 +21,7 @@ export type FormContextType = {
   unsavedOne2ManyChilds?: Map<string, any>;
   addOne2ManyChild?: (key: string, child: any) => void;
   removeOne2ManyChild?: (key: string) => void;
-  submitForm?: (options?: { callOnSubmitSucceed?: boolean }) => Promise<void>;
+  submitForm?: (options?: { callOnSubmitSucceed?: boolean }) => Promise<boolean>;
   fetchValues?: () => void;
 };
 

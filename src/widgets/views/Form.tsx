@@ -519,6 +519,7 @@ function Form(props: FormProps, ref: any) {
   };
 
   const submitForm = async (options?: { callOnSubmitSucceed?: boolean }) => {
+    let submitSucceed = false;
     const { callOnSubmitSucceed = true } = options || {};
     formSubmitting.current = true;
 
@@ -527,13 +528,13 @@ function Form(props: FormProps, ref: any) {
       formSubmitting.current = false;
       setFormHasChanges?.(false);
       onCancel?.();
-      return;
+      return false;
     }
 
     if (await checkIfFormHasErrors()) {
       formSubmitting.current = false;
       formErrorsDialog(lang);
-      return;
+      return false;
     }
 
     setIsSubmitting(true);
@@ -559,6 +560,7 @@ function Form(props: FormProps, ref: any) {
         assignNewValuesToForm({ values: {}, fields, reset: true });
         await fetchValues();
       }
+      submitSucceed = true;
     } catch (err) {
       formSubmitting.current = false;
       setIsSubmitting(false);
@@ -570,6 +572,8 @@ function Form(props: FormProps, ref: any) {
       setFormIsSaving?.(false);
       setIsSubmitting(false);
     }
+
+    return submitSucceed;
   };
 
   const parseForm = ({
