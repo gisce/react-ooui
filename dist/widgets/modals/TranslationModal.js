@@ -86,6 +86,7 @@ var TranslationModal = function (props) {
     var _b = react_1.useState(false), isLoading = _b[0], setIsLoading = _b[1];
     var _c = react_1.useState(false), submitLoading = _c[0], setSubmitLoading = _c[1];
     var _d = react_1.useState({}), valuesForLangs = _d[0], setValuesForLangs = _d[1];
+    var originalValuesForLangs = react_1.useRef();
     react_1.useEffect(function () {
         if (visible) {
             fetchData();
@@ -169,6 +170,7 @@ var TranslationModal = function (props) {
                         _i++;
                         return [3 /*break*/, 1];
                     case 4:
+                        originalValuesForLangs.current = retrievedValuesForLang;
                         setValuesForLangs(retrievedValuesForLang);
                         return [2 /*return*/];
                 }
@@ -202,6 +204,7 @@ var TranslationModal = function (props) {
                     case 2:
                         if (!(_i < _a.length)) return [3 /*break*/, 5];
                         langCode = _a[_i];
+                        if (!(valuesForLangs[langCode] !== originalValuesForLangs.current[langCode])) return [3 /*break*/, 4];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().update({
                                 model: model,
                                 id: id,

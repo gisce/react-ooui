@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Modal, Button, Divider, Row, Space, Spin, Col } from "antd";
 import {
   CheckOutlined,
@@ -38,6 +38,8 @@ export const TranslationModal = (props: TranslationModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [valuesForLangs, setValuesForLangs] = useState<ValuesForLangs>({});
+
+  const originalValuesForLangs = useRef<ValuesForLangs>();
 
   useEffect(() => {
     if (visible) {
@@ -91,6 +93,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
       retrievedValuesForLang[lang.code] = retrievedValue[field] || "";
     }
 
+    originalValuesForLangs.current = retrievedValuesForLang;
     setValuesForLangs(retrievedValuesForLang);
   }
 
@@ -124,15 +127,19 @@ export const TranslationModal = (props: TranslationModalProps) => {
 
     try {
       for (const langCode of Object.keys(valuesForLangs)) {
-        await ConnectionProvider.getHandler().update({
-          model,
-          id,
-          values: { [field]: valuesForLangs[langCode] },
-          context: {
-            lang: langCode,
-          },
-          fields: {},
-        });
+        if (
+          valuesForLangs[langCode] !== originalValuesForLangs.current![langCode]
+        ) {
+          await ConnectionProvider.getHandler().update({
+            model,
+            id,
+            values: { [field]: valuesForLangs[langCode] },
+            context: {
+              lang: langCode,
+            },
+            fields: {},
+          });
+        }
       }
     } catch (err) {
       showErrorDialog(err as any);
