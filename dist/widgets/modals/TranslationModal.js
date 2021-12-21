@@ -118,7 +118,7 @@ var TranslationModal = function (props) {
                             model: "res.lang",
                         })];
                     case 1:
-                        results = (_a.sent()).results;
+                        results = (_a.sent());
                         setLangs === null || setLangs === void 0 ? void 0 : setLangs(results.map(function (item) {
                             return {
                                 code: item.code,

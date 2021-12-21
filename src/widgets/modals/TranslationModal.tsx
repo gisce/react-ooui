@@ -48,11 +48,11 @@ export const TranslationModal = (props: TranslationModalProps) => {
   }
 
   async function getLangs() {
-    const { results } = await ConnectionProvider.getHandler().search({
+    const results: any[] = (await ConnectionProvider.getHandler().search({
       params: [["translatable", "=", "1"]],
       fields: ["code", "name"],
       model: "res.lang",
-    });
+    })) as any;
 
     setLangs?.(
       results.map((item: any) => {
