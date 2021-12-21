@@ -177,8 +177,8 @@ var TranslationModal = function (props) {
     }
     function getInputsForLangs() {
         return langs.map(function (lang, i) {
-            return (react_1.default.createElement(antd_1.Row, { key: i },
-                react_1.default.createElement(antd_1.Col, { flex: "4rem", style: { paddingRight: 10 } }, lang.name),
+            return (react_1.default.createElement(antd_1.Row, { key: i, style: { paddingBottom: 20 } },
+                react_1.default.createElement(antd_1.Col, { flex: "8rem", style: { paddingRight: 10 } }, lang.name),
                 react_1.default.createElement(antd_1.Col, { flex: "auto" },
                     react_1.default.createElement(TextArea_1.default, { rows: 4, value: valuesForLangs[lang.code] || "", onChange: function (event) {
                             var _a;

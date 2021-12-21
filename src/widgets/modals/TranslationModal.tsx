@@ -90,8 +90,8 @@ export const TranslationModal = (props: TranslationModalProps) => {
   function getInputsForLangs() {
     return langs.map((lang: Lang, i: number) => {
       return (
-        <Row key={i}>
-          <Col flex="4rem" style={{ paddingRight: 10 }}>
+        <Row key={i} style={{ paddingBottom: 20 }}>
+          <Col flex="8rem" style={{ paddingRight: 10 }}>
             {lang.name}
           </Col>
           <Col flex="auto">

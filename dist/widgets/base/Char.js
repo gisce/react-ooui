@@ -47,28 +47,29 @@ var Char = function (props) {
     var ooui = props.ooui;
     var _a = ooui, id = _a.id, readOnly = _a.readOnly, isPassword = _a.isPassword, required = _a.required, translatable = _a.translatable;
     var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
+    return (react_1.default.createElement(Field_1.default, __assign({ required: required }, props), isPassword ? (react_1.default.createElement(antd_1.Input.Password, { disabled: readOnly, id: id })) : translatable ? (react_1.default.createElement(TranslatableInput, { field: id, requiredClass: requiredClass, readOnly: readOnly })) : (react_1.default.createElement(antd_1.Input, { disabled: readOnly || translatable, id: id, className: requiredClass }))));
+};
+exports.Char = Char;
+var TranslatableInput = function (_a) {
+    var value = _a.value, field = _a.field, readOnly = _a.readOnly, requiredClass = _a.requiredClass, onChange = _a.onChange;
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var formContext = react_1.useContext(FormContext_1.FormContext);
     var _b = formContext || {}, activeId = _b.activeId, activeModel = _b.activeModel;
     var _c = react_1.useState(false), translationModalVisible = _c[0], setTranslationModalVisible = _c[1];
-    function input() {
-        return (react_1.default.createElement(antd_1.Input, { disabled: readOnly || translatable, id: id, className: requiredClass }));
-    }
-    function translatableInput() {
-        return (react_1.default.createElement(react_1.default.Fragment, null,
-            react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false },
-                react_1.default.createElement(antd_1.Col, { flex: "auto" }, input()),
-                react_1.default.createElement(antd_1.Col, { flex: "32px" },
-                    react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("translate"), icon: react_1.default.createElement(icons_1.TranslationOutlined, null), onClick: function () {
-                            // TODO: must ensure that model is previously saved and validated, like a button
-                            setTranslationModalVisible(true);
-                        } }, t("translate")))),
-            react_1.default.createElement(TranslationModal_1.TranslationModal, { id: activeId, model: activeModel, field: id, visible: translationModalVisible, onCloseModal: function () {
-                    // TODO: must reload the form
-                    setTranslationModalVisible(false);
-                } })));
-    }
-    return (react_1.default.createElement(Field_1.default, __assign({ required: required }, props), isPassword ? (react_1.default.createElement(antd_1.Input.Password, { disabled: readOnly, id: id })) : translatable ? (translatableInput()) : (input())));
+    return (react_1.default.createElement(react_1.default.Fragment, null,
+        react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false },
+            react_1.default.createElement(antd_1.Col, { flex: "auto" },
+                react_1.default.createElement(antd_1.Input, { value: value, disabled: readOnly, id: field, className: requiredClass, onChange: function (event) {
+                        onChange === null || onChange === void 0 ? void 0 : onChange(event.target.value);
+                    } })),
+            react_1.default.createElement(antd_1.Col, { flex: "32px" },
+                react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("translate"), icon: react_1.default.createElement(icons_1.TranslationOutlined, null), onClick: function () {
+                        // TODO: must ensure that model is previously saved and validated, like a button
+                        setTranslationModalVisible(true);
+                    } }, t("translate")))),
+        react_1.default.createElement(TranslationModal_1.TranslationModal, { id: activeId, model: activeModel, field: field, visible: translationModalVisible, onCloseModal: function () {
+                // TODO: must reload the form
+                setTranslationModalVisible(false);
+            } })));
 };
-exports.Char = Char;
 //# sourceMappingURL=Char.js.map

@@ -15,62 +15,83 @@ export const Char = (props: WidgetProps) => {
   const { id, readOnly, isPassword, required, translatable } = ooui as CharOoui;
   const requiredClass =
     required && !readOnly ? Config.requiredClass : undefined;
-  const { t } = useContext(LocaleContext) as LocaleContextType;
-  const formContext = useContext(FormContext) as FormContextType;
-  const { activeId, activeModel } = formContext || {};
-  const [translationModalVisible, setTranslationModalVisible] = useState(false);
-
-  function input() {
-    return (
-      <Input
-        disabled={readOnly || translatable}
-        id={id}
-        className={requiredClass}
-      />
-    );
-  }
-
-  function translatableInput() {
-    return (
-      <>
-        <Row gutter={8} wrap={false}>
-          <Col flex="auto">{input()}</Col>
-          <Col flex="32px">
-            <ButtonWithTooltip
-              tooltip={t("translate")}
-              icon={<TranslationOutlined />}
-              onClick={() => {
-                // TODO: must ensure that model is previously saved and validated, like a button
-                setTranslationModalVisible(true);
-              }}
-            >
-              {t("translate")}
-            </ButtonWithTooltip>
-          </Col>
-        </Row>
-        <TranslationModal
-          id={activeId!}
-          model={activeModel}
-          field={id}
-          visible={translationModalVisible}
-          onCloseModal={() => {
-            // TODO: must reload the form
-            setTranslationModalVisible(false);
-          }}
-        />
-      </>
-    );
-  }
 
   return (
     <Field required={required} {...props}>
       {isPassword ? (
         <Input.Password disabled={readOnly} id={id} />
       ) : translatable ? (
-        translatableInput()
+        <TranslatableInput
+          field={id}
+          requiredClass={requiredClass}
+          readOnly={readOnly}
+        />
       ) : (
-        input()
+        <Input
+          disabled={readOnly || translatable}
+          id={id}
+          className={requiredClass}
+        />
       )}
     </Field>
+  );
+};
+
+const TranslatableInput = ({
+  value,
+  field,
+  readOnly,
+  requiredClass,
+  onChange,
+}: {
+  value?: string;
+  field: string;
+  readOnly: boolean;
+  requiredClass: string | undefined;
+  onChange?: (value: string) => void;
+}) => {
+  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const formContext = useContext(FormContext) as FormContextType;
+  const { activeId, activeModel } = formContext || {};
+  const [translationModalVisible, setTranslationModalVisible] = useState(false);
+
+  return (
+    <>
+      <Row gutter={8} wrap={false}>
+        <Col flex="auto">
+          <Input
+            value={value}
+            disabled={readOnly}
+            id={field}
+            className={requiredClass}
+            onChange={(event: any) => {
+              onChange?.(event.target.value);
+            }}
+          />
+        </Col>
+        <Col flex="32px">
+          <ButtonWithTooltip
+            tooltip={t("translate")}
+            icon={<TranslationOutlined />}
+            onClick={() => {
+              // TODO: must ensure that model is previously saved and validated, like a button
+              setTranslationModalVisible(true);
+            }}
+          >
+            {t("translate")}
+          </ButtonWithTooltip>
+        </Col>
+      </Row>
+      <TranslationModal
+        id={activeId!}
+        model={activeModel}
+        field={field}
+        visible={translationModalVisible}
+        onCloseModal={() => {
+          // TODO: must reload the form
+          setTranslationModalVisible(false);
+        }}
+      />
+    </>
   );
 };
