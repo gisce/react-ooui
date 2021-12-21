@@ -106,6 +106,7 @@ type ReadObjectsRequest = {
   model: string;
   ids: number[];
   context?: any;
+  fieldsToRetrieve?: any;
 };
 
 type GetLogInfoRequest = {
