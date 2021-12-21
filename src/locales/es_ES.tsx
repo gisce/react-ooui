@@ -73,4 +73,5 @@ export default {
   searchId: "ID de búsqueda:",
   idNotFound: "No se encuentra ésta ID de recuros para el objeto",
   selectedRegisters: "registros seleccionados",
+  translate: "Traducir",
 };

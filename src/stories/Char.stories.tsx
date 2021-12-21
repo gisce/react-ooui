@@ -34,3 +34,16 @@ export const Password = (): React.ReactElement => {
     </LocaleProvider>
   );
 };
+
+export const Translatable = (): React.ReactElement => {
+  const ooui = new CharOoui({
+    name: "field",
+    string: "Lorem ipsum",
+    translate: true,
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Char ooui={ooui} showLabel />
+    </LocaleProvider>
+  );
+};

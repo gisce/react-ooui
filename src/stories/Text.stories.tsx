@@ -20,3 +20,16 @@ export const Default = (): React.ReactElement => {
     </LocaleProvider>
   );
 };
+
+export const Translatable = (): React.ReactElement => {
+  const ooui = new TextOoui({
+    name: "field",
+    string: "Lorem ipsum",
+    translate: true,
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Text ooui={ooui} />
+    </LocaleProvider>
+  );
+};

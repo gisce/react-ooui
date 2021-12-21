@@ -70,5 +70,6 @@ exports.default = {
     searchId: "Search ID:",
     idNotFound: "Resource ID does not exist for this object!",
     selectedRegisters: "selected registers",
+    translate: "Translate",
 };
 //# sourceMappingURL=en_US.js.map
