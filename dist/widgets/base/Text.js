@@ -83,11 +83,10 @@ var Text = function (props) {
     var ooui = props.ooui;
     var id = ooui.id, readOnly = ooui.readOnly, required = ooui.required, height = ooui.height, translatable = ooui.translatable;
     var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
-    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
-    return (react_1.default.createElement(Field_1.default, __assign({ required: required }, props), translatable ? (react_1.default.createElement(TranslatableText, { field: id, requiredClass: requiredClass })) : (react_1.default.createElement(TextArea, { disabled: readOnly || translatable, className: requiredClass, style: { height: height ? height + "px" : "100%" }, rows: 4 }))));
+    return (react_1.default.createElement(Field_1.default, __assign({ required: required }, props), translatable ? (react_1.default.createElement(TranslatableText, { field: id, requiredClass: requiredClass, height: height })) : (react_1.default.createElement(TextArea, { disabled: readOnly || translatable, className: requiredClass, style: { height: height ? height + "px" : "100%" }, rows: 4 }))));
 };
 var TranslatableText = function (_a) {
-    var value = _a.value, field = _a.field, requiredClass = _a.requiredClass, onChange = _a.onChange;
+    var value = _a.value, field = _a.field, requiredClass = _a.requiredClass, onChange = _a.onChange, height = _a.height;
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var formContext = react_1.useContext(FormContext_1.FormContext);
     var _b = formContext || {}, activeId = _b.activeId, activeModel = _b.activeModel, submitForm = _b.submitForm, fetchValues = _b.fetchValues;
@@ -96,7 +95,7 @@ var TranslatableText = function (_a) {
         react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false },
             react_1.default.createElement(TextArea, { value: value, onChange: function (event) {
                     onChange === null || onChange === void 0 ? void 0 : onChange(event.target.value);
-                }, id: field, disabled: true, className: requiredClass, rows: 4 })),
+                }, style: { height: height ? height + "px" : "100%" }, id: field, disabled: true, className: requiredClass, rows: 4 })),
         react_1.default.createElement(antd_1.Row, { justify: "end", style: { paddingTop: 5 } },
             react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("translate"), icon: react_1.default.createElement(icons_1.TranslationOutlined, null), onClick: function () { return __awaiter(void 0, void 0, void 0, function () {
                     var submittedSuccessfully;

@@ -20,12 +20,15 @@ const Text = (props: Props) => {
   const { id, readOnly, required, height, translatable } = ooui;
   const requiredClass =
     required && !readOnly ? Config.requiredClass : undefined;
-  const { t } = useContext(LocaleContext) as LocaleContextType;
 
   return (
     <Field required={required} {...props}>
       {translatable ? (
-        <TranslatableText field={id} requiredClass={requiredClass} />
+        <TranslatableText
+          field={id}
+          requiredClass={requiredClass}
+          height={height}
+        />
       ) : (
         <TextArea
           disabled={readOnly || translatable}
@@ -43,10 +46,12 @@ const TranslatableText = ({
   field,
   requiredClass,
   onChange,
+  height,
 }: {
   value?: string;
   field: string;
   requiredClass: string | undefined;
+  height: number | undefined;
   onChange?: (value: string) => void;
 }) => {
   const { t } = useContext(LocaleContext) as LocaleContextType;
@@ -62,6 +67,7 @@ const TranslatableText = ({
           onChange={(event: any) => {
             onChange?.(event.target.value);
           }}
+          style={{ height: height ? height + "px" : "100%" }}
           id={field}
           disabled={true}
           className={requiredClass}
