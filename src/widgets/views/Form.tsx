@@ -883,6 +883,8 @@ function Form(props: FormProps, ref: any) {
           unsavedOne2ManyChilds={unsavedOne2ManyChilds.current}
           addOne2ManyChild={addOne2ManyChild}
           removeOne2ManyChild={removeOne2ManyChild}
+          submitForm={submitForm}
+          fetchValues={fetchValues}
         >
           <AntForm
             form={antForm}

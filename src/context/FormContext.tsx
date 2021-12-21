@@ -21,6 +21,8 @@ export type FormContextType = {
   unsavedOne2ManyChilds?: Map<string, any>;
   addOne2ManyChild?: (key: string, child: any) => void;
   removeOne2ManyChild?: (key: string) => void;
+  submitForm?: (options?: { callOnSubmitSucceed?: boolean }) => Promise<void>;
+  fetchValues?: () => void;
 };
 
 export const FormContext = React.createContext<FormContextType | null>(null);
@@ -44,6 +46,8 @@ const FormProvider = (props: FormProviderProps): any => {
     unsavedOne2ManyChilds,
     addOne2ManyChild,
     removeOne2ManyChild,
+    submitForm,
+    fetchValues,
   } = props;
 
   return (
@@ -61,6 +65,8 @@ const FormProvider = (props: FormProviderProps): any => {
         unsavedOne2ManyChilds,
         addOne2ManyChild,
         removeOne2ManyChild,
+        submitForm,
+        fetchValues,
       }}
     >
       {children}

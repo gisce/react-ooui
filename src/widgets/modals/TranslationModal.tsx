@@ -12,6 +12,7 @@ type TranslationModalProps = {
   id: number;
   field: string;
   onCloseModal: () => void;
+  onSubmitSucceed: () => void;
 };
 
 type Lang = {

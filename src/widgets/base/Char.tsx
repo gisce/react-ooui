@@ -46,7 +46,7 @@ const TranslatableInput = ({
 }) => {
   const { t } = useContext(LocaleContext) as LocaleContextType;
   const formContext = useContext(FormContext) as FormContextType;
-  const { activeId, activeModel } = formContext || {};
+  const { activeId, activeModel, submitForm, fetchValues } = formContext || {};
   const [translationModalVisible, setTranslationModalVisible] = useState(false);
 
   return (
@@ -67,8 +67,8 @@ const TranslatableInput = ({
           <ButtonWithTooltip
             tooltip={t("translate")}
             icon={<TranslationOutlined />}
-            onClick={() => {
-              // TODO: must ensure that model is previously saved and validated, like a button
+            onClick={async () => {
+              await submitForm?.();
               setTranslationModalVisible(true);
             }}
           >
@@ -82,8 +82,11 @@ const TranslatableInput = ({
         field={field}
         visible={translationModalVisible}
         onCloseModal={() => {
-          // TODO: must reload the form
           setTranslationModalVisible(false);
+        }}
+        onSubmitSucceed={() => {
+          setTranslationModalVisible(false);
+          fetchValues?.();
         }}
       />
     </>
