@@ -9,6 +9,7 @@ import useWindowDimensions from "@/hooks/useWindowDimensions";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import ConnectionProvider from "@/ConnectionProvider";
 import TextArea from "antd/lib/input/TextArea";
+import showErrorDialog from "@/ui/ActionErrorDialog";
 
 type TranslationModalProps = {
   visible: boolean;
@@ -47,8 +48,12 @@ export const TranslationModal = (props: TranslationModalProps) => {
   async function fetchData() {
     setIsLoading(true);
 
-    const langs = await getLangs();
-    await getValuesForLangs(langs);
+    try {
+      const langs = await getLangs();
+      await getValuesForLangs(langs);
+    } catch (err) {
+      showErrorDialog(err as any);
+    }
 
     setIsLoading(false);
   }
@@ -117,20 +122,23 @@ export const TranslationModal = (props: TranslationModalProps) => {
   async function onSubmit() {
     setSubmitLoading(true);
 
-    for (const langCode of Object.keys(valuesForLangs)) {
-      await ConnectionProvider.getHandler().update({
-        model,
-        id,
-        values: { [field]: valuesForLangs[langCode] },
-        context: {
-          lang: langCode,
-        },
-        fields: {},
-      });
+    try {
+      for (const langCode of Object.keys(valuesForLangs)) {
+        await ConnectionProvider.getHandler().update({
+          model,
+          id,
+          values: { [field]: valuesForLangs[langCode] },
+          context: {
+            lang: langCode,
+          },
+          fields: {},
+        });
+      }
+    } catch (err) {
+      showErrorDialog(err as any);
     }
 
     setSubmitLoading(false);
-
     onSubmitSucceed();
   }
 
