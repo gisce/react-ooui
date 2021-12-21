@@ -84,7 +84,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
         await ConnectionProvider.getHandler().readObjects({
           model,
           ids: [id],
-          fields: [field],
+          fieldsToRetrieve: [field],
           context: { lang: lang.code },
         })
       )[0];

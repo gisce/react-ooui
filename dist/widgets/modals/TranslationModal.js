@@ -158,7 +158,7 @@ var TranslationModal = function (props) {
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
                                 model: model,
                                 ids: [id],
-                                fields: [field],
+                                fieldsToRetrieve: [field],
                                 context: { lang: lang.code },
                             })];
                     case 2:
