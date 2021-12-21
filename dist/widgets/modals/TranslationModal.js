@@ -83,7 +83,8 @@ var TranslationModal = function (props) {
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var _a = react_1.useState([]), langs = _a[0], setLangs = _a[1];
     var _b = react_1.useState(false), isLoading = _b[0], setIsLoading = _b[1];
-    var _c = react_1.useState({}), valuesForLangs = _c[0], setValuesForLangs = _c[1];
+    var _c = react_1.useState(false), submitLoading = _c[0], setSubmitLoading = _c[1];
+    var _d = react_1.useState({}), valuesForLangs = _d[0], setValuesForLangs = _d[1];
     react_1.useEffect(function () {
         if (visible) {
             fetchData();
@@ -172,14 +173,42 @@ var TranslationModal = function (props) {
                     react_1.default.createElement(TextArea_1.default, { rows: 4, value: valuesForLangs[lang.code] || "", onChange: function (event) {
                             var _a;
                             setValuesForLangs(__assign(__assign({}, valuesForLangs), (_a = {}, _a[lang.code] = event.target.value, _a)));
-                        } }))));
+                        }, disabled: submitLoading }))));
         });
     }
     function onSubmit() {
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                onSubmitSucceed();
-                return [2 /*return*/];
+            var _i, _a, langCode;
+            var _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        setSubmitLoading(true);
+                        _i = 0, _a = Object.keys(valuesForLangs);
+                        _c.label = 1;
+                    case 1:
+                        if (!(_i < _a.length)) return [3 /*break*/, 4];
+                        langCode = _a[_i];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().update({
+                                model: model,
+                                id: id,
+                                values: (_b = {}, _b[field] = valuesForLangs[langCode], _b),
+                                context: {
+                                    lang: langCode,
+                                },
+                                fields: {},
+                            })];
+                    case 2:
+                        _c.sent();
+                        _c.label = 3;
+                    case 3:
+                        _i++;
+                        return [3 /*break*/, 1];
+                    case 4:
+                        setSubmitLoading(false);
+                        onSubmitSucceed();
+                        return [2 /*return*/];
+                }
             });
         });
     }
@@ -192,8 +221,8 @@ var TranslationModal = function (props) {
             react_1.default.createElement(antd_1.Divider, null),
             react_1.default.createElement(antd_1.Row, { justify: "end" },
                 react_1.default.createElement(antd_1.Space, null,
-                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), onClick: onCloseModal }, t("cancel")),
-                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: onSubmit, style: { marginLeft: 15 } }, t("ok"))))));
+                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), onClick: onCloseModal, disabled: submitLoading }, t("cancel")),
+                    react_1.default.createElement(antd_1.Button, { icon: submitLoading ? react_1.default.createElement(icons_1.LoadingOutlined, null) : react_1.default.createElement(icons_1.CheckOutlined, null), disabled: submitLoading, onClick: onSubmit, style: { marginLeft: 15 } }, t("ok"))))));
     }
     return (react_1.default.createElement(antd_1.Modal, { title: t("translate"), centered: true, width: modalWidth, visible: visible, closable: true, onCancel: onCloseModal, footer: null, destroyOnClose: true }, content()));
 };

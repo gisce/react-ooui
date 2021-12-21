@@ -1,6 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Modal, Button, Divider, Row, Space, Spin, Col } from "antd";
-import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import {
+  CheckOutlined,
+  CloseOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import ConnectionProvider from "@/ConnectionProvider";
@@ -31,6 +35,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
   const { t } = useContext(LocaleContext) as LocaleContextType;
   const [langs, setLangs] = useState<Lang[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
   const [valuesForLangs, setValuesForLangs] = useState<ValuesForLangs>({});
 
   useEffect(() => {
@@ -101,6 +106,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
                   [lang.code]: event.target.value,
                 });
               }}
+              disabled={submitLoading}
             />
           </Col>
         </Row>
@@ -109,6 +115,22 @@ export const TranslationModal = (props: TranslationModalProps) => {
   }
 
   async function onSubmit() {
+    setSubmitLoading(true);
+
+    for (const langCode of Object.keys(valuesForLangs)) {
+      await ConnectionProvider.getHandler().update({
+        model,
+        id,
+        values: { [field]: valuesForLangs[langCode] },
+        context: {
+          lang: langCode,
+        },
+        fields: {},
+      });
+    }
+
+    setSubmitLoading(false);
+
     onSubmitSucceed();
   }
 
@@ -123,11 +145,16 @@ export const TranslationModal = (props: TranslationModalProps) => {
         <Divider />
         <Row justify="end">
           <Space>
-            <Button icon={<CloseOutlined />} onClick={onCloseModal}>
+            <Button
+              icon={<CloseOutlined />}
+              onClick={onCloseModal}
+              disabled={submitLoading}
+            >
               {t("cancel")}
             </Button>
             <Button
-              icon={<CheckOutlined />}
+              icon={submitLoading ? <LoadingOutlined /> : <CheckOutlined />}
+              disabled={submitLoading}
               onClick={onSubmit}
               style={{ marginLeft: 15 }}
             >
