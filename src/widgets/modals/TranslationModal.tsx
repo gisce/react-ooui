@@ -25,7 +25,7 @@ type ValuesForLangs = {
 };
 
 export const TranslationModal = (props: TranslationModalProps) => {
-  const { visible, onCloseModal: onCloseModalProps, model, id, field } = props;
+  const { visible, onCloseModal, model, id, field, onSubmitSucceed } = props;
 
   const { modalWidth } = useWindowDimensions();
   const { t } = useContext(LocaleContext) as LocaleContextType;
@@ -84,11 +84,6 @@ export const TranslationModal = (props: TranslationModalProps) => {
     setValuesForLangs(retrievedValuesForLang);
   }
 
-  async function onCloseModal() {
-    await new Promise((resolve) => setTimeout(resolve, 5));
-    onCloseModalProps();
-  }
-
   function getInputsForLangs() {
     return langs.map((lang: Lang, i: number) => {
       return (
@@ -113,6 +108,10 @@ export const TranslationModal = (props: TranslationModalProps) => {
     });
   }
 
+  async function onSubmit() {
+    onSubmitSucceed();
+  }
+
   function content() {
     if (isLoading) {
       return <Spin />;
@@ -129,7 +128,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
             </Button>
             <Button
               icon={<CheckOutlined />}
-              onClick={onCloseModal}
+              onClick={onSubmit}
               style={{ marginLeft: 15 }}
             >
               {t("ok")}

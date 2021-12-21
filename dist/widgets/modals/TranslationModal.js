@@ -78,7 +78,7 @@ var LocaleContext_1 = require("@/context/LocaleContext");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var TextArea_1 = __importDefault(require("antd/lib/input/TextArea"));
 var TranslationModal = function (props) {
-    var visible = props.visible, onCloseModalProps = props.onCloseModal, model = props.model, id = props.id, field = props.field;
+    var visible = props.visible, onCloseModal = props.onCloseModal, model = props.model, id = props.id, field = props.field, onSubmitSucceed = props.onSubmitSucceed;
     var modalWidth = useWindowDimensions_1.default().modalWidth;
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var _a = react_1.useState([]), langs = _a[0], setLangs = _a[1];
@@ -164,19 +164,6 @@ var TranslationModal = function (props) {
             });
         });
     }
-    function onCloseModal() {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 5); })];
-                    case 1:
-                        _a.sent();
-                        onCloseModalProps();
-                        return [2 /*return*/];
-                }
-            });
-        });
-    }
     function getInputsForLangs() {
         return langs.map(function (lang, i) {
             return (react_1.default.createElement(antd_1.Row, { key: i, style: { paddingBottom: 20 } },
@@ -186,6 +173,14 @@ var TranslationModal = function (props) {
                             var _a;
                             setValuesForLangs(__assign(__assign({}, valuesForLangs), (_a = {}, _a[lang.code] = event.target.value, _a)));
                         } }))));
+        });
+    }
+    function onSubmit() {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                onSubmitSucceed();
+                return [2 /*return*/];
+            });
         });
     }
     function content() {
@@ -198,7 +193,7 @@ var TranslationModal = function (props) {
             react_1.default.createElement(antd_1.Row, { justify: "end" },
                 react_1.default.createElement(antd_1.Space, null,
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), onClick: onCloseModal }, t("cancel")),
-                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: onCloseModal, style: { marginLeft: 15 } }, t("ok"))))));
+                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: onSubmit, style: { marginLeft: 15 } }, t("ok"))))));
     }
     return (react_1.default.createElement(antd_1.Modal, { title: t("translate"), centered: true, width: modalWidth, visible: visible, closable: true, onCancel: onCloseModal, footer: null, destroyOnClose: true }, content()));
 };
