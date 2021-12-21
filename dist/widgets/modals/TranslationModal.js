@@ -77,6 +77,7 @@ var useWindowDimensions_1 = __importDefault(require("@/hooks/useWindowDimensions
 var LocaleContext_1 = require("@/context/LocaleContext");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var TextArea_1 = __importDefault(require("antd/lib/input/TextArea"));
+var ActionErrorDialog_1 = __importDefault(require("@/ui/ActionErrorDialog"));
 var TranslationModal = function (props) {
     var visible = props.visible, onCloseModal = props.onCloseModal, model = props.model, id = props.id, field = props.field, onSubmitSucceed = props.onSubmitSucceed;
     var modalWidth = useWindowDimensions_1.default().modalWidth;
@@ -92,17 +93,26 @@ var TranslationModal = function (props) {
     }, [visible]);
     function fetchData() {
         return __awaiter(this, void 0, void 0, function () {
-            var langs;
+            var langs_1, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         setIsLoading(true);
-                        return [4 /*yield*/, getLangs()];
+                        _a.label = 1;
                     case 1:
-                        langs = _a.sent();
-                        return [4 /*yield*/, getValuesForLangs(langs)];
+                        _a.trys.push([1, 4, , 5]);
+                        return [4 /*yield*/, getLangs()];
                     case 2:
+                        langs_1 = _a.sent();
+                        return [4 /*yield*/, getValuesForLangs(langs_1)];
+                    case 3:
                         _a.sent();
+                        return [3 /*break*/, 5];
+                    case 4:
+                        err_1 = _a.sent();
+                        ActionErrorDialog_1.default(err_1);
+                        return [3 /*break*/, 5];
+                    case 5:
                         setIsLoading(false);
                         return [2 /*return*/];
                 }
@@ -135,16 +145,16 @@ var TranslationModal = function (props) {
     }
     function getValuesForLangs(langs) {
         return __awaiter(this, void 0, void 0, function () {
-            var retrievedValuesForLang, _i, langs_1, lang, retrievedValue;
+            var retrievedValuesForLang, _i, langs_2, lang, retrievedValue;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         retrievedValuesForLang = {};
-                        _i = 0, langs_1 = langs;
+                        _i = 0, langs_2 = langs;
                         _a.label = 1;
                     case 1:
-                        if (!(_i < langs_1.length)) return [3 /*break*/, 4];
-                        lang = langs_1[_i];
+                        if (!(_i < langs_2.length)) return [3 /*break*/, 4];
+                        lang = langs_2[_i];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
                                 model: model,
                                 ids: [id],
@@ -178,16 +188,19 @@ var TranslationModal = function (props) {
     }
     function onSubmit() {
         return __awaiter(this, void 0, void 0, function () {
-            var _i, _a, langCode;
+            var _i, _a, langCode, err_2;
             var _b;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
                         setSubmitLoading(true);
-                        _i = 0, _a = Object.keys(valuesForLangs);
                         _c.label = 1;
                     case 1:
-                        if (!(_i < _a.length)) return [3 /*break*/, 4];
+                        _c.trys.push([1, 6, , 7]);
+                        _i = 0, _a = Object.keys(valuesForLangs);
+                        _c.label = 2;
+                    case 2:
+                        if (!(_i < _a.length)) return [3 /*break*/, 5];
                         langCode = _a[_i];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().update({
                                 model: model,
@@ -198,13 +211,18 @@ var TranslationModal = function (props) {
                                 },
                                 fields: {},
                             })];
-                    case 2:
-                        _c.sent();
-                        _c.label = 3;
                     case 3:
-                        _i++;
-                        return [3 /*break*/, 1];
+                        _c.sent();
+                        _c.label = 4;
                     case 4:
+                        _i++;
+                        return [3 /*break*/, 2];
+                    case 5: return [3 /*break*/, 7];
+                    case 6:
+                        err_2 = _c.sent();
+                        ActionErrorDialog_1.default(err_2);
+                        return [3 /*break*/, 7];
+                    case 7:
                         setSubmitLoading(false);
                         onSubmitSucceed();
                         return [2 /*return*/];

@@ -89,6 +89,7 @@ declare type ReadObjectsRequest = {
     model: string;
     ids: number[];
     context?: any;
+    fieldsToRetrieve?: any;
 };
 declare type GetLogInfoRequest = {
     model: string;

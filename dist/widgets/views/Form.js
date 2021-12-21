@@ -487,10 +487,11 @@ function Form(props, ref) {
         });
     }); };
     var submitForm = function (options) { return __awaiter(_this, void 0, void 0, function () {
-        var _a, callOnSubmitSucceed, o2m_childs, _i, o2m_childs_1, child, err_2;
+        var submitSucceed, _a, callOnSubmitSucceed, o2m_childs, _i, o2m_childs_1, child, err_2;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
+                    submitSucceed = false;
                     _a = (options || {}).callOnSubmitSucceed, callOnSubmitSucceed = _a === void 0 ? true : _a;
                     formSubmitting.current = true;
                     setError(undefined);
@@ -498,14 +499,14 @@ function Form(props, ref) {
                         formSubmitting.current = false;
                         setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
                         onCancel === null || onCancel === void 0 ? void 0 : onCancel();
-                        return [2 /*return*/];
+                        return [2 /*return*/, false];
                     }
                     return [4 /*yield*/, checkIfFormHasErrors()];
                 case 1:
                     if (_b.sent()) {
                         formSubmitting.current = false;
                         FormErrorsDialog_1.default(lang);
-                        return [2 /*return*/];
+                        return [2 /*return*/, false];
                     }
                     setIsSubmitting(true);
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(true);
@@ -544,7 +545,9 @@ function Form(props, ref) {
                 case 11:
                     _b.sent();
                     _b.label = 12;
-                case 12: return [3 /*break*/, 15];
+                case 12:
+                    submitSucceed = true;
+                    return [3 /*break*/, 15];
                 case 13:
                     err_2 = _b.sent();
                     formSubmitting.current = false;
@@ -558,7 +561,7 @@ function Form(props, ref) {
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
                     setIsSubmitting(false);
                     return [7 /*endfinally*/];
-                case 15: return [2 /*return*/];
+                case 15: return [2 /*return*/, submitSucceed];
             }
         });
     }); };

@@ -98,14 +98,16 @@ var TranslatableText = function (_a) {
                     onChange === null || onChange === void 0 ? void 0 : onChange(event.target.value);
                 }, id: field, disabled: true, className: requiredClass, rows: 4 })),
         react_1.default.createElement(antd_1.Row, { justify: "end", style: { paddingTop: 5 } },
-            " ",
             react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("translate"), icon: react_1.default.createElement(icons_1.TranslationOutlined, null), onClick: function () { return __awaiter(void 0, void 0, void 0, function () {
+                    var submittedSuccessfully;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0: return [4 /*yield*/, (submitForm === null || submitForm === void 0 ? void 0 : submitForm())];
                             case 1:
-                                _a.sent();
-                                setTranslationModalVisible(true);
+                                submittedSuccessfully = _a.sent();
+                                if (submittedSuccessfully) {
+                                    setTranslationModalVisible(true);
+                                }
                                 return [2 /*return*/];
                         }
                     });

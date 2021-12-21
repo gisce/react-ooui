@@ -18,7 +18,7 @@ export declare type FormContextType = {
     removeOne2ManyChild?: (key: string) => void;
     submitForm?: (options?: {
         callOnSubmitSucceed?: boolean;
-    }) => Promise<void>;
+    }) => Promise<boolean>;
     fetchValues?: () => void;
 };
 export declare const FormContext: React.Context<FormContextType | null>;
