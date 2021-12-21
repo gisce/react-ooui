@@ -41,8 +41,8 @@ export const TranslationModal = (props: TranslationModalProps) => {
   async function fetchData() {
     setIsLoading(true);
 
-    await getLangs();
-    await getValuesForLangs();
+    const langs = await getLangs();
+    await getValuesForLangs(langs);
 
     setIsLoading(false);
   }
@@ -54,17 +54,18 @@ export const TranslationModal = (props: TranslationModalProps) => {
       model: "res.lang",
     })) as any;
 
-    setLangs?.(
-      results.map((item: any) => {
-        return {
-          code: item.code,
-          name: item.name,
-        };
-      })
-    );
+    const langs = results.map((item: any) => {
+      return {
+        code: item.code,
+        name: item.name,
+      };
+    });
+
+    setLangs?.(langs);
+    return langs;
   }
 
-  async function getValuesForLangs() {
+  async function getValuesForLangs(langs: Lang[]) {
     const retrievedValuesForLang: ValuesForLangs = {};
 
     for (const lang of langs) {
@@ -139,19 +140,17 @@ export const TranslationModal = (props: TranslationModalProps) => {
   }
 
   return (
-    <>
-      <Modal
-        title={t("translate")}
-        centered
-        width={modalWidth}
-        visible={visible}
-        closable={true}
-        onCancel={onCloseModal}
-        footer={null}
-        destroyOnClose
-      >
-        {content()}
-      </Modal>
-    </>
+    <Modal
+      title={t("translate")}
+      centered
+      width={modalWidth}
+      visible={visible}
+      closable={true}
+      onCancel={onCloseModal}
+      footer={null}
+      destroyOnClose
+    >
+      {content()}
+    </Modal>
   );
 };

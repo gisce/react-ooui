@@ -20,12 +20,8 @@ export const Char = (props: WidgetProps) => {
     <Field required={required} {...props}>
       {isPassword ? (
         <Input.Password disabled={readOnly} id={id} />
-      ) : translatable ? (
-        <TranslatableInput
-          field={id}
-          requiredClass={requiredClass}
-          readOnly={readOnly}
-        />
+      ) : translatable && !readOnly ? (
+        <TranslatableInput field={id} requiredClass={requiredClass} />
       ) : (
         <Input
           disabled={readOnly || translatable}
@@ -40,13 +36,11 @@ export const Char = (props: WidgetProps) => {
 const TranslatableInput = ({
   value,
   field,
-  readOnly,
   requiredClass,
   onChange,
 }: {
   value?: string;
   field: string;
-  readOnly: boolean;
   requiredClass: string | undefined;
   onChange?: (value: string) => void;
 }) => {
@@ -61,7 +55,7 @@ const TranslatableInput = ({
         <Col flex="auto">
           <Input
             value={value}
-            disabled={readOnly}
+            disabled={true}
             id={field}
             className={requiredClass}
             onChange={(event: any) => {

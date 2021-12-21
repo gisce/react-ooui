@@ -91,14 +91,15 @@ var TranslationModal = function (props) {
     }, [visible]);
     function fetchData() {
         return __awaiter(this, void 0, void 0, function () {
+            var langs;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         setIsLoading(true);
                         return [4 /*yield*/, getLangs()];
                     case 1:
-                        _a.sent();
-                        return [4 /*yield*/, getValuesForLangs()];
+                        langs = _a.sent();
+                        return [4 /*yield*/, getValuesForLangs(langs)];
                     case 2:
                         _a.sent();
                         setIsLoading(false);
@@ -109,7 +110,7 @@ var TranslationModal = function (props) {
     }
     function getLangs() {
         return __awaiter(this, void 0, void 0, function () {
-            var results;
+            var results, langs;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().search({
@@ -119,18 +120,19 @@ var TranslationModal = function (props) {
                         })];
                     case 1:
                         results = (_a.sent());
-                        setLangs === null || setLangs === void 0 ? void 0 : setLangs(results.map(function (item) {
+                        langs = results.map(function (item) {
                             return {
                                 code: item.code,
                                 name: item.name,
                             };
-                        }));
-                        return [2 /*return*/];
+                        });
+                        setLangs === null || setLangs === void 0 ? void 0 : setLangs(langs);
+                        return [2 /*return*/, langs];
                 }
             });
         });
     }
-    function getValuesForLangs() {
+    function getValuesForLangs(langs) {
         return __awaiter(this, void 0, void 0, function () {
             var retrievedValuesForLang, _i, langs_1, lang, retrievedValue;
             return __generator(this, function (_a) {
@@ -198,8 +200,7 @@ var TranslationModal = function (props) {
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), onClick: onCloseModal }, t("cancel")),
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: onCloseModal, style: { marginLeft: 15 } }, t("ok"))))));
     }
-    return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(antd_1.Modal, { title: t("translate"), centered: true, width: modalWidth, visible: visible, closable: true, onCancel: onCloseModal, footer: null, destroyOnClose: true }, content())));
+    return (react_1.default.createElement(antd_1.Modal, { title: t("translate"), centered: true, width: modalWidth, visible: visible, closable: true, onCancel: onCloseModal, footer: null, destroyOnClose: true }, content()));
 };
 exports.TranslationModal = TranslationModal;
 //# sourceMappingURL=TranslationModal.js.map
