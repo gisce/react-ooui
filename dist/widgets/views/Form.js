@@ -499,7 +499,7 @@ function Form(props, ref) {
                         formSubmitting.current = false;
                         setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
                         onCancel === null || onCancel === void 0 ? void 0 : onCancel();
-                        return [2 /*return*/, false];
+                        return [2 /*return*/, true];
                     }
                     return [4 /*yield*/, checkIfFormHasErrors()];
                 case 1:

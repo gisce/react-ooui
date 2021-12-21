@@ -528,7 +528,7 @@ function Form(props: FormProps, ref: any) {
       formSubmitting.current = false;
       setFormHasChanges?.(false);
       onCancel?.();
-      return false;
+      return true;
     }
 
     if (await checkIfFormHasErrors()) {
