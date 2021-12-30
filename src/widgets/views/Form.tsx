@@ -342,9 +342,9 @@ function Form(props: FormProps, ref: any) {
       });
     }
 
-    if (actionDomain) {
-      values = { ...getValuesForDomain(actionDomain), ...values };
-    }
+    // if (actionDomain) {
+    //   values = { ...getValuesForDomain(actionDomain), ...values };
+    // }
 
     originalFormValues.current = processValues(values, _fields);
 

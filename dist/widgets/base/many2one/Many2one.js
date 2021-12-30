@@ -138,7 +138,7 @@ var Many2oneInput = function (props) {
         }
     }, [value]);
     react_1.useEffect(function () {
-        parseDomain();
+        // parseDomain();
     }, [domain]);
     var triggerChange = function (changedValue) {
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);

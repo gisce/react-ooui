@@ -94,7 +94,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   }, [value]);
 
   useEffect(() => {
-    parseDomain();
+    // parseDomain();
   }, [domain]);
 
   const triggerChange = (changedValue: any[]) => {
