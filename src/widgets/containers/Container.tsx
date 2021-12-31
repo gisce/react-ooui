@@ -60,9 +60,11 @@ const Container = (props: Props): React.ReactElement => {
         fieldInRows = true;
       }
 
+      const itemRowIndex = row.indexOf(item);
+
       return (
         <div
-          key={`${i.toString()}-${j.toString()}`}
+          key={`${i.toString()}-${itemRowIndex.toString()}`}
           style={getSpanStyleForItem({ item, responsiveBehaviour })}
         >
           {createReactWidget({
