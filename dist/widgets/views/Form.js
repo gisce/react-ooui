@@ -299,9 +299,9 @@ function Form(props, ref) {
                     values = _a.sent();
                     _a.label = 3;
                 case 3:
-                    // if (actionDomain) {
-                    //   values = { ...getValuesForDomain(actionDomain), ...values };
-                    // }
+                    if (actionDomain) {
+                        values = __assign(__assign({}, formHelper_1.getValuesForDomain(actionDomain)), values);
+                    }
                     originalFormValues.current = formHelper_1.processValues(values, _fields);
                     parseForm({ fields: _fields, arch: _arch, values: values });
                     assignNewValuesToForm({ values: values, fields: _fields, reset: true });
