@@ -43,7 +43,8 @@ var Container = function (props) {
             if (item instanceof ooui_1.Label && item.fieldForLabel) {
                 fieldInRows = true;
             }
-            return (react_1.default.createElement("div", { key: i.toString() + "-" + j.toString(), style: containerHelper_1.getSpanStyleForItem({ item: item, responsiveBehaviour: responsiveBehaviour }) }, WidgetFactory_1.createReactWidget({
+            var itemRowIndex = row.indexOf(item);
+            return (react_1.default.createElement("div", { key: i.toString() + "-" + itemRowIndex.toString(), style: containerHelper_1.getSpanStyleForItem({ item: item, responsiveBehaviour: responsiveBehaviour }) }, WidgetFactory_1.createReactWidget({
                 ooui: item,
                 responsiveBehaviour: responsiveBehaviour,
             })));
