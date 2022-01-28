@@ -12,6 +12,7 @@ import company from "./models/company";
 import switching from "./models/switching";
 import attachment from "./models/attachment";
 import crm_case from "./models/crm_case";
+import form_with_gridfiber from "./models/form_with_gridfiber";
 
 const allModels = [
   cups,
@@ -28,6 +29,7 @@ const allModels = [
   switching,
   attachment,
   crm_case,
+  form_with_gridfiber,
 ];
 
 const getMock = (model: string) => {

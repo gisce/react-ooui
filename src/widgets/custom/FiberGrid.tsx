@@ -7,7 +7,7 @@ import { GridUi } from "fiber-diagram";
 
 export const FiberGrid = (props: WidgetProps) => {
   const { ooui } = props;
-  const { readOnly, required } = ooui as CharOoui;
+  const { id, readOnly, required } = ooui as CharOoui;
   // const requiredClass =
   //   required && !readOnly ? Config.requiredClass : undefined;
 

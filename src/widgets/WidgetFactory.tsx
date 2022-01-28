@@ -26,6 +26,7 @@ import {
   ProgressBar,
 } from "@/index";
 import { Image } from "./base/Image";
+import { FiberGrid } from "./custom/FiberGrid";
 
 const getWidgetType = (type: string) => {
   switch (type) {
@@ -79,6 +80,8 @@ const getWidgetType = (type: string) => {
       return Email;
     case "float_time":
       return FloatTime;
+    case "fiber_grid":
+      return FiberGrid;
     default:
       return undefined;
   }
