@@ -19,6 +19,7 @@
     "build-storybook": "build-storybook -s public"
   },
   "dependencies": {
+    "fiber-diagram": "github:gisce/fiber-diagram",
     "file-type": "^16.5.0",
     "ooui": "git+ssh://git@github.com/gisce/ooui.js.git",
     "react": "^17.0.1",
