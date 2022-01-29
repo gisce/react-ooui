@@ -98,17 +98,9 @@ var TranslatableText = function (_a) {
                 }, style: { height: height ? height + "px" : "100%" }, id: field, disabled: true, className: requiredClass, rows: 4 })),
         react_1.default.createElement(antd_1.Row, { justify: "end", style: { paddingTop: 5 } },
             react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("translate"), icon: react_1.default.createElement(icons_1.TranslationOutlined, null), onClick: function () { return __awaiter(void 0, void 0, void 0, function () {
-                    var submittedSuccessfully;
                     return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0: return [4 /*yield*/, (submitForm === null || submitForm === void 0 ? void 0 : submitForm())];
-                            case 1:
-                                submittedSuccessfully = _a.sent();
-                                if (submittedSuccessfully) {
-                                    setTranslationModalVisible(true);
-                                }
-                                return [2 /*return*/];
-                        }
+                        setTranslationModalVisible(true);
+                        return [2 /*return*/];
                     });
                 }); } }, t("translate"))),
         react_1.default.createElement(TranslationModal_1.TranslationModal, { id: activeId, model: activeModel, field: field, visible: translationModalVisible, onCloseModal: function () {
