@@ -68,11 +68,7 @@ const TranslatableChar = ({
             tooltip={t("translate")}
             icon={<TranslationOutlined />}
             onClick={async () => {
-              const submittedSuccessfully = await submitForm?.();
-
-              if (submittedSuccessfully) {
-                setTranslationModalVisible(true);
-              }
+              setTranslationModalVisible(true);
             }}
           >
             {t("translate")}
