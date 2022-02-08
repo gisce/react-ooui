@@ -45,7 +45,7 @@ export const MultiSelectionInput = (props: SelectionInputProps) => {
       .map((entry: string[]) => {
         const [key, value] = entry;
         return (
-          <Option key={key} value={value}>
+          <Option key={key} value={key}>
             {value}
           </Option>
         );

@@ -48,7 +48,7 @@ var MultiSelectionInput = function (props) {
         })
             .map(function (entry) {
             var key = entry[0], value = entry[1];
-            return (react_1.default.createElement(Option, { key: key, value: value }, value));
+            return (react_1.default.createElement(Option, { key: key, value: key }, value));
         });
     var CustomSelect = required && !readOnly ? RequiredSelect : antd_1.Select;
     return (react_1.default.createElement(CustomSelect, { disabled: readOnly, onChange: onChange, value: value, mode: "multiple" }, options));
