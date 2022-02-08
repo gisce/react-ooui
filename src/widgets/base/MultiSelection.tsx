@@ -45,7 +45,7 @@ export const MultiSelectionInput = (props: SelectionInputProps) => {
       .map((entry: string[]) => {
         const [key, value] = entry;
         return (
-          <Option key={key} value={key}>
+          <Option key={key} value={value}>
             {value}
           </Option>
         );
@@ -53,11 +53,20 @@ export const MultiSelectionInput = (props: SelectionInputProps) => {
 
   const CustomSelect: any = required && !readOnly ? RequiredSelect : Select;
 
+  function handleChange(changedValues: string[]) {
+    const keysForChangedValues = changedValues.map((changedValue) => {
+      const entry = values.find(([key, value]) => changedValue === value);
+      return entry && entry[0];
+    });
+
+    onChange?.(keysForChangedValues);
+  }
+
   return (
     <CustomSelect
       disabled={readOnly}
-      onChange={onChange}
-      value={value}
+      onChange={handleChange}
+      value={value?.map((key) => selectionValues.get(key))}
       mode="multiple"
     >
       {options}
