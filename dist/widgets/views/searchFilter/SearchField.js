@@ -28,6 +28,7 @@ var DateTimeRangePicker_1 = require("./DateTimeRangePicker");
 var PairFields_1 = require("./PairFields");
 var LocaleContext_1 = require("@/context/LocaleContext");
 var ooui_1 = require("ooui");
+var MultiSelection_1 = require("@/widgets/base/MultiSelection");
 var types = {
     text: "text",
     many2one: "many2one",
@@ -72,7 +73,7 @@ function SearchField(props) {
             return react_1.default.createElement(DateTimeRangePicker_1.DateTimeRangePicker, { ooui: field, layout: "vertical", showLabel: true });
         }
         case types.selection: {
-            return react_1.default.createElement(Selection_1.Selection, { layout: "vertical", ooui: field, showLabel: true });
+            return react_1.default.createElement(MultiSelection_1.MultiSelection, { layout: "vertical", ooui: field, showLabel: true });
         }
         default: {
             return react_1.default.createElement(Char_1.Char, { ooui: field, layout: "vertical", showLabel: true });

@@ -71,6 +71,15 @@ var getParamForField = function (key, value, fields) {
         }
         return filteredValues;
     }
+    else if (type === "selection") {
+        return [
+            key,
+            "in",
+            value.map(function (valueEntry) {
+                return convertBooleanParamIfNeeded(valueEntry);
+            }),
+        ];
+    }
     else {
         return [key, "=", convertBooleanParamIfNeeded(value)];
     }

@@ -59,6 +59,14 @@ const getParamForField = (key: string, value: any, fields: any) => {
       filteredValues.push([filteredKey, "<=", value[1]]);
     }
     return filteredValues;
+  } else if (type === "selection") {
+    return [
+      key,
+      "in",
+      value.map((valueEntry: string) =>
+        convertBooleanParamIfNeeded(valueEntry)
+      ),
+    ];
   } else {
     return [key, "=", convertBooleanParamIfNeeded(value)];
   }

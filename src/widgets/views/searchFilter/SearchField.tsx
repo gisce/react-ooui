@@ -9,6 +9,7 @@ import { PairFields } from "./PairFields";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 import { Field, Selection as SelectionOoui } from "ooui";
+import { MultiSelection } from "@/widgets/base/MultiSelection";
 
 type Props = {
   field: Field;
@@ -63,7 +64,7 @@ export function SearchField(props: Props) {
       return <DateTimeRangePicker ooui={field} layout="vertical" showLabel />;
     }
     case types.selection: {
-      return <Selection layout="vertical" ooui={field} showLabel />;
+      return <MultiSelection layout="vertical" ooui={field} showLabel />;
     }
     default: {
       return <Char ooui={field} layout="vertical" showLabel />;

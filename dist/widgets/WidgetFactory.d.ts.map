@@ -1,1 +1,1 @@
-{"version":3,"file":"WidgetFactory.d.ts","sourceRoot":"","sources":["../../src/widgets/WidgetFactory.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAsF1B,QAAA,MAAM,iBAAiB,UAAW,GAAG,+DAWpC,CAAC;AAEF,OAAO,EAAE,iBAAiB,EAAE,CAAC"}
+{"version":3,"file":"WidgetFactory.d.ts","sourceRoot":"","sources":["../../src/widgets/WidgetFactory.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAyF1B,QAAA,MAAM,iBAAiB,UAAW,GAAG,+DAWpC,CAAC;AAEF,OAAO,EAAE,iBAAiB,EAAE,CAAC"}
