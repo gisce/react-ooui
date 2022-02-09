@@ -61,7 +61,7 @@ var MultiSelectionInput = function (props) {
         });
         onChange === null || onChange === void 0 ? void 0 : onChange(keysForChangedValues);
     }
-    return (react_1.default.createElement(CustomSelect, { disabled: readOnly, onChange: handleChange, value: value === null || value === void 0 ? void 0 : value.map(function (key) { return selectionValues.get(key); }), mode: "multiple" }, options));
+    return (react_1.default.createElement(CustomSelect, { disabled: readOnly, onChange: handleChange, value: value === null || value === void 0 ? void 0 : value.map(function (key) { return selectionValues.get(key); }), mode: "multiple", showArrow: true }, options));
 };
 exports.MultiSelectionInput = MultiSelectionInput;
 var RequiredSelect = styled_components_1.default(antd_1.Select)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  &.ant-select:not(.ant-select-customize-input) .ant-select-selector {\n    background-color: ", ";\n  }\n"], ["\n  &.ant-select:not(.ant-select-customize-input) .ant-select-selector {\n    background-color: ", ";\n  }\n"])), Config_1.default.requiredColor);
