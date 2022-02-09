@@ -18,6 +18,7 @@ declare type Props = {
     visible?: boolean;
     rootTree?: boolean;
     parentContext?: any;
+    onChangeSelectedRowKeys?: (selectedRowKeys: any) => void;
 };
 declare const _default: React.ForwardRefExoticComponent<Props & React.RefAttributes<unknown>>;
 export default _default;

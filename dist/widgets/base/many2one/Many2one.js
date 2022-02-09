@@ -326,9 +326,9 @@ var Many2oneInput = function (props) {
                 ooui_1.transformDomainForChildWidget({
                     domain: domain,
                     widgetFieldName: fieldName,
-                }), context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValue: function (id) {
+                }), context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValues: function (ids) {
                 setShowSearchModal(false);
-                fetchNameAndUpdate(id);
+                fetchNameAndUpdate(ids[0]);
                 searchButtonTappedRef.current = false;
                 inputTextRef.current = undefined;
             }, onCloseModal: function () {

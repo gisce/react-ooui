@@ -2,7 +2,7 @@ declare type SearchSelectionProps = {
     visible: boolean;
     model: string;
     nameSearch?: string;
-    onSelectValue: (value: any) => void;
+    onSelectValues: (values: number[]) => void;
     onCloseModal: () => void;
     domain?: any;
     context?: any;

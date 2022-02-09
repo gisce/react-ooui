@@ -81,7 +81,7 @@ var react_measure_1 = __importDefault(require("react-measure"));
 var DEFAULT_SEARCH_LIMIT = 80;
 function SearchTree(props, ref) {
     var _this = this;
-    var action = props.action, model = props.model, formViewProps = props.formView, treeViewProps = props.treeView, onRowClicked = props.onRowClicked, nameSearch = props.nameSearch, treeScrollY = props.treeScrollY, _a = props.domain, domain = _a === void 0 ? [] : _a, _b = props.visible, visible = _b === void 0 ? true : _b, _c = props.rootTree, rootTree = _c === void 0 ? false : _c, _d = props.parentContext, parentContext = _d === void 0 ? {} : _d;
+    var action = props.action, model = props.model, formViewProps = props.formView, treeViewProps = props.treeView, onRowClicked = props.onRowClicked, nameSearch = props.nameSearch, treeScrollY = props.treeScrollY, _a = props.domain, domain = _a === void 0 ? [] : _a, _b = props.visible, visible = _b === void 0 ? true : _b, _c = props.rootTree, rootTree = _c === void 0 ? false : _c, _d = props.parentContext, parentContext = _d === void 0 ? {} : _d, onChangeSelectedRowKeys = props.onChangeSelectedRowKeys;
     var _e = react_1.useState(false), isLoading = _e[0], setIsLoading = _e[1];
     var _f = react_1.useState(false), initialFetchDone = _f[0], setInitialFetchDone = _f[1];
     var searchNameGetDoneRef = react_1.useRef(false);
@@ -414,11 +414,12 @@ function SearchTree(props, ref) {
             treeView: treeView,
         });
     };
-    function onChangeSelectedRowKeys(selectedRowKeys) {
+    function changeSelectedRowKeys(selectedRowKeys) {
         var items = getResults().filter(function (result) {
             return selectedRowKeys.includes(result.id);
         });
         setSelectedRowItems === null || setSelectedRowItems === void 0 ? void 0 : setSelectedRowItems(items);
+        onChangeSelectedRowKeys === null || onChangeSelectedRowKeys === void 0 ? void 0 : onChangeSelectedRowKeys(selectedRowKeys);
     }
     function calculateTableHeight() {
         return height - (searchFilterHeight + 255);
@@ -465,7 +466,7 @@ function SearchTree(props, ref) {
             }),
             react_1.default.createElement(Tree_1.default, { total: totalItems, limit: limit, page: page, treeView: treeView, results: getResults(), onRequestPageChange: onRequestPageChange, loading: tableRefreshing, onRowClicked: onRowClickedHandler, scrollY: treeScrollY || calculateTableHeight(), colorsForResults: colorsForResults, rowSelection: {
                     selectedRowKeys: selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.map(function (item) { return item.id; }),
-                    onChange: onChangeSelectedRowKeys,
+                    onChange: changeSelectedRowKeys,
                 }, onChangeSort: function (newSorter) {
                     setSorter === null || setSorter === void 0 ? void 0 : setSorter(newSorter);
                     var sortedResults = sortResults(getResults(), newSorter);

@@ -464,7 +464,7 @@ function Form(props, ref) {
                     _b.label = 4;
                 case 4:
                     if (!postSaveAction) return [3 /*break*/, 6];
-                    return [4 /*yield*/, postSaveAction(getCurrentId())];
+                    return [4 /*yield*/, postSaveAction([getCurrentId()])];
                 case 5:
                     _b.sent();
                     _b.label = 6;

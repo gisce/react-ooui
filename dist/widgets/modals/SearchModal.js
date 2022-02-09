@@ -67,10 +67,11 @@ var icons_1 = require("@ant-design/icons");
 var useWindowDimensions_1 = __importDefault(require("@/hooks/useWindowDimensions"));
 var LocaleContext_1 = require("@/context/LocaleContext");
 var SearchModal = function (props) {
-    var visible = props.visible, onCloseModalProps = props.onCloseModal, onSelectValue = props.onSelectValue, model = props.model, nameSearch = props.nameSearch, domain = props.domain, _a = props.context, context = _a === void 0 ? {} : _a;
+    var visible = props.visible, onCloseModalProps = props.onCloseModal, onSelectValues = props.onSelectValues, model = props.model, nameSearch = props.nameSearch, domain = props.domain, _a = props.context, context = _a === void 0 ? {} : _a;
     var _b = react_1.useState(false), showCreateModal = _b[0], setShowCreateModal = _b[1];
     var _c = useWindowDimensions_1.default(), modalWidth = _c.modalWidth, modalHeight = _c.modalHeight;
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
+    var _d = react_1.useState([]), selectedRowKeys = _d[0], setSelectedRowKeys = _d[1];
     var onCloseModal = function () { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -86,19 +87,31 @@ var SearchModal = function (props) {
         var id;
         return __generator(this, function (_a) {
             id = event.id;
-            onSelectValue(id);
+            onSelectValues([id]);
             return [2 /*return*/];
         });
     }); };
+    function submit() {
+        if (selectedRowKeys.length === 0) {
+            onCloseModal();
+            return;
+        }
+        onSelectValues(selectedRowKeys);
+    }
     var content = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,
-            react_1.default.createElement(SearchTree_1.default, { model: model, nameSearch: nameSearch, onRowClicked: onRowClicked, treeScrollY: modalHeight * 0.3, domain: domain, parentContext: context }),
+            react_1.default.createElement(SearchTree_1.default, { model: model, nameSearch: nameSearch, onRowClicked: onRowClicked, treeScrollY: modalHeight * 0.3, domain: domain, parentContext: context, onChangeSelectedRowKeys: function (selectedRowKeys) {
+                    setSelectedRowKeys(selectedRowKeys);
+                } }),
             react_1.default.createElement(antd_1.Divider, null),
             react_1.default.createElement(antd_1.Row, { justify: "end" },
                 react_1.default.createElement(antd_1.Space, null,
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FileAddOutlined, null), onClick: function () {
                             setShowCreateModal(true);
                         } }, t("new")),
+                    react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: function () {
+                            submit();
+                        } }, t("ok")),
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), onClick: onCloseModal }, t("cancel"))))));
     };
     return (react_1.default.createElement(react_1.default.Fragment, null,
@@ -106,7 +119,7 @@ var SearchModal = function (props) {
         react_1.default.createElement(FormModal_1.FormModal, { model: model, visible: showCreateModal, parentContext: context, onSubmitSucceed: function (id) {
                 setShowCreateModal(false);
                 onCloseModal();
-                onSelectValue(id);
+                onSelectValues([id]);
             }, onCancel: function () {
                 setShowCreateModal(false);
                 onCloseModal();
