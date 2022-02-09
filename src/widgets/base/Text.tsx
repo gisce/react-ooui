@@ -1,11 +1,8 @@
 import React, { useContext, useState } from "react";
-import { Col, Input, Row } from "antd";
+import { Input } from "antd";
 import Field from "@/common/Field";
 import Config from "@/Config";
 import { Text as TextOoui } from "ooui";
-import ButtonWithTooltip from "@/common/ButtonWithTooltip";
-import { TranslationOutlined } from "@ant-design/icons";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { TranslationModal } from "../modals/TranslationModal";
 import { FormContext, FormContextType } from "@/context/FormContext";
 
@@ -54,48 +51,34 @@ const TranslatableText = ({
   height: number | undefined;
   onChange?: (value: string) => void;
 }) => {
-  const { t } = useContext(LocaleContext) as LocaleContextType;
   const formContext = useContext(FormContext) as FormContextType;
-  const { activeId, activeModel, submitForm, fetchValues } = formContext || {};
+  const { activeId, activeModel, fetchValues } = formContext || {};
   const [translationModalVisible, setTranslationModalVisible] = useState(false);
 
   return (
     <>
-      <Row gutter={8} wrap={false}>
-        <div
-          onClick={() => {
-            if (!translationModalVisible) {
-              setTranslationModalVisible(true);
-            }
-          }}
-        >
-          <TextArea
-            value={value}
-            onChange={(event: any) => {
-              onChange?.(event.target.value);
-            }}
-            style={{
-              height: height ? height + "px" : "100%",
-              cursor: "pointer",
-            }}
-            id={field}
-            disabled={true}
-            className={requiredClass}
-            rows={4}
-          />
-        </div>
-      </Row>
-      <Row justify="end" style={{ paddingTop: 5 }}>
-        <ButtonWithTooltip
-          tooltip={t("translate")}
-          icon={<TranslationOutlined />}
-          onClick={async () => {
+      <div
+        onClick={() => {
+          if (!translationModalVisible) {
             setTranslationModalVisible(true);
+          }
+        }}
+      >
+        <TextArea
+          value={value}
+          onChange={(event: any) => {
+            onChange?.(event.target.value);
           }}
-        >
-          {t("translate")}
-        </ButtonWithTooltip>
-      </Row>
+          style={{
+            height: height ? height + "px" : "100%",
+            cursor: "pointer",
+          }}
+          id={field}
+          disabled={true}
+          className={requiredClass}
+          rows={4}
+        />
+      </div>
       <TranslationModal
         id={activeId!}
         model={activeModel}

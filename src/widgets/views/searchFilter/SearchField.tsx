@@ -67,7 +67,7 @@ export function SearchField(props: Props) {
       return <MultiSelection layout="vertical" ooui={field} showLabel />;
     }
     default: {
-      return <Char ooui={field} layout="vertical" showLabel />;
+      return <Char ooui={field} layout="vertical" showLabel isSearchField />;
     }
   }
 }
