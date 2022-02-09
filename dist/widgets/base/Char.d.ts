@@ -1,3 +1,7 @@
 import { WidgetProps } from "@/types";
-export declare const Char: (props: WidgetProps) => JSX.Element;
+declare type CharProps = WidgetProps & {
+    isSearchField?: boolean;
+};
+export declare const Char: (props: CharProps) => JSX.Element;
+export {};
 //# sourceMappingURL=Char.d.ts.map

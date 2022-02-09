@@ -76,7 +76,7 @@ function SearchField(props) {
             return react_1.default.createElement(MultiSelection_1.MultiSelection, { layout: "vertical", ooui: field, showLabel: true });
         }
         default: {
-            return react_1.default.createElement(Char_1.Char, { ooui: field, layout: "vertical", showLabel: true });
+            return react_1.default.createElement(Char_1.Char, { ooui: field, layout: "vertical", showLabel: true, isSearchField: true });
         }
     }
 }
