@@ -2,7 +2,11 @@ import React, { useState, useContext, useRef, useEffect } from "react";
 import { Modal, Button, Divider, Row, Space } from "antd";
 import { FormModal } from "./FormModal";
 import SearchTree from "@/widgets/views/SearchTree";
-import { FileAddOutlined, CloseOutlined } from "@ant-design/icons";
+import {
+  FileAddOutlined,
+  CloseOutlined,
+  CheckOutlined,
+} from "@ant-design/icons";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
@@ -10,7 +14,7 @@ type SearchSelectionProps = {
   visible: boolean;
   model: string;
   nameSearch?: string;
-  onSelectValue: (value: any) => void;
+  onSelectValues: (values: number[]) => void;
   onCloseModal: () => void;
   domain?: any;
   context?: any;
@@ -20,7 +24,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
   const {
     visible,
     onCloseModal: onCloseModalProps,
-    onSelectValue,
+    onSelectValues,
     model,
     nameSearch,
     domain,
@@ -30,6 +34,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
 
   const { modalWidth, modalHeight } = useWindowDimensions();
   const { t } = useContext(LocaleContext) as LocaleContextType;
+  const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
 
   const onCloseModal = async () => {
     await new Promise((resolve) => setTimeout(resolve, 5));
@@ -38,8 +43,17 @@ export const SearchModal = (props: SearchSelectionProps) => {
 
   const onRowClicked = async (event: any) => {
     const { id } = event;
-    onSelectValue(id);
+    onSelectValues([id]);
   };
+
+  function submit() {
+    if (selectedRowKeys.length === 0) {
+      onCloseModal();
+      return;
+    }
+
+    onSelectValues(selectedRowKeys);
+  }
 
   const content = () => {
     return (
@@ -51,6 +65,9 @@ export const SearchModal = (props: SearchSelectionProps) => {
           treeScrollY={modalHeight * 0.3}
           domain={domain}
           parentContext={context}
+          onChangeSelectedRowKeys={(selectedRowKeys: any) => {
+            setSelectedRowKeys(selectedRowKeys);
+          }}
         />
         <Divider />
         <Row justify="end">
@@ -62,6 +79,14 @@ export const SearchModal = (props: SearchSelectionProps) => {
               }}
             >
               {t("new")}
+            </Button>
+            <Button
+              icon={<CheckOutlined />}
+              onClick={() => {
+                submit();
+              }}
+            >
+              {t("ok")}
             </Button>
             <Button icon={<CloseOutlined />} onClick={onCloseModal}>
               {t("cancel")}
@@ -93,7 +118,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
         onSubmitSucceed={(id?: number) => {
           setShowCreateModal(false);
           onCloseModal();
-          onSelectValue(id);
+          onSelectValues([id!]);
         }}
         onCancel={() => {
           setShowCreateModal(false);

@@ -502,7 +502,7 @@ function Form(props: FormProps, ref: any) {
     }
 
     if (postSaveAction) {
-      await postSaveAction(getCurrentId());
+      await postSaveAction([getCurrentId()]);
     }
 
     if (!insideButtonModal && callOnSubmitSucceed) {

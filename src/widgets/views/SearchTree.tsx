@@ -42,6 +42,7 @@ type Props = {
   visible?: boolean;
   rootTree?: boolean;
   parentContext?: any;
+  onChangeSelectedRowKeys?: (selectedRowKeys: any) => void;
 };
 
 function SearchTree(props: Props, ref: any) {
@@ -57,6 +58,7 @@ function SearchTree(props: Props, ref: any) {
     visible = true,
     rootTree = false,
     parentContext = {},
+    onChangeSelectedRowKeys,
   } = props;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -399,12 +401,13 @@ function SearchTree(props: Props, ref: any) {
     });
   };
 
-  function onChangeSelectedRowKeys(selectedRowKeys: number[]) {
+  function changeSelectedRowKeys(selectedRowKeys: number[]) {
     const items = getResults().filter((result: any) => {
       return selectedRowKeys.includes(result.id);
     });
 
     setSelectedRowItems?.(items);
+    onChangeSelectedRowKeys?.(selectedRowKeys);
   }
 
   function calculateTableHeight() {
@@ -494,7 +497,7 @@ function SearchTree(props: Props, ref: any) {
           colorsForResults={colorsForResults}
           rowSelection={{
             selectedRowKeys: selectedRowItems?.map((item) => item.id),
-            onChange: onChangeSelectedRowKeys,
+            onChange: changeSelectedRowKeys,
           }}
           onChangeSort={(newSorter) => {
             setSorter?.(newSorter);

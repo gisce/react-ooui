@@ -60,8 +60,15 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   } = useContext(One2manyContext) as One2manyContextType;
 
   const formContext = useContext(FormContext) as FormContextType;
-  const { activeId, activeModel, getValues, getContext, domain, addOne2ManyChild, removeOne2ManyChild } =
-    formContext || {};
+  const {
+    activeId,
+    activeModel,
+    getValues,
+    getContext,
+    domain,
+    addOne2ManyChild,
+    removeOne2ManyChild,
+  } = formContext || {};
   const { lang, t } = useContext(LocaleContext) as LocaleContextType;
 
   const formRef = useRef();
@@ -380,44 +387,106 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     triggerChange(updatedItems);
   };
 
-  const formModalPostSaveAction = async (id: number) => {
+  const formModalPostSaveAction = async (ids: number[]) => {
     // We check wether the item is already in our internal list
-    const itemAlreadyPresent =
-      items.find((item) => item.id === id) !== undefined;
+    const newItems = ids.filter((id) => {
+      return items.find((item) => item.id === id) === undefined;
+    });
 
-    // We call the API for reading the updated object
-    const updatedFormObject = (
-      await ConnectionProvider.getHandler().readObjects({
-        arch: views.get("form").arch,
-        model: relation,
-        ids: [id],
-        fields: views.get("form").fields,
-        context: { ...getContext?.(), ...context },
-      })
-    )[0];
-    const updatedTreeObject = (
-      await ConnectionProvider.getHandler().readObjects({
-        arch: views.get("tree").arch,
-        model: relation,
-        ids: [id],
-        fields: views.get("tree").fields,
-        context: { ...getContext?.(), ...context },
-      })
-    )[0];
+    const modifiedItems = ids.filter((id) => {
+      return items.find((item) => item.id === id) !== undefined;
+    });
 
-    if (!itemAlreadyPresent) {
-      await processNewItem({
-        id,
-        values: updatedFormObject,
-        treeValues: updatedTreeObject,
-      });
-    } else {
-      await processUpdateItem({
-        id,
-        values: updatedFormObject,
-        treeValues: updatedTreeObject,
+    let updatedItems = items;
+
+    for (const newItem of newItems) {
+      const updatedFormObject = (
+        await ConnectionProvider.getHandler().readObjects({
+          arch: views.get("form").arch,
+          model: relation,
+          ids: [newItem],
+          fields: views.get("form").fields,
+          context: { ...getContext?.(), ...context },
+        })
+      )[0];
+      const updatedTreeObject = (
+        await ConnectionProvider.getHandler().readObjects({
+          arch: views.get("tree").arch,
+          model: relation,
+          ids: [newItem],
+          fields: views.get("tree").fields,
+          context: { ...getContext?.(), ...context },
+        })
+      )[0];
+
+      if (activeId) {
+        // We call the API for reading the updated object
+
+        await linkItem({
+          model: activeModel,
+          activeId,
+          id: newItem,
+          fields: views.get("form").fields,
+          fieldName,
+        });
+
+        // It's a new item and we already have linked it with its parent, so we just only have to add it
+        // to our internal list as an original (server and client are synced)
+        updatedItems.push({
+          id: newItem,
+          operation: "original",
+          values: updatedFormObject,
+          treeValues: updatedTreeObject,
+        });
+      } else {
+        // Since we don't have a activeId to link with, we add the item as pendingLink
+        // The effective link will take place when the parent form is saved
+        updatedItems.push({
+          id: newItem,
+          operation: "pendingLink",
+          values: updatedFormObject,
+          treeValues: updatedTreeObject,
+        });
+      }
+    }
+
+    for (const modifiedItem of modifiedItems) {
+      // We iterate over our internal list in order to update the object values with the updated ones from the API
+      // If we have a activeId, we consider the item as original, because it's already saved and linked
+      // If we don't have a activeId, the item will have to be linked when the parent form is saved
+      const updatedFormObject = (
+        await ConnectionProvider.getHandler().readObjects({
+          arch: views.get("form").arch,
+          model: relation,
+          ids: [modifiedItem],
+          fields: views.get("form").fields,
+          context: { ...getContext?.(), ...context },
+        })
+      )[0];
+      const updatedTreeObject = (
+        await ConnectionProvider.getHandler().readObjects({
+          arch: views.get("tree").arch,
+          model: relation,
+          ids: [modifiedItem],
+          fields: views.get("tree").fields,
+          context: { ...getContext?.(), ...context },
+        })
+      )[0];
+
+      updatedItems = updatedItems.map((item: One2manyItem) => {
+        if (item.id === modifiedItem) {
+          return {
+            id: modifiedItem,
+            operation: activeId ? "original" : "pendingLink",
+            values: updatedFormObject,
+            treeValues: updatedTreeObject,
+          };
+        }
+        return item;
       });
     }
+
+    triggerChange(updatedItems);
   };
 
   const setItemSaved = async ({
@@ -447,76 +516,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     }
   };
 
-  const processNewItem = async ({
-    id,
-    values,
-    treeValues,
-  }: {
-    id: number;
-    values: any;
-    treeValues: any;
-  }) => {
-    if (activeId) {
-      await linkItem({
-        model: activeModel,
-        activeId,
-        id,
-        fields: views.get("form").fields,
-        fieldName,
-      });
-
-      // It's a new item and we already have linked it with its parent, so we just only have to add it
-      // to our internal list as an original (server and client are synced)
-      triggerChange(
-        items.concat({
-          id,
-          operation: "original",
-          values,
-          treeValues,
-        })
-      );
-      return;
-    }
-
-    // Since we don't have a activeId to link with, we add the item as pendingLink
-    // The effective link will take place when the parent form is saved
-    triggerChange(
-      items.concat({
-        id,
-        operation: "pendingLink",
-        values,
-        treeValues,
-      })
-    );
-  };
-
-  const processUpdateItem = async ({
-    id,
-    values,
-    treeValues,
-  }: {
-    id: number;
-    values: any;
-    treeValues: any;
-  }) => {
-    // We iterate over our internal list in order to update the object values with the updated ones from the API
-    // If we have a activeId, we consider the item as original, because it's already saved and linked
-    // If we don't have a activeId, the item will have to be linked when the parent form is saved
-    const updatedItems: One2manyItem[] = items.map((item: One2manyItem) => {
-      if (item.id === id) {
-        return {
-          id,
-          operation: activeId ? "original" : "pendingLink",
-          values,
-          treeValues,
-        };
-      }
-      return item;
-    });
-
-    triggerChange(updatedItems);
-  };
-
   // This is the callback called when we save the One2manyTopBar in form mode
   const onFormSubmitSucceed = () => {
     setFormIsSaving(false);
@@ -539,11 +538,11 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     setShowFormModal(true);
   };
 
-  const onSearchModalSelectValue = async (id: number) => {
+  const onSearchModalSelectValue = async (ids: number[]) => {
     setIsLoading(true);
 
     try {
-      await formModalPostSaveAction(id);
+      await formModalPostSaveAction(ids);
     } catch (e) {
       setError(e);
     } finally {
@@ -660,9 +659,9 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         model={relation}
         context={{ ...getContext?.(), ...context }}
         visible={showSearchModal}
-        onSelectValue={(id: number) => {
+        onSelectValues={async (ids: number[]) => {
           setShowSearchModal(false);
-          onSearchModalSelectValue(id);
+          onSearchModalSelectValue(ids);
         }}
         onCloseModal={() => {
           setShowSearchModal(false);
