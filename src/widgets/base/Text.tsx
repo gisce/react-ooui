@@ -74,7 +74,10 @@ const TranslatableText = ({
             onChange={(event: any) => {
               onChange?.(event.target.value);
             }}
-            style={{ height: height ? height + "px" : "100%" }}
+            style={{
+              height: height ? height + "px" : "100%",
+              cursor: "pointer",
+            }}
             id={field}
             disabled={true}
             className={requiredClass}

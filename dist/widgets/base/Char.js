@@ -102,7 +102,7 @@ var TranslatableChar = function (_a) {
                     } },
                     react_1.default.createElement(antd_1.Input, { value: value, disabled: true, id: field, className: requiredClass, onChange: function (event) {
                             onChange === null || onChange === void 0 ? void 0 : onChange(event.target.value);
-                        } }))),
+                        }, style: { cursor: "pointer" } }))),
             react_1.default.createElement(antd_1.Col, { flex: "32px" },
                 react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("translate"), icon: react_1.default.createElement(icons_1.TranslationOutlined, null), onClick: function () { return __awaiter(void 0, void 0, void 0, function () {
                         return __generator(this, function (_a) {

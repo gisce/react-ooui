@@ -68,6 +68,7 @@ const TranslatableChar = ({
               onChange={(event: any) => {
                 onChange?.(event.target.value);
               }}
+              style={{ cursor: "pointer" }}
             />
           </div>
         </Col>
