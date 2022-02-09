@@ -62,22 +62,25 @@ const TranslatableText = ({
   return (
     <>
       <Row gutter={8} wrap={false}>
-        <TextArea
-          value={value}
-          onChange={(event: any) => {
-            onChange?.(event.target.value);
-          }}
-          style={{ height: height ? height + "px" : "100%" }}
-          id={field}
-          disabled={true}
-          className={requiredClass}
-          rows={4}
-          onFocus={() => {
+        <div
+          onClick={() => {
             if (!translationModalVisible) {
               setTranslationModalVisible(true);
             }
           }}
-        />
+        >
+          <TextArea
+            value={value}
+            onChange={(event: any) => {
+              onChange?.(event.target.value);
+            }}
+            style={{ height: height ? height + "px" : "100%" }}
+            id={field}
+            disabled={true}
+            className={requiredClass}
+            rows={4}
+          />
+        </div>
       </Row>
       <Row justify="end" style={{ paddingTop: 5 }}>
         <ButtonWithTooltip

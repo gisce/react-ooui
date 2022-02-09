@@ -53,20 +53,23 @@ const TranslatableChar = ({
     <>
       <Row gutter={8} wrap={false}>
         <Col flex="auto">
-          <Input
-            value={value}
-            disabled={true}
-            id={field}
-            className={requiredClass}
-            onChange={(event: any) => {
-              onChange?.(event.target.value);
-            }}
-            onFocus={() => {
+          <div
+            onClick={() => {
               if (!translationModalVisible) {
                 setTranslationModalVisible(true);
               }
             }}
-          />
+          >
+            <Input
+              value={value}
+              disabled={true}
+              id={field}
+              className={requiredClass}
+              onChange={(event: any) => {
+                onChange?.(event.target.value);
+              }}
+            />
+          </div>
         </Col>
         <Col flex="32px">
           <ButtonWithTooltip
