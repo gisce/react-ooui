@@ -61,6 +61,11 @@ const TranslatableChar = ({
             onChange={(event: any) => {
               onChange?.(event.target.value);
             }}
+            onFocus={() => {
+              if (!translationModalVisible) {
+                setTranslationModalVisible(true);
+              }
+            }}
           />
         </Col>
         <Col flex="32px">

@@ -95,7 +95,11 @@ var TranslatableText = function (_a) {
         react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false },
             react_1.default.createElement(TextArea, { value: value, onChange: function (event) {
                     onChange === null || onChange === void 0 ? void 0 : onChange(event.target.value);
-                }, style: { height: height ? height + "px" : "100%" }, id: field, disabled: true, className: requiredClass, rows: 4 })),
+                }, style: { height: height ? height + "px" : "100%" }, id: field, disabled: true, className: requiredClass, rows: 4, onFocus: function () {
+                    if (!translationModalVisible) {
+                        setTranslationModalVisible(true);
+                    }
+                } })),
         react_1.default.createElement(antd_1.Row, { justify: "end", style: { paddingTop: 5 } },
             react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("translate"), icon: react_1.default.createElement(icons_1.TranslationOutlined, null), onClick: function () { return __awaiter(void 0, void 0, void 0, function () {
                     return __generator(this, function (_a) {

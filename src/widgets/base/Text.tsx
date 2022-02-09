@@ -72,6 +72,11 @@ const TranslatableText = ({
           disabled={true}
           className={requiredClass}
           rows={4}
+          onFocus={() => {
+            if (!translationModalVisible) {
+              setTranslationModalVisible(true);
+            }
+          }}
         />
       </Row>
       <Row justify="end" style={{ paddingTop: 5 }}>
