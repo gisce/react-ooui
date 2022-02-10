@@ -5,7 +5,7 @@ const path = require("path");
 module.exports = {
   entry: "./src/index.ts",
   mode: "development",
-  devtool: 'inline-source-map',
+  devtool: "inline-source-map",
   output: {
     globalObject: "this",
     path: path.resolve(__dirname, "dist"),
@@ -27,6 +27,11 @@ module.exports = {
   },
   module: {
     rules: [
+      {
+        test: /\.(js|mjs|jsx|ts|tsx)$/,
+        enforce: "pre",
+        use: ["source-map-loader"],
+      },
       {
         test: /\.tsx?$/,
         loader: "ts-loader",
