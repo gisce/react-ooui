@@ -71,5 +71,7 @@ exports.default = {
     idNotFound: "No es troba aquesta id de recurs per l'objecte",
     selectedRegisters: "registres seleccionats",
     translate: "Traduïr",
+    enterTextBeforeTranslate: "Introdueix algun text al camp abans d'afegir traduccions",
+    saveBeforeTranslate: "Heu de desar el registre abans d'afegir les traduccions"
 };
 //# sourceMappingURL=ca_ES.js.map

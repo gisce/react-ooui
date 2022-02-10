@@ -1,10 +1,14 @@
 import React, { useContext, useState } from "react";
-import { Input } from "antd";
+import { Input, Row } from "antd";
 import Field from "@/common/Field";
 import Config from "@/Config";
 import { Text as TextOoui } from "ooui";
 import { TranslationModal } from "../modals/TranslationModal";
 import { FormContext, FormContextType } from "@/context/FormContext";
+import ButtonWithTooltip from "@/common/ButtonWithTooltip";
+import { TranslationOutlined } from "@ant-design/icons";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import showInfo from "@/ui/InfoDialog";
 
 const { TextArea } = Input;
 
@@ -52,13 +56,56 @@ const TranslatableText = ({
   onChange?: (value: string) => void;
 }) => {
   const formContext = useContext(FormContext) as FormContextType;
-  const { activeId, activeModel, fetchValues } = formContext || {};
+  const { activeId, activeModel, fetchValues, formHasChanges } =
+    formContext || {};
   const [translationModalVisible, setTranslationModalVisible] = useState(false);
+  const { t } = useContext(LocaleContext) as LocaleContextType;
+
+  if (!activeId) {
+    return (
+      <>
+        <Row gutter={8} wrap={false}>
+          <TextArea
+            value={value}
+            onChange={(event: any) => {
+              onChange?.(event.target.value);
+            }}
+            style={{
+              height: height ? height + "px" : "100%",
+            }}
+            id={field}
+            className={requiredClass}
+            rows={4}
+          />
+        </Row>
+        <Row justify="end" style={{ paddingTop: 5 }}>
+          <ButtonWithTooltip
+            tooltip={t("translate")}
+            icon={<TranslationOutlined />}
+            onClick={async () => {
+              if (formHasChanges?.()) {
+                showInfo(t("saveBeforeTranslate"));
+              } else {
+                showInfo(t("enterTextBeforeTranslate"));
+              }
+            }}
+          >
+            {t("translate")}
+          </ButtonWithTooltip>
+        </Row>
+      </>
+    );
+  }
 
   return (
     <>
       <div
         onClick={() => {
+          if (formHasChanges?.()) {
+            showInfo(t("saveBeforeTranslate"));
+            return;
+          }
+
           if (!translationModalVisible) {
             setTranslationModalVisible(true);
           }

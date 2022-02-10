@@ -69,6 +69,8 @@ declare const _default: {
     idNotFound: string;
     selectedRegisters: string;
     translate: string;
+    enterTextBeforeTranslate: string;
+    saveBeforeTranslate: string;
 };
 export default _default;
 //# sourceMappingURL=ca_ES.d.ts.map

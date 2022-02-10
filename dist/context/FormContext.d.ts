@@ -20,6 +20,7 @@ export declare type FormContextType = {
         callOnSubmitSucceed?: boolean;
     }) => Promise<boolean>;
     fetchValues?: () => void;
+    formHasChanges?: () => boolean;
 };
 export declare const FormContext: React.Context<FormContextType | null>;
 declare type FormProviderProps = FormContextType & {

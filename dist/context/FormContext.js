@@ -7,7 +7,7 @@ exports.FormContext = void 0;
 var react_1 = __importDefault(require("react"));
 exports.FormContext = react_1.default.createContext(null);
 var FormProvider = function (props) {
-    var children = props.children, activeId = props.activeId, activeModel = props.activeModel, setFieldValue = props.setFieldValue, getFieldValue = props.getFieldValue, executeButtonAction = props.executeButtonAction, getContext = props.getContext, getValues = props.getValues, setOriginalValue = props.setOriginalValue, domain = props.domain, unsavedOne2ManyChilds = props.unsavedOne2ManyChilds, addOne2ManyChild = props.addOne2ManyChild, removeOne2ManyChild = props.removeOne2ManyChild, submitForm = props.submitForm, fetchValues = props.fetchValues;
+    var children = props.children, activeId = props.activeId, activeModel = props.activeModel, setFieldValue = props.setFieldValue, getFieldValue = props.getFieldValue, executeButtonAction = props.executeButtonAction, getContext = props.getContext, getValues = props.getValues, setOriginalValue = props.setOriginalValue, domain = props.domain, unsavedOne2ManyChilds = props.unsavedOne2ManyChilds, addOne2ManyChild = props.addOne2ManyChild, removeOne2ManyChild = props.removeOne2ManyChild, submitForm = props.submitForm, fetchValues = props.fetchValues, formHasChanges = props.formHasChanges;
     return (react_1.default.createElement(exports.FormContext.Provider, { value: {
             domain: domain,
             getValues: getValues,
@@ -23,6 +23,7 @@ var FormProvider = function (props) {
             removeOne2ManyChild: removeOne2ManyChild,
             submitForm: submitForm,
             fetchValues: fetchValues,
+            formHasChanges: formHasChanges,
         } }, children));
 };
 exports.default = FormProvider;

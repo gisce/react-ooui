@@ -91,6 +91,9 @@ var TranslationModal = function (props) {
         if (visible) {
             fetchData();
         }
+        else {
+            setValuesForLangs({});
+        }
     }, [visible]);
     function fetchData() {
         return __awaiter(this, void 0, void 0, function () {

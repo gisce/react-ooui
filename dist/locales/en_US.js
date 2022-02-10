@@ -71,5 +71,7 @@ exports.default = {
     idNotFound: "Resource ID does not exist for this object!",
     selectedRegisters: "selected registers",
     translate: "Translate",
+    enterTextBeforeTranslate: "Enter some text to the related field before adding translations",
+    saveBeforeTranslate: "You must save the record before adding translations",
 };
 //# sourceMappingURL=en_US.js.map

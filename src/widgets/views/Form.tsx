@@ -889,6 +889,7 @@ function Form(props: FormProps, ref: any) {
           removeOne2ManyChild={removeOne2ManyChild}
           submitForm={submitForm}
           fetchValues={fetchValues}
+          formHasChanges={formHasChanges}
         >
           <AntForm
             form={antForm}

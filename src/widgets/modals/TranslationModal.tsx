@@ -44,6 +44,8 @@ export const TranslationModal = (props: TranslationModalProps) => {
   useEffect(() => {
     if (visible) {
       fetchData();
+    } else {
+      setValuesForLangs({});
     }
   }, [visible]);
 
