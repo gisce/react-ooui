@@ -13,6 +13,12 @@ module.exports = {
       ...config.resolve.alias,
       "@": path.resolve(__dirname, "../src/"),
     };
+    config.module.rules.push({
+      test: /\.(js|mjs|jsx|ts|tsx)$/,
+      enforce: "pre",
+      use: ["source-map-loader"],
+    });
+
     return config;
   },
 };
