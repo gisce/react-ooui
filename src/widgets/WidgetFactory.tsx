@@ -27,6 +27,7 @@ import {
 } from "@/index";
 import { Image } from "./base/Image";
 import { FiberGrid } from "./custom/FiberGrid";
+import { Timeline } from "./custom/Timeline";
 
 const getWidgetType = (type: string) => {
   switch (type) {
@@ -82,6 +83,8 @@ const getWidgetType = (type: string) => {
       return FloatTime;
     case "fiber_grid":
       return FiberGrid;
+    case "timeline":
+      return Timeline;
     default:
       return undefined;
   }
