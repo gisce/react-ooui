@@ -25,6 +25,8 @@ export type ActionViewContextType = {
   setRemovingItem?: (value: boolean) => void;
   formIsLoading?: boolean;
   setFormIsLoading?: (value: boolean) => void;
+  treeIsLoading?: boolean;
+  setTreeIsLoading?: (value: boolean) => void;
   toolbar?: any;
   setToolbar?: (value: any) => void;
   attachments?: any;
@@ -58,6 +60,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
   const [removingItem, setRemovingItem] = useState<boolean>(false);
   const [formIsLoading, setFormIsLoading] = useState<boolean>(false);
+  const [treeIsLoading, setTreeIsLoading] = useState<boolean>(true);
   const [attachments, setAttachments] = useState<any>([]);
   const [duplicatingItem, setDuplicatingItem] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useState<any[]>([]);
@@ -128,6 +131,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setRemovingItem,
         formIsLoading,
         setFormIsLoading,
+        treeIsLoading,
+        setTreeIsLoading,
         toolbar,
         setToolbar,
         attachments,
