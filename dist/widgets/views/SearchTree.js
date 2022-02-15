@@ -104,7 +104,7 @@ function SearchTree(props, ref) {
     var _w = react_1.useState(200), searchFilterHeight = _w[0], setSearchFilterHeight = _w[1];
     var height = useWindowDimensions_1.default().height;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _x = (rootTree ? actionViewContext : {}) || {}, _y = _x.setResults, setResultsActionView = _y === void 0 ? undefined : _y, _z = _x.setCurrentItemIndex, setCurrentItemIndex = _z === void 0 ? undefined : _z, _0 = _x.currentId, currentId = _0 === void 0 ? undefined : _0, _1 = _x.results, resultsActionView = _1 === void 0 ? undefined : _1, _2 = _x.selectedRowItems, selectedRowItems = _2 === void 0 ? undefined : _2, _3 = _x.setSelectedRowItems, setSelectedRowItems = _3 === void 0 ? undefined : _3, _4 = _x.setSearchParams, setSearchParams = _4 === void 0 ? undefined : _4, _5 = _x.searchVisible, searchVisible = _5 === void 0 ? true : _5, _6 = _x.setSearchVisible, setSearchVisible = _6 === void 0 ? undefined : _6, _7 = _x.sorter, sorter = _7 === void 0 ? undefined : _7, _8 = _x.setSorter, setSorter = _8 === void 0 ? undefined : _8, _9 = _x.setTotalItems, setActionViewTotalItems = _9 === void 0 ? undefined : _9, _10 = _x.setSearchTreeNameSearch, setSearchTreeNameSearch = _10 === void 0 ? undefined : _10;
+    var _x = (rootTree ? actionViewContext : {}) || {}, _y = _x.setResults, setResultsActionView = _y === void 0 ? undefined : _y, _z = _x.setCurrentItemIndex, setCurrentItemIndex = _z === void 0 ? undefined : _z, _0 = _x.currentId, currentId = _0 === void 0 ? undefined : _0, _1 = _x.results, resultsActionView = _1 === void 0 ? undefined : _1, _2 = _x.selectedRowItems, selectedRowItems = _2 === void 0 ? undefined : _2, _3 = _x.setSelectedRowItems, setSelectedRowItems = _3 === void 0 ? undefined : _3, _4 = _x.setSearchParams, setSearchParams = _4 === void 0 ? undefined : _4, _5 = _x.searchVisible, searchVisible = _5 === void 0 ? true : _5, _6 = _x.setSearchVisible, setSearchVisible = _6 === void 0 ? undefined : _6, _7 = _x.sorter, sorter = _7 === void 0 ? undefined : _7, _8 = _x.setSorter, setSorter = _8 === void 0 ? undefined : _8, _9 = _x.setTotalItems, setActionViewTotalItems = _9 === void 0 ? undefined : _9, _10 = _x.setSearchTreeNameSearch, setSearchTreeNameSearch = _10 === void 0 ? undefined : _10, _11 = _x.setTreeIsLoading, setTreeIsLoading = _11 === void 0 ? undefined : _11, _12 = _x.treeIsLoading, treeIsLoading = _12 === void 0 ? false : _12;
     react_1.useImperativeHandle(ref, function () { return ({
         refreshResults: function () {
             searchNameGetDoneRef.current = false;
@@ -248,6 +248,7 @@ function SearchTree(props, ref) {
                 case 0:
                     _a.trys.push([0, 5, 6, 7]);
                     setTableRefreshing(true);
+                    setTreeIsLoading === null || setTreeIsLoading === void 0 ? void 0 : setTreeIsLoading(true);
                     if (!(nameSearch && !searchNameGetDoneRef.current)) return [3 /*break*/, 2];
                     return [4 /*yield*/, searchByNameSearch()];
                 case 1:
@@ -265,6 +266,7 @@ function SearchTree(props, ref) {
                 case 6:
                     setTableRefreshing(false);
                     setSearchFilterLoading(false);
+                    setTreeIsLoading === null || setTreeIsLoading === void 0 ? void 0 : setTreeIsLoading(false);
                     return [7 /*endfinally*/];
                 case 7: return [2 /*return*/];
             }
@@ -287,6 +289,7 @@ function SearchTree(props, ref) {
                     setInitialFetchDone(false);
                     setIsLoading(true);
                     setInitialError(undefined);
+                    setTreeIsLoading === null || setTreeIsLoading === void 0 ? void 0 : setTreeIsLoading(true);
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 6, 7, 8]);
@@ -308,6 +311,7 @@ function SearchTree(props, ref) {
                     return [3 /*break*/, 8];
                 case 7:
                     setIsLoading(false);
+                    setTreeIsLoading === null || setTreeIsLoading === void 0 ? void 0 : setTreeIsLoading(false);
                     return [7 /*endfinally*/];
                 case 8: return [2 /*return*/];
             }

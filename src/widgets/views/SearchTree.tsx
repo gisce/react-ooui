@@ -111,6 +111,8 @@ function SearchTree(props: Props, ref: any) {
     setSorter = undefined,
     setTotalItems: setActionViewTotalItems = undefined,
     setSearchTreeNameSearch = undefined,
+    setTreeIsLoading = undefined,
+    treeIsLoading = false,
   } = (rootTree ? actionViewContext : {}) || {};
 
   useImperativeHandle(ref, () => ({
@@ -263,6 +265,7 @@ function SearchTree(props: Props, ref: any) {
   const fetchResults = async () => {
     try {
       setTableRefreshing(true);
+      setTreeIsLoading?.(true);
       if (nameSearch && !searchNameGetDoneRef.current) {
         await searchByNameSearch();
       } else {
@@ -273,6 +276,7 @@ function SearchTree(props: Props, ref: any) {
     } finally {
       setTableRefreshing(false);
       setSearchFilterLoading(false);
+      setTreeIsLoading?.(false);
     }
   };
 
@@ -291,6 +295,7 @@ function SearchTree(props: Props, ref: any) {
     setInitialFetchDone(false);
     setIsLoading(true);
     setInitialError(undefined);
+    setTreeIsLoading?.(true);
 
     try {
       if (type === "action") {
@@ -303,6 +308,7 @@ function SearchTree(props: Props, ref: any) {
       setInitialError(error);
     } finally {
       setIsLoading(false);
+      setTreeIsLoading?.(false);
     }
   };
 

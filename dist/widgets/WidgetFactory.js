@@ -8,6 +8,7 @@ var react_1 = __importDefault(require("react"));
 var index_1 = require("@/index");
 var Image_1 = require("./base/Image");
 var FiberGrid_1 = require("./custom/FiberGrid");
+var Timeline_1 = require("./custom/Timeline");
 var getWidgetType = function (type) {
     switch (type) {
         case "form":
@@ -62,6 +63,8 @@ var getWidgetType = function (type) {
             return index_1.FloatTime;
         case "fiber_grid":
             return FiberGrid_1.FiberGrid;
+        case "timeline":
+            return Timeline_1.Timeline;
         default:
             return undefined;
     }

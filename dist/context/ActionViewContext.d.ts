@@ -24,6 +24,8 @@ export declare type ActionViewContextType = {
     setRemovingItem?: (value: boolean) => void;
     formIsLoading?: boolean;
     setFormIsLoading?: (value: boolean) => void;
+    treeIsLoading?: boolean;
+    setTreeIsLoading?: (value: boolean) => void;
     toolbar?: any;
     setToolbar?: (value: any) => void;
     attachments?: any;

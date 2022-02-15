@@ -86,7 +86,7 @@ var ButtonWithBadge_1 = __importDefault(require("./ButtonWithBadge"));
 var logInfoHelper_1 = require("@/helpers/logInfoHelper");
 var SearchBar_1 = __importDefault(require("./SearchBar"));
 function TreeActionBar(props) {
-    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, selectedRowItems = _a.selectedRowItems, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, duplicatingItem = _a.duplicatingItem, setDuplicatingItem = _a.setDuplicatingItem, currentModel = _a.currentModel, searchTreeRef = _a.searchTreeRef, setCurrentId = _a.setCurrentId, setCurrentItemIndex = _a.setCurrentItemIndex, toolbar = _a.toolbar, searchParams = _a.searchParams, searchVisible = _a.searchVisible, setSearchVisible = _a.setSearchVisible, setSearchTreeNameSearch = _a.setSearchTreeNameSearch, searchTreeNameSearch = _a.searchTreeNameSearch;
+    var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), availableViews = _a.availableViews, currentView = _a.currentView, setCurrentView = _a.setCurrentView, selectedRowItems = _a.selectedRowItems, setRemovingItem = _a.setRemovingItem, removingItem = _a.removingItem, duplicatingItem = _a.duplicatingItem, setDuplicatingItem = _a.setDuplicatingItem, currentModel = _a.currentModel, searchTreeRef = _a.searchTreeRef, setCurrentId = _a.setCurrentId, setCurrentItemIndex = _a.setCurrentItemIndex, toolbar = _a.toolbar, searchParams = _a.searchParams, searchVisible = _a.searchVisible, setSearchVisible = _a.setSearchVisible, setSearchTreeNameSearch = _a.setSearchTreeNameSearch, searchTreeNameSearch = _a.searchTreeNameSearch, treeIsLoading = _a.treeIsLoading;
     var _b = props.parentContext, parentContext = _b === void 0 ? {} : _b;
     var _c = react_1.useContext(LocaleContext_1.LocaleContext), t = _c.t, lang = _c.lang;
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
@@ -183,7 +183,7 @@ function TreeActionBar(props) {
         return null;
     }
     return (react_1.default.createElement(antd_1.Space, { wrap: true },
-        react_1.default.createElement(SearchBar_1.default, { disabled: duplicatingItem || removingItem, searchText: searchTreeNameSearch, onSearch: function (searchString) {
+        react_1.default.createElement(SearchBar_1.default, { disabled: duplicatingItem || removingItem || treeIsLoading, searchText: searchTreeNameSearch, onSearch: function (searchString) {
                 if (searchString && searchString.trim().length > 0) {
                     setSearchTreeNameSearch === null || setSearchTreeNameSearch === void 0 ? void 0 : setSearchTreeNameSearch(searchString);
                 }
@@ -192,31 +192,34 @@ function TreeActionBar(props) {
                 }
             } }),
         separator(),
-        react_1.default.createElement(NewButton_1.default, null),
+        react_1.default.createElement(NewButton_1.default, { disabled: treeIsLoading }),
         separator(),
-        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.CopyOutlined, null), tooltip: t("duplicate"), disabled: !selectedRowItems || (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) !== 1 || duplicatingItem, loading: duplicatingItem, onClick: duplicate }),
-        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.DeleteOutlined, null), tooltip: t("delete"), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0), loading: removingItem, onClick: tryDelete }),
+        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.CopyOutlined, null), tooltip: t("duplicate"), disabled: !selectedRowItems ||
+                (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) !== 1 ||
+                duplicatingItem ||
+                treeIsLoading, loading: duplicatingItem, onClick: duplicate }),
+        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.DeleteOutlined, null), tooltip: t("delete"), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0) || treeIsLoading, loading: removingItem, onClick: tryDelete }),
         separator(),
         react_1.default.createElement(ButtonWithBadge_1.default, { onClick: function () {
                 setSearchVisible === null || setSearchVisible === void 0 ? void 0 : setSearchVisible(!searchVisible);
-            }, disabled: duplicatingItem || removingItem, badgeNumber: searchParams === null || searchParams === void 0 ? void 0 : searchParams.length }),
-        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.InfoCircleOutlined, null), tooltip: t("showLogs"), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0), loading: false, onClick: function () {
+            }, disabled: duplicatingItem || removingItem || treeIsLoading, badgeNumber: searchParams === null || searchParams === void 0 ? void 0 : searchParams.length }),
+        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.InfoCircleOutlined, null), tooltip: t("showLogs"), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0) || treeIsLoading, loading: false, onClick: function () {
                 logInfoHelper_1.showLogInfo(currentModel, selectedRowItems[0].id, t);
             } }),
-        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.ReloadOutlined, null), tooltip: t("refresh"), disabled: duplicatingItem || removingItem, loading: false, onClick: function () {
+        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.ReloadOutlined, null), tooltip: t("refresh"), disabled: duplicatingItem || removingItem || treeIsLoading, loading: false, onClick: function () {
                 var _a;
                 (_a = searchTreeRef === null || searchTreeRef === void 0 ? void 0 : searchTreeRef.current) === null || _a === void 0 ? void 0 : _a.refreshResults();
             } }),
         separator(),
-        react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews, onChangeView: setCurrentView }),
+        react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews, onChangeView: setCurrentView, disabled: treeIsLoading }),
         separator(),
-        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0), tooltip: t("actions"), items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.action, onItemClick: function (action) {
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0) || treeIsLoading, tooltip: t("actions"), items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.action, onItemClick: function (action) {
                 if (!action) {
                     return;
                 }
                 runAction(action);
             } }),
-        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.PrinterOutlined, null), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0), tooltip: t("reports"), items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.print, onItemClick: function (report) {
+        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.PrinterOutlined, null), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0) || treeIsLoading, tooltip: t("reports"), items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.print, onItemClick: function (report) {
                 if (!report) {
                     return;
                 }
