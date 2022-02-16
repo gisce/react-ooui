@@ -430,7 +430,7 @@ var One2manyInput = function (props) {
                     updatedTreeObject = (_a.sent())[0];
                     updatedItems = items.map(function (item) {
                         if (item.id === id) {
-                            return __assign(__assign({}, item), { values: updatedFormObject, treeValues: updatedTreeObject });
+                            return __assign(__assign({}, item), { operation: item.operation === "pendingUpdate" ? "original" : item.operation, values: updatedFormObject, treeValues: updatedTreeObject });
                         }
                         return item;
                     });
@@ -652,7 +652,12 @@ var One2manyInput = function (props) {
                     setItemSaved({ id: (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.id, saved: false });
                     setFormHasChanges(true);
                     addOne2ManyChild === null || addOne2ManyChild === void 0 ? void 0 : addOne2ManyChild(one2ManyUuid.current, formRef.current);
-                }, readOnly: readOnly, postSaveAction: formPostSaveAction }));
+                }, readOnly: readOnly, postSaveAction: function (ids) { return __awaiter(void 0, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        formPostSaveAction(ids[0]);
+                        return [2 /*return*/];
+                    });
+                }); } }));
         }
         return (react_1.default.createElement(index_2.Tree, { total: itemsToShow.length, limit: itemsToShow.length, treeView: views.get("tree"), results: itemsToShow.map(function (item) { return item.treeValues; }), loading: isLoading, onRowClicked: onTreeRowClicked, showPagination: false, rowSelection: {
                 selectedRowKeys: selectedRowKeys,
