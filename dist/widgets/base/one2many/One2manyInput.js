@@ -88,6 +88,14 @@ var SearchModal_1 = require("@/widgets/modals/SearchModal");
 var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 var LocaleContext_1 = require("@/context/LocaleContext");
 var uuid_1 = require("uuid");
+function filterDuplicateItems(items) {
+    var ids = items.map(function (o) { return o.id; });
+    var filtered = items.filter(function (item, index) {
+        var id = item.id;
+        return !ids.includes(id, index + 1);
+    });
+    return filtered;
+}
 var One2manyInput = function (props) {
     var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui, views = props.views;
     var _b = react_1.useContext(One2manyContext_1.One2manyContext), currentView = _b.currentView, setCurrentView = _b.setCurrentView, itemIndex = _b.itemIndex, setItemIndex = _b.setItemIndex, manualTriggerChange = _b.manualTriggerChange, setManualTriggerChange = _b.setManualTriggerChange;
@@ -118,7 +126,7 @@ var One2manyInput = function (props) {
     }, [domain]);
     var triggerChange = function (changedValue) {
         setManualTriggerChange(true);
-        onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
+        onChange === null || onChange === void 0 ? void 0 : onChange(filterDuplicateItems(changedValue));
     };
     var fetchData = function () { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
@@ -579,7 +587,7 @@ var One2manyInput = function (props) {
                     return item;
                 });
                 if (saved) {
-                    onChange === null || onChange === void 0 ? void 0 : onChange(updatedItems);
+                    onChange === null || onChange === void 0 ? void 0 : onChange(filterDuplicateItems(updatedItems));
                 }
                 else {
                     triggerChange(updatedItems);
