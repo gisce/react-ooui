@@ -45,6 +45,15 @@ interface One2manyInputProps {
   views: Views;
 }
 
+function filterDuplicateItems(items: any) {
+  const ids = items.map((o: any) => o.id);
+  const filtered = items.filter((item: any, index: number) => {
+    const { id } = item;
+    return !ids.includes(id, index + 1);
+  });
+  return filtered;
+}
+
 const One2manyInput: React.FC<One2manyInputProps> = (
   props: One2manyInputProps
 ) => {
@@ -107,7 +116,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
   const triggerChange = (changedValue: Array<One2manyItem>) => {
     setManualTriggerChange(true);
-    onChange?.(changedValue);
+    onChange?.(filterDuplicateItems(changedValue));
   };
 
   const fetchData = async () => {
@@ -512,7 +521,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     });
 
     if (saved) {
-      onChange?.(updatedItems);
+      onChange?.(filterDuplicateItems(updatedItems));
     } else {
       triggerChange(updatedItems);
     }
