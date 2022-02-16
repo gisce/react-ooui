@@ -377,6 +377,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       if (item.id === id) {
         return {
           ...item,
+          operation:
+            item.operation === "pendingUpdate" ? "original" : item.operation,
           values: updatedFormObject,
           treeValues: updatedTreeObject,
         };
@@ -582,7 +584,9 @@ const One2manyInput: React.FC<One2manyInputProps> = (
             addOne2ManyChild?.(one2ManyUuid.current, formRef.current);
           }}
           readOnly={readOnly}
-          postSaveAction={formPostSaveAction}
+          postSaveAction={async (ids: number[]) => {
+            formPostSaveAction(ids[0]);
+          }}
         />
       );
     }
