@@ -224,7 +224,7 @@ function Tree(props: Props): React.ReactElement {
           return `cursor-pointer select-none record-row-${record.id}`;
         }}
         rowKey={(item: any) => {
-          return item.id;
+          return `${item.id}${items.indexOf(item)}`;
         }}
         onRow={(record: any) => {
           let style = undefined;

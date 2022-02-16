@@ -147,7 +147,7 @@ function Tree(props) {
         react_1.default.createElement(StyledTable, { minHeight: adjustedHeight, columns: dataTable.columns, scroll: { x: dataTable.tableWidth, y: adjustedHeight }, size: "small", dataSource: items, pagination: false, loading: loading, rowClassName: function (record) {
                 return "cursor-pointer select-none record-row-" + record.id;
             }, rowKey: function (item) {
-                return item.id;
+                return "" + item.id + items.indexOf(item);
             }, onRow: function (record) {
                 var style = undefined;
                 if (colorsForResults[record.id]) {
