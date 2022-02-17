@@ -3,17 +3,16 @@ declare type One2manyTopBarProps = {
     mode: "tree" | "form";
     isMany2Many: boolean;
     readOnly: boolean;
-    formIsSaving: boolean;
     formHasChanges: boolean;
     onToggleViewMode: () => void;
     onCreateItem: () => void;
-    onSaveItem: () => void;
     onDelete: () => void;
     totalItems: number;
     currentItemIndex: number;
     onPreviousItem: () => void;
     onNextItem: () => void;
     onSearchItem: () => void;
+    selectedRowKeys: string[];
 };
 export declare const One2manyTopBar: (props: One2manyTopBarProps) => JSX.Element;
 export {};

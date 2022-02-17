@@ -40,6 +40,9 @@ var booleanComponentFn = function (value) {
     return react_1.default.createElement(antd_1.Checkbox, { defaultChecked: value, disabled: true });
 };
 var many2OneComponentFn = function (m2oField) {
+    if (!m2oField) {
+        return react_1.default.createElement(react_1.default.Fragment, null);
+    }
     return (react_1.default.createElement(antd_1.Space, null,
         react_1.default.createElement(react_1.default.Fragment, null, m2oField.value),
         react_1.default.createElement(Many2oneSuffix_1.Many2oneSuffix, { id: m2oField.id, model: m2oField.model })));

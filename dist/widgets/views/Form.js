@@ -103,13 +103,6 @@ function Form(props, ref) {
     var lastAssignedValues = react_1.useRef({});
     var warningIsShown = react_1.useRef(false);
     var formSubmitting = react_1.useRef(false);
-    var unsavedOne2ManyChilds = react_1.useRef(new Map());
-    function addOne2ManyChild(key, child) {
-        unsavedOne2ManyChilds.current.set(key, child);
-    }
-    function removeOne2ManyChild(key) {
-        unsavedOne2ManyChilds.current.delete(key);
-    }
     // const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
     //   breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
     //   updateOnBreakpointChange: true,
@@ -138,6 +131,7 @@ function Form(props, ref) {
         },
     }); });
     react_1.useEffect(function () {
+        setError(undefined);
         if (!model && !formViewProps) {
             return;
         }
@@ -147,16 +141,17 @@ function Form(props, ref) {
             return;
         }
         // In the case we set the id to undefined for creating a new item
-        if (id === undefined && fields) {
+        if ((id === undefined && fields) ||
+            (id !== undefined && fields && id < 0)) {
             createdId.current = undefined;
             setFormOoui(undefined);
         }
         fetchData();
     }, [id, model, valuesProps, formViewProps, visible]);
-    var onSubmitSucceed = function (id, values) {
+    var onSubmitSucceed = function (id, values, formValues) {
         setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
         setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
-        propsOnSubmitSucceed === null || propsOnSubmitSucceed === void 0 ? void 0 : propsOnSubmitSucceed(id, values);
+        propsOnSubmitSucceed === null || propsOnSubmitSucceed === void 0 ? void 0 : propsOnSubmitSucceed(id, values, formValues);
         setCurrentId === null || setCurrentId === void 0 ? void 0 : setCurrentId(id);
     };
     var onCancel = function () {
@@ -171,7 +166,22 @@ function Form(props, ref) {
         return id || createdId.current;
     }
     function getValues() {
-        return __assign(__assign({}, getCurrentValues(fields)), getAdditionalValues());
+        var values = __assign(__assign({}, getCurrentValues(fields)), getAdditionalValues());
+        for (var key in values) {
+            if (values[key] === undefined) {
+                delete values[key];
+            }
+        }
+        return values;
+    }
+    function getFormValues() {
+        var values = __assign({}, getCurrentValues(fields));
+        for (var key in values) {
+            if (values[key] === undefined) {
+                delete values[key];
+            }
+        }
+        return values;
     }
     function getContext() {
         return __assign(__assign({}, parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context);
@@ -280,6 +290,7 @@ function Form(props, ref) {
             switch (_a.label) {
                 case 0:
                     setFormIsLoading === null || setFormIsLoading === void 0 ? void 0 : setFormIsLoading(true);
+                    setError(undefined);
                     if (options) {
                         _fields = options.fields;
                         _arch = options.arch;
@@ -470,7 +481,7 @@ function Form(props, ref) {
                     _b.label = 6;
                 case 6:
                     if (!insideButtonModal && callOnSubmitSucceed) {
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues());
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues(), getFormValues());
                     }
                     return [2 /*return*/];
             }
@@ -481,13 +492,13 @@ function Form(props, ref) {
         return __generator(this, function (_b) {
             _a = (options || {}).callOnSubmitSucceed, callOnSubmitSucceed = _a === void 0 ? true : _a;
             if (!insideButtonModal && callOnSubmitSucceed) {
-                onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues());
+                onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues(), getFormValues());
             }
             return [2 /*return*/];
         });
     }); };
     var submitForm = function (options) { return __awaiter(_this, void 0, void 0, function () {
-        var submitSucceed, _a, callOnSubmitSucceed, o2m_childs, _i, o2m_childs_1, child, err_2;
+        var submitSucceed, _a, callOnSubmitSucceed, err_2;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -512,56 +523,43 @@ function Form(props, ref) {
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(true);
                     _b.label = 2;
                 case 2:
-                    _b.trys.push([2, 13, 14, 15]);
-                    o2m_childs = Array.from(unsavedOne2ManyChilds.current.values());
-                    if (!(o2m_childs.length > 0)) return [3 /*break*/, 6];
-                    _i = 0, o2m_childs_1 = o2m_childs;
-                    _b.label = 3;
-                case 3:
-                    if (!(_i < o2m_childs_1.length)) return [3 /*break*/, 6];
-                    child = o2m_childs_1[_i];
-                    return [4 /*yield*/, child.submitForm()];
-                case 4:
-                    _b.sent();
-                    _b.label = 5;
-                case 5:
-                    _i++;
-                    return [3 /*break*/, 3];
-                case 6:
-                    if (!(submitMode === "api")) return [3 /*break*/, 8];
+                    _b.trys.push([2, 9, 10, 11]);
+                    if (!(submitMode === "api")) return [3 /*break*/, 4];
                     return [4 /*yield*/, submitApi(options)];
+                case 3:
+                    _b.sent();
+                    return [3 /*break*/, 6];
+                case 4: return [4 /*yield*/, submitValues(options)];
+                case 5:
+                    _b.sent();
+                    _b.label = 6;
+                case 6:
+                    if (mustClearAfterSave) {
+                        createdId.current = undefined;
+                        assignNewValuesToForm({ values: {}, fields: fields, reset: true });
+                    }
+                    if (!(submitMode === "api")) return [3 /*break*/, 8];
+                    return [4 /*yield*/, fetchValues()];
                 case 7:
                     _b.sent();
-                    return [3 /*break*/, 10];
-                case 8: return [4 /*yield*/, submitValues(options)];
-                case 9:
-                    _b.sent();
-                    _b.label = 10;
-                case 10:
-                    if (!mustClearAfterSave) return [3 /*break*/, 12];
-                    createdId.current = undefined;
-                    assignNewValuesToForm({ values: {}, fields: fields, reset: true });
-                    return [4 /*yield*/, fetchValues()];
-                case 11:
-                    _b.sent();
-                    _b.label = 12;
-                case 12:
+                    _b.label = 8;
+                case 8:
                     submitSucceed = true;
-                    return [3 /*break*/, 15];
-                case 13:
+                    return [3 /*break*/, 11];
+                case 9:
                     err_2 = _b.sent();
                     formSubmitting.current = false;
                     setIsSubmitting(false);
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
                     onSubmitError === null || onSubmitError === void 0 ? void 0 : onSubmitError(err_2);
                     setError((err_2 === null || err_2 === void 0 ? void 0 : err_2.message) ? err_2.message : err_2);
-                    return [3 /*break*/, 15];
-                case 14:
+                    return [3 /*break*/, 11];
+                case 10:
                     formSubmitting.current = false;
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
                     setIsSubmitting(false);
                     return [7 /*endfinally*/];
-                case 15: return [2 /*return*/, submitSucceed];
+                case 11: return [2 /*return*/, submitSucceed];
             }
         });
     }); };
@@ -728,12 +726,12 @@ function Form(props, ref) {
                             response !== null &&
                             Object.keys(response).length === 0 &&
                             insideButtonModal)) return [3 /*break*/, 2];
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues());
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues(), getFormValues());
                         return [3 /*break*/, 7];
                     case 2:
                         if (!(response.type &&
                             response.type === "ir.actions.act_window_close")) return [3 /*break*/, 3];
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues());
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues(), getFormValues());
                         return [3 /*break*/, 7];
                     case 3:
                         if (!response.type) return [3 /*break*/, 5];
@@ -764,7 +762,7 @@ function Form(props, ref) {
                     case 1:
                         response = _b.sent();
                         if (!(response.type && response.type === "ir.actions.act_window_close")) return [3 /*break*/, 2];
-                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues());
+                        onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues(), getFormValues());
                         return [3 /*break*/, 4];
                     case 2: return [4 /*yield*/, fetchValues()];
                     case 3:
@@ -814,7 +812,7 @@ function Form(props, ref) {
                     case 1:
                         closeParent = ((_b.sent()) || {}).closeParent;
                         if (!rootForm && closeParent) {
-                            onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues());
+                            onSubmitSucceed === null || onSubmitSucceed === void 0 ? void 0 : onSubmitSucceed(getCurrentId(), getValues(), getFormValues());
                         }
                         return [2 /*return*/];
                 }
@@ -884,7 +882,7 @@ function Form(props, ref) {
             return null;
         }
         return (react_1.default.createElement(react_1.default.Fragment, null,
-            react_1.default.createElement(FormContext_1.default, { getValues: getValues, domain: actionDomain, activeId: id, activeModel: model, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction, getContext: getContext, setOriginalValue: setOriginalValue, unsavedOne2ManyChilds: unsavedOne2ManyChilds.current, addOne2ManyChild: addOne2ManyChild, removeOne2ManyChild: removeOne2ManyChild, submitForm: submitForm, fetchValues: fetchValues, formHasChanges: formHasChanges },
+            react_1.default.createElement(FormContext_1.default, { getValues: getValues, domain: actionDomain, activeId: id, activeModel: model, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction, getContext: getContext, setOriginalValue: setOriginalValue, submitForm: submitForm, fetchValues: fetchValues, formHasChanges: formHasChanges },
                 react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: debouncedCheckFieldsChanges, component: false, preserve: false }, formOoui && (react_1.default.createElement(Container_1.default, { container: formOoui.container, responsiveBehaviour: responsiveBehaviour }))))));
     };
     var footer = function () {

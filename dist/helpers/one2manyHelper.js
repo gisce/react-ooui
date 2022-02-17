@@ -50,7 +50,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkItem = exports.removeItems = exports.readObjectValues = void 0;
+exports.getNextPendingId = exports.linkItem = exports.removeItems = exports.readObjectValues = void 0;
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var readObjectValues = function (options) { return __awaiter(void 0, void 0, void 0, function () {
     var items, model, formFields, treeFields, _a, context, idsToFetch, values, formValues, treeValues;
@@ -141,4 +141,16 @@ var linkItem = function (options) { return __awaiter(void 0, void 0, void 0, fun
     });
 }); };
 exports.linkItem = linkItem;
+var getNextPendingId = function (items) {
+    var negativeIds = items
+        .filter(function (item) { return item.id && item.id < 0; })
+        .map(function (item) { return item.id; });
+    if (negativeIds.length === 0) {
+        return -1;
+    }
+    else {
+        return Math.min.apply(Math, negativeIds) - 1;
+    }
+};
+exports.getNextPendingId = getNextPendingId;
 //# sourceMappingURL=one2manyHelper.js.map

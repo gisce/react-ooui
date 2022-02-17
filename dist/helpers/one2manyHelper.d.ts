@@ -24,5 +24,6 @@ declare type LinkItemOptions = {
     fields: any;
 };
 declare const linkItem: (options: LinkItemOptions) => Promise<void>;
-export { readObjectValues, removeItems, linkItem };
+declare const getNextPendingId: (items: One2manyItem[]) => number;
+export { readObjectValues, removeItems, linkItem, getNextPendingId };
 //# sourceMappingURL=one2manyHelper.d.ts.map

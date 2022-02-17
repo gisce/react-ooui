@@ -87,7 +87,6 @@ var one2manyHelper_1 = require("@/helpers/one2manyHelper");
 var SearchModal_1 = require("@/widgets/modals/SearchModal");
 var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 var LocaleContext_1 = require("@/context/LocaleContext");
-var uuid_1 = require("uuid");
 function filterDuplicateItems(items) {
     var ids = items.map(function (o) { return o.id; });
     var filtered = items.filter(function (item, index) {
@@ -100,7 +99,7 @@ var One2manyInput = function (props) {
     var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui, views = props.views;
     var _b = react_1.useContext(One2manyContext_1.One2manyContext), currentView = _b.currentView, setCurrentView = _b.setCurrentView, itemIndex = _b.itemIndex, setItemIndex = _b.setItemIndex, manualTriggerChange = _b.manualTriggerChange, setManualTriggerChange = _b.setManualTriggerChange;
     var formContext = react_1.useContext(FormContext_1.FormContext);
-    var _c = formContext || {}, activeId = _c.activeId, activeModel = _c.activeModel, getValues = _c.getValues, getContext = _c.getContext, domain = _c.domain, addOne2ManyChild = _c.addOne2ManyChild, removeOne2ManyChild = _c.removeOne2ManyChild;
+    var _c = formContext || {}, activeId = _c.activeId, getValues = _c.getValues, getContext = _c.getContext, domain = _c.domain;
     var _d = react_1.useContext(LocaleContext_1.LocaleContext), lang = _d.lang, t = _d.t;
     var formRef = react_1.useRef();
     var _e = react_1.useState(false), formHasChanges = _e[0], setFormHasChanges = _e[1];
@@ -109,15 +108,13 @@ var One2manyInput = function (props) {
     var _h = react_1.useState(false), showFormModal = _h[0], setShowFormModal = _h[1];
     var _j = react_1.useState(false), showSearchModal = _j[0], setShowSearchModal = _j[1];
     var _k = react_1.useState(), modalItem = _k[0], setModalItem = _k[1];
-    var _l = react_1.useState(false), formIsSaving = _l[0], setFormIsSaving = _l[1];
-    var _m = react_1.useState([]), selectedRowKeys = _m[0], setSelectedRowKeys = _m[1];
-    var _o = react_1.useState(false), continuousEntryMode = _o[0], setContinuousEntryMode = _o[1];
+    var _l = react_1.useState([]), selectedRowKeys = _l[0], setSelectedRowKeys = _l[1];
+    var _m = react_1.useState(false), continuousEntryMode = _m[0], setContinuousEntryMode = _m[1];
     var transformedDomain = react_1.useRef([]);
-    var one2ManyUuid = react_1.useRef(uuid_1.v4());
-    var _p = ooui, readOnly = _p.readOnly, relation = _p.relation, context = _p.context, widgetDomain = _p.domain;
+    var _o = ooui, readOnly = _o.readOnly, relation = _o.relation, context = _o.context, widgetDomain = _o.domain;
     var isMany2many = ooui.type === "many2many";
     var fieldName = ooui.id;
-    var itemsToShow = items.filter(function (item) { return item.values; });
+    var itemsToShow = items.filter(function (item) { return item.values && item.operation !== "pendingRemove"; });
     use_deep_compare_effect_1.default(function () {
         fetchData();
     }, [items]);
@@ -155,7 +152,6 @@ var One2manyInput = function (props) {
                 case 0:
                     setIsLoading(true);
                     setFormHasChanges(false);
-                    removeOne2ManyChild === null || removeOne2ManyChild === void 0 ? void 0 : removeOne2ManyChild(one2ManyUuid.current);
                     setError(undefined);
                     _a.label = 1;
                 case 1:
@@ -250,14 +246,49 @@ var One2manyInput = function (props) {
             }
         }
     };
+    var reloadOriginalValuesForFormItem = function () { return __awaiter(void 0, void 0, void 0, function () {
+        var currentId, updatedFormObject, updatedTreeObject, updatedItems;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    currentId = itemsToShow[itemIndex].id;
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                            arch: views.get("form").arch,
+                            model: relation,
+                            ids: [currentId],
+                            fields: views.get("form").fields,
+                            context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
+                        })];
+                case 1:
+                    updatedFormObject = (_a.sent())[0];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                            arch: views.get("tree").arch,
+                            model: relation,
+                            ids: [currentId],
+                            fields: views.get("tree").fields,
+                            context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
+                        })];
+                case 2:
+                    updatedTreeObject = (_a.sent())[0];
+                    updatedItems = items.map(function (item) {
+                        if (item.id === currentId) {
+                            return __assign(__assign({}, item), { operation: "original", values: updatedFormObject, treeValues: updatedTreeObject });
+                        }
+                        return item;
+                    });
+                    triggerChange(updatedItems);
+                    return [2 /*return*/];
+            }
+        });
+    }); };
     var showFormChangesDialogIfNeeded = function (callback) {
         if (formHasChanges) {
             UnsavedChangesDialog_1.default({
                 lang: lang,
                 onOk: function () {
+                    reloadOriginalValuesForFormItem();
                     callback();
                     setFormHasChanges(false);
-                    removeOne2ManyChild === null || removeOne2ManyChild === void 0 ? void 0 : removeOne2ManyChild(one2ManyUuid.current);
                 },
             });
         }
@@ -292,16 +323,12 @@ var One2manyInput = function (props) {
             },
         });
     };
-    var saveItem = function () {
-        setFormIsSaving(true);
-        formRef.current.submitForm();
-    };
     var createItem = function () { return __awaiter(void 0, void 0, void 0, function () {
         var inv_field, defaultValues;
         var _a;
         return __generator(this, function (_b) {
             inv_field = ooui.inv_field;
-            if (inv_field) {
+            if (inv_field && activeId) {
                 defaultValues = (_a = {}, _a[inv_field] = activeId, _a);
             }
             if (currentView === "form") {
@@ -333,279 +360,97 @@ var One2manyInput = function (props) {
         });
     }); };
     var removeCurrentItem = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var err_2;
+        var updatedItems;
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    setIsLoading(true);
-                    setFormHasChanges(false);
-                    removeOne2ManyChild === null || removeOne2ManyChild === void 0 ? void 0 : removeOne2ManyChild(one2ManyUuid.current);
-                    setError(undefined);
-                    _a.label = 1;
-                case 1:
-                    _a.trys.push([1, 4, , 5]);
-                    if (!activeId) return [3 /*break*/, 3];
-                    return [4 /*yield*/, one2manyHelper_1.removeItems({
-                            activeId: activeId,
-                            model: activeModel,
-                            idsToRemove: [itemsToShow[itemIndex].id],
-                            fields: views.get("form").fields,
-                            fieldName: fieldName,
-                            isMany2many: isMany2many,
-                        })];
-                case 2:
-                    _a.sent();
-                    _a.label = 3;
-                case 3:
-                    // We remove the item from the internal list
+            setIsLoading(true);
+            setFormHasChanges(false);
+            setError(undefined);
+            try {
+                if (itemsToShow[itemIndex].id > 0) {
+                    updatedItems = items.map(function (item) {
+                        if (item.id === itemsToShow[itemIndex].id) {
+                            return __assign(__assign({}, item), { operation: "pendingRemove" });
+                        }
+                        else {
+                            return item;
+                        }
+                    });
+                    triggerChange(updatedItems);
+                }
+                else {
                     triggerChange(items.filter(function (item) { return item.id !== itemsToShow[itemIndex].id; }));
-                    return [3 /*break*/, 5];
-                case 4:
-                    err_2 = _a.sent();
-                    setError(err_2);
-                    return [3 /*break*/, 5];
-                case 5:
-                    setItemIndex(0);
-                    setIsLoading(false);
-                    return [2 /*return*/];
+                }
             }
+            catch (err) {
+                setError(err);
+            }
+            setItemIndex(0);
+            setIsLoading(false);
+            return [2 /*return*/];
         });
     }); };
     var removeSelectedItems = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var itemsToRemove, idsToRemove, updatedItems, err_3;
+        var itemsToRemove, idsToRemove_1, updatedItems;
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    itemsToRemove = itemsToShow.filter(function (item) {
-                        return selectedRowKeys.includes(item.id);
-                    });
-                    setIsLoading(true);
-                    setFormHasChanges(false);
-                    removeOne2ManyChild === null || removeOne2ManyChild === void 0 ? void 0 : removeOne2ManyChild(one2ManyUuid.current);
-                    setError(undefined);
-                    _a.label = 1;
-                case 1:
-                    _a.trys.push([1, 4, , 5]);
-                    if (!activeId) return [3 /*break*/, 3];
-                    idsToRemove = itemsToRemove.map(function (item) { return item.id; });
-                    return [4 /*yield*/, one2manyHelper_1.removeItems({
-                            activeId: activeId,
-                            model: activeModel,
-                            idsToRemove: idsToRemove,
-                            fields: views.get("form").fields,
-                            fieldName: fieldName,
-                            isMany2many: isMany2many,
-                        })];
-                case 2:
-                    _a.sent();
-                    _a.label = 3;
-                case 3:
-                    updatedItems = items.filter(function (item) { return !selectedRowKeys.includes(item.id); });
-                    triggerChange(updatedItems);
-                    return [3 /*break*/, 5];
-                case 4:
-                    err_3 = _a.sent();
-                    setError(err_3);
-                    return [3 /*break*/, 5];
-                case 5:
-                    setItemIndex(0);
-                    setIsLoading(false);
-                    return [2 /*return*/];
-            }
-        });
-    }); };
-    var formPostSaveAction = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-        var updatedFormObject, updatedTreeObject, updatedItems;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
-                        arch: views.get("form").arch,
-                        model: relation,
-                        ids: [id],
-                        fields: views.get("form").fields,
-                        context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
-                    })];
-                case 1:
-                    updatedFormObject = (_a.sent())[0];
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
-                            arch: views.get("tree").arch,
-                            model: relation,
-                            ids: [id],
-                            fields: views.get("tree").fields,
-                            context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
-                        })];
-                case 2:
-                    updatedTreeObject = (_a.sent())[0];
-                    updatedItems = items.map(function (item) {
-                        if (item.id === id) {
-                            return __assign(__assign({}, item), { operation: item.operation === "pendingUpdate" ? "original" : item.operation, values: updatedFormObject, treeValues: updatedTreeObject });
-                        }
-                        return item;
-                    });
-                    triggerChange(updatedItems);
-                    return [2 /*return*/];
-            }
-        });
-    }); };
-    var formModalPostSaveAction = function (ids) { return __awaiter(void 0, void 0, void 0, function () {
-        var newItems, modifiedItems, updatedItems, _i, newItems_1, newItem, updatedFormObject, updatedTreeObject, _loop_1, _a, modifiedItems_1, modifiedItem;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    newItems = ids.filter(function (id) {
-                        return items.find(function (item) { return item.id === id; }) === undefined;
-                    });
-                    modifiedItems = ids.filter(function (id) {
-                        return items.find(function (item) { return item.id === id; }) !== undefined;
-                    });
-                    updatedItems = items;
-                    _i = 0, newItems_1 = newItems;
-                    _b.label = 1;
-                case 1:
-                    if (!(_i < newItems_1.length)) return [3 /*break*/, 7];
-                    newItem = newItems_1[_i];
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
-                            arch: views.get("form").arch,
-                            model: relation,
-                            ids: [newItem],
-                            fields: views.get("form").fields,
-                            context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
-                        })];
-                case 2:
-                    updatedFormObject = (_b.sent())[0];
-                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
-                            arch: views.get("tree").arch,
-                            model: relation,
-                            ids: [newItem],
-                            fields: views.get("tree").fields,
-                            context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
-                        })];
-                case 3:
-                    updatedTreeObject = (_b.sent())[0];
-                    if (!activeId) return [3 /*break*/, 5];
-                    // We call the API for reading the updated object
-                    return [4 /*yield*/, one2manyHelper_1.linkItem({
-                            model: activeModel,
-                            activeId: activeId,
-                            id: newItem,
-                            fields: views.get("form").fields,
-                            fieldName: fieldName,
-                        })];
-                case 4:
-                    // We call the API for reading the updated object
-                    _b.sent();
-                    // It's a new item and we already have linked it with its parent, so we just only have to add it
-                    // to our internal list as an original (server and client are synced)
-                    updatedItems.push({
-                        id: newItem,
-                        operation: "original",
-                        values: updatedFormObject,
-                        treeValues: updatedTreeObject,
-                    });
-                    return [3 /*break*/, 6];
-                case 5:
-                    // Since we don't have a activeId to link with, we add the item as pendingLink
-                    // The effective link will take place when the parent form is saved
-                    updatedItems.push({
-                        id: newItem,
-                        operation: "pendingLink",
-                        values: updatedFormObject,
-                        treeValues: updatedTreeObject,
-                    });
-                    _b.label = 6;
-                case 6:
-                    _i++;
-                    return [3 /*break*/, 1];
-                case 7:
-                    _loop_1 = function (modifiedItem) {
-                        var updatedFormObject, updatedTreeObject;
-                        return __generator(this, function (_c) {
-                            switch (_c.label) {
-                                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
-                                        arch: views.get("form").arch,
-                                        model: relation,
-                                        ids: [modifiedItem],
-                                        fields: views.get("form").fields,
-                                        context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
-                                    })];
-                                case 1:
-                                    updatedFormObject = (_c.sent())[0];
-                                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
-                                            arch: views.get("tree").arch,
-                                            model: relation,
-                                            ids: [modifiedItem],
-                                            fields: views.get("tree").fields,
-                                            context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
-                                        })];
-                                case 2:
-                                    updatedTreeObject = (_c.sent())[0];
-                                    updatedItems = updatedItems.map(function (item) {
-                                        if (item.id === modifiedItem) {
-                                            return {
-                                                id: modifiedItem,
-                                                operation: activeId ? "original" : "pendingLink",
-                                                values: updatedFormObject,
-                                                treeValues: updatedTreeObject,
-                                            };
-                                        }
-                                        return item;
-                                    });
-                                    return [2 /*return*/];
-                            }
-                        });
-                    };
-                    _a = 0, modifiedItems_1 = modifiedItems;
-                    _b.label = 8;
-                case 8:
-                    if (!(_a < modifiedItems_1.length)) return [3 /*break*/, 11];
-                    modifiedItem = modifiedItems_1[_a];
-                    return [5 /*yield**/, _loop_1(modifiedItem)];
-                case 9:
-                    _b.sent();
-                    _b.label = 10;
-                case 10:
-                    _a++;
-                    return [3 /*break*/, 8];
-                case 11:
-                    triggerChange(updatedItems);
-                    return [2 /*return*/];
-            }
-        });
-    }); };
-    var setItemSaved = function (_a) {
-        var id = _a.id, saved = _a.saved;
-        return __awaiter(void 0, void 0, void 0, function () {
-            var updatedItems;
-            return __generator(this, function (_b) {
-                if (!id) {
-                    return [2 /*return*/];
-                }
-                updatedItems = items.map(function (item) {
-                    if (item.id === id) {
-                        return __assign(__assign({}, item), { operation: (saved ? "original" : "pendingUpdate") });
-                    }
-                    return item;
-                });
-                if (saved) {
-                    onChange === null || onChange === void 0 ? void 0 : onChange(filterDuplicateItems(updatedItems));
-                }
-                else {
-                    triggerChange(updatedItems);
-                }
-                return [2 /*return*/];
+            itemsToRemove = itemsToShow.filter(function (item) {
+                return selectedRowKeys.includes(item.id);
             });
+            setIsLoading(true);
+            setFormHasChanges(false);
+            setError(undefined);
+            try {
+                idsToRemove_1 = itemsToRemove.map(function (item) { return item.id; });
+                updatedItems = items
+                    .filter(function (item) {
+                    if (idsToRemove_1.includes(item.id) && item.id < 0) {
+                        return false;
+                    }
+                    return true;
+                })
+                    .map(function (item) {
+                    if (idsToRemove_1.includes(item.id)) {
+                        return __assign(__assign({}, item), { operation: "pendingRemove" });
+                    }
+                    else {
+                        return item;
+                    }
+                });
+                triggerChange(updatedItems);
+            }
+            catch (err) {
+                setError(err);
+            }
+            setItemIndex(0);
+            setIsLoading(false);
+            return [2 /*return*/];
         });
-    };
-    // This is the callback called when we save the One2manyTopBar in form mode
-    var onFormSubmitSucceed = function () {
-        var _a;
-        setFormIsSaving(false);
-        setFormHasChanges(false);
-        removeOne2ManyChild === null || removeOne2ManyChild === void 0 ? void 0 : removeOne2ManyChild(one2ManyUuid.current);
-        setItemSaved({ id: (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.id, saved: true });
-    };
-    // This is the callback called when a modal is done saving the object
-    var onFormModalSubmitSucceed = function () {
+    }); };
+    // This is the callback called when a modal is done creating/updating the object
+    var onFormModalSubmitSucceed = function (id, _, values) {
+        var updatedItems;
+        if (id) {
+            updatedItems = items.map(function (item) {
+                if (item.id === id) {
+                    return {
+                        id: id,
+                        operation: id > 0 ? "pendingUpdate" : "pendingCreate",
+                        values: __assign(__assign({}, values), { id: id }),
+                        treeValues: __assign(__assign({}, values), { id: id }),
+                    };
+                }
+                return item;
+            });
+        }
+        else {
+            var nextId = one2manyHelper_1.getNextPendingId(items);
+            updatedItems = items.concat({
+                id: nextId,
+                operation: "pendingCreate",
+                values: __assign(__assign({}, values), { id: nextId }),
+                treeValues: __assign(__assign({}, values), { id: nextId }),
+            });
+        }
+        triggerChange(updatedItems);
         if (!continuousEntryMode) {
             setShowFormModal(false);
         }
@@ -617,26 +462,62 @@ var One2manyInput = function (props) {
         setShowFormModal(true);
     };
     var onSearchModalSelectValue = function (ids) { return __awaiter(void 0, void 0, void 0, function () {
-        var e_1;
+        var updatedItems, filteredIds, _i, filteredIds_1, id, updatedFormObject, updatedTreeObject, e_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     setIsLoading(true);
+                    updatedItems = items;
+                    filteredIds = ids.filter(function (id) {
+                        return !items.find(function (item) { return item.id === id; });
+                    });
                     _a.label = 1;
                 case 1:
-                    _a.trys.push([1, 3, 4, 5]);
-                    return [4 /*yield*/, formModalPostSaveAction(ids)];
+                    _a.trys.push([1, 7, 8, 9]);
+                    _i = 0, filteredIds_1 = filteredIds;
+                    _a.label = 2;
                 case 2:
-                    _a.sent();
-                    return [3 /*break*/, 5];
+                    if (!(_i < filteredIds_1.length)) return [3 /*break*/, 6];
+                    id = filteredIds_1[_i];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                            arch: views.get("form").arch,
+                            model: relation,
+                            ids: [id],
+                            fields: views.get("form").fields,
+                            context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
+                        })];
                 case 3:
+                    updatedFormObject = (_a.sent())[0];
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                            arch: views.get("tree").arch,
+                            model: relation,
+                            ids: [id],
+                            fields: views.get("tree").fields,
+                            context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context),
+                        })];
+                case 4:
+                    updatedTreeObject = (_a.sent())[0];
+                    updatedItems.push({
+                        id: id,
+                        operation: "pendingLink",
+                        values: updatedFormObject,
+                        treeValues: updatedTreeObject,
+                    });
+                    _a.label = 5;
+                case 5:
+                    _i++;
+                    return [3 /*break*/, 2];
+                case 6:
+                    onChange === null || onChange === void 0 ? void 0 : onChange(updatedItems);
+                    return [3 /*break*/, 9];
+                case 7:
                     e_1 = _a.sent();
                     setError(e_1);
-                    return [3 /*break*/, 5];
-                case 4:
+                    return [3 /*break*/, 9];
+                case 8:
                     setIsLoading(false);
                     return [7 /*endfinally*/];
-                case 5: return [2 /*return*/];
+                case 9: return [2 /*return*/];
             }
         });
     }); };
@@ -653,19 +534,20 @@ var One2manyInput = function (props) {
             if (itemsToShow.length === 0) {
                 return t("noCurrentEntries");
             }
-            return (react_1.default.createElement(index_1.Form, { formView: views.get("form"), values: (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.values, parentContext: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), ref: formRef, model: relation, id: (_b = itemsToShow[itemIndex]) === null || _b === void 0 ? void 0 : _b.id, onSubmitSucceed: onFormSubmitSucceed, onSubmitError: function () {
-                    setFormIsSaving(false);
-                }, onFieldsChange: function () {
+            return (react_1.default.createElement(index_1.Form, { formView: views.get("form"), values: (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.values, parentContext: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), ref: formRef, model: relation, id: (_b = itemsToShow[itemIndex]) === null || _b === void 0 ? void 0 : _b.id, submitMode: "values", onFieldsChange: function (values) {
                     var _a;
-                    setItemSaved({ id: (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.id, saved: false });
-                    setFormHasChanges(true);
-                    addOne2ManyChild === null || addOne2ManyChild === void 0 ? void 0 : addOne2ManyChild(one2ManyUuid.current, formRef.current);
-                }, readOnly: readOnly, postSaveAction: function (ids) { return __awaiter(void 0, void 0, void 0, function () {
-                    return __generator(this, function (_a) {
-                        formPostSaveAction(ids[0]);
-                        return [2 /*return*/];
+                    var currentItemId = (_a = itemsToShow[itemIndex]) === null || _a === void 0 ? void 0 : _a.id;
+                    var updatedItems = items.map(function (item) {
+                        if (item.id === currentItemId) {
+                            return __assign(__assign({}, item), { operation: item.operation === "original"
+                                    ? "pendingUpdate"
+                                    : item.operation, values: __assign(__assign({}, values), { id: currentItemId }), treeValues: __assign(__assign({}, values), { id: currentItemId }) });
+                        }
+                        return item;
                     });
-                }); } }));
+                    triggerChange(updatedItems);
+                    setFormHasChanges(true);
+                }, readOnly: readOnly }));
         }
         return (react_1.default.createElement(index_2.Tree, { total: itemsToShow.length, limit: itemsToShow.length, treeView: views.get("tree"), results: itemsToShow.map(function (item) { return item.treeValues; }), loading: isLoading, onRowClicked: onTreeRowClicked, showPagination: false, rowSelection: {
                 selectedRowKeys: selectedRowKeys,
@@ -683,12 +565,12 @@ var One2manyInput = function (props) {
         return react_1.default.createElement(antd_1.Spin, null);
     }
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(One2manyTopBar_1.One2manyTopBar, { mode: currentView, title: getTitle(), readOnly: readOnly, isMany2Many: isMany2many, formHasChanges: formHasChanges, formIsSaving: formIsSaving, totalItems: itemsToShow.length, currentItemIndex: itemIndex, onSaveItem: saveItem, onDelete: showRemoveConfirm, onCreateItem: createItem, onToggleViewMode: toggleViewMode, onPreviousItem: previousItem, onNextItem: nextItem, onSearchItem: searchItem }),
+        react_1.default.createElement(One2manyTopBar_1.One2manyTopBar, { mode: currentView, title: getTitle(), readOnly: readOnly, isMany2Many: isMany2many, formHasChanges: formHasChanges, totalItems: itemsToShow.length, currentItemIndex: itemIndex, onDelete: showRemoveConfirm, onCreateItem: createItem, onToggleViewMode: toggleViewMode, onPreviousItem: previousItem, onNextItem: nextItem, onSearchItem: searchItem, selectedRowKeys: selectedRowKeys }),
         content(),
-        react_1.default.createElement(FormModal_1.FormModal, { formView: views.get("form"), model: relation, id: modalItem === null || modalItem === void 0 ? void 0 : modalItem.id, values: modalItem === null || modalItem === void 0 ? void 0 : modalItem.values, defaultValues: modalItem === null || modalItem === void 0 ? void 0 : modalItem.defaultValues, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, parentContext: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), onCancel: function () {
+        react_1.default.createElement(FormModal_1.FormModal, { formView: views.get("form"), model: relation, id: modalItem === null || modalItem === void 0 ? void 0 : modalItem.id, submitMode: "values", values: modalItem === null || modalItem === void 0 ? void 0 : modalItem.values, defaultValues: modalItem === null || modalItem === void 0 ? void 0 : modalItem.defaultValues, visible: showFormModal, onSubmitSucceed: onFormModalSubmitSucceed, parentContext: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), onCancel: function () {
                 setContinuousEntryMode(false);
                 setShowFormModal(false);
-            }, readOnly: readOnly, mustClearAfterSave: mustClearAfterSave, postSaveAction: formModalPostSaveAction }),
+            }, readOnly: readOnly, mustClearAfterSave: mustClearAfterSave }),
         react_1.default.createElement(SearchModal_1.SearchModal, { domain: transformedDomain.current, model: relation, context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), visible: showSearchModal, onSelectValues: function (ids) { return __awaiter(void 0, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     setShowSearchModal(false);
