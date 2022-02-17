@@ -20,18 +20,18 @@ import {
 } from "@/context/One2manyContext";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { One2manyTopBar } from "@/widgets/base/one2many/One2manyTopBar";
-import {
-  readObjectValues,
-  removeItems,
-  linkItem,
-} from "@/helpers/one2manyHelper";
+import { readObjectValues, getNextPendingId } from "@/helpers/one2manyHelper";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
-import { v4 as uuidv4 } from "uuid";
 
 type One2manyItem = {
-  operation?: "original" | "pendingLink" | "pendingUpdate";
+  operation?:
+    | "original"
+    | "pendingRemove"
+    | "pendingUpdate"
+    | "pendingCreate"
+    | "pendingLink";
   id?: number;
   values?: any;
   treeValues?: any;
@@ -69,15 +69,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   } = useContext(One2manyContext) as One2manyContextType;
 
   const formContext = useContext(FormContext) as FormContextType;
-  const {
-    activeId,
-    activeModel,
-    getValues,
-    getContext,
-    domain,
-    addOne2ManyChild,
-    removeOne2ManyChild,
-  } = formContext || {};
+  const { activeId, getValues, getContext, domain } = formContext || {};
   const { lang, t } = useContext(LocaleContext) as LocaleContextType;
 
   const formRef = useRef();
@@ -87,14 +79,11 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
   const [modalItem, setModalItem] = useState<One2manyItem>();
-  const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
   const [continuousEntryMode, setContinuousEntryMode] = useState<boolean>(
     false
   );
   const transformedDomain = useRef<any[]>([]);
-
-  const one2ManyUuid = useRef<string>(uuidv4());
 
   const {
     readOnly,
@@ -104,7 +93,9 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   } = ooui as One2manyOoui;
   const isMany2many = ooui.type === "many2many";
   const { id: fieldName } = ooui;
-  const itemsToShow = items.filter((item) => item.values);
+  const itemsToShow = items.filter(
+    (item) => item.values && item.operation !== "pendingRemove"
+  );
 
   useDeepCompareEffect(() => {
     fetchData();
@@ -137,7 +128,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const fetchOriginalItemsFromApi = async () => {
     setIsLoading(true);
     setFormHasChanges(false);
-    removeOne2ManyChild?.(one2ManyUuid.current);
     setError(undefined);
 
     try {
@@ -151,7 +141,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
       triggerChange(itemsWithValues);
     } catch (err) {
-      setError(err);
+      setError(err as any);
     } finally {
       setIsLoading(false);
     }
@@ -214,14 +204,51 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     }
   };
 
+  const reloadOriginalValuesForFormItem = async () => {
+    const currentId = itemsToShow[itemIndex].id!;
+
+    const updatedFormObject = (
+      await ConnectionProvider.getHandler().readObjects({
+        arch: views.get("form").arch,
+        model: relation,
+        ids: [currentId],
+        fields: views.get("form").fields,
+        context: { ...getContext?.(), ...context },
+      })
+    )[0];
+    const updatedTreeObject = (
+      await ConnectionProvider.getHandler().readObjects({
+        arch: views.get("tree").arch,
+        model: relation,
+        ids: [currentId],
+        fields: views.get("tree").fields,
+        context: { ...getContext?.(), ...context },
+      })
+    )[0];
+
+    const updatedItems: One2manyItem[] = items.map((item) => {
+      if (item.id === currentId) {
+        return {
+          ...item,
+          operation: "original",
+          values: updatedFormObject,
+          treeValues: updatedTreeObject,
+        };
+      }
+      return item;
+    });
+
+    triggerChange(updatedItems);
+  };
+
   const showFormChangesDialogIfNeeded = (callback: () => void) => {
     if (formHasChanges) {
       showUnsavedChangesDialog({
         lang,
         onOk: () => {
+          reloadOriginalValuesForFormItem();
           callback();
           setFormHasChanges(false);
-          removeOne2ManyChild?.(one2ManyUuid.current);
         },
       });
     } else {
@@ -256,16 +283,11 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     });
   };
 
-  const saveItem = () => {
-    setFormIsSaving(true);
-    (formRef.current as any).submitForm();
-  };
-
   const createItem = async () => {
     const { inv_field } = ooui;
     let defaultValues: any;
 
-    if (inv_field) {
+    if (inv_field && activeId) {
       defaultValues = { [inv_field]: activeId };
     }
 
@@ -295,28 +317,28 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const removeCurrentItem = async () => {
     setIsLoading(true);
     setFormHasChanges(false);
-    removeOne2ManyChild?.(one2ManyUuid.current);
     setError(undefined);
 
     try {
-      // If we have a activeId it means we can process the operation to the API
-      if (activeId) {
-        await removeItems({
-          activeId,
-          model: activeModel,
-          idsToRemove: [itemsToShow[itemIndex].id!],
-          fields: views.get("form").fields,
-          fieldName,
-          isMany2many,
+      if (itemsToShow[itemIndex].id! > 0) {
+        const updatedItems = items.map((item) => {
+          if (item.id === itemsToShow[itemIndex].id!) {
+            return {
+              ...item,
+              operation: "pendingRemove",
+            } as One2manyItem;
+          } else {
+            return item;
+          }
         });
+        triggerChange(updatedItems);
+      } else {
+        triggerChange(
+          items.filter((item) => item.id !== itemsToShow[itemIndex].id!)
+        );
       }
-
-      // We remove the item from the internal list
-      triggerChange(
-        items.filter((item) => item.id !== itemsToShow[itemIndex].id)
-      );
     } catch (err) {
-      setError(err);
+      setError(err as any);
     }
 
     setItemIndex(0);
@@ -330,213 +352,69 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
     setIsLoading(true);
     setFormHasChanges(false);
-    removeOne2ManyChild?.(one2ManyUuid.current);
     setError(undefined);
 
     try {
-      // If we have a activeId it means we can process the operation to the API
-      if (activeId) {
-        const idsToRemove: number[] = itemsToRemove.map((item) => item.id!);
+      const idsToRemove: number[] = itemsToRemove.map((item) => item.id!);
 
-        await removeItems({
-          activeId,
-          model: activeModel,
-          idsToRemove: idsToRemove,
-          fields: views.get("form").fields,
-          fieldName,
-          isMany2many,
+      const updatedItems = items
+        .filter((item) => {
+          if (idsToRemove.includes(item.id!) && item.id! < 0) {
+            return false;
+          }
+          return true;
+        })
+        .map((item) => {
+          if (idsToRemove.includes(item.id!)) {
+            return {
+              ...item,
+              operation: "pendingRemove",
+            } as One2manyItem;
+          } else {
+            return item;
+          }
         });
-      }
-      // We remove the items from the internal list
-      const updatedItems = items.filter(
-        (item) => !selectedRowKeys.includes(item.id)
-      );
       triggerChange(updatedItems);
     } catch (err) {
-      setError(err);
+      setError(err as any);
     }
 
     setItemIndex(0);
     setIsLoading(false);
   };
 
-  const formPostSaveAction = async (id: number) => {
-    // We call the API for reading the updated object
-    const updatedFormObject = (
-      await ConnectionProvider.getHandler().readObjects({
-        arch: views.get("form").arch,
-        model: relation,
-        ids: [id],
-        fields: views.get("form").fields,
-        context: { ...getContext?.(), ...context },
-      })
-    )[0];
-    const updatedTreeObject = (
-      await ConnectionProvider.getHandler().readObjects({
-        arch: views.get("tree").arch,
-        model: relation,
-        ids: [id],
-        fields: views.get("tree").fields,
-        context: { ...getContext?.(), ...context },
-      })
-    )[0];
+  // This is the callback called when a modal is done creating/updating the object
+  const onFormModalSubmitSucceed = (
+    id: number | undefined,
+    _: any,
+    values: any
+  ) => {
+    let updatedItems: One2manyItem[];
 
-    // Then we update the retrieved object with updated values inside our internal list with triggerChange
-    const updatedItems: One2manyItem[] = items.map((item: One2manyItem) => {
-      if (item.id === id) {
-        return {
-          ...item,
-          operation:
-            item.operation === "pendingUpdate" ? "original" : item.operation,
-          values: updatedFormObject,
-          treeValues: updatedTreeObject,
-        };
-      }
-      return item;
-    });
-
-    triggerChange(updatedItems);
-  };
-
-  const formModalPostSaveAction = async (ids: number[]) => {
-    // We check wether the item is already in our internal list
-    const newItems = ids.filter((id) => {
-      return items.find((item) => item.id === id) === undefined;
-    });
-
-    const modifiedItems = ids.filter((id) => {
-      return items.find((item) => item.id === id) !== undefined;
-    });
-
-    let updatedItems = items;
-
-    for (const newItem of newItems) {
-      const updatedFormObject = (
-        await ConnectionProvider.getHandler().readObjects({
-          arch: views.get("form").arch,
-          model: relation,
-          ids: [newItem],
-          fields: views.get("form").fields,
-          context: { ...getContext?.(), ...context },
-        })
-      )[0];
-      const updatedTreeObject = (
-        await ConnectionProvider.getHandler().readObjects({
-          arch: views.get("tree").arch,
-          model: relation,
-          ids: [newItem],
-          fields: views.get("tree").fields,
-          context: { ...getContext?.(), ...context },
-        })
-      )[0];
-
-      if (activeId) {
-        // We call the API for reading the updated object
-
-        await linkItem({
-          model: activeModel,
-          activeId,
-          id: newItem,
-          fields: views.get("form").fields,
-          fieldName,
-        });
-
-        // It's a new item and we already have linked it with its parent, so we just only have to add it
-        // to our internal list as an original (server and client are synced)
-        updatedItems.push({
-          id: newItem,
-          operation: "original",
-          values: updatedFormObject,
-          treeValues: updatedTreeObject,
-        });
-      } else {
-        // Since we don't have a activeId to link with, we add the item as pendingLink
-        // The effective link will take place when the parent form is saved
-        updatedItems.push({
-          id: newItem,
-          operation: "pendingLink",
-          values: updatedFormObject,
-          treeValues: updatedTreeObject,
-        });
-      }
-    }
-
-    for (const modifiedItem of modifiedItems) {
-      // We iterate over our internal list in order to update the object values with the updated ones from the API
-      // If we have a activeId, we consider the item as original, because it's already saved and linked
-      // If we don't have a activeId, the item will have to be linked when the parent form is saved
-      const updatedFormObject = (
-        await ConnectionProvider.getHandler().readObjects({
-          arch: views.get("form").arch,
-          model: relation,
-          ids: [modifiedItem],
-          fields: views.get("form").fields,
-          context: { ...getContext?.(), ...context },
-        })
-      )[0];
-      const updatedTreeObject = (
-        await ConnectionProvider.getHandler().readObjects({
-          arch: views.get("tree").arch,
-          model: relation,
-          ids: [modifiedItem],
-          fields: views.get("tree").fields,
-          context: { ...getContext?.(), ...context },
-        })
-      )[0];
-
-      updatedItems = updatedItems.map((item: One2manyItem) => {
-        if (item.id === modifiedItem) {
+    if (id) {
+      updatedItems = items.map((item: One2manyItem) => {
+        if (item.id === id) {
           return {
-            id: modifiedItem,
-            operation: activeId ? "original" : "pendingLink",
-            values: updatedFormObject,
-            treeValues: updatedTreeObject,
+            id,
+            operation: id > 0 ? "pendingUpdate" : "pendingCreate",
+            values: { ...values, id },
+            treeValues: { ...values, id },
           };
         }
         return item;
       });
+    } else {
+      const nextId = getNextPendingId(items);
+      updatedItems = items.concat({
+        id: nextId,
+        operation: "pendingCreate",
+        values: { ...values, id: nextId },
+        treeValues: { ...values, id: nextId },
+      });
     }
 
     triggerChange(updatedItems);
-  };
 
-  const setItemSaved = async ({
-    id,
-    saved,
-  }: {
-    id: number;
-    saved: boolean;
-  }) => {
-    if (!id) {
-      return;
-    }
-    const updatedItems = items.map((item: One2manyItem) => {
-      if (item.id === id) {
-        return {
-          ...item,
-          operation: (saved ? "original" : "pendingUpdate") as any,
-        };
-      }
-      return item;
-    });
-
-    if (saved) {
-      onChange?.(filterDuplicateItems(updatedItems));
-    } else {
-      triggerChange(updatedItems);
-    }
-  };
-
-  // This is the callback called when we save the One2manyTopBar in form mode
-  const onFormSubmitSucceed = () => {
-    setFormIsSaving(false);
-    setFormHasChanges(false);
-    removeOne2ManyChild?.(one2ManyUuid.current);
-    setItemSaved({ id: itemsToShow[itemIndex]?.id!, saved: true });
-  };
-
-  // This is the callback called when a modal is done saving the object
-  const onFormModalSubmitSucceed = () => {
     if (!continuousEntryMode) {
       setShowFormModal(false);
     }
@@ -552,10 +430,42 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const onSearchModalSelectValue = async (ids: number[]) => {
     setIsLoading(true);
 
+    let updatedItems = items;
+    const filteredIds = ids.filter((id) => {
+      return !items.find((item) => item.id === id);
+    });
+
     try {
-      await formModalPostSaveAction(ids);
+      for (const id of filteredIds) {
+        const updatedFormObject = (
+          await ConnectionProvider.getHandler().readObjects({
+            arch: views.get("form").arch,
+            model: relation,
+            ids: [id],
+            fields: views.get("form").fields,
+            context: { ...getContext?.(), ...context },
+          })
+        )[0];
+        const updatedTreeObject = (
+          await ConnectionProvider.getHandler().readObjects({
+            arch: views.get("tree").arch,
+            model: relation,
+            ids: [id],
+            fields: views.get("tree").fields,
+            context: { ...getContext?.(), ...context },
+          })
+        )[0];
+        updatedItems.push({
+          id,
+          operation: "pendingLink",
+          values: updatedFormObject,
+          treeValues: updatedTreeObject,
+        });
+      }
+
+      onChange?.(updatedItems);
     } catch (e) {
-      setError(e);
+      setError(e as any);
     } finally {
       setIsLoading(false);
     }
@@ -583,19 +493,30 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           ref={formRef}
           model={relation}
           id={itemsToShow[itemIndex]?.id}
-          onSubmitSucceed={onFormSubmitSucceed}
-          onSubmitError={() => {
-            setFormIsSaving(false);
-          }}
-          onFieldsChange={() => {
-            setItemSaved({ id: itemsToShow[itemIndex]?.id!, saved: false });
+          submitMode={"values"}
+          onFieldsChange={(values: any) => {
+            const currentItemId = itemsToShow[itemIndex]?.id;
+
+            const updatedItems = items.map((item) => {
+              if (item.id === currentItemId) {
+                return {
+                  ...item,
+                  operation:
+                    item.operation === "original"
+                      ? "pendingUpdate"
+                      : item.operation,
+                  values: { ...values, id: currentItemId },
+                  treeValues: { ...values, id: currentItemId },
+                };
+              }
+              return item;
+            });
+
+            triggerChange(updatedItems);
+
             setFormHasChanges(true);
-            addOne2ManyChild?.(one2ManyUuid.current, formRef.current);
           }}
           readOnly={readOnly}
-          postSaveAction={async (ids: number[]) => {
-            formPostSaveAction(ids[0]);
-          }}
         />
       );
     }
@@ -638,22 +559,22 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         readOnly={readOnly}
         isMany2Many={isMany2many}
         formHasChanges={formHasChanges}
-        formIsSaving={formIsSaving}
         totalItems={itemsToShow.length}
         currentItemIndex={itemIndex}
-        onSaveItem={saveItem}
         onDelete={showRemoveConfirm}
         onCreateItem={createItem}
         onToggleViewMode={toggleViewMode}
         onPreviousItem={previousItem}
         onNextItem={nextItem}
         onSearchItem={searchItem}
+        selectedRowKeys={selectedRowKeys}
       />
       {content()}
       <FormModal
         formView={views.get("form")}
         model={relation}
         id={modalItem?.id}
+        submitMode={"values"}
         values={modalItem?.values}
         defaultValues={modalItem?.defaultValues}
         visible={showFormModal}
@@ -665,7 +586,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         }}
         readOnly={readOnly}
         mustClearAfterSave={mustClearAfterSave}
-        postSaveAction={formModalPostSaveAction}
       />
       <SearchModal
         domain={transformedDomain.current}
