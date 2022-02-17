@@ -12,7 +12,7 @@ type ReadObjectValuesOptions = {
 const readObjectValues = async (
   options: ReadObjectValuesOptions
 ): Promise<One2manyItem[]> => {
-  const { items, model, formFields, treeFields, context = {} } = options;
+  const { items, model, formFields, treeFields, context = {}} = options;
 
   // We get a number array of id's
   const idsToFetch = items.map((item) => item.id) as number[];
@@ -117,15 +117,4 @@ const linkItem = async (options: LinkItemOptions) => {
   });
 };
 
-const getNextPendingId = (items: One2manyItem[]) => {
-  const negativeIds: number[] = items
-    .filter((item) => item.id && item.id < 0)
-    .map((item) => item.id!);
-  if (negativeIds.length === 0) {
-    return -1;
-  } else {
-    return Math.min(...negativeIds) - 1;
-  }
-};
-
-export { readObjectValues, removeItems, linkItem, getNextPendingId };
+export { readObjectValues, removeItems, linkItem };

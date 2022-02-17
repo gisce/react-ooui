@@ -18,6 +18,9 @@ export type FormContextType = {
   getValues: () => Promise<any>;
   setOriginalValue: (field: string, value: any) => void;
   domain: any[];
+  unsavedOne2ManyChilds?: Map<string, any>;
+  addOne2ManyChild?: (key: string, child: any) => void;
+  removeOne2ManyChild?: (key: string) => void;
   submitForm?: (options?: { callOnSubmitSucceed?: boolean }) => Promise<boolean>;
   fetchValues?: () => void;
   formHasChanges?: () => boolean;
@@ -41,6 +44,9 @@ const FormProvider = (props: FormProviderProps): any => {
     getValues,
     setOriginalValue,
     domain,
+    unsavedOne2ManyChilds,
+    addOne2ManyChild,
+    removeOne2ManyChild,
     submitForm,
     fetchValues,
     formHasChanges,
@@ -58,6 +64,9 @@ const FormProvider = (props: FormProviderProps): any => {
         executeButtonAction,
         getContext,
         setOriginalValue,
+        unsavedOne2ManyChilds,
+        addOne2ManyChild,
+        removeOne2ManyChild,
         submitForm,
         fetchValues,
         formHasChanges,

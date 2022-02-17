@@ -40,11 +40,7 @@ type Props = {
 const booleanComponentFn = (value: boolean): React.ReactElement => {
   return <Checkbox defaultChecked={value} disabled />;
 };
-
 const many2OneComponentFn = (m2oField: any): React.ReactElement => {
-  if (!m2oField) {
-    return <></>;
-  }
   return (
     <Space>
       <>{m2oField.value}</>
