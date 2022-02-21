@@ -41,10 +41,17 @@ var getTouchedValues = function (_a) {
     var source = _a.source, target = _a.target, fields = _a.fields;
     var differences = {};
     Object.keys(target).forEach(function (key) {
-        if (Array.isArray(target[key])) {
-            var is2Many = fields[key]
-                ? fields[key].type === "one2many" || fields[key].type === "many2many"
-                : false;
+        var _a, _b;
+        var is2Many = fields[key]
+            ? fields[key].type === "one2many" || fields[key].type === "many2many"
+            : false;
+        if (is2Many) {
+            var nonOriginalItems = ((_b = (_a = target[key]) === null || _a === void 0 ? void 0 : _a.items) === null || _b === void 0 ? void 0 : _b.filter(function (item) { return item.operation !== "original"; })) || [];
+            if (nonOriginalItems.length > 0) {
+                differences[key] = target[key];
+            }
+        }
+        else if (Array.isArray(target[key])) {
             if (source[key] === undefined) {
                 differences[key] = target[key];
             }
@@ -63,12 +70,6 @@ var getTouchedValues = function (_a) {
                     if (sourceValue !== targetValue) {
                         differences[key] = target[key];
                     }
-                }
-            }
-            else if (is2Many) {
-                var nonOriginalItems = target[key].filter(function (item) { return item.operation !== "original"; });
-                if (nonOriginalItems.length > 0) {
-                    differences[key] = target[key];
                 }
             }
             else {
