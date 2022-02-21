@@ -1,4 +1,4 @@
-import { Text as TextOoui } from "ooui";
+import { Text as TextOoui } from "@gisce/ooui";
 declare type Props = {
     ooui: TextOoui;
 };

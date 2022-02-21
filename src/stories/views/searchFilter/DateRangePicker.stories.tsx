@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Field as FieldOoui } from "ooui";
+import { Field as FieldOoui } from "@gisce/ooui";
 import LocaleProvider from "../../../context/LocaleContext";
 
 import { DateRangePicker } from "../../../widgets/views/searchFilter/DateRangePicker";

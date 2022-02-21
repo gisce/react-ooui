@@ -1,4 +1,4 @@
-import { Separator as SeparatorOoui } from "ooui";
+import { Separator as SeparatorOoui } from "@gisce/ooui";
 declare type Props = {
     ooui: SeparatorOoui;
 };

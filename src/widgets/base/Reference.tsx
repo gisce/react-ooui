@@ -4,7 +4,7 @@ import {
   Reference as ReferenceOoui,
   Selection as SelectionOoui,
   Many2one as Many2oneOoui,
-} from "ooui";
+} from "@gisce/ooui";
 import Field from "@/common/Field";
 import { Many2oneInput } from "./many2one/Many2one";
 import { SelectionInput } from "./Selection";

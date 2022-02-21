@@ -2,7 +2,7 @@ import React from "react";
 import { Row, Col } from "antd";
 import { Float } from "@/widgets/base/Float";
 import { Integer } from "@/widgets/base/Integer";
-import { Integer as IntegerOoui, Label as LabelOoui } from "ooui";
+import { Integer as IntegerOoui, Label as LabelOoui } from "@gisce/ooui";
 import Label from "@/widgets/base/Label";
 import { WidgetProps } from "@/types";
 

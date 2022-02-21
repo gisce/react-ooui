@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Table, Pagination, Checkbox, Space, Row, Col, Spin } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
-import { Tree as TreeOoui } from "ooui";
+import { Tree as TreeOoui } from "@gisce/ooui";
 
 import { TreeView, Column } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";

@@ -1,4 +1,4 @@
-import { One2many as One2manyOoui } from "ooui";
+import { One2many as One2manyOoui } from "@gisce/ooui";
 declare type Props = {
     ooui: One2manyOoui;
 };

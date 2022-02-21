@@ -1,4 +1,4 @@
-import { Timeline as TimelineOoui } from "ooui";
+import { Timeline as TimelineOoui } from "@gisce/ooui";
 import { Views } from "@/types";
 declare type TimelineProps = {
     ooui: TimelineOoui;

@@ -4,7 +4,7 @@ import React from "react";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 import Config from "@/Config";
-import { Date as DateOoui } from "ooui";
+import { Date as DateOoui } from "@gisce/ooui";
 import moment from "moment";
 
 type DatePickerProps = WidgetProps & {

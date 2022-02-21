@@ -1,5 +1,5 @@
 import React from "react";
-import { One2many as One2manyOoui } from "ooui";
+import { One2many as One2manyOoui } from "@gisce/ooui";
 import { Views } from "@/types";
 declare type One2manyItem = {
     operation?: "original" | "pendingRemove" | "pendingUpdate" | "pendingCreate" | "pendingLink";

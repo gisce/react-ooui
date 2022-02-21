@@ -24,7 +24,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
-var ooui_1 = require("ooui");
+var ooui_1 = require("@gisce/ooui");
 var Label_1 = __importDefault(require("@/widgets/base/Label"));
 var LocaleContext_1 = require("@/context/LocaleContext");
 function Field(_a) {

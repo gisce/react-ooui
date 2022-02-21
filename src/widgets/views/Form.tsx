@@ -6,7 +6,7 @@ import React, {
   useRef,
   useContext,
 } from "react";
-import { Form as FormOoui } from "ooui";
+import { Form as FormOoui } from "@gisce/ooui";
 import {
   Form as AntForm,
   Button,

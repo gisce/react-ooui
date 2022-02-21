@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Input, Button, Row, Col } from "antd";
-import { Char as CharOoui } from "ooui";
+import { Char as CharOoui } from "@gisce/ooui";
 import Config from "@/Config";
 import { EditOutlined, CheckOutlined } from "@ant-design/icons";
 

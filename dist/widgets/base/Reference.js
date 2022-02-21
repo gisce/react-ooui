@@ -36,7 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReferenceInput = exports.Reference = void 0;
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
-var ooui_1 = require("ooui");
+var ooui_1 = require("@gisce/ooui");
 var Field_1 = __importDefault(require("@/common/Field"));
 var Many2one_1 = require("./many2one/Many2one");
 var Selection_1 = require("./Selection");

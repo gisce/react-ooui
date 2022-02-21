@@ -1,7 +1,7 @@
 import React, { useContext, useRef } from "react";
 import { Row, Space } from "antd";
 import Field from "@/common/Field";
-import { Image as ImageOoui } from "ooui";
+import { Image as ImageOoui } from "@gisce/ooui";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
 import {
   FolderOpenOutlined,

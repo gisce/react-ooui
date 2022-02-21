@@ -70,7 +70,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
-var ooui_1 = require("ooui");
+var ooui_1 = require("@gisce/ooui");
 var antd_1 = require("antd");
 var icons_1 = require("@ant-design/icons");
 var debounce_1 = __importDefault(require("lodash/debounce"));

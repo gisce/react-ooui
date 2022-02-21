@@ -1,7 +1,7 @@
 import React from "react";
 
 import { One2many } from "..";
-import { One2many as One2manyOoui } from "ooui";
+import { One2many as One2manyOoui } from "@gisce/ooui";
 import "antd/dist/antd.css";
 import LocaleProvider from "../context/LocaleContext";
 

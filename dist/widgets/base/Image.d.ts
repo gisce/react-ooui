@@ -1,4 +1,4 @@
-import { Image as ImageOoui } from "ooui";
+import { Image as ImageOoui } from "@gisce/ooui";
 declare type Props = {
     ooui: ImageOoui;
 };

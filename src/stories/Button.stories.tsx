@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Button } from "..";
-import { Button as ButtonOoui } from "ooui";
+import { Button as ButtonOoui } from "@gisce/ooui";
 import "antd/dist/antd.css";
 import LocaleProvider from "../context/LocaleContext";
 

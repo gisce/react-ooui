@@ -19,7 +19,7 @@ var react_1 = __importDefault(require("react"));
 var antd_1 = require("antd");
 var Float_1 = require("@/widgets/base/Float");
 var Integer_1 = require("@/widgets/base/Integer");
-var ooui_1 = require("ooui");
+var ooui_1 = require("@gisce/ooui");
 var Label_1 = __importDefault(require("@/widgets/base/Label"));
 function PairFields(props) {
     var ooui = props.ooui, showLabel = props.showLabel;

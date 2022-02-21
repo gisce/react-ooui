@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { FloatTimeInput } from "../widgets/base/FloatTime";
-import { Float as FloatOoui } from "ooui";
+import { Float as FloatOoui } from "@gisce/ooui";
 import "antd/dist/antd.css";
 import LocaleProvider from "../context/LocaleContext";
 

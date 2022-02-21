@@ -1,5 +1,5 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
-import { One2many as One2manyOoui } from "ooui";
+import { One2many as One2manyOoui } from "@gisce/ooui";
 import { Alert, Spin } from "antd";
 import { Form } from "@/index";
 import { Tree } from "@/index";
@@ -7,7 +7,7 @@ import {
   Form as FormOoui,
   Tree as TreeOoui,
   transformDomainForChildWidget,
-} from "ooui";
+} from "@gisce/ooui";
 import { Views } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import { FormModal } from "@/widgets/modals/FormModal";

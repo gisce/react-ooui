@@ -2,7 +2,7 @@ import React from "react";
 import { Tooltip } from "antd";
 import { WidgetProps } from "@/types";
 import { QuestionCircleOutlined } from "@ant-design/icons";
-import { Label as LabelOoui } from "ooui";
+import { Label as LabelOoui } from "@gisce/ooui";
 
 type Props = WidgetProps & {
   align?: "left" | "center" | "right";
@@ -24,7 +24,9 @@ const Label = (props: Props) => {
   const labelAlgin = align ? align : fieldForLabel ? responsiveAlign : "left";
 
   return (
-    <div className={`flex flex-row items-center pb-1 pt-1 ${alignClass[labelAlgin]}`}>
+    <div
+      className={`flex flex-row items-center pb-1 pt-1 ${alignClass[labelAlgin]}`}
+    >
       {tooltip && (
         <Tooltip title={tooltip}>
           <QuestionCircleOutlined className="text-xs text-blue-400 pr-1" />

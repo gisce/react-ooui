@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import Welcome from "./Welcome";
 import TabManagerProvider from "@/context/TabManagerContext";
 import ActionView, { View } from "./ActionView";
-import { parseContext } from "ooui";
+import { parseContext } from "@gisce/ooui";
 import LocaleContextProvider from "@/context/LocaleContext";
 import { tForLang } from "@/context/LocaleContext";
 import { ShortcutApi } from "@/ui/FavouriteButton";

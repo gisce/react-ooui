@@ -1,7 +1,7 @@
 import React, { useRef, useContext } from "react";
 import { Row, Col, Button, Input, Space } from "antd";
 import Field from "@/common/Field";
-import { Binary as BinaryOoui } from "ooui";
+import { Binary as BinaryOoui } from "@gisce/ooui";
 import Config from "@/Config";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
 import {
