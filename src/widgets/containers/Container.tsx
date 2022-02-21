@@ -1,5 +1,11 @@
 import React from "react";
-import { Container as ContainerOoui, Field, Widget, Button, Label } from "ooui";
+import {
+  Container as ContainerOoui,
+  Field,
+  Widget,
+  Button,
+  Label,
+} from "@gisce/ooui";
 import { createReactWidget } from "@/widgets/WidgetFactory";
 
 import {

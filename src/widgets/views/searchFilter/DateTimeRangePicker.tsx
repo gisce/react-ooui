@@ -2,7 +2,7 @@ import { DatePicker, TimePicker } from "antd";
 
 import React from "react";
 import Field from "@/common/Field";
-import { Field as FieldOoui, Label as LabelOoui } from "ooui";
+import { Field as FieldOoui, Label as LabelOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Label from "@/widgets/base/Label";
 

@@ -5,7 +5,11 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import "antd/dist/antd.css";
 import "@/tailwind.generated.css";
 
-import { SearchFilter as SearchFilterOoui, Container, Field } from "ooui";
+import {
+  SearchFilter as SearchFilterOoui,
+  Container,
+  Field,
+} from "@gisce/ooui";
 
 import { SearchField } from "./SearchField";
 import { SearchBottomBar } from "./SearchBottomBar";

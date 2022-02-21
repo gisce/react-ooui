@@ -1,4 +1,4 @@
-import { Widget, Label, Field, Container } from "ooui";
+import { Widget, Label, Field, Container } from "@gisce/ooui";
 
 const getSpanStyleForItem = ({
   item,
@@ -70,7 +70,10 @@ const expandWidgetsIfNeeded = ({
   });
 };
 
-const getSingleRowTemplateColumns = (row: Widget[], numberOfColumns: number) => {
+const getSingleRowTemplateColumns = (
+  row: Widget[],
+  numberOfColumns: number
+) => {
   const gridOptions = row.map((item: Widget) => {
     if (item instanceof Label && (item as Label).fieldForLabel) {
       return "auto";

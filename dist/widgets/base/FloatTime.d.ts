@@ -1,5 +1,5 @@
 import React from "react";
-import { Float as FloatOoui } from "ooui";
+import { Float as FloatOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 export declare const FloatTime: (props: WidgetProps) => JSX.Element;
 interface FloatTimeInputProps {

@@ -1,6 +1,6 @@
 import React from "react";
 import { Divider } from "antd";
-import { Separator as SeparatorOoui } from "ooui";
+import { Separator as SeparatorOoui } from "@gisce/ooui";
 
 type Props = {
   ooui: SeparatorOoui;

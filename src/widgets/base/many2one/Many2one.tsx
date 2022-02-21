@@ -7,7 +7,10 @@ import {
 } from "@ant-design/icons";
 import styled from "styled-components";
 
-import { Many2one as Many2oneOoui, transformDomainForChildWidget } from "ooui";
+import {
+  Many2one as Many2oneOoui,
+  transformDomainForChildWidget,
+} from "@gisce/ooui";
 import Field from "@/common/Field";
 import Config from "@/Config";
 import { SearchModal } from "@/widgets/modals/SearchModal";
@@ -89,7 +92,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     } else if (id && text.length > 0) {
       setInputText(text);
     } else if (!id && !text) {
-      setInputText(inputTextRef.current || "");
+      setInputText(inputTextRef.current || "");
     }
   }, [value]);
 

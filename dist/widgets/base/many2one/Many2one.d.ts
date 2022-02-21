@@ -1,5 +1,5 @@
 import React from "react";
-import { Many2one as Many2oneOoui } from "ooui";
+import { Many2one as Many2oneOoui } from "@gisce/ooui";
 declare type Props = {
     ooui: Many2oneOoui;
     onOpenDetailClick?: ((event: React.MouseEvent<HTMLElement, MouseEvent>) => void) | undefined;

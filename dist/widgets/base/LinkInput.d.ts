@@ -1,4 +1,4 @@
-import { Char as CharOoui } from "ooui";
+import { Char as CharOoui } from "@gisce/ooui";
 interface LinkInputProps {
     ooui: CharOoui;
     value?: string;

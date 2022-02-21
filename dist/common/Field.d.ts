@@ -1,5 +1,5 @@
 import React from "react";
-import { Field as FieldOoui } from "ooui";
+import { Field as FieldOoui } from "@gisce/ooui";
 export default function Field({ ooui, children, layout, valuePropName, showLabel, alignLabel, required, type, validator, }: {
     ooui: FieldOoui;
     children?: React.ReactNode;

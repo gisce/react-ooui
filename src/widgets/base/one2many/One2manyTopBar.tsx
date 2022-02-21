@@ -1,15 +1,12 @@
 import React from "react";
-import { Button } from "antd";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
 
 import {
   FileAddOutlined,
-  SaveOutlined,
   DeleteOutlined,
   LeftOutlined,
   RightOutlined,
   AlignLeftOutlined,
-  LoadingOutlined,
   SearchOutlined,
   ApiOutlined,
 } from "@ant-design/icons";
@@ -19,17 +16,16 @@ type One2manyTopBarProps = {
   mode: "tree" | "form";
   isMany2Many: boolean;
   readOnly: boolean;
-  formIsSaving: boolean;
   formHasChanges: boolean;
   onToggleViewMode: () => void;
   onCreateItem: () => void;
-  onSaveItem: () => void;
   onDelete: () => void;
   totalItems: number;
   currentItemIndex: number;
   onPreviousItem: () => void;
   onNextItem: () => void;
   onSearchItem: () => void;
+  selectedRowKeys: string[];
 };
 
 export const One2manyTopBar = (props: One2manyTopBarProps) => {
@@ -39,9 +35,6 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
     onCreateItem,
     onToggleViewMode,
     mode,
-    formIsSaving,
-    onSaveItem,
-    formHasChanges,
     onDelete,
     totalItems,
     currentItemIndex,
@@ -49,6 +42,7 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
     onNextItem,
     isMany2Many,
     onSearchItem,
+    selectedRowKeys,
   } = props;
 
   function separator() {
@@ -65,24 +59,17 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
     );
   }
 
-  function saveButton() {
-    return (
-      <ButtonWithTooltip
-        tooltip={"Save"}
-        icon={formIsSaving ? <LoadingOutlined /> : <SaveOutlined />}
-        onClick={onSaveItem}
-        disabled={!formHasChanges || formIsSaving || readOnly}
-      />
-    );
-  }
-
   function deleteButton() {
     return (
       <ButtonWithTooltip
         tooltip={isMany2Many ? "Unlink" : "Delete"}
         icon={isMany2Many ? <ApiOutlined /> : <DeleteOutlined />}
         onClick={onDelete}
-        disabled={totalItems === 0 || readOnly}
+        disabled={
+          totalItems === 0 ||
+          readOnly ||
+          (mode !== "form" && selectedRowKeys.length === 0)
+        }
       />
     );
   }
@@ -139,7 +126,6 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
           />
         )}
         {separator()}
-        {mode === "form" && saveButton()}
         {deleteButton()}
         {mode === "form" && itemBrowser()}
         {separator()}

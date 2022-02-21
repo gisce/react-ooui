@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 
 import { Integer } from "@/widgets/base/Integer";
 import { Row, Space } from "antd";
-import { Integer as IntegerOoui } from "ooui";
+import { Integer as IntegerOoui } from "@gisce/ooui";
 
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 

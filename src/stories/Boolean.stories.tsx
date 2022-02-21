@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Boolean } from "..";
-import { Boolean as BooleanOoui } from "ooui";
+import { Boolean as BooleanOoui } from "@gisce/ooui";
 import "antd/dist/antd.css";
 import LocaleProvider from "../context/LocaleContext";
 

@@ -8,7 +8,7 @@ var react_1 = __importDefault(require("react"));
 var ButtonWithTooltip_1 = __importDefault(require("@/common/ButtonWithTooltip"));
 var icons_1 = require("@ant-design/icons");
 var One2manyTopBar = function (props) {
-    var titleString = props.title, readOnly = props.readOnly, onCreateItem = props.onCreateItem, onToggleViewMode = props.onToggleViewMode, mode = props.mode, formIsSaving = props.formIsSaving, onSaveItem = props.onSaveItem, formHasChanges = props.formHasChanges, onDelete = props.onDelete, totalItems = props.totalItems, currentItemIndex = props.currentItemIndex, onPreviousItem = props.onPreviousItem, onNextItem = props.onNextItem, isMany2Many = props.isMany2Many, onSearchItem = props.onSearchItem;
+    var titleString = props.title, readOnly = props.readOnly, onCreateItem = props.onCreateItem, onToggleViewMode = props.onToggleViewMode, mode = props.mode, onDelete = props.onDelete, totalItems = props.totalItems, currentItemIndex = props.currentItemIndex, onPreviousItem = props.onPreviousItem, onNextItem = props.onNextItem, isMany2Many = props.isMany2Many, onSearchItem = props.onSearchItem, selectedRowKeys = props.selectedRowKeys;
     function separator() {
         return react_1.default.createElement("div", { className: "inline-block w-3" });
     }
@@ -17,11 +17,10 @@ var One2manyTopBar = function (props) {
             react_1.default.createElement("div", { className: "h-full flex flex-col justify-center items-center" },
                 react_1.default.createElement("span", { className: "pl-2 font-bold" }, titleString))));
     }
-    function saveButton() {
-        return (react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Save", icon: formIsSaving ? react_1.default.createElement(icons_1.LoadingOutlined, null) : react_1.default.createElement(icons_1.SaveOutlined, null), onClick: onSaveItem, disabled: !formHasChanges || formIsSaving || readOnly }));
-    }
     function deleteButton() {
-        return (react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: isMany2Many ? "Unlink" : "Delete", icon: isMany2Many ? react_1.default.createElement(icons_1.ApiOutlined, null) : react_1.default.createElement(icons_1.DeleteOutlined, null), onClick: onDelete, disabled: totalItems === 0 || readOnly }));
+        return (react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: isMany2Many ? "Unlink" : "Delete", icon: isMany2Many ? react_1.default.createElement(icons_1.ApiOutlined, null) : react_1.default.createElement(icons_1.DeleteOutlined, null), onClick: onDelete, disabled: totalItems === 0 ||
+                readOnly ||
+                (mode !== "form" && selectedRowKeys.length === 0) }));
     }
     function index() {
         var itemToShow = "_";
@@ -51,7 +50,6 @@ var One2manyTopBar = function (props) {
             react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Create new item", icon: react_1.default.createElement(icons_1.FileAddOutlined, null), disabled: readOnly, onClick: onCreateItem }),
             isMany2Many && (react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Search existing item", icon: react_1.default.createElement(icons_1.SearchOutlined, null), disabled: readOnly, onClick: onSearchItem })),
             separator(),
-            mode === "form" && saveButton(),
             deleteButton(),
             mode === "form" && itemBrowser(),
             separator(),

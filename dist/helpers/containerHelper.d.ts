@@ -1,4 +1,4 @@
-import { Widget } from "ooui";
+import { Widget } from "@gisce/ooui";
 declare const getSpanStyleForItem: ({ item, responsiveBehaviour, }: {
     item: Widget;
     responsiveBehaviour: boolean;

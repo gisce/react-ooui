@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { One2many as One2manyOoui } from "ooui";
+import { One2many as One2manyOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { Spin, Alert } from "antd";
 import { Views } from "@/types";

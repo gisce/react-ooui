@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Table, Pagination, Checkbox, Space, Row, Col, Spin } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
-import { Tree as TreeOoui } from "ooui";
+import { Tree as TreeOoui } from "@gisce/ooui";
 
 import { TreeView, Column } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
@@ -40,7 +40,11 @@ type Props = {
 const booleanComponentFn = (value: boolean): React.ReactElement => {
   return <Checkbox defaultChecked={value} disabled />;
 };
+
 const many2OneComponentFn = (m2oField: any): React.ReactElement => {
+  if (!m2oField) {
+    return <></>;
+  }
   return (
     <Space>
       <>{m2oField.value}</>
@@ -224,7 +228,7 @@ function Tree(props: Props): React.ReactElement {
           return `cursor-pointer select-none record-row-${record.id}`;
         }}
         rowKey={(item: any) => {
-          return `${item.id}${items.indexOf(item)}`;
+          return item.id;
         }}
         onRow={(record: any) => {
           let style = undefined;

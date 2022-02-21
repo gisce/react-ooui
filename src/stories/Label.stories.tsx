@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Label } from "..";
-import { Label as LabelOoui } from "ooui";
+import { Label as LabelOoui } from "@gisce/ooui";
 import "antd/dist/antd.css";
 import LocaleProvider from "../context/LocaleContext";
 

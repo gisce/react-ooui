@@ -1,4 +1,4 @@
-import { Tree as TreeOoui, Selection, Many2one, Boolean } from "ooui";
+import { Tree as TreeOoui, Selection, Many2one, Boolean } from "@gisce/ooui";
 import { TreeView, Column } from "@/types";
 
 const getTree = (treeView: TreeView): TreeOoui => {
@@ -28,8 +28,8 @@ const getTableColumns = (tree: TreeOoui, components: any): Array<Column> => {
       title: column.label,
       render,
       sorter: (a: any, b: any) => {
-        let aItem = a[key] || "",
-          bItem = b[key] || "";
+        let aItem = a[key] || "",
+          bItem = b[key] || "";
 
         if (type === "many2one") {
           aItem = a[key]?.value || "";

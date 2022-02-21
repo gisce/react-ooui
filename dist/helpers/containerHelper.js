@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTemplateColumns = exports.getSingleRowTemplateColumns = exports.rowsHaveAnyField = exports.getMaxColspanForRows = exports.expandWidgetsIfNeeded = exports.getSpanStyleForItem = exports.fillRowWithEmptiesToFit = void 0;
-var ooui_1 = require("ooui");
+var ooui_1 = require("@gisce/ooui");
 var getSpanStyleForItem = function (_a) {
     var item = _a.item, responsiveBehaviour = _a.responsiveBehaviour;
     return {

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Form as AntForm, Input } from "antd";
-import { Char as CharOoui } from "ooui";
+import { Char as CharOoui } from "@gisce/ooui";
 import { Char } from "@/index";
 
 export default function FormTest(props: { email: string }) {

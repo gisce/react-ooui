@@ -6,7 +6,7 @@ import React, {
   useRef,
   useContext,
 } from "react";
-import { Form as FormOoui } from "ooui";
+import { Form as FormOoui } from "@gisce/ooui";
 import {
   Form as AntForm,
   Button,
@@ -65,7 +65,7 @@ export type FormProps = {
   getDataFromAction?: boolean;
   mustClearAfterSave?: boolean;
   submitMode?: "api" | "values";
-  onSubmitSucceed?: (id?: number, values?: any) => void;
+  onSubmitSucceed?: (id?: number, values?: any, formValues?: any) => void;
   onSubmitError?: (error: any) => void;
   onCancel?: () => void;
   onFieldsChange?: (values: any) => void;
@@ -121,16 +121,6 @@ function Form(props: FormProps, ref: any) {
   const warningIsShown = useRef<boolean>(false);
   const formSubmitting = useRef<boolean>(false);
 
-  const unsavedOne2ManyChilds = useRef(new Map<string, any>());
-
-  function addOne2ManyChild(key: string, child: any) {
-    unsavedOne2ManyChilds.current.set(key, child);
-  }
-
-  function removeOne2ManyChild(key: string) {
-    unsavedOne2ManyChilds.current.delete(key);
-  }
-
   // const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
   //   breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
   //   updateOnBreakpointChange: true,
@@ -174,6 +164,8 @@ function Form(props: FormProps, ref: any) {
   }));
 
   useEffect(() => {
+    setError(undefined);
+
     if (!model && !formViewProps) {
       return;
     }
@@ -185,7 +177,10 @@ function Form(props: FormProps, ref: any) {
     }
 
     // In the case we set the id to undefined for creating a new item
-    if (id === undefined && fields) {
+    if (
+      (id === undefined && fields) ||
+      (id !== undefined && fields && id < 0)
+    ) {
       createdId.current = undefined;
       setFormOoui(undefined);
     }
@@ -193,10 +188,10 @@ function Form(props: FormProps, ref: any) {
     fetchData();
   }, [id, model, valuesProps, formViewProps, visible]);
 
-  const onSubmitSucceed = (id?: number, values?: any) => {
+  const onSubmitSucceed = (id?: number, values?: any, formValues?: any) => {
     setFormHasChanges?.(false);
     setFormIsSaving?.(false);
-    propsOnSubmitSucceed?.(id, values);
+    propsOnSubmitSucceed?.(id, values, formValues);
     setCurrentId?.(id);
   };
 
@@ -215,10 +210,32 @@ function Form(props: FormProps, ref: any) {
   }
 
   function getValues() {
-    return {
+    const values = {
       ...getCurrentValues(fields),
       ...getAdditionalValues(),
     };
+
+    for (const key in values) {
+      if (values[key] === undefined) {
+        delete values[key];
+      }
+    }
+
+    return values;
+  }
+
+  function getFormValues() {
+    const values = {
+      ...getCurrentValues(fields),
+    };
+
+    for (const key in values) {
+      if (values[key] === undefined) {
+        delete values[key];
+      }
+    }
+
+    return values;
   }
 
   function getContext() {
@@ -324,6 +341,7 @@ function Form(props: FormProps, ref: any) {
     let _arch;
 
     setFormIsLoading?.(true);
+    setError(undefined);
 
     if (options) {
       _fields = options.fields;
@@ -506,7 +524,7 @@ function Form(props: FormProps, ref: any) {
     }
 
     if (!insideButtonModal && callOnSubmitSucceed) {
-      onSubmitSucceed?.(getCurrentId(), getValues());
+      onSubmitSucceed?.(getCurrentId(), getValues(), getFormValues());
     }
   };
 
@@ -514,7 +532,7 @@ function Form(props: FormProps, ref: any) {
     const { callOnSubmitSucceed = true } = options || {};
 
     if (!insideButtonModal && callOnSubmitSucceed) {
-      onSubmitSucceed?.(getCurrentId(), getValues());
+      onSubmitSucceed?.(getCurrentId(), getValues(), getFormValues());
     }
   };
 
@@ -541,14 +559,6 @@ function Form(props: FormProps, ref: any) {
     setFormIsSaving?.(true);
 
     try {
-      const o2m_childs = Array.from(unsavedOne2ManyChilds.current.values());
-
-      if (o2m_childs.length > 0) {
-        for (const child of o2m_childs) {
-          await child.submitForm();
-        }
-      }
-
       if (submitMode === "api") {
         await submitApi(options);
       } else {
@@ -558,6 +568,9 @@ function Form(props: FormProps, ref: any) {
       if (mustClearAfterSave) {
         createdId.current = undefined;
         assignNewValuesToForm({ values: {}, fields, reset: true });
+      }
+
+      if (submitMode === "api") {
         await fetchValues();
       }
       submitSucceed = true;
@@ -751,12 +764,12 @@ function Form(props: FormProps, ref: any) {
       Object.keys(response).length === 0 &&
       insideButtonModal
     ) {
-      onSubmitSucceed?.(getCurrentId(), getValues());
+      onSubmitSucceed?.(getCurrentId(), getValues(), getFormValues());
     } else if (
       response.type &&
       response.type === "ir.actions.act_window_close"
     ) {
-      onSubmitSucceed?.(getCurrentId(), getValues());
+      onSubmitSucceed?.(getCurrentId(), getValues(), getFormValues());
     } else if (response.type) {
       await runAction({ actionData: response, context });
     } else {
@@ -772,7 +785,7 @@ function Form(props: FormProps, ref: any) {
     });
 
     if (response.type && response.type === "ir.actions.act_window_close") {
-      onSubmitSucceed?.(getCurrentId(), getValues());
+      onSubmitSucceed?.(getCurrentId(), getValues(), getFormValues());
     } else {
       await fetchValues();
     }
@@ -819,7 +832,7 @@ function Form(props: FormProps, ref: any) {
       })) || {};
 
     if (!rootForm && closeParent) {
-      onSubmitSucceed?.(getCurrentId(), getValues());
+      onSubmitSucceed?.(getCurrentId(), getValues(), getFormValues());
     }
   }
 
@@ -884,9 +897,6 @@ function Form(props: FormProps, ref: any) {
           executeButtonAction={executeButtonAction}
           getContext={getContext}
           setOriginalValue={setOriginalValue}
-          unsavedOne2ManyChilds={unsavedOne2ManyChilds.current}
-          addOne2ManyChild={addOne2ManyChild}
-          removeOne2ManyChild={removeOne2ManyChild}
           submitForm={submitForm}
           fetchValues={fetchValues}
           formHasChanges={formHasChanges}

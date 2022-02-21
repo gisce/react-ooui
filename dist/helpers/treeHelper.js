@@ -12,7 +12,7 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getColorMap = exports.itemHasBooleans = exports.convertBooleansToNumeric = exports.getTree = exports.getTableItems = exports.getTableColumns = void 0;
-var ooui_1 = require("ooui");
+var ooui_1 = require("@gisce/ooui");
 var getTree = function (treeView) {
     var xml = treeView.arch;
     var fields = treeView.fields;

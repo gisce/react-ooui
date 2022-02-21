@@ -23,7 +23,7 @@ exports.SearchParams = void 0;
 var react_1 = __importStar(require("react"));
 var Integer_1 = require("@/widgets/base/Integer");
 var antd_1 = require("antd");
-var ooui_1 = require("ooui");
+var ooui_1 = require("@gisce/ooui");
 var LocaleContext_1 = require("@/context/LocaleContext");
 function SearchParams() {
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;

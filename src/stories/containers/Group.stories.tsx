@@ -6,7 +6,7 @@ import { withKnobs, number, text } from "@storybook/addon-knobs";
 import LocaleProvider from "../../context/LocaleContext";
 
 import { Form } from "antd";
-import { Form as FormOoui, Group as GroupOoui } from "ooui";
+import { Form as FormOoui, Group as GroupOoui } from "@gisce/ooui";
 import { Group } from "../..";
 
 export default {

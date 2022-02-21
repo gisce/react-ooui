@@ -1,4 +1,4 @@
-import { Tree as TreeOoui } from "ooui";
+import { Tree as TreeOoui } from "@gisce/ooui";
 import { TreeView, Column } from "@/types";
 declare const getTree: (treeView: TreeView) => TreeOoui;
 declare const getTableColumns: (tree: TreeOoui, components: any) => Array<Column>;

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Timeline as TimelineOoui } from "ooui";
+import { Timeline as TimelineOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { One2manyItem } from "../base/one2many/One2manyInput";
 import useDeepCompareEffect from "use-deep-compare-effect";

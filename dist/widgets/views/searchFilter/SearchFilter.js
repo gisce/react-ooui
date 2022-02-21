@@ -27,7 +27,7 @@ var antd_1 = require("antd");
 var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 require("antd/dist/antd.css");
 require("@/tailwind.generated.css");
-var ooui_1 = require("ooui");
+var ooui_1 = require("@gisce/ooui");
 var SearchField_1 = require("./SearchField");
 var SearchBottomBar_1 = require("./SearchBottomBar");
 var SearchParams_1 = require("./SearchParams");

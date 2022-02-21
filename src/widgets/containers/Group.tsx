@@ -1,5 +1,5 @@
 import React from "react";
-import { Group as GroupOoui } from "ooui";
+import { Group as GroupOoui } from "@gisce/ooui";
 import Container from "./Container";
 import Fieldset from "@/ui/Fieldset";
 

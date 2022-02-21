@@ -1,5 +1,5 @@
 import React from "react";
-import { Reference as ReferenceOoui } from "ooui";
+import { Reference as ReferenceOoui } from "@gisce/ooui";
 declare type Props = {
     ooui: ReferenceOoui;
     onOpenDetailClick?: ((event: React.MouseEvent<HTMLElement, MouseEvent>) => void) | undefined;

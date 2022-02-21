@@ -4,7 +4,7 @@ import Field from "@/common/Field";
 
 import { WidgetProps } from "@/types";
 import { LinkInput } from "./LinkInput";
-import { Char as CharOoui } from "ooui";
+import { Char as CharOoui } from "@gisce/ooui";
 
 export const Url = (props: WidgetProps) => {
   const { ooui } = props;

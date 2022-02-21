@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Field as FieldOoui } from "ooui";
+import { Field as FieldOoui } from "@gisce/ooui";
 
 import { PairFields } from "../../../widgets/views/searchFilter/PairFields";
 import "antd/dist/antd.css";

@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(require("react"));
-var ooui_1 = require("ooui");
+var ooui_1 = require("@gisce/ooui");
 var WidgetFactory_1 = require("@/widgets/WidgetFactory");
 var containerHelper_1 = require("@/helpers/containerHelper");
 var Container = function (props) {

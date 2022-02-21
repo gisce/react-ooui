@@ -1,4 +1,4 @@
-import { Field } from "ooui";
+import { Field } from "@gisce/ooui";
 declare type Props = {
     field: Field;
 };

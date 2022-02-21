@@ -27,7 +27,7 @@ var DateRangePicker_1 = require("./DateRangePicker");
 var DateTimeRangePicker_1 = require("./DateTimeRangePicker");
 var PairFields_1 = require("./PairFields");
 var LocaleContext_1 = require("@/context/LocaleContext");
-var ooui_1 = require("ooui");
+var ooui_1 = require("@gisce/ooui");
 var MultiSelection_1 = require("@/widgets/base/MultiSelection");
 var types = {
     text: "text",

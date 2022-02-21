@@ -1,5 +1,5 @@
 import React from "react";
-import { Group as GroupOoui } from "ooui";
+import { Group as GroupOoui } from "@gisce/ooui";
 declare type Props = {
     ooui: GroupOoui;
     showLabel?: boolean;

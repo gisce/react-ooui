@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import { openBase64InNewTab, getMimeType } from "@/helpers/filesHelper";
-import { parseContext } from "ooui";
+import { parseContext } from "@gisce/ooui";
 import ConnectionProvider from "@/ConnectionProvider";
 import { Modal, Spin } from "antd";
 import {

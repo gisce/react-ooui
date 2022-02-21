@@ -3,7 +3,7 @@ import { Select } from "antd";
 import styled from "styled-components";
 
 import Field from "@/common/Field";
-import { Selection as SelectionOoui } from "ooui";
+import { Selection as SelectionOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Config from "@/Config";
 
@@ -46,11 +46,7 @@ export const SelectionInput = (props: SelectionInputProps) => {
   const CustomSelect: any = required && !readOnly ? RequiredSelect : Select;
 
   return (
-    <CustomSelect
-      disabled={readOnly}
-      onChange={onChange}
-      value={value}
-    >
+    <CustomSelect disabled={readOnly} onChange={onChange} value={value}>
       {options}
     </CustomSelect>
   );

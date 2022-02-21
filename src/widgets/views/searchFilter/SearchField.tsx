@@ -8,7 +8,7 @@ import { PairFields } from "./PairFields";
 
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
-import { Field, Selection as SelectionOoui } from "ooui";
+import { Field, Selection as SelectionOoui } from "@gisce/ooui";
 import { MultiSelection } from "@/widgets/base/MultiSelection";
 
 type Props = {

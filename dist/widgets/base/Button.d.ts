@@ -1,4 +1,4 @@
-import { Button as ButtonOoui } from "ooui";
+import { Button as ButtonOoui } from "@gisce/ooui";
 declare type Props = {
     ooui: ButtonOoui;
 };

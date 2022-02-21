@@ -1,5 +1,5 @@
 import React from "react";
-import { Notebook as NotebookOoui } from "ooui";
+import { Notebook as NotebookOoui } from "@gisce/ooui";
 declare type Props = {
     ooui: NotebookOoui;
     responsiveBehaviour: boolean;

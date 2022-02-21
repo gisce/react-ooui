@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Col, Input, Row } from "antd";
 import Field from "@/common/Field";
-import { Char as CharOoui } from "ooui";
+import { Char as CharOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Config from "@/Config";
 import { TranslationModal } from "../modals/TranslationModal";

@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import Field from "@/common/Field";
 import { Button as AntButton } from "antd";
-import { Button as ButtonOoui } from "ooui";
+import { Button as ButtonOoui } from "@gisce/ooui";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { LoadingOutlined } from "@ant-design/icons";

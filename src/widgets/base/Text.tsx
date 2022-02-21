@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { Input, Row } from "antd";
 import Field from "@/common/Field";
 import Config from "@/Config";
-import { Text as TextOoui } from "ooui";
+import { Text as TextOoui } from "@gisce/ooui";
 import { TranslationModal } from "../modals/TranslationModal";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
