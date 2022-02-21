@@ -523,7 +523,7 @@ function Form(props, ref) {
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(true);
                     _b.label = 2;
                 case 2:
-                    _b.trys.push([2, 9, 10, 11]);
+                    _b.trys.push([2, 8, 9, 10]);
                     if (!(submitMode === "api")) return [3 /*break*/, 4];
                     return [4 /*yield*/, submitApi(options)];
                 case 3:
@@ -538,28 +538,25 @@ function Form(props, ref) {
                         createdId.current = undefined;
                         assignNewValuesToForm({ values: {}, fields: fields, reset: true });
                     }
-                    if (!(submitMode === "api")) return [3 /*break*/, 8];
                     return [4 /*yield*/, fetchValues()];
                 case 7:
                     _b.sent();
-                    _b.label = 8;
-                case 8:
                     submitSucceed = true;
-                    return [3 /*break*/, 11];
-                case 9:
+                    return [3 /*break*/, 10];
+                case 8:
                     err_2 = _b.sent();
                     formSubmitting.current = false;
                     setIsSubmitting(false);
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
                     onSubmitError === null || onSubmitError === void 0 ? void 0 : onSubmitError(err_2);
                     setError((err_2 === null || err_2 === void 0 ? void 0 : err_2.message) ? err_2.message : err_2);
-                    return [3 /*break*/, 11];
-                case 10:
+                    return [3 /*break*/, 10];
+                case 9:
                     formSubmitting.current = false;
                     setFormIsSaving === null || setFormIsSaving === void 0 ? void 0 : setFormIsSaving(false);
                     setIsSubmitting(false);
                     return [7 /*endfinally*/];
-                case 11: return [2 /*return*/, submitSucceed];
+                case 10: return [2 /*return*/, submitSucceed];
             }
         });
     }); };
