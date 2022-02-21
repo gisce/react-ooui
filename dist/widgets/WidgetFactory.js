@@ -9,6 +9,7 @@ var index_1 = require("@/index");
 var Image_1 = require("./base/Image");
 var FiberGrid_1 = require("./custom/FiberGrid");
 var Timeline_1 = require("./custom/Timeline");
+var Indicator_1 = require("./custom/Indicator");
 var getWidgetType = function (type) {
     switch (type) {
         case "form":
@@ -65,6 +66,8 @@ var getWidgetType = function (type) {
             return FiberGrid_1.FiberGrid;
         case "timeline":
             return Timeline_1.Timeline;
+        case "indicator":
+            return Indicator_1.Indicator;
         default:
             return undefined;
     }
