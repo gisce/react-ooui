@@ -43,11 +43,20 @@ export const getTouchedValues = ({
 }) => {
   const differences: any = {};
   Object.keys(target).forEach((key) => {
-    if (Array.isArray(target[key])) {
-      const is2Many = fields[key]
-        ? fields[key].type === "one2many" || fields[key].type === "many2many"
-        : false;
+    const is2Many = fields[key]
+      ? fields[key].type === "one2many" || fields[key].type === "many2many"
+      : false;
 
+    if (is2Many) {
+      const nonOriginalItems =
+        target[key]?.items?.filter(
+          (item: One2manyItem) => item.operation !== "original"
+        ) || [];
+
+      if (nonOriginalItems.length > 0) {
+        differences[key] = target[key];
+      }
+    } else if (Array.isArray(target[key])) {
       if (source[key] === undefined) {
         differences[key] = target[key];
       } else if (fields[key].type === "many2one") {
@@ -64,13 +73,6 @@ export const getTouchedValues = ({
           if (sourceValue !== targetValue) {
             differences[key] = target[key];
           }
-        }
-      } else if (is2Many) {
-        const nonOriginalItems = target[key].filter(
-          (item: One2manyItem) => item.operation !== "original"
-        );
-        if (nonOriginalItems.length > 0) {
-          differences[key] = target[key];
         }
       } else {
         const sourceValue = JSON.stringify(source[key]);

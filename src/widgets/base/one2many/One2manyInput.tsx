@@ -25,6 +25,11 @@ import { SearchModal } from "@/widgets/modals/SearchModal";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
+type One2manyValue = {
+  fields?: any;
+  items: Array<One2manyItem>;
+};
+
 type One2manyItem = {
   operation?:
     | "original"
@@ -40,8 +45,8 @@ type One2manyItem = {
 
 interface One2manyInputProps {
   ooui: One2manyOoui;
-  value?: Array<One2manyItem>;
-  onChange?: (value: any[]) => void;
+  value?: One2manyValue;
+  onChange?: (value: One2manyValue) => void;
   views: Views;
 }
 
@@ -57,7 +62,8 @@ function filterDuplicateItems(items: any) {
 const One2manyInput: React.FC<One2manyInputProps> = (
   props: One2manyInputProps
 ) => {
-  const { value: items = [], onChange, ooui, views } = props;
+  const { value, onChange, ooui, views } = props;
+  const { items = [] } = value || {};
 
   const {
     currentView,
@@ -107,7 +113,11 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
   const triggerChange = (changedValue: Array<One2manyItem>) => {
     setManualTriggerChange(true);
-    onChange?.(filterDuplicateItems(changedValue));
+
+    onChange?.({
+      fields: views.get("form").fields,
+      items: filterDuplicateItems(changedValue),
+    });
   };
 
   const fetchData = async () => {
@@ -463,7 +473,10 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         });
       }
 
-      onChange?.(updatedItems);
+      onChange?.({
+        fields: views.get("form").fields,
+        items: updatedItems,
+      });
     } catch (e) {
       setError(e as any);
     } finally {
@@ -604,4 +617,4 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   );
 };
 
-export { One2manyInput, One2manyItem };
+export { One2manyInput, One2manyItem, One2manyValue };

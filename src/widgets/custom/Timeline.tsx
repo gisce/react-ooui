@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Timeline as TimelineOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
-import { One2manyItem } from "../base/one2many/One2manyInput";
+import { One2manyItem, One2manyValue } from "../base/one2many/One2manyInput";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { Views } from "@/types";
 import { FormContext, FormContextType } from "@/context/FormContext";
@@ -15,8 +15,8 @@ type TimelineProps = {
 };
 
 type TimelineInputProps = TimelineProps & {
-  value?: Array<any>;
-  onChange?: (value: any[]) => void;
+  value?: One2manyValue;
+  onChange?: (value: One2manyValue) => void;
   views: Views;
 };
 
@@ -77,7 +77,9 @@ export const Timeline = (props: TimelineProps) => {
 };
 
 export const TimelineInput = (props: TimelineInputProps) => {
-  const { value: items = [], views, ooui, onChange } = props;
+  const { value, views, ooui, onChange } = props;
+  const { items = [] } = value || {};
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
@@ -93,7 +95,9 @@ export const TimelineInput = (props: TimelineInputProps) => {
   }, [items]);
 
   const triggerChange = (changedValue: Array<One2manyItem>) => {
-    onChange?.(changedValue);
+    onChange?.({
+      items: changedValue,
+    });
   };
 
   async function fetchData() {

@@ -72,8 +72,9 @@ export const One2many = (props: Props) => {
 
   const validator = async (_: any, value: any) => {
     if (!value) throw new Error();
-    if (!Array.isArray(value)) throw new Error();
-    if (value.length === 0) throw new Error();
+    if (!value.items) throw new Error();
+    if (!Array.isArray(value.items)) throw new Error();
+    if (value.items.length === 0) throw new Error();
   };
 
   return (
