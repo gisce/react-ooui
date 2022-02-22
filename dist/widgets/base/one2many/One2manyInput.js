@@ -85,7 +85,6 @@ var FormContext_1 = require("@/context/FormContext");
 var One2manyTopBar_1 = require("@/widgets/base/one2many/One2manyTopBar");
 var one2manyHelper_1 = require("@/helpers/one2manyHelper");
 var SearchModal_1 = require("@/widgets/modals/SearchModal");
-var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
 var LocaleContext_1 = require("@/context/LocaleContext");
 function filterDuplicateItems(items) {
     var ids = items.map(function (o) { return o.id; });
@@ -96,8 +95,9 @@ function filterDuplicateItems(items) {
     return filtered;
 }
 var One2manyInput = function (props) {
-    var _a = props.value, items = _a === void 0 ? [] : _a, onChange = props.onChange, ooui = props.ooui, views = props.views;
-    var _b = react_1.useContext(One2manyContext_1.One2manyContext), currentView = _b.currentView, setCurrentView = _b.setCurrentView, itemIndex = _b.itemIndex, setItemIndex = _b.setItemIndex, manualTriggerChange = _b.manualTriggerChange, setManualTriggerChange = _b.setManualTriggerChange;
+    var value = props.value, onChange = props.onChange, ooui = props.ooui, views = props.views;
+    var _a = (value || {}).items, items = _a === void 0 ? [] : _a;
+    var _b = react_1.useContext(One2manyContext_1.One2manyContext), currentView = _b.currentView, setCurrentView = _b.setCurrentView, itemIndex = _b.itemIndex, setItemIndex = _b.setItemIndex;
     var formContext = react_1.useContext(FormContext_1.FormContext);
     var _c = formContext || {}, activeId = _c.activeId, getValues = _c.getValues, getContext = _c.getContext, domain = _c.domain;
     var _d = react_1.useContext(LocaleContext_1.LocaleContext), lang = _d.lang, t = _d.t;
@@ -115,33 +115,30 @@ var One2manyInput = function (props) {
     var isMany2many = ooui.type === "many2many";
     var fieldName = ooui.id;
     var itemsToShow = items.filter(function (item) { return item.values && item.operation !== "pendingRemove"; });
-    use_deep_compare_effect_1.default(function () {
-        fetchData();
+    react_1.useEffect(function () {
+        if (items.some(function (item) { return !item.values; })) {
+            fetchData();
+        }
     }, [items]);
     react_1.useEffect(function () {
         parseDomain();
     }, [domain]);
     var triggerChange = function (changedValue) {
-        setManualTriggerChange(true);
-        onChange === null || onChange === void 0 ? void 0 : onChange(filterDuplicateItems(changedValue));
+        onChange === null || onChange === void 0 ? void 0 : onChange({
+            fields: views.get("form").fields,
+            items: filterDuplicateItems(changedValue),
+        });
     };
     var fetchData = function () { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    if (!manualTriggerChange) return [3 /*break*/, 1];
-                    setManualTriggerChange(false);
-                    return [3 /*break*/, 3];
+                case 0: return [4 /*yield*/, fetchOriginalItemsFromApi()];
                 case 1:
-                    if (!(items.length > 0)) return [3 /*break*/, 3];
-                    return [4 /*yield*/, fetchOriginalItemsFromApi()];
-                case 2:
                     _a.sent();
                     if (itemIndex > itemsToShow.length - 1 && itemIndex !== 0) {
                         setItemIndex(0);
                     }
-                    _a.label = 3;
-                case 3: return [2 /*return*/];
+                    return [2 /*return*/];
             }
         });
     }); };
@@ -508,7 +505,7 @@ var One2manyInput = function (props) {
                     _i++;
                     return [3 /*break*/, 2];
                 case 6:
-                    onChange === null || onChange === void 0 ? void 0 : onChange(updatedItems);
+                    triggerChange(updatedItems);
                     return [3 /*break*/, 9];
                 case 7:
                     e_1 = _a.sent();

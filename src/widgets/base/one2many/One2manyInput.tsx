@@ -22,8 +22,12 @@ import { FormContext, FormContextType } from "@/context/FormContext";
 import { One2manyTopBar } from "@/widgets/base/one2many/One2manyTopBar";
 import { readObjectValues, getNextPendingId } from "@/helpers/one2manyHelper";
 import { SearchModal } from "@/widgets/modals/SearchModal";
-import useDeepCompareEffect from "use-deep-compare-effect";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+
+type One2manyValue = {
+  fields?: any;
+  items: Array<One2manyItem>;
+};
 
 type One2manyItem = {
   operation?:
@@ -40,8 +44,8 @@ type One2manyItem = {
 
 interface One2manyInputProps {
   ooui: One2manyOoui;
-  value?: Array<One2manyItem>;
-  onChange?: (value: any[]) => void;
+  value?: One2manyValue;
+  onChange?: (value: One2manyValue) => void;
   views: Views;
 }
 
@@ -57,16 +61,12 @@ function filterDuplicateItems(items: any) {
 const One2manyInput: React.FC<One2manyInputProps> = (
   props: One2manyInputProps
 ) => {
-  const { value: items = [], onChange, ooui, views } = props;
+  const { value, onChange, ooui, views } = props;
+  const { items = [] } = value || {};
 
-  const {
-    currentView,
-    setCurrentView,
-    itemIndex,
-    setItemIndex,
-    manualTriggerChange,
-    setManualTriggerChange,
-  } = useContext(One2manyContext) as One2manyContextType;
+  const { currentView, setCurrentView, itemIndex, setItemIndex } = useContext(
+    One2manyContext
+  ) as One2manyContextType;
 
   const formContext = useContext(FormContext) as FormContextType;
   const { activeId, getValues, getContext, domain } = formContext || {};
@@ -97,8 +97,10 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     (item) => item.values && item.operation !== "pendingRemove"
   );
 
-  useDeepCompareEffect(() => {
-    fetchData();
+  useEffect(() => {
+    if (items.some((item) => !item.values)) {
+      fetchData();
+    }
   }, [items]);
 
   useEffect(() => {
@@ -106,22 +108,16 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   }, [domain]);
 
   const triggerChange = (changedValue: Array<One2manyItem>) => {
-    setManualTriggerChange(true);
-    onChange?.(filterDuplicateItems(changedValue));
+    onChange?.({
+      fields: views.get("form").fields,
+      items: filterDuplicateItems(changedValue),
+    });
   };
 
   const fetchData = async () => {
-    // We need a value (manualTriggerChange) to differ whenever the value is changed manually
-    // or the values come from the AntForm (first render or refreshing)
-    // This way when we trigger a change when we add/delete an item we avoid fetching again from the API
-    // And entering in a infinite loop
-    if (manualTriggerChange) {
-      setManualTriggerChange(false);
-    } else if (items.length > 0) {
-      await fetchOriginalItemsFromApi();
-      if (itemIndex > itemsToShow.length - 1 && itemIndex !== 0) {
-        setItemIndex(0);
-      }
+    await fetchOriginalItemsFromApi();
+    if (itemIndex > itemsToShow.length - 1 && itemIndex !== 0) {
+      setItemIndex(0);
     }
   };
 
@@ -463,7 +459,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         });
       }
 
-      onChange?.(updatedItems);
+      triggerChange(updatedItems);
     } catch (e) {
       setError(e as any);
     } finally {
@@ -604,4 +600,4 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   );
 };
 
-export { One2manyInput, One2manyItem };
+export { One2manyInput, One2manyItem, One2manyValue };

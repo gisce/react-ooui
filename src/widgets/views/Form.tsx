@@ -570,9 +570,7 @@ function Form(props: FormProps, ref: any) {
         assignNewValuesToForm({ values: {}, fields, reset: true });
       }
 
-      if (submitMode === "api") {
-        await fetchValues();
-      }
+      await fetchValues();
       submitSucceed = true;
     } catch (err) {
       formSubmitting.current = false;

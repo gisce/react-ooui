@@ -153,9 +153,11 @@ var One2many = function (props) {
         return __generator(this, function (_a) {
             if (!value)
                 throw new Error();
-            if (!Array.isArray(value))
+            if (!value.items)
                 throw new Error();
-            if (value.length === 0)
+            if (!Array.isArray(value.items))
+                throw new Error();
+            if (value.items.length === 0)
                 throw new Error();
             return [2 /*return*/];
         });

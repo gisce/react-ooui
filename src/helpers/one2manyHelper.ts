@@ -14,8 +14,14 @@ const readObjectValues = async (
 ): Promise<One2manyItem[]> => {
   const { items, model, formFields, treeFields, context = {} } = options;
 
+  const temporalItems: One2manyItem = items.filter(
+    (item) => item.operation !== "original"
+  );
+
   // We get a number array of id's
-  const idsToFetch = items.map((item) => item.id) as number[];
+  const idsToFetch = items
+    .filter((item) => item.operation === "original")
+    .map((item) => item.id) as number[];
 
   const values = await ConnectionProvider.getHandler().readObjects({
     model,
@@ -45,7 +51,7 @@ const readObjectValues = async (
   });
 
   // We fill the values property of the One2manyItem with the retrieved values from the API
-  return items.map((item) => {
+  const originalItemsWithFetchedValues: One2manyItem[] = items.map((item) => {
     const fetchedFormItemValues = formValues.find(
       (itemValues: any) => itemValues.id === item.id
     );
@@ -59,6 +65,8 @@ const readObjectValues = async (
       treeValues: fetchedTreeItemValues,
     };
   });
+
+  return originalItemsWithFetchedValues.concat(temporalItems);
 };
 
 type RemoveItemOptions = {

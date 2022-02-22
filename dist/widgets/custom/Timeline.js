@@ -147,7 +147,8 @@ var Timeline = function (props) {
 };
 exports.Timeline = Timeline;
 var TimelineInput = function (props) {
-    var _a = props.value, items = _a === void 0 ? [] : _a, views = props.views, ooui = props.ooui, onChange = props.onChange;
+    var value = props.value, views = props.views, ooui = props.ooui, onChange = props.onChange;
+    var _a = (value || {}).items, items = _a === void 0 ? [] : _a;
     var _b = react_1.useState(false), isLoading = _b[0], setIsLoading = _b[1];
     var _c = react_1.useState(), error = _c[0], setError = _c[1];
     var _d = react_1.useState(false), showFormModal = _d[0], setShowFormModal = _d[1];
@@ -160,7 +161,9 @@ var TimelineInput = function (props) {
         fetchData();
     }, [items]);
     var triggerChange = function (changedValue) {
-        onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
+        onChange === null || onChange === void 0 ? void 0 : onChange({
+            items: changedValue,
+        });
     };
     function fetchData() {
         return __awaiter(this, void 0, void 0, function () {

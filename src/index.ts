@@ -21,7 +21,7 @@ import { FormModal } from "@/widgets/modals/FormModal";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import Date from "@/widgets/base/Date";
 import DateTime from "@/widgets/base/DateTime";
-import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
+import { One2manyValue, One2manyItem } from "@/widgets/base/one2many/One2manyInput";
 import { Reference } from "@/widgets/base/Reference";
 import { Binary } from "@/widgets/base/Binary";
 import iconMapper from "@/helpers/iconMapper";
@@ -97,6 +97,7 @@ export {
   SearchModal,
   One2many,
   One2manyItem,
+  One2manyValue,
   Date,
   DateTime,
   Reference,
