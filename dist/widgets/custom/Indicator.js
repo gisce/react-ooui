@@ -18,8 +18,14 @@ var Indicator = function (props) {
         ooui.tooltip &&
             react_1.default.createElement(antd_1.Tooltip, { title: ooui.tooltip },
                 react_1.default.createElement(icons_1.QuestionCircleOutlined, { className: "text-xs text-blue-400 pr-1" }))));
-    return (react_1.default.createElement(Field_1.default, { ooui: ooui },
+    var field = (react_1.default.createElement(Field_1.default, { ooui: ooui },
         react_1.default.createElement(antd_2.Statistic, { title: title })));
+    if (ooui.card) {
+        return (react_1.default.createElement(antd_2.Card, null, field));
+    }
+    else {
+        return field;
+    }
 };
 exports.Indicator = Indicator;
 //# sourceMappingURL=Indicator.js.map
