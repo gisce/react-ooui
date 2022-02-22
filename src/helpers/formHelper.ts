@@ -48,6 +48,12 @@ export const getTouchedValues = ({
       : false;
 
     if (is2Many) {
+      const sourceValue = JSON.stringify(source[key]);
+      const targetValue = JSON.stringify(target[key]);
+      if (sourceValue === targetValue) {
+        return;
+      }
+
       const nonOriginalItems =
         target[key]?.items?.filter(
           (item: One2manyItem) => item.operation !== "original"
