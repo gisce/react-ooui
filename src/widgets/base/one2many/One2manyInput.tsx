@@ -22,7 +22,6 @@ import { FormContext, FormContextType } from "@/context/FormContext";
 import { One2manyTopBar } from "@/widgets/base/one2many/One2manyTopBar";
 import { readObjectValues, getNextPendingId } from "@/helpers/one2manyHelper";
 import { SearchModal } from "@/widgets/modals/SearchModal";
-import useDeepCompareEffect from "use-deep-compare-effect";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 type One2manyValue = {
@@ -65,14 +64,9 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const { value, onChange, ooui, views } = props;
   const { items = [] } = value || {};
 
-  const {
-    currentView,
-    setCurrentView,
-    itemIndex,
-    setItemIndex,
-    manualTriggerChange,
-    setManualTriggerChange,
-  } = useContext(One2manyContext) as One2manyContextType;
+  const { currentView, setCurrentView, itemIndex, setItemIndex } = useContext(
+    One2manyContext
+  ) as One2manyContextType;
 
   const formContext = useContext(FormContext) as FormContextType;
   const { activeId, getValues, getContext, domain } = formContext || {};
@@ -103,8 +97,10 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     (item) => item.values && item.operation !== "pendingRemove"
   );
 
-  useDeepCompareEffect(() => {
-    fetchData();
+  useEffect(() => {
+    if (items.some((item) => !item.values)) {
+      fetchData();
+    }
   }, [items]);
 
   useEffect(() => {
@@ -112,8 +108,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   }, [domain]);
 
   const triggerChange = (changedValue: Array<One2manyItem>) => {
-    setManualTriggerChange(true);
-
     onChange?.({
       fields: views.get("form").fields,
       items: filterDuplicateItems(changedValue),
@@ -121,17 +115,9 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   };
 
   const fetchData = async () => {
-    // We need a value (manualTriggerChange) to differ whenever the value is changed manually
-    // or the values come from the AntForm (first render or refreshing)
-    // This way when we trigger a change when we add/delete an item we avoid fetching again from the API
-    // And entering in a infinite loop
-    if (manualTriggerChange) {
-      setManualTriggerChange(false);
-    } else if (items.length > 0) {
-      await fetchOriginalItemsFromApi();
-      if (itemIndex > itemsToShow.length - 1 && itemIndex !== 0) {
-        setItemIndex(0);
-      }
+    await fetchOriginalItemsFromApi();
+    if (itemIndex > itemsToShow.length - 1 && itemIndex !== 0) {
+      setItemIndex(0);
     }
   };
 
@@ -473,10 +459,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         });
       }
 
-      onChange?.({
-        fields: views.get("form").fields,
-        items: updatedItems,
-      });
+      triggerChange(updatedItems);
     } catch (e) {
       setError(e as any);
     } finally {
