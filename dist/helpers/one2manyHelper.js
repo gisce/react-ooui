@@ -53,12 +53,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getNextPendingId = exports.linkItem = exports.removeItems = exports.readObjectValues = void 0;
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var readObjectValues = function (options) { return __awaiter(void 0, void 0, void 0, function () {
-    var items, model, formFields, treeFields, _a, context, idsToFetch, values, formValues, treeValues;
+    var items, model, formFields, treeFields, _a, context, temporalItems, idsToFetch, values, formValues, treeValues, originalItemsWithFetchedValues;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
                 items = options.items, model = options.model, formFields = options.formFields, treeFields = options.treeFields, _a = options.context, context = _a === void 0 ? {} : _a;
-                idsToFetch = items.map(function (item) { return item.id; });
+                temporalItems = items.filter(function (item) { return item.operation !== "original"; });
+                idsToFetch = items
+                    .filter(function (item) { return item.operation === "original"; })
+                    .map(function (item) { return item.id; });
                 return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
                         model: model,
                         ids: idsToFetch,
@@ -85,12 +88,12 @@ var readObjectValues = function (options) { return __awaiter(void 0, void 0, voi
                     });
                     return resultTreeValues;
                 });
-                // We fill the values property of the One2manyItem with the retrieved values from the API
-                return [2 /*return*/, items.map(function (item) {
-                        var fetchedFormItemValues = formValues.find(function (itemValues) { return itemValues.id === item.id; });
-                        var fetchedTreeItemValues = treeValues.find(function (itemValues) { return itemValues.id === item.id; });
-                        return __assign(__assign({}, item), { values: fetchedFormItemValues, treeValues: fetchedTreeItemValues });
-                    })];
+                originalItemsWithFetchedValues = items.map(function (item) {
+                    var fetchedFormItemValues = formValues.find(function (itemValues) { return itemValues.id === item.id; });
+                    var fetchedTreeItemValues = treeValues.find(function (itemValues) { return itemValues.id === item.id; });
+                    return __assign(__assign({}, item), { values: fetchedFormItemValues, treeValues: fetchedTreeItemValues });
+                });
+                return [2 /*return*/, originalItemsWithFetchedValues.concat(temporalItems)];
         }
     });
 }); };
