@@ -1,7 +1,7 @@
 import React from "react";
 import { Tooltip } from "antd";
 import { Statistic, Card } from "antd";
-import { Indicator as IndicatorOoui } from "ooui";
+import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Field from "@/common/Field";
 import {QuestionCircleOutlined} from "@ant-design/icons";
