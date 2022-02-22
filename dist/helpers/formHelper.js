@@ -46,6 +46,11 @@ var getTouchedValues = function (_a) {
             ? fields[key].type === "one2many" || fields[key].type === "many2many"
             : false;
         if (is2Many) {
+            var sourceValue = JSON.stringify(source[key]);
+            var targetValue = JSON.stringify(target[key]);
+            if (sourceValue === targetValue) {
+                return;
+            }
             var nonOriginalItems = ((_b = (_a = target[key]) === null || _a === void 0 ? void 0 : _a.items) === null || _b === void 0 ? void 0 : _b.filter(function (item) { return item.operation !== "original"; })) || [];
             if (nonOriginalItems.length > 0) {
                 differences[key] = target[key];
