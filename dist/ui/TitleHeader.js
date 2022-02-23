@@ -48,7 +48,7 @@ function TitleHeader(props) {
         }
         return null;
     }
-    return (react_1.default.createElement(react_1.default.Fragment, null,
+    return (react_1.default.createElement(antd_1.Affix, { offsetTop: 76 },
         react_1.default.createElement(antd_1.Row, { className: "bg-blueGray-100 shadow-md rounded", style: { padding: "1em" }, align: "middle" },
             react_1.default.createElement(antd_1.Col, { flex: 2 },
                 react_1.default.createElement(Title, { level: 3, style: { marginBottom: 0 } }, title),
