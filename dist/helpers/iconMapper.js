@@ -113,6 +113,13 @@ exports.default = (function (key) {
         var newKey = "STOCK_" + rootIcon.toUpperCase();
         return iconMapping[newKey];
     }
-    return iconMapping[key];
+    if (iconMapping.hasOwnProperty(key)) {
+        return iconMapping[key];
+    }
+    else {
+        var antKey = key.split("-").map(function (word) { return (word.replace(/\w\S*/g, function (w) { return (w.charAt(0).toUpperCase() + w.substr(1).toLowerCase()); })); }).join("") + "Outlined";
+        // @ts-ignore
+        return Icons[antKey];
+    }
 });
 //# sourceMappingURL=iconMapper.js.map
