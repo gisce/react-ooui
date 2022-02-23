@@ -20,3 +20,55 @@ export const Default = (): React.ReactElement => {
     </LocaleProvider>
   );
 };
+
+export const WithStockIcon = (): React.ReactElement => {
+  const ooui = new ButtonOoui({
+    name: "button_field",
+    string: "Lorem ipsum",
+    icon: "gtk-ok"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Button ooui={ooui} />
+    </LocaleProvider>
+  );
+};
+
+export const WithCustomIcon = (): React.ReactElement => {
+  const ooui = new ButtonOoui({
+    name: "button_field",
+    string: "Lorem ipsum",
+    icon: "terp-purchase"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Button ooui={ooui} />
+    </LocaleProvider>
+  );
+};
+
+export const WithAntdIcon = (): React.ReactElement => {
+  const ooui = new ButtonOoui({
+    name: "button_field",
+    string: "Lorem ipsum",
+    icon: "ant-design"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Button ooui={ooui} />
+    </LocaleProvider>
+  );
+};
+
+export const WithUnexistingdIcon = (): React.ReactElement => {
+  const ooui = new ButtonOoui({
+    name: "button_field",
+    string: "Lorem ipsum",
+    icon: "foo"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Button ooui={ooui} />
+    </LocaleProvider>
+  );
+};
