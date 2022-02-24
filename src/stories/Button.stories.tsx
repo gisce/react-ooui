@@ -72,3 +72,49 @@ export const WithUnexistingdIcon = (): React.ReactElement => {
     </LocaleProvider>
   );
 };
+
+export const PrimaryButton = (): React.ReactElement => {
+  const ooui = new ButtonOoui({
+    name: "button_field",
+    string: "Lorem ipsum",
+    icon: "send",
+    primary: "1"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Button ooui={ooui} />
+    </LocaleProvider>
+  );
+};
+
+export const DangerButton = (): React.ReactElement => {
+  const ooui = new ButtonOoui({
+    name: "button_field",
+    string: "Lorem ipsum",
+    icon: "exclamation-circle",
+    danger: "1"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Button ooui={ooui} />
+    </LocaleProvider>
+  );
+};
+
+
+export const PrimaryDangerButton = (): React.ReactElement => {
+  const ooui = new ButtonOoui({
+    name: "button_field",
+    string: "Lorem ipsum",
+    icon: "exclamation-circle",
+    danger: "1",
+    primary: "1"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Button ooui={ooui} />
+    </LocaleProvider>
+  );
+};
+
+
