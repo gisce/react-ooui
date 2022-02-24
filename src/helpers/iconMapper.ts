@@ -94,5 +94,15 @@ export default (key: string): React.ElementType => {
     const newKey = `STOCK_${rootIcon.toUpperCase()}`;
     return iconMapping[newKey];
   }
-  return iconMapping[key];
+  if (iconMapping.hasOwnProperty(key)) {
+    return iconMapping[key];
+  } else {
+    const antKey = `${key.split("-").map((word) => (
+      word.replace(/\w\S*/g, (w) => (w.charAt(0).toUpperCase() + w.substr(1).toLowerCase())))
+    ).join("")}Outlined`
+    // @ts-ignore
+    return Icons[antKey];
+  }
+
+
 };
