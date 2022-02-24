@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@gisce/ooui": "^0.2.2",
+    "@gisce/react-formiga-components": "^1.0.7",
     "fiber-diagram": "github:gisce/fiber-diagram",
     "file-type": "^16.5.0",
     "react": "^17.0.1",

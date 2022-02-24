@@ -14,6 +14,10 @@ module.exports = {
   },
   plugins: ["react", "@typescript-eslint"],
   rules: {
+    "no-shadow": "off",
+    "no-restricted-syntax": "off",
+    indent: "off",
+    "no-unused-vars": "off",
     "import/no-extraneous-dependencies": "off",
     quotes: ["error", "double"],
     "react/prop-types": "off",
