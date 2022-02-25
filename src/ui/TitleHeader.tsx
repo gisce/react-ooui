@@ -57,7 +57,11 @@ function TitleHeader(props: Props) {
          </>
         )
       } else if (selectedRowItems.length > 1) {
-        return `${selectedRowItems.length} ${t("selectedRegisters")}`;
+        return (
+          <>
+            {selectedRowItems.length} {t("selectedRegisters")}<Text copyable={{text: selectedRowItems.map(reg => reg.id).join(", ")}}></Text>
+          </>
+        );
       }
     }
     return null;
