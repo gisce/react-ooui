@@ -5,6 +5,7 @@ import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Field from "@/common/Field";
 import {QuestionCircleOutlined} from "@ant-design/icons";
+import iconMapper from "@/helpers/iconMapper";
 
 type IndicatorProps = WidgetProps & {
   ooui: IndicatorOoui
@@ -24,9 +25,11 @@ export const Indicator = (props: IndicatorProps) => {
     </>
   );
 
+  const Icon: React.ElementType = iconMapper(ooui.icon);
+
   const field = (
     <Field ooui={ooui}>
-      <Statistic title={title} />
+      <Statistic title={title} prefix={Icon && <Icon/>} suffix={ooui.suffix}/>
     </Field>
   );
 
