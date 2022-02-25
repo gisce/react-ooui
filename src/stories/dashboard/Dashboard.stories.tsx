@@ -14,10 +14,10 @@ const xml = `<?xml version="1.0"?>
     </dashboard>
     `;
 
-export const Default = (): React.ReactElement => {
+export function Default(): React.ReactElement {
   return (
     <LocaleProvider lang="en_US">
       <Dashboard arch={xml} />
     </LocaleProvider>
   );
-};
+}
