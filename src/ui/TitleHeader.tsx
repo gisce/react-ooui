@@ -6,7 +6,7 @@ import {
 } from "@/context/ActionViewContext";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 type Props = {
   children: any;
@@ -32,17 +32,30 @@ function TitleHeader(props: Props) {
       }
 
       if (totalItems === 0) {
-        return `${t("editingDocument")} (id: ${currentId})`;
+        return (
+          <>
+            {t("editingDocument")} (id: <Text copyable>{currentId}</Text>)
+          </>
+        );
       }
 
-      return `${t("register")} ${
-        currentItemIndex === undefined ? 1 : currentItemIndex + 1
-      } / ${results!.length} ${t("of")} ${totalItems} - ${t(
-        "editingDocument"
-      )} (id: ${currentId})`;
+      return (
+        <>
+         {t("register")} {
+          currentItemIndex === undefined ? 1 : currentItemIndex + 1
+        } / {results!.length} {t("of")} {totalItems} - {t(
+          "editingDocument"
+        )} (id: <Text copyable>{currentId}</Text>)
+        </>
+      );
+
     } else if (currentView?.type === "tree" && selectedRowItems) {
       if (selectedRowItems.length === 1) {
-        return `1 ${t("selectedRegisters")} - (id: ${selectedRowItems[0].id})`;
+        return (
+         <>
+           1 {t("selectedRegisters")} - (id: <Text copyable>{selectedRowItems[0].id}</Text>)
+         </>
+        )
       } else if (selectedRowItems.length > 1) {
         return `${selectedRowItems.length} ${t("selectedRegisters")}`;
       }
