@@ -66,7 +66,11 @@ function TitleHeader(props) {
                     ")"));
             }
             else if (selectedRowItems.length > 1) {
-                return selectedRowItems.length + " " + t("selectedRegisters");
+                return (react_1.default.createElement(react_1.default.Fragment, null,
+                    selectedRowItems.length,
+                    " ",
+                    t("selectedRegisters"),
+                    react_1.default.createElement(Text, { copyable: { text: selectedRowItems.map(function (reg) { return reg.id; }).join(", ") } })));
             }
         }
         return null;
