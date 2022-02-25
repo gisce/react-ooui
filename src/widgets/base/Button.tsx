@@ -66,6 +66,8 @@ export const Button = (props: Props) => {
         disabled={!activated || readOnly}
         onClick={onClick}
         icon={getButtonIcon()}
+        type={ooui.primary ? "primary": "default"}
+        danger={ooui.danger}
       >
         {label}
       </AntButton>
