@@ -23,7 +23,7 @@ var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var ActionViewContext_1 = require("@/context/ActionViewContext");
 var LocaleContext_1 = require("@/context/LocaleContext");
-var Title = antd_1.Typography.Title;
+var Title = antd_1.Typography.Title, Text = antd_1.Typography.Text;
 function TitleHeader(props) {
     var children = props.children;
     var _a = react_1.useContext(ActionViewContext_1.ActionViewContext), title = _a.title, currentView = _a.currentView, currentId = _a.currentId, currentItemIndex = _a.currentItemIndex, results = _a.results, totalItems = _a.totalItems, selectedRowItems = _a.selectedRowItems;
@@ -34,13 +34,36 @@ function TitleHeader(props) {
                 return "";
             }
             if (totalItems === 0) {
-                return t("editingDocument") + " (id: " + currentId + ")";
+                return (react_1.default.createElement(react_1.default.Fragment, null,
+                    t("editingDocument"),
+                    " (id: ",
+                    react_1.default.createElement(Text, { copyable: true }, currentId),
+                    ")"));
             }
-            return t("register") + " " + (currentItemIndex === undefined ? 1 : currentItemIndex + 1) + " / " + results.length + " " + t("of") + " " + totalItems + " - " + t("editingDocument") + " (id: " + currentId + ")";
+            return (react_1.default.createElement(react_1.default.Fragment, null,
+                t("register"),
+                " ",
+                currentItemIndex === undefined ? 1 : currentItemIndex + 1,
+                " / ",
+                results.length,
+                " ",
+                t("of"),
+                " ",
+                totalItems,
+                " - ",
+                t("editingDocument"),
+                " (id: ",
+                react_1.default.createElement(Text, { copyable: true }, currentId),
+                ")"));
         }
         else if ((currentView === null || currentView === void 0 ? void 0 : currentView.type) === "tree" && selectedRowItems) {
             if (selectedRowItems.length === 1) {
-                return "1 " + t("selectedRegisters") + " - (id: " + selectedRowItems[0].id + ")";
+                return (react_1.default.createElement(react_1.default.Fragment, null,
+                    "1 ",
+                    t("selectedRegisters"),
+                    " - (id: ",
+                    react_1.default.createElement(Text, { copyable: true }, selectedRowItems[0].id),
+                    ")"));
             }
             else if (selectedRowItems.length > 1) {
                 return selectedRowItems.length + " " + t("selectedRegisters");
