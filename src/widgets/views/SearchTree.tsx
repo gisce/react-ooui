@@ -65,6 +65,7 @@ function SearchTree(props: Props, ref: any) {
   const [initialFetchDone, setInitialFetchDone] = useState<boolean>(false);
 
   const searchNameGetDoneRef = useRef(false);
+  const internalLimit = useRef(80);
 
   const [currentModel, setCurrentModel] = useState<string>();
   const [treeView, setTreeView] = useState<TreeView>();
@@ -144,6 +145,7 @@ function SearchTree(props: Props, ref: any) {
     const searchResults = await ConnectionProvider.getHandler().nameSearch({
       model: currentModel!,
       payload: nameSearch,
+      limit: internalLimit.current,
       attrs: actionDomain.current.length > 0 ? actionDomain.current : domain,
       context: parentContext,
     });
@@ -271,7 +273,7 @@ function SearchTree(props: Props, ref: any) {
       } else {
         await searchResults();
       }
-    } catch (error) {
+    } catch (error: any) {
       setSearchError(error);
     } finally {
       setTableRefreshing(false);
@@ -304,7 +306,7 @@ function SearchTree(props: Props, ref: any) {
         await fetchModelData();
       }
       setInitialFetchDone(true);
-    } catch (error) {
+    } catch (error: any) {
       setInitialError(error);
     } finally {
       setIsLoading(false);
@@ -398,6 +400,10 @@ function SearchTree(props: Props, ref: any) {
     fetchResults();
   };
 
+  const onSearchTreeLimitChange = (newLimit: number) => {
+    internalLimit.current = newLimit;
+  }
+
   const onRowClickedHandler = (id: number) => {
     onRowClicked({
       id,
@@ -476,6 +482,7 @@ function SearchTree(props: Props, ref: any) {
                   offset={offset}
                   isSearching={searchFilterLoading}
                   onSubmit={onSubmit}
+                  onLimitChange={onSearchTreeLimitChange}
                 />
                 {searchError && (
                   <Alert
