@@ -26,6 +26,7 @@ type Props = {
   isSearching: boolean;
   limit: number;
   offset: number;
+  onLimitChange?: (limit: number) => void;
 };
 
 function SearchFilter(props: Props) {
@@ -37,6 +38,7 @@ function SearchFilter(props: Props) {
     isSearching,
     offset,
     limit,
+    onLimitChange,
   } = props;
 
   const [simpleSearchFields, setSimpleSearchFields] = useState<Container>();
@@ -95,7 +97,7 @@ function SearchFilter(props: Props) {
       initialValues={{ offset, limit }}
     >
       {rows}
-      {advancedFilter && <SearchParams />}
+      {advancedFilter && <SearchParams onLimitChange={onLimitChange}/>}
       <SearchBottomBar
         advancedFilter={advancedFilter}
         onAdvancedFilterToggle={() => {

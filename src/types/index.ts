@@ -86,6 +86,7 @@ type ExecuteRequest = {
 
 type NameSearchRequest = {
   model: string;
+  limit?: number;
   payload?: any;
   context?: any;
   attrs?: any;
