@@ -85,6 +85,7 @@ function SearchTree(props, ref) {
     var _e = react_1.useState(false), isLoading = _e[0], setIsLoading = _e[1];
     var _f = react_1.useState(false), initialFetchDone = _f[0], setInitialFetchDone = _f[1];
     var searchNameGetDoneRef = react_1.useRef(false);
+    var internalLimit = react_1.useRef(80);
     var _g = react_1.useState(), currentModel = _g[0], setCurrentModel = _g[1];
     var _h = react_1.useState(), treeView = _h[0], setTreeView = _h[1];
     var _j = react_1.useState(), formView = _j[0], setFormView = _j[1];
@@ -133,6 +134,7 @@ function SearchTree(props, ref) {
                 case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().nameSearch({
                         model: currentModel,
                         payload: nameSearch,
+                        limit: internalLimit.current,
                         attrs: actionDomain.current.length > 0 ? actionDomain.current : domain,
                         context: parentContext,
                     })];
@@ -410,6 +412,9 @@ function SearchTree(props, ref) {
             setOffset(newOffset);
         fetchResults();
     };
+    var onSearchTreeLimitChange = function (newLimit) {
+        internalLimit.current = newLimit;
+    };
     var onRowClickedHandler = function (id) {
         onRowClicked({
             id: id,
@@ -464,7 +469,7 @@ function SearchTree(props, ref) {
                 var measureRef = _a.measureRef;
                 return (react_1.default.createElement("div", { ref: measureRef },
                     react_1.default.createElement("div", { style: { display: searchVisible ? "block" : "none" } },
-                        react_1.default.createElement(SearchFilter_1.default, { fields: __assign(__assign({}, treeView.fields), formView.fields), searchFields: formView.search_fields, onClear: onClear, limit: limit, offset: offset, isSearching: searchFilterLoading, onSubmit: onSubmit }),
+                        react_1.default.createElement(SearchFilter_1.default, { fields: __assign(__assign({}, treeView.fields), formView.fields), searchFields: formView.search_fields, onClear: onClear, limit: limit, offset: offset, isSearching: searchFilterLoading, onSubmit: onSubmit, onLimitChange: onSearchTreeLimitChange }),
                         searchError && (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: searchError, type: "error", banner: true })),
                         react_1.default.createElement("div", { className: "pb-5" }))));
             }),

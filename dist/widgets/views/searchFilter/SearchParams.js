@@ -25,7 +25,8 @@ var Integer_1 = require("@/widgets/base/Integer");
 var antd_1 = require("antd");
 var ooui_1 = require("@gisce/ooui");
 var LocaleContext_1 = require("@/context/LocaleContext");
-function SearchParams() {
+function SearchParams(props) {
+    var onLimitChange = props.onLimitChange;
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var limitOoui = new ooui_1.Integer({ name: "limit" });
     var offsetOoui = new ooui_1.Integer({ name: "offset" });
@@ -33,7 +34,9 @@ function SearchParams() {
         react_1.default.createElement(antd_1.Row, { key: "count_params" }, t("parameters")),
         react_1.default.createElement(antd_1.Space, { align: "center" },
             t("limit") + " :",
-            react_1.default.createElement(Integer_1.Integer, { ooui: limitOoui }),
+            react_1.default.createElement(Integer_1.Integer, { ooui: limitOoui, onChange: function (newValue) {
+                    onLimitChange === null || onLimitChange === void 0 ? void 0 : onLimitChange(newValue);
+                } }),
             t("first") + " :",
             react_1.default.createElement(Integer_1.Integer, { ooui: offsetOoui }))));
 }
