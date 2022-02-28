@@ -86,7 +86,7 @@ function TreeActionBar(props: Props) {
       setCurrentItemIndex?.(undefined);
 
       searchTreeRef?.current?.refreshResults();
-    } catch (e) {
+    } catch (e: any) {
       showErrorDialog(e);
     } finally {
       setRemovingItem?.(false);
@@ -108,7 +108,7 @@ function TreeActionBar(props: Props) {
       if (newId) {
         searchTreeRef?.current?.refreshResults();
       }
-    } catch (e) {
+    } catch (e: any) {
       showErrorDialog(e);
     } finally {
       setDuplicatingItem?.(false);

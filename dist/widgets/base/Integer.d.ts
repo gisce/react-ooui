@@ -1,3 +1,7 @@
 import { WidgetProps } from "@/types";
-export declare const Integer: (props: WidgetProps) => JSX.Element;
+declare type IntegerProps = WidgetProps & {
+    onChange?: (newValue: number) => void;
+};
+export declare const Integer: (props: IntegerProps) => JSX.Element;
+export {};
 //# sourceMappingURL=Integer.d.ts.map

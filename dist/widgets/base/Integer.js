@@ -20,12 +20,15 @@ var antd_1 = require("antd");
 var Field_1 = __importDefault(require("@/common/Field"));
 var Config_1 = __importDefault(require("@/Config"));
 var Integer = function (props) {
-    var ooui = props.ooui;
+    var ooui = props.ooui, onChange = props.onChange;
     var id = ooui.id, readOnly = ooui.readOnly, required = ooui.required;
     var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
     return (react_1.default.createElement(Field_1.default, __assign({ required: required, type: "number" }, props),
         react_1.default.createElement(antd_1.InputNumber, { id: id, className: "w-full " + requiredClass, disabled: readOnly, formatter: function (value) {
                 return ("" + value).replace(/[^0-9]+/g, "");
+            }, onChange: function (newValue) {
+                var newNumber = newValue;
+                onChange === null || onChange === void 0 ? void 0 : onChange(newNumber);
             }, defaultValue: 0 })));
 };
 exports.Integer = Integer;

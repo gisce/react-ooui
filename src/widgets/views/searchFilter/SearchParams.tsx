@@ -6,7 +6,12 @@ import { Integer as IntegerOoui } from "@gisce/ooui";
 
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
-export function SearchParams(): React.ReactElement {
+type SearchParamsProps = {
+  onLimitChange?: (limit: number) => void;
+}
+
+export function SearchParams(props: SearchParamsProps): React.ReactElement {
+  const { onLimitChange } = props;
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
   const limitOoui = new IntegerOoui({ name: "limit" });
@@ -16,7 +21,9 @@ export function SearchParams(): React.ReactElement {
       <Row key={"count_params"}>{t("parameters")}</Row>
       <Space align="center">
         {t("limit") + " :"}
-        <Integer ooui={limitOoui} />
+        <Integer ooui={limitOoui} onChange={(newValue: number) => {
+          onLimitChange?.(newValue);
+        }}/>
         {t("first") + " :"}
         <Integer ooui={offsetOoui} />
       </Space>
