@@ -5,8 +5,8 @@ import {
   TableOutlined,
   FormOutlined,
   CheckOutlined,
+  PieChartOutlined,
 } from "@ant-design/icons";
-import { ViewType } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
@@ -27,6 +27,8 @@ function getIconForView(view?: View) {
 
   if (view.type === "tree") {
     return <TableOutlined />;
+  } else if(view.type === "dashboard") {
+    return <PieChartOutlined />;
   } else {
     // if (view === "form") {
     return <FormOutlined />;

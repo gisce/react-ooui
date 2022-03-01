@@ -15,6 +15,7 @@ import {
   TabManagerContextType,
 } from "@/context/TabManagerContext";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { ViewType } from "@/types";
 
 export type ShortcutApi = {
   action_id: number;
@@ -169,7 +170,7 @@ const FavouriteButton = (props: Props) => {
             <Menu.Item key={shortcut.id}>
               <FavouriteItem
                 title={shortcut.name}
-                type={shortcut.view_type as "tree" | "form"}
+                type={shortcut.view_type as ViewType}
               />
             </Menu.Item>
           ))}
@@ -187,7 +188,7 @@ const FavouriteButton = (props: Props) => {
     type,
   }: {
     title: string;
-    type: "tree" | "form";
+    type: ViewType;
   }) {
     const icon = type === "tree" ? <TableOutlined /> : <FormOutlined />;
     return (

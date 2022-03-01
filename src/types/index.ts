@@ -225,7 +225,7 @@ type ConnectionProviderType = {
   addFavourite: (options: IsShortcutFavoriteOptions) => Promise<void>;
 };
 
-type ViewType = "tree" | "form";
+type ViewType = "tree" | "form" | "dashboard";
 
 export type {
   Strings,

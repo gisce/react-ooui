@@ -9,8 +9,8 @@ export default {
 
 const xml = `<?xml version="1.0"?>
     <dashboard string="Partner dashboard">
-        <action name="71" parms="{'x':0,'y':0,'w':6,'h':24}" />
-        <action name="75" parms="{'x':7,'y':0,'w':6,'h':24}" />
+        <dashboard_item action_id="71" position="{'x':0,'y':0,'w':6,'h':24}" />
+        <dashboard_item action_id="75" position="{'x':7,'y':0,'w':6,'h':24}" />
     </dashboard>
     `;
 

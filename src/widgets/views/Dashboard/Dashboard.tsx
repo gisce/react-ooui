@@ -8,6 +8,7 @@ import Title from "antd/lib/typography/Title";
 import ActionView from "@/views/ActionView";
 import { DashboardProps } from "./Dashboard.types";
 import { fetchAction } from "./dashboardHelper";
+import "@gisce/react-formiga-components/build/index.css";
 
 export function Dashboard(props: DashboardProps) {
   const { arch, context = {} } = props;
@@ -16,7 +17,7 @@ export function Dashboard(props: DashboardProps) {
 
   async function fetchData() {
     const fetchedActionsPromises = [];
-    for (const actionOoui of dashboardOoui!.actions) {
+    for (const actionOoui of dashboardOoui!.items) {
       fetchedActionsPromises.push(fetchAction({ actionOoui }));
     }
     const fetchedActions = await Promise.all(fetchedActionsPromises);
@@ -37,53 +38,51 @@ export function Dashboard(props: DashboardProps) {
   }, [dashboardOoui]);
 
   return (
-    <>
-      <Title level={3}>{dashboardOoui?.string}</Title>
-      <DashboardFmg>
-        {actionsData.map((action) => {
-          const {
-            actionId,
-            actionType,
-            key,
-            title,
-            views,
-            model,
-            context,
-            domain,
-            initialView,
-          } = action;
+    <DashboardFmg>
+      {actionsData.map((action) => {
+        const {
+          actionId,
+          actionType,
+          key,
+          title,
+          views,
+          model,
+          context,
+          domain,
+          initialView,
+        } = action;
 
-          let parmsParsed = {};
+        let parmsParsed = {};
 
-          try {
-            parmsParsed = JSON.parse(action.parms.replace(/'/g, "\""));
-          } catch (err) {
-            throw new Error(`Error parsing parms: ${action.parms}`);
-          }
+        try {
+          parmsParsed = JSON.parse(action.position.replace(/'/g, '"'));
+        } catch (err) {
+          // console.error(`Error parsing parms: ${action.position}`);
+          parmsParsed = { x: 0, y: 0, w: 4, h: 4 };
+        }
 
-          return (
-            <DashboardFmgItem
-              key={action.action_id}
-              id={action.action_id}
-              title={action.title}
-              parms={parmsParsed}
-            >
-              <ActionView
-                action_id={actionId}
-                action_type={actionType}
-                tabKey={key}
-                title={title}
-                views={views}
-                model={model}
-                context={context}
-                domain={domain}
-                setCanWeClose={() => {}}
-                initialView={initialView}
-              />
-            </DashboardFmgItem>
-          );
-        })}
-      </DashboardFmg>
-    </>
+        return (
+          <DashboardFmgItem
+            key={action.action_id}
+            id={action.action_id}
+            title={action.title}
+            parms={parmsParsed}
+          >
+            <ActionView
+              action_id={actionId}
+              action_type={actionType}
+              tabKey={key}
+              title={title}
+              views={views}
+              model={model}
+              context={context}
+              domain={domain}
+              setCanWeClose={() => {}}
+              initialView={initialView}
+            />
+          </DashboardFmgItem>
+        );
+      })}
+    </DashboardFmg>
   );
 }

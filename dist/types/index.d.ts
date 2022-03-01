@@ -189,6 +189,6 @@ declare type ConnectionProviderType = {
     }) => Promise<void>;
     addFavourite: (options: IsShortcutFavoriteOptions) => Promise<void>;
 };
-declare type ViewType = "tree" | "form";
+declare type ViewType = "tree" | "form" | "dashboard";
 export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, ReadEvalUiObjectsRequest, NameSearchRequest, DuplicateRequest, GetLogInfoRequest, IsShortcutFavoriteOptions, };
 //# sourceMappingURL=index.d.ts.map
