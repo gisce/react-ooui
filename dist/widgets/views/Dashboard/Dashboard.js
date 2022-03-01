@@ -66,7 +66,8 @@ var ActionView_1 = __importDefault(require("@/views/ActionView"));
 var dashboardHelper_1 = require("./dashboardHelper");
 require("@gisce/react-formiga-components/build/index.css");
 function Dashboard(props) {
-    var arch = props.arch, _a = props.context, context = _a === void 0 ? {} : _a;
+    var arj = props.arch, _a = props.context, context = _a === void 0 ? {} : _a;
+    var arch = "<?xml version=\"1.0\"?>\n  <dashboard string=\"Partner dashboard\">\n      <dashboard_item action_id=\"71\" position=\"{'x':0,'y':0,'w':6,'h':24}\" />\n      <dashboard_item action_id=\"75\" position=\"{'x':7,'y':0,'w':6,'h':24}\" />\n  </dashboard>\n  ";
     var _b = react_1.useState(), dashboardOoui = _b[0], setDashboardOoui = _b[1];
     var _c = react_1.useState([]), actionsData = _c[0], setActionsData = _c[1];
     function fetchData() {
