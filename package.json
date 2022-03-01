@@ -19,7 +19,7 @@
     "build-storybook": "build-storybook -s public"
   },
   "dependencies": {
-    "@gisce/ooui": "^0.2.3",
+    "@gisce/ooui": "^0.2.4",
     "@gisce/react-formiga-components": "^1.0.7",
     "fiber-diagram": "github:gisce/fiber-diagram",
     "file-type": "^16.5.0",
@@ -58,6 +58,7 @@
     "@typescript-eslint/parser": "^5.12.1",
     "antd": "^4.12.3",
     "autoprefixer": "^9.8.6",
+    "css-loader": "^6.6.0",
     "cypress": "^5.2.0",
     "eslint": "^7.32.0",
     "eslint-config-airbnb": "^19.0.4",
