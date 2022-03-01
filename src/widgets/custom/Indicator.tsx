@@ -38,14 +38,19 @@ const IndicatorInput = (props: IndicatorInputProps) => {
       }
     </>
   );
-
   const Icon: React.ElementType = iconMapper(ooui.icon);
+  let formattedValue = value;
+  if (ooui.selectionValues.size) {
+    formattedValue = ooui.selectionValues.get(value);
+  } else if (Array.isArray(value)) {
+    formattedValue = value[1];
+  }
   const field = (
     <Statistic
       title={title}
       prefix={Icon && <Icon/>}
       suffix={ooui.suffix}
-      value={Array.isArray(value) ? value[1] : value}
+      value={formattedValue}
     />
   )
   if (ooui.card) {
