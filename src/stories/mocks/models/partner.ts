@@ -66,7 +66,7 @@ export default {
   },
   form: {
     arch:
-      '<form string="Partners"><field colspan="4" name="property_product_pricelist" /><field colspan="4" name="category_id" nolabel="1" select="2" widget="timeline" widget_props="{\'titleField\':\'id\',\'summaryField\':\'id\'}" summaryField="notes" titleField="id" /><field name="debit" widget="indicator" /></form>',
+      '<form string="Partners"><field colspan="4" name="property_product_pricelist" /><field colspan="4" name="category_id" nolabel="1" select="2" widget="timeline" widget_props="{\'titleField\':\'id\',\'summaryField\':\'id\'}" summaryField="notes" titleField="id" /><field name="debit" widget="indicator" /><field name="user_id" widget="indicator" widget_props="{\'card\': true}"/></form>',
     x: '<form string="Partners"><field name="parent_id"></form>',
     field_parent: false,
     fields: {

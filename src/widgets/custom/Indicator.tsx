@@ -14,6 +14,20 @@ type IndicatorProps = WidgetProps & {
 export const Indicator = (props: IndicatorProps) => {
   const { ooui } = props;
 
+  return (
+    <Field ooui={ooui}>
+      <IndicatorInput ooui={ooui} />
+    </Field>
+  );
+};
+
+type IndicatorInputProps = {
+  ooui: IndicatorOoui;
+  value?: any;
+}
+
+const IndicatorInput = (props: IndicatorInputProps) => {
+  const { ooui, value } = props;
   const title = (
     <>
       <span>{ooui.label} </span>
@@ -26,13 +40,14 @@ export const Indicator = (props: IndicatorProps) => {
   );
 
   const Icon: React.ElementType = iconMapper(ooui.icon);
-
   const field = (
-    <Field ooui={ooui}>
-      <Statistic title={title} prefix={Icon && <Icon/>} suffix={ooui.suffix}/>
-    </Field>
-  );
-
+    <Statistic
+      title={title}
+      prefix={Icon && <Icon/>}
+      suffix={ooui.suffix}
+      value={Array.isArray(value) ? value[1] : value}
+    />
+  )
   if (ooui.card) {
     return (
       <Card>
@@ -42,6 +57,4 @@ export const Indicator = (props: IndicatorProps) => {
   } else {
     return field;
   }
-
-
-};
+}
