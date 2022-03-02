@@ -21,7 +21,10 @@ import { FormModal } from "@/widgets/modals/FormModal";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import Date from "@/widgets/base/Date";
 import DateTime from "@/widgets/base/DateTime";
-import { One2manyValue, One2manyItem } from "@/widgets/base/one2many/One2manyInput";
+import {
+  One2manyValue,
+  One2manyItem,
+} from "@/widgets/base/one2many/One2manyInput";
 import { Reference } from "@/widgets/base/Reference";
 import { Binary } from "@/widgets/base/Binary";
 import iconMapper from "@/helpers/iconMapper";
@@ -30,6 +33,8 @@ import { Url } from "@/widgets/base/Url";
 import { Email } from "@/widgets/base/Email";
 import { Image } from "@/widgets/base/Image";
 import showConfirmDialog from "@/ui/ConfirmDialog";
+import { Dashboard } from "@/widgets/views/Dashboard";
+import { GraphIndicator } from "@/widgets/views/Graph/GraphIndicator";
 
 import {
   TreeView,
@@ -120,4 +125,6 @@ export {
   NameSearchRequest,
   ProgressBar,
   FavouriteButton,
+  Dashboard,
+  GraphIndicator,
 };

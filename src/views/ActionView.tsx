@@ -26,6 +26,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { GoToResourceModal } from "@/ui/GoToResourceModal";
 import showInfo from "@/ui/InfoDialog";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { Dashboard } from "@/index";
 
 type Props = {
   domain: any;
@@ -69,6 +70,7 @@ function ActionView(props: Props, ref: any) {
 
   const [treeView, setTreeView] = useState<TreeView>();
   const [formView, setFormView] = useState<FormView>();
+  const [dashboardArch, setDashboardArch] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const res_id_parsed: number | undefined = res_id
     ? (res_id as number)
@@ -148,11 +150,13 @@ function ActionView(props: Props, ref: any) {
 
         if (viewType === "tree") {
           setTreeView(viewData);
-        }
-        if (viewType === "form") {
+        } else if (viewType === "form") {
           setFormView(viewData);
           setToolbar((viewData as any)?.toolbar);
+        } else if (viewType === "dashboard") {
+          setDashboardArch(viewData.arch);
         }
+
         availableViews.push({ id, type: viewType });
       } catch (err) {
         console.error(
@@ -335,6 +339,38 @@ function ActionView(props: Props, ref: any) {
     return null;
   }
 
+  function viewContent() {
+    if (currentView!.type === "dashboard") {
+      return (
+        <>
+          <TitleHeader />
+          <Dashboard arch={dashboardArch!} />
+        </>
+      );
+    }
+
+    return (
+      <>
+        <TitleHeader>
+          {currentView!.type === "form" ? (
+            <FormActionBar />
+          ) : (
+            <TreeActionBar parentContext={context} />
+          )}
+        </TitleHeader>
+        {content()}
+        <GoToResourceModal
+          visible={gtResourceModalVisible}
+          onIdSubmitted={goToResourceId}
+          isSearching={searchingForResourceId}
+          onCancel={() => {
+            setGtResourceModalVisible(false);
+          }}
+        />
+      </>
+    );
+  }
+
   return (
     <ActionViewProvider
       title={title}
@@ -362,22 +398,7 @@ function ActionView(props: Props, ref: any) {
       setSearchTreeNameSearch={setSearchTreeNameSearch}
       searchTreeNameSearch={searchTreeNameSearch}
     >
-      <TitleHeader>
-        {currentView!.type === "form" ? (
-          <FormActionBar />
-        ) : (
-          <TreeActionBar parentContext={context} />
-        )}
-      </TitleHeader>
-      {content()}
-      <GoToResourceModal
-        visible={gtResourceModalVisible}
-        onIdSubmitted={goToResourceId}
-        isSearching={searchingForResourceId}
-        onCancel={() => {
-          setGtResourceModalVisible(false);
-        }}
-      />
+      {viewContent()}
     </ActionViewProvider>
   );
 }

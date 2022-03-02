@@ -3,7 +3,7 @@ import { Timeline as TimelineOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { One2manyItem, One2manyValue } from "../base/one2many/One2manyInput";
 import useDeepCompareEffect from "use-deep-compare-effect";
-import { Views } from "@/types";
+import { Views, ViewType } from "@/types";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import ConnectionProvider from "@/ConnectionProvider";
 import { Spin, Alert, Timeline as AntTimeline } from "antd";
@@ -33,7 +33,7 @@ export const Timeline = (props: TimelineProps) => {
     fetchData();
   }, [ooui]);
 
-  const getViewData = async (type: "form" | "tree") => {
+  const getViewData = async (type: ViewType) => {
     if (oouiViews && oouiViews[type]) {
       return oouiViews[type];
     }

@@ -9,6 +9,7 @@ import iconMapper from "@/helpers/iconMapper";
 
 type IndicatorProps = WidgetProps & {
   ooui: IndicatorOoui
+  value?: number;
 };
 
 export const Indicator = (props: IndicatorProps) => {

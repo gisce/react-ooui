@@ -35,6 +35,9 @@ function getIconForView(view) {
     if (view.type === "tree") {
         return react_1.default.createElement(icons_1.TableOutlined, null);
     }
+    else if (view.type === "dashboard") {
+        return react_1.default.createElement(icons_1.PieChartOutlined, null);
+    }
     else {
         // if (view === "form") {
         return react_1.default.createElement(icons_1.FormOutlined, null);
