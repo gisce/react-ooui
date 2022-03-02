@@ -57,6 +57,7 @@ export const GoToResourceModal = (props: Props) => {
                 style={{ marginLeft: 15 }}
                 icon={<CheckOutlined />}
                 htmlType="submit"
+                type="primary"
                 disabled={isSearching}
               >
                 {t("ok")}
