@@ -297,14 +297,21 @@ var Many2oneInput = function (props) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!(event.keyCode === 13)) return [3 /*break*/, 2];
+                        if (!(event.code === "Enter")) return [3 /*break*/, 2];
                         event.preventDefault();
                         event.stopPropagation();
                         return [4 /*yield*/, onElementLostFocus()];
                     case 1:
                         _a.sent();
-                        _a.label = 2;
-                    case 2: return [2 /*return*/];
+                        return [3 /*break*/, 3];
+                    case 2:
+                        if (event.code === "Backspace") {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            setInputText("");
+                        }
+                        _a.label = 3;
+                    case 3: return [2 /*return*/];
                 }
             });
         });
