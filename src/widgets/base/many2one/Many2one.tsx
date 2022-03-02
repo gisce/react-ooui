@@ -220,10 +220,14 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   }
 
   async function onKeyUp(event: any) {
-    if (event.keyCode === 13) {
+    if (event.code === "Enter") {
       event.preventDefault();
       event.stopPropagation();
       await onElementLostFocus();
+    } else if (event.code === "Backspace") {
+      event.preventDefault();
+      event.stopPropagation();
+      await setInputText("");
     }
   }
 
