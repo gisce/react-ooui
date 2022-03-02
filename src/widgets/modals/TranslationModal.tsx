@@ -174,6 +174,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
               disabled={submitLoading}
               onClick={onSubmit}
               style={{ marginLeft: 15 }}
+              type="primary"
             >
               {t("ok")}
             </Button>

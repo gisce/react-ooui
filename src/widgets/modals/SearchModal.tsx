@@ -85,6 +85,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
               onClick={() => {
                 submit();
               }}
+              type="primary"
             >
               {t("ok")}
             </Button>
