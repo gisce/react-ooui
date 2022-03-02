@@ -43,7 +43,7 @@ var GoToResourceModal = function (props) {
                 react_1.default.createElement(antd_1.Col, null,
                     react_1.default.createElement(antd_1.Space, null,
                         react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), htmlType: "button", onClick: onCancel, disabled: isSearching }, t("cancel")),
-                        react_1.default.createElement(antd_1.Button, { loading: isSearching, style: { marginLeft: 15 }, icon: react_1.default.createElement(icons_1.CheckOutlined, null), htmlType: "submit", disabled: isSearching }, t("ok"))))))));
+                        react_1.default.createElement(antd_1.Button, { loading: isSearching, style: { marginLeft: 15 }, icon: react_1.default.createElement(icons_1.CheckOutlined, null), htmlType: "submit", type: "primary", disabled: isSearching }, t("ok"))))))));
 };
 exports.GoToResourceModal = GoToResourceModal;
 //# sourceMappingURL=GoToResourceModal.js.map
