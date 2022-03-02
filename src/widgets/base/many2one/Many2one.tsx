@@ -227,7 +227,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     } else if (event.code === "Backspace") {
       event.preventDefault();
       event.stopPropagation();
-      await setInputText("");
+      setInputText("");
     }
   }
 
