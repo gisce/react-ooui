@@ -31,6 +31,7 @@ import { Email } from "@/widgets/base/Email";
 import { Image } from "@/widgets/base/Image";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { Dashboard } from "@/widgets/views/Dashboard";
+import { GraphIndicator } from "@/widgets/views/Graph/GraphIndicator";
 import { TreeView, SearchFields, FormView, ConnectionProviderType, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, GetViewRequest, DefaultGetRequest, ReadEvalUiObjectsRequest, NameSearchRequest } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import RootView from "./views/RootView";
@@ -38,5 +39,5 @@ import TabSelector from "./views/TabSelector";
 import CurrentTabContent from "./views/CurrentTabContent";
 import ContentRootProvider from "./context/ContentRootContext";
 import FavouriteButton from "./ui/FavouriteButton";
-export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, FloatTime, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectsRequest, ReadEvalUiObjectsRequest, DeleteObjectsRequest, FormModal, SearchModal, One2many, One2manyItem, One2manyValue, Date, DateTime, Reference, Binary, iconMapper, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ActionBar, GetViewRequest, DefaultGetRequest, RootView, TabSelector, CurrentTabContent, Url, Email, Image, ContentRootProvider, showConfirmDialog, NameSearchRequest, ProgressBar, FavouriteButton, Dashboard, };
+export { Button, Char, Selection, Boolean, Many2one, Tree, Group, SearchFilter, Form, Notebook, Float, FloatTime, Integer, Label, Text, TreeView, FormView, SearchFields, Separator, SearchTree, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ConnectionProvider, ConnectionProviderType, ViewData, Views, ExecuteRequest, ReadObjectsRequest, ReadEvalUiObjectsRequest, DeleteObjectsRequest, FormModal, SearchModal, One2many, One2manyItem, One2manyValue, Date, DateTime, Reference, Binary, iconMapper, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ActionBar, GetViewRequest, DefaultGetRequest, RootView, TabSelector, CurrentTabContent, Url, Email, Image, ContentRootProvider, showConfirmDialog, NameSearchRequest, ProgressBar, FavouriteButton, Dashboard, GraphIndicator, };
 //# sourceMappingURL=index.d.ts.map

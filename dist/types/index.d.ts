@@ -40,10 +40,12 @@ declare type SearchRequest = {
     context?: any;
     attrs?: any;
 };
+declare type SearchAllIdsRequest = SearchCountRequest & {
+    totalItems: number;
+};
 declare type SearchCountRequest = {
     params: Array<any>;
     model: string;
-    totalItems: number;
     context?: any;
 };
 declare type CreateObjectRequest = {
@@ -161,7 +163,8 @@ declare type ConnectionProviderType = {
         context?: any;
     }) => Promise<ViewData>;
     getView: (options: GetViewRequest) => Promise<FormView | TreeView>;
-    searchAllIds: (options: SearchCountRequest) => Promise<number[]>;
+    searchAllIds: (options: SearchAllIdsRequest) => Promise<number[]>;
+    searchCount: (options: SearchCountRequest) => Promise<number>;
     search: (options: SearchRequest) => Promise<SearchResponse>;
     searchForTree: (options: SearchRequest) => Promise<SearchResponse>;
     update: (options: UpdateObjectRequest) => Promise<any>;
@@ -189,6 +192,6 @@ declare type ConnectionProviderType = {
     }) => Promise<void>;
     addFavourite: (options: IsShortcutFavoriteOptions) => Promise<void>;
 };
-declare type ViewType = "tree" | "form" | "dashboard";
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, ReadEvalUiObjectsRequest, NameSearchRequest, DuplicateRequest, GetLogInfoRequest, IsShortcutFavoriteOptions, };
+declare type ViewType = "tree" | "form" | "dashboard" | "graph";
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchAllIdsRequest, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, ReadEvalUiObjectsRequest, NameSearchRequest, DuplicateRequest, GetLogInfoRequest, IsShortcutFavoriteOptions, };
 //# sourceMappingURL=index.d.ts.map

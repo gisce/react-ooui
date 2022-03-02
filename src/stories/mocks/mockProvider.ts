@@ -16,8 +16,9 @@ import {
   GetReportRequest,
   ExecuteOnChangeRequest,
   DefaultGetRequest,
-  SearchCountRequest,
+  SearchAllIdsRequest,
   NameSearchRequest,
+  SearchCountRequest,
 } from "../../types/index";
 
 const init = () => {
@@ -167,6 +168,9 @@ const init = () => {
     },
     nameSearch: async (options: NameSearchRequest) => {
       return [];
+    },
+    searchCount: async (options: SearchCountRequest) => {
+      return Math.floor(Math.random() * 1100);
     },
   };
 
