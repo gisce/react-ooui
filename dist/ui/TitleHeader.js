@@ -44,8 +44,7 @@ function TitleHeader(props) {
                 t("register"),
                 " ",
                 currentItemIndex === undefined ? 1 : currentItemIndex + 1,
-                " /",
-                " ",
+                " / ",
                 results.length,
                 " ",
                 t("of"),
@@ -53,8 +52,7 @@ function TitleHeader(props) {
                 totalItems,
                 " - ",
                 t("editingDocument"),
-                " (id:",
-                " ",
+                " (id: ",
                 react_1.default.createElement(Text, { copyable: true }, currentId),
                 ")"));
         }
@@ -63,8 +61,7 @@ function TitleHeader(props) {
                 return (react_1.default.createElement(react_1.default.Fragment, null,
                     "1 ",
                     t("selectedRegisters"),
-                    " - (id:",
-                    " ",
+                    " - (id: ",
                     react_1.default.createElement(Text, { copyable: true }, selectedRowItems[0].id),
                     ")"));
             }
@@ -73,14 +70,12 @@ function TitleHeader(props) {
                     selectedRowItems.length,
                     " ",
                     t("selectedRegisters"),
-                    react_1.default.createElement(Text, { copyable: {
-                            text: selectedRowItems.map(function (reg) { return reg.id; }).join(", "),
-                        } })));
+                    react_1.default.createElement(Text, { copyable: { text: selectedRowItems.map(function (reg) { return reg.id; }).join(", ") } })));
             }
         }
         return null;
     }
-    return (react_1.default.createElement(react_1.default.Fragment, null,
+    return (react_1.default.createElement(antd_1.Affix, { offsetTop: 76 },
         react_1.default.createElement(antd_1.Row, { className: "bg-blueGray-100 shadow-md rounded", style: { padding: "1em" }, align: "middle" },
             react_1.default.createElement(antd_1.Col, { flex: 2 },
                 react_1.default.createElement(Title, { level: 3, style: { marginBottom: 0 } }, title),
