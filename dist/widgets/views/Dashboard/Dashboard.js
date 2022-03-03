@@ -61,12 +61,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Dashboard = void 0;
 var react_1 = __importStar(require("react"));
 var ooui_1 = require("@gisce/ooui");
-var react_formiga_components_1 = require("@gisce/react-formiga-components");
 var ActionView_1 = __importDefault(require("@/views/ActionView"));
 var dashboardHelper_1 = require("./dashboardHelper");
-require("@/vendor.css");
+require("react-resizable/css/styles.css");
+require("react-grid-layout/css/styles.css");
 var Graph_1 = require("../Graph/Graph");
-require("@gisce/react-formiga-components/build/index.css");
+var DashboardGrid_1 = require("../DashboardGrid");
 function Dashboard(props) {
     var arch = props.arch, _a = props.context, context = _a === void 0 ? {} : _a;
     var _b = react_1.useState(), dashboardOoui = _b[0], setDashboardOoui = _b[1];
@@ -192,7 +192,7 @@ function Dashboard(props) {
             fetchData();
         }
     }, [dashboardOoui]);
-    return (react_1.default.createElement(react_formiga_components_1.Dashboard, null, actionsData.map(function (action, idx) {
+    return (react_1.default.createElement(DashboardGrid_1.DashboardGrid, null, actionsData.map(function (action, idx) {
         var _a = action, actionId = _a.actionId, actionType = _a.actionType, key = _a.key, title = _a.title, views = _a.views, model = _a.model, context = _a.context, domain = _a.domain, initialView = _a.initialView;
         var parmsParsed = {};
         try {
@@ -209,7 +209,7 @@ function Dashboard(props) {
         else if (initialView !== undefined) {
             childContent = (react_1.default.createElement(ActionView_1.default, { action_id: actionId, action_type: actionType, tabKey: key, title: title, views: views, model: model, context: context, domain: domain, setCanWeClose: function () { }, initialView: initialView }));
         }
-        return (react_1.default.createElement(react_formiga_components_1.DashboardItem, { key: actionId, id: actionId, title: title, parms: parmsParsed }, childContent));
+        return (react_1.default.createElement(DashboardGrid_1.DashboardGridItem, { key: actionId, id: actionId, title: title, parms: parmsParsed }, childContent));
     })));
 }
 exports.Dashboard = Dashboard;
