@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Dashboard as DashboardOoui } from "@gisce/ooui";
-import {
-  Dashboard as DashboardFmg,
-  DashboardItem as DashboardFmgItem,
-} from "@gisce/react-formiga-components";
 import ActionView from "@/views/ActionView";
 import { DashboardProps } from "./Dashboard.types";
 import { fetchAction } from "./dashboardHelper";
-import "@gisce/react-formiga-components/build/index.css";
+import "react-resizable/css/styles.css";
+import "react-grid-layout/css/styles.css";
 import { Graph } from "../Graph/Graph";
+import { DashboardGrid, DashboardGridItem } from "../DashboardGrid";
 
 export function Dashboard(props: DashboardProps) {
   const { arch, context = {} } = props;
@@ -130,7 +128,7 @@ export function Dashboard(props: DashboardProps) {
   }, [dashboardOoui]);
 
   return (
-    <DashboardFmg>
+    <DashboardGrid>
       {actionsData.map((action, idx) => {
         const {
           actionId,
@@ -186,16 +184,16 @@ export function Dashboard(props: DashboardProps) {
         }
 
         return (
-          <DashboardFmgItem
+          <DashboardGridItem
             key={actionId}
             id={actionId}
             title={title}
             parms={parmsParsed}
           >
             {childContent}
-          </DashboardFmgItem>
+          </DashboardGridItem>
         );
       })}
-    </DashboardFmg>
+    </DashboardGrid>
   );
 }
