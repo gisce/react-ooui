@@ -2,9 +2,6 @@ import React, { useState } from "react";
 import { Form, Row, Col } from "antd";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
-import "antd/dist/antd.css";
-import "@/tailwind.generated.css";
-
 import {
   SearchFilter as SearchFilterOoui,
   Container,

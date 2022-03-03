@@ -25,8 +25,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var use_deep_compare_effect_1 = __importDefault(require("use-deep-compare-effect"));
-require("antd/dist/antd.css");
-require("@/tailwind.generated.css");
 var ooui_1 = require("@gisce/ooui");
 var SearchField_1 = require("./SearchField");
 var SearchBottomBar_1 = require("./SearchBottomBar");
