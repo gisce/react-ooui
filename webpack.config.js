@@ -3,47 +3,59 @@ const path = require("path");
 //   .BundleAnalyzerPlugin;
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 
-module.exports = {
-  entry: "./src/index.ts",
-  mode: "production",
-  // devtool: "inline-source-map",
-  output: {
-    globalObject: "this",
-    path: path.resolve(__dirname, "dist"),
-    filename: "index.js",
-    library: "react-ooui",
-    libraryTarget: "umd",
-  },
-  externals: {
-    react: "react",
-    "react-dom": "react-dom",
-    antd: "antd",
-    "@ant-design/icons": "@ant-design/icons",
-  },
-  resolve: {
-    extensions: [".tsx", ".ts", ".js"],
-    alias: {
-      "@": path.resolve(__dirname, "src/"),
+module.exports = (args) => {
+  const environment =
+    Object.keys(args).indexOf("development") !== undefined
+      ? "development"
+      : "production";
+
+  const config = {
+    entry: "./src/index.ts",
+    mode: environment,
+    devtool: environment === "development" ? "inline-source-map" : undefined,
+    output: {
+      globalObject: "this",
+      path: path.resolve(__dirname, "dist"),
+      filename: "index.js",
+      library: "react-ooui",
+      libraryTarget: "umd",
     },
-  },
-  module: {
-    rules: [
-      // {
-      //   test: /\.(js|mjs|jsx|ts|tsx)$/,
-      //   enforce: "pre",
-      //   use: ["source-map-loader"],
-      // },
-      {
-        test: /\.tsx?$/,
-        loader: "ts-loader",
-        exclude: /node_modules/,
+    externals: {
+      react: "react",
+      "react-dom": "react-dom",
+      antd: "antd",
+      "@ant-design/icons": "@ant-design/icons",
+    },
+    resolve: {
+      extensions: [".tsx", ".ts", ".js"],
+      alias: {
+        "@": path.resolve(__dirname, "src/"),
       },
-      {
-        test: /\.css$/,
-        use: [MiniCSSExtractPlugin.loader, "css-loader"],
-      },
-    ],
-  },
-  plugins: [new MiniCSSExtractPlugin()],
-  // plugins: [new BundleAnalyzerPlugin()],
+    },
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          loader: "ts-loader",
+          exclude: /node_modules/,
+        },
+        {
+          test: /\.css$/,
+          use: [MiniCSSExtractPlugin.loader, "css-loader"],
+        },
+      ],
+    },
+    plugins: [new MiniCSSExtractPlugin()],
+    // plugins: [new BundleAnalyzerPlugin()],
+  };
+
+  if (environment === "development") {
+    config.module.rules.push({
+      test: /\.(js|mjs|jsx|ts|tsx)$/,
+      enforce: "pre",
+      use: ["source-map-loader"],
+    });
+  }
+
+  return config;
 };
