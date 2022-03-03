@@ -49,10 +49,13 @@ type SearchRequest = {
   attrs?: any;
 };
 
+type SearchAllIdsRequest = SearchCountRequest & {
+  totalItems: number;
+};
+
 type SearchCountRequest = {
   params: Array<any>;
   model: string;
-  totalItems: number;
   context?: any;
 };
 
@@ -193,7 +196,8 @@ type ConnectionProviderType = {
     context?: any;
   }) => Promise<ViewData>;
   getView: (options: GetViewRequest) => Promise<FormView | TreeView>;
-  searchAllIds: (options: SearchCountRequest) => Promise<number[]>;
+  searchAllIds: (options: SearchAllIdsRequest) => Promise<number[]>;
+  searchCount: (options: SearchCountRequest) => Promise<number>;
   search: (options: SearchRequest) => Promise<SearchResponse>;
   searchForTree: (options: SearchRequest) => Promise<SearchResponse>;
   update: (options: UpdateObjectRequest) => Promise<any>;
@@ -225,7 +229,7 @@ type ConnectionProviderType = {
   addFavourite: (options: IsShortcutFavoriteOptions) => Promise<void>;
 };
 
-type ViewType = "tree" | "form";
+type ViewType = "tree" | "form" | "dashboard" | "graph";
 
 export type {
   Strings,
@@ -248,6 +252,7 @@ export type {
   GetReportRequest,
   ExecuteOnChangeRequest,
   ViewType,
+  SearchAllIdsRequest,
   SearchCountRequest,
   GetViewRequest,
   DefaultGetRequest,

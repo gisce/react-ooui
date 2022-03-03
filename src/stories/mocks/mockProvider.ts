@@ -16,8 +16,9 @@ import {
   GetReportRequest,
   ExecuteOnChangeRequest,
   DefaultGetRequest,
-  SearchCountRequest,
+  SearchAllIdsRequest,
   NameSearchRequest,
+  SearchCountRequest,
 } from "../../types/index";
 
 const init = () => {
@@ -135,11 +136,41 @@ const init = () => {
     defaultGet: (options: DefaultGetRequest) => {
       return {} as any;
     },
-    getActionData: ({ action, context }: { action: string; context?: any }) => {
-      return null;
+    getActionData: async ({
+      action,
+      context,
+    }: {
+      action: string;
+      context?: any;
+    }) => {
+      return {
+        auto_refresh: 0,
+        context: "{}",
+        domain: false,
+        groups_id: [],
+        id: 1497,
+        limit: 80,
+        name: "Llistat d'Usuaris de l'Oficina Virtual",
+        res_model: "ov.users",
+        src_model: false,
+        target: "current",
+        type: "ir.actions.act_window",
+        usage: false,
+        view_id: [1639, "giscedata_ov.tree"],
+        view_ids: [],
+        view_mode: "tree,form",
+        view_type: "form",
+        views: [
+          [1639, "tree"],
+          [1640, "form"],
+        ],
+      };
     },
     nameSearch: async (options: NameSearchRequest) => {
       return [];
+    },
+    searchCount: async (options: SearchCountRequest) => {
+      return Math.floor(Math.random() * 1100);
     },
   };
 

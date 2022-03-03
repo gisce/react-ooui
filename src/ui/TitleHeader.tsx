@@ -9,7 +9,7 @@ import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 const { Title, Text } = Typography;
 
 type Props = {
-  children: any;
+  children?: any;
 };
 
 function TitleHeader(props: Props) {
