@@ -64,8 +64,9 @@ var ooui_1 = require("@gisce/ooui");
 var react_formiga_components_1 = require("@gisce/react-formiga-components");
 var ActionView_1 = __importDefault(require("@/views/ActionView"));
 var dashboardHelper_1 = require("./dashboardHelper");
-require("@gisce/react-formiga-components/build/index.css");
+require("@/vendor.css");
 var Graph_1 = require("../Graph/Graph");
+require("@gisce/react-formiga-components/build/index.css");
 function Dashboard(props) {
     var arch = props.arch, _a = props.context, context = _a === void 0 ? {} : _a;
     var _b = react_1.useState(), dashboardOoui = _b[0], setDashboardOoui = _b[1];

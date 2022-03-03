@@ -4,7 +4,6 @@ import {
   Dashboard as DashboardFmg,
   DashboardItem as DashboardFmgItem,
 } from "@gisce/react-formiga-components";
-import Title from "antd/lib/typography/Title";
 import ActionView from "@/views/ActionView";
 import { DashboardProps } from "./Dashboard.types";
 import { fetchAction } from "./dashboardHelper";

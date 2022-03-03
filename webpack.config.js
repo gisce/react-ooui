@@ -1,6 +1,7 @@
 const path = require("path");
 // const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
 //   .BundleAnalyzerPlugin;
+const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   entry: "./src/index.ts",
@@ -38,10 +39,11 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.css$/i,
-        use: ["style-loader", "css-loader"],
+        test: /\.css$/,
+        use: [MiniCSSExtractPlugin.loader, "css-loader"],
       },
     ],
   },
+  plugins: [new MiniCSSExtractPlugin()],
   // plugins: [new BundleAnalyzerPlugin()],
 };
