@@ -111,7 +111,7 @@ var SearchModal = function (props) {
                         } }, t("new")),
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CheckOutlined, null), onClick: function () {
                             submit();
-                        } }, t("ok")),
+                        }, type: "primary" }, t("ok")),
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), onClick: onCloseModal }, t("cancel"))))));
     };
     return (react_1.default.createElement(react_1.default.Fragment, null,

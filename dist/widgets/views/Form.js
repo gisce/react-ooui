@@ -906,7 +906,7 @@ function Form(props, ref) {
                                         return [2 /*return*/];
                                 }
                             });
-                        }); } }, "OK")))));
+                        }); }, type: "primary" }, "OK")))));
     };
     if (!visible) {
         return null;

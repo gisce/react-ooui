@@ -939,6 +939,7 @@ function Form(props: FormProps, ref: any) {
               onClick={async () => {
                 await submitForm();
               }}
+              type="primary"
             >
               OK
             </Button>

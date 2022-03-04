@@ -246,7 +246,7 @@ var TranslationModal = function (props) {
             react_1.default.createElement(antd_1.Row, { justify: "end" },
                 react_1.default.createElement(antd_1.Space, null,
                     react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.CloseOutlined, null), onClick: onCloseModal, disabled: submitLoading }, t("cancel")),
-                    react_1.default.createElement(antd_1.Button, { icon: submitLoading ? react_1.default.createElement(icons_1.LoadingOutlined, null) : react_1.default.createElement(icons_1.CheckOutlined, null), disabled: submitLoading, onClick: onSubmit, style: { marginLeft: 15 } }, t("ok"))))));
+                    react_1.default.createElement(antd_1.Button, { icon: submitLoading ? react_1.default.createElement(icons_1.LoadingOutlined, null) : react_1.default.createElement(icons_1.CheckOutlined, null), disabled: submitLoading, onClick: onSubmit, style: { marginLeft: 15 }, type: "primary" }, t("ok"))))));
     }
     return (react_1.default.createElement(antd_1.Modal, { title: t("translate"), centered: true, width: modalWidth, visible: visible, closable: true, onCancel: onCloseModal, footer: null, destroyOnClose: true }, content()));
 };
