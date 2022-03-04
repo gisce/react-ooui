@@ -14,6 +14,7 @@ import LocaleContextProvider from "@/context/LocaleContext";
 import { tForLang } from "@/context/LocaleContext";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import showErrorDialog from "@/ui/ActionErrorDialog";
+import { ViewType } from "@/types";
 
 type RootViewProps = {
   children: React.ReactNode;
@@ -82,7 +83,7 @@ function RootView(props: RootViewProps, ref: any) {
     action: string;
     values?: any;
     forced_values?: any;
-    initialViewType?: "form" | "tree";
+    initialViewType?: ViewType;
   }) {
     const dataForAction = await ConnectionProvider.getHandler().getActionData({
       action,
@@ -311,7 +312,7 @@ function RootView(props: RootViewProps, ref: any) {
     model: string;
     values?: any;
     forced_values?: any;
-    initialViewType?: "form" | "tree";
+    initialViewType?: ViewType;
   }) {
     const actionString = await ConnectionProvider.getHandler().getActionStringForModel(
       model

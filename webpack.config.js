@@ -1,11 +1,12 @@
 const path = require("path");
 // const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
 //   .BundleAnalyzerPlugin;
+const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
   entry: "./src/index.ts",
-  mode: "development",
-  devtool: "inline-source-map",
+  mode: "production",
+  // devtool: "inline-source-map",
   output: {
     globalObject: "this",
     path: path.resolve(__dirname, "dist"),
@@ -27,18 +28,22 @@ module.exports = {
   },
   module: {
     rules: [
-      {
-        test: /\.(js|mjs|jsx|ts|tsx)$/,
-        enforce: "pre",
-        use: ["source-map-loader"],
-      },
+      // {
+      //   test: /\.(js|mjs|jsx|ts|tsx)$/,
+      //   enforce: "pre",
+      //   use: ["source-map-loader"],
+      // },
       {
         test: /\.tsx?$/,
         loader: "ts-loader",
         exclude: /node_modules/,
       },
-      { test: /\.css$/, loader: "ignore-loader" },
+      {
+        test: /\.css$/,
+        use: [MiniCSSExtractPlugin.loader, "css-loader"],
+      },
     ],
   },
+  plugins: [new MiniCSSExtractPlugin()],
   // plugins: [new BundleAnalyzerPlugin()],
 };
