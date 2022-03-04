@@ -1,5 +1,5 @@
 declare type Props = {
-    children: any;
+    children?: any;
 };
 declare function TitleHeader(props: Props): JSX.Element;
 export default TitleHeader;

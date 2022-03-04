@@ -1,3 +1,4 @@
+import { ViewType } from "@/types";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import { View } from "@/views/ActionView";
 import React from "react";
@@ -27,7 +28,7 @@ export declare type TabManagerContextType = {
         model: string;
         values?: any;
         forced_values?: any;
-        initialViewType?: "form" | "tree";
+        initialViewType?: ViewType;
     }) => void;
     activeKey: string;
     onChangeTab: (key: string) => void;

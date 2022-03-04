@@ -1,5 +1,3 @@
-import "antd/dist/antd.css";
-import "@/tailwind.generated.css";
 import { SearchFields } from "@/types";
 declare type Props = {
     fields: any;
