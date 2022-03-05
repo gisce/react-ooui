@@ -70,97 +70,7 @@ var DashboardGrid_1 = require("../DashboardGrid");
 function Dashboard(props) {
     var arch = props.arch, _a = props.context, context = _a === void 0 ? {} : _a;
     var _b = react_1.useState(), dashboardOoui = _b[0], setDashboardOoui = _b[1];
-    var _c = react_1.useState([]), _ = _c[0], setActionsData = _c[1];
-    var actionsData = [
-        {
-            parms: "False",
-            title: "Partners",
-            actionId: 15,
-            actionType: "ir.actions.act_window",
-            key: "b27b405c-60b6-42c0-b3db-376b5e9c21d7",
-            views: [
-                [96, "graph"],
-                [97, "form"],
-                [false, "calendar"],
-            ],
-            model: "res.partner",
-            context: {},
-            domain: [],
-            initialView: {
-                id: 96,
-                type: "graph",
-            },
-        },
-        {
-            parms: "False",
-            title: "Partners",
-            actionId: 14,
-            actionType: "ir.actions.act_window",
-            key: "b27b405c-60b6-42c0-b3db-376b5e9c21d1",
-            views: [
-                [96, "graph"],
-                [97, "form"],
-                [false, "calendar"],
-            ],
-            model: "giscedata.lectures.comptador",
-            context: {},
-            domain: [],
-            initialView: {
-                id: 96,
-                type: "graph",
-            },
-        },
-        {
-            parms: "False",
-            title: "Partners",
-            actionId: 11,
-            actionType: "ir.actions.act_window",
-            key: "b27b405c-60b6-42c0-b3db-339c21d1",
-            views: [
-                [96, "graph"],
-                [97, "form"],
-                [false, "calendar"],
-            ],
-            model: "giscedata.polissa",
-            context: {},
-            domain: [],
-            initialView: {
-                id: 96,
-                type: "graph",
-            },
-        },
-        {
-            parms: "False",
-            title: "Partners",
-            actionId: 12,
-            actionType: "ir.actions.act_window",
-            key: "b27b405c-6336-42c0-b3db-339c21d1",
-            views: [
-                [96, "graph"],
-                [97, "form"],
-                [false, "calendar"],
-            ],
-            model: "project.task",
-            context: {},
-            domain: [],
-            initialView: {
-                id: 96,
-                type: "graph",
-            },
-        },
-    ];
-    // const actionsData = [
-    //   {
-    //     actionId: 71,
-    //     actionType: "ir.actions.act_window",
-    //     context: {},
-    //     domain: [],
-    //     initialView: { id: 1337, type: "graph" },
-    //     model: "res.partner",
-    //     title: "Partners count",
-    //     views: [[1337, "graph"]],
-    //   },
-    // ];
+    var _c = react_1.useState([]), actionsData = _c[0], setActionsData = _c[1];
     function fetchData() {
         return __awaiter(this, void 0, void 0, function () {
             var fetchedActionsPromises, _i, _a, actionOoui, fetchedActions;
@@ -204,7 +114,7 @@ function Dashboard(props) {
         }
         var childContent = null;
         if ((initialView === null || initialView === void 0 ? void 0 : initialView.type) === "graph") {
-            childContent = (react_1.default.createElement(Graph_1.Graph, { view_id: views.filter(function (view) { return view[1] === "graph"; })[0][0], model: model, context: context, domain: domain }));
+            childContent = (react_1.default.createElement(Graph_1.Graph, { title: title, view_id: views.filter(function (view) { return view[1] === "graph"; })[0][0], model: model, context: context, domain: domain }));
         }
         else if (initialView !== undefined) {
             childContent = (react_1.default.createElement(ActionView_1.default, { action_id: actionId, action_type: actionType, tabKey: key, title: title, views: views, model: model, context: context, domain: domain, setCanWeClose: function () { }, initialView: initialView }));

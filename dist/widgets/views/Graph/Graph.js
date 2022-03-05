@@ -61,7 +61,7 @@ var ooui_1 = require("@gisce/ooui");
 var icons_1 = require("@ant-design/icons");
 var GraphIndicator_1 = require("./GraphIndicator");
 var Graph = function (props) {
-    var view_id = props.view_id, model = props.model, context = props.context, domain = props.domain;
+    var view_id = props.view_id, model = props.model, context = props.context, domain = props.domain, title = props.title;
     var _a = react_1.useState(false), loading = _a[0], setLoading = _a[1];
     var _b = react_1.useState(), graphOoui = _b[0], setGraphOoui = _b[1];
     react_1.useEffect(function () {
@@ -92,7 +92,7 @@ var Graph = function (props) {
         return null;
     }
     if (graphOoui.type === "indicator") {
-        return (react_1.default.createElement(GraphIndicator_1.GraphIndicator, { ooui: graphOoui, model: model, context: context, domain: domain }));
+        return (react_1.default.createElement(GraphIndicator_1.GraphIndicator, { title: title, ooui: graphOoui, model: model, context: context, domain: domain }));
     }
     else {
         return react_1.default.createElement(react_1.default.Fragment, null, "Graph " + graphOoui.type + " not implemented");
