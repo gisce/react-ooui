@@ -66,7 +66,7 @@ var Indicator_1 = require("@/widgets/custom/Indicator");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var antd_1 = require("antd");
 var GraphIndicator = function (props) {
-    var ooui = props.ooui, model = props.model, domain = props.domain, context = props.context;
+    var title = props.title, ooui = props.ooui, model = props.model, domain = props.domain, context = props.context;
     var _a = react_1.useState(false), loading = _a[0], setLoading = _a[1];
     var form = antd_1.Form.useForm()[0];
     react_1.useEffect(function () {
@@ -114,7 +114,7 @@ var GraphIndicator = function (props) {
     return (react_1.default.createElement(antd_1.Form, { form: form },
         react_1.default.createElement(Indicator_1.Indicator, { ooui: new ooui_1.Indicator({
                 name: "indicator",
-                string: ooui.string,
+                string: title || ooui.string,
             }) })));
 };
 exports.GraphIndicator = GraphIndicator;
