@@ -6,6 +6,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { Form } from "antd";
 
 export type GraphInidicatorProps = {
+  title?: string;
   ooui: Graph;
   model: string;
   domain: any;
@@ -13,7 +14,7 @@ export type GraphInidicatorProps = {
 };
 
 export const GraphIndicator = (props: GraphInidicatorProps) => {
-  const { ooui, model, domain, context } = props;
+  const { title, ooui, model, domain, context } = props;
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
@@ -56,7 +57,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
         ooui={
           new IndicatorOoui({
             name: "indicator",
-            string: ooui.string,
+            string: title || ooui.string,
           })
         }
       />
