@@ -5,6 +5,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { GraphIndicator } from "./GraphIndicator";
 
 export type GraphProps = {
+  title?: string;
   view_id: number;
   model: string;
   domain: any;
@@ -12,7 +13,7 @@ export type GraphProps = {
 };
 
 export const Graph = (props: GraphProps) => {
-  const { view_id, model, context, domain } = props;
+  const { view_id, model, context, domain, title } = props;
   const [loading, setLoading] = useState(false);
   const [graphOoui, setGraphOoui] = useState<GraphOoui>();
 
@@ -54,6 +55,7 @@ export const Graph = (props: GraphProps) => {
   if (graphOoui.type === "indicator") {
     return (
       <GraphIndicator
+        title={title}
         ooui={graphOoui}
         model={model}
         context={context}

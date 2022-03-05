@@ -11,99 +11,7 @@ import { DashboardGrid, DashboardGridItem } from "../DashboardGrid";
 export function Dashboard(props: DashboardProps) {
   const { arch, context = {} } = props;
   const [dashboardOoui, setDashboardOoui] = useState<DashboardOoui>();
-  const [_, setActionsData] = useState<any[]>([]);
-
-  const actionsData = [
-    {
-      parms: "False",
-      title: "Partners",
-      actionId: 15,
-      actionType: "ir.actions.act_window",
-      key: "b27b405c-60b6-42c0-b3db-376b5e9c21d7",
-      views: [
-        [96, "graph"],
-        [97, "form"],
-        [false, "calendar"],
-      ],
-      model: "res.partner",
-      context: {},
-      domain: [],
-      initialView: {
-        id: 96,
-        type: "graph",
-      },
-    },
-    {
-      parms: "False",
-      title: "Partners",
-      actionId: 14,
-      actionType: "ir.actions.act_window",
-      key: "b27b405c-60b6-42c0-b3db-376b5e9c21d1",
-      views: [
-        [96, "graph"],
-        [97, "form"],
-        [false, "calendar"],
-      ],
-      model: "giscedata.lectures.comptador",
-      context: {},
-      domain: [],
-      initialView: {
-        id: 96,
-        type: "graph",
-      },
-    },
-    {
-      parms: "False",
-      title: "Partners",
-      actionId: 11,
-      actionType: "ir.actions.act_window",
-      key: "b27b405c-60b6-42c0-b3db-339c21d1",
-      views: [
-        [96, "graph"],
-        [97, "form"],
-        [false, "calendar"],
-      ],
-      model: "giscedata.polissa",
-      context: {},
-      domain: [],
-      initialView: {
-        id: 96,
-        type: "graph",
-      },
-    },
-    {
-      parms: "False",
-      title: "Partners",
-      actionId: 12,
-      actionType: "ir.actions.act_window",
-      key: "b27b405c-6336-42c0-b3db-339c21d1",
-      views: [
-        [96, "graph"],
-        [97, "form"],
-        [false, "calendar"],
-      ],
-      model: "project.task",
-      context: {},
-      domain: [],
-      initialView: {
-        id: 96,
-        type: "graph",
-      },
-    },
-  ];
-
-  // const actionsData = [
-  //   {
-  //     actionId: 71,
-  //     actionType: "ir.actions.act_window",
-  //     context: {},
-  //     domain: [],
-  //     initialView: { id: 1337, type: "graph" },
-  //     model: "res.partner",
-  //     title: "Partners count",
-  //     views: [[1337, "graph"]],
-  //   },
-  // ];
+  const [actionsData, setActionsData] = useState<any[]>([]);
 
   async function fetchData() {
     const fetchedActionsPromises = [];
@@ -156,6 +64,7 @@ export function Dashboard(props: DashboardProps) {
         if (initialView?.type === "graph") {
           childContent = (
             <Graph
+              title={title}
               view_id={
                 views.filter(
                   (view: [number, string]) => view[1] === "graph"

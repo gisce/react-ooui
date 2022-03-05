@@ -13,13 +13,14 @@
     "build:ts": "tsc",
     "build:tailwind": "postcss src/tailwind.css -o src/tailwind.generated.css",
     "build": "webpack",
+    "build:dev": "npm run build:ts && npm run build:tailwind && webpack --env=development",
     "test": "jest",
     "cypress": "cypress open",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public"
   },
   "dependencies": {
-    "@gisce/ooui": "^0.2.5",
+    "@gisce/ooui": "^0.2.6",
     "fiber-diagram": "github:gisce/fiber-diagram",
     "file-type": "^16.5.0",
     "react": "^17.0.1",
