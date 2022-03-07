@@ -1,4 +1,5 @@
 export declare type GraphProps = {
+    title?: string;
     view_id: number;
     model: string;
     domain: any;

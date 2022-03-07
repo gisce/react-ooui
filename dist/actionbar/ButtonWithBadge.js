@@ -41,7 +41,7 @@ function ButtonWithBadge(props) {
                     background: "#1890FF",
                     color: "#fefefe",
                 } }, badgeNumber))),
-        react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("advanced_search"), icon: react_1.default.createElement(icons_1.SearchOutlined, null), onClick: onClick, disabled: disabled, style: { width: 46, zIndex: 0 } })));
+        react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("advanced_search"), icon: react_1.default.createElement(icons_1.FilterOutlined, null), onClick: onClick, disabled: disabled, style: { width: 46, zIndex: 0 } })));
 }
 exports.default = ButtonWithBadge;
 //# sourceMappingURL=ButtonWithBadge.js.map

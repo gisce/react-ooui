@@ -46,7 +46,9 @@ export const SelectionInput = (props: SelectionInputProps) => {
   const CustomSelect: any = required && !readOnly ? RequiredSelect : Select;
 
   return (
-    <CustomSelect disabled={readOnly} onChange={onChange} value={value}>
+    <CustomSelect disabled={readOnly} onChange={onChange} value={value} optionFilterProp="children" filterOption={
+      (input: string, option: any) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    } showSearch>
       {options}
     </CustomSelect>
   );

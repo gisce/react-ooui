@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { SearchOutlined } from "@ant-design/icons";
+import { FilterOutlined } from "@ant-design/icons";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
 
@@ -35,7 +35,7 @@ function ButtonWithBadge(props: Props) {
       )}
       <ButtonWithTooltip
         tooltip={t("advanced_search")}
-        icon={<SearchOutlined />}
+        icon={<FilterOutlined />}
         onClick={onClick}
         disabled={disabled}
         style={{ width: 46, zIndex: 0 }}
