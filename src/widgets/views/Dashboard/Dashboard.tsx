@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ActionView from "@/views/ActionView";
 import { DashboardProps } from "./Dashboard.types";
 import { fetchAction } from "./dashboardHelper";
@@ -11,9 +11,14 @@ import { FormView } from "@/types";
 import { One2manyItem } from "@/index";
 import { readObjectValues } from "@/helpers/one2manyHelper";
 
+const itemsField = "line_ids";
+
 export function Dashboard(props: DashboardProps) {
   const { model, context = {}, id } = props;
   const [dashboardItems, setDashboardItems] = useState<any[]>([]);
+
+  const itemsFields = useRef<any>();
+  const boardFields = useRef<any>();
 
   useEffect(() => {
     fetchData();
@@ -22,8 +27,9 @@ export function Dashboard(props: DashboardProps) {
   async function fetchData() {
     const view = await fetchView();
     const values = await fetchValues(view);
-    const model = view.fields["line_ids"].relation;
-    const items: One2manyItem[] = values["line_ids"].items;
+    const model = view.fields[itemsField].relation;
+    const items: One2manyItem[] = values[itemsField].items;
+    boardFields.current = view.fields;
 
     const dashboardItems: One2manyItem[] = await fetchDashboardItems({
       items,
@@ -51,7 +57,7 @@ export function Dashboard(props: DashboardProps) {
     model: string;
     context: any;
   }) {
-    const modelFields = (
+    itemsFields.current = (
       await ConnectionProvider.getHandler().getView({
         model,
         type: "form",
@@ -60,8 +66,8 @@ export function Dashboard(props: DashboardProps) {
     ).fields;
 
     return await readObjectValues({
-      treeFields: modelFields,
-      formFields: modelFields,
+      treeFields: itemsFields.current,
+      formFields: itemsFields.current,
       model,
       items,
       context,
@@ -91,16 +97,79 @@ export function Dashboard(props: DashboardProps) {
           actionId,
           rootContext: context,
         });
-        itemsWithActions.push({ ...dashboardItem.values, actionData });
+        itemsWithActions.push({ ...dashboardItem, actionData });
       }
     }
     setDashboardItems(itemsWithActions);
   }
 
+  async function onPositionItemsChanged(itemPositions: any[]) {
+    const differences = itemPositions.filter((itemPosition) => {
+      const dashboardItem = dashboardItems.find(
+        (dashboardItem) => dashboardItem.id === itemPosition.id
+      );
+      if (!dashboardItem) {
+        return false;
+      }
+
+      if (!dashboardItem.position) {
+        return true;
+      }
+
+      const remotePosition = {
+        ...JSON.parse(dashboardItem.position.replace(/'/g, '"')),
+        id: dashboardItem.id,
+      };
+
+      return JSON.stringify(itemPosition) !== JSON.stringify(remotePosition);
+    });
+
+    if (differences.length === 0) {
+      return;
+    }
+
+    const itemsToUpdate = dashboardItems.filter((dashboardItem) => {
+      return differences.map((diff) => diff.id).includes(dashboardItem.id);
+    });
+
+    const itemsToUpdateWithUpdatedPos = itemsToUpdate.map((dashboardItem) => {
+      const diffItem = {
+        ...differences.find((diffItem) => diffItem.id === dashboardItem.id),
+      };
+      delete diffItem.id;
+
+      const item = { ...dashboardItem };
+      delete item.actionData;
+
+      return {
+        ...dashboardItem,
+        operation: "pendingUpdate",
+        values: {
+          ...dashboardItem.values,
+          position: JSON.stringify(diffItem).replace(/"/g, "'"),
+        },
+      };
+    });
+
+    const valueToUpdate = {
+      fields: itemsFields.current,
+      items: itemsToUpdateWithUpdatedPos,
+    };
+
+    await ConnectionProvider.getHandler().update({
+      model,
+      id,
+      values: { [itemsField]: valueToUpdate },
+      fields: boardFields.current,
+      context,
+    });
+  }
+
   return (
-    <DashboardGrid>
+    <DashboardGrid onPositionItemsChanged={onPositionItemsChanged}>
       {dashboardItems.map((item, idx) => {
-        const { actionData, position } = item;
+        const { actionData, values } = item;
+        const { position, id } = values;
 
         const {
           actionId,
@@ -157,12 +226,7 @@ export function Dashboard(props: DashboardProps) {
         }
 
         return (
-          <DashboardGridItem
-            key={actionId}
-            id={actionId}
-            title={title}
-            parms={parmsParsed}
-          >
+          <DashboardGridItem key={id} id={id} title={title} parms={parmsParsed}>
             {childContent}
           </DashboardGridItem>
         );
