@@ -142,6 +142,16 @@ function ActionView(props: Props, ref: any) {
       const [id, viewType] = viewArray;
 
       try {
+        if (viewType === "dashboard") {
+          setDashboardData({
+            id: context["active_id"],
+            model,
+            context,
+          });
+          availableViews.push({ id, type: viewType });
+          return;
+        }
+
         const viewData = await ConnectionProvider.getHandler().getView({
           model,
           type: viewType,
@@ -154,12 +164,6 @@ function ActionView(props: Props, ref: any) {
         } else if (viewType === "form") {
           setFormView(viewData);
           setToolbar((viewData as any)?.toolbar);
-        } else if (viewType === "dashboard") {
-          setDashboardData({
-            id: context["active_id"],
-            model,
-            context,
-          });
         }
 
         availableViews.push({ id, type: viewType });
