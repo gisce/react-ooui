@@ -1,1 +1,1 @@
-{"version":3,"file":"Dashboard.d.ts","sourceRoot":"","sources":["../../../../src/widgets/views/Dashboard/Dashboard.tsx"],"names":[],"mappings":"AAGA,OAAO,EAAE,cAAc,EAAE,MAAM,mBAAmB,CAAC;AAEnD,OAAO,gCAAgC,CAAC;AACxC,OAAO,kCAAkC,CAAC;AAI1C,wBAAgB,SAAS,CAAC,KAAK,EAAE,cAAc,eAiG9C"}
+{"version":3,"file":"Dashboard.d.ts","sourceRoot":"","sources":["../../../../src/widgets/views/Dashboard/Dashboard.tsx"],"names":[],"mappings":"AAEA,OAAO,EAAE,cAAc,EAAE,MAAM,mBAAmB,CAAC;AAEnD,OAAO,gCAAgC,CAAC;AACxC,OAAO,kCAAkC,CAAC;AAU1C,wBAAgB,SAAS,CAAC,KAAK,EAAE,cAAc,eA4N9C"}
