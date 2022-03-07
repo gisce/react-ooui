@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Dashboard as DashboardOoui } from "@gisce/ooui";
 import ActionView from "@/views/ActionView";
 import { DashboardProps } from "./Dashboard.types";
 import { fetchAction } from "./dashboardHelper";
@@ -7,37 +6,102 @@ import "react-resizable/css/styles.css";
 import "react-grid-layout/css/styles.css";
 import { Graph } from "../Graph/Graph";
 import { DashboardGrid, DashboardGridItem } from "../DashboardGrid";
+import ConnectionProvider from "@/ConnectionProvider";
+import { FormView } from "@/types";
+import { One2manyItem } from "@/index";
+import { readObjectValues } from "@/helpers/one2manyHelper";
 
 export function Dashboard(props: DashboardProps) {
-  const { arch, context = {} } = props;
-  const [dashboardOoui, setDashboardOoui] = useState<DashboardOoui>();
-  const [actionsData, setActionsData] = useState<any[]>([]);
+  const { model, context = {}, id } = props;
+  const [dashboardItems, setDashboardItems] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchData();
+  }, [model, id, context]);
 
   async function fetchData() {
-    const fetchedActionsPromises = [];
-    for (const actionOoui of dashboardOoui!.items) {
-      fetchedActionsPromises.push(fetchAction({ actionOoui }));
-    }
-    const fetchedActions = await Promise.all(fetchedActionsPromises);
-    setActionsData(fetchedActions);
+    const view = await fetchView();
+    const values = await fetchValues(view);
+    const model = view.fields["line_ids"].relation;
+    const items: One2manyItem[] = values["line_ids"].items;
+
+    const dashboardItems: One2manyItem[] = await fetchDashboardItems({
+      items,
+      model,
+      context,
+    });
+
+    fetchActions(dashboardItems);
   }
 
-  useEffect(() => {
-    // We parse the XML and create the dashboard ooui object
-    const parsedDashboardOoui = new DashboardOoui(arch);
-    setDashboardOoui(parsedDashboardOoui);
-  }, [arch]);
+  async function fetchView() {
+    return await ConnectionProvider.getHandler().getView({
+      model,
+      type: "form",
+      context,
+    });
+  }
 
-  useEffect(() => {
-    if (dashboardOoui) {
-      // We should retrieve every action data
-      fetchData();
+  async function fetchDashboardItems({
+    items,
+    model,
+    context,
+  }: {
+    items: One2manyItem[];
+    model: string;
+    context: any;
+  }) {
+    const modelFields = (
+      await ConnectionProvider.getHandler().getView({
+        model,
+        type: "form",
+        context,
+      })
+    ).fields;
+
+    return await readObjectValues({
+      treeFields: modelFields,
+      formFields: modelFields,
+      model,
+      items,
+      context,
+    });
+  }
+
+  async function fetchValues(view: FormView) {
+    return (
+      await ConnectionProvider.getHandler().readObjects({
+        arch: view.arch,
+        model,
+        ids: [id],
+        fields: view.fields,
+        context,
+      })
+    )[0];
+  }
+
+  async function fetchActions(items: One2manyItem[]) {
+    const itemsWithActions = [];
+
+    for (const dashboardItem of items) {
+      const { values } = dashboardItem;
+      if (values.action_id && values.action_id.length > 0) {
+        const actionId = parseInt(values.action_id[0], 10);
+        const actionData = await fetchAction({
+          actionId,
+          rootContext: context,
+        });
+        itemsWithActions.push({ ...dashboardItem.values, actionData });
+      }
     }
-  }, [dashboardOoui]);
+    setDashboardItems(itemsWithActions);
+  }
 
   return (
     <DashboardGrid>
-      {actionsData.map((action, idx) => {
+      {dashboardItems.map((item, idx) => {
+        const { actionData, position } = item;
+
         const {
           actionId,
           actionType,
@@ -48,12 +112,12 @@ export function Dashboard(props: DashboardProps) {
           context,
           domain,
           initialView,
-        } = action as any;
+        } = actionData as any;
 
         let parmsParsed = {};
 
         try {
-          parmsParsed = JSON.parse((action as any).position.replace(/'/g, '"'));
+          parmsParsed = JSON.parse(position.replace(/'/g, '"'));
         } catch (err) {
           // console.error(`Error parsing parms: ${action.position}`);
           parmsParsed = { x: idx * 2, y: 0, w: 2, h: 3 };

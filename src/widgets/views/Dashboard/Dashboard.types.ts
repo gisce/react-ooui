@@ -1,4 +1,5 @@
 export type DashboardProps = {
-  arch: string;
+  model: string;
+  id: number;
   context?: any;
 };
