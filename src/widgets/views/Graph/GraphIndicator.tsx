@@ -57,7 +57,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
         ooui={
           new IndicatorOoui({
             name: "indicator",
-            string: title || ooui.string,
+            string: "",
           })
         }
       />

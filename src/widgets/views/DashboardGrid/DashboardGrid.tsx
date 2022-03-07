@@ -31,6 +31,7 @@ export const DashboardGrid = (props: DashboardGridProps) => {
     <ResponsiveReactGridLayout
       className="layout"
       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+      draggableHandle={".ant-card-head"}
       rowHeight={30}
       onLayoutChange={(layout) => {
         onPositionItemsChanged?.(

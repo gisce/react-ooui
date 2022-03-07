@@ -132,6 +132,15 @@ function ActionView(props, ref) {
                     _b.label = 2;
                 case 2:
                     _b.trys.push([2, 4, , 5]);
+                    if (viewType === "dashboard") {
+                        setDashboardData({
+                            id: context["active_id"],
+                            model: model,
+                            context: context,
+                        });
+                        availableViews.push({ id: id, type: viewType });
+                        return [2 /*return*/];
+                    }
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
                             model: model,
                             type: viewType,
@@ -146,13 +155,6 @@ function ActionView(props, ref) {
                     else if (viewType === "form") {
                         setFormView(viewData);
                         setToolbar((_a = viewData) === null || _a === void 0 ? void 0 : _a.toolbar);
-                    }
-                    else if (viewType === "dashboard") {
-                        setDashboardData({
-                            id: context["active_id"],
-                            model: model,
-                            context: context,
-                        });
                     }
                     availableViews.push({ id: id, type: viewType });
                     return [3 /*break*/, 5];
