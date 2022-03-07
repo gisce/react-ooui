@@ -3,16 +3,15 @@ import { DashboardItem as DashboardItemOoui, parseContext } from "@gisce/ooui";
 import { v4 as uuidv4 } from "uuid";
 
 export async function fetchAction({
-  actionOoui,
+  actionId,
   rootContext = {},
   globalValues = {},
 }: {
-  actionOoui: DashboardItemOoui;
+  actionId: number;
   rootContext?: any;
   globalValues?: any;
 }): Promise<any> {
   const actionType = "ir.actions.act_window";
-  const actionId = parseInt(actionOoui.action_id!, 10);
   const action = `${actionType},${actionId}`;
 
   const dataForAction = await ConnectionProvider.getHandler().getActionData({
@@ -58,7 +57,6 @@ export async function fetchAction({
   const initialView = { id, type };
 
   return {
-    parms: actionOoui.position,
     title,
     actionId,
     actionType,

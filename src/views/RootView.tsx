@@ -284,9 +284,22 @@ function RootView(props: RootViewProps, ref: any) {
       }
     }
 
-    const [id, type] = finalViews.find((view: any[]) => {
-      return view[0] === view_id;
-    });
+    let id, type;
+    if (view_id === undefined || view_id === null) {
+      const view = finalViews.find((view: any[]) => {
+        return view[0] === undefined;
+      });
+      id = undefined;
+      type = view[1];
+    } else {
+      [id, type] = finalViews.find((view: any[]) => {
+        if (view[0] === undefined) {
+          return false;
+        }
+        return view[0] === view_id;
+      });
+    }
+
     const initialView = { id, type };
 
     openAction({

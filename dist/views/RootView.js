@@ -275,7 +275,8 @@ function RootView(props, ref) {
     }
     function openShortcut(shortcut) {
         return __awaiter(this, void 0, void 0, function () {
-            var action_id, action_type, res_id, view_id, action, dataForAction, parsedContext, parsedDomain, _a, model, views, title, target, finalViews, _i, views_2, viewArray, id_1, viewType, view_id_1, _b, id, type, initialView;
+            var action_id, action_type, res_id, view_id, action, dataForAction, parsedContext, parsedDomain, _a, model, views, title, target, finalViews, _i, views_2, viewArray, id_1, viewType, view_id_1, id, type, view, initialView;
+            var _b;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -332,9 +333,21 @@ function RootView(props, ref) {
                         _i++;
                         return [3 /*break*/, 5];
                     case 9:
-                        _b = finalViews.find(function (view) {
-                            return view[0] === view_id;
-                        }), id = _b[0], type = _b[1];
+                        if (view_id === undefined || view_id === null) {
+                            view = finalViews.find(function (view) {
+                                return view[0] === undefined;
+                            });
+                            id = undefined;
+                            type = view[1];
+                        }
+                        else {
+                            _b = finalViews.find(function (view) {
+                                if (view[0] === undefined) {
+                                    return false;
+                                }
+                                return view[0] === view_id;
+                            }), id = _b[0], type = _b[1];
+                        }
                         initialView = { id: id, type: type };
                         openAction({
                             domain: parsedDomain,

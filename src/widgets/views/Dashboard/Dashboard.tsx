@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { Dashboard as DashboardOoui } from "@gisce/ooui";
+import React, { useEffect, useRef, useState } from "react";
 import ActionView from "@/views/ActionView";
 import { DashboardProps } from "./Dashboard.types";
 import { fetchAction } from "./dashboardHelper";
@@ -7,37 +6,171 @@ import "react-resizable/css/styles.css";
 import "react-grid-layout/css/styles.css";
 import { Graph } from "../Graph/Graph";
 import { DashboardGrid, DashboardGridItem } from "../DashboardGrid";
+import ConnectionProvider from "@/ConnectionProvider";
+import { FormView } from "@/types";
+import { One2manyItem } from "@/index";
+import { readObjectValues } from "@/helpers/one2manyHelper";
+
+const itemsField = "line_ids";
 
 export function Dashboard(props: DashboardProps) {
-  const { arch, context = {} } = props;
-  const [dashboardOoui, setDashboardOoui] = useState<DashboardOoui>();
-  const [actionsData, setActionsData] = useState<any[]>([]);
+  const { model, context = {}, id } = props;
+  const [dashboardItems, setDashboardItems] = useState<any[]>([]);
+
+  const itemsFields = useRef<any>();
+  const boardFields = useRef<any>();
+
+  useEffect(() => {
+    fetchData();
+  }, [model, id, context]);
 
   async function fetchData() {
-    const fetchedActionsPromises = [];
-    for (const actionOoui of dashboardOoui!.items) {
-      fetchedActionsPromises.push(fetchAction({ actionOoui }));
-    }
-    const fetchedActions = await Promise.all(fetchedActionsPromises);
-    setActionsData(fetchedActions);
+    const view = await fetchView();
+    const values = await fetchValues(view);
+    const model = view.fields[itemsField].relation;
+    const items: One2manyItem[] = values[itemsField].items;
+    boardFields.current = view.fields;
+
+    const dashboardItems: One2manyItem[] = await fetchDashboardItems({
+      items,
+      model,
+      context,
+    });
+
+    fetchActions(dashboardItems);
   }
 
-  useEffect(() => {
-    // We parse the XML and create the dashboard ooui object
-    const parsedDashboardOoui = new DashboardOoui(arch);
-    setDashboardOoui(parsedDashboardOoui);
-  }, [arch]);
+  async function fetchView() {
+    return await ConnectionProvider.getHandler().getView({
+      model,
+      type: "form",
+      context,
+    });
+  }
 
-  useEffect(() => {
-    if (dashboardOoui) {
-      // We should retrieve every action data
-      fetchData();
+  async function fetchDashboardItems({
+    items,
+    model,
+    context,
+  }: {
+    items: One2manyItem[];
+    model: string;
+    context: any;
+  }) {
+    itemsFields.current = (
+      await ConnectionProvider.getHandler().getView({
+        model,
+        type: "form",
+        context,
+      })
+    ).fields;
+
+    return await readObjectValues({
+      treeFields: itemsFields.current,
+      formFields: itemsFields.current,
+      model,
+      items,
+      context,
+    });
+  }
+
+  async function fetchValues(view: FormView) {
+    return (
+      await ConnectionProvider.getHandler().readObjects({
+        arch: view.arch,
+        model,
+        ids: [id],
+        fields: view.fields,
+        context,
+      })
+    )[0];
+  }
+
+  async function fetchActions(items: One2manyItem[]) {
+    const itemsWithActions = [];
+
+    for (const dashboardItem of items) {
+      const { values } = dashboardItem;
+      if (values.action_id && values.action_id.length > 0) {
+        const actionId = parseInt(values.action_id[0], 10);
+        const actionData = await fetchAction({
+          actionId,
+          rootContext: context,
+        });
+        itemsWithActions.push({ ...dashboardItem, actionData });
+      }
     }
-  }, [dashboardOoui]);
+    setDashboardItems(itemsWithActions);
+  }
+
+  async function onPositionItemsChanged(itemPositions: any[]) {
+    const differences = itemPositions.filter((itemPosition) => {
+      const dashboardItem = dashboardItems.find(
+        (dashboardItem) => dashboardItem.id === itemPosition.id
+      );
+      if (!dashboardItem) {
+        return false;
+      }
+
+      if (!dashboardItem.position) {
+        return true;
+      }
+
+      const remotePosition = {
+        ...JSON.parse(dashboardItem.position.replace(/'/g, '"')),
+        id: dashboardItem.id,
+      };
+
+      return JSON.stringify(itemPosition) !== JSON.stringify(remotePosition);
+    });
+
+    if (differences.length === 0) {
+      return;
+    }
+
+    const itemsToUpdate = dashboardItems.filter((dashboardItem) => {
+      return differences.map((diff) => diff.id).includes(dashboardItem.id);
+    });
+
+    const itemsToUpdateWithUpdatedPos = itemsToUpdate.map((dashboardItem) => {
+      const diffItem = {
+        ...differences.find((diffItem) => diffItem.id === dashboardItem.id),
+      };
+      delete diffItem.id;
+
+      const item = { ...dashboardItem };
+      delete item.actionData;
+
+      return {
+        ...dashboardItem,
+        operation: "pendingUpdate",
+        values: {
+          ...dashboardItem.values,
+          position: JSON.stringify(diffItem).replace(/"/g, "'"),
+        },
+      };
+    });
+
+    const valueToUpdate = {
+      fields: itemsFields.current,
+      items: itemsToUpdateWithUpdatedPos,
+    };
+
+    await ConnectionProvider.getHandler().update({
+      model,
+      id,
+      values: { [itemsField]: valueToUpdate },
+      fields: boardFields.current,
+      context,
+    });
+  }
 
   return (
-    <DashboardGrid>
-      {actionsData.map((action, idx) => {
+    <DashboardGrid onPositionItemsChanged={onPositionItemsChanged}>
+      {dashboardItems.map((item, idx) => {
+        const { actionData, values } = item;
+        const { position, id } = values;
+
         const {
           actionId,
           actionType,
@@ -48,12 +181,12 @@ export function Dashboard(props: DashboardProps) {
           context,
           domain,
           initialView,
-        } = action as any;
+        } = actionData as any;
 
         let parmsParsed = {};
 
         try {
-          parmsParsed = JSON.parse((action as any).position.replace(/'/g, '"'));
+          parmsParsed = JSON.parse(position.replace(/'/g, '"'));
         } catch (err) {
           // console.error(`Error parsing parms: ${action.position}`);
           parmsParsed = { x: idx * 2, y: 0, w: 2, h: 3 };
@@ -93,12 +226,7 @@ export function Dashboard(props: DashboardProps) {
         }
 
         return (
-          <DashboardGridItem
-            key={actionId}
-            id={actionId}
-            title={title}
-            parms={parmsParsed}
-          >
+          <DashboardGridItem key={id} id={id} title={title} parms={parmsParsed}>
             {childContent}
           </DashboardGridItem>
         );

@@ -1,5 +1,6 @@
 export declare type DashboardProps = {
-    arch: string;
+    model: string;
+    id: number;
     context?: any;
 };
 //# sourceMappingURL=Dashboard.types.d.ts.map

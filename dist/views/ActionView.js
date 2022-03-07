@@ -80,7 +80,7 @@ function ActionView(props, ref) {
     var _d = react_1.useState([]), availableViews = _d[0], setAvailableViews = _d[1];
     var _e = react_1.useState(), treeView = _e[0], setTreeView = _e[1];
     var _f = react_1.useState(), formView = _f[0], setFormView = _f[1];
-    var _g = react_1.useState(), dashboardArch = _g[0], setDashboardArch = _g[1];
+    var _g = react_1.useState(), dashboardData = _g[0], setDashboardData = _g[1];
     var _h = react_1.useState(true), isLoading = _h[0], setIsLoading = _h[1];
     var res_id_parsed = res_id
         ? res_id
@@ -148,7 +148,11 @@ function ActionView(props, ref) {
                         setToolbar((_a = viewData) === null || _a === void 0 ? void 0 : _a.toolbar);
                     }
                     else if (viewType === "dashboard") {
-                        setDashboardArch(viewData.arch);
+                        setDashboardData({
+                            id: context["active_id"],
+                            model: model,
+                            context: context,
+                        });
                     }
                     availableViews.push({ id: id, type: viewType });
                     return [3 /*break*/, 5];
@@ -328,9 +332,12 @@ function ActionView(props, ref) {
     }
     function viewContent() {
         if (currentView.type === "dashboard") {
+            if (!dashboardData) {
+                return null;
+            }
             return (react_1.default.createElement(react_1.default.Fragment, null,
                 react_1.default.createElement(TitleHeader_1.default, null),
-                react_1.default.createElement(index_1.Dashboard, { arch: dashboardArch })));
+                react_1.default.createElement(index_1.Dashboard, { model: dashboardData.model, id: dashboardData.id, context: dashboardData === null || dashboardData === void 0 ? void 0 : dashboardData.context })));
         }
         return (react_1.default.createElement(react_1.default.Fragment, null,
             react_1.default.createElement(TitleHeader_1.default, null, currentView.type === "form" ? (react_1.default.createElement(FormActionBar_1.default, null)) : (react_1.default.createElement(TreeActionBar_1.default, { parentContext: context }))),

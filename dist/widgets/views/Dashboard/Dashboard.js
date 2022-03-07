@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -60,53 +71,196 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Dashboard = void 0;
 var react_1 = __importStar(require("react"));
-var ooui_1 = require("@gisce/ooui");
 var ActionView_1 = __importDefault(require("@/views/ActionView"));
 var dashboardHelper_1 = require("./dashboardHelper");
 require("react-resizable/css/styles.css");
 require("react-grid-layout/css/styles.css");
 var Graph_1 = require("../Graph/Graph");
 var DashboardGrid_1 = require("../DashboardGrid");
+var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
+var one2manyHelper_1 = require("@/helpers/one2manyHelper");
+var itemsField = "line_ids";
 function Dashboard(props) {
-    var arch = props.arch, _a = props.context, context = _a === void 0 ? {} : _a;
-    var _b = react_1.useState(), dashboardOoui = _b[0], setDashboardOoui = _b[1];
-    var _c = react_1.useState([]), actionsData = _c[0], setActionsData = _c[1];
+    var model = props.model, _a = props.context, context = _a === void 0 ? {} : _a, id = props.id;
+    var _b = react_1.useState([]), dashboardItems = _b[0], setDashboardItems = _b[1];
+    var itemsFields = react_1.useRef();
+    var boardFields = react_1.useRef();
+    react_1.useEffect(function () {
+        fetchData();
+    }, [model, id, context]);
     function fetchData() {
         return __awaiter(this, void 0, void 0, function () {
-            var fetchedActionsPromises, _i, _a, actionOoui, fetchedActions;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        fetchedActionsPromises = [];
-                        for (_i = 0, _a = dashboardOoui.items; _i < _a.length; _i++) {
-                            actionOoui = _a[_i];
-                            fetchedActionsPromises.push(dashboardHelper_1.fetchAction({ actionOoui: actionOoui }));
-                        }
-                        return [4 /*yield*/, Promise.all(fetchedActionsPromises)];
+            var view, values, model, items, dashboardItems;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, fetchView()];
                     case 1:
-                        fetchedActions = _b.sent();
-                        setActionsData(fetchedActions);
+                        view = _a.sent();
+                        return [4 /*yield*/, fetchValues(view)];
+                    case 2:
+                        values = _a.sent();
+                        model = view.fields[itemsField].relation;
+                        items = values[itemsField].items;
+                        boardFields.current = view.fields;
+                        return [4 /*yield*/, fetchDashboardItems({
+                                items: items,
+                                model: model,
+                                context: context,
+                            })];
+                    case 3:
+                        dashboardItems = _a.sent();
+                        fetchActions(dashboardItems);
                         return [2 /*return*/];
                 }
             });
         });
     }
-    react_1.useEffect(function () {
-        // We parse the XML and create the dashboard ooui object
-        var parsedDashboardOoui = new ooui_1.Dashboard(arch);
-        setDashboardOoui(parsedDashboardOoui);
-    }, [arch]);
-    react_1.useEffect(function () {
-        if (dashboardOoui) {
-            // We should retrieve every action data
-            fetchData();
-        }
-    }, [dashboardOoui]);
-    return (react_1.default.createElement(DashboardGrid_1.DashboardGrid, null, actionsData.map(function (action, idx) {
-        var _a = action, actionId = _a.actionId, actionType = _a.actionType, key = _a.key, title = _a.title, views = _a.views, model = _a.model, context = _a.context, domain = _a.domain, initialView = _a.initialView;
+    function fetchView() {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
+                            model: model,
+                            type: "form",
+                            context: context,
+                        })];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    }
+    function fetchDashboardItems(_a) {
+        var items = _a.items, model = _a.model, context = _a.context;
+        return __awaiter(this, void 0, void 0, function () {
+            var _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _b = itemsFields;
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
+                                model: model,
+                                type: "form",
+                                context: context,
+                            })];
+                    case 1:
+                        _b.current = (_c.sent()).fields;
+                        return [4 /*yield*/, one2manyHelper_1.readObjectValues({
+                                treeFields: itemsFields.current,
+                                formFields: itemsFields.current,
+                                model: model,
+                                items: items,
+                                context: context,
+                            })];
+                    case 2: return [2 /*return*/, _c.sent()];
+                }
+            });
+        });
+    }
+    function fetchValues(view) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                            arch: view.arch,
+                            model: model,
+                            ids: [id],
+                            fields: view.fields,
+                            context: context,
+                        })];
+                    case 1: return [2 /*return*/, (_a.sent())[0]];
+                }
+            });
+        });
+    }
+    function fetchActions(items) {
+        return __awaiter(this, void 0, void 0, function () {
+            var itemsWithActions, _i, items_1, dashboardItem, values, actionId, actionData;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        itemsWithActions = [];
+                        _i = 0, items_1 = items;
+                        _a.label = 1;
+                    case 1:
+                        if (!(_i < items_1.length)) return [3 /*break*/, 4];
+                        dashboardItem = items_1[_i];
+                        values = dashboardItem.values;
+                        if (!(values.action_id && values.action_id.length > 0)) return [3 /*break*/, 3];
+                        actionId = parseInt(values.action_id[0], 10);
+                        return [4 /*yield*/, dashboardHelper_1.fetchAction({
+                                actionId: actionId,
+                                rootContext: context,
+                            })];
+                    case 2:
+                        actionData = _a.sent();
+                        itemsWithActions.push(__assign(__assign({}, dashboardItem), { actionData: actionData }));
+                        _a.label = 3;
+                    case 3:
+                        _i++;
+                        return [3 /*break*/, 1];
+                    case 4:
+                        setDashboardItems(itemsWithActions);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
+    function onPositionItemsChanged(itemPositions) {
+        return __awaiter(this, void 0, void 0, function () {
+            var differences, itemsToUpdate, itemsToUpdateWithUpdatedPos, valueToUpdate;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        differences = itemPositions.filter(function (itemPosition) {
+                            var dashboardItem = dashboardItems.find(function (dashboardItem) { return dashboardItem.id === itemPosition.id; });
+                            if (!dashboardItem) {
+                                return false;
+                            }
+                            if (!dashboardItem.position) {
+                                return true;
+                            }
+                            var remotePosition = __assign(__assign({}, JSON.parse(dashboardItem.position.replace(/'/g, '"'))), { id: dashboardItem.id });
+                            return JSON.stringify(itemPosition) !== JSON.stringify(remotePosition);
+                        });
+                        if (differences.length === 0) {
+                            return [2 /*return*/];
+                        }
+                        itemsToUpdate = dashboardItems.filter(function (dashboardItem) {
+                            return differences.map(function (diff) { return diff.id; }).includes(dashboardItem.id);
+                        });
+                        itemsToUpdateWithUpdatedPos = itemsToUpdate.map(function (dashboardItem) {
+                            var diffItem = __assign({}, differences.find(function (diffItem) { return diffItem.id === dashboardItem.id; }));
+                            delete diffItem.id;
+                            var item = __assign({}, dashboardItem);
+                            delete item.actionData;
+                            return __assign(__assign({}, dashboardItem), { operation: "pendingUpdate", values: __assign(__assign({}, dashboardItem.values), { position: JSON.stringify(diffItem).replace(/"/g, "'") }) });
+                        });
+                        valueToUpdate = {
+                            fields: itemsFields.current,
+                            items: itemsToUpdateWithUpdatedPos,
+                        };
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().update({
+                                model: model,
+                                id: id,
+                                values: (_a = {}, _a[itemsField] = valueToUpdate, _a),
+                                fields: boardFields.current,
+                                context: context,
+                            })];
+                    case 1:
+                        _b.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
+    return (react_1.default.createElement(DashboardGrid_1.DashboardGrid, { onPositionItemsChanged: onPositionItemsChanged }, dashboardItems.map(function (item, idx) {
+        var actionData = item.actionData, values = item.values;
+        var position = values.position, id = values.id;
+        var _a = actionData, actionId = _a.actionId, actionType = _a.actionType, key = _a.key, title = _a.title, views = _a.views, model = _a.model, context = _a.context, domain = _a.domain, initialView = _a.initialView;
         var parmsParsed = {};
         try {
-            parmsParsed = JSON.parse(action.position.replace(/'/g, '"'));
+            parmsParsed = JSON.parse(position.replace(/'/g, '"'));
         }
         catch (err) {
             // console.error(`Error parsing parms: ${action.position}`);
@@ -119,7 +273,7 @@ function Dashboard(props) {
         else if (initialView !== undefined) {
             childContent = (react_1.default.createElement(ActionView_1.default, { action_id: actionId, action_type: actionType, tabKey: key, title: title, views: views, model: model, context: context, domain: domain, setCanWeClose: function () { }, initialView: initialView }));
         }
-        return (react_1.default.createElement(DashboardGrid_1.DashboardGridItem, { key: actionId, id: actionId, title: title, parms: parmsParsed }, childContent));
+        return (react_1.default.createElement(DashboardGrid_1.DashboardGridItem, { key: id, id: id, title: title, parms: parmsParsed }, childContent));
     })));
 }
 exports.Dashboard = Dashboard;

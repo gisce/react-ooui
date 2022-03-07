@@ -27,6 +27,7 @@ import { GoToResourceModal } from "@/ui/GoToResourceModal";
 import showInfo from "@/ui/InfoDialog";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { Dashboard } from "@/index";
+import { DashboardProps } from "@/widgets/views/Dashboard/Dashboard.types";
 
 type Props = {
   domain: any;
@@ -70,7 +71,7 @@ function ActionView(props: Props, ref: any) {
 
   const [treeView, setTreeView] = useState<TreeView>();
   const [formView, setFormView] = useState<FormView>();
-  const [dashboardArch, setDashboardArch] = useState<string>();
+  const [dashboardData, setDashboardData] = useState<DashboardProps>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const res_id_parsed: number | undefined = res_id
     ? (res_id as number)
@@ -154,7 +155,11 @@ function ActionView(props: Props, ref: any) {
           setFormView(viewData);
           setToolbar((viewData as any)?.toolbar);
         } else if (viewType === "dashboard") {
-          setDashboardArch(viewData.arch);
+          setDashboardData({
+            id: context["active_id"],
+            model,
+            context,
+          });
         }
 
         availableViews.push({ id, type: viewType });
@@ -341,10 +346,18 @@ function ActionView(props: Props, ref: any) {
 
   function viewContent() {
     if (currentView!.type === "dashboard") {
+      if (!dashboardData) {
+        return null;
+      }
+
       return (
         <>
           <TitleHeader />
-          <Dashboard arch={dashboardArch!} />
+          <Dashboard
+            model={dashboardData!.model}
+            id={dashboardData!.id}
+            context={dashboardData?.context}
+          />
         </>
       );
     }
