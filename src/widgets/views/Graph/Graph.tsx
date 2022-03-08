@@ -53,15 +53,7 @@ export const Graph = (props: GraphProps) => {
   }
 
   if (graphOoui.type === "indicator") {
-    return (
-      <GraphIndicator
-        title={title}
-        ooui={graphOoui}
-        model={model}
-        context={context}
-        domain={domain}
-      />
-    );
+    return <GraphIndicator model={model} context={context} domain={domain} />;
   } else {
     return <>{`Graph ${graphOoui.type} not implemented`}</>;
   }

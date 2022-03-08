@@ -1,6 +1,6 @@
 import React from "react";
 import { DashboardGridItemProps } from "./DashboardGridItem.types";
-import { ExportOutlined } from "@ant-design/icons";
+import { ExpandAltOutlined } from "@ant-design/icons";
 import { Card } from "antd";
 import styled from "styled-components";
 
@@ -16,8 +16,9 @@ export const DashboardGridItem = (props: DashboardGridItemProps) => {
   return (
     <GrabCard
       title={title}
-      extra={<ExportOutlined style={{ cursor: "pointer" }} />}
-      style={{ backgroundColor: "#efefef", height: "100%" }}
+      extra={<ExpandAltOutlined style={{ cursor: "pointer" }} />}
+      className={"shadow-md rounded"}
+      style={{ height: "100%", overflow: "hidden" }}
     >
       <div style={{ padding: "2em" }}>{children}</div>
     </GrabCard>
