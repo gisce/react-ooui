@@ -92,7 +92,7 @@ var Graph = function (props) {
         return null;
     }
     if (graphOoui.type === "indicator") {
-        return (react_1.default.createElement(GraphIndicator_1.GraphIndicator, { title: title, ooui: graphOoui, model: model, context: context, domain: domain }));
+        return react_1.default.createElement(GraphIndicator_1.GraphIndicator, { model: model, context: context, domain: domain });
     }
     else {
         return react_1.default.createElement(react_1.default.Fragment, null, "Graph " + graphOoui.type + " not implemented");
