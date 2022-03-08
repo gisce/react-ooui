@@ -64,6 +64,8 @@ var icons_1 = require("@ant-design/icons");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var Title_1 = __importDefault(require("antd/lib/typography/Title"));
 var react_measure_1 = __importDefault(require("react-measure"));
+var fontGrowFactor = 0.7;
+var minFontSize = 30;
 var GraphIndicator = function (props) {
     var model = props.model, domain = props.domain, context = props.context;
     var _a = react_1.useState(false), loading = _a[0], setLoading = _a[1];
@@ -94,7 +96,7 @@ var GraphIndicator = function (props) {
                     case 3:
                         err_1 = _a.sent();
                         console.error(err_1);
-                        return [2 /*return*/, react_1.default.createElement(react_1.default.Fragment, null, JSON.stringify(err_1))];
+                        return [3 /*break*/, 4];
                     case 4:
                         setLoading(false);
                         return [2 /*return*/];
@@ -110,9 +112,12 @@ var GraphIndicator = function (props) {
             setHeight((_a = contentRect.bounds) === null || _a === void 0 ? void 0 : _a.height);
         } }, function (_a) {
         var measureRef = _a.measureRef;
-        var fontSize = height * 0.5 < 20 ? 20 : height * 0.3;
+        var fontSize = height * fontGrowFactor < minFontSize
+            ? minFontSize
+            : height * fontGrowFactor;
         return (react_1.default.createElement("div", { ref: measureRef, style: {
                 width: "100%",
+                height: "100%",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
