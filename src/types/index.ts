@@ -128,6 +128,12 @@ type ReadEvalUiObjectsRequest = {
   attrs?: any;
 };
 
+type ParseConditionRequest = {
+  condition: string;
+  values: any;
+  context?: any;
+};
+
 type DeleteObjectsRequest = {
   model: string;
   ids: number[];
@@ -206,6 +212,7 @@ type ConnectionProviderType = {
   execute: (options: ExecuteRequest) => Promise<any>;
   readObjects: (options: ReadObjectsRequest) => Promise<any>;
   readEvalUiObjects: (options: ReadEvalUiObjectsRequest) => Promise<any>;
+  parseCondition: (options: ParseConditionRequest) => Promise<any>;
   executeWorkflow: (options: ExecuteRequest) => Promise<any>;
   createReport: (options: CreateReportRequest) => Promise<any>;
   getReport: (options: GetReportRequest) => Promise<any>;
@@ -262,4 +269,5 @@ export type {
   DuplicateRequest,
   GetLogInfoRequest,
   IsShortcutFavoriteOptions,
+  ParseConditionRequest,
 };
