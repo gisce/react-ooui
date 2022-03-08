@@ -5,9 +5,12 @@ const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = (args) => {
   const environment =
-    Object.keys(args).indexOf("development") !== undefined
+    Object.keys(args).indexOf("development") !== -1
       ? "development"
       : "production";
+
+  // console.log("args: " + JSON.stringify(args));
+  console.log("Webpack is running in " + environment + " mode");
 
   const config = {
     entry: "./src/index.ts",

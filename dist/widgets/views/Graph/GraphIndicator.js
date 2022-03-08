@@ -114,7 +114,7 @@ var GraphIndicator = function (props) {
     return (react_1.default.createElement(antd_1.Form, { form: form },
         react_1.default.createElement(Indicator_1.Indicator, { ooui: new ooui_1.Indicator({
                 name: "indicator",
-                string: title || ooui.string,
+                string: "",
             }) })));
 };
 exports.GraphIndicator = GraphIndicator;

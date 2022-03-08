@@ -161,27 +161,31 @@ function RootView(props, ref) {
                         _i = 0, views_1 = views;
                         _f.label = 5;
                     case 5:
-                        if (!(_i < views_1.length)) return [3 /*break*/, 9];
+                        if (!(_i < views_1.length)) return [3 /*break*/, 11];
                         viewArray = views_1[_i];
                         id = viewArray[0], viewType = viewArray[1];
-                        if (!!id) return [3 /*break*/, 7];
-                        return [4 /*yield*/, __1.ConnectionProvider.getHandler().getView({
-                                model: model,
-                                type: viewType,
-                                id: id,
-                                context: __assign(__assign({}, rootContext), parsedContext),
-                            })];
-                    case 6:
+                        if (!!id) return [3 /*break*/, 9];
+                        if (!(viewType === "dashboard")) return [3 /*break*/, 6];
+                        finalViews.push([undefined, "dashboard"]);
+                        return [3 /*break*/, 8];
+                    case 6: return [4 /*yield*/, __1.ConnectionProvider.getHandler().getView({
+                            model: model,
+                            type: viewType,
+                            id: id,
+                            context: __assign(__assign({}, rootContext), parsedContext),
+                        })];
+                    case 7:
                         view_id = (_f.sent()).view_id;
                         finalViews.push([view_id, viewType]);
-                        return [3 /*break*/, 8];
-                    case 7:
-                        finalViews.push(viewArray);
                         _f.label = 8;
-                    case 8:
+                    case 8: return [3 /*break*/, 10];
+                    case 9:
+                        finalViews.push(viewArray);
+                        _f.label = 10;
+                    case 10:
                         _i++;
                         return [3 /*break*/, 5];
-                    case 9:
+                    case 11:
                         if (initialViewType) {
                             _d = finalViews.find(function (_a) {
                                 var _ = _a[0], type = _a[1];

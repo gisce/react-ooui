@@ -14,7 +14,7 @@ export const Default = (): React.ReactElement => {
 
   return (
     <LocaleProvider lang="en_US">
-      <GraphIndicator ooui={ooui} model="partner" domain={{}} context={{}} />
+      <GraphIndicator model="partner" domain={{}} context={{}} />
     </LocaleProvider>
   );
 };
