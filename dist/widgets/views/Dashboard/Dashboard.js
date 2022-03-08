@@ -79,10 +79,14 @@ var Graph_1 = require("../Graph/Graph");
 var DashboardGrid_1 = require("../DashboardGrid");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var one2manyHelper_1 = require("@/helpers/one2manyHelper");
+var icons_1 = require("@ant-design/icons");
+var antd_1 = require("antd");
 var itemsField = "line_ids";
 function Dashboard(props) {
     var model = props.model, _a = props.context, context = _a === void 0 ? {} : _a, id = props.id;
     var _b = react_1.useState([]), dashboardItems = _b[0], setDashboardItems = _b[1];
+    var _c = react_1.useState(false), isLoading = _c[0], setIsLoading = _c[1];
+    var _d = react_1.useState(), error = _d[0], setError = _d[1];
     var itemsFields = react_1.useRef();
     var boardFields = react_1.useRef();
     react_1.useEffect(function () {
@@ -90,27 +94,42 @@ function Dashboard(props) {
     }, [model, id, context]);
     function fetchData() {
         return __awaiter(this, void 0, void 0, function () {
-            var view, values, model, items, dashboardItems;
+            var view, values, model_1, items, originalItems, itemsWithActions, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, fetchView()];
+                    case 0:
+                        setIsLoading(true);
+                        setError(undefined);
+                        _a.label = 1;
                     case 1:
+                        _a.trys.push([1, 6, , 7]);
+                        return [4 /*yield*/, fetchView()];
+                    case 2:
                         view = _a.sent();
                         return [4 /*yield*/, fetchValues(view)];
-                    case 2:
+                    case 3:
                         values = _a.sent();
-                        model = view.fields[itemsField].relation;
+                        model_1 = view.fields[itemsField].relation;
                         items = values[itemsField].items;
                         boardFields.current = view.fields;
                         return [4 /*yield*/, fetchDashboardItems({
                                 items: items,
-                                model: model,
+                                model: model_1,
                                 context: context,
                             })];
-                    case 3:
-                        dashboardItems = _a.sent();
-                        fetchActions(dashboardItems);
-                        return [2 /*return*/];
+                    case 4:
+                        originalItems = _a.sent();
+                        return [4 /*yield*/, getItemsWithActions(originalItems)];
+                    case 5:
+                        itemsWithActions = _a.sent();
+                        setDashboardItems(itemsWithActions);
+                        setIsLoading(false);
+                        return [3 /*break*/, 7];
+                    case 6:
+                        err_1 = _a.sent();
+                        setError(JSON.stringify(err_1));
+                        return [3 /*break*/, 7];
+                    case 7: return [2 /*return*/];
                 }
             });
         });
@@ -172,7 +191,7 @@ function Dashboard(props) {
             });
         });
     }
-    function fetchActions(items) {
+    function getItemsWithActions(items) {
         return __awaiter(this, void 0, void 0, function () {
             var itemsWithActions, _i, items_1, dashboardItem, values, actionId, actionData;
             return __generator(this, function (_a) {
@@ -198,9 +217,7 @@ function Dashboard(props) {
                     case 3:
                         _i++;
                         return [3 /*break*/, 1];
-                    case 4:
-                        setDashboardItems(itemsWithActions);
-                        return [2 /*return*/];
+                    case 4: return [2 /*return*/, itemsWithActions];
                 }
             });
         });
@@ -253,6 +270,12 @@ function Dashboard(props) {
                 }
             });
         });
+    }
+    if (error) {
+        return (react_1.default.createElement(antd_1.Alert, { className: "mt-10 mb-20", message: error, type: "error", banner: true }));
+    }
+    if (isLoading) {
+        return react_1.default.createElement(icons_1.LoadingOutlined, null);
     }
     return (react_1.default.createElement(DashboardGrid_1.DashboardGrid, { onPositionItemsChanged: onPositionItemsChanged }, dashboardItems.map(function (item, idx) {
         var actionData = item.actionData, values = item.values;

@@ -65,23 +65,24 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var Title_1 = __importDefault(require("antd/lib/typography/Title"));
 var react_measure_1 = __importDefault(require("react-measure"));
 var GraphIndicator = function (props) {
-    var model = props.model, domain = props.domain, context = props.context;
+    var model = props.model, domain = props.domain, context = props.context, colorCondition = props.colorCondition;
     var _a = react_1.useState(false), loading = _a[0], setLoading = _a[1];
     var _b = react_1.useState(), value = _b[0], setValue = _b[1];
     var _c = react_1.useState(0), height = _c[0], setHeight = _c[1];
+    var _d = react_1.useState(), color = _d[0], setColor = _d[1];
     react_1.useEffect(function () {
         fetchData();
-    }, [model]);
+    }, [model, colorCondition]);
     function fetchData() {
         return __awaiter(this, void 0, void 0, function () {
-            var retrievedValue, err_1;
+            var retrievedValue, conditionEval, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         setLoading(true);
                         _a.label = 1;
                     case 1:
-                        _a.trys.push([1, 3, , 4]);
+                        _a.trys.push([1, 5, , 6]);
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchCount({
                                 model: model,
                                 params: domain,
@@ -90,12 +91,22 @@ var GraphIndicator = function (props) {
                     case 2:
                         retrievedValue = _a.sent();
                         setValue(retrievedValue);
-                        return [3 /*break*/, 4];
+                        if (!colorCondition) return [3 /*break*/, 4];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().parseCondition({
+                                condition: colorCondition,
+                                values: { value: retrievedValue },
+                                context: context,
+                            })];
                     case 3:
+                        conditionEval = _a.sent();
+                        setColor(conditionEval);
+                        _a.label = 4;
+                    case 4: return [3 /*break*/, 6];
+                    case 5:
                         err_1 = _a.sent();
                         console.error(err_1);
                         return [2 /*return*/, react_1.default.createElement(react_1.default.Fragment, null, JSON.stringify(err_1))];
-                    case 4:
+                    case 6:
                         setLoading(false);
                         return [2 /*return*/];
                 }
@@ -117,7 +128,7 @@ var GraphIndicator = function (props) {
                 alignItems: "center",
                 justifyContent: "center",
             } },
-            react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize, marginBottom: 0 } }, value)));
+            react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize, marginBottom: 0, color: color } }, value)));
     }));
 };
 exports.GraphIndicator = GraphIndicator;

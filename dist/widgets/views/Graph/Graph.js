@@ -54,11 +54,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Graph = void 0;
 var react_1 = __importStar(require("react"));
 var ooui_1 = require("@gisce/ooui");
 var icons_1 = require("@ant-design/icons");
+var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var GraphIndicator_1 = require("./GraphIndicator");
 var Graph = function (props) {
     var view_id = props.view_id, model = props.model, context = props.context, domain = props.domain, title = props.title;
@@ -69,30 +73,44 @@ var Graph = function (props) {
     }, [view_id]);
     function fetchData() {
         return __awaiter(this, void 0, void 0, function () {
-            var ooui;
+            var viewData, ooui, err_1;
             return __generator(this, function (_a) {
-                setLoading(true);
-                try {
-                    ooui = new ooui_1.Graph("<?xml version=\"1.0\"?>\n      <graph string=\"Count of " + model + "\" type=\"indicator\" />\n      ");
-                    setGraphOoui(ooui);
+                switch (_a.label) {
+                    case 0:
+                        setLoading(true);
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
+                                model: model,
+                                id: view_id,
+                                type: "graph",
+                                context: context,
+                            })];
+                    case 2:
+                        viewData = _a.sent();
+                        ooui = new ooui_1.Graph(viewData.arch);
+                        setGraphOoui(ooui);
+                        return [3 /*break*/, 4];
+                    case 3:
+                        err_1 = _a.sent();
+                        console.error(err_1);
+                        return [2 /*return*/, react_1.default.createElement(react_1.default.Fragment, null, JSON.stringify(err_1))];
+                    case 4:
+                        setLoading(false);
+                        return [2 /*return*/];
                 }
-                catch (err) {
-                    console.error(err);
-                    return [2 /*return*/, react_1.default.createElement(react_1.default.Fragment, null, JSON.stringify(err))];
-                }
-                setLoading(false);
-                return [2 /*return*/];
             });
         });
     }
     if (loading) {
-        return react_1.default.createElement(icons_1.LoadingOutlined, null);
+        return react_1.default.createElement(icons_1.LoadingOutlined, { style: { height: "12px" } });
     }
     if (!graphOoui) {
         return null;
     }
     if (graphOoui.type === "indicator") {
-        return react_1.default.createElement(GraphIndicator_1.GraphIndicator, { model: model, context: context, domain: domain });
+        return (react_1.default.createElement(GraphIndicator_1.GraphIndicator, { colorCondition: graphOoui.color, model: model, context: context, domain: domain }));
     }
     else {
         return react_1.default.createElement(react_1.default.Fragment, null, "Graph " + graphOoui.type + " not implemented");
