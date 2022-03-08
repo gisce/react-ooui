@@ -60,15 +60,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GraphIndicator = void 0;
 var react_1 = __importStar(require("react"));
-var ooui_1 = require("@gisce/ooui");
 var icons_1 = require("@ant-design/icons");
-var Indicator_1 = require("@/widgets/custom/Indicator");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
-var antd_1 = require("antd");
+var Title_1 = __importDefault(require("antd/lib/typography/Title"));
+var react_measure_1 = __importDefault(require("react-measure"));
 var GraphIndicator = function (props) {
-    var title = props.title, ooui = props.ooui, model = props.model, domain = props.domain, context = props.context;
+    var model = props.model, domain = props.domain, context = props.context;
     var _a = react_1.useState(false), loading = _a[0], setLoading = _a[1];
-    var form = antd_1.Form.useForm()[0];
+    var _b = react_1.useState(), value = _b[0], setValue = _b[1];
+    var _c = react_1.useState(0), height = _c[0], setHeight = _c[1];
     react_1.useEffect(function () {
         fetchData();
     }, [model]);
@@ -89,13 +89,7 @@ var GraphIndicator = function (props) {
                             })];
                     case 2:
                         retrievedValue = _a.sent();
-                        form.setFields([
-                            {
-                                name: "indicator",
-                                touched: true,
-                                value: retrievedValue,
-                            },
-                        ]);
+                        setValue(retrievedValue);
                         return [3 /*break*/, 4];
                     case 3:
                         err_1 = _a.sent();
@@ -111,11 +105,20 @@ var GraphIndicator = function (props) {
     if (loading) {
         return react_1.default.createElement(icons_1.LoadingOutlined, null);
     }
-    return (react_1.default.createElement(antd_1.Form, { form: form },
-        react_1.default.createElement(Indicator_1.Indicator, { ooui: new ooui_1.Indicator({
-                name: "indicator",
-                string: "",
-            }) })));
+    return (react_1.default.createElement(react_measure_1.default, { bounds: true, onResize: function (contentRect) {
+            var _a;
+            setHeight((_a = contentRect.bounds) === null || _a === void 0 ? void 0 : _a.height);
+        } }, function (_a) {
+        var measureRef = _a.measureRef;
+        var fontSize = height * 0.5 < 20 ? 20 : height * 0.3;
+        return (react_1.default.createElement("div", { ref: measureRef, style: {
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+            } },
+            react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize, marginBottom: 0 } }, value)));
+    }));
 };
 exports.GraphIndicator = GraphIndicator;
 //# sourceMappingURL=GraphIndicator.js.map

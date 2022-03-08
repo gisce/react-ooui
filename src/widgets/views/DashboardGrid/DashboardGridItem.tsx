@@ -8,6 +8,10 @@ const GrabCard = styled(Card)`
   .ant-card-head {
     cursor: grab;
   }
+  .ant-card-body {
+    height: 80%;
+    padding: 0;
+  }
 `;
 
 export const DashboardGridItem = (props: DashboardGridItemProps) => {
@@ -20,7 +24,7 @@ export const DashboardGridItem = (props: DashboardGridItemProps) => {
       className={"shadow-md rounded"}
       style={{ height: "100%", overflow: "hidden" }}
     >
-      <div style={{ padding: "2em" }}>{children}</div>
+      <div style={{ height: "100%", display: "flex" }}>{children}</div>
     </GrabCard>
   );
 };

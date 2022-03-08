@@ -1,1 +1,1 @@
-{"version":3,"file":"DashboardGridItem.d.ts","sourceRoot":"","sources":["../../../../src/widgets/views/DashboardGrid/DashboardGridItem.tsx"],"names":[],"mappings":"AACA,OAAO,EAAE,sBAAsB,EAAE,MAAM,2BAA2B,CAAC;AAWnE,eAAO,MAAM,iBAAiB,UAAW,sBAAsB,gBAY9D,CAAC"}
+{"version":3,"file":"DashboardGridItem.d.ts","sourceRoot":"","sources":["../../../../src/widgets/views/DashboardGrid/DashboardGridItem.tsx"],"names":[],"mappings":"AACA,OAAO,EAAE,sBAAsB,EAAE,MAAM,2BAA2B,CAAC;AAenE,eAAO,MAAM,iBAAiB,UAAW,sBAAsB,gBAa9D,CAAC"}
