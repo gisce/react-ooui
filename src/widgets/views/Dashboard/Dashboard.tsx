@@ -10,12 +10,16 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { FormView } from "@/types";
 import { One2manyItem } from "@/index";
 import { readObjectValues } from "@/helpers/one2manyHelper";
+import { LoadingOutlined } from "@ant-design/icons";
+import { Alert } from "antd";
 
 const itemsField = "line_ids";
 
 export function Dashboard(props: DashboardProps) {
   const { model, context = {}, id } = props;
   const [dashboardItems, setDashboardItems] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>();
 
   const itemsFields = useRef<any>();
   const boardFields = useRef<any>();
@@ -25,19 +29,28 @@ export function Dashboard(props: DashboardProps) {
   }, [model, id, context]);
 
   async function fetchData() {
-    const view = await fetchView();
-    const values = await fetchValues(view);
-    const model = view.fields[itemsField].relation;
-    const items: One2manyItem[] = values[itemsField].items;
-    boardFields.current = view.fields;
+    setIsLoading(true);
+    setError(undefined);
 
-    const dashboardItems: One2manyItem[] = await fetchDashboardItems({
-      items,
-      model,
-      context,
-    });
+    try {
+      const view = await fetchView();
+      const values = await fetchValues(view);
+      const model = view.fields[itemsField].relation;
+      const items: One2manyItem[] = values[itemsField].items;
+      boardFields.current = view.fields;
 
-    fetchActions(dashboardItems);
+      const originalItems: One2manyItem[] = await fetchDashboardItems({
+        items,
+        model,
+        context,
+      });
+
+      const itemsWithActions = await getItemsWithActions(originalItems);
+      setDashboardItems(itemsWithActions);
+      setIsLoading(false);
+    } catch (err) {
+      setError(JSON.stringify(err));
+    }
   }
 
   async function fetchView() {
@@ -86,7 +99,7 @@ export function Dashboard(props: DashboardProps) {
     )[0];
   }
 
-  async function fetchActions(items: One2manyItem[]) {
+  async function getItemsWithActions(items: One2manyItem[]) {
     const itemsWithActions = [];
 
     for (const dashboardItem of items) {
@@ -100,7 +113,8 @@ export function Dashboard(props: DashboardProps) {
         itemsWithActions.push({ ...dashboardItem, actionData });
       }
     }
-    setDashboardItems(itemsWithActions);
+
+    return itemsWithActions;
   }
 
   async function onPositionItemsChanged(itemPositions: any[]) {
@@ -163,6 +177,16 @@ export function Dashboard(props: DashboardProps) {
       fields: boardFields.current,
       context,
     });
+  }
+
+  if (error) {
+    return (
+      <Alert className="mt-10 mb-20" message={error} type="error" banner />
+    );
+  }
+
+  if (isLoading) {
+    return <LoadingOutlined />;
   }
 
   return (

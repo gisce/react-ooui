@@ -11,17 +11,19 @@ export type GraphInidicatorProps = {
   model: string;
   domain: any;
   context: any;
+  colorCondition?: string | null;
 };
 
 export const GraphIndicator = (props: GraphInidicatorProps) => {
-  const { model, domain, context } = props;
+  const { model, domain, context, colorCondition } = props;
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState<number>();
   const [height, setHeight] = useState<number>(0);
+  const [color, setColor] = useState<string>();
 
   useEffect(() => {
     fetchData();
-  }, [model]);
+  }, [model, colorCondition]);
 
   async function fetchData() {
     setLoading(true);
@@ -34,6 +36,17 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
       });
 
       setValue(retrievedValue);
+
+      if (colorCondition) {
+        const conditionEval = await ConnectionProvider.getHandler().parseCondition(
+          {
+            condition: colorCondition,
+            values: { value: retrievedValue },
+            context,
+          }
+        );
+        setColor(conditionEval);
+      }
     } catch (err) {
       console.error(err);
       // return <>{JSON.stringify(err)}</>;
@@ -69,7 +82,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
               justifyContent: "center",
             }}
           >
-            <Title style={{ fontSize, marginBottom: 0 }}>{value}</Title>
+            <Title style={{ fontSize, marginBottom: 0, color }}>{value}</Title>
           </div>
         );
       }}

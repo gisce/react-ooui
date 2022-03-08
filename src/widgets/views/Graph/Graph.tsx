@@ -25,16 +25,14 @@ export const Graph = (props: GraphProps) => {
     setLoading(true);
 
     try {
-      // const viewData = await ConnectionProvider.getHandler().getView({
-      //   model,
-      //   id: view_id,
-      //   type: "graph",
-      //   context,
-      // });
+      const viewData = await ConnectionProvider.getHandler().getView({
+        model,
+        id: view_id,
+        type: "graph",
+        context,
+      });
 
-      const ooui = new GraphOoui(`<?xml version="1.0"?>
-      <graph string="Count of ${model}" type="indicator" />
-      `);
+      const ooui = new GraphOoui(viewData.arch);
       setGraphOoui(ooui);
     } catch (err) {
       console.error(err);
@@ -45,7 +43,7 @@ export const Graph = (props: GraphProps) => {
   }
 
   if (loading) {
-    return <LoadingOutlined />;
+    return <LoadingOutlined style={{ height: "12px" }} />;
   }
 
   if (!graphOoui) {
@@ -53,7 +51,14 @@ export const Graph = (props: GraphProps) => {
   }
 
   if (graphOoui.type === "indicator") {
-    return <GraphIndicator model={model} context={context} domain={domain} />;
+    return (
+      <GraphIndicator
+        colorCondition={graphOoui.color}
+        model={model}
+        context={context}
+        domain={domain}
+      />
+    );
   } else {
     return <>{`Graph ${graphOoui.type} not implemented`}</>;
   }
