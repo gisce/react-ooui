@@ -34,6 +34,10 @@ import { Email } from "@/widgets/base/Email";
 import { Image } from "@/widgets/base/Image";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { Dashboard } from "@/widgets/views/Dashboard";
+import {
+  DashboardGridItem,
+  DashboardGrid,
+} from "@/widgets/views/DashboardGrid";
 import { GraphIndicator } from "@/widgets/views/Graph/GraphIndicator";
 
 import {
@@ -127,4 +131,6 @@ export {
   FavouriteButton,
   Dashboard,
   GraphIndicator,
+  DashboardGridItem,
+  DashboardGrid,
 };

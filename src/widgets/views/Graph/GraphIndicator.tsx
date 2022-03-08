@@ -4,6 +4,9 @@ import ConnectionProvider from "@/ConnectionProvider";
 import Title from "antd/lib/typography/Title";
 import Measure from "react-measure";
 
+const fontGrowFactor = 0.7;
+const minFontSize = 30;
+
 export type GraphInidicatorProps = {
   model: string;
   domain: any;
@@ -33,7 +36,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
       setValue(retrievedValue);
     } catch (err) {
       console.error(err);
-      return <>{JSON.stringify(err)}</>;
+      // return <>{JSON.stringify(err)}</>;
     }
 
     setLoading(false);
@@ -51,12 +54,16 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
       }}
     >
       {({ measureRef }) => {
-        const fontSize = height * 0.5 < 20 ? 20 : height * 0.3;
+        const fontSize =
+          height * fontGrowFactor < minFontSize
+            ? minFontSize
+            : height * fontGrowFactor;
         return (
           <div
             ref={measureRef}
             style={{
               width: "100%",
+              height: "100%",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
