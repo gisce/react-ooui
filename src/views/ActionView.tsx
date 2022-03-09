@@ -28,6 +28,8 @@ import showInfo from "@/ui/InfoDialog";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { Dashboard } from "@/index";
 import { DashboardProps } from "@/widgets/views/Dashboard/Dashboard.types";
+import DashboardActionProvider from "@/context/DashboardActionContext";
+import DashboardActionBar from "@/actionbar/DashboardActionBar";
 
 type Props = {
   domain: any;
@@ -98,6 +100,7 @@ function ActionView(props: Props, ref: any) {
 
   const formRef = useRef();
   const searchTreeRef = useRef();
+  const dashboardRef = useRef();
 
   const tabManagerContext = useContext(
     TabManagerContext
@@ -355,14 +358,17 @@ function ActionView(props: Props, ref: any) {
       }
 
       return (
-        <>
-          <TitleHeader />
+        <DashboardActionProvider dashboardRef={dashboardRef}>
+          <TitleHeader>
+            <DashboardActionBar />
+          </TitleHeader>
           <Dashboard
+            ref={dashboardRef}
             model={dashboardData!.model}
             id={dashboardData!.id}
             context={dashboardData?.context}
           />
-        </>
+        </DashboardActionProvider>
       );
     }
 

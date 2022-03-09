@@ -1,4 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import ActionView from "@/views/ActionView";
 import { DashboardProps } from "./Dashboard.types";
 import { fetchAction } from "./dashboardHelper";
@@ -12,14 +20,21 @@ import { One2manyItem } from "@/index";
 import { readObjectValues } from "@/helpers/one2manyHelper";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Alert } from "antd";
+import {
+  DashboardActionContext,
+  DashboardActionContextType,
+} from "@/context/DashboardActionContext";
 
 const itemsField = "line_ids";
 
-export function Dashboard(props: DashboardProps) {
+function Dashboard(props: DashboardProps, ref: any) {
   const { model, context = {}, id } = props;
   const [dashboardItems, setDashboardItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
+  const { setIsLoading: setActionBarLoading } = useContext(
+    DashboardActionContext
+  ) as DashboardActionContextType;
 
   const itemsFields = useRef<any>();
   const boardFields = useRef<any>();
@@ -28,8 +43,15 @@ export function Dashboard(props: DashboardProps) {
     fetchData();
   }, [model, id, context]);
 
+  useImperativeHandle(ref, () => ({
+    refresh: () => {
+      fetchData();
+    },
+  }));
+
   async function fetchData() {
     setIsLoading(true);
+    setActionBarLoading(true);
     setError(undefined);
 
     try {
@@ -48,6 +70,7 @@ export function Dashboard(props: DashboardProps) {
       const itemsWithActions = await getItemsWithActions(originalItems);
       setDashboardItems(itemsWithActions);
       setIsLoading(false);
+      setActionBarLoading(false);
     } catch (err) {
       setError(JSON.stringify(err));
     }
@@ -258,3 +281,5 @@ export function Dashboard(props: DashboardProps) {
     </DashboardGrid>
   );
 }
+
+export default forwardRef(Dashboard);
