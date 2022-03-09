@@ -30,7 +30,7 @@ import { Url } from "@/widgets/base/Url";
 import { Email } from "@/widgets/base/Email";
 import { Image } from "@/widgets/base/Image";
 import showConfirmDialog from "@/ui/ConfirmDialog";
-import { Dashboard } from "@/widgets/views/Dashboard";
+import Dashboard from "@/widgets/views/Dashboard/Dashboard";
 import { DashboardGridItem, DashboardGrid } from "@/widgets/views/DashboardGrid";
 import { GraphIndicator } from "@/widgets/views/Graph/GraphIndicator";
 import { TreeView, SearchFields, FormView, ConnectionProviderType, SearchRequest, SearchResponse, CreateObjectRequest, UpdateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, GetViewRequest, DefaultGetRequest, ReadEvalUiObjectsRequest, NameSearchRequest } from "@/types";

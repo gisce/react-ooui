@@ -69,7 +69,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Dashboard = void 0;
 var react_1 = __importStar(require("react"));
 var ActionView_1 = __importDefault(require("@/views/ActionView"));
 var dashboardHelper_1 = require("./dashboardHelper");
@@ -81,17 +80,24 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var one2manyHelper_1 = require("@/helpers/one2manyHelper");
 var icons_1 = require("@ant-design/icons");
 var antd_1 = require("antd");
+var DashboardActionContext_1 = require("@/context/DashboardActionContext");
 var itemsField = "line_ids";
-function Dashboard(props) {
+function Dashboard(props, ref) {
     var model = props.model, _a = props.context, context = _a === void 0 ? {} : _a, id = props.id;
     var _b = react_1.useState([]), dashboardItems = _b[0], setDashboardItems = _b[1];
     var _c = react_1.useState(false), isLoading = _c[0], setIsLoading = _c[1];
     var _d = react_1.useState(), error = _d[0], setError = _d[1];
+    var setActionBarLoading = react_1.useContext(DashboardActionContext_1.DashboardActionContext).setIsLoading;
     var itemsFields = react_1.useRef();
     var boardFields = react_1.useRef();
     react_1.useEffect(function () {
         fetchData();
     }, [model, id, context]);
+    react_1.useImperativeHandle(ref, function () { return ({
+        refresh: function () {
+            fetchData();
+        },
+    }); });
     function fetchData() {
         return __awaiter(this, void 0, void 0, function () {
             var view, values, model_1, items, originalItems, itemsWithActions, err_1;
@@ -99,6 +105,7 @@ function Dashboard(props) {
                 switch (_a.label) {
                     case 0:
                         setIsLoading(true);
+                        setActionBarLoading(true);
                         setError(undefined);
                         _a.label = 1;
                     case 1:
@@ -124,6 +131,7 @@ function Dashboard(props) {
                         itemsWithActions = _a.sent();
                         setDashboardItems(itemsWithActions);
                         setIsLoading(false);
+                        setActionBarLoading(false);
                         return [3 /*break*/, 7];
                     case 6:
                         err_1 = _a.sent();
@@ -299,5 +307,5 @@ function Dashboard(props) {
         return (react_1.default.createElement(DashboardGrid_1.DashboardGridItem, { key: id, id: id, title: title, parms: parmsParsed }, childContent));
     })));
 }
-exports.Dashboard = Dashboard;
+exports.default = react_1.forwardRef(Dashboard);
 //# sourceMappingURL=Dashboard.js.map

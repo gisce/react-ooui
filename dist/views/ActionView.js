@@ -73,6 +73,8 @@ var GoToResourceModal_1 = require("@/ui/GoToResourceModal");
 var InfoDialog_1 = __importDefault(require("@/ui/InfoDialog"));
 var LocaleContext_1 = require("@/context/LocaleContext");
 var index_1 = require("@/index");
+var DashboardActionContext_1 = __importDefault(require("@/context/DashboardActionContext"));
+var DashboardActionBar_1 = __importDefault(require("@/actionbar/DashboardActionBar"));
 function ActionView(props, ref) {
     var _this = this;
     var domain = props.domain, model = props.model, context = props.context, views = props.views, title = props.title, setCanWeClose = props.setCanWeClose, tabKey = props.tabKey, initialView = props.initialView, formDefaultValues = props.formDefaultValues, _a = props.formForcedValues, formForcedValues = _a === void 0 ? {} : _a, _b = props.res_id, res_id = _b === void 0 ? false : _b, action_id = props.action_id, action_type = props.action_type;
@@ -98,6 +100,7 @@ function ActionView(props, ref) {
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var formRef = react_1.useRef();
     var searchTreeRef = react_1.useRef();
+    var dashboardRef = react_1.useRef();
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
     var _u = tabManagerContext || {}, setCurrentViewTabContext = _u.setCurrentView, setCurrentIdTabContext = _u.setCurrentId, tabs = _u.tabs, activeKey = _u.activeKey, openAction = _u.openAction;
     react_hotkeys_hook_1.useHotkeys("ctrl+g,command+g", function (event) {
@@ -337,9 +340,10 @@ function ActionView(props, ref) {
             if (!dashboardData) {
                 return null;
             }
-            return (react_1.default.createElement(react_1.default.Fragment, null,
-                react_1.default.createElement(TitleHeader_1.default, null),
-                react_1.default.createElement(index_1.Dashboard, { model: dashboardData.model, id: dashboardData.id, context: dashboardData === null || dashboardData === void 0 ? void 0 : dashboardData.context })));
+            return (react_1.default.createElement(DashboardActionContext_1.default, { dashboardRef: dashboardRef },
+                react_1.default.createElement(TitleHeader_1.default, null,
+                    react_1.default.createElement(DashboardActionBar_1.default, null)),
+                react_1.default.createElement(index_1.Dashboard, { ref: dashboardRef, model: dashboardData.model, id: dashboardData.id, context: dashboardData === null || dashboardData === void 0 ? void 0 : dashboardData.context })));
         }
         return (react_1.default.createElement(react_1.default.Fragment, null,
             react_1.default.createElement(TitleHeader_1.default, null, currentView.type === "form" ? (react_1.default.createElement(FormActionBar_1.default, null)) : (react_1.default.createElement(TreeActionBar_1.default, { parentContext: context }))),
