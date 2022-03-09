@@ -53,6 +53,8 @@ export const Graph = (props: GraphProps) => {
   if (graphOoui.type === "indicator") {
     return (
       <GraphIndicator
+        showPercent={graphOoui.showPercent}
+        totalDomain={graphOoui.totalDomain!}
         colorCondition={graphOoui.color}
         model={model}
         context={context}
