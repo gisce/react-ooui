@@ -52,8 +52,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
 
       if (totalDomain) {
         const parsedDomain = await ConnectionProvider.getHandler().evalDomain({
-          // domain: totalDomain,
-          domain: "[]",
+          domain: totalDomain,
           values: {},
           context,
         });
@@ -147,6 +146,8 @@ function CommonIndicator({
     height * fontGrowFactor < minFontSize
       ? minFontSize
       : height * fontGrowFactor;
+  const finalValue = total ? `${value}/${total}` : `${value}`;
+
   return (
     <div
       ref={measureRef}
@@ -159,8 +160,7 @@ function CommonIndicator({
         overflow: "hidden",
       }}
     >
-      <Title style={{ fontSize, margin: 0, color }}>{value}</Title>
-      {total && <Title style={{ fontSize, margin: 0 }}>{`/${total}`}</Title>}
+      <Title style={{ fontSize, margin: 0, color }}>{finalValue}</Title>
     </div>
   );
 }
@@ -184,6 +184,8 @@ function PercentageIndicator({
     height * fontGrowFactor < minFontSize
       ? minFontSize
       : height * fontGrowFactor;
+  const finalValue = total ? `${value}/${total}` : `${value}`;
+
   return (
     <div
       ref={measureRef}
@@ -199,29 +201,11 @@ function PercentageIndicator({
       }}
     >
       <Title
-        style={{ fontSize: fontSize * 0.5, margin: 0 }}
+        style={{ fontSize: fontSize * 0.5, margin: 0, color }}
       >{`${percent}%`}</Title>
-      <div>
-        <Title
-          style={{
-            display: "inline-block",
-            fontSize: fontSize * 0.2,
-            margin: 0,
-            color,
-          }}
-        >
-          {value}
-        </Title>
-        {total && (
-          <Title
-            style={{
-              display: "inline-block",
-              fontSize: fontSize * 0.2,
-              margin: 0,
-            }}
-          >{`/${total}`}</Title>
-        )}
-      </div>
+      <Title style={{ fontSize: fontSize * 0.2, margin: 0, color }}>
+        {finalValue}
+      </Title>
     </div>
   );
 }
