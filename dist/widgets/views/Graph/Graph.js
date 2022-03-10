@@ -104,7 +104,8 @@ var Graph = function (props) {
         });
     }
     if (loading) {
-        return react_1.default.createElement(icons_1.LoadingOutlined, { style: { height: "12px" } });
+        return (react_1.default.createElement("div", { style: { padding: "1rem" } },
+            react_1.default.createElement(icons_1.LoadingOutlined, { style: { height: "12px" } })));
     }
     if (!graphOoui) {
         return null;

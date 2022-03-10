@@ -73,7 +73,8 @@ var GraphIndicator = function (props) {
     var _d = react_1.useState(), percent = _d[0], setPercent = _d[1];
     var _e = react_1.useState(), totalValue = _e[0], setTotalValue = _e[1];
     var _f = react_1.useState(0), height = _f[0], setHeight = _f[1];
-    var _g = react_1.useState(), color = _g[0], setColor = _g[1];
+    var _g = react_1.useState(0), width = _g[0], setWidth = _g[1];
+    var _h = react_1.useState(), color = _h[0], setColor = _h[1];
     react_1.useEffect(function () {
         fetchData();
     }, [model, colorCondition]);
@@ -141,28 +142,41 @@ var GraphIndicator = function (props) {
         });
     }
     if (loading) {
-        return react_1.default.createElement(icons_1.LoadingOutlined, null);
+        return (react_1.default.createElement("div", { style: { padding: "1rem" } },
+            react_1.default.createElement(icons_1.LoadingOutlined, { style: { height: "12px" } })));
     }
     return (react_1.default.createElement(react_measure_1.default, { bounds: true, onResize: function (contentRect) {
-            var _a;
+            var _a, _b;
             setHeight((_a = contentRect.bounds) === null || _a === void 0 ? void 0 : _a.height);
+            setWidth((_b = contentRect.bounds) === null || _b === void 0 ? void 0 : _b.width);
         } }, function (_a) {
         var measureRef = _a.measureRef;
         if (showPercent) {
-            return (react_1.default.createElement(PercentageIndicator, { value: value, total: totalValue, percent: percent, measureRef: measureRef, height: height, color: color }));
+            return (react_1.default.createElement(PercentageIndicator, { value: value, total: totalValue, percent: percent, measureRef: measureRef, height: height, width: width, color: color }));
         }
         else {
-            return (react_1.default.createElement(CommonIndicator, { value: value, total: totalValue, measureRef: measureRef, height: height, color: color }));
+            return (react_1.default.createElement(CommonIndicator, { value: value, total: totalValue, measureRef: measureRef, height: height, width: width, color: color }));
         }
     }));
 };
 exports.GraphIndicator = GraphIndicator;
+function getTextWidth(text, font) {
+    var canvas = document.createElement("canvas");
+    var context = canvas.getContext("2d");
+    context.font = font || getComputedStyle(document.body).font;
+    return context.measureText(text).width;
+}
 function CommonIndicator(_a) {
-    var measureRef = _a.measureRef, height = _a.height, total = _a.total, value = _a.value, color = _a.color;
+    var measureRef = _a.measureRef, width = _a.width, height = _a.height, total = _a.total, value = _a.value, color = _a.color;
     var fontSize = height * fontGrowFactor < minFontSize
         ? minFontSize
         : height * fontGrowFactor;
     var finalValue = total ? value + "/" + total : "" + value;
+    var tw = getTextWidth(finalValue, "bold " + Math.floor(fontSize * 1.03) + "px sans-serif");
+    if (tw >= width * 0.85) {
+        var maxFontSize = ((width * 0.85) / tw) * fontSize;
+        fontSize = maxFontSize;
+    }
     return (react_1.default.createElement("div", { ref: measureRef, style: {
             width: "100%",
             height: "100%",
@@ -174,11 +188,17 @@ function CommonIndicator(_a) {
         react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize, margin: 0, color: color } }, finalValue)));
 }
 function PercentageIndicator(_a) {
-    var measureRef = _a.measureRef, height = _a.height, percent = _a.percent, total = _a.total, value = _a.value, color = _a.color;
-    var fontSize = height * fontGrowFactor < minFontSize
+    var measureRef = _a.measureRef, height = _a.height, width = _a.width, percent = _a.percent, total = _a.total, value = _a.value, color = _a.color;
+    var twoLinesHeight = height * 0.65;
+    var fontSize = twoLinesHeight * fontGrowFactor < minFontSize
         ? minFontSize
-        : height * fontGrowFactor;
+        : twoLinesHeight * fontGrowFactor;
     var finalValue = total ? value + "/" + total : "" + value;
+    var tw = getTextWidth(finalValue, "bold " + Math.floor(fontSize * 1.03) + "px sans-serif");
+    if (tw >= width * 0.85 || fontSize * 2 < twoLinesHeight) {
+        var maxFontSize = ((width * 0.85) / tw) * fontSize;
+        fontSize = maxFontSize;
+    }
     return (react_1.default.createElement("div", { ref: measureRef, style: {
             width: "100%",
             height: "100%",
@@ -189,7 +209,7 @@ function PercentageIndicator(_a) {
             flexDirection: "column",
             padding: "0.2rem",
         } },
-        react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize * 0.5, margin: 0, color: color } }, percent + "%"),
-        react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize * 0.2, margin: 0, color: color } }, finalValue)));
+        react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize * 0.8, margin: 0, color: color } }, percent + "%"),
+        react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize * 0.4, margin: 0, color: color } }, finalValue)));
 }
 //# sourceMappingURL=GraphIndicator.js.map
