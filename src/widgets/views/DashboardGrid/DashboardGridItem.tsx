@@ -7,7 +7,7 @@ import { Typography } from "antd";
 const { Text } = Typography;
 
 export const DashboardGridItem = (props: DashboardGridItemProps) => {
-  const { id, title, children } = props;
+  const { id, title, children, action } = props;
 
   return (
     <div

@@ -28,7 +28,7 @@ import {
 const itemsField = "line_ids";
 
 function Dashboard(props: DashboardProps, ref: any) {
-  const { model, context = {}, id } = props;
+  const { model, context = {}, id, action } = props;
   const [dashboardItems, setDashboardItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
@@ -273,7 +273,13 @@ function Dashboard(props: DashboardProps, ref: any) {
         }
 
         return (
-          <DashboardGridItem key={id} id={id} title={title} parms={parmsParsed}>
+          <DashboardGridItem
+            key={id}
+            id={id}
+            title={title}
+            parms={parmsParsed}
+            action={action}
+          >
             {childContent}
           </DashboardGridItem>
         );
