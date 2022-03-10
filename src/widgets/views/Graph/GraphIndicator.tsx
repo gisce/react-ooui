@@ -30,6 +30,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
   const [percent, setPercent] = useState<number>();
   const [totalValue, setTotalValue] = useState<number>();
   const [height, setHeight] = useState<number>(0);
+  const [width, setWidth] = useState<number>(0);
   const [color, setColor] = useState<string>();
 
   useEffect(() => {
@@ -91,7 +92,11 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
   }
 
   if (loading) {
-    return <LoadingOutlined />;
+    return (
+      <div style={{ padding: "1rem" }}>
+        <LoadingOutlined style={{ height: "12px" }} />
+      </div>
+    );
   }
 
   return (
@@ -99,6 +104,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
       bounds
       onResize={(contentRect) => {
         setHeight(contentRect.bounds?.height!);
+        setWidth(contentRect.bounds?.width!);
       }}
     >
       {({ measureRef }) => {
@@ -110,6 +116,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
               percent={percent!}
               measureRef={measureRef}
               height={height}
+              width={width}
               color={color}
             />
           );
@@ -120,6 +127,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
               total={totalValue}
               measureRef={measureRef}
               height={height}
+              width={width}
               color={color}
             />
           );
@@ -129,24 +137,45 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
   );
 };
 
+function getTextWidth(text: string, font: string) {
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+
+  context!.font = font || getComputedStyle(document.body).font;
+  return context!.measureText(text).width;
+}
+
 function CommonIndicator({
   measureRef,
+  width,
   height,
   total,
   value,
   color,
 }: {
   measureRef: any;
+  width: number;
   height: number;
   total: number | undefined;
   value: number;
   color: string | undefined;
 }) {
-  const fontSize =
+  let fontSize =
     height * fontGrowFactor < minFontSize
       ? minFontSize
       : height * fontGrowFactor;
+
   const finalValue = total ? `${value}/${total}` : `${value}`;
+
+  const tw = getTextWidth(
+    finalValue,
+    `bold ${Math.floor(fontSize * 1.03)}px sans-serif`
+  );
+
+  if (tw >= width * 0.85) {
+    const maxFontSize = ((width * 0.85) / tw) * fontSize;
+    fontSize = maxFontSize;
+  }
 
   return (
     <div
@@ -168,6 +197,7 @@ function CommonIndicator({
 function PercentageIndicator({
   measureRef,
   height,
+  width,
   percent,
   total,
   value,
@@ -175,16 +205,29 @@ function PercentageIndicator({
 }: {
   measureRef: any;
   height: number;
+  width: number;
   percent: number;
   total: number;
   value: number;
   color: string | undefined;
 }) {
-  const fontSize =
-    height * fontGrowFactor < minFontSize
+  const twoLinesHeight = height * 0.65;
+  let fontSize =
+    twoLinesHeight * fontGrowFactor < minFontSize
       ? minFontSize
-      : height * fontGrowFactor;
+      : twoLinesHeight * fontGrowFactor;
+
   const finalValue = total ? `${value}/${total}` : `${value}`;
+
+  const tw = getTextWidth(
+    finalValue,
+    `bold ${Math.floor(fontSize * 1.03)}px sans-serif`
+  );
+
+  if (tw >= width * 0.85 || fontSize * 2 < twoLinesHeight) {
+    const maxFontSize = ((width * 0.85) / tw) * fontSize;
+    fontSize = maxFontSize;
+  }
 
   return (
     <div
@@ -201,9 +244,9 @@ function PercentageIndicator({
       }}
     >
       <Title
-        style={{ fontSize: fontSize * 0.5, margin: 0, color }}
+        style={{ fontSize: fontSize * 0.8, margin: 0, color }}
       >{`${percent}%`}</Title>
-      <Title style={{ fontSize: fontSize * 0.2, margin: 0, color }}>
+      <Title style={{ fontSize: fontSize * 0.4, margin: 0, color }}>
         {finalValue}
       </Title>
     </div>

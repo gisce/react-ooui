@@ -43,7 +43,11 @@ export const Graph = (props: GraphProps) => {
   }
 
   if (loading) {
-    return <LoadingOutlined style={{ height: "12px" }} />;
+    return (
+      <div style={{ padding: "1rem" }}>
+        <LoadingOutlined style={{ height: "12px" }} />
+      </div>
+    );
   }
 
   if (!graphOoui) {
