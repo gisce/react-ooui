@@ -24,11 +24,12 @@ var react_1 = __importStar(require("react"));
 exports.DashboardActionContext = react_1.default.createContext(null);
 var DashboardActionProvider = function (props) {
     var _a = react_1.useState(false), isLoading = _a[0], setIsLoading = _a[1];
-    var children = props.children, dashboardRef = props.dashboardRef;
+    var children = props.children, dashboardRef = props.dashboardRef, openAction = props.openAction;
     return (react_1.default.createElement(exports.DashboardActionContext.Provider, { value: {
             isLoading: isLoading,
             setIsLoading: setIsLoading,
             dashboardRef: dashboardRef,
+            openAction: openAction,
         } }, children));
 };
 exports.default = DashboardActionProvider;

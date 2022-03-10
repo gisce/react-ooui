@@ -102,7 +102,7 @@ function ActionView(props, ref) {
     var searchTreeRef = react_1.useRef();
     var dashboardRef = react_1.useRef();
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
-    var _u = tabManagerContext || {}, setCurrentViewTabContext = _u.setCurrentView, setCurrentIdTabContext = _u.setCurrentId, tabs = _u.tabs, activeKey = _u.activeKey, openAction = _u.openAction;
+    var _u = tabManagerContext || {}, openShortcut = _u.openShortcut, setCurrentViewTabContext = _u.setCurrentView, setCurrentIdTabContext = _u.setCurrentId, tabs = _u.tabs, activeKey = _u.activeKey, openAction = _u.openAction;
     react_hotkeys_hook_1.useHotkeys("ctrl+g,command+g", function (event) {
         event.preventDefault();
         handleGoToRecordShortcut();
@@ -340,7 +340,9 @@ function ActionView(props, ref) {
             if (!dashboardData) {
                 return null;
             }
-            return (react_1.default.createElement(DashboardActionContext_1.default, { dashboardRef: dashboardRef },
+            return (react_1.default.createElement(DashboardActionContext_1.default, { dashboardRef: dashboardRef, openAction: function (action) {
+                    openShortcut(action);
+                } },
                 react_1.default.createElement(TitleHeader_1.default, null,
                     react_1.default.createElement(DashboardActionBar_1.default, null)),
                 react_1.default.createElement(index_1.Dashboard, { ref: dashboardRef, model: dashboardData.model, id: dashboardData.id, context: dashboardData === null || dashboardData === void 0 ? void 0 : dashboardData.context })));

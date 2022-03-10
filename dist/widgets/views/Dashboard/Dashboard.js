@@ -87,7 +87,7 @@ function Dashboard(props, ref) {
     var _b = react_1.useState([]), dashboardItems = _b[0], setDashboardItems = _b[1];
     var _c = react_1.useState(false), isLoading = _c[0], setIsLoading = _c[1];
     var _d = react_1.useState(), error = _d[0], setError = _d[1];
-    var setActionBarLoading = react_1.useContext(DashboardActionContext_1.DashboardActionContext).setIsLoading;
+    var _e = react_1.useContext(DashboardActionContext_1.DashboardActionContext), setActionBarLoading = _e.setIsLoading, openAction = _e.openAction;
     var itemsFields = react_1.useRef();
     var boardFields = react_1.useRef();
     react_1.useEffect(function () {
@@ -304,7 +304,25 @@ function Dashboard(props, ref) {
         else if (initialView !== undefined) {
             childContent = (react_1.default.createElement(ActionView_1.default, { action_id: actionId, action_type: actionType, tabKey: key, title: title, views: views, model: model, context: context, domain: domain, setCanWeClose: function () { }, initialView: initialView }));
         }
-        return (react_1.default.createElement(DashboardGrid_1.DashboardGridItem, { key: id, id: id, title: title, parms: parmsParsed }, childContent));
+        var action;
+        var treeView = views.find(function (view) {
+            var type = view[1];
+            return type === "tree";
+        });
+        if (treeView) {
+            var id_1 = treeView[0], type = treeView[1];
+            var action_id = actionData.actionId, action_type = actionData.actionType, name_1 = actionData.title, res_model = actionData.model;
+            action = {
+                action_id: action_id,
+                action_type: action_type,
+                name: name_1,
+                res_id: false,
+                res_model: res_model,
+                view_id: id_1,
+                view_type: type,
+            };
+        }
+        return (react_1.default.createElement(DashboardGrid_1.DashboardGridItem, { key: id, id: id, title: title, parms: parmsParsed, action: action, openAction: openAction }, childContent));
     })));
 }
 exports.default = react_1.forwardRef(Dashboard);

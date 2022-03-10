@@ -176,7 +176,7 @@ var FavouriteButton = function (props) {
                 react_1.default.createElement(antd_1.Tooltip, { title: t("edit_favorites") },
                     react_1.default.createElement(icons_1.EditOutlined, { style: { color: "#1890FF", cursor: "pointer" }, onClick: editFavourites })))),
         react_1.default.createElement(antd_2.Menu.Divider, null),
-        loading ? (react_1.default.createElement(antd_1.Spin, null)) : shortcuts.length > 0 ? (react_1.default.createElement(react_1.default.Fragment, null, shortcuts.map(function (shortcut) { return (react_1.default.createElement(antd_2.Menu.Item, { key: shortcut.id },
+        loading ? (react_1.default.createElement(antd_1.Spin, { style: { padding: "1rem" } })) : shortcuts.length > 0 ? (react_1.default.createElement(react_1.default.Fragment, null, shortcuts.map(function (shortcut) { return (react_1.default.createElement(antd_2.Menu.Item, { key: shortcut.id },
             react_1.default.createElement(FavouriteItem, { title: shortcut.name, type: shortcut.view_type }))); }))) : (react_1.default.createElement("div", { style: { width: 300, padding: 5, paddingLeft: 15 } }, t("no_favorites")))));
     function FavouriteItem(_a) {
         var title = _a.title, type = _a.type;

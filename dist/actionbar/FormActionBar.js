@@ -277,7 +277,7 @@ function FormActionBar() {
                 });
             } }),
         separator(),
-        react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews, onChangeView: function (view) {
+        react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews.filter(function (view) { return view.type === "tree" || view.type === "form"; }), onChangeView: function (view) {
                 setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(false);
                 setCurrentView === null || setCurrentView === void 0 ? void 0 : setCurrentView(view);
             }, disabled: mustDisableButtons, formHasChanges: formHasChanges }),
@@ -329,7 +329,7 @@ function FormActionBar() {
                         res_model: res_model,
                         res_id: res_id,
                     },
-                    initialViewType: "form"
+                    initialViewType: "form",
                 });
             } })));
 }

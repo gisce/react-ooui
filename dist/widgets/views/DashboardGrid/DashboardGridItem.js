@@ -10,7 +10,7 @@ var antd_1 = require("antd");
 var antd_2 = require("antd");
 var Text = antd_2.Typography.Text;
 var DashboardGridItem = function (props) {
-    var id = props.id, title = props.title, children = props.children;
+    var id = props.id, title = props.title, children = props.children, action = props.action, openAction = props.openAction;
     return (react_1.default.createElement("div", { className: "shadow-md rounded", style: {
             height: "100%",
             display: "flex",
@@ -27,9 +27,11 @@ var DashboardGridItem = function (props) {
                     overflow: "hidden",
                 } },
                 react_1.default.createElement(Text, { ellipsis: true }, title)),
-            react_1.default.createElement(antd_1.Col, { flex: "25px", style: { padding: "0.5rem" } },
+            action && (react_1.default.createElement(antd_1.Col, { flex: "25px", style: { padding: "0.5rem" } },
                 react_1.default.createElement(antd_1.Row, { justify: "end", align: "middle" },
-                    react_1.default.createElement(icons_1.ExpandAltOutlined, { style: { cursor: "pointer" } })))),
+                    react_1.default.createElement(icons_1.ExpandAltOutlined, { style: { cursor: "pointer" }, onClick: function () {
+                            openAction === null || openAction === void 0 ? void 0 : openAction(action);
+                        } }))))),
         children));
 };
 exports.DashboardGridItem = DashboardGridItem;
