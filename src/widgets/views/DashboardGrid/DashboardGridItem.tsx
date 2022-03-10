@@ -7,7 +7,7 @@ import { Typography } from "antd";
 const { Text } = Typography;
 
 export const DashboardGridItem = (props: DashboardGridItemProps) => {
-  const { id, title, children, action } = props;
+  const { id, title, children, action, openAction } = props;
 
   return (
     <div
@@ -38,11 +38,18 @@ export const DashboardGridItem = (props: DashboardGridItemProps) => {
         >
           <Text ellipsis={true}>{title}</Text>
         </Col>
-        <Col flex="25px" style={{ padding: "0.5rem" }}>
-          <Row justify="end" align="middle">
-            <ExpandAltOutlined style={{ cursor: "pointer" }} />
-          </Row>
-        </Col>
+        {action && (
+          <Col flex="25px" style={{ padding: "0.5rem" }}>
+            <Row justify="end" align="middle">
+              <ExpandAltOutlined
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  openAction?.(action);
+                }}
+              />
+            </Row>
+          </Col>
+        )}
       </Row>
       {children}
     </div>

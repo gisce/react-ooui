@@ -106,6 +106,7 @@ function ActionView(props: Props, ref: any) {
     TabManagerContext
   ) as TabManagerContextType;
   const {
+    openShortcut,
     setCurrentView: setCurrentViewTabContext,
     setCurrentId: setCurrentIdTabContext,
     tabs,
@@ -146,27 +147,10 @@ function ActionView(props: Props, ref: any) {
 
       try {
         if (viewType === "dashboard") {
-          let action;
-          const treeView = views.find(([, type]) => type === "tree");
-          let treeViewId, treeViewType;
-          if (treeView) {
-            [treeViewId, treeViewType] = treeView;
-            action = {
-              action_id,
-              action_type,
-              name: title,
-              res_id: false,
-              res_model: model,
-              view_id: treeViewId,
-              view_type: treeViewType,
-            };
-          }
-
           setDashboardData({
             id: context["active_id"],
             model,
             context,
-            action,
           });
           availableViews.push({ id, type: viewType });
           return;
@@ -375,7 +359,12 @@ function ActionView(props: Props, ref: any) {
       }
 
       return (
-        <DashboardActionProvider dashboardRef={dashboardRef}>
+        <DashboardActionProvider
+          dashboardRef={dashboardRef}
+          openAction={(action) => {
+            openShortcut(action!);
+          }}
+        >
           <TitleHeader>
             <DashboardActionBar />
           </TitleHeader>
@@ -384,7 +373,6 @@ function ActionView(props: Props, ref: any) {
             model={dashboardData!.model}
             id={dashboardData!.id}
             context={dashboardData?.context}
-            action={dashboardData?.action}
           />
         </DashboardActionProvider>
       );

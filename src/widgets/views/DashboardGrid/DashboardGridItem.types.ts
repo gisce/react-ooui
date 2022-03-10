@@ -6,4 +6,5 @@ export type DashboardGridItemProps = {
   children?: React.ReactNode;
   parms: any;
   action?: ShortcutApi;
+  openAction?: (shortcutApi?: ShortcutApi) => void;
 };

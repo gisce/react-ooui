@@ -15,7 +15,7 @@ import "react-grid-layout/css/styles.css";
 import { Graph } from "../Graph/Graph";
 import { DashboardGrid, DashboardGridItem } from "../DashboardGrid";
 import ConnectionProvider from "@/ConnectionProvider";
-import { FormView } from "@/types";
+import { FormView, ViewType } from "@/types";
 import { One2manyItem } from "@/index";
 import { readObjectValues } from "@/helpers/one2manyHelper";
 import { LoadingOutlined } from "@ant-design/icons";
@@ -24,15 +24,16 @@ import {
   DashboardActionContext,
   DashboardActionContextType,
 } from "@/context/DashboardActionContext";
+import { ShortcutApi } from "@/ui/FavouriteButton";
 
 const itemsField = "line_ids";
 
 function Dashboard(props: DashboardProps, ref: any) {
-  const { model, context = {}, id, action } = props;
+  const { model, context = {}, id } = props;
   const [dashboardItems, setDashboardItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
-  const { setIsLoading: setActionBarLoading } = useContext(
+  const { setIsLoading: setActionBarLoading, openAction } = useContext(
     DashboardActionContext
   ) as DashboardActionContextType;
 
@@ -272,13 +273,39 @@ function Dashboard(props: DashboardProps, ref: any) {
           );
         }
 
+        let action: ShortcutApi;
+        const treeView = views.find((view: any[]) => {
+          const [, type] = view;
+          return type === "tree";
+        });
+        if (treeView) {
+          const [id, type] = treeView;
+          const {
+            actionId: action_id,
+            actionType: action_type,
+            title: name,
+            model: res_model,
+          } = actionData;
+
+          action = {
+            action_id,
+            action_type,
+            name,
+            res_id: false,
+            res_model,
+            view_id: id,
+            view_type: type,
+          };
+        }
+
         return (
           <DashboardGridItem
             key={id}
             id={id}
             title={title}
             parms={parmsParsed}
-            action={action}
+            action={action!}
+            openAction={openAction}
           >
             {childContent}
           </DashboardGridItem>
