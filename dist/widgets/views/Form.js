@@ -715,7 +715,7 @@ function Form(props, ref) {
                             model: model,
                             action: action,
                             payload: [getCurrentId()],
-                            context: __assign(__assign(__assign({}, context), parentContext), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context),
+                            context: __assign(__assign(__assign({}, context), formOoui === null || formOoui === void 0 ? void 0 : formOoui.context), parentContext),
                         })];
                     case 1:
                         response = _b.sent();
