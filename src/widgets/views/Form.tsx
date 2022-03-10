@@ -751,8 +751,8 @@ function Form(props: FormProps, ref: any) {
       payload: [getCurrentId()!],
       context: {
         ...context,
-        ...parentContext,
         ...formOoui?.context,
+        ...parentContext,
       },
     });
 
