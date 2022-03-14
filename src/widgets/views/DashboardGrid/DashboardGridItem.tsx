@@ -1,6 +1,6 @@
 import React from "react";
 import { DashboardGridItemProps } from "./DashboardGridItem.types";
-import { ExpandAltOutlined } from "@ant-design/icons";
+import { ExportOutlined } from "@ant-design/icons";
 import { Row, Col } from "antd";
 import { Typography } from "antd";
 
@@ -41,7 +41,7 @@ export const DashboardGridItem = (props: DashboardGridItemProps) => {
         {action && (
           <Col flex="25px" style={{ padding: "0.5rem" }}>
             <Row justify="end" align="middle">
-              <ExpandAltOutlined
+              <ExportOutlined
                 style={{ cursor: "pointer" }}
                 onClick={() => {
                   openAction?.(action);
