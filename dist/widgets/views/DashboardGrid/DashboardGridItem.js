@@ -29,7 +29,7 @@ var DashboardGridItem = function (props) {
                 react_1.default.createElement(Text, { ellipsis: true }, title)),
             action && (react_1.default.createElement(antd_1.Col, { flex: "25px", style: { padding: "0.5rem" } },
                 react_1.default.createElement(antd_1.Row, { justify: "end", align: "middle" },
-                    react_1.default.createElement(icons_1.ExpandAltOutlined, { style: { cursor: "pointer" }, onClick: function () {
+                    react_1.default.createElement(icons_1.ExportOutlined, { style: { cursor: "pointer" }, onClick: function () {
                             openAction === null || openAction === void 0 ? void 0 : openAction(action);
                         } }))))),
         children));
