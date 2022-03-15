@@ -206,7 +206,7 @@ function Tree(props: Props): React.ReactElement {
   }
 
   return treeOoui.current === null ? (
-    <Spin />
+    <Spin style={{ padding: "2rem" }} />
   ) : (
     <div>
       {pagination()}
