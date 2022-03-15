@@ -286,7 +286,7 @@ function DashboardTree(props: Props) {
 
   return (
     <div style={!visible ? { display: "none" } : {}}>
-      {isLoading ? <Spin /> : content()}
+      {isLoading ? <Spin style={{ padding: "2rem" }} /> : content()}
     </div>
   );
 }
