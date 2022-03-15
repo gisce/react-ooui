@@ -268,7 +268,30 @@ function Dashboard(props: DashboardProps, ref: any) {
                   )[0][0]
                 }
                 onRowClicked={(record) => {
-                  console.log(record);
+                  const formView = views.find((view: any[]) => {
+                    const [, type] = view;
+                    return type === "form";
+                  });
+                  if (formView) {
+                    const [id, type] = formView;
+                    const {
+                      actionId: action_id,
+                      actionType: action_type,
+                      title: name,
+                      model: res_model,
+                    } = actionData;
+
+                    const action: ShortcutApi = {
+                      action_id,
+                      action_type,
+                      name,
+                      res_id: record.id,
+                      res_model,
+                      view_id: id,
+                      view_type: type,
+                    };
+                    openAction(action);
+                  }
                 }}
               />
             </div>
