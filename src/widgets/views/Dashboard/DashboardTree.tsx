@@ -39,8 +39,6 @@ function DashboardTree(props: Props) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [initialFetchDone, setInitialFetchDone] = useState<boolean>(false);
 
-  const searchNameGetDoneRef = useRef(false);
-
   const [currentModel, setCurrentModel] = useState<string>();
   const [treeView, setTreeView] = useState<TreeView>();
   const [formView, setFormView] = useState<FormView>();
@@ -140,7 +138,6 @@ function DashboardTree(props: Props) {
     }
 
     if (visible) {
-      searchNameGetDoneRef.current = false;
       fetchResults();
     }
   }, [page, offset, initialFetchDone, visible]);
@@ -252,7 +249,7 @@ function DashboardTree(props: Props) {
     }
 
     return (
-      <>
+      <div style={{ overflowY: "scroll" }}>
         {searchError && (
           <Alert className="mt-10" message={searchError} type="error" banner />
         )}
@@ -274,7 +271,7 @@ function DashboardTree(props: Props) {
             setResults(sortedResults);
           }}
         />
-      </>
+      </div>
     );
   };
 
@@ -284,11 +281,7 @@ function DashboardTree(props: Props) {
     );
   }
 
-  return (
-    <div style={!visible ? { display: "none" } : {}}>
-      {isLoading ? <Spin style={{ padding: "2rem" }} /> : content()}
-    </div>
-  );
+  return isLoading ? <Spin style={{ padding: "2rem" }} /> : content();
 }
 
 export default DashboardTree;

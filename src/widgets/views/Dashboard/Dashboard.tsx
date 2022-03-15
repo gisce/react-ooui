@@ -26,6 +26,8 @@ import {
 } from "@/context/DashboardActionContext";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import DashboardTree from "./DashboardTree";
+import Form from "../Form";
+import { DashboardForm } from "./DashboardForm";
 
 const itemsField = "line_ids";
 
@@ -257,9 +259,10 @@ function Dashboard(props: DashboardProps, ref: any) {
               domain={domain}
             />
           );
+        } else if (initialView?.type === "form") {
+          childContent = <DashboardForm model={model} />;
         } else if (initialView?.type === "tree") {
           childContent = (
-            <div style={{ overflowY: "scroll" }}>
               <DashboardTree
                 model={model}
                 view_id={
@@ -294,7 +297,6 @@ function Dashboard(props: DashboardProps, ref: any) {
                   }
                 }}
               />
-            </div>
           );
         } else if (initialView !== undefined) {
           childContent = (
