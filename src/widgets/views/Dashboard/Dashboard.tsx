@@ -25,6 +25,7 @@ import {
   DashboardActionContextType,
 } from "@/context/DashboardActionContext";
 import { ShortcutApi } from "@/ui/FavouriteButton";
+import DashboardTree from "./DashboardTree";
 
 const itemsField = "line_ids";
 
@@ -255,6 +256,22 @@ function Dashboard(props: DashboardProps, ref: any) {
               context={context}
               domain={domain}
             />
+          );
+        } else if (initialView?.type === "tree") {
+          childContent = (
+            <div style={{ overflowY: "scroll" }}>
+              <DashboardTree
+                model={model}
+                view_id={
+                  views.filter(
+                    (view: [number, string]) => view[1] === "tree"
+                  )[0][0]
+                }
+                onRowClicked={(record) => {
+                  console.log(record);
+                }}
+              />
+            </div>
           );
         } else if (initialView !== undefined) {
           childContent = (
