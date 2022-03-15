@@ -80,7 +80,6 @@ function DashboardTree(props) {
     var action = props.action, model = props.model, view_id = props.view_id, onRowClicked = props.onRowClicked, _a = props.domain, domain = _a === void 0 ? [] : _a, _b = props.visible, visible = _b === void 0 ? true : _b, _c = props.parentContext, parentContext = _c === void 0 ? {} : _c;
     var _d = react_1.useState(false), isLoading = _d[0], setIsLoading = _d[1];
     var _e = react_1.useState(false), initialFetchDone = _e[0], setInitialFetchDone = _e[1];
-    var searchNameGetDoneRef = react_1.useRef(false);
     var _f = react_1.useState(), currentModel = _f[0], setCurrentModel = _f[1];
     var _g = react_1.useState(), treeView = _g[0], setTreeView = _g[1];
     var _h = react_1.useState(), formView = _h[0], setFormView = _h[1];
@@ -176,7 +175,6 @@ function DashboardTree(props) {
             return;
         }
         if (visible) {
-            searchNameGetDoneRef.current = false;
             fetchResults();
         }
     }, [page, offset, initialFetchDone, visible]);
@@ -303,7 +301,7 @@ function DashboardTree(props) {
         if (!treeView || !formView) {
             return null;
         }
-        return (react_1.default.createElement(react_1.default.Fragment, null,
+        return (react_1.default.createElement("div", { style: { overflowY: "scroll" } },
             searchError && (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: searchError, type: "error", banner: true })),
             react_1.default.createElement(Tree_1.default, { showPagination: false, total: totalItems, limit: limitRef.current, disableScroll: true, page: page, treeView: treeView, results: results, onRequestPageChange: onRequestPageChange, loading: tableRefreshing, onRowClicked: onRowClickedHandler, colorsForResults: colorsForResults, onChangeSort: function (newSorter) {
                     setSorter === null || setSorter === void 0 ? void 0 : setSorter(newSorter);
@@ -314,7 +312,7 @@ function DashboardTree(props) {
     if (initialError) {
         return (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: initialError, type: "error", banner: true }));
     }
-    return (react_1.default.createElement("div", { style: !visible ? { display: "none" } : {} }, isLoading ? react_1.default.createElement(antd_1.Spin, { style: { padding: "2rem" } }) : content()));
+    return isLoading ? react_1.default.createElement(antd_1.Spin, { style: { padding: "2rem" } }) : content();
 }
 exports.default = DashboardTree;
 //# sourceMappingURL=DashboardTree.js.map

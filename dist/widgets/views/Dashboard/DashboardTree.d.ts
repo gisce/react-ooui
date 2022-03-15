@@ -13,6 +13,6 @@ declare type Props = {
     visible?: boolean;
     parentContext?: any;
 };
-declare function DashboardTree(props: Props): JSX.Element;
+declare function DashboardTree(props: Props): JSX.Element | null;
 export default DashboardTree;
 //# sourceMappingURL=DashboardTree.d.ts.map
