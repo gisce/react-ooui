@@ -16,6 +16,7 @@ declare type Props = {
         [key: number]: string;
     };
     onChangeSort?: (results: any) => void;
+    disableScroll?: boolean;
 };
 declare function Tree(props: Props): React.ReactElement;
 export default Tree;

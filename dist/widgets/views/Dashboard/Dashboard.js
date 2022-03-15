@@ -81,6 +81,7 @@ var one2manyHelper_1 = require("@/helpers/one2manyHelper");
 var icons_1 = require("@ant-design/icons");
 var antd_1 = require("antd");
 var DashboardActionContext_1 = require("@/context/DashboardActionContext");
+var DashboardTree_1 = __importDefault(require("./DashboardTree"));
 var itemsField = "line_ids";
 function Dashboard(props, ref) {
     var model = props.model, _a = props.context, context = _a === void 0 ? {} : _a, id = props.id;
@@ -301,6 +302,29 @@ function Dashboard(props, ref) {
         if ((initialView === null || initialView === void 0 ? void 0 : initialView.type) === "graph") {
             childContent = (react_1.default.createElement(Graph_1.Graph, { title: title, view_id: views.filter(function (view) { return view[1] === "graph"; })[0][0], model: model, context: context, domain: domain }));
         }
+        else if ((initialView === null || initialView === void 0 ? void 0 : initialView.type) === "tree") {
+            childContent = (react_1.default.createElement("div", { style: { overflowY: "scroll" } },
+                react_1.default.createElement(DashboardTree_1.default, { model: model, view_id: views.filter(function (view) { return view[1] === "tree"; })[0][0], onRowClicked: function (record) {
+                        var formView = views.find(function (view) {
+                            var type = view[1];
+                            return type === "form";
+                        });
+                        if (formView) {
+                            var id_1 = formView[0], type = formView[1];
+                            var action_id = actionData.actionId, action_type = actionData.actionType, name_1 = actionData.title, res_model = actionData.model;
+                            var action_1 = {
+                                action_id: action_id,
+                                action_type: action_type,
+                                name: name_1,
+                                res_id: record.id,
+                                res_model: res_model,
+                                view_id: id_1,
+                                view_type: type,
+                            };
+                            openAction(action_1);
+                        }
+                    } })));
+        }
         else if (initialView !== undefined) {
             childContent = (react_1.default.createElement(ActionView_1.default, { action_id: actionId, action_type: actionType, tabKey: key, title: title, views: views, model: model, context: context, domain: domain, setCanWeClose: function () { }, initialView: initialView }));
         }
@@ -310,15 +334,15 @@ function Dashboard(props, ref) {
             return type === "tree";
         });
         if (treeView) {
-            var id_1 = treeView[0], type = treeView[1];
-            var action_id = actionData.actionId, action_type = actionData.actionType, name_1 = actionData.title, res_model = actionData.model;
+            var id_2 = treeView[0], type = treeView[1];
+            var action_id = actionData.actionId, action_type = actionData.actionType, name_2 = actionData.title, res_model = actionData.model;
             action = {
                 action_id: action_id,
                 action_type: action_type,
-                name: name_1,
+                name: name_2,
                 res_id: false,
                 res_model: res_model,
-                view_id: id_1,
+                view_id: id_2,
                 view_type: type,
             };
         }
