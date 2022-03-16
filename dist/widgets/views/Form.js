@@ -72,6 +72,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
 var ooui_1 = require("@gisce/ooui");
 var antd_1 = require("antd");
+var react_measure_1 = __importDefault(require("react-measure"));
 var icons_1 = require("@ant-design/icons");
 var debounce_1 = __importDefault(require("lodash/debounce"));
 var Container_1 = __importDefault(require("@/widgets/containers/Container"));
@@ -86,7 +87,7 @@ var FormModalContext_1 = require("@/context/FormModalContext");
 var ActionViewContext_1 = require("@/context/ActionViewContext");
 var ContentRootContext_1 = require("@/context/ContentRootContext");
 var LocaleContext_1 = require("@/context/LocaleContext");
-var WIDTH_BREAKPOINT = 1000;
+var WIDTH_BREAKPOINT = 800;
 function Form(props, ref) {
     var _this = this;
     var model = props.model, id = props.id, propsOnCancel = props.onCancel, propsOnSubmitSucceed = props.onSubmitSucceed, _a = props.showFooter, showFooter = _a === void 0 ? false : _a, _b = props.getDataFromAction, getDataFromAction = _b === void 0 ? false : _b, onFieldsChange = props.onFieldsChange, propsOnSubmitError = props.onSubmitError, _c = props.readOnly, readOnly = _c === void 0 ? false : _c, _d = props.mustClearAfterSave, mustClearAfterSave = _d === void 0 ? false : _d, _e = props.submitMode, submitMode = _e === void 0 ? "api" : _e, valuesProps = props.values, formViewProps = props.formView, postSaveAction = props.postSaveAction, _f = props.insideButtonModal, insideButtonModal = _f === void 0 ? false : _f, _g = props.parentContext, parentContext = _g === void 0 ? {} : _g, actionDomain = props.actionDomain, _h = props.visible, visible = _h === void 0 ? true : _h, _j = props.rootForm, rootForm = _j === void 0 ? false : _j, defaultValues = props.defaultValues, _k = props.forcedValues, forcedValues = _k === void 0 ? {} : _k;
@@ -98,23 +99,19 @@ function Form(props, ref) {
     var _p = react_1.useState(), arch = _p[0], setArch = _p[1];
     var _q = react_1.useState(), fields = _q[0], setFields = _q[1];
     var formModalContext = react_1.useContext(FormModalContext_1.FormModalContext);
+    var _r = react_1.useState(), containerWidth = _r[0], setContainerWidth = _r[1];
     var createdId = react_1.useRef();
     var originalFormValues = react_1.useRef({});
     var lastAssignedValues = react_1.useRef({});
     var warningIsShown = react_1.useRef(false);
     var formSubmitting = react_1.useRef(false);
-    // const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
-    //   breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
-    //   updateOnBreakpointChange: true,
-    // });
-    // const responsiveBehaviour = width < WIDTH_BREAKPOINT;
-    var responsiveBehaviour = false;
+    var responsiveBehaviour = containerWidth < WIDTH_BREAKPOINT;
     var formContext = react_1.useContext(FormContext_1.FormContext);
     var parentId = (formContext || {}).activeId;
     var actionViewContext = react_1.useContext(ActionViewContext_1.ActionViewContext);
-    var _r = (rootForm ? actionViewContext : {}) || {}, _s = _r.setFormIsSaving, setFormIsSaving = _s === void 0 ? undefined : _s, _t = _r.setFormHasChanges, setFormHasChanges = _t === void 0 ? undefined : _t, _u = _r.setCurrentId, setCurrentId = _u === void 0 ? undefined : _u, _v = _r.setFormIsLoading, setFormIsLoading = _v === void 0 ? undefined : _v, _w = _r.setAttachments, setAttachments = _w === void 0 ? undefined : _w;
+    var _s = (rootForm ? actionViewContext : {}) || {}, _t = _s.setFormIsSaving, setFormIsSaving = _t === void 0 ? undefined : _t, _u = _s.setFormHasChanges, setFormHasChanges = _u === void 0 ? undefined : _u, _v = _s.setCurrentId, setCurrentId = _v === void 0 ? undefined : _v, _w = _s.setFormIsLoading, setFormIsLoading = _w === void 0 ? undefined : _w, _x = _s.setAttachments, setAttachments = _x === void 0 ? undefined : _x;
     var contentRootContext = react_1.useContext(ContentRootContext_1.ContentRootContext);
-    var _x = contentRootContext || {}, processAction = _x.processAction, globalValues = _x.globalValues;
+    var _y = contentRootContext || {}, processAction = _y.processAction, globalValues = _y.globalValues;
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
         getFields: function () {
@@ -911,10 +908,16 @@ function Form(props, ref) {
     if (!visible) {
         return null;
     }
-    return (react_1.default.createElement("div", { className: "pb-2" },
-        error && (react_1.default.createElement(antd_1.Alert, { className: "mt-10 mb-20", message: JSON.stringify(error), type: "error", banner: true })),
-        content(),
-        showFooter && footer()));
+    return (react_1.default.createElement(react_measure_1.default, { bounds: true, onResize: function (contentRect) {
+            var _a;
+            setContainerWidth((_a = contentRect.bounds) === null || _a === void 0 ? void 0 : _a.width);
+        } }, function (_a) {
+        var measureRef = _a.measureRef;
+        return (react_1.default.createElement("div", { className: "pb-2", ref: measureRef },
+            error && (react_1.default.createElement(antd_1.Alert, { className: "mt-10 mb-20", message: JSON.stringify(error), type: "error", banner: true })),
+            content(),
+            showFooter && footer()));
+    }));
 }
 exports.default = react_1.forwardRef(Form);
 //# sourceMappingURL=Form.js.map
