@@ -1,6 +1,5 @@
 import React, {
   forwardRef,
-  useCallback,
   useContext,
   useEffect,
   useImperativeHandle,
@@ -15,7 +14,7 @@ import "react-grid-layout/css/styles.css";
 import { Graph } from "../Graph/Graph";
 import { DashboardGrid, DashboardGridItem } from "../DashboardGrid";
 import ConnectionProvider from "@/ConnectionProvider";
-import { FormView, ViewType } from "@/types";
+import { FormView } from "@/types";
 import { One2manyItem } from "@/index";
 import { readObjectValues } from "@/helpers/one2manyHelper";
 import { LoadingOutlined } from "@ant-design/icons";
@@ -26,13 +25,12 @@ import {
 } from "@/context/DashboardActionContext";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import DashboardTree from "./DashboardTree";
-import Form from "../Form";
 import { DashboardForm } from "./DashboardForm";
 
 const itemsField = "line_ids";
 
 function Dashboard(props: DashboardProps, ref: any) {
-  const { model, context = {}, id } = props;
+  const { model, context = {}, id, configAction } = props;
   const [dashboardItems, setDashboardItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
@@ -51,6 +49,7 @@ function Dashboard(props: DashboardProps, ref: any) {
     refresh: () => {
       fetchData();
     },
+    configDashboard: openConfigDashboard,
   }));
 
   async function fetchData() {
@@ -206,6 +205,10 @@ function Dashboard(props: DashboardProps, ref: any) {
     });
   }
 
+  async function openConfigDashboard() {
+    openAction(configAction);
+  }
+
   if (error) {
     return (
       <Alert className="mt-10 mb-20" message={error} type="error" banner />
@@ -263,40 +266,40 @@ function Dashboard(props: DashboardProps, ref: any) {
           childContent = <DashboardForm model={model} />;
         } else if (initialView?.type === "tree") {
           childContent = (
-              <DashboardTree
-                model={model}
-                view_id={
-                  views.filter(
-                    (view: [number, string]) => view[1] === "tree"
-                  )[0][0]
-                }
-                onRowClicked={(record) => {
-                  const formView = views.find((view: any[]) => {
-                    const [, type] = view;
-                    return type === "form";
-                  });
-                  if (formView) {
-                    const [id, type] = formView;
-                    const {
-                      actionId: action_id,
-                      actionType: action_type,
-                      title: name,
-                      model: res_model,
-                    } = actionData;
+            <DashboardTree
+              model={model}
+              view_id={
+                views.filter(
+                  (view: [number, string]) => view[1] === "tree"
+                )[0][0]
+              }
+              onRowClicked={(record) => {
+                const formView = views.find((view: any[]) => {
+                  const [, type] = view;
+                  return type === "form";
+                });
+                if (formView) {
+                  const [id, type] = formView;
+                  const {
+                    actionId: action_id,
+                    actionType: action_type,
+                    title: name,
+                    model: res_model,
+                  } = actionData;
 
-                    const action: ShortcutApi = {
-                      action_id,
-                      action_type,
-                      name,
-                      res_id: record.id,
-                      res_model,
-                      view_id: id,
-                      view_type: type,
-                    };
-                    openAction(action);
-                  }
-                }}
-              />
+                  const action: ShortcutApi = {
+                    action_id,
+                    action_type,
+                    name,
+                    res_id: record.id,
+                    res_model,
+                    view_id: id,
+                    view_type: type,
+                  };
+                  openAction(action);
+                }
+              }}
+            />
           );
         } else if (initialView !== undefined) {
           childContent = (

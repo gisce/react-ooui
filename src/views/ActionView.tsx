@@ -147,13 +147,32 @@ function ActionView(props: Props, ref: any) {
 
       try {
         if (viewType === "dashboard") {
+          const formView = views.find((view: any[]) => {
+            const [, type] = view;
+            return type === "form";
+          });
+
+          let configAction;
+
+          if (formView) {
+            configAction = {
+              action_id,
+              action_type,
+              name: title,
+              res_id: context["active_id"],
+              res_model: model,
+              view_id: formView[0],
+              view_type: formView[1],
+            };
+          }
+
           setDashboardData({
             id: context["active_id"],
             model,
             context,
+            configAction,
           });
           availableViews.push({ id, type: viewType });
-          return;
         }
 
         const viewData = await ConnectionProvider.getHandler().getView({
@@ -373,6 +392,7 @@ function ActionView(props: Props, ref: any) {
             model={dashboardData!.model}
             id={dashboardData!.id}
             context={dashboardData?.context}
+            configAction={dashboardData?.configAction}
           />
         </DashboardActionProvider>
       );

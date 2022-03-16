@@ -5,7 +5,7 @@ import {
 } from "@/context/DashboardActionContext";
 import { Space } from "antd";
 import ActionButton from "./ActionButton";
-import { ReloadOutlined } from "@ant-design/icons";
+import { ReloadOutlined, SettingOutlined } from "@ant-design/icons";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 function DashboardActionBar() {
@@ -16,6 +16,15 @@ function DashboardActionBar() {
 
   return (
     <Space wrap={true}>
+      <ActionButton
+        icon={<SettingOutlined />}
+        tooltip={t("configDashboard")}
+        disabled={isLoading}
+        loading={false}
+        onClick={() => {
+          dashboardRef?.current.configDashboard();
+        }}
+      />
       <ActionButton
         icon={<ReloadOutlined />}
         tooltip={t("refresh")}

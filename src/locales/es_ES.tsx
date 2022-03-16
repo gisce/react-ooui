@@ -78,4 +78,5 @@ export default {
     "Introduce algun texto en el campo antes de añadir traducciones",
   saveBeforeTranslate:
     "Tienes que guardar el registro antes de añadir las traducciones",
+  configDashboard: "Configurar panel",
 };

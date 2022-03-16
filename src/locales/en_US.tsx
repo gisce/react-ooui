@@ -74,4 +74,5 @@ export default {
   enterTextBeforeTranslate:
     "Enter some text to the related field before adding translations",
   saveBeforeTranslate: "You must save the record before adding translations",
+  configDashboard: "Setup dashboard",
 };
