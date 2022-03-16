@@ -119,7 +119,7 @@ function ActionView(props, ref) {
         canWeClose: canWeClose,
     }); });
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
-        var availableViews, _i, views_1, viewArray, id, viewType, viewData, err_1;
+        var availableViews, _i, views_1, viewArray, id, viewType, formView_1, configAction, viewData, err_1;
         var _a;
         return __generator(this, function (_b) {
             switch (_b.label) {
@@ -136,13 +136,29 @@ function ActionView(props, ref) {
                 case 2:
                     _b.trys.push([2, 4, , 5]);
                     if (viewType === "dashboard") {
+                        formView_1 = views.find(function (view) {
+                            var type = view[1];
+                            return type === "form";
+                        });
+                        configAction = void 0;
+                        if (formView_1) {
+                            configAction = {
+                                action_id: action_id,
+                                action_type: action_type,
+                                name: title,
+                                res_id: context["active_id"],
+                                res_model: model,
+                                view_id: formView_1[0],
+                                view_type: formView_1[1],
+                            };
+                        }
                         setDashboardData({
                             id: context["active_id"],
                             model: model,
                             context: context,
+                            configAction: configAction,
                         });
                         availableViews.push({ id: id, type: viewType });
-                        return [2 /*return*/];
                     }
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
                             model: model,
@@ -345,7 +361,7 @@ function ActionView(props, ref) {
                 } },
                 react_1.default.createElement(TitleHeader_1.default, null,
                     react_1.default.createElement(DashboardActionBar_1.default, null)),
-                react_1.default.createElement(index_1.Dashboard, { ref: dashboardRef, model: dashboardData.model, id: dashboardData.id, context: dashboardData === null || dashboardData === void 0 ? void 0 : dashboardData.context })));
+                react_1.default.createElement(index_1.Dashboard, { ref: dashboardRef, model: dashboardData.model, id: dashboardData.id, context: dashboardData === null || dashboardData === void 0 ? void 0 : dashboardData.context, configAction: dashboardData === null || dashboardData === void 0 ? void 0 : dashboardData.configAction })));
         }
         return (react_1.default.createElement(react_1.default.Fragment, null,
             react_1.default.createElement(TitleHeader_1.default, null, currentView.type === "form" ? (react_1.default.createElement(FormActionBar_1.default, null)) : (react_1.default.createElement(TreeActionBar_1.default, { parentContext: context }))),

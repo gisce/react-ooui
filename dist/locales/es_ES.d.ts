@@ -71,6 +71,7 @@ declare const _default: {
     translate: string;
     enterTextBeforeTranslate: string;
     saveBeforeTranslate: string;
+    configDashboard: string;
 };
 export default _default;
 //# sourceMappingURL=es_ES.d.ts.map

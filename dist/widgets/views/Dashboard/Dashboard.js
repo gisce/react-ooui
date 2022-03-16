@@ -85,7 +85,7 @@ var DashboardTree_1 = __importDefault(require("./DashboardTree"));
 var DashboardForm_1 = require("./DashboardForm");
 var itemsField = "line_ids";
 function Dashboard(props, ref) {
-    var model = props.model, _a = props.context, context = _a === void 0 ? {} : _a, id = props.id;
+    var model = props.model, _a = props.context, context = _a === void 0 ? {} : _a, id = props.id, configAction = props.configAction;
     var _b = react_1.useState([]), dashboardItems = _b[0], setDashboardItems = _b[1];
     var _c = react_1.useState(false), isLoading = _c[0], setIsLoading = _c[1];
     var _d = react_1.useState(), error = _d[0], setError = _d[1];
@@ -99,6 +99,7 @@ function Dashboard(props, ref) {
         refresh: function () {
             fetchData();
         },
+        configDashboard: openConfigDashboard,
     }); });
     function fetchData() {
         return __awaiter(this, void 0, void 0, function () {
@@ -278,6 +279,14 @@ function Dashboard(props, ref) {
                         _b.sent();
                         return [2 /*return*/];
                 }
+            });
+        });
+    }
+    function openConfigDashboard() {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                openAction(configAction);
+                return [2 /*return*/];
             });
         });
     }

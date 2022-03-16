@@ -32,6 +32,9 @@ function DashboardActionBar() {
     var _a = react_1.useContext(DashboardActionContext_1.DashboardActionContext), isLoading = _a.isLoading, dashboardRef = _a.dashboardRef;
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     return (react_1.default.createElement(antd_1.Space, { wrap: true },
+        react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.SettingOutlined, null), tooltip: t("configDashboard"), disabled: isLoading, loading: false, onClick: function () {
+                dashboardRef === null || dashboardRef === void 0 ? void 0 : dashboardRef.current.configDashboard();
+            } }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.ReloadOutlined, null), tooltip: t("refresh"), disabled: isLoading, loading: false, onClick: function () {
                 dashboardRef === null || dashboardRef === void 0 ? void 0 : dashboardRef.current.refresh();
             } })));
