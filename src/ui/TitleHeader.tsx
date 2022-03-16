@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Row, Col, Typography, Affix } from "antd";
+import { Row, Col, Typography } from "antd";
 import {
   ActionViewContext,
   ActionViewContextType,
@@ -67,7 +67,7 @@ function TitleHeader(props: Props) {
     return null;
   }
   return (
-    <Affix offsetTop={76}>
+    <div style={{ position: "sticky", top: 80, zIndex: 99 }}>
       <Row
         className="bg-blueGray-100 shadow-md rounded"
         style={{ padding: "1em" }}
@@ -84,7 +84,7 @@ function TitleHeader(props: Props) {
         </Col>
       </Row>
       <div className="pb-5" />
-    </Affix>
+    </div>
   );
 }
 
