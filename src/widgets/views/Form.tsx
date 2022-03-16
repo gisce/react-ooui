@@ -16,7 +16,7 @@ import {
   Alert,
   Spin,
 } from "antd";
-import useDimensions from "react-cool-dimensions";
+import Measure from "react-measure";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import debounce from "lodash/debounce";
 
@@ -79,7 +79,7 @@ export type FormProps = {
   forcedValues?: any;
 };
 
-const WIDTH_BREAKPOINT = 1000;
+const WIDTH_BREAKPOINT = 800;
 
 function Form(props: FormProps, ref: any) {
   const {
@@ -114,6 +114,7 @@ function Form(props: FormProps, ref: any) {
   const [arch, setArch] = useState<string>();
   const [fields, setFields] = useState<any>();
   const formModalContext = useContext(FormModalContext) as FormModalContextType;
+  const [containerWidth, setContainerWidth] = useState<any>();
 
   const createdId = useRef<number>();
   const originalFormValues = useRef<any>({});
@@ -121,12 +122,7 @@ function Form(props: FormProps, ref: any) {
   const warningIsShown = useRef<boolean>(false);
   const formSubmitting = useRef<boolean>(false);
 
-  // const { width, ref: containerRef } = useDimensions<HTMLDivElement>({
-  //   breakpoints: { XS: 0, SM: 320, MD: 480, LG: 1000 },
-  //   updateOnBreakpointChange: true,
-  // });
-  // const responsiveBehaviour = width < WIDTH_BREAKPOINT;
-  const responsiveBehaviour = false;
+  const responsiveBehaviour = containerWidth < WIDTH_BREAKPOINT;
 
   const formContext = useContext(FormContext) as FormContextType;
   const { activeId: parentId } = formContext || {};
@@ -954,18 +950,27 @@ function Form(props: FormProps, ref: any) {
   }
 
   return (
-    <div className="pb-2">
-      {error && (
-        <Alert
-          className="mt-10 mb-20"
-          message={JSON.stringify(error)}
-          type="error"
-          banner
-        />
+    <Measure
+      bounds
+      onResize={(contentRect) => {
+        setContainerWidth(contentRect.bounds?.width!);
+      }}
+    >
+      {({ measureRef }) => (
+        <div className="pb-2" ref={measureRef}>
+          {error && (
+            <Alert
+              className="mt-10 mb-20"
+              message={JSON.stringify(error)}
+              type="error"
+              banner
+            />
+          )}
+          {content()}
+          {showFooter && footer()}
+        </div>
       )}
-      {content()}
-      {showFooter && footer()}
-    </div>
+    </Measure>
   );
 }
 

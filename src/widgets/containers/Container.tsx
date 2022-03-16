@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Container as ContainerOoui,
-  Field,
-  Widget,
-  Button,
-  Label,
-} from "@gisce/ooui";
+import { Container as ContainerOoui, Widget, Label } from "@gisce/ooui";
 import { createReactWidget } from "@/widgets/WidgetFactory";
 
 import {
@@ -71,7 +65,10 @@ const Container = (props: Props): React.ReactElement => {
       return (
         <div
           key={`${i.toString()}-${itemRowIndex.toString()}`}
-          style={getSpanStyleForItem({ item, responsiveBehaviour })}
+          style={{
+            ...getSpanStyleForItem({ item, responsiveBehaviour }),
+            minWidth: 0,
+          }}
         >
           {createReactWidget({
             ooui: item,
@@ -90,6 +87,8 @@ const Container = (props: Props): React.ReactElement => {
     display: "grid",
     gridTemplateColumns: responsiveBehaviour ? "auto" : templateColumns,
     gap: "1rem",
+    minHeight: 0,
+    minWidth: 0,
   };
 
   return <div style={gridStyle}>{content}</div>;
