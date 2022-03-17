@@ -387,6 +387,7 @@ function RootView(props, ref) {
                         return [4 /*yield*/, __1.ConnectionProvider.getHandler().getView({
                                 model: model,
                                 type: "form",
+                                id: initialView.type === "form" ? initialView.id : undefined,
                                 context: __assign(__assign({}, rootContext), context),
                             })];
                     case 1:
