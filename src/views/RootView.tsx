@@ -358,6 +358,7 @@ function RootView(props: RootViewProps, ref: any) {
       const formView = (await ConnectionProvider.getHandler().getView({
         model,
         type: "form",
+        id: initialView.type === "form" ? initialView.id : undefined,
         context: { ...rootContext, ...context },
       })) as FormView;
 
