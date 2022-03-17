@@ -160,6 +160,8 @@ export const getOnChangePayload = ({
   onChangeFieldActionArgs.forEach((arg: string) => {
     if (values[arg]) {
       payload[arg] = values[arg];
+    } else if (arg[0] === "'") {
+      payload[arg] = arg.replace(/'/g, "");
     } else {
       payload[arg] = false;
     }
