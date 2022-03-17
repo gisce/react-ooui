@@ -5,7 +5,7 @@ const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = (args) => {
   const environment =
-    Object.keys(args).indexOf("development") !== undefined
+    Object.keys(args).indexOf("development") !== -1
       ? "development"
       : "production";
 
