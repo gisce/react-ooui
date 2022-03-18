@@ -55,14 +55,13 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var ooui_1 = require("@gisce/ooui");
 var uuid_1 = require("uuid");
 function fetchAction(_a) {
-    var actionOoui = _a.actionOoui, _b = _a.rootContext, rootContext = _b === void 0 ? {} : _b, _c = _a.globalValues, globalValues = _c === void 0 ? {} : _c;
+    var actionId = _a.actionId, _b = _a.rootContext, rootContext = _b === void 0 ? {} : _b, _c = _a.globalValues, globalValues = _c === void 0 ? {} : _c;
     return __awaiter(this, void 0, void 0, function () {
-        var actionType, actionId, action, dataForAction, parsedContext, parsedDomain, _d, model, views, title, finalViews, _i, views_1, viewArray, id_1, viewType, view_id, _e, id, type, initialView;
+        var actionType, action, dataForAction, parsedContext, parsedDomain, _d, model, views, title, finalViews, _i, views_1, viewArray, id_1, viewType, view_id, _e, id, type, initialView;
         return __generator(this, function (_f) {
             switch (_f.label) {
                 case 0:
                     actionType = "ir.actions.act_window";
-                    actionId = parseInt(actionOoui.action_id, 10);
                     action = actionType + "," + actionId;
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getActionData({
                             action: action,
@@ -118,7 +117,6 @@ function fetchAction(_a) {
                     _e = finalViews[0], id = _e[0], type = _e[1];
                     initialView = { id: id, type: type };
                     return [2 /*return*/, {
-                            parms: actionOoui.position,
                             title: title,
                             actionId: actionId,
                             actionType: actionType,

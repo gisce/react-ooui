@@ -1,6 +1,5 @@
-import { DashboardItem as DashboardItemOoui } from "@gisce/ooui";
-export declare function fetchAction({ actionOoui, rootContext, globalValues, }: {
-    actionOoui: DashboardItemOoui;
+export declare function fetchAction({ actionId, rootContext, globalValues, }: {
+    actionId: number;
     rootContext?: any;
     globalValues?: any;
 }): Promise<any>;

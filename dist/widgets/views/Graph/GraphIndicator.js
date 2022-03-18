@@ -60,28 +60,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GraphIndicator = void 0;
 var react_1 = __importStar(require("react"));
-var ooui_1 = require("@gisce/ooui");
 var icons_1 = require("@ant-design/icons");
-var Indicator_1 = require("@/widgets/custom/Indicator");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
-var antd_1 = require("antd");
+var Title_1 = __importDefault(require("antd/lib/typography/Title"));
+var react_measure_1 = __importDefault(require("react-measure"));
+var fontGrowFactor = 0.7;
+var minFontSize = 30;
 var GraphIndicator = function (props) {
-    var title = props.title, ooui = props.ooui, model = props.model, domain = props.domain, context = props.context;
-    var _a = react_1.useState(false), loading = _a[0], setLoading = _a[1];
-    var form = antd_1.Form.useForm()[0];
+    var model = props.model, domain = props.domain, context = props.context, colorCondition = props.colorCondition, totalDomain = props.totalDomain, _a = props.showPercent, showPercent = _a === void 0 ? false : _a;
+    var _b = react_1.useState(false), loading = _b[0], setLoading = _b[1];
+    var _c = react_1.useState(), value = _c[0], setValue = _c[1];
+    var _d = react_1.useState(), percent = _d[0], setPercent = _d[1];
+    var _e = react_1.useState(), totalValue = _e[0], setTotalValue = _e[1];
+    var _f = react_1.useState(0), height = _f[0], setHeight = _f[1];
+    var _g = react_1.useState(0), width = _g[0], setWidth = _g[1];
+    var _h = react_1.useState(), color = _h[0], setColor = _h[1];
     react_1.useEffect(function () {
         fetchData();
-    }, [model]);
+    }, [model, colorCondition]);
     function fetchData() {
         return __awaiter(this, void 0, void 0, function () {
-            var retrievedValue, err_1;
+            var totalRetrievedValue, percent, retrievedValue, parsedDomain, conditionEval, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         setLoading(true);
                         _a.label = 1;
                     case 1:
-                        _a.trys.push([1, 3, , 4]);
+                        _a.trys.push([1, 8, , 9]);
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchCount({
                                 model: model,
                                 params: domain,
@@ -89,19 +95,46 @@ var GraphIndicator = function (props) {
                             })];
                     case 2:
                         retrievedValue = _a.sent();
-                        form.setFields([
-                            {
-                                name: "indicator",
-                                touched: true,
-                                value: retrievedValue,
-                            },
-                        ]);
-                        return [3 /*break*/, 4];
+                        setValue(retrievedValue);
+                        if (!totalDomain) return [3 /*break*/, 5];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().evalDomain({
+                                domain: totalDomain,
+                                values: {},
+                                context: context,
+                            })];
                     case 3:
+                        parsedDomain = _a.sent();
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchCount({
+                                model: model,
+                                params: parsedDomain,
+                                context: context,
+                            })];
+                    case 4:
+                        totalRetrievedValue = _a.sent();
+                        setTotalValue(totalRetrievedValue);
+                        _a.label = 5;
+                    case 5:
+                        if (totalRetrievedValue) {
+                            percent =
+                                Math.round((retrievedValue / totalRetrievedValue) * 100 * 100) / 100;
+                            setPercent(percent);
+                        }
+                        if (!colorCondition) return [3 /*break*/, 7];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().parseCondition({
+                                condition: colorCondition,
+                                values: { value: retrievedValue, percent: percent },
+                                context: context,
+                            })];
+                    case 6:
+                        conditionEval = _a.sent();
+                        setColor(conditionEval);
+                        _a.label = 7;
+                    case 7: return [3 /*break*/, 9];
+                    case 8:
                         err_1 = _a.sent();
                         console.error(err_1);
-                        return [2 /*return*/, react_1.default.createElement(react_1.default.Fragment, null, JSON.stringify(err_1))];
-                    case 4:
+                        return [3 /*break*/, 9];
+                    case 9:
                         setLoading(false);
                         return [2 /*return*/];
                 }
@@ -109,13 +142,74 @@ var GraphIndicator = function (props) {
         });
     }
     if (loading) {
-        return react_1.default.createElement(icons_1.LoadingOutlined, null);
+        return (react_1.default.createElement("div", { style: { padding: "1rem" } },
+            react_1.default.createElement(icons_1.LoadingOutlined, { style: { height: "12px" } })));
     }
-    return (react_1.default.createElement(antd_1.Form, { form: form },
-        react_1.default.createElement(Indicator_1.Indicator, { ooui: new ooui_1.Indicator({
-                name: "indicator",
-                string: title || ooui.string,
-            }) })));
+    return (react_1.default.createElement(react_measure_1.default, { bounds: true, onResize: function (contentRect) {
+            var _a, _b;
+            setHeight((_a = contentRect.bounds) === null || _a === void 0 ? void 0 : _a.height);
+            setWidth((_b = contentRect.bounds) === null || _b === void 0 ? void 0 : _b.width);
+        } }, function (_a) {
+        var measureRef = _a.measureRef;
+        if (showPercent) {
+            return (react_1.default.createElement(PercentageIndicator, { value: value, total: totalValue, percent: percent, measureRef: measureRef, height: height, width: width, color: color }));
+        }
+        else {
+            return (react_1.default.createElement(CommonIndicator, { value: value, total: totalValue, measureRef: measureRef, height: height, width: width, color: color }));
+        }
+    }));
 };
 exports.GraphIndicator = GraphIndicator;
+function getTextWidth(text, font) {
+    var canvas = document.createElement("canvas");
+    var context = canvas.getContext("2d");
+    context.font = font || getComputedStyle(document.body).font;
+    return context.measureText(text).width;
+}
+function CommonIndicator(_a) {
+    var measureRef = _a.measureRef, width = _a.width, height = _a.height, total = _a.total, value = _a.value, color = _a.color;
+    var fontSize = height * fontGrowFactor < minFontSize
+        ? minFontSize
+        : height * fontGrowFactor;
+    var finalValue = total ? value + "/" + total : "" + value;
+    var tw = getTextWidth(finalValue, "bold " + Math.floor(fontSize * 1.03) + "px sans-serif");
+    if (tw >= width * 0.85) {
+        var maxFontSize = ((width * 0.85) / tw) * fontSize;
+        fontSize = maxFontSize;
+    }
+    return (react_1.default.createElement("div", { ref: measureRef, style: {
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            overflow: "hidden",
+        } },
+        react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize, margin: 0, color: color } }, finalValue)));
+}
+function PercentageIndicator(_a) {
+    var measureRef = _a.measureRef, height = _a.height, width = _a.width, percent = _a.percent, total = _a.total, value = _a.value, color = _a.color;
+    var twoLinesHeight = height * 0.65;
+    var fontSize = twoLinesHeight * fontGrowFactor < minFontSize
+        ? minFontSize
+        : twoLinesHeight * fontGrowFactor;
+    var finalValue = total ? value + "/" + total : "" + value;
+    var tw = getTextWidth(finalValue, "bold " + Math.floor(fontSize * 1.03) + "px sans-serif");
+    if (tw >= width * 0.85 || fontSize * 2 < twoLinesHeight) {
+        var maxFontSize = ((width * 0.85) / tw) * fontSize;
+        fontSize = maxFontSize;
+    }
+    return (react_1.default.createElement("div", { ref: measureRef, style: {
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            overflow: "hidden",
+            flexDirection: "column",
+            padding: "0.2rem",
+        } },
+        react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize * 0.8, margin: 0, color: color } }, percent + "%"),
+        react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize * 0.4, margin: 0, color: color } }, finalValue)));
+}
 //# sourceMappingURL=GraphIndicator.js.map

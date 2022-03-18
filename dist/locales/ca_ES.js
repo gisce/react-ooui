@@ -72,6 +72,7 @@ exports.default = {
     selectedRegisters: "registres seleccionats",
     translate: "Traduïr",
     enterTextBeforeTranslate: "Introdueix algun text al camp abans d'afegir traduccions",
-    saveBeforeTranslate: "Heu de desar el registre abans d'afegir les traduccions"
+    saveBeforeTranslate: "Heu de desar el registre abans d'afegir les traduccions",
+    configDashboard: "Configurar panell",
 };
 //# sourceMappingURL=ca_ES.js.map

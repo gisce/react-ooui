@@ -107,6 +107,11 @@ declare type ReadEvalUiObjectsRequest = {
     context?: any;
     attrs?: any;
 };
+declare type ParseConditionRequest = {
+    condition: string;
+    values: any;
+    context?: any;
+};
 declare type DeleteObjectsRequest = {
     model: string;
     ids: number[];
@@ -173,6 +178,7 @@ declare type ConnectionProviderType = {
     execute: (options: ExecuteRequest) => Promise<any>;
     readObjects: (options: ReadObjectsRequest) => Promise<any>;
     readEvalUiObjects: (options: ReadEvalUiObjectsRequest) => Promise<any>;
+    parseCondition: (options: ParseConditionRequest) => Promise<any>;
     executeWorkflow: (options: ExecuteRequest) => Promise<any>;
     createReport: (options: CreateReportRequest) => Promise<any>;
     getReport: (options: GetReportRequest) => Promise<any>;
@@ -193,5 +199,5 @@ declare type ConnectionProviderType = {
     addFavourite: (options: IsShortcutFavoriteOptions) => Promise<void>;
 };
 declare type ViewType = "tree" | "form" | "dashboard" | "graph";
-export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchAllIdsRequest, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, ReadEvalUiObjectsRequest, NameSearchRequest, DuplicateRequest, GetLogInfoRequest, IsShortcutFavoriteOptions, };
+export type { Strings, SearchFields, TreeView, FormView, Column, WidgetProps, SearchRequest, SearchResponse, ConnectionProviderType, UpdateObjectRequest, CreateObjectRequest, ViewData, Views, ExecuteRequest, ReadObjectsRequest, DeleteObjectsRequest, CreateReportRequest, GetReportRequest, ExecuteOnChangeRequest, ViewType, SearchAllIdsRequest, SearchCountRequest, GetViewRequest, DefaultGetRequest, GenerateReportOptions, ReadEvalUiObjectsRequest, NameSearchRequest, DuplicateRequest, GetLogInfoRequest, IsShortcutFavoriteOptions, ParseConditionRequest, };
 //# sourceMappingURL=index.d.ts.map
