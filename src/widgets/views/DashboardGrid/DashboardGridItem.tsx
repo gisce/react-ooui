@@ -22,6 +22,7 @@ export const DashboardGridItem = (props: DashboardGridItemProps) => {
       }}
     >
       <Row
+        className="bg-blueGray-100"
         align="middle"
         style={{ borderBottom: "1px solid #ddd" }}
         wrap={false}

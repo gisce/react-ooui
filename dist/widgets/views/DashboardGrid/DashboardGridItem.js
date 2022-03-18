@@ -19,7 +19,7 @@ var DashboardGridItem = function (props) {
             border: "1px solid #eee",
             backgroundColor: "white",
         } },
-        react_1.default.createElement(antd_1.Row, { align: "middle", style: { borderBottom: "1px solid #ddd" }, wrap: false },
+        react_1.default.createElement(antd_1.Row, { className: "bg-blueGray-100", align: "middle", style: { borderBottom: "1px solid #ddd" }, wrap: false },
             react_1.default.createElement(antd_1.Col, { flex: "auto", className: "draggable-head", style: {
                     fontWeight: "bold",
                     padding: "0.5rem",
