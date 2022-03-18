@@ -27,6 +27,7 @@ import {
 import ButtonWithBadge from "./ButtonWithBadge";
 import { showLogInfo } from "@/helpers/logInfoHelper";
 import SearchBar from "./SearchBar";
+import { View } from "@/views/ActionView";
 
 type Props = {
   parentContext?: any;
@@ -86,7 +87,7 @@ function TreeActionBar(props: Props) {
       setCurrentItemIndex?.(undefined);
 
       searchTreeRef?.current?.refreshResults();
-    } catch (e: any) {
+    } catch (e) {
       showErrorDialog(e);
     } finally {
       setRemovingItem?.(false);
@@ -108,7 +109,7 @@ function TreeActionBar(props: Props) {
       if (newId) {
         searchTreeRef?.current?.refreshResults();
       }
-    } catch (e: any) {
+    } catch (e) {
       showErrorDialog(e);
     } finally {
       setDuplicatingItem?.(false);
@@ -206,7 +207,9 @@ function TreeActionBar(props: Props) {
       {separator()}
       <ChangeViewButton
         currentView={currentView}
-        availableViews={availableViews}
+        availableViews={availableViews.filter(
+          (view: View) => view.type === "tree" || view.type === "form"
+        )}
         onChangeView={setCurrentView}
         disabled={treeIsLoading}
       />

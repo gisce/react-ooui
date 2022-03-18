@@ -120,13 +120,17 @@ function RootView(props: RootViewProps, ref: any) {
       const [id, viewType] = viewArray;
 
       if (!id) {
-        const { view_id } = await ConnectionProvider.getHandler().getView({
-          model,
-          type: viewType,
-          id,
-          context: { ...rootContext, ...parsedContext },
-        });
-        finalViews.push([view_id, viewType]);
+        if (viewType === "dashboard") {
+          finalViews.push([undefined, "dashboard"]);
+        } else {
+          const { view_id } = await ConnectionProvider.getHandler().getView({
+            model,
+            type: viewType,
+            id,
+            context: { ...rootContext, ...parsedContext },
+          });
+          finalViews.push([view_id, viewType]);
+        }
       } else {
         finalViews.push(viewArray);
       }
@@ -272,21 +276,38 @@ function RootView(props: RootViewProps, ref: any) {
       const [id, viewType] = viewArray;
 
       if (!id) {
-        const { view_id } = await ConnectionProvider.getHandler().getView({
-          model,
-          type: viewType,
-          id,
-          context: { ...rootContext, ...parsedContext },
-        });
-        finalViews.push([view_id, viewType]);
+        if (viewType === "dashboard") {
+          finalViews.push([undefined, "dashboard"]);
+        } else {
+          const { view_id } = await ConnectionProvider.getHandler().getView({
+            model,
+            type: viewType,
+            id,
+            context: { ...rootContext, ...parsedContext },
+          });
+          finalViews.push([view_id, viewType]);
+        }
       } else {
         finalViews.push(viewArray);
       }
     }
 
-    const [id, type] = finalViews.find((view: any[]) => {
-      return view[0] === view_id;
-    });
+    let id, type;
+    if (view_id === undefined || view_id === null) {
+      const view = finalViews.find((view: any[]) => {
+        return view[0] === undefined;
+      });
+      id = undefined;
+      type = view[1];
+    } else {
+      [id, type] = finalViews.find((view: any[]) => {
+        if (view[0] === undefined) {
+          return false;
+        }
+        return view[0] === view_id;
+      });
+    }
+
     const initialView = { id, type };
 
     openAction({

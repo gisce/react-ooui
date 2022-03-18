@@ -1,4 +1,8 @@
+import { ShortcutApi } from "@/ui/FavouriteButton";
+
 export type DashboardProps = {
-  arch: string;
+  model: string;
+  id: number;
   context?: any;
+  configAction?: ShortcutApi;
 };

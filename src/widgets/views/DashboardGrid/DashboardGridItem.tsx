@@ -1,31 +1,57 @@
 import React from "react";
 import { DashboardGridItemProps } from "./DashboardGridItem.types";
-import { CloseOutlined } from "@ant-design/icons";
+import { ExportOutlined } from "@ant-design/icons";
+import { Row, Col } from "antd";
+import { Typography } from "antd";
+
+const { Text } = Typography;
 
 export const DashboardGridItem = (props: DashboardGridItemProps) => {
-  const { id, title, children } = props;
+  const { id, title, children, action, openAction } = props;
 
   return (
     <div
+      className={"shadow-md rounded"}
       style={{
-        backgroundColor: "#efefef",
-        width: "100%",
         height: "100%",
-        borderRadius: "0.5em",
-        overflow: "hidden",
         display: "flex",
         flexDirection: "column",
+        overflow: "hidden",
+        border: "1px solid #eee",
+        backgroundColor: "white",
       }}
     >
-      {/* <div style={{ padding: "0.25rem", alignSelf: "end" }}>
-        <CloseOutlined
-          onClick={(e) => {
-            e.stopPropagation();
-            onCloseTap(id);
+      <Row
+        align="middle"
+        style={{ borderBottom: "1px solid #ddd" }}
+        wrap={false}
+      >
+        <Col
+          flex="auto"
+          className="draggable-head"
+          style={{
+            fontWeight: "bold",
+            padding: "0.5rem",
+            cursor: "grab",
+            overflow: "hidden",
           }}
-        />
-      </div> */}
-      <div style={{ padding: "2em" }}>{children}</div>
+        >
+          <Text ellipsis={true}>{title}</Text>
+        </Col>
+        {action && (
+          <Col flex="25px" style={{ padding: "0.5rem" }}>
+            <Row justify="end" align="middle">
+              <ExportOutlined
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  openAction?.(action);
+                }}
+              />
+            </Row>
+          </Col>
+        )}
+      </Row>
+      {children}
     </div>
   );
 };

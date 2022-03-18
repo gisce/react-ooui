@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Row, Col, Typography, Affix } from "antd";
+import { Row, Col, Typography } from "antd";
 import {
   ActionViewContext,
   ActionViewContextType,
@@ -41,25 +41,29 @@ function TitleHeader(props: Props) {
 
       return (
         <>
-         {t("register")} {
-          currentItemIndex === undefined ? 1 : currentItemIndex + 1
-        } / {results!.length} {t("of")} {totalItems} - {t(
-          "editingDocument"
-        )} (id: <Text copyable>{currentId}</Text>)
+          {t("register")}{" "}
+          {currentItemIndex === undefined ? 1 : currentItemIndex + 1} /{" "}
+          {results!.length} {t("of")} {totalItems} - {t("editingDocument")} (id:{" "}
+          <Text copyable>{currentId}</Text>)
         </>
       );
-
     } else if (currentView?.type === "tree" && selectedRowItems) {
       if (selectedRowItems.length === 1) {
         return (
-         <>
-           1 {t("selectedRegisters")} - (id: <Text copyable>{selectedRowItems[0].id}</Text>)
-         </>
-        )
+          <>
+            1 {t("selectedRegisters")} - (id:{" "}
+            <Text copyable>{selectedRowItems[0].id}</Text>)
+          </>
+        );
       } else if (selectedRowItems.length > 1) {
         return (
           <>
-            {selectedRowItems.length} {t("selectedRegisters")}<Text copyable={{text: selectedRowItems.map(reg => reg.id).join(", ")}}></Text>
+            {selectedRowItems.length} {t("selectedRegisters")}
+            <Text
+              copyable={{
+                text: selectedRowItems.map((reg) => reg.id).join(", "),
+              }}
+            ></Text>
           </>
         );
       }
@@ -67,7 +71,7 @@ function TitleHeader(props: Props) {
     return null;
   }
   return (
-    <Affix offsetTop={76}>
+    <div style={{ position: "sticky", top: 80, zIndex: 3 }}>
       <Row
         className="bg-blueGray-100 shadow-md rounded"
         style={{ padding: "1em" }}
@@ -84,7 +88,7 @@ function TitleHeader(props: Props) {
         </Col>
       </Row>
       <div className="pb-5" />
-    </Affix>
+    </div>
   );
 }
 

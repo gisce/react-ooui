@@ -9,6 +9,9 @@ module.exports = (args) => {
       ? "development"
       : "production";
 
+  // console.log("args: " + JSON.stringify(args));
+  console.log("Webpack is running in " + environment + " mode");
+
   const config = {
     entry: "./src/index.ts",
     mode: environment,

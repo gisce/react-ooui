@@ -7,7 +7,7 @@ import "react-grid-layout/css/styles.css";
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 export const DashboardGrid = (props: DashboardGridProps) => {
-  const { children = [] } = props;
+  const { children = [], onPositionItemsChanged } = props;
 
   const items = React.Children.map(
     children,
@@ -31,9 +31,20 @@ export const DashboardGrid = (props: DashboardGridProps) => {
     <ResponsiveReactGridLayout
       className="layout"
       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+      draggableHandle={".draggable-head"}
       rowHeight={30}
-      onLayoutChange={(layout, layouts) => {
-        // console.log();
+      onLayoutChange={(layout) => {
+        onPositionItemsChanged?.(
+          layout.map((item) => {
+            return {
+              id: parseInt(item.i.replace(".$", ""), 10),
+              x: item.x,
+              y: item.y,
+              w: item.w,
+              h: item.h,
+            };
+          })
+        );
       }}
     >
       {items}
