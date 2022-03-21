@@ -392,12 +392,14 @@ export const GraphLine = (props: GraphInidicatorProps) => {
   ];
 
   return (
-    <Line
-      data={data}
-      padding="auto"
-      xField="Date"
-      yField="scales"
-      xAxis={{ tickCount: 5 }}
-    />
+    <div style={{ padding: "1rem" }}>
+      <Line
+        data={data}
+        padding="auto"
+        xField="Date"
+        yField="scales"
+        xAxis={{ tickCount: 5 }}
+      />
+    </div>
   );
 };
