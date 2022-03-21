@@ -313,10 +313,10 @@ function Dashboard(props, ref) {
             childContent = (react_1.default.createElement(Graph_1.Graph, { title: title, view_id: views.filter(function (view) { return view[1] === "graph"; })[0][0], model: model, context: context, domain: domain }));
         }
         else if ((initialView === null || initialView === void 0 ? void 0 : initialView.type) === "form") {
-            childContent = react_1.default.createElement(DashboardForm_1.DashboardForm, { model: model });
+            childContent = react_1.default.createElement(DashboardForm_1.DashboardForm, { model: model, actionDomain: domain });
         }
         else if ((initialView === null || initialView === void 0 ? void 0 : initialView.type) === "tree") {
-            childContent = (react_1.default.createElement(DashboardTree_1.default, { model: model, view_id: views.filter(function (view) { return view[1] === "tree"; })[0][0], onRowClicked: function (record) {
+            childContent = (react_1.default.createElement(DashboardTree_1.default, { model: model, domain: domain, view_id: views.filter(function (view) { return view[1] === "tree"; })[0][0], onRowClicked: function (record) {
                     var formView = views.find(function (view) {
                         var type = view[1];
                         return type === "form";
