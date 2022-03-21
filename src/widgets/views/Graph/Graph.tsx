@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Graph as GraphOoui } from "@gisce/ooui";
+import {
+  parseGraph,
+  Graph as GraphOoui,
+  GraphIndicator as GraphIndicatorOoui,
+  GraphLine as GraphLineOoui,
+} from "@gisce/ooui";
 import { LoadingOutlined } from "@ant-design/icons";
 import ConnectionProvider from "@/ConnectionProvider";
 import { GraphIndicator } from "./GraphIndicator";
+import { GraphLine } from "./GraphLine";
 
 export type GraphProps = {
   title?: string;
@@ -32,7 +38,7 @@ export const Graph = (props: GraphProps) => {
         context,
       });
 
-      const ooui = new GraphOoui(viewData.arch);
+      const ooui = parseGraph(viewData.arch);
       setGraphOoui(ooui);
     } catch (err) {
       console.error(err);
@@ -54,18 +60,33 @@ export const Graph = (props: GraphProps) => {
     return null;
   }
 
-  if (graphOoui.type === "indicator") {
-    return (
-      <GraphIndicator
-        showPercent={graphOoui.showPercent}
-        totalDomain={graphOoui.totalDomain!}
-        colorCondition={graphOoui.color}
-        model={model}
-        context={context}
-        domain={domain}
-      />
-    );
-  } else {
-    return <>{`Graph ${graphOoui.type} not implemented`}</>;
+  switch (graphOoui.type) {
+    case "indicator": {
+      const indicator = graphOoui as GraphIndicatorOoui;
+      return (
+        <GraphIndicator
+          showPercent={indicator.showPercent}
+          totalDomain={indicator.totalDomain!}
+          colorCondition={indicator.color}
+          model={model}
+          context={context}
+          domain={domain}
+        />
+      );
+    }
+    case "line": {
+      const line = graphOoui as GraphLineOoui;
+      return (
+        <GraphLine
+          model={model}
+          domain={domain}
+          context={context}
+          ooui={line}
+        />
+      );
+    }
+    default: {
+      return <>{`Graph ${graphOoui.type} not implemented`}</>;
+    }
   }
 };
