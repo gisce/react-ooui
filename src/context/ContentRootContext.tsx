@@ -188,7 +188,6 @@ const ContentRootProvider = (
         context,
       });
     } else if (type === "ir.actions.act_window") {
-      await runAction({ actionData, fields, values, context });
       return await runAction({ actionData, fields, values, context });
     } else {
       showErrorDialog(`${type} action not supported`);
@@ -251,6 +250,7 @@ const ContentRootProvider = (
       const formView = (await ConnectionProvider.getHandler().getView({
         model: actionData.res_model,
         type: "form",
+        id: actionData?.view_id?.[0] || undefined,
         context,
       })) as FormView;
 

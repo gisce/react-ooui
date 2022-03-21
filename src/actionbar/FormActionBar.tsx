@@ -38,6 +38,7 @@ import {
 } from "@/context/ContentRootContext";
 import AttachmentsButton from "./AttachmentsButton";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { View } from "@/views/ActionView";
 
 function FormActionBar() {
   const {
@@ -293,7 +294,9 @@ function FormActionBar() {
       {separator()}
       <ChangeViewButton
         currentView={currentView}
-        availableViews={availableViews}
+        availableViews={availableViews.filter(
+          (view: View) => view.type === "tree" || view.type === "form"
+        )}
         onChangeView={(view: any) => {
           setFormHasChanges?.(false);
           setCurrentView?.(view);
@@ -386,7 +389,7 @@ function FormActionBar() {
               res_model,
               res_id,
             },
-            initialViewType: "form"
+            initialViewType: "form",
           });
         }}
       />

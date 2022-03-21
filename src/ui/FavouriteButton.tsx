@@ -20,7 +20,7 @@ import { ViewType } from "@/types";
 export type ShortcutApi = {
   action_id: number;
   action_type: string;
-  id: number;
+  id?: number;
   name: string;
   res_id: number | boolean;
   res_model: string;
@@ -163,7 +163,7 @@ const FavouriteButton = (props: Props) => {
       </div>
       <Menu.Divider />
       {loading ? (
-        <Spin />
+        <Spin style={{ padding: "1rem" }} />
       ) : shortcuts.length > 0 ? (
         <>
           {shortcuts.map((shortcut) => (
@@ -183,13 +183,7 @@ const FavouriteButton = (props: Props) => {
     </Menu>
   );
 
-  function FavouriteItem({
-    title,
-    type,
-  }: {
-    title: string;
-    type: ViewType;
-  }) {
+  function FavouriteItem({ title, type }: { title: string; type: ViewType }) {
     const icon = type === "tree" ? <TableOutlined /> : <FormOutlined />;
     return (
       <Row wrap={false}>

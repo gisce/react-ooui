@@ -276,13 +276,17 @@ function RootView(props: RootViewProps, ref: any) {
       const [id, viewType] = viewArray;
 
       if (!id) {
-        const { view_id } = await ConnectionProvider.getHandler().getView({
-          model,
-          type: viewType,
-          id,
-          context: { ...rootContext, ...parsedContext },
-        });
-        finalViews.push([view_id, viewType]);
+        if (viewType === "dashboard") {
+          finalViews.push([undefined, "dashboard"]);
+        } else {
+          const { view_id } = await ConnectionProvider.getHandler().getView({
+            model,
+            type: viewType,
+            id,
+            context: { ...rootContext, ...parsedContext },
+          });
+          finalViews.push([view_id, viewType]);
+        }
       } else {
         finalViews.push(viewArray);
       }
@@ -375,6 +379,7 @@ function RootView(props: RootViewProps, ref: any) {
       const formView = (await ConnectionProvider.getHandler().getView({
         model,
         type: "form",
+        id: initialView.type === "form" ? initialView.id : undefined,
         context: { ...rootContext, ...context },
       })) as FormView;
 

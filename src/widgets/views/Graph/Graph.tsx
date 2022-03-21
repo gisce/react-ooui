@@ -43,7 +43,11 @@ export const Graph = (props: GraphProps) => {
   }
 
   if (loading) {
-    return <LoadingOutlined style={{ height: "12px" }} />;
+    return (
+      <div style={{ padding: "1rem" }}>
+        <LoadingOutlined style={{ height: "12px" }} />
+      </div>
+    );
   }
 
   if (!graphOoui) {
@@ -53,6 +57,8 @@ export const Graph = (props: GraphProps) => {
   if (graphOoui.type === "indicator") {
     return (
       <GraphIndicator
+        showPercent={graphOoui.showPercent}
+        totalDomain={graphOoui.totalDomain!}
         colorCondition={graphOoui.color}
         model={model}
         context={context}

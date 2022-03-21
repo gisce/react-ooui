@@ -1,4 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import ActionView from "@/views/ActionView";
 import { DashboardProps } from "./Dashboard.types";
 import { fetchAction } from "./dashboardHelper";
@@ -12,14 +19,24 @@ import { One2manyItem } from "@/index";
 import { readObjectValues } from "@/helpers/one2manyHelper";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Alert } from "antd";
+import {
+  DashboardActionContext,
+  DashboardActionContextType,
+} from "@/context/DashboardActionContext";
+import { ShortcutApi } from "@/ui/FavouriteButton";
+import DashboardTree from "./DashboardTree";
+import { DashboardForm } from "./DashboardForm";
 
 const itemsField = "line_ids";
 
-export function Dashboard(props: DashboardProps) {
-  const { model, context = {}, id } = props;
+function Dashboard(props: DashboardProps, ref: any) {
+  const { model, context = {}, id, configAction } = props;
   const [dashboardItems, setDashboardItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
+  const { setIsLoading: setActionBarLoading, openAction } = useContext(
+    DashboardActionContext
+  ) as DashboardActionContextType;
 
   const itemsFields = useRef<any>();
   const boardFields = useRef<any>();
@@ -28,8 +45,16 @@ export function Dashboard(props: DashboardProps) {
     fetchData();
   }, [model, id, context]);
 
+  useImperativeHandle(ref, () => ({
+    refresh: () => {
+      fetchData();
+    },
+    configDashboard: openConfigDashboard,
+  }));
+
   async function fetchData() {
     setIsLoading(true);
+    setActionBarLoading(true);
     setError(undefined);
 
     try {
@@ -48,6 +73,7 @@ export function Dashboard(props: DashboardProps) {
       const itemsWithActions = await getItemsWithActions(originalItems);
       setDashboardItems(itemsWithActions);
       setIsLoading(false);
+      setActionBarLoading(false);
     } catch (err) {
       setError(JSON.stringify(err));
     }
@@ -179,6 +205,10 @@ export function Dashboard(props: DashboardProps) {
     });
   }
 
+  async function openConfigDashboard() {
+    openAction(configAction);
+  }
+
   if (error) {
     return (
       <Alert className="mt-10 mb-20" message={error} type="error" banner />
@@ -232,6 +262,45 @@ export function Dashboard(props: DashboardProps) {
               domain={domain}
             />
           );
+        } else if (initialView?.type === "form") {
+          childContent = <DashboardForm model={model} />;
+        } else if (initialView?.type === "tree") {
+          childContent = (
+            <DashboardTree
+              model={model}
+              view_id={
+                views.filter(
+                  (view: [number, string]) => view[1] === "tree"
+                )[0][0]
+              }
+              onRowClicked={(record) => {
+                const formView = views.find((view: any[]) => {
+                  const [, type] = view;
+                  return type === "form";
+                });
+                if (formView) {
+                  const [id, type] = formView;
+                  const {
+                    actionId: action_id,
+                    actionType: action_type,
+                    title: name,
+                    model: res_model,
+                  } = actionData;
+
+                  const action: ShortcutApi = {
+                    action_id,
+                    action_type,
+                    name,
+                    res_id: record.id,
+                    res_model,
+                    view_id: id,
+                    view_type: type,
+                  };
+                  openAction(action);
+                }
+              }}
+            />
+          );
         } else if (initialView !== undefined) {
           childContent = (
             <ActionView
@@ -249,8 +318,40 @@ export function Dashboard(props: DashboardProps) {
           );
         }
 
+        let action: ShortcutApi;
+        const treeView = views.find((view: any[]) => {
+          const [, type] = view;
+          return type === "tree";
+        });
+        if (treeView) {
+          const [id, type] = treeView;
+          const {
+            actionId: action_id,
+            actionType: action_type,
+            title: name,
+            model: res_model,
+          } = actionData;
+
+          action = {
+            action_id,
+            action_type,
+            name,
+            res_id: false,
+            res_model,
+            view_id: id,
+            view_type: type,
+          };
+        }
+
         return (
-          <DashboardGridItem key={id} id={id} title={title} parms={parmsParsed}>
+          <DashboardGridItem
+            key={id}
+            id={id}
+            title={title}
+            parms={parmsParsed}
+            action={action!}
+            openAction={openAction}
+          >
             {childContent}
           </DashboardGridItem>
         );
@@ -258,3 +359,5 @@ export function Dashboard(props: DashboardProps) {
     </DashboardGrid>
   );
 }
+
+export default forwardRef(Dashboard);

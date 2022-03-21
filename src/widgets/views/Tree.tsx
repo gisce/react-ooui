@@ -35,6 +35,7 @@ type Props = {
   scrollY?: number;
   colorsForResults?: { [key: number]: string };
   onChangeSort?: (results: any) => void;
+  disableScroll?: boolean;
 };
 
 const booleanComponentFn = (value: boolean): React.ReactElement => {
@@ -84,6 +85,7 @@ function Tree(props: Props): React.ReactElement {
     scrollY,
     colorsForResults = {},
     onChangeSort,
+    disableScroll = false,
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
@@ -204,7 +206,7 @@ function Tree(props: Props): React.ReactElement {
   }
 
   return treeOoui.current === null ? (
-    <Spin />
+    <Spin style={{ padding: "2rem" }} />
   ) : (
     <div>
       {pagination()}
@@ -219,7 +221,11 @@ function Tree(props: Props): React.ReactElement {
       <StyledTable
         minHeight={adjustedHeight!}
         columns={dataTable.columns}
-        scroll={{ x: dataTable.tableWidth, y: adjustedHeight }}
+        scroll={
+          disableScroll
+            ? undefined
+            : { x: dataTable.tableWidth, y: adjustedHeight }
+        }
         size="small"
         dataSource={items}
         pagination={false}

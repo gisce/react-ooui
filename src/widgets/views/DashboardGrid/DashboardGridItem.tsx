@@ -1,30 +1,58 @@
 import React from "react";
 import { DashboardGridItemProps } from "./DashboardGridItem.types";
-import { ExpandAltOutlined } from "@ant-design/icons";
-import { Card } from "antd";
-import styled from "styled-components";
+import { ExportOutlined } from "@ant-design/icons";
+import { Row, Col } from "antd";
+import { Typography } from "antd";
 
-const GrabCard = styled(Card)`
-  .ant-card-head {
-    cursor: grab;
-  }
-  .ant-card-body {
-    height: 80%;
-    padding: 0;
-  }
-`;
+const { Text } = Typography;
 
 export const DashboardGridItem = (props: DashboardGridItemProps) => {
-  const { id, title, children } = props;
+  const { id, title, children, action, openAction } = props;
 
   return (
-    <GrabCard
-      title={title}
-      extra={<ExpandAltOutlined style={{ cursor: "pointer" }} />}
+    <div
       className={"shadow-md rounded"}
-      style={{ height: "100%", overflow: "hidden" }}
+      style={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        border: "1px solid #eee",
+        backgroundColor: "white",
+      }}
     >
-      <div style={{ height: "100%", display: "flex" }}>{children}</div>
-    </GrabCard>
+      <Row
+        className="bg-blueGray-100"
+        align="middle"
+        style={{ borderBottom: "1px solid #ddd" }}
+        wrap={false}
+      >
+        <Col
+          flex="auto"
+          className="draggable-head"
+          style={{
+            fontWeight: "bold",
+            padding: "0.5rem",
+            cursor: "grab",
+            overflow: "hidden",
+          }}
+        >
+          <Text ellipsis={true}>{title}</Text>
+        </Col>
+        {action && (
+          <Col flex="25px" style={{ padding: "0.5rem" }}>
+            <Row justify="end" align="middle">
+              <ExportOutlined
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  openAction?.(action);
+                }}
+              />
+            </Row>
+          </Col>
+        )}
+      </Row>
+      {children}
+    </div>
   );
 };
