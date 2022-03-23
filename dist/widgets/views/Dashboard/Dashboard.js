@@ -310,7 +310,7 @@ function Dashboard(props, ref) {
         }
         var childContent = null;
         if ((initialView === null || initialView === void 0 ? void 0 : initialView.type) === "graph") {
-            childContent = (react_1.default.createElement(Graph_1.Graph, { title: title, view_id: views.filter(function (view) { return view[1] === "graph"; })[0][0], model: model, context: context, domain: domain }));
+            childContent = (react_1.default.createElement(Graph_1.Graph, { view_id: views.filter(function (view) { return view[1] === "graph"; })[0][0], model: model, context: context, domain: domain }));
         }
         else if ((initialView === null || initialView === void 0 ? void 0 : initialView.type) === "form") {
             childContent = react_1.default.createElement(DashboardForm_1.DashboardForm, { model: model, actionDomain: domain });

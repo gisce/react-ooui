@@ -64,10 +64,11 @@ var icons_1 = require("@ant-design/icons");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var Title_1 = __importDefault(require("antd/lib/typography/Title"));
 var react_measure_1 = __importDefault(require("react-measure"));
+var iconMapper_1 = __importDefault(require("@/helpers/iconMapper"));
 var fontGrowFactor = 0.7;
 var minFontSize = 30;
 var GraphIndicator = function (props) {
-    var model = props.model, domain = props.domain, context = props.context, colorCondition = props.colorCondition, totalDomain = props.totalDomain, _a = props.showPercent, showPercent = _a === void 0 ? false : _a;
+    var model = props.model, domain = props.domain, context = props.context, colorCondition = props.colorCondition, totalDomain = props.totalDomain, _a = props.showPercent, showPercent = _a === void 0 ? false : _a, iconProps = props.icon, suffix = props.suffix;
     var _b = react_1.useState(false), loading = _b[0], setLoading = _b[1];
     var _c = react_1.useState(), value = _c[0], setValue = _c[1];
     var _d = react_1.useState(), percent = _d[0], setPercent = _d[1];
@@ -75,19 +76,20 @@ var GraphIndicator = function (props) {
     var _f = react_1.useState(0), height = _f[0], setHeight = _f[1];
     var _g = react_1.useState(0), width = _g[0], setWidth = _g[1];
     var _h = react_1.useState(), color = _h[0], setColor = _h[1];
+    var _j = react_1.useState(), icon = _j[0], setIcon = _j[1];
     react_1.useEffect(function () {
         fetchData();
     }, [model, colorCondition]);
     function fetchData() {
         return __awaiter(this, void 0, void 0, function () {
-            var totalRetrievedValue, percent, retrievedValue, parsedDomain, conditionEval, err_1;
+            var totalRetrievedValue, percent, retrievedValue, parsedDomain, conditionEval, iconEval, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         setLoading(true);
                         _a.label = 1;
                     case 1:
-                        _a.trys.push([1, 8, , 9]);
+                        _a.trys.push([1, 11, , 12]);
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchCount({
                                 model: model,
                                 params: domain,
@@ -129,12 +131,27 @@ var GraphIndicator = function (props) {
                         conditionEval = _a.sent();
                         setColor(conditionEval);
                         _a.label = 7;
-                    case 7: return [3 /*break*/, 9];
+                    case 7:
+                        if (!iconProps) return [3 /*break*/, 10];
+                        if (!(iconProps.indexOf(":") !== -1)) return [3 /*break*/, 9];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().parseCondition({
+                                condition: iconProps,
+                                values: { value: retrievedValue },
+                                context: context,
+                            })];
                     case 8:
+                        iconEval = _a.sent();
+                        setIcon(iconEval);
+                        return [3 /*break*/, 10];
+                    case 9:
+                        setIcon(iconProps);
+                        _a.label = 10;
+                    case 10: return [3 /*break*/, 12];
+                    case 11:
                         err_1 = _a.sent();
                         console.error(err_1);
-                        return [3 /*break*/, 9];
-                    case 9:
+                        return [3 /*break*/, 12];
+                    case 12:
                         setLoading(false);
                         return [2 /*return*/];
                 }
@@ -152,10 +169,10 @@ var GraphIndicator = function (props) {
         } }, function (_a) {
         var measureRef = _a.measureRef;
         if (showPercent) {
-            return (react_1.default.createElement(PercentageIndicator, { value: value, total: totalValue, percent: percent, measureRef: measureRef, height: height, width: width, color: color }));
+            return (react_1.default.createElement(PercentageIndicator, { value: value, total: totalValue, percent: percent, measureRef: measureRef, height: height, width: width, color: color, icon: icon, suffix: suffix }));
         }
         else {
-            return (react_1.default.createElement(CommonIndicator, { value: value, total: totalValue, measureRef: measureRef, height: height, width: width, color: color }));
+            return (react_1.default.createElement(CommonIndicator, { value: value, total: totalValue, measureRef: measureRef, height: height, width: width, color: color, icon: icon, suffix: suffix }));
         }
     }));
 };
@@ -167,16 +184,23 @@ function getTextWidth(text, font) {
     return context.measureText(text).width;
 }
 function CommonIndicator(_a) {
-    var measureRef = _a.measureRef, width = _a.width, height = _a.height, total = _a.total, value = _a.value, color = _a.color;
+    var measureRef = _a.measureRef, width = _a.width, height = _a.height, total = _a.total, value = _a.value, color = _a.color, icon = _a.icon, suffix = _a.suffix;
     var fontSize = height * fontGrowFactor < minFontSize
         ? minFontSize
         : height * fontGrowFactor;
     var finalValue = total ? value + "/" + total : "" + value;
+    if (suffix) {
+        finalValue += " " + suffix;
+    }
     var tw = getTextWidth(finalValue, "bold " + Math.floor(fontSize * 1.03) + "px sans-serif");
+    if (icon) {
+        tw = tw * 2;
+    }
     if (tw >= width * 0.85) {
         var maxFontSize = ((width * 0.85) / tw) * fontSize;
         fontSize = maxFontSize;
     }
+    var IconElement = icon && iconMapper_1.default(icon);
     return (react_1.default.createElement("div", { ref: measureRef, style: {
             width: "100%",
             height: "100%",
@@ -185,16 +209,25 @@ function CommonIndicator(_a) {
             justifyContent: "center",
             overflow: "hidden",
         } },
-        react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize, margin: 0, color: color } }, finalValue)));
+        react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize, margin: 0, color: color } },
+            icon && react_1.default.createElement(IconElement, { style: { fontSize: fontSize * 0.75 } }),
+            icon ? " " + finalValue : finalValue)));
 }
 function PercentageIndicator(_a) {
-    var measureRef = _a.measureRef, height = _a.height, width = _a.width, percent = _a.percent, total = _a.total, value = _a.value, color = _a.color;
+    var measureRef = _a.measureRef, height = _a.height, width = _a.width, percent = _a.percent, total = _a.total, value = _a.value, color = _a.color, icon = _a.icon, suffix = _a.suffix;
     var twoLinesHeight = height * 0.65;
     var fontSize = twoLinesHeight * fontGrowFactor < minFontSize
         ? minFontSize
         : twoLinesHeight * fontGrowFactor;
     var finalValue = total ? value + "/" + total : "" + value;
+    if (suffix) {
+        finalValue += " " + suffix;
+    }
     var tw = getTextWidth(finalValue, "bold " + Math.floor(fontSize * 1.03) + "px sans-serif");
+    if (icon) {
+        tw = tw * 2;
+    }
+    var IconElement = icon && iconMapper_1.default(icon);
     if (tw >= width * 0.85 || fontSize * 2 < twoLinesHeight) {
         var maxFontSize = ((width * 0.85) / tw) * fontSize;
         fontSize = maxFontSize;
@@ -209,7 +242,9 @@ function PercentageIndicator(_a) {
             flexDirection: "column",
             padding: "0.2rem",
         } },
-        react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize * 0.8, margin: 0, color: color } }, percent + "%"),
+        react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize * 0.8, margin: 0, color: color } },
+            icon && react_1.default.createElement(IconElement, { style: { fontSize: fontSize * 0.5 } }),
+            icon ? " " + percent + "%" : percent + "%"),
         react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize * 0.4, margin: 0, color: color } }, finalValue)));
 }
 //# sourceMappingURL=GraphIndicator.js.map
