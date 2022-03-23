@@ -63,6 +63,7 @@ export const Graph = (props: GraphProps) => {
         model={model}
         context={context}
         domain={domain}
+        icon={graphOoui.icon}
       />
     );
   } else {

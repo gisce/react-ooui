@@ -12,7 +12,14 @@ export function Default(): React.ReactElement {
     <LocaleProvider lang="en_US">
       <DashboardGrid>
         <DashboardGridItem title="hoooasdfasdfasdfasdfasdfoola">
-          <GraphIndicator model="res.partner" context={{}} domain={{}} />
+          <GraphIndicator
+            model="res.partner"
+            context={{}}
+            domain={{}}
+            icon={"wallet"}
+            // showPercent={true}
+            suffix={"€"}
+          />
         </DashboardGridItem>
       </DashboardGrid>
     </LocaleProvider>
