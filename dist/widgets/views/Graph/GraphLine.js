@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GraphLine = void 0;
 var react_1 = __importDefault(require("react"));
 var icons_1 = require("@ant-design/icons");
-var plots_1 = require("@ant-design/plots");
+// import { Line } from "@ant-design/plots";
 var useGraphCountData_1 = __importDefault(require("./useGraphCountData"));
 var antd_1 = require("antd");
 var GraphLine = function (props) {
@@ -25,8 +25,7 @@ var GraphLine = function (props) {
         return (react_1.default.createElement("div", { style: { padding: "1rem" } },
             react_1.default.createElement(icons_1.LoadingOutlined, { style: { height: "12px" } })));
     }
-    return (react_1.default.createElement("div", { style: { padding: "1rem" } },
-        react_1.default.createElement(plots_1.Line, { data: data, padding: "auto", xField: ooui.x.name, yField: yLabel, xAxis: { tickCount: 5 } })));
+    return (react_1.default.createElement("div", { style: { padding: "1rem" } }, "Graph"));
 };
 exports.GraphLine = GraphLine;
 //# sourceMappingURL=GraphLine.js.map
