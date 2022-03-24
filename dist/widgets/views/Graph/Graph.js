@@ -64,9 +64,8 @@ var ooui_1 = require("@gisce/ooui");
 var icons_1 = require("@ant-design/icons");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var GraphIndicator_1 = require("./GraphIndicator");
-var GraphLine_1 = require("./GraphLine");
 var Graph = function (props) {
-    var view_id = props.view_id, model = props.model, context = props.context, domain = props.domain;
+    var view_id = props.view_id, model = props.model, context = props.context, domain = props.domain, title = props.title;
     var _a = react_1.useState(false), loading = _a[0], setLoading = _a[1];
     var _b = react_1.useState(), graphOoui = _b[0], setGraphOoui = _b[1];
     react_1.useEffect(function () {
@@ -74,7 +73,7 @@ var Graph = function (props) {
     }, [view_id]);
     function fetchData() {
         return __awaiter(this, void 0, void 0, function () {
-            var viewData, graph, err_1;
+            var viewData, ooui, err_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -90,8 +89,8 @@ var Graph = function (props) {
                             })];
                     case 2:
                         viewData = _a.sent();
-                        graph = ooui_1.parseGraph(viewData.arch);
-                        setGraphOoui(graph);
+                        ooui = new ooui_1.Graph(viewData.arch);
+                        setGraphOoui(ooui);
                         return [3 /*break*/, 4];
                     case 3:
                         err_1 = _a.sent();
@@ -111,18 +110,11 @@ var Graph = function (props) {
     if (!graphOoui) {
         return null;
     }
-    switch (graphOoui.type) {
-        case "indicator": {
-            var indicator = graphOoui;
-            return (react_1.default.createElement(GraphIndicator_1.GraphIndicator, { showPercent: indicator.showPercent, totalDomain: indicator.totalDomain, colorCondition: indicator.color, model: model, context: context, domain: domain, icon: indicator.icon, suffix: indicator.suffix }));
-        }
-        case "line": {
-            var line = graphOoui;
-            return (react_1.default.createElement(GraphLine_1.GraphLine, { model: model, context: context, domain: domain, ooui: line }));
-        }
-        default: {
-            return react_1.default.createElement(react_1.default.Fragment, null, "Graph " + graphOoui.type + " not implemented");
-        }
+    if (graphOoui.type === "indicator") {
+        return (react_1.default.createElement(GraphIndicator_1.GraphIndicator, { showPercent: graphOoui.showPercent, totalDomain: graphOoui.totalDomain, colorCondition: graphOoui.color, model: model, context: context, domain: domain, icon: graphOoui.icon, suffix: graphOoui.suffix }));
+    }
+    else {
+        return react_1.default.createElement(react_1.default.Fragment, null, "Graph " + graphOoui.type + " not implemented");
     }
 };
 exports.Graph = Graph;

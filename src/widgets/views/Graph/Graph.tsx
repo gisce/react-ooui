@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from "react";
-import {
-  Graph as GraphOoui,
-  parseGraph,
-  GraphIndicator as GraphIndicatorOoui,
-  GraphLine as GraphLineOoui,
-} from "@gisce/ooui";
+import { Graph as GraphOoui } from "@gisce/ooui";
 import { LoadingOutlined } from "@ant-design/icons";
 import ConnectionProvider from "@/ConnectionProvider";
 import { GraphIndicator } from "./GraphIndicator";
-import { GraphLine } from "./GraphLine";
 
 export type GraphProps = {
+  title?: string;
   view_id: number;
   model: string;
   domain: any;
@@ -18,7 +13,7 @@ export type GraphProps = {
 };
 
 export const Graph = (props: GraphProps) => {
-  const { view_id, model, context, domain } = props;
+  const { view_id, model, context, domain, title } = props;
   const [loading, setLoading] = useState(false);
   const [graphOoui, setGraphOoui] = useState<GraphOoui>();
 
@@ -37,8 +32,8 @@ export const Graph = (props: GraphProps) => {
         context,
       });
 
-      const graph = parseGraph(viewData.arch);
-      setGraphOoui(graph);
+      const ooui = new GraphOoui(viewData.arch);
+      setGraphOoui(ooui);
     } catch (err) {
       console.error(err);
       return <>{JSON.stringify(err)}</>;
@@ -59,35 +54,20 @@ export const Graph = (props: GraphProps) => {
     return null;
   }
 
-  switch (graphOoui.type) {
-    case "indicator": {
-      const indicator = graphOoui as GraphIndicatorOoui;
-      return (
-        <GraphIndicator
-          showPercent={indicator.showPercent}
-          totalDomain={indicator.totalDomain!}
-          colorCondition={indicator.color}
-          model={model}
-          context={context}
-          domain={domain}
-          icon={indicator.icon!}
-          suffix={indicator.suffix!}
-        />
-      );
-    }
-    case "line": {
-      const line = graphOoui as GraphLineOoui;
-      return (
-        <GraphLine
-          model={model}
-          context={context}
-          domain={domain}
-          ooui={line}
-        />
-      );
-    }
-    default: {
-      return <>{`Graph ${graphOoui.type} not implemented`}</>;
-    }
+  if (graphOoui.type === "indicator") {
+    return (
+      <GraphIndicator
+        showPercent={graphOoui.showPercent}
+        totalDomain={graphOoui.totalDomain!}
+        colorCondition={graphOoui.color}
+        model={model}
+        context={context}
+        domain={domain}
+        icon={graphOoui.icon!}
+        suffix={graphOoui.suffix!}
+      />
+    );
+  } else {
+    return <>{`Graph ${graphOoui.type} not implemented`}</>;
   }
 };
