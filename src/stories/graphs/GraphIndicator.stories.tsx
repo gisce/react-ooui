@@ -1,4 +1,4 @@
-import { parseGraph } from "@gisce/ooui";
+import { Graph } from "@gisce/ooui";
 import React from "react";
 import { GraphIndicator } from "../..";
 import LocaleProvider from "../../context/LocaleContext";
@@ -8,7 +8,7 @@ export default {
 };
 
 export const Default = (): React.ReactElement => {
-  const ooui = parseGraph(`<?xml version="1.0"?>
+  const ooui = new Graph(`<?xml version="1.0"?>
   <graph string="My indicator" type="indicator" />
   `);
 
