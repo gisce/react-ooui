@@ -1,7 +1,7 @@
 export declare type ShortcutApi = {
     action_id: number;
     action_type: string;
-    id: number;
+    id?: number;
     name: string;
     res_id: number | boolean;
     res_model: string;

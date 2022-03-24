@@ -69,7 +69,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Dashboard = void 0;
 var react_1 = __importStar(require("react"));
 var ActionView_1 = __importDefault(require("@/views/ActionView"));
 var dashboardHelper_1 = require("./dashboardHelper");
@@ -81,17 +80,27 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var one2manyHelper_1 = require("@/helpers/one2manyHelper");
 var icons_1 = require("@ant-design/icons");
 var antd_1 = require("antd");
+var DashboardActionContext_1 = require("@/context/DashboardActionContext");
+var DashboardTree_1 = __importDefault(require("./DashboardTree"));
+var DashboardForm_1 = require("./DashboardForm");
 var itemsField = "line_ids";
-function Dashboard(props) {
-    var model = props.model, _a = props.context, context = _a === void 0 ? {} : _a, id = props.id;
+function Dashboard(props, ref) {
+    var model = props.model, _a = props.context, context = _a === void 0 ? {} : _a, id = props.id, configAction = props.configAction;
     var _b = react_1.useState([]), dashboardItems = _b[0], setDashboardItems = _b[1];
     var _c = react_1.useState(false), isLoading = _c[0], setIsLoading = _c[1];
     var _d = react_1.useState(), error = _d[0], setError = _d[1];
+    var _e = react_1.useContext(DashboardActionContext_1.DashboardActionContext), setActionBarLoading = _e.setIsLoading, openAction = _e.openAction;
     var itemsFields = react_1.useRef();
     var boardFields = react_1.useRef();
     react_1.useEffect(function () {
         fetchData();
     }, [model, id, context]);
+    react_1.useImperativeHandle(ref, function () { return ({
+        refresh: function () {
+            fetchData();
+        },
+        configDashboard: openConfigDashboard,
+    }); });
     function fetchData() {
         return __awaiter(this, void 0, void 0, function () {
             var view, values, model_1, items, originalItems, itemsWithActions, err_1;
@@ -99,6 +108,7 @@ function Dashboard(props) {
                 switch (_a.label) {
                     case 0:
                         setIsLoading(true);
+                        setActionBarLoading(true);
                         setError(undefined);
                         _a.label = 1;
                     case 1:
@@ -124,6 +134,7 @@ function Dashboard(props) {
                         itemsWithActions = _a.sent();
                         setDashboardItems(itemsWithActions);
                         setIsLoading(false);
+                        setActionBarLoading(false);
                         return [3 /*break*/, 7];
                     case 6:
                         err_1 = _a.sent();
@@ -271,6 +282,14 @@ function Dashboard(props) {
             });
         });
     }
+    function openConfigDashboard() {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                openAction(configAction);
+                return [2 /*return*/];
+            });
+        });
+    }
     if (error) {
         return (react_1.default.createElement(antd_1.Alert, { className: "mt-10 mb-20", message: error, type: "error", banner: true }));
     }
@@ -291,13 +310,56 @@ function Dashboard(props) {
         }
         var childContent = null;
         if ((initialView === null || initialView === void 0 ? void 0 : initialView.type) === "graph") {
-            childContent = (react_1.default.createElement(Graph_1.Graph, { title: title, view_id: views.filter(function (view) { return view[1] === "graph"; })[0][0], model: model, context: context, domain: domain }));
+            childContent = (react_1.default.createElement(Graph_1.Graph, { view_id: views.filter(function (view) { return view[1] === "graph"; })[0][0], model: model, context: context, domain: domain }));
+        }
+        else if ((initialView === null || initialView === void 0 ? void 0 : initialView.type) === "form") {
+            childContent = react_1.default.createElement(DashboardForm_1.DashboardForm, { model: model, actionDomain: domain });
+        }
+        else if ((initialView === null || initialView === void 0 ? void 0 : initialView.type) === "tree") {
+            childContent = (react_1.default.createElement(DashboardTree_1.default, { model: model, domain: domain, view_id: views.filter(function (view) { return view[1] === "tree"; })[0][0], onRowClicked: function (record) {
+                    var formView = views.find(function (view) {
+                        var type = view[1];
+                        return type === "form";
+                    });
+                    if (formView) {
+                        var id_1 = formView[0], type = formView[1];
+                        var action_id = actionData.actionId, action_type = actionData.actionType, name_1 = actionData.title, res_model = actionData.model;
+                        var action_1 = {
+                            action_id: action_id,
+                            action_type: action_type,
+                            name: name_1,
+                            res_id: record.id,
+                            res_model: res_model,
+                            view_id: id_1,
+                            view_type: type,
+                        };
+                        openAction(action_1);
+                    }
+                } }));
         }
         else if (initialView !== undefined) {
             childContent = (react_1.default.createElement(ActionView_1.default, { action_id: actionId, action_type: actionType, tabKey: key, title: title, views: views, model: model, context: context, domain: domain, setCanWeClose: function () { }, initialView: initialView }));
         }
-        return (react_1.default.createElement(DashboardGrid_1.DashboardGridItem, { key: id, id: id, title: title, parms: parmsParsed }, childContent));
+        var action;
+        var treeView = views.find(function (view) {
+            var type = view[1];
+            return type === "tree";
+        });
+        if (treeView) {
+            var id_2 = treeView[0], type = treeView[1];
+            var action_id = actionData.actionId, action_type = actionData.actionType, name_2 = actionData.title, res_model = actionData.model;
+            action = {
+                action_id: action_id,
+                action_type: action_type,
+                name: name_2,
+                res_id: false,
+                res_model: res_model,
+                view_id: id_2,
+                view_type: type,
+            };
+        }
+        return (react_1.default.createElement(DashboardGrid_1.DashboardGridItem, { key: id, id: id, title: title, parms: parmsParsed, action: action, openAction: openAction }, childContent));
     })));
 }
-exports.Dashboard = Dashboard;
+exports.default = react_1.forwardRef(Dashboard);
 //# sourceMappingURL=Dashboard.js.map

@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -44,7 +55,7 @@ var Container = function (props) {
                 fieldInRows = true;
             }
             var itemRowIndex = row.indexOf(item);
-            return (react_1.default.createElement("div", { key: i.toString() + "-" + itemRowIndex.toString(), style: containerHelper_1.getSpanStyleForItem({ item: item, responsiveBehaviour: responsiveBehaviour }) }, WidgetFactory_1.createReactWidget({
+            return (react_1.default.createElement("div", { key: i.toString() + "-" + itemRowIndex.toString(), style: __assign(__assign({}, containerHelper_1.getSpanStyleForItem({ item: item, responsiveBehaviour: responsiveBehaviour })), { minWidth: 0 }) }, WidgetFactory_1.createReactWidget({
                 ooui: item,
                 responsiveBehaviour: responsiveBehaviour,
             })));
@@ -57,6 +68,8 @@ var Container = function (props) {
         display: "grid",
         gridTemplateColumns: responsiveBehaviour ? "auto" : templateColumns,
         gap: "1rem",
+        minHeight: 0,
+        minWidth: 0,
     };
     return react_1.default.createElement("div", { style: gridStyle }, content);
 };

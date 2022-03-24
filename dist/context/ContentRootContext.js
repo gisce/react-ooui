@@ -221,13 +221,10 @@ var ContentRootProvider = function (props, ref) {
                             })];
                     case 1: return [2 /*return*/, _b.sent()];
                     case 2:
-                        if (!(type === "ir.actions.act_window")) return [3 /*break*/, 5];
+                        if (!(type === "ir.actions.act_window")) return [3 /*break*/, 4];
                         return [4 /*yield*/, runAction({ actionData: actionData, fields: fields, values: values, context: context })];
-                    case 3:
-                        _b.sent();
-                        return [4 /*yield*/, runAction({ actionData: actionData, fields: fields, values: values, context: context })];
-                    case 4: return [2 /*return*/, _b.sent()];
-                    case 5:
+                    case 3: return [2 /*return*/, _b.sent()];
+                    case 4:
                         ActionErrorDialog_1.default(type + " action not supported");
                         return [2 /*return*/, {}];
                 }
@@ -235,11 +232,12 @@ var ContentRootProvider = function (props, ref) {
         });
     }
     function runAction(_a) {
-        var _actionData = _a.actionData, _b = _a.fields, fields = _b === void 0 ? {} : _b, _c = _a.values, values = _c === void 0 ? {} : _c, _d = _a.context, context = _d === void 0 ? {} : _d;
+        var _b;
+        var _actionData = _a.actionData, _c = _a.fields, fields = _c === void 0 ? {} : _c, _d = _a.values, values = _d === void 0 ? {} : _d, _e = _a.context, context = _e === void 0 ? {} : _e;
         return __awaiter(this, void 0, void 0, function () {
             var actionData, responseContext, mergedContext, parsedDomain, formView, initialView, viewTypes, views, _i, viewTypes_1, viewType, viewData, type_1, retrievedViewId;
-            return __generator(this, function (_e) {
-                switch (_e.label) {
+            return __generator(this, function (_f) {
+                switch (_f.label) {
                     case 0:
                         actionData = _actionData;
                         if (!!_actionData.res_model) return [3 /*break*/, 2];
@@ -249,8 +247,8 @@ var ContentRootProvider = function (props, ref) {
                                 context: context,
                             })];
                     case 1:
-                        actionData = (_e.sent())[0];
-                        _e.label = 2;
+                        actionData = (_f.sent())[0];
+                        _f.label = 2;
                     case 2:
                         responseContext = typeof (actionData === null || actionData === void 0 ? void 0 : actionData.context) === "string"
                             ? ooui_1.parseContext({
@@ -268,17 +266,18 @@ var ContentRootProvider = function (props, ref) {
                                 context: mergedContext,
                             })];
                     case 3:
-                        parsedDomain = _e.sent();
-                        _e.label = 4;
+                        parsedDomain = _f.sent();
+                        _f.label = 4;
                     case 4:
                         if (!(actionData.target === "new")) return [3 /*break*/, 6];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
                                 model: actionData.res_model,
                                 type: "form",
+                                id: ((_b = actionData === null || actionData === void 0 ? void 0 : actionData.view_id) === null || _b === void 0 ? void 0 : _b[0]) || undefined,
                                 context: context,
                             })];
                     case 5:
-                        formView = (_e.sent());
+                        formView = (_f.sent());
                         openActionModal({
                             domain: parsedDomain,
                             model: actionData.res_model,
@@ -291,7 +290,7 @@ var ContentRootProvider = function (props, ref) {
                         viewTypes = actionData.view_mode.split(",");
                         views = [];
                         _i = 0, viewTypes_1 = viewTypes;
-                        _e.label = 7;
+                        _f.label = 7;
                     case 7:
                         if (!(_i < viewTypes_1.length)) return [3 /*break*/, 10];
                         viewType = viewTypes_1[_i];
@@ -301,9 +300,9 @@ var ContentRootProvider = function (props, ref) {
                                 context: mergedContext,
                             })];
                     case 8:
-                        viewData = _e.sent();
+                        viewData = _f.sent();
                         views.push([viewData.view_id, viewType]);
-                        _e.label = 9;
+                        _f.label = 9;
                     case 9:
                         _i++;
                         return [3 /*break*/, 7];

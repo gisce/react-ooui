@@ -24,7 +24,7 @@ export const DashboardForm = (props: FormProps) => {
 
   return (
     <div style={{ padding: "0.5rem", overflowY: "scroll" }}>
-      <Form model={model} id={firstId} readOnly />
+      <Form {...props} model={model} id={firstId} readOnly />
     </div>
   );
 };

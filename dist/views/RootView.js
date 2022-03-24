@@ -316,27 +316,31 @@ function RootView(props, ref) {
                         _i = 0, views_2 = views;
                         _c.label = 5;
                     case 5:
-                        if (!(_i < views_2.length)) return [3 /*break*/, 9];
+                        if (!(_i < views_2.length)) return [3 /*break*/, 11];
                         viewArray = views_2[_i];
                         id_1 = viewArray[0], viewType = viewArray[1];
-                        if (!!id_1) return [3 /*break*/, 7];
-                        return [4 /*yield*/, __1.ConnectionProvider.getHandler().getView({
-                                model: model,
-                                type: viewType,
-                                id: id_1,
-                                context: __assign(__assign({}, rootContext), parsedContext),
-                            })];
-                    case 6:
+                        if (!!id_1) return [3 /*break*/, 9];
+                        if (!(viewType === "dashboard")) return [3 /*break*/, 6];
+                        finalViews.push([undefined, "dashboard"]);
+                        return [3 /*break*/, 8];
+                    case 6: return [4 /*yield*/, __1.ConnectionProvider.getHandler().getView({
+                            model: model,
+                            type: viewType,
+                            id: id_1,
+                            context: __assign(__assign({}, rootContext), parsedContext),
+                        })];
+                    case 7:
                         view_id_1 = (_c.sent()).view_id;
                         finalViews.push([view_id_1, viewType]);
-                        return [3 /*break*/, 8];
-                    case 7:
-                        finalViews.push(viewArray);
                         _c.label = 8;
-                    case 8:
+                    case 8: return [3 /*break*/, 10];
+                    case 9:
+                        finalViews.push(viewArray);
+                        _c.label = 10;
+                    case 10:
                         _i++;
                         return [3 /*break*/, 5];
-                    case 9:
+                    case 11:
                         if (view_id === undefined || view_id === null) {
                             view = finalViews.find(function (view) {
                                 return view[0] === undefined;
@@ -404,6 +408,7 @@ function RootView(props, ref) {
                         return [4 /*yield*/, __1.ConnectionProvider.getHandler().getView({
                                 model: model,
                                 type: "form",
+                                id: initialView.type === "form" ? initialView.id : undefined,
                                 context: __assign(__assign({}, rootContext), context),
                             })];
                     case 1:

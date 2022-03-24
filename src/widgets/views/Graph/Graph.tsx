@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
-  parseGraph,
   Graph as GraphOoui,
+  parseGraph,
   GraphIndicator as GraphIndicatorOoui,
   GraphLine as GraphLineOoui,
 } from "@gisce/ooui";
@@ -11,7 +11,6 @@ import { GraphIndicator } from "./GraphIndicator";
 import { GraphLine } from "./GraphLine";
 
 export type GraphProps = {
-  title?: string;
   view_id: number;
   model: string;
   domain: any;
@@ -19,7 +18,7 @@ export type GraphProps = {
 };
 
 export const Graph = (props: GraphProps) => {
-  const { view_id, model, context, domain, title } = props;
+  const { view_id, model, context, domain } = props;
   const [loading, setLoading] = useState(false);
   const [graphOoui, setGraphOoui] = useState<GraphOoui>();
 
@@ -38,8 +37,8 @@ export const Graph = (props: GraphProps) => {
         context,
       });
 
-      const ooui = parseGraph(viewData.arch);
-      setGraphOoui(ooui);
+      const graph = parseGraph(viewData.arch);
+      setGraphOoui(graph);
     } catch (err) {
       console.error(err);
       return <>{JSON.stringify(err)}</>;
@@ -71,6 +70,8 @@ export const Graph = (props: GraphProps) => {
           model={model}
           context={context}
           domain={domain}
+          icon={indicator.icon!}
+          suffix={indicator.suffix!}
         />
       );
     }
@@ -79,8 +80,8 @@ export const Graph = (props: GraphProps) => {
       return (
         <GraphLine
           model={model}
-          domain={domain}
           context={context}
+          domain={domain}
           ooui={line}
         />
       );

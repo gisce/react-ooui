@@ -39,6 +39,7 @@ declare type SearchRequest = {
     fields?: any;
     context?: any;
     attrs?: any;
+    order?: number | string;
 };
 declare type SearchAllIdsRequest = SearchCountRequest & {
     totalItems: number;

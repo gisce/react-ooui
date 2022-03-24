@@ -251,7 +251,6 @@ function Dashboard(props: DashboardProps, ref: any) {
         if (initialView?.type === "graph") {
           childContent = (
             <Graph
-              title={title}
               view_id={
                 views.filter(
                   (view: [number, string]) => view[1] === "graph"
@@ -263,11 +262,12 @@ function Dashboard(props: DashboardProps, ref: any) {
             />
           );
         } else if (initialView?.type === "form") {
-          childContent = <DashboardForm model={model} />;
+          childContent = <DashboardForm model={model} actionDomain={domain} />;
         } else if (initialView?.type === "tree") {
           childContent = (
             <DashboardTree
               model={model}
+              domain={domain}
               view_id={
                 views.filter(
                   (view: [number, string]) => view[1] === "tree"

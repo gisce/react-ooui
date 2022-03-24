@@ -73,6 +73,8 @@ var GoToResourceModal_1 = require("@/ui/GoToResourceModal");
 var InfoDialog_1 = __importDefault(require("@/ui/InfoDialog"));
 var LocaleContext_1 = require("@/context/LocaleContext");
 var index_1 = require("@/index");
+var DashboardActionContext_1 = __importDefault(require("@/context/DashboardActionContext"));
+var DashboardActionBar_1 = __importDefault(require("@/actionbar/DashboardActionBar"));
 function ActionView(props, ref) {
     var _this = this;
     var domain = props.domain, model = props.model, context = props.context, views = props.views, title = props.title, setCanWeClose = props.setCanWeClose, tabKey = props.tabKey, initialView = props.initialView, formDefaultValues = props.formDefaultValues, _a = props.formForcedValues, formForcedValues = _a === void 0 ? {} : _a, _b = props.res_id, res_id = _b === void 0 ? false : _b, action_id = props.action_id, action_type = props.action_type;
@@ -98,8 +100,9 @@ function ActionView(props, ref) {
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var formRef = react_1.useRef();
     var searchTreeRef = react_1.useRef();
+    var dashboardRef = react_1.useRef();
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
-    var _u = tabManagerContext || {}, setCurrentViewTabContext = _u.setCurrentView, setCurrentIdTabContext = _u.setCurrentId, tabs = _u.tabs, activeKey = _u.activeKey, openAction = _u.openAction;
+    var _u = tabManagerContext || {}, openShortcut = _u.openShortcut, setCurrentViewTabContext = _u.setCurrentView, setCurrentIdTabContext = _u.setCurrentId, tabs = _u.tabs, activeKey = _u.activeKey, openAction = _u.openAction;
     react_hotkeys_hook_1.useHotkeys("ctrl+g,command+g", function (event) {
         event.preventDefault();
         handleGoToRecordShortcut();
@@ -116,7 +119,7 @@ function ActionView(props, ref) {
         canWeClose: canWeClose,
     }); });
     var fetchData = function () { return __awaiter(_this, void 0, void 0, function () {
-        var availableViews, _i, views_1, viewArray, id, viewType, viewData, err_1;
+        var availableViews, _i, views_1, viewArray, id, viewType, formView_1, configAction, viewData, err_1;
         var _a;
         return __generator(this, function (_b) {
             switch (_b.label) {
@@ -133,13 +136,29 @@ function ActionView(props, ref) {
                 case 2:
                     _b.trys.push([2, 4, , 5]);
                     if (viewType === "dashboard") {
+                        formView_1 = views.find(function (view) {
+                            var type = view[1];
+                            return type === "form";
+                        });
+                        configAction = void 0;
+                        if (formView_1) {
+                            configAction = {
+                                action_id: action_id,
+                                action_type: action_type,
+                                name: title,
+                                res_id: context["active_id"],
+                                res_model: model,
+                                view_id: formView_1[0],
+                                view_type: formView_1[1],
+                            };
+                        }
                         setDashboardData({
                             id: context["active_id"],
                             model: model,
                             context: context,
+                            configAction: configAction,
                         });
                         availableViews.push({ id: id, type: viewType });
-                        return [2 /*return*/];
                     }
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
                             model: model,
@@ -337,9 +356,12 @@ function ActionView(props, ref) {
             if (!dashboardData) {
                 return null;
             }
-            return (react_1.default.createElement(react_1.default.Fragment, null,
-                react_1.default.createElement(TitleHeader_1.default, null),
-                react_1.default.createElement(index_1.Dashboard, { model: dashboardData.model, id: dashboardData.id, context: dashboardData === null || dashboardData === void 0 ? void 0 : dashboardData.context })));
+            return (react_1.default.createElement(DashboardActionContext_1.default, { dashboardRef: dashboardRef, openAction: function (action) {
+                    openShortcut(action);
+                } },
+                react_1.default.createElement(TitleHeader_1.default, null,
+                    react_1.default.createElement(DashboardActionBar_1.default, null)),
+                react_1.default.createElement(index_1.Dashboard, { ref: dashboardRef, model: dashboardData.model, id: dashboardData.id, context: dashboardData === null || dashboardData === void 0 ? void 0 : dashboardData.context, configAction: dashboardData === null || dashboardData === void 0 ? void 0 : dashboardData.configAction })));
         }
         return (react_1.default.createElement(react_1.default.Fragment, null,
             react_1.default.createElement(TitleHeader_1.default, null, currentView.type === "form" ? (react_1.default.createElement(FormActionBar_1.default, null)) : (react_1.default.createElement(TreeActionBar_1.default, { parentContext: context }))),

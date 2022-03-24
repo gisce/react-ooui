@@ -211,7 +211,7 @@ function TreeActionBar(props) {
                 (_a = searchTreeRef === null || searchTreeRef === void 0 ? void 0 : searchTreeRef.current) === null || _a === void 0 ? void 0 : _a.refreshResults();
             } }),
         separator(),
-        react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews, onChangeView: setCurrentView, disabled: treeIsLoading }),
+        react_1.default.createElement(ChangeViewButton_1.default, { currentView: currentView, availableViews: availableViews.filter(function (view) { return view.type === "tree" || view.type === "form"; }), onChangeView: setCurrentView, disabled: treeIsLoading }),
         separator(),
         react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.ThunderboltOutlined, null), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0) || treeIsLoading, tooltip: t("actions"), items: toolbar === null || toolbar === void 0 ? void 0 : toolbar.action, onItemClick: function (action) {
                 if (!action) {

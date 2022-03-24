@@ -15,7 +15,7 @@ var DashboardGrid = function (props) {
         var _a = child.props, parms = _a.parms, id = _a.id;
         return (react_1.default.createElement("div", { key: id, "data-grid": parms }, child));
     });
-    return (react_1.default.createElement(ResponsiveReactGridLayout, { className: "layout", cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }, draggableHandle: ".ant-card-head", rowHeight: 30, onLayoutChange: function (layout) {
+    return (react_1.default.createElement(ResponsiveReactGridLayout, { className: "layout", cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }, draggableHandle: ".draggable-head", rowHeight: 30, onLayoutChange: function (layout) {
             onPositionItemsChanged === null || onPositionItemsChanged === void 0 ? void 0 : onPositionItemsChanged(layout.map(function (item) {
                 return {
                     id: parseInt(item.i.replace(".$", ""), 10),

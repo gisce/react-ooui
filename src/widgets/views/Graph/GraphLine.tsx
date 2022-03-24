@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { LoadingOutlined } from "@ant-design/icons";
-import ConnectionProvider from "@/ConnectionProvider";
 import { GraphLine as GraphLineOoui } from "@gisce/ooui";
 import { Line } from "@ant-design/plots";
+import useGraphCountData from "./useGraphCountData";
+import { Alert } from "antd";
 
 export type GraphInidicatorProps = {
   model: string;
@@ -13,60 +14,19 @@ export type GraphInidicatorProps = {
 
 export const GraphLine = (props: GraphInidicatorProps) => {
   const { model, domain, context, ooui } = props;
+  const { data, loading, error, yLabel } = useGraphCountData({
+    model,
+    domain,
+    context,
+    x: ooui.x!,
+    y: ooui.y!,
+  });
 
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<Record<string, any>[]>();
-
-  useEffect(() => {
-    fetchData();
-  }, [model]);
-
-  async function fetchData() {
-    setLoading(true);
-
-    try {
-      const xField: string = ooui.x!.name!;
-      const fields = [xField];
-
-      if (ooui.y!.name !== ooui.x!.name) {
-        fields.push(ooui.y!.name!);
-      }
-
-      const results: any[] = (await ConnectionProvider.getHandler().search({
-        params: domain,
-        fields,
-        context,
-        model,
-      })) as any;
-
-      const dataObject: { [key: string]: any } = {};
-      const dataArray: Record<string, any>[] = [];
-
-      for (const result of results) {
-        if (result[xField] !== undefined && result[xField] !== false) {
-          if (dataObject[result[xField]] === undefined) {
-            dataObject[result[xField]] = 0;
-          }
-          dataObject[result[xField]] += 1;
-        }
-      }
-
-      Object.keys(dataObject).forEach((key) => {
-        dataArray.push({
-          [xField]: key,
-          count: dataObject[key],
-        });
-      });
-
-      setData(dataArray);
-    } catch (err) {
-      console.error(err);
-    }
-
-    setLoading(false);
+  if (error) {
+    return <Alert message={JSON.stringify(error)} type="error" banner />;
   }
 
-  if (loading) {
+  if (loading || data === undefined) {
     return (
       <div style={{ padding: "1rem" }}>
         <LoadingOutlined style={{ height: "12px" }} />
@@ -80,7 +40,7 @@ export const GraphLine = (props: GraphInidicatorProps) => {
         data={data!}
         padding="auto"
         xField={ooui.x!.name}
-        yField="count"
+        yField={yLabel}
         xAxis={{ tickCount: 5 }}
       />
     </div>
