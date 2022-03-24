@@ -1,7 +1,7 @@
 import React from "react";
 import { LoadingOutlined } from "@ant-design/icons";
 import { GraphLine as GraphLineOoui } from "@gisce/ooui";
-// import { Line } from "@ant-design/plots";
+import { Line } from "@ant-design/plots";
 import useGraphCountData from "./useGraphCountData";
 import { Alert } from "antd";
 
@@ -36,14 +36,13 @@ export const GraphLine = (props: GraphInidicatorProps) => {
 
   return (
     <div style={{ padding: "1rem" }}>
-      {/* <Line
+      <Line
         data={data!}
         padding="auto"
         xField={ooui.x!.name}
         yField={yLabel}
         xAxis={{ tickCount: 5 }}
-      /> */}
-      Graph
+      />
     </div>
   );
 };
