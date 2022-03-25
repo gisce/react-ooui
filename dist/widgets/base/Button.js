@@ -112,7 +112,7 @@ var Button = function (props) {
         return undefined;
     }
     return (react_1.default.createElement(Field_1.default, { ooui: ooui },
-        react_1.default.createElement(antd_1.Button, { className: "w-full", disabled: !activated || readOnly, onClick: onClick, icon: getButtonIcon(), type: ooui.primary ? "primary" : "default", danger: ooui.danger }, label)));
+        react_1.default.createElement(antd_1.Button, { block: true, disabled: !activated || readOnly, onClick: onClick, icon: getButtonIcon(), type: ooui.primary ? "primary" : "default", danger: ooui.danger, style: { whiteSpace: "normal", height: "auto" } }, label)));
 };
 exports.Button = Button;
 //# sourceMappingURL=Button.js.map
