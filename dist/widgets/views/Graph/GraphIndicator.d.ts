@@ -5,6 +5,8 @@ export declare type GraphInidicatorProps = {
     colorCondition?: string | null;
     totalDomain?: string;
     showPercent?: boolean;
+    icon?: string;
+    suffix?: string;
 };
 export declare const GraphIndicator: (props: GraphInidicatorProps) => JSX.Element;
 //# sourceMappingURL=GraphIndicator.d.ts.map

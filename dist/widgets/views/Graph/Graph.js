@@ -111,7 +111,7 @@ var Graph = function (props) {
         return null;
     }
     if (graphOoui.type === "indicator") {
-        return (react_1.default.createElement(GraphIndicator_1.GraphIndicator, { showPercent: graphOoui.showPercent, totalDomain: graphOoui.totalDomain, colorCondition: graphOoui.color, model: model, context: context, domain: domain }));
+        return (react_1.default.createElement(GraphIndicator_1.GraphIndicator, { showPercent: graphOoui.showPercent, totalDomain: graphOoui.totalDomain, colorCondition: graphOoui.color, model: model, context: context, domain: domain, icon: graphOoui.icon, suffix: graphOoui.suffix }));
     }
     else {
         return react_1.default.createElement(react_1.default.Fragment, null, "Graph " + graphOoui.type + " not implemented");

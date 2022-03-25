@@ -47,6 +47,7 @@ type SearchRequest = {
   fields?: any;
   context?: any;
   attrs?: any;
+  order?: number | string;
 };
 
 type SearchAllIdsRequest = SearchCountRequest & {

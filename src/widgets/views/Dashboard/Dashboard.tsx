@@ -251,7 +251,6 @@ function Dashboard(props: DashboardProps, ref: any) {
         if (initialView?.type === "graph") {
           childContent = (
             <Graph
-              title={title}
               view_id={
                 views.filter(
                   (view: [number, string]) => view[1] === "graph"
