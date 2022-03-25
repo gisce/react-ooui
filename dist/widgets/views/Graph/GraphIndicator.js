@@ -136,7 +136,7 @@ var GraphIndicator = function (props) {
                         if (!(iconProps.indexOf(":") !== -1)) return [3 /*break*/, 9];
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().parseCondition({
                                 condition: iconProps,
-                                values: { value: retrievedValue },
+                                values: { value: retrievedValue, percent: percent },
                                 context: context,
                             })];
                     case 8:
