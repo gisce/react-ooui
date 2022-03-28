@@ -84,7 +84,7 @@ const ContentRootProvider = (
     const {
       context: reportContext,
       model,
-      datas,
+      datas = {},
       report_name,
       type,
     } = reportData;
