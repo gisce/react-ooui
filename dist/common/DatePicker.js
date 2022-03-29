@@ -22,13 +22,13 @@ var moment_1 = __importDefault(require("moment"));
 var DatePickerConfig = {
     date: {
         placeholder: "__/__/____",
-        dateDisplayFormat: "",
-        dateInternalFormat: "",
+        dateDisplayFormat: "YYYY-MM-DD",
+        dateInternalFormat: "YYYY-MM-DD",
     },
     time: {
         placeholder: "__/__/____ __:__:__",
-        dateDisplayFormat: "",
-        dateInternalFormat: "",
+        dateDisplayFormat: "YYYY-MM-DD HH:mm:ss",
+        dateInternalFormat: "YYYY-MM-DD HH:mm:ss",
     },
 };
 var DatePicker = function (props) {
@@ -55,7 +55,9 @@ var DatePickerInput = function (props) {
     var showTimeParms = showTime
         ? { defaultValue: moment_1.default("00:00:00", "HH:mm:ss") }
         : undefined;
-    var dateValue = value ? moment_1.default(value) : undefined;
+    var dateValue = value
+        ? moment_1.default(value, DatePickerConfig[mode].dateInternalFormat)
+        : undefined;
     return (react_1.default.createElement(antd_1.DatePicker, { style: { width: "100%" }, placeholder: showTime
             ? DatePickerConfig.time.placeholder
             : DatePickerConfig.date.placeholder, disabled: readOnly, id: id, showTime: showTimeParms, className: requiredClass, format: DatePickerConfig[mode].dateDisplayFormat, value: dateValue, onChange: onValueStringChange }));
