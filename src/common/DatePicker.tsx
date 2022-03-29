@@ -14,13 +14,13 @@ type DatePickerProps = WidgetProps & {
 const DatePickerConfig = {
   date: {
     placeholder: "__/__/____",
-    dateDisplayFormat: "",
-    dateInternalFormat: "",
+    dateDisplayFormat: "YYYY-MM-DD",
+    dateInternalFormat: "YYYY-MM-DD",
   },
   time: {
     placeholder: "__/__/____ __:__:__",
-    dateDisplayFormat: "",
-    dateInternalFormat: "",
+    dateDisplayFormat: "YYYY-MM-DD HH:mm:ss",
+    dateInternalFormat: "YYYY-MM-DD HH:mm:ss",
   },
 };
 const DatePicker = (props: DatePickerProps) => {
@@ -67,7 +67,9 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
   const showTimeParms = showTime
     ? { defaultValue: moment("00:00:00", "HH:mm:ss") }
     : undefined;
-  const dateValue = value ? moment(value) : undefined;
+  const dateValue = value
+    ? moment(value, DatePickerConfig[mode].dateInternalFormat)
+    : undefined;
 
   return (
     <AntDatePicker
