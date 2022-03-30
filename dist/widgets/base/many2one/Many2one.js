@@ -292,7 +292,7 @@ var Many2oneInput = function (props) {
             });
         });
     }
-    function onKeyUp(event) {
+    function onKeyDown(event) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -305,10 +305,10 @@ var Many2oneInput = function (props) {
                         _a.sent();
                         return [3 /*break*/, 3];
                     case 2:
-                        if (event.code === "Backspace") {
+                        if (event.code === "Backspace" && id !== undefined) {
                             event.preventDefault();
                             event.stopPropagation();
-                            setInputText("");
+                            triggerChange([undefined, ""]);
                         }
                         _a.label = 3;
                     case 3: return [2 /*return*/];
@@ -319,7 +319,7 @@ var Many2oneInput = function (props) {
     var CustomInput = required && !readOnly ? RequiredInput : antd_1.Input;
     return (react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false },
         react_1.default.createElement(antd_1.Col, { flex: "auto" },
-            react_1.default.createElement(CustomInput, { type: "text", value: inputText, disabled: readOnly, onChange: onValueStringChange, className: requiredClass, onBlur: onElementLostFocus, onKeyUp: onKeyUp, suffix: react_1.default.createElement(Many2oneSuffix_1.Many2oneSuffix, { id: id, model: relation, context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context) }) })),
+            react_1.default.createElement(CustomInput, { type: "text", value: inputText, disabled: readOnly, onChange: onValueStringChange, className: requiredClass, onBlur: onElementLostFocus, onKeyDown: onKeyDown, suffix: react_1.default.createElement(Many2oneSuffix_1.Many2oneSuffix, { id: id, model: relation, context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context) }) })),
         react_1.default.createElement(antd_1.Col, { flex: "32px" },
             react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: id === undefined || text === "" || inputText === undefined, onClick: function () {
                     setShowFormModal(true);
