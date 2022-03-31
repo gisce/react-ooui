@@ -219,15 +219,15 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     }
   }
 
-  async function onKeyUp(event: any) {
+  async function onKeyDown(event: any) {
     if (event.code === "Enter") {
       event.preventDefault();
       event.stopPropagation();
       await onElementLostFocus();
-    } else if (event.code === "Backspace") {
+    } else if (event.code === "Backspace" && id !== undefined) {
       event.preventDefault();
       event.stopPropagation();
-      setInputText("");
+      triggerChange([undefined, ""]);
     }
   }
 
@@ -243,7 +243,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           onChange={onValueStringChange}
           className={requiredClass}
           onBlur={onElementLostFocus}
-          onKeyUp={onKeyUp}
+          onKeyDown={onKeyDown}
           suffix={
             <Many2oneSuffix
               id={id}

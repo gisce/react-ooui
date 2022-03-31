@@ -62,12 +62,13 @@ export const Button = (props: Props) => {
   return (
     <Field ooui={ooui}>
       <AntButton
-        className="w-full"
+        block
         disabled={!activated || readOnly}
         onClick={onClick}
         icon={getButtonIcon()}
-        type={ooui.primary ? "primary": "default"}
+        type={ooui.primary ? "primary" : "default"}
         danger={ooui.danger}
+        style={{ whiteSpace: "normal", height: "auto" }}
       >
         {label}
       </AntButton>

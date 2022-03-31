@@ -96,7 +96,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
           const iconEval = await ConnectionProvider.getHandler().parseCondition(
             {
               condition: iconProps,
-              values: { value: retrievedValue },
+              values: { value: retrievedValue, percent },
               context,
             }
           );
@@ -305,7 +305,7 @@ function PercentageIndicator({
       </Title>
       <Title style={{ fontSize: fontSize * 0.4, margin: 0, color }}>
         {finalValue}
-      </Title>  
+      </Title>
     </div>
   );
 }
