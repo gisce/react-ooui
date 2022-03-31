@@ -3,12 +3,12 @@ import {
   Graph as GraphOoui,
   parseGraph,
   GraphIndicator as GraphIndicatorOoui,
-  GraphLine as GraphLineOoui,
+  GraphChart as GraphChartOoui,
 } from "@gisce/ooui";
 import { LoadingOutlined } from "@ant-design/icons";
 import ConnectionProvider from "@/ConnectionProvider";
 import { GraphIndicator } from "./GraphIndicator";
-import { GraphLine } from "./GraphLine";
+import { GraphChart } from "./GraphChart";
 
 export type GraphProps = {
   view_id: number;
@@ -75,14 +75,16 @@ export const Graph = (props: GraphProps) => {
         />
       );
     }
-    case "line": {
-      const line = graphOoui as GraphLineOoui;
+    case "line":
+    case "bar":
+    case "pie": {
+      const graphChart = graphOoui as GraphChartOoui;
       return (
-        <GraphLine
+        <GraphChart
           model={model}
           context={context}
           domain={domain}
-          ooui={line}
+          ooui={graphChart}
         />
       );
     }

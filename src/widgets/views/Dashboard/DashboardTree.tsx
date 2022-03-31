@@ -126,7 +126,7 @@ function DashboardTree(props: Props) {
       setTableRefreshing(true);
       await searchResults();
     } catch (error) {
-      setSearchError(error);
+      setSearchError(JSON.stringify(error));
     } finally {
       setTableRefreshing(false);
     }
