@@ -64,7 +64,7 @@ var ooui_1 = require("@gisce/ooui");
 var icons_1 = require("@ant-design/icons");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var GraphIndicator_1 = require("./GraphIndicator");
-var GraphLine_1 = require("./GraphLine");
+var GraphChart_1 = require("./GraphChart");
 var Graph = function (props) {
     var view_id = props.view_id, model = props.model, context = props.context, domain = props.domain;
     var _a = react_1.useState(false), loading = _a[0], setLoading = _a[1];
@@ -116,9 +116,11 @@ var Graph = function (props) {
             var indicator = graphOoui;
             return (react_1.default.createElement(GraphIndicator_1.GraphIndicator, { showPercent: indicator.showPercent, totalDomain: indicator.totalDomain, colorCondition: indicator.color, model: model, context: context, domain: domain, icon: indicator.icon, suffix: indicator.suffix }));
         }
-        case "line": {
-            var line = graphOoui;
-            return (react_1.default.createElement(GraphLine_1.GraphLine, { model: model, context: context, domain: domain, ooui: line }));
+        case "line":
+        case "bar":
+        case "pie": {
+            var graphChart = graphOoui;
+            return (react_1.default.createElement(GraphChart_1.GraphChart, { model: model, context: context, domain: domain, ooui: graphChart }));
         }
         default: {
             return react_1.default.createElement(react_1.default.Fragment, null, "Graph " + graphOoui.type + " not implemented");

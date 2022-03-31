@@ -161,7 +161,7 @@ function DashboardTree(props) {
                     return [3 /*break*/, 4];
                 case 2:
                     error_1 = _a.sent();
-                    setSearchError(error_1);
+                    setSearchError(JSON.stringify(error_1));
                     return [3 /*break*/, 4];
                 case 3:
                     setTableRefreshing(false);

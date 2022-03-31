@@ -41,6 +41,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var react_1 = require("react");
+var labelsForOperator = {
+    count: "count",
+    "+": "sum",
+    "-": "subtract",
+    "*": "multiply",
+    avg: "average",
+    min: "min",
+    max: "max",
+};
 function useGraphCountData(opts) {
     var _a = react_1.useState(false), loading = _a[0], setLoading = _a[1];
     var _b = react_1.useState(), data = _b[0], setData = _b[1];
@@ -50,67 +59,50 @@ function useGraphCountData(opts) {
     react_1.useEffect(function () {
         (function () {
             return __awaiter(this, void 0, void 0, function () {
-                var domain, context, x, y, isCount, xField_1, yField_1, fields, results, dataObject_1, dataArray_1, _i, results_1, result, data_1, err_1;
+                var domain, context, x, y, xField, yField, fields, yLabel_1, results, dataObject, _i, results_1, result, valuesForOperator, err_1;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
                             domain = opts.domain, context = opts.context, x = opts.x, y = opts.y;
-                            isCount = false;
                             _a.label = 1;
                         case 1:
                             _a.trys.push([1, 3, 4, 5]);
                             setLoading(true);
-                            xField_1 = x.name;
-                            yField_1 = y.name;
-                            fields = [xField_1];
-                            if (yField_1 !== xField_1) {
-                                setYLabel(yField_1);
-                                fields.push(yField_1);
+                            xField = x.name;
+                            yField = y.name;
+                            fields = [xField];
+                            if (y.operator !== "count") {
+                                fields.push(yField);
                             }
-                            else {
-                                setYLabel("count");
-                                isCount = true;
-                            }
+                            yLabel_1 = labelsForOperator[y.operator] || "value";
+                            setYLabel(yLabel_1);
                             return [4 /*yield*/, ConnectionProvider_1.default.getHandler().search({
                                     params: domain,
                                     fields: fields,
                                     context: context,
                                     model: model,
-                                    order: xField_1,
+                                    order: xField,
                                 })];
                         case 2:
                             results = (_a.sent());
-                            if (isCount) {
-                                dataObject_1 = {};
-                                dataArray_1 = [];
-                                for (_i = 0, results_1 = results; _i < results_1.length; _i++) {
-                                    result = results_1[_i];
-                                    if (result[xField_1] !== undefined && result[xField_1] !== false) {
-                                        if (dataObject_1[result[xField_1]] === undefined) {
-                                            dataObject_1[result[xField_1]] = 0;
-                                        }
-                                        dataObject_1[result[xField_1]] += 1;
+                            dataObject = {};
+                            // Group by x
+                            for (_i = 0, results_1 = results; _i < results_1.length; _i++) {
+                                result = results_1[_i];
+                                if (result[xField] !== undefined && result[xField] !== false) {
+                                    if (dataObject[result[xField]] === undefined) {
+                                        dataObject[result[xField]] = [];
                                     }
+                                    dataObject[result[xField]].push(result[yField]);
                                 }
-                                Object.keys(dataObject_1).forEach(function (key) {
-                                    var _a;
-                                    dataArray_1.push((_a = {},
-                                        _a[xField_1] = key,
-                                        _a.count = dataObject_1[key],
-                                        _a));
-                                });
-                                setData(dataArray_1);
                             }
-                            else {
-                                data_1 = results.map(function (result) {
-                                    var _a;
-                                    return _a = {},
-                                        _a[xField_1] = result[xField_1],
-                                        _a[yField_1] = result[yField_1],
-                                        _a;
-                                });
-                                setData(data_1);
-                            }
+                            valuesForOperator = getValuesForOperator({
+                                operator: y.operator,
+                                groupedValues: dataObject,
+                                xField: xField,
+                                yLabel: yLabel_1,
+                            });
+                            setData(valuesForOperator);
                             return [3 /*break*/, 5];
                         case 3:
                             err_1 = _a.sent();
@@ -128,4 +120,61 @@ function useGraphCountData(opts) {
     return { data: data, error: error, loading: loading, yLabel: yLabel };
 }
 exports.default = useGraphCountData;
-//# sourceMappingURL=useGraphCountData.js.map
+function getValuesForOperator(_a) {
+    var operator = _a.operator, groupedValues = _a.groupedValues, xField = _a.xField, yLabel = _a.yLabel;
+    var values = [];
+    Object.keys(groupedValues).forEach(function (x) {
+        var _a, _b, _c, _d, _e, _f, _g, _h;
+        var y = groupedValues[x];
+        switch (operator) {
+            case "count": {
+                var count = y.length;
+                values.push((_a = {}, _a[xField] = x, _a[yLabel] = count, _a));
+                break;
+            }
+            case "+": {
+                var sum = y.reduce(function (previousValue, currentValue) {
+                    return previousValue + currentValue;
+                });
+                values.push((_b = {}, _b[xField] = x, _b[yLabel] = roundNumber(sum), _b));
+                break;
+            }
+            case "-": {
+                var substract = y.reduce(function (previousValue, currentValue) {
+                    return previousValue - currentValue;
+                });
+                values.push((_c = {}, _c[xField] = x, _c[yLabel] = roundNumber(substract), _c));
+                break;
+            }
+            case "*": {
+                var mult = y.reduce(function (previousValue, currentValue) {
+                    return previousValue * currentValue;
+                });
+                values.push((_d = {}, _d[xField] = x, _d[yLabel] = roundNumber(mult), _d));
+                break;
+            }
+            case "avg": {
+                var sum = y.reduce(function (a, b) { return a + b; }, 0);
+                var avg = sum / y.length || 0;
+                values.push((_e = {}, _e[xField] = x, _e[yLabel] = roundNumber(avg), _e));
+                break;
+            }
+            case "min": {
+                values.push((_f = {}, _f[xField] = x, _f[yLabel] = Math.min.apply(Math, y), _f));
+                break;
+            }
+            case "max": {
+                values.push((_g = {}, _g[xField] = x, _g[yLabel] = Math.max.apply(Math, y), _g));
+                break;
+            }
+            default: {
+                values.push((_h = {}, _h[xField] = x, _h[yLabel] = y, _h));
+            }
+        }
+    });
+    return values;
+}
+function roundNumber(num) {
+    return Math.round((num + Number.EPSILON) * 100) / 100;
+}
+//# sourceMappingURL=useGraphData.js.map
