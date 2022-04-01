@@ -17,11 +17,9 @@ function Notebook(props: Props): React.ReactElement {
     <Tabs defaultActiveKey="1">
       {tabs
         .filter((page: any) => !page.invisible)
-        .map((page: any, key: number) => {
-          const tabKey = (key + 1).toString();
-
+        .map((page: any) => {
           return (
-            <TabPane tab={page.label} key={tabKey}>
+            <TabPane tab={page.label} key={page.label}>
               <Group
                 ooui={page as GroupOoui}
                 showLabel={false}
