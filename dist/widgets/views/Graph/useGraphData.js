@@ -55,18 +55,19 @@ function useGraphCountData(opts) {
     var _b = react_1.useState(), data = _b[0], setData = _b[1];
     var _c = react_1.useState(), error = _c[0], setError = _c[1];
     var _d = react_1.useState(), yLabel = _d[0], setYLabel = _d[1];
+    var _e = react_1.useState(), xLabel = _e[0], setXLabel = _e[1];
     var model = opts.model;
     react_1.useEffect(function () {
         (function () {
             return __awaiter(this, void 0, void 0, function () {
-                var domain, context, x, y, xField, yField, fields, yLabel_1, results, dataObject, _i, results_1, result, valuesForOperator, err_1;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
+                var domain, context, x, y, xField, yField, fields, yLabel_1, results, fieldsForModel, xFieldData, mustMapLabel, dataObject_1, valueLabelRelation_1, _i, results_1, result, _a, value, label, dataLabelObject_1, valuesForOperator, err_1;
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
                         case 0:
                             domain = opts.domain, context = opts.context, x = opts.x, y = opts.y;
-                            _a.label = 1;
+                            _b.label = 1;
                         case 1:
-                            _a.trys.push([1, 3, 4, 5]);
+                            _b.trys.push([1, 4, 5, 6]);
                             setLoading(true);
                             xField = x.name;
                             yField = y.name;
@@ -84,34 +85,55 @@ function useGraphCountData(opts) {
                                     order: xField,
                                 })];
                         case 2:
-                            results = (_a.sent());
-                            dataObject = {};
+                            results = (_b.sent());
+                            return [4 /*yield*/, getFieldsForModel({ model: model, context: context })];
+                        case 3:
+                            fieldsForModel = _b.sent();
+                            xFieldData = fieldsForModel[xField];
+                            mustMapLabel = xFieldData.type === "selection" || xFieldData.type === "many2one";
+                            dataObject_1 = {};
+                            valueLabelRelation_1 = {};
                             // Group by x
                             for (_i = 0, results_1 = results; _i < results_1.length; _i++) {
                                 result = results_1[_i];
-                                if (result[xField] !== undefined && result[xField] !== false) {
-                                    if (dataObject[result[xField]] === undefined) {
-                                        dataObject[result[xField]] = [];
+                                _a = getValueData({
+                                    fields: fieldsForModel,
+                                    values: result,
+                                    fieldName: xField,
+                                }), value = _a.value, label = _a.label;
+                                valueLabelRelation_1[value] = label;
+                                if (value !== undefined && value !== false) {
+                                    if (dataObject_1[value] === undefined) {
+                                        dataObject_1[value] = [];
                                     }
-                                    dataObject[result[xField]].push(result[yField]);
+                                    dataObject_1[value].push(result[yField]);
                                 }
+                            }
+                            dataLabelObject_1 = {};
+                            if (mustMapLabel) {
+                                // Translate x values to labels
+                                Object.keys(dataObject_1).forEach(function (x) {
+                                    var y = dataObject_1[x];
+                                    var labelForX = valueLabelRelation_1[x];
+                                    dataLabelObject_1[labelForX] = y;
+                                });
                             }
                             valuesForOperator = getValuesForOperator({
                                 operator: y.operator,
-                                groupedValues: dataObject,
+                                groupedValues: mustMapLabel ? dataLabelObject_1 : dataObject_1,
                                 xField: xField,
                                 yLabel: yLabel_1,
                             });
                             setData(valuesForOperator);
-                            return [3 /*break*/, 5];
-                        case 3:
-                            err_1 = _a.sent();
-                            setError(err_1);
-                            return [3 /*break*/, 5];
+                            return [3 /*break*/, 6];
                         case 4:
+                            err_1 = _b.sent();
+                            setError(err_1);
+                            return [3 /*break*/, 6];
+                        case 5:
                             setLoading(false);
                             return [7 /*endfinally*/];
-                        case 5: return [2 /*return*/];
+                        case 6: return [2 /*return*/];
                     }
                 });
             });
@@ -176,5 +198,42 @@ function getValuesForOperator(_a) {
 }
 function roundNumber(num) {
     return Math.round((num + Number.EPSILON) * 100) / 100;
+}
+function getFieldsForModel(_a) {
+    var model = _a.model, context = _a.context;
+    return __awaiter(this, void 0, void 0, function () {
+        var viewData;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().getView({
+                        model: model,
+                        context: context,
+                        type: "form",
+                    })];
+                case 1:
+                    viewData = _b.sent();
+                    return [2 /*return*/, viewData.fields];
+            }
+        });
+    });
+}
+function getValueData(_a) {
+    var fields = _a.fields, values = _a.values, fieldName = _a.fieldName;
+    var xFieldData = fields[fieldName];
+    var value = values[fieldName];
+    if (xFieldData && xFieldData.type === "many2one") {
+        return { value: value[0], label: value[1] };
+    }
+    else if (xFieldData && xFieldData.type === "selection") {
+        var selectionValues = xFieldData.selection;
+        var valuePair = selectionValues.find(function (selectionPair) {
+            return selectionPair[0] === value;
+        });
+        if (!valuePair) {
+            throw new Error("Could not find value " + value + " in selection");
+        }
+        return { value: value, label: valuePair[1] };
+    }
+    return { value: value, label: fieldName };
 }
 //# sourceMappingURL=useGraphData.js.map
