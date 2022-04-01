@@ -50,7 +50,7 @@ export const One2many = (props: Props) => {
       views.set("tree", treeView);
       setViews(views);
     } catch (err) {
-      setError(err);
+      setError(JSON.stringify(err));
     } finally {
       setIsLoading(false);
     }
