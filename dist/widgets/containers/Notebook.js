@@ -12,9 +12,8 @@ function Notebook(props) {
     var tabs = [].concat.apply([], ooui.container.rows);
     return (react_1.default.createElement(antd_1.Tabs, { defaultActiveKey: "1" }, tabs
         .filter(function (page) { return !page.invisible; })
-        .map(function (page, key) {
-        var tabKey = (key + 1).toString();
-        return (react_1.default.createElement(TabPane, { tab: page.label, key: tabKey },
+        .map(function (page) {
+        return (react_1.default.createElement(TabPane, { tab: page.label, key: page.label },
             react_1.default.createElement(index_1.Group, { ooui: page, showLabel: false, responsiveBehaviour: responsiveBehaviour })));
     })));
 }
