@@ -128,7 +128,7 @@ var One2many = function (props) {
                     return [3 /*break*/, 6];
                 case 4:
                     err_1 = _a.sent();
-                    setError(err_1);
+                    setError(JSON.stringify(err_1));
                     return [3 /*break*/, 6];
                 case 5:
                     setIsLoading(false);
