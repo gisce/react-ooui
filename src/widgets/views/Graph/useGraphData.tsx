@@ -25,6 +25,7 @@ export default function useGraphCountData(opts: GraphDataOpts) {
   const [data, setData] = useState<Record<string, any>[]>();
   const [error, setError] = useState<any>();
   const [yLabel, setYLabel] = useState<string>();
+  const [xLabel, setXLabel] = useState<string>();
   const { model } = opts;
 
   useEffect(() => {
@@ -52,21 +53,46 @@ export default function useGraphCountData(opts: GraphDataOpts) {
           order: xField,
         })) as any;
 
+        const fieldsForModel = await getFieldsForModel({ model, context });
+        const xFieldData = fieldsForModel[xField];
+        const mustMapLabel =
+          xFieldData.type === "selection" || xFieldData.type === "many2one";
+
         const dataObject: { [key: string]: any } = {};
+        const valueLabelRelation: { [key: string]: any } = {};
 
         // Group by x
         for (const result of results) {
-          if (result[xField] !== undefined && result[xField] !== false) {
-            if (dataObject[result[xField]] === undefined) {
-              dataObject[result[xField]] = [];
+          const { value, label } = getValueData({
+            fields: fieldsForModel,
+            values: result,
+            fieldName: xField,
+          });
+
+          valueLabelRelation[value] = label;
+
+          if (value !== undefined && value !== false) {
+            if (dataObject[value] === undefined) {
+              dataObject[value] = [];
             }
-            dataObject[result[xField]].push(result[yField]);
+            dataObject[value].push(result[yField]);
           }
+        }
+
+        let dataLabelObject: { [key: string]: any } = {};
+
+        if (mustMapLabel) {
+          // Translate x values to labels
+          Object.keys(dataObject).forEach((x) => {
+            const y = dataObject[x];
+            const labelForX = valueLabelRelation[x];
+            dataLabelObject[labelForX] = y;
+          });
         }
 
         const valuesForOperator = getValuesForOperator({
           operator: y.operator!,
-          groupedValues: dataObject,
+          groupedValues: mustMapLabel ? dataLabelObject : dataObject,
           xField,
           yLabel,
         });
@@ -155,4 +181,50 @@ function getValuesForOperator({
 
 function roundNumber(num: number) {
   return Math.round((num + Number.EPSILON) * 100) / 100;
+}
+
+async function getFieldsForModel({
+  model,
+  context,
+}: {
+  model: string;
+  context: any;
+}) {
+  const viewData = await ConnectionProvider.getHandler().getView({
+    model,
+    context,
+    type: "form",
+  });
+  return viewData.fields;
+}
+
+function getValueData({
+  fields,
+  values,
+  fieldName,
+}: {
+  fields: any;
+  values: any;
+  fieldName: string;
+}) {
+  const xFieldData = fields[fieldName];
+  const value = values[fieldName];
+
+  if (xFieldData && xFieldData.type === "many2one") {
+    return { value: value[0], label: value[1] };
+  } else if (xFieldData && xFieldData.type === "selection") {
+    const selectionValues: [number, string][] = xFieldData.selection;
+
+    const valuePair = selectionValues.find((selectionPair) => {
+      return selectionPair[0] === value;
+    });
+
+    if (!valuePair) {
+      throw new Error(`Could not find value ${value} in selection`);
+    }
+
+    return { value, label: valuePair[1] };
+  }
+
+  return { value, label: fieldName };
 }
