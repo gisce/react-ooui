@@ -11,19 +11,21 @@ const types = {
   pie: Pie,
 };
 
-export type GraphInidicatorProps = {
+export type GraphChartProps = {
   model: string;
   domain: any;
   context: any;
   ooui: GraphChartOoui;
+  limit: number;
 };
 
-export const GraphChart = (props: GraphInidicatorProps) => {
-  const { model, domain, context, ooui } = props;
+export const GraphChart = (props: GraphChartProps) => {
+  const { model, domain, context, ooui, limit, } = props;
   const { data, loading, error, yLabel } = useGraphData({
     model,
     domain,
     context,
+    limit,
     x: ooui.x!,
     y: ooui.y!,
   });

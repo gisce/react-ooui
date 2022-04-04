@@ -33,7 +33,7 @@ export async function fetchAction({
       })
     : [];
 
-  const { res_model: model, views, name: title } = dataForAction;
+  const { res_model: model, views, name: title, limit } = dataForAction;
 
   const finalViews = [];
 
@@ -66,5 +66,6 @@ export async function fetchAction({
     context: { ...rootContext, ...parsedContext },
     domain: parsedDomain,
     initialView,
+    limit,
   };
 }

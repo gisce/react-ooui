@@ -15,10 +15,11 @@ export type GraphProps = {
   model: string;
   domain: any;
   context: any;
+  limit: number;
 };
 
 export const Graph = (props: GraphProps) => {
-  const { view_id, model, context, domain } = props;
+  const { view_id, model, context, domain, limit } = props;
   const [loading, setLoading] = useState(false);
   const [graphOoui, setGraphOoui] = useState<GraphOoui>();
 
@@ -85,6 +86,7 @@ export const Graph = (props: GraphProps) => {
           context={context}
           domain={domain}
           ooui={graphChart}
+          limit={limit}
         />
       );
     }

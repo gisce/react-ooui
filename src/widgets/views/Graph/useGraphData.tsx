@@ -8,6 +8,7 @@ export type GraphDataOpts = {
   context: any;
   x: GraphAxis;
   y: GraphAxis;
+  limit: number,
 };
 
 const labelsForOperator = {
@@ -30,7 +31,7 @@ export default function useGraphCountData(opts: GraphDataOpts) {
 
   useEffect(() => {
     (async function () {
-      const { domain, context, x, y } = opts;
+      const { domain, context, x, y, limit } = opts;
 
       try {
         setLoading(true);
@@ -51,6 +52,7 @@ export default function useGraphCountData(opts: GraphDataOpts) {
           context,
           model,
           order: xField,
+          limit,
         })) as any;
 
         const fieldsForModel = await getFieldsForModel({ model, context });
