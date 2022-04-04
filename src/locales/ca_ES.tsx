@@ -78,4 +78,5 @@ export default {
   saveBeforeTranslate:
     "Heu de desar el registre abans d'afegir les traduccions",
   configDashboard: "Configurar panell",
+  moveDashboard: "Moure items del panell",
 };

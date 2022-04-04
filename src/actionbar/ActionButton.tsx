@@ -9,14 +9,28 @@ type Props = {
   disabled?: boolean;
   label?: string;
   loading?: boolean;
+  type?: string;
 };
 
 function ActionButton(props: Props) {
-  const { onClick, disabled = false, loading = false, tooltip, icon, label } = props;
+  const {
+    onClick,
+    disabled = false,
+    loading = false,
+    tooltip,
+    icon,
+    label,
+    type = "default",
+  } = props;
   const finalIcon = loading ? <LoadingOutlined /> : icon;
 
   return (
-    <ButtonWithTooltip tooltip={tooltip} onClick={onClick} disabled={disabled}>
+    <ButtonWithTooltip
+      type={type as any}
+      tooltip={tooltip}
+      onClick={onClick}
+      disabled={disabled}
+    >
       {finalIcon}
       {label}
     </ButtonWithTooltip>

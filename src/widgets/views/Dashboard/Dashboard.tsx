@@ -34,9 +34,11 @@ function Dashboard(props: DashboardProps, ref: any) {
   const [dashboardItems, setDashboardItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
-  const { setIsLoading: setActionBarLoading, openAction } = useContext(
-    DashboardActionContext
-  ) as DashboardActionContextType;
+  const {
+    setIsLoading: setActionBarLoading,
+    openAction,
+    moveItemsEnabled,
+  } = useContext(DashboardActionContext) as DashboardActionContextType;
 
   const itemsFields = useRef<any>();
   const boardFields = useRef<any>();
@@ -144,6 +146,10 @@ function Dashboard(props: DashboardProps, ref: any) {
   }
 
   async function onPositionItemsChanged(itemPositions: any[]) {
+    if (!moveItemsEnabled) {
+      return;
+    }
+
     const differences = itemPositions.filter((itemPosition) => {
       const dashboardItem = dashboardItems.find(
         (dashboardItem) => dashboardItem.id === itemPosition.id
