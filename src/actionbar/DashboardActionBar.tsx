@@ -5,17 +5,39 @@ import {
 } from "@/context/DashboardActionContext";
 import { Space } from "antd";
 import ActionButton from "./ActionButton";
-import { ReloadOutlined, SettingOutlined } from "@ant-design/icons";
+import {
+  ReloadOutlined,
+  SettingOutlined,
+  BorderOuterOutlined,
+} from "@ant-design/icons";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 function DashboardActionBar() {
-  const { isLoading, dashboardRef } = useContext(
-    DashboardActionContext
-  ) as DashboardActionContextType;
+  const {
+    isLoading,
+    dashboardRef,
+    moveItemsEnabled,
+    setMoveItemsEnabled,
+  } = useContext(DashboardActionContext) as DashboardActionContextType;
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
   return (
     <Space wrap={true}>
+      <ActionButton
+        icon={
+          <BorderOuterOutlined
+            style={{ color: moveItemsEnabled ? "white" : undefined }}
+          />
+        }
+        type={moveItemsEnabled ? "primary" : "default"}
+        tooltip={t("moveDashboard")}
+        disabled={isLoading}
+        loading={false}
+        onClick={() => {
+          setMoveItemsEnabled(!moveItemsEnabled);
+        }}
+      />
+      {separator()}
       <ActionButton
         icon={<SettingOutlined />}
         tooltip={t("configDashboard")}

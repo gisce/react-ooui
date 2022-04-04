@@ -89,7 +89,7 @@ function Dashboard(props, ref) {
     var _b = react_1.useState([]), dashboardItems = _b[0], setDashboardItems = _b[1];
     var _c = react_1.useState(false), isLoading = _c[0], setIsLoading = _c[1];
     var _d = react_1.useState(), error = _d[0], setError = _d[1];
-    var _e = react_1.useContext(DashboardActionContext_1.DashboardActionContext), setActionBarLoading = _e.setIsLoading, openAction = _e.openAction;
+    var _e = react_1.useContext(DashboardActionContext_1.DashboardActionContext), setActionBarLoading = _e.setIsLoading, openAction = _e.openAction, moveItemsEnabled = _e.moveItemsEnabled;
     var itemsFields = react_1.useRef();
     var boardFields = react_1.useRef();
     react_1.useEffect(function () {
@@ -240,6 +240,9 @@ function Dashboard(props, ref) {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
+                        if (!moveItemsEnabled) {
+                            return [2 /*return*/];
+                        }
                         differences = itemPositions.filter(function (itemPosition) {
                             var dashboardItem = dashboardItems.find(function (dashboardItem) { return dashboardItem.id === itemPosition.id; });
                             if (!dashboardItem) {
