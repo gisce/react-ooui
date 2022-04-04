@@ -26,11 +26,12 @@ var types = {
     pie: plots_1.Pie,
 };
 var GraphChart = function (props) {
-    var model = props.model, domain = props.domain, context = props.context, ooui = props.ooui;
+    var model = props.model, domain = props.domain, context = props.context, ooui = props.ooui, limit = props.limit;
     var _a = useGraphData_1.default({
         model: model,
         domain: domain,
         context: context,
+        limit: limit,
         x: ooui.x,
         y: ooui.y,
     }), data = _a.data, loading = _a.loading, error = _a.error, yLabel = _a.yLabel;

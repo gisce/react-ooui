@@ -57,7 +57,7 @@ var uuid_1 = require("uuid");
 function fetchAction(_a) {
     var actionId = _a.actionId, _b = _a.rootContext, rootContext = _b === void 0 ? {} : _b, _c = _a.globalValues, globalValues = _c === void 0 ? {} : _c;
     return __awaiter(this, void 0, void 0, function () {
-        var actionType, action, dataForAction, parsedContext, parsedDomain, _d, model, views, title, finalViews, _i, views_1, viewArray, id_1, viewType, view_id, _e, id, type, initialView;
+        var actionType, action, dataForAction, parsedContext, parsedDomain, _d, model, views, title, limit, finalViews, _i, views_1, viewArray, id_1, viewType, view_id, _e, id, type, initialView;
         return __generator(this, function (_f) {
             switch (_f.label) {
                 case 0:
@@ -88,7 +88,7 @@ function fetchAction(_a) {
                     _f.label = 4;
                 case 4:
                     parsedDomain = _d;
-                    model = dataForAction.res_model, views = dataForAction.views, title = dataForAction.name;
+                    model = dataForAction.res_model, views = dataForAction.views, title = dataForAction.name, limit = dataForAction.limit;
                     finalViews = [];
                     _i = 0, views_1 = views;
                     _f.label = 5;
@@ -126,6 +126,7 @@ function fetchAction(_a) {
                             context: __assign(__assign({}, rootContext), parsedContext),
                             domain: parsedDomain,
                             initialView: initialView,
+                            limit: limit,
                         }];
             }
         });
