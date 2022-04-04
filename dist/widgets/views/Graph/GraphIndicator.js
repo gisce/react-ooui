@@ -65,6 +65,7 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var Title_1 = __importDefault(require("antd/lib/typography/Title"));
 var react_measure_1 = __importDefault(require("react-measure"));
 var iconMapper_1 = __importDefault(require("@/helpers/iconMapper"));
+var antd_1 = require("antd");
 var fontGrowFactor = 0.7;
 var minFontSize = 30;
 var GraphIndicator = function (props) {
@@ -242,9 +243,16 @@ function PercentageIndicator(_a) {
             flexDirection: "column",
             padding: "0.2rem",
         } },
-        react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize * 0.8, margin: 0, color: color } },
-            icon && react_1.default.createElement(IconElement, { style: { fontSize: fontSize * 0.5 } }),
-            icon ? " " + percent + "%" : percent + "%"),
-        react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize * 0.4, margin: 0, color: color } }, finalValue)));
+        react_1.default.createElement(antd_1.Row, { align: "middle" },
+            icon && (react_1.default.createElement(antd_1.Col, null,
+                react_1.default.createElement(IconElement, { style: { fontSize: fontSize * 1, color: color, paddingRight: "10px" } }))),
+            react_1.default.createElement(antd_1.Col, null,
+                react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize * 0.8, margin: 0, color: color } }, icon ? " " + percent + "%" : percent + "%"),
+                react_1.default.createElement(Title_1.default, { style: {
+                        fontSize: fontSize * 0.4,
+                        margin: 0,
+                        color: color,
+                        textAlign: "center",
+                    } }, finalValue)))));
 }
 //# sourceMappingURL=GraphIndicator.js.map
