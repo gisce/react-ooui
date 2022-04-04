@@ -5,6 +5,7 @@ declare type Props = {
     disabled?: boolean;
     label?: string;
     loading?: boolean;
+    type?: string;
 };
 declare function ActionButton(props: Props): JSX.Element;
 export default ActionButton;

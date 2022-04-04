@@ -74,5 +74,6 @@ exports.default = {
     enterTextBeforeTranslate: "Introdueix algun text al camp abans d'afegir traduccions",
     saveBeforeTranslate: "Heu de desar el registre abans d'afegir les traduccions",
     configDashboard: "Configurar panell",
+    moveDashboard: "Moure items del panell",
 };
 //# sourceMappingURL=ca_ES.js.map

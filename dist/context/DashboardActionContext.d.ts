@@ -5,6 +5,8 @@ export declare type DashboardActionContextType = {
     setIsLoading: (value: boolean) => void;
     dashboardRef: any;
     openAction: (action?: ShortcutApi) => void;
+    moveItemsEnabled: boolean;
+    setMoveItemsEnabled: (value: boolean) => void;
 };
 export declare const DashboardActionContext: React.Context<DashboardActionContextType | null>;
 declare type DashboardActionProviderProps = {
