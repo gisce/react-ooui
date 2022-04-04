@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { LoadingOutlined, PieChartFilled } from "@ant-design/icons";
+import React, { useState, useEffect } from "react";
+import { LoadingOutlined } from "@ant-design/icons";
 import ConnectionProvider from "@/ConnectionProvider";
 import Title from "antd/lib/typography/Title";
 import Measure from "react-measure";
 import iconMapper from "@/helpers/iconMapper";
+import { Col, Row } from "antd";
 
 const fontGrowFactor = 0.7;
 const minFontSize = 30;
@@ -299,13 +300,30 @@ function PercentageIndicator({
         padding: "0.2rem",
       }}
     >
-      <Title style={{ fontSize: fontSize * 0.8, margin: 0, color }}>
-        {icon && <IconElement style={{ fontSize: fontSize * 0.5 }} />}
-        {icon ? ` ${percent}%` : `${percent}%`}
-      </Title>
-      <Title style={{ fontSize: fontSize * 0.4, margin: 0, color }}>
-        {finalValue}
-      </Title>
+      <Row align={"middle"}>
+        {icon && (
+          <Col>
+            <IconElement
+              style={{ fontSize: fontSize * 1, color, paddingRight: "10px" }}
+            />
+          </Col>
+        )}
+        <Col>
+          <Title style={{ fontSize: fontSize * 0.8, margin: 0, color }}>
+            {icon ? ` ${percent}%` : `${percent}%`}
+          </Title>
+          <Title
+            style={{
+              fontSize: fontSize * 0.4,
+              margin: 0,
+              color,
+              textAlign: "center",
+            }}
+          >
+            {finalValue}
+          </Title>
+        </Col>
+      </Row>
     </div>
   );
 }
