@@ -210,7 +210,7 @@ function CommonIndicator(_a) {
             overflow: "hidden",
         } },
         react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize, margin: 0, color: color } },
-            icon && react_1.default.createElement(IconElement, { style: { fontSize: fontSize * 0.75 } }),
+            icon && react_1.default.createElement(IconElement, { style: { fontSize: fontSize * 0.7 } }),
             icon ? " " + finalValue : finalValue)));
 }
 function PercentageIndicator(_a) {
