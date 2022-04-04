@@ -5,6 +5,7 @@ export declare type GraphDataOpts = {
     context: any;
     x: GraphAxis;
     y: GraphAxis;
+    limit: number;
 };
 export default function useGraphCountData(opts: GraphDataOpts): {
     data: Record<string, any>[] | undefined;

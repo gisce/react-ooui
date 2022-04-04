@@ -302,7 +302,7 @@ function Dashboard(props, ref) {
     return (react_1.default.createElement(DashboardGrid_1.DashboardGrid, { onPositionItemsChanged: onPositionItemsChanged }, dashboardItems.map(function (item, idx) {
         var actionData = item.actionData, values = item.values;
         var position = values.position, id = values.id;
-        var _a = actionData, actionId = _a.actionId, actionType = _a.actionType, key = _a.key, title = _a.title, views = _a.views, model = _a.model, context = _a.context, domain = _a.domain, initialView = _a.initialView;
+        var _a = actionData, actionId = _a.actionId, actionType = _a.actionType, key = _a.key, title = _a.title, views = _a.views, model = _a.model, context = _a.context, domain = _a.domain, initialView = _a.initialView, limit = _a.limit;
         var parmsParsed = {};
         try {
             parmsParsed = JSON.parse(position.replace(/'/g, '"'));
@@ -313,7 +313,7 @@ function Dashboard(props, ref) {
         }
         var childContent = null;
         if ((initialView === null || initialView === void 0 ? void 0 : initialView.type) === "graph") {
-            childContent = (react_1.default.createElement(Graph_1.Graph, { view_id: views.filter(function (view) { return view[1] === "graph"; })[0][0], model: model, context: context, domain: domain }));
+            childContent = (react_1.default.createElement(Graph_1.Graph, { view_id: views.filter(function (view) { return view[1] === "graph"; })[0][0], model: model, context: context, domain: domain, limit: limit }));
         }
         else if ((initialView === null || initialView === void 0 ? void 0 : initialView.type) === "form") {
             childContent = react_1.default.createElement(DashboardForm_1.DashboardForm, { model: model, actionDomain: domain });

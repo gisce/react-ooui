@@ -60,11 +60,11 @@ function useGraphCountData(opts) {
     react_1.useEffect(function () {
         (function () {
             return __awaiter(this, void 0, void 0, function () {
-                var domain, context, x, y, xField, yField, fields, yLabel_1, results, fieldsForModel, xFieldData, mustMapLabel, dataObject_1, valueLabelRelation_1, _i, results_1, result, _a, value, label, dataLabelObject_1, valuesForOperator, err_1;
+                var domain, context, x, y, limit, xField, yField, fields, yLabel_1, results, fieldsForModel, xFieldData, mustMapLabel, dataObject_1, valueLabelRelation_1, _i, results_1, result, _a, value, label, dataLabelObject_1, valuesForOperator, err_1;
                 return __generator(this, function (_b) {
                     switch (_b.label) {
                         case 0:
-                            domain = opts.domain, context = opts.context, x = opts.x, y = opts.y;
+                            domain = opts.domain, context = opts.context, x = opts.x, y = opts.y, limit = opts.limit;
                             _b.label = 1;
                         case 1:
                             _b.trys.push([1, 4, 5, 6]);
@@ -83,6 +83,7 @@ function useGraphCountData(opts) {
                                     context: context,
                                     model: model,
                                     order: xField,
+                                    limit: limit,
                                 })];
                         case 2:
                             results = (_b.sent());
