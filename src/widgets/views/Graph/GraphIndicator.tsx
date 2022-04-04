@@ -229,7 +229,7 @@ function CommonIndicator({
       }}
     >
       <Title style={{ fontSize, margin: 0, color }}>
-        {icon && <IconElement style={{ fontSize: fontSize * 0.75 }} />}
+        {icon && <IconElement style={{ fontSize: fontSize * 0.7 }} />}
         {icon ? ` ${finalValue}` : finalValue}
       </Title>
     </div>
