@@ -241,6 +241,7 @@ function Dashboard(props: DashboardProps, ref: any) {
           context,
           domain,
           initialView,
+          limit,
         } = actionData as any;
 
         let parmsParsed = {};
@@ -265,6 +266,7 @@ function Dashboard(props: DashboardProps, ref: any) {
               model={model}
               context={context}
               domain={domain}
+              limit={limit}
             />
           );
         } else if (initialView?.type === "form") {
