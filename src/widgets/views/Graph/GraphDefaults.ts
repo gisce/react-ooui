@@ -24,11 +24,21 @@ const DefaultGraphOptions = {
     ],
   },
   barStacked: {
-    padding: "auto",
-    xAxis: {
-      tickCount: 5,
-    },
     isStacked: true,
+    label: {
+      position: "middle",
+      layout: [
+        {
+          type: "interval-adjust-position",
+        },
+        {
+          type: "interval-hide-overlap",
+        },
+        {
+          type: "adjust-color",
+        },
+      ],
+    },
   },
 };
 

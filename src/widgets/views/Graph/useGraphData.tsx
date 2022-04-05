@@ -316,28 +316,55 @@ function applyOperators({
 
   Object.keys(results).forEach((x) => {
     const yValues = results[x];
-    const operatorsApplied: { [key: string]: any } = {};
 
     yAxis.forEach((y) => {
       const operator = y.operator!;
       const yField = y.name!;
-      const valuesForAxis: any[] = yValues
-        .filter(
-          (yValue: { [key: string]: any }) => yValue[yField] !== undefined
-        )
-        .map((yValue: { [key: string]: any }) => {
-          return yValue[yField];
-        });
-
-      const result = getValueForOperator({ operator, values: valuesForAxis });
-      operatorsApplied[getYAxisFieldname(y)] = result;
 
       if (y.label) {
-        operatorsApplied[y.label] = yValues[0][y.label];
+        const groupedYValues = getResultsGroupedBy({
+          results: yValues,
+          fieldName: y.label,
+        });
+
+        Object.keys(groupedYValues).forEach((yLabelKey) => {
+          const iYValues = groupedYValues[yLabelKey];
+          const valuesForAxis: any[] = getValuesForAxis({
+            values: iYValues,
+            fieldName: yField,
+          });
+
+          const result = getValueForOperator({
+            operator,
+            values: valuesForAxis,
+          });
+
+          if (!resultsWithOperatorsApplied[x]) {
+            resultsWithOperatorsApplied[x] = [];
+          }
+
+          resultsWithOperatorsApplied[x].push({
+            [getYAxisFieldname(y)]: result,
+            [y!.label!]: yLabelKey,
+          });
+        });
+      } else {
+        const valuesForAxis: any[] = getValuesForAxis({
+          values: yValues,
+          fieldName: yField,
+        });
+
+        const result = getValueForOperator({ operator, values: valuesForAxis });
+
+        if (!resultsWithOperatorsApplied[x]) {
+          resultsWithOperatorsApplied[x] = [];
+        }
+
+        resultsWithOperatorsApplied[x].push({
+          [getYAxisFieldname(y)]: result,
+        });
       }
     });
-
-    resultsWithOperatorsApplied[x] = operatorsApplied;
   });
 
   return resultsWithOperatorsApplied;
@@ -379,11 +406,13 @@ function createDataObject({
   const resultsArray: any[] = [];
 
   Object.keys(results).forEach((x) => {
-    const yValues = results[x];
+    const entries = results[x];
 
-    resultsArray.push({
-      [xField]: x,
-      ...yValues,
+    entries.forEach((yValues: any) => {
+      resultsArray.push({
+        [xField]: x,
+        ...yValues,
+      });
     });
   });
 
@@ -445,4 +474,40 @@ function getYFields(y: GraphAxis[]) {
     }
   });
   return yFields;
+}
+
+function getResultsGroupedBy({
+  results,
+  fieldName,
+}: {
+  results: any[];
+  fieldName: string;
+}) {
+  const groupedResults: { [key: string]: any } = {};
+
+  for (const result of results) {
+    const value = result[fieldName];
+    if (value !== undefined && value !== false) {
+      if (groupedResults[value] === undefined) {
+        groupedResults[value] = [];
+      }
+      groupedResults[value].push(result);
+    }
+  }
+
+  return groupedResults;
+}
+
+function getValuesForAxis({
+  values,
+  fieldName,
+}: {
+  values: any[];
+  fieldName: string;
+}) {
+  return values
+    .filter((yValue: { [key: string]: any }) => yValue[fieldName] !== undefined)
+    .map((yValue: { [key: string]: any }) => {
+      return yValue[fieldName];
+    });
 }
