@@ -217,7 +217,7 @@ function getValueData(_a) {
 }
 function getYStackedResultsIfNeeded(_a) {
     var results = _a.results, fields = _a.fields, ooui = _a.ooui, type = _a.type;
-    if (type !== "barStacked") {
+    if (type !== "barGrouped") {
         return results;
     }
     var fieldName = ooui.y[0].label;
@@ -242,7 +242,7 @@ function getYStackedResultsIfNeeded(_a) {
 function getGraphDefaultsType(_a) {
     var ooui = _a.ooui;
     if (ooui.type === "bar" && ooui.y && ooui.y.length === 1 && ooui.y[0].label) {
-        return "barStacked";
+        return "barGrouped";
     }
     if (ooui.type === "pie") {
         return ooui.type;
@@ -379,7 +379,7 @@ function getGraphProps(_a) {
         graphProps.colorField = ooui.x.name;
         graphProps.angleField = getYAxisFieldname(ooui.y[0]);
     }
-    else if (type === "barStacked") {
+    else if (type === "barGrouped") {
         graphProps.xField = ooui.x.name;
         graphProps.yField = getYAxisFieldname(ooui.y[0]);
         graphProps.seriesField = ooui.y[0].label;

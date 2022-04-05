@@ -21,8 +21,8 @@ declare const DefaultGraphOptions: {
             type: string;
         }[];
     };
-    barStacked: {
-        isStacked: boolean;
+    barGrouped: {
+        isGroup: boolean;
         label: {
             position: string;
             layout: {
