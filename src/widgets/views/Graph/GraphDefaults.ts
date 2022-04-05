@@ -23,8 +23,8 @@ const DefaultGraphOptions = {
       },
     ],
   },
-  barStacked: {
-    isStacked: true,
+  barGrouped: {
+    isGroup: true,
     label: {
       position: "middle",
       layout: [
