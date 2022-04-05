@@ -1,16 +1,14 @@
-import { GraphAxis } from "@gisce/ooui/dist/Graph";
+import { GraphChart as GraphChartOoui } from "@gisce/ooui";
 export declare type GraphDataOpts = {
     model: string;
     domain: any;
     context: any;
-    x: GraphAxis;
-    y: GraphAxis;
-    limit: number;
+    ooui: GraphChartOoui;
+    limit?: number;
 };
 export default function useGraphCountData(opts: GraphDataOpts): {
-    data: Record<string, any>[] | undefined;
     error: any;
     loading: boolean;
-    yLabel: string | undefined;
+    graphProps: any;
 };
 //# sourceMappingURL=useGraphData.d.ts.map

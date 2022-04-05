@@ -32,57 +32,18 @@ var GraphChart = function (props) {
         domain: domain,
         context: context,
         limit: limit,
-        x: ooui.x,
-        y: ooui.y,
-    }), data = _a.data, loading = _a.loading, error = _a.error, yLabel = _a.yLabel;
+        ooui: ooui,
+    }), loading = _a.loading, error = _a.error, graphProps = _a.graphProps;
     if (error) {
         return react_1.default.createElement(antd_1.Alert, { message: JSON.stringify(error), type: "error", banner: true });
     }
-    if (loading || data === undefined) {
+    if (loading || (graphProps === null || graphProps === void 0 ? void 0 : graphProps.data) === undefined) {
         return (react_1.default.createElement("div", { style: { padding: "1rem" } },
             react_1.default.createElement(icons_1.LoadingOutlined, { style: { height: "12px" } })));
     }
     var Chart = types[ooui.type];
-    var config = {};
-    if (ooui.type === "pie") {
-        config = {
-            appendPadding: 10,
-            data: data,
-            angleField: yLabel,
-            colorField: ooui.x.name,
-            radius: 0.9,
-            label: {
-                type: "inner",
-                offset: "-30%",
-                content: function (_a) {
-                    var percent = _a.percent;
-                    return (percent * 100).toFixed(0) + "%";
-                },
-                style: {
-                    fontSize: 14,
-                    textAlign: "center",
-                },
-            },
-            interactions: [
-                {
-                    type: "element-active",
-                },
-            ],
-        };
-    }
-    else {
-        config = {
-            data: data,
-            padding: "auto",
-            xField: ooui.x.name,
-            yField: yLabel,
-            xAxis: {
-                tickCount: 5,
-            },
-        };
-    }
     return (react_1.default.createElement("div", { style: { padding: "1rem" } },
-        react_1.default.createElement(Chart, __assign({}, config))));
+        react_1.default.createElement(Chart, __assign({}, graphProps))));
 };
 exports.GraphChart = GraphChart;
 //# sourceMappingURL=GraphChart.js.map
