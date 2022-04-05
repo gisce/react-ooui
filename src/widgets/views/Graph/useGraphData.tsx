@@ -1,14 +1,15 @@
 import ConnectionProvider from "@/ConnectionProvider";
 import { GraphAxis, Operator } from "@gisce/ooui/dist/Graph";
 import { useEffect, useState } from "react";
+import { GraphChart as GraphChartOoui } from "@gisce/ooui";
+import GraphDefaults from "./GraphDefaults";
 
 export type GraphDataOpts = {
   model: string;
   domain: any;
   context: any;
-  x: GraphAxis;
-  y: GraphAxis;
-  limit: number,
+  ooui: GraphChartOoui;
+  limit?: number;
 };
 
 const labelsForOperator = {
@@ -21,85 +22,66 @@ const labelsForOperator = {
   max: "max",
 };
 
+type GraphDefaultsType = "default" | "barStacked" | "pie";
+
 export default function useGraphCountData(opts: GraphDataOpts) {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<Record<string, any>[]>();
   const [error, setError] = useState<any>();
-  const [yLabel, setYLabel] = useState<string>();
-  const [xLabel, setXLabel] = useState<string>();
+  const [graphProps, setGraphProps] = useState<any>();
   const { model } = opts;
 
   useEffect(() => {
     (async function () {
-      const { domain, context, x, y, limit } = opts;
+      const { domain, context, ooui, limit } = opts;
+      const defaultsType: GraphDefaultsType = getGraphDefaultsType({ ooui });
 
       try {
         setLoading(true);
-        const xField: string = x.name!;
-        const yField: string = y.name!;
-        const fields = [xField];
-
-        if (y.operator !== "count") {
-          fields.push(yField);
-        }
-
-        const yLabel = labelsForOperator[y.operator!] || "value";
-        setYLabel(yLabel);
+        const xField: string = ooui.x!.name!;
 
         const results: any[] = (await ConnectionProvider.getHandler().search({
           params: domain,
-          fields,
+          fields: getFieldsToRetrieve({ ooui }),
           context,
           model,
           order: xField,
           limit,
         })) as any;
 
-        const fieldsForModel = await getFieldsForModel({ model, context });
-        const xFieldData = fieldsForModel[xField];
-        const mustMapLabel =
-          xFieldData.type === "selection" || xFieldData.type === "many2one";
+        const fields = await getFieldsForModel({ model, context });
 
-        const dataObject: { [key: string]: any } = {};
-        const valueLabelRelation: { [key: string]: any } = {};
-
-        // Group by x
-        for (const result of results) {
-          const { value, label } = getValueData({
-            fields: fieldsForModel,
-            values: result,
-            fieldName: xField,
-          });
-
-          valueLabelRelation[value] = label;
-
-          if (value !== undefined && value !== false) {
-            if (dataObject[value] === undefined) {
-              dataObject[value] = [];
-            }
-            dataObject[value].push(result[yField]);
-          }
-        }
-
-        let dataLabelObject: { [key: string]: any } = {};
-
-        if (mustMapLabel) {
-          // Translate x values to labels
-          Object.keys(dataObject).forEach((x) => {
-            const y = dataObject[x];
-            const labelForX = valueLabelRelation[x];
-            dataLabelObject[labelForX] = y;
-          });
-        }
-
-        const valuesForOperator = getValuesForOperator({
-          operator: y.operator!,
-          groupedValues: mustMapLabel ? dataLabelObject : dataObject,
-          xField,
-          yLabel,
+        const yStackedValues = getYStackedResultsIfNeeded({
+          results,
+          fields,
+          ooui,
+          type: defaultsType,
         });
 
-        setData(valuesForOperator);
+        const { valueLabelRelation, groupedResults } = getRecordsGroupedByX({
+          xField,
+          yFields: getYFields(ooui!.y!),
+          results: yStackedValues,
+          fields,
+        });
+
+        const appliedOperators = applyOperators({
+          results: groupedResults,
+          ooui,
+        });
+
+        const resultsWithFinalXLabels = replaceLabelsForXIfNeeded({
+          results: appliedOperators,
+          valueLabelRelation,
+          ooui,
+          fields,
+        });
+
+        const data = createDataObject({
+          results: resultsWithFinalXLabels,
+          xField,
+        });
+
+        setGraphProps(getGraphProps({ type: defaultsType, data, ooui }));
       } catch (err) {
         setError(err);
       } finally {
@@ -108,77 +90,56 @@ export default function useGraphCountData(opts: GraphDataOpts) {
     })();
   }, [model]);
 
-  return { data, error, loading, yLabel };
+  return { error, loading, graphProps };
 }
 
-function getValuesForOperator({
+function getValueForOperator({
   operator,
-  groupedValues,
-  xField,
-  yLabel,
+  values,
 }: {
   operator: Operator;
-  groupedValues: { [key: string]: any };
-  xField: string;
-  yLabel: string;
+  values: any[];
 }) {
-  const values: any[] = [];
-
-  Object.keys(groupedValues).forEach((x) => {
-    const y = groupedValues[x];
-
-    switch (operator) {
-      case "count": {
-        const count = y.length;
-        values.push({ [xField]: x, [yLabel]: count });
-        break;
-      }
-      case "+": {
-        const sum = y.reduce(function (previousValue: any, currentValue: any) {
-          return previousValue + currentValue;
-        });
-
-        values.push({ [xField]: x, [yLabel]: roundNumber(sum) });
-        break;
-      }
-      case "-": {
-        const substract = y.reduce(function (
-          previousValue: any,
-          currentValue: any
-        ) {
-          return previousValue - currentValue;
-        });
-        values.push({ [xField]: x, [yLabel]: roundNumber(substract) });
-        break;
-      }
-      case "*": {
-        const mult = y.reduce(function (previousValue: any, currentValue: any) {
-          return previousValue * currentValue;
-        });
-        values.push({ [xField]: x, [yLabel]: roundNumber(mult) });
-        break;
-      }
-      case "avg": {
-        const sum = y.reduce((a: any, b: any) => a + b, 0);
-        const avg = sum / y.length || 0;
-        values.push({ [xField]: x, [yLabel]: roundNumber(avg) });
-        break;
-      }
-      case "min": {
-        values.push({ [xField]: x, [yLabel]: Math.min(...y) });
-        break;
-      }
-      case "max": {
-        values.push({ [xField]: x, [yLabel]: Math.max(...y) });
-        break;
-      }
-      default: {
-        values.push({ [xField]: x, [yLabel]: y });
-      }
+  switch (operator) {
+    case "count": {
+      return values.length;
     }
-  });
-
-  return values;
+    case "+": {
+      return roundNumber(
+        values.reduce(function (previousValue: any, currentValue: any) {
+          return previousValue + currentValue;
+        })
+      );
+    }
+    case "-": {
+      return roundNumber(
+        values.reduce(function (previousValue: any, currentValue: any) {
+          return previousValue - currentValue;
+        })
+      );
+    }
+    case "*": {
+      return roundNumber(
+        values.reduce(function (previousValue: any, currentValue: any) {
+          return previousValue * currentValue;
+        })
+      );
+    }
+    case "avg": {
+      const sum = values.reduce((a: any, b: any) => a + b, 0);
+      const avg = sum / values.length || 0;
+      return roundNumber(avg);
+    }
+    case "min": {
+      return Math.min(...values);
+    }
+    case "max": {
+      return Math.max(...values);
+    }
+    default: {
+      return values;
+    }
+  }
 }
 
 function roundNumber(num: number) {
@@ -229,4 +190,259 @@ function getValueData({
   }
 
   return { value, label: fieldName };
+}
+
+function getYStackedResultsIfNeeded({
+  results,
+  fields,
+  ooui,
+  type,
+}: {
+  results: any[];
+  fields: any;
+  ooui: GraphChartOoui;
+  type: GraphDefaultsType;
+}) {
+  if (type !== "barStacked") {
+    return results;
+  }
+
+  const fieldName = ooui!.y![0].label!;
+
+  let finalResults: any[] = [];
+  const mapValueLabel: { [key: string]: string } = {};
+
+  results.forEach((result) => {
+    const { value, label } = getValueData({
+      fields,
+      values: result,
+      fieldName: fieldName,
+    });
+
+    mapValueLabel[value] = label;
+    finalResults.push({ ...result, [fieldName]: value });
+  });
+
+  finalResults = finalResults.map((result) => {
+    return {
+      ...result,
+      [fieldName]: mapValueLabel[result[fieldName]],
+    };
+  });
+
+  return finalResults;
+}
+
+function getGraphDefaultsType({ ooui }: { ooui: GraphChartOoui }) {
+  if (ooui.type === "bar" && ooui.y && ooui.y.length === 1 && ooui.y[0].label) {
+    return "barStacked";
+  }
+  if (ooui.type === "pie") {
+    return ooui.type;
+  }
+  return "default";
+}
+
+function getFieldsToRetrieve({ ooui }: { ooui: GraphChartOoui }) {
+  const xField: string = ooui.x!.name!;
+  const fields = [xField];
+
+  if (!ooui.y) {
+    return [];
+  }
+
+  ooui.y.forEach((y) => {
+    if (y.operator !== "count") {
+      fields.push(y.name!);
+    }
+
+    if (y.label) {
+      fields.push(y.label);
+    }
+  });
+
+  return fields;
+}
+
+function getRecordsGroupedByX({
+  results,
+  fields,
+  xField,
+  yFields,
+}: {
+  results: any[];
+  fields: any;
+  xField: string;
+  yFields: string[];
+}) {
+  const valueLabelRelation: { [key: string]: any } = {};
+  const groupedResults: { [key: string]: any } = {};
+
+  for (const result of results) {
+    const { value, label } = getValueData({
+      fields,
+      values: result,
+      fieldName: xField,
+    });
+
+    valueLabelRelation[value] = label;
+
+    if (value !== undefined && value !== false) {
+      if (groupedResults[value] === undefined) {
+        groupedResults[value] = [];
+      }
+
+      const yValues: { [key: string]: any } = {};
+      yFields.forEach((yField) => {
+        yValues[yField] = result[yField];
+      });
+
+      groupedResults[value].push(yValues);
+    }
+  }
+
+  return { valueLabelRelation, groupedResults };
+}
+
+function applyOperators({
+  results,
+  ooui,
+}: {
+  results: { [key: string]: any };
+  ooui: GraphChartOoui;
+}) {
+  const yAxis = ooui!.y!;
+  const resultsWithOperatorsApplied: { [key: string]: any } = {};
+
+  Object.keys(results).forEach((x) => {
+    const yValues = results[x];
+    const operatorsApplied: { [key: string]: any } = {};
+
+    yAxis.forEach((y) => {
+      const operator = y.operator!;
+      const yField = y.name!;
+      const valuesForAxis: any[] = yValues
+        .filter(
+          (yValue: { [key: string]: any }) => yValue[yField] !== undefined
+        )
+        .map((yValue: { [key: string]: any }) => {
+          return yValue[yField];
+        });
+
+      const result = getValueForOperator({ operator, values: valuesForAxis });
+      operatorsApplied[getYAxisFieldname(y)] = result;
+
+      if (y.label) {
+        operatorsApplied[y.label] = yValues[0][y.label];
+      }
+    });
+
+    resultsWithOperatorsApplied[x] = operatorsApplied;
+  });
+
+  return resultsWithOperatorsApplied;
+}
+
+function replaceLabelsForXIfNeeded({
+  results,
+  valueLabelRelation,
+  ooui,
+  fields,
+}: {
+  results: { [key: string]: any };
+  valueLabelRelation: { [key: string]: any };
+  ooui: GraphChartOoui;
+  fields: any;
+}) {
+  const resultsWithLabels: { [key: string]: any } = {};
+  const mustMapLabel = mustMapXLabel({ ooui, fields });
+
+  if (!mustMapLabel) {
+    return results;
+  }
+
+  Object.keys(results).forEach((x) => {
+    const yValues = results[x];
+    resultsWithLabels[valueLabelRelation[x]] = yValues;
+  });
+
+  return resultsWithLabels;
+}
+
+function createDataObject({
+  results,
+  xField,
+}: {
+  xField: string;
+  results: { [key: string]: any };
+}) {
+  const resultsArray: any[] = [];
+
+  Object.keys(results).forEach((x) => {
+    const yValues = results[x];
+
+    resultsArray.push({
+      [xField]: x,
+      ...yValues,
+    });
+  });
+
+  return resultsArray;
+}
+
+function getGraphProps({
+  type,
+  data,
+  ooui,
+}: {
+  type: GraphDefaultsType;
+  data: any[];
+  ooui: GraphChartOoui;
+}) {
+  let graphProps: any = GraphDefaults[type];
+  graphProps.data = data;
+
+  if (type === "pie") {
+    graphProps.colorField = ooui.x!.name;
+    graphProps.angleField = getYAxisFieldname(ooui!.y![0]);
+  } else if (type === "barStacked") {
+    graphProps.xField = ooui.x!.name;
+    graphProps.yField = getYAxisFieldname(ooui!.y![0]);
+    graphProps.seriesField = ooui!.y![0].label;
+  } else if (type === "default") {
+    graphProps.xField = ooui.x!.name;
+    graphProps.yField = getYAxisFieldname(ooui!.y![0]);
+  }
+
+  return graphProps;
+}
+
+function mustMapXLabel({
+  ooui,
+  fields,
+}: {
+  ooui: GraphChartOoui;
+  fields: any;
+}) {
+  const xField: string = ooui!.x!.name!;
+  const xFieldData = fields[xField];
+  return xFieldData.type === "selection" || xFieldData.type === "many2one";
+}
+
+function getYAxisFieldname(y: GraphAxis) {
+  if (y.operator) {
+    return y.name + "_" + labelsForOperator[y.operator];
+  }
+  return y.name!;
+}
+
+function getYFields(y: GraphAxis[]) {
+  const yFields: string[] = [];
+  y.forEach((yAxis) => {
+    yFields.push(yAxis!.name!);
+    if (yAxis!.label) {
+      yFields.push(yAxis!.label);
+    }
+  });
+  return yFields;
 }
