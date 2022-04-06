@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Tooltip, ButtonProps } from "antd";
 
-type Props = ButtonProps & {
+export type Props = ButtonProps & {
   tooltip: string;
 };
 

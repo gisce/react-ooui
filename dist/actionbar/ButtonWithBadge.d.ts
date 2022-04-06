@@ -1,6 +1,5 @@
-declare type Props = {
-    onClick: () => void;
-    disabled?: boolean;
+import { Props as ButtonWithTooltipProps } from "@/common/ButtonWithTooltip";
+declare type Props = ButtonWithTooltipProps & {
     badgeNumber?: number;
 };
 declare function ButtonWithBadge(props: Props): JSX.Element;
