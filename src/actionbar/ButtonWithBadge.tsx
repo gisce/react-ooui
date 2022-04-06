@@ -1,17 +1,12 @@
-import React, { useContext } from "react";
-import { FilterOutlined } from "@ant-design/icons";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
-import ButtonWithTooltip from "@/common/ButtonWithTooltip";
+import React from "react";
+import ButtonWithTooltip, {Props as ButtonWithTooltipProps } from "@/common/ButtonWithTooltip";
 
-type Props = {
-  onClick: () => void;
-  disabled?: boolean;
+type Props = ButtonWithTooltipProps & {
   badgeNumber?: number;
 };
 
 function ButtonWithBadge(props: Props) {
-  const { onClick, disabled = false, badgeNumber = 0 } = props;
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { badgeNumber = 0, ...restProps } = props;
 
   return (
     <div style={{ position: "relative" }}>
@@ -34,10 +29,7 @@ function ButtonWithBadge(props: Props) {
         </div>
       )}
       <ButtonWithTooltip
-        tooltip={t("advanced_search")}
-        icon={<FilterOutlined />}
-        onClick={onClick}
-        disabled={disabled}
+        {...restProps}
         style={{ width: 46, zIndex: 0 }}
       ></ButtonWithTooltip>
     </div>
