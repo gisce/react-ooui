@@ -14,6 +14,7 @@ import {
   CopyOutlined,
   ReloadOutlined,
   InfoCircleOutlined,
+  FilterOutlined,
 } from "@ant-design/icons";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showConfirmDialog from "@/ui/ConfirmDialog";
@@ -178,6 +179,9 @@ function TreeActionBar(props: Props) {
       />
       {separator()}
       <ButtonWithBadge
+        icon={<FilterOutlined style={{ color: searchVisible ? "white" : undefined }}/>}
+        tooltip={t("advanced_search")}
+        type={searchVisible ? "primary" : "default"}
         onClick={() => {
           setSearchVisible?.(!searchVisible);
         }}
