@@ -213,14 +213,21 @@ function getYStackedResultsIfNeeded({
   const mapValueLabel: { [key: string]: string } = {};
 
   results.forEach((result) => {
-    const { value, label } = getValueData({
-      fields,
-      values: result,
-      fieldName: fieldName,
-    });
+    const mustMapLabel = mustMapField({ fieldName, fields });
 
-    mapValueLabel[value] = label;
-    finalResults.push({ ...result, [fieldName]: value });
+    if (mustMapLabel) {
+      const { value, label } = getValueData({
+        fields,
+        values: result,
+        fieldName,
+      });
+
+      mapValueLabel[value] = label;
+      finalResults.push({ ...result, [fieldName]: value });
+    } else {
+      mapValueLabel[result[fieldName]] = result[fieldName];
+      finalResults.push({ ...result, [fieldName]: result[fieldName] });
+    }
   });
 
   finalResults = finalResults.map((result) => {
@@ -454,7 +461,17 @@ function mustMapXLabel({
   fields: any;
 }) {
   const xField: string = ooui!.x!.name!;
-  const xFieldData = fields[xField];
+  return mustMapField({ fieldName: xField, fields });
+}
+
+function mustMapField({
+  fieldName,
+  fields,
+}: {
+  fieldName: string;
+  fields: any;
+}) {
+  const xFieldData = fields[fieldName];
   return xFieldData.type === "selection" || xFieldData.type === "many2one";
 }
 

@@ -224,14 +224,21 @@ function getYStackedResultsIfNeeded(_a) {
     var finalResults = [];
     var mapValueLabel = {};
     results.forEach(function (result) {
-        var _a;
-        var _b = getValueData({
-            fields: fields,
-            values: result,
-            fieldName: fieldName,
-        }), value = _b.value, label = _b.label;
-        mapValueLabel[value] = label;
-        finalResults.push(__assign(__assign({}, result), (_a = {}, _a[fieldName] = value, _a)));
+        var _a, _b;
+        var mustMapLabel = mustMapField({ fieldName: fieldName, fields: fields });
+        if (mustMapLabel) {
+            var _c = getValueData({
+                fields: fields,
+                values: result,
+                fieldName: fieldName,
+            }), value = _c.value, label = _c.label;
+            mapValueLabel[value] = label;
+            finalResults.push(__assign(__assign({}, result), (_a = {}, _a[fieldName] = value, _a)));
+        }
+        else {
+            mapValueLabel[result[fieldName]] = result[fieldName];
+            finalResults.push(__assign(__assign({}, result), (_b = {}, _b[fieldName] = result[fieldName], _b)));
+        }
     });
     finalResults = finalResults.map(function (result) {
         var _a;
@@ -393,7 +400,11 @@ function getGraphProps(_a) {
 function mustMapXLabel(_a) {
     var ooui = _a.ooui, fields = _a.fields;
     var xField = ooui.x.name;
-    var xFieldData = fields[xField];
+    return mustMapField({ fieldName: xField, fields: fields });
+}
+function mustMapField(_a) {
+    var fieldName = _a.fieldName, fields = _a.fields;
+    var xFieldData = fields[fieldName];
     return xFieldData.type === "selection" || xFieldData.type === "many2one";
 }
 function getYAxisFieldname(y) {
