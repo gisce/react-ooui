@@ -200,7 +200,7 @@ function TreeActionBar(props) {
                 treeIsLoading, loading: duplicatingItem, onClick: duplicate }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.DeleteOutlined, null), tooltip: t("delete"), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0) || treeIsLoading, loading: removingItem, onClick: tryDelete }),
         separator(),
-        react_1.default.createElement(ButtonWithBadge_1.default, { onClick: function () {
+        react_1.default.createElement(ButtonWithBadge_1.default, { icon: react_1.default.createElement(icons_1.FilterOutlined, { style: { color: searchVisible ? "white" : undefined } }), tooltip: t("advanced_search"), type: searchVisible ? "primary" : "default", onClick: function () {
                 setSearchVisible === null || setSearchVisible === void 0 ? void 0 : setSearchVisible(!searchVisible);
             }, disabled: duplicatingItem || removingItem || treeIsLoading, badgeNumber: searchParams === null || searchParams === void 0 ? void 0 : searchParams.length }),
         react_1.default.createElement(ActionButton_1.default, { icon: react_1.default.createElement(icons_1.InfoCircleOutlined, null), tooltip: t("showLogs"), disabled: !(selectedRowItems && (selectedRowItems === null || selectedRowItems === void 0 ? void 0 : selectedRowItems.length) > 0) || treeIsLoading, loading: false, onClick: function () {
