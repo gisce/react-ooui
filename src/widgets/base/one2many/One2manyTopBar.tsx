@@ -1,5 +1,6 @@
 import React from "react";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
+import { ViewModes } from "@/widgets/base/one2many/One2many";
 
 import {
   FileAddOutlined,
@@ -13,7 +14,7 @@ import {
 
 type One2manyTopBarProps = {
   title: string;
-  mode: "tree" | "form";
+  mode: ViewModes;
   isMany2Many: boolean;
   readOnly: boolean;
   formHasChanges: boolean;

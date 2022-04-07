@@ -3,6 +3,7 @@ import { One2many as One2manyOoui } from "@gisce/ooui";
 import { Alert, Spin } from "antd";
 import { Form } from "@/index";
 import { Tree } from "@/index";
+import { Graph } from "@/widgets/views/Graph/Graph";
 import {
   Form as FormOoui,
   Tree as TreeOoui,
@@ -23,6 +24,7 @@ import { One2manyTopBar } from "@/widgets/base/one2many/One2manyTopBar";
 import { readObjectValues, getNextPendingId } from "@/helpers/one2manyHelper";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import {ViewModes} from "@/widgets/base/one2many/One2many";
 
 type One2manyValue = {
   fields?: any;
@@ -166,12 +168,14 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   }
 
   const toggleViewMode = () => {
-    if (currentView === "form" && views.get("tree")) {
+    const keys = Array.from(views.keys())
+    const nextView = keys[(keys.indexOf(currentView) + 1) % keys.length] as ViewModes;
+    if (currentView === "form") {
       showFormChangesDialogIfNeeded(() => {
-        setCurrentView("tree");
+        setCurrentView(nextView);
       });
-    } else if (currentView === "tree" && views.get("form")) {
-      setCurrentView("form");
+    } else {
+      setCurrentView(nextView);
     }
   };
 
@@ -516,22 +520,35 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         />
       );
     }
-
-    return (
-      <Tree
-        total={itemsToShow.length}
-        limit={itemsToShow.length}
-        treeView={views.get("tree")}
-        results={itemsToShow.map((item) => item.treeValues)}
-        loading={isLoading}
-        onRowClicked={onTreeRowClicked}
-        showPagination={false}
-        rowSelection={{
-          selectedRowKeys,
-          onChange: setSelectedRowKeys,
-        }}
-      />
-    );
+    if (currentView === "tree") {
+      return (
+        <Tree
+          total={itemsToShow.length}
+          limit={itemsToShow.length}
+          treeView={views.get("tree")}
+          results={itemsToShow.map((item) => item.treeValues)}
+          loading={isLoading}
+          onRowClicked={onTreeRowClicked}
+          showPagination={false}
+          rowSelection={{
+            selectedRowKeys,
+            onChange: setSelectedRowKeys,
+          }}
+        />
+      );
+    }
+    if (currentView === "graph") {
+      const domain = [[`${ooui.inv_field}`, '=', activeId]]
+      return (
+        <Graph
+          view_id={views.get("graph").view_id}
+          model={ooui.relation}
+          domain={domain}
+          context={ooui.context}
+          limit={0}
+        />
+      )
+    }
   };
 
   if (error) {
