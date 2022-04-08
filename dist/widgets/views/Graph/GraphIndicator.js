@@ -224,9 +224,10 @@ function PercentageIndicator(_a) {
     if (suffix) {
         finalValue += " " + suffix;
     }
-    var tw = getTextWidth(finalValue, "bold " + Math.floor(fontSize * 1.03) + "px sans-serif");
+    var percentValue = percent + "%";
+    var tw = getTextWidth(percentValue, "bold " + Math.floor(fontSize * 1.03) + "px sans-serif");
     if (icon) {
-        tw = tw * 2;
+        tw = tw * 1.5;
     }
     var IconElement = icon && iconMapper_1.default(icon);
     if (tw >= width * 0.85 || fontSize * 2 < twoLinesHeight) {
