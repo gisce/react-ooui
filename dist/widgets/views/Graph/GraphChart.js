@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GraphChart = void 0;
+exports.GraphChart = exports.GraphChartComp = void 0;
 var react_1 = __importDefault(require("react"));
 var icons_1 = require("@ant-design/icons");
 var plots_1 = require("@ant-design/plots");
@@ -25,7 +25,7 @@ var types = {
     bar: plots_1.Column,
     pie: plots_1.Pie,
 };
-var GraphChart = function (props) {
+var GraphChartComp = function (props) {
     var model = props.model, domain = props.domain, context = props.context, ooui = props.ooui, limit = props.limit;
     var _a = useGraphData_1.default({
         model: model,
@@ -45,5 +45,6 @@ var GraphChart = function (props) {
     return (react_1.default.createElement("div", { style: { padding: "1rem" } },
         react_1.default.createElement(Chart, __assign({}, graphProps))));
 };
-exports.GraphChart = GraphChart;
+exports.GraphChartComp = GraphChartComp;
+exports.GraphChart = react_1.default.memo(exports.GraphChartComp);
 //# sourceMappingURL=GraphChart.js.map
