@@ -270,13 +270,15 @@ function PercentageIndicator({
     finalValue += " " + suffix;
   }
 
+  const percentValue = `${percent}%`;
+
   let tw = getTextWidth(
-    finalValue,
+    percentValue,
     `bold ${Math.floor(fontSize * 1.03)}px sans-serif`
   );
 
   if (icon) {
-    tw = tw * 2;
+    tw = tw * 1.5;
   }
 
   const IconElement: any = icon && iconMapper(icon);
