@@ -13,11 +13,13 @@ type Props = {
   ooui: One2manyOoui;
 };
 
+export type ViewModes = "tree" | "form" | "graph";
+
 export const One2many = (props: Props) => {
   const { ooui } = props;
   const { mode, relation, views: oouiViews, required, context } = ooui;
 
-  let initialView: "tree" | "form";
+  let initialView: ViewModes;
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>();
   const [views, setViews] = useState<Views>(new Map<string, any>());
@@ -28,7 +30,7 @@ export const One2many = (props: Props) => {
     fetchData();
   }, [ooui]);
 
-  const getViewData = async (type: "form" | "tree") => {
+  const getViewData = async (type: ViewModes) => {
     if (oouiViews && oouiViews[type]) {
       return oouiViews[type];
     }
@@ -44,11 +46,19 @@ export const One2many = (props: Props) => {
     setError(undefined);
 
     try {
-      const formView = await getViewData("form");
-      const treeView = await getViewData("tree");
-      views.set("form", formView);
-      views.set("tree", treeView);
-      setViews(views);
+      if (mode && mode.length > 0) {
+        for (const m of mode as ViewModes[]) {
+          const v = await getViewData(m);
+          views.set(m, v)
+        }
+        setViews(views)
+      } else {
+        const formView = await getViewData("form");
+        const treeView = await getViewData("tree");
+        views.set("form", formView);
+        views.set("tree", treeView);
+        setViews(views);
+      }
     } catch (err) {
       setError(JSON.stringify(err));
     } finally {
@@ -57,7 +67,7 @@ export const One2many = (props: Props) => {
   };
 
   if (mode && mode.length > 0) {
-    initialView = mode[0] as "tree" | "form";
+    initialView = mode[0] as ViewModes;
   } else {
     initialView = "tree";
   }
