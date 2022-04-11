@@ -112,12 +112,14 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
     <div className="flex mb-2">
       {title()}
       <div className="h-8 flex-none pl-2">
-        <ButtonWithTooltip
-          tooltip={"Create new item"}
-          icon={<FileAddOutlined />}
-          disabled={readOnly}
-          onClick={onCreateItem}
-        />
+        {mode !== "graph" && (
+          <ButtonWithTooltip
+            tooltip={"Create new item"}
+            icon={<FileAddOutlined />}
+            disabled={readOnly}
+            onClick={onCreateItem}
+          />
+        )}
         {isMany2Many && (
           <ButtonWithTooltip
             tooltip={"Search existing item"}
@@ -126,8 +128,8 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
             onClick={onSearchItem}
           />
         )}
-        {separator()}
-        {deleteButton()}
+        {mode !== "graph" && separator()}
+        {mode !== "graph" && deleteButton()}
         {mode === "form" && itemBrowser()}
         {separator()}
         <ButtonWithTooltip
