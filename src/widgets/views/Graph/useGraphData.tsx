@@ -183,7 +183,7 @@ function getValueData({
     });
 
     if (!valuePair) {
-      throw new Error(`Could not find value ${value} in selection`);
+      return { value: false, label: undefined };
     }
 
     return { value, label: valuePair[1] };
@@ -291,6 +291,10 @@ function getRecordsGroupedByX({
       values: result,
       fieldName: xField,
     });
+
+    if (value === false && fields[xField].type === "selection") {
+      continue;
+    }
 
     valueLabelRelation[value] = label;
 

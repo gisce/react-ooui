@@ -209,7 +209,7 @@ function getValueData(_a) {
             return selectionPair[0] === value;
         });
         if (!valuePair) {
-            throw new Error("Could not find value " + value + " in selection");
+            return { value: false, label: undefined };
         }
         return { value: value, label: valuePair[1] };
     }
@@ -283,6 +283,9 @@ function getRecordsGroupedByX(_a) {
             values: result,
             fieldName: xField,
         }), value = _b.value, label = _b.label;
+        if (value === false && fields[xField].type === "selection") {
+            return "continue";
+        }
         valueLabelRelation[value] = label;
         if (value !== undefined && value !== false) {
             if (groupedResults[value] === undefined) {
