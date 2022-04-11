@@ -4,6 +4,10 @@ declare const DefaultGraphOptions: {
         xAxis: {
             tickCount: number;
         };
+        legend: {
+            maxWidthRatio: number;
+            maxItemWidth: number;
+        };
     };
     pie: {
         appendPadding: number;
@@ -17,12 +21,20 @@ declare const DefaultGraphOptions: {
                 textAlign: string;
             };
         };
+        legend: {
+            maxWidthRatio: number;
+            maxItemWidth: number;
+        };
         interactions: {
             type: string;
         }[];
     };
     barGrouped: {
         isGroup: boolean;
+        legend: {
+            maxWidthRatio: number;
+            maxItemWidth: number;
+        };
         label: {
             position: string;
             layout: {
