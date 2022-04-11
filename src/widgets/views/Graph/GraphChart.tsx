@@ -19,7 +19,7 @@ export type GraphChartProps = {
   ooui: GraphChartOoui;
 };
 
-export const GraphChart = (props: GraphChartProps) => {
+export const GraphChartComp = (props: GraphChartProps) => {
   const { model, domain, context, ooui, limit } = props;
 
   const { loading, error, graphProps } = useGraphData({
@@ -50,3 +50,5 @@ export const GraphChart = (props: GraphChartProps) => {
     </div>
   );
 };
+
+export const GraphChart = React.memo(GraphChartComp);

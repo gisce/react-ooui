@@ -230,8 +230,8 @@ function CommonIndicator({
       }}
     >
       <Title style={{ fontSize, margin: 0, color }}>
-        {icon && <IconElement style={{ fontSize: fontSize * 0.7 }} />}
-        {icon ? ` ${finalValue}` : finalValue}
+        {IconElement && <IconElement style={{ fontSize: fontSize * 0.7 }} />}
+        {IconElement ? ` ${finalValue}` : finalValue}
       </Title>
     </div>
   );
@@ -270,13 +270,15 @@ function PercentageIndicator({
     finalValue += " " + suffix;
   }
 
+  const percentValue = `${percent}%`;
+
   let tw = getTextWidth(
-    finalValue,
+    percentValue,
     `bold ${Math.floor(fontSize * 1.03)}px sans-serif`
   );
 
   if (icon) {
-    tw = tw * 2;
+    tw = tw * 1.5;
   }
 
   const IconElement: any = icon && iconMapper(icon);
@@ -301,7 +303,7 @@ function PercentageIndicator({
       }}
     >
       <Row align={"middle"}>
-        {icon && (
+        {IconElement && (
           <Col>
             <IconElement
               style={{ fontSize: fontSize * 1, color, paddingRight: "10px" }}
@@ -310,7 +312,7 @@ function PercentageIndicator({
         )}
         <Col>
           <Title style={{ fontSize: fontSize * 0.8, margin: 0, color }}>
-            {icon ? ` ${percent}%` : `${percent}%`}
+            {IconElement ? ` ${percent}%` : `${percent}%`}
           </Title>
           <Title
             style={{

@@ -211,8 +211,8 @@ function CommonIndicator(_a) {
             overflow: "hidden",
         } },
         react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize, margin: 0, color: color } },
-            icon && react_1.default.createElement(IconElement, { style: { fontSize: fontSize * 0.7 } }),
-            icon ? " " + finalValue : finalValue)));
+            IconElement && react_1.default.createElement(IconElement, { style: { fontSize: fontSize * 0.7 } }),
+            IconElement ? " " + finalValue : finalValue)));
 }
 function PercentageIndicator(_a) {
     var measureRef = _a.measureRef, height = _a.height, width = _a.width, percent = _a.percent, total = _a.total, value = _a.value, color = _a.color, icon = _a.icon, suffix = _a.suffix;
@@ -224,9 +224,10 @@ function PercentageIndicator(_a) {
     if (suffix) {
         finalValue += " " + suffix;
     }
-    var tw = getTextWidth(finalValue, "bold " + Math.floor(fontSize * 1.03) + "px sans-serif");
+    var percentValue = percent + "%";
+    var tw = getTextWidth(percentValue, "bold " + Math.floor(fontSize * 1.03) + "px sans-serif");
     if (icon) {
-        tw = tw * 2;
+        tw = tw * 1.5;
     }
     var IconElement = icon && iconMapper_1.default(icon);
     if (tw >= width * 0.85 || fontSize * 2 < twoLinesHeight) {
@@ -244,10 +245,10 @@ function PercentageIndicator(_a) {
             padding: "0.2rem",
         } },
         react_1.default.createElement(antd_1.Row, { align: "middle" },
-            icon && (react_1.default.createElement(antd_1.Col, null,
+            IconElement && (react_1.default.createElement(antd_1.Col, null,
                 react_1.default.createElement(IconElement, { style: { fontSize: fontSize * 1, color: color, paddingRight: "10px" } }))),
             react_1.default.createElement(antd_1.Col, null,
-                react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize * 0.8, margin: 0, color: color } }, icon ? " " + percent + "%" : percent + "%"),
+                react_1.default.createElement(Title_1.default, { style: { fontSize: fontSize * 0.8, margin: 0, color: color } }, IconElement ? " " + percent + "%" : percent + "%"),
                 react_1.default.createElement(Title_1.default, { style: {
                         fontSize: fontSize * 0.4,
                         margin: 0,

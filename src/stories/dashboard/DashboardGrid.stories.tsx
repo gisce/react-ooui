@@ -11,14 +11,17 @@ export function Default(): React.ReactElement {
   return (
     <LocaleProvider lang="en_US">
       <DashboardGrid>
-        <DashboardGridItem title="hoooasdfasdfasdfasdfasdfoola">
+        <DashboardGridItem
+          title="test"
+          parms={{ w: 3, h: 9, x: 0, y: 0, id: 10 }}
+        >
           <GraphIndicator
             model="res.partner"
             context={{}}
             domain={{}}
             icon={"wallet"}
-            // showPercent={true}
-            suffix={"€"}
+            showPercent={true}
+            // suffix={"€"}
           />
         </DashboardGridItem>
       </DashboardGrid>
