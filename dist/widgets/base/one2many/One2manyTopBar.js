@@ -47,10 +47,10 @@ var One2manyTopBar = function (props) {
     return (react_1.default.createElement("div", { className: "flex mb-2" },
         title(),
         react_1.default.createElement("div", { className: "h-8 flex-none pl-2" },
-            react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Create new item", icon: react_1.default.createElement(icons_1.FileAddOutlined, null), disabled: readOnly, onClick: onCreateItem }),
+            mode !== "graph" && (react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Create new item", icon: react_1.default.createElement(icons_1.FileAddOutlined, null), disabled: readOnly, onClick: onCreateItem })),
             isMany2Many && (react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Search existing item", icon: react_1.default.createElement(icons_1.SearchOutlined, null), disabled: readOnly, onClick: onSearchItem })),
-            separator(),
-            deleteButton(),
+            mode !== "graph" && separator(),
+            mode !== "graph" && deleteButton(),
             mode === "form" && itemBrowser(),
             separator(),
             react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: "Toggle view mode", icon: react_1.default.createElement(icons_1.AlignLeftOutlined, null), onClick: onToggleViewMode }))));
