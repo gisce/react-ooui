@@ -4,6 +4,10 @@ const DefaultGraphOptions = {
     xAxis: {
       tickCount: 5,
     },
+    legend: {
+      maxWidthRatio: 0.5,
+      maxItemWidth: 1000,
+    },
   },
   pie: {
     appendPadding: 10,
@@ -17,6 +21,10 @@ const DefaultGraphOptions = {
         textAlign: "center",
       },
     },
+    legend: {
+      maxWidthRatio: 0.5,
+      maxItemWidth: 1000,
+    },
     interactions: [
       {
         type: "element-active",
@@ -25,6 +33,10 @@ const DefaultGraphOptions = {
   },
   barGrouped: {
     isGroup: true,
+    legend: {
+      maxWidthRatio: 0.5,
+      maxItemWidth: 1000,
+    },
     label: {
       position: "middle",
       layout: [
