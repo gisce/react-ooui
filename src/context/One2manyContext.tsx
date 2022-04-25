@@ -1,8 +1,9 @@
 import React, { useState } from "react";
+import { ViewModes } from "@/widgets/base/one2many/One2many";
 
 export type One2manyContextType = {
-  currentView: "tree" | "form";
-  setCurrentView: (view: "tree" | "form") => void;
+  currentView: ViewModes;
+  setCurrentView: (view: ViewModes) => void;
   itemIndex: number;
   setItemIndex: (value: number) => void;
   manualTriggerChange: boolean;
@@ -18,9 +19,9 @@ const One2manyProvider = ({
   initialView,
 }: {
   children: React.ReactNode;
-  initialView: "tree" | "form";
+  initialView: ViewModes;
 }): any => {
-  const [currentView, setCurrentView] = useState<"tree" | "form">(initialView);
+  const [currentView, setCurrentView] = useState<ViewModes>(initialView);
   const [itemIndex, setItemIndex] = useState<number>(0);
   const [manualTriggerChange, setManualTriggerChange] = useState<boolean>(
     false
