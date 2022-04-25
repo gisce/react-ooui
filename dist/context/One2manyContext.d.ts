@@ -1,7 +1,8 @@
 import React from "react";
+import { ViewModes } from "@/widgets/base/one2many/One2many";
 export declare type One2manyContextType = {
-    currentView: "tree" | "form";
-    setCurrentView: (view: "tree" | "form") => void;
+    currentView: ViewModes;
+    setCurrentView: (view: ViewModes) => void;
     itemIndex: number;
     setItemIndex: (value: number) => void;
     manualTriggerChange: boolean;
@@ -10,7 +11,7 @@ export declare type One2manyContextType = {
 export declare const One2manyContext: React.Context<One2manyContextType | null>;
 declare const One2manyProvider: ({ children, initialView, }: {
     children: React.ReactNode;
-    initialView: "tree" | "form";
+    initialView: ViewModes;
 }) => any;
 export default One2manyProvider;
 //# sourceMappingURL=One2manyContext.d.ts.map

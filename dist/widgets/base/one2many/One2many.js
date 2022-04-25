@@ -107,33 +107,51 @@ var One2many = function (props) {
         });
     }); };
     var fetchData = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var formView, treeView, err_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var _i, _a, m, v, formView, treeView, err_1;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
                     setIsLoading(true);
                     setError(undefined);
-                    _a.label = 1;
+                    _b.label = 1;
                 case 1:
-                    _a.trys.push([1, 4, 5, 6]);
-                    return [4 /*yield*/, getViewData("form")];
+                    _b.trys.push([1, 10, 11, 12]);
+                    if (!(mode && mode.length > 0)) return [3 /*break*/, 6];
+                    _i = 0, _a = mode;
+                    _b.label = 2;
                 case 2:
-                    formView = _a.sent();
-                    return [4 /*yield*/, getViewData("tree")];
+                    if (!(_i < _a.length)) return [3 /*break*/, 5];
+                    m = _a[_i];
+                    return [4 /*yield*/, getViewData(m)];
                 case 3:
-                    treeView = _a.sent();
+                    v = _b.sent();
+                    views.set(m, v);
+                    _b.label = 4;
+                case 4:
+                    _i++;
+                    return [3 /*break*/, 2];
+                case 5:
+                    setViews(views);
+                    return [3 /*break*/, 9];
+                case 6: return [4 /*yield*/, getViewData("form")];
+                case 7:
+                    formView = _b.sent();
+                    return [4 /*yield*/, getViewData("tree")];
+                case 8:
+                    treeView = _b.sent();
                     views.set("form", formView);
                     views.set("tree", treeView);
                     setViews(views);
-                    return [3 /*break*/, 6];
-                case 4:
-                    err_1 = _a.sent();
+                    _b.label = 9;
+                case 9: return [3 /*break*/, 12];
+                case 10:
+                    err_1 = _b.sent();
                     setError(JSON.stringify(err_1));
-                    return [3 /*break*/, 6];
-                case 5:
+                    return [3 /*break*/, 12];
+                case 11:
                     setIsLoading(false);
                     return [7 /*endfinally*/];
-                case 6: return [2 /*return*/];
+                case 12: return [2 /*return*/];
             }
         });
     }); };

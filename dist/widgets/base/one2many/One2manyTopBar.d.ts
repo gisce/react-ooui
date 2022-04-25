@@ -1,6 +1,7 @@
+import { ViewModes } from "@/widgets/base/one2many/One2many";
 declare type One2manyTopBarProps = {
     title: string;
-    mode: "tree" | "form";
+    mode: ViewModes;
     isMany2Many: boolean;
     readOnly: boolean;
     formHasChanges: boolean;

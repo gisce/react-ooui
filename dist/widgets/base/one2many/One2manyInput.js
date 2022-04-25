@@ -74,6 +74,7 @@ var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var index_1 = require("@/index");
 var index_2 = require("@/index");
+var Graph_1 = require("@/widgets/views/Graph/Graph");
 var ooui_1 = require("@gisce/ooui");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var FormModal_1 = require("@/widgets/modals/FormModal");
@@ -86,6 +87,11 @@ var One2manyTopBar_1 = require("@/widgets/base/one2many/One2manyTopBar");
 var one2manyHelper_1 = require("@/helpers/one2manyHelper");
 var SearchModal_1 = require("@/widgets/modals/SearchModal");
 var LocaleContext_1 = require("@/context/LocaleContext");
+var ViewObjects = {
+    form: ooui_1.Form,
+    tree: ooui_1.Tree,
+    graph: Graph_1.Graph,
+};
 function filterDuplicateItems(items) {
     var ids = items.map(function (o) { return o.id; });
     var filtered = items.filter(function (item, index) {
@@ -209,13 +215,15 @@ var One2manyInput = function (props) {
         });
     }
     var toggleViewMode = function () {
-        if (currentView === "form" && views.get("tree")) {
+        var keys = Array.from(views.keys());
+        var nextView = keys[(keys.indexOf(currentView) + 1) % keys.length];
+        if (currentView === "form") {
             showFormChangesDialogIfNeeded(function () {
-                setCurrentView("tree");
+                setCurrentView(nextView);
             });
         }
-        else if (currentView === "tree" && views.get("form")) {
-            setCurrentView("form");
+        else {
+            setCurrentView(nextView);
         }
     };
     var previousItem = function () {
@@ -520,10 +528,16 @@ var One2manyInput = function (props) {
     }); };
     // TODO: improve this. Do we really have to parse the entire object just to get the title?
     function getTitle() {
-        var ViewType = currentView === "form" ? ooui_1.Form : ooui_1.Tree;
-        var ooui = new ViewType(views.get(currentView).fields);
-        ooui.parse(views.get(currentView).arch);
-        return ooui.string;
+        var ViewType = ViewObjects[currentView];
+        if (currentView === "graph") {
+            var parsedGraph = ooui_1.parseGraph(views.get("graph").arch);
+            return parsedGraph.string;
+        }
+        else {
+            var ooui_2 = new ViewType(views.get(currentView).fields);
+            ooui_2.parse(views.get(currentView).arch);
+            return ooui_2.string;
+        }
     }
     var content = function () {
         var _a, _b;
@@ -546,10 +560,16 @@ var One2manyInput = function (props) {
                     setFormHasChanges(true);
                 }, readOnly: readOnly }));
         }
-        return (react_1.default.createElement(index_2.Tree, { total: itemsToShow.length, limit: itemsToShow.length, treeView: views.get("tree"), results: itemsToShow.map(function (item) { return item.treeValues; }), loading: isLoading, onRowClicked: onTreeRowClicked, showPagination: false, rowSelection: {
-                selectedRowKeys: selectedRowKeys,
-                onChange: setSelectedRowKeys,
-            } }));
+        if (currentView === "tree") {
+            return (react_1.default.createElement(index_2.Tree, { total: itemsToShow.length, limit: itemsToShow.length, treeView: views.get("tree"), results: itemsToShow.map(function (item) { return item.treeValues; }), loading: isLoading, onRowClicked: onTreeRowClicked, showPagination: false, rowSelection: {
+                    selectedRowKeys: selectedRowKeys,
+                    onChange: setSelectedRowKeys,
+                } }));
+        }
+        if (currentView === "graph") {
+            var domain_1 = [["" + ooui.inv_field, "=", activeId]];
+            return (react_1.default.createElement(Graph_1.Graph, { view_id: views.get("graph").view_id, model: ooui.relation, domain: domain_1, context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), limit: 0 }));
+        }
     };
     if (error) {
         return react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true });
