@@ -47,9 +47,8 @@ export const BinaryInput = (props: BinaryInputProps) => {
   const requiredClass =
     required && !readOnly ? Config.requiredClass : undefined;
   const inputFile = useRef(null);
-  const { setFieldValue, getFieldValue } = useContext(
-    FormContext
-  ) as FormContextType;
+  const { setFieldValue, getFieldValue } =
+    (useContext(FormContext) as FormContextType) || {};
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
   const filesize = value ? getFilesize(value) : "";
@@ -92,8 +91,8 @@ export const BinaryInput = (props: BinaryInputProps) => {
   }
 
   return (
-    <Row gutter={8} wrap={false}>
-      <Col flex="auto">
+    <Row gutter={8}>
+      <Col style={{ paddingBottom: 5 }}>
         <input
           type="file"
           id="file"
@@ -108,7 +107,7 @@ export const BinaryInput = (props: BinaryInputProps) => {
           value={filesize}
         />
       </Col>
-      <Col flex="256px">
+      <Col>
         <Space>
           <Button
             icon={<FolderOpenOutlined />}
