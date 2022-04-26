@@ -44,6 +44,7 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
           id: r.id,
           name: r.name,
           datas: r.datas,
+          link: r.link,
         }))
       );
     } catch (error) {
@@ -52,18 +53,22 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
     setPreloading(false);
   }, attachments);
 
-  const downloadAttachment = useCallback(async (attachment: any) => {
-    const fileType: any = await getMimeType(attachment.datas);
-    openBase64InNewTab(attachment.datas, fileType.mime);
-  }, attachments);
+  const openAttachmentContent = useCallback(async (attachment: any) => {
+    if (attachment.datas) {
+      const fileType: any = await getMimeType(attachment.datas);
+      openBase64InNewTab(attachment.datas, fileType.mime);
+    } else if (attachment.link) {
+      window.open(attachment.link);
+    }
+  }, []);
 
   const openAttachmentDetail = useCallback(async (attachment: any) => {
     onViewAttachmentDetails(attachment);
-  }, attachments);
+  }, []);
 
   useEffect(() => {
     preloadAttachments();
-  }, [attachments, preloadAttachments]);
+  }, [preloadAttachments]);
 
   return (
     <AttachmentsButtonWrapper
@@ -72,7 +77,7 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
       disabled={disabled}
       loading={preloading}
       onAddNewAttachment={onAddNewAttachment}
-      onDownloadAttachment={downloadAttachment}
+      onOpenAttachmentContent={openAttachmentContent}
       onOpenAttachmentDetail={openAttachmentDetail}
     />
   );

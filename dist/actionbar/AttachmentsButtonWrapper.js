@@ -38,7 +38,7 @@ var AttachmentsButtonWrapper = function (props) {
 };
 exports.AttachmentsButtonWrapper = AttachmentsButtonWrapper;
 var Content = function (props, setPopoverVisible) {
-    var _a = props.attachments, attachments = _a === void 0 ? [] : _a, loading = props.loading, onAddNewAttachment = props.onAddNewAttachment, onDownloadAttachment = props.onDownloadAttachment, onOpenAttachmentDetail = props.onOpenAttachmentDetail;
+    var _a = props.attachments, attachments = _a === void 0 ? [] : _a, loading = props.loading, onAddNewAttachment = props.onAddNewAttachment, onOpenAttachmentContent = props.onOpenAttachmentContent, onOpenAttachmentDetail = props.onOpenAttachmentDetail;
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     if (loading) {
         return react_1.default.createElement(antd_1.Spin, { style: { padding: 20 } });
@@ -52,10 +52,10 @@ var Content = function (props, setPopoverVisible) {
             react_1.default.createElement("li", { className: " ant-dropdown-menu-item-divider" }),
             attachments.map(function (attachment) { return (react_1.default.createElement(antd_1.Row, { style: { paddingTop: 4, paddingBottom: 4 }, wrap: false, align: "middle", key: attachment.id },
                 react_1.default.createElement(antd_1.Col, { flex: "auto" }, attachment.name),
-                react_1.default.createElement(antd_1.Col, { flex: "25px", style: { textAlign: "center" } }, attachment.datas && (react_1.default.createElement(antd_1.Tooltip, { title: t("download") },
+                react_1.default.createElement(antd_1.Col, { flex: "25px", style: { textAlign: "center" } }, (attachment.datas || attachment.link) && (react_1.default.createElement(antd_1.Tooltip, { title: t("download") },
                     react_1.default.createElement(icons_1.DownloadOutlined, { style: { cursor: "pointer" }, onClick: function () {
                             setPopoverVisible(false);
-                            onDownloadAttachment(attachment);
+                            onOpenAttachmentContent(attachment);
                         } })))),
                 react_1.default.createElement(antd_1.Col, { flex: "25px", style: { textAlign: "center" } },
                     react_1.default.createElement(antd_1.Tooltip, { title: t("openAttachment") },

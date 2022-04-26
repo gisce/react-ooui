@@ -90,6 +90,7 @@ function AttachmentsButton(props) {
                         id: r.id,
                         name: r.name,
                         datas: r.datas,
+                        link: r.link,
                     }); }));
                     return [3 /*break*/, 4];
                 case 3:
@@ -102,28 +103,36 @@ function AttachmentsButton(props) {
             }
         });
     }); }, attachments);
-    var downloadAttachment = react_1.useCallback(function (attachment) { return __awaiter(_this, void 0, void 0, function () {
+    var openAttachmentContent = react_1.useCallback(function (attachment) { return __awaiter(_this, void 0, void 0, function () {
         var fileType;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, filesHelper_1.getMimeType(attachment.datas)];
+                case 0:
+                    if (!attachment.datas) return [3 /*break*/, 2];
+                    return [4 /*yield*/, filesHelper_1.getMimeType(attachment.datas)];
                 case 1:
                     fileType = _a.sent();
                     filesHelper_1.openBase64InNewTab(attachment.datas, fileType.mime);
-                    return [2 /*return*/];
+                    return [3 /*break*/, 3];
+                case 2:
+                    if (attachment.link) {
+                        window.open(attachment.link);
+                    }
+                    _a.label = 3;
+                case 3: return [2 /*return*/];
             }
         });
-    }); }, attachments);
+    }); }, []);
     var openAttachmentDetail = react_1.useCallback(function (attachment) { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             onViewAttachmentDetails(attachment);
             return [2 /*return*/];
         });
-    }); }, attachments);
+    }); }, []);
     react_1.useEffect(function () {
         preloadAttachments();
-    }, [attachments, preloadAttachments]);
-    return (react_1.default.createElement(AttachmentsButtonWrapper_1.AttachmentsButtonWrapper, { numberOfAttachments: attachments.length, attachments: preloadedAttachments, disabled: disabled, loading: preloading, onAddNewAttachment: onAddNewAttachment, onDownloadAttachment: downloadAttachment, onOpenAttachmentDetail: openAttachmentDetail }));
+    }, [preloadAttachments]);
+    return (react_1.default.createElement(AttachmentsButtonWrapper_1.AttachmentsButtonWrapper, { numberOfAttachments: attachments.length, attachments: preloadedAttachments, disabled: disabled, loading: preloading, onAddNewAttachment: onAddNewAttachment, onOpenAttachmentContent: openAttachmentContent, onOpenAttachmentDetail: openAttachmentDetail }));
 }
 exports.default = AttachmentsButton;
 //# sourceMappingURL=AttachmentsButton.js.map

@@ -12,6 +12,7 @@ export type Attachment = {
   id: number;
   name: string;
   datas: string;
+  link: string;
 };
 
 export type AttachmentsButtonWrapperProps = {
@@ -20,7 +21,7 @@ export type AttachmentsButtonWrapperProps = {
   disabled: boolean;
   loading: boolean;
   onAddNewAttachment: () => void;
-  onDownloadAttachment: (attachment: Attachment) => void;
+  onOpenAttachmentContent: (attachment: Attachment) => void;
   onOpenAttachmentDetail: (attachment: Attachment) => void;
 };
 
@@ -65,7 +66,7 @@ const Content = (
     attachments = [],
     loading,
     onAddNewAttachment,
-    onDownloadAttachment,
+    onOpenAttachmentContent,
     onOpenAttachmentDetail,
   } = props;
   const { t } = useContext(LocaleContext) as LocaleContextType;
@@ -97,13 +98,13 @@ const Content = (
             >
               <Col flex="auto">{attachment.name}</Col>
               <Col flex="25px" style={{ textAlign: "center" }}>
-                {attachment.datas && (
+                {(attachment.datas || attachment.link) && (
                   <Tooltip title={t("download")}>
                     <DownloadOutlined
                       style={{ cursor: "pointer" }}
                       onClick={() => {
                         setPopoverVisible(false);
-                        onDownloadAttachment(attachment);
+                        onOpenAttachmentContent(attachment);
                       }}
                     />
                   </Tooltip>

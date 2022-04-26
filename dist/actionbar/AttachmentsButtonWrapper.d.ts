@@ -2,6 +2,7 @@ export declare type Attachment = {
     id: number;
     name: string;
     datas: string;
+    link: string;
 };
 export declare type AttachmentsButtonWrapperProps = {
     attachments: Attachment[] | undefined;
@@ -9,7 +10,7 @@ export declare type AttachmentsButtonWrapperProps = {
     disabled: boolean;
     loading: boolean;
     onAddNewAttachment: () => void;
-    onDownloadAttachment: (attachment: Attachment) => void;
+    onOpenAttachmentContent: (attachment: Attachment) => void;
     onOpenAttachmentDetail: (attachment: Attachment) => void;
 };
 export declare const AttachmentsButtonWrapper: (props: AttachmentsButtonWrapperProps) => JSX.Element;
