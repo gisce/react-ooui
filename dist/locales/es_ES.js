@@ -75,5 +75,6 @@ exports.default = {
     saveBeforeTranslate: "Tienes que guardar el registro antes de añadir las traducciones",
     configDashboard: "Configurar panel",
     moveDashboard: "Mover items del panel",
+    openAttachment: "Ver detalle del adjunto",
 };
 //# sourceMappingURL=es_ES.js.map

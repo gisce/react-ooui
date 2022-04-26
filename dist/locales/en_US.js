@@ -75,5 +75,6 @@ exports.default = {
     saveBeforeTranslate: "You must save the record before adding translations",
     configDashboard: "Setup dashboard",
     moveDashboard: "Move dashboard items",
+    openAttachment: "Open attachment detail",
 };
 //# sourceMappingURL=en_US.js.map

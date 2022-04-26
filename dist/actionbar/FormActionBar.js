@@ -331,6 +331,12 @@ function FormActionBar() {
                     },
                     initialViewType: "form",
                 });
+            }, onViewAttachmentDetails: function (attachment) {
+                openDefaultActionForModel({
+                    model: "ir.attachment",
+                    res_id: attachment.id,
+                    initialViewType: "form",
+                });
             } })));
 }
 function separator() {
