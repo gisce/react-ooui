@@ -110,7 +110,7 @@ var groupDateTimeValuesIfNeeded = function (values) {
             var dateValueFrom = datePair[0].format("YYYY-MM-DD");
             from = dateValueFrom;
             if (timePair && timePair[0] !== null) {
-                var timeValueFrom = timePair[0].format("HH:mm");
+                var timeValueFrom = timePair[0].format("HH:mm:ss");
                 from = from + " " + timeValueFrom;
             }
         }
@@ -118,7 +118,7 @@ var groupDateTimeValuesIfNeeded = function (values) {
             var dateValueTo = datePair[1].format("YYYY-MM-DD");
             to = dateValueTo;
             if (timePair && timePair[1] !== null) {
-                var timeValueTo = timePair[1].format("HH:mm");
+                var timeValueTo = timePair[1].format("HH:mm:ss");
                 to = to + " " + timeValueTo;
             }
         }
