@@ -79,4 +79,5 @@ export default {
     "Heu de desar el registre abans d'afegir les traduccions",
   configDashboard: "Configurar panell",
   moveDashboard: "Moure items del panell",
+  openAttachment: "Veure detall de l'adjunt"
 };

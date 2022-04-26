@@ -1,82 +1,80 @@
-import React, { useContext, useState } from "react";
-import { LinkOutlined } from "@ant-design/icons";
-import DropdownButton from "./DropdownButton";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
-
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { getMimeType, openBase64InNewTab } from "@/helpers/filesHelper";
 import ConnectionProvider from "@/ConnectionProvider";
 import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
-import { Modal, Spin } from "antd";
 import showErrorDialog from "@/ui/ActionErrorDialog";
+import {
+  Attachment,
+  AttachmentsButtonWrapper,
+} from "./AttachmentsButtonWrapper";
 
-type AttachmentsButtonProps = {
+export type AttachmentsButtonProps = {
   attachments?: any;
   disabled?: boolean;
   onAddNewAttachment: () => void;
+  onViewAttachmentDetails: (attachment: Attachment) => void;
 };
 
 function AttachmentsButton(props: AttachmentsButtonProps) {
-  const { attachments, disabled, onAddNewAttachment } = props;
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const {
+    attachments,
+    disabled = false,
+    onAddNewAttachment,
+    onViewAttachmentDetails,
+  } = props;
   const { formRef } = useContext(ActionViewContext) as ActionViewContextType;
-  const [downloading, setDownloading] = useState(false);
+  const [preloading, setPreloading] = useState(false);
+  const [preloadedAttachments, setPreloadedAttachments] = useState<
+    Attachment[]
+  >([]);
+
+  const preloadAttachments = useCallback(async () => {
+    setPreloading(true);
+    try {
+      const results = await ConnectionProvider.getHandler().readObjects({
+        model: "ir.attachment",
+        ids: attachments.map((a: any) => a.id),
+        context: (formRef.current as any).getContext(),
+      });
+      setPreloadedAttachments(
+        results.map((r: any) => ({
+          id: r.id,
+          name: r.name,
+          datas: r.datas,
+        }))
+      );
+    } catch (error) {
+      showErrorDialog(error as any);
+    }
+    setPreloading(false);
+  }, attachments);
+
+  const downloadAttachment = useCallback(async (attachment: any) => {
+    const fileType: any = await getMimeType(attachment.datas);
+    openBase64InNewTab(attachment.datas, fileType.mime);
+  }, attachments);
+
+  const openAttachmentDetail = useCallback(async (attachment: any) => {
+    onViewAttachmentDetails(attachment);
+  }, attachments);
+
+  useEffect(() => {
+    preloadAttachments();
+  }, [attachments, preloadAttachments]);
 
   return (
-    <>
-      <DropdownButton
-        icon={<LinkOutlined />}
-        disabled={disabled}
-        label={`(${attachments.length})`}
-        tooltip={t("attachments")}
-        items={[
-          { id: "addNewAttachment", name: t("addNewAttachment") },
-          { id: "divider0", name: "divider" },
-          ...attachments,
-        ]}
-        onItemClick={async (itemClicked: any) => {
-          if (!itemClicked) {
-            return;
-          }
-
-          if (itemClicked.id === "addNewAttachment") {
-            onAddNewAttachment();
-            return;
-          }
-
-          setDownloading(true);
-          try {
-            const [result] = await ConnectionProvider.getHandler().readObjects({
-              model: "ir.attachment",
-              ids: [itemClicked.id],
-              context: (formRef.current as any).getContext(),
-            });
-
-            if (!result.datas) {
-              // TODO: maybe open a dialog message to inform that the attachment hasn't got data? or maybe open the attachment in a new form-tab?
-              return;
-            }
-
-            const fileType: any = await getMimeType(result.datas!);
-            openBase64InNewTab(result.datas, fileType.mime);
-          } catch (error) {
-            showErrorDialog(error);
-          }
-          setDownloading(false);
-        }}
-      />
-      <Modal
-        title={t("downloadingAttachment")}
-        visible={downloading}
-        footer={null}
-        closable={false}
-        centered
-      >
-        <Spin />
-      </Modal>
-    </>
+    <AttachmentsButtonWrapper
+      numberOfAttachments={attachments.length}
+      attachments={preloadedAttachments}
+      disabled={disabled}
+      loading={preloading}
+      onAddNewAttachment={onAddNewAttachment}
+      onDownloadAttachment={downloadAttachment}
+      onOpenAttachmentDetail={openAttachmentDetail}
+    />
   );
 }
 

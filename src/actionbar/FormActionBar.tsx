@@ -39,6 +39,7 @@ import {
 import AttachmentsButton from "./AttachmentsButton";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { View } from "@/views/ActionView";
+import { Attachment } from "./AttachmentsButtonWrapper";
 
 function FormActionBar() {
   const {
@@ -389,6 +390,13 @@ function FormActionBar() {
               res_model,
               res_id,
             },
+            initialViewType: "form",
+          });
+        }}
+        onViewAttachmentDetails={(attachment: Attachment) => {
+          openDefaultActionForModel({
+            model: "ir.attachment",
+            res_id: attachment.id,
             initialViewType: "form",
           });
         }}
