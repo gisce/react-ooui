@@ -106,7 +106,7 @@ const groupDateTimeValuesIfNeeded = (values: any) => {
       from = dateValueFrom;
 
       if (timePair && timePair[0] !== null) {
-        const timeValueFrom = timePair[0].format("HH:mm");
+        const timeValueFrom = timePair[0].format("HH:mm:ss");
         from = from + " " + timeValueFrom;
       }
     }
@@ -116,7 +116,7 @@ const groupDateTimeValuesIfNeeded = (values: any) => {
       to = dateValueTo;
 
       if (timePair && timePair[1] !== null) {
-        const timeValueTo = timePair[1].format("HH:mm");
+        const timeValueTo = timePair[1].format("HH:mm:ss");
         to = to + " " + timeValueTo;
       }
     }
