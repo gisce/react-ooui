@@ -91,7 +91,7 @@ var BinaryInput = function (props) {
     var _a = ooui, readOnly = _a.readOnly, required = _a.required, filenameField = _a.filenameField;
     var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
     var inputFile = react_1.useRef(null);
-    var _b = react_1.useContext(FormContext_1.FormContext), setFieldValue = _b.setFieldValue, getFieldValue = _b.getFieldValue;
+    var _b = react_1.useContext(FormContext_1.FormContext) || {}, setFieldValue = _b.setFieldValue, getFieldValue = _b.getFieldValue;
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var filesize = value ? filesHelper_1.getFilesize(value) : "";
     var triggerChange = function (changedValue) {
@@ -155,11 +155,11 @@ var BinaryInput = function (props) {
         setFieldValue(filenameField, undefined);
         triggerChange(undefined);
     }
-    return (react_1.default.createElement(antd_1.Row, { gutter: 8, wrap: false },
-        react_1.default.createElement(antd_1.Col, { flex: "auto" },
+    return (react_1.default.createElement(antd_1.Row, { gutter: 8 },
+        react_1.default.createElement(antd_1.Col, { style: { paddingBottom: 5 } },
             react_1.default.createElement("input", { type: "file", id: "file", ref: inputFile, style: { display: "none" }, onChange: onChangeFile }),
             react_1.default.createElement(antd_1.Input, { type: "text", disabled: true, className: requiredClass, value: filesize })),
-        react_1.default.createElement(antd_1.Col, { flex: "256px" },
+        react_1.default.createElement(antd_1.Col, null,
             react_1.default.createElement(antd_1.Space, null,
                 react_1.default.createElement(antd_1.Button, { icon: react_1.default.createElement(icons_1.FolderOpenOutlined, null), disabled: readOnly, onClick: function () {
                         var fileUploadField = inputFile.current;
