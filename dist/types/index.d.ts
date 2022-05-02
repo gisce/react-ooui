@@ -42,7 +42,7 @@ declare type SearchRequest = {
     order?: number | string;
 };
 declare type SearchAllIdsRequest = SearchCountRequest & {
-    totalItems: number;
+    totalItems?: number;
 };
 declare type SearchCountRequest = {
     params: Array<any>;

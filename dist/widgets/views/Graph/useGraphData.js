@@ -50,6 +50,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getValueForOperator = void 0;
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var react_1 = require("react");
 var GraphDefaults_1 = __importDefault(require("./GraphDefaults"));
@@ -170,11 +171,9 @@ function getValueForOperator(_a) {
         case "max": {
             return Math.max.apply(Math, values);
         }
-        default: {
-            return values;
-        }
     }
 }
+exports.getValueForOperator = getValueForOperator;
 function roundNumber(num) {
     return Math.round((num + Number.EPSILON) * 100) / 100;
 }
