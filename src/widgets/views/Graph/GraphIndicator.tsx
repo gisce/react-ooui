@@ -4,7 +4,9 @@ import ConnectionProvider from "@/ConnectionProvider";
 import Title from "antd/lib/typography/Title";
 import Measure from "react-measure";
 import iconMapper from "@/helpers/iconMapper";
-import { Col, Row } from "antd";
+import { Alert, Col, Row } from "antd";
+import { Operator } from "@gisce/ooui";
+import { getValueForOperator } from "./useGraphData";
 
 const fontGrowFactor = 0.7;
 const minFontSize = 30;
@@ -18,6 +20,8 @@ export type GraphInidicatorProps = {
   showPercent?: boolean;
   icon?: string;
   suffix?: string;
+  field?: string;
+  operator?: Operator;
 };
 
 export const GraphIndicator = (props: GraphInidicatorProps) => {
@@ -30,6 +34,8 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
     showPercent = false,
     icon: iconProps,
     suffix,
+    field,
+    operator,
   } = props;
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState<number>();
@@ -39,10 +45,39 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
   const [width, setWidth] = useState<number>(0);
   const [color, setColor] = useState<string>();
   const [icon, setIcon] = useState<string>();
+  const [error, setError] = useState<string>();
 
   useEffect(() => {
     fetchData();
   }, [model, colorCondition]);
+
+  async function fetchTotalValue(queryDomain: any) {
+    if (field && operator) {
+      const resultIds = await ConnectionProvider.getHandler().searchAllIds({
+        params: queryDomain,
+        model,
+        context,
+      });
+
+      const results = await ConnectionProvider.getHandler().readObjects({
+        model,
+        ids: resultIds,
+        fieldsToRetrieve: [field],
+        context,
+      });
+
+      return getValueForOperator({
+        values: results.map((r: any) => r[field]),
+        operator,
+      });
+    } else {
+      return await ConnectionProvider.getHandler().searchCount({
+        model,
+        params: queryDomain,
+        context,
+      });
+    }
+  }
 
   async function fetchData() {
     setLoading(true);
@@ -50,11 +85,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
     let percent;
 
     try {
-      const retrievedValue = await ConnectionProvider.getHandler().searchCount({
-        model,
-        params: domain,
-        context,
-      });
+      const retrievedValue = await fetchTotalValue(domain);
 
       setValue(retrievedValue);
 
@@ -64,13 +95,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
           values: {},
           context,
         });
-        totalRetrievedValue = await ConnectionProvider.getHandler().searchCount(
-          {
-            model,
-            params: parsedDomain,
-            context,
-          }
-        );
+        totalRetrievedValue = await fetchTotalValue(parsedDomain);
 
         setTotalValue(totalRetrievedValue);
       }
@@ -107,10 +132,14 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
         }
       }
     } catch (err) {
-      console.error(err);
+      setError(JSON.stringify(err));
     }
 
     setLoading(false);
+  }
+
+  if (error) {
+    return <Alert className="mt-10" message={error} type="error" banner />;
   }
 
   if (loading) {

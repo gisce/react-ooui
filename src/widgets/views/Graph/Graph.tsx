@@ -4,6 +4,7 @@ import {
   parseGraph,
   GraphIndicator as GraphIndicatorOoui,
   GraphChart as GraphChartOoui,
+  GraphIndicatorField,
 } from "@gisce/ooui";
 import { LoadingOutlined } from "@ant-design/icons";
 import ConnectionProvider from "@/ConnectionProvider";
@@ -61,8 +62,17 @@ export const Graph = (props: GraphProps) => {
   }
 
   switch (graphOoui.type) {
+    case "indicatorField":
     case "indicator": {
       const indicator = graphOoui as GraphIndicatorOoui;
+      const indicatorFieldopts =
+        indicator.type === "indicatorField"
+          ? {
+              field: (indicator as GraphIndicatorField).field,
+              operator: (indicator as GraphIndicatorField).operator,
+            }
+          : {};
+
       return (
         <GraphIndicator
           showPercent={indicator.showPercent}
@@ -73,6 +83,7 @@ export const Graph = (props: GraphProps) => {
           domain={domain}
           icon={indicator.icon!}
           suffix={indicator.suffix!}
+          {...indicatorFieldopts}
         />
       );
     }

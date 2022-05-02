@@ -51,7 +51,7 @@ type SearchRequest = {
 };
 
 type SearchAllIdsRequest = SearchCountRequest & {
-  totalItems: number;
+  totalItems?: number;
 };
 
 type SearchCountRequest = {
