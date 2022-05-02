@@ -54,76 +54,115 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importStar(require("react"));
-var icons_1 = require("@ant-design/icons");
-var DropdownButton_1 = __importDefault(require("./DropdownButton"));
-var LocaleContext_1 = require("@/context/LocaleContext");
 var filesHelper_1 = require("@/helpers/filesHelper");
 var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var ActionViewContext_1 = require("@/context/ActionViewContext");
-var antd_1 = require("antd");
 var ActionErrorDialog_1 = __importDefault(require("@/ui/ActionErrorDialog"));
+var AttachmentsButtonWrapper_1 = require("./AttachmentsButtonWrapper");
+var antd_1 = require("antd");
+var LocaleContext_1 = require("@/context/LocaleContext");
 function AttachmentsButton(props) {
     var _this = this;
-    var attachments = props.attachments, disabled = props.disabled, onAddNewAttachment = props.onAddNewAttachment;
-    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
+    var attachments = props.attachments, _a = props.disabled, disabled = _a === void 0 ? false : _a, onAddNewAttachment = props.onAddNewAttachment, onViewAttachmentDetails = props.onViewAttachmentDetails;
     var formRef = react_1.useContext(ActionViewContext_1.ActionViewContext).formRef;
-    var _a = react_1.useState(false), downloading = _a[0], setDownloading = _a[1];
-    return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(DropdownButton_1.default, { icon: react_1.default.createElement(icons_1.LinkOutlined, null), disabled: disabled, label: "(" + attachments.length + ")", tooltip: t("attachments"), items: __spreadArray([
-                { id: "addNewAttachment", name: t("addNewAttachment") },
-                { id: "divider0", name: "divider" }
-            ], attachments), onItemClick: function (itemClicked) { return __awaiter(_this, void 0, void 0, function () {
-                var result, fileType, error_1;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            if (!itemClicked) {
-                                return [2 /*return*/];
-                            }
-                            if (itemClicked.id === "addNewAttachment") {
-                                onAddNewAttachment();
-                                return [2 /*return*/];
-                            }
-                            setDownloading(true);
-                            _a.label = 1;
-                        case 1:
-                            _a.trys.push([1, 4, , 5]);
-                            return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
-                                    model: "ir.attachment",
-                                    ids: [itemClicked.id],
-                                    context: formRef.current.getContext(),
-                                })];
-                        case 2:
-                            result = (_a.sent())[0];
-                            if (!result.datas) {
-                                // TODO: maybe open a dialog message to inform that the attachment hasn't got data? or maybe open the attachment in a new form-tab?
-                                return [2 /*return*/];
-                            }
-                            return [4 /*yield*/, filesHelper_1.getMimeType(result.datas)];
-                        case 3:
-                            fileType = _a.sent();
-                            filesHelper_1.openBase64InNewTab(result.datas, fileType.mime);
-                            return [3 /*break*/, 5];
-                        case 4:
-                            error_1 = _a.sent();
-                            ActionErrorDialog_1.default(error_1);
-                            return [3 /*break*/, 5];
-                        case 5:
-                            setDownloading(false);
-                            return [2 /*return*/];
+    var _b = react_1.useState(false), preloading = _b[0], setPreloading = _b[1];
+    var _c = react_1.useState([]), preloadedAttachments = _c[0], setPreloadedAttachments = _c[1];
+    var _d = react_1.useState(false), downloading = _d[0], setDownloading = _d[1];
+    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
+    var preloadAttachments = react_1.useCallback(function () { return __awaiter(_this, void 0, void 0, function () {
+        var results, error_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    setPreloading(true);
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                            model: "ir.attachment",
+                            ids: attachments.map(function (a) { return a.id; }),
+                            fieldsToRetrieve: ["name", "datas_fname", "link"],
+                            context: formRef.current.getContext(),
+                        })];
+                case 2:
+                    results = _a.sent();
+                    setPreloadedAttachments(results.map(function (r) { return ({
+                        id: r.id,
+                        name: r.name,
+                        datas_fname: r.datas_fname,
+                        link: r.link,
+                    }); }));
+                    return [3 /*break*/, 4];
+                case 3:
+                    error_1 = _a.sent();
+                    ActionErrorDialog_1.default(error_1);
+                    return [3 /*break*/, 4];
+                case 4:
+                    setPreloading(false);
+                    return [2 /*return*/];
+            }
+        });
+    }); }, attachments);
+    var openAttachmentLink = react_1.useCallback(function (attachment) { return __awaiter(_this, void 0, void 0, function () {
+        var retrievedAttachment, results, error_2, fileType;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (attachment.link) {
+                        window.open(attachment.link);
+                        return [2 /*return*/];
                     }
-                });
-            }); } }),
+                    setDownloading(true);
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                            model: "ir.attachment",
+                            ids: [attachment.id],
+                            context: formRef.current.getContext(),
+                        })];
+                case 2:
+                    results = _a.sent();
+                    retrievedAttachment = results[0];
+                    return [3 /*break*/, 4];
+                case 3:
+                    error_2 = _a.sent();
+                    ActionErrorDialog_1.default(error_2);
+                    return [3 /*break*/, 4];
+                case 4:
+                    setDownloading(false);
+                    if (!retrievedAttachment) {
+                        return [2 /*return*/];
+                    }
+                    if (!retrievedAttachment.datas) return [3 /*break*/, 6];
+                    return [4 /*yield*/, filesHelper_1.getMimeType(retrievedAttachment.datas)];
+                case 5:
+                    fileType = _a.sent();
+                    filesHelper_1.openBase64InNewTab(retrievedAttachment.datas, fileType.mime);
+                    return [3 /*break*/, 7];
+                case 6:
+                    onViewAttachmentDetails(retrievedAttachment);
+                    _a.label = 7;
+                case 7: return [2 /*return*/];
+            }
+        });
+    }); }, []);
+    var openAttachmentDetail = react_1.useCallback(function (attachment) { return __awaiter(_this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            onViewAttachmentDetails(attachment);
+            return [2 /*return*/];
+        });
+    }); }, []);
+    react_1.useEffect(function () {
+        preloadAttachments();
+    }, [preloadAttachments]);
+    return (react_1.default.createElement(react_1.default.Fragment, null,
+        react_1.default.createElement(AttachmentsButtonWrapper_1.AttachmentsButtonWrapper, { numberOfAttachments: attachments.length, attachments: preloadedAttachments, disabled: disabled, loading: preloading, onAddNewAttachment: onAddNewAttachment, onopenAttachmentLink: openAttachmentLink, onOpenAttachmentDetail: openAttachmentDetail }),
         react_1.default.createElement(antd_1.Modal, { title: t("downloadingAttachment"), visible: downloading, footer: null, closable: false, centered: true },
             react_1.default.createElement(antd_1.Spin, null))));
 }

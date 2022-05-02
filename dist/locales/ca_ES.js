@@ -75,5 +75,7 @@ exports.default = {
     saveBeforeTranslate: "Heu de desar el registre abans d'afegir les traduccions",
     configDashboard: "Configurar panell",
     moveDashboard: "Moure items del panell",
+    openAttachment: "Veure detall de l'adjunt",
+    openAttachmentLink: "Obrir enllaç de l'adjunt",
 };
 //# sourceMappingURL=ca_ES.js.map

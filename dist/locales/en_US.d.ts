@@ -73,6 +73,8 @@ declare const _default: {
     saveBeforeTranslate: string;
     configDashboard: string;
     moveDashboard: string;
+    openAttachment: string;
+    openAttachmentLink: string;
 };
 export default _default;
 //# sourceMappingURL=en_US.d.ts.map

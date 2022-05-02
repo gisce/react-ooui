@@ -120,7 +120,7 @@ function RootView(props, ref) {
         tabViewsCloseFunctions.current.set(tabKey, canWeClose);
     }
     function retrieveAndOpenAction(_a) {
-        var action = _a.action, values = _a.values, forced_values = _a.forced_values, initialViewType = _a.initialViewType;
+        var action = _a.action, values = _a.values, forced_values = _a.forced_values, initialViewType = _a.initialViewType, res_id = _a.res_id;
         return __awaiter(this, void 0, void 0, function () {
             var dataForAction, _b, action_type, action_id_string, action_id, parsedContext, parsedDomain, _c, model, views, title, target, finalViews, _i, views_1, viewArray, id, viewType, view_id, initialView, _d, id, type, _e, id, type;
             return __generator(this, function (_f) {
@@ -209,6 +209,7 @@ function RootView(props, ref) {
                             action_id: action_id,
                             values: values,
                             forced_values: forced_values,
+                            res_id: res_id,
                         });
                         return [2 /*return*/];
                 }
@@ -375,7 +376,7 @@ function RootView(props, ref) {
         });
     }
     function openDefaultActionForModel(_a) {
-        var model = _a.model, values = _a.values, forced_values = _a.forced_values, initialViewType = _a.initialViewType;
+        var model = _a.model, values = _a.values, forced_values = _a.forced_values, initialViewType = _a.initialViewType, res_id = _a.res_id;
         return __awaiter(this, void 0, void 0, function () {
             var actionString;
             return __generator(this, function (_b) {
@@ -388,6 +389,7 @@ function RootView(props, ref) {
                                 values: values,
                                 forced_values: forced_values,
                                 initialViewType: initialViewType,
+                                res_id: res_id,
                             })];
                     case 2:
                         _b.sent();
