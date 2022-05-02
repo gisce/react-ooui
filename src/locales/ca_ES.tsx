@@ -80,5 +80,5 @@ export default {
   configDashboard: "Configurar panell",
   moveDashboard: "Moure items del panell",
   openAttachment: "Veure detall de l'adjunt",
-  openAttachmentContent: "Obrir contingut de l'adjunt",
+  openAttachmentLink: "Obrir enllaç de l'adjunt",
 };

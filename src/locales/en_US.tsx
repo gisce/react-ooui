@@ -77,5 +77,5 @@ export default {
   configDashboard: "Setup dashboard",
   moveDashboard: "Move dashboard items",
   openAttachment: "Open attachment detail",
-  openAttachmentContent: "Open attachment content",
+  openAttachmentLink: "Open attachment link",
 };

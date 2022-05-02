@@ -1,9 +1,9 @@
 import React, { useContext, useState } from "react";
 import {
-  LinkOutlined,
   DownOutlined,
-  EyeOutlined,
   FormOutlined,
+  DownloadOutlined,
+  LinkOutlined,
 } from "@ant-design/icons";
 import { Popover, Button, Row, Col, Tooltip, Spin } from "antd";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
@@ -21,7 +21,7 @@ export type AttachmentsButtonWrapperProps = {
   disabled: boolean;
   loading: boolean;
   onAddNewAttachment: () => void;
-  onOpenAttachmentContent: (attachment: Attachment) => void;
+  onopenAttachmentLink: (attachment: Attachment) => void;
   onOpenAttachmentDetail: (attachment: Attachment) => void;
 };
 
@@ -66,7 +66,7 @@ const Content = (
     attachments = [],
     loading,
     onAddNewAttachment,
-    onOpenAttachmentContent,
+    onopenAttachmentLink,
     onOpenAttachmentDetail,
   } = props;
   const { t } = useContext(LocaleContext) as LocaleContextType;
@@ -89,40 +89,49 @@ const Content = (
       {attachments.length > 0 && (
         <>
           <li className=" ant-dropdown-menu-item-divider"></li>
-          {attachments.map((attachment: any) => (
-            <Row
-              style={{ paddingTop: 4, paddingBottom: 4 }}
-              wrap={false}
-              align="middle"
-              key={attachment.id}
-            >
-              <Col flex="auto">{attachment.name}</Col>
-              <Col flex="25px" style={{ textAlign: "center" }}>
-                {(attachment.datas_fname || attachment.link) && (
-                  <Tooltip title={t("openAttachmentContent")}>
-                    <EyeOutlined
+          {attachments.map((attachment: any) => {
+            const Icon = attachment.link ? LinkOutlined : DownloadOutlined;
+            return (
+              <Row
+                style={{ paddingTop: 4, paddingBottom: 4 }}
+                wrap={false}
+                align="middle"
+                key={attachment.id}
+              >
+                <Col flex="auto">{attachment.name}</Col>
+                <Col flex="25px" style={{ textAlign: "center" }}>
+                  {(attachment.datas_fname || attachment.link) && (
+                    <Tooltip
+                      title={
+                        attachment.link
+                          ? t("openAttachmentLink")
+                          : t("download")
+                      }
+                    >
+                      <Icon
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          setPopoverVisible(false);
+                          onopenAttachmentLink(attachment);
+                        }}
+                      />
+                    </Tooltip>
+                  )}
+                </Col>
+                <Col flex="25px" style={{ textAlign: "center" }}>
+                  <Tooltip title={t("openAttachment")}>
+                    <FormOutlined
                       style={{ cursor: "pointer" }}
                       onClick={() => {
                         setPopoverVisible(false);
-                        onOpenAttachmentContent(attachment);
+                        onOpenAttachmentDetail(attachment);
                       }}
                     />
                   </Tooltip>
-                )}
-              </Col>
-              <Col flex="25px" style={{ textAlign: "center" }}>
-                <Tooltip title={t("openAttachment")}>
-                  <FormOutlined
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                      setPopoverVisible(false);
-                      onOpenAttachmentDetail(attachment);
-                    }}
-                  />
-                </Tooltip>
-              </Col>
-            </Row>
-          ))}
+                </Col>
+              </Row>
+            );
+          })}
         </>
       )}
     </>

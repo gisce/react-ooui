@@ -58,7 +58,7 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
     setPreloading(false);
   }, attachments);
 
-  const openAttachmentContent = useCallback(async (attachment: any) => {
+  const openAttachmentLink = useCallback(async (attachment: any) => {
     if (attachment.link) {
       window.open(attachment.link);
       return;
@@ -109,7 +109,7 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
         disabled={disabled}
         loading={preloading}
         onAddNewAttachment={onAddNewAttachment}
-        onOpenAttachmentContent={openAttachmentContent}
+        onopenAttachmentLink={openAttachmentLink}
         onOpenAttachmentDetail={openAttachmentDetail}
       />
       <Modal
