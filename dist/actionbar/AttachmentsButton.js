@@ -64,12 +64,16 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var ActionViewContext_1 = require("@/context/ActionViewContext");
 var ActionErrorDialog_1 = __importDefault(require("@/ui/ActionErrorDialog"));
 var AttachmentsButtonWrapper_1 = require("./AttachmentsButtonWrapper");
+var antd_1 = require("antd");
+var LocaleContext_1 = require("@/context/LocaleContext");
 function AttachmentsButton(props) {
     var _this = this;
     var attachments = props.attachments, _a = props.disabled, disabled = _a === void 0 ? false : _a, onAddNewAttachment = props.onAddNewAttachment, onViewAttachmentDetails = props.onViewAttachmentDetails;
     var formRef = react_1.useContext(ActionViewContext_1.ActionViewContext).formRef;
     var _b = react_1.useState(false), preloading = _b[0], setPreloading = _b[1];
     var _c = react_1.useState([]), preloadedAttachments = _c[0], setPreloadedAttachments = _c[1];
+    var _d = react_1.useState(false), downloading = _d[0], setDownloading = _d[1];
+    var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var preloadAttachments = react_1.useCallback(function () { return __awaiter(_this, void 0, void 0, function () {
         var results, error_1;
         return __generator(this, function (_a) {
@@ -82,6 +86,7 @@ function AttachmentsButton(props) {
                     return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
                             model: "ir.attachment",
                             ids: attachments.map(function (a) { return a.id; }),
+                            fieldsToRetrieve: ["name", "datas_fname", "link"],
                             context: formRef.current.getContext(),
                         })];
                 case 2:
@@ -89,7 +94,7 @@ function AttachmentsButton(props) {
                     setPreloadedAttachments(results.map(function (r) { return ({
                         id: r.id,
                         name: r.name,
-                        datas: r.datas,
+                        datas_fname: r.datas_fname,
                         link: r.link,
                     }); }));
                     return [3 /*break*/, 4];
@@ -104,22 +109,46 @@ function AttachmentsButton(props) {
         });
     }); }, attachments);
     var openAttachmentContent = react_1.useCallback(function (attachment) { return __awaiter(_this, void 0, void 0, function () {
-        var fileType;
+        var retrievedAttachment, results, error_2, fileType;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!attachment.datas) return [3 /*break*/, 2];
-                    return [4 /*yield*/, filesHelper_1.getMimeType(attachment.datas)];
-                case 1:
-                    fileType = _a.sent();
-                    filesHelper_1.openBase64InNewTab(attachment.datas, fileType.mime);
-                    return [3 /*break*/, 3];
-                case 2:
                     if (attachment.link) {
                         window.open(attachment.link);
+                        return [2 /*return*/];
                     }
-                    _a.label = 3;
-                case 3: return [2 /*return*/];
+                    setDownloading(true);
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                            model: "ir.attachment",
+                            ids: [attachment.id],
+                            context: formRef.current.getContext(),
+                        })];
+                case 2:
+                    results = _a.sent();
+                    retrievedAttachment = results[0];
+                    return [3 /*break*/, 4];
+                case 3:
+                    error_2 = _a.sent();
+                    ActionErrorDialog_1.default(error_2);
+                    return [3 /*break*/, 4];
+                case 4:
+                    setDownloading(false);
+                    if (!retrievedAttachment) {
+                        return [2 /*return*/];
+                    }
+                    if (!retrievedAttachment.datas) return [3 /*break*/, 6];
+                    return [4 /*yield*/, filesHelper_1.getMimeType(retrievedAttachment.datas)];
+                case 5:
+                    fileType = _a.sent();
+                    filesHelper_1.openBase64InNewTab(retrievedAttachment.datas, fileType.mime);
+                    return [3 /*break*/, 7];
+                case 6:
+                    onViewAttachmentDetails(retrievedAttachment);
+                    _a.label = 7;
+                case 7: return [2 /*return*/];
             }
         });
     }); }, []);
@@ -132,7 +161,10 @@ function AttachmentsButton(props) {
     react_1.useEffect(function () {
         preloadAttachments();
     }, [preloadAttachments]);
-    return (react_1.default.createElement(AttachmentsButtonWrapper_1.AttachmentsButtonWrapper, { numberOfAttachments: attachments.length, attachments: preloadedAttachments, disabled: disabled, loading: preloading, onAddNewAttachment: onAddNewAttachment, onOpenAttachmentContent: openAttachmentContent, onOpenAttachmentDetail: openAttachmentDetail }));
+    return (react_1.default.createElement(react_1.default.Fragment, null,
+        react_1.default.createElement(AttachmentsButtonWrapper_1.AttachmentsButtonWrapper, { numberOfAttachments: attachments.length, attachments: preloadedAttachments, disabled: disabled, loading: preloading, onAddNewAttachment: onAddNewAttachment, onOpenAttachmentContent: openAttachmentContent, onOpenAttachmentDetail: openAttachmentDetail }),
+        react_1.default.createElement(antd_1.Modal, { title: t("downloadingAttachment"), visible: downloading, footer: null, closable: false, centered: true },
+            react_1.default.createElement(antd_1.Spin, null))));
 }
 exports.default = AttachmentsButton;
 //# sourceMappingURL=AttachmentsButton.js.map

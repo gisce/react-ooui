@@ -52,8 +52,8 @@ var Content = function (props, setPopoverVisible) {
             react_1.default.createElement("li", { className: " ant-dropdown-menu-item-divider" }),
             attachments.map(function (attachment) { return (react_1.default.createElement(antd_1.Row, { style: { paddingTop: 4, paddingBottom: 4 }, wrap: false, align: "middle", key: attachment.id },
                 react_1.default.createElement(antd_1.Col, { flex: "auto" }, attachment.name),
-                react_1.default.createElement(antd_1.Col, { flex: "25px", style: { textAlign: "center" } }, (attachment.datas || attachment.link) && (react_1.default.createElement(antd_1.Tooltip, { title: t("download") },
-                    react_1.default.createElement(icons_1.DownloadOutlined, { style: { cursor: "pointer" }, onClick: function () {
+                react_1.default.createElement(antd_1.Col, { flex: "25px", style: { textAlign: "center" } }, (attachment.datas_fname || attachment.link) && (react_1.default.createElement(antd_1.Tooltip, { title: t("openAttachmentContent") },
+                    react_1.default.createElement(icons_1.EyeOutlined, { style: { cursor: "pointer" }, onClick: function () {
                             setPopoverVisible(false);
                             onOpenAttachmentContent(attachment);
                         } })))),
