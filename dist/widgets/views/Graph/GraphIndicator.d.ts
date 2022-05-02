@@ -1,3 +1,4 @@
+import { Operator } from "@gisce/ooui";
 export declare type GraphInidicatorProps = {
     model: string;
     domain: any;
@@ -7,6 +8,8 @@ export declare type GraphInidicatorProps = {
     showPercent?: boolean;
     icon?: string;
     suffix?: string;
+    field?: string;
+    operator?: Operator;
 };
 export declare const GraphIndicator: (props: GraphInidicatorProps) => JSX.Element;
 //# sourceMappingURL=GraphIndicator.d.ts.map

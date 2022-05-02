@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -112,9 +123,16 @@ var Graph = function (props) {
         return null;
     }
     switch (graphOoui.type) {
+        case "indicatorField":
         case "indicator": {
             var indicator = graphOoui;
-            return (react_1.default.createElement(GraphIndicator_1.GraphIndicator, { showPercent: indicator.showPercent, totalDomain: indicator.totalDomain, colorCondition: indicator.color, model: model, context: context, domain: domain, icon: indicator.icon, suffix: indicator.suffix }));
+            var indicatorFieldopts = indicator.type === "indicatorField"
+                ? {
+                    field: indicator.field,
+                    operator: indicator.operator,
+                }
+                : {};
+            return (react_1.default.createElement(GraphIndicator_1.GraphIndicator, __assign({ showPercent: indicator.showPercent, totalDomain: indicator.totalDomain, colorCondition: indicator.color, model: model, context: context, domain: domain, icon: indicator.icon, suffix: indicator.suffix }, indicatorFieldopts)));
         }
         case "line":
         case "bar":

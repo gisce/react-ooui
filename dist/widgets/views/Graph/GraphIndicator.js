@@ -66,10 +66,11 @@ var Title_1 = __importDefault(require("antd/lib/typography/Title"));
 var react_measure_1 = __importDefault(require("react-measure"));
 var iconMapper_1 = __importDefault(require("@/helpers/iconMapper"));
 var antd_1 = require("antd");
+var useGraphData_1 = require("./useGraphData");
 var fontGrowFactor = 0.7;
 var minFontSize = 30;
 var GraphIndicator = function (props) {
-    var model = props.model, domain = props.domain, context = props.context, colorCondition = props.colorCondition, totalDomain = props.totalDomain, _a = props.showPercent, showPercent = _a === void 0 ? false : _a, iconProps = props.icon, suffix = props.suffix;
+    var model = props.model, domain = props.domain, context = props.context, colorCondition = props.colorCondition, totalDomain = props.totalDomain, _a = props.showPercent, showPercent = _a === void 0 ? false : _a, iconProps = props.icon, suffix = props.suffix, field = props.field, operator = props.operator;
     var _b = react_1.useState(false), loading = _b[0], setLoading = _b[1];
     var _c = react_1.useState(), value = _c[0], setValue = _c[1];
     var _d = react_1.useState(), percent = _d[0], setPercent = _d[1];
@@ -78,9 +79,46 @@ var GraphIndicator = function (props) {
     var _g = react_1.useState(0), width = _g[0], setWidth = _g[1];
     var _h = react_1.useState(), color = _h[0], setColor = _h[1];
     var _j = react_1.useState(), icon = _j[0], setIcon = _j[1];
+    var _k = react_1.useState(), error = _k[0], setError = _k[1];
     react_1.useEffect(function () {
         fetchData();
     }, [model, colorCondition]);
+    function fetchTotalValue(queryDomain) {
+        return __awaiter(this, void 0, void 0, function () {
+            var resultIds, results;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!(field && operator)) return [3 /*break*/, 3];
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchAllIds({
+                                params: queryDomain,
+                                model: model,
+                                context: context,
+                            })];
+                    case 1:
+                        resultIds = _a.sent();
+                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().readObjects({
+                                model: model,
+                                ids: resultIds,
+                                fieldsToRetrieve: [field],
+                                context: context,
+                            })];
+                    case 2:
+                        results = _a.sent();
+                        return [2 /*return*/, useGraphData_1.getValueForOperator({
+                                values: results.map(function (r) { return r[field]; }),
+                                operator: operator,
+                            })];
+                    case 3: return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchCount({
+                            model: model,
+                            params: queryDomain,
+                            context: context,
+                        })];
+                    case 4: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    }
     function fetchData() {
         return __awaiter(this, void 0, void 0, function () {
             var totalRetrievedValue, percent, retrievedValue, parsedDomain, conditionEval, iconEval, err_1;
@@ -91,11 +129,7 @@ var GraphIndicator = function (props) {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 11, , 12]);
-                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchCount({
-                                model: model,
-                                params: domain,
-                                context: context,
-                            })];
+                        return [4 /*yield*/, fetchTotalValue(domain)];
                     case 2:
                         retrievedValue = _a.sent();
                         setValue(retrievedValue);
@@ -107,11 +141,7 @@ var GraphIndicator = function (props) {
                             })];
                     case 3:
                         parsedDomain = _a.sent();
-                        return [4 /*yield*/, ConnectionProvider_1.default.getHandler().searchCount({
-                                model: model,
-                                params: parsedDomain,
-                                context: context,
-                            })];
+                        return [4 /*yield*/, fetchTotalValue(parsedDomain)];
                     case 4:
                         totalRetrievedValue = _a.sent();
                         setTotalValue(totalRetrievedValue);
@@ -150,7 +180,7 @@ var GraphIndicator = function (props) {
                     case 10: return [3 /*break*/, 12];
                     case 11:
                         err_1 = _a.sent();
-                        console.error(err_1);
+                        setError(JSON.stringify(err_1));
                         return [3 /*break*/, 12];
                     case 12:
                         setLoading(false);
@@ -158,6 +188,9 @@ var GraphIndicator = function (props) {
                 }
             });
         });
+    }
+    if (error) {
+        return react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: error, type: "error", banner: true });
     }
     if (loading) {
         return (react_1.default.createElement("div", { style: { padding: "1rem" } },

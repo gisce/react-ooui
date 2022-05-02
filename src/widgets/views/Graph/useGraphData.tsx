@@ -93,7 +93,7 @@ export default function useGraphCountData(opts: GraphDataOpts) {
   return { error, loading, graphProps };
 }
 
-function getValueForOperator({
+export function getValueForOperator({
   operator,
   values,
 }: {
@@ -135,9 +135,6 @@ function getValueForOperator({
     }
     case "max": {
       return Math.max(...values);
-    }
-    default: {
-      return values;
     }
   }
 }
