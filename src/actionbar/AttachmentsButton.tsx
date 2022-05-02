@@ -10,6 +10,8 @@ import {
   Attachment,
   AttachmentsButtonWrapper,
 } from "./AttachmentsButtonWrapper";
+import { Modal, Spin } from "antd";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 export type AttachmentsButtonProps = {
   attachments?: any;
@@ -30,6 +32,8 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
   const [preloadedAttachments, setPreloadedAttachments] = useState<
     Attachment[]
   >([]);
+  const [downloading, setDownloading] = useState(false);
+  const { t } = useContext(LocaleContext) as LocaleContextType;
 
   const preloadAttachments = useCallback(async () => {
     setPreloading(true);
@@ -37,13 +41,14 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
       const results = await ConnectionProvider.getHandler().readObjects({
         model: "ir.attachment",
         ids: attachments.map((a: any) => a.id),
+        fieldsToRetrieve: ["name", "datas_fname", "link"],
         context: (formRef.current as any).getContext(),
       });
       setPreloadedAttachments(
         results.map((r: any) => ({
           id: r.id,
           name: r.name,
-          datas: r.datas,
+          datas_fname: r.datas_fname,
           link: r.link,
         }))
       );
@@ -54,11 +59,37 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
   }, attachments);
 
   const openAttachmentContent = useCallback(async (attachment: any) => {
-    if (attachment.datas) {
-      const fileType: any = await getMimeType(attachment.datas);
-      openBase64InNewTab(attachment.datas, fileType.mime);
-    } else if (attachment.link) {
+    if (attachment.link) {
       window.open(attachment.link);
+      return;
+    }
+
+    setDownloading(true);
+
+    let retrievedAttachment;
+
+    try {
+      const results = await ConnectionProvider.getHandler().readObjects({
+        model: "ir.attachment",
+        ids: [attachment.id],
+        context: (formRef.current as any).getContext(),
+      });
+      retrievedAttachment = results[0];
+    } catch (error) {
+      showErrorDialog(error as any);
+    }
+
+    setDownloading(false);
+
+    if (!retrievedAttachment) {
+      return;
+    }
+
+    if (retrievedAttachment.datas) {
+      const fileType: any = await getMimeType(retrievedAttachment.datas);
+      openBase64InNewTab(retrievedAttachment.datas, fileType.mime);
+    } else {
+      onViewAttachmentDetails(retrievedAttachment);
     }
   }, []);
 
@@ -71,15 +102,26 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
   }, [preloadAttachments]);
 
   return (
-    <AttachmentsButtonWrapper
-      numberOfAttachments={attachments.length}
-      attachments={preloadedAttachments}
-      disabled={disabled}
-      loading={preloading}
-      onAddNewAttachment={onAddNewAttachment}
-      onOpenAttachmentContent={openAttachmentContent}
-      onOpenAttachmentDetail={openAttachmentDetail}
-    />
+    <>
+      <AttachmentsButtonWrapper
+        numberOfAttachments={attachments.length}
+        attachments={preloadedAttachments}
+        disabled={disabled}
+        loading={preloading}
+        onAddNewAttachment={onAddNewAttachment}
+        onOpenAttachmentContent={openAttachmentContent}
+        onOpenAttachmentDetail={openAttachmentDetail}
+      />
+      <Modal
+        title={t("downloadingAttachment")}
+        visible={downloading}
+        footer={null}
+        closable={false}
+        centered
+      >
+        <Spin />
+      </Modal>
+    </>
   );
 }
 

@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import {
   LinkOutlined,
   DownOutlined,
-  DownloadOutlined,
+  EyeOutlined,
   FormOutlined,
 } from "@ant-design/icons";
 import { Popover, Button, Row, Col, Tooltip, Spin } from "antd";
@@ -98,9 +98,9 @@ const Content = (
             >
               <Col flex="auto">{attachment.name}</Col>
               <Col flex="25px" style={{ textAlign: "center" }}>
-                {(attachment.datas || attachment.link) && (
-                  <Tooltip title={t("download")}>
-                    <DownloadOutlined
+                {(attachment.datas_fname || attachment.link) && (
+                  <Tooltip title={t("openAttachmentContent")}>
+                    <EyeOutlined
                       style={{ cursor: "pointer" }}
                       onClick={() => {
                         setPopoverVisible(false);
