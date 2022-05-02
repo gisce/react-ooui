@@ -79,11 +79,13 @@ function RootView(props: RootViewProps, ref: any) {
     values,
     forced_values,
     initialViewType,
+    res_id,
   }: {
     action: string;
     values?: any;
     forced_values?: any;
     initialViewType?: ViewType;
+    res_id?: number;
   }) {
     const dataForAction = await ConnectionProvider.getHandler().getActionData({
       action,
@@ -160,6 +162,7 @@ function RootView(props: RootViewProps, ref: any) {
       action_id,
       values,
       forced_values,
+      res_id,
     });
   }
 
@@ -329,11 +332,13 @@ function RootView(props: RootViewProps, ref: any) {
     values,
     forced_values,
     initialViewType,
+    res_id,
   }: {
     model: string;
     values?: any;
     forced_values?: any;
     initialViewType?: ViewType;
+    res_id?: number;
   }) {
     const actionString = await ConnectionProvider.getHandler().getActionStringForModel(
       model
@@ -343,6 +348,7 @@ function RootView(props: RootViewProps, ref: any) {
       values,
       forced_values,
       initialViewType,
+      res_id,
     });
   }
 
