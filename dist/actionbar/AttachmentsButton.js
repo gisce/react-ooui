@@ -108,7 +108,7 @@ function AttachmentsButton(props) {
             }
         });
     }); }, attachments);
-    var openAttachmentContent = react_1.useCallback(function (attachment) { return __awaiter(_this, void 0, void 0, function () {
+    var openAttachmentLink = react_1.useCallback(function (attachment) { return __awaiter(_this, void 0, void 0, function () {
         var retrievedAttachment, results, error_2, fileType;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -162,7 +162,7 @@ function AttachmentsButton(props) {
         preloadAttachments();
     }, [preloadAttachments]);
     return (react_1.default.createElement(react_1.default.Fragment, null,
-        react_1.default.createElement(AttachmentsButtonWrapper_1.AttachmentsButtonWrapper, { numberOfAttachments: attachments.length, attachments: preloadedAttachments, disabled: disabled, loading: preloading, onAddNewAttachment: onAddNewAttachment, onOpenAttachmentContent: openAttachmentContent, onOpenAttachmentDetail: openAttachmentDetail }),
+        react_1.default.createElement(AttachmentsButtonWrapper_1.AttachmentsButtonWrapper, { numberOfAttachments: attachments.length, attachments: preloadedAttachments, disabled: disabled, loading: preloading, onAddNewAttachment: onAddNewAttachment, onopenAttachmentLink: openAttachmentLink, onOpenAttachmentDetail: openAttachmentDetail }),
         react_1.default.createElement(antd_1.Modal, { title: t("downloadingAttachment"), visible: downloading, footer: null, closable: false, centered: true },
             react_1.default.createElement(antd_1.Spin, null))));
 }

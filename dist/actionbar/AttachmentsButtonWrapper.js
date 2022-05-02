@@ -38,7 +38,7 @@ var AttachmentsButtonWrapper = function (props) {
 };
 exports.AttachmentsButtonWrapper = AttachmentsButtonWrapper;
 var Content = function (props, setPopoverVisible) {
-    var _a = props.attachments, attachments = _a === void 0 ? [] : _a, loading = props.loading, onAddNewAttachment = props.onAddNewAttachment, onOpenAttachmentContent = props.onOpenAttachmentContent, onOpenAttachmentDetail = props.onOpenAttachmentDetail;
+    var _a = props.attachments, attachments = _a === void 0 ? [] : _a, loading = props.loading, onAddNewAttachment = props.onAddNewAttachment, onopenAttachmentLink = props.onopenAttachmentLink, onOpenAttachmentDetail = props.onOpenAttachmentDetail;
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     if (loading) {
         return react_1.default.createElement(antd_1.Spin, { style: { padding: 20 } });
@@ -50,18 +50,23 @@ var Content = function (props, setPopoverVisible) {
             } }, t("addNewAttachment")),
         attachments.length > 0 && (react_1.default.createElement(react_1.default.Fragment, null,
             react_1.default.createElement("li", { className: " ant-dropdown-menu-item-divider" }),
-            attachments.map(function (attachment) { return (react_1.default.createElement(antd_1.Row, { style: { paddingTop: 4, paddingBottom: 4 }, wrap: false, align: "middle", key: attachment.id },
-                react_1.default.createElement(antd_1.Col, { flex: "auto" }, attachment.name),
-                react_1.default.createElement(antd_1.Col, { flex: "25px", style: { textAlign: "center" } }, (attachment.datas_fname || attachment.link) && (react_1.default.createElement(antd_1.Tooltip, { title: t("openAttachmentContent") },
-                    react_1.default.createElement(icons_1.EyeOutlined, { style: { cursor: "pointer" }, onClick: function () {
-                            setPopoverVisible(false);
-                            onOpenAttachmentContent(attachment);
-                        } })))),
-                react_1.default.createElement(antd_1.Col, { flex: "25px", style: { textAlign: "center" } },
-                    react_1.default.createElement(antd_1.Tooltip, { title: t("openAttachment") },
-                        react_1.default.createElement(icons_1.FormOutlined, { style: { cursor: "pointer" }, onClick: function () {
+            attachments.map(function (attachment) {
+                var Icon = attachment.link ? icons_1.LinkOutlined : icons_1.DownloadOutlined;
+                return (react_1.default.createElement(antd_1.Row, { style: { paddingTop: 4, paddingBottom: 4 }, wrap: false, align: "middle", key: attachment.id },
+                    react_1.default.createElement(antd_1.Col, { flex: "auto" }, attachment.name),
+                    react_1.default.createElement(antd_1.Col, { flex: "25px", style: { textAlign: "center" } }, (attachment.datas_fname || attachment.link) && (react_1.default.createElement(antd_1.Tooltip, { title: attachment.link
+                            ? t("openAttachmentLink")
+                            : t("download") },
+                        react_1.default.createElement(Icon, { style: { cursor: "pointer" }, onClick: function () {
                                 setPopoverVisible(false);
-                                onOpenAttachmentDetail(attachment);
-                            } }))))); })))));
+                                onopenAttachmentLink(attachment);
+                            } })))),
+                    react_1.default.createElement(antd_1.Col, { flex: "25px", style: { textAlign: "center" } },
+                        react_1.default.createElement(antd_1.Tooltip, { title: t("openAttachment") },
+                            react_1.default.createElement(icons_1.FormOutlined, { style: { cursor: "pointer" }, onClick: function () {
+                                    setPopoverVisible(false);
+                                    onOpenAttachmentDetail(attachment);
+                                } })))));
+            })))));
 };
 //# sourceMappingURL=AttachmentsButtonWrapper.js.map

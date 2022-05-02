@@ -76,6 +76,6 @@ exports.default = {
     configDashboard: "Configurar panel",
     moveDashboard: "Mover items del panel",
     openAttachment: "Ver detalle del adjunto",
-    openAttachmentContent: "Abrir contenido del adjunto",
+    openAttachmentLink: "Abrir enlace del adjunto",
 };
 //# sourceMappingURL=es_ES.js.map

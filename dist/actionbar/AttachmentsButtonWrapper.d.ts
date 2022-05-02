@@ -10,7 +10,7 @@ export declare type AttachmentsButtonWrapperProps = {
     disabled: boolean;
     loading: boolean;
     onAddNewAttachment: () => void;
-    onOpenAttachmentContent: (attachment: Attachment) => void;
+    onopenAttachmentLink: (attachment: Attachment) => void;
     onOpenAttachmentDetail: (attachment: Attachment) => void;
 };
 export declare const AttachmentsButtonWrapper: (props: AttachmentsButtonWrapperProps) => JSX.Element;

@@ -74,7 +74,7 @@ declare const _default: {
     configDashboard: string;
     moveDashboard: string;
     openAttachment: string;
-    openAttachmentContent: string;
+    openAttachmentLink: string;
 };
 export default _default;
 //# sourceMappingURL=ca_ES.d.ts.map
