@@ -7,7 +7,7 @@ exports.FormContext = void 0;
 var react_1 = __importDefault(require("react"));
 exports.FormContext = react_1.default.createContext(null);
 var FormProvider = function (props) {
-    var children = props.children, activeId = props.activeId, activeModel = props.activeModel, setFieldValue = props.setFieldValue, getFieldValue = props.getFieldValue, executeButtonAction = props.executeButtonAction, getContext = props.getContext, getValues = props.getValues, setOriginalValue = props.setOriginalValue, domain = props.domain, submitForm = props.submitForm, fetchValues = props.fetchValues, formHasChanges = props.formHasChanges;
+    var children = props.children, activeId = props.activeId, activeModel = props.activeModel, setFieldValue = props.setFieldValue, getFieldValue = props.getFieldValue, executeButtonAction = props.executeButtonAction, getContext = props.getContext, getValues = props.getValues, setOriginalValue = props.setOriginalValue, domain = props.domain, submitForm = props.submitForm, fetchValues = props.fetchValues, formHasChanges = props.formHasChanges, elementHasLostFocus = props.elementHasLostFocus;
     return (react_1.default.createElement(exports.FormContext.Provider, { value: {
             domain: domain,
             getValues: getValues,
@@ -21,6 +21,7 @@ var FormProvider = function (props) {
             submitForm: submitForm,
             fetchValues: fetchValues,
             formHasChanges: formHasChanges,
+            elementHasLostFocus: elementHasLostFocus,
         } }, children));
 };
 exports.default = FormProvider;

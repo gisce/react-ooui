@@ -18,9 +18,12 @@ export type FormContextType = {
   getValues: () => Promise<any>;
   setOriginalValue: (field: string, value: any) => void;
   domain: any[];
-  submitForm?: (options?: { callOnSubmitSucceed?: boolean }) => Promise<boolean>;
+  submitForm?: (options?: {
+    callOnSubmitSucceed?: boolean;
+  }) => Promise<boolean>;
   fetchValues?: () => void;
   formHasChanges?: () => boolean;
+  elementHasLostFocus?: () => void;
 };
 
 export const FormContext = React.createContext<FormContextType | null>(null);
@@ -44,6 +47,7 @@ const FormProvider = (props: FormProviderProps): any => {
     submitForm,
     fetchValues,
     formHasChanges,
+    elementHasLostFocus,
   } = props;
 
   return (
@@ -61,6 +65,7 @@ const FormProvider = (props: FormProviderProps): any => {
         submitForm,
         fetchValues,
         formHasChanges,
+        elementHasLostFocus,
       }}
     >
       {children}

@@ -18,6 +18,7 @@ export declare type FormContextType = {
     }) => Promise<boolean>;
     fetchValues?: () => void;
     formHasChanges?: () => boolean;
+    elementHasLostFocus?: () => void;
 };
 export declare const FormContext: React.Context<FormContextType | null>;
 declare type FormProviderProps = FormContextType & {
