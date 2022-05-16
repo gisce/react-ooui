@@ -84,9 +84,11 @@ var Char = function (props) {
     var ooui = props.ooui, _a = props.isSearchField, isSearchField = _a === void 0 ? false : _a;
     var _b = ooui, id = _b.id, readOnly = _b.readOnly, isPassword = _b.isPassword, required = _b.required, translatable = _b.translatable;
     var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
-    var input = (react_1.default.createElement(antd_1.Input, { disabled: readOnly || (translatable && !isSearchField), id: id, className: requiredClass }));
+    var formContext = react_1.useContext(FormContext_1.FormContext);
+    var elementHasLostFocus = (formContext || {}).elementHasLostFocus;
+    var input = (react_1.default.createElement(antd_1.Input, { disabled: readOnly || (translatable && !isSearchField), id: id, className: requiredClass, maxLength: ooui.size, onBlur: elementHasLostFocus }));
     if (isPassword) {
-        input = react_1.default.createElement(antd_1.Input.Password, { disabled: readOnly, id: id });
+        input = (react_1.default.createElement(antd_1.Input.Password, { disabled: readOnly, id: id, onBlur: elementHasLostFocus }));
     }
     if (translatable && !readOnly && !isSearchField) {
         input = react_1.default.createElement(TranslatableChar, { field: id, requiredClass: requiredClass });
@@ -97,7 +99,7 @@ exports.Char = Char;
 var TranslatableChar = function (_a) {
     var value = _a.value, field = _a.field, requiredClass = _a.requiredClass, onChange = _a.onChange;
     var formContext = react_1.useContext(FormContext_1.FormContext);
-    var _b = formContext || {}, activeId = _b.activeId, activeModel = _b.activeModel, fetchValues = _b.fetchValues, formHasChanges = _b.formHasChanges;
+    var _b = formContext || {}, activeId = _b.activeId, activeModel = _b.activeModel, fetchValues = _b.fetchValues, formHasChanges = _b.formHasChanges, elementHasLostFocus = _b.elementHasLostFocus;
     var _c = react_1.useState(false), translationModalVisible = _c[0], setTranslationModalVisible = _c[1];
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     if (!activeId) {
@@ -106,7 +108,7 @@ var TranslatableChar = function (_a) {
                 react_1.default.createElement(antd_1.Col, { flex: "auto" },
                     react_1.default.createElement(antd_1.Input, { value: value, id: field, className: requiredClass, onChange: function (event) {
                             onChange === null || onChange === void 0 ? void 0 : onChange(event.target.value);
-                        } })),
+                        }, onBlur: elementHasLostFocus })),
                 react_1.default.createElement(antd_1.Col, { flex: "32px" },
                     react_1.default.createElement(ButtonWithTooltip_1.default, { tooltip: t("translate"), icon: react_1.default.createElement(icons_1.TranslationOutlined, null), onClick: function () { return __awaiter(void 0, void 0, void 0, function () {
                             return __generator(this, function (_a) {
@@ -132,7 +134,7 @@ var TranslatableChar = function (_a) {
             } },
             react_1.default.createElement(antd_1.Input, { value: value, disabled: true, id: field, className: requiredClass, onChange: function (event) {
                     onChange === null || onChange === void 0 ? void 0 : onChange(event.target.value);
-                }, style: { cursor: "pointer" } })),
+                }, onBlur: elementHasLostFocus, style: { cursor: "pointer" } })),
         react_1.default.createElement(TranslationModal_1.TranslationModal, { id: activeId, model: activeModel, field: field, visible: translationModalVisible, onCloseModal: function () {
                 setTranslationModalVisible(false);
             }, onSubmitSucceed: function () {

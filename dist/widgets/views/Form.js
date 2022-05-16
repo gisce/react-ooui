@@ -570,46 +570,51 @@ function Form(props, ref) {
         if (formModalContext && ooui.string)
             (_b = formModalContext.setTitle) === null || _b === void 0 ? void 0 : _b.call(formModalContext, ooui.string);
     };
-    var checkFieldsChanges = function () { return __awaiter(_this, void 0, void 0, function () {
-        var touchedValues, changedFields, values;
-        return __generator(this, function (_a) {
-            if (formSubmitting.current)
-                return [2 /*return*/];
-            touchedValues = formHelper_1.getTouchedValues({
-                source: lastAssignedValues.current,
-                target: getCurrentValues(fields),
-                fields: fields,
-            });
-            changedFields = Object.keys(touchedValues);
-            if (changedFields.length !== 0) {
-                values = formHelper_1.processValues(antForm.getFieldsValue(true), fields);
-                lastAssignedValues.current = values;
-                onFieldsChange === null || onFieldsChange === void 0 ? void 0 : onFieldsChange(values);
-                setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(true);
-                // We check if there are any field of type text, email, url or char inside the changed values
-                // in order to debounce the call
-                if (formHelper_1.checkFieldsType({
-                    changedFields: changedFields,
+    var checkFieldsChanges = function (_a) {
+        var _b = _a.elementHasLostFocus, elementHasLostFocus = _b === void 0 ? false : _b;
+        return __awaiter(_this, void 0, void 0, function () {
+            var touchedValues, changedFields, values;
+            return __generator(this, function (_c) {
+                if (formSubmitting.current)
+                    return [2 /*return*/];
+                touchedValues = formHelper_1.getTouchedValues({
+                    source: lastAssignedValues.current,
+                    target: getCurrentValues(fields),
                     fields: fields,
-                    types: [
-                        "text",
-                        "email",
-                        "url",
-                        "char",
-                        "float",
-                        "integer",
-                        "many2one",
-                    ],
-                })) {
-                    debouncedEvaluateChanges(changedFields);
+                });
+                changedFields = Object.keys(touchedValues);
+                if (changedFields.length !== 0) {
+                    // We check if there are any field of type text, email, url or char inside the changed values
+                    // in order to ignore the call, because it will fire when element lost focus
+                    if (formHelper_1.checkFieldsType({
+                        changedFields: changedFields,
+                        fields: fields,
+                        types: [
+                            "text",
+                            "email",
+                            "url",
+                            "char",
+                            "float",
+                            "float_time",
+                            "integer",
+                            "many2one",
+                        ],
+                    }) &&
+                        elementHasLostFocus !== true) {
+                        return [2 /*return*/];
+                    }
+                    else {
+                        values = formHelper_1.processValues(antForm.getFieldsValue(true), fields);
+                        lastAssignedValues.current = values;
+                        onFieldsChange === null || onFieldsChange === void 0 ? void 0 : onFieldsChange(values);
+                        setFormHasChanges === null || setFormHasChanges === void 0 ? void 0 : setFormHasChanges(true);
+                        evaluateChanges(changedFields);
+                    }
                 }
-                else {
-                    evaluateChanges(changedFields);
-                }
-            }
-            return [2 /*return*/];
+                return [2 /*return*/];
+            });
         });
-    }); };
+    };
     var debouncedCheckFieldsChanges = debounce_1.default(checkFieldsChanges, 100);
     var evaluateChanges = function (changedFields) { return __awaiter(_this, void 0, void 0, function () {
         var i, changedField, err_3;
@@ -701,7 +706,6 @@ function Form(props, ref) {
             }
         });
     }); };
-    var debouncedEvaluateChanges = debounce_1.default(evaluateChanges, 800);
     function runObjectButton(_a) {
         var action = _a.action, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
@@ -813,6 +817,9 @@ function Form(props, ref) {
             });
         });
     }
+    function elementHasLostFocus() {
+        checkFieldsChanges({ elementHasLostFocus: true });
+    }
     function executeButtonAction(_a) {
         var type = _a.type, action = _a.action, context = _a.context;
         return __awaiter(this, void 0, void 0, function () {
@@ -876,8 +883,10 @@ function Form(props, ref) {
             return null;
         }
         return (react_1.default.createElement(react_1.default.Fragment, null,
-            react_1.default.createElement(FormContext_1.default, { getValues: getValues, domain: actionDomain, activeId: id, activeModel: model, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction, getContext: getContext, setOriginalValue: setOriginalValue, submitForm: submitForm, fetchValues: fetchValues, formHasChanges: formHasChanges },
-                react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: debouncedCheckFieldsChanges, component: false, preserve: false }, formOoui && (react_1.default.createElement(Container_1.default, { container: formOoui.container, responsiveBehaviour: responsiveBehaviour }))))));
+            react_1.default.createElement(FormContext_1.default, { getValues: getValues, domain: actionDomain, activeId: id, activeModel: model, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction, getContext: getContext, setOriginalValue: setOriginalValue, submitForm: submitForm, fetchValues: fetchValues, formHasChanges: formHasChanges, elementHasLostFocus: elementHasLostFocus },
+                react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: function () {
+                        debouncedCheckFieldsChanges({ elementHasLostFocus: false });
+                    }, component: false, preserve: false }, formOoui && (react_1.default.createElement(Container_1.default, { container: formOoui.container, responsiveBehaviour: responsiveBehaviour }))))));
     };
     var footer = function () {
         return (react_1.default.createElement(react_1.default.Fragment, null,

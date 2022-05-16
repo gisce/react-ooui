@@ -117,7 +117,7 @@ var Many2oneInput = function (props) {
     var _e = react_1.useState(""), inputText = _e[0], setInputText = _e[1];
     var inputTextRef = react_1.useRef();
     var formContext = react_1.useContext(FormContext_1.FormContext);
-    var _f = formContext || {}, domain = _f.domain, getValues = _f.getValues, getContext = _f.getContext, setOriginalValue = _f.setOriginalValue;
+    var _f = formContext || {}, domain = _f.domain, getValues = _f.getValues, getContext = _f.getContext, setOriginalValue = _f.setOriginalValue, elementHasLostFocus = _f.elementHasLostFocus;
     var transformedDomain = react_1.useRef([]);
     var id = value && value[0];
     var text = (value && value[1]) || "";
@@ -142,6 +142,7 @@ var Many2oneInput = function (props) {
     }, [domain]);
     var triggerChange = function (changedValue) {
         onChange === null || onChange === void 0 ? void 0 : onChange(changedValue);
+        elementHasLostFocus === null || elementHasLostFocus === void 0 ? void 0 : elementHasLostFocus();
     };
     var onValueStringChange = function (e) {
         inputTextRef.current = e.target.value;

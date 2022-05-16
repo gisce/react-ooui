@@ -27,10 +27,13 @@ var react_1 = __importStar(require("react"));
 var antd_1 = require("antd");
 var Config_1 = __importDefault(require("@/Config"));
 var icons_1 = require("@ant-design/icons");
+var FormContext_1 = require("@/context/FormContext");
 var LinkInput = function (props) {
     var ooui = props.ooui, value = props.value, onChange = props.onChange, valueValidator = props.valueValidator, _a = props.linkPrefix, linkPrefix = _a === void 0 ? "" : _a;
     var _b = ooui, id = _b.id, readOnly = _b.readOnly, required = _b.required;
     var requiredClass = required && !readOnly ? Config_1.default.requiredClass : undefined;
+    var formContext = react_1.useContext(FormContext_1.FormContext);
+    var elementHasLostFocus = (formContext || {}).elementHasLostFocus;
     var _c = react_1.useState(false), editMode = _c[0], setEditMode = _c[1];
     var _d = react_1.useState(false), showInput = _d[0], setShowInput = _d[1];
     react_1.useEffect(function () {
@@ -59,6 +62,7 @@ var LinkInput = function (props) {
                 if (valueValidator(value)) {
                     setEditMode(false);
                     setShowInput(false);
+                    elementHasLostFocus === null || elementHasLostFocus === void 0 ? void 0 : elementHasLostFocus();
                 }
             } })) : (react_1.default.createElement("a", { href: "" + linkPrefix + value, style: { color: "#1890ff", paddingRight: 15 }, target: "_blank" }, value)))));
 };
