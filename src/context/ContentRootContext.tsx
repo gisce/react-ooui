@@ -57,6 +57,7 @@ const ContentRootProvider = (
 ): any => {
   const { children, globalValues = {} } = props;
   const reportInProgressInterval = useRef<any>();
+  const waitingForReport = useRef<boolean>();
   const [reportGenerating, setReportGenerating] = useState<boolean>(false);
   const tabManagerContext = useContext(
     TabManagerContext
@@ -135,13 +136,15 @@ const ContentRootProvider = (
 
       setReportGenerating(true);
 
+      waitingForReport.current = true;
       reportInProgressInterval.current = setInterval(() => {
         evaluateReportStatus(newReportId);
       }, 1000);
     } catch (err) {
+      waitingForReport.current = false;
+      clearInterval(reportInProgressInterval.current);
       showErrorDialog(err);
       setReportGenerating(false);
-      clearInterval(reportInProgressInterval.current);
     }
   }
 
@@ -151,13 +154,15 @@ const ContentRootProvider = (
       reportState = await ConnectionProvider.getHandler().getReport({
         id,
       });
-      if (reportState.state) {
+      if (reportState.state && waitingForReport.current === true) {
+        waitingForReport.current = false;
         clearInterval(reportInProgressInterval.current);
         setReportGenerating(false);
         const fileType: any = await getMimeType(reportState.result);
         openBase64InNewTab(reportState.result, fileType.mime);
       }
     } catch (error) {
+      waitingForReport.current = false;
       clearInterval(reportInProgressInterval.current);
       setReportGenerating(false);
       showErrorDialog(error.exception || error);
