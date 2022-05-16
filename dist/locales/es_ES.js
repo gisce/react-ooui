@@ -68,7 +68,7 @@ exports.default = {
     lastUpdatedDate: "Fecha última modificación",
     goToResourceId: "Ir al recurso con ID",
     searchId: "ID de búsqueda:",
-    idNotFound: "No se encuentra ésta ID de recuros para el objeto",
+    idNotFound: "No se encuentra ésta ID de recursos para el objeto",
     selectedRegisters: "registros seleccionados",
     translate: "Traducir",
     enterTextBeforeTranslate: "Introduce algun texto en el campo antes de añadir traducciones",

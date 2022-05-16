@@ -94,6 +94,7 @@ exports.ContentRootContext = react_1.default.createContext(null);
 var ContentRootProvider = function (props, ref) {
     var children = props.children, _a = props.globalValues, globalValues = _a === void 0 ? {} : _a;
     var reportInProgressInterval = react_1.useRef();
+    var waitingForReport = react_1.useRef();
     var _b = react_1.useState(false), reportGenerating = _b[0], setReportGenerating = _b[1];
     var tabManagerContext = react_1.useContext(TabManagerContext_1.TabManagerContext);
     var openAction = (tabManagerContext || {}).openAction;
@@ -156,15 +157,17 @@ var ContentRootProvider = function (props, ref) {
                     case 3:
                         newReportId_1 = _d.sent();
                         setReportGenerating(true);
+                        waitingForReport.current = true;
                         reportInProgressInterval.current = setInterval(function () {
                             evaluateReportStatus(newReportId_1);
                         }, 1000);
                         return [3 /*break*/, 5];
                     case 4:
                         err_1 = _d.sent();
+                        waitingForReport.current = false;
+                        clearInterval(reportInProgressInterval.current);
                         ActionErrorDialog_1.default(err_1);
                         setReportGenerating(false);
-                        clearInterval(reportInProgressInterval.current);
                         return [3 /*break*/, 5];
                     case 5: return [2 /*return*/];
                 }
@@ -183,7 +186,8 @@ var ContentRootProvider = function (props, ref) {
                             })];
                     case 1:
                         reportState = _a.sent();
-                        if (!reportState.state) return [3 /*break*/, 3];
+                        if (!(reportState.state && waitingForReport.current === true)) return [3 /*break*/, 3];
+                        waitingForReport.current = false;
                         clearInterval(reportInProgressInterval.current);
                         setReportGenerating(false);
                         return [4 /*yield*/, filesHelper_1.getMimeType(reportState.result)];
@@ -194,6 +198,7 @@ var ContentRootProvider = function (props, ref) {
                     case 3: return [3 /*break*/, 5];
                     case 4:
                         error_1 = _a.sent();
+                        waitingForReport.current = false;
                         clearInterval(reportInProgressInterval.current);
                         setReportGenerating(false);
                         ActionErrorDialog_1.default(error_1.exception || error_1);
