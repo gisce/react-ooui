@@ -74,7 +74,13 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const [inputText, setInputText] = useState<string>("");
   const inputTextRef = useRef<string>();
   const formContext = useContext(FormContext) as FormContextType;
-  const { domain, getValues, getContext, setOriginalValue } = formContext || {};
+  const {
+    domain,
+    getValues,
+    getContext,
+    setOriginalValue,
+    elementHasLostFocus,
+  } = formContext || {};
   const transformedDomain = useRef<any[]>([]);
 
   const id = value && value[0];
@@ -102,6 +108,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
 
   const triggerChange = (changedValue: any[]) => {
     onChange?.(changedValue);
+    elementHasLostFocus?.();
   };
 
   const onValueStringChange = (e: React.ChangeEvent<HTMLInputElement>) => {

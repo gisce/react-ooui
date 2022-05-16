@@ -20,17 +20,27 @@ export const Char = (props: CharProps) => {
   const { id, readOnly, isPassword, required, translatable } = ooui as CharOoui;
   const requiredClass =
     required && !readOnly ? Config.requiredClass : undefined;
+  const formContext = useContext(FormContext) as FormContextType;
+  const { elementHasLostFocus } = formContext || {};
 
   let input = (
     <Input
       disabled={readOnly || (translatable && !isSearchField)}
       id={id}
       className={requiredClass}
+      maxLength={(ooui as CharOoui).size}
+      onBlur={elementHasLostFocus}
     />
   );
 
   if (isPassword) {
-    input = <Input.Password disabled={readOnly} id={id} />;
+    input = (
+      <Input.Password
+        disabled={readOnly}
+        id={id}
+        onBlur={elementHasLostFocus}
+      />
+    );
   }
 
   if (translatable && !readOnly && !isSearchField) {
@@ -56,8 +66,13 @@ const TranslatableChar = ({
   onChange?: (value: string) => void;
 }) => {
   const formContext = useContext(FormContext) as FormContextType;
-  const { activeId, activeModel, fetchValues, formHasChanges } =
-    formContext || {};
+  const {
+    activeId,
+    activeModel,
+    fetchValues,
+    formHasChanges,
+    elementHasLostFocus,
+  } = formContext || {};
   const [translationModalVisible, setTranslationModalVisible] = useState(false);
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
@@ -73,6 +88,7 @@ const TranslatableChar = ({
               onChange={(event: any) => {
                 onChange?.(event.target.value);
               }}
+              onBlur={elementHasLostFocus}
             />
           </Col>
           <Col flex="32px">
@@ -117,6 +133,7 @@ const TranslatableChar = ({
           onChange={(event: any) => {
             onChange?.(event.target.value);
           }}
+          onBlur={elementHasLostFocus}
           style={{ cursor: "pointer" }}
         />
       </div>

@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { InputNumber } from "antd";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 import Config from "@/Config";
+import { FormContext, FormContextType } from "@/context/FormContext";
 
 type IntegerProps = WidgetProps & {
   onChange?: (newValue: number) => void;
@@ -13,6 +14,8 @@ export const Integer = (props: IntegerProps) => {
   const { id, readOnly, required } = ooui;
   const requiredClass =
     required && !readOnly ? Config.requiredClass : undefined;
+  const formContext = useContext(FormContext) as FormContextType;
+  const { elementHasLostFocus } = formContext || {};
 
   return (
     <Field required={required} type={"number"} {...props}>
@@ -28,6 +31,7 @@ export const Integer = (props: IntegerProps) => {
           onChange?.(newNumber);
         }}
         defaultValue={0}
+        onBlur={elementHasLostFocus}
       />
     </Field>
   );

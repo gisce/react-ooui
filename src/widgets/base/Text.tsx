@@ -21,6 +21,8 @@ const Text = (props: Props) => {
   const { id, readOnly, required, height, translatable } = ooui;
   const requiredClass =
     required && !readOnly ? Config.requiredClass : undefined;
+  const formContext = useContext(FormContext) as FormContextType;
+  const { elementHasLostFocus } = formContext || {};
 
   return (
     <Field required={required} {...props}>
@@ -36,6 +38,7 @@ const Text = (props: Props) => {
           className={requiredClass}
           style={{ height: height ? height + "px" : "100%" }}
           rows={4}
+          onBlur={elementHasLostFocus}
         />
       )}
     </Field>
@@ -56,8 +59,13 @@ const TranslatableText = ({
   onChange?: (value: string) => void;
 }) => {
   const formContext = useContext(FormContext) as FormContextType;
-  const { activeId, activeModel, fetchValues, formHasChanges } =
-    formContext || {};
+  const {
+    activeId,
+    activeModel,
+    fetchValues,
+    formHasChanges,
+    elementHasLostFocus,
+  } = formContext || {};
   const [translationModalVisible, setTranslationModalVisible] = useState(false);
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
@@ -76,6 +84,7 @@ const TranslatableText = ({
             id={field}
             className={requiredClass}
             rows={4}
+            onBlur={elementHasLostFocus}
           />
         </Row>
         <Row justify="end" style={{ paddingTop: 5 }}>
@@ -124,6 +133,7 @@ const TranslatableText = ({
           disabled={true}
           className={requiredClass}
           rows={4}
+          onBlur={elementHasLostFocus}
         />
       </div>
       <TranslationModal
