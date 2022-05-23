@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { WidgetProps } from "@/types";
 export declare const ProgressBar: (props: WidgetProps) => JSX.Element;
 export declare const ProgressBarInput: ({ value }: {

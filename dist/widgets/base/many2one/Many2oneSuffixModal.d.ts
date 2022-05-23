@@ -1,3 +1,4 @@
+/// <reference types="react" />
 declare type Props = {
     visible: boolean;
     items: any[];

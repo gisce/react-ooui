@@ -66,7 +66,7 @@ var Title_1 = __importDefault(require("antd/lib/typography/Title"));
 var react_measure_1 = __importDefault(require("react-measure"));
 var iconMapper_1 = __importDefault(require("@/helpers/iconMapper"));
 var antd_1 = require("antd");
-var useGraphData_1 = require("./useGraphData");
+var graphProcessor_1 = require("@gisce/ooui/dist/Graph/processor/graphProcessor");
 var fontGrowFactor = 0.7;
 var minFontSize = 30;
 var GraphIndicator = function (props) {
@@ -105,7 +105,7 @@ var GraphIndicator = function (props) {
                             })];
                     case 2:
                         results = _a.sent();
-                        return [2 /*return*/, useGraphData_1.getValueForOperator({
+                        return [2 /*return*/, graphProcessor_1.getValueForOperator({
                                 values: results.map(function (r) { return r[field]; }),
                                 operator: operator,
                             })];

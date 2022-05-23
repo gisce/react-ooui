@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { Binary as BinaryOoui } from "@gisce/ooui";
 declare type Props = {
     ooui: BinaryOoui;

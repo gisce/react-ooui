@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { Separator as SeparatorOoui } from "@gisce/ooui";
 declare type Props = {
     ooui: SeparatorOoui;

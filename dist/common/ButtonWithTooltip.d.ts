@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { ButtonProps } from "antd";
 export declare type Props = ButtonProps & {
     tooltip: string;

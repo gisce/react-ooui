@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { Operator } from "@gisce/ooui";
 export declare type GraphInidicatorProps = {
     model: string;

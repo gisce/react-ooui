@@ -1,3 +1,4 @@
+/// <reference types="react" />
 declare type TabProps = {
     tabKey: string;
     label: string;

@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { Char as CharOoui } from "@gisce/ooui";
 interface LinkInputProps {
     ooui: CharOoui;

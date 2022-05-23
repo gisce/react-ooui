@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { WidgetProps } from "@/types";
 declare type IntegerProps = WidgetProps & {
     onChange?: (newValue: number) => void;

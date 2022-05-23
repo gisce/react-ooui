@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 declare type IndicatorProps = WidgetProps & {

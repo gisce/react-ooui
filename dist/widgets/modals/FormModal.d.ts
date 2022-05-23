@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { FormProps } from "@/widgets/views/Form";
 declare type FormModalProps = FormProps & {
     visible: boolean;

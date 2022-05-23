@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { Props as ButtonWithTooltipProps } from "@/common/ButtonWithTooltip";
 declare type Props = ButtonWithTooltipProps & {
     badgeNumber?: number;

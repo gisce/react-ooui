@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { WidgetProps } from "@/types";
 export declare const MultiSelection: (props: WidgetProps) => JSX.Element;
 declare type SelectionInputProps = WidgetProps & {

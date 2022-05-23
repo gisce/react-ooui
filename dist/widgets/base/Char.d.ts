@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { WidgetProps } from "@/types";
 declare type CharProps = WidgetProps & {
     isSearchField?: boolean;

@@ -1,3 +1,4 @@
+/// <reference types="react" />
 export declare type Attachment = {
     id: number;
     name: string;

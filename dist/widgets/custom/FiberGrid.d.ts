@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { WidgetProps } from "@/types";
 export declare const FiberGrid: (props: WidgetProps) => JSX.Element;
 interface FiberGridInputProps {

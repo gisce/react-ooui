@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { Image as ImageOoui } from "@gisce/ooui";
 declare type Props = {
     ooui: ImageOoui;

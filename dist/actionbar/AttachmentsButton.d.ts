@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { Attachment } from "./AttachmentsButtonWrapper";
 export declare type AttachmentsButtonProps = {
     attachments?: any;

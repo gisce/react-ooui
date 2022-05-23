@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { View } from "@/views/ActionView";
 declare type Props = {
     onChangeView: (view: View) => void;
