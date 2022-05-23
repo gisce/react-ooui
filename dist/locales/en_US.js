@@ -77,5 +77,6 @@ exports.default = {
     moveDashboard: "Move dashboard items",
     openAttachment: "Open attachment detail",
     openAttachmentLink: "Open attachment link",
+    uninformed: "Uninformed",
 };
 //# sourceMappingURL=en_US.js.map

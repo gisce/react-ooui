@@ -81,4 +81,5 @@ export default {
   moveDashboard: "Moure items del panell",
   openAttachment: "Veure detall de l'adjunt",
   openAttachmentLink: "Obrir enllaç de l'adjunt",
+  uninformed: "Sense informar",
 };

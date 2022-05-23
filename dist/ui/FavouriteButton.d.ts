@@ -1,3 +1,4 @@
+/// <reference types="react" />
 export declare type ShortcutApi = {
     action_id: number;
     action_type: string;

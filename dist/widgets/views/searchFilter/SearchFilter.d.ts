@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { SearchFields } from "@/types";
 declare type Props = {
     fields: any;

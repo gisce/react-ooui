@@ -1,3 +1,4 @@
+/// <reference types="react" />
 declare type Props = {
     id: number;
     model: string;

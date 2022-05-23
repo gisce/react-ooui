@@ -1,3 +1,4 @@
+/// <reference types="react" />
 export declare type GraphProps = {
     view_id: number;
     model: string;

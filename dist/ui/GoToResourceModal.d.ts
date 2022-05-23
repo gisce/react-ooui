@@ -1,3 +1,4 @@
+/// <reference types="react" />
 declare type Props = {
     visible: boolean;
     onIdSubmitted: (id: number) => void;

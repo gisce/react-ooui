@@ -1,19 +1,18 @@
-import { Operator } from "@gisce/ooui/dist/Graph";
-import { GraphChart as GraphChartOoui } from "@gisce/ooui";
-export declare type GraphDataOpts = {
+import { GraphType } from "@gisce/ooui";
+export declare type GraphDataQueryOpts = {
     model: string;
-    domain: any;
-    context: any;
-    ooui: GraphChartOoui;
+    domain?: any;
+    context?: any;
     limit?: number;
 };
-export default function useGraphCountData(opts: GraphDataOpts): {
-    error: any;
-    loading: boolean;
-    graphProps: any;
+export declare type GraphDataOpts = GraphDataQueryOpts & {
+    xml: string;
+    uninformedString: string;
 };
-export declare function getValueForOperator({ operator, values, }: {
-    operator: Operator;
-    values: any[];
-}): number;
+export declare const useGraphData: (opts: GraphDataOpts) => {
+    loading: boolean;
+    error: any;
+    type: GraphType;
+    values: any;
+};
 //# sourceMappingURL=useGraphData.d.ts.map

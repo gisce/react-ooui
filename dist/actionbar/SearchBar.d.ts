@@ -1,3 +1,4 @@
+/// <reference types="react" />
 declare type Props = {
     onSearch: (searchValue?: string) => void;
     searchText?: string;

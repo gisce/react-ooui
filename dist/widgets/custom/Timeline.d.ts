@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { Timeline as TimelineOoui } from "@gisce/ooui";
 import { One2manyValue } from "../base/one2many/One2manyInput";
 import { Views } from "@/types";

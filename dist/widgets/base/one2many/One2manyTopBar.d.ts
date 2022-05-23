@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { ViewModes } from "@/widgets/base/one2many/One2many";
 declare type One2manyTopBarProps = {
     title: string;

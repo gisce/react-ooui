@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { Text as TextOoui } from "@gisce/ooui";
 declare type Props = {
     ooui: TextOoui;

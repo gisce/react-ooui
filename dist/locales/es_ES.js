@@ -77,5 +77,6 @@ exports.default = {
     moveDashboard: "Mover items del panel",
     openAttachment: "Ver detalle del adjunto",
     openAttachmentLink: "Abrir enlace del adjunto",
+    uninformed: "Sin informar",
 };
 //# sourceMappingURL=es_ES.js.map

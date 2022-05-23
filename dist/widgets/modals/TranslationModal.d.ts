@@ -1,3 +1,4 @@
+/// <reference types="react" />
 declare type TranslationModalProps = {
     visible: boolean;
     model: string;
