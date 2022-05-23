@@ -6,7 +6,7 @@ import Measure from "react-measure";
 import iconMapper from "@/helpers/iconMapper";
 import { Alert, Col, Row } from "antd";
 import { Operator } from "@gisce/ooui";
-import { getValueForOperator } from "./useGraphData";
+import { getValueForOperator } from "@gisce/ooui/dist/Graph/processor/graphProcessor";
 
 const fontGrowFactor = 0.7;
 const minFontSize = 30;
