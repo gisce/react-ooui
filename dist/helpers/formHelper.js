@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mergeSearchFields = exports.getOnChangePayload = exports.getValuesForDomain = exports.mergeFieldsDomain = exports.checkFieldsType = exports.getTouchedValues = exports.processValues = void 0;
+exports.transformPlainMany2Ones = exports.mergeSearchFields = exports.getOnChangePayload = exports.getValuesForDomain = exports.mergeFieldsDomain = exports.checkFieldsType = exports.getTouchedValues = exports.processValues = void 0;
 var filteredValues = function (values, fields) {
     if (!fields) {
         return values;
@@ -169,4 +169,23 @@ exports.mergeSearchFields = mergeSearchFields;
 function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
 }
+var transformPlainMany2Ones = function (_a) {
+    var values = _a.values, fields = _a.fields;
+    var reformattedValues = {};
+    Object.keys(values).forEach(function (key) {
+        var value = values[key];
+        if (fields[key] &&
+            fields[key].type === "many2one" &&
+            value &&
+            Array.isArray(value) &&
+            value.length === 2) {
+            reformattedValues[key] = value[0];
+        }
+        else {
+            reformattedValues[key] = value;
+        }
+    });
+    return reformattedValues;
+};
+exports.transformPlainMany2Ones = transformPlainMany2Ones;
 //# sourceMappingURL=formHelper.js.map

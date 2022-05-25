@@ -195,3 +195,31 @@ export const mergeSearchFields = (searchFields: any[]) => {
 function onlyUnique(value: any, index: number, self: any) {
   return self.indexOf(value) === index;
 }
+
+export const transformPlainMany2Ones = ({
+  values,
+  fields,
+}: {
+  values: any;
+  fields: any;
+}) => {
+  let reformattedValues: { [key: string]: any } = {};
+
+  Object.keys(values).forEach((key) => {
+    const value = values[key];
+
+    if (
+      fields[key] &&
+      fields[key].type === "many2one" &&
+      value &&
+      Array.isArray(value) &&
+      value.length === 2
+    ) {
+      reformattedValues[key] = value[0];
+    } else {
+      reformattedValues[key] = value;
+    }
+  });
+
+  return reformattedValues;
+};

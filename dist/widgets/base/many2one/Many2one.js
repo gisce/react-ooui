@@ -87,6 +87,7 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var Many2oneSuffix_1 = require("./Many2oneSuffix");
 var GenericErrorDialog_1 = __importDefault(require("@/ui/GenericErrorDialog"));
 var FormContext_1 = require("@/context/FormContext");
+var formHelper_1 = require("@/helpers/formHelper");
 var Many2one = function (props) {
     var ooui = props.ooui;
     var required = ooui.required;
@@ -117,8 +118,9 @@ var Many2oneInput = function (props) {
     var _e = react_1.useState(""), inputText = _e[0], setInputText = _e[1];
     var inputTextRef = react_1.useRef();
     var formContext = react_1.useContext(FormContext_1.FormContext);
-    var _f = formContext || {}, domain = _f.domain, getValues = _f.getValues, getContext = _f.getContext, setOriginalValue = _f.setOriginalValue, elementHasLostFocus = _f.elementHasLostFocus;
+    var _f = formContext || {}, domain = _f.domain, getValues = _f.getValues, getFields = _f.getFields, getContext = _f.getContext, setOriginalValue = _f.setOriginalValue, elementHasLostFocus = _f.elementHasLostFocus;
     var transformedDomain = react_1.useRef([]);
+    var _g = react_1.useState([]), searchDomain = _g[0], setSearchDomain = _g[1];
     var id = value && value[0];
     var text = (value && value[1]) || "";
     react_1.useEffect(function () {
@@ -262,25 +264,23 @@ var Many2oneInput = function (props) {
     }); };
     function parseDomain() {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, _b;
-            var _c;
-            return __generator(this, function (_d) {
-                switch (_d.label) {
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         if (!widgetDomain) return [3 /*break*/, 2];
                         _a = transformedDomain;
-                        _b = ooui_1.transformDomainForChildWidget;
-                        _c = {};
                         return [4 /*yield*/, ConnectionProvider_1.default.getHandler().evalDomain({
                                 domain: widgetDomain,
-                                values: getValues(),
+                                values: formHelper_1.transformPlainMany2Ones({
+                                    fields: getFields(),
+                                    values: getValues(),
+                                }),
                                 context: getContext(),
                             })];
                     case 1:
-                        _a.current = _b.apply(void 0, [(_c.domain = _d.sent(),
-                                _c.widgetFieldName = fieldName,
-                                _c)]);
-                        _d.label = 2;
+                        _a.current = _b.sent();
+                        _b.label = 2;
                     case 2:
                         if (domain && domain.length > 0) {
                             transformedDomain.current = transformedDomain.current.concat(ooui_1.transformDomainForChildWidget({
@@ -288,6 +288,7 @@ var Many2oneInput = function (props) {
                                 widgetFieldName: fieldName,
                             }));
                         }
+                        setSearchDomain(transformedDomain.current);
                         return [2 /*return*/];
                 }
             });
@@ -330,11 +331,7 @@ var Many2oneInput = function (props) {
                     searchButtonTappedRef.current = true;
                     tryFetchFirstResultOrShowSearch(text);
                 }, tabIndex: -1 })),
-        react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, domain: domain &&
-                ooui_1.transformDomainForChildWidget({
-                    domain: domain,
-                    widgetFieldName: fieldName,
-                }), context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValues: function (ids) {
+        react_1.default.createElement(SearchModal_1.SearchModal, { model: relation, domain: searchDomain, context: __assign(__assign({}, getContext === null || getContext === void 0 ? void 0 : getContext()), context), visible: showSearchModal, nameSearch: !id ? searchText : undefined, onSelectValues: function (ids) {
                 setShowSearchModal(false);
                 fetchNameAndUpdate(ids[0]);
                 searchButtonTappedRef.current = false;

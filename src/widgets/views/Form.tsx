@@ -145,9 +145,7 @@ function Form(props: FormProps, ref: any) {
 
   useImperativeHandle(ref, () => ({
     submitForm,
-    getFields: () => {
-      return fields;
-    },
+    getFields,
     getValues,
     getContext,
     fetchValues,
@@ -203,6 +201,10 @@ function Form(props: FormProps, ref: any) {
 
   function getCurrentId() {
     return id || createdId.current;
+  }
+
+  function getFields() {
+    return fields;
   }
 
   function getValues() {
@@ -891,6 +893,7 @@ function Form(props: FormProps, ref: any) {
       <>
         <FormProvider
           getValues={getValues}
+          getFields={getFields}
           domain={actionDomain}
           activeId={id}
           activeModel={model}
