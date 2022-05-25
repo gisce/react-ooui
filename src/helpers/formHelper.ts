@@ -168,3 +168,30 @@ export const getOnChangePayload = ({
   });
   return payload;
 };
+
+export const mergeSearchFields = (searchFields: any[]) => {
+  const mergedSearchFields = {
+    primary: [],
+    secondary: [],
+  };
+
+  searchFields.forEach((sf) => {
+    if (!sf) {
+      return;
+    }
+
+    mergedSearchFields.primary = mergedSearchFields.primary.concat(sf.primary);
+    mergedSearchFields.secondary = mergedSearchFields.secondary.concat(
+      sf.secondary
+    );
+  });
+
+  return {
+    primary: mergedSearchFields.primary.filter(onlyUnique),
+    secondary: mergedSearchFields.secondary.filter(onlyUnique),
+  };
+};
+
+function onlyUnique(value: any, index: number, self: any) {
+  return self.indexOf(value) === index;
+}

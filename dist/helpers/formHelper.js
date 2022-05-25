@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOnChangePayload = exports.getValuesForDomain = exports.mergeFieldsDomain = exports.checkFieldsType = exports.getTouchedValues = exports.processValues = void 0;
+exports.mergeSearchFields = exports.getOnChangePayload = exports.getValuesForDomain = exports.mergeFieldsDomain = exports.checkFieldsType = exports.getTouchedValues = exports.processValues = void 0;
 var filteredValues = function (values, fields) {
     if (!fields) {
         return values;
@@ -148,4 +148,25 @@ var getOnChangePayload = function (_a) {
     return payload;
 };
 exports.getOnChangePayload = getOnChangePayload;
+var mergeSearchFields = function (searchFields) {
+    var mergedSearchFields = {
+        primary: [],
+        secondary: [],
+    };
+    searchFields.forEach(function (sf) {
+        if (!sf) {
+            return;
+        }
+        mergedSearchFields.primary = mergedSearchFields.primary.concat(sf.primary);
+        mergedSearchFields.secondary = mergedSearchFields.secondary.concat(sf.secondary);
+    });
+    return {
+        primary: mergedSearchFields.primary.filter(onlyUnique),
+        secondary: mergedSearchFields.secondary.filter(onlyUnique),
+    };
+};
+exports.mergeSearchFields = mergeSearchFields;
+function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+}
 //# sourceMappingURL=formHelper.js.map

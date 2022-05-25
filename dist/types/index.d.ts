@@ -21,6 +21,7 @@ declare type TreeView = {
     view_id: number;
     arch: string;
     fields: any;
+    search_fields?: SearchFields;
 };
 declare type FormView = TreeView & {
     search_fields?: SearchFields;

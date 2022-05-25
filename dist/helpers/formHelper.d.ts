@@ -18,4 +18,8 @@ export declare const getOnChangePayload: ({ onChangeFieldActionArgs, values, }: 
     onChangeFieldActionArgs: any[];
     values: any;
 }) => any;
+export declare const mergeSearchFields: (searchFields: any[]) => {
+    primary: never[];
+    secondary: never[];
+};
 //# sourceMappingURL=formHelper.d.ts.map

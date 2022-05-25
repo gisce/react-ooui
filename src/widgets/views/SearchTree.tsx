@@ -20,6 +20,7 @@ import {
 import { getColorMap, getTree } from "@/helpers/treeHelper";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import Measure from "react-measure";
+import { mergeSearchFields } from "@/helpers/formHelper";
 
 const DEFAULT_SEARCH_LIMIT = 80;
 
@@ -273,7 +274,7 @@ function SearchTree(props: Props, ref: any) {
       } else {
         await searchResults();
       }
-    } catch (error: any) {
+    } catch (error) {
       setSearchError(error);
     } finally {
       setTableRefreshing(false);
@@ -306,7 +307,7 @@ function SearchTree(props: Props, ref: any) {
         await fetchModelData();
       }
       setInitialFetchDone(true);
-    } catch (error: any) {
+    } catch (error) {
       setInitialError(error);
     } finally {
       setIsLoading(false);
@@ -402,7 +403,7 @@ function SearchTree(props: Props, ref: any) {
 
   const onSearchTreeLimitChange = (newLimit: number) => {
     internalLimit.current = newLimit;
-  }
+  };
 
   const onRowClickedHandler = (id: number) => {
     onRowClicked({
@@ -476,7 +477,10 @@ function SearchTree(props: Props, ref: any) {
               <div style={{ display: searchVisible ? "block" : "none" }}>
                 <SearchFilter
                   fields={{ ...treeView.fields, ...formView.fields }}
-                  searchFields={formView.search_fields!}
+                  searchFields={mergeSearchFields([
+                    formView.search_fields,
+                    treeView.search_fields,
+                  ])}
                   onClear={onClear}
                   limit={limit}
                   offset={offset}
