@@ -24,6 +24,33 @@ const arch = `<form><notebook name="notebook">
 </notebook>
 </form>`;
 
+const testArch = `<form><notebook name="notebook"><page string="Corbes">
+<group colspan="4">
+    <group string="Validada" colspan="2">
+        <field name="name" string="Última corba"/>
+        <field name="surname" string="Format"/>
+    </group>
+    <group string="Facturada" colspan="2">
+        <field name="name" string="Última corba"/>
+        <field name="surname" string="Format"/>
+    </group>
+    <group string="Autoconsumida" colspan="2">
+        <field name="name" string="Última corba"/>
+        <field name="surname" string="Format"/>
+    </group>
+    <group string="Generada Neta" colspan="2">
+        <field name="name" string="Última corba"/>
+        <field name="surname" string="Format"/>
+    </group>
+    <group string="Quart-Horària" colspan="2">
+        <field name="name" string="Última corba"/>
+        <field name="surname" string="Format"/>
+    </group>
+    <group colspan="2"></group>
+</group>
+</page></notebook>
+</form>`;
+
 const fields = {
   name: {
     string: "Field of page 1",
@@ -38,6 +65,20 @@ const fields = {
 export const Default = (): React.ReactElement => {
   const formOoui = new FormOoui(fields);
   formOoui.parse(arch);
+  const notebookOoui = formOoui.findById("notebook") as NotebookOoui;
+
+  return (
+    <LocaleProvider lang="en_US">
+      <Form>
+        <Notebook ooui={notebookOoui} />
+      </Form>
+    </LocaleProvider>
+  );
+};
+
+export const Test = (): React.ReactElement => {
+  const formOoui = new FormOoui(fields);
+  formOoui.parse(testArch);
   const notebookOoui = formOoui.findById("notebook") as NotebookOoui;
 
   return (
