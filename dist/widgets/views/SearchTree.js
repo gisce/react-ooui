@@ -78,6 +78,7 @@ var ActionViewContext_1 = require("@/context/ActionViewContext");
 var treeHelper_1 = require("@/helpers/treeHelper");
 var useWindowDimensions_1 = __importDefault(require("@/hooks/useWindowDimensions"));
 var react_measure_1 = __importDefault(require("react-measure"));
+var formHelper_1 = require("@/helpers/formHelper");
 var DEFAULT_SEARCH_LIMIT = 80;
 function SearchTree(props, ref) {
     var _this = this;
@@ -469,7 +470,10 @@ function SearchTree(props, ref) {
                 var measureRef = _a.measureRef;
                 return (react_1.default.createElement("div", { ref: measureRef },
                     react_1.default.createElement("div", { style: { display: searchVisible ? "block" : "none" } },
-                        react_1.default.createElement(SearchFilter_1.default, { fields: __assign(__assign({}, treeView.fields), formView.fields), searchFields: formView.search_fields, onClear: onClear, limit: limit, offset: offset, isSearching: searchFilterLoading, onSubmit: onSubmit, onLimitChange: onSearchTreeLimitChange }),
+                        react_1.default.createElement(SearchFilter_1.default, { fields: __assign(__assign({}, treeView.fields), formView.fields), searchFields: formHelper_1.mergeSearchFields([
+                                formView.search_fields,
+                                treeView.search_fields,
+                            ]), onClear: onClear, limit: limit, offset: offset, isSearching: searchFilterLoading, onSubmit: onSubmit, onLimitChange: onSearchTreeLimitChange }),
                         searchError && (react_1.default.createElement(antd_1.Alert, { className: "mt-10", message: searchError, type: "error", banner: true })),
                         react_1.default.createElement("div", { className: "pb-5" }))));
             }),
