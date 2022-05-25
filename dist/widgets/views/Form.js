@@ -114,9 +114,7 @@ function Form(props, ref) {
     var _y = contentRootContext || {}, processAction = _y.processAction, globalValues = _y.globalValues;
     react_1.useImperativeHandle(ref, function () { return ({
         submitForm: submitForm,
-        getFields: function () {
-            return fields;
-        },
+        getFields: getFields,
         getValues: getValues,
         getContext: getContext,
         fetchValues: fetchValues,
@@ -161,6 +159,9 @@ function Form(props, ref) {
     };
     function getCurrentId() {
         return id || createdId.current;
+    }
+    function getFields() {
+        return fields;
     }
     function getValues() {
         var values = __assign(__assign({}, getCurrentValues(fields)), getAdditionalValues());
@@ -883,7 +884,7 @@ function Form(props, ref) {
             return null;
         }
         return (react_1.default.createElement(react_1.default.Fragment, null,
-            react_1.default.createElement(FormContext_1.default, { getValues: getValues, domain: actionDomain, activeId: id, activeModel: model, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction, getContext: getContext, setOriginalValue: setOriginalValue, submitForm: submitForm, fetchValues: fetchValues, formHasChanges: formHasChanges, elementHasLostFocus: elementHasLostFocus },
+            react_1.default.createElement(FormContext_1.default, { getValues: getValues, getFields: getFields, domain: actionDomain, activeId: id, activeModel: model, setFieldValue: setFieldValue, getFieldValue: getFieldValue, executeButtonAction: executeButtonAction, getContext: getContext, setOriginalValue: setOriginalValue, submitForm: submitForm, fetchValues: fetchValues, formHasChanges: formHasChanges, elementHasLostFocus: elementHasLostFocus },
                 react_1.default.createElement(antd_1.Form, { form: antForm, onFieldsChange: function () {
                         debouncedCheckFieldsChanges({ elementHasLostFocus: false });
                     }, component: false, preserve: false }, formOoui && (react_1.default.createElement(Container_1.default, { container: formOoui.container, responsiveBehaviour: responsiveBehaviour }))))));

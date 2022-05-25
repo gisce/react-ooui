@@ -22,4 +22,10 @@ export declare const mergeSearchFields: (searchFields: any[]) => {
     primary: never[];
     secondary: never[];
 };
+export declare const transformPlainMany2Ones: ({ values, fields, }: {
+    values: any;
+    fields: any;
+}) => {
+    [key: string]: any;
+};
 //# sourceMappingURL=formHelper.d.ts.map

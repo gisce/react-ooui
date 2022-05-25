@@ -11,6 +11,7 @@ export declare type FormContextType = {
     }) => Promise<void>;
     getContext: () => Promise<any>;
     getValues: () => Promise<any>;
+    getFields: () => Promise<any>;
     setOriginalValue: (field: string, value: any) => void;
     domain: any[];
     submitForm?: (options?: {
