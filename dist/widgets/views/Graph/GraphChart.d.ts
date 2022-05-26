@@ -4,6 +4,7 @@ export declare type GraphChartProps = {
     domain: any;
     context: any;
     xml: string;
+    limit: number;
 };
 export declare const GraphChart: (props: GraphChartProps) => JSX.Element;
 //# sourceMappingURL=GraphChart.d.ts.map

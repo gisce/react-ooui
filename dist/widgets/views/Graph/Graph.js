@@ -77,7 +77,7 @@ var ConnectionProvider_1 = __importDefault(require("@/ConnectionProvider"));
 var GraphIndicator_1 = require("./GraphIndicator");
 var GraphChart_1 = require("./GraphChart");
 var Graph = function (props) {
-    var view_id = props.view_id, model = props.model, context = props.context, domain = props.domain;
+    var view_id = props.view_id, model = props.model, context = props.context, domain = props.domain, limit = props.limit;
     var _a = react_1.useState(false), loading = _a[0], setLoading = _a[1];
     var _b = react_1.useState(), graphOoui = _b[0], setGraphOoui = _b[1];
     var _c = react_1.useState(), graphXml = _c[0], setGraphXml = _c[1];
@@ -139,7 +139,7 @@ var Graph = function (props) {
         case "line":
         case "bar":
         case "pie": {
-            return (react_1.default.createElement(GraphChart_1.GraphChart, { model: model, context: context, domain: domain, xml: graphXml }));
+            return (react_1.default.createElement(GraphChart_1.GraphChart, { model: model, context: context, domain: domain, xml: graphXml, limit: limit }));
         }
         default: {
             return react_1.default.createElement(react_1.default.Fragment, null, "Graph " + graphOoui.type + " not implemented");

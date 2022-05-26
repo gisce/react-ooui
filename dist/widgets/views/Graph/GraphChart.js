@@ -46,11 +46,12 @@ var types = {
     pie: plots_1.Pie,
 };
 var GraphChart = function (props) {
-    var model = props.model, domain = props.domain, context = props.context, xml = props.xml;
+    var model = props.model, domain = props.domain, context = props.context, xml = props.xml, limit = props.limit;
     var t = react_1.useContext(LocaleContext_1.LocaleContext).t;
     var _a = useGraphData_1.useGraphData({
         model: model,
         xml: xml,
+        limit: limit,
         domain: domain,
         context: context,
         uninformedString: t("uninformed"),
