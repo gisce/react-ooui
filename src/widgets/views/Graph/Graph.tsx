@@ -19,7 +19,7 @@ export type GraphProps = {
 };
 
 export const Graph = (props: GraphProps) => {
-  const { view_id, model, context, domain } = props;
+  const { view_id, model, context, domain, limit } = props;
   const [loading, setLoading] = useState(false);
   const [graphOoui, setGraphOoui] = useState<GraphOoui>();
   const [graphXml, setGraphXml] = useState<string>();
@@ -97,6 +97,7 @@ export const Graph = (props: GraphProps) => {
           context={context}
           domain={domain}
           xml={graphXml!}
+          limit={limit}
         />
       );
     }

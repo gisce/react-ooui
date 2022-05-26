@@ -16,7 +16,7 @@ export type GraphDataQueryOpts = {
   model: string;
   domain?: any;
   context?: any;
-  limit?: number;
+  limit: number;
 };
 
 export type GraphDataOpts = GraphDataQueryOpts & {
@@ -57,6 +57,7 @@ export const useGraphData = (opts: GraphDataOpts) => {
           model,
           domain,
           context,
+          limit,
           order: ooui.x.name,
           fields: fieldsToRetrieve,
         }));
@@ -116,18 +117,21 @@ async function retrieveData({
   domain,
   context,
   order,
+  limit,
 }: {
   fields: string[];
   model: string;
   domain: any;
   context: any;
   order: string;
+  limit: number;
 }) {
   const values: any[] = (await ConnectionProvider.getHandler().search({
     model,
     params: domain,
     fields,
     context,
+    limit,
     order,
   })) as any;
   const fieldsDefinition = await getFieldsForModel({ model, context });

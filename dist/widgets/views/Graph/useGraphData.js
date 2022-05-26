@@ -71,6 +71,7 @@ var useGraphData = function (opts) {
                                 model: model,
                                 domain: domain,
                                 context: context,
+                                limit: limit,
                                 order: ooui.x.name,
                                 fields: fieldsToRetrieve,
                             })];
@@ -133,7 +134,7 @@ function getFieldsForModel(_a) {
     });
 }
 function retrieveData(_a) {
-    var fields = _a.fields, model = _a.model, domain = _a.domain, context = _a.context, order = _a.order;
+    var fields = _a.fields, model = _a.model, domain = _a.domain, context = _a.context, order = _a.order, limit = _a.limit;
     return __awaiter(this, void 0, void 0, function () {
         var values, fieldsDefinition;
         return __generator(this, function (_b) {
@@ -143,6 +144,7 @@ function retrieveData(_a) {
                         params: domain,
                         fields: fields,
                         context: context,
+                        limit: limit,
                         order: order,
                     })];
                 case 1:

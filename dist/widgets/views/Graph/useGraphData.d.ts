@@ -3,7 +3,7 @@ export declare type GraphDataQueryOpts = {
     model: string;
     domain?: any;
     context?: any;
-    limit?: number;
+    limit: number;
 };
 export declare type GraphDataOpts = GraphDataQueryOpts & {
     xml: string;
