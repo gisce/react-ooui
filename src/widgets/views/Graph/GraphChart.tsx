@@ -16,15 +16,17 @@ export type GraphChartProps = {
   domain: any;
   context: any;
   xml: string;
+  limit: number;
 };
 
 export const GraphChart = (props: GraphChartProps) => {
-  const { model, domain, context, xml } = props;
+  const { model, domain, context, xml, limit } = props;
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
   const { error, loading, values, type } = useGraphData({
     model,
     xml,
+    limit,
     domain,
     context,
     uninformedString: t("uninformed"),
