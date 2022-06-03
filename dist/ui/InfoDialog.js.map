@@ -1,1 +1,0 @@
-{"version":3,"file":"InfoDialog.js","sourceRoot":"","sources":["../../src/ui/InfoDialog.tsx"],"names":[],"mappings":";;AAAA,6BAA6B;AAErB,IAAA,IAAI,GAAK,YAAK,KAAV,CAAW;AAEvB,IAAM,UAAU,GAAG,UAAC,OAAY;IAC9B,IAAI,CAAC;QACH,KAAK,EAAE,EAAE;QACT,QAAQ,EAAE,IAAI;QACd,OAAO,SAAA;KACR,CAAC,CAAC;AACL,CAAC,CAAC;AAEF,kBAAe,UAAU,CAAC"}
