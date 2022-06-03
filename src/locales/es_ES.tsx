@@ -72,7 +72,7 @@ export default {
   lastUpdatedDate: "Fecha última modificación",
   goToResourceId: "Ir al recurso con ID",
   searchId: "ID de búsqueda:",
-  idNotFound: "No se encuentra ésta ID de recuros para el objeto",
+  idNotFound: "No se encuentra ésta ID de recursos para el objeto",
   selectedRegisters: "registros seleccionados",
   translate: "Traducir",
   enterTextBeforeTranslate:
@@ -83,4 +83,5 @@ export default {
   moveDashboard: "Mover items del panel",
   openAttachment: "Ver detalle del adjunto",
   openAttachmentLink: "Abrir enlace del adjunto",
+  uninformed: "Sin informar",
 };

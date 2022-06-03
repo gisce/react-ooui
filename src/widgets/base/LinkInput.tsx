@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Input, Button, Row, Col } from "antd";
 import { Char as CharOoui } from "@gisce/ooui";
 import Config from "@/Config";
 import { EditOutlined, CheckOutlined } from "@ant-design/icons";
+import { FormContext, FormContextType } from "@/context/FormContext";
 
 interface LinkInputProps {
   ooui: CharOoui;
@@ -17,6 +18,8 @@ export const LinkInput = (props: LinkInputProps) => {
   const { id, readOnly, required } = ooui as CharOoui;
   const requiredClass =
     required && !readOnly ? Config.requiredClass : undefined;
+  const formContext = useContext(FormContext) as FormContextType;
+  const { elementHasLostFocus } = formContext || {};
 
   const [editMode, setEditMode] = useState(false);
   const [showInput, setShowInput] = useState(false);
@@ -74,6 +77,7 @@ export const LinkInput = (props: LinkInputProps) => {
               if (valueValidator(value)) {
                 setEditMode(false);
                 setShowInput(false);
+                elementHasLostFocus?.();
               }
             }}
           />

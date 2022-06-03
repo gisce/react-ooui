@@ -19,6 +19,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { Many2oneSuffix } from "./Many2oneSuffix";
 import showErrorDialog from "@/ui/GenericErrorDialog";
 import { FormContext, FormContextType } from "@/context/FormContext";
+import { transformPlainMany2Ones } from "@/helpers/formHelper";
 
 type Props = {
   ooui: Many2oneOoui;
@@ -74,8 +75,16 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const [inputText, setInputText] = useState<string>("");
   const inputTextRef = useRef<string>();
   const formContext = useContext(FormContext) as FormContextType;
-  const { domain, getValues, getContext, setOriginalValue } = formContext || {};
+  const {
+    domain,
+    getValues,
+    getFields,
+    getContext,
+    setOriginalValue,
+    elementHasLostFocus,
+  } = formContext || {};
   const transformedDomain = useRef<any[]>([]);
+  const [searchDomain, setSearchDomain] = useState<any>([]);
 
   const id = value && value[0];
   const text = (value && value[1]) || "";
@@ -102,6 +111,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
 
   const triggerChange = (changedValue: any[]) => {
     onChange?.(changedValue);
+    elementHasLostFocus?.();
   };
 
   const onValueStringChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -199,14 +209,16 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
 
   async function parseDomain() {
     if (widgetDomain) {
-      transformedDomain.current = transformDomainForChildWidget({
-        domain: await ConnectionProvider.getHandler().evalDomain({
+      transformedDomain.current = await ConnectionProvider.getHandler().evalDomain(
+        {
           domain: widgetDomain,
-          values: getValues(),
+          values: transformPlainMany2Ones({
+            fields: getFields(),
+            values: getValues(),
+          }),
           context: getContext(),
-        }),
-        widgetFieldName: fieldName,
-      });
+        }
+      );
     }
 
     if (domain && domain.length > 0) {
@@ -217,6 +229,8 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
         })
       );
     }
+
+    setSearchDomain(transformedDomain.current);
   }
 
   async function onKeyDown(event: any) {
@@ -276,13 +290,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       </Col>
       <SearchModal
         model={relation}
-        domain={
-          domain &&
-          transformDomainForChildWidget({
-            domain,
-            widgetFieldName: fieldName,
-          })
-        }
+        domain={searchDomain}
         context={{ ...getContext?.(), ...context }}
         visible={showSearchModal}
         nameSearch={!id ? searchText : undefined}

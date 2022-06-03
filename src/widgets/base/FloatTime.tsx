@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Input } from "antd";
 import Field from "@/common/Field";
 import { Float as FloatOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Config from "@/Config";
 import { parseFloatToString, parseStringToFloat } from "@/helpers/timeHelper";
+import { FormContext, FormContextType } from "@/context/FormContext";
 
 export const FloatTime = (props: WidgetProps) => {
   const { ooui } = props;
@@ -32,6 +33,8 @@ export const FloatTimeInput: React.FC<FloatTimeInputProps> = (
     required && !readOnly ? Config.requiredClass : undefined;
   const inputTextRef = useRef<string>();
   const [inputText, setInputText] = useState<string>();
+  const formContext = useContext(FormContext) as FormContextType;
+  const { elementHasLostFocus } = formContext || {};
 
   useEffect(() => {
     setInputText(parseFloatToString(value!));
@@ -46,8 +49,10 @@ export const FloatTimeInput: React.FC<FloatTimeInputProps> = (
     setInputText(e.target.value);
   }
 
-  function onElementLostFocus() {
+  async function onElementLostFocus() {
     triggerChange(parseStringToFloat(inputText));
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    elementHasLostFocus?.();
   }
 
   return (

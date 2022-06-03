@@ -145,9 +145,7 @@ function Form(props: FormProps, ref: any) {
 
   useImperativeHandle(ref, () => ({
     submitForm,
-    getFields: () => {
-      return fields;
-    },
+    getFields,
     getValues,
     getContext,
     fetchValues,
@@ -203,6 +201,10 @@ function Form(props: FormProps, ref: any) {
 
   function getCurrentId() {
     return id || createdId.current;
+  }
+
+  function getFields() {
+    return fields;
   }
 
   function getValues() {
@@ -607,7 +609,11 @@ function Form(props: FormProps, ref: any) {
       formModalContext.setTitle?.(ooui.string);
   };
 
-  const checkFieldsChanges = async () => {
+  const checkFieldsChanges = async ({
+    elementHasLostFocus = false,
+  }: {
+    elementHasLostFocus?: boolean;
+  }) => {
     if (formSubmitting.current) return;
 
     const touchedValues = getTouchedValues({
@@ -619,14 +625,8 @@ function Form(props: FormProps, ref: any) {
     const changedFields = Object.keys(touchedValues);
 
     if (changedFields.length !== 0) {
-      const values = processValues(antForm.getFieldsValue(true), fields);
-      lastAssignedValues.current = values;
-
-      onFieldsChange?.(values);
-      setFormHasChanges?.(true);
-
       // We check if there are any field of type text, email, url or char inside the changed values
-      // in order to debounce the call
+      // in order to ignore the call, because it will fire when element lost focus
       if (
         checkFieldsType({
           changedFields,
@@ -637,13 +637,21 @@ function Form(props: FormProps, ref: any) {
             "url",
             "char",
             "float",
+            "float_time",
             "integer",
             "many2one",
           ],
-        })
+        }) &&
+        elementHasLostFocus !== true
       ) {
-        debouncedEvaluateChanges(changedFields);
+        return;
       } else {
+        const values = processValues(antForm.getFieldsValue(true), fields);
+        lastAssignedValues.current = values;
+
+        onFieldsChange?.(values);
+        setFormHasChanges?.(true);
+
         evaluateChanges(changedFields);
       }
     }
@@ -731,8 +739,6 @@ function Form(props: FormProps, ref: any) {
       setFields(proccessedFields);
     }
   };
-
-  const debouncedEvaluateChanges = debounce(evaluateChanges, 800);
 
   async function runObjectButton({
     action,
@@ -830,6 +836,10 @@ function Form(props: FormProps, ref: any) {
     }
   }
 
+  function elementHasLostFocus() {
+    checkFieldsChanges({ elementHasLostFocus: true });
+  }
+
   async function executeButtonAction({
     type,
     action,
@@ -883,6 +893,7 @@ function Form(props: FormProps, ref: any) {
       <>
         <FormProvider
           getValues={getValues}
+          getFields={getFields}
           domain={actionDomain}
           activeId={id}
           activeModel={model}
@@ -894,10 +905,13 @@ function Form(props: FormProps, ref: any) {
           submitForm={submitForm}
           fetchValues={fetchValues}
           formHasChanges={formHasChanges}
+          elementHasLostFocus={elementHasLostFocus}
         >
           <AntForm
             form={antForm}
-            onFieldsChange={debouncedCheckFieldsChanges}
+            onFieldsChange={() => {
+              debouncedCheckFieldsChanges({ elementHasLostFocus: false });
+            }}
             component={false}
             preserve={false}
           >

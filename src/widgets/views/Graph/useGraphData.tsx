@@ -1,147 +1,100 @@
+import { useState } from "react";
+import {
+  parseGraph,
+  GraphChart as GraphChartOoui,
+  graphProcessor,
+  graphFieldUtils,
+  GraphType,
+} from "@gisce/ooui";
+import useDeepCompareEffect from "use-deep-compare-effect";
 import ConnectionProvider from "@/ConnectionProvider";
-import { GraphAxis, Operator } from "@gisce/ooui/dist/Graph";
-import { useEffect, useState } from "react";
-import { GraphChart as GraphChartOoui } from "@gisce/ooui";
-import GraphDefaults from "./GraphDefaults";
 
-export type GraphDataOpts = {
+const { processGraphData } = graphProcessor;
+const { getFieldsToRetrieve } = graphFieldUtils;
+
+export type GraphDataQueryOpts = {
   model: string;
-  domain: any;
-  context: any;
-  ooui: GraphChartOoui;
-  limit?: number;
+  domain?: any;
+  context?: any;
+  limit: number;
 };
 
-const labelsForOperator = {
-  count: "count",
-  "+": "sum",
-  "-": "subtract",
-  "*": "multiply",
-  avg: "average",
-  min: "min",
-  max: "max",
+export type GraphDataOpts = GraphDataQueryOpts & {
+  xml: string;
+  uninformedString: string;
 };
 
-type GraphDefaultsType = "default" | "barGrouped" | "pie";
-
-export default function useGraphCountData(opts: GraphDataOpts) {
+export const useGraphData = (opts: GraphDataOpts) => {
+  const {
+    model,
+    domain = [],
+    context = {},
+    xml,
+    limit,
+    uninformedString,
+  } = opts;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>();
-  const [graphProps, setGraphProps] = useState<any>();
-  const { model } = opts;
+  const [processedValues, setProcessedValues] = useState<any>();
+  const [type, setType] = useState<GraphType>("line");
 
-  useEffect(() => {
-    (async function () {
-      const { domain, context, ooui, limit } = opts;
-      const defaultsType: GraphDefaultsType = getGraphDefaultsType({ ooui });
+  useDeepCompareEffect(() => {
+    (async () => {
+      setLoading(true);
+      setError(undefined);
+
+      // // First we parse the xml with ooui library
+      const ooui = parseGraph(xml) as GraphChartOoui;
+      setType(ooui.type || "line");
+
+      // // Then we fetch the data
+      const fieldsToRetrieve = getFieldsToRetrieve({ ooui });
+      let values, fields;
 
       try {
-        setLoading(true);
-        const xField: string = ooui.x!.name!;
-
-        const results: any[] = (await ConnectionProvider.getHandler().search({
-          params: domain,
-          fields: getFieldsToRetrieve({ ooui }),
-          context,
+        // Use connection provider or whatever service you need to use
+        ({ values, fields } = await retrieveData({
           model,
-          order: xField,
+          domain,
+          context,
           limit,
-        })) as any;
-
-        const fields = await getFieldsForModel({ model, context });
-
-        const yStackedValues = getYStackedResultsIfNeeded({
-          results,
-          fields,
-          ooui,
-          type: defaultsType,
-        });
-
-        const { valueLabelRelation, groupedResults } = getRecordsGroupedByX({
-          xField,
-          yFields: getYFields(ooui!.y!),
-          results: yStackedValues,
-          fields,
-        });
-
-        const appliedOperators = applyOperators({
-          results: groupedResults,
-          ooui,
-        });
-
-        const resultsWithFinalXLabels = replaceLabelsForXIfNeeded({
-          results: appliedOperators,
-          valueLabelRelation,
-          ooui,
-          fields,
-        });
-
-        const data = createDataObject({
-          results: resultsWithFinalXLabels,
-          xField,
-        });
-
-        setGraphProps(getGraphProps({ type: defaultsType, data, ooui }));
-      } catch (err) {
-        setError(err);
-      } finally {
+          order: ooui.x.name,
+          fields: fieldsToRetrieve,
+        }));
+      } catch (e) {
+        setError("Error fetching graph data values: " + JSON.stringify(e));
         setLoading(false);
+        return;
       }
+
+      try {
+        if (!values || !fields) {
+          setError("No values or fields returned");
+          setLoading(false);
+          return;
+        }
+
+        const _processedValues = processGraphData({
+          ooui,
+          values,
+          fields,
+          options: {
+            uninformedString,
+          },
+        });
+        setProcessedValues(_processedValues);
+      } catch (e) {
+        setError("Error processing graph data: " + e);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(false);
     })();
-  }, [model]);
+  }, [xml, model, limit, context, domain]);
 
-  return { error, loading, graphProps };
-}
-
-export function getValueForOperator({
-  operator,
-  values,
-}: {
-  operator: Operator;
-  values: any[];
-}) {
-  switch (operator) {
-    case "count": {
-      return values.length;
-    }
-    case "+": {
-      return roundNumber(
-        values.reduce(function (previousValue: any, currentValue: any) {
-          return previousValue + currentValue;
-        })
-      );
-    }
-    case "-": {
-      return roundNumber(
-        values.reduce(function (previousValue: any, currentValue: any) {
-          return previousValue - currentValue;
-        })
-      );
-    }
-    case "*": {
-      return roundNumber(
-        values.reduce(function (previousValue: any, currentValue: any) {
-          return previousValue * currentValue;
-        })
-      );
-    }
-    case "avg": {
-      const sum = values.reduce((a: any, b: any) => a + b, 0);
-      const avg = sum / values.length || 0;
-      return roundNumber(avg);
-    }
-    case "min": {
-      return Math.min(...values);
-    }
-    case "max": {
-      return Math.max(...values);
-    }
-  }
-}
-
-function roundNumber(num: number) {
-  return Math.round((num + Number.EPSILON) * 100) / 100;
-}
+  return { loading, error, type, values: processedValues };
+};
 
 async function getFieldsForModel({
   model,
@@ -158,374 +111,32 @@ async function getFieldsForModel({
   return viewData.fields;
 }
 
-function getValueData({
+async function retrieveData({
   fields,
-  values,
-  fieldName,
+  model,
+  domain,
+  context,
+  order,
+  limit,
 }: {
-  fields: any;
-  values: any;
-  fieldName: string;
+  fields: string[];
+  model: string;
+  domain: any;
+  context: any;
+  order: string;
+  limit: number;
 }) {
-  const xFieldData = fields[fieldName];
-  const value = values[fieldName];
-
-  if (xFieldData && xFieldData.type === "many2one") {
-    return { value: value[0], label: value[1] };
-  } else if (xFieldData && xFieldData.type === "selection") {
-    const selectionValues: [number, string][] = xFieldData.selection;
-
-    const valuePair = selectionValues.find((selectionPair) => {
-      return selectionPair[0] === value;
-    });
-
-    if (!valuePair) {
-      return { value: false, label: undefined };
-    }
-
-    return { value, label: valuePair[1] };
-  }
-
-  return { value, label: fieldName };
-}
-
-function getYStackedResultsIfNeeded({
-  results,
-  fields,
-  ooui,
-  type,
-}: {
-  results: any[];
-  fields: any;
-  ooui: GraphChartOoui;
-  type: GraphDefaultsType;
-}) {
-  if (type !== "barGrouped") {
-    return results;
-  }
-
-  const fieldName = ooui!.y![0].label!;
-
-  let finalResults: any[] = [];
-  const mapValueLabel: { [key: string]: string } = {};
-
-  results.forEach((result) => {
-    const mustMapLabel = mustMapField({ fieldName, fields });
-
-    if (mustMapLabel) {
-      const { value, label } = getValueData({
-        fields,
-        values: result,
-        fieldName,
-      });
-
-      mapValueLabel[value] = label;
-      finalResults.push({ ...result, [fieldName]: value });
-    } else {
-      mapValueLabel[result[fieldName]] = result[fieldName];
-      finalResults.push({ ...result, [fieldName]: result[fieldName] });
-    }
-  });
-
-  finalResults = finalResults.map((result) => {
-    return {
-      ...result,
-      [fieldName]: mapValueLabel[result[fieldName]],
-    };
-  });
-
-  return finalResults;
-}
-
-function getGraphDefaultsType({ ooui }: { ooui: GraphChartOoui }) {
-  if (ooui.type === "bar" && ooui.y && ooui.y.length === 1 && ooui.y[0].label) {
-    return "barGrouped";
-  }
-  if (ooui.type === "pie") {
-    return ooui.type;
-  }
-  return "default";
-}
-
-function getFieldsToRetrieve({ ooui }: { ooui: GraphChartOoui }) {
-  const xField: string = ooui.x!.name!;
-  const fields = [xField];
-
-  if (!ooui.y) {
-    return [];
-  }
-
-  ooui.y.forEach((y) => {
-    if (y.operator !== "count") {
-      fields.push(y.name!);
-    }
-
-    if (y.label) {
-      fields.push(y.label);
-    }
-  });
-
-  return fields;
-}
-
-function getRecordsGroupedByX({
-  results,
-  fields,
-  xField,
-  yFields,
-}: {
-  results: any[];
-  fields: any;
-  xField: string;
-  yFields: string[];
-}) {
-  const valueLabelRelation: { [key: string]: any } = {};
-  const groupedResults: { [key: string]: any } = {};
-
-  for (const result of results) {
-    const { value, label } = getValueData({
-      fields,
-      values: result,
-      fieldName: xField,
-    });
-
-    if (value === false && fields[xField].type === "selection") {
-      continue;
-    }
-
-    valueLabelRelation[value] = label;
-
-    if (value !== undefined && value !== false) {
-      if (groupedResults[value] === undefined) {
-        groupedResults[value] = [];
-      }
-
-      const yValues: { [key: string]: any } = {};
-      yFields.forEach((yField) => {
-        yValues[yField] = result[yField];
-      });
-
-      groupedResults[value].push(yValues);
-    }
-  }
-
-  return { valueLabelRelation, groupedResults };
-}
-
-function applyOperators({
-  results,
-  ooui,
-}: {
-  results: { [key: string]: any };
-  ooui: GraphChartOoui;
-}) {
-  const yAxis = ooui!.y!;
-  const resultsWithOperatorsApplied: { [key: string]: any } = {};
-
-  Object.keys(results).forEach((x) => {
-    const yValues = results[x];
-
-    yAxis.forEach((y) => {
-      const operator = y.operator!;
-      const yField = y.name!;
-
-      if (y.label) {
-        const groupedYValues = getResultsGroupedBy({
-          results: yValues,
-          fieldName: y.label,
-        });
-
-        Object.keys(groupedYValues).forEach((yLabelKey) => {
-          const iYValues = groupedYValues[yLabelKey];
-          const valuesForAxis: any[] = getValuesForAxis({
-            values: iYValues,
-            fieldName: yField,
-          });
-
-          const result = getValueForOperator({
-            operator,
-            values: valuesForAxis,
-          });
-
-          if (!resultsWithOperatorsApplied[x]) {
-            resultsWithOperatorsApplied[x] = [];
-          }
-
-          resultsWithOperatorsApplied[x].push({
-            [getYAxisFieldname(y)]: result,
-            [y!.label!]: yLabelKey,
-          });
-        });
-      } else {
-        const valuesForAxis: any[] = getValuesForAxis({
-          values: yValues,
-          fieldName: yField,
-        });
-
-        const result = getValueForOperator({ operator, values: valuesForAxis });
-
-        if (!resultsWithOperatorsApplied[x]) {
-          resultsWithOperatorsApplied[x] = [];
-        }
-
-        resultsWithOperatorsApplied[x].push({
-          [getYAxisFieldname(y)]: result,
-        });
-      }
-    });
-  });
-
-  return resultsWithOperatorsApplied;
-}
-
-function replaceLabelsForXIfNeeded({
-  results,
-  valueLabelRelation,
-  ooui,
-  fields,
-}: {
-  results: { [key: string]: any };
-  valueLabelRelation: { [key: string]: any };
-  ooui: GraphChartOoui;
-  fields: any;
-}) {
-  const resultsWithLabels: { [key: string]: any } = {};
-  const mustMapLabel = mustMapXLabel({ ooui, fields });
-
-  if (!mustMapLabel) {
-    return results;
-  }
-
-  Object.keys(results).forEach((x) => {
-    const yValues = results[x];
-    resultsWithLabels[valueLabelRelation[x]] = yValues;
-  });
-
-  return resultsWithLabels;
-}
-
-function createDataObject({
-  results,
-  xField,
-}: {
-  xField: string;
-  results: { [key: string]: any };
-}) {
-  const resultsArray: any[] = [];
-
-  Object.keys(results).forEach((x) => {
-    const entries = results[x];
-
-    entries.forEach((yValues: any) => {
-      resultsArray.push({
-        [xField]: x,
-        ...yValues,
-      });
-    });
-  });
-
-  return resultsArray;
-}
-
-function getGraphProps({
-  type,
-  data,
-  ooui,
-}: {
-  type: GraphDefaultsType;
-  data: any[];
-  ooui: GraphChartOoui;
-}) {
-  let graphProps: any = GraphDefaults[type];
-  graphProps.data = data;
-
-  if (type === "pie") {
-    graphProps.colorField = ooui.x!.name;
-    graphProps.angleField = getYAxisFieldname(ooui!.y![0]);
-  } else if (type === "barGrouped") {
-    graphProps.xField = ooui.x!.name;
-    graphProps.yField = getYAxisFieldname(ooui!.y![0]);
-    graphProps.seriesField = ooui!.y![0].label;
-  } else if (type === "default") {
-    graphProps.xField = ooui.x!.name;
-    graphProps.yField = getYAxisFieldname(ooui!.y![0]);
-  }
-
-  return graphProps;
-}
-
-function mustMapXLabel({
-  ooui,
-  fields,
-}: {
-  ooui: GraphChartOoui;
-  fields: any;
-}) {
-  const xField: string = ooui!.x!.name!;
-  return mustMapField({ fieldName: xField, fields });
-}
-
-function mustMapField({
-  fieldName,
-  fields,
-}: {
-  fieldName: string;
-  fields: any;
-}) {
-  const xFieldData = fields[fieldName];
-  return xFieldData.type === "selection" || xFieldData.type === "many2one";
-}
-
-function getYAxisFieldname(y: GraphAxis) {
-  if (y.operator) {
-    return y.name + "_" + labelsForOperator[y.operator];
-  }
-  return y.name!;
-}
-
-function getYFields(y: GraphAxis[]) {
-  const yFields: string[] = [];
-  y.forEach((yAxis) => {
-    yFields.push(yAxis!.name!);
-    if (yAxis!.label) {
-      yFields.push(yAxis!.label);
-    }
-  });
-  return yFields;
-}
-
-function getResultsGroupedBy({
-  results,
-  fieldName,
-}: {
-  results: any[];
-  fieldName: string;
-}) {
-  const groupedResults: { [key: string]: any } = {};
-
-  for (const result of results) {
-    const value = result[fieldName];
-    if (value !== undefined && value !== false) {
-      if (groupedResults[value] === undefined) {
-        groupedResults[value] = [];
-      }
-      groupedResults[value].push(result);
-    }
-  }
-
-  return groupedResults;
-}
-
-function getValuesForAxis({
-  values,
-  fieldName,
-}: {
-  values: any[];
-  fieldName: string;
-}) {
-  return values
-    .filter((yValue: { [key: string]: any }) => yValue[fieldName] !== undefined)
-    .map((yValue: { [key: string]: any }) => {
-      return yValue[fieldName];
-    });
+  const values: any[] = (await ConnectionProvider.getHandler().search({
+    model,
+    params: domain,
+    fields,
+    context,
+    limit,
+    order,
+  })) as any;
+  const fieldsDefinition = await getFieldsForModel({ model, context });
+  return {
+    values,
+    fields: fieldsDefinition,
+  };
 }

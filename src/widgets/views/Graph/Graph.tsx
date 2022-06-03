@@ -3,7 +3,6 @@ import {
   Graph as GraphOoui,
   parseGraph,
   GraphIndicator as GraphIndicatorOoui,
-  GraphChart as GraphChartOoui,
   GraphIndicatorField,
 } from "@gisce/ooui";
 import { LoadingOutlined } from "@ant-design/icons";
@@ -23,6 +22,7 @@ export const Graph = (props: GraphProps) => {
   const { view_id, model, context, domain, limit } = props;
   const [loading, setLoading] = useState(false);
   const [graphOoui, setGraphOoui] = useState<GraphOoui>();
+  const [graphXml, setGraphXml] = useState<string>();
 
   useEffect(() => {
     fetchData();
@@ -39,6 +39,7 @@ export const Graph = (props: GraphProps) => {
         context,
       });
 
+      setGraphXml(viewData.arch);
       const graph = parseGraph(viewData.arch);
       setGraphOoui(graph);
     } catch (err) {
@@ -90,13 +91,12 @@ export const Graph = (props: GraphProps) => {
     case "line":
     case "bar":
     case "pie": {
-      const graphChart = graphOoui as GraphChartOoui;
       return (
         <GraphChart
           model={model}
           context={context}
           domain={domain}
-          ooui={graphChart}
+          xml={graphXml!}
           limit={limit}
         />
       );

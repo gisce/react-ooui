@@ -1,1 +1,0 @@
-{"version":3,"file":"Many2oneSuffixModal.d.ts","sourceRoot":"","sources":["../../../../src/widgets/base/many2one/Many2oneSuffixModal.tsx"],"names":[],"mappings":"AAIA,aAAK,KAAK,GAAG;IACX,OAAO,EAAE,OAAO,CAAC;IACjB,KAAK,EAAE,GAAG,EAAE,CAAC;IACb,aAAa,EAAE,CAAC,IAAI,EAAE,GAAG,KAAK,IAAI,CAAC;IACnC,QAAQ,EAAE,MAAM,IAAI,CAAC;CACtB,CAAC;AAEF,eAAO,MAAM,mBAAmB,UAAW,KAAK,gBA6B/C,CAAC"}

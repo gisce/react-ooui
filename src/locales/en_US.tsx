@@ -79,4 +79,5 @@ export default {
   moveDashboard: "Move dashboard items",
   openAttachment: "Open attachment detail",
   openAttachmentLink: "Open attachment link",
+  uninformed: "Uninformed",
 };

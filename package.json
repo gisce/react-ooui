@@ -1,13 +1,15 @@
 {
-  "name": "react-ooui",
+  "name": "@gisce/react-ooui",
   "version": "0.1.0",
-  "private": true,
   "main": "dist/index.js",
   "files": [
     "dist",
     "src",
     "README.md"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "prebuild": "npm run build:tailwind && rimraf dist && npm run build:ts",
     "build:ts": "tsc",
@@ -21,7 +23,7 @@
   },
   "dependencies": {
     "@ant-design/charts": "^1.3.6",
-    "@gisce/ooui": "^0.5.2",
+    "@gisce/ooui": "^0.6.14",
     "fiber-diagram": "github:gisce/fiber-diagram",
     "file-type": "^16.5.0",
     "react-grid-layout": "^1.3.4",
@@ -29,7 +31,7 @@
     "react-measure": "^2.5.2",
     "scroll-into-view": "^1.16.0",
     "styled-components": "^5.2.1",
-    "use-deep-compare-effect": "^1.6.1",
+    "use-deep-compare-effect": "^1.8.1",
     "validator": "^13.6.0"
   },
   "devDependencies": {

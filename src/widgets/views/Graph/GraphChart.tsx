@@ -1,9 +1,9 @@
-import React from "react";
-import { LoadingOutlined } from "@ant-design/icons";
-import { GraphChart as GraphChartOoui } from "@gisce/ooui";
+import React, { useContext } from "react";
 import { Line, Column, Pie } from "@ant-design/plots";
-import useGraphData from "./useGraphData";
-import { Alert } from "antd";
+import GraphDefaults from "./GraphDefaults";
+import { useGraphData } from "./useGraphData";
+import { Alert, Spin } from "antd";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 const types = {
   line: Line,
@@ -14,41 +14,89 @@ const types = {
 export type GraphChartProps = {
   model: string;
   domain: any;
-  limit: number;
   context: any;
-  ooui: GraphChartOoui;
+  xml: string;
+  limit: number;
 };
 
-export const GraphChartComp = (props: GraphChartProps) => {
-  const { model, domain, context, ooui, limit } = props;
+export const GraphChart = (props: GraphChartProps) => {
+  const { model, domain, context, xml, limit } = props;
+  const { t } = useContext(LocaleContext) as LocaleContextType;
 
-  const { loading, error, graphProps } = useGraphData({
+  const { error, loading, values, type } = useGraphData({
     model,
+    xml,
+    limit,
     domain,
     context,
-    limit,
-    ooui,
+    uninformedString: t("uninformed"),
   });
 
   if (error) {
-    return <Alert message={JSON.stringify(error)} type="error" banner />;
+    return <Alert message={error} type="error" banner />;
   }
 
-  if (loading || graphProps?.data === undefined) {
-    return (
-      <div style={{ padding: "1rem" }}>
-        <LoadingOutlined style={{ height: "12px" }} />
-      </div>
-    );
+  if (loading) {
+    return <Spin />;
   }
 
-  const Chart = (types as any)[ooui.type!];
+  if (!values) {
+    return <Alert message="No data to display" type="info" />;
+  }
+
+  const { data, isGroup, isStack } = values;
+
+  const Chart = (types as any)[type!];
+
+  if (!Chart) {
+    return <>{`Unknown graph type: ${type}`}</>;
+  }
 
   return (
     <div style={{ padding: "1rem" }}>
-      <Chart {...graphProps} />
+      <Chart
+        {...getGraphProps({
+          type,
+          data,
+          isGroup,
+          isStack,
+        })}
+      />
     </div>
   );
 };
 
-export const GraphChart = React.memo(GraphChartComp);
+type GetGraphPropsType = {
+  type: string;
+  isStack: boolean;
+  isGroup: boolean;
+  data: any[];
+};
+
+function getGraphProps(props: GetGraphPropsType) {
+  const { type, data, isGroup, isStack } = props;
+  let graphProps = (GraphDefaults as any)[type];
+
+  if (!graphProps) {
+    graphProps = (GraphDefaults as any)["default"];
+  }
+
+  graphProps.data = data;
+
+  if (type === "pie") {
+    graphProps.colorField = "x";
+    graphProps.angleField = "value";
+  } else {
+    graphProps.xField = "x";
+    graphProps.yField = "value";
+    graphProps.seriesField = "type";
+
+    graphProps.isGroup = isGroup;
+
+    if (isStack) {
+      graphProps.groupField = "stacked";
+    }
+  }
+
+  return graphProps;
+}
