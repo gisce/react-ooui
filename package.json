@@ -1,13 +1,15 @@
 {
-  "name": "react-ooui",
+  "name": "@gisce/react-ooui",
   "version": "0.1.0",
-  "private": true,
   "main": "dist/index.js",
   "files": [
     "dist",
     "src",
     "README.md"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "prebuild": "npm run build:tailwind && rimraf dist && npm run build:ts",
     "build:ts": "tsc",

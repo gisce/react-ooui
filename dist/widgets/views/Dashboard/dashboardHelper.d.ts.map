@@ -1,1 +1,0 @@
-{"version":3,"file":"dashboardHelper.d.ts","sourceRoot":"","sources":["../../../../src/widgets/views/Dashboard/dashboardHelper.ts"],"names":[],"mappings":"AAIA,wBAAsB,WAAW,CAAC,EAChC,QAAQ,EACR,WAAgB,EAChB,YAAiB,GAClB,EAAE;IACD,QAAQ,EAAE,MAAM,CAAC;IACjB,WAAW,CAAC,EAAE,GAAG,CAAC;IAClB,YAAY,CAAC,EAAE,GAAG,CAAC;CACpB,GAAG,OAAO,CAAC,GAAG,CAAC,CA0Df"}
