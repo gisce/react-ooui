@@ -1,1 +1,0 @@
-{"version":3,"file":"ButtonWithBadge.d.ts","sourceRoot":"","sources":["../../src/actionbar/ButtonWithBadge.tsx"],"names":[],"mappings":";AACA,OAA0B,EAAC,KAAK,IAAI,sBAAsB,EAAE,MAAM,4BAA4B,CAAC;AAE/F,aAAK,KAAK,GAAG,sBAAsB,GAAG;IACpC,WAAW,CAAC,EAAE,MAAM,CAAC;CACtB,CAAC;AAEF,iBAAS,eAAe,CAAC,KAAK,EAAE,KAAK,eA6BpC;AAED,eAAe,eAAe,CAAC"}
