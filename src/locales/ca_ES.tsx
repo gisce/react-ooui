@@ -13,6 +13,7 @@ export default {
   welcome: "Benvingut",
   attachments: "Adjunts",
   addNewAttachment: "Afegir nou adjunt",
+  listAllAttachments: "Veure tots els adjunts",
   viewAs: "Veure com",
   confirmRemoveItem: "Estàs segur de volguer eliminar aquest item?",
   save: "Desar",

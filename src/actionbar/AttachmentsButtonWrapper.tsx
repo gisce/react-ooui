@@ -4,6 +4,8 @@ import {
   FormOutlined,
   DownloadOutlined,
   LinkOutlined,
+  FileAddOutlined,
+  TableOutlined,
 } from "@ant-design/icons";
 import { Popover, Button, Row, Col, Tooltip, Spin } from "antd";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
@@ -21,6 +23,7 @@ export type AttachmentsButtonWrapperProps = {
   disabled: boolean;
   loading: boolean;
   onAddNewAttachment: () => void;
+  onListAllAttachments: () => void;
   onopenAttachmentLink: (attachment: Attachment) => void;
   onOpenAttachmentDetail: (attachment: Attachment) => void;
 };
@@ -68,6 +71,7 @@ const Content = (
     onAddNewAttachment,
     onopenAttachmentLink,
     onOpenAttachmentDetail,
+    onListAllAttachments,
   } = props;
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
@@ -78,13 +82,24 @@ const Content = (
   return (
     <>
       <a
+        style={{ display: "block", paddingBottom: 5 }}
+        href="#"
+        onClick={() => {
+          setPopoverVisible(false);
+          onListAllAttachments();
+        }}
+      >
+        <TableOutlined /> {t("listAllAttachments")}
+      </a>
+      <a
+        style={{ display: "block" }}
         href="#"
         onClick={() => {
           setPopoverVisible(false);
           onAddNewAttachment();
         }}
       >
-        {t("addNewAttachment")}
+        <FileAddOutlined /> {t("addNewAttachment")}
       </a>
       {attachments.length > 0 && (
         <>

@@ -17,6 +17,7 @@ export type AttachmentsButtonProps = {
   attachments?: any;
   disabled?: boolean;
   onAddNewAttachment: () => void;
+  onListAllAttachments: () => void;
   onViewAttachmentDetails: (attachment: Attachment) => void;
 };
 
@@ -25,6 +26,7 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
     attachments,
     disabled = false,
     onAddNewAttachment,
+    onListAllAttachments,
     onViewAttachmentDetails,
   } = props;
   const { formRef } = useContext(ActionViewContext) as ActionViewContextType;
@@ -109,6 +111,7 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
         disabled={disabled}
         loading={preloading}
         onAddNewAttachment={onAddNewAttachment}
+        onListAllAttachments={onListAllAttachments}
         onopenAttachmentLink={openAttachmentLink}
         onOpenAttachmentDetail={openAttachmentDetail}
       />

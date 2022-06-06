@@ -13,6 +13,7 @@ export default {
   welcome: "Bienvenido",
   attachments: "Adjuntos",
   addNewAttachment: "Añadir nuevo adjunto",
+  listAllAttachments: "Ver todos los adjuntos",
   viewAs: "Ver cómo",
   confirmRemoveItem: "Estás seguro de querer eliminar éste registro?",
   save: "Guardar",

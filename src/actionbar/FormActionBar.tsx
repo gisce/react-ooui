@@ -393,6 +393,18 @@ function FormActionBar() {
             initialViewType: "form",
           });
         }}
+        onListAllAttachments={() => {
+          const res_id = currentId as number;
+          const res_model = currentModel as string;
+          openDefaultActionForModel({
+            model: "ir.attachment",
+            domain: [
+              ["res_model", "=", `${res_model}`],
+              ["res_id", "=", `${res_id}`],
+            ],
+            initialViewType: "tree",
+          });
+        }}
         onViewAttachmentDetails={(attachment: Attachment) => {
           openDefaultActionForModel({
             model: "ir.attachment",

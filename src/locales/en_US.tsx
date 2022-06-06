@@ -12,6 +12,7 @@ export default {
   welcome: "Welcome",
   attachments: "Attachments",
   addNewAttachment: "Add new attachment",
+  listAllAttachments: "View all the attachments",
   viewAs: "View as",
   confirmRemoveItem: "Are you sure to remove this item?",
   save: "Save",
