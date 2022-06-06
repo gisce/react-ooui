@@ -46,7 +46,6 @@ const testArch = `<form><notebook name="notebook"><page string="Corbes">
         <field name="name" string="Última corba"/>
         <field name="surname" string="Format"/>
     </group>
-    <group colspan="2"></group>
 </group>
 </page></notebook>
 </form>`;
