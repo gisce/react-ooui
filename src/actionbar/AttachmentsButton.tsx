@@ -111,7 +111,7 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
         disabled={disabled}
         loading={preloading}
         onAddNewAttachment={onAddNewAttachment}
-        onListAllAttachments={onAddNewAttachment}
+        onListAllAttachments={onListAllAttachments}
         onopenAttachmentLink={openAttachmentLink}
         onOpenAttachmentDetail={openAttachmentDetail}
       />

@@ -398,13 +398,10 @@ function FormActionBar() {
           const res_model = currentModel as string;
           openDefaultActionForModel({
             model: "ir.attachment",
-            values: {
-              selection_associated_object: `${res_model},${res_id}`,
-            },
-            forced_values: {
-              res_model,
-              res_id,
-            },
+            domain: [
+              ["res_model", "=", `${res_model}`],
+              ["res_id", "=", `${res_id}`],
+            ],
             initialViewType: "tree",
           });
         }}

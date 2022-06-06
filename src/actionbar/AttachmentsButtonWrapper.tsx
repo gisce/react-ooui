@@ -82,6 +82,7 @@ const Content = (
   return (
     <>
       <a
+        style={{ display: "block", paddingBottom: 5 }}
         href="#"
         onClick={() => {
           setPopoverVisible(false);
@@ -90,8 +91,8 @@ const Content = (
       >
         <TableOutlined /> {t("listAllAttachments")}
       </a>
-      <br />
       <a
+        style={{ display: "block" }}
         href="#"
         onClick={() => {
           setPopoverVisible(false);

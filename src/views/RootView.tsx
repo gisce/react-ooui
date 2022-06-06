@@ -80,12 +80,14 @@ function RootView(props: RootViewProps, ref: any) {
     forced_values,
     initialViewType,
     res_id,
+    domain = [],
   }: {
     action: string;
     values?: any;
     forced_values?: any;
     initialViewType?: ViewType;
     res_id?: number;
+    domain?: any;
   }) {
     const dataForAction = await ConnectionProvider.getHandler().getActionData({
       action,
@@ -151,7 +153,7 @@ function RootView(props: RootViewProps, ref: any) {
     }
 
     openAction({
-      domain: parsedDomain,
+      domain: [...parsedDomain, ...domain],
       context: { ...rootContext, ...parsedContext },
       model,
       views: finalViews,
@@ -333,12 +335,14 @@ function RootView(props: RootViewProps, ref: any) {
     forced_values,
     initialViewType,
     res_id,
+    domain,
   }: {
     model: string;
     values?: any;
     forced_values?: any;
     initialViewType?: ViewType;
     res_id?: number;
+    domain?: any;
   }) {
     const actionString = await ConnectionProvider.getHandler().getActionStringForModel(
       model
@@ -349,6 +353,7 @@ function RootView(props: RootViewProps, ref: any) {
       forced_values,
       initialViewType,
       res_id,
+      domain,
     });
   }
 
