@@ -202,6 +202,8 @@ function SearchTree(props: Props, ref: any) {
     params.forEach((param) => {
       if (Array.isArray(param) && param[0]) {
         uniqueFields[param[0]] = true;
+      } else {
+        uniqueFields[param] = true;
       }
     });
 
@@ -217,6 +219,8 @@ function SearchTree(props: Props, ref: any) {
         if (!uniqueParams.includes(element[0])) {
           finalParams.push(element);
         }
+      } else if (!uniqueParams.includes(element)) {
+        finalParams.push(element);
       }
     });
 
