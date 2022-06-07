@@ -70,6 +70,15 @@ const floatTimeComponent = (value: number): React.ReactElement => {
   return <>{parseFloatToString(value)}</>;
 };
 
+const imageComponent = (value: string): React.ReactElement => {
+  return (
+    <img
+      src={`data:image/*;base64,${value}`}
+      style={{ maxWidth: "50px", padding: "5px" }}
+    />
+  );
+};
+
 function Tree(props: Props): React.ReactElement {
   const {
     page = 1,
@@ -108,6 +117,7 @@ function Tree(props: Props): React.ReactElement {
       many2many: one2ManyComponentFn,
       progressbar: progressBarComponentFn,
       float_time: floatTimeComponent,
+      image: imageComponent,
     });
     setColumns(columns);
   }, [treeView]);
