@@ -42,41 +42,44 @@ const Container = (props: Props): React.ReactElement => {
       numberOfColumns: columns,
     });
 
-    const rowWithEmptiesToFit = fillRowWithEmptiesToFit({
-      row: rowWithExpandedItems,
-      numberOfColumns: columns,
-      mustFillWithEmpties: responsiveBehaviour,
-    });
-
+    let rowWithEmptiesToFit;
     if (i === 0) {
+      rowWithEmptiesToFit = fillRowWithEmptiesToFit({
+        row: rowWithExpandedItems,
+        numberOfColumns: columns,
+        mustFillWithEmpties: responsiveBehaviour,
+      });
+
       firstRow = firstRow.concat(rowWithEmptiesToFit);
     }
 
-    return rowWithEmptiesToFit.map((item: Widget, j: number) => {
-      // We check if we have any label+field inside the container.
-      // In this scenario, we must format the grid accordingly
-      // Otherwise, the grid will divide uniformly
-      if (item instanceof Label && (item as Label).fieldForLabel) {
-        fieldInRows = true;
+    return (i === 0 ? rowWithEmptiesToFit : rowWithExpandedItems).map(
+      (item: Widget, j: number) => {
+        // We check if we have any label+field inside the container.
+        // In this scenario, we must format the grid accordingly
+        // Otherwise, the grid will divide uniformly
+        if (item instanceof Label && (item as Label).fieldForLabel) {
+          fieldInRows = true;
+        }
+
+        const itemRowIndex = row.indexOf(item);
+
+        return (
+          <div
+            key={`${i.toString()}-${itemRowIndex.toString()}`}
+            style={{
+              ...getSpanStyleForItem({ item, responsiveBehaviour }),
+              minWidth: 0,
+            }}
+          >
+            {createReactWidget({
+              ooui: item,
+              responsiveBehaviour,
+            })}
+          </div>
+        );
       }
-
-      const itemRowIndex = row.indexOf(item);
-
-      return (
-        <div
-          key={`${i.toString()}-${itemRowIndex.toString()}`}
-          style={{
-            ...getSpanStyleForItem({ item, responsiveBehaviour }),
-            minWidth: 0,
-          }}
-        >
-          {createReactWidget({
-            ooui: item,
-            responsiveBehaviour,
-          })}
-        </div>
-      );
-    });
+    );
   });
 
   const templateColumns =
