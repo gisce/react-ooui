@@ -73,14 +73,6 @@ export const FormModal = (props: FormModalProps) => {
     setIsFavourite(!isFavourite);
   }
 
-  function onTitleChange(newTitle: string) {
-    if (formTitle) {
-      return;
-    }
-
-    setFormTitle(newTitle);
-  }
-
   function header() {
     return (
       <Row align="middle">
@@ -104,7 +96,7 @@ export const FormModal = (props: FormModalProps) => {
   }
 
   return (
-    <FormModalProvider setTitle={onTitleChange}>
+    <FormModalProvider setTitle={setFormTitle}>
       <Modal
         title={isMenuAction ? header() : formTitle}
         centered
