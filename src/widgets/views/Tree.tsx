@@ -10,7 +10,7 @@ import { calculateColumnsWidth } from "@/helpers/dynamicColumnsHelper";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../base/ProgressBar";
 import styled from "styled-components";
-
+import { Table as GisceTable } from "@/table/Table";
 interface TableProps {
   minHeight: number;
 }
@@ -228,17 +228,17 @@ function Tree(props: Props): React.ReactElement {
           </div>
         );
       })} */}
-      <StyledTable
-        minHeight={adjustedHeight!}
-        columns={dataTable.columns}
+      <GisceTable
+        minHeight={adjustedHeight!} //
+        columns={dataTable.columns} //
         scroll={
           disableScroll
             ? undefined
             : { x: dataTable.tableWidth, y: adjustedHeight }
         }
         size="small"
-        dataSource={items}
-        pagination={false}
+        dataSource={items} //
+        pagination={false} //
         loading={loading}
         rowClassName={(record: any) => {
           return `cursor-pointer select-none record-row-${record.id}`;
