@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Table, Pagination, Checkbox, Space, Row, Col, Spin } from "antd";
+import { Pagination, Checkbox, Space, Row, Col, Spin } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
 
@@ -9,17 +9,7 @@ import { Many2oneSuffix } from "../base/many2one/Many2oneSuffix";
 import { calculateColumnsWidth } from "@/helpers/dynamicColumnsHelper";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../base/ProgressBar";
-import styled from "styled-components";
-import { Table as GisceTable } from "@/table/Table";
-interface TableProps {
-  minHeight: number;
-}
-
-const StyledTable = styled(Table)`
-  .ant-table-body {
-    min-height: ${(props: TableProps) => props.minHeight}px;
-  }
-`;
+import { Table as GisceTable } from "@gisce/react-formiga-table";
 
 type Props = {
   total: number;
@@ -119,6 +109,7 @@ function Tree(props: Props): React.ReactElement {
       float_time: floatTimeComponent,
       image: imageComponent,
     });
+
     setColumns(columns);
   }, [treeView]);
 
@@ -220,32 +211,15 @@ function Tree(props: Props): React.ReactElement {
   ) : (
     <div>
       {pagination()}
-      {/* {results.map((result) => {
-        return (
-          <div key={result.id}>
-            <br />
-            <span>{result.name}</span>
-          </div>
-        );
-      })} */}
       <GisceTable
-        minHeight={adjustedHeight!} //
-        columns={dataTable.columns} //
-        scroll={
-          disableScroll
-            ? undefined
-            : { x: dataTable.tableWidth, y: adjustedHeight }
-        }
-        size="small"
-        dataSource={items} //
-        pagination={false} //
+        height={adjustedHeight!}
+        columns={dataTable.columns}
+        dataSource={items}
         loading={loading}
-        rowClassName={(record: any) => {
-          return `cursor-pointer select-none record-row-${record.id}`;
-        }}
         rowKey={(item: any) => {
           return item.id;
         }}
+        loadingComponent={<h1>Loading</h1>}
         onRow={(record: any) => {
           let style = undefined;
 

@@ -428,7 +428,7 @@ function SearchTree(props: Props, ref: any) {
   }
 
   function calculateTableHeight() {
-    return height - (searchFilterHeight + 255);
+    return height - (searchFilterHeight + 210);
   }
 
   function sortResults(resultsToSort: any[], sorter: any) {
