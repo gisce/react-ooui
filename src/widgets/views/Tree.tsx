@@ -219,7 +219,7 @@ function Tree(props: Props): React.ReactElement {
         rowKey={(item: any) => {
           return item.id;
         }}
-        loadingComponent={<h1>Loading</h1>}
+        loadingComponent={<Spin />}
         onRow={(record: any) => {
           let style = undefined;
 
