@@ -6,7 +6,7 @@ import React, {
   useRef,
   useContext,
 } from "react";
-import { Form as FormOoui } from "@gisce/ooui";
+import { Form as FormOoui, parseContext } from "@gisce/ooui";
 import {
   Form as AntForm,
   Button,
@@ -771,7 +771,20 @@ function Form(props: FormProps, ref: any) {
     ) {
       onSubmitSucceed?.(getCurrentId(), getValues(), getFormValues());
     } else if (response.type) {
-      await runAction({ actionData: response, context });
+      let responseContext = {};
+
+      if (response.context) {
+        responseContext = parseContext({
+          context: response.context,
+          fields,
+          values: getValues(),
+        });
+      }
+
+      await runAction({
+        actionData: response,
+        context: { ...context, ...responseContext },
+      });
     } else {
       await fetchValues();
     }
@@ -822,9 +835,9 @@ function Form(props: FormProps, ref: any) {
         fields,
         values: getValues(),
         context: {
-          ...context,
           ...parentContext,
           ...formOoui?.context,
+          ...context,
         },
         onRefreshParentValues: () => {
           fetchValues();
