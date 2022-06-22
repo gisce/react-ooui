@@ -115,6 +115,7 @@ function Form(props: FormProps, ref: any) {
   const [fields, setFields] = useState<any>();
   const formModalContext = useContext(FormModalContext) as FormModalContextType;
   const [containerWidth, setContainerWidth] = useState<any>();
+  const [defaultGetCalled, setDefaultGetCalled] = useState<boolean>(false);
 
   const createdId = useRef<number>();
   const originalFormValues = useRef<any>({});
@@ -181,6 +182,15 @@ function Form(props: FormProps, ref: any) {
 
     fetchData();
   }, [id, model, valuesProps, formViewProps, visible]);
+
+  useEffect(() => {
+    if (defaultGetCalled) {
+      checkFieldsChanges({
+        elementHasLostFocus: true,
+      });
+      setDefaultGetCalled(false);
+    }
+  }, [defaultGetCalled]);
 
   const onSubmitSucceed = (id?: number, values?: any, formValues?: any) => {
     setFormHasChanges?.(false);
@@ -337,6 +347,7 @@ function Form(props: FormProps, ref: any) {
     let values;
     let _fields;
     let _arch;
+    let hasDefaultGetCalled;
 
     setFormIsLoading?.(true);
     setError(undefined);
@@ -352,10 +363,13 @@ function Form(props: FormProps, ref: any) {
     if (valuesProps) {
       values = valuesProps;
     } else {
-      values = await fetchValuesFromApi({
+      ({
+        values,
+        defaultGetCalled: hasDefaultGetCalled,
+      } = await fetchValuesFromApi({
         fields: _fields,
         arch: _arch!,
-      });
+      }));
     }
 
     if (actionDomain) {
@@ -365,9 +379,18 @@ function Form(props: FormProps, ref: any) {
     originalFormValues.current = processValues(values, _fields);
 
     parseForm({ fields: _fields, arch: _arch!, values });
-    assignNewValuesToForm({ values, fields: _fields, reset: true });
+    assignNewValuesToForm({
+      values,
+      fields: _fields,
+      reset: true,
+      isDefaultGet: hasDefaultGetCalled,
+    });
     setFormIsLoading?.(false);
     setFormHasChanges?.(false);
+
+    if (hasDefaultGetCalled) {
+      setDefaultGetCalled(true);
+    }
   };
 
   function setOriginalValue(field: string, value: any) {
@@ -420,10 +443,12 @@ function Form(props: FormProps, ref: any) {
     values: newValues,
     fields,
     reset,
+    isDefaultGet = false,
   }: {
     values: any;
     fields: any;
     reset: boolean;
+    isDefaultGet?: boolean;
   }) => {
     const currentValues = reset ? {} : antForm.getFieldsValue(true);
     const mergedValues = { ...currentValues, ...newValues };
@@ -440,7 +465,10 @@ function Form(props: FormProps, ref: any) {
       };
     });
 
-    lastAssignedValues.current = valuesProcessed;
+    if (!isDefaultGet) {
+      lastAssignedValues.current = valuesProcessed;
+    }
+
     antForm.setFields(fieldsToUpdate);
   };
 
@@ -452,6 +480,8 @@ function Form(props: FormProps, ref: any) {
     arch: string;
   }) => {
     let values = {};
+    let defaultGetCalled = false;
+
     if (getCurrentId()!) {
       values = (
         await ConnectionProvider.getHandler().readObjects({
@@ -476,8 +506,9 @@ function Form(props: FormProps, ref: any) {
     } else {
       setAttachments?.([]);
       values = await getDefaultValues(fields);
+      defaultGetCalled = true;
     }
-    return values;
+    return { values, defaultGetCalled };
   };
 
   const submitApi = async (options?: { callOnSubmitSucceed?: boolean }) => {
