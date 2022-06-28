@@ -95,6 +95,8 @@ function SearchTree(props: Props, ref: any) {
   const actionDomain = useRef<any>([]);
   const [searchFilterHeight, setSearchFilterHeight] = useState<number>(200);
 
+  const originalResults = useRef<any[]>([]);
+
   const { height } = useWindowDimensions();
 
   const actionViewContext = useContext(
@@ -175,16 +177,20 @@ function SearchTree(props: Props, ref: any) {
       );
       const resultsData = resultsWithData[0];
 
+      originalResults.current = [...resultsData];
+
       setColorsForResults(getColorMap(resultsWithData[1]));
-      setResults(resultsData);
 
       const newResultIds = resultsData.map((item: any) => item.id);
 
-      const resultsSorted = sortResults({
-        resultsToSort: resultsData,
-        sorter: sorter,
-        fields: { ...treeView!.fields, ...formView!.fields },
-      });
+      const resultsSorted =
+        sorter !== undefined
+          ? sortResults({
+              resultsToSort: resultsData,
+              sorter,
+              fields: { ...treeView!.fields, ...formView!.fields },
+            })
+          : [...originalResults.current];
 
       setResults(resultsSorted);
 
@@ -256,11 +262,16 @@ function SearchTree(props: Props, ref: any) {
     setActionViewTotalItems?.(totalItems);
     setColorsForResults(getColorMap(attrsEvaluated));
 
-    const resultsSorted = sortResults({
-      resultsToSort: results,
-      sorter: sorter,
-      fields: { ...treeView!.fields, ...formView!.fields },
-    });
+    originalResults.current = [...results];
+
+    const resultsSorted =
+      sorter !== undefined
+        ? sortResults({
+            resultsToSort: results,
+            sorter: sorter,
+            fields: { ...treeView!.fields, ...formView!.fields },
+          })
+        : [...originalResults.current];
 
     setResults(resultsSorted);
 
@@ -498,15 +509,14 @@ function SearchTree(props: Props, ref: any) {
           sorter={sorter}
           onChangeSort={(newSorter) => {
             setSorter?.(newSorter);
-            const sortedResults = sortResults({
-              resultsToSort: getResults(),
-              sorter: newSorter,
-              fields: { ...treeView.fields, ...formView.fields },
-            });
-            console.log(
-              "New sorted results: " +
-                JSON.stringify(sortedResults.map((e) => e.id))
-            );
+            const sortedResults =
+              newSorter !== undefined
+                ? sortResults({
+                    resultsToSort: getResults(),
+                    sorter: newSorter,
+                    fields: { ...treeView.fields, ...formView.fields },
+                  })
+                : [...originalResults.current];
             setResults(sortedResults);
           }}
         />
