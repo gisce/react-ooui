@@ -10,6 +10,7 @@ import { calculateColumnsWidth } from "@/helpers/dynamicColumnsHelper";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../base/ProgressBar";
 import { Table as GisceTable } from "@gisce/react-formiga-table";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 type Props = {
   total: number;
@@ -25,7 +26,7 @@ type Props = {
   scrollY?: number;
   colorsForResults?: { [key: number]: string };
   onChangeSort?: (results: any) => void;
-  disableScroll?: boolean;
+  sorter?: any;
 };
 
 const booleanComponentFn = (value: boolean): React.ReactElement => {
@@ -84,7 +85,7 @@ function Tree(props: Props): React.ReactElement {
     scrollY,
     colorsForResults = {},
     onChangeSort,
-    disableScroll = false,
+    sorter,
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
@@ -216,9 +217,6 @@ function Tree(props: Props): React.ReactElement {
         columns={dataTable.columns}
         dataSource={items}
         loading={loading}
-        rowKey={(item: any) => {
-          return item.id;
-        }}
         loadingComponent={<Spin />}
         onRow={(record: any) => {
           let style = undefined;
@@ -234,14 +232,9 @@ function Tree(props: Props): React.ReactElement {
             },
           };
         }}
-        rowSelection={rowSelection}
-        onChange={(pagination, filters, sorter, extraInfo) => {
-          if (!(sorter as any).order) {
-            onChangeSort?.(undefined);
-          } else {
-            onChangeSort?.(sorter);
-          }
-        }}
+        onRowSelectionChange={rowSelection?.onChange}
+        onChangeSort={onChangeSort}
+        sorter={sorter}
       />
       {getSums()}
     </div>

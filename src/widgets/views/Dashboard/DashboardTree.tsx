@@ -5,7 +5,7 @@ import Tree from "@/widgets/views/Tree";
 import { FormView, TreeView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 
-import { getColorMap, getTree } from "@/helpers/treeHelper";
+import { getColorMap, getTree, sortResults } from "@/helpers/treeHelper";
 
 const DEFAULT_SEARCH_LIMIT = 80;
 
@@ -117,7 +117,12 @@ function DashboardTree(props: Props) {
     setTotalItems(totalItems);
     setColorsForResults(getColorMap(attrsEvaluated));
 
-    const resultsSorted = sortResults(results, sorter);
+    const resultsSorted = sortResults({
+      resultsToSort: results,
+      sorter: sorter,
+      fields: { ...treeView!.fields, ...formView!.fields },
+    });
+
     setResults(resultsSorted);
   };
 
@@ -211,38 +216,6 @@ function DashboardTree(props: Props) {
     });
   };
 
-  function sortResults(resultsToSort: any[], sorter: any) {
-    if (!sorter) {
-      return resultsToSort;
-    }
-
-    const { field, order } = sorter;
-    const fields = { ...treeView!.fields, ...formView!.fields };
-    const type = fields[field].type;
-
-    const sortFn = (a: any, b: any) => {
-      let aItem = a[field] || "",
-        bItem = b[field] || "";
-
-      if (type === "many2one") {
-        aItem = a[field]?.value || "";
-        bItem = b[field]?.value || "";
-      }
-
-      if (aItem === bItem) {
-        return 0;
-      }
-
-      if (order === "ascend") {
-        return aItem > bItem ? 1 : -1;
-      }
-
-      return aItem < bItem ? 1 : -1;
-    };
-
-    return resultsToSort.sort(sortFn);
-  }
-
   const content = () => {
     if (!treeView || !formView) {
       return null;
@@ -257,7 +230,6 @@ function DashboardTree(props: Props) {
           showPagination={false}
           total={totalItems}
           limit={limitRef.current}
-          disableScroll
           page={page}
           treeView={treeView}
           results={results}
@@ -265,9 +237,14 @@ function DashboardTree(props: Props) {
           loading={tableRefreshing}
           onRowClicked={onRowClickedHandler}
           colorsForResults={colorsForResults}
+          sorter={sorter}
           onChangeSort={(newSorter) => {
             setSorter?.(newSorter);
-            const sortedResults = sortResults(results, newSorter);
+            const sortedResults = sortResults({
+              resultsToSort: results,
+              sorter: newSorter,
+              fields: { ...treeView.fields, ...formView.fields },
+            });
             setResults(sortedResults);
           }}
         />

@@ -5,6 +5,7 @@ import React, {
   useContext,
   forwardRef,
   useImperativeHandle,
+  useCallback,
 } from "react";
 import { Alert, Spin } from "antd";
 
@@ -17,7 +18,7 @@ import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
-import { getColorMap, getTree } from "@/helpers/treeHelper";
+import { getColorMap, getTree, sortResults } from "@/helpers/treeHelper";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import Measure from "react-measure";
 import { mergeSearchFields } from "@/helpers/formHelper";
@@ -114,7 +115,6 @@ function SearchTree(props: Props, ref: any) {
     setTotalItems: setActionViewTotalItems = undefined,
     setSearchTreeNameSearch = undefined,
     setTreeIsLoading = undefined,
-    treeIsLoading = false,
   } = (rootTree ? actionViewContext : {}) || {};
 
   useImperativeHandle(ref, () => ({
@@ -135,12 +135,12 @@ function SearchTree(props: Props, ref: any) {
     setResultsInternal(results);
   }
 
-  function getResults() {
+  const getResults = useCallback(() => {
     if (!resultsActionView) {
       return resultsInternal;
     }
     return resultsActionView;
-  }
+  }, [resultsActionView, resultsInternal]);
 
   const searchByNameSearch = async () => {
     const searchResults = await ConnectionProvider.getHandler().nameSearch({
@@ -180,7 +180,12 @@ function SearchTree(props: Props, ref: any) {
 
       const newResultIds = resultsData.map((item: any) => item.id);
 
-      const resultsSorted = sortResults(resultsData, sorter);
+      const resultsSorted = sortResults({
+        resultsToSort: resultsData,
+        sorter: sorter,
+        fields: { ...treeView!.fields, ...formView!.fields },
+      });
+
       setResults(resultsSorted);
 
       if (newResultIds.length > 0) {
@@ -251,7 +256,12 @@ function SearchTree(props: Props, ref: any) {
     setActionViewTotalItems?.(totalItems);
     setColorsForResults(getColorMap(attrsEvaluated));
 
-    const resultsSorted = sortResults(results, sorter);
+    const resultsSorted = sortResults({
+      resultsToSort: results,
+      sorter: sorter,
+      fields: { ...treeView!.fields, ...formView!.fields },
+    });
+
     setResults(resultsSorted);
 
     if (resultsActionView && resultsSorted.length > 0) {
@@ -418,49 +428,14 @@ function SearchTree(props: Props, ref: any) {
     });
   };
 
-  function changeSelectedRowKeys(selectedRowKeys: number[]) {
-    const items = getResults().filter((result: any) => {
-      return selectedRowKeys.includes(result.id);
-    });
-
-    setSelectedRowItems?.(items);
+  function changeSelectedRowKeys(selectedRowItems: any[]) {
+    setSelectedRowItems?.(selectedRowItems);
+    const selectedRowKeys = selectedRowItems.map((entry: any) => entry.id);
     onChangeSelectedRowKeys?.(selectedRowKeys);
   }
 
   function calculateTableHeight() {
     return height - (searchFilterHeight + 210);
-  }
-
-  function sortResults(resultsToSort: any[], sorter: any) {
-    if (!sorter) {
-      return resultsToSort;
-    }
-
-    const { field, order } = sorter;
-    const fields = { ...treeView!.fields, ...formView!.fields };
-    const type = fields[field].type;
-
-    const sortFn = (a: any, b: any) => {
-      let aItem = a[field] || "",
-        bItem = b[field] || "";
-
-      if (type === "many2one") {
-        aItem = a[field]?.value || "";
-        bItem = b[field]?.value || "";
-      }
-
-      if (aItem === bItem) {
-        return 0;
-      }
-
-      if (order === "ascend") {
-        return aItem > bItem ? 1 : -1;
-      }
-
-      return aItem < bItem ? 1 : -1;
-    };
-
-    return resultsToSort.sort(sortFn);
   }
 
   const content = () => {
@@ -510,7 +485,7 @@ function SearchTree(props: Props, ref: any) {
           limit={limit}
           page={page}
           treeView={treeView}
-          results={getResults()}
+          results={[...getResults()]}
           onRequestPageChange={onRequestPageChange}
           loading={tableRefreshing}
           onRowClicked={onRowClickedHandler}
@@ -520,9 +495,18 @@ function SearchTree(props: Props, ref: any) {
             selectedRowKeys: selectedRowItems?.map((item) => item.id),
             onChange: changeSelectedRowKeys,
           }}
+          sorter={sorter}
           onChangeSort={(newSorter) => {
             setSorter?.(newSorter);
-            const sortedResults = sortResults(getResults(), newSorter);
+            const sortedResults = sortResults({
+              resultsToSort: getResults(),
+              sorter: newSorter,
+              fields: { ...treeView.fields, ...formView.fields },
+            });
+            console.log(
+              "New sorted results: " +
+                JSON.stringify(sortedResults.map((e) => e.id))
+            );
             setResults(sortedResults);
           }}
         />

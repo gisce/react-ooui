@@ -117,6 +117,46 @@ function getColorMap(colorsValue: any) {
   return map;
 }
 
+function sortResults({
+  resultsToSort,
+  sorter,
+  fields,
+}: {
+  resultsToSort: any[];
+  sorter: any;
+  fields: any;
+}) {
+  if (!sorter) {
+    return resultsToSort;
+  }
+
+  const { id: field, desc } = sorter;
+  const order = desc === false ? "ascend" : "descend";
+
+  const type = fields[field].type;
+
+  const sortFn = (a: any, b: any) => {
+    let aItem = a[field] || "",
+      bItem = b[field] || "";
+
+    if (type === "many2one") {
+      aItem = a[field]?.[1] || "";
+      bItem = b[field]?.[1] || "";
+    }
+
+    if (aItem === bItem) {
+      return 0;
+    }
+
+    if (order === "ascend") {
+      return aItem > bItem ? 1 : -1;
+    }
+
+    return aItem < bItem ? 1 : -1;
+  };
+
+  return resultsToSort.sort(sortFn);
+}
 export {
   getTableColumns,
   getTableItems,
@@ -124,4 +164,5 @@ export {
   convertBooleansToNumeric,
   itemHasBooleans,
   getColorMap,
+  sortResults,
 };
