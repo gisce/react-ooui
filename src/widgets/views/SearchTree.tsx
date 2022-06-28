@@ -133,8 +133,8 @@ function SearchTree(props: Props, ref: any) {
   };
 
   function setResults(results: any) {
-    setResultsActionView?.(results);
-    setResultsInternal(results);
+    setResultsActionView?.([...results]);
+    setResultsInternal([...results]);
   }
 
   const getResults = useCallback(() => {
@@ -496,7 +496,7 @@ function SearchTree(props: Props, ref: any) {
           limit={limit}
           page={page}
           treeView={treeView}
-          results={[...getResults()]}
+          results={getResults()}
           onRequestPageChange={onRequestPageChange}
           loading={tableRefreshing}
           onRowClicked={onRowClickedHandler}
