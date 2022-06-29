@@ -94,6 +94,7 @@ function getGraphProps(props: GetGraphPropsType) {
     graphProps.isGroup = isGroup;
 
     if (isStack) {
+      graphProps.isStack = true;
       graphProps.groupField = "stacked";
     }
   }
