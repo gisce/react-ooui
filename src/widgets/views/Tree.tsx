@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Table, Pagination, Checkbox, Space, Row, Col, Spin } from "antd";
+import { Pagination, Checkbox, Space, Row, Col, Spin } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
 
@@ -9,17 +9,8 @@ import { Many2oneSuffix } from "../base/many2one/Many2oneSuffix";
 import { calculateColumnsWidth } from "@/helpers/dynamicColumnsHelper";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../base/ProgressBar";
-import styled from "styled-components";
-
-interface TableProps {
-  minHeight: number;
-}
-
-const StyledTable = styled(Table)`
-  .ant-table-body {
-    min-height: ${(props: TableProps) => props.minHeight}px;
-  }
-`;
+import { Table as GisceTable } from "@gisce/react-formiga-table";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 type Props = {
   total: number;
@@ -35,11 +26,21 @@ type Props = {
   scrollY?: number;
   colorsForResults?: { [key: number]: string };
   onChangeSort?: (results: any) => void;
-  disableScroll?: boolean;
+  sorter?: any;
 };
 
 const booleanComponentFn = (value: boolean): React.ReactElement => {
-  return <Checkbox defaultChecked={value} disabled />;
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignContent: "center",
+      }}
+    >
+      <Checkbox defaultChecked={value} disabled />
+    </div>
+  );
 };
 
 const many2OneComponentFn = (m2oField: any): React.ReactElement => {
@@ -70,6 +71,10 @@ const floatTimeComponent = (value: number): React.ReactElement => {
   return <>{parseFloatToString(value)}</>;
 };
 
+const numberComponent = (value: number): React.ReactElement => {
+  return <div style={{ textAlign: "right" }}>{value}</div>;
+};
+
 const imageComponent = (value: string): React.ReactElement => {
   return (
     <img
@@ -94,7 +99,7 @@ function Tree(props: Props): React.ReactElement {
     scrollY,
     colorsForResults = {},
     onChangeSort,
-    disableScroll = false,
+    sorter,
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
@@ -118,7 +123,10 @@ function Tree(props: Props): React.ReactElement {
       progressbar: progressBarComponentFn,
       float_time: floatTimeComponent,
       image: imageComponent,
+      integer: numberComponent,
+      float: numberComponent,
     });
+
     setColumns(columns);
   }, [treeView]);
 
@@ -220,32 +228,12 @@ function Tree(props: Props): React.ReactElement {
   ) : (
     <div>
       {pagination()}
-      {/* {results.map((result) => {
-        return (
-          <div key={result.id}>
-            <br />
-            <span>{result.name}</span>
-          </div>
-        );
-      })} */}
-      <StyledTable
-        minHeight={adjustedHeight!}
+      <GisceTable
+        height={adjustedHeight!}
         columns={dataTable.columns}
-        scroll={
-          disableScroll
-            ? undefined
-            : { x: dataTable.tableWidth, y: adjustedHeight }
-        }
-        size="small"
         dataSource={items}
-        pagination={false}
         loading={loading}
-        rowClassName={(record: any) => {
-          return `cursor-pointer select-none record-row-${record.id}`;
-        }}
-        rowKey={(item: any) => {
-          return item.id;
-        }}
+        loadingComponent={<Spin />}
         onRow={(record: any) => {
           let style = undefined;
 
@@ -260,14 +248,9 @@ function Tree(props: Props): React.ReactElement {
             },
           };
         }}
-        rowSelection={rowSelection}
-        onChange={(pagination, filters, sorter, extraInfo) => {
-          if (!(sorter as any).order) {
-            onChangeSort?.(undefined);
-          } else {
-            onChangeSort?.(sorter);
-          }
-        }}
+        onRowSelectionChange={rowSelection?.onChange}
+        onChangeSort={onChangeSort}
+        sorter={sorter}
       />
       {getSums()}
     </div>
