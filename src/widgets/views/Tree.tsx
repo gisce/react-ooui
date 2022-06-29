@@ -30,7 +30,17 @@ type Props = {
 };
 
 const booleanComponentFn = (value: boolean): React.ReactElement => {
-  return <Checkbox defaultChecked={value} disabled />;
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignContent: "center",
+      }}
+    >
+      <Checkbox defaultChecked={value} disabled />
+    </div>
+  );
 };
 
 const many2OneComponentFn = (m2oField: any): React.ReactElement => {
@@ -59,6 +69,10 @@ const progressBarComponentFn = (value: any): React.ReactElement => {
 
 const floatTimeComponent = (value: number): React.ReactElement => {
   return <>{parseFloatToString(value)}</>;
+};
+
+const numberComponent = (value: number): React.ReactElement => {
+  return <div style={{ textAlign: "right" }}>{value}</div>;
 };
 
 const imageComponent = (value: string): React.ReactElement => {
@@ -109,6 +123,8 @@ function Tree(props: Props): React.ReactElement {
       progressbar: progressBarComponentFn,
       float_time: floatTimeComponent,
       image: imageComponent,
+      integer: numberComponent,
+      float: numberComponent,
     });
 
     setColumns(columns);
