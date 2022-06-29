@@ -5,6 +5,7 @@ import React, {
   useContext,
   forwardRef,
   useImperativeHandle,
+  useCallback,
 } from "react";
 import { Alert, Spin } from "antd";
 
@@ -17,7 +18,7 @@ import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
-import { getColorMap, getTree } from "@/helpers/treeHelper";
+import { getColorMap, getTree, sortResults } from "@/helpers/treeHelper";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import Measure from "react-measure";
 import { mergeSearchFields } from "@/helpers/formHelper";
@@ -94,6 +95,8 @@ function SearchTree(props: Props, ref: any) {
   const actionDomain = useRef<any>([]);
   const [searchFilterHeight, setSearchFilterHeight] = useState<number>(200);
 
+  const originalResults = useRef<any[]>([]);
+
   const { height } = useWindowDimensions();
 
   const actionViewContext = useContext(
@@ -114,7 +117,6 @@ function SearchTree(props: Props, ref: any) {
     setTotalItems: setActionViewTotalItems = undefined,
     setSearchTreeNameSearch = undefined,
     setTreeIsLoading = undefined,
-    treeIsLoading = false,
   } = (rootTree ? actionViewContext : {}) || {};
 
   useImperativeHandle(ref, () => ({
@@ -131,16 +133,16 @@ function SearchTree(props: Props, ref: any) {
   };
 
   function setResults(results: any) {
-    setResultsActionView?.(results);
-    setResultsInternal(results);
+    setResultsActionView?.([...results]);
+    setResultsInternal([...results]);
   }
 
-  function getResults() {
+  const getResults = useCallback(() => {
     if (!resultsActionView) {
       return resultsInternal;
     }
     return resultsActionView;
-  }
+  }, [resultsActionView, resultsInternal]);
 
   const searchByNameSearch = async () => {
     const searchResults = await ConnectionProvider.getHandler().nameSearch({
@@ -175,12 +177,21 @@ function SearchTree(props: Props, ref: any) {
       );
       const resultsData = resultsWithData[0];
 
+      originalResults.current = [...resultsData];
+
       setColorsForResults(getColorMap(resultsWithData[1]));
-      setResults(resultsData);
 
       const newResultIds = resultsData.map((item: any) => item.id);
 
-      const resultsSorted = sortResults(resultsData, sorter);
+      const resultsSorted =
+        sorter !== undefined
+          ? sortResults({
+              resultsToSort: resultsData,
+              sorter,
+              fields: { ...treeView!.fields, ...formView!.fields },
+            })
+          : [...originalResults.current];
+
       setResults(resultsSorted);
 
       if (newResultIds.length > 0) {
@@ -251,7 +262,17 @@ function SearchTree(props: Props, ref: any) {
     setActionViewTotalItems?.(totalItems);
     setColorsForResults(getColorMap(attrsEvaluated));
 
-    const resultsSorted = sortResults(results, sorter);
+    originalResults.current = [...results];
+
+    const resultsSorted =
+      sorter !== undefined
+        ? sortResults({
+            resultsToSort: results,
+            sorter: sorter,
+            fields: { ...treeView!.fields, ...formView!.fields },
+          })
+        : [...originalResults.current];
+
     setResults(resultsSorted);
 
     if (resultsActionView && resultsSorted.length > 0) {
@@ -418,49 +439,14 @@ function SearchTree(props: Props, ref: any) {
     });
   };
 
-  function changeSelectedRowKeys(selectedRowKeys: number[]) {
-    const items = getResults().filter((result: any) => {
-      return selectedRowKeys.includes(result.id);
-    });
-
-    setSelectedRowItems?.(items);
+  function changeSelectedRowKeys(selectedRowItems: any[]) {
+    setSelectedRowItems?.(selectedRowItems);
+    const selectedRowKeys = selectedRowItems.map((entry: any) => entry.id);
     onChangeSelectedRowKeys?.(selectedRowKeys);
   }
 
   function calculateTableHeight() {
-    return height - (searchFilterHeight + 255);
-  }
-
-  function sortResults(resultsToSort: any[], sorter: any) {
-    if (!sorter) {
-      return resultsToSort;
-    }
-
-    const { field, order } = sorter;
-    const fields = { ...treeView!.fields, ...formView!.fields };
-    const type = fields[field].type;
-
-    const sortFn = (a: any, b: any) => {
-      let aItem = a[field] || "",
-        bItem = b[field] || "";
-
-      if (type === "many2one") {
-        aItem = a[field]?.value || "";
-        bItem = b[field]?.value || "";
-      }
-
-      if (aItem === bItem) {
-        return 0;
-      }
-
-      if (order === "ascend") {
-        return aItem > bItem ? 1 : -1;
-      }
-
-      return aItem < bItem ? 1 : -1;
-    };
-
-    return resultsToSort.sort(sortFn);
+    return height - (searchFilterHeight + 210);
   }
 
   const content = () => {
@@ -520,9 +506,17 @@ function SearchTree(props: Props, ref: any) {
             selectedRowKeys: selectedRowItems?.map((item) => item.id),
             onChange: changeSelectedRowKeys,
           }}
+          sorter={sorter}
           onChangeSort={(newSorter) => {
             setSorter?.(newSorter);
-            const sortedResults = sortResults(getResults(), newSorter);
+            const sortedResults =
+              newSorter !== undefined
+                ? sortResults({
+                    resultsToSort: getResults(),
+                    sorter: newSorter,
+                    fields: { ...treeView.fields, ...formView.fields },
+                  })
+                : [...originalResults.current];
             setResults(sortedResults);
           }}
         />
