@@ -7,7 +7,6 @@ import { Graph } from "@/widgets/views/Graph/Graph";
 import {
   Form as FormOoui,
   Tree as TreeOoui,
-  Graph as GraphOoui,
   parseGraph,
   transformDomainForChildWidget,
 } from "@gisce/ooui";

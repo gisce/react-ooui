@@ -439,9 +439,11 @@ function SearchTree(props: Props, ref: any) {
     });
   };
 
-  function changeSelectedRowKeys(selectedRowItems: any[]) {
+  function changeSelectedRowKeys(selectedRowKeys: any[]) {
+    const selectedRowItems = getResults().filter((entry: any) =>
+      selectedRowKeys.includes(entry.id)
+    );
     setSelectedRowItems?.(selectedRowItems);
-    const selectedRowKeys = selectedRowItems.map((entry: any) => entry.id);
     onChangeSelectedRowKeys?.(selectedRowKeys);
   }
 
