@@ -26,6 +26,7 @@ import { readObjectValues, getNextPendingId } from "@/helpers/one2manyHelper";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { ViewModes } from "@/widgets/base/one2many/One2many";
+import { sortResults } from "@/helpers/treeHelper";
 
 type One2manyValue = {
   fields?: any;
@@ -93,6 +94,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     false
   );
   const transformedDomain = useRef<any[]>([]);
+  const [sorter, setSorter] = useState<any>();
 
   const {
     readOnly,
@@ -534,13 +536,23 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         />
       );
     }
+
+    const resultsToShow = sortResults({
+      resultsToSort: itemsToShow.map((item) => item.treeValues),
+      sorter,
+      fields: {
+        ...views.get("tree").fields,
+        ...views.get("form").fields,
+      },
+    });
+
     if (currentView === "tree") {
       return (
         <Tree
           total={itemsToShow.length}
           limit={itemsToShow.length}
           treeView={views.get("tree")}
-          results={itemsToShow.map((item) => item.treeValues)}
+          results={resultsToShow}
           loading={isLoading}
           onRowClicked={onTreeRowClicked}
           showPagination={false}
@@ -548,6 +560,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
             selectedRowKeys,
             onChange: setSelectedRowKeys,
           }}
+          sorter={sorter}
+          onChangeSort={setSorter}
         />
       );
     }

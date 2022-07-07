@@ -126,14 +126,8 @@ function sortResults({
   sorter: any;
   fields: any;
 }) {
-  if (!sorter) {
-    return resultsToSort;
-  }
-
-  const { id: field, desc } = sorter;
-  const order = desc === false ? "ascend" : "descend";
-
-  const type = fields[field].type;
+  let field: string;
+  let order = "ascend";
 
   const sortFn = (a: any, b: any) => {
     let aItem = a[field] || "",
@@ -155,8 +149,20 @@ function sortResults({
     return aItem < bItem ? 1 : -1;
   };
 
+  if (!sorter) {
+    field = "id";
+    return resultsToSort.sort(sortFn);
+  }
+
+  const { id, desc } = sorter;
+  field = id;
+  order = desc === false ? "ascend" : "descend";
+
+  const type = fields[field].type;
+
   return resultsToSort.sort(sortFn);
 }
+
 export {
   getTableColumns,
   getTableItems,
