@@ -26,7 +26,7 @@ import { readObjectValues, getNextPendingId } from "@/helpers/one2manyHelper";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { ViewModes } from "@/widgets/base/one2many/One2many";
-import { sortResults } from "@/helpers/treeHelper";
+import { sortResults, sortResultsWithOrder } from "@/helpers/treeHelper";
 
 type One2manyValue = {
   fields?: any;
@@ -95,6 +95,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   );
   const transformedDomain = useRef<any[]>([]);
   const [sorter, setSorter] = useState<any>();
+  const originalSortItemIds = useRef<number[]>();
 
   const {
     readOnly,
@@ -152,6 +153,10 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         items,
         context: { ...getContext?.(), ...context },
       });
+
+      if (!originalSortItemIds.current) {
+        originalSortItemIds.current = itemsWithValues.map((item) => item.id!);
+      }
 
       triggerChange(itemsWithValues);
     } catch (err) {
@@ -544,14 +549,19 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       );
     }
 
-    const resultsToShow = sortResults({
-      resultsToSort: itemsToShow.map((item) => item.treeValues),
-      sorter,
-      fields: {
-        ...views.get("tree").fields,
-        ...views.get("form").fields,
-      },
-    });
+    const resultsToShow = sorter
+      ? sortResults({
+          resultsToSort: itemsToShow.map((item) => item.treeValues),
+          sorter,
+          fields: {
+            ...views.get("tree").fields,
+            ...views.get("form").fields,
+          },
+        })
+      : sortResultsWithOrder(
+          itemsToShow.map((item) => item.treeValues),
+          originalSortItemIds.current!
+        );
 
     if (currentView === "tree") {
       return (

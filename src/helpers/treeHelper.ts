@@ -126,8 +126,14 @@ function sortResults({
   sorter: any;
   fields: any;
 }) {
-  let field: string;
-  let order = "ascend";
+  if (!sorter) {
+    return resultsToSort;
+  }
+
+  const { id: field, desc } = sorter;
+  const order = desc === false ? "ascend" : "descend";
+
+  const type = fields[field].type;
 
   const sortFn = (a: any, b: any) => {
     let aItem = a[field] || "",
@@ -149,18 +155,16 @@ function sortResults({
     return aItem < bItem ? 1 : -1;
   };
 
-  if (!sorter) {
-    field = "id";
-    return resultsToSort.sort(sortFn);
-  }
-
-  const { id, desc } = sorter;
-  field = id;
-  order = desc === false ? "ascend" : "descend";
-
-  const type = fields[field].type;
-
   return resultsToSort.sort(sortFn);
+}
+
+function sortResultsWithOrder(results: any[], order: number[]) {
+  const sortedResults = results.sort((a: any, b: any) => {
+    const aIndex = order.indexOf(a.id);
+    const bIndex = order.indexOf(b.id);
+    return aIndex - bIndex;
+  });
+  return sortedResults;
 }
 
 export {
@@ -171,4 +175,5 @@ export {
   itemHasBooleans,
   getColorMap,
   sortResults,
+  sortResultsWithOrder,
 };
