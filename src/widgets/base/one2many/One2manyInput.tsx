@@ -108,7 +108,14 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     (item) => item.values && item.operation !== "pendingRemove"
   );
 
+  const noFieldsTree = views.get("tree")?.fields === undefined;
+  const noFieldsForm = views.get("form")?.fields === undefined;
+
   useEffect(() => {
+    if (noFieldsForm || noFieldsTree) {
+      return;
+    }
+
     if (items.some((item) => !item.values)) {
       fetchData();
     }
@@ -581,6 +588,18 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
   if (error) {
     return <Alert className="mt-10" message={error} type="error" banner />;
+  }
+
+  if (noFieldsForm || noFieldsTree) {
+    const mode = noFieldsTree ? "tree" : "form";
+    return (
+      <Alert
+        className="mt-10"
+        message={`No fields in ${mode} view for model ${relation}`}
+        type="error"
+        banner
+      />
+    );
   }
 
   // If we are in create mode we have to show the modal in continuous mode.
