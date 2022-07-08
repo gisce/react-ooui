@@ -27,6 +27,8 @@ type One2manyTopBarProps = {
   onNextItem: () => void;
   onSearchItem: () => void;
   selectedRowKeys: string[];
+  showToggleButton: boolean;
+  showCreateButton: boolean;
 };
 
 export const One2manyTopBar = (props: One2manyTopBarProps) => {
@@ -44,6 +46,8 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
     isMany2Many,
     onSearchItem,
     selectedRowKeys,
+    showCreateButton,
+    showToggleButton,
   } = props;
 
   function separator() {
@@ -112,7 +116,7 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
     <div className="flex mb-2">
       {title()}
       <div className="h-8 flex-none pl-2">
-        {mode !== "graph" && (
+        {mode !== "graph" && showCreateButton && (
           <ButtonWithTooltip
             tooltip={"Create new item"}
             icon={<FileAddOutlined />}
@@ -120,7 +124,7 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
             onClick={onCreateItem}
           />
         )}
-        {isMany2Many && (
+        {isMany2Many && showCreateButton && (
           <ButtonWithTooltip
             tooltip={"Search existing item"}
             icon={<SearchOutlined />}
@@ -132,11 +136,13 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
         {mode !== "graph" && deleteButton()}
         {mode === "form" && itemBrowser()}
         {separator()}
-        <ButtonWithTooltip
-          tooltip={"Toggle view mode"}
-          icon={<AlignLeftOutlined />}
-          onClick={onToggleViewMode}
-        />
+        {showToggleButton && (
+          <ButtonWithTooltip
+            tooltip={"Toggle view mode"}
+            icon={<AlignLeftOutlined />}
+            onClick={onToggleViewMode}
+          />
+        )}
       </div>
     </div>
   );
