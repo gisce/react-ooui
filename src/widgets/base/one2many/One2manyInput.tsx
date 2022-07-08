@@ -109,14 +109,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     (item) => item.values && item.operation !== "pendingRemove"
   );
 
-  const noFieldsTree = views.get("tree")?.fields === undefined;
-  const noFieldsForm = views.get("form")?.fields === undefined;
-
   useEffect(() => {
-    if (noFieldsForm || noFieldsTree) {
-      return;
-    }
-
     if (items.some((item) => !item.values)) {
       fetchData();
     }
@@ -128,7 +121,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
   const triggerChange = (changedValue: Array<One2manyItem>) => {
     onChange?.({
-      fields: views.get("form").fields,
+      fields: views.get("form")?.fields || views.get("tree")?.fields,
       items: filterDuplicateItems(changedValue),
     });
   };
@@ -148,7 +141,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     try {
       const itemsWithValues = await readObjectValues({
         treeFields: views.get("tree").fields,
-        formFields: views.get("form").fields,
+        formFields: views.get("form")?.fields || {},
         model: relation,
         items,
         context: { ...getContext?.(), ...context },
@@ -444,6 +437,10 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   };
 
   const onTreeRowClicked = (itemId: number) => {
+    if (views.get("form")?.fields === undefined) {
+      return;
+    }
+
     // We show the detail for the clicked item in a Form modal
     setModalItem(items.find((item) => item.id === itemId));
     setContinuousEntryMode(false);
@@ -555,7 +552,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           sorter,
           fields: {
             ...views.get("tree").fields,
-            ...views.get("form").fields,
+            ...(views.get("form")?.fields || {}),
           },
         })
       : sortResultsWithOrder(
@@ -600,18 +597,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     return <Alert className="mt-10" message={error} type="error" banner />;
   }
 
-  if (noFieldsForm || noFieldsTree) {
-    const mode = noFieldsTree ? "tree" : "form";
-    return (
-      <Alert
-        className="mt-10"
-        message={`No fields in ${mode} view for model ${relation}`}
-        type="error"
-        banner
-      />
-    );
-  }
-
   // If we are in create mode we have to show the modal in continuous mode.
   // This means the modal won't close after clicking OK, the modal will add the new item
   // and will reset to defaults to let the user add a new item.
@@ -638,6 +623,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         onNextItem={nextItem}
         onSearchItem={searchItem}
         selectedRowKeys={selectedRowKeys}
+        showCreateButton={views.get("form")?.fields !== undefined}
+        showToggleButton={views.size > 1}
       />
       {content()}
       <FormModal
