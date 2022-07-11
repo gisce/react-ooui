@@ -436,11 +436,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     }
   };
 
-  const onTreeRowClicked = (itemId: number) => {
-    if (views.get("form")?.fields === undefined) {
-      return;
-    }
-
+  const onTreeRowClicked = (record: any) => {
+    const { id: itemId } = record;
     // We show the detail for the clicked item in a Form modal
     setModalItem(items.find((item) => item.id === itemId));
     setContinuousEntryMode(false);
@@ -568,7 +565,11 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           treeView={views.get("tree")}
           results={resultsToShow}
           loading={isLoading}
-          onRowClicked={onTreeRowClicked}
+          onRowClicked={
+            views.get("form")?.fields !== undefined
+              ? onTreeRowClicked
+              : undefined
+          }
           showPagination={false}
           rowSelection={{
             selectedRowKeys,

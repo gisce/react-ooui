@@ -21,7 +21,7 @@ type Props = {
   results: Array<any>;
   showPagination?: boolean;
   onRequestPageChange?: (page: number, pageSize?: number) => void;
-  onRowClicked?: (id: number) => void;
+  onRowClicked?: (record: any) => void;
   rowSelection?: any;
   scrollY?: number;
   colorsForResults?: { [key: number]: string };
@@ -234,20 +234,13 @@ function Tree(props: Props): React.ReactElement {
         dataSource={items}
         loading={loading}
         loadingComponent={<Spin />}
-        onRow={(record: any) => {
-          let style = undefined;
-
+        onRowStyle={(record: any) => {
           if (colorsForResults![record.id]) {
-            style = { color: colorsForResults![record.id] };
+            return { color: colorsForResults![record.id] };
           }
-
-          return {
-            style,
-            onDoubleClick: () => {
-              if (onRowClicked) onRowClicked(record.id);
-            },
-          };
+          return undefined;
         }}
+        onRowDoubleClick={onRowClicked}
         onRowSelectionChange={rowSelection?.onChange}
         onChangeSort={onChangeSort}
         sorter={sorter}

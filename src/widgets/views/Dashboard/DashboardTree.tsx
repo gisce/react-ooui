@@ -208,7 +208,8 @@ function DashboardTree(props: Props) {
     }
   }, [action, model]);
 
-  const onRowClickedHandler = (id: number) => {
+  const onRowClickedHandler = (record: any) => {
+    const { id } = record;
     onRowClicked({
       id,
       model: currentModel!,

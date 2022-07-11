@@ -430,7 +430,8 @@ function SearchTree(props: Props, ref: any) {
     internalLimit.current = newLimit;
   };
 
-  const onRowClickedHandler = (id: number) => {
+  const onRowClickedHandler = (record: any) => {
+    const { id } = record;
     onRowClicked({
       id,
       model: currentModel!,
