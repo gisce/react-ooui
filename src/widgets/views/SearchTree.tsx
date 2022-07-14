@@ -26,7 +26,7 @@ import {
   ContentRootContext,
   ContentRootContextType,
 } from "@/context/ContentRootContext";
-import { parseContext } from "@gisce/ooui";
+import showErrorDialog from "@/ui/ActionErrorDialog";
 
 const DEFAULT_SEARCH_LIMIT = 80;
 
@@ -101,6 +101,7 @@ function SearchTree(props: Props, ref: any) {
   const [searchFilterHeight, setSearchFilterHeight] = useState<number>(200);
 
   const originalResults = useRef<any[]>([]);
+  const expandableClickActionData = useRef<any>();
 
   const { height } = useWindowDimensions();
 
@@ -457,27 +458,41 @@ function SearchTree(props: Props, ref: any) {
     internalLimit.current = newLimit;
   };
 
+  const treeButOpen = async (record: any) => {
+    const { id } = record;
+
+    if (!expandableClickActionData.current) {
+      expandableClickActionData.current = await ConnectionProvider.getHandler().treeButOpen(
+        {
+          id: treeView!.view_id,
+          model: currentModel!,
+          context: parentContext,
+        }
+      );
+    }
+
+    const actionData: any = expandableClickActionData.current[0][2];
+
+    await processAction?.({
+      actionData,
+      fields: treeView!.fields,
+      values: {
+        active_id: id,
+        ...record,
+      },
+      context: parentContext,
+    });
+  };
+
   const onRowClickedHandler = async (record: any) => {
     const { id } = record;
 
     if (treeView?.isExpandable) {
-      // TODO: store treebutdataaction in a useRef and only call if we don't have it.
-      const treeButData = await ConnectionProvider.getHandler().treeButOpen({
-        id: treeView.view_id,
-        model: currentModel!,
-        context: parentContext,
-      });
-      const actionData: any = treeButData[0][2];
-
-      await processAction?.({
-        actionData,
-        fields: treeView.fields,
-        values: {
-          active_id: id,
-          ...record,
-        },
-        context: parentContext,
-      });
+      try {
+        await treeButOpen(record);
+      } catch (err) {
+        showErrorDialog(err);
+      }
       return;
     }
 
