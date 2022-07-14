@@ -168,7 +168,9 @@ function SearchTree(props: Props, ref: any) {
           model: currentModel!,
           ids: resultsIds,
           arch: treeView?.arch!,
-          fields: Object.keys(treeView?.fields!),
+          fields: treeView!.field_parent
+            ? [...Object.keys(treeView!.fields), treeView!.field_parent]
+            : treeView!.fields,
           context: parentContext,
           attrs: colors && {
             colors,
@@ -254,7 +256,9 @@ function SearchTree(props: Props, ref: any) {
       limit,
       offset,
       model: currentModel!,
-      fields: treeView!.fields,
+      fields: treeView!.field_parent
+        ? [...Object.keys(treeView!.fields), treeView!.field_parent]
+        : treeView!.fields,
       context: parentContext,
       attrs: colors && { colors },
     });
@@ -307,6 +311,19 @@ function SearchTree(props: Props, ref: any) {
       setTreeIsLoading?.(false);
     }
   };
+
+  async function onFetchChildrenForRecord(record: any) {
+    const child_id = record[treeView?.field_parent || "child_id"];
+
+    return await ConnectionProvider.getHandler().readObjects({
+      model: currentModel!,
+      ids: child_id,
+      fields: treeView!.field_parent
+        ? [...Object.keys(treeView!.fields), treeView!.field_parent]
+        : treeView!.fields,
+      context: parentContext,
+    });
+  }
 
   useEffect(() => {
     if (!initialFetchDone) {
@@ -522,6 +539,10 @@ function SearchTree(props: Props, ref: any) {
                 : [...originalResults.current];
             setResults(sortedResults);
           }}
+          onFetchChildrenForRecord={
+            treeView.isExpandable ? onFetchChildrenForRecord : undefined
+          }
+          childField={treeView.field_parent}
         />
       </>
     );

@@ -10,7 +10,11 @@ import { calculateColumnsWidth } from "@/helpers/dynamicColumnsHelper";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../base/ProgressBar";
 import { Table as GisceTable } from "@gisce/react-formiga-table";
-import useDeepCompareEffect from "use-deep-compare-effect";
+import {
+  PlusSquareOutlined,
+  MinusSquareOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 
 type Props = {
   total: number;
@@ -27,6 +31,8 @@ type Props = {
   colorsForResults?: { [key: number]: string };
   onChangeSort?: (results: any) => void;
   sorter?: any;
+  onFetchChildrenForRecord?: (item: any) => Promise<any[]>;
+  childField?: string;
 };
 
 const booleanComponentFn = (value: boolean): React.ReactElement => {
@@ -100,6 +106,8 @@ function Tree(props: Props): React.ReactElement {
     colorsForResults = {},
     onChangeSort,
     sorter,
+    onFetchChildrenForRecord,
+    childField,
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
@@ -244,6 +252,17 @@ function Tree(props: Props): React.ReactElement {
         onRowSelectionChange={rowSelection?.onChange}
         onChangeSort={onChangeSort}
         sorter={sorter}
+        expandableOpts={
+          onFetchChildrenForRecord
+            ? {
+                expandIcon: PlusSquareOutlined,
+                collapseIcon: MinusSquareOutlined,
+                loadingIcon: LoadingOutlined,
+                onFetchChildrenForRecord,
+                childField: childField!,
+              }
+            : undefined
+        }
       />
       {getSums()}
     </div>

@@ -27,6 +27,8 @@ type TreeView = {
   arch: string;
   fields: any;
   search_fields?: SearchFields;
+  isExpandable?: boolean;
+  field_parent?: string;
 };
 
 type FormView = TreeView & {

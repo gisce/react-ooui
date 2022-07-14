@@ -116,7 +116,15 @@ function RootView(props: RootViewProps, ref: any) {
         })
       : [];
 
-    const { res_model: model, views, name: title, target } = dataForAction;
+    const {
+      res_model: model,
+      views,
+      name: title,
+      target,
+      view_type,
+    } = dataForAction;
+
+    const treeExpandable = view_type === "tree";
 
     const finalViews = [];
 
@@ -165,6 +173,7 @@ function RootView(props: RootViewProps, ref: any) {
       values,
       forced_values,
       res_id,
+      treeExpandable,
     });
   }
 
@@ -273,7 +282,14 @@ function RootView(props: RootViewProps, ref: any) {
         })
       : [];
 
-    const { res_model: model, views, name: title, target } = dataForAction;
+    const {
+      res_model: model,
+      views,
+      name: title,
+      target,
+      view_type,
+    } = dataForAction;
+    const treeExpandable = view_type === "tree";
 
     const finalViews = [];
 
@@ -326,6 +342,7 @@ function RootView(props: RootViewProps, ref: any) {
       action_id,
       action_type,
       res_id,
+      treeExpandable,
     });
   }
 
@@ -370,6 +387,7 @@ function RootView(props: RootViewProps, ref: any) {
     res_id,
     values,
     forced_values,
+    treeExpandable = false,
   }: {
     domain: any;
     context: any;
@@ -383,6 +401,7 @@ function RootView(props: RootViewProps, ref: any) {
     res_id?: number | boolean;
     values?: any;
     forced_values?: any;
+    treeExpandable?: boolean;
   }) {
     const key = uuidv4();
 
@@ -428,6 +447,7 @@ function RootView(props: RootViewProps, ref: any) {
             res_id={res_id}
             formDefaultValues={values}
             formForcedValues={forced_values}
+            treeExpandable={treeExpandable}
           />
         ),
         key,

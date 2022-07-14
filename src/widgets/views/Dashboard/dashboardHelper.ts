@@ -33,7 +33,14 @@ export async function fetchAction({
       })
     : [];
 
-  const { res_model: model, views, name: title, limit } = dataForAction;
+  const {
+    res_model: model,
+    views,
+    name: title,
+    limit,
+    view_type,
+  } = dataForAction;
+  const treeExpandable = view_type === "tree";
 
   const finalViews = [];
 
@@ -67,5 +74,6 @@ export async function fetchAction({
     domain: parsedDomain,
     initialView,
     limit,
+    treeExpandable,
   };
 }

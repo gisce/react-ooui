@@ -45,6 +45,7 @@ type Props = {
   res_id?: number | boolean;
   action_id: number;
   action_type: string;
+  treeExpandable?: boolean;
 };
 
 export type View = {
@@ -67,6 +68,7 @@ function ActionView(props: Props, ref: any) {
     res_id = false,
     action_id,
     action_type,
+    treeExpandable = false,
   } = props;
   const [currentView, setCurrentViewInternal] = useState<View>();
   const [availableViews, setAvailableViews] = useState<View[]>([]);
@@ -183,7 +185,7 @@ function ActionView(props: Props, ref: any) {
         });
 
         if (viewType === "tree") {
-          setTreeView(viewData);
+          setTreeView({ ...viewData, isExpandable: treeExpandable });
         } else if (viewType === "form") {
           setFormView(viewData);
           setToolbar((viewData as any)?.toolbar);
