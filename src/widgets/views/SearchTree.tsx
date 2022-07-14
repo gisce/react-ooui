@@ -22,6 +22,11 @@ import { getColorMap, getTree, sortResults } from "@/helpers/treeHelper";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import Measure from "react-measure";
 import { mergeSearchFields } from "@/helpers/formHelper";
+import {
+  ContentRootContext,
+  ContentRootContextType,
+} from "@/context/ContentRootContext";
+import { parseContext } from "@gisce/ooui";
 
 const DEFAULT_SEARCH_LIMIT = 80;
 
@@ -118,6 +123,11 @@ function SearchTree(props: Props, ref: any) {
     setSearchTreeNameSearch = undefined,
     setTreeIsLoading = undefined,
   } = (rootTree ? actionViewContext : {}) || {};
+
+  const contentRootContext = useContext(
+    ContentRootContext
+  ) as ContentRootContextType;
+  const { processAction } = contentRootContext || {};
 
   useImperativeHandle(ref, () => ({
     refreshResults: () => {
@@ -447,8 +457,30 @@ function SearchTree(props: Props, ref: any) {
     internalLimit.current = newLimit;
   };
 
-  const onRowClickedHandler = (record: any) => {
+  const onRowClickedHandler = async (record: any) => {
     const { id } = record;
+
+    if (treeView?.isExpandable) {
+      // TODO: store treebutdataaction in a useRef and only call if we don't have it.
+      const treeButData = await ConnectionProvider.getHandler().treeButOpen({
+        id: treeView.view_id,
+        model: currentModel!,
+        context: parentContext,
+      });
+      const actionData: any = treeButData[0][2];
+
+      await processAction?.({
+        actionData,
+        fields: treeView.fields,
+        values: {
+          active_id: id,
+          ...record,
+        },
+        context: parentContext,
+      });
+      return;
+    }
+
     onRowClicked({
       id,
       model: currentModel!,
