@@ -69,6 +69,8 @@ const getTableItems = (treeOoui: TreeOoui, results: Array<any>): Array<any> => {
           parsedItem[key] = item[key];
         } else if (widget) {
           parsedItem[key] = item[key] === false ? "" : item[key];
+        } else {
+          parsedItem[key] = item[key];
         }
       }
     });

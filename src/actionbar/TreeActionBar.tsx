@@ -32,6 +32,7 @@ import { View } from "@/views/ActionView";
 
 type Props = {
   parentContext?: any;
+  treeExpandable: boolean;
 };
 
 function TreeActionBar(props: Props) {
@@ -57,7 +58,7 @@ function TreeActionBar(props: Props) {
     treeIsLoading,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
-  const { parentContext = {} } = props;
+  const { parentContext = {}, treeExpandable } = props;
 
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
   const contentRootContext = useContext(
@@ -142,52 +143,63 @@ function TreeActionBar(props: Props) {
 
   return (
     <Space wrap={true}>
-      <SearchBar
-        disabled={duplicatingItem || removingItem || treeIsLoading}
-        searchText={searchTreeNameSearch}
-        onSearch={(searchString?: string) => {
-          if (searchString && searchString.trim().length > 0) {
-            setSearchTreeNameSearch?.(searchString);
-          } else {
-            setSearchTreeNameSearch?.(undefined);
+      {treeExpandable ? null : (
+        <>
+          <SearchBar
+            disabled={duplicatingItem || removingItem || treeIsLoading}
+            searchText={searchTreeNameSearch}
+            onSearch={(searchString?: string) => {
+              if (searchString && searchString.trim().length > 0) {
+                setSearchTreeNameSearch?.(searchString);
+              } else {
+                setSearchTreeNameSearch?.(undefined);
+              }
+            }}
+          />
+          {separator()}
+          <NewButton disabled={treeIsLoading} />
+          {separator()}
+          <ActionButton
+            icon={<CopyOutlined />}
+            tooltip={t("duplicate")}
+            disabled={
+              !selectedRowItems ||
+              selectedRowItems?.length !== 1 ||
+              duplicatingItem ||
+              treeIsLoading
+            }
+            loading={duplicatingItem}
+            onClick={duplicate}
+          />
+          <ActionButton
+            icon={<DeleteOutlined />}
+            tooltip={t("delete")}
+            disabled={
+              !(selectedRowItems && selectedRowItems?.length > 0) ||
+              treeIsLoading
+            }
+            loading={removingItem}
+            onClick={tryDelete}
+          />
+          {separator()}
+        </>
+      )}
+      {!treeExpandable && (
+        <ButtonWithBadge
+          icon={
+            <FilterOutlined
+              style={{ color: searchVisible ? "white" : undefined }}
+            />
           }
-        }}
-      />
-      {separator()}
-      <NewButton disabled={treeIsLoading} />
-      {separator()}
-      <ActionButton
-        icon={<CopyOutlined />}
-        tooltip={t("duplicate")}
-        disabled={
-          !selectedRowItems ||
-          selectedRowItems?.length !== 1 ||
-          duplicatingItem ||
-          treeIsLoading
-        }
-        loading={duplicatingItem}
-        onClick={duplicate}
-      />
-      <ActionButton
-        icon={<DeleteOutlined />}
-        tooltip={t("delete")}
-        disabled={
-          !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
-        }
-        loading={removingItem}
-        onClick={tryDelete}
-      />
-      {separator()}
-      <ButtonWithBadge
-        icon={<FilterOutlined style={{ color: searchVisible ? "white" : undefined }}/>}
-        tooltip={t("advanced_search")}
-        type={searchVisible ? "primary" : "default"}
-        onClick={() => {
-          setSearchVisible?.(!searchVisible);
-        }}
-        disabled={duplicatingItem || removingItem || treeIsLoading}
-        badgeNumber={searchParams?.length}
-      />
+          tooltip={t("advanced_search")}
+          type={searchVisible ? "primary" : "default"}
+          onClick={() => {
+            setSearchVisible?.(!searchVisible);
+          }}
+          disabled={duplicatingItem || removingItem || treeIsLoading}
+          badgeNumber={searchParams?.length}
+        />
+      )}
       <ActionButton
         icon={<InfoCircleOutlined />}
         tooltip={t("showLogs")}
@@ -208,15 +220,19 @@ function TreeActionBar(props: Props) {
           searchTreeRef?.current?.refreshResults();
         }}
       />
-      {separator()}
-      <ChangeViewButton
-        currentView={currentView}
-        availableViews={availableViews.filter(
-          (view: View) => view.type === "tree" || view.type === "form"
-        )}
-        onChangeView={setCurrentView}
-        disabled={treeIsLoading}
-      />
+      {!treeExpandable && (
+        <>
+          {separator()}
+          <ChangeViewButton
+            currentView={currentView}
+            availableViews={availableViews.filter(
+              (view: View) => view.type === "tree" || view.type === "form"
+            )}
+            onChangeView={setCurrentView}
+            disabled={treeIsLoading}
+          />
+        </>
+      )}
       {separator()}
       <DropdownButton
         icon={<ThunderboltOutlined />}

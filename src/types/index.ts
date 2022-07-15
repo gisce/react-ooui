@@ -27,6 +27,8 @@ type TreeView = {
   arch: string;
   fields: any;
   search_fields?: SearchFields;
+  isExpandable?: boolean;
+  field_parent?: string;
 };
 
 type FormView = TreeView & {
@@ -194,6 +196,12 @@ type IsShortcutFavoriteOptions = {
   context?: any;
 };
 
+type TreeButOpenOptions = {
+  model: string;
+  id: number;
+  context?: any;
+};
+
 type ConnectionProviderType = {
   getActionStringForModel: (model: string) => Promise<string>;
   getViewsForAction: ({
@@ -236,6 +244,7 @@ type ConnectionProviderType = {
   ) => Promise<number | boolean>;
   removeFavourite: ({ shortcut_id }: { shortcut_id: number }) => Promise<void>;
   addFavourite: (options: IsShortcutFavoriteOptions) => Promise<void>;
+  treeButOpen: (options: TreeButOpenOptions) => Promise<any>;
 };
 
 type ViewType = "tree" | "form" | "dashboard" | "graph";
@@ -272,4 +281,5 @@ export type {
   GetLogInfoRequest,
   IsShortcutFavoriteOptions,
   ParseConditionRequest,
+  TreeButOpenOptions,
 };
