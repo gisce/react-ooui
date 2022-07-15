@@ -156,27 +156,25 @@ function Tree(props: Props): React.ReactElement {
         .replace("{total}", total?.toString());
 
   const pagination = () => {
-    if (!showPagination) {
+    if (!showPagination || treeView.isExpandable) {
       return null;
     }
 
     return loading ? null : (
-      <>
-        <Row align="bottom" className="pb-4">
-          <Col span={12}>
-            <Pagination
-              total={total}
-              pageSize={limit}
-              current={page}
-              showSizeChanger={false}
-              onChange={onRequestPageChange}
-            />
-          </Col>
-          <Col span={12} className="text-right">
-            {summary}
-          </Col>
-        </Row>
-      </>
+      <Row align="bottom" className="pb-4">
+        <Col span={12}>
+          <Pagination
+            total={total}
+            pageSize={limit}
+            current={page}
+            showSizeChanger={false}
+            onChange={onRequestPageChange}
+          />
+        </Col>
+        <Col span={12} className="text-right">
+          {summary}
+        </Col>
+      </Row>
     );
   };
 

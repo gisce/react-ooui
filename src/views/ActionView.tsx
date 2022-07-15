@@ -406,7 +406,10 @@ function ActionView(props: Props, ref: any) {
           {currentView!.type === "form" ? (
             <FormActionBar />
           ) : (
-            <TreeActionBar parentContext={context} />
+            <TreeActionBar
+              parentContext={context}
+              treeExpandable={treeView?.isExpandable || false}
+            />
           )}
         </TitleHeader>
         {content()}
