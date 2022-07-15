@@ -326,7 +326,7 @@ function SearchTree(props: Props, ref: any) {
   async function onFetchChildrenForRecord(record: any) {
     const child_id = record[treeView?.field_parent || "child_id"];
 
-    return await ConnectionProvider.getHandler().readObjects({
+    const children = await ConnectionProvider.getHandler().readObjects({
       model: currentModel!,
       ids: child_id,
       fields: treeView!.field_parent
@@ -334,6 +334,10 @@ function SearchTree(props: Props, ref: any) {
         : treeView!.fields,
       context: parentContext,
     });
+
+    setResults([...getResults(), ...children]);
+
+    return children;
   }
 
   useEffect(() => {

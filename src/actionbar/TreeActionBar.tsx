@@ -157,32 +157,33 @@ function TreeActionBar(props: Props) {
             }}
           />
           {separator()}
+          <NewButton disabled={treeIsLoading} />
+          {separator()}
+          <ActionButton
+            icon={<CopyOutlined />}
+            tooltip={t("duplicate")}
+            disabled={
+              !selectedRowItems ||
+              selectedRowItems?.length !== 1 ||
+              duplicatingItem ||
+              treeIsLoading
+            }
+            loading={duplicatingItem}
+            onClick={duplicate}
+          />
+          <ActionButton
+            icon={<DeleteOutlined />}
+            tooltip={t("delete")}
+            disabled={
+              !(selectedRowItems && selectedRowItems?.length > 0) ||
+              treeIsLoading
+            }
+            loading={removingItem}
+            onClick={tryDelete}
+          />
+          {separator()}
         </>
       )}
-      <NewButton disabled={treeIsLoading} />
-      {separator()}
-      <ActionButton
-        icon={<CopyOutlined />}
-        tooltip={t("duplicate")}
-        disabled={
-          !selectedRowItems ||
-          selectedRowItems?.length !== 1 ||
-          duplicatingItem ||
-          treeIsLoading
-        }
-        loading={duplicatingItem}
-        onClick={duplicate}
-      />
-      <ActionButton
-        icon={<DeleteOutlined />}
-        tooltip={t("delete")}
-        disabled={
-          !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
-        }
-        loading={removingItem}
-        onClick={tryDelete}
-      />
-      {separator()}
       {!treeExpandable && (
         <ButtonWithBadge
           icon={
