@@ -517,6 +517,9 @@ function SearchTree(props: Props, ref: any) {
   }
 
   function calculateTableHeight() {
+    if (treeView?.isExpandable) {
+      return height - 160;
+    }
     return height - (searchFilterHeight + 210);
   }
 
