@@ -10,7 +10,11 @@ import { calculateColumnsWidth } from "@/helpers/dynamicColumnsHelper";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../base/ProgressBar";
 import { Table as GisceTable } from "@gisce/react-formiga-table";
-import useDeepCompareEffect from "use-deep-compare-effect";
+import {
+  PlusSquareOutlined,
+  MinusSquareOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 
 type Props = {
   total: number;
@@ -27,6 +31,8 @@ type Props = {
   colorsForResults?: { [key: number]: string };
   onChangeSort?: (results: any) => void;
   sorter?: any;
+  onFetchChildrenForRecord?: (item: any) => Promise<any[]>;
+  childField?: string;
 };
 
 const booleanComponentFn = (value: boolean): React.ReactElement => {
@@ -100,6 +106,8 @@ function Tree(props: Props): React.ReactElement {
     colorsForResults = {},
     onChangeSort,
     sorter,
+    onFetchChildrenForRecord,
+    childField,
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
@@ -148,27 +156,25 @@ function Tree(props: Props): React.ReactElement {
         .replace("{total}", total?.toString());
 
   const pagination = () => {
-    if (!showPagination) {
+    if (!showPagination || treeView.isExpandable) {
       return null;
     }
 
     return loading ? null : (
-      <>
-        <Row align="bottom" className="pb-4">
-          <Col span={12}>
-            <Pagination
-              total={total}
-              pageSize={limit}
-              current={page}
-              showSizeChanger={false}
-              onChange={onRequestPageChange}
-            />
-          </Col>
-          <Col span={12} className="text-right">
-            {summary}
-          </Col>
-        </Row>
-      </>
+      <Row align="bottom" className="pb-4">
+        <Col span={12}>
+          <Pagination
+            total={total}
+            pageSize={limit}
+            current={page}
+            showSizeChanger={false}
+            onChange={onRequestPageChange}
+          />
+        </Col>
+        <Col span={12} className="text-right">
+          {summary}
+        </Col>
+      </Row>
     );
   };
 
@@ -244,6 +250,17 @@ function Tree(props: Props): React.ReactElement {
         onRowSelectionChange={rowSelection?.onChange}
         onChangeSort={onChangeSort}
         sorter={sorter}
+        expandableOpts={
+          onFetchChildrenForRecord
+            ? {
+                expandIcon: PlusSquareOutlined,
+                collapseIcon: MinusSquareOutlined,
+                loadingIcon: LoadingOutlined,
+                onFetchChildrenForRecord,
+                childField: childField!,
+              }
+            : undefined
+        }
       />
       {getSums()}
     </div>

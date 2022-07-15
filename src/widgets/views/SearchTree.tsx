@@ -22,6 +22,11 @@ import { getColorMap, getTree, sortResults } from "@/helpers/treeHelper";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import Measure from "react-measure";
 import { mergeSearchFields } from "@/helpers/formHelper";
+import {
+  ContentRootContext,
+  ContentRootContextType,
+} from "@/context/ContentRootContext";
+import showErrorDialog from "@/ui/ActionErrorDialog";
 
 const DEFAULT_SEARCH_LIMIT = 80;
 
@@ -96,6 +101,7 @@ function SearchTree(props: Props, ref: any) {
   const [searchFilterHeight, setSearchFilterHeight] = useState<number>(200);
 
   const originalResults = useRef<any[]>([]);
+  const expandableClickActionData = useRef<any>();
 
   const { height } = useWindowDimensions();
 
@@ -118,6 +124,11 @@ function SearchTree(props: Props, ref: any) {
     setSearchTreeNameSearch = undefined,
     setTreeIsLoading = undefined,
   } = (rootTree ? actionViewContext : {}) || {};
+
+  const contentRootContext = useContext(
+    ContentRootContext
+  ) as ContentRootContextType;
+  const { processAction } = contentRootContext || {};
 
   useImperativeHandle(ref, () => ({
     refreshResults: () => {
@@ -168,7 +179,9 @@ function SearchTree(props: Props, ref: any) {
           model: currentModel!,
           ids: resultsIds,
           arch: treeView?.arch!,
-          fields: Object.keys(treeView?.fields!),
+          fields: treeView!.field_parent
+            ? { ...treeView!.fields, [treeView!.field_parent]: {} }
+            : treeView!.fields,
           context: parentContext,
           attrs: colors && {
             colors,
@@ -254,7 +267,9 @@ function SearchTree(props: Props, ref: any) {
       limit,
       offset,
       model: currentModel!,
-      fields: treeView!.fields,
+      fields: treeView!.field_parent
+        ? { ...treeView!.fields, [treeView!.field_parent]: {} }
+        : treeView!.fields,
       context: parentContext,
       attrs: colors && { colors },
     });
@@ -307,6 +322,23 @@ function SearchTree(props: Props, ref: any) {
       setTreeIsLoading?.(false);
     }
   };
+
+  async function onFetchChildrenForRecord(record: any) {
+    const child_id = record[treeView?.field_parent || "child_id"];
+
+    const children = await ConnectionProvider.getHandler().readObjects({
+      model: currentModel!,
+      ids: child_id,
+      fields: treeView!.field_parent
+        ? { ...treeView!.fields, [treeView!.field_parent]: {} }
+        : treeView!.fields,
+      context: parentContext,
+    });
+
+    setResults([...getResults(), ...children]);
+
+    return children;
+  }
 
   useEffect(() => {
     if (!initialFetchDone) {
@@ -430,8 +462,44 @@ function SearchTree(props: Props, ref: any) {
     internalLimit.current = newLimit;
   };
 
-  const onRowClickedHandler = (record: any) => {
+  const treeButOpen = async (record: any) => {
     const { id } = record;
+
+    if (!expandableClickActionData.current) {
+      expandableClickActionData.current = await ConnectionProvider.getHandler().treeButOpen(
+        {
+          id: treeView!.view_id,
+          model: currentModel!,
+          context: parentContext,
+        }
+      );
+    }
+
+    const actionData: any = expandableClickActionData.current[0][2];
+
+    await processAction?.({
+      actionData,
+      fields: treeView!.fields,
+      values: {
+        active_id: id,
+        ...record,
+      },
+      context: parentContext,
+    });
+  };
+
+  const onRowClickedHandler = async (record: any) => {
+    const { id } = record;
+
+    if (treeView?.isExpandable) {
+      try {
+        await treeButOpen(record);
+      } catch (err) {
+        showErrorDialog(err);
+      }
+      return;
+    }
+
     onRowClicked({
       id,
       model: currentModel!,
@@ -449,6 +517,9 @@ function SearchTree(props: Props, ref: any) {
   }
 
   function calculateTableHeight() {
+    if (treeView?.isExpandable) {
+      return height - 160;
+    }
     return height - (searchFilterHeight + 210);
   }
 
@@ -522,6 +593,10 @@ function SearchTree(props: Props, ref: any) {
                 : [...originalResults.current];
             setResults(sortedResults);
           }}
+          onFetchChildrenForRecord={
+            treeView.isExpandable ? onFetchChildrenForRecord : undefined
+          }
+          childField={treeView.field_parent}
         />
       </>
     );
