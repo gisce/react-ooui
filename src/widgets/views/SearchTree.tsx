@@ -180,7 +180,7 @@ function SearchTree(props: Props, ref: any) {
           ids: resultsIds,
           arch: treeView?.arch!,
           fields: treeView!.field_parent
-            ? [...Object.keys(treeView!.fields), treeView!.field_parent]
+            ? { ...treeView!.fields, [treeView!.field_parent]: {} }
             : treeView!.fields,
           context: parentContext,
           attrs: colors && {
@@ -268,7 +268,7 @@ function SearchTree(props: Props, ref: any) {
       offset,
       model: currentModel!,
       fields: treeView!.field_parent
-        ? [...Object.keys(treeView!.fields), treeView!.field_parent]
+        ? { ...treeView!.fields, [treeView!.field_parent]: {} }
         : treeView!.fields,
       context: parentContext,
       attrs: colors && { colors },
@@ -330,7 +330,7 @@ function SearchTree(props: Props, ref: any) {
       model: currentModel!,
       ids: child_id,
       fields: treeView!.field_parent
-        ? [...Object.keys(treeView!.fields), treeView!.field_parent]
+        ? { ...treeView!.fields, [treeView!.field_parent]: {} }
         : treeView!.fields,
       context: parentContext,
     });
