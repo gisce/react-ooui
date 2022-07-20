@@ -44,7 +44,7 @@ const booleanComponentFn = (value: boolean): React.ReactElement => {
         alignContent: "center",
       }}
     >
-      <Checkbox defaultChecked={value} disabled />
+      <Checkbox checked={value} disabled />
     </div>
   );
 };
