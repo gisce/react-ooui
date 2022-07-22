@@ -223,3 +223,17 @@ export const transformPlainMany2Ones = ({
 
   return reformattedValues;
 };
+
+
+export const colorFromString = (text: string) => {
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) {
+    hash = text.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  let hexColour = '#';
+  for (let i = 0; i < 3; i++) {
+    var value = (hash >> (i * 8)) & 0xFF;
+    hexColour += ('00' + value.toString(16)).slice(-2);
+  }
+  return hexColour;
+}
