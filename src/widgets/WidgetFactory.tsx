@@ -29,6 +29,7 @@ import { Image } from "./base/Image";
 import { FiberGrid } from "./custom/FiberGrid";
 import { Timeline } from "./custom/Timeline";
 import { Indicator} from "./custom/Indicator";
+import { Tags } from "./custom/Tags";
 
 const getWidgetType = (type: string) => {
   switch (type) {
@@ -88,6 +89,8 @@ const getWidgetType = (type: string) => {
       return Timeline;
     case "indicator":
       return Indicator;
+    case "tags":
+      return Tags;
     default:
       return undefined;
   }
