@@ -4,9 +4,9 @@ import Field from "@/common/Field";
 import { One2manyItem, One2manyValue } from "../base/one2many/One2manyInput";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { FormContext, FormContextType } from "@/context/FormContext";
-import ConnectionProvider from "@/ConnectionProvider";
 import { Spin, Alert, Timeline as AntTimeline, Tag as AntTag } from "antd";
 import { readObjectValues } from "@/helpers/one2manyHelper";
+import { colorFromString } from "@/helpers/formHelper";
 
 type TagsProps = {
   ooui: TagsOoui;
@@ -19,37 +19,6 @@ type TagsInputProps = TagsProps & {
 
 export const Tags = (props: TagsProps) => {
   const { ooui } = props;
-  const { relation, context } = ooui;
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>();
-  const formContext = useContext(FormContext) as FormContextType;
-  const { getContext } = formContext || {};
-
-  useDeepCompareEffect(() => {
-    fetchData();
-  }, [ooui]);
-
-
-  const fetchData = async () => {
-    setIsLoading(true);
-    setError(undefined);
-
-    try {
-     console.log('Fetching....')
-    } catch (err) {
-      setError(err as any);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  if (isLoading) {
-    return <Spin />;
-  }
-
-  if (error) {
-    return <Alert className="mt-10" message={error} type="error" banner />;
-  }
 
   return (
     <Field type={"array"} {...props}>
@@ -111,19 +80,6 @@ export const TagsInput = (props: TagsInputProps) => {
     return <Spin />;
   }
 
-  const color = (text: string) => {
-    let hash = 0;
-    for (let i = 0; i < text.length; i++) {
-      hash = text.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    var colour = '#';
-    for (let i = 0; i < 3; i++) {
-      var value = (hash >> (i * 8)) & 0xFF;
-      colour += ('00' + value.toString(16)).substr(-2);
-    }
-    return colour;
-  }
-
   return (
     <>
       <div style={{ padding: "1rem" }}>
@@ -131,7 +87,7 @@ export const TagsInput = (props: TagsInputProps) => {
         {itemsToShow.map((item, index) => {
           const value = item.values?.[field];
           return (
-            <AntTag key={index} color={color(value)}>{value}</AntTag>
+            <AntTag key={index} color={colorFromString(value)}>{value}</AntTag>
           );
         })}
       </div>
