@@ -105,10 +105,6 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     }
   }, [value]);
 
-  useEffect(() => {
-    parseDomain();
-  }, [domain]);
-
   const triggerChange = (changedValue: any[]) => {
     onChange?.(changedValue);
     elementHasLostFocus?.();
@@ -160,6 +156,8 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   };
 
   const tryFetchFirstResultOrShowSearch = async (text: string) => {
+    await parseDomain();
+
     if (transformedDomain.current && transformedDomain.current.length > 0) {
       const resultIds = await ConnectionProvider.getHandler().searchAllIds({
         params: transformedDomain.current,
@@ -170,7 +168,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
 
       if (resultIds.length === 1) {
         fetchNameAndUpdate(resultIds[0], true);
-      } else if (resultIds.length > 1) {
+      } else {
         setSearchText(text);
         setShowSearchModal(true);
       }
