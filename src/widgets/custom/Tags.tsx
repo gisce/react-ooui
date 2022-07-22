@@ -6,6 +6,7 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { Spin, Alert, Timeline as AntTimeline, Tag as AntTag } from "antd";
 import { readObjectValues } from "@/helpers/one2manyHelper";
+import { colorFromString } from "@/helpers/formHelper";
 
 type TagsProps = {
   ooui: TagsOoui;
@@ -79,19 +80,6 @@ export const TagsInput = (props: TagsInputProps) => {
     return <Spin />;
   }
 
-  const color = (text: string) => {
-    let hash = 0;
-    for (let i = 0; i < text.length; i++) {
-      hash = text.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    var colour = '#';
-    for (let i = 0; i < 3; i++) {
-      var value = (hash >> (i * 8)) & 0xFF;
-      colour += ('00' + value.toString(16)).substr(-2);
-    }
-    return colour;
-  }
-
   return (
     <>
       <div style={{ padding: "1rem" }}>
@@ -99,7 +87,7 @@ export const TagsInput = (props: TagsInputProps) => {
         {itemsToShow.map((item, index) => {
           const value = item.values?.[field];
           return (
-            <AntTag key={index} color={color(value)}>{value}</AntTag>
+            <AntTag key={index} color={colorFromString(value)}>{value}</AntTag>
           );
         })}
       </div>
