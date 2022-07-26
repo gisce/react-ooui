@@ -7,6 +7,7 @@ import { FormContext, FormContextType } from "@/context/FormContext";
 import { Spin, Alert, Timeline as AntTimeline, Tag as AntTag } from "antd";
 import { readObjectValues } from "@/helpers/one2manyHelper";
 import { colorFromString } from "@/helpers/formHelper";
+import ConnectionProvider from "@/ConnectionProvider";
 
 type TagsProps = {
   ooui: TagsOoui;
@@ -55,10 +56,16 @@ export const TagsInput = (props: TagsInputProps) => {
     setIsLoading(true);
     setError(undefined);
 
+    const fieldsDef = await ConnectionProvider.getHandler().getFields({
+      model: relation,
+      fields: [field],
+      context: getContext(),
+    });
+
     try {
       const itemsWithValues = await readObjectValues({
-        treeFields: [ooui.field],
-        formFields: [],
+        treeFields: {},
+        formFields: fieldsDef,
         model: relation,
         items,
         context: { ...getContext?.(), ...context },
@@ -86,6 +93,9 @@ export const TagsInput = (props: TagsInputProps) => {
         
         {itemsToShow.map((item, index) => {
           const value = item.values?.[field];
+          if (!value) {
+            return null;
+          }
           return (
             <AntTag key={index} color={colorFromString(value)}>{value}</AntTag>
           );

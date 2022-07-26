@@ -169,6 +169,12 @@ type GetViewRequest = {
   context?: any;
 };
 
+type GetFieldsRequest = {
+  model: string;
+  fields: string[];
+  context?: any;
+};
+
 type DefaultGetRequest = {
   model: string;
   fields?: any;
@@ -212,6 +218,7 @@ type ConnectionProviderType = {
     context?: any;
   }) => Promise<ViewData>;
   getView: (options: GetViewRequest) => Promise<FormView | TreeView>;
+  getFields: (options: GetFieldsRequest) => Promise<any>;
   searchAllIds: (options: SearchAllIdsRequest) => Promise<number[]>;
   searchCount: (options: SearchCountRequest) => Promise<number>;
   search: (options: SearchRequest) => Promise<SearchResponse>;
@@ -273,6 +280,7 @@ export type {
   SearchAllIdsRequest,
   SearchCountRequest,
   GetViewRequest,
+  GetFieldsRequest,
   DefaultGetRequest,
   GenerateReportOptions,
   ReadEvalUiObjectsRequest,
