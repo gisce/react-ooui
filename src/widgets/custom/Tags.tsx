@@ -87,6 +87,20 @@ export const TagsInput = (props: TagsInputProps) => {
     return <Spin />;
   }
 
+  const removeItem = (item: One2manyItem) => {
+    const newItems: One2manyItem[] = items.map(i => {
+      if (i.id === item.id) {
+        return {
+          ...item,
+          operation: "pendingRemove",
+        }
+      } else {
+        return item
+      }
+    });
+    triggerChange(newItems);
+  };
+
   return (
     <>
       <div style={{ padding: "1rem" }}>
@@ -97,7 +111,11 @@ export const TagsInput = (props: TagsInputProps) => {
             return null;
           }
           return (
-            <AntTag key={index} color={colorFromString(value)}>{value}</AntTag>
+            <AntTag key={index} color={colorFromString(value)} closable={!readOnly} onClose={e => {
+              e.preventDefault();
+              removeItem(item);
+
+            }}>{value}</AntTag>
           );
         })}
       </div>
