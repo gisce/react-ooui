@@ -28,3 +28,23 @@ export const Default = (): React.ReactElement => {
     </LocaleProvider>
   );
 };
+
+export const Readonly = (): React.ReactElement => {
+  const ooui = new TagsOoui({
+    name: "button_field",
+    string: "Lorem ipsum",
+    field: "name",
+    readonly: true
+  });
+
+  return (
+    <LocaleProvider lang="en_US">
+      <TagsInput ooui={ooui} value={{items: [
+          {id: 1, operation: "original", values: {name: "test"}},
+          {id: 2, operation: "original", values: {name: "foo"}},
+          {id: 3, operation: "pendingRemove", values: {name: "remove"}}
+        ]}}
+      />
+    </LocaleProvider>
+  );
+};
