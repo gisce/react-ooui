@@ -7,6 +7,7 @@ import { FormContext, FormContextType } from "@/context/FormContext";
 import { Spin, Alert, Timeline as AntTimeline, Tag as AntTag } from "antd";
 import { readObjectValues } from "@/helpers/one2manyHelper";
 import { colorFromString } from "@/helpers/formHelper";
+import ConnectionProvider from "@/ConnectionProvider";
 
 type TagsProps = {
   ooui: TagsOoui;
@@ -42,7 +43,9 @@ export const TagsInput = (props: TagsInputProps) => {
   const { getContext } = formContext || {};
 
   useDeepCompareEffect(() => {
-    fetchData();
+    if (items.some((item) => !item.values)) {
+      fetchData();
+    }
   }, [items]);
 
   const triggerChange = (changedValue: Array<One2manyItem>) => {
@@ -55,15 +58,20 @@ export const TagsInput = (props: TagsInputProps) => {
     setIsLoading(true);
     setError(undefined);
 
+    const fieldsDef = await ConnectionProvider.getHandler().getFields({
+      model: relation,
+      fields: [field],
+      context: getContext(),
+    });
+
     try {
       const itemsWithValues = await readObjectValues({
-        treeFields: [ooui.field],
-        formFields: [],
+        treeFields: {},
+        formFields: fieldsDef,
         model: relation,
         items,
         context: { ...getContext?.(), ...context },
       });
-
       triggerChange(itemsWithValues);
     } catch (err) {
       setError(err as any);
@@ -80,14 +88,41 @@ export const TagsInput = (props: TagsInputProps) => {
     return <Spin />;
   }
 
+  const removeItem = (item: One2manyItem) => {
+    const newItems: One2manyItem[] = items.map(i => {
+      if (i.id === item.id) {
+        return {
+          ...item,
+          operation: "pendingRemove",
+        }
+      } else {
+        return i
+      }
+    });
+    triggerChange(newItems);
+  };
+
   return (
     <>
       <div style={{ padding: "1rem" }}>
         
         {itemsToShow.map((item, index) => {
           const value = item.values?.[field];
+          let formattedValue = value;
+          if (ooui.selectionValues.size) {
+            formattedValue = ooui.selectionValues.get(value);
+          } else if (Array.isArray(value)) {
+            formattedValue = value[1];
+          }
+          if (!value) {
+            return null;
+          }
           return (
-            <AntTag key={index} color={colorFromString(value)}>{value}</AntTag>
+            <AntTag key={index} color={colorFromString(formattedValue)} closable={!readOnly} onClose={e => {
+              e.preventDefault();
+              removeItem(item);
+
+            }}>{formattedValue}</AntTag>
           );
         })}
       </div>
