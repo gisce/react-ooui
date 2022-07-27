@@ -55,8 +55,6 @@ export const TagsInput = (props: TagsInputProps) => {
   };
 
   async function fetchData() {
-    console.log("items", items);
-    console.log("itemsToShow", itemsToShow);
     setIsLoading(true);
     setError(undefined);
 
@@ -74,7 +72,6 @@ export const TagsInput = (props: TagsInputProps) => {
         items,
         context: { ...getContext?.(), ...context },
       });
-      console.log("itemsWithValues", itemsWithValues);
       triggerChange(itemsWithValues);
     } catch (err) {
       setError(err as any);
@@ -99,10 +96,9 @@ export const TagsInput = (props: TagsInputProps) => {
           operation: "pendingRemove",
         }
       } else {
-        return item
+        return i
       }
     });
-    console.log("newItems",newItems);
     triggerChange(newItems);
   };
 
