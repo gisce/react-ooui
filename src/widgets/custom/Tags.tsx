@@ -43,7 +43,9 @@ export const TagsInput = (props: TagsInputProps) => {
   const { getContext } = formContext || {};
 
   useDeepCompareEffect(() => {
-    fetchData();
+    if (items.some((item) => !item.values)) {
+      fetchData();
+    }
   }, [items]);
 
   const triggerChange = (changedValue: Array<One2manyItem>) => {
@@ -53,6 +55,8 @@ export const TagsInput = (props: TagsInputProps) => {
   };
 
   async function fetchData() {
+    console.log("items", items);
+    console.log("itemsToShow", itemsToShow);
     setIsLoading(true);
     setError(undefined);
 
@@ -70,7 +74,7 @@ export const TagsInput = (props: TagsInputProps) => {
         items,
         context: { ...getContext?.(), ...context },
       });
-
+      console.log("itemsWithValues", itemsWithValues);
       triggerChange(itemsWithValues);
     } catch (err) {
       setError(err as any);
@@ -98,6 +102,7 @@ export const TagsInput = (props: TagsInputProps) => {
         return item
       }
     });
+    console.log("newItems",newItems);
     triggerChange(newItems);
   };
 
