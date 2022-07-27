@@ -108,15 +108,21 @@ export const TagsInput = (props: TagsInputProps) => {
         
         {itemsToShow.map((item, index) => {
           const value = item.values?.[field];
+          let formattedValue = value;
+          if (ooui.selectionValues.size) {
+            formattedValue = ooui.selectionValues.get(value);
+          } else if (Array.isArray(value)) {
+            formattedValue = value[1];
+          }
           if (!value) {
             return null;
           }
           return (
-            <AntTag key={index} color={colorFromString(value)} closable={!readOnly} onClose={e => {
+            <AntTag key={index} color={colorFromString(formattedValue)} closable={!readOnly} onClose={e => {
               e.preventDefault();
               removeItem(item);
 
-            }}>{value}</AntTag>
+            }}>{formattedValue}</AntTag>
           );
         })}
       </div>
