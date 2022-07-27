@@ -118,7 +118,7 @@ export const TagsInput = (props: TagsInputProps) => {
             return null;
           }
           return (
-            <AntTag key={index} color={colorFromString(formattedValue)} closable={!readOnly} onClose={e => {
+            <AntTag key={index} color={colorFromString(formattedValue)} closable={!readOnly} style={{margin: '5px'}} onClose={e => {
               e.preventDefault();
               removeItem(item);
 
