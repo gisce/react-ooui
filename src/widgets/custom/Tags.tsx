@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { Tags as TagsOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { One2manyItem, One2manyValue } from "../base/one2many/One2manyInput";
@@ -44,9 +44,7 @@ export const TagsInput = (props: TagsInputProps) => {
   const { getContext } = formContext || {};
 
   useDeepCompareEffect(() => {
-    if (items.some((item) => !item.values)) {
-      fetchData();
-    }
+    fetchOptions();
   }, [items]);
 
   const triggerChange = (changedValue: Array<One2manyItem>) => {
@@ -83,20 +81,10 @@ export const TagsInput = (props: TagsInputProps) => {
     } finally {
       setIsLoadingOptions(false);
     }
-
-  }
-
-  async function fetchData() {
-    setError(undefined);
-    try {
-      await fetchOptions();
-    } catch (err) {
-      setError(err as any);
-    }
-
     if (error) {
       return <Alert className="mt-10" message={error} type="error" banner />;
     }
+
   };
 
   const onChangeSelected = (ids: number[]) => {
