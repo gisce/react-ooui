@@ -55,11 +55,18 @@ export const TagsInput = (props: TagsInputProps) => {
 
   async function fetchOptions() {
     setIsLoadingOptions(true);
-    let params = formContext?.domain || [];
-    if (readOnly) {
-      params = [['id', 'in', itemsToShow]]
-    }
+    let params: any[] = [];
     try {
+      if (ooui.domain) {
+        await ConnectionProvider.getHandler().evalDomain({
+          domain: ooui.domain,
+          values: formContext.getValues(),
+          context: formContext.getContext()
+        });
+      }
+      if (readOnly) {
+        params = [['id', 'in', itemsToShow]]
+      }
       const optionsRead = await ConnectionProvider.getHandler().search({
         model: relation,
         params: params,
