@@ -19,6 +19,7 @@ import {
   SearchAllIdsRequest,
   NameSearchRequest,
   SearchCountRequest,
+  GetFieldsRequest,
 } from "../../types/index";
 
 const init = () => {
@@ -50,6 +51,14 @@ const init = () => {
       const data = getMock(model);
       return data[type];
     },
+    getFields: async (options: GetFieldsRequest) => {
+      const { model, fields } = options;
+      await new Promise((resolve) => setTimeout(resolve, timeout));
+      const data = getMock(model);
+      const fieldsDef = Object.fromEntries(Object.entries(data.form.fields).filter(([key]) => fields.includes(key)));
+      return fieldsDef;
+
+    },
     searchAllIds: async (options: SearchCountRequest) => {
       await new Promise((resolve) => setTimeout(resolve, timeout));
       return [6];
@@ -57,10 +66,7 @@ const init = () => {
     search: async (options: SearchRequest) => {
       await new Promise((resolve) => setTimeout(resolve, timeout));
       const data = getMock(options.model);
-      return {
-        totalItems: 1,
-        results: [data.exampleValues],
-      };
+      return [data.exampleValues];
     },
     searchForTree: async (options: SearchRequest) => {
       await new Promise((resolve) => setTimeout(resolve, timeout));
