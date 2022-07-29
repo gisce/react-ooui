@@ -4,8 +4,7 @@ import Field from "@/common/Field";
 import { One2manyItem, One2manyValue } from "../base/one2many/One2manyInput";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { FormContext, FormContextType } from "@/context/FormContext";
-import { Spin, Alert, Tag as AntTag, Select } from "antd";
-import { readObjectValues } from "@/helpers/one2manyHelper";
+import { Alert, Tag as AntTag, Select } from "antd";
 import { colorFromString } from "@/helpers/formHelper";
 import ConnectionProvider from "@/ConnectionProvider";
 
@@ -34,10 +33,7 @@ export const TagsInput = (props: TagsInputProps) => {
   const itemsToShow = items.filter(
     (item) => item.operation !== "pendingRemove"
   ).map((item) => item.id) as number[];
-  console.log("items", items);
-  console.log("itemsToShow", itemsToShow);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [options, setOptions] = useState<any[]>([]);
   const [error, setError] = useState<string>();
   const [isLoadingOptions, setIsLoadingOptions] = useState<boolean>(false);
@@ -45,7 +41,6 @@ export const TagsInput = (props: TagsInputProps) => {
 
 
   const formContext = useContext(FormContext) as FormContextType;
-  console.log("formContext", formContext);
   const { getContext } = formContext || {};
 
   useDeepCompareEffect(() => {
@@ -60,9 +55,12 @@ export const TagsInput = (props: TagsInputProps) => {
     });
   };
 
-  async function fetchOptions(params: any[] = []) {
+  async function fetchOptions() {
     setIsLoadingOptions(true);
-    //params: formContext?.domain || [],
+    let params = formContext?.domain || [];
+    if (readOnly) {
+      params = [['id', 'in', itemsToShow]]
+    }
     try {
       const optionsRead = await ConnectionProvider.getHandler().search({
         model: relation,
@@ -70,7 +68,6 @@ export const TagsInput = (props: TagsInputProps) => {
         fields: [field],
         context: { ...getContext?.(), ...context },
       });
-      console.log("optionsRead", optionsRead);
       const options = optionsRead.map((item:any) => {
         const value = item[field];
         let formattedValue = value;
@@ -79,7 +76,6 @@ export const TagsInput = (props: TagsInputProps) => {
         }
         return {label: formattedValue, value: item.id}
       });
-      console.log("options", options);
       setOptions(options);
       
     } catch (err) {
@@ -91,30 +87,25 @@ export const TagsInput = (props: TagsInputProps) => {
   }
 
   async function fetchData() {
-    setIsLoading(true);
     setError(undefined);
-    console.log("fetch data");
     try {
-      await fetchOptions([['id', 'in', itemsToShow]]);
+      await fetchOptions();
     } catch (err) {
       setError(err as any);
-    } finally {
-      setIsLoading(false);
     }
-  }
 
-  if (error) {
-    return <Alert className="mt-10" message={error} type="error" banner />;
-  }
+    if (error) {
+      return <Alert className="mt-10" message={error} type="error" banner />;
+    }
+  };
 
   const onChangeSelected = (ids: number[]) => {
-    // items són els que actualment hi ha
     const newItems: One2manyItem[] = items.map((item) => {
       if (ids.includes(item.id as number)) {
         if (item.operation == "pendingRemove") {
           return {
             ...item,
-            operation: "original"
+            operation: "pendingLink"
           }
         } else {
           return item
@@ -127,18 +118,15 @@ export const TagsInput = (props: TagsInputProps) => {
     ids.filter(id => !currentIds.includes(id)).map((id) => {
       newItems.push({id, operation: 'pendingLink'});
     });
-    console.log("onChangeSelected newItems", newItems);
     triggerChange(newItems);
   };
 
   const tagRender = (props: any) => {
-    console.log(props);
-    const { label, value, closable, onClose } = props;
+    const { label, closable, onClose } = props;
     const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
       event.preventDefault();
       event.stopPropagation();
     };
-    console.log(props);
     return (
       <AntTag
         color={colorFromString(label)}
@@ -149,34 +137,24 @@ export const TagsInput = (props: TagsInputProps) => {
           {label}
       </AntTag>
     );
-  }
-
-  const onDropdownVisibleChange = (open: boolean) => {
-    if (open && !isLoadingOptions) {
-      fetchOptions();
-    } else {
-      console.log('Already loading options');
-    }
-  }
+  };
   
   return (
     <>
       <div style={{ padding: "1rem" }}>
         <Select
           mode="multiple"
-          value={itemsToShow}
+          value={options.length ? itemsToShow : []}
           tagRender={tagRender}
           bordered={!readOnly}
           disabled={readOnly}
           options={options}
-          onDeselect={(e) => {console.log("Deselect", e)}}
-          onChange={(ids) => {console.log("Change", ids); onChangeSelected(ids)}}
+          onChange={onChangeSelected}
           loading={isLoadingOptions}
-          onDropdownVisibleChange={onDropdownVisibleChange}
           >
         </Select>
       </div>
     </>
-  )
+  );
   
 };
