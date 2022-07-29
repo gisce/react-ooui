@@ -4,7 +4,6 @@ import { Radio as RadioAnt, Space } from "antd";
 import Field from "@/common/Field";
 import { Radio as RadioOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
-import Config from "@/Config";
 
 export const Radio = (props: WidgetProps) => {
   const { ooui } = props;
