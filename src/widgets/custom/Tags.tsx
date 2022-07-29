@@ -4,8 +4,7 @@ import Field from "@/common/Field";
 import { One2manyItem, One2manyValue } from "../base/one2many/One2manyInput";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { FormContext, FormContextType } from "@/context/FormContext";
-import { Spin, Alert, Timeline as AntTimeline, Tag as AntTag } from "antd";
-import { readObjectValues } from "@/helpers/one2manyHelper";
+import { Alert, Tag as AntTag, Select } from "antd";
 import { colorFromString } from "@/helpers/formHelper";
 import ConnectionProvider from "@/ConnectionProvider";
 
@@ -31,21 +30,21 @@ export const Tags = (props: TagsProps) => {
 export const TagsInput = (props: TagsInputProps) => {
   const { value, ooui, onChange } = props;
   const { items = [] } = value || {};
-
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>();
-  const { relation, context, readOnly, field } = ooui;
   const itemsToShow = items.filter(
-    (item) => item.values && item.operation !== "pendingRemove"
-  );
+    (item) => item.operation !== "pendingRemove"
+  ).map((item) => item.id) as number[];
+
+  const [options, setOptions] = useState<any[]>([]);
+  const [error, setError] = useState<string>();
+  const [isLoadingOptions, setIsLoadingOptions] = useState<boolean>(false);
+  const { relation, context, readOnly, field } = ooui;
+
 
   const formContext = useContext(FormContext) as FormContextType;
   const { getContext } = formContext || {};
 
   useDeepCompareEffect(() => {
-    if (items.some((item) => !item.values)) {
-      fetchData();
-    }
+    fetchOptions();
   }, [items]);
 
   const triggerChange = (changedValue: Array<One2manyItem>) => {
@@ -54,79 +53,96 @@ export const TagsInput = (props: TagsInputProps) => {
     });
   };
 
-  async function fetchData() {
-    setIsLoading(true);
-    setError(undefined);
-
-    const fieldsDef = await ConnectionProvider.getHandler().getFields({
-      model: relation,
-      fields: [field],
-      context: getContext(),
-    });
-
+  async function fetchOptions() {
+    setIsLoadingOptions(true);
+    let params = formContext?.domain || [];
+    if (readOnly) {
+      params = [['id', 'in', itemsToShow]]
+    }
     try {
-      const itemsWithValues = await readObjectValues({
-        treeFields: {},
-        formFields: fieldsDef,
+      const optionsRead = await ConnectionProvider.getHandler().search({
         model: relation,
-        items,
+        params: params,
+        fields: [field],
         context: { ...getContext?.(), ...context },
       });
-      triggerChange(itemsWithValues);
+      const options = optionsRead.map((item:any) => {
+        const value = item[field];
+        let formattedValue = value;
+        if (Array.isArray(value)) {
+          formattedValue = value[1];
+        }
+        return {label: formattedValue, value: item.id}
+      });
+      setOptions(options);
+      
     } catch (err) {
-      setError(err as any);
+      setError(err as any)
     } finally {
-      setIsLoading(false);
+      setIsLoadingOptions(false);
     }
-  }
+    if (error) {
+      return <Alert className="mt-10" message={error} type="error" banner />;
+    }
 
-  if (error) {
-    return <Alert className="mt-10" message={error} type="error" banner />;
-  }
+  };
 
-  if (isLoading) {
-    return <Spin />;
-  }
-
-  const removeItem = (item: One2manyItem) => {
-    const newItems: One2manyItem[] = items.map(i => {
-      if (i.id === item.id) {
-        return {
-          ...item,
-          operation: "pendingRemove",
+  const onChangeSelected = (ids: number[]) => {
+    const newItems: One2manyItem[] = items.map((item) => {
+      if (ids.includes(item.id as number)) {
+        if (item.operation == "pendingRemove") {
+          return {
+            ...item,
+            operation: "pendingLink"
+          }
+        } else {
+          return item
         }
       } else {
-        return i
+        return {id: item.id, operation: 'pendingRemove'}
       }
+    })
+    const currentIds = newItems.map(item => item.id)
+    ids.filter(id => !currentIds.includes(id)).map((id) => {
+      newItems.push({id, operation: 'pendingLink'});
     });
     triggerChange(newItems);
   };
 
+  const tagRender = (props: any) => {
+    const { label, closable, onClose } = props;
+    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    return (
+      <AntTag
+        color={colorFromString(label)}
+        onMouseDown={onPreventMouseDown}
+        style={{margin: '5px'}}
+        closable={closable}
+        onClose={onClose}>
+          {label}
+      </AntTag>
+    );
+  };
+  
   return (
     <>
       <div style={{ padding: "1rem" }}>
-        
-        {itemsToShow.map((item, index) => {
-          const value = item.values?.[field];
-          let formattedValue = value;
-          if (ooui.selectionValues.size) {
-            formattedValue = ooui.selectionValues.get(value);
-          } else if (Array.isArray(value)) {
-            formattedValue = value[1];
-          }
-          if (!value) {
-            return null;
-          }
-          return (
-            <AntTag key={index} color={colorFromString(formattedValue)} closable={!readOnly} style={{margin: '5px'}} onClose={e => {
-              e.preventDefault();
-              removeItem(item);
-
-            }}>{formattedValue}</AntTag>
-          );
-        })}
+        <Select
+          mode="multiple"
+          value={options.length ? itemsToShow : []}
+          tagRender={tagRender}
+          bordered={!readOnly}
+          disabled={readOnly}
+          options={options}
+          onChange={onChangeSelected}
+          loading={isLoadingOptions}
+          >
+        </Select>
       </div>
-     
     </>
   );
+  
 };
