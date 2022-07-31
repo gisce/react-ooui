@@ -1,8 +1,10 @@
 import React from "react";
-import { Tooltip } from "antd";
+import { Tooltip, Typography } from "antd";
 import { WidgetProps } from "@/types";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Label as LabelOoui } from "@gisce/ooui";
+
+const { Text, Title } = Typography;
 
 type Props = WidgetProps & {
   align?: "left" | "center" | "right";
@@ -23,6 +25,8 @@ const Label = (props: Props) => {
   const responsiveAlign = responsiveBehaviour ? "left" : "right";
   const labelAlgin = align ? align : fieldForLabel ? responsiveAlign : "left";
 
+  const TextType = ooui.labelSize === "text" ? Text : Title;
+
   return (
     <div
       className={`flex flex-row items-center pb-1 pt-1 ${alignClass[labelAlgin]}`}
@@ -32,7 +36,7 @@ const Label = (props: Props) => {
           <QuestionCircleOutlined className="text-xs text-blue-400 pr-1" />
         </Tooltip>
       )}
-      <span className="pr-2">{labelText}</span>
+      <span className="pr-2"><TextType level={ooui.labelSize !== "text" ? ooui.labelSize : null} type={ooui.labelType}>{labelText}</TextType></span>
     </div>
   );
 };
