@@ -25,6 +25,7 @@ import {
   FloatTime,
   ProgressBar,
   MultiCheckbox,
+  Radio,
 } from "@/index";
 import { Image } from "./base/Image";
 import { FiberGrid } from "./custom/FiberGrid";
@@ -94,6 +95,8 @@ const getWidgetType = (type: string) => {
       return Tags;
     case "multicheckbox":
       return MultiCheckbox;
+    case "radio":
+      return Radio;
     default:
       return undefined;
   }
