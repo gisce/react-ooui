@@ -3,7 +3,6 @@ import { Tooltip, Typography } from "antd";
 import { WidgetProps } from "@/types";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Label as LabelOoui } from "@gisce/ooui";
-
 const { Text, Title } = Typography;
 
 type Props = WidgetProps & {
@@ -19,13 +18,19 @@ const alignClass = {
 
 const Label = (props: Props) => {
   const { ooui, align, responsiveBehaviour } = props;
-  const { label, tooltip, fieldForLabel } = ooui as LabelOoui;
+  const {
+    label,
+    tooltip,
+    fieldForLabel,
+    labelSize,
+    labelType,
+  } = ooui as LabelOoui;
   const addColon = fieldForLabel !== null ? true : false;
   const labelText = addColon && label.length > 1 ? label + " :" : label;
   const responsiveAlign = responsiveBehaviour ? "left" : "right";
   const labelAlgin = align ? align : fieldForLabel ? responsiveAlign : "left";
 
-  const TextType = ooui.labelSize === "text" ? Text : Title;
+  const TextType = labelSize === "text" ? Text : Title;
 
   return (
     <div
@@ -36,7 +41,14 @@ const Label = (props: Props) => {
           <QuestionCircleOutlined className="text-xs text-blue-400 pr-1" />
         </Tooltip>
       )}
-      <span className="pr-2"><TextType level={ooui.labelSize !== "text" ? ooui.labelSize : null} type={ooui.labelType}>{labelText}</TextType></span>
+      <span className="pr-2">
+        <TextType
+          level={labelSize !== "text" ? ((labelSize as string) as any) : null}
+          type={labelType as any}
+        >
+          {labelText}
+        </TextType>
+      </span>
     </div>
   );
 };
