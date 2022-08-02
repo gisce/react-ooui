@@ -65,7 +65,7 @@ export const TagsInput = (props: TagsInputProps) => {
         const evaluatedDomain = await ConnectionProvider.getHandler().evalDomain(
           {
             domain: ooui.domain,
-            values: formContext.getValues(),
+            values: formContext.getPlainValues(),
             context: formContext.getContext(),
           }
         );
