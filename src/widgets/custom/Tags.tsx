@@ -60,8 +60,6 @@ export const TagsInput = (props: TagsInputProps) => {
       if (readOnly) {
         params = [["id", "in", itemsToShow]];
       }
-      console.log("ooui", ooui);
-      console.log("values", formContext.getValues());
       if (ooui.domain) {
         const evaluatedDomain = await ConnectionProvider.getHandler().evalDomain(
           {

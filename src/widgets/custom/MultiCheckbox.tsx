@@ -54,10 +54,21 @@ export const MultiCheckboxInput = (props: MultiCheckboxInputProps) => {
 
   async function fetchOptions() {
     setIsLoadingOptions(true);
+    let params: any = [];
+    if (ooui.domain) {
+      const evaluatedDomain = await ConnectionProvider.getHandler().evalDomain(
+        {
+          domain: ooui.domain,
+          values: formContext.getPlainValues(),
+          context: formContext.getContext(),
+        }
+      );
+      params = [...params, ...evaluatedDomain];
+    }
     try {
       const optionsRead = await ConnectionProvider.getHandler().search({
         model: relation,
-        params: [],
+        params: params,
         fields: [field],
         context: { ...getContext?.(), ...context },
       });
