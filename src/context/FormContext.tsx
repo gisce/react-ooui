@@ -16,7 +16,7 @@ export type FormContextType = {
   }) => Promise<void>;
   getContext: () => Promise<any>;
   getValues: () => Promise<any>;
-  getPlainValues: () => Promise<any>;
+  getPlainValues: () => { [key: string]: any };
   getFields: () => Promise<any>;
   setOriginalValue: (field: string, value: any) => void;
   domain: any[];
