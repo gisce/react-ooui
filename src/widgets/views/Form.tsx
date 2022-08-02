@@ -38,7 +38,7 @@ import FormProvider, {
   FormContext,
   FormContextType,
 } from "@/context/FormContext";
-import { FormView } from "@/index";
+import { FormView, One2manyItem } from "@/index";
 import {
   FormModalContext,
   FormModalContextType,
@@ -249,10 +249,15 @@ function Form(props: FormProps, ref: any) {
         value.length === 2
       ) {
         reformattedValues[key] = value[0];
-      } else if (fields[key && fields[key].type === "one2many" && value]) {
-        reformattedValues[key] = value.map((val: any) => val.id);
-      } else if (fields[key && fields[key].type === "many2many" && value]) {
-        reformattedValues[key] = value.map((val: any) => val.id);
+      } else if (
+        fields[key] &&
+        (fields[key].type === "one2many" || fields[key].type === "many2many") &&
+        value &&
+        value.items
+      ) {
+        reformattedValues[key] = value.items
+          .filter((item: One2manyItem) => item.operation !== "pendingRemove")
+          .map((val: any) => val.id);
       } else {
         reformattedValues[key] = value;
       }

@@ -66,7 +66,7 @@ export const TagsInput = (props: TagsInputProps) => {
         const evaluatedDomain = await ConnectionProvider.getHandler().evalDomain(
           {
             domain: ooui.domain,
-            values: formContext.getValues(),
+            values: formContext.getPlainValues(),
             context: formContext.getContext(),
           }
         );
@@ -94,11 +94,7 @@ export const TagsInput = (props: TagsInputProps) => {
     } finally {
       setIsLoadingOptions(false);
     }
-    if (error) {
-      return <Alert className="mt-10" message={error} type="error" banner />;
-    }
-
-  };
+  }
 
   const onChangeSelected = (ids: number[]) => {
     const newItems: One2manyItem[] = items.map((item) => {
@@ -139,7 +135,11 @@ export const TagsInput = (props: TagsInputProps) => {
       </AntTag>
     );
   };
-  
+
+  if (error) {
+    return <Alert className="mt-10" message={error} type="error" banner />;
+  }
+
   return (
     <>
       <div style={{ padding: "1rem" }}>
