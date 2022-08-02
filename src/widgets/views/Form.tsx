@@ -378,13 +378,13 @@ function Form(props: FormProps, ref: any) {
 
     originalFormValues.current = processValues(values, _fields);
 
-    parseForm({ fields: _fields, arch: _arch!, values });
     assignNewValuesToForm({
       values,
       fields: _fields,
       reset: true,
       isDefaultGet: hasDefaultGetCalled,
     });
+    parseForm({ fields: _fields, arch: _arch!, values });
     setFormIsLoading?.(false);
     setFormHasChanges?.(false);
 
