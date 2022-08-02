@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "0.11.0",
+  "version": "0.13.0",
   "main": "dist/index.js",
   "files": [
     "dist",
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@ant-design/charts": "^1.3.6",
-    "@gisce/ooui": "^0.9.1",
+    "@gisce/ooui": "^0.11.0",
     "@gisce/react-formiga-table": "^0.3.0",
     "fiber-diagram": "github:gisce/fiber-diagram",
     "file-type": "^16.5.0",

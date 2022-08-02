@@ -35,6 +35,8 @@ import { Image } from "@/widgets/base/Image";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import Dashboard from "@/widgets/views/Dashboard/Dashboard";
 import { Tags } from "@/widgets/custom/Tags";
+import { Radio } from "@/widgets/custom/Radio";
+import { Switch } from "@/widgets/custom/Switch";
 import {
   DashboardGridItem,
   DashboardGrid,
@@ -137,4 +139,6 @@ export {
   DashboardGridItem,
   DashboardGrid,
   Tags,
+  Radio,
+  Switch,
 };

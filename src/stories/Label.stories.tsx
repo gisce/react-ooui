@@ -20,3 +20,82 @@ export const Default = (): React.ReactElement => {
     </LocaleProvider>
   );
 };
+
+export const LabelSecondary = (): React.ReactElement => {
+  const ooui = new LabelOoui({
+    name: "field",
+    string: "Lorem ipsum",
+    widget_props: "{'label_type': 'secondary'}"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Label ooui={ooui} />
+    </LocaleProvider>
+  );
+};
+
+export const LabelWaning = (): React.ReactElement => {
+  const ooui = new LabelOoui({
+    name: "field",
+    string: "Lorem ipsum",
+    widget_props: "{'label_type': 'warning'}"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Label ooui={ooui} />
+    </LocaleProvider>
+  );
+};
+
+export const LabelDanger = (): React.ReactElement => {
+  const ooui = new LabelOoui({
+    name: "field",
+    string: "Lorem ipsum",
+    widget_props: "{'label_type': 'danger'}"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Label ooui={ooui} />
+    </LocaleProvider>
+  );
+};
+
+export const LabelSuccess = (): React.ReactElement => {
+  const ooui = new LabelOoui({
+    name: "field",
+    string: "Lorem ipsum",
+    widget_props: "{'label_type': 'success'}"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Label ooui={ooui} />
+    </LocaleProvider>
+  );
+};
+
+
+export const LabelH1 = (): React.ReactElement => {
+  const ooui = new LabelOoui({
+    name: "field",
+    string: "Lorem ipsum",
+    widget_props: "{'label_size': 'h1'}"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Label ooui={ooui} />
+    </LocaleProvider>
+  );
+};
+
+export const LabelH2Warning = (): React.ReactElement => {
+  const ooui = new LabelOoui({
+    name: "field",
+    string: "Lorem ipsum",
+    widget_props: "{'label_size': 'h1', 'label_type': 'warning'}"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Label ooui={ooui} />
+    </LocaleProvider>
+  );
+};
