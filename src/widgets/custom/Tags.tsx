@@ -60,12 +60,13 @@ export const TagsInput = (props: TagsInputProps) => {
       if (readOnly) {
         params = [["id", "in", itemsToShow]];
       }
-
+      console.log("ooui", ooui);
+      console.log("values", formContext.getValues());
       if (ooui.domain) {
         const evaluatedDomain = await ConnectionProvider.getHandler().evalDomain(
           {
             domain: ooui.domain,
-            values: formContext.getPlainValues(),
+            values: formContext.getValues(),
             context: formContext.getContext(),
           }
         );
