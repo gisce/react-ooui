@@ -24,6 +24,7 @@ import {
   Email,
   FloatTime,
   ProgressBar,
+  MultiCheckbox,
   Radio,
   Switch,
 } from "@/index";
@@ -93,6 +94,8 @@ const getWidgetType = (type: string) => {
       return Indicator;
     case "tags":
       return Tags;
+    case "multicheckbox":
+      return MultiCheckbox;
     case "radio":
       return Radio;
     case "switch":
