@@ -25,6 +25,7 @@ import {
   FloatTime,
   ProgressBar,
   Radio,
+  Switch,
 } from "@/index";
 import { Image } from "./base/Image";
 import { FiberGrid } from "./custom/FiberGrid";
@@ -94,6 +95,8 @@ const getWidgetType = (type: string) => {
       return Tags;
     case "radio":
       return Radio;
+    case "switch":
+      return Switch;
     default:
       return undefined;
   }
