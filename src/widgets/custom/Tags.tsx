@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Tags as TagsOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
+import { WidgetProps } from "@/types";
 import { One2manyItem, One2manyValue } from "../base/one2many/One2manyInput";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { FormContext, FormContextType } from "@/context/FormContext";
@@ -8,7 +9,7 @@ import { Alert, Tag as AntTag, Select } from "antd";
 import { colorFromString } from "@/helpers/formHelper";
 import ConnectionProvider from "@/ConnectionProvider";
 
-type TagsProps = {
+type TagsProps = WidgetProps & {
   ooui: TagsOoui;
 };
 
@@ -140,7 +141,7 @@ export const TagsInput = (props: TagsInputProps) => {
 
   return (
     <>
-      <div style={{ padding: "1rem" }}>
+      <div className="flex flex-row">
         <Select
           mode="multiple"
           value={options.length ? itemsToShow : []}
