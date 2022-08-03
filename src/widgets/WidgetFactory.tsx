@@ -27,6 +27,7 @@ import {
   MultiCheckbox,
   Radio,
   Switch,
+  Steps,
 } from "@/index";
 import { Image } from "./base/Image";
 import { FiberGrid } from "./custom/FiberGrid";
@@ -100,6 +101,8 @@ const getWidgetType = (type: string) => {
       return Radio;
     case "switch":
       return Switch;
+    case "steps":
+      return Steps;
     default:
       return undefined;
   }

@@ -38,6 +38,7 @@ import { Tags } from "@/widgets/custom/Tags";
 import { MultiCheckbox } from "./widgets/custom/MultiCheckbox";
 import { Radio } from "@/widgets/custom/Radio";
 import { Switch } from "@/widgets/custom/Switch";
+import { Steps } from "@/widgets/custom/Steps";
 import {
   DashboardGridItem,
   DashboardGrid,
@@ -143,4 +144,5 @@ export {
   MultiCheckbox,
   Radio,
   Switch,
+  Steps,
 };
