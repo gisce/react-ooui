@@ -1,6 +1,6 @@
 import React from "react";
 
-import { TagsInput } from "../../widgets/custom/Tags";
+import { TagsInput, Tags } from "../../widgets/custom/Tags";
 import { Tags as TagsOoui } from "@gisce/ooui";
 import "antd/dist/antd.css";
 import LocaleProvider from "../../context/LocaleContext";
@@ -46,6 +46,22 @@ export const Readonly = (): React.ReactElement => {
           {id: 3, operation: "pendingRemove"}
         ]}}
       />
+    </LocaleProvider>
+  );
+};
+
+
+export const TagsLabel = (): React.ReactElement => {
+  const ooui = new TagsOoui({
+    name: "button_field",
+    string: "Lorem ipsum",
+    field: "name",
+    relation: "res.partner.category",
+  });
+
+  return (
+    <LocaleProvider lang="en_US">
+      <Tags ooui={ooui} showLabel/>
     </LocaleProvider>
   );
 };

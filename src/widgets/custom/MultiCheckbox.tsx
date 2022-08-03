@@ -130,7 +130,7 @@ export const MultiCheckboxInput = (props: MultiCheckboxInputProps) => {
   
   return (
     <>
-      <div style={{ padding: "1rem" }}>
+      <div className="flex flex-row">
         <Checkbox.Group value={options.length ? itemsToShow : []} disabled={readOnly} onChange={onChangeSelected} style={{width: '100%'}}>
           <Row>
           {options.map((option) => (
