@@ -43,7 +43,7 @@ const iconMapping: { [key: string]: React.ElementType } = {
   STOCK_REDO: Icons.RedoOutlined,
   STOCK_COPY: Icons.CopyOutlined,
   STOCK_MEDIA_PAUSE: Icons.PauseOutlined,
-  STOCK_GO_FORWARD: Icons.CaretRightOutlined,
+  STOCK_GO_FORWARD: Icons.ArrowRightOutlined,
   STOCK_UNDELETE: Icons.UndoOutlined,
   STOCK_EXECUTE: Icons.SettingOutlined,
   STOCK_SAVE: Icons.SaveOutlined,
