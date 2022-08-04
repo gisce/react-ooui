@@ -1,4 +1,5 @@
 import { Button } from "@/widgets/base/Button";
+import { ButtonGroup } from "./widgets/custom/ButtonGroup";
 import { Char } from "@/widgets/base/Char";
 import { Selection } from "@/widgets/base/Selection";
 import { Boolean } from "@/widgets/base/Boolean";
@@ -78,6 +79,7 @@ import FavouriteButton from "./ui/FavouriteButton";
 
 export {
   Button,
+  ButtonGroup,
   Char,
   Selection,
   Boolean,
