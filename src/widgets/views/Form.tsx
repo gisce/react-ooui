@@ -698,6 +698,7 @@ function Form(props: FormProps, ref: any) {
           fields,
           types: [
             "text",
+            "codeeditor",
             "email",
             "url",
             "char",
