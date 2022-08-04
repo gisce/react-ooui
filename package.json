@@ -28,7 +28,7 @@
     "@gisce/react-formiga-table": "^0.3.0",
     "@monaco-editor/react": "^4.4.5",
     "fiber-diagram": "github:gisce/fiber-diagram",
-    "file-type": "^16.5.0",
+    "file-type": "^16.5.4",
     "react-grid-layout": "^1.3.4",
     "react-hotkeys-hook": "^3.4.4",
     "react-measure": "^2.5.2",
