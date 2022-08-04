@@ -38,7 +38,7 @@ import FormProvider, {
   FormContext,
   FormContextType,
 } from "@/context/FormContext";
-import { FormView } from "@/index";
+import { FormView, One2manyItem } from "@/index";
 import {
   FormModalContext,
   FormModalContextType,
@@ -148,6 +148,7 @@ function Form(props: FormProps, ref: any) {
     submitForm,
     getFields,
     getValues,
+    getPlainValues,
     getContext,
     fetchValues,
     cancelUnsavedChanges,
@@ -230,6 +231,39 @@ function Form(props: FormProps, ref: any) {
     }
 
     return values;
+  }
+
+  function getPlainValues() {
+    const values: any = getValues();
+    const fields: any = getFields();
+    let reformattedValues: { [key: string]: any } = {};
+
+    Object.keys(values).forEach((key) => {
+      const value = values[key];
+
+      if (
+        fields[key] &&
+        fields[key].type === "many2one" &&
+        value &&
+        Array.isArray(value) &&
+        value.length === 2
+      ) {
+        reformattedValues[key] = value[0];
+      } else if (
+        fields[key] &&
+        (fields[key].type === "one2many" || fields[key].type === "many2many") &&
+        value &&
+        value.items
+      ) {
+        reformattedValues[key] = value.items
+          .filter((item: One2manyItem) => item.operation !== "pendingRemove")
+          .map((val: any) => val.id);
+      } else {
+        reformattedValues[key] = value;
+      }
+    });
+
+    return reformattedValues;
   }
 
   function getFormValues() {
@@ -664,6 +698,7 @@ function Form(props: FormProps, ref: any) {
           fields,
           types: [
             "text",
+            "codeeditor",
             "email",
             "url",
             "char",
@@ -937,6 +972,7 @@ function Form(props: FormProps, ref: any) {
       <>
         <FormProvider
           getValues={getValues}
+          getPlainValues={getPlainValues}
           getFields={getFields}
           domain={actionDomain}
           activeId={id}

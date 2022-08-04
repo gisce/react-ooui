@@ -104,6 +104,8 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
         percent =
           Math.round((retrievedValue / totalRetrievedValue) * 100 * 100) / 100;
         setPercent(percent);
+      } else {
+        setPercent(0);
       }
 
       if (colorCondition) {

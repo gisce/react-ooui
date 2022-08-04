@@ -35,8 +35,11 @@ import { Image } from "@/widgets/base/Image";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import Dashboard from "@/widgets/views/Dashboard/Dashboard";
 import { Tags } from "@/widgets/custom/Tags";
+import { MultiCheckbox } from "./widgets/custom/MultiCheckbox";
 import { Radio } from "@/widgets/custom/Radio";
 import { Switch } from "@/widgets/custom/Switch";
+import { Steps } from "@/widgets/custom/Steps";
+import { CodeEditor } from "@/widgets/custom/CodeEditor";
 import {
   DashboardGridItem,
   DashboardGrid,
@@ -139,6 +142,9 @@ export {
   DashboardGridItem,
   DashboardGrid,
   Tags,
+  MultiCheckbox,
   Radio,
   Switch,
+  Steps,
+  CodeEditor,
 };

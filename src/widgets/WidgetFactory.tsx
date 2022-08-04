@@ -24,8 +24,11 @@ import {
   Email,
   FloatTime,
   ProgressBar,
+  MultiCheckbox,
   Radio,
   Switch,
+  Steps,
+  CodeEditor,
 } from "@/index";
 import { Image } from "./base/Image";
 import { FiberGrid } from "./custom/FiberGrid";
@@ -93,10 +96,16 @@ const getWidgetType = (type: string) => {
       return Indicator;
     case "tags":
       return Tags;
+    case "multicheckbox":
+      return MultiCheckbox;
     case "radio":
       return Radio;
     case "switch":
       return Switch;
+    case "steps":
+      return Steps;
+    case "codeeditor":
+      return CodeEditor;
     default:
       return undefined;
   }

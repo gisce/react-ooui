@@ -18,7 +18,12 @@ import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
-import { getColorMap, getTree, sortResults } from "@/helpers/treeHelper";
+import {
+  getColorMap,
+  getTableItems,
+  getTree,
+  sortResults,
+} from "@/helpers/treeHelper";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import Measure from "react-measure";
 import { mergeSearchFields } from "@/helpers/formHelper";
@@ -337,7 +342,7 @@ function SearchTree(props: Props, ref: any) {
 
     setResults([...getResults(), ...children]);
 
-    return children;
+    return getTableItems(getTree(treeView!), children);
   }
 
   useEffect(() => {

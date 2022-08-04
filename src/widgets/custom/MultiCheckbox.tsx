@@ -1,34 +1,32 @@
 import React, { useContext, useState } from "react";
-import { Tags as TagsOoui } from "@gisce/ooui";
+import { MultiCheckbox as MultiCheckboxOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
-import { WidgetProps } from "@/types";
 import { One2manyItem, One2manyValue } from "../base/one2many/One2manyInput";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { FormContext, FormContextType } from "@/context/FormContext";
-import { Alert, Tag as AntTag, Select } from "antd";
-import { colorFromString } from "@/helpers/formHelper";
+import { Alert, Checkbox, Spin, Col, Row, Button, Space  } from "antd";
 import ConnectionProvider from "@/ConnectionProvider";
 
-type TagsProps = WidgetProps & {
-  ooui: TagsOoui;
+type MultiCheckboxProps = {
+  ooui: MultiCheckboxOoui;
 };
 
-type TagsInputProps = TagsProps & {
+type MultiCheckboxInputProps = MultiCheckboxProps & {
   value?: One2manyValue;
   onChange?: (value: One2manyValue) => void;
 };
 
-export const Tags = (props: TagsProps) => {
+export const MultiCheckbox = (props: MultiCheckboxProps) => {
   const { ooui } = props;
 
   return (
     <Field type={"array"} {...props}>
-      <TagsInput ooui={ooui}  />
+      <MultiCheckboxInput ooui={ooui}  />
     </Field>
   );
 };
 
-export const TagsInput = (props: TagsInputProps) => {
+export const MultiCheckboxInput = (props: MultiCheckboxInputProps) => {
   const { value, ooui, onChange } = props;
   const { items = [] } = value || {};
   const itemsToShow = items.filter(
@@ -38,7 +36,7 @@ export const TagsInput = (props: TagsInputProps) => {
   const [options, setOptions] = useState<any[]>([]);
   const [error, setError] = useState<string>();
   const [isLoadingOptions, setIsLoadingOptions] = useState<boolean>(false);
-  const { relation, context, readOnly, field } = ooui;
+  const { relation, context, readOnly, field, columns } = ooui;
 
 
   const formContext = useContext(FormContext) as FormContextType;
@@ -56,22 +54,18 @@ export const TagsInput = (props: TagsInputProps) => {
 
   async function fetchOptions() {
     setIsLoadingOptions(true);
-    let params: any[] = [];
+    let params: any = [];
+    if (ooui.domain) {
+      const evaluatedDomain = await ConnectionProvider.getHandler().evalDomain(
+        {
+          domain: ooui.domain,
+          values: formContext.getPlainValues(),
+          context: formContext.getContext(),
+        }
+      );
+      params = [...params, ...evaluatedDomain];
+    }
     try {
-      if (readOnly) {
-        params = [["id", "in", itemsToShow]];
-      }
-      if (ooui.domain) {
-        const evaluatedDomain = await ConnectionProvider.getHandler().evalDomain(
-          {
-            domain: ooui.domain,
-            values: formContext.getPlainValues(),
-            context: formContext.getContext(),
-          }
-        );
-        params = [...params, ...evaluatedDomain];
-      }
-
       const optionsRead = await ConnectionProvider.getHandler().search({
         model: relation,
         params: params,
@@ -93,15 +87,28 @@ export const TagsInput = (props: TagsInputProps) => {
     } finally {
       setIsLoadingOptions(false);
     }
+    if (error) {
+      return <Alert className="mt-10" message={error} type="error" banner />;
+    }
+
+
+  };
+
+  const checkAll = () => {
+    onChangeSelected(options.map(option => option.value));
   }
 
-  const onChangeSelected = (ids: number[]) => {
+  const uncheckAll = () => {
+    onChangeSelected([]);
+  }
+
+  const onChangeSelected = (ids: any[]) => {
     const newItems: One2manyItem[] = items.map((item) => {
       if (ids.includes(item.id as number)) {
         if (item.operation == "pendingRemove") {
           return {
             ...item,
-            operation: "pendingLink"
+            operation: "original"
           }
         } else {
           return item
@@ -117,42 +124,28 @@ export const TagsInput = (props: TagsInputProps) => {
     triggerChange(newItems);
   };
 
-  const tagRender = (props: any) => {
-    const { label, closable, onClose } = props;
-    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
-      event.preventDefault();
-      event.stopPropagation();
-    };
-    return (
-      <AntTag
-        color={colorFromString(label)}
-        onMouseDown={onPreventMouseDown}
-        style={{margin: '5px'}}
-        closable={closable}
-        onClose={onClose}>
-          {label}
-      </AntTag>
-    );
-  };
-
-  if (error) {
-    return <Alert className="mt-10" message={error} type="error" banner />;
+  if (isLoadingOptions && options.length === 0) {
+    return <Spin />
   }
-
+  
   return (
     <>
       <div className="flex flex-row">
-        <Select
-          mode="multiple"
-          value={options.length ? itemsToShow : []}
-          tagRender={tagRender}
-          bordered={!readOnly}
-          disabled={readOnly}
-          options={options}
-          onChange={onChangeSelected}
-          loading={isLoadingOptions}
-          >
-        </Select>
+        <Checkbox.Group value={options.length ? itemsToShow : []} disabled={readOnly} onChange={onChangeSelected} style={{width: '100%'}}>
+          <Row>
+          {options.map((option) => (
+            <Col span={Math.floor(24 / columns)}>
+              <Checkbox value={option.value}>{option.label}</Checkbox>
+            </Col>
+          ))}
+          </Row>
+        </Checkbox.Group>
+        {!readOnly &&
+          <Space>
+            <Button onClick={checkAll} disabled={itemsToShow.length == options.length}>Check all</Button>
+            <Button onClick={uncheckAll} disabled={itemsToShow.length === 0}>Uncheck all</Button>
+          </Space>
+        }
       </div>
     </>
   );
