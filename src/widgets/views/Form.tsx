@@ -288,6 +288,7 @@ function Form(props: FormProps, ref: any) {
     return {
       id: getCurrentId()!,
       active_id: getCurrentId()!,
+      active_ids: [getCurrentId()!],
       parent_id: parentId,
       ...globalValues,
     };
