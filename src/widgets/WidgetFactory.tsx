@@ -7,6 +7,7 @@ import {
   Char,
   Text,
   Button,
+  ButtonGroup,
   Selection,
   Many2one,
   Boolean,
@@ -54,6 +55,8 @@ const getWidgetType = (type: string) => {
       return Text;
     case "button":
       return Button;
+    case "buttonGroup":
+      return ButtonGroup;
     case "selection":
       return Selection;
     case "many2one":

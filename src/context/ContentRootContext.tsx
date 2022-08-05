@@ -256,7 +256,7 @@ const ContentRootProvider = (
         model: actionData.res_model,
         type: "form",
         id: actionData?.view_id?.[0] || undefined,
-        context,
+        context: mergedContext,
       })) as FormView;
 
       openActionModal({
