@@ -109,7 +109,6 @@ type ExecuteOnChangeRequest = {
 };
 
 type ReadObjectsRequest = {
-  arch?: string;
   fields?: any;
   model: string;
   ids: number[];

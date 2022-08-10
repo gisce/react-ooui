@@ -64,7 +64,6 @@ export const Many2oneSuffix = (props: Props) => {
 
       const values = (
         await ConnectionProvider.getHandler().readObjects({
-          arch,
           model,
           ids: [id],
           fields,

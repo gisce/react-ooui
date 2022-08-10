@@ -118,7 +118,6 @@ function Dashboard(props: DashboardProps, ref: any) {
   async function fetchValues(view: FormView) {
     return (
       await ConnectionProvider.getHandler().readObjects({
-        arch: view.arch,
         model,
         ids: [id],
         fields: view.fields,
