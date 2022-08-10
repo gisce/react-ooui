@@ -15,7 +15,7 @@ module.exports = (args) => {
   const config = {
     entry: "./src/index.ts",
     mode: environment,
-    devtool: environment === "development" ? "inline-source-map" : undefined,
+    devtool: environment === "development" ? "inline-cheap-module-source-map" : undefined,
     output: {
       globalObject: "this",
       path: path.resolve(__dirname, "dist"),
