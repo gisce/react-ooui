@@ -225,7 +225,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
     const updatedFormObject = (
       await ConnectionProvider.getHandler().readObjects({
-        arch: views.get("form").arch,
         model: relation,
         ids: [currentId],
         fields: views.get("form").fields,
@@ -234,7 +233,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     )[0];
     const updatedTreeObject = (
       await ConnectionProvider.getHandler().readObjects({
-        arch: views.get("tree").arch,
         model: relation,
         ids: [currentId],
         fields: views.get("tree").fields,
@@ -456,7 +454,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       for (const id of filteredIds) {
         const updatedFormObject = (
           await ConnectionProvider.getHandler().readObjects({
-            arch: views.get("form").arch,
             model: relation,
             ids: [id],
             fields: views.get("form").fields,
@@ -465,7 +462,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         )[0];
         const updatedTreeObject = (
           await ConnectionProvider.getHandler().readObjects({
-            arch: views.get("tree").arch,
             model: relation,
             ids: [id],
             fields: views.get("tree").fields,

@@ -520,7 +520,6 @@ function Form(props: FormProps, ref: any) {
     if (getCurrentId()!) {
       values = (
         await ConnectionProvider.getHandler().readObjects({
-          arch,
           model,
           ids: [getCurrentId()!],
           fields,
