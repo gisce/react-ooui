@@ -58,7 +58,7 @@ export const useGraphData = (opts: GraphDataOpts) => {
           domain,
           context,
           limit,
-          order: ooui.x.name,
+          order: ooui.timerange ? ooui.x.name : null,
           fields: fieldsToRetrieve,
         }));
       } catch (e) {
@@ -125,7 +125,7 @@ async function retrieveData({
   model: string;
   domain: any;
   context: any;
-  order: string;
+  order: string | null;
   limit: number;
 }) {
   const values: any[] = (await ConnectionProvider.getHandler().search({
