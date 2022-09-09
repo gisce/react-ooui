@@ -99,16 +99,18 @@ export const useGraphData = (opts: GraphDataOpts) => {
 async function getFieldsForModel({
   model,
   context,
+  fields,
 }: {
   model: string;
   context: any;
+  fields: string[];
 }) {
-  const viewData = await ConnectionProvider.getHandler().getView({
+  const viewData = await ConnectionProvider.getHandler().getFields({
     model,
     context,
-    type: "form",
+    fields,
   });
-  return viewData.fields;
+  return viewData;
 }
 
 async function retrieveData({
@@ -134,7 +136,7 @@ async function retrieveData({
     limit,
     order,
   })) as any;
-  const fieldsDefinition = await getFieldsForModel({ model, context });
+  const fieldsDefinition = await getFieldsForModel({ model, context, fields });
   return {
     values,
     fields: fieldsDefinition,
