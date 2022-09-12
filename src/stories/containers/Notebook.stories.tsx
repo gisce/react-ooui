@@ -88,3 +88,29 @@ export const Test = (): React.ReactElement => {
     </LocaleProvider>
   );
 };
+
+export const IconTabs = (): React.ReactElement => {
+
+  const arch = `<form>
+    <notebook name="notebook">
+      <page string="Home" icon="home">
+        <field name="name" />
+      </page>
+      <page string="Attributes" icon="project">
+        <field name="surname" />
+      </page>
+    </notebook>
+  </form>`;
+
+  const formOoui = new FormOoui(fields);
+  formOoui.parse(arch);
+  const notebookOoui = formOoui.findById("notebook") as NotebookOoui;
+
+  return (
+    <LocaleProvider lang="en_US">
+      <Form>
+        <Notebook ooui={notebookOoui} />
+      </Form>
+    </LocaleProvider>
+  );
+};
