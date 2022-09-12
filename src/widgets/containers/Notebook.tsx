@@ -12,9 +12,9 @@ type Props = {
 
 function Notebook(props: Props): React.ReactElement {
   const { ooui, responsiveBehaviour } = props;
-  const tabs = [].concat.apply([], ooui!.container.rows);
+  const tabs = ooui.pages;
   return (
-    <Tabs defaultActiveKey="1">
+    <Tabs defaultActiveKey="1" tabPosition={ooui.tabPosition}>
       {tabs
         .filter((page: any) => !page.invisible)
         .map((page: any) => {
