@@ -89,6 +89,59 @@ export const Test = (): React.ReactElement => {
   );
 };
 
+export const BottomPosition = (): React.ReactElement => {
+
+  const arch = `<form>
+    <notebook name="notebook" tabpos="bottom">
+      <page string="General">
+        <field name="name" />
+      </page>
+      <page string="Secondary">
+        <field name="surname" />
+      </page>
+    </notebook>
+  </form>`;
+
+  const formOoui = new FormOoui(fields);
+  formOoui.parse(arch);
+  const notebookOoui = formOoui.findById("notebook") as NotebookOoui;
+
+  return (
+    <LocaleProvider lang="en_US">
+      <Form>
+        <Notebook ooui={notebookOoui} />
+      </Form>
+    </LocaleProvider>
+  );
+};
+
+
+export const LeftPosition = (): React.ReactElement => {
+
+  const arch = `<form>
+    <notebook name="notebook" tabpos="left">
+      <page string="General">
+        <field name="name" />
+      </page>
+      <page string="Secondary">
+        <field name="surname" />
+      </page>
+    </notebook>
+  </form>`;
+
+  const formOoui = new FormOoui(fields);
+  formOoui.parse(arch);
+  const notebookOoui = formOoui.findById("notebook") as NotebookOoui;
+
+  return (
+    <LocaleProvider lang="en_US">
+      <Form>
+        <Notebook ooui={notebookOoui} />
+      </Form>
+    </LocaleProvider>
+  );
+};
+
 export const IconTabs = (): React.ReactElement => {
 
   const arch = `<form>
