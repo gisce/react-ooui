@@ -1,4 +1,6 @@
-import * as Icons from "@ant-design/icons";
+import Icon, * as Icons from "@ant-design/icons";
+import * as TablerIcons from "@tabler/icons";
+import React from "react";
 
 const iconMapping: { [key: string]: React.ElementType } = {
   STOCK_HELP: Icons.QuestionOutlined,
@@ -96,13 +98,17 @@ export default (key: string): React.ElementType => {
   }
   if (iconMapping.hasOwnProperty(key)) {
     return iconMapping[key];
-  } else {
-    const antKey = `${key.split("-").map((word) => (
-      word.replace(/\w\S*/g, (w) => (w.charAt(0).toUpperCase() + w.substr(1).toLowerCase())))
-    ).join("")}Outlined`
+  }
+  const IconCamelCase = `${key.split("-").map((word) => (
+    word.replace(/\w\S*/g, (w) => (w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())))
+  ).join("")}`;
+  const antKey = `${IconCamelCase}Outlined`
+  if (Icons.hasOwnProperty(antKey)) {
     // @ts-ignore
     return Icons[antKey];
   }
-
-
+  const tablerKey = `Icon${IconCamelCase}`;
+  // @ts-ignore
+  const CustomIcon = () => React.createElement(Icon, {component: TablerIcons[tablerKey]});
+  return CustomIcon
 };
