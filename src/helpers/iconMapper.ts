@@ -1,6 +1,20 @@
-import * as Icons from "@ant-design/icons";
+import Icon, * as Icons from "@ant-design/icons";
+import * as TablerIcons from "@tabler/icons";
+import React from "react";
 
 const iconMapping: { [key: string]: React.ElementType } = {
+  "terp-purchase": Icons.ShoppingCartOutlined,
+  "terp-graph": Icons.PieChartOutlined,
+  "terp-crm": Icons.ContactsOutlined,
+  "terp-hr": TablerIcons.IconFriends,
+  "terp-account": TablerIcons.IconBuildingBank,
+  "terp-project": TablerIcons.IconChecklist,
+  "terp-administration": TablerIcons.IconAdjustments,
+  "terp-partner": Icons.TeamOutlined,
+  "terp-mrp": Icons.BuildOutlined,
+  "terp-product": Icons.ShoppingOutlined,
+  STOCK_JUSTIFY_FILL: Icons.UnorderedListOutlined,
+  STOCK_INDENT: TablerIcons.IconIndentIncrease,
   STOCK_HELP: Icons.QuestionOutlined,
   STOCK_GO_UP: Icons.ArrowUpOutlined,
   STOCK_SORT_DESCENDING: Icons.SortDescendingOutlined,
@@ -16,15 +30,10 @@ const iconMapping: { [key: string]: React.ElementType } = {
   STOCK_BOLD: Icons.BoldOutlined,
   STOCK_APPLY: Icons.CheckOutlined,
   STOCK_ZOOM_OUT: Icons.ZoomOutOutlined,
-  "terp-graph": Icons.PieChartOutlined,
-  "terp-crm": Icons.ContactsOutlined,
   STOCK_STRIKETHROUGH: Icons.StrikethroughOutlined,
   STOCK_MEDIA_REWIND: Icons.BackwardOutlined,
-  "terp-partner": Icons.TeamOutlined,
   STOCK_PRINT: Icons.PrinterOutlined,
   STOCK_NO: Icons.CloseOutlined,
-  "terp-mrp": Icons.BuildOutlined,
-  "terp-product": Icons.ShoppingOutlined,
   STOCK_GOTO_FIRST: Icons.FastBackwardOutlined,
   STOCK_CLOSE: Icons.CloseOutlined,
   STOCK_REMOVE: Icons.MinusOutlined,
@@ -80,7 +89,6 @@ const iconMapping: { [key: string]: React.ElementType } = {
   STOCK_ABOUT: Icons.StarOutlined,
   STOCK_COLOR_PICKER: Icons.AimOutlined,
   STOCK_SELECT_FONT: Icons.FontSizeOutlined,
-  "terp-purchase": Icons.ShoppingCartOutlined,
   STOCK_DELETE: Icons.DeleteOutlined,
   STOCK_DND: Icons.FileTextOutlined,
   STOCK_CLEAR: Icons.CloseSquareOutlined,
@@ -96,13 +104,21 @@ export default (key: string): React.ElementType => {
   }
   if (iconMapping.hasOwnProperty(key)) {
     return iconMapping[key];
-  } else {
-    const antKey = `${key.split("-").map((word) => (
-      word.replace(/\w\S*/g, (w) => (w.charAt(0).toUpperCase() + w.substr(1).toLowerCase())))
-    ).join("")}Outlined`
+  }
+  const IconCamelCase = `${key.split("-").map((word) => (
+    word.replace(/\w\S*/g, (w) => (w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())))
+  ).join("")}`;
+  const antKey = `${IconCamelCase}Outlined`
+  if (Icons.hasOwnProperty(antKey)) {
     // @ts-ignore
     return Icons[antKey];
   }
-
-
+  const tablerKey = `Icon${IconCamelCase}`;
+  if (TablerIcons.hasOwnProperty(tablerKey)) {
+    // @ts-ignore
+    const CustomIcon = () => React.createElement(Icon, {component: TablerIcons[tablerKey]});
+    return CustomIcon
+  }
+  // @ts-ignore
+  return undefined
 };

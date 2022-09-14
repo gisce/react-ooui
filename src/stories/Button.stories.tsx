@@ -73,6 +73,19 @@ export const WithUnexistingdIcon = (): React.ReactElement => {
   );
 };
 
+export const WithTablerIcon = (): React.ReactElement => {
+  const ooui = new ButtonOoui({
+    name: "button_field",
+    string: "Lorem ipsum",
+    icon: "bulb-off"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Button ooui={ooui} />
+    </LocaleProvider>
+  );
+};
+
 export const PrimaryButton = (): React.ReactElement => {
   const ooui = new ButtonOoui({
     name: "button_field",

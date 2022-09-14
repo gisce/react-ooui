@@ -194,6 +194,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
       onCancel={onCloseModal}
       footer={null}
       destroyOnClose
+      maskClosable={false}
     >
       {content()}
     </Modal>

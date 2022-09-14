@@ -27,6 +27,7 @@ export const GoToResourceModal = (props: Props) => {
       footer={null}
       destroyOnClose
       onCancel={onCancel}
+      maskClosable={false}
     >
       <Form layout="vertical" onFinish={handleSubmit} autoComplete="off">
         <Form.Item

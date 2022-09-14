@@ -121,6 +121,7 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
         footer={null}
         closable={false}
         centered
+        maskClosable={false}
       >
         <Spin />
       </Modal>
