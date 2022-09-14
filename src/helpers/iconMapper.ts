@@ -108,7 +108,11 @@ export default (key: string): React.ElementType => {
     return Icons[antKey];
   }
   const tablerKey = `Icon${IconCamelCase}`;
+  if (TablerIcons.hasOwnProperty(tablerKey)) {
+    // @ts-ignore
+    const CustomIcon = () => React.createElement(Icon, {component: TablerIcons[tablerKey]});
+    return CustomIcon
+  }
   // @ts-ignore
-  const CustomIcon = () => React.createElement(Icon, {component: TablerIcons[tablerKey]});
-  return CustomIcon
+  return undefined
 };
