@@ -1,6 +1,7 @@
-import Icon, * as Icons from "@ant-design/icons";
-import * as TablerIcons from "@tabler/icons";
 import React from "react";
+import Icon from "@ant-design/icons";
+import { AntIcons as Icons } from "./icons/antd_icons";
+import { TablerIcons } from "./icons/tabler_icons";
 
 const iconMapping: { [key: string]: React.ElementType } = {
   "terp-purchase": Icons.ShoppingCartOutlined,
@@ -96,7 +97,7 @@ const iconMapping: { [key: string]: React.ElementType } = {
   STOCK_PREFERENCES: Icons.SettingOutlined,
 };
 
-export default (key: string): React.ElementType => {
+export default (key: string): React.ElementType | undefined => {
   if (key.indexOf("gtk-") !== -1) {
     const rootIcon = key.replace("gtk-", "").replace("-", "_");
     const newKey = `STOCK_${rootIcon.toUpperCase()}`;
@@ -105,20 +106,27 @@ export default (key: string): React.ElementType => {
   if (iconMapping.hasOwnProperty(key)) {
     return iconMapping[key];
   }
-  const IconCamelCase = `${key.split("-").map((word) => (
-    word.replace(/\w\S*/g, (w) => (w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())))
-  ).join("")}`;
-  const antKey = `${IconCamelCase}Outlined`
+  const IconCamelCase = `${key
+    .split("-")
+    .map((word) =>
+      word.replace(
+        /\w\S*/g,
+        (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+      )
+    )
+    .join("")}`;
+
+  const antKey = `${IconCamelCase}Outlined`;
   if (Icons.hasOwnProperty(antKey)) {
-    // @ts-ignore
     return Icons[antKey];
   }
+
   const tablerKey = `Icon${IconCamelCase}`;
   if (TablerIcons.hasOwnProperty(tablerKey)) {
-    // @ts-ignore
-    const CustomIcon = () => React.createElement(Icon, {component: TablerIcons[tablerKey]});
-    return CustomIcon
+    const CustomIcon = () =>
+      React.createElement(Icon, { component: TablerIcons[tablerKey] });
+    return CustomIcon;
   }
-  // @ts-ignore
-  return undefined
+
+  return undefined;
 };
