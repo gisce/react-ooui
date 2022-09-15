@@ -47,6 +47,10 @@ export default defineConfig({
         "validator",
       ],
       output: {
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name == "style.css") return "main.css";
+          return assetInfo.name as any;
+        },
         globals: {
           react: "React",
           "react-dom": "ReactDOM",

@@ -13,10 +13,6 @@
     ".": {
       "import": "./dist/react-ooui.es.js",
       "require": "./dist/react-ooui.umd.js"
-    },
-    "./dist/main.css": {
-      "import": "./dist/style.css",
-      "require": "./dist/style.css"
     }
   },
   "publishConfig": {
