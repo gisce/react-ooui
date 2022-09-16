@@ -32,6 +32,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Remove shrinkwrap
+        run: rm npm-shrinkwrap.json
+
       - name: Publish
         run: npm publish
         env:
