@@ -109,6 +109,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
         onCancel={onCloseModal}
         footer={null}
         destroyOnClose
+        maskClosable={false}
       >
         {content()}
       </Modal>

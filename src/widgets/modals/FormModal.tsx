@@ -105,6 +105,7 @@ export const FormModal = (props: FormModalProps) => {
         footer={null}
         destroyOnClose
         onCancel={onCancel}
+        maskClosable={false}
       >
         <Form
           id={id}

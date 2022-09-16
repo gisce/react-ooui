@@ -58,7 +58,7 @@ export const useGraphData = (opts: GraphDataOpts) => {
           domain,
           context,
           limit,
-          order: ooui.x.name,
+          order: ooui.timerange ? ooui.x.name : null,
           fields: fieldsToRetrieve,
         }));
       } catch (e) {
@@ -99,16 +99,18 @@ export const useGraphData = (opts: GraphDataOpts) => {
 async function getFieldsForModel({
   model,
   context,
+  fields,
 }: {
   model: string;
   context: any;
+  fields: string[];
 }) {
-  const viewData = await ConnectionProvider.getHandler().getView({
+  const viewData = await ConnectionProvider.getHandler().getFields({
     model,
     context,
-    type: "form",
+    fields,
   });
-  return viewData.fields;
+  return viewData;
 }
 
 async function retrieveData({
@@ -123,7 +125,7 @@ async function retrieveData({
   model: string;
   domain: any;
   context: any;
-  order: string;
+  order: string | null;
   limit: number;
 }) {
   const values: any[] = (await ConnectionProvider.getHandler().search({
@@ -134,7 +136,7 @@ async function retrieveData({
     limit,
     order,
   })) as any;
-  const fieldsDefinition = await getFieldsForModel({ model, context });
+  const fieldsDefinition = await getFieldsForModel({ model, context, fields });
   return {
     values,
     fields: fieldsDefinition,

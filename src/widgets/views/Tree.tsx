@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Pagination, Checkbox, Space, Row, Col, Spin } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
-import { Tree as TreeOoui } from "@gisce/ooui";
+import { One2many, Tree as TreeOoui } from "@gisce/ooui";
 
 import { TreeView, Column } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
@@ -15,6 +15,7 @@ import {
   MinusSquareOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
+import { One2manyValue } from "../base/one2many/One2manyInput";
 
 type Props = {
   total: number;
@@ -64,8 +65,8 @@ const textComponentFn = (value: any): React.ReactElement => {
   return <div style={{ whiteSpace: "pre-line" }}>{value}</div>;
 };
 
-const one2ManyComponentFn = (value: any): React.ReactElement => {
-  const length = Array.isArray(value) ? value.length : 0;
+const one2ManyComponentFn = (value: One2manyValue): React.ReactElement => {
+  const length = Array.isArray(value?.items) ? value?.items.length : 0;
   return <>{`( ${length} )`}</>;
 };
 
@@ -210,7 +211,7 @@ function Tree(props: Props): React.ReactElement {
     });
 
     return (
-      <div className="mt-2 p-1 pb-0 pl-2 bg-gray-50">{summary.join(", ")}</div>
+      <div className="p-1 pb-0 pl-2 mt-2 bg-gray-50">{summary.join(", ")}</div>
     );
   }
 

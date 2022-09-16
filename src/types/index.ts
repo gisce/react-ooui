@@ -50,7 +50,7 @@ type SearchRequest = {
   fields?: any;
   context?: any;
   attrs?: any;
-  order?: number | string;
+  order?: number | string | null;
 };
 
 type SearchAllIdsRequest = SearchCountRequest & {

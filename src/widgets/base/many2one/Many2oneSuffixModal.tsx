@@ -21,6 +21,7 @@ export const Many2oneSuffixModal = (props: Props) => {
       footer={null}
       destroyOnClose
       onCancel={onCancel}
+      maskClosable={false}
     >
       <Space direction="vertical" className="w-full">
         {items.map((item) => {
