@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "files": [
     "dist",
     "src",
@@ -50,7 +50,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",
-    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@storybook/addon-actions": "^6.5.12",
     "@storybook/addon-essentials": "^6.5.12",
     "@storybook/addon-interactions": "^6.5.12",

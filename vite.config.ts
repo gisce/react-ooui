@@ -3,7 +3,6 @@ import * as path from "path";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
-import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
 
 export default defineConfig({
   resolve: {
@@ -59,19 +58,5 @@ export default defineConfig({
         },
       },
     },
-  },
-  optimizeDeps: {
-    esbuildOptions: {
-      // Node.js global to browser globalThis
-      define: {
-        global: "globalThis",
-      },
-      // Enable esbuild polyfill plugins
-      plugins: [
-        NodeGlobalsPolyfillPlugin({
-          buffer: true,
-        }),
-      ],
-    },
-  },
+  }
 });
