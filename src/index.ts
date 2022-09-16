@@ -22,7 +22,7 @@ import { FormModal } from "@/widgets/modals/FormModal";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import Date from "@/widgets/base/Date";
 import DateTime from "@/widgets/base/DateTime";
-import {
+import type {
   One2manyValue,
   One2manyItem,
 } from "@/widgets/base/one2many/One2manyInput";
@@ -47,7 +47,7 @@ import {
 } from "@/widgets/views/DashboardGrid";
 import { GraphIndicator } from "@/widgets/views/Graph/GraphIndicator";
 
-import {
+import type {
   TreeView,
   SearchFields,
   FormView,
