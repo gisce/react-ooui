@@ -1,12 +1,12 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "lockfileVersion": 2,
   "requires": true,
   "packages": {
     "": {
       "name": "@gisce/react-ooui",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "dependencies": {
         "@ant-design/plots": "^1.0.9",
         "@gisce/ooui": "^0.16.2",
