@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "files": [
     "dist",
     "src",
@@ -38,6 +38,7 @@
     "@storybook/addon-knobs": "^6.4.0",
     "@tabler/icons": "^1.96.0",
     "antd": "^4.12.3",
+    "buffer": "^6.0.3",
     "fiber-diagram": "github:gisce/fiber-diagram",
     "file-type": "^16.5.0",
     "react": "^17.0.1",
