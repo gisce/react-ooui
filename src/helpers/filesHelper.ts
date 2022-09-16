@@ -1,4 +1,5 @@
 import FileType from "file-type/browser";
+import { Buffer } from "buffer";
 
 export function getFilesize(base64string: string) {
   const buffer = Buffer.from(base64string, "base64");
