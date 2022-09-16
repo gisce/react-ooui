@@ -28,6 +28,7 @@ export default defineConfig({
     },
     rollupOptions: {
       external: [
+        "buffer",
         "react",
         "react-dom",
         "styled-components",
