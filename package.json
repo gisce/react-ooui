@@ -13,6 +13,10 @@
     ".": {
       "import": "./dist/react-ooui.es.js",
       "require": "./dist/react-ooui.umd.js"
+    },
+    "./dist/main.css": {
+      "import": "./dist/main.css",
+      "require": "./dist/main.css"
     }
   },
   "publishConfig": {
@@ -46,6 +50,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",
+    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@storybook/addon-actions": "^6.5.12",
     "@storybook/addon-essentials": "^6.5.12",
     "@storybook/addon-interactions": "^6.5.12",
