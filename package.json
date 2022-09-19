@@ -23,6 +23,7 @@
     "access": "public"
   },
   "scripts": {
+    "prerelease": "npm version prerelease --preid rc",
     "start": "vite build --watch --force",
     "build:tailwind": "postcss src/tailwind.css -o src/tailwind.generated.css",
     "build": "vite build",
