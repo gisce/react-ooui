@@ -6,7 +6,9 @@ import Measure from "react-measure";
 import iconMapper from "@/helpers/iconMapper";
 import { Alert, Col, Row } from "antd";
 import { Operator } from "@gisce/ooui";
-import { getValueForOperator } from "@gisce/ooui/dist/Graph/processor/graphProcessor";
+
+import { graphProcessor } from "@gisce/ooui";
+const { getValueForOperator } = graphProcessor;
 
 const fontGrowFactor = 0.7;
 const minFontSize = 30;
@@ -109,13 +111,12 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
       }
 
       if (colorCondition) {
-        const conditionEval = await ConnectionProvider.getHandler().parseCondition(
-          {
+        const conditionEval =
+          await ConnectionProvider.getHandler().parseCondition({
             condition: colorCondition,
             values: { value: retrievedValue, percent },
             context,
-          }
-        );
+          });
         setColor(conditionEval);
       }
 
