@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Pagination, Checkbox, Space, Row, Col, Spin } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
-import { One2many, Tree as TreeOoui } from "@gisce/ooui";
+import { Tree as TreeOoui } from "@gisce/ooui";
 
 import { TreeView, Column } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
@@ -18,7 +18,7 @@ import {
 import { One2manyValue } from "../base/one2many/One2manyInput";
 
 type Props = {
-  total: number;
+  total?: number;
   limit: number;
   page?: number;
   loading: boolean;
@@ -147,7 +147,7 @@ function Tree(props: Props): React.ReactElement {
 
   const from = (page - 1) * limit + 1;
   const to = from - 1 + items.length;
-  const summary = total === null
+  const summary = !total
     ? null
     : total === 0
     ? t("no_results")
@@ -161,7 +161,9 @@ function Tree(props: Props): React.ReactElement {
       return null;
     }
 
-    return loading ? null : total === null ? <Spin /> : (
+    return loading ? null : !total ? (
+      <Spin />
+    ) : (
       <Row align="bottom" className="pb-4">
         <Col span={12}>
           <Pagination

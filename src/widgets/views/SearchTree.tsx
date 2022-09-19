@@ -90,7 +90,7 @@ function SearchTree(props: Props, ref: any) {
 
   const paramsRef = useRef<Array<any>>([]);
 
-  const [totalItems, setTotalItems] = useState<number|null>(null);
+  const [totalItems, setTotalItems] = useState<number>();
   const [resultsInternal, setResultsInternal] = useState<any>([]);
   const [colorsForResults, setColorsForResults] = useState<any>(undefined);
 
