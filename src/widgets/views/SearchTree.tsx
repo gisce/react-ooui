@@ -90,7 +90,7 @@ function SearchTree(props: Props, ref: any) {
 
   const paramsRef = useRef<Array<any>>([]);
 
-  const [totalItems, setTotalItems] = useState<number>(0);
+  const [totalItems, setTotalItems] = useState<number>();
   const [resultsInternal, setResultsInternal] = useState<any>([]);
   const [colorsForResults, setColorsForResults] = useState<any>(undefined);
 
@@ -278,8 +278,6 @@ function SearchTree(props: Props, ref: any) {
       context: parentContext,
       attrs: colors && { colors },
     });
-    setTotalItems(totalItems);
-    setActionViewTotalItems?.(totalItems);
     setColorsForResults(getColorMap(attrsEvaluated));
 
     originalResults.current = [...results];
@@ -292,6 +290,11 @@ function SearchTree(props: Props, ref: any) {
             fields: { ...treeView!.fields, ...formView!.fields },
           })
         : [...originalResults.current];
+
+    totalItems.then((value) => {
+      setTotalItems(value);
+      setActionViewTotalItems?.(value);
+    });
 
     setResults(resultsSorted);
 
