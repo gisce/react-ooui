@@ -147,7 +147,7 @@ function Tree(props: Props): React.ReactElement {
 
   const from = (page - 1) * limit + 1;
   const to = from - 1 + items.length;
-  const summary = loading
+  const summary = total === null
     ? null
     : total === 0
     ? t("no_results")
@@ -161,7 +161,7 @@ function Tree(props: Props): React.ReactElement {
       return null;
     }
 
-    return loading ? null : (
+    return loading ? null : total === null ? <Spin /> : (
       <Row align="bottom" className="pb-4">
         <Col span={12}>
           <Pagination
