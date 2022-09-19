@@ -27,10 +27,13 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Installing dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build
         run: npm run build
+
+      - name: Remove shrinkwrap
+        run: rm npm-shrinkwrap.json
 
       - name: Publish
         run: npm publish

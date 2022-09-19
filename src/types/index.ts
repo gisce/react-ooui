@@ -37,7 +37,7 @@ type FormView = TreeView & {
 };
 
 type SearchResponse = {
-  totalItems: number;
+  totalItems: Promise<number>;
   results: any[];
   attrsEvaluated?: any;
 };
