@@ -147,21 +147,22 @@ function Tree(props: Props): React.ReactElement {
 
   const from = (page - 1) * limit + 1;
   const to = from - 1 + items.length;
-  const summary = !total
-    ? null
-    : total === 0
-    ? t("no_results")
-    : t("summary")
-        .replace("{from}", from?.toString())
-        .replace("{to}", to?.toString())
-        .replace("{total}", total?.toString());
+  const summary =
+    total === undefined
+      ? null
+      : total === 0
+      ? t("no_results")
+      : t("summary")
+          .replace("{from}", from?.toString())
+          .replace("{to}", to?.toString())
+          .replace("{total}", total?.toString());
 
   const pagination = () => {
     if (!showPagination || treeView.isExpandable) {
       return null;
     }
 
-    return loading ? null : !total ? (
+    return loading ? null : total === undefined ? (
       <Spin />
     ) : (
       <Row align="bottom" className="pb-4">
