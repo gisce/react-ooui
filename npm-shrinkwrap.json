@@ -1,15 +1,15 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "lockfileVersion": 2,
   "requires": true,
   "packages": {
     "": {
       "name": "@gisce/react-ooui",
-      "version": "1.0.11",
+      "version": "1.0.12",
       "dependencies": {
         "@ant-design/plots": "^1.0.9",
-        "@gisce/ooui": "^0.17.1",
+        "@gisce/ooui": "^0.17.3",
         "@gisce/react-formiga-table": "^0.5.0",
         "@monaco-editor/react": "^4.4.5",
         "@tabler/icons": "^1.96.0",
@@ -2714,10 +2714,11 @@
       "dev": true
     },
     "node_modules/@gisce/ooui": {
-      "version": "0.17.1",
-      "resolved": "https://registry.npmjs.org/@gisce/ooui/-/ooui-0.17.1.tgz",
-      "integrity": "sha512-N1gdACaHjsPiH857OapWzuTfkvXVGbeUtryhoGYMup77EgZ5u/tsVjd87iWHa75GLw/Vp6e/SrFlVf084mO54Q==",
+      "version": "0.17.3",
+      "resolved": "https://registry.npmjs.org/@gisce/ooui/-/ooui-0.17.3.tgz",
+      "integrity": "sha512-0JJwgx2Dv8dc8Z4pEEJult50t2uU203zO+OjDyuxzdPO48nlJ/2EPMsD8dvJk6YC3QBWI2BmYNCY3NJ6GKTWmQ==",
       "dependencies": {
+        "html-entities": "^2.3.3",
         "moment": "^2.29.3"
       }
     },
@@ -15356,8 +15357,7 @@
     "node_modules/html-entities": {
       "version": "2.3.3",
       "resolved": "https://registry.npmjs.org/html-entities/-/html-entities-2.3.3.tgz",
-      "integrity": "sha512-DV5Ln36z34NNTDgnz0EWGBLZENelNAtkiFA4kyNOG2tDI6Mz1uSWiq1wAKdyjnJwyDiDO7Fa2SO1CTxPXL8VxA==",
-      "dev": true
+      "integrity": "sha512-DV5Ln36z34NNTDgnz0EWGBLZENelNAtkiFA4kyNOG2tDI6Mz1uSWiq1wAKdyjnJwyDiDO7Fa2SO1CTxPXL8VxA=="
     },
     "node_modules/html-escaper": {
       "version": "2.0.2",
@@ -30659,10 +30659,11 @@
       "dev": true
     },
     "@gisce/ooui": {
-      "version": "0.17.1",
-      "resolved": "https://registry.npmjs.org/@gisce/ooui/-/ooui-0.17.1.tgz",
-      "integrity": "sha512-N1gdACaHjsPiH857OapWzuTfkvXVGbeUtryhoGYMup77EgZ5u/tsVjd87iWHa75GLw/Vp6e/SrFlVf084mO54Q==",
+      "version": "0.17.3",
+      "resolved": "https://registry.npmjs.org/@gisce/ooui/-/ooui-0.17.3.tgz",
+      "integrity": "sha512-0JJwgx2Dv8dc8Z4pEEJult50t2uU203zO+OjDyuxzdPO48nlJ/2EPMsD8dvJk6YC3QBWI2BmYNCY3NJ6GKTWmQ==",
       "requires": {
+        "html-entities": "^2.3.3",
         "moment": "^2.29.3"
       }
     },
@@ -40306,8 +40307,7 @@
     "html-entities": {
       "version": "2.3.3",
       "resolved": "https://registry.npmjs.org/html-entities/-/html-entities-2.3.3.tgz",
-      "integrity": "sha512-DV5Ln36z34NNTDgnz0EWGBLZENelNAtkiFA4kyNOG2tDI6Mz1uSWiq1wAKdyjnJwyDiDO7Fa2SO1CTxPXL8VxA==",
-      "dev": true
+      "integrity": "sha512-DV5Ln36z34NNTDgnz0EWGBLZENelNAtkiFA4kyNOG2tDI6Mz1uSWiq1wAKdyjnJwyDiDO7Fa2SO1CTxPXL8VxA=="
     },
     "html-escaper": {
       "version": "2.0.2",
