@@ -15,7 +15,7 @@ export type GraphProps = {
   model: string;
   domain: any;
   context: any;
-  limit: number;
+  limit?: number;
 };
 
 export const Graph = (props: GraphProps) => {
