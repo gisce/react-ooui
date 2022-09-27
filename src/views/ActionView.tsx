@@ -18,6 +18,7 @@ import ActionViewProvider from "@/context/ActionViewContext";
 import TitleHeader from "@/ui/TitleHeader";
 import FormActionBar from "@/actionbar/FormActionBar";
 import TreeActionBar from "@/actionbar/TreeActionBar";
+import GraphActionBar from "@/actionbar/GraphActionBar";
 import {
   TabManagerContext,
   TabManagerContextType,
@@ -395,6 +396,16 @@ function ActionView(props: Props, ref: any) {
             configAction={dashboardData?.configAction}
           />
         </DashboardActionProvider>
+      );
+    }
+
+    if (currentView!.type === "graph") {
+      return (
+        <>
+          <TitleHeader>
+            <GraphActionBar />
+          </TitleHeader>
+        </>
       );
     }
 
