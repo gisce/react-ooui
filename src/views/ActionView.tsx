@@ -175,6 +175,7 @@ function ActionView(props: Props, ref: any) {
             configAction,
           });
           availableViews.push({ id, type: viewType });
+          return;
         }
 
         const viewData = await ConnectionProvider.getHandler().getView({
