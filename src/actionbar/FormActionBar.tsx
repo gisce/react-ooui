@@ -295,9 +295,7 @@ function FormActionBar() {
       {separator()}
       <ChangeViewButton
         currentView={currentView}
-        availableViews={availableViews.filter(
-          (view: View) => view.type === "tree" || view.type === "form"
-        )}
+        availableViews={availableViews}
         onChangeView={(view: any) => {
           setFormHasChanges?.(false);
           setCurrentView?.(view);

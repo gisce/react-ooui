@@ -5,8 +5,9 @@ import {
   TableOutlined,
   FormOutlined,
   CheckOutlined,
+  AreaChartOutlined,
+  CalendarOutlined,
 } from "@ant-design/icons";
-import { ViewType } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
@@ -20,17 +21,19 @@ type Props = {
   formHasChanges?: boolean;
 };
 
+const iconsForViewTypes = {
+  tree: <TableOutlined />,
+  form: <FormOutlined />,
+  graph: <AreaChartOutlined />,
+  calendar: <CalendarOutlined />,
+};
+
 function getIconForView(view?: View) {
   if (!view) {
-    return null;
-  }
-
-  if (view.type === "tree") {
-    return <TableOutlined />;
-  } else {
-    // if (view === "form") {
     return <FormOutlined />;
   }
+
+  return (iconsForViewTypes as any)?.[view.type] || <FormOutlined />;
 }
 
 function ChangeViewButton(props: Props) {
@@ -48,7 +51,7 @@ function ChangeViewButton(props: Props) {
   useEffect(() => {
     if (availableViews.length === 1) {
       setPreviousView(availableViews[0]);
-    } else {
+    } else if (availableViews.length > 1) {
       setPreviousView(
         availableViews.filter((view) => view.id !== currentView.id)[0]
       );
@@ -56,20 +59,22 @@ function ChangeViewButton(props: Props) {
   }, [availableViews]);
 
   function getMenu() {
+    console.log("getMenu - currentView: ", JSON.stringify(currentView));
     const menuItems = availableViews.map((view) => {
       return (
         <Menu.Item key={view.id}>
           <Row wrap={false}>
             <Col flex="none" style={{ paddingRight: 20 }}>
-              <CheckOutlined
-                style={{ opacity: currentView === view ? 1 : 0 }}
-              />
+              {getIconForView(view)}
             </Col>
-
             <Col flex="auto" style={{ paddingRight: 20 }}>
               {view.type.charAt(0).toUpperCase() + view.type.slice(1)}
             </Col>
-            <Col flex="none">{getIconForView(view)}</Col>
+            <Col flex="none">
+              <CheckOutlined
+                style={{ opacity: currentView.id === view.id ? 1 : 0 }}
+              />
+            </Col>
           </Row>
         </Menu.Item>
       );
@@ -99,13 +104,11 @@ function ChangeViewButton(props: Props) {
   function handleMenuClick(event: any) {
     tryNavigate(() => {
       setPreviousView(currentView);
-      const selectedView = event.key;
-      onChangeView(selectedView);
+      const selectedView = availableViews.find(
+        (view) => view.id === parseInt(event.key)
+      );
+      onChangeView(selectedView!);
     });
-  }
-
-  if (!currentView) {
-    return null;
   }
 
   return (
@@ -115,7 +118,7 @@ function ChangeViewButton(props: Props) {
         icon={getIconForView(previousView)}
         style={{ width: 50 }}
         onClick={() => {
-          handleMenuClick({ key: previousView });
+          handleMenuClick({ key: previousView?.id });
         }}
         disabled={disabled || availableViews.length === 1}
       />

@@ -81,21 +81,18 @@ function ActionView(props: Props, ref: any) {
     ? (res_id as number)
     : undefined;
 
-  const [currentId, setCurrentIdInternal] = useState<number | undefined>(
-    res_id_parsed
-  );
+  const [currentId, setCurrentIdInternal] =
+    useState<number | undefined>(res_id_parsed);
   const [selectedRowItems, setSelectedRowItems] = useState<any[]>([]);
   const [currentItemIndex, setCurrentItemIndex] = useState<number>();
   const [results, setResults] = useState<any>([]);
   const [toolbar, setToolbar] = useState<any>();
   const [sorter, setSorter] = useState<any>();
   const [totalItems, setTotalItems] = useState<number>(0);
-  const [gtResourceModalVisible, setGtResourceModalVisible] = useState<boolean>(
-    false
-  );
-  const [searchingForResourceId, setSearchingForResourceId] = useState<boolean>(
-    false
-  );
+  const [gtResourceModalVisible, setGtResourceModalVisible] =
+    useState<boolean>(false);
+  const [searchingForResourceId, setSearchingForResourceId] =
+    useState<boolean>(false);
   const [searchTreeNameSearch, setSearchTreeNameSearch] = useState<string>();
 
   const { t } = useContext(LocaleContext) as LocaleContextType;

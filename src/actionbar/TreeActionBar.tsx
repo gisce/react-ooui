@@ -225,9 +225,7 @@ function TreeActionBar(props: Props) {
           {separator()}
           <ChangeViewButton
             currentView={currentView}
-            availableViews={availableViews.filter(
-              (view: View) => view.type === "tree" || view.type === "form"
-            )}
+            availableViews={availableViews}
             onChangeView={setCurrentView}
             disabled={treeIsLoading}
           />
