@@ -13,7 +13,6 @@ import { FormView, TreeView, ViewType } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 
 import ActionViewProvider from "@/context/ActionViewContext";
-import TitleHeader from "@/ui/TitleHeader";
 import {
   TabManagerContext,
   TabManagerContextType,
@@ -22,13 +21,11 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { GoToResourceModal } from "@/ui/GoToResourceModal";
 import showInfo from "@/ui/InfoDialog";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
-import { Dashboard } from "@/index";
 import { DashboardProps } from "@/widgets/views/Dashboard/Dashboard.types";
-import DashboardActionProvider from "@/context/DashboardActionContext";
-import DashboardActionBar from "@/actionbar/DashboardActionBar";
 import { GraphActionView } from "@/views/actionViews/GraphActionView";
 import { FormActionView } from "./actionViews/FormActionView";
 import { TreeActionView } from "./actionViews/TreeActionView";
+import { DashboardActionView } from "./actionViews/DashboardActionView";
 
 type Props = {
   domain: any;
@@ -99,13 +96,11 @@ function ActionView(props: Props, ref: any) {
 
   const formRef = useRef();
   const searchTreeRef = useRef();
-  const dashboardRef = useRef();
 
   const tabManagerContext = useContext(
     TabManagerContext
   ) as TabManagerContextType;
   const {
-    openShortcut,
     setCurrentView: setCurrentViewTabContext,
     setCurrentId: setCurrentIdTabContext,
     tabs,
@@ -369,29 +364,7 @@ function ActionView(props: Props, ref: any) {
 
   function viewContent() {
     if (currentView!.type === "dashboard") {
-      if (!dashboardData) {
-        return null;
-      }
-
-      return (
-        <DashboardActionProvider
-          dashboardRef={dashboardRef}
-          openAction={(action) => {
-            openShortcut(action!);
-          }}
-        >
-          <TitleHeader>
-            <DashboardActionBar />
-          </TitleHeader>
-          <Dashboard
-            ref={dashboardRef}
-            model={dashboardData!.model}
-            id={dashboardData!.id}
-            context={dashboardData?.context}
-            configAction={dashboardData?.configAction}
-          />
-        </DashboardActionProvider>
-      );
+      return <DashboardActionView dashboardData={dashboardData!} />;
     }
 
     return (
