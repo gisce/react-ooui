@@ -28,7 +28,6 @@ import {
 import ButtonWithBadge from "./ButtonWithBadge";
 import { showLogInfo } from "@/helpers/logInfoHelper";
 import SearchBar from "./SearchBar";
-import { View } from "@/views/ActionView";
 
 type Props = {
   parentContext?: any;

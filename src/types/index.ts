@@ -1,3 +1,4 @@
+import { ShortcutApi } from "@/ui/FavouriteButton";
 import { Field as FieldOoui } from "@gisce/ooui";
 
 type Strings = {
@@ -22,7 +23,18 @@ type SearchFields = {
   secondary: string[];
 };
 
-type TreeView = {
+export type InitialViewData = {
+  id: number;
+  type: ViewType;
+};
+
+export type BaseView = {
+  type: ViewType;
+  view_id: number;
+  name: string;
+};
+
+type TreeView = BaseView & {
   view_id: number;
   arch: string;
   fields: any;
@@ -35,6 +47,26 @@ type FormView = TreeView & {
   search_fields?: SearchFields;
   toolbar?: any;
 };
+
+export type DashboardView = {
+  view_id?: number;
+  type: ViewType;
+  model: string;
+  id: number;
+  context?: any;
+  configAction?: ShortcutApi;
+};
+
+export type DashboardProps = Omit<DashboardView, "type">;
+
+export type GraphView = {
+  arch: string;
+  type: ViewType;
+  view_id: number;
+  name: string;
+};
+
+export type View = TreeView | FormView | DashboardView | GraphView;
 
 type SearchResponse = {
   totalItems: Promise<number>;
@@ -216,7 +248,9 @@ type ConnectionProviderType = {
     action: string;
     context?: any;
   }) => Promise<ViewData>;
-  getView: (options: GetViewRequest) => Promise<FormView | TreeView>;
+  getView: (
+    options: GetViewRequest
+  ) => Promise<FormView | TreeView | GraphView>;
   getFields: (options: GetFieldsRequest) => Promise<any>;
   searchAllIds: (options: SearchAllIdsRequest) => Promise<number[]>;
   searchCount: (options: SearchCountRequest) => Promise<number>;
@@ -253,7 +287,7 @@ type ConnectionProviderType = {
   treeButOpen: (options: TreeButOpenOptions) => Promise<any>;
 };
 
-type ViewType = "tree" | "form" | "dashboard" | "graph";
+type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar";
 
 export type {
   Strings,

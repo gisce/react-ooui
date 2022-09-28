@@ -1,9 +1,8 @@
 import TreeActionBar from "@/actionbar/TreeActionBar";
-import { FormView, TreeView } from "@/types";
+import { FormView, TreeView, View } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
 import SearchTree from "@/widgets/views/SearchTree";
 import React from "react";
-import { View } from "../ActionView";
 
 export type TreeActionViewProps = {
   formView?: FormView;
@@ -64,7 +63,10 @@ export const TreeActionView = (props: TreeActionViewProps) => {
             return item.id === id;
           });
           setCurrentItemIndex(itemIndex);
-          setCurrentView(availableViews.find((v) => v.type === "form")!);
+          const formView = availableViews.find(
+            (v) => v.type === "form"
+          ) as FormView;
+          setCurrentView(formView);
         }}
       />
     </>

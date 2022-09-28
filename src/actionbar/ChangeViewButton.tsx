@@ -11,7 +11,7 @@ import {
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
-import { View } from "@/views/ActionView";
+import { GraphView, View } from "@/types";
 
 type Props = {
   onChangeView: (view: View) => void;
@@ -53,26 +53,29 @@ function ChangeViewButton(props: Props) {
       setPreviousView(availableViews[0]);
     } else if (availableViews.length > 1) {
       setPreviousView(
-        availableViews.filter((view) => view.id !== currentView.id)[0]
+        availableViews.filter((view) => view.view_id !== currentView.view_id)[0]
       );
     }
   }, [availableViews]);
 
   function getMenu() {
-    console.log("getMenu - currentView: ", JSON.stringify(currentView));
-    const menuItems = availableViews.map((view) => {
+    const menuItems = availableViews.map((view, idx) => {
       return (
-        <Menu.Item key={view.id}>
+        <Menu.Item key={view.view_id || idx}>
           <Row wrap={false}>
             <Col flex="none" style={{ paddingRight: 20 }}>
               {getIconForView(view)}
             </Col>
             <Col flex="auto" style={{ paddingRight: 20 }}>
-              {view.type.charAt(0).toUpperCase() + view.type.slice(1)}
+              {view.type === "graph"
+                ? (view as GraphView).name
+                : view.type.charAt(0).toUpperCase() + view.type.slice(1)}
             </Col>
             <Col flex="none">
               <CheckOutlined
-                style={{ opacity: currentView.id === view.id ? 1 : 0 }}
+                style={{
+                  opacity: currentView.view_id === view.view_id ? 1 : 0,
+                }}
               />
             </Col>
           </Row>
@@ -105,7 +108,7 @@ function ChangeViewButton(props: Props) {
     tryNavigate(() => {
       setPreviousView(currentView);
       const selectedView = availableViews.find(
-        (view) => view.id === parseInt(event.key)
+        (view) => view.view_id === parseInt(event.key)
       );
       onChangeView(selectedView!);
     });
@@ -118,7 +121,7 @@ function ChangeViewButton(props: Props) {
         icon={getIconForView(previousView)}
         style={{ width: 50 }}
         onClick={() => {
-          handleMenuClick({ key: previousView?.id });
+          handleMenuClick({ key: previousView?.view_id });
         }}
         disabled={disabled || availableViews.length === 1}
       />

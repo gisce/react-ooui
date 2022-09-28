@@ -9,7 +9,14 @@ import React, {
 
 import { Spin } from "antd";
 
-import { FormView, TreeView, ViewType } from "@/types/index";
+import {
+  DashboardView,
+  FormView,
+  GraphView,
+  InitialViewData,
+  TreeView,
+  View,
+} from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 
 import ActionViewProvider from "@/context/ActionViewContext";
@@ -21,7 +28,6 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { GoToResourceModal } from "@/ui/GoToResourceModal";
 import showInfo from "@/ui/InfoDialog";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
-import { DashboardProps } from "@/widgets/views/Dashboard/Dashboard.types";
 import { GraphActionView } from "@/views/actionViews/GraphActionView";
 import { FormActionView } from "./actionViews/FormActionView";
 import { TreeActionView } from "./actionViews/TreeActionView";
@@ -35,18 +41,13 @@ type Props = {
   title: string;
   tabKey: string;
   setCanWeClose: (f: any) => void;
-  initialView: View;
+  initialView: InitialViewData;
   formDefaultValues?: any;
   formForcedValues?: any;
   res_id?: number | boolean;
   action_id: number;
   action_type: string;
   treeExpandable?: boolean;
-};
-
-export type View = {
-  id: number;
-  type: ViewType;
 };
 
 function ActionView(props: Props, ref: any) {
@@ -67,12 +68,9 @@ function ActionView(props: Props, ref: any) {
     treeExpandable = false,
   } = props;
   const [currentView, setCurrentViewInternal] = useState<View>();
+
   const [availableViews, setAvailableViews] = useState<View[]>([]);
 
-  const [graphView, setGraphView] = useState<any>();
-  const [treeView, setTreeView] = useState<TreeView>();
-  const [formView, setFormView] = useState<FormView>();
-  const [dashboardData, setDashboardData] = useState<DashboardProps>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const res_id_parsed: number | undefined = res_id
     ? (res_id as number)
@@ -134,13 +132,32 @@ function ActionView(props: Props, ref: any) {
   const fetchData = async () => {
     setIsLoading(true);
 
-    const availableViews = [];
+    const viewDataRetrieved: View[] = [];
 
     for (const viewArray of views) {
       const [id, viewType] = viewArray;
 
+      let viewInfo;
+
       try {
-        if (viewType === "dashboard") {
+        if (viewType !== "dashboard") {
+          viewInfo = await ConnectionProvider.getHandler().getView({
+            model,
+            type: viewType,
+            id,
+            context,
+          });
+        }
+      } catch (err) {
+        console.error(
+          `${model} - ${viewType} - ${JSON.stringify(err, null, 2)}`
+        );
+
+        continue;
+      }
+
+      switch (viewType) {
+        case "dashboard": {
           const formView = views.find((view: any[]) => {
             const [, type] = view;
             return type === "form";
@@ -160,59 +177,70 @@ function ActionView(props: Props, ref: any) {
             };
           }
 
-          setDashboardData({
+          viewDataRetrieved.push({
+            type: "dashboard",
             id: context["active_id"],
             model,
             context,
             configAction,
           });
-          availableViews.push({ id, type: viewType });
-          return;
+          break;
         }
-
-        const viewData = await ConnectionProvider.getHandler().getView({
-          model,
-          type: viewType,
-          id,
-          context,
-        });
-
-        if (viewType === "tree") {
-          setTreeView({ ...viewData, isExpandable: treeExpandable });
-        } else if (viewType === "form") {
-          setFormView(viewData);
-          setToolbar((viewData as any)?.toolbar);
-        } else if (viewType === "graph") {
-          setGraphView(viewData);
+        case "form": {
+          viewDataRetrieved.push({
+            ...(viewInfo as FormView),
+          });
+          break;
         }
-
-        availableViews.push({ id, type: viewType });
-      } catch (err) {
-        console.error(
-          `${model} - ${viewType} - ${JSON.stringify(err, null, 2)}`
-        );
+        case "tree": {
+          viewDataRetrieved.push({
+            ...(viewInfo as TreeView),
+            isExpandable: treeExpandable,
+          });
+          break;
+        }
+        case "graph": {
+          viewDataRetrieved.push({
+            ...(viewInfo as GraphView),
+          });
+          break;
+        }
+        default:
+          break;
       }
     }
 
-    // TODO: We will have to improve this when more views are supported
-    if (!initialView && availableViews.find((v) => v.type === "tree")) {
-      setCurrentView(availableViews.find((v) => v.type === "tree"));
+    if (!initialView && viewDataRetrieved.find((v) => v.type === "tree")) {
+      const treeView: TreeView = viewDataRetrieved.find(
+        (v) => v.type === "tree"
+      ) as TreeView;
+      setCurrentView(treeView);
     } else if (!initialView) {
-      setCurrentView(availableViews.find((v) => v.type === "form"));
+      const formView: TreeView = viewDataRetrieved.find(
+        (v) => v.type === "form"
+      ) as TreeView;
+
+      setCurrentView(formView);
     } else {
-      setCurrentView(initialView);
+      const view = viewDataRetrieved.find(
+        (v) => v.type === initialView.type && v.view_id === initialView.id
+      );
+      setCurrentView(view);
     }
 
-    setAvailableViews(availableViews);
+    setAvailableViews(viewDataRetrieved);
     setIsLoading(false);
   };
 
   setCanWeClose({ tabKey, canWeClose });
 
   useEffect(() => {
-    setCurrentView(
-      initialView || availableViews.find((v) => v.type === "tree")
-    );
+    const treeView = availableViews.find((v) => v.type === "tree") as TreeView;
+    const initialViewWithData: View = availableViews.find(
+      (v) => v.type === initialView.type && v.view_id === initialView.id
+    ) as View;
+
+    setCurrentView(initialViewWithData || treeView);
     if (!res_id) {
       setCurrentId(undefined);
       setCurrentItemIndex(undefined);
@@ -303,50 +331,80 @@ function ActionView(props: Props, ref: any) {
   }
 
   function content() {
-    if (isLoading) {
-      return <Spin />;
-    }
-
-    return (
-      <>
-        <FormActionView
-          formRef={formRef}
-          currentId={currentId}
-          visible={currentView!.type === "form"}
-          formView={formView}
-          model={model}
-          context={context}
-          domain={domain}
-          defaultValues={formDefaultValues}
-          forcedValues={formForcedValues}
-          results={results}
-          setResults={setResults}
-          setCurrentItemIndex={setCurrentItemIndex}
-        />
-        <TreeActionView
-          visible={currentView!.type === "tree"}
-          model={model}
-          context={context}
-          domain={domain}
-          formView={formView}
-          treeView={treeView}
-          searchTreeRef={searchTreeRef}
-          searchTreeNameSearch={searchTreeNameSearch}
-          availableViews={availableViews}
-          results={results}
-          setCurrentItemIndex={setCurrentItemIndex}
-          setCurrentId={setCurrentId}
-          setCurrentView={setCurrentView}
-        />
-        <GraphActionView
-          visible={currentView!.type === "graph"}
-          viewData={graphView}
-          model={model}
-          context={context}
-          domain={domain}
-        />
-      </>
-    );
+    return availableViews.map((view) => {
+      switch (view.type) {
+        case "form": {
+          return (
+            <FormActionView
+              key={`${view.type}-${view.view_id}`}
+              formRef={formRef}
+              currentId={currentId}
+              visible={
+                currentView!.type === view.type &&
+                currentView!.view_id === view.view_id
+              }
+              formView={view as FormView}
+              model={model}
+              context={context}
+              domain={domain}
+              defaultValues={formDefaultValues}
+              forcedValues={formForcedValues}
+              results={results}
+              setResults={setResults}
+              setCurrentItemIndex={setCurrentItemIndex}
+            />
+          );
+        }
+        case "tree": {
+          return (
+            <TreeActionView
+              key={`${view.type}-${view.view_id}`}
+              visible={
+                currentView!.type === view.type &&
+                currentView!.view_id === view.view_id
+              }
+              model={model}
+              context={context}
+              domain={domain}
+              formView={
+                availableViews.find((v) => v.type === "form") as FormView
+              }
+              treeView={view as TreeView}
+              searchTreeRef={searchTreeRef}
+              searchTreeNameSearch={searchTreeNameSearch}
+              availableViews={availableViews}
+              results={results}
+              setCurrentItemIndex={setCurrentItemIndex}
+              setCurrentId={setCurrentId}
+              setCurrentView={setCurrentView}
+            />
+          );
+        }
+        case "graph": {
+          return (
+            <GraphActionView
+              key={`${view.type}-${view.view_id}`}
+              visible={
+                currentView!.type === view.type &&
+                currentView!.view_id === view.view_id
+              }
+              viewData={view as GraphView}
+              model={model}
+              context={context}
+              domain={domain}
+            />
+          );
+        }
+        case "dashboard": {
+          return (
+            <DashboardActionView
+              key={`${view.type}-${view.view_id}`}
+              dashboardData={view as DashboardView}
+            />
+          );
+        }
+      }
+    });
   }
 
   function onNewClicked() {
@@ -354,32 +412,19 @@ function ActionView(props: Props, ref: any) {
       (formRef.current as any).clearAndReload();
     } else {
       setCurrentId(undefined);
-      setCurrentView(availableViews.find((v) => v.type === "form"));
+      const formView: FormView = availableViews.find(
+        (v) => v.type === "form"
+      ) as FormView;
+      setCurrentView(formView);
     }
+  }
+
+  if (isLoading) {
+    return <Spin />;
   }
 
   if (!currentView) {
     return null;
-  }
-
-  function viewContent() {
-    if (currentView!.type === "dashboard") {
-      return <DashboardActionView dashboardData={dashboardData!} />;
-    }
-
-    return (
-      <>
-        {content()}
-        <GoToResourceModal
-          visible={gtResourceModalVisible}
-          onIdSubmitted={goToResourceId}
-          isSearching={searchingForResourceId}
-          onCancel={() => {
-            setGtResourceModalVisible(false);
-          }}
-        />
-      </>
-    );
   }
 
   return (
@@ -409,7 +454,15 @@ function ActionView(props: Props, ref: any) {
       setSearchTreeNameSearch={setSearchTreeNameSearch}
       searchTreeNameSearch={searchTreeNameSearch}
     >
-      {viewContent()}
+      {content()}
+      <GoToResourceModal
+        visible={gtResourceModalVisible}
+        onIdSubmitted={goToResourceId}
+        isSearching={searchingForResourceId}
+        onCancel={() => {
+          setGtResourceModalVisible(false);
+        }}
+      />
     </ActionViewProvider>
   );
 }

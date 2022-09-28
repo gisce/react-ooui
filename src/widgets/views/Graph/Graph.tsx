@@ -9,6 +9,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import ConnectionProvider from "@/ConnectionProvider";
 import { GraphIndicator } from "./GraphIndicator";
 import { GraphChart } from "./GraphChart";
+import { GraphView } from "@/types";
 
 export type GraphProps = {
   view_id: number;
@@ -32,12 +33,12 @@ export const Graph = (props: GraphProps) => {
     setLoading(true);
 
     try {
-      const viewData = await ConnectionProvider.getHandler().getView({
+      const viewData = (await ConnectionProvider.getHandler().getView({
         model,
         id: view_id,
         type: "graph",
         context,
-      });
+      })) as GraphView;
 
       setGraphXml(viewData.arch);
       const graph = parseGraph(viewData.arch);

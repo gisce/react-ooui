@@ -1,4 +1,4 @@
-import { View } from "@/views/ActionView";
+import { View } from "@/types";
 import React, { useEffect, useState } from "react";
 
 export type ActionViewContextType = {
@@ -47,9 +47,8 @@ export type ActionViewContextType = {
   setSearchTreeNameSearch?: (searchString?: string) => void;
 };
 
-export const ActionViewContext = React.createContext<ActionViewContextType | null>(
-  null
-);
+export const ActionViewContext =
+  React.createContext<ActionViewContextType | null>(null);
 
 type ActionViewProviderProps = ActionViewContextType & {
   children: React.ReactNode;

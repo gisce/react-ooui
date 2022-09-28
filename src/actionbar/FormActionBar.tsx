@@ -38,7 +38,6 @@ import {
 } from "@/context/ContentRootContext";
 import AttachmentsButton from "./AttachmentsButton";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
-import { View } from "@/views/ActionView";
 import { Attachment } from "./AttachmentsButtonWrapper";
 
 function FormActionBar() {
