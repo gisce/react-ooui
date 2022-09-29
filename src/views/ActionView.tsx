@@ -16,6 +16,7 @@ import {
   InitialViewData,
   TreeView,
   View,
+  ViewType,
 } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 
@@ -37,7 +38,7 @@ type Props = {
   domain: any;
   context: any;
   model: string;
-  views: Array<any>;
+  views: Array<[number, ViewType]>;
   title: string;
   tabKey: string;
   setCanWeClose: (f: any) => void;
@@ -322,7 +323,7 @@ function ActionView(props: Props, ref: any) {
       views,
       title,
       target: "current",
-      initialView: { id: viewForm[0], type: "form" },
+      initialView: { id: viewForm?.[0]!, type: "form" },
       action_id,
       action_type,
       res_id: id,
