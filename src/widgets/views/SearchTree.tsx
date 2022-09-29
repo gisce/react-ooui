@@ -32,6 +32,7 @@ import {
   ContentRootContextType,
 } from "@/context/ContentRootContext";
 import showErrorDialog from "@/ui/ActionErrorDialog";
+import { mergeParams } from "@/helpers/searchHelper";
 
 const DEFAULT_SEARCH_LIMIT = 80;
 
@@ -223,37 +224,6 @@ function SearchTree(props: Props, ref: any) {
     }
 
     searchNameGetDoneRef.current = true;
-  };
-
-  const getUniqueFieldsForParams = (params: any[]) => {
-    const uniqueFields: any = {};
-
-    params.forEach((param) => {
-      if (Array.isArray(param) && param[0]) {
-        uniqueFields[param[0]] = true;
-      } else {
-        uniqueFields[param] = true;
-      }
-    });
-
-    return Object.keys(uniqueFields);
-  };
-
-  const mergeParams = (searchParams: any[], domainParams: any[]) => {
-    const finalParams = searchParams;
-    const uniqueParams = getUniqueFieldsForParams(searchParams);
-
-    domainParams.forEach((element) => {
-      if (Array.isArray(element) && element[0]) {
-        if (!uniqueParams.includes(element[0])) {
-          finalParams.push(element);
-        }
-      } else if (!uniqueParams.includes(element)) {
-        finalParams.push(element);
-      }
-    });
-
-    return finalParams;
   };
 
   const searchResults = async () => {

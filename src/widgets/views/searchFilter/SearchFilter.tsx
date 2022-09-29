@@ -13,7 +13,7 @@ import { SearchBottomBar } from "./SearchBottomBar";
 import { SearchFields } from "@/types";
 import { SearchParams } from "./SearchParams";
 
-import { getParamsForFields } from "@/helpers/searchFilterHelper";
+import { getParamsForFields } from "@/helpers/searchHelper";
 
 type Props = {
   fields: any;
