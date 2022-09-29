@@ -41,6 +41,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
       <div style={!visible ? { display: "none" } : {}}>
         <TitleHeader>
           <TreeActionBar
+            toolbar={formView?.toolbar}
             parentContext={context}
             treeExpandable={treeView?.isExpandable || false}
           />

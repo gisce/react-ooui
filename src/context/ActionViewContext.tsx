@@ -27,8 +27,6 @@ export type ActionViewContextType = {
   setFormIsLoading?: (value: boolean) => void;
   treeIsLoading?: boolean;
   setTreeIsLoading?: (value: boolean) => void;
-  toolbar?: any;
-  setToolbar?: (value: any) => void;
   attachments?: any;
   setAttachments?: (value: any) => void;
   selectedRowItems?: any[];
@@ -81,8 +79,6 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     currentItemIndex,
     setCurrentItemIndex,
     currentModel,
-    toolbar,
-    setToolbar,
     sorter,
     setSorter,
     totalItems,
@@ -132,8 +128,6 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setFormIsLoading,
         treeIsLoading,
         setTreeIsLoading,
-        toolbar,
-        setToolbar,
         attachments,
         setAttachments,
         selectedRowItems,

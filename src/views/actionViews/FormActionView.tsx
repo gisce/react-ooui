@@ -39,7 +39,7 @@ export const FormActionView = (props: FormActionViewProps) => {
     <>
       <div style={!visible ? { display: "none" } : {}}>
         <TitleHeader>
-          <FormActionBar />
+          <FormActionBar toolbar={formView?.toolbar} />
         </TitleHeader>
       </div>
       <Form

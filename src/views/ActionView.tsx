@@ -81,7 +81,6 @@ function ActionView(props: Props, ref: any) {
   const [selectedRowItems, setSelectedRowItems] = useState<any[]>([]);
   const [currentItemIndex, setCurrentItemIndex] = useState<number>();
   const [results, setResults] = useState<any>([]);
-  const [toolbar, setToolbar] = useState<any>();
   const [sorter, setSorter] = useState<any>();
   const [totalItems, setTotalItems] = useState<number>(0);
   const [gtResourceModalVisible, setGtResourceModalVisible] =
@@ -443,8 +442,6 @@ function ActionView(props: Props, ref: any) {
       results={results}
       setResults={setResults}
       currentModel={model}
-      toolbar={toolbar}
-      setToolbar={setToolbar}
       sorter={sorter}
       setSorter={setSorter}
       totalItems={totalItems}

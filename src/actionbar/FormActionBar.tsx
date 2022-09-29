@@ -40,7 +40,7 @@ import AttachmentsButton from "./AttachmentsButton";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { Attachment } from "./AttachmentsButtonWrapper";
 
-function FormActionBar() {
+function FormActionBar({ toolbar }: { toolbar: any }) {
   const {
     availableViews,
     currentView,
@@ -60,7 +60,6 @@ function FormActionBar() {
     setDuplicatingItem,
     setResults,
     formIsLoading,
-    toolbar,
     attachments,
     formRef,
     setFormHasChanges,

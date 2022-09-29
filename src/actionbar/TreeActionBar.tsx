@@ -32,6 +32,7 @@ import SearchBar from "./SearchBar";
 type Props = {
   parentContext?: any;
   treeExpandable: boolean;
+  toolbar: any;
 };
 
 function TreeActionBar(props: Props) {
@@ -48,7 +49,6 @@ function TreeActionBar(props: Props) {
     searchTreeRef,
     setCurrentId,
     setCurrentItemIndex,
-    toolbar,
     searchParams,
     searchVisible,
     setSearchVisible,
@@ -57,7 +57,7 @@ function TreeActionBar(props: Props) {
     treeIsLoading,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
-  const { parentContext = {}, treeExpandable } = props;
+  const { parentContext = {}, treeExpandable, toolbar } = props;
 
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
   const contentRootContext = useContext(
