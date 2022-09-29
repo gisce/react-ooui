@@ -61,6 +61,8 @@ export const useSearch = (opts: UseSearchOpts) => {
     setLimit,
   } = opts;
 
+  console.log("useSearch rerender: " + JSON.stringify(opts));
+
   const [tableRefreshing, setTableRefreshing] = useState<boolean>(false);
   const [searchFilterLoading, setSearchFilterLoading] =
     useState<boolean>(false);
@@ -252,13 +254,27 @@ export const useSearch = (opts: UseSearchOpts) => {
       setTreeIsLoading?.(false);
     }
   }, [
-    setTableRefreshing,
-    setTreeIsLoading,
+    actionDomain,
+    context,
+    currentId,
+    domain,
+    formView,
+    internalLimit,
+    limit,
+    model,
     nameSearch,
+    offset,
+    resultsActionView,
     searchNameGetDoneRef,
+    setActionViewTotalItems,
+    setCurrentItemIndex,
+    setResults,
     setSearchError,
     setSearchFilterLoading,
+    setTableRefreshing,
     setTreeIsLoading,
+    sorter,
+    treeView,
   ]);
 
   const changeSort = useCallback(
