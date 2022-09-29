@@ -64,6 +64,8 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     formRef,
     setFormHasChanges,
     searchTreeRef,
+    previousView,
+    setPreviousView,
   } = useContext(ActionViewContext) as ActionViewContextType;
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
 
@@ -293,8 +295,10 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       {separator()}
       <ChangeViewButton
         currentView={currentView}
+        previousView={previousView}
         availableViews={availableViews}
         onChangeView={(view: any) => {
+          setPreviousView(currentView);
           setFormHasChanges?.(false);
           setCurrentView?.(view);
         }}

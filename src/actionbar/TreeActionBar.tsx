@@ -55,6 +55,8 @@ function TreeActionBar(props: Props) {
     setSearchTreeNameSearch,
     searchTreeNameSearch,
     treeIsLoading,
+    setPreviousView,
+    previousView,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   const { parentContext = {}, treeExpandable, toolbar } = props;
@@ -221,7 +223,11 @@ function TreeActionBar(props: Props) {
           <ChangeViewButton
             currentView={currentView}
             availableViews={availableViews}
-            onChangeView={setCurrentView}
+            onChangeView={(newView) => {
+              setPreviousView?.(currentView);
+              setCurrentView?.(newView);
+            }}
+            previousView={previousView}
             disabled={treeIsLoading}
           />
         </>

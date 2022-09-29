@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Menu, Dropdown, Row, Col, Button } from "antd";
 import {
   DownOutlined,
@@ -19,6 +19,7 @@ type Props = {
   availableViews: View[];
   disabled?: boolean;
   formHasChanges?: boolean;
+  previousView?: View;
 };
 
 const iconsForViewTypes = {
@@ -43,20 +44,9 @@ function ChangeViewButton(props: Props) {
     onChangeView,
     disabled = false,
     formHasChanges = false,
+    previousView,
   } = props;
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
-
-  const [previousView, setPreviousView] = useState<View>();
-
-  useEffect(() => {
-    if (availableViews.length === 1) {
-      setPreviousView(availableViews[0]);
-    } else if (availableViews.length > 1) {
-      setPreviousView(
-        availableViews.filter((view) => view.view_id !== currentView.view_id)[0]
-      );
-    }
-  }, [availableViews]);
 
   function getMenu() {
     const menuItems = availableViews.map((view, idx) => {
@@ -106,7 +96,6 @@ function ChangeViewButton(props: Props) {
 
   function handleMenuClick(event: any) {
     tryNavigate(() => {
-      setPreviousView(currentView);
       const selectedView = availableViews.find(
         (view) => view.view_id === parseInt(event.key)
       );
@@ -117,7 +106,7 @@ function ChangeViewButton(props: Props) {
   return (
     <>
       <ButtonWithTooltip
-        tooltip={previousView ? t("viewAs") + " " + t(previousView!.type) : ""}
+        tooltip={previousView ? t("viewAs") + " " + t(previousView.type) : ""}
         icon={getIconForView(previousView)}
         style={{ width: 50 }}
         onClick={() => {
