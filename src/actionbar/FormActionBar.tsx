@@ -298,7 +298,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         previousView={previousView}
         availableViews={availableViews}
         onChangeView={(view: any) => {
-          setPreviousView(currentView);
+          setPreviousView?.(currentView);
           setFormHasChanges?.(false);
           setCurrentView?.(view);
         }}

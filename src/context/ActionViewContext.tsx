@@ -46,7 +46,7 @@ export type ActionViewContextType = {
   searchTreeNameSearch?: string;
   setSearchTreeNameSearch?: (searchString?: string) => void;
   previousView?: View;
-  setPreviousView: (view: View) => void;
+  setPreviousView?: (view: View) => void;
 };
 
 export const ActionViewContext =

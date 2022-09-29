@@ -29,8 +29,8 @@ type UseSearchOpts = {
   domain: any;
   currentId?: number;
   limitFromAction?: number;
-  limit: number;
-  setLimit: (value: number) => void;
+  limit?: number;
+  setLimit?: (value: number) => void;
 };
 
 export const DEFAULT_SEARCH_LIMIT = 80;
@@ -312,7 +312,7 @@ export const useSearch = (opts: UseSearchOpts) => {
       setSearchFilterLoading(true);
       setSearchError(undefined);
       setPage(1);
-      if (newLimit) setLimit(newLimit);
+      if (newLimit) setLimit?.(newLimit);
       if (newOffset) setOffset(newOffset);
       fetchResults();
     },
@@ -348,7 +348,7 @@ export const useSearch = (opts: UseSearchOpts) => {
     setSearchError(undefined);
     setOffset(0);
     setPage(1);
-    setLimit(limitFromAction || DEFAULT_SEARCH_LIMIT);
+    setLimit?.(limitFromAction || DEFAULT_SEARCH_LIMIT);
   }, [
     tableRefreshing,
     setSearchTreeNameSearch,

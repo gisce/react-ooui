@@ -392,6 +392,12 @@ function ActionView(props: Props, ref: any) {
               model={model}
               context={context}
               domain={domain}
+              treeView={
+                availableViews.find((v) => v.type === "tree") as TreeView
+              }
+              formView={
+                availableViews.find((v) => v.type === "form") as FormView
+              }
             />
           );
         }
