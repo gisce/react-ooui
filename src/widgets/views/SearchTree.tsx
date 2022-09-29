@@ -95,9 +95,8 @@ function SearchTree(props: Props, ref: any) {
   const [resultsInternal, setResultsInternal] = useState<any>([]);
   const [colorsForResults, setColorsForResults] = useState<any>(undefined);
 
-  const [searchFilterLoading, setSearchFilterLoading] = useState<boolean>(
-    false
-  );
+  const [searchFilterLoading, setSearchFilterLoading] =
+    useState<boolean>(false);
   const [searchError, setSearchError] = useState<string>();
   const [initialError, setInitialError] = useState<string>();
 
@@ -180,8 +179,8 @@ function SearchTree(props: Props, ref: any) {
 
       const { colors } = getTree(treeView!);
 
-      const resultsWithData = await ConnectionProvider.getHandler().readEvalUiObjects(
-        {
+      const resultsWithData =
+        await ConnectionProvider.getHandler().readEvalUiObjects({
           model: currentModel!,
           ids: resultsIds,
           arch: treeView?.arch!,
@@ -192,8 +191,7 @@ function SearchTree(props: Props, ref: any) {
           attrs: colors && {
             colors,
           },
-        }
-      );
+        });
       const resultsData = resultsWithData[0];
 
       originalResults.current = [...resultsData];
@@ -233,21 +231,18 @@ function SearchTree(props: Props, ref: any) {
     const searchParams = mergeParams(paramsRef.current, domainParams);
     const { colors } = getTree(treeView!);
 
-    const {
-      totalItems,
-      results,
-      attrsEvaluated,
-    } = await ConnectionProvider.getHandler().searchForTree({
-      params: searchParams,
-      limit,
-      offset,
-      model: currentModel!,
-      fields: treeView!.field_parent
-        ? { ...treeView!.fields, [treeView!.field_parent]: {} }
-        : treeView!.fields,
-      context: parentContext,
-      attrs: colors && { colors },
-    });
+    const { totalItems, results, attrsEvaluated } =
+      await ConnectionProvider.getHandler().searchForTree({
+        params: searchParams,
+        limit,
+        offset,
+        model: currentModel!,
+        fields: treeView!.field_parent
+          ? { ...treeView!.fields, [treeView!.field_parent]: {} }
+          : treeView!.fields,
+        context: parentContext,
+        attrs: colors && { colors },
+      });
     setColorsForResults(getColorMap(attrsEvaluated));
 
     originalResults.current = [...results];
@@ -351,12 +346,11 @@ function SearchTree(props: Props, ref: any) {
   };
 
   const fetchActionData = async () => {
-    const dataForAction = await ConnectionProvider.getHandler().getViewsForAction(
-      {
+    const dataForAction =
+      await ConnectionProvider.getHandler().getViewsForAction({
         action: action!,
         context: parentContext,
-      }
-    );
+      });
     actionDomain.current = dataForAction.domain;
     setFormView(dataForAction.views.get("form"));
     setTreeView(dataForAction.views.get("tree"));
@@ -444,13 +438,12 @@ function SearchTree(props: Props, ref: any) {
     const { id } = record;
 
     if (!expandableClickActionData.current) {
-      expandableClickActionData.current = await ConnectionProvider.getHandler().treeButOpen(
-        {
+      expandableClickActionData.current =
+        await ConnectionProvider.getHandler().treeButOpen({
           id: treeView!.view_id,
           model: currentModel!,
           context: parentContext,
-        }
-      );
+        });
     }
 
     const actionData: any = expandableClickActionData.current[0][2];
@@ -508,41 +501,22 @@ function SearchTree(props: Props, ref: any) {
 
     return (
       <>
-        <Measure
-          bounds
-          onResize={(contentRect) => {
-            setSearchFilterHeight(contentRect.bounds?.height!);
-          }}
-        >
-          {({ measureRef }) => (
-            <div ref={measureRef}>
-              <div style={{ display: searchVisible ? "block" : "none" }}>
-                <SearchFilter
-                  fields={{ ...treeView.fields, ...formView.fields }}
-                  searchFields={mergeSearchFields([
-                    formView.search_fields,
-                    treeView.search_fields,
-                  ])}
-                  onClear={onClear}
-                  limit={limit}
-                  offset={offset}
-                  isSearching={searchFilterLoading}
-                  onSubmit={onSubmit}
-                  onLimitChange={onSearchTreeLimitChange}
-                />
-                {searchError && (
-                  <Alert
-                    className="mt-10"
-                    message={searchError}
-                    type="error"
-                    banner
-                  />
-                )}
-                <div className="pb-5" />
-              </div>
-            </div>
-          )}
-        </Measure>
+        <SearchFilter
+          fields={{ ...treeView.fields, ...formView.fields }}
+          searchFields={mergeSearchFields([
+            formView.search_fields,
+            treeView.search_fields,
+          ])}
+          onClear={onClear}
+          limit={limit}
+          offset={offset}
+          isSearching={searchFilterLoading}
+          onSubmit={onSubmit}
+          onLimitChange={onSearchTreeLimitChange}
+          setSearchFilterHeight={setSearchFilterHeight}
+          searchError={searchError}
+          searchVisible={searchVisible}
+        />
         <Tree
           total={totalItems}
           limit={limit}
