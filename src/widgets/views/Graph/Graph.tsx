@@ -1,4 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import {
   Graph as GraphOoui,
   parseGraph,
@@ -10,6 +16,10 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { GraphIndicator } from "./GraphIndicator";
 import { GraphChart } from "./GraphChart";
 import { GraphView } from "@/types";
+import {
+  ActionViewContext,
+  ActionViewContextType,
+} from "@/context/ActionViewContext";
 
 export type GraphProps = {
   view_id: number;
@@ -19,11 +29,21 @@ export type GraphProps = {
   limit?: number;
 };
 
-export const Graph = (props: GraphProps) => {
+const GraphComp = (props: GraphProps, ref: any) => {
   const { view_id, model, context, domain, limit } = props;
   const [loading, setLoading] = useState(false);
   const [graphOoui, setGraphOoui] = useState<GraphOoui>();
   const [graphXml, setGraphXml] = useState<string>();
+  const actionViewContext = useContext(
+    ActionViewContext
+  ) as ActionViewContextType;
+  const { setGraphIsLoading = undefined } = actionViewContext || {};
+
+  useImperativeHandle(ref, () => ({
+    refresh: () => {
+      fetchData();
+    },
+  }));
 
   useEffect(() => {
     fetchData();
@@ -31,6 +51,7 @@ export const Graph = (props: GraphProps) => {
 
   async function fetchData() {
     setLoading(true);
+    setGraphIsLoading?.(true);
 
     try {
       const viewData = (await ConnectionProvider.getHandler().getView({
@@ -49,11 +70,21 @@ export const Graph = (props: GraphProps) => {
     }
 
     setLoading(false);
+    setGraphIsLoading?.(false);
   }
 
   if (loading) {
     return (
-      <div style={{ padding: "1rem" }}>
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          height: "20%",
+          justifyContent: "center",
+          alignContent: "center",
+          padding: "1rem",
+        }}
+      >
         <LoadingOutlined style={{ height: "12px" }} />
       </div>
     );
@@ -107,3 +138,5 @@ export const Graph = (props: GraphProps) => {
     }
   }
 };
+
+export const Graph = forwardRef(GraphComp);

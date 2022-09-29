@@ -36,19 +36,21 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     availableViews,
     searchTreeNameSearch,
   } = props;
+
+  if (!visible) {
+    return null;
+  }
+
   return (
     <>
-      <div style={!visible ? { display: "none" } : {}}>
-        <TitleHeader>
-          <TreeActionBar
-            toolbar={formView?.toolbar}
-            parentContext={context}
-            treeExpandable={treeView?.isExpandable || false}
-          />
-        </TitleHeader>
-      </div>
+      <TitleHeader>
+        <TreeActionBar
+          toolbar={formView?.toolbar}
+          parentContext={context}
+          treeExpandable={treeView?.isExpandable || false}
+        />
+      </TitleHeader>
       <SearchTree
-        visible={visible}
         ref={searchTreeRef}
         rootTree={true}
         model={model}

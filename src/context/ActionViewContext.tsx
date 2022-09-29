@@ -27,6 +27,8 @@ export type ActionViewContextType = {
   setFormIsLoading?: (value: boolean) => void;
   treeIsLoading?: boolean;
   setTreeIsLoading?: (value: boolean) => void;
+  graphIsLoading?: boolean;
+  setGraphIsLoading?: (value: boolean) => void;
   attachments?: any;
   setAttachments?: (value: any) => void;
   selectedRowItems?: any[];
@@ -56,12 +58,13 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
   const [removingItem, setRemovingItem] = useState<boolean>(false);
-  const [formIsLoading, setFormIsLoading] = useState<boolean>(false);
+  const [formIsLoading, setFormIsLoading] = useState<boolean>(true);
   const [treeIsLoading, setTreeIsLoading] = useState<boolean>(true);
   const [attachments, setAttachments] = useState<any>([]);
   const [duplicatingItem, setDuplicatingItem] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useState<any[]>([]);
   const [searchVisible, setSearchVisible] = useState<boolean>(false);
+  const [graphIsLoading, setGraphIsLoading] = useState<boolean>(true);
 
   const {
     children,
@@ -144,6 +147,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setTotalItems,
         searchTreeNameSearch,
         setSearchTreeNameSearch,
+        setGraphIsLoading,
+        graphIsLoading,
       }}
     >
       {children}

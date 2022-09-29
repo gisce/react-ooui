@@ -35,15 +35,16 @@ export const FormActionView = (props: FormActionViewProps) => {
     setCurrentItemIndex,
   } = props;
 
+  if (!visible) {
+    return null;
+  }
+
   return (
     <>
-      <div style={!visible ? { display: "none" } : {}}>
-        <TitleHeader>
-          <FormActionBar toolbar={formView?.toolbar} />
-        </TitleHeader>
-      </div>
+      <TitleHeader>
+        <FormActionBar toolbar={formView?.toolbar} />
+      </TitleHeader>
       <Form
-        visible={visible}
         rootForm={true}
         ref={formRef}
         model={model}
