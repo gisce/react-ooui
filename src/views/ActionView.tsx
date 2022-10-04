@@ -451,6 +451,7 @@ function ActionView(props: Props, ref: any) {
       setSelectedRowItems={setSelectedRowItems}
       setSearchTreeNameSearch={setSearchTreeNameSearch}
       searchTreeNameSearch={searchTreeNameSearch}
+      goToResourceId={goToResourceId}
     >
       {viewContent()}
     </ActionViewProvider>
