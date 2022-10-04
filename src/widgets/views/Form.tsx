@@ -738,20 +738,19 @@ function Form(props: FormProps, ref: any) {
 
   const processFieldOnChange = async (fieldName: string) => {
     const onChangeFieldAction = formOoui?.onChangeFields[fieldName];
-    const currentValues = processValues(antForm.getFieldsValue(true), fields);
 
     if (!onChangeFieldAction) {
       parseForm({
         fields,
         arch: arch!,
-        values: currentValues,
+        values: getCurrentValues(fields),
       });
       return;
     }
 
     const payload = getOnChangePayload({
       values: {
-        ...currentValues,
+        ...getCurrentValues(fields),
         context: {
           ...parentContext,
           ...formOoui?.context,
@@ -769,7 +768,10 @@ function Form(props: FormProps, ref: any) {
     });
 
     if (response.value) {
-      const processedValues = { ...currentValues, ...response.value };
+      const processedValues = {
+        ...getCurrentValues(fields),
+        ...response.value,
+      };
       parseForm({ fields, arch: arch!, values: processedValues });
       assignNewValuesToForm({
         values: processedValues,
@@ -791,7 +793,7 @@ function Form(props: FormProps, ref: any) {
       });
     }
 
-    if (response.domain) {
+    if (response.domain && Object.keys(response.domain).length > 0) {
       const proccessedFields = mergeFieldsDomain({
         fieldsDomain: response.domain,
         fields,
@@ -800,7 +802,7 @@ function Form(props: FormProps, ref: any) {
       parseForm({
         fields: proccessedFields,
         arch: arch!,
-        values: currentValues,
+        values: getCurrentValues(proccessedFields),
       });
       setFields(proccessedFields);
     }
