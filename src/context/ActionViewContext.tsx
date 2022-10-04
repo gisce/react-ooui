@@ -45,11 +45,11 @@ export type ActionViewContextType = {
   setTotalItems: (totalItems: number) => void;
   searchTreeNameSearch?: string;
   setSearchTreeNameSearch?: (searchString?: string) => void;
+  goToResourceId?: (id: number) => Promise<void>;
 };
 
-export const ActionViewContext = React.createContext<ActionViewContextType | null>(
-  null
-);
+export const ActionViewContext =
+  React.createContext<ActionViewContextType | null>(null);
 
 type ActionViewProviderProps = ActionViewContextType & {
   children: React.ReactNode;
@@ -92,6 +92,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     selectedRowItems,
     searchTreeNameSearch,
     setSearchTreeNameSearch,
+    goToResourceId,
   } = props;
 
   useEffect(() => {
@@ -151,6 +152,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setTotalItems,
         searchTreeNameSearch,
         setSearchTreeNameSearch,
+        goToResourceId,
       }}
     >
       {children}
