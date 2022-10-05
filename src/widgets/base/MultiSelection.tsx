@@ -59,6 +59,11 @@ export const MultiSelectionInput = (props: SelectionInputProps) => {
       return entry && entry[0];
     });
 
+    if (keysForChangedValues.length === 0) {
+      onChange?.(undefined);
+      return;
+    }
+
     onChange?.(keysForChangedValues);
   }
 
