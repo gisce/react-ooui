@@ -995,7 +995,6 @@ function Form(props: FormProps, ref: any) {
               debouncedCheckFieldsChanges({ elementHasLostFocus: false });
             }}
             component={false}
-            preserve={false}
           >
             {formOoui && (
               <Container
