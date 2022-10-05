@@ -86,11 +86,11 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const transformedDomain = useRef<any[]>([]);
   const [searchDomain, setSearchDomain] = useState<any>([]);
 
-  const id = value && value[0];
+  const id = (value && value[0]) || undefined;
   const text = (value && value[1]) || "";
 
   useEffect(() => {
-    if (!Array.isArray(value) && !isNaN(value as any)) {
+    if (!Array.isArray(value) && value) {
       fetchNameAndUpdate(value as any);
     }
   }, [value]);
