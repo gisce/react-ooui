@@ -45,6 +45,7 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     setTotalItems: setActionViewTotalItems = undefined,
     setSearchTreeNameSearch = undefined,
     setTreeIsLoading = undefined,
+    results = undefined,
   } = actionViewContext || {};
 
   const { searchParams, searchValues, setSearchValues } = useContext(
@@ -60,7 +61,6 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     offset,
     limit,
     tableRefreshing,
-    totalItems,
   } = useSearch({
     model,
     setSearchTreeNameSearch,
@@ -119,6 +119,9 @@ export const GraphActionView = (props: GraphActionViewProps) => {
         <Spin />
       ) : (
         <>
+          <p style={{ textAlign: "right" }}>
+            {`${t("totalRegisters")} ${results?.length}`}
+          </p>
           <Graph
             ref={graphRef}
             view_id={viewData.view_id}
