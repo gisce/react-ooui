@@ -45,7 +45,8 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     setTotalItems: setActionViewTotalItems = undefined,
     setSearchTreeNameSearch = undefined,
     setTreeIsLoading = undefined,
-    results = undefined,
+    limit,
+    setLimit,
   } = actionViewContext || {};
 
   const { searchParams, searchValues, setSearchValues } = useContext(
@@ -59,7 +60,6 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     searchFilterLoading,
     searchError,
     offset,
-    limit,
     tableRefreshing,
   } = useSearch({
     model,
@@ -81,6 +81,8 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     domain,
     currentId,
     setActionViewTotalItems,
+    limit,
+    setLimit,
   });
 
   if (!visible) {
@@ -120,7 +122,7 @@ export const GraphActionView = (props: GraphActionViewProps) => {
       ) : (
         <>
           <p style={{ textAlign: "right" }}>
-            {`${t("totalRegisters")} ${results?.length}`}
+            {`${t("totalRegisters")} ${resultsActionView?.length}`}
           </p>
           <Graph
             ref={graphRef}

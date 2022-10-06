@@ -29,7 +29,6 @@ type UseSearchOpts = {
   resultsActionView?: any[];
   domain: any;
   currentId?: number;
-  limitFromAction?: number;
   limit?: number;
   setLimit?: (value: number) => void;
   setSearchValues?: (value: any) => void;
@@ -58,7 +57,6 @@ export const useSearch = (opts: UseSearchOpts) => {
     resultsActionView,
     domain,
     currentId,
-    limitFromAction,
     limit,
     setLimit,
     searchParams = [],
@@ -74,9 +72,9 @@ export const useSearch = (opts: UseSearchOpts) => {
   const [totalItems, setTotalItems] = useState<number>();
   const [resultsInternal, setResultsInternal] = useState<any>([]);
   const [colorsForResults, setColorsForResults] = useState<any>(undefined);
+  const internalLimit = useRef(limit || DEFAULT_SEARCH_LIMIT);
 
   const originalResults = useRef<any[]>([]);
-  const internalLimit = useRef(80);
   const actionDomain = useRef<any>([]);
 
   const setResults = useCallback((results: any) => {
@@ -165,7 +163,6 @@ export const useSearch = (opts: UseSearchOpts) => {
     sorter,
     setCurrentItemIndex,
     setActionViewTotalItems,
-    internalLimit,
     actionDomain,
   ]);
 
@@ -179,7 +176,7 @@ export const useSearch = (opts: UseSearchOpts) => {
     const { totalItems, results, attrsEvaluated } =
       await ConnectionProvider.getHandler().searchForTree({
         params: mergedParams,
-        limit,
+        limit: internalLimit.current,
         offset,
         model,
         fields: treeView!.field_parent
@@ -261,7 +258,6 @@ export const useSearch = (opts: UseSearchOpts) => {
     currentId,
     domain,
     formView,
-    internalLimit,
     limit,
     model,
     nameSearch,
@@ -316,6 +312,7 @@ export const useSearch = (opts: UseSearchOpts) => {
       setSearchFilterLoading(true);
       setSearchError(undefined);
       setPage(1);
+      internalLimit.current = newLimit;
       if (newLimit) setLimit?.(newLimit);
       if (newOffset) setOffset(newOffset);
       fetchResults();
@@ -352,7 +349,7 @@ export const useSearch = (opts: UseSearchOpts) => {
     setSearchError(undefined);
     setOffset(0);
     setPage(1);
-    setLimit?.(limitFromAction || DEFAULT_SEARCH_LIMIT);
+    setLimit?.(limit || DEFAULT_SEARCH_LIMIT);
   }, [
     tableRefreshing,
     setSearchTreeNameSearch,
@@ -361,7 +358,7 @@ export const useSearch = (opts: UseSearchOpts) => {
     setOffset,
     setPage,
     setLimit,
-    limitFromAction,
+    limit,
   ]);
 
   const fetchChildrenForRecord = useCallback(

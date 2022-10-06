@@ -34,7 +34,6 @@ type OnRowClickedData = {
 };
 
 type Props = {
-  action?: string;
   model?: string;
   formView?: FormView;
   treeView?: TreeView;
@@ -50,7 +49,6 @@ type Props = {
 
 function SearchTree(props: Props, ref: any) {
   const {
-    action,
     model,
     formView: formViewProps,
     treeView: treeViewProps,
@@ -68,18 +66,13 @@ function SearchTree(props: Props, ref: any) {
   const [initialFetchDone, setInitialFetchDone] = useState<boolean>(false);
 
   const searchNameGetDoneRef = useRef(false);
-  const internalLimit = useRef(80);
 
   const [currentModel, setCurrentModel] = useState<string>();
   const [treeView, setTreeView] = useState<TreeView>();
   const [formView, setFormView] = useState<FormView>();
 
-  const [limitFromAction, setLimitFromAction] = useState<number>();
-  const [limit, setLimit] = useState<number>(DEFAULT_SEARCH_LIMIT);
-
   const [initialError, setInitialError] = useState<string>();
 
-  const actionDomain = useRef<any>([]);
   const [searchFilterHeight, setSearchFilterHeight] = useState<number>(200);
 
   const expandableClickActionData = useRef<any>();
@@ -112,6 +105,8 @@ function SearchTree(props: Props, ref: any) {
     setTreeIsLoading = undefined,
     searchValues = {},
     setSearchValues = undefined,
+    limit = DEFAULT_SEARCH_LIMIT,
+    setLimit = undefined,
   } = (rootTree ? actionViewContext : {}) || {};
 
   const {
@@ -151,9 +146,8 @@ function SearchTree(props: Props, ref: any) {
     domain,
     currentId,
     setActionViewTotalItems,
-    limitFromAction,
-    setLimit,
     limit,
+    setLimit,
   });
 
   useImperativeHandle(ref, () => ({
@@ -172,20 +166,16 @@ function SearchTree(props: Props, ref: any) {
       searchNameGetDoneRef.current = false;
       fetchResults();
     }
-  }, [page, limit, offset, initialFetchDone, visible, nameSearch]);
+  }, [page, offset, initialFetchDone, visible, nameSearch]);
 
-  const fetchData = async (type: "action" | "model") => {
+  const fetchData = async () => {
     setInitialFetchDone(false);
     setIsLoading(true);
     setInitialError(undefined);
     setTreeIsLoading?.(true);
 
     try {
-      if (type === "action") {
-        await fetchActionData();
-      } else {
-        await fetchModelData();
-      }
+      await fetchModelData();
       setInitialFetchDone(true);
     } catch (error) {
       setInitialError(error);
@@ -193,20 +183,6 @@ function SearchTree(props: Props, ref: any) {
       setIsLoading(false);
       setTreeIsLoading?.(false);
     }
-  };
-
-  const fetchActionData = async () => {
-    const dataForAction =
-      await ConnectionProvider.getHandler().getViewsForAction({
-        action: action!,
-        context: parentContext,
-      });
-    actionDomain.current = dataForAction.domain;
-    setFormView(dataForAction.views.get("form"));
-    setTreeView(dataForAction.views.get("tree"));
-    setCurrentModel(dataForAction.model);
-    setLimitFromAction(dataForAction.limit);
-    setLimit(dataForAction.limit);
   };
 
   const fetchModelData = async () => {
@@ -234,20 +210,14 @@ function SearchTree(props: Props, ref: any) {
 
     setFormView(_formView as FormView);
     setTreeView(_treeView as TreeView);
-    setLimitFromAction(undefined);
-    setLimit(DEFAULT_SEARCH_LIMIT);
   };
 
   useEffect(() => {
-    if (action) {
-      fetchData("action");
-    } else if (model) {
-      fetchData("model");
-    }
-  }, [action, model]);
+    fetchData();
+  }, [model]);
 
   const onSearchTreeLimitChange = (newLimit: number) => {
-    internalLimit.current = newLimit;
+    setLimit?.(newLimit);
   };
 
   const treeButOpen = async (record: any) => {

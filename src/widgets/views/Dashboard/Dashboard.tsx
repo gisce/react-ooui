@@ -320,6 +320,7 @@ function Dashboard(props: DashboardProps, ref: any) {
               domain={domain}
               setCanWeClose={() => {}}
               initialView={initialView}
+              limit={limit}
             />
           );
         }

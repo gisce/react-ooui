@@ -18,6 +18,7 @@ export type TreeActionViewProps = {
   setCurrentView: (view: View) => void;
   availableViews: View[];
   searchTreeNameSearch?: string;
+  limit?: number;
 };
 
 export const TreeActionView = (props: TreeActionViewProps) => {
@@ -35,6 +36,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     setCurrentView,
     availableViews,
     searchTreeNameSearch,
+    limit,
   } = props;
 
   if (!visible) {

@@ -49,6 +49,7 @@ type Props = {
   action_id: number;
   action_type: string;
   treeExpandable?: boolean;
+  limit?: number;
 };
 
 function ActionView(props: Props, ref: any) {
@@ -67,6 +68,7 @@ function ActionView(props: Props, ref: any) {
     action_id,
     action_type,
     treeExpandable = false,
+    limit,
   } = props;
   const [currentView, setCurrentViewInternal] = useState<View>();
 
@@ -363,6 +365,7 @@ function ActionView(props: Props, ref: any) {
                 currentView!.type === view.type &&
                 currentView!.view_id === view.view_id
               }
+              limit={limit}
               model={model}
               context={context}
               domain={domain}
@@ -398,6 +401,7 @@ function ActionView(props: Props, ref: any) {
               formView={
                 availableViews.find((v) => v.type === "form") as FormView
               }
+              limit={limit}
             />
           );
         }
@@ -458,6 +462,7 @@ function ActionView(props: Props, ref: any) {
       setSearchTreeNameSearch={setSearchTreeNameSearch}
       searchTreeNameSearch={searchTreeNameSearch}
       goToResourceId={goToResourceId}
+      limit={limit}
     >
       {content()}
       <GoToResourceModal

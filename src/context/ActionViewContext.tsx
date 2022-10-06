@@ -1,5 +1,6 @@
+import { DEFAULT_SEARCH_LIMIT } from "@/hooks/useSearch";
 import { View } from "@/types";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export type ActionViewContextType = {
   title: string;
@@ -50,6 +51,8 @@ export type ActionViewContextType = {
   goToResourceId?: (id: number) => Promise<void>;
   searchValues?: any;
   setSearchValues?: (value: any) => void;
+  limit?: number;
+  setLimit?: (value: number) => void;
 };
 
 export const ActionViewContext =
@@ -60,19 +63,6 @@ type ActionViewProviderProps = ActionViewContextType & {
 };
 
 const ActionViewProvider = (props: ActionViewProviderProps): any => {
-  const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
-  const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
-  const [removingItem, setRemovingItem] = useState<boolean>(false);
-  const [formIsLoading, setFormIsLoading] = useState<boolean>(true);
-  const [treeIsLoading, setTreeIsLoading] = useState<boolean>(true);
-  const [attachments, setAttachments] = useState<any>([]);
-  const [duplicatingItem, setDuplicatingItem] = useState<boolean>(false);
-  const [searchParams, setSearchParams] = useState<any[]>([]);
-  const [searchVisible, setSearchVisible] = useState<boolean>(false);
-  const [graphIsLoading, setGraphIsLoading] = useState<boolean>(true);
-  const [previousView, setPreviousView] = useState<View>();
-  const [searchValues, setSearchValues] = useState<any>({});
-
   const {
     children,
     currentView,
@@ -98,7 +88,24 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     searchTreeNameSearch,
     setSearchTreeNameSearch,
     goToResourceId,
+    limit: limitProps,
   } = props;
+
+  const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
+  const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
+  const [removingItem, setRemovingItem] = useState<boolean>(false);
+  const [formIsLoading, setFormIsLoading] = useState<boolean>(true);
+  const [treeIsLoading, setTreeIsLoading] = useState<boolean>(true);
+  const [attachments, setAttachments] = useState<any>([]);
+  const [duplicatingItem, setDuplicatingItem] = useState<boolean>(false);
+  const [searchParams, setSearchParams] = useState<any[]>([]);
+  const [searchVisible, setSearchVisible] = useState<boolean>(false);
+  const [graphIsLoading, setGraphIsLoading] = useState<boolean>(true);
+  const [previousView, setPreviousView] = useState<View>();
+  const [searchValues, setSearchValues] = useState<any>({});
+  const [limit, setLimit] = useState<number>(
+    limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT
+  );
 
   useEffect(() => {
     if (results && results.length > 0 && !currentItemIndex) {
@@ -106,6 +113,10 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
       setCurrentId?.(results[0].id);
     }
   }, [results]);
+
+  useEffect(() => {
+    setLimit(limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT);
+  }, [limitProps]);
 
   useEffect(() => {
     if (availableViews.length === 1) {
@@ -172,6 +183,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         goToResourceId,
         searchValues,
         setSearchValues,
+        limit,
+        setLimit,
       }}
     >
       {children}
