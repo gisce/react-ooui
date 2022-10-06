@@ -56,7 +56,7 @@ const Container = (props: Props): React.ReactElement => {
       firstRow = firstRow.concat(rowWithEmptiesToFit);
     }
 
-    return rowWithEmptiesToFit.map((item: Widget, j: number) => {
+    return rowWithEmptiesToFit.map((item: Widget) => {
       // We check if we have any label+field inside the container.
       // In this scenario, we must format the grid accordingly
       // Otherwise, the grid will divide uniformly
@@ -64,11 +64,9 @@ const Container = (props: Props): React.ReactElement => {
         fieldInRows = true;
       }
 
-      const itemRowIndex = row.indexOf(item);
-
       return (
         <div
-          key={`${i.toString()}-${itemRowIndex.toString()}`}
+          key={item.key}
           style={{
             ...getSpanStyleForItem({ item, responsiveBehaviour }),
             minWidth: 0,

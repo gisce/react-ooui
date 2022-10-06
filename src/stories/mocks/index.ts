@@ -14,6 +14,7 @@ import attachment from "./models/attachment";
 import crm_case from "./models/crm_case";
 import form_with_gridfiber from "./models/form_with_gridfiber";
 import partner_category from "./models/res_partner_category";
+import activacioContracte from "./models/activacioContracte";
 
 const allModels = [
   cups,
@@ -32,6 +33,7 @@ const allModels = [
   crm_case,
   form_with_gridfiber,
   partner_category,
+  activacioContracte,
 ];
 
 const getMock = (model: string) => {
