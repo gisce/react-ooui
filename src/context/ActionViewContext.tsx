@@ -47,6 +47,7 @@ export type ActionViewContextType = {
   setSearchTreeNameSearch?: (searchString?: string) => void;
   previousView?: View;
   setPreviousView?: (view: View) => void;
+  goToResourceId?: (id: number) => Promise<void>;
 };
 
 export const ActionViewContext =
@@ -93,6 +94,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     selectedRowItems,
     searchTreeNameSearch,
     setSearchTreeNameSearch,
+    goToResourceId,
   } = props;
 
   useEffect(() => {
@@ -159,11 +161,11 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         totalItems,
         setTotalItems,
         searchTreeNameSearch,
-        setSearchTreeNameSearch,
-        setGraphIsLoading,
+        setSearchTreeNameSearch,        setGraphIsLoading,
         graphIsLoading,
         previousView,
         setPreviousView,
+        goToResourceId,
       }}
     >
       {children}

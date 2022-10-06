@@ -66,6 +66,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     searchTreeRef,
     previousView,
     setPreviousView,
+    goToResourceId,
   } = useContext(ActionViewContext) as ActionViewContextType;
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
 
@@ -182,9 +183,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       });
 
       if (newId) {
-        await searchTreeRef?.current?.refreshResults();
-        setCurrentId?.(newId);
-        setCurrentItemIndex?.(currentItemIndex! + 1);
+        await goToResourceId?.(newId);
       }
     } catch (e) {
       showErrorDialog(JSON.stringify(e));
