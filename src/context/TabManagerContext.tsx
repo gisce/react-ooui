@@ -1,5 +1,6 @@
-import { InitialViewData, View, ViewType } from "@/types";
+import { ViewType } from "@/types";
 import { ShortcutApi } from "@/ui/FavouriteButton";
+import { View } from "@/views/ActionView";
 import React, { useState } from "react";
 
 export type TabManagerContextType = {
@@ -23,7 +24,7 @@ export type TabManagerContextType = {
     views: Array<any>;
     title: string;
     target: string;
-    initialView: InitialViewData;
+    initialView: View;
     action_id: number;
     action_type: string;
     res_id?: number | boolean;

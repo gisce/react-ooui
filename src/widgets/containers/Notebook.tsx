@@ -17,7 +17,7 @@ function Notebook(props: Props): React.ReactElement {
 
   function getPageIcon(icon: string) {
     if (icon) {
-      const Icon: React.ElementType = iconMapper(icon) as any;
+      const Icon: React.ElementType = iconMapper(icon);
       return Icon && <Icon />;
     }
     return undefined;

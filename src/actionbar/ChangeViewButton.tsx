@@ -1,17 +1,16 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Menu, Dropdown, Row, Col, Button } from "antd";
 import {
   DownOutlined,
   TableOutlined,
   FormOutlined,
   CheckOutlined,
-  AreaChartOutlined,
-  CalendarOutlined,
 } from "@ant-design/icons";
+import { ViewType } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
-import { GraphView, View } from "@/types";
+import { View } from "@/views/ActionView";
 
 type Props = {
   onChangeView: (view: View) => void;
@@ -19,22 +18,19 @@ type Props = {
   availableViews: View[];
   disabled?: boolean;
   formHasChanges?: boolean;
-  previousView?: View;
-};
-
-const iconsForViewTypes = {
-  tree: <TableOutlined />,
-  form: <FormOutlined />,
-  graph: <AreaChartOutlined />,
-  calendar: <CalendarOutlined />,
 };
 
 function getIconForView(view?: View) {
   if (!view) {
-    return <FormOutlined />;
+    return null;
   }
 
-  return (iconsForViewTypes as any)?.[view.type] || <FormOutlined />;
+  if (view.type === "tree") {
+    return <TableOutlined />;
+  } else {
+    // if (view === "form") {
+    return <FormOutlined />;
+  }
 }
 
 function ChangeViewButton(props: Props) {
@@ -44,30 +40,36 @@ function ChangeViewButton(props: Props) {
     onChangeView,
     disabled = false,
     formHasChanges = false,
-    previousView,
   } = props;
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
 
+  const [previousView, setPreviousView] = useState<View>();
+
+  useEffect(() => {
+    if (availableViews.length === 1) {
+      setPreviousView(availableViews[0]);
+    } else {
+      setPreviousView(
+        availableViews.filter((view) => view.id !== currentView.id)[0]
+      );
+    }
+  }, [availableViews]);
+
   function getMenu() {
-    const menuItems = availableViews.map((view, idx) => {
+    const menuItems = availableViews.map((view) => {
       return (
-        <Menu.Item key={view.view_id || idx}>
+        <Menu.Item key={view.id}>
           <Row wrap={false}>
             <Col flex="none" style={{ paddingRight: 20 }}>
-              {getIconForView(view)}
-            </Col>
-            <Col flex="auto" style={{ paddingRight: 20 }}>
-              {view.type === "graph"
-                ? (view as GraphView).name
-                : view.type.charAt(0).toUpperCase() + view.type.slice(1)}
-            </Col>
-            <Col flex="none">
               <CheckOutlined
-                style={{
-                  opacity: currentView.view_id === view.view_id ? 1 : 0,
-                }}
+                style={{ opacity: currentView === view ? 1 : 0 }}
               />
             </Col>
+
+            <Col flex="auto" style={{ paddingRight: 20 }}>
+              {view.type.charAt(0).toUpperCase() + view.type.slice(1)}
+            </Col>
+            <Col flex="none">{getIconForView(view)}</Col>
           </Row>
         </Menu.Item>
       );
@@ -96,21 +98,24 @@ function ChangeViewButton(props: Props) {
 
   function handleMenuClick(event: any) {
     tryNavigate(() => {
-      const selectedView = availableViews.find(
-        (view) => view.view_id === parseInt(event.key)
-      );
-      onChangeView(selectedView!);
+      setPreviousView(currentView);
+      const selectedView = event.key;
+      onChangeView(selectedView);
     });
+  }
+
+  if (!currentView) {
+    return null;
   }
 
   return (
     <>
       <ButtonWithTooltip
-        tooltip={previousView ? t("viewAs") + " " + t(previousView.type) : ""}
+        tooltip={previousView ? t("viewAs") + " " + t(previousView!.type) : ""}
         icon={getIconForView(previousView)}
         style={{ width: 50 }}
         onClick={() => {
-          handleMenuClick({ key: previousView?.view_id });
+          handleMenuClick({ key: previousView });
         }}
         disabled={disabled || availableViews.length === 1}
       />

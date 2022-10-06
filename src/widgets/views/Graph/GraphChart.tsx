@@ -16,7 +16,7 @@ export type GraphChartProps = {
   domain: any;
   context: any;
   xml: string;
-  limit?: number;
+  limit: number;
 };
 
 export const GraphChart = (props: GraphChartProps) => {

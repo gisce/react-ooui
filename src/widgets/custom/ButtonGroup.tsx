@@ -1,12 +1,8 @@
 import React, { useContext, useState } from "react";
 import Field from "@/common/Field";
-import { DownOutlined } from "@ant-design/icons";
+import { DownOutlined } from '@ant-design/icons';
 import { Dropdown, Menu } from "antd";
-import {
-  ButtonGroup as ButtonGroupOoui,
-  Button as ButtonOoui,
-  Field as FieldOoui,
-} from "@gisce/ooui";
+import { ButtonGroup as ButtonGroupOoui, Button as ButtonOoui, Field as FieldOoui } from "@gisce/ooui";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { LoadingOutlined } from "@ant-design/icons";
@@ -45,7 +41,7 @@ export const ButtonGroup = (props: ButtonGroupProps) => {
   function getButtonIcon() {
     if (isRunning) return <LoadingOutlined />;
     if (icon) {
-      const Icon: React.ElementType = iconMapper(icon) as any;
+      const Icon: React.ElementType = iconMapper(icon);
       return Icon && <Icon />;
     }
     return undefined;
@@ -75,22 +71,21 @@ export const ButtonGroup = (props: ButtonGroupProps) => {
   }
 
   return (
-    <Field ooui={new FieldOoui({ ...{ ooui } })}>
+    <Field ooui={new FieldOoui({...{ooui}})}>
       <Dropdown.Button
         disabled={!activated || readOnly}
         onClick={onClick}
-        icon={<DownOutlined />}
+        icon={<DownOutlined/>}
         type={primary ? "primary" : undefined}
         //danger={danger ? true : undefined} This works but typescript
         // doesn't accept
         overlay={<Items ooui={secondaryButtons} />}
       >
-        {getButtonIcon()}
-        {caption}
+      {getButtonIcon()}{caption}
       </Dropdown.Button>
     </Field>
-  );
-};
+  )
+}
 
 const Items = (props: ItemsProps) => {
   const { ooui } = props;
@@ -135,7 +130,7 @@ const Items = (props: ItemsProps) => {
     function getButtonIcon() {
       if (isRunning) return <LoadingOutlined />;
       if (icon) {
-        const Icon: React.ElementType = iconMapper(icon) as any;
+        const Icon: React.ElementType = iconMapper(icon);
         return Icon && <Icon />;
       }
       return undefined;
@@ -152,5 +147,9 @@ const Items = (props: ItemsProps) => {
       </Menu.Item>
     );
   });
-  return <Menu>{items}</Menu>;
+  return (
+    <Menu>
+      {items}
+    </Menu>
+  )
 };

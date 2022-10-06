@@ -121,7 +121,7 @@ const FavouriteButton = (props: Props) => {
       return;
     }
 
-    const view_id = currentView.view_id!;
+    const view_id = currentView.id;
     let res_id: boolean | number = false;
 
     if (currentView.type === "form") {
@@ -205,7 +205,7 @@ const FavouriteButton = (props: Props) => {
 
       const currentTab = tabs.find((t) => t.key === activeKey);
       const { id: action_id, type: action_type } = currentTab?.action || {};
-      const view_id = currentView.view_id!;
+      const view_id = currentView.id;
       let res_id: boolean | number = false;
 
       if (!action_id || !action_type) {

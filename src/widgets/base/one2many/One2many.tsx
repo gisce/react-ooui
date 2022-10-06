@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { One2many as One2manyOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { Spin, Alert } from "antd";
-import { Views, ViewType } from "@/types";
+import { Views } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import One2manyProvider from "@/context/One2manyContext";
 import { One2manyInput } from "@/widgets/base/one2many/One2manyInput";
@@ -13,11 +13,13 @@ type Props = {
   ooui: One2manyOoui;
 };
 
+export type ViewModes = "tree" | "form" | "graph";
+
 export const One2many = (props: Props) => {
   const { ooui } = props;
   const { mode, relation, views: oouiViews, required, context } = ooui;
 
-  let initialView: ViewType;
+  let initialView: ViewModes;
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>();
   const [views, setViews] = useState<Views>(new Map<string, any>());
@@ -28,7 +30,7 @@ export const One2many = (props: Props) => {
     fetchData();
   }, [ooui]);
 
-  const getViewData = async (type: ViewType) => {
+  const getViewData = async (type: ViewModes) => {
     if (oouiViews && oouiViews[type]) {
       return oouiViews[type];
     }
@@ -45,7 +47,7 @@ export const One2many = (props: Props) => {
 
     try {
       if (mode && mode.length > 0) {
-        for (const m of mode as ViewType[]) {
+        for (const m of mode as ViewModes[]) {
           const v = await getViewData(m);
           views.set(m, v)
         }
@@ -65,7 +67,7 @@ export const One2many = (props: Props) => {
   };
 
   if (mode && mode.length > 0) {
-    initialView = mode[0] as ViewType;
+    initialView = mode[0] as ViewModes;
   } else {
     initialView = "tree";
   }

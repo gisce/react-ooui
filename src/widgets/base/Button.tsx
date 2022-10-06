@@ -53,7 +53,7 @@ export const Button = (props: Props) => {
   function getButtonIcon() {
     if (isRunning) return <LoadingOutlined />;
     if (icon) {
-      const Icon: React.ElementType = iconMapper(icon) as any;
+      const Icon: React.ElementType = iconMapper(icon);
       return Icon && <Icon />;
     }
     return undefined;

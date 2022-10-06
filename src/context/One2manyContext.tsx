@@ -1,9 +1,9 @@
-import { ViewType } from "@/types";
 import React, { useState } from "react";
+import { ViewModes } from "@/widgets/base/one2many/One2many";
 
 export type One2manyContextType = {
-  currentView: ViewType;
-  setCurrentView: (view: ViewType) => void;
+  currentView: ViewModes;
+  setCurrentView: (view: ViewModes) => void;
   itemIndex: number;
   setItemIndex: (value: number) => void;
   manualTriggerChange: boolean;
@@ -19,9 +19,9 @@ const One2manyProvider = ({
   initialView,
 }: {
   children: React.ReactNode;
-  initialView: ViewType;
+  initialView: ViewModes;
 }): any => {
-  const [currentView, setCurrentView] = useState<ViewType>(initialView);
+  const [currentView, setCurrentView] = useState<ViewModes>(initialView);
   const [itemIndex, setItemIndex] = useState<number>(0);
   const [manualTriggerChange, setManualTriggerChange] = useState<boolean>(
     false

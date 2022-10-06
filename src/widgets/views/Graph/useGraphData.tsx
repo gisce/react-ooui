@@ -16,7 +16,7 @@ export type GraphDataQueryOpts = {
   model: string;
   domain?: any;
   context?: any;
-  limit?: number;
+  limit: number;
 };
 
 export type GraphDataOpts = GraphDataQueryOpts & {
@@ -126,7 +126,7 @@ async function retrieveData({
   domain: any;
   context: any;
   order: string | null;
-  limit?: number;
+  limit: number;
 }) {
   const values: any[] = (await ConnectionProvider.getHandler().search({
     model,

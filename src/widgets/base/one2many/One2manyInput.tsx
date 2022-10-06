@@ -10,7 +10,7 @@ import {
   parseGraph,
   transformDomainForChildWidget,
 } from "@gisce/ooui";
-import { Views, ViewType } from "@/types";
+import { Views } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import { FormModal } from "@/widgets/modals/FormModal";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
@@ -25,6 +25,7 @@ import { One2manyTopBar } from "@/widgets/base/one2many/One2manyTopBar";
 import { readObjectValues, getNextPendingId } from "@/helpers/one2manyHelper";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { ViewModes } from "@/widgets/base/one2many/One2many";
 import { sortResults, sortResultsWithOrder } from "@/helpers/treeHelper";
 
 type One2manyValue = {
@@ -89,8 +90,9 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
   const [modalItem, setModalItem] = useState<One2manyItem>();
   const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
-  const [continuousEntryMode, setContinuousEntryMode] =
-    useState<boolean>(false);
+  const [continuousEntryMode, setContinuousEntryMode] = useState<boolean>(
+    false
+  );
   const transformedDomain = useRef<any[]>([]);
   const [sorter, setSorter] = useState<any>();
   const originalSortItemIds = useRef<number[]>();
@@ -183,7 +185,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     const keys = Array.from(views.keys());
     const nextView = keys[
       (keys.indexOf(currentView) + 1) % keys.length
-    ] as ViewType;
+    ] as ViewModes;
     if (currentView === "form") {
       showFormChangesDialogIfNeeded(() => {
         setCurrentView(nextView);
@@ -484,7 +486,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
   // TODO: improve this. Do we really have to parse the entire object just to get the title?
   function getTitle() {
-    const ViewType: any = (ViewObjects as any)[currentView];
+    const ViewType: any = ViewObjects[currentView];
     if (currentView === "graph") {
       const parsedGraph = parseGraph(views.get("graph").arch);
       return parsedGraph.string!;

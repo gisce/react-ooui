@@ -5,7 +5,7 @@ const convertBooleanParamIfNeeded = (value: any) => {
   return value;
 };
 
-export const getParamsForFields = (values: any, fields: any) => {
+const getParamsForFields = (values: any, fields: any) => {
   const filteredValues = removeUndefinedFields(values);
   const groupedDateTime = groupDateTimeValuesIfNeeded(filteredValues);
   const groupedValues = ungroupDateValuesIfNeeded(groupedDateTime, fields);
@@ -88,7 +88,7 @@ const removeDateTimeSingleFields = (values: any) => {
   return newValues;
 };
 
-export const groupDateTimeValuesIfNeeded = (values: any) => {
+const groupDateTimeValuesIfNeeded = (values: any) => {
   const newValues: any = { ...removeDateTimeSingleFields(values) };
 
   const datetimeDateFields = getDatetimeDateFields(values);
@@ -148,7 +148,7 @@ const ungroupDateValuesIfNeeded = (values: any, fields: any) => {
   return newValues;
 };
 
-export const removeUndefinedFields = (values: any) => {
+const removeUndefinedFields = (values: any) => {
   const newValues = { ...values };
   Object.keys(newValues).forEach(
     (key) =>
@@ -160,33 +160,8 @@ export const removeUndefinedFields = (values: any) => {
   return newValues;
 };
 
-export const getUniqueFieldsForParams = (params: any[]) => {
-  const uniqueFields: any = {};
-
-  params.forEach((param) => {
-    if (Array.isArray(param) && param[0]) {
-      uniqueFields[param[0]] = true;
-    } else {
-      uniqueFields[param] = true;
-    }
-  });
-
-  return Object.keys(uniqueFields);
-};
-
-export const mergeParams = (searchParams: any[], domainParams: any[]) => {
-  const finalParams = searchParams;
-  const uniqueParams = getUniqueFieldsForParams(searchParams);
-
-  domainParams.forEach((element) => {
-    if (Array.isArray(element) && element[0]) {
-      if (!uniqueParams.includes(element[0])) {
-        finalParams.push(element);
-      }
-    } else if (!uniqueParams.includes(element)) {
-      finalParams.push(element);
-    }
-  });
-
-  return finalParams;
+export {
+  removeUndefinedFields,
+  groupDateTimeValuesIfNeeded,
+  getParamsForFields,
 };

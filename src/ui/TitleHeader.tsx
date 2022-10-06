@@ -9,12 +9,11 @@ import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 const { Title, Text } = Typography;
 
 type Props = {
-  title?: string;
   children?: any;
 };
 
 function TitleHeader(props: Props) {
-  const { title: titleProps, children } = props;
+  const { children } = props;
   const {
     title,
     currentView,
@@ -74,13 +73,13 @@ function TitleHeader(props: Props) {
   return (
     <div style={{ position: "sticky", top: 80, zIndex: 3 }}>
       <Row
-        className="rounded shadow-md bg-blueGray-100"
+        className="bg-blueGray-100 shadow-md rounded"
         style={{ padding: "1em" }}
         align="middle"
       >
         <Col flex={2}>
           <Title level={3} style={{ marginBottom: 0 }}>
-            {titleProps || title}
+            {title}
           </Title>
           {getSummary()}
         </Col>

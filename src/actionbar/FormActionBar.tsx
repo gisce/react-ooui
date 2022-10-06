@@ -38,9 +38,10 @@ import {
 } from "@/context/ContentRootContext";
 import AttachmentsButton from "./AttachmentsButton";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { View } from "@/views/ActionView";
 import { Attachment } from "./AttachmentsButtonWrapper";
 
-function FormActionBar({ toolbar }: { toolbar: any }) {
+function FormActionBar() {
   const {
     availableViews,
     currentView,
@@ -60,12 +61,11 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     setDuplicatingItem,
     setResults,
     formIsLoading,
+    toolbar,
     attachments,
     formRef,
     setFormHasChanges,
     searchTreeRef,
-    previousView,
-    setPreviousView,
     goToResourceId,
   } = useContext(ActionViewContext) as ActionViewContextType;
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
@@ -294,10 +294,10 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       {separator()}
       <ChangeViewButton
         currentView={currentView}
-        previousView={previousView}
-        availableViews={availableViews}
+        availableViews={availableViews.filter(
+          (view: View) => view.type === "tree" || view.type === "form"
+        )}
         onChangeView={(view: any) => {
-          setPreviousView?.(currentView);
           setFormHasChanges?.(false);
           setCurrentView?.(view);
         }}
