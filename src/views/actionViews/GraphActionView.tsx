@@ -10,6 +10,8 @@ import { FormView, TreeView } from "@/types";
 import { mergeSearchFields } from "@/helpers/formHelper";
 import { useSearch } from "@/hooks/useSearch";
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
+import { Spin } from "antd";
+import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 export type GraphActionViewProps = {
   viewData: any;
@@ -45,22 +47,26 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     setTreeIsLoading = undefined,
   } = actionViewContext || {};
 
-  const { searchParams } = useContext(
+  const { searchParams, searchValues, setSearchValues } = useContext(
     ActionViewContext
   ) as ActionViewContextType;
+  const { t } = useContext(LocaleContext) as LocaleContextType;
 
   const {
     submit,
     clear,
-    tableRefreshing,
     searchFilterLoading,
     searchError,
     offset,
     limit,
+    tableRefreshing,
+    totalItems,
   } = useSearch({
     model,
     setSearchTreeNameSearch,
     setSelectedRowItems,
+    searchParams,
+    setSearchValues,
     setSearchParams,
     setSearchVisible,
     setTreeIsLoading,
@@ -107,14 +113,21 @@ export const GraphActionView = (props: GraphActionViewProps) => {
         onSubmit={submit}
         searchError={searchError}
         searchVisible={searchVisible}
+        searchValues={searchValues}
       />
-      <Graph
-        ref={graphRef}
-        view_id={viewData.view_id}
-        model={model}
-        context={context}
-        domain={searchParams || domain}
-      />
+      {tableRefreshing ? (
+        <Spin />
+      ) : (
+        <>
+          <Graph
+            ref={graphRef}
+            view_id={viewData.view_id}
+            model={model}
+            context={context}
+            domain={searchParams || domain}
+          />
+        </>
+      )}
     </>
   );
 };

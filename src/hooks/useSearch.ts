@@ -12,6 +12,7 @@ type UseSearchOpts = {
   model: string;
   setSearchTreeNameSearch?: (searchString?: string) => void;
   setSelectedRowItems?: (value: any[]) => void;
+  searchParams?: any[];
   setSearchParams?: (value: any[]) => void;
   setSearchVisible?: (value: boolean) => void;
   setTreeIsLoading?: (value: boolean) => void;
@@ -31,6 +32,7 @@ type UseSearchOpts = {
   limitFromAction?: number;
   limit?: number;
   setLimit?: (value: number) => void;
+  setSearchValues?: (value: any) => void;
 };
 
 export const DEFAULT_SEARCH_LIMIT = 80;
@@ -59,9 +61,9 @@ export const useSearch = (opts: UseSearchOpts) => {
     limitFromAction,
     limit,
     setLimit,
+    searchParams = [],
+    setSearchValues,
   } = opts;
-
-  console.log("useSearch rerender: " + JSON.stringify(opts));
 
   const [tableRefreshing, setTableRefreshing] = useState<boolean>(false);
   const [searchFilterLoading, setSearchFilterLoading] =
@@ -73,7 +75,6 @@ export const useSearch = (opts: UseSearchOpts) => {
   const [resultsInternal, setResultsInternal] = useState<any>([]);
   const [colorsForResults, setColorsForResults] = useState<any>(undefined);
 
-  const paramsRef = useRef<Array<any>>([]);
   const originalResults = useRef<any[]>([]);
   const internalLimit = useRef(80);
   const actionDomain = useRef<any>([]);
@@ -172,12 +173,12 @@ export const useSearch = (opts: UseSearchOpts) => {
     const domainParams =
       actionDomain.current.length > 0 ? actionDomain.current : domain;
 
-    const searchParams = mergeParams(paramsRef.current, domainParams);
+    const mergedParams = mergeParams(searchParams, domainParams);
     const { colors } = getTree(treeView!);
 
     const { totalItems, results, attrsEvaluated } =
       await ConnectionProvider.getHandler().searchForTree({
-        params: searchParams,
+        params: mergedParams,
         limit,
         offset,
         model,
@@ -200,11 +201,6 @@ export const useSearch = (opts: UseSearchOpts) => {
           })
         : [...originalResults.current];
 
-    totalItems.then((value) => {
-      setTotalItems(value);
-      setActionViewTotalItems?.(value);
-    });
-
     setResults(resultsSorted);
 
     if (resultsActionView && resultsSorted.length > 0) {
@@ -220,6 +216,11 @@ export const useSearch = (opts: UseSearchOpts) => {
     } else {
       setCurrentItemIndex?.(undefined);
     }
+
+    const totalItemsValue = await totalItems;
+
+    setTotalItems(totalItemsValue);
+    setActionViewTotalItems?.(totalItemsValue);
   }, [
     setCurrentItemIndex,
     resultsActionView,
@@ -235,6 +236,7 @@ export const useSearch = (opts: UseSearchOpts) => {
     limit,
     offset,
     actionDomain,
+    searchParams,
   ]);
 
   const fetchResults = useCallback(async () => {
@@ -298,15 +300,17 @@ export const useSearch = (opts: UseSearchOpts) => {
       params: newParams,
       limit: newLimit,
       offset: newOffset,
+      searchValues,
     }: {
       params: any;
       limit: number;
       offset: number;
+      searchValues: any;
     }) => {
       if (tableRefreshing) return;
-      paramsRef.current = newParams;
       setSearchTreeNameSearch?.(undefined);
       setSelectedRowItems?.([]);
+      setSearchValues?.(searchValues);
       setSearchParams?.(newParams);
       setSearchVisible?.(false);
       setSearchFilterLoading(true);
@@ -343,8 +347,8 @@ export const useSearch = (opts: UseSearchOpts) => {
   const clear = useCallback(() => {
     if (tableRefreshing) return;
     setSearchTreeNameSearch?.(undefined);
-    paramsRef.current = [];
     setSearchParams?.([]);
+    setSearchValues?.({});
     setSearchError(undefined);
     setOffset(0);
     setPage(1);

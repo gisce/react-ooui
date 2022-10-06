@@ -101,6 +101,7 @@ function SearchTree(props: Props, ref: any) {
     results: resultsActionView = undefined,
     selectedRowItems = undefined,
     setSelectedRowItems = undefined,
+    searchParams = [],
     setSearchParams = undefined,
     searchVisible = true,
     setSearchVisible = undefined,
@@ -109,6 +110,8 @@ function SearchTree(props: Props, ref: any) {
     setTotalItems: setActionViewTotalItems = undefined,
     setSearchTreeNameSearch = undefined,
     setTreeIsLoading = undefined,
+    searchValues = {},
+    setSearchValues = undefined,
   } = (rootTree ? actionViewContext : {}) || {};
 
   const {
@@ -131,6 +134,8 @@ function SearchTree(props: Props, ref: any) {
     setSearchTreeNameSearch,
     setSelectedRowItems,
     setSearchParams,
+    setSearchValues,
+    searchParams,
     setSearchVisible,
     setTreeIsLoading,
     nameSearch,
@@ -327,6 +332,7 @@ function SearchTree(props: Props, ref: any) {
           setSearchFilterHeight={setSearchFilterHeight}
           searchError={searchError}
           searchVisible={searchVisible}
+          searchValues={searchValues}
         />
         <Tree
           total={totalItems}

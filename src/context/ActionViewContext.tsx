@@ -48,6 +48,8 @@ export type ActionViewContextType = {
   previousView?: View;
   setPreviousView?: (view: View) => void;
   goToResourceId?: (id: number) => Promise<void>;
+  searchValues?: any;
+  setSearchValues?: (value: any) => void;
 };
 
 export const ActionViewContext =
@@ -69,6 +71,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [searchVisible, setSearchVisible] = useState<boolean>(false);
   const [graphIsLoading, setGraphIsLoading] = useState<boolean>(true);
   const [previousView, setPreviousView] = useState<View>();
+  const [searchValues, setSearchValues] = useState<any>({});
 
   const {
     children,
@@ -161,11 +164,14 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         totalItems,
         setTotalItems,
         searchTreeNameSearch,
-        setSearchTreeNameSearch,        setGraphIsLoading,
+        setSearchTreeNameSearch,
+        setGraphIsLoading,
         graphIsLoading,
         previousView,
         setPreviousView,
         goToResourceId,
+        searchValues,
+        setSearchValues,
       }}
     >
       {children}

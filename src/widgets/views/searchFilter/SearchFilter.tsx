@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Row, Col, Alert } from "antd";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
@@ -28,6 +28,7 @@ type Props = {
   searchVisible?: boolean;
   setSearchFilterHeight?: (height: number) => void;
   searchError?: string;
+  searchValues?: any;
 };
 
 function SearchFilter(props: Props) {
@@ -43,6 +44,7 @@ function SearchFilter(props: Props) {
     searchVisible,
     setSearchFilterHeight,
     searchError,
+    searchValues,
   } = props;
 
   const [simpleSearchFields, setSimpleSearchFields] = useState<Container>();
@@ -50,6 +52,10 @@ function SearchFilter(props: Props) {
   const [advancedFilter, setAdvancedFilter] = useState(false);
 
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    form.setFieldsValue(searchValues);
+  }, [searchValues]);
 
   const getRowsAndCols = () => {
     if (!advancedSearchFields) {
@@ -90,7 +96,7 @@ function SearchFilter(props: Props) {
     delete values.limit;
     const newParams = getParamsForFields(values, fields);
 
-    onSubmit({ params: newParams, offset, limit });
+    onSubmit({ params: newParams, offset, limit, searchValues: values });
   };
 
   return (
@@ -122,7 +128,7 @@ function SearchFilter(props: Props) {
                 }}
                 isSearching={isSearching}
               />
-            </Form>{" "}
+            </Form>
             {searchError && (
               <Alert
                 className="mt-10"
