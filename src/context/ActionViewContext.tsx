@@ -45,6 +45,8 @@ export type ActionViewContextType = {
   setTotalItems: (totalItems: number) => void;
   searchTreeNameSearch?: string;
   setSearchTreeNameSearch?: (searchString?: string) => void;
+  previousView?: View;
+  setPreviousView?: (view: View) => void;
 };
 
 export const ActionViewContext =
@@ -65,6 +67,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [searchParams, setSearchParams] = useState<any[]>([]);
   const [searchVisible, setSearchVisible] = useState<boolean>(false);
   const [graphIsLoading, setGraphIsLoading] = useState<boolean>(true);
+  const [previousView, setPreviousView] = useState<View>();
 
   const {
     children,
@@ -98,6 +101,16 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
       setCurrentId?.(results[0].id);
     }
   }, [results]);
+
+  useEffect(() => {
+    if (availableViews.length === 1) {
+      setPreviousView(availableViews[0]);
+    } else if (availableViews.length > 1) {
+      setPreviousView(
+        availableViews.filter((view) => view.view_id !== currentView.view_id)[0]
+      );
+    }
+  }, [availableViews]);
 
   const callOnFormSave = () => {
     (formRef.current as any)?.submitForm();
@@ -149,6 +162,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setSearchTreeNameSearch,
         setGraphIsLoading,
         graphIsLoading,
+        previousView,
+        setPreviousView,
       }}
     >
       {children}

@@ -9,6 +9,7 @@ import ActionButton from "./ActionButton";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import ButtonWithBadge from "./ButtonWithBadge";
 import { ReloadOutlined, FilterOutlined } from "@ant-design/icons";
+import { View } from "@/types";
 
 function GraphActionBar({ refreshGraph }: { refreshGraph: () => void }) {
   const { t } = useContext(LocaleContext) as LocaleContextType;
@@ -20,6 +21,8 @@ function GraphActionBar({ refreshGraph }: { refreshGraph: () => void }) {
     searchVisible,
     setSearchVisible,
     graphIsLoading,
+    previousView,
+    setPreviousView,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   return (
@@ -50,8 +53,12 @@ function GraphActionBar({ refreshGraph }: { refreshGraph: () => void }) {
       <ChangeViewButton
         currentView={currentView}
         availableViews={availableViews}
-        onChangeView={setCurrentView}
+        onChangeView={(newView: View) => {
+          setPreviousView?.(currentView);
+          setCurrentView?.(newView);
+        }}
         disabled={false}
+        previousView={previousView}
       />
     </Space>
   );
