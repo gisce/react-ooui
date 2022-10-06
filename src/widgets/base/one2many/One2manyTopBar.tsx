@@ -1,6 +1,5 @@
 import React from "react";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
-import { ViewModes } from "@/widgets/base/one2many/One2many";
 
 import {
   FileAddOutlined,
@@ -11,10 +10,11 @@ import {
   SearchOutlined,
   ApiOutlined,
 } from "@ant-design/icons";
+import { ViewType } from "@/types";
 
 type One2manyTopBarProps = {
   title: string;
-  mode: ViewModes;
+  mode: ViewType;
   isMany2Many: boolean;
   readOnly: boolean;
   formHasChanges: boolean;
@@ -56,8 +56,8 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
 
   function title() {
     return (
-      <div className="h-8 flex flex-grow bg-gray-700 text-gray-200">
-        <div className="h-full flex flex-col justify-center items-center">
+      <div className="flex flex-grow h-8 text-gray-200 bg-gray-700">
+        <div className="flex flex-col items-center justify-center h-full">
           <span className="pl-2 font-bold">{titleString}</span>
         </div>
       </div>
@@ -115,7 +115,7 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
   return (
     <div className="flex mb-2">
       {title()}
-      <div className="h-8 flex-none pl-2">
+      <div className="flex-none h-8 pl-2">
         {mode !== "graph" && showCreateButton && (
           <ButtonWithTooltip
             tooltip={"Create new item"}

@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "1.0.19",
+  "version": "1.1.0",
   "files": [
     "dist",
     "src",
@@ -24,7 +24,7 @@
   },
   "scripts": {
     "prerelease": "npm version prerelease --preid rc",
-    "start": "vite build --watch --force",
+    "start": "while :; do vite build --watch --force; done",
     "build:tailwind": "postcss src/tailwind.css -o src/tailwind.generated.css",
     "build": "vite build",
     "test": "jest",

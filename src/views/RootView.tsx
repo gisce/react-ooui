@@ -8,13 +8,13 @@ import { ConnectionProvider, ContentRootProvider, FormView } from "..";
 import { v4 as uuidv4 } from "uuid";
 import Welcome from "./Welcome";
 import TabManagerProvider from "@/context/TabManagerContext";
-import ActionView, { View } from "./ActionView";
+import ActionView from "./ActionView";
 import { parseContext } from "@gisce/ooui";
 import LocaleContextProvider from "@/context/LocaleContext";
 import { tForLang } from "@/context/LocaleContext";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import showErrorDialog from "@/ui/ActionErrorDialog";
-import { ViewType } from "@/types";
+import { InitialViewData, ViewType } from "@/types";
 
 type RootViewProps = {
   children: React.ReactNode;
@@ -361,9 +361,8 @@ function RootView(props: RootViewProps, ref: any) {
     res_id?: number;
     domain?: any;
   }) {
-    const actionString = await ConnectionProvider.getHandler().getActionStringForModel(
-      model
-    );
+    const actionString =
+      await ConnectionProvider.getHandler().getActionStringForModel(model);
     await retrieveAndOpenAction({
       action: actionString,
       values,
@@ -395,7 +394,7 @@ function RootView(props: RootViewProps, ref: any) {
     views: Array<any>;
     title: string;
     target: string;
-    initialView: View;
+    initialView: InitialViewData;
     action_id: number;
     action_type: string;
     res_id?: number | boolean;
