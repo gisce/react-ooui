@@ -128,6 +128,7 @@ export const GraphActionView = (props: GraphActionViewProps) => {
             model={model}
             context={context}
             domain={searchParams || domain}
+            limit={limit}
           />
         </>
       )}
