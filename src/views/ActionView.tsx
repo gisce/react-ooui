@@ -46,6 +46,7 @@ type Props = {
   action_id: number;
   action_type: string;
   treeExpandable?: boolean;
+  limit?: number;
 };
 
 export type View = {
@@ -69,6 +70,7 @@ function ActionView(props: Props, ref: any) {
     action_id,
     action_type,
     treeExpandable = false,
+    limit
   } = props;
   const [currentView, setCurrentViewInternal] = useState<View>();
   const [availableViews, setAvailableViews] = useState<View[]>([]);
@@ -341,6 +343,7 @@ function ActionView(props: Props, ref: any) {
           ref={searchTreeRef}
           rootTree={true}
           model={model}
+          limit={limit}
           parentContext={context}
           nameSearch={searchTreeNameSearch}
           formView={formView}
