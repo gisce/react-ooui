@@ -24,7 +24,7 @@ export const Integer = (props: IntegerProps) => {
         className={"w-full " + requiredClass}
         disabled={readOnly}
         formatter={(value) => {
-          return `${value}`.replace(/[^0-9]+/g, "");
+          return `${value}`.replace(/[^0-9]-+/g, "");
         }}
         onChange={(newValue: any) => {
           const newNumber = newValue as number;
