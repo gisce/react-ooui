@@ -160,22 +160,6 @@ function sortResults({
   return resultsToSort.sort(sortFn);
 }
 
-function sortResultsWithOrder(results: any[], order: number[]) {
-  if (!order) {
-    const sortResultsById = results.sort((a: any, b: any) => {
-      return a.id - b.id;
-    });
-    return sortResultsById;
-  }
-
-  const sortedResults = results.sort((a: any, b: any) => {
-    const aIndex = order.indexOf(a.id);
-    const bIndex = order.indexOf(b.id);
-    return aIndex - bIndex;
-  });
-  return sortedResults;
-}
-
 export {
   getTableColumns,
   getTableItems,
@@ -184,5 +168,4 @@ export {
   itemHasBooleans,
   getColorMap,
   sortResults,
-  sortResultsWithOrder,
 };
