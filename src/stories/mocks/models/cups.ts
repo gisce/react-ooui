@@ -217,7 +217,7 @@ export default {
       dp: {
         size: 5,
         string: "Codi Postal",
-        type: "integer",
+        type: "float",
         views: {},
       },
       es: {
