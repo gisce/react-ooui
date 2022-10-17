@@ -128,6 +128,17 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     }
   }, [availableViews]);
 
+  useEffect(() => {
+    if (
+      previousView?.view_id === currentView.view_id &&
+      availableViews.length > 1
+    ) {
+      setPreviousView(
+        availableViews.filter((view) => view.view_id !== currentView.view_id)[0]
+      );
+    }
+  }, [currentView]);
+
   const callOnFormSave = () => {
     (formRef.current as any)?.submitForm();
   };
