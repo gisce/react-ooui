@@ -23,7 +23,9 @@
     "access": "public"
   },
   "scripts": {
-    "prerelease": "npm version prerelease --preid rc",
+    "preminor": "npm version preminor --preid rc",
+    "prepatch": "npm version prepatch --preid rc",
+    "premajor": "npm version premajor --preid rc",
     "start": "while :; do vite build --watch --force; done",
     "build:tailwind": "postcss src/tailwind.css -o src/tailwind.generated.css",
     "build": "vite build",
@@ -33,7 +35,7 @@
   },
   "dependencies": {
     "@ant-design/plots": "^1.0.9",
-    "@gisce/ooui": "^0.17.6",
+    "@gisce/ooui": "^0.17.7",
     "@gisce/react-formiga-table": "^0.5.0",
     "@monaco-editor/react": "^4.4.5",
     "@tabler/icons": "^1.96.0",

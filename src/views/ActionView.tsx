@@ -401,7 +401,6 @@ function ActionView(props: Props, ref: any) {
               formView={
                 availableViews.find((v) => v.type === "form") as FormView
               }
-              limit={limit}
             />
           );
         }

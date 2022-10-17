@@ -62,9 +62,10 @@ export const BinaryInput = (props: BinaryInputProps) => {
     const linkSource = `data:${fileType?.mime};base64,${value}`;
     const downloadLink = document.createElement("a");
     const fileName = getFieldValue(filenameField);
+    const name = getFieldValue("name");
 
     downloadLink.href = linkSource;
-    downloadLink.download = fileName;
+    downloadLink.download = fileName || name;
     downloadLink.click();
   }
 

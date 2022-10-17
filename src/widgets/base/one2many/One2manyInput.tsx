@@ -25,7 +25,7 @@ import { One2manyTopBar } from "@/widgets/base/one2many/One2manyTopBar";
 import { readObjectValues, getNextPendingId } from "@/helpers/one2manyHelper";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
-import { sortResults, sortResultsWithOrder } from "@/helpers/treeHelper";
+import { sortResults } from "@/helpers/treeHelper";
 
 type One2manyValue = {
   fields?: any;
@@ -546,10 +546,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
             ...(views.get("form")?.fields || {}),
           },
         })
-      : sortResultsWithOrder(
-          itemsToShow.map((item) => item.treeValues),
-          originalSortItemIds.current!
-        );
+      : itemsToShow.map((item) => item.treeValues);
 
     if (currentView === "tree") {
       return (
