@@ -17,6 +17,7 @@ import {
 } from "@/context/TabManagerContext";
 import { FormModal } from "@/widgets/modals/FormModal";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { transformPlainMany2Ones } from "@/helpers/formHelper";
 
 export type ContentRootContextType = {
   processAction: ({
@@ -225,7 +226,10 @@ const ContentRootProvider = (
     if (actionData.domain) {
       parsedDomain = await ConnectionProvider.getHandler().evalDomain({
         domain: actionData.domain,
-        values: { ...values, ...globalValues },
+        values: transformPlainMany2Ones({
+          fields,
+          values: { ...values, ...globalValues },
+        }),
         context: mergedContext,
       });
     }
