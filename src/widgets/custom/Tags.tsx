@@ -6,7 +6,7 @@ import { One2manyItem, One2manyValue } from "../base/one2many/One2manyInput";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { Alert, Tag as AntTag, Select } from "antd";
-import { colorFromString } from "@/helpers/formHelper";
+import { colorFromString, transformPlainMany2Ones } from "@/helpers/formHelper";
 import ConnectionProvider from "@/ConnectionProvider";
 
 type TagsProps = WidgetProps & {
@@ -65,8 +65,11 @@ export const TagsInput = (props: TagsInputProps) => {
         const evaluatedDomain = await ConnectionProvider.getHandler().evalDomain(
           {
             domain: ooui.domain,
-            values: formContext.getPlainValues(),
-            context: formContext.getContext(),
+            values: transformPlainMany2Ones({
+              fields: formContext?.getFields(),
+              values: formContext.getPlainValues(),
+            }),
+                context: formContext.getContext(),
           }
         );
         params = [...params, ...evaluatedDomain];
@@ -87,7 +90,7 @@ export const TagsInput = (props: TagsInputProps) => {
         return {label: formattedValue, value: item.id}
       });
       setOptions(options);
-      
+
     } catch (err) {
       setError(err as any)
     } finally {
@@ -156,5 +159,5 @@ export const TagsInput = (props: TagsInputProps) => {
       </div>
     </>
   );
-  
+
 };

@@ -15,6 +15,7 @@ import { tForLang } from "@/context/LocaleContext";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import { InitialViewData, ViewType } from "@/types";
+import { transformPlainMany2Ones } from "@/helpers/formHelper";
 
 type RootViewProps = {
   children: React.ReactNode;
@@ -245,7 +246,10 @@ function RootView(props: RootViewProps, ref: any) {
     const parsedDomain = domain
       ? await ConnectionProvider.getHandler().evalDomain({
           domain: domain,
-          values: { ...values, ...globalValues },
+          values: transformPlainMany2Ones({
+            fields,
+            values: { ...values, ...globalValues },
+          }),
           context: { ...rootContext, ...parsedContext },
         })
       : [];

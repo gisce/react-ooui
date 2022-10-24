@@ -26,6 +26,7 @@ import { readObjectValues, getNextPendingId } from "@/helpers/one2manyHelper";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { sortResults } from "@/helpers/treeHelper";
+import { transformPlainMany2Ones } from "@/helpers/formHelper";
 
 type One2manyValue = {
   fields?: any;
@@ -78,7 +79,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   ) as One2manyContextType;
 
   const formContext = useContext(FormContext) as FormContextType;
-  const { activeId, getValues, getContext, domain } = formContext || {};
+  const { activeId, getFields, getValues, getContext, domain } =
+    formContext || {};
   const { lang, t } = useContext(LocaleContext) as LocaleContextType;
 
   const formRef = useRef();
@@ -162,7 +164,10 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       transformedDomain.current = transformDomainForChildWidget({
         domain: await ConnectionProvider.getHandler().evalDomain({
           domain: widgetDomain,
-          values: getValues(),
+          values: transformPlainMany2Ones({
+            fields: getFields(),
+            values: getValues(),
+          }),
           context: getContext(),
         }),
         widgetFieldName: fieldName,
