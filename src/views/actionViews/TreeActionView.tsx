@@ -36,7 +36,6 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     setCurrentView,
     availableViews,
     searchTreeNameSearch,
-    limit,
   } = props;
 
   if (!visible) {

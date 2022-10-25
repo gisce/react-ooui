@@ -175,7 +175,7 @@ export const getUniqueFieldsForParams = (params: any[]) => {
 };
 
 export const mergeParams = (searchParams: any[], domainParams: any[]) => {
-  const finalParams = searchParams;
+  const finalParams = [...searchParams];
   const uniqueParams = getUniqueFieldsForParams(searchParams);
 
   domainParams.forEach((element) => {
