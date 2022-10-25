@@ -75,7 +75,6 @@ export const useSearch = (opts: UseSearchOpts) => {
   const internalLimit = useRef(limit || DEFAULT_SEARCH_LIMIT);
 
   const originalResults = useRef<any[]>([]);
-  const actionDomain = useRef<any>([]);
 
   const setResults = useCallback((results: any) => {
     setResultsActionView?.([...results]);
@@ -94,7 +93,7 @@ export const useSearch = (opts: UseSearchOpts) => {
       model,
       payload: nameSearch,
       limit: internalLimit.current,
-      attrs: actionDomain.current.length > 0 ? actionDomain.current : domain,
+      attrs: domain,
       context,
     });
 
@@ -163,14 +162,10 @@ export const useSearch = (opts: UseSearchOpts) => {
     sorter,
     setCurrentItemIndex,
     setActionViewTotalItems,
-    actionDomain,
   ]);
 
   const searchResults = useCallback(async () => {
-    const domainParams =
-      actionDomain.current.length > 0 ? actionDomain.current : domain;
-
-    const mergedParams = mergeParams(searchParams, domainParams);
+    const mergedParams = mergeParams(searchParams, domain);
     const { colors } = getTree(treeView!);
 
     const { totalItems, results, attrsEvaluated } =
@@ -232,7 +227,6 @@ export const useSearch = (opts: UseSearchOpts) => {
     setActionViewTotalItems,
     limit,
     offset,
-    actionDomain,
     searchParams,
   ]);
 
@@ -253,7 +247,6 @@ export const useSearch = (opts: UseSearchOpts) => {
       setTreeIsLoading?.(false);
     }
   }, [
-    actionDomain,
     context,
     currentId,
     domain,
