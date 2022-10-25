@@ -164,109 +164,117 @@ export const useSearch = (opts: UseSearchOpts) => {
     setActionViewTotalItems,
   ]);
 
-  const searchResults = useCallback(async () => {
-    const mergedParams = mergeParams(searchParams, domain);
-    const { colors } = getTree(treeView!);
+  const searchResults = useCallback(
+    async (opts?: { params: any; newOffset: number }) => {
+      const { params, newOffset } = opts || {};
 
-    const { totalItems, results, attrsEvaluated } =
-      await ConnectionProvider.getHandler().searchForTree({
-        params: mergedParams,
-        limit: internalLimit.current,
-        offset,
-        model,
-        fields: treeView!.field_parent
-          ? { ...treeView!.fields, [treeView!.field_parent]: {} }
-          : treeView!.fields,
-        context,
-        attrs: colors && { colors },
-      });
-    setColorsForResults(getColorMap(attrsEvaluated));
+      const mergedParams = mergeParams(params || searchParams, domain);
+      const { colors } = getTree(treeView!);
 
-    originalResults.current = [...results];
+      const { totalItems, results, attrsEvaluated } =
+        await ConnectionProvider.getHandler().searchForTree({
+          params: mergedParams,
+          limit: internalLimit.current,
+          offset: newOffset || offset,
+          model,
+          fields: treeView!.field_parent
+            ? { ...treeView!.fields, [treeView!.field_parent]: {} }
+            : treeView!.fields,
+          context,
+          attrs: colors && { colors },
+        });
+      setColorsForResults(getColorMap(attrsEvaluated));
 
-    const resultsSorted =
-      sorter !== undefined
-        ? sortResults({
-            resultsToSort: results,
-            sorter: sorter,
-            fields: { ...treeView!.fields, ...formView!.fields },
-          })
-        : [...originalResults.current];
+      originalResults.current = [...results];
 
-    setResults(resultsSorted);
+      const resultsSorted =
+        sorter !== undefined
+          ? sortResults({
+              resultsToSort: results,
+              sorter: sorter,
+              fields: { ...treeView!.fields, ...formView!.fields },
+            })
+          : [...originalResults.current];
 
-    if (resultsActionView && resultsSorted.length > 0) {
-      const newCurrentItemIndex = resultsSorted.findIndex(
-        (item) => currentId === item.id
-      );
+      setResults(resultsSorted);
 
-      if (newCurrentItemIndex === -1) {
-        setCurrentItemIndex?.(0);
+      if (resultsActionView && resultsSorted.length > 0) {
+        const newCurrentItemIndex = resultsSorted.findIndex(
+          (item) => currentId === item.id
+        );
+
+        if (newCurrentItemIndex === -1) {
+          setCurrentItemIndex?.(0);
+        } else {
+          setCurrentItemIndex?.(newCurrentItemIndex);
+        }
       } else {
-        setCurrentItemIndex?.(newCurrentItemIndex);
+        setCurrentItemIndex?.(undefined);
       }
-    } else {
-      setCurrentItemIndex?.(undefined);
-    }
 
-    const totalItemsValue = await totalItems;
+      const totalItemsValue = await totalItems;
 
-    setTotalItems(totalItemsValue);
-    setActionViewTotalItems?.(totalItemsValue);
-  }, [
-    setCurrentItemIndex,
-    resultsActionView,
-    setResults,
-    currentId,
-    model,
-    context,
-    domain,
-    treeView,
-    formView,
-    sorter,
-    setActionViewTotalItems,
-    limit,
-    offset,
-    searchParams,
-  ]);
+      setTotalItems(totalItemsValue);
+      setActionViewTotalItems?.(totalItemsValue);
+    },
+    [
+      setCurrentItemIndex,
+      resultsActionView,
+      setResults,
+      currentId,
+      model,
+      context,
+      domain,
+      treeView,
+      formView,
+      sorter,
+      setActionViewTotalItems,
+      limit,
+      offset,
+      searchParams,
+    ]
+  );
 
-  const fetchResults = useCallback(async () => {
-    try {
-      setTableRefreshing(true);
-      setTreeIsLoading?.(true);
-      if (nameSearch && !searchNameGetDoneRef.current) {
-        await searchByNameSearch();
-      } else {
-        await searchResults();
+  const fetchResults = useCallback(
+    async (opts?: { params: any; newOffset: number }) => {
+      try {
+        setTableRefreshing(true);
+        setTreeIsLoading?.(true);
+        if (nameSearch && !searchNameGetDoneRef.current) {
+          await searchByNameSearch();
+        } else {
+          await searchResults(opts);
+        }
+      } catch (error) {
+        setSearchError(error.message);
+      } finally {
+        setTableRefreshing(false);
+        setSearchFilterLoading(false);
+        setTreeIsLoading?.(false);
       }
-    } catch (error) {
-      setSearchError(error.message);
-    } finally {
-      setTableRefreshing(false);
-      setSearchFilterLoading(false);
-      setTreeIsLoading?.(false);
-    }
-  }, [
-    context,
-    currentId,
-    domain,
-    formView,
-    limit,
-    model,
-    nameSearch,
-    offset,
-    resultsActionView,
-    searchNameGetDoneRef,
-    setActionViewTotalItems,
-    setCurrentItemIndex,
-    setResults,
-    setSearchError,
-    setSearchFilterLoading,
-    setTableRefreshing,
-    setTreeIsLoading,
-    sorter,
-    treeView,
-  ]);
+    },
+    [
+      context,
+      currentId,
+      domain,
+      formView,
+      limit,
+      model,
+      nameSearch,
+      offset,
+      resultsActionView,
+      searchNameGetDoneRef,
+      setActionViewTotalItems,
+      setCurrentItemIndex,
+      setResults,
+      setSearchError,
+      setSearchFilterLoading,
+      setTableRefreshing,
+      setTreeIsLoading,
+      sorter,
+      treeView,
+    ]
+  );
 
   const changeSort = useCallback(
     (newSorter: any) => {
@@ -285,22 +293,19 @@ export const useSearch = (opts: UseSearchOpts) => {
   );
 
   const submit = useCallback(
-    ({
-      params: newParams,
-      limit: newLimit,
-      offset: newOffset,
-      searchValues,
-    }: {
+    (opts: {
       params: any;
       limit: number;
       offset: number;
       searchValues: any;
     }) => {
+      const { params, searchValues, limit: newLimit, offset: newOffset } = opts;
+
       if (tableRefreshing) return;
       setSearchTreeNameSearch?.(undefined);
       setSelectedRowItems?.([]);
       setSearchValues?.(searchValues);
-      setSearchParams?.(newParams);
+      setSearchParams?.(params);
       setSearchVisible?.(false);
       setSearchFilterLoading(true);
       setSearchError(undefined);
@@ -308,7 +313,10 @@ export const useSearch = (opts: UseSearchOpts) => {
       internalLimit.current = newLimit;
       if (newLimit) setLimit?.(newLimit);
       if (newOffset) setOffset(newOffset);
-      fetchResults();
+      fetchResults({
+        params,
+        newOffset,
+      });
     },
     [
       tableRefreshing,
