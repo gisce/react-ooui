@@ -1,7 +1,7 @@
 import GraphActionBar from "@/actionbar/GraphActionBar";
 import TitleHeader from "@/ui/TitleHeader";
 import { Graph } from "@/widgets/views/Graph/Graph";
-import React, { useContext, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import {
   ActionViewContext,
   ActionViewContextType,
@@ -12,6 +12,7 @@ import { useSearch } from "@/hooks/useSearch";
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import { Spin } from "antd";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { mergeParams } from "@/helpers/searchHelper";
 
 export type GraphActionViewProps = {
   viewData: any;
@@ -47,43 +48,41 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     setTreeIsLoading = undefined,
     limit,
     setLimit,
+    searchParams,
+    searchValues,
+    setSearchValues,
   } = actionViewContext || {};
 
-  const { searchParams, searchValues, setSearchValues } = useContext(
-    ActionViewContext
-  ) as ActionViewContextType;
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
-  const {
-    submit,
-    clear,
-    searchFilterLoading,
-    searchError,
-    offset,
-    tableRefreshing,
-  } = useSearch({
-    model,
-    setSearchTreeNameSearch,
-    setSelectedRowItems,
-    searchParams,
-    setSearchValues,
-    setSearchParams,
-    setSearchVisible,
-    setTreeIsLoading,
-    context,
-    formView: formView!,
-    treeView: treeView!,
-    sorter,
-    setSorter,
-    setCurrentItemIndex,
-    setResultsActionView,
-    resultsActionView,
-    domain,
-    currentId,
-    setActionViewTotalItems,
-    limit,
-    setLimit,
-  });
+  useEffect(() => {
+    (graphRef.current as any)?.refresh();
+  }, [searchParams]);
+
+  const { clear, searchFilterLoading, searchError, offset, tableRefreshing } =
+    useSearch({
+      model,
+      setSearchTreeNameSearch,
+      setSelectedRowItems,
+      searchParams,
+      setSearchValues,
+      setSearchParams,
+      setSearchVisible,
+      setTreeIsLoading,
+      context,
+      formView: formView!,
+      treeView: treeView!,
+      sorter,
+      setSorter,
+      setCurrentItemIndex,
+      setResultsActionView,
+      resultsActionView,
+      domain,
+      currentId,
+      setActionViewTotalItems,
+      limit,
+      setLimit,
+    });
 
   if (!visible) {
     return null;
@@ -112,7 +111,15 @@ export const GraphActionView = (props: GraphActionViewProps) => {
         onClear={clear}
         offset={offset}
         isSearching={searchFilterLoading}
-        onSubmit={submit}
+        onSubmit={(opts: {
+          params: any;
+          limit: number;
+          offset: number;
+          searchValues: any;
+        }) => {
+          setSearchParams?.(opts.params);
+          setSearchVisible?.(false);
+        }}
         searchError={searchError}
         searchVisible={searchVisible}
         searchValues={searchValues}
@@ -129,7 +136,7 @@ export const GraphActionView = (props: GraphActionViewProps) => {
             view_id={viewData.view_id}
             model={model}
             context={context}
-            domain={searchParams || domain}
+            domain={mergeParams(searchParams || [], domain)}
             limit={limit}
           />
         </>
