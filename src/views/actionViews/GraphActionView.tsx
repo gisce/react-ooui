@@ -1,7 +1,7 @@
 import GraphActionBar from "@/actionbar/GraphActionBar";
 import TitleHeader from "@/ui/TitleHeader";
 import { Graph } from "@/widgets/views/Graph/Graph";
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   ActionViewContext,
   ActionViewContextType,
@@ -11,7 +11,6 @@ import { mergeSearchFields } from "@/helpers/formHelper";
 import { useSearch } from "@/hooks/useSearch";
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import { Spin } from "antd";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { mergeParams } from "@/helpers/searchHelper";
 
 export type GraphActionViewProps = {
@@ -51,13 +50,20 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     searchParams,
     searchValues,
     setSearchValues,
+    currentView,
   } = actionViewContext || {};
 
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const [applyLimit, setApplyLimit] = useState(true);
 
   useEffect(() => {
     (graphRef.current as any)?.refresh();
   }, [searchParams]);
+
+  useEffect(() => {
+    if (viewData.view_id !== currentView.view_id) {
+      setApplyLimit(true);
+    }
+  }, [currentView]);
 
   const { clear, searchFilterLoading, searchError, offset, tableRefreshing } =
     useSearch({
@@ -117,29 +123,26 @@ export const GraphActionView = (props: GraphActionViewProps) => {
           offset: number;
           searchValues: any;
         }) => {
+          setApplyLimit(false);
           setSearchParams?.(opts.params);
           setSearchVisible?.(false);
         }}
         searchError={searchError}
         searchVisible={searchVisible}
         searchValues={searchValues}
+        showLimitOptions={false}
       />
       {tableRefreshing ? (
         <Spin />
       ) : (
-        <>
-          <p style={{ textAlign: "right" }}>
-            {`${t("totalRegisters")} ${resultsActionView?.length}`}
-          </p>
-          <Graph
-            ref={graphRef}
-            view_id={viewData.view_id}
-            model={model}
-            context={context}
-            domain={mergeParams(searchParams || [], domain)}
-            limit={limit}
-          />
-        </>
+        <Graph
+          ref={graphRef}
+          view_id={viewData.view_id}
+          model={model}
+          context={context}
+          domain={mergeParams(searchParams || [], domain)}
+          limit={applyLimit ? limit : undefined}
+        />
       )}
     </>
   );

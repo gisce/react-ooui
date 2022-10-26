@@ -23,7 +23,7 @@ export const GraphChart = (props: GraphChartProps) => {
   const { model, domain, context, xml, limit } = props;
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
-  const { error, loading, values, type } = useGraphData({
+  const { error, loading, values, type, evaluatedEntries } = useGraphData({
     model,
     xml,
     limit,
@@ -54,6 +54,9 @@ export const GraphChart = (props: GraphChartProps) => {
 
   return (
     <div style={{ padding: "1rem" }}>
+      <p style={{ textAlign: "right" }}>
+        {`${t("totalRegisters")} ${evaluatedEntries?.length}`}
+      </p>
       <Chart
         {...getGraphProps({
           type,

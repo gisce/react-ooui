@@ -36,6 +36,7 @@ export const useGraphData = (opts: GraphDataOpts) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>();
   const [processedValues, setProcessedValues] = useState<any>();
+  const [evaluatedEntries, setEvaluatedEntries] = useState<any[]>();
   const [type, setType] = useState<GraphType>("line");
 
   useDeepCompareEffect(() => {
@@ -74,6 +75,7 @@ export const useGraphData = (opts: GraphDataOpts) => {
           return;
         }
 
+        setEvaluatedEntries(values);
         const _processedValues = processGraphData({
           ooui,
           values,
@@ -93,7 +95,13 @@ export const useGraphData = (opts: GraphDataOpts) => {
     })();
   }, [xml, model, limit, context, domain]);
 
-  return { loading, error, type, values: processedValues };
+  return {
+    loading,
+    error,
+    type,
+    values: processedValues,
+    evaluatedEntries,
+  };
 };
 
 async function getFieldsForModel({
