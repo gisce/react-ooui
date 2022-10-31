@@ -27,10 +27,11 @@ export type GraphProps = {
   domain: any;
   context: any;
   limit?: number;
+  manualIds?: number[];
 };
 
 const GraphComp = (props: GraphProps, ref: any) => {
-  const { view_id, model, context, domain, limit } = props;
+  const { view_id, model, context, domain, limit, manualIds } = props;
   const [loading, setLoading] = useState(false);
   const [graphOoui, setGraphOoui] = useState<GraphOoui>();
   const [graphXml, setGraphXml] = useState<string>();
@@ -116,6 +117,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
           domain={domain}
           icon={indicator.icon!}
           suffix={indicator.suffix!}
+          manualIds={manualIds}
           {...indicatorFieldopts}
         />
       );
@@ -130,6 +132,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
           domain={domain}
           xml={graphXml!}
           limit={limit}
+          manualIds={manualIds}
         />
       );
     }

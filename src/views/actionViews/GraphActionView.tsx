@@ -142,6 +142,9 @@ export const GraphActionView = (props: GraphActionViewProps) => {
           context={context}
           domain={mergeParams(searchParams || [], domain)}
           limit={applyLimit ? limit : undefined}
+          manualIds={
+            applyLimit ? resultsActionView?.map((r) => r.id) : undefined
+          }
         />
       )}
     </>

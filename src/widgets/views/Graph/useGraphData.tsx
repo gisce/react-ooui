@@ -17,6 +17,7 @@ export type GraphDataQueryOpts = {
   domain?: any;
   context?: any;
   limit?: number;
+  manualIds?: number[];
 };
 
 export type GraphDataOpts = GraphDataQueryOpts & {
@@ -32,6 +33,7 @@ export const useGraphData = (opts: GraphDataOpts) => {
     xml,
     limit,
     uninformedString,
+    manualIds,
   } = opts;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>();
@@ -61,6 +63,7 @@ export const useGraphData = (opts: GraphDataOpts) => {
           limit,
           order: ooui.timerange ? ooui.x.name : null,
           fields: fieldsToRetrieve,
+          manualIds,
         }));
       } catch (e) {
         setError("Error fetching graph data values: " + JSON.stringify(e));
@@ -128,6 +131,7 @@ async function retrieveData({
   context,
   order,
   limit,
+  manualIds,
 }: {
   fields: string[];
   model: string;
@@ -135,7 +139,28 @@ async function retrieveData({
   context: any;
   order: string | null;
   limit?: number;
+  manualIds?: number[];
 }) {
+  const fieldsDefinition = await getFieldsForModel({ model, context, fields });
+
+  if (manualIds) {
+    let values: any[] = (await ConnectionProvider.getHandler().readObjects({
+      model,
+      ids: manualIds,
+      fieldsToRetrieve: fields,
+      context,
+    })) as any;
+
+    if (order) {
+      values = [...values].sort((a, b) => a[order] - b[order]);
+    }
+
+    return {
+      values,
+      fields: fieldsDefinition,
+    };
+  }
+
   const values: any[] = (await ConnectionProvider.getHandler().search({
     model,
     params: domain,
@@ -144,7 +169,6 @@ async function retrieveData({
     limit,
     order,
   })) as any;
-  const fieldsDefinition = await getFieldsForModel({ model, context, fields });
   return {
     values,
     fields: fieldsDefinition,

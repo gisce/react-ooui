@@ -24,6 +24,7 @@ export type GraphInidicatorProps = {
   suffix?: string;
   field?: string;
   operator?: Operator;
+  manualIds?: number[];
 };
 
 export const GraphIndicator = (props: GraphInidicatorProps) => {
@@ -38,6 +39,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
     suffix,
     field,
     operator,
+    manualIds,
   } = props;
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState<number>();
@@ -53,10 +55,52 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
     fetchData();
   }, [model, colorCondition]);
 
-  async function fetchTotalValue(queryDomain: any) {
+  async function fetchValue({
+    domain,
+    isTotal,
+  }: {
+    domain: any;
+    isTotal: boolean;
+  }) {
+    if (isTotal) {
+      return await fetchTotalValue({ domain });
+    }
+
+    if (field && operator) {
+      const resultIds =
+        manualIds ||
+        (await ConnectionProvider.getHandler().searchAllIds({
+          params: domain,
+          model,
+          context,
+        }));
+
+      const results = await ConnectionProvider.getHandler().readObjects({
+        model,
+        ids: resultIds,
+        fieldsToRetrieve: [field],
+        context,
+      });
+
+      return getValueForOperator({
+        values: results.map((r: any) => r[field]),
+        operator,
+      });
+    } else {
+      return manualIds
+        ? manualIds.length
+        : await ConnectionProvider.getHandler().searchCount({
+            model,
+            params: domain,
+            context,
+          });
+    }
+  }
+
+  async function fetchTotalValue({ domain }: { domain: any }) {
     if (field && operator) {
       const resultIds = await ConnectionProvider.getHandler().searchAllIds({
-        params: queryDomain,
+        params: domain,
         model,
         context,
       });
@@ -75,19 +119,18 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
     } else {
       return await ConnectionProvider.getHandler().searchCount({
         model,
-        params: queryDomain,
+        params: domain,
         context,
       });
     }
   }
-
   async function fetchData() {
     setLoading(true);
     let totalRetrievedValue;
     let percent;
 
     try {
-      const retrievedValue = await fetchTotalValue(domain);
+      const retrievedValue = await fetchValue({ domain, isTotal: false });
 
       setValue(retrievedValue);
 
@@ -97,7 +140,10 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
           values: {},
           context,
         });
-        totalRetrievedValue = await fetchTotalValue(parsedDomain);
+        totalRetrievedValue = await fetchValue({
+          domain: parsedDomain,
+          isTotal: true,
+        });
 
         setTotalValue(totalRetrievedValue);
       }
