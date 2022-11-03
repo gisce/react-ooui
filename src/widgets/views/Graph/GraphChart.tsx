@@ -16,20 +16,22 @@ export type GraphChartProps = {
   domain: any;
   context: any;
   xml: string;
-  limit: number;
+  limit?: number;
+  manualIds?: number[];
 };
 
 export const GraphChart = (props: GraphChartProps) => {
-  const { model, domain, context, xml, limit } = props;
+  const { model, domain, context, xml, limit, manualIds } = props;
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
-  const { error, loading, values, type } = useGraphData({
+  const { error, loading, values, type, evaluatedEntries } = useGraphData({
     model,
     xml,
     limit,
     domain,
     context,
     uninformedString: t("uninformed"),
+    manualIds,
   });
 
   if (error) {
@@ -54,6 +56,9 @@ export const GraphChart = (props: GraphChartProps) => {
 
   return (
     <div style={{ padding: "1rem" }}>
+      <p style={{ textAlign: "right" }}>
+        {`${t("totalRegisters")} ${evaluatedEntries?.length}`}
+      </p>
       <Chart
         {...getGraphProps({
           type,

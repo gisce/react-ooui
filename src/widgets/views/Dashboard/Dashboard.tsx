@@ -7,14 +7,13 @@ import React, {
   useState,
 } from "react";
 import ActionView from "@/views/ActionView";
-import { DashboardProps } from "./Dashboard.types";
 import { fetchAction } from "./dashboardHelper";
 import "react-resizable/css/styles.css";
 import "react-grid-layout/css/styles.css";
 import { Graph } from "../Graph/Graph";
 import { DashboardGrid, DashboardGridItem } from "../DashboardGrid";
 import ConnectionProvider from "@/ConnectionProvider";
-import { FormView } from "@/types";
+import { DashboardProps, FormView } from "@/types";
 import { One2manyItem } from "@/index";
 import { readObjectValues } from "@/helpers/one2manyHelper";
 import { LoadingOutlined } from "@ant-design/icons";
@@ -60,7 +59,7 @@ function Dashboard(props: DashboardProps, ref: any) {
     setError(undefined);
 
     try {
-      const view = await fetchView();
+      const view: FormView = (await fetchView()) as FormView;
       const values = await fetchValues(view);
       const model = view.fields[itemsField].relation;
       const items: One2manyItem[] = values[itemsField].items;
@@ -99,11 +98,11 @@ function Dashboard(props: DashboardProps, ref: any) {
     context: any;
   }) {
     itemsFields.current = (
-      await ConnectionProvider.getHandler().getView({
+      (await ConnectionProvider.getHandler().getView({
         model,
         type: "form",
         context,
-      })
+      })) as FormView
     ).fields;
 
     return await readObjectValues({
@@ -321,6 +320,7 @@ function Dashboard(props: DashboardProps, ref: any) {
               domain={domain}
               setCanWeClose={() => {}}
               initialView={initialView}
+              limit={limit}
             />
           );
         }

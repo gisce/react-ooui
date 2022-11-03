@@ -1,5 +1,6 @@
-import { View } from "@/views/ActionView";
-import React, { useEffect, useState } from "react";
+import { DEFAULT_SEARCH_LIMIT } from "@/hooks/useSearch";
+import { View } from "@/types";
+import React, { useEffect, useRef, useState } from "react";
 
 export type ActionViewContextType = {
   title: string;
@@ -27,8 +28,8 @@ export type ActionViewContextType = {
   setFormIsLoading?: (value: boolean) => void;
   treeIsLoading?: boolean;
   setTreeIsLoading?: (value: boolean) => void;
-  toolbar?: any;
-  setToolbar?: (value: any) => void;
+  graphIsLoading?: boolean;
+  setGraphIsLoading?: (value: boolean) => void;
   attachments?: any;
   setAttachments?: (value: any) => void;
   selectedRowItems?: any[];
@@ -45,7 +46,13 @@ export type ActionViewContextType = {
   setTotalItems: (totalItems: number) => void;
   searchTreeNameSearch?: string;
   setSearchTreeNameSearch?: (searchString?: string) => void;
+  previousView?: View;
+  setPreviousView?: (view: View) => void;
   goToResourceId?: (id: number) => Promise<void>;
+  searchValues?: any;
+  setSearchValues?: (value: any) => void;
+  limit?: number;
+  setLimit?: (value: number) => void;
 };
 
 export const ActionViewContext =
@@ -56,16 +63,6 @@ type ActionViewProviderProps = ActionViewContextType & {
 };
 
 const ActionViewProvider = (props: ActionViewProviderProps): any => {
-  const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
-  const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
-  const [removingItem, setRemovingItem] = useState<boolean>(false);
-  const [formIsLoading, setFormIsLoading] = useState<boolean>(false);
-  const [treeIsLoading, setTreeIsLoading] = useState<boolean>(true);
-  const [attachments, setAttachments] = useState<any>([]);
-  const [duplicatingItem, setDuplicatingItem] = useState<boolean>(false);
-  const [searchParams, setSearchParams] = useState<any[]>([]);
-  const [searchVisible, setSearchVisible] = useState<boolean>(false);
-
   const {
     children,
     currentView,
@@ -82,8 +79,6 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     currentItemIndex,
     setCurrentItemIndex,
     currentModel,
-    toolbar,
-    setToolbar,
     sorter,
     setSorter,
     totalItems,
@@ -93,7 +88,24 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     searchTreeNameSearch,
     setSearchTreeNameSearch,
     goToResourceId,
+    limit: limitProps,
   } = props;
+
+  const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
+  const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
+  const [removingItem, setRemovingItem] = useState<boolean>(false);
+  const [formIsLoading, setFormIsLoading] = useState<boolean>(true);
+  const [treeIsLoading, setTreeIsLoading] = useState<boolean>(true);
+  const [attachments, setAttachments] = useState<any>([]);
+  const [duplicatingItem, setDuplicatingItem] = useState<boolean>(false);
+  const [searchParams, setSearchParams] = useState<any[]>([]);
+  const [searchVisible, setSearchVisible] = useState<boolean>(false);
+  const [graphIsLoading, setGraphIsLoading] = useState<boolean>(true);
+  const [previousView, setPreviousView] = useState<View>();
+  const [searchValues, setSearchValues] = useState<any>({});
+  const [limit, setLimit] = useState<number>(
+    limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT
+  );
 
   useEffect(() => {
     if (results && results.length > 0 && !currentItemIndex) {
@@ -101,6 +113,31 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
       setCurrentId?.(results[0].id);
     }
   }, [results]);
+
+  useEffect(() => {
+    setLimit(limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT);
+  }, [limitProps]);
+
+  useEffect(() => {
+    if (availableViews.length === 1) {
+      setPreviousView(availableViews[0]);
+    } else if (availableViews.length > 1) {
+      setPreviousView(
+        availableViews.filter((view) => view.view_id !== currentView.view_id)[0]
+      );
+    }
+  }, [availableViews]);
+
+  useEffect(() => {
+    if (
+      previousView?.view_id === currentView.view_id &&
+      availableViews.length > 1
+    ) {
+      setPreviousView(
+        availableViews.filter((view) => view.view_id !== currentView.view_id)[0]
+      );
+    }
+  }, [currentView]);
 
   const callOnFormSave = () => {
     (formRef.current as any)?.submitForm();
@@ -134,8 +171,6 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setFormIsLoading,
         treeIsLoading,
         setTreeIsLoading,
-        toolbar,
-        setToolbar,
         attachments,
         setAttachments,
         selectedRowItems,
@@ -152,7 +187,15 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setTotalItems,
         searchTreeNameSearch,
         setSearchTreeNameSearch,
+        setGraphIsLoading,
+        graphIsLoading,
+        previousView,
+        setPreviousView,
         goToResourceId,
+        searchValues,
+        setSearchValues,
+        limit,
+        setLimit,
       }}
     >
       {children}

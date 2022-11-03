@@ -28,11 +28,11 @@ import {
 import ButtonWithBadge from "./ButtonWithBadge";
 import { showLogInfo } from "@/helpers/logInfoHelper";
 import SearchBar from "./SearchBar";
-import { View } from "@/views/ActionView";
 
 type Props = {
   parentContext?: any;
   treeExpandable: boolean;
+  toolbar: any;
 };
 
 function TreeActionBar(props: Props) {
@@ -49,16 +49,17 @@ function TreeActionBar(props: Props) {
     searchTreeRef,
     setCurrentId,
     setCurrentItemIndex,
-    toolbar,
     searchParams,
     searchVisible,
     setSearchVisible,
     setSearchTreeNameSearch,
     searchTreeNameSearch,
     treeIsLoading,
+    setPreviousView,
+    previousView,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
-  const { parentContext = {}, treeExpandable } = props;
+  const { parentContext = {}, treeExpandable, toolbar } = props;
 
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
   const contentRootContext = useContext(
@@ -135,10 +136,6 @@ function TreeActionBar(props: Props) {
         searchTreeRef?.current?.refreshResults();
       },
     });
-  }
-
-  if (!currentView) {
-    return null;
   }
 
   return (
@@ -225,10 +222,12 @@ function TreeActionBar(props: Props) {
           {separator()}
           <ChangeViewButton
             currentView={currentView}
-            availableViews={availableViews.filter(
-              (view: View) => view.type === "tree" || view.type === "form"
-            )}
-            onChangeView={setCurrentView}
+            availableViews={availableViews}
+            onChangeView={(newView) => {
+              setPreviousView?.(currentView);
+              setCurrentView?.(newView);
+            }}
+            previousView={previousView}
             disabled={treeIsLoading}
           />
         </>

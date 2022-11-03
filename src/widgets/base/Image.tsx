@@ -21,7 +21,7 @@ export const Image = (props: Props) => {
   const { ooui } = props;
   const { required, id } = ooui;
 
-  const Icon: React.ElementType = iconMapper(id);
+  const Icon: React.ElementType = iconMapper(id) as any;
 
   if (Icon) {
     return <Icon />;

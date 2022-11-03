@@ -6,6 +6,7 @@ import { FormView, TreeView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 
 import { getColorMap, getTree, sortResults } from "@/helpers/treeHelper";
+import { mergeParams } from "@/helpers/searchHelper";
 
 const DEFAULT_SEARCH_LIMIT = 80;
 
@@ -67,33 +68,6 @@ function DashboardTree(props: Props) {
     setOffset((page - 1) * limitRef.current!);
   };
 
-  const getUniqueFieldsForParams = (params: any[]) => {
-    const uniqueFields: any = {};
-
-    params.forEach((param) => {
-      if (Array.isArray(param) && param[0]) {
-        uniqueFields[param[0]] = true;
-      }
-    });
-
-    return Object.keys(uniqueFields);
-  };
-
-  const mergeParams = (searchParams: any[], domainParams: any[]) => {
-    const finalParams = searchParams;
-    const uniqueParams = getUniqueFieldsForParams(searchParams);
-
-    domainParams.forEach((element) => {
-      if (Array.isArray(element) && element[0]) {
-        if (!uniqueParams.includes(element[0])) {
-          finalParams.push(element);
-        }
-      }
-    });
-
-    return finalParams;
-  };
-
   const searchResults = async () => {
     const domainParams =
       actionDomain.current.length > 0 ? actionDomain.current : domain;
@@ -101,20 +75,18 @@ function DashboardTree(props: Props) {
     const searchParams = mergeParams(paramsRef.current, domainParams);
     const { colors } = getTree(treeView!);
 
-    const {
-      totalItems,
-      results,
-      attrsEvaluated,
-    } = await ConnectionProvider.getHandler().searchForTree({
-      params: searchParams,
-      limit: limitRef.current,
-      offset,
-      model: currentModel!,
-      fields: treeView!.fields,
-      context: parentContext,
-      attrs: colors && { colors },
-    });
-    setTotalItems(totalItems);
+    const { totalItems, results, attrsEvaluated } =
+      await ConnectionProvider.getHandler().searchForTree({
+        params: searchParams,
+        limit: limitRef.current,
+        offset,
+        model: currentModel!,
+        fields: treeView!.fields,
+        context: parentContext,
+        attrs: colors && { colors },
+      });
+    const totalItemsResult = await totalItems;
+    setTotalItems(totalItemsResult);
     setColorsForResults(getColorMap(attrsEvaluated));
 
     const resultsSorted = sortResults({
@@ -167,12 +139,11 @@ function DashboardTree(props: Props) {
   };
 
   const fetchActionData = async () => {
-    const dataForAction = await ConnectionProvider.getHandler().getViewsForAction(
-      {
+    const dataForAction =
+      await ConnectionProvider.getHandler().getViewsForAction({
         action: action!,
         context: parentContext,
-      }
-    );
+      });
     actionDomain.current = dataForAction.domain;
     setFormView(dataForAction.views.get("form"));
     setTreeView(dataForAction.views.get("tree"));

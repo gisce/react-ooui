@@ -58,7 +58,7 @@ export const Many2oneSuffix = (props: Props) => {
         model,
         type: "form",
         context,
-      });
+      }) as FormView;
       setFormView(formView);
       const { fields, arch } = formView;
 
