@@ -119,6 +119,7 @@ function Tree(props: Props): React.ReactElement {
   const treeOoui = useRef<any>(null);
 
   const { t } = useContext(LocaleContext) as LocaleContextType;
+  const internalLimit = useRef(limit);
 
   useEffect(() => {
     treeOoui.current = getTree(treeView);
@@ -143,9 +144,10 @@ function Tree(props: Props): React.ReactElement {
     errorInParseColors.current = false;
     const items = getTableItems(treeOoui.current, results);
     setItems(items);
+    internalLimit.current = limit;
   }, [results]);
 
-  const from = (page - 1) * limit + 1;
+  const from = (page - 1) * internalLimit.current + 1;
   const to = from - 1 + items.length;
   const summary =
     total === undefined
@@ -169,7 +171,7 @@ function Tree(props: Props): React.ReactElement {
         <Col span={12}>
           <Pagination
             total={total}
-            pageSize={limit}
+            pageSize={internalLimit.current}
             current={page}
             showSizeChanger={false}
             onChange={onRequestPageChange}

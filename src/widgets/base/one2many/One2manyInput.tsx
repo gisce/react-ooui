@@ -10,7 +10,7 @@ import {
   parseGraph,
   transformDomainForChildWidget,
 } from "@gisce/ooui";
-import { Views } from "@/types";
+import { Views, ViewType } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import { FormModal } from "@/widgets/modals/FormModal";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
@@ -25,7 +25,6 @@ import { One2manyTopBar } from "@/widgets/base/one2many/One2manyTopBar";
 import { readObjectValues, getNextPendingId } from "@/helpers/one2manyHelper";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
-import { ViewModes } from "@/widgets/base/one2many/One2many";
 import { sortResults } from "@/helpers/treeHelper";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
 
@@ -189,7 +188,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     const keys = Array.from(views.keys());
     const nextView = keys[
       (keys.indexOf(currentView) + 1) % keys.length
-    ] as ViewModes;
+    ] as ViewType;
     if (currentView === "form") {
       showFormChangesDialogIfNeeded(() => {
         setCurrentView(nextView);
@@ -490,7 +489,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
   // TODO: improve this. Do we really have to parse the entire object just to get the title?
   function getTitle() {
-    const ViewType: any = ViewObjects[currentView];
+    const ViewType: any = (ViewObjects as any)[currentView];
     if (currentView === "graph") {
       const parsedGraph = parseGraph(views.get("graph").arch);
       return parsedGraph.string!;

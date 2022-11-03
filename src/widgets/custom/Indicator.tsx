@@ -34,12 +34,12 @@ const IndicatorInput = (props: IndicatorInputProps) => {
       <span>{ooui.label} </span>
       {ooui.tooltip &&
         <Tooltip title={ooui.tooltip}>
-          <QuestionCircleOutlined className="text-xs text-blue-400 pr-1"/>
+          <QuestionCircleOutlined className="pr-1 text-xs text-blue-400"/>
         </Tooltip>
       }
     </>
   );
-  const Icon: React.ElementType = iconMapper(ooui.icon);
+  const Icon: React.ElementType = iconMapper(ooui.icon) as any;
   let formattedValue = value;
   if (ooui.selectionValues.size) {
     formattedValue = ooui.selectionValues.get(value);

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Form, Row, Col } from "antd";
+import React, { useEffect, useState } from "react";
+import { Form, Row, Col, Alert } from "antd";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
 import {
@@ -13,7 +13,8 @@ import { SearchBottomBar } from "./SearchBottomBar";
 import { SearchFields } from "@/types";
 import { SearchParams } from "./SearchParams";
 
-import { getParamsForFields } from "@/helpers/searchFilterHelper";
+import { getParamsForFields } from "@/helpers/searchHelper";
+import Measure from "react-measure";
 
 type Props = {
   fields: any;
@@ -24,6 +25,11 @@ type Props = {
   limit: number;
   offset: number;
   onLimitChange?: (limit: number) => void;
+  searchVisible?: boolean;
+  setSearchFilterHeight?: (height: number) => void;
+  searchError?: string;
+  searchValues?: any;
+  showLimitOptions?: boolean;
 };
 
 function SearchFilter(props: Props) {
@@ -36,6 +42,11 @@ function SearchFilter(props: Props) {
     offset,
     limit,
     onLimitChange,
+    searchVisible,
+    setSearchFilterHeight,
+    searchError,
+    searchValues,
+    showLimitOptions = true,
   } = props;
 
   const [simpleSearchFields, setSimpleSearchFields] = useState<Container>();
@@ -43,6 +54,10 @@ function SearchFilter(props: Props) {
   const [advancedFilter, setAdvancedFilter] = useState(false);
 
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    form.setFieldsValue(searchValues);
+  }, [searchValues]);
 
   const getRowsAndCols = () => {
     if (!advancedSearchFields) {
@@ -83,30 +98,54 @@ function SearchFilter(props: Props) {
     delete values.limit;
     const newParams = getParamsForFields(values, fields);
 
-    onSubmit({ params: newParams, offset, limit });
+    onSubmit({ params: newParams, offset, limit, searchValues: values });
   };
 
   return (
-    <Form
-      className="bg-gray-50 rounded p-3 shadow-md"
-      form={form}
-      onFinish={onFinish}
-      initialValues={{ offset, limit }}
+    <Measure
+      bounds
+      onResize={(contentRect) => {
+        setSearchFilterHeight?.(contentRect.bounds?.height!);
+      }}
     >
-      {rows}
-      {advancedFilter && <SearchParams onLimitChange={onLimitChange}/>}
-      <SearchBottomBar
-        advancedFilter={advancedFilter}
-        onAdvancedFilterToggle={() => {
-          setAdvancedFilter(!advancedFilter);
-        }}
-        onClear={() => {
-          form.resetFields();
-          onClear();
-        }}
-        isSearching={isSearching}
-      />
-    </Form>
+      {({ measureRef }) => (
+        <div ref={measureRef}>
+          <div style={{ display: searchVisible ? "block" : "none" }}>
+            <Form
+              className="p-3 rounded shadow-md bg-gray-50"
+              form={form}
+              onFinish={onFinish}
+              initialValues={{ offset, limit }}
+            >
+              {rows}
+              {advancedFilter && showLimitOptions && (
+                <SearchParams onLimitChange={onLimitChange} />
+              )}
+              <SearchBottomBar
+                advancedFilter={advancedFilter}
+                onAdvancedFilterToggle={() => {
+                  setAdvancedFilter(!advancedFilter);
+                }}
+                onClear={() => {
+                  form.resetFields();
+                  onClear();
+                }}
+                isSearching={isSearching}
+              />
+            </Form>
+            {searchError && (
+              <Alert
+                className="mt-10"
+                message={searchError}
+                type="error"
+                banner
+              />
+            )}
+            <div className="pb-5" />
+          </div>
+        </div>
+      )}
+    </Measure>
   );
 }
 
