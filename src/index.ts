@@ -19,6 +19,7 @@ import { Separator } from "@/widgets/base/Separator";
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import SearchTree from "@/widgets/views/SearchTree";
 import { FormModal } from "@/widgets/modals/FormModal";
+import { ExportModal } from "@/widgets/modals/ExportModal";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import Date from "@/widgets/base/Date";
 import DateTime from "@/widgets/base/DateTime";
@@ -149,4 +150,5 @@ export {
   Switch,
   Steps,
   CodeEditor,
+  ExportModal,
 };
