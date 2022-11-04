@@ -224,9 +224,13 @@ function ActionView(props: Props, ref: any) {
 
       setCurrentView(formView);
     } else {
-      const view = viewDataRetrieved.find(
-        (v) => v.type === initialView.type && v.view_id === initialView.id
-      );
+      const view = viewDataRetrieved.find((v) => {
+        if (!initialView.id) {
+          return v.type === initialView.type;
+        } else {
+          return v.type === initialView.type && v.view_id === initialView.id;
+        }
+      });
       setCurrentView(view);
     }
 
@@ -238,9 +242,13 @@ function ActionView(props: Props, ref: any) {
 
   useEffect(() => {
     const treeView = availableViews.find((v) => v.type === "tree") as TreeView;
-    const initialViewWithData: View = availableViews.find(
-      (v) => v.type === initialView.type && v.view_id === initialView.id
-    ) as View;
+    const initialViewWithData: View = availableViews.find((v) => {
+      if (!initialView.id) {
+        return v.type === initialView.type;
+      } else {
+        return v.type === initialView.type && v.view_id === initialView.id;
+      }
+    }) as View;
 
     setCurrentView(initialViewWithData || treeView);
     if (!res_id) {
