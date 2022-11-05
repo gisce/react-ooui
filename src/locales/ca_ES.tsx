@@ -85,4 +85,5 @@ export default {
   uninformed: "Sense informar",
   totalRegisters: "Registres totals:",
   export: "Exportar",
+  selectAtLeastOneField: "Selecciona almenys un camp per a l'exportació",
 };

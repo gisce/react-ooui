@@ -5,6 +5,8 @@ import {
 } from "@gisce/react-formiga-components";
 import { ExportOptions } from "@gisce/react-formiga-components/dist/components/other/ExportModal/ExportModal.types";
 import React, { useRef } from "react";
+import showInfo from "@/ui/InfoDialog";
+import { tForLang } from "@/context/LocaleContext";
 
 export type ExportModalProps = {
   visible: boolean;
@@ -19,17 +21,19 @@ export type ExportModalProps = {
   context?: any;
 };
 
-// export type ExportModalProps = {
-//   onCancel: () => void;
-//   onSucceed: (options: ExportOptions) => Promise<void>;
-//   selectedRegistersToExport?: number;
-//   totalRegisters: number;
-//   onGetFields: () => Promise<ExportField[]>;
-//   onGetFieldChilds: (field: string) => Promise<ExportField[]>;
-// };
-
 export const ExportModal = (props: ExportModalProps) => {
-  const { visible, locale, onClose, model, context } = props;
+  const {
+    visible,
+    locale,
+    onClose,
+    model,
+    context,
+    treeFields,
+    selectedRegistersToExport,
+    totalRegisters,
+    domain,
+    limit,
+  } = props;
   const fields = useRef<any>({});
 
   return (
@@ -37,12 +41,16 @@ export const ExportModal = (props: ExportModalProps) => {
       visible={visible}
       locale={locale as Locale}
       onSucceed={async (options: ExportOptions) => {
+        if (options.selectedKeys.length === 0) {
+          showInfo(tForLang("selectAtLeastOneField", locale));
+          return;
+        }
         onClose();
       }}
       onCancel={onClose}
-      selectedRegistersToExport={undefined}
-      totalRegisters={0}
-      onGetFieldChilds={async ({ key, title }) => {
+      selectedRegistersToExport={selectedRegistersToExport}
+      totalRegisters={totalRegisters}
+      onGetFieldChilds={async ({ key, title }: any) => {
         let fieldDefinition;
 
         if (key.indexOf("/") === -1) {
@@ -76,6 +84,7 @@ export const ExportModal = (props: ExportModalProps) => {
         fields.current["/"] = viewData;
         return convertToExportField({ fields: viewData });
       }}
+      selectedKeys={treeFields ? Object.keys(treeFields) : undefined}
     />
   );
 };

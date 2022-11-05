@@ -86,4 +86,5 @@ export default {
   uninformed: "Sin informar",
   totalRegisters: "Registros totales:",
   export: "Exportar",
+  selectAtLeastOneField: "Selecciona al menos un campo para la exportación",
 };
