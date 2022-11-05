@@ -81,4 +81,5 @@ export default {
   openAttachmentLink: "Open attachment link",
   uninformed: "Uninformed",
   totalRegisters: "Total registers:",
+  export: "Export",
 };

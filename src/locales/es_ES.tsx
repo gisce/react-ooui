@@ -85,4 +85,5 @@ export default {
   openAttachmentLink: "Abrir enlace del adjunto",
   uninformed: "Sin informar",
   totalRegisters: "Registros totales:",
+  export: "Exportar",
 };

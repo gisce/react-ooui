@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Space } from "antd";
 import ChangeViewButton from "./ChangeViewButton";
 import {
@@ -15,6 +15,7 @@ import {
   ReloadOutlined,
   InfoCircleOutlined,
   FilterOutlined,
+  ExportOutlined,
 } from "@ant-design/icons";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showConfirmDialog from "@/ui/ConfirmDialog";
@@ -28,6 +29,8 @@ import {
 import ButtonWithBadge from "./ButtonWithBadge";
 import { showLogInfo } from "@/helpers/logInfoHelper";
 import SearchBar from "./SearchBar";
+import { ExportModal } from "..";
+import { mergeParams } from "@/helpers/searchHelper";
 
 type Props = {
   parentContext?: any;
@@ -66,6 +69,7 @@ function TreeActionBar(props: Props) {
     ContentRootContext
   ) as ContentRootContextType;
   const { processAction } = contentRootContext || {};
+  const [exportModalVisible, setExportModalVisible] = useState(false);
 
   function tryDelete() {
     showConfirmDialog({
@@ -233,6 +237,16 @@ function TreeActionBar(props: Props) {
         </>
       )}
       {separator()}
+      <ActionButton
+        icon={<ExportOutlined />}
+        tooltip={t("export")}
+        disabled={duplicatingItem || removingItem || treeIsLoading}
+        loading={false}
+        onClick={() => {
+          setExportModalVisible(true);
+        }}
+      />
+      {separator()}
       <DropdownButton
         icon={<ThunderboltOutlined />}
         disabled={
@@ -268,6 +282,18 @@ function TreeActionBar(props: Props) {
             },
           });
         }}
+      />
+      <ExportModal
+        visible={exportModalVisible}
+        locale={lang}
+        onClose={() => setExportModalVisible(false)}
+        model={currentModel!}
+        treeFields={searchTreeRef.fields}
+        domain={mergeParams(searchTreeRef.domain || [], searchParams || [])}
+        limit={searchTreeRef.limit}
+        totalRegisters={searchTreeRef.totalRegisters}
+        selectedRegistersToExport={selectedRowItems?.length}
+        context={parentContext}
       />
     </Space>
   );

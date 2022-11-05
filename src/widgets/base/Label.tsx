@@ -38,7 +38,7 @@ const Label = (props: Props) => {
     >
       {tooltip && (
         <Tooltip title={tooltip}>
-          <QuestionCircleOutlined className="text-xs text-blue-400 pr-1" />
+          <QuestionCircleOutlined className="pr-1 text-xs text-blue-400" />
         </Tooltip>
       )}
       <span className="pr-2">
