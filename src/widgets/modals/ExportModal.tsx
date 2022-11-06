@@ -4,7 +4,7 @@ import {
   Locale,
 } from "@gisce/react-formiga-components";
 import { ExportOptions } from "@gisce/react-formiga-components/dist/components/other/ExportModal/ExportModal.types";
-import React, { useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import showInfo from "@/ui/InfoDialog";
 import { tForLang } from "@/context/LocaleContext";
 import { getMimeType, openBase64InNewTab } from "@/helpers/filesHelper";
@@ -37,66 +37,78 @@ export const ExportModal = (props: ExportModalProps) => {
   } = props;
   const fields = useRef<any>({});
 
+  const onSucceed = useCallback(
+    async (options: ExportOptions) => {
+      if (options.selectedKeys.length === 0) {
+        showInfo(tForLang("selectAtLeastOneField", locale));
+        return;
+      }
+
+      const { datas } = await ConnectionProvider.getHandler().exportData({
+        model,
+        fields: options.selectedKeys,
+        domain,
+        limit,
+        context,
+        format: options.exportType,
+      });
+
+      const fileType: any = await getMimeType(datas);
+      openBase64InNewTab(datas, fileType.mime);
+      onClose();
+    },
+    [locale, model, domain, limit, context, onClose]
+  );
+
+  const onGetFields = useCallback(async () => {
+    const viewData = await ConnectionProvider.getHandler().getFields({
+      model,
+      context,
+      fields: [],
+    });
+    fields.current["/"] = viewData;
+    return convertToExportField({ fields: viewData });
+  }, [model, context, fields]);
+
+  const onGetFieldChilds = useCallback(
+    async ({ key, title }: any) => {
+      let fieldDefinition;
+
+      if (key.indexOf("/") === -1) {
+        fieldDefinition = fields.current["/"];
+      } else {
+        fieldDefinition = fields.current[getParentKey(key)];
+      }
+
+      const optsForField = fieldDefinition[getChildKey(key)];
+      const relation = optsForField.relation;
+      const viewData = await ConnectionProvider.getHandler().getFields({
+        model: relation,
+        context,
+        fields: [],
+      });
+
+      fields.current[key] = viewData;
+
+      return convertToExportField({
+        fields: viewData,
+        parentTitle: title,
+        parentKey: key,
+      });
+    },
+    [fields, model, context]
+  );
+
   return (
     <ExportModalFmg
       visible={visible}
       locale={locale as Locale}
-      onSucceed={async (options: ExportOptions) => {
-        if (options.selectedKeys.length === 0) {
-          showInfo(tForLang("selectAtLeastOneField", locale));
-          return;
-        }
-
-        const { datas } = await ConnectionProvider.getHandler().exportData({
-          model,
-          fields: options.selectedKeys,
-          domain,
-          limit,
-          context,
-          format: options.exportType,
-        });
-
-        const fileType: any = await getMimeType(datas);
-        openBase64InNewTab(datas, fileType.mime);
-        onClose();
-      }}
+      onSucceed={onSucceed}
       onCancel={onClose}
       selectedRegistersToExport={selectedRegistersToExport}
       totalRegisters={totalRegisters}
-      onGetFieldChilds={async ({ key, title }: any) => {
-        let fieldDefinition;
-
-        if (key.indexOf("/") === -1) {
-          fieldDefinition = fields.current["/"];
-        } else {
-          fieldDefinition = fields.current[getParentKey(key)];
-        }
-
-        const optsForField = fieldDefinition[getChildKey(key)];
-        const relation = optsForField.relation;
-        const viewData = await ConnectionProvider.getHandler().getFields({
-          model: relation,
-          context,
-          fields: [],
-        });
-
-        fields.current[key] = viewData;
-
-        return convertToExportField({
-          fields: viewData,
-          parentTitle: title,
-          parentKey: key,
-        });
-      }}
-      onGetFields={async () => {
-        const viewData = await ConnectionProvider.getHandler().getFields({
-          model,
-          context,
-          fields: [],
-        });
-        fields.current["/"] = viewData;
-        return convertToExportField({ fields: viewData });
-      }}
+      onGetFieldChilds={onGetFieldChilds}
+      onGetFields={onGetFields}
       selectedKeys={treeFields ? Object.keys(treeFields) : undefined}
     />
   );
