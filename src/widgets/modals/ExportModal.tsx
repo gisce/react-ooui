@@ -7,6 +7,7 @@ import { ExportOptions } from "@gisce/react-formiga-components/dist/components/o
 import React, { useRef } from "react";
 import showInfo from "@/ui/InfoDialog";
 import { tForLang } from "@/context/LocaleContext";
+import { getMimeType, openBase64InNewTab } from "@/helpers/filesHelper";
 
 export type ExportModalProps = {
   visible: boolean;
@@ -45,6 +46,18 @@ export const ExportModal = (props: ExportModalProps) => {
           showInfo(tForLang("selectAtLeastOneField", locale));
           return;
         }
+
+        const { datas } = await ConnectionProvider.getHandler().exportData({
+          model,
+          fields: options.selectedKeys,
+          domain,
+          limit,
+          context,
+          format: options.exportType,
+        });
+
+        const fileType: any = await getMimeType(datas);
+        openBase64InNewTab(datas, fileType.mime);
         onClose();
       }}
       onCancel={onClose}
@@ -111,6 +124,7 @@ const convertToExportField = ({
       key: `${parentKey ? parentKey + "/" : ""}${key}`,
       title: `${parentTitle ? parentTitle + "/" : ""}${valuesForField.string}`,
       tooltip: valuesForField.help,
+      required: valuesForField.required,
       isLeaf: !relationField,
     });
   }
