@@ -47,15 +47,18 @@ export const ExportModal = (props: ExportModalProps) => {
       const { datas } = await ConnectionProvider.getHandler().exportData({
         model,
         fields: options.selectedKeys,
-        domain,
-        limit,
+        domain: options.registersAmount === "all" ? [] : domain,
+        limit: options.registersAmount === "all" ? undefined : limit,
         context,
         format: options.exportType,
       });
 
+      onClose();
+
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
       const fileType: any = await getMimeType(datas);
       openBase64InNewTab(datas, fileType.mime);
-      onClose();
     },
     [locale, model, domain, limit, context, onClose]
   );
