@@ -7,7 +7,7 @@ import {
 } from "@/context/ActionViewContext";
 import NewButton from "./NewButton";
 import ActionButton from "./ActionButton";
-import {
+import Icon, {
   DeleteOutlined,
   PrinterOutlined,
   ThunderboltOutlined,
@@ -15,7 +15,6 @@ import {
   ReloadOutlined,
   InfoCircleOutlined,
   FilterOutlined,
-  ExportOutlined,
 } from "@ant-design/icons";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showConfirmDialog from "@/ui/ConfirmDialog";
@@ -240,14 +239,49 @@ function TreeActionBar(props: Props) {
         </>
       )}
       {separator()}
-      <ActionButton
-        icon={<ExportOutlined />}
+      <DropdownButton
+        icon={
+          <Icon
+            component={() => (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="icon icon-tabler icon-tabler-database-export"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="#2c3e50"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <ellipse cx="12" cy="6" rx="8" ry="3" />
+                <path d="M4 6v6c0 1.657 3.582 3 8 3a19.84 19.84 0 0 0 3.302 -.267m4.698 -2.733v-6" />
+                <path d="M4 12v6c0 1.599 3.335 2.905 7.538 2.995m8.462 -6.995v-2m-6 7h7m-3 -3l3 3l-3 3" />
+              </svg>
+            )}
+          />
+        }
         tooltip={t("export")}
-        disabled={duplicatingItem || removingItem || treeIsLoading}
-        loading={false}
-        onClick={() => {
-          setExportModalVisible(true);
+        items={[
+          {
+            id: "print_screen",
+            name: "Imprimir pantalla",
+          },
+          {
+            id: "export",
+            name: "Exportación avanzada",
+          },
+        ]}
+        onItemClick={(action: any) => {
+          if (!action) {
+            return;
+          }
+
+          runAction(action);
         }}
+        disabled={duplicatingItem || removingItem || treeIsLoading}
       />
       {separator()}
       <DropdownButton
