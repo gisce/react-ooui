@@ -246,12 +246,12 @@ function TreeActionBar(props: Props) {
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="icon icon-tabler icon-tabler-database-export"
-                width="18"
-                height="18"
+                width="1em"
+                height="1em"
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
-                stroke="#2c3e50"
                 fill="none"
+                stroke="currentColor"
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
