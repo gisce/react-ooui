@@ -165,7 +165,7 @@ export const useSearch = (opts: UseSearchOpts) => {
   ]);
 
   const searchResults = useCallback(
-    async (opts?: { params: any; newOffset: number }) => {
+    async (opts?: { params: any; newOffset?: number }) => {
       const { params, newOffset } = opts || {};
 
       const mergedParams = mergeParams(params || searchParams, domain);
@@ -236,7 +236,7 @@ export const useSearch = (opts: UseSearchOpts) => {
   );
 
   const fetchResults = useCallback(
-    async (opts?: { params: any; newOffset: number }) => {
+    async (opts?: { params: any; newOffset?: number }) => {
       try {
         setTableRefreshing(true);
         setTreeIsLoading?.(true);
@@ -310,8 +310,11 @@ export const useSearch = (opts: UseSearchOpts) => {
       setSearchFilterLoading(true);
       setSearchError(undefined);
       setPage(1);
-      internalLimit.current = newLimit;
-      if (newLimit) setLimit?.(newLimit);
+
+      if (newLimit) {
+        internalLimit.current = newLimit;
+        setLimit?.(newLimit);
+      }
       if (newOffset) setOffset(newOffset);
       fetchResults({
         params,
