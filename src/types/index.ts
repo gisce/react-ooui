@@ -41,6 +41,7 @@ type TreeView = BaseView & {
   search_fields?: SearchFields;
   isExpandable?: boolean;
   field_parent?: string;
+  toolbar?: any;
 };
 
 type FormView = TreeView & {
