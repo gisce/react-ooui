@@ -28,6 +28,7 @@ import {
 import { useHotkeys } from "react-hotkeys-hook";
 import { GoToResourceModal } from "@/ui/GoToResourceModal";
 import showInfo from "@/ui/InfoDialog";
+import showErrorDialog from "@/ui/ActionErrorDialog";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { GraphActionView } from "@/views/actionViews/GraphActionView";
 import { FormActionView } from "./actionViews/FormActionView";
@@ -211,18 +212,18 @@ function ActionView(props: Props, ref: any) {
           break;
       }
     }
+    let currentViewToAssign = undefined;
 
     if (!initialView && viewDataRetrieved.find((v) => v.type === "tree")) {
       const treeView: TreeView = viewDataRetrieved.find(
         (v) => v.type === "tree"
       ) as TreeView;
-      setCurrentView(treeView);
+      currentViewToAssign = treeView;
     } else if (!initialView) {
       const formView: TreeView = viewDataRetrieved.find(
         (v) => v.type === "form"
       ) as TreeView;
-
-      setCurrentView(formView);
+      currentViewToAssign = formView;
     } else {
       const view = viewDataRetrieved.find((v) => {
         if (!initialView.id) {
@@ -231,9 +232,16 @@ function ActionView(props: Props, ref: any) {
           return v.type === initialView.type && v.view_id === initialView.id;
         }
       });
-      setCurrentView(view);
+      currentViewToAssign = view;
     }
 
+    if (!currentViewToAssign) {
+      showErrorDialog(
+        "Error determining the first view to show.\nPlease, make sure the view ids on the fields_view_get responses are the same as the ones defined in the action"
+      );
+    }
+
+    setCurrentView(currentViewToAssign);
     setAvailableViews(viewDataRetrieved);
     setIsLoading(false);
   };
