@@ -112,7 +112,6 @@ export const ExportModal = (props: ExportModalProps) => {
       totalRegisters={totalRegisters}
       onGetFieldChilds={onGetFieldChilds}
       onGetFields={onGetFields}
-      selectedKeys={treeFields ? Object.keys(treeFields) : undefined}
     />
   );
 };
