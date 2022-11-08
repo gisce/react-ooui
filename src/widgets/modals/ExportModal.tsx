@@ -18,7 +18,6 @@ export type ExportModalProps = {
   model: string;
   domain: any[];
   limit?: number;
-  treeFields?: any;
   context?: any;
 };
 
@@ -29,7 +28,6 @@ export const ExportModal = (props: ExportModalProps) => {
     onClose,
     model,
     context,
-    treeFields,
     selectedRegistersToExport,
     totalRegisters,
     domain,
@@ -77,13 +75,18 @@ export const ExportModal = (props: ExportModalProps) => {
     async ({ key, title }: any) => {
       let fieldDefinition;
 
-      if (key.indexOf("/") === -1) {
+      const sanitizedKey =
+        key.split("/")[key.split("/").length - 1] === "id"
+          ? key.split("/").slice(0, -1).join("/")
+          : key;
+
+      if (sanitizedKey.indexOf("/") === -1) {
         fieldDefinition = fields.current["/"];
       } else {
-        fieldDefinition = fields.current[getParentKey(key)];
+        fieldDefinition = fields.current[getParentKey(sanitizedKey)];
       }
 
-      const optsForField = fieldDefinition[getChildKey(key)];
+      const optsForField = fieldDefinition[getChildKey(sanitizedKey)];
       const relation = optsForField.relation;
       const viewData = await ConnectionProvider.getHandler().getFields({
         model: relation,
@@ -91,12 +94,12 @@ export const ExportModal = (props: ExportModalProps) => {
         fields: [],
       });
 
-      fields.current[key] = viewData;
+      fields.current[sanitizedKey] = viewData;
 
       return convertToExportField({
         fields: viewData,
         parentTitle: title,
-        parentKey: key,
+        parentKey: sanitizedKey,
       });
     },
     [fields, model, context]
@@ -134,8 +137,14 @@ const convertToExportField = ({
       valuesForField.type === "one2many" ||
       valuesForField.type === "many2many";
 
+    let newKey = `${parentKey ? parentKey + "/" : ""}${key}`;
+
+    if (relationField) {
+      newKey += "/id";
+    }
+
     exportFields.push({
-      key: `${parentKey ? parentKey + "/" : ""}${key}`,
+      key: newKey,
       title: `${parentTitle ? parentTitle + "/" : ""}${valuesForField.string}`,
       tooltip: valuesForField.help,
       required: valuesForField.required,
