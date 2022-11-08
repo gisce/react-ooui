@@ -73,6 +73,10 @@ function TreeActionBar(props: Props) {
   const { processAction } = contentRootContext || {};
   const [exportModalVisible, setExportModalVisible] = useState(false);
 
+  const hasNameSearch: boolean =
+    searchTreeNameSearch !== undefined &&
+    searchTreeNameSearch.trim().length > 0;
+
   function tryDelete() {
     showConfirmDialog({
       confirmMessage: t("confirmRemove"),
@@ -304,21 +308,39 @@ function TreeActionBar(props: Props) {
         items={[
           {
             id: "print_screen",
-            name: "Imprimir pantalla",
+            name: t("printScreen"),
           },
           {
             id: "export",
-            name: "Exportación avanzada",
+            name: t("advancedExport"),
           },
         ]}
-        onItemClick={(action: any) => {
-          if (!action) {
+        onItemClick={(itemClicked: any) => {
+          if (itemClicked.id === "print_screen") {
+            let idsToExport = selectedRowItems?.map((item) => item.id) || [];
+
+            if (idsToExport.length === 0) {
+              idsToExport = results?.map((item) => item.id) || [];
+            }
+
+            runAction({
+              id: -1,
+              model: currentModel,
+              report_name: "printscreen.list",
+              type: "ir.actions.report.xml",
+              datas: {
+                model: currentModel,
+                ids: idsToExport,
+              },
+            });
             return;
           }
 
-          runAction(action);
+          setExportModalVisible(true);
         }}
-        disabled={duplicatingItem || removingItem || treeIsLoading}
+        disabled={
+          duplicatingItem || removingItem || treeIsLoading || hasNameSearch
+        }
       />
       <ExportModal
         visible={exportModalVisible}
