@@ -86,4 +86,6 @@ export default {
   totalRegisters: "Registres totals:",
   export: "Exportar",
   selectAtLeastOneField: "Selecciona almenys un camp per a l'exportació",
+  printScreen: "Imprimir pantalla",
+  advancedExport: "Exportació avançada",
 };
