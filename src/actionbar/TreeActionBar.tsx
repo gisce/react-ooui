@@ -240,6 +240,43 @@ function TreeActionBar(props: Props) {
       )}
       {separator()}
       <DropdownButton
+        icon={<ThunderboltOutlined />}
+        disabled={
+          !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
+        }
+        tooltip={t("actions")}
+        items={toolbar?.action}
+        onItemClick={(action: any) => {
+          if (!action) {
+            return;
+          }
+
+          runAction(action);
+        }}
+      />
+      <DropdownButton
+        icon={<PrinterOutlined />}
+        disabled={
+          !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
+        }
+        tooltip={t("reports")}
+        items={toolbar?.print}
+        onItemClick={(report: any) => {
+          if (!report) {
+            return;
+          }
+
+          runAction({
+            ...report,
+            datas: {
+              ...(report.datas || {}),
+              ids: selectedRowItems!.map((item) => item.id),
+            },
+          });
+        }}
+      />
+      {separator()}
+      <DropdownButton
         icon={
           <Icon
             component={() => (
@@ -282,43 +319,6 @@ function TreeActionBar(props: Props) {
           runAction(action);
         }}
         disabled={duplicatingItem || removingItem || treeIsLoading}
-      />
-      {separator()}
-      <DropdownButton
-        icon={<ThunderboltOutlined />}
-        disabled={
-          !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
-        }
-        tooltip={t("actions")}
-        items={toolbar?.action}
-        onItemClick={(action: any) => {
-          if (!action) {
-            return;
-          }
-
-          runAction(action);
-        }}
-      />
-      <DropdownButton
-        icon={<PrinterOutlined />}
-        disabled={
-          !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
-        }
-        tooltip={t("reports")}
-        items={toolbar?.print}
-        onItemClick={(report: any) => {
-          if (!report) {
-            return;
-          }
-
-          runAction({
-            ...report,
-            datas: {
-              ...(report.datas || {}),
-              ids: selectedRowItems!.map((item) => item.id),
-            },
-          });
-        }}
       />
       <ExportModal
         visible={exportModalVisible}
