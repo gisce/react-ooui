@@ -132,6 +132,11 @@ const convertToExportField = ({
 
   for (const key of Object.keys(fields)) {
     const valuesForField = fields[key];
+
+    if (valuesForField.relation && valuesForField.is_function === true) {
+      continue;
+    }
+    
     const relationField =
       valuesForField.type === "many2one" ||
       valuesForField.type === "one2many" ||
