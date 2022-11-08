@@ -192,6 +192,7 @@ function ActionView(props: Props, ref: any) {
         case "form": {
           viewDataRetrieved.push({
             ...(viewInfo as FormView),
+            type: viewType,
           });
           break;
         }
@@ -199,12 +200,14 @@ function ActionView(props: Props, ref: any) {
           viewDataRetrieved.push({
             ...(viewInfo as TreeView),
             isExpandable: treeExpandable,
+            type: viewType,
           });
           break;
         }
         case "graph": {
           viewDataRetrieved.push({
             ...(viewInfo as GraphView),
+            type: viewType,
           });
           break;
         }
