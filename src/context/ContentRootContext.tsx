@@ -43,13 +43,18 @@ type ActionModalOpts = {
   actionData?: any;
 };
 
-export const ContentRootContext = React.createContext<ContentRootContextType | null>(
-  null
-);
+export const ContentRootContext =
+  React.createContext<ContentRootContextType | null>(null);
 
 type ContentRootProviderProps = {
   children: React.ReactNode;
   globalValues?: any;
+};
+
+const callRefreshValues = async (fns: any[]) => {
+  for (let i = 0; i < fns.length; i++) {
+    await fns?.[i]?.();
+  }
 };
 
 const ContentRootProvider = (
@@ -64,7 +69,7 @@ const ContentRootProvider = (
     TabManagerContext
   ) as TabManagerContextType;
   const { openAction } = tabManagerContext || {};
-  const onRefreshParentValues = useRef<any>();
+  const onRefreshParentValues = useRef<any>([]);
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
   useImperativeHandle(ref, () => ({
@@ -167,7 +172,7 @@ const ContentRootProvider = (
     onRefreshParentValues?: any;
   }) {
     const { type } = actionData;
-    onRefreshParentValues.current = onRefreshParentValuesFn;
+    onRefreshParentValues.current.push(onRefreshParentValuesFn);
 
     if (type === "ir.actions.report.xml") {
       return await generateReport({
@@ -347,7 +352,8 @@ const ContentRootProvider = (
   }
 
   async function onFormModalSucceed() {
-    onRefreshParentValues.current?.();
+    callRefreshValues(onRefreshParentValues.current);
+    onRefreshParentValues.current = [];
     setActionModalVisible(false);
     setActionModalOptions({
       domain: undefined,
@@ -386,7 +392,8 @@ const ContentRootProvider = (
             visible={actionModalVisible}
             onSubmitSucceed={onFormModalSucceed}
             onCancel={() => {
-              onRefreshParentValues.current?.();
+              callRefreshValues(onRefreshParentValues.current);
+              onRefreshParentValues.current = [];
               setActionModalVisible(false);
               setActionModalOptions({
                 domain: undefined,
