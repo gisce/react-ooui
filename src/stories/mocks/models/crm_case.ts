@@ -39,13 +39,14 @@ export default {
     task_id: false,
     user_id: [1, "Administrator"],
     workdones_ids: [],
+    integer: 40003.23,
   },
   form: {
-    arch:
-      '<form string="Casos">\n       <group col="8" colspan="4">\n                                <field colspan="4" name="partner_id" on_change="onchange_partner_id(partner_id, email_from)" select="1"/>\n                                <field colspan="3" name="partner_address_id" on_change="onchange_partner_address_id(partner_address_id, email_from)" select="2"/>\n                             \n                                <field colspan="3" name="email_from" select="2"/>\n                                <button name="remind_partner" states="open,pending" string="Envia notificaci\u00f3" type="object"/>\n                                <field name="user_id" select="1" domain="[(\'id\',\'!=\', 0)]"/>\n                                <button name="autoassign" string="Assigna-me\'l" type="object"/>\n                                <button name="remind_user" states="open,pending" string="Envia notificaci\u00f3" type="object"/>\n                            </group><field name="state" select="1"/></form>',
+    arch: '<form string="Casos">\n      <field name="integer" /> <group col="8" colspan="4">\n                                <field colspan="4" name="partner_id" on_change="onchange_partner_id(partner_id, email_from)" select="1"/>\n                                <field colspan="3" name="partner_address_id" on_change="onchange_partner_address_id(partner_address_id, email_from)" select="2"/>\n                             \n                                <field colspan="3" name="email_from" select="2"/>\n                                <button name="remind_partner" states="open,pending" string="Envia notificaci\u00f3" type="object"/>\n                                <field name="user_id" select="1" domain="[(\'id\',\'!=\', 0)]"/>\n                                <button name="autoassign" string="Assigna-me\'l" type="object"/>\n                                <button name="remind_user" states="open,pending" string="Envia notificaci\u00f3" type="object"/>\n                            </group><field name="state" select="1"/></form>',
 
     field_parent: false,
     fields: {
+      integer: { string: "Integer", type: "integer" },
       active: { string: "Actiu", type: "boolean", views: {} },
       canal_id: {
         context: "",
@@ -138,8 +139,7 @@ export default {
         type: "one2many",
         views: {
           form: {
-            arch:
-              '<form string="Historial de comunicaci&#xF3;">\n                                    <group col="6" colspan="4">\n                                        <field name="date" select="1"/>\n                                        <field name="email" select="1"/>\n                                        <field name="canal_id" select="2"/>\n                                    </group>\n                                    <newline/>\n                                    <field colspan="4" name="description" nolabel="1" select="2"/>\n                                </form>\n                                ',
+            arch: '<form string="Historial de comunicaci&#xF3;">\n                                    <group col="6" colspan="4">\n                                        <field name="date" select="1"/>\n                                        <field name="email" select="1"/>\n                                        <field name="canal_id" select="2"/>\n                                    </group>\n                                    <newline/>\n                                    <field colspan="4" name="description" nolabel="1" select="2"/>\n                                </form>\n                                ',
             fields: {
               canal_id: {
                 context: "",
@@ -160,8 +160,7 @@ export default {
             },
           },
           tree: {
-            arch:
-              '<tree string="Historial de comunicaci&#xF3;">\n                                    <field name="note"/>\n                                </tree>\n                            ',
+            arch: '<tree string="Historial de comunicaci&#xF3;">\n                                    <field name="note"/>\n                                </tree>\n                            ',
             fields: {
               note: {
                 digits: [16, 2],
@@ -185,8 +184,7 @@ export default {
         type: "one2many",
         views: {
           form: {
-            arch:
-              '<form string="Accions">\n                                    <separator colspan="4" string="Informaci\u00f3 de l\'acci\u00f3"/>\n                                    <field colspan="4" name="name"/>\n                                    <field name="date" select="2"/>\n                                    <field name="fefe_id" select="2"/>\n                                    <field name="som" select="2"/>\n                                    <field name="canal_id"/>\n                                </form>\n                            ',
+            arch: '<form string="Accions">\n                                    <separator colspan="4" string="Informaci\u00f3 de l\'acci\u00f3"/>\n                                    <field colspan="4" name="name"/>\n                                    <field name="date" select="2"/>\n                                    <field name="fefe_id" select="2"/>\n                                    <field name="som" select="2"/>\n                                    <field name="canal_id"/>\n                                </form>\n                            ',
             fields: {
               canal_id: {
                 context: "",
@@ -389,8 +387,7 @@ export default {
         type: "one2many",
         views: {
           tree: {
-            arch:
-              '<tree editable="top">\n                                <field name="date"/>\n                                <field name="type_id"/>\n                                <field name="hours" sum="Time spent" widget="float_time"/>\n                          \n                                <field name="name"/>    \n                            </tree>\n                        ',
+            arch: '<tree editable="top">\n                                <field name="date"/>\n                                <field name="type_id"/>\n                                <field name="hours" sum="Time spent" widget="float_time"/>\n                          \n                                <field name="name"/>    \n                            </tree>\n                        ',
             fields: {
               date: { string: "Data", type: "datetime", views: {} },
               hours: { string: "Temps dedicat", type: "float", views: {} },
