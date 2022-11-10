@@ -32,6 +32,7 @@ export const Integer = (props: IntegerProps) => {
         }}
         defaultValue={0}
         onBlur={elementHasLostFocus}
+        precision={0}
       />
     </Field>
   );
