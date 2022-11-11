@@ -437,6 +437,10 @@ function RootView(props: RootViewProps, ref: any) {
         },
       });
     } else {
+      const formattedInitialView = initialView && Array.isArray(initialView.id)
+        ? { ...initialView, id: initialView.id[0] }
+        : initialView;
+
       addNewTab({
         title,
         action: {
@@ -454,7 +458,7 @@ function RootView(props: RootViewProps, ref: any) {
             context={{ ...rootContext, ...context }}
             domain={domain}
             setCanWeClose={registerViewCloseFn}
-            initialView={initialView}
+            initialView={formattedInitialView}
             res_id={res_id}
             formDefaultValues={values}
             formForcedValues={forced_values}

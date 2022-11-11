@@ -308,6 +308,10 @@ function Dashboard(props: DashboardProps, ref: any) {
             />
           );
         } else if (initialView !== undefined) {
+          const formattedInitialView =
+            initialView && Array.isArray(initialView.id)
+              ? { ...initialView, id: initialView.id[0] }
+              : initialView;
           childContent = (
             <ActionView
               action_id={actionId}
@@ -319,7 +323,7 @@ function Dashboard(props: DashboardProps, ref: any) {
               context={context}
               domain={domain}
               setCanWeClose={() => {}}
-              initialView={initialView}
+              initialView={formattedInitialView}
               limit={limit}
             />
           );
