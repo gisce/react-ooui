@@ -2,7 +2,11 @@ import TreeActionBar from "@/actionbar/TreeActionBar";
 import { FormView, TreeView, View } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
 import SearchTree from "@/widgets/views/SearchTree";
-import React from "react";
+import React, { useContext } from "react";
+import {
+  ActionViewContext,
+  ActionViewContextType,
+} from "@/context/ActionViewContext";
 
 export type TreeActionViewProps = {
   formView?: FormView;
@@ -38,6 +42,10 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     searchTreeNameSearch,
   } = props;
 
+  const { currentView, setPreviousView } = useContext(
+    ActionViewContext
+  ) as ActionViewContextType;
+
   if (!visible) {
     return null;
   }
@@ -66,6 +74,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
           const itemIndex = results.findIndex((item: any) => {
             return item.id === id;
           });
+          setPreviousView?.(currentView);
           setCurrentItemIndex(itemIndex);
           const formView = availableViews.find(
             (v) => v.type === "form"
