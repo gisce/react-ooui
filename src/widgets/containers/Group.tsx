@@ -1,7 +1,7 @@
 import React from "react";
 import { Group as GroupOoui } from "@gisce/ooui";
 import Container from "./Container";
-import Fieldset from "@/ui/Fieldset";
+import { FieldSet } from "@gisce/react-formiga-components";
 
 type Props = {
   ooui: GroupOoui;
@@ -15,12 +15,12 @@ function Group(props: Props): React.ReactElement {
   return (
     <>
       {ooui.label && showLabel ? (
-        <Fieldset label={ooui.label}>
+        <FieldSet label={ooui.label}>
           <Container
             container={ooui!.container}
             responsiveBehaviour={responsiveBehaviour}
           />
-        </Fieldset>
+        </FieldSet>
       ) : (
         <Container
           container={ooui!.container}
