@@ -1,16 +1,16 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "1.2.0-rc.12",
+  "version": "1.2.0-rc.13",
   "lockfileVersion": 2,
   "requires": true,
   "packages": {
     "": {
       "name": "@gisce/react-ooui",
-      "version": "1.2.0-rc.12",
+      "version": "1.2.0-rc.13",
       "dependencies": {
         "@ant-design/plots": "^1.0.9",
         "@gisce/ooui": "^0.17.9-rc.0",
-        "@gisce/react-formiga-components": "^1.0.9-rc.9",
+        "@gisce/react-formiga-components": "^1.0.9-rc.10",
         "@gisce/react-formiga-table": "^0.5.0",
         "@monaco-editor/react": "^4.4.5",
         "@tabler/icons": "^1.96.0",
@@ -2724,9 +2724,9 @@
       }
     },
     "node_modules/@gisce/react-formiga-components": {
-      "version": "1.0.9-rc.9",
-      "resolved": "https://registry.npmjs.org/@gisce/react-formiga-components/-/react-formiga-components-1.0.9-rc.9.tgz",
-      "integrity": "sha512-WcXvZxUzEVX+Lk7EbDOrD5+JGT0EOgtb2TP4uT6Q7rQo8mKiT0Xhlpn3IyemY2uozPUwNiyhmuj6CkNH1UOYgg==",
+      "version": "1.0.9-rc.10",
+      "resolved": "https://registry.npmjs.org/@gisce/react-formiga-components/-/react-formiga-components-1.0.9-rc.10.tgz",
+      "integrity": "sha512-RJJswqMxq3CtqZC1UgQJc7CH6NWjXJC/qSslgbkFnDVPAGaVFw/kkQ6D1P0j4nU87UUN0ecBF6vFejxrzkMJeA==",
       "dependencies": {
         "antd": "4.12.3",
         "file-type-buffer-browser": "git+ssh://git@github.com/mguellsegarra/file-type-buffer-browser.git",
@@ -30715,9 +30715,9 @@
       }
     },
     "@gisce/react-formiga-components": {
-      "version": "1.0.9-rc.9",
-      "resolved": "https://registry.npmjs.org/@gisce/react-formiga-components/-/react-formiga-components-1.0.9-rc.9.tgz",
-      "integrity": "sha512-WcXvZxUzEVX+Lk7EbDOrD5+JGT0EOgtb2TP4uT6Q7rQo8mKiT0Xhlpn3IyemY2uozPUwNiyhmuj6CkNH1UOYgg==",
+      "version": "1.0.9-rc.10",
+      "resolved": "https://registry.npmjs.org/@gisce/react-formiga-components/-/react-formiga-components-1.0.9-rc.10.tgz",
+      "integrity": "sha512-RJJswqMxq3CtqZC1UgQJc7CH6NWjXJC/qSslgbkFnDVPAGaVFw/kkQ6D1P0j4nU87UUN0ecBF6vFejxrzkMJeA==",
       "requires": {
         "antd": "4.12.3",
         "file-type-buffer-browser": "git+ssh://git@github.com/mguellsegarra/file-type-buffer-browser.git",
