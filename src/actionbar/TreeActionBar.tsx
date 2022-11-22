@@ -61,6 +61,7 @@ function TreeActionBar(props: Props) {
     previousView,
     results,
     limit,
+    totalItems,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   const { parentContext = {}, treeExpandable, toolbar } = props;
@@ -351,7 +352,7 @@ function TreeActionBar(props: Props) {
           searchParams || []
         )}
         limit={limit}
-        totalRegisters={results?.length || 0}
+        totalRegisters={totalItems || 0}
         selectedRegistersToExport={
           selectedRowItems &&
           selectedRowItems.length &&

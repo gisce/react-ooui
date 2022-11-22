@@ -136,7 +136,7 @@ const convertToExportField = ({
     if (valuesForField.relation && valuesForField.is_function === true) {
       continue;
     }
-    
+
     const relationField =
       valuesForField.type === "many2one" ||
       valuesForField.type === "one2many" ||
@@ -150,7 +150,9 @@ const convertToExportField = ({
 
     exportFields.push({
       key: newKey,
-      title: `${parentTitle ? parentTitle + "/" : ""}${valuesForField.string}`,
+      title: `${parentTitle ? parentTitle + " → " : ""}${
+        valuesForField.string
+      }`,
       tooltip: valuesForField.help,
       required: valuesForField.required,
       isLeaf: !relationField,
