@@ -353,13 +353,7 @@ function TreeActionBar(props: Props) {
         )}
         limit={limit}
         totalRegisters={totalItems || 0}
-        selectedRegistersToExport={
-          selectedRowItems &&
-          selectedRowItems.length &&
-          selectedRowItems.length > 0
-            ? selectedRowItems.length
-            : undefined
-        }
+        selectedRegistersToExport={selectedRowItems}
         visibleRegisters={results?.length}
         context={parentContext}
       />

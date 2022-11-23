@@ -13,7 +13,7 @@ export type ExportModalProps = {
   visible: boolean;
   locale: string;
   onClose: () => void;
-  selectedRegistersToExport?: number;
+  selectedRegistersToExport?: any[];
   totalRegisters: number;
   model: string;
   domain: any[];
@@ -39,16 +39,33 @@ export const ExportModal = (props: ExportModalProps) => {
 
   const onSucceed = useCallback(
     async (options: ExportOptions) => {
-      if (options.selectedKeys.length === 0) {
+      if (
+        options.selectedKeys === undefined ||
+        options.selectedKeys.length === 0
+      ) {
         showInfo(tForLang("selectAtLeastOneField", locale));
         return;
+      }
+
+      let exportDomain = options.registersAmount === "all" ? [] : domain;
+      let exportLimit = options.registersAmount === "all" ? 0 : limit;
+
+      if (
+        options.registersAmount === "selected" &&
+        selectedRegistersToExport?.length !== 0
+      ) {
+        exportDomain = [
+          ...exportDomain,
+          ["id", "in", selectedRegistersToExport?.map((r) => r.id)],
+        ];
+        exportLimit = 0;
       }
 
       const { datas } = await ConnectionProvider.getHandler().exportData({
         model,
         fields: options.selectedKeys,
-        domain: options.registersAmount === "all" ? [] : domain,
-        limit: options.registersAmount === "all" ? undefined : limit,
+        domain: exportDomain,
+        limit: exportLimit,
         context,
         format: options.exportType,
       });
@@ -113,7 +130,13 @@ export const ExportModal = (props: ExportModalProps) => {
       locale={locale as Locale}
       onSucceed={onSucceed}
       onCancel={onClose}
-      selectedRegistersToExport={selectedRegistersToExport}
+      selectedRegistersToExport={
+        selectedRegistersToExport &&
+        selectedRegistersToExport.length &&
+        selectedRegistersToExport.length > 0
+          ? selectedRegistersToExport.length
+          : undefined
+      }
       totalRegisters={totalRegisters}
       onGetFieldChilds={onGetFieldChilds}
       onGetFields={onGetFields}
