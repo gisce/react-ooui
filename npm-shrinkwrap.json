@@ -1,15 +1,15 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "1.2.0-rc.15",
+  "version": "1.2.0-rc.16",
   "lockfileVersion": 2,
   "requires": true,
   "packages": {
     "": {
       "name": "@gisce/react-ooui",
-      "version": "1.2.0-rc.15",
+      "version": "1.2.0-rc.16",
       "dependencies": {
         "@ant-design/plots": "^1.0.9",
-        "@gisce/ooui": "^0.17.10-rc.3",
+        "@gisce/ooui": "^0.17.11-rc.0",
         "@gisce/react-formiga-components": "^1.0.9-rc.11",
         "@gisce/react-formiga-table": "^0.5.0",
         "@monaco-editor/react": "^4.4.5",
@@ -2715,9 +2715,9 @@
       "dev": true
     },
     "node_modules/@gisce/ooui": {
-      "version": "0.17.10-rc.3",
-      "resolved": "https://registry.npmjs.org/@gisce/ooui/-/ooui-0.17.10-rc.3.tgz",
-      "integrity": "sha512-p0lLo6aV+24IjgqMlY9lryZvCyUXJlp9LkSDnLkiot1IEW/0cIZTVEdTBKxO0SXEHcXdImaSpp4emzX4MaEQ8w==",
+      "version": "0.17.11-rc.0",
+      "resolved": "https://registry.npmjs.org/@gisce/ooui/-/ooui-0.17.11-rc.0.tgz",
+      "integrity": "sha512-qkXYA7kb8mt1IQiOLN4hSVWK4yjScIPrGqsneNH7pZva3EY3mipfQrkx5bNa9aQx5w4teQpW1X5iAUzCI3ngxg==",
       "dependencies": {
         "html-entities": "^2.3.3",
         "moment": "^2.29.3"
@@ -30706,9 +30706,9 @@
       "dev": true
     },
     "@gisce/ooui": {
-      "version": "0.17.10-rc.3",
-      "resolved": "https://registry.npmjs.org/@gisce/ooui/-/ooui-0.17.10-rc.3.tgz",
-      "integrity": "sha512-p0lLo6aV+24IjgqMlY9lryZvCyUXJlp9LkSDnLkiot1IEW/0cIZTVEdTBKxO0SXEHcXdImaSpp4emzX4MaEQ8w==",
+      "version": "0.17.11-rc.0",
+      "resolved": "https://registry.npmjs.org/@gisce/ooui/-/ooui-0.17.11-rc.0.tgz",
+      "integrity": "sha512-qkXYA7kb8mt1IQiOLN4hSVWK4yjScIPrGqsneNH7pZva3EY3mipfQrkx5bNa9aQx5w4teQpW1X5iAUzCI3ngxg==",
       "requires": {
         "html-entities": "^2.3.3",
         "moment": "^2.29.3"
