@@ -360,6 +360,7 @@ function TreeActionBar(props: Props) {
             ? selectedRowItems.length
             : undefined
         }
+        visibleRegisters={results?.length}
         context={parentContext}
       />
     </Space>

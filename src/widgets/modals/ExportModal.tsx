@@ -19,6 +19,7 @@ export type ExportModalProps = {
   domain: any[];
   limit?: number;
   context?: any;
+  visibleRegisters: number;
 };
 
 export const ExportModal = (props: ExportModalProps) => {
@@ -32,6 +33,7 @@ export const ExportModal = (props: ExportModalProps) => {
     totalRegisters,
     domain,
     limit,
+    visibleRegisters,
   } = props;
   const fields = useRef<any>({});
 
@@ -115,6 +117,7 @@ export const ExportModal = (props: ExportModalProps) => {
       totalRegisters={totalRegisters}
       onGetFieldChilds={onGetFieldChilds}
       onGetFields={onGetFields}
+      visibleRegisters={visibleRegisters}
     />
   );
 };
