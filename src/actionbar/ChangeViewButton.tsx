@@ -104,7 +104,7 @@ function ChangeViewButton(props: Props) {
   }
 
   return (
-    <>
+    <div style={{ display: "flex" }}>
       <ButtonWithTooltip
         tooltip={previousView ? t("viewAs") + " " + t(previousView.type) : ""}
         icon={getIconForView(previousView)}
@@ -124,7 +124,7 @@ function ChangeViewButton(props: Props) {
           onClick={(e) => e.preventDefault()}
         ></Button>
       </Dropdown>
-    </>
+    </div>
   );
 }
 
