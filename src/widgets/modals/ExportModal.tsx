@@ -47,25 +47,22 @@ export const ExportModal = (props: ExportModalProps) => {
         return;
       }
 
-      let exportDomain = options.registersAmount === "all" ? [] : domain;
-      let exportLimit = options.registersAmount === "all" ? 0 : limit;
+      let exportDomain = domain;
 
       if (
         options.registersAmount === "selected" &&
         selectedRegistersToExport?.length !== 0
       ) {
         exportDomain = [
-          ...exportDomain,
           ["id", "in", selectedRegistersToExport?.map((r) => r.id)],
         ];
-        exportLimit = 0;
       }
 
       const { datas } = await ConnectionProvider.getHandler().exportData({
         model,
         fields: options.selectedKeys,
         domain: exportDomain,
-        limit: exportLimit,
+        limit: options.registersAmount === "all" ? 0 : limit,
         context,
         format: options.exportType,
       });
