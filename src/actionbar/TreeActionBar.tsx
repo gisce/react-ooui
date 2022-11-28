@@ -290,11 +290,11 @@ function TreeActionBar(props: Props) {
                 width="1em"
                 height="1em"
                 viewBox="0 0 24 24"
-                stroke-width="1.5"
+                strokeWidth="1.5"
                 fill="none"
                 stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                 <ellipse cx="12" cy="6" rx="8" ry="3" />
@@ -354,7 +354,7 @@ function TreeActionBar(props: Props) {
         limit={limit}
         totalRegisters={totalItems || 0}
         selectedRegistersToExport={selectedRowItems}
-        visibleRegisters={results?.length}
+        visibleRegisters={results?.length || 0}
         context={parentContext}
       />
     </Space>
