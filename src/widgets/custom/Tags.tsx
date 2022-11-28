@@ -23,7 +23,7 @@ export const Tags = (props: TagsProps) => {
 
   return (
     <Field type={"array"} {...props}>
-      <TagsInput ooui={ooui}  />
+      <TagsInput ooui={ooui} />
     </Field>
   );
 };
@@ -31,15 +31,14 @@ export const Tags = (props: TagsProps) => {
 export const TagsInput = (props: TagsInputProps) => {
   const { value, ooui, onChange } = props;
   const { items = [] } = value || {};
-  const itemsToShow = items.filter(
-    (item) => item.operation !== "pendingRemove"
-  ).map((item) => item.id) as number[];
+  const itemsToShow = items
+    .filter((item) => item.operation !== "pendingRemove")
+    .map((item) => item.id) as number[];
 
   const [options, setOptions] = useState<any[]>([]);
   const [error, setError] = useState<string>();
   const [isLoadingOptions, setIsLoadingOptions] = useState<boolean>(false);
   const { relation, context, readOnly, field } = ooui;
-
 
   const formContext = useContext(FormContext) as FormContextType;
   const { getContext } = formContext || {};
@@ -62,16 +61,16 @@ export const TagsInput = (props: TagsInputProps) => {
         params = [["id", "in", itemsToShow]];
       }
       if (ooui.domain) {
-        const evaluatedDomain = await ConnectionProvider.getHandler().evalDomain(
-          {
+        const evaluatedDomain =
+          await ConnectionProvider.getHandler().evalDomain({
             domain: ooui.domain,
             values: transformPlainMany2Ones({
               fields: formContext?.getFields(),
               values: formContext.getPlainValues(),
             }),
-                context: formContext.getContext(),
-          }
-        );
+            fields: formContext?.getFields(),
+            context: formContext.getContext(),
+          });
         params = [...params, ...evaluatedDomain];
       }
 
@@ -81,18 +80,17 @@ export const TagsInput = (props: TagsInputProps) => {
         fields: [field],
         context: { ...getContext?.(), ...context },
       });
-      const options = optionsRead.map((item:any) => {
+      const options = optionsRead.map((item: any) => {
         const value = item[field];
         let formattedValue = value;
         if (Array.isArray(value)) {
           formattedValue = value[1];
         }
-        return {label: formattedValue, value: item.id}
+        return { label: formattedValue, value: item.id };
       });
       setOptions(options);
-
     } catch (err) {
-      setError(err as any)
+      setError(err as any);
     } finally {
       setIsLoadingOptions(false);
     }
@@ -104,19 +102,21 @@ export const TagsInput = (props: TagsInputProps) => {
         if (item.operation == "pendingRemove") {
           return {
             ...item,
-            operation: "pendingLink"
-          }
+            operation: "pendingLink",
+          };
         } else {
-          return item
+          return item;
         }
       } else {
-        return {id: item.id, operation: 'pendingRemove'}
+        return { id: item.id, operation: "pendingRemove" };
       }
-    })
-    const currentIds = newItems.map(item => item.id)
-    ids.filter(id => !currentIds.includes(id)).map((id) => {
-      newItems.push({id, operation: 'pendingLink'});
     });
+    const currentIds = newItems.map((item) => item.id);
+    ids
+      .filter((id) => !currentIds.includes(id))
+      .map((id) => {
+        newItems.push({ id, operation: "pendingLink" });
+      });
     triggerChange(newItems);
   };
 
@@ -130,10 +130,11 @@ export const TagsInput = (props: TagsInputProps) => {
       <AntTag
         color={colorFromString(label)}
         onMouseDown={onPreventMouseDown}
-        style={{margin: '5px'}}
+        style={{ margin: "5px" }}
         closable={closable}
-        onClose={onClose}>
-          {label}
+        onClose={onClose}
+      >
+        {label}
       </AntTag>
     );
   };
@@ -154,10 +155,8 @@ export const TagsInput = (props: TagsInputProps) => {
           options={options}
           onChange={onChangeSelected}
           loading={isLoadingOptions}
-          >
-        </Select>
+        ></Select>
       </div>
     </>
   );
-
 };
