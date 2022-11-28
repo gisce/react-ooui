@@ -46,6 +46,7 @@ export default defineConfig({
         "@tabler/icons",
         "use-deep-compare-effect",
         "validator",
+        "interweave",
       ],
       output: {
         assetFileNames: (assetInfo) => {
@@ -59,5 +60,5 @@ export default defineConfig({
         },
       },
     },
-  }
+  },
 });
