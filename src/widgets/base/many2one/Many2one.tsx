@@ -231,7 +231,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   }
 
   async function onKeyDown(event: any) {
-    if (event.code === "Enter") {
+    if (event.keyCode === 13) {
       event.preventDefault();
       event.stopPropagation();
       await onElementLostFocus();
