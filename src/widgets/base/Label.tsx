@@ -3,6 +3,7 @@ import { Tooltip, Typography } from "antd";
 import { WidgetProps } from "@/types";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Label as LabelOoui } from "@gisce/ooui";
+import { Interweave } from "interweave";
 const { Text, Title } = Typography;
 
 type Props = WidgetProps & {
@@ -18,13 +19,8 @@ const alignClass = {
 
 const Label = (props: Props) => {
   const { ooui, align, responsiveBehaviour } = props;
-  const {
-    label,
-    tooltip,
-    fieldForLabel,
-    labelSize,
-    labelType,
-  } = ooui as LabelOoui;
+  const { label, tooltip, fieldForLabel, labelSize, labelType } =
+    ooui as LabelOoui;
   const addColon = fieldForLabel !== null ? true : false;
   const labelText = addColon && label.length > 1 ? label + " :" : label;
   const responsiveAlign = responsiveBehaviour ? "left" : "right";
@@ -43,10 +39,10 @@ const Label = (props: Props) => {
       )}
       <span className="pr-2">
         <TextType
-          level={labelSize !== "text" ? ((labelSize as string) as any) : null}
+          level={labelSize !== "text" ? (labelSize as string as any) : null}
           type={labelType as any}
         >
-          {labelText}
+          <Interweave content={labelText} />
         </TextType>
       </span>
     </div>
