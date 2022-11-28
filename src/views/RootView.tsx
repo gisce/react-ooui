@@ -250,6 +250,7 @@ function RootView(props: RootViewProps, ref: any) {
             fields,
             values: { ...values, ...globalValues },
           }),
+          fields,
           context: { ...rootContext, ...parsedContext },
         })
       : [];
@@ -437,9 +438,10 @@ function RootView(props: RootViewProps, ref: any) {
         },
       });
     } else {
-      const formattedInitialView = initialView && Array.isArray(initialView.id)
-        ? { ...initialView, id: initialView.id[0] }
-        : initialView;
+      const formattedInitialView =
+        initialView && Array.isArray(initialView.id)
+          ? { ...initialView, id: initialView.id[0] }
+          : initialView;
 
       addNewTab({
         title,

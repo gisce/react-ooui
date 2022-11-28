@@ -224,6 +224,7 @@ type EvalDomainRequest = {
   domain: string;
   values: any;
   context?: any;
+  fields?: any;
 };
 
 type IsShortcutFavoriteOptions = {

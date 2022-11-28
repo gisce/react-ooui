@@ -168,6 +168,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
             fields: getFields(),
             values: getValues(),
           }),
+          fields: getFields(),
           context: getContext(),
         }),
         widgetFieldName: fieldName,
