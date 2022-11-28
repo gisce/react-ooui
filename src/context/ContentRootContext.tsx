@@ -235,6 +235,7 @@ const ContentRootProvider = (
           fields,
           values: { ...values, ...globalValues },
         }),
+        fields,
         context: mergedContext,
       });
     }
