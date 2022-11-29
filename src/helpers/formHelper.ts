@@ -152,16 +152,35 @@ export const getValuesForDomain = (domain: any[]) => {
 export const getOnChangePayload = ({
   onChangeFieldActionArgs,
   values,
+  parentValues = {},
 }: {
   onChangeFieldActionArgs: any[];
   values: any;
+  parentValues?: any;
 }) => {
   const payload: any = {};
   onChangeFieldActionArgs.forEach((arg: string) => {
-    if (values[arg]) {
+    const splittedArg = arg.split("");
+
+    if (arg === "True") {
+      payload[arg] = true;
+    } else if (arg === "False") {
+      payload[arg] = false;
+    } else if (values[arg]) {
       payload[arg] = values[arg];
-    } else if (arg[0] === "'") {
+    } else if (
+      splittedArg[0] === "'" &&
+      splittedArg[splittedArg.length - 1] === "'" &&
+      splittedArg.filter((i: string) => i === "'").length === 2
+    ) {
       payload[arg] = arg.replace(/'/g, "");
+    } else if (splittedArg.includes("'")) {
+      // This is a string with a variable in it.
+      // TODO: pending implement.
+      payload[arg] = arg;
+    } else if (arg.indexOf("parent.") !== -1) {
+      const parentKey = arg.replace("parent.", "");
+      payload[arg] = parentValues[parentKey] || false;
     } else {
       payload[arg] = false;
     }
