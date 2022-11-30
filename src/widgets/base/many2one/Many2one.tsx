@@ -132,13 +132,12 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
         if (transformedDomain.current && transformedDomain.current.length > 0) {
           tryFetchFirstResultOrShowSearch(inputTextRef.current as string);
         } else {
-          const results: any[] = await ConnectionProvider.getHandler().nameSearch(
-            {
+          const results: any[] =
+            await ConnectionProvider.getHandler().nameSearch({
               model: relation,
               payload: inputTextRef.current as string,
               context: { ...getContext?.(), ...context },
-            }
-          );
+            });
 
           if (results.length === 1) {
             inputTextRef.current = undefined;
@@ -207,16 +206,16 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
 
   async function parseDomain() {
     if (widgetDomain) {
-      transformedDomain.current = await ConnectionProvider.getHandler().evalDomain(
-        {
+      transformedDomain.current =
+        await ConnectionProvider.getHandler().evalDomain({
           domain: widgetDomain,
           values: transformPlainMany2Ones({
             fields: getFields(),
             values: getValues(),
           }),
+          fields: getFields(),
           context: getContext(),
-        }
-      );
+        });
     }
 
     if (domain && domain.length > 0) {
