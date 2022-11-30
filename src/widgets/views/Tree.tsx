@@ -16,6 +16,7 @@ import {
   LoadingOutlined,
 } from "@ant-design/icons";
 import { One2manyValue } from "../base/one2many/One2manyInput";
+import { Interweave } from "interweave";
 
 type Props = {
   total?: number;
@@ -62,6 +63,7 @@ const many2OneComponentFn = (m2oField: any): React.ReactElement => {
   );
 };
 const textComponentFn = (value: any): React.ReactElement => {
+  return <Interweave content={value?.replace(/(?:\r\n|\r|\n)/g, "<br>")} />;
   return <div style={{ whiteSpace: "pre-line" }}>{value}</div>;
 };
 
