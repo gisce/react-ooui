@@ -62,6 +62,7 @@ export const MultiCheckboxInput = (props: MultiCheckboxInputProps) => {
           fields: formContext?.getFields(),
           values: formContext.getPlainValues(),
         }),
+        fields: formContext?.getFields(),
         context: formContext.getContext(),
       });
       params = [...params, ...evaluatedDomain];

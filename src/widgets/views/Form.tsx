@@ -126,8 +126,7 @@ function Form(props: FormProps, ref: any) {
   const responsiveBehaviour = containerWidth < WIDTH_BREAKPOINT;
 
   const formContext = useContext(FormContext) as FormContextType;
-  const { activeId: parentId, getPlainValues: getParentPlainValues } =
-    formContext || {};
+  const { activeId: parentId } = formContext || {};
 
   const actionViewContext = useContext(
     ActionViewContext
@@ -399,11 +398,13 @@ function Form(props: FormProps, ref: any) {
     if (valuesProps) {
       values = valuesProps;
     } else {
-      ({ values, defaultGetCalled: hasDefaultGetCalled } =
-        await fetchValuesFromApi({
-          fields: _fields,
-          arch: _arch!,
-        }));
+      ({
+        values,
+        defaultGetCalled: hasDefaultGetCalled,
+      } = await fetchValuesFromApi({
+        fields: _fields,
+        arch: _arch!,
+      }));
     }
 
     if (actionDomain) {
@@ -454,13 +455,15 @@ function Form(props: FormProps, ref: any) {
 
   const getFormView = async (): Promise<FormView> => {
     if (getDataFromAction) {
-      const action =
-        await ConnectionProvider.getHandler().getActionStringForModel(model);
-      const viewsForAction =
-        await ConnectionProvider.getHandler().getViewsForAction({
+      const action = await ConnectionProvider.getHandler().getActionStringForModel(
+        model
+      );
+      const viewsForAction = await ConnectionProvider.getHandler().getViewsForAction(
+        {
           action,
           context: parentContext,
-        });
+        }
+      );
       return viewsForAction.views.get("form");
     }
 
