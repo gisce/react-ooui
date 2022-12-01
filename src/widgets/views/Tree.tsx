@@ -64,7 +64,6 @@ const many2OneComponentFn = (m2oField: any): React.ReactElement => {
 };
 const textComponentFn = (value: any): React.ReactElement => {
   return <Interweave content={value?.replace(/(?:\r\n|\r|\n)/g, "<br>")} />;
-  return <div style={{ whiteSpace: "pre-line" }}>{value}</div>;
 };
 
 const one2ManyComponentFn = (value: One2manyValue): React.ReactElement => {
