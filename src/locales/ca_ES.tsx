@@ -88,4 +88,5 @@ export default {
   selectAtLeastOneField: "Selecciona almenys un camp per a l'exportació",
   printScreen: "Imprimir pantalla",
   advancedExport: "Exportació avançada",
+  savedRegisters: "Registre guardat correctament",
 };

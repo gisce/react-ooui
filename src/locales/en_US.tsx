@@ -85,4 +85,5 @@ export default {
   selectAtLeastOneField: "Select at least one field for the export",
   printScreen: "Print screen",
   advancedExport: "Advanced export",
+  savedRegisters: "Record successfully saved",
 };
