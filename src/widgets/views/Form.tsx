@@ -756,6 +756,7 @@ function Form(props: FormProps, ref: any) {
           ...formOoui?.context,
         },
       },
+      parentValues: getParentPlainValues?.(),
       onChangeFieldActionArgs: onChangeFieldAction.args,
     });
 
