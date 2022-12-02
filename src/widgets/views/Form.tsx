@@ -126,7 +126,8 @@ function Form(props: FormProps, ref: any) {
   const responsiveBehaviour = containerWidth < WIDTH_BREAKPOINT;
 
   const formContext = useContext(FormContext) as FormContextType;
-  const { activeId: parentId } = formContext || {};
+  const { activeId: parentId, getPlainValues: getParentPlainValues } =
+    formContext || {};
 
   const actionViewContext = useContext(
     ActionViewContext
