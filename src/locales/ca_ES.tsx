@@ -85,4 +85,5 @@ export default {
   uninformed: "Sense informar",
   totalRegisters: "Registres totals:",
   savedRegisters: "Registre guardat correctament",
+  errorWhileSavingForm: "Error en guardar el formulari",
 };
