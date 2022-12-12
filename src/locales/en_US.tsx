@@ -81,4 +81,6 @@ export default {
   openAttachmentLink: "Open attachment link",
   uninformed: "Uninformed",
   totalRegisters: "Total registers:",
+  savedRegisters: "Record successfully saved",
+  errorWhileSavingForm: "Error while saving form",
 };
