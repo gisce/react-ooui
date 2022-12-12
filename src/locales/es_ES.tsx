@@ -86,4 +86,5 @@ export default {
   uninformed: "Sin informar",
   totalRegisters: "Registros totales:",
   savedRegisters: "Registro guardado correctamente",
+  errorWhileSavingForm: "Error al guardar el formulario",
 };

@@ -15,6 +15,7 @@ import {
   Row,
   Alert,
   Spin,
+  message,
 } from "antd";
 import Measure from "react-measure";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
@@ -105,7 +106,7 @@ function Form(props: FormProps, ref: any) {
     defaultValues,
     forcedValues = {},
   } = props;
-  const { lang } = useContext(LocaleContext) as LocaleContextType;
+  const { t, lang } = useContext(LocaleContext) as LocaleContextType;
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>();
@@ -342,6 +343,7 @@ function Form(props: FormProps, ref: any) {
       await antForm.validateFields();
       return false;
     } catch (verror) {
+      message.error(t("fillRequiredFields"));
       return true;
     }
   }
@@ -640,6 +642,7 @@ function Form(props: FormProps, ref: any) {
       setIsSubmitting(false);
       setFormIsSaving?.(false);
       onSubmitError?.(err);
+      message.error(t("errorWhileSavingForm"));
       setError(err?.message ? err.message : err);
     } finally {
       formSubmitting.current = false;
