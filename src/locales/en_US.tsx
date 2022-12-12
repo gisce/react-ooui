@@ -86,4 +86,5 @@ export default {
   printScreen: "Print screen",
   advancedExport: "Advanced export",
   savedRegisters: "Record successfully saved",
+  errorWhileSavingForm: "Error while saving form",
 };

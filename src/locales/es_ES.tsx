@@ -90,4 +90,5 @@ export default {
   printScreen: "Imprimir pantalla",
   advancedExport: "Exportación avanzada",
   savedRegisters: "Registro guardado correctamente",
+  errorWhileSavingForm: "Error al guardar el formulario",
 };
