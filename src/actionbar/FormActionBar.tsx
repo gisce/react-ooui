@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { Space, Spin } from "antd";
+import React, { useContext, useEffect, useRef } from "react";
+import { Space, Spin, message } from "antd";
 import {
   SaveOutlined,
   RightOutlined,
@@ -63,7 +63,6 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     attachments,
     formRef,
     setFormHasChanges,
-    searchTreeRef,
     previousView,
     setPreviousView,
     goToResourceId,
@@ -79,6 +78,15 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     TabManagerContext
   ) as TabManagerContextType;
   const { openRelate, openDefaultActionForModel } = tabManagerContext || {};
+  const prevFormIsSavingRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    if (!formIsSaving && prevFormIsSavingRef.current) {
+      message.success(t("savedRegisters"));
+    }
+
+    prevFormIsSavingRef.current = formIsSaving || false;
+  }, [formIsSaving]);
 
   function tryRefresh(callback: any) {
     if (formHasChanges) {

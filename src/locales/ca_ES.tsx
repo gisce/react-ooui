@@ -84,4 +84,6 @@ export default {
   openAttachmentLink: "Obrir enllaç de l'adjunt",
   uninformed: "Sense informar",
   totalRegisters: "Registres totals:",
+  savedRegisters: "Registre guardat correctament",
+  errorWhileSavingForm: "Error en guardar el formulari",
 };
