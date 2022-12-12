@@ -172,7 +172,9 @@ function Tree(props: Props): React.ReactElement {
         <Col span={12}>
           <Pagination
             total={total}
-            pageSize={internalLimit.current}
+            pageSize={
+              internalLimit.current === 0 ? total : internalLimit.current
+            }
             current={page}
             showSizeChanger={false}
             onChange={onRequestPageChange}
