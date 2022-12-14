@@ -695,7 +695,7 @@ function Form(props: FormProps, ref: any) {
       if (
         checkFieldsType({
           changedFields,
-          fields,
+          formOoui: formOoui!,
           types: [
             "text",
             "codeeditor",
