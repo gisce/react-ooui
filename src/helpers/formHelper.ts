@@ -1,4 +1,5 @@
 import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
+import { Form as FormOoui } from "@gisce/ooui";
 
 const filteredValues = (values: any, fields: any) => {
   if (!fields) {
@@ -100,15 +101,16 @@ export const getTouchedValues = ({
 
 export const checkFieldsType = ({
   changedFields,
-  fields,
+  formOoui,
   types,
 }: {
   changedFields: string[];
-  fields: any;
+  formOoui: FormOoui;
   types: string[];
 }) => {
   const valuesChecked = changedFields.map((key) => {
-    return types.includes(fields[key]?.type);
+    const fieldType = formOoui?.findById(key)?.type!;
+    return types.includes(fieldType);
   });
   return valuesChecked.some((i) => i === true);
 };
