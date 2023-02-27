@@ -325,6 +325,7 @@ function SearchTree(props: Props, ref: any) {
             treeView.isExpandable ? fetchChildrenForRecord : undefined
           }
           childField={treeView.field_parent}
+          rootTree={rootTree}
         />
       </>
     );

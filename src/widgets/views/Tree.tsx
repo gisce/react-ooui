@@ -17,6 +17,10 @@ import {
 } from "@ant-design/icons";
 import { One2manyValue } from "../base/one2many/One2manyInput";
 import { Interweave } from "interweave";
+import {
+  ActionViewContext,
+  ActionViewContextType,
+} from "@/context/ActionViewContext";
 
 type Props = {
   total?: number;
@@ -35,6 +39,7 @@ type Props = {
   sorter?: any;
   onFetchChildrenForRecord?: (item: any) => Promise<any[]>;
   childField?: string;
+  rootTree?: boolean;
 };
 
 const booleanComponentFn = (value: boolean): React.ReactElement => {
@@ -110,6 +115,7 @@ function Tree(props: Props): React.ReactElement {
     sorter,
     onFetchChildrenForRecord,
     childField,
+    rootTree = false,
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
@@ -121,6 +127,12 @@ function Tree(props: Props): React.ReactElement {
 
   const { t } = useContext(LocaleContext) as LocaleContextType;
   const internalLimit = useRef(limit);
+
+  const actionViewContext = useContext(
+    ActionViewContext
+  ) as ActionViewContextType;
+  const { title = undefined, setTitle = undefined } =
+    (rootTree ? actionViewContext : {}) || {};
 
   useEffect(() => {
     treeOoui.current = getTree(treeView);
@@ -139,6 +151,10 @@ function Tree(props: Props): React.ReactElement {
     });
 
     setColumns(columns);
+
+    if (treeOoui.current.string && title !== treeOoui.current.string) {
+      setTitle?.(treeOoui.current.string);
+    }
   }, [treeView]);
 
   useEffect(() => {

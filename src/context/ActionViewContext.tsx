@@ -53,6 +53,7 @@ export type ActionViewContextType = {
   setSearchValues?: (value: any) => void;
   limit?: number;
   setLimit?: (value: number) => void;
+  setTitle?: (value: string) => void;
 };
 
 export const ActionViewContext =
@@ -66,7 +67,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const {
     children,
     currentView,
-    title,
+    title: titleProps,
     setCurrentView,
     availableViews,
     formRef,
@@ -106,6 +107,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [limit, setLimit] = useState<number>(
     limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT
   );
+  const [title, setTitle] = useState<string>(titleProps);
 
   useEffect(() => {
     if (results && results.length > 0 && !currentItemIndex) {
@@ -196,6 +198,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setSearchValues,
         limit,
         setLimit,
+        setTitle,
       }}
     >
       {children}
