@@ -17,6 +17,8 @@ import {
 } from "@ant-design/icons";
 import { One2manyValue } from "../base/one2many/One2manyInput";
 import { Interweave } from "interweave";
+import { Many2oneTree } from "../base/many2one/Many2oneTree";
+import { ReferenceTree } from "../base/ReferenceTree";
 
 type Props = {
   total?: number;
@@ -52,16 +54,9 @@ const booleanComponentFn = (value: boolean): React.ReactElement => {
 };
 
 const many2OneComponentFn = (m2oField: any): React.ReactElement => {
-  if (!m2oField) {
-    return <></>;
-  }
-  return (
-    <Space>
-      <>{m2oField.value}</>
-      <Many2oneSuffix id={m2oField.id} model={m2oField.model} />
-    </Space>
-  );
+  return <Many2oneTree m2oField={m2oField} />;
 };
+
 const textComponentFn = (value: any): React.ReactElement => {
   return <Interweave content={value?.replace(/(?:\r\n|\r|\n)/g, "<br>")} />;
 };
@@ -90,6 +85,10 @@ const imageComponent = (value: string): React.ReactElement => {
       style={{ maxWidth: "50px", padding: "5px" }}
     />
   );
+};
+
+const referenceComponent = (value: any): React.ReactElement => {
+  return <ReferenceTree value={value} />;
 };
 
 function Tree(props: Props): React.ReactElement {
@@ -136,6 +135,7 @@ function Tree(props: Props): React.ReactElement {
       image: imageComponent,
       integer: numberComponent,
       float: numberComponent,
+      reference: referenceComponent,
     });
 
     setColumns(columns);
