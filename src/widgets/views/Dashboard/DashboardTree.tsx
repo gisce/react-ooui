@@ -219,6 +219,7 @@ function DashboardTree(props: Props) {
             });
             setResults(sortedResults);
           }}
+          context={parentContext}
         />
       </div>
     );
