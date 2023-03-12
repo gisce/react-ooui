@@ -15,7 +15,11 @@ const getTree = (treeView: TreeView): TreeOoui => {
   return tree;
 };
 
-const getTableColumns = (tree: TreeOoui, components: any): Array<Column> => {
+const getTableColumns = (
+  tree: TreeOoui,
+  components: any,
+  context: any
+): Array<Column> => {
   const tableColumns = tree.columns.map((column) => {
     const type = column.type;
     const key = column.id;
@@ -24,7 +28,7 @@ const getTableColumns = (tree: TreeOoui, components: any): Array<Column> => {
 
     if (component) {
       render = (item: any) => {
-        return component(item);
+        return component(item, key, tree.fields[key], context);
       };
     }
 

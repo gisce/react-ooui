@@ -307,6 +307,7 @@ function SearchTree(props: Props, ref: any) {
           searchValues={searchValues}
         />
         <Tree
+          context={parentContext}
           total={totalItems}
           limit={limit}
           page={page}
