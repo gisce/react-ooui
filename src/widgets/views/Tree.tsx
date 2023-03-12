@@ -37,6 +37,7 @@ type Props = {
   sorter?: any;
   onFetchChildrenForRecord?: (item: any) => Promise<any[]>;
   childField?: string;
+  context?: any;
 };
 
 const booleanComponentFn = (value: boolean): React.ReactElement => {
@@ -87,8 +88,21 @@ const imageComponent = (value: string): React.ReactElement => {
   );
 };
 
-const referenceComponent = (value: any): React.ReactElement => {
-  return <ReferenceTree value={value} />;
+const referenceComponent = (
+  value: any,
+  key: string,
+  fieldDefinitions: any,
+  context: any
+): React.ReactElement => {
+  return (
+    <>
+      <ReferenceTree
+        value={value}
+        selectionValues={new Map(fieldDefinitions?.selection)}
+        context={context}
+      />
+    </>
+  );
 };
 
 function Tree(props: Props): React.ReactElement {
@@ -109,6 +123,7 @@ function Tree(props: Props): React.ReactElement {
     sorter,
     onFetchChildrenForRecord,
     childField,
+    context,
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
@@ -124,19 +139,23 @@ function Tree(props: Props): React.ReactElement {
   useEffect(() => {
     treeOoui.current = getTree(treeView);
 
-    const columns = getTableColumns(treeOoui.current, {
-      boolean: booleanComponentFn,
-      many2one: many2OneComponentFn,
-      text: textComponentFn,
-      one2many: one2ManyComponentFn,
-      many2many: one2ManyComponentFn,
-      progressbar: progressBarComponentFn,
-      float_time: floatTimeComponent,
-      image: imageComponent,
-      integer: numberComponent,
-      float: numberComponent,
-      reference: referenceComponent,
-    });
+    const columns = getTableColumns(
+      treeOoui.current,
+      {
+        boolean: booleanComponentFn,
+        many2one: many2OneComponentFn,
+        text: textComponentFn,
+        one2many: one2ManyComponentFn,
+        many2many: one2ManyComponentFn,
+        progressbar: progressBarComponentFn,
+        float_time: floatTimeComponent,
+        image: imageComponent,
+        integer: numberComponent,
+        float: numberComponent,
+        reference: referenceComponent,
+      },
+      context
+    );
 
     setColumns(columns);
   }, [treeView]);

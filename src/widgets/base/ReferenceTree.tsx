@@ -4,12 +4,16 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Many2oneSuffix } from "./many2one/Many2oneSuffix";
 import { LoadingOutlined } from "@ant-design/icons";
 
-export type ReferenceTreeProps = { value: string; context?: any };
+export type ReferenceTreeProps = {
+  value: string;
+  context?: any;
+  selectionValues?: any;
+};
 
 export const ReferenceTree = (
   props: ReferenceTreeProps
 ): React.ReactElement => {
-  const { value, context } = props;
+  const { value, context, selectionValues } = props;
   const [name, setName] = useState();
   const [loading, setLoading] = useState(false);
 
@@ -46,8 +50,11 @@ export const ReferenceTree = (
     return <LoadingOutlined />;
   }
 
+  const selectionDescription = selectionValues.get(model);
+
   return (
     <Space>
+      <>{`${selectionDescription}:`}</>
       <>{name}</>
       <Many2oneSuffix id={intId} model={model} />
     </Space>
