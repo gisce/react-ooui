@@ -1,4 +1,10 @@
-import { Tree as TreeOoui, Selection, Many2one, Boolean } from "@gisce/ooui";
+import {
+  Tree as TreeOoui,
+  Selection,
+  Many2one,
+  Boolean,
+  Reference,
+} from "@gisce/ooui";
 import { TreeView, Column } from "@/types";
 
 const getTree = (treeView: TreeView): TreeOoui => {
@@ -54,7 +60,9 @@ const getTableItems = (treeOoui: TreeOoui, results: Array<any>): Array<any> => {
       } else {
         const widget = treeOoui.findById(key);
 
-        if (widget instanceof Selection) {
+        if (widget instanceof Reference) {
+          parsedItem[key] = item[key];
+        } else if (widget instanceof Selection) {
           const selection = widget;
           parsedItem[key] = selection.selectionValues.get(item[key]);
         } else if (widget instanceof Many2one) {
