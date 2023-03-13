@@ -79,14 +79,8 @@ type RemoveItemOptions = {
 };
 
 const removeItems = async (options: RemoveItemOptions) => {
-  const {
-    model,
-    activeId,
-    fieldName,
-    idsToRemove,
-    fields,
-    isMany2many,
-  } = options;
+  const { model, activeId, fieldName, idsToRemove, fields, isMany2many } =
+    options;
 
   const values: any = {};
   values[fieldName] = [];
@@ -136,4 +130,28 @@ const getNextPendingId = (items: One2manyItem[]) => {
   }
 };
 
-export { readObjectValues, removeItems, linkItem, getNextPendingId };
+const convertToPlain2ManyValues = (values: any, fields: any) => {
+  const result: any = {};
+  Object.keys(values).forEach((key) => {
+    if (
+      fields.hasOwnProperty(key) &&
+      (fields[key].type === "one2many" || fields[key].type === "many2many") &&
+      values[key] &&
+      values[key]?.items
+    ) {
+      result[key] = values[key].items.filter(
+        (item: One2manyItem) => item.operation !== "pendingRemove"
+      );
+    } else {
+      result[key] = values[key];
+    }
+  });
+  return result;
+};
+export {
+  readObjectValues,
+  removeItems,
+  linkItem,
+  getNextPendingId,
+  convertToPlain2ManyValues,
+};

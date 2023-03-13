@@ -55,6 +55,7 @@ import {
   ContentRootContextType,
 } from "@/context/ContentRootContext";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { convertToPlain2ManyValues } from "@/helpers/one2manyHelper";
 
 export type FormProps = {
   model: string;
@@ -663,10 +664,13 @@ function Form(props: FormProps, ref: any) {
     // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
     ooui.parse(arch, {
       readOnly,
-      values: {
-        ...values,
-        ...getAdditionalValues(),
-      },
+      values: convertToPlain2ManyValues(
+        {
+          ...values,
+          ...getAdditionalValues(),
+        },
+        fields
+      ),
     });
     setFormOoui(ooui);
 
