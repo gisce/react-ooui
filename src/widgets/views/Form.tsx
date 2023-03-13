@@ -55,6 +55,7 @@ import {
   ContentRootContextType,
 } from "@/context/ContentRootContext";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { convertToPlain2ManyValues } from "@/helpers/one2manyHelper";
 
 export type FormProps = {
   model: string;
@@ -401,13 +402,11 @@ function Form(props: FormProps, ref: any) {
     if (valuesProps) {
       values = valuesProps;
     } else {
-      ({
-        values,
-        defaultGetCalled: hasDefaultGetCalled,
-      } = await fetchValuesFromApi({
-        fields: _fields,
-        arch: _arch!,
-      }));
+      ({ values, defaultGetCalled: hasDefaultGetCalled } =
+        await fetchValuesFromApi({
+          fields: _fields,
+          arch: _arch!,
+        }));
     }
 
     if (actionDomain) {
@@ -458,15 +457,13 @@ function Form(props: FormProps, ref: any) {
 
   const getFormView = async (): Promise<FormView> => {
     if (getDataFromAction) {
-      const action = await ConnectionProvider.getHandler().getActionStringForModel(
-        model
-      );
-      const viewsForAction = await ConnectionProvider.getHandler().getViewsForAction(
-        {
+      const action =
+        await ConnectionProvider.getHandler().getActionStringForModel(model);
+      const viewsForAction =
+        await ConnectionProvider.getHandler().getViewsForAction({
           action,
           context: parentContext,
-        }
-      );
+        });
       return viewsForAction.views.get("form");
     }
 
@@ -667,10 +664,13 @@ function Form(props: FormProps, ref: any) {
     // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
     ooui.parse(arch, {
       readOnly,
-      values: {
-        ...values,
-        ...getAdditionalValues(),
-      },
+      values: convertToPlain2ManyValues(
+        {
+          ...values,
+          ...getAdditionalValues(),
+        },
+        fields
+      ),
     });
     setFormOoui(ooui);
 
