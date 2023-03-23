@@ -5,7 +5,6 @@ import { Tree as TreeOoui } from "@gisce/ooui";
 
 import { TreeView, Column } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
-import { Many2oneSuffix } from "../base/many2one/Many2oneSuffix";
 import { calculateColumnsWidth } from "@/helpers/dynamicColumnsHelper";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../base/ProgressBar";
@@ -17,6 +16,10 @@ import {
 } from "@ant-design/icons";
 import { One2manyValue } from "../base/one2many/One2manyInput";
 import { Interweave } from "interweave";
+import {
+  ActionViewContext,
+  ActionViewContextType,
+} from "@/context/ActionViewContext";
 import { Many2oneTree } from "../base/many2one/Many2oneTree";
 import { ReferenceTree } from "../base/ReferenceTree";
 
@@ -37,6 +40,7 @@ type Props = {
   sorter?: any;
   onFetchChildrenForRecord?: (item: any) => Promise<any[]>;
   childField?: string;
+  rootTree?: boolean;
   context?: any;
 };
 
@@ -123,6 +127,7 @@ function Tree(props: Props): React.ReactElement {
     sorter,
     onFetchChildrenForRecord,
     childField,
+    rootTree = false,
     context,
   } = props;
 
@@ -135,6 +140,12 @@ function Tree(props: Props): React.ReactElement {
 
   const { t } = useContext(LocaleContext) as LocaleContextType;
   const internalLimit = useRef(limit);
+
+  const actionViewContext = useContext(
+    ActionViewContext
+  ) as ActionViewContextType;
+  const { title = undefined, setTitle = undefined } =
+    (rootTree ? actionViewContext : {}) || {};
 
   useEffect(() => {
     treeOoui.current = getTree(treeView);
@@ -158,6 +169,10 @@ function Tree(props: Props): React.ReactElement {
     );
 
     setColumns(columns);
+
+    if (treeOoui.current.string && title !== treeOoui.current.string) {
+      setTitle?.(treeOoui.current.string);
+    }
   }, [treeView]);
 
   useEffect(() => {
