@@ -5,7 +5,6 @@ import { Tree as TreeOoui } from "@gisce/ooui";
 
 import { TreeView, Column } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
-import { Many2oneSuffix } from "../base/many2one/Many2oneSuffix";
 import { calculateColumnsWidth } from "@/helpers/dynamicColumnsHelper";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../base/ProgressBar";
@@ -21,6 +20,8 @@ import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
+import { Many2oneTree } from "../base/many2one/Many2oneTree";
+import { ReferenceTree } from "../base/ReferenceTree";
 
 type Props = {
   total?: number;
@@ -40,6 +41,7 @@ type Props = {
   onFetchChildrenForRecord?: (item: any) => Promise<any[]>;
   childField?: string;
   rootTree?: boolean;
+  context?: any;
 };
 
 const booleanComponentFn = (value: boolean): React.ReactElement => {
@@ -57,16 +59,9 @@ const booleanComponentFn = (value: boolean): React.ReactElement => {
 };
 
 const many2OneComponentFn = (m2oField: any): React.ReactElement => {
-  if (!m2oField) {
-    return <></>;
-  }
-  return (
-    <Space>
-      <>{m2oField.value}</>
-      <Many2oneSuffix id={m2oField.id} model={m2oField.model} />
-    </Space>
-  );
+  return <Many2oneTree m2oField={m2oField} />;
 };
+
 const textComponentFn = (value: any): React.ReactElement => {
   return <Interweave content={value?.replace(/(?:\r\n|\r|\n)/g, "<br>")} />;
 };
@@ -97,6 +92,23 @@ const imageComponent = (value: string): React.ReactElement => {
   );
 };
 
+const referenceComponent = (
+  value: any,
+  key: string,
+  fieldDefinitions: any,
+  context: any
+): React.ReactElement => {
+  return (
+    <>
+      <ReferenceTree
+        value={value}
+        selectionValues={new Map(fieldDefinitions?.selection)}
+        context={context}
+      />
+    </>
+  );
+};
+
 function Tree(props: Props): React.ReactElement {
   const {
     page = 1,
@@ -116,6 +128,7 @@ function Tree(props: Props): React.ReactElement {
     onFetchChildrenForRecord,
     childField,
     rootTree = false,
+    context,
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
@@ -137,18 +150,23 @@ function Tree(props: Props): React.ReactElement {
   useEffect(() => {
     treeOoui.current = getTree(treeView);
 
-    const columns = getTableColumns(treeOoui.current, {
-      boolean: booleanComponentFn,
-      many2one: many2OneComponentFn,
-      text: textComponentFn,
-      one2many: one2ManyComponentFn,
-      many2many: one2ManyComponentFn,
-      progressbar: progressBarComponentFn,
-      float_time: floatTimeComponent,
-      image: imageComponent,
-      integer: numberComponent,
-      float: numberComponent,
-    });
+    const columns = getTableColumns(
+      treeOoui.current,
+      {
+        boolean: booleanComponentFn,
+        many2one: many2OneComponentFn,
+        text: textComponentFn,
+        one2many: one2ManyComponentFn,
+        many2many: one2ManyComponentFn,
+        progressbar: progressBarComponentFn,
+        float_time: floatTimeComponent,
+        image: imageComponent,
+        integer: numberComponent,
+        float: numberComponent,
+        reference: referenceComponent,
+      },
+      context
+    );
 
     setColumns(columns);
 
