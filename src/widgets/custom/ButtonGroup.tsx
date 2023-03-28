@@ -83,7 +83,7 @@ export const ButtonGroup = (props: ButtonGroupProps) => {
         type={primary ? "primary" : undefined}
         //danger={danger ? true : undefined} This works but typescript
         // doesn't accept
-        overlay={<Items ooui={secondaryButtons} />}
+        overlay={Items({ooui: secondaryButtons})}
       >
         {getButtonIcon()}
         {caption}
