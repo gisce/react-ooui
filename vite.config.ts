@@ -43,7 +43,7 @@ export default defineConfig({
         "react-grid-layout",
         "react-hotkeys-hook",
         "react-measure",
-        "@tabler/icons",
+        "@tabler/icons-react",
         "use-deep-compare-effect",
         "validator",
         "interweave",

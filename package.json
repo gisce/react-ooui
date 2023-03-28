@@ -39,7 +39,7 @@
     "@gisce/ooui": "^0.17.12",
     "@gisce/react-formiga-table": "^0.5.0",
     "@monaco-editor/react": "^4.4.5",
-    "@tabler/icons": "^1.96.0",
+    "@tabler/icons-react": "^2.11.0",
     "antd": "^4.12.3",
     "buffer": "^6.0.3",
     "fiber-diagram": "github:gisce/fiber-diagram",

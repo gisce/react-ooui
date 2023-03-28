@@ -1,6 +1,6 @@
 import React from "react";
 import * as AntIcons from "@ant-design/icons";
-import * as TablerIcons from "@tabler/icons";
+import * as TablerIcons from "@tabler/icons-react";
 
 type TablerKey = keyof typeof TablerIcons;
 type AntKey = keyof typeof AntIcons;
