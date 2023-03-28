@@ -1,111 +1,119 @@
 import React from "react";
-import Icon from "@ant-design/icons";
-import { AntIcons as Icons } from "./icons/antd_icons";
-import { TablerIcons } from "./icons/tabler_icons";
+import * as AntIcons from "@ant-design/icons";
+import * as TablerIcons from "@tabler/icons";
 
-const iconMapping: { [key: string]: React.ElementType } = {
-  "terp-purchase": Icons.ShoppingCartOutlined,
-  "terp-graph": Icons.PieChartOutlined,
-  "terp-crm": Icons.ContactsOutlined,
-  "terp-hr": TablerIcons.IconFriends,
-  "terp-account": TablerIcons.IconBuildingBank,
-  "terp-project": TablerIcons.IconChecklist,
-  "terp-administration": TablerIcons.IconAdjustments,
-  "terp-partner": Icons.TeamOutlined,
-  "terp-mrp": Icons.BuildOutlined,
-  "terp-product": Icons.ShoppingOutlined,
-  STOCK_JUSTIFY_FILL: Icons.UnorderedListOutlined,
-  STOCK_INDENT: TablerIcons.IconIndentIncrease,
-  STOCK_HELP: Icons.QuestionOutlined,
-  STOCK_GO_UP: Icons.ArrowUpOutlined,
-  STOCK_SORT_DESCENDING: Icons.SortDescendingOutlined,
-  STOCK_ADD: Icons.PlusOutlined,
-  STOCK_GOTO_LAST: Icons.FastForwardOutlined,
-  STOCK_FIND: Icons.SearchOutlined,
-  STOCK_PROPERTIES: Icons.ControlOutlined,
-  STOCK_DIALOG_INFO: Icons.InfoOutlined,
-  STOCK_FLOPPY: Icons.UsbOutlined,
-  STOCK_JUSTIFY_CENTER: Icons.AlignCenterOutlined,
-  STOCK_GO_BACK: Icons.ArrowLeftOutlined,
-  STOCK_UNDERLINE: Icons.UnderlineOutlined,
-  STOCK_BOLD: Icons.BoldOutlined,
-  STOCK_APPLY: Icons.CheckOutlined,
-  STOCK_ZOOM_OUT: Icons.ZoomOutOutlined,
-  STOCK_STRIKETHROUGH: Icons.StrikethroughOutlined,
-  STOCK_MEDIA_REWIND: Icons.BackwardOutlined,
-  STOCK_PRINT: Icons.PrinterOutlined,
-  STOCK_NO: Icons.CloseOutlined,
-  STOCK_GOTO_FIRST: Icons.FastBackwardOutlined,
-  STOCK_CLOSE: Icons.CloseOutlined,
-  STOCK_REMOVE: Icons.MinusOutlined,
-  STOCK_CUT: Icons.ScissorOutlined,
-  STOCK_DIALOG_AUTHENTICATION: Icons.SafetyOutlined,
-  STOCK_ZOOM_FIT: Icons.ExpandOutlined,
-  STOCK_JUMP_TO: Icons.SelectOutlined,
-  STOCK_HARDDISK: Icons.HddOutlined,
-  STOCK_SAVE_AS: Icons.SaveOutlined,
-  STOCK_UNDO: Icons.UndoOutlined,
-  STOCK_JUSTIFY_RIGHT: Icons.AlignRightOutlined,
-  STOCK_DIALOG_ERROR: Icons.CloseCircleOutlined,
-  STOCK_INDEX: Icons.ProfileOutlined,
-  STOCK_GOTO_BOTTOM: Icons.VerticalAlignBottomOutlined,
-  STOCK_MEDIA_NEXT: Icons.StepForwardOutlined,
-  STOCK_REDO: Icons.RedoOutlined,
-  STOCK_COPY: Icons.CopyOutlined,
-  STOCK_MEDIA_PAUSE: Icons.PauseOutlined,
-  STOCK_GO_FORWARD: Icons.ArrowRightOutlined,
-  STOCK_UNDELETE: Icons.UndoOutlined,
-  STOCK_EXECUTE: Icons.SettingOutlined,
-  STOCK_SAVE: Icons.SaveOutlined,
-  STOCK_DIALOG_QUESTION: Icons.QuestionCircleOutlined,
-  STOCK_SORT_ASCENDING: Icons.SortAscendingOutlined,
-  STOCK_REFRESH: Icons.ReloadOutlined,
-  STOCK_MEDIA_FORWARD: Icons.ForwardOutlined,
-  STOCK_STOP: Icons.BorderOutlined,
-  STOCK_PRINT_PREVIEW: Icons.PrinterOutlined,
-  STOCK_HOME: Icons.HomeOutlined,
-  STOCK_PASTE: Icons.CarryOutOutlined,
-  STOCK_ZOOM_100: Icons.ZoomInOutlined,
-  STOCK_FIND_AND_REPLACE: Icons.FileSearchOutlined,
-  STOCK_DIALOG_WARNING: Icons.WarningOutlined,
-  STOCK_ZOOM_IN: Icons.ZoomInOutlined,
-  STOCK_CONVERT: Icons.ExportOutlined,
-  STOCK_ITALIC: Icons.ItalicOutlined,
-  STOCK_YES: Icons.CheckOutlined,
-  STOCK_MEDIA_PLAY: Icons.PlayCircleOutlined,
-  STOCK_MEDIA_RECORD: Icons.VideoCameraOutlined,
-  STOCK_MEDIA_PREVIOUS: Icons.StepBackwardOutlined,
-  STOCK_NEW: Icons.FileAddOutlined,
-  STOCK_CANCEL: Icons.CloseOutlined,
-  STOCK_DISCONNECT: Icons.ApiOutlined,
-  STOCK_JUSTIFY_LEFT: Icons.AlignLeftOutlined,
-  STOCK_FILE: Icons.FileOutlined,
-  STOCK_QUIT: Icons.LogoutOutlined,
-  STOCK_EDIT: Icons.EditOutlined,
-  STOCK_CONNECT: Icons.ApiOutlined,
-  STOCK_GO_DOWN: Icons.CaretDownOutlined,
-  STOCK_NETWORK: Icons.ApartmentOutlined,
-  STOCK_OK: Icons.CheckOutlined,
-  STOCK_GOTO_TOP: Icons.VerticalAlignTopOutlined,
-  STOCK_ABOUT: Icons.StarOutlined,
-  STOCK_COLOR_PICKER: Icons.AimOutlined,
-  STOCK_SELECT_FONT: Icons.FontSizeOutlined,
-  STOCK_DELETE: Icons.DeleteOutlined,
-  STOCK_DND: Icons.FileTextOutlined,
-  STOCK_CLEAR: Icons.CloseSquareOutlined,
-  STOCK_UNINDENT: Icons.AlignLeftOutlined,
-  STOCK_PREFERENCES: Icons.SettingOutlined,
+type TablerKey = keyof typeof TablerIcons;
+type AntKey = keyof typeof AntIcons;
+
+const iconMapping: { [key: string]: string } = {
+  "terp-purchase": "ShoppingCart",
+  "terp-graph": "PieChart",
+  "terp-crm": "Contacts",
+  "terp-hr": "Friends",
+  "terp-account": "BuildingBank",
+  "terp-project": "Checklist",
+  "terp-administration": "Adjustments",
+  "terp-partner": "Team",
+  "terp-mrp": "Build",
+  "terp-product": "Shopping",
+  STOCK_JUSTIFY_FILL: "UnorderedList",
+  STOCK_INDENT: "IndentIncrease",
+  STOCK_HELP: "Question",
+  STOCK_GO_UP: "ArrowUp",
+  STOCK_SORT_DESCENDING: "SortDescending",
+  STOCK_ADD: "Plus",
+  STOCK_GOTO_LAST: "FastForward",
+  STOCK_FIND: "Search",
+  STOCK_PROPERTIES: "Control",
+  STOCK_DIALOG_INFO: "Info",
+  STOCK_FLOPPY: "Usb",
+  STOCK_JUSTIFY_CENTER: "AlignCenter",
+  STOCK_GO_BACK: "ArrowLeft",
+  STOCK_UNDERLINE: "Underline",
+  STOCK_BOLD: "Bold",
+  STOCK_APPLY: "Check",
+  STOCK_ZOOM_OUT: "ZoomOut",
+  STOCK_STRIKETHROUGH: "Strikethrough",
+  STOCK_MEDIA_REWIND: "Backward",
+  STOCK_PRINT: "Printer",
+  STOCK_NO: "Close",
+  STOCK_GOTO_FIRST: "FastBackward",
+  STOCK_CLOSE: "Close",
+  STOCK_REMOVE: "Minus",
+  STOCK_CUT: "Scissor",
+  STOCK_DIALOG_AUTHENTICATION: "Safety",
+  STOCK_ZOOM_FIT: "Expand",
+  STOCK_JUMP_TO: "Select",
+  STOCK_HARDDISK: "Hdd",
+  STOCK_SAVE_AS: "Save",
+  STOCK_UNDO: "Undo",
+  STOCK_JUSTIFY_RIGHT: "AlignRight",
+  STOCK_DIALOG_ERROR: "CloseCircle",
+  STOCK_INDEX: "Profile",
+  STOCK_GOTO_BOTTOM: "VerticalAlignBottom",
+  STOCK_MEDIA_NEXT: "StepForward",
+  STOCK_REDO: "Redo",
+  STOCK_COPY: "Copy",
+  STOCK_MEDIA_PAUSE: "Pause",
+  STOCK_GO_FORWARD: "ArrowRight",
+  STOCK_UNDELETE: "Undo",
+  STOCK_EXECUTE: "Setting",
+  STOCK_SAVE: "Save",
+  STOCK_DIALOG_QUESTION: "QuestionCircle",
+  STOCK_SORT_ASCENDING: "SortAscending",
+  STOCK_REFRESH: "Reload",
+  STOCK_MEDIA_FORWARD: "Forward",
+  STOCK_STOP: "Border",
+  STOCK_PRINT_PREVIEW: "Printer",
+  STOCK_HOME: "Home",
+  STOCK_PASTE: "CarryOut",
+  STOCK_ZOOM_100: "ZoomIn",
+  STOCK_FIND_AND_REPLACE: "FileSearch",
+  STOCK_DIALOG_WARNING: "Warning",
+  STOCK_ZOOM_IN: "ZoomIn",
+  STOCK_CONVERT: "Export",
+  STOCK_ITALIC: "Italic",
+  STOCK_YES: "Check",
+  STOCK_MEDIA_PLAY: "PlayCircle",
+  STOCK_MEDIA_RECORD: "VideoCamera",
+  STOCK_MEDIA_PREVIOUS: "StepBackward",
+  STOCK_NEW: "FileAdd",
+  STOCK_CANCEL: "Close",
+  STOCK_DISCONNECT: "Api",
+  STOCK_JUSTIFY_LEFT: "AlignLeft",
+  STOCK_FILE: "File",
+  STOCK_QUIT: "Logout",
+  STOCK_EDIT: "Edit",
+  STOCK_CONNECT: "Api",
+  STOCK_GO_DOWN: "CaretDown",
+  STOCK_NETWORK: "Apartment",
+  STOCK_OK: "Check",
+  STOCK_GOTO_TOP: "VerticalAlignTop",
+  STOCK_ABOUT: "Star",
+  STOCK_COLOR_PICKER: "Aim",
+  STOCK_SELECT_FONT: "FontSize",
+  STOCK_DELETE: "Delete",
+  STOCK_DND: "FileText",
+  STOCK_CLEAR: "CloseSquare",
+  STOCK_UNINDENT: "AlignLeft",
+  STOCK_PREFERENCES: "Setting",
 };
 
-export default (key: string): React.ElementType | undefined => {
+export default (key: string) => {
   if (key.indexOf("gtk-") !== -1) {
     const rootIcon = key.replace("gtk-", "").replace("-", "_");
     const newKey = `STOCK_${rootIcon.toUpperCase()}`;
-    return iconMapping[newKey];
+    return getIconForKey(iconMapping[newKey]);
   }
+
   if (iconMapping.hasOwnProperty(key)) {
-    return iconMapping[key];
+    return getIconForKey(iconMapping[key]);
   }
+
+  return getIconForKey(key);
+};
+
+function getIconForKey(key: string) {
   const IconCamelCase = `${key
     .split("-")
     .map((word) =>
@@ -116,17 +124,15 @@ export default (key: string): React.ElementType | undefined => {
     )
     .join("")}`;
 
-  const antKey = `${IconCamelCase}Outlined`;
-  if (Icons.hasOwnProperty(antKey)) {
-    return Icons[antKey];
+  const antKey: AntKey = `${IconCamelCase}Outlined` as any;
+  if (AntIcons[antKey]) {
+    return AntIcons[antKey];
   }
 
-  const tablerKey = `Icon${IconCamelCase}`;
-  if (TablerIcons.hasOwnProperty(tablerKey)) {
-    const CustomIcon = () =>
-      React.createElement(Icon, { component: TablerIcons[tablerKey] });
-    return CustomIcon;
+  const tablerKey: TablerKey = `Icon${IconCamelCase}` as any;
+  if (TablerIcons[tablerKey]) {
+    return TablerIcons[tablerKey];
   }
 
   return undefined;
-};
+}
