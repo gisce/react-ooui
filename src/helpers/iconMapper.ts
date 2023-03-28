@@ -135,7 +135,8 @@ function getIconForKey(key: string) {
     const TablerIcon = () =>
       React.createElement(TablerIcons[tablerKey] as any, {
         fill: "transparent",
-        height: 16,
+        height: 17,
+        width: 17,
       });
     const CustomIcon = () =>
       React.createElement(Icon, {
