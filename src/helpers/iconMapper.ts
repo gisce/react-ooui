@@ -1,6 +1,7 @@
 import React from "react";
 import * as AntIcons from "@ant-design/icons";
 import * as TablerIcons from "@tabler/icons-react";
+import Icon from "@ant-design/icons";
 
 type TablerKey = keyof typeof TablerIcons;
 type AntKey = keyof typeof AntIcons;
@@ -131,7 +132,16 @@ function getIconForKey(key: string) {
 
   const tablerKey: TablerKey = `Icon${IconCamelCase}` as any;
   if (TablerIcons[tablerKey]) {
-    return TablerIcons[tablerKey];
+    const TablerIcon = () =>
+      React.createElement(TablerIcons[tablerKey] as any, {
+        fill: "transparent",
+        height: 16,
+      });
+    const CustomIcon = () =>
+      React.createElement(Icon, {
+        component: TablerIcon,
+      });
+    return CustomIcon;
   }
 
   return undefined;
