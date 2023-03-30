@@ -2,14 +2,18 @@ import iconMapper from "../helpers/iconMapper";
 import * as Icons from "@ant-design/icons";
 
 describe("A IconMapper instance", () => {
-  test("should return the default icon when key not found", () => {
-    const defaultIcon = Icons.RightOutlined;
-    const icon = iconMapper("RANDOM_KEY");
-    expect(icon).toBe(defaultIcon);
+  test("should return undefined when key not found", () => {
+    const icon = iconMapper("foo-bar");
+    expect(icon).toBe(undefined);
   });
   test("should return proper help icon when requested", () => {
     const helpIcon = Icons.QuestionOutlined;
-    const icon = iconMapper("STOCK_HELP");
+    const icon = iconMapper("gtk-help");
     expect(icon).toBe(helpIcon);
   });
+  test("should replace all - for _", () => {
+    const findAndReplaceIcon = Icons.FileSearchOutlined;
+    const icon = iconMapper("gtk-find-and-replace");
+    expect(icon).toBe(findAndReplaceIcon);
+  })
 });
