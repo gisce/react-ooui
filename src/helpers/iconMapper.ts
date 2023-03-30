@@ -103,8 +103,7 @@ const iconMapping: { [key: string]: string } = {
 export default (key: string) => {
   if (key.indexOf("gtk-") !== -1) {
     const rootIcon = key.replace("gtk-", "").replace(/\-/g, "_");
-    const newKey = `STOCK_${rootIcon.toUpperCase()}`;
-    return getIconForKey(iconMapping[newKey]);
+    key = `STOCK_${rootIcon.toUpperCase()}`;
   }
 
   if (iconMapping.hasOwnProperty(key)) {
