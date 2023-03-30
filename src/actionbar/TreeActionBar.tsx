@@ -153,9 +153,24 @@ function TreeActionBar(props: Props) {
               }
             }}
           />
+          {!treeExpandable && (
+            <ButtonWithBadge
+              icon={
+                <FilterOutlined
+                  style={{ color: searchVisible ? "white" : undefined }}
+                />
+              }
+              tooltip={t("advanced_search")}
+              type={searchVisible ? "primary" : "default"}
+              onClick={() => {
+                setSearchVisible?.(!searchVisible);
+              }}
+              disabled={duplicatingItem || removingItem || treeIsLoading}
+              badgeNumber={searchParams?.length}
+            />
+          )}
           {separator()}
           <NewButton disabled={treeIsLoading} />
-          {separator()}
           <ActionButton
             icon={<CopyOutlined />}
             tooltip={t("duplicate")}
@@ -180,22 +195,6 @@ function TreeActionBar(props: Props) {
           />
           {separator()}
         </>
-      )}
-      {!treeExpandable && (
-        <ButtonWithBadge
-          icon={
-            <FilterOutlined
-              style={{ color: searchVisible ? "white" : undefined }}
-            />
-          }
-          tooltip={t("advanced_search")}
-          type={searchVisible ? "primary" : "default"}
-          onClick={() => {
-            setSearchVisible?.(!searchVisible);
-          }}
-          disabled={duplicatingItem || removingItem || treeIsLoading}
-          badgeNumber={searchParams?.length}
-        />
       )}
       <ActionButton
         icon={<InfoCircleOutlined />}
