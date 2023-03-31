@@ -40,6 +40,7 @@ type Props = {
   rowSelection?: any;
   scrollY?: number;
   colorsForResults?: { [key: number]: string };
+  statusForResults?: { [key: number]: string };
   onChangeSort?: (results: any) => void;
   sorter?: any;
   onFetchChildrenForRecord?: (item: any) => Promise<any[]>;
@@ -171,6 +172,7 @@ function Tree(props: Props): React.ReactElement {
     rowSelection,
     scrollY,
     colorsForResults = {},
+    statusForResults = {},
     onChangeSort,
     sorter,
     onFetchChildrenForRecord,
