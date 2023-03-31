@@ -102,9 +102,8 @@ const iconMapping: { [key: string]: string } = {
 
 export default (key: string) => {
   if (key.indexOf("gtk-") !== -1) {
-    const rootIcon = key.replace("gtk-", "").replace("-", "_");
-    const newKey = `STOCK_${rootIcon.toUpperCase()}`;
-    return getIconForKey(iconMapping[newKey]);
+    const rootIcon = key.replace("gtk-", "").replace(/\-/g, "_");
+    key = `STOCK_${rootIcon.toUpperCase()}`;
   }
 
   if (iconMapping.hasOwnProperty(key)) {
@@ -114,8 +113,8 @@ export default (key: string) => {
   return getIconForKey(key);
 };
 
-function getIconForKey(key: string) {
-  const IconCamelCase = `${key
+function toCamelCase(key: string): string {
+  return `${key
     .split("-")
     .map((word) =>
       word.replace(
@@ -124,6 +123,13 @@ function getIconForKey(key: string) {
       )
     )
     .join("")}`;
+}
+
+function getIconForKey(key: string) {
+  let IconCamelCase = key.charAt(0).toUpperCase() + key.slice(1); // Capitalize first letter
+  if (IconCamelCase.indexOf("-") !== -1) {
+    IconCamelCase = toCamelCase(IconCamelCase);
+  }
 
   const antKey: AntKey = `${IconCamelCase}Outlined` as any;
   if (AntIcons[antKey]) {
