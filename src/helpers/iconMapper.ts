@@ -100,17 +100,17 @@ const iconMapping: { [key: string]: string } = {
   STOCK_PREFERENCES: "Setting",
 };
 
-export default (key: string) => {
+export default (key: string, className?: any) => {
   if (key.indexOf("gtk-") !== -1) {
     const rootIcon = key.replace("gtk-", "").replace(/\-/g, "_");
     key = `STOCK_${rootIcon.toUpperCase()}`;
   }
 
   if (iconMapping.hasOwnProperty(key)) {
-    return getIconForKey(iconMapping[key]);
+    return getIconForKey(iconMapping[key], className);
   }
 
-  return getIconForKey(key);
+  return getIconForKey(key, className);
 };
 
 function toCamelCase(key: string): string {
@@ -125,7 +125,7 @@ function toCamelCase(key: string): string {
     .join("")}`;
 }
 
-function getIconForKey(key: string) {
+function getIconForKey(key: string, className?: any) {
   let IconCamelCase = key.charAt(0).toUpperCase() + key.slice(1); // Capitalize first letter
   if (IconCamelCase.indexOf("-") !== -1) {
     IconCamelCase = toCamelCase(IconCamelCase);
@@ -133,7 +133,10 @@ function getIconForKey(key: string) {
 
   const antKey: AntKey = `${IconCamelCase}Outlined` as any;
   if (AntIcons[antKey]) {
-    return AntIcons[antKey];
+    return () =>
+      React.createElement(AntIcons[antKey] as any, {
+        className,
+      });
   }
 
   const tablerKey: TablerKey = `Icon${IconCamelCase}` as any;
@@ -147,6 +150,7 @@ function getIconForKey(key: string) {
     const CustomIcon = () =>
       React.createElement(Icon, {
         component: TablerIcon,
+        className,
       });
     return CustomIcon;
   }
