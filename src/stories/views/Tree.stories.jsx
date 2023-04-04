@@ -30,7 +30,7 @@ Default.args = {
       lang: false,
       name: "AGRI ENERGIA ELECTRICA, S.A.",
       ref: "0112",
-      title: false,
+      title: "corp",
       numeric: 30.1,
       progressbar: 100,
     },
@@ -41,7 +41,7 @@ Default.args = {
       lang: false,
       name: "Agrolait",
       ref: false,
-      title: false,
+      title: "ltd",
       numeric: 30.1,
       progressbar: 70.434331,
     },
@@ -85,14 +85,14 @@ Default.args = {
       lang: false,
       name: "Aragón",
       ref: "02",
-      title: false,
+      title: "corp",
       numeric: 30.1,
       progressbar: 20.01,
     },
   ],
   treeView: {
     arch:
-      '<tree string="Partners">\n<field name="numeric" sum="Numeric"/><field name="name"/>\n                    <field name="title"/>\n                    <field name="ref"/>\n                    <field name="city" select="2"/>\n                    <field name="country" select="2"/>\n                    <field name="lang"/>\n <field name="progressbar" string="Progress" />               </tree>',
+      `<tree string="Partners">\n<field name="numeric" sum="Numeric"/><field name="name"/>\n                    <field name="title" widget="tag" widget_props="{'colors': {'corp': 'red', 'ltd': 'green'}}"/>\n                    <field name="ref"/>\n                    <field name="city" select="2"/>\n                    <field name="country" select="2"/>\n                    <field name="lang"/>\n <field name="progressbar" string="Progress" />               </tree>`,
     fields: {
       progressbar: {
         string: "Progress bar",
@@ -149,7 +149,7 @@ Default.args = {
       },
       title: {
         selection: [
-          ["Corp.", "Corp."],
+          ["corp", "Corp."],
           ["ltd", "Ltd"],
           ["", ""],
         ],
