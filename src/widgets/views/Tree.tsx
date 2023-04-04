@@ -111,8 +111,6 @@ value: any,
   ooui: any,
   context: any
 ): React.ReactElement => {
-  console.log(value);
-  console.log(ooui);
   return (
     <>{ooui.selectionValues.get(value)}</>
   );
