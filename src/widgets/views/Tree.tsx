@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Pagination, Checkbox, Space, Row, Col, Spin } from "antd";
+import { Pagination, Checkbox, Space, Row, Col, Spin, Tag } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
 
@@ -92,17 +92,43 @@ const imageComponent = (value: string): React.ReactElement => {
   );
 };
 
+const TagComponent = (
+value: any,
+  key: string,
+  ooui: any,
+  context: any
+): React.ReactElement => {
+  return (
+    <>
+      <Tag color={ooui.colors[value]}>{ooui.selectionValues.get(value)}</Tag>
+    </>
+  );
+};
+
+const SelectionComponent = (
+value: any,
+  key: string,
+  ooui: any,
+  context: any
+): React.ReactElement => {
+  console.log(value);
+  console.log(ooui);
+  return (
+    <>{ooui.selectionValues.get(value)}</>
+  );
+};
+
 const referenceComponent = (
   value: any,
   key: string,
-  fieldDefinitions: any,
+  ooui: any,
   context: any
 ): React.ReactElement => {
   return (
     <>
       <ReferenceTree
         value={value}
-        selectionValues={new Map(fieldDefinitions?.selection)}
+        selectionValues={ooui.selectionValues}
         context={context}
       />
     </>
@@ -164,6 +190,8 @@ function Tree(props: Props): React.ReactElement {
         integer: numberComponent,
         float: numberComponent,
         reference: referenceComponent,
+        tag: TagComponent,
+        selection: SelectionComponent,
       },
       context
     );

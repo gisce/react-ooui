@@ -29,6 +29,7 @@ import {
   Radio,
   Switch,
   Steps,
+  Tag,
   CodeEditor,
 } from "@/index";
 import { Image } from "./base/Image";
@@ -99,6 +100,8 @@ const getWidgetType = (type: string) => {
       return Indicator;
     case "tags":
       return Tags;
+    case "tag":
+      return Tag;
     case "multicheckbox":
       return MultiCheckbox;
     case "radio":
