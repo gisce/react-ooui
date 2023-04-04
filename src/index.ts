@@ -37,6 +37,7 @@ import { Image } from "@/widgets/base/Image";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import Dashboard from "@/widgets/views/Dashboard/Dashboard";
 import { Tags } from "@/widgets/custom/Tags";
+import { Tag } from "@/widgets/custom/Tag";
 import { MultiCheckbox } from "./widgets/custom/MultiCheckbox";
 import { Radio } from "@/widgets/custom/Radio";
 import { Switch } from "@/widgets/custom/Switch";
@@ -145,6 +146,7 @@ export {
   DashboardGridItem,
   DashboardGrid,
   Tags,
+  Tag,
   MultiCheckbox,
   Radio,
   Switch,

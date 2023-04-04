@@ -28,7 +28,7 @@ const getTableColumns = (
 
     if (component) {
       render = (item: any) => {
-        return component(item, key, tree.fields[key], context);
+        return component(item, key, column, context);
       };
     }
 
@@ -68,7 +68,7 @@ const getTableItems = (treeOoui: TreeOoui, results: Array<any>): Array<any> => {
           parsedItem[key] = item[key];
         } else if (widget instanceof Selection) {
           const selection = widget;
-          parsedItem[key] = selection.selectionValues.get(item[key]);
+          parsedItem[key] = item[key];
         } else if (widget instanceof Many2one) {
           parsedItem[key] = item[key] &&
             Array.isArray(item[key]) &&
