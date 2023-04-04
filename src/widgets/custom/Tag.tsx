@@ -14,6 +14,9 @@ export const Tag = (props: WidgetProps) => {
 
 export const TagInput = (props) => {
   const {ooui, value} = props;
+  if (!value) {
+    return null
+  }
   const color = ooui.colors === "auto" ? colorFromString(value) : ooui.colors[value]
   return (
     <AntdTag color={color}>{ooui.selectionValues.get(value)}</AntdTag>

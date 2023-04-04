@@ -100,7 +100,7 @@ value: any,
 ): React.ReactElement => {
   return (
     <>
-      <Tag color={ooui.colors[value]}>{ooui.selectionValues.get(value)}</Tag>
+      {value ? <Tag color={ooui.colors[value]}>{ooui.selectionValues.get(value)}</Tag> : null}
     </>
   );
 };
