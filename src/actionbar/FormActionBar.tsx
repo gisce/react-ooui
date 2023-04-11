@@ -352,15 +352,18 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         disabled={mustDisableButtons}
         tooltip={t("reports")}
         items={toolbar?.print}
-        onItemClick={(report: any) => {
+        onItemClick={async (report: any) => {
           if (!report) {
             return;
           }
+          const savedSucceed = await onFormSave?.();
 
-          runAction({
-            ...report,
-            datas: { ...(report.datas || {}), ids: [currentId as number] },
-          });
+          if (savedSucceed) {
+            runAction({
+              ...report,
+              datas: { ...(report.datas || {}), ids: [currentId as number] },
+            });
+          }
         }}
       />
       <DropdownButton
