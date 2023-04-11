@@ -344,9 +344,8 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
             return;
           }
 
-          const result = await saveNewDocumentIfNeeded({
+          const result = await saveDocument({
             onFormSave,
-            currentId,
           });
 
           if (!result.succeed) {
@@ -365,9 +364,8 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           if (!report) {
             return;
           }
-          const result = await saveNewDocumentIfNeeded({
+          const result = await saveDocument({
             onFormSave,
-            currentId,
           });
 
           if (!result.succeed) {
@@ -393,9 +391,8 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
             return;
           }
 
-          const result = await saveNewDocumentIfNeeded({
+          const result = await saveDocument({
             onFormSave,
-            currentId,
           });
 
           if (!result.succeed) {
@@ -415,9 +412,8 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         disabled={mustDisableButtons}
         attachments={attachments}
         onAddNewAttachment={async () => {
-          const result = await saveNewDocumentIfNeeded({
+          const result = await saveDocument({
             onFormSave,
-            currentId,
           });
 
           if (!result.succeed) {
@@ -439,9 +435,8 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           });
         }}
         onListAllAttachments={async () => {
-          const result = await saveNewDocumentIfNeeded({
+          const result = await saveDocument({
             onFormSave,
-            currentId,
           });
 
           if (!result.succeed) {
@@ -460,9 +455,8 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           });
         }}
         onViewAttachmentDetails={async (attachment: Attachment) => {
-          const result = await saveNewDocumentIfNeeded({
+          const result = await saveDocument({
             onFormSave,
-            currentId,
           });
 
           if (!result.succeed) {
@@ -484,18 +478,12 @@ function separator() {
   return <div className="inline-block w-2" />;
 }
 
-async function saveNewDocumentIfNeeded({
+async function saveDocument({
   onFormSave,
-  currentId,
 }: {
   onFormSave?: () => Promise<{ succeed: boolean; id: number }>;
-  currentId: number | undefined;
 }): Promise<{ succeed: boolean; currentId?: number }> {
-  if (currentId !== undefined) {
-    return { succeed: true, currentId: currentId };
-  }
   const result = await onFormSave?.();
-
   if (result?.succeed) {
     return { succeed: true, currentId: result.id };
   } else {
