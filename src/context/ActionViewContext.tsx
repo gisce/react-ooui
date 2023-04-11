@@ -142,7 +142,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   }, [currentView]);
 
   const callOnFormSave = async () => {
-    await (formRef.current as any)?.submitForm();
+    return await (formRef.current as any)?.submitForm();
   };
 
   return (
