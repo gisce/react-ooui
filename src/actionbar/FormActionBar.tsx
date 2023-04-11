@@ -343,9 +343,13 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           if (!action) {
             return;
           }
-          const savedSucceed = await onFormSave?.();
 
-          if (!savedSucceed) {
+          const result = await saveNewDocumentIfNeeded({
+            onFormSave,
+            currentId,
+          });
+
+          if (!result.succeed) {
             return;
           }
 
@@ -361,15 +365,21 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           if (!report) {
             return;
           }
-          const savedSucceed = await onFormSave?.();
+          const result = await saveNewDocumentIfNeeded({
+            onFormSave,
+            currentId,
+          });
 
-          if (!savedSucceed) {
+          if (!result.succeed) {
             return;
           }
 
           runAction({
             ...report,
-            datas: { ...(report.datas || {}), ids: [currentId as number] },
+            datas: {
+              ...(report.datas || {}),
+              ids: [result.currentId as number],
+            },
           });
         }}
       />
@@ -383,9 +393,12 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
             return;
           }
 
-          const savedSucceed = await onFormSave?.();
+          const result = await saveNewDocumentIfNeeded({
+            onFormSave,
+            currentId,
+          });
 
-          if (!savedSucceed) {
+          if (!result.succeed) {
             return;
           }
 
@@ -402,13 +415,16 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         disabled={mustDisableButtons}
         attachments={attachments}
         onAddNewAttachment={async () => {
-          const savedSucceed = await onFormSave?.();
+          const result = await saveNewDocumentIfNeeded({
+            onFormSave,
+            currentId,
+          });
 
-          if (!savedSucceed) {
+          if (!result.succeed) {
             return;
           }
 
-          const res_id = currentId as number;
+          const res_id = result.currentId as number;
           const res_model = currentModel as string;
           openDefaultActionForModel({
             model: "ir.attachment",
@@ -423,13 +439,16 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           });
         }}
         onListAllAttachments={async () => {
-          const savedSucceed = await onFormSave?.();
+          const result = await saveNewDocumentIfNeeded({
+            onFormSave,
+            currentId,
+          });
 
-          if (!savedSucceed) {
+          if (!result.succeed) {
             return;
           }
 
-          const res_id = currentId as number;
+          const res_id = result.currentId as number;
           const res_model = currentModel as string;
           openDefaultActionForModel({
             model: "ir.attachment",
@@ -441,9 +460,12 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           });
         }}
         onViewAttachmentDetails={async (attachment: Attachment) => {
-          const savedSucceed = await onFormSave?.();
+          const result = await saveNewDocumentIfNeeded({
+            onFormSave,
+            currentId,
+          });
 
-          if (!savedSucceed) {
+          if (!result.succeed) {
             return;
           }
 
@@ -460,6 +482,25 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
 
 function separator() {
   return <div className="inline-block w-2" />;
+}
+
+async function saveNewDocumentIfNeeded({
+  onFormSave,
+  currentId,
+}: {
+  onFormSave?: () => Promise<{ succeed: boolean; id: number }>;
+  currentId: number | undefined;
+}): Promise<{ succeed: boolean; currentId?: number }> {
+  if (currentId !== undefined) {
+    return { succeed: true, currentId: currentId };
+  }
+  const result = await onFormSave?.();
+
+  if (result?.succeed) {
+    return { succeed: true, currentId: result.id };
+  } else {
+    return { succeed: false, currentId: undefined };
+  }
 }
 
 export default FormActionBar;
