@@ -339,8 +339,13 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         disabled={mustDisableButtons}
         tooltip={t("actions")}
         items={toolbar?.action}
-        onItemClick={(action: any) => {
+        onItemClick={async (action: any) => {
           if (!action) {
+            return;
+          }
+          const savedSucceed = await onFormSave?.();
+
+          if (!savedSucceed) {
             return;
           }
 
@@ -358,12 +363,14 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           }
           const savedSucceed = await onFormSave?.();
 
-          if (savedSucceed) {
-            runAction({
-              ...report,
-              datas: { ...(report.datas || {}), ids: [currentId as number] },
-            });
+          if (!savedSucceed) {
+            return;
           }
+
+          runAction({
+            ...report,
+            datas: { ...(report.datas || {}), ids: [currentId as number] },
+          });
         }}
       />
       <DropdownButton
@@ -373,6 +380,12 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         items={toolbar?.relate}
         onItemClick={async (relate: any) => {
           if (!relate) {
+            return;
+          }
+
+          const savedSucceed = await onFormSave?.();
+
+          if (!savedSucceed) {
             return;
           }
 
@@ -388,7 +401,13 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       <AttachmentsButton
         disabled={mustDisableButtons}
         attachments={attachments}
-        onAddNewAttachment={() => {
+        onAddNewAttachment={async () => {
+          const savedSucceed = await onFormSave?.();
+
+          if (!savedSucceed) {
+            return;
+          }
+
           const res_id = currentId as number;
           const res_model = currentModel as string;
           openDefaultActionForModel({
@@ -403,7 +422,13 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
             initialViewType: "form",
           });
         }}
-        onListAllAttachments={() => {
+        onListAllAttachments={async () => {
+          const savedSucceed = await onFormSave?.();
+
+          if (!savedSucceed) {
+            return;
+          }
+
           const res_id = currentId as number;
           const res_model = currentModel as string;
           openDefaultActionForModel({
@@ -415,7 +440,13 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
             initialViewType: "tree",
           });
         }}
-        onViewAttachmentDetails={(attachment: Attachment) => {
+        onViewAttachmentDetails={async (attachment: Attachment) => {
+          const savedSucceed = await onFormSave?.();
+
+          if (!savedSucceed) {
+            return;
+          }
+
           openDefaultActionForModel({
             model: "ir.attachment",
             res_id: attachment.id,
