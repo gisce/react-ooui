@@ -11,7 +11,7 @@ export type ActionViewContextType = {
   setFormIsSaving?: (value: boolean) => void;
   formHasChanges?: boolean;
   setFormHasChanges?: (value: boolean) => void;
-  onFormSave?: () => void;
+  onFormSave?: () => Promise<void>;
   formRef?: any;
   searchTreeRef?: any;
   onNewClicked: () => void;
@@ -141,8 +141,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     }
   }, [currentView]);
 
-  const callOnFormSave = () => {
-    (formRef.current as any)?.submitForm();
+  const callOnFormSave = async () => {
+    await (formRef.current as any)?.submitForm();
   };
 
   return (
