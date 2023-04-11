@@ -11,7 +11,7 @@ export type ActionViewContextType = {
   setFormIsSaving?: (value: boolean) => void;
   formHasChanges?: boolean;
   setFormHasChanges?: (value: boolean) => void;
-  onFormSave?: () => Promise<void>;
+  onFormSave?: () => Promise<{ succeed: boolean; id: number }>;
   formRef?: any;
   searchTreeRef?: any;
   onNewClicked: () => void;
