@@ -22,7 +22,7 @@ export type FormContextType = {
   domain: any[];
   submitForm?: (options?: {
     callOnSubmitSucceed?: boolean;
-  }) => Promise<boolean>;
+  }) => Promise<{ succeed: boolean; id: number }>;
   fetchValues?: () => void;
   formHasChanges?: () => boolean;
   elementHasLostFocus?: () => void;

@@ -614,13 +614,13 @@ function Form(props: FormProps, ref: any) {
       formSubmitting.current = false;
       setFormHasChanges?.(false);
       onCancel?.();
-      return true;
+      return { succeed: true, id: getCurrentId()! };
     }
 
     if (await checkIfFormHasErrors()) {
       formSubmitting.current = false;
       formErrorsDialog(lang);
-      return false;
+      return { succeed: false, id: getCurrentId()! };
     }
 
     setIsSubmitting(true);
@@ -653,7 +653,7 @@ function Form(props: FormProps, ref: any) {
       setIsSubmitting(false);
     }
 
-    return submitSucceed;
+    return { succeed: submitSucceed, id: getCurrentId()! };
   };
 
   const parseForm = ({
