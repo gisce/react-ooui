@@ -295,6 +295,7 @@ function SearchTree(props: Props, ref: any) {
             formView.search_fields,
             treeView.search_fields,
           ])}
+          formXml={formView.arch}
           onClear={clear}
           limit={limit}
           offset={offset}
