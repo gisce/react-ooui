@@ -5,14 +5,14 @@ const convertBooleanParamIfNeeded = (value: any) => {
   return value;
 };
 
-export const getParamsForFields = (values: any, fields: any) => {
+export const getParamsForFields = (values: any, widgetContainer: any) => {
   const filteredValues = removeUndefinedFields(values);
   const groupedDateTime = groupDateTimeValuesIfNeeded(filteredValues);
-  const groupedValues = ungroupDateValuesIfNeeded(groupedDateTime, fields);
+  const groupedValues = ungroupDateValuesIfNeeded(groupedDateTime, widgetContainer);
 
   const params = [
     ...Object.keys(groupedValues).map((key) => {
-      return getParamForField(key, groupedValues[key], fields);
+      return getParamForField(key, groupedValues[key], widgetContainer);
     }),
   ];
 
@@ -27,9 +27,9 @@ export const getParamsForFields = (values: any, fields: any) => {
   return paramsForFields;
 };
 
-const getParamForField = (key: string, value: any, fields: any) => {
+const getParamForField = (key: string, value: any, widgetContainer: any) => {
   const filteredKey = key.split("#")[0];
-  const type = fields[filteredKey].type;
+  const type = widgetContainer.findById(filteredKey)?.type;
 
   if (
     type === "char" ||
@@ -127,9 +127,10 @@ export const groupDateTimeValuesIfNeeded = (values: any) => {
   return newValues;
 };
 
-const ungroupDateValuesIfNeeded = (values: any, fields: any) => {
+const ungroupDateValuesIfNeeded = (values: any, widgetContainer: any) => {
   const dateFields = Object.keys(values).filter((key) => {
-    return fields[key] && fields[key].type === "date";
+    const widget = widgetContainer.findById(key);
+    return widget && widget.type === "date";
   });
 
   let newValues: any = { ...values };

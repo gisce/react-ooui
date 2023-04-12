@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Form, Row, Col, Alert } from "antd";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
@@ -30,6 +30,7 @@ type Props = {
   searchError?: string;
   searchValues?: any;
   showLimitOptions?: boolean;
+  formXml: string;
 };
 
 function SearchFilter(props: Props) {
@@ -47,11 +48,13 @@ function SearchFilter(props: Props) {
     searchError,
     searchValues,
     showLimitOptions = true,
+    formXml,
   } = props;
 
   const [simpleSearchFields, setSimpleSearchFields] = useState<Container>();
   const [advancedSearchFields, setAdvancedSearchFields] = useState<Container>();
   const [advancedFilter, setAdvancedFilter] = useState(false);
+  const sfo = useRef<SearchFilterOoui>();
 
   const [form] = Form.useForm();
 
@@ -84,10 +87,10 @@ function SearchFilter(props: Props) {
 
   useDeepCompareEffect(() => {
     setAdvancedFilter(false);
-    const sfo = new SearchFilterOoui(searchFields, fields);
-    sfo.parse();
-    setSimpleSearchFields(sfo._simpleSearchContainer);
-    setAdvancedSearchFields(sfo._advancedSearchContainer);
+    sfo.current = new SearchFilterOoui(searchFields, fields, formXml);
+    sfo.current.parse();
+    setSimpleSearchFields(sfo.current._simpleSearchContainer);
+    setAdvancedSearchFields(sfo.current._advancedSearchContainer);
   }, [fields, searchFields]);
 
   const rows = getRowsAndCols();
@@ -96,7 +99,10 @@ function SearchFilter(props: Props) {
     const { limit, offset } = values;
     delete values.offset;
     delete values.limit;
-    const newParams = getParamsForFields(values, fields);
+    const newParams = getParamsForFields(
+      values,
+      sfo.current?._advancedSearchContainer
+    );
 
     onSubmit({ params: newParams, offset, limit, searchValues: values });
   };
