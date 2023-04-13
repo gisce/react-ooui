@@ -1,6 +1,6 @@
 const formatter = (graphType: "pie" | "default" | "barGrouped") => {
   return (object: any) => {
-    const formattedValue = object.value.toLocaleString("en-US", {
+    const formattedValue = object.value.toLocaleString("es-ES", {
       useGrouping: true,
     });
     const name = graphType === "pie" ? object.x : object.type;
