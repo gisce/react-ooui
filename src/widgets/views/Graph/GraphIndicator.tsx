@@ -273,7 +273,11 @@ function CommonIndicator({
       ? minFontSize
       : height * fontGrowFactor;
 
-  let finalValue = total ? `${value}/${total}` : `${value}`;
+  const localeValue = value?.toLocaleString("es-ES", {
+    useGrouping: true,
+  });
+
+  let finalValue = total ? `${localeValue}/${total}` : `${localeValue}`;
 
   if (suffix) {
     finalValue += " " + suffix;
@@ -342,13 +346,23 @@ function PercentageIndicator({
       ? minFontSize
       : twoLinesHeight * fontGrowFactor;
 
-  let finalValue = total ? `${value}/${total}` : `${value}`;
+  const localeValue = value?.toLocaleString("es-ES", {
+    useGrouping: true,
+  });
+
+  let finalValue = total
+    ? `${localeValue}/${total?.toLocaleString("es-ES", {
+        useGrouping: true,
+      })}`
+    : `${localeValue}`;
 
   if (suffix) {
     finalValue += " " + suffix;
   }
 
-  const percentValue = `${percent}%`;
+  const percentValue = `${percent?.toLocaleString("es-ES", {
+    useGrouping: true,
+  })}%`;
 
   let tw = getTextWidth(
     percentValue,
