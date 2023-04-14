@@ -37,6 +37,7 @@ export default defineConfig({
         "@ant-design/plots",
         "@gisce/ooui",
         "@gisce/react-formiga-table",
+        "@gisce/react-formiga-components",
         "@monaco-editor/react",
         "fiber-diagram",
         "file-type",
