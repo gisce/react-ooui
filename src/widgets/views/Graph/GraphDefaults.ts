@@ -1,3 +1,13 @@
+const formatter = (graphType: "pie" | "default" | "barGrouped") => {
+  return (object: any) => {
+    const formattedValue = object.value.toLocaleString("es-ES", {
+      useGrouping: true,
+    });
+    const name = graphType === "pie" ? object.x : object.type;
+    return { name, value: formattedValue };
+  };
+};
+
 const DefaultGraphOptions = {
   default: {
     padding: "auto",
@@ -7,6 +17,9 @@ const DefaultGraphOptions = {
     legend: {
       maxWidthRatio: 0.5,
       maxItemWidth: 1000,
+    },
+    tooltip: {
+      formatter: formatter("default"),
     },
   },
   pie: {
@@ -25,6 +38,9 @@ const DefaultGraphOptions = {
       maxWidthRatio: 0.5,
       maxItemWidth: 1000,
     },
+    tooltip: {
+      formatter: formatter("pie"),
+    },
     interactions: [
       {
         type: "element-active",
@@ -36,6 +52,9 @@ const DefaultGraphOptions = {
     legend: {
       maxWidthRatio: 0.5,
       maxItemWidth: 1000,
+    },
+    tooltip: {
+      formatter: formatter("barGrouped"),
     },
     label: {
       position: "middle",
