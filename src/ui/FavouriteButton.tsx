@@ -55,7 +55,7 @@ const FavouriteButton = (props: Props) => {
   const [shortcuts, setShortcuts] = useState<ShortcutApi[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentShortcutId, setCurrentShortcutId] = useState<number>();
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = (useContext(LocaleContext) as LocaleContextType) || {};
 
   const tabManagerContext = useContext(
     TabManagerContext
