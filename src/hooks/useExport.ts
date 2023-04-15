@@ -111,63 +111,15 @@ export const useExport = ({
   );
 
   const onGetPredefinedExports = useCallback(async () => {
-    const pExports = await ConnectionProvider.getHandler().search({
-      model: "ir.exports",
-      params: [["resource", "=", model]],
-      context,
+    const predefinedExports = await listPredefinedExports({ model, context });
+
+    const keysWithChilds = await retrieveKeyFieldsForPredefinedExports({
+      predefinedExports,
+      fields: fields.current,
+      onGetFieldChilds,
     });
 
-    const exportLinesIds = pExports
-      .map((pExport) => pExport.export_fields)
-      .reduce((acc, val) => acc.concat(val), []);
-
-    // Now we must read each id of the export lines
-    const exportLinesObjects =
-      await ConnectionProvider.getHandler().readObjects({
-        model: "ir.exports.line",
-        ids: exportLinesIds,
-        context,
-      });
-
-    const predefinedExports = pExports.map((pExport) => ({
-      id: pExport.id,
-      name: pExport.name,
-      fields: pExport.export_fields.map((id: number) => {
-        const exportLine = exportLinesObjects.find((e: any) => e.id === id);
-        return {
-          key: exportLine.name,
-        };
-      }),
-    }));
-
-    // --> Then we must load the fields for each key if not loaded yet in fields
-
-    const allPredefinedExportKeys: string[] = predefinedExports
-      .map((pExport) =>
-        pExport.fields.map((field: PredefinedExportField) => field.key)
-      )
-      .reduce((acc, val) => acc.concat(val), []);
-
-    const keysWithoutChildsInFields = allPredefinedExportKeys
-      .filter((key) => {
-        if (key.indexOf("/") === -1) {
-          return !fields.current["/"][key];
-        } else {
-          return !fields.current[getParentKey(key)];
-        }
-      })
-      .map((key) => getParentKey(key))
-      .sort((a, b) => {
-        return a.split("/").length - b.split("/").length;
-      });
-
-    const keysWithChilds = [];
-
-    for (const key of keysWithoutChildsInFields) {
-      keysWithChilds.push({ key, childs: await onGetFieldChilds(key) });
-    }
-
-    // Then we reformat predefined exports to get the title and the correct id
+    // Then we reformat predefined exports to get the title and the correct key with /id if needed
     const predefinedExportsAdjusted = predefinedExports.map((pExport) => {
       return {
         ...pExport,
@@ -197,7 +149,7 @@ export const useExport = ({
       };
     });
 
-    // We do the same with keysWithChilds, to reformat the id
+    // We must reformat each key of keysWithChilds to add the '/id' if needed
     const keysWithChildsAdjusted = keysWithChilds.map(({ key, childs }) => {
       const sanitizedKey = getSanitizedKey(key);
       const childKey = getChildKey(sanitizedKey);
@@ -336,4 +288,91 @@ const getTitle = ({
   parentTitle?: string;
 }) => {
   return `${parentTitle ? parentTitle + " → " : ""}${title}`;
+};
+
+const listPredefinedExports = async ({
+  model,
+  context,
+}: {
+  model: string;
+  context: any;
+}) => {
+  const pExports = await ConnectionProvider.getHandler().search({
+    model: "ir.exports",
+    params: [["resource", "=", model]],
+    context,
+  });
+
+  const exportLinesIds = pExports.flatMap((exp: any) => exp.export_fields);
+
+  // Now we must read each id of the export lines
+  const exportLinesObjects = await ConnectionProvider.getHandler().readObjects({
+    model: "ir.exports.line",
+    ids: exportLinesIds,
+    context,
+  });
+
+  return pExports.map((pExport) => ({
+    id: pExport.id,
+    name: pExport.name,
+    fields: pExport.export_fields.map((id: number) => {
+      const exportLine = exportLinesObjects.find((e: any) => e.id === id);
+      return {
+        key: exportLine.name,
+      };
+    }),
+  }));
+};
+
+const getKeysWithoutChildsInFields = ({
+  fields,
+  keys,
+}: {
+  fields: any;
+  keys: string[];
+}) => {
+  return [
+    ...new Set(
+      keys
+        .filter((key) => {
+          if (key.indexOf("/") === -1) {
+            return !fields["/"][key];
+          } else {
+            return !fields[getParentKey(key)];
+          }
+        })
+        .map((key) => getParentKey(key))
+        .sort((a, b) => {
+          return a.split("/").length - b.split("/").length;
+        })
+    ),
+  ];
+};
+
+const retrieveKeyFieldsForPredefinedExports = async ({
+  predefinedExports,
+  fields,
+  onGetFieldChilds,
+}: {
+  predefinedExports: PredefinedExport[];
+  fields: any;
+  onGetFieldChilds: (key: string) => Promise<ExportField[]>;
+}) => {
+  const allPredefinedExportKeys = predefinedExports.flatMap(
+    (exp: PredefinedExport) => exp.fields.map((field) => field.key)
+  );
+
+  const keysWithoutChildsInFields = getKeysWithoutChildsInFields({
+    fields,
+    keys: allPredefinedExportKeys,
+  });
+
+  const keysWithChilds = [];
+
+  // We must load the fields info for each key if not loaded yet in fields and store them in an array to pass them to the formiga component
+  for (const key of keysWithoutChildsInFields) {
+    keysWithChilds.push({ key, childs: await onGetFieldChilds(key) });
+  }
+
+  return keysWithChilds;
 };
