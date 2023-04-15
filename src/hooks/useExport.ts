@@ -169,14 +169,16 @@ export const useExport = ({
 
     // Then we reformat predefined exports to get the title and the correct id
     const predefinedExportsAdjusted = predefinedExports.map((pExport) => {
-      const fieldsWithTitles = pExport.fields.map(
-        (field: PredefinedExportField) => {
+      return {
+        ...pExport,
+        fields: pExport.fields.map((field: PredefinedExportField) => {
           const sanitizedKey = getSanitizedKey(field.key);
+          const childKey = getChildKey(sanitizedKey);
           const fieldDefinition = getFieldDefinition(
             sanitizedKey,
             fields.current
           );
-          const optsForField = fieldDefinition[getChildKey(sanitizedKey)];
+          const optsForField = fieldDefinition[childKey];
           const relationField = isRelationField(optsForField);
           const parentKey =
             sanitizedKey.indexOf("/") !== -1
@@ -184,23 +186,23 @@ export const useExport = ({
               : undefined;
           const newKey = addIdToKeyIfNeeded({
             relationField,
-            key: getChildKey(sanitizedKey),
+            key: childKey,
             parentKey,
           });
           return {
             key: newKey,
             title: optsForField.string,
           };
-        }
-      );
-      return { ...pExport, fields: fieldsWithTitles };
+        }),
+      };
     });
 
     // We do the same with keysWithChilds, to reformat the id
     const keysWithChildsAdjusted = keysWithChilds.map(({ key, childs }) => {
       const sanitizedKey = getSanitizedKey(key);
+      const childKey = getChildKey(sanitizedKey);
       const fieldDefinition = getFieldDefinition(sanitizedKey, fields.current);
-      const optsForField = fieldDefinition[getChildKey(sanitizedKey)];
+      const optsForField = fieldDefinition[childKey];
       const relationField = isRelationField(optsForField);
       const parentKey =
         sanitizedKey.indexOf("/") !== -1
@@ -208,7 +210,7 @@ export const useExport = ({
           : undefined;
       const newKey = addIdToKeyIfNeeded({
         relationField,
-        key: getChildKey(sanitizedKey),
+        key: childKey,
         parentKey,
       });
       return { key: newKey, childs };
