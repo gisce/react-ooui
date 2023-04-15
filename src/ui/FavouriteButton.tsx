@@ -150,10 +150,10 @@ const FavouriteButton = (props: Props) => {
     <Menu onClick={handleMenuClick}>
       <div style={{ width: 300, padding: 5, display: "flex" }}>
         <div style={{ paddingLeft: 15, color: "#ccc" }}>
-          {t("favorites").toUpperCase()}
+          {t?.("favorites").toUpperCase()}
         </div>
         <div style={{ flexGrow: 1, paddingLeft: 10 }}>
-          <Tooltip title={t("edit_favorites")}>
+          <Tooltip title={t?.("edit_favorites")}>
             <EditOutlined
               style={{ color: "#1890FF", cursor: "pointer" }}
               onClick={editFavourites}
@@ -177,7 +177,7 @@ const FavouriteButton = (props: Props) => {
         </>
       ) : (
         <div style={{ width: 300, padding: 5, paddingLeft: 15 }}>
-          {t("no_favorites")}
+          {t?.("no_favorites")}
         </div>
       )}
     </Menu>
