@@ -52,7 +52,10 @@ export const useExport = ({
 
       const { datas } = await ConnectionProvider.getHandler().exportData({
         model,
-        fields: options.selectedKeys,
+        fields: addIdToRelationFields({
+          keys: options.selectedKeys,
+          fields: fields.current,
+        }),
         domain: exportDomain,
         limit: options.registersAmount === "all" ? 0 : limit,
         context,
@@ -81,10 +84,8 @@ export const useExport = ({
 
   const onGetFieldChilds = useCallback(
     async (key: string) => {
-      const sanitizedKey = getSanitizedKey(key);
-      const fieldDefinition = getFieldDefinition(sanitizedKey, fields.current);
-
-      const optsForField = fieldDefinition[getChildKey(sanitizedKey)];
+      const fieldDefinition = getFieldDefinition(key, fields.current);
+      const optsForField = fieldDefinition[getChildKey(key)];
       const relation = optsForField.relation;
       const viewData = await ConnectionProvider.getHandler().getFields({
         model: relation,
@@ -100,11 +101,11 @@ export const useExport = ({
         });
       }
 
-      fields.current[sanitizedKey] = viewData;
+      fields.current[key] = viewData;
 
       return convertToExportFields({
         fields: viewData,
-        parentKey: sanitizedKey,
+        parentKey: key,
       });
     },
     [fields.current, model, context]
@@ -119,58 +120,25 @@ export const useExport = ({
       onGetFieldChilds,
     });
 
-    // Then we reformat predefined exports to get the title and the correct key with /id if needed
+    // Then we reformat predefined exports to get the title
     const predefinedExportsAdjusted = predefinedExports.map((pExport) => {
       return {
         ...pExport,
         fields: pExport.fields.map((field: PredefinedExportField) => {
-          const sanitizedKey = getSanitizedKey(field.key);
-          const childKey = getChildKey(sanitizedKey);
-          const fieldDefinition = getFieldDefinition(
-            sanitizedKey,
-            fields.current
-          );
+          const childKey = getChildKey(field.key);
+          const fieldDefinition = getFieldDefinition(field.key, fields.current);
           const optsForField = fieldDefinition[childKey];
-          const relationField = isRelationField(optsForField);
-          const parentKey =
-            sanitizedKey.indexOf("/") !== -1
-              ? getParentKey(sanitizedKey)
-              : undefined;
-          const newKey = addIdToKeyIfNeeded({
-            relationField,
-            key: childKey,
-            parentKey,
-          });
           return {
-            key: newKey,
+            key: field.key,
             title: optsForField.string,
           };
         }),
       };
     });
 
-    // We must reformat each key of keysWithChilds to add the '/id' if needed
-    const keysWithChildsAdjusted = keysWithChilds.map(({ key, childs }) => {
-      const sanitizedKey = getSanitizedKey(key);
-      const childKey = getChildKey(sanitizedKey);
-      const fieldDefinition = getFieldDefinition(sanitizedKey, fields.current);
-      const optsForField = fieldDefinition[childKey];
-      const relationField = isRelationField(optsForField);
-      const parentKey =
-        sanitizedKey.indexOf("/") !== -1
-          ? getParentKey(sanitizedKey)
-          : undefined;
-      const newKey = addIdToKeyIfNeeded({
-        relationField,
-        key: childKey,
-        parentKey,
-      });
-      return { key: newKey, childs };
-    });
-
     return {
       predefinedExports: predefinedExportsAdjusted,
-      keysWithChilds: keysWithChildsAdjusted,
+      keysWithChilds,
     };
   }, [fields.current]);
 
@@ -215,7 +183,7 @@ const convertToExportFields = ({
     const relationField = isRelationField(valuesForField);
 
     exportFields.push({
-      key: addIdToKeyIfNeeded({ relationField, key, parentKey }),
+      key: compoundId({ key, parentKey }),
       title: valuesForField.string,
       tooltip: valuesForField.help,
       required: valuesForField.required,
@@ -233,21 +201,14 @@ const isRelationField = (fieldDefinition: any) => {
   );
 };
 
-const addIdToKeyIfNeeded = ({
-  relationField,
+const compoundId = ({
   parentKey,
   key,
 }: {
-  relationField: boolean;
   parentKey?: string;
   key: string;
 }) => {
-  let newKey = `${parentKey ? parentKey + "/" : ""}${key}`;
-
-  if (relationField) {
-    newKey += "/id";
-  }
-  return newKey;
+  return `${parentKey ? parentKey + "/" : ""}${key}`;
 };
 
 const getParentKey = (key: string) => {
@@ -264,12 +225,6 @@ const getChildKey = (key: string) => {
   }
   const items = key.split("/");
   return items[items.length - 1];
-};
-
-const getSanitizedKey = (key: string) => {
-  return key.split("/")[key.split("/").length - 1] === "id"
-    ? key.split("/").slice(0, -1).join("/")
-    : key;
 };
 
 const getFieldDefinition = (key: string, fields: any) => {
@@ -376,3 +331,18 @@ const retrieveKeyFieldsForPredefinedExports = async ({
 
   return keysWithChilds;
 };
+
+const addIdToRelationFields = ({
+  keys,
+  fields,
+}: {
+  keys: string[];
+  fields: any;
+}) =>
+  keys.map((key) => {
+    const childKey = getChildKey(key);
+    const fieldDefinition = getFieldDefinition(key, fields);
+    const optsForField = fieldDefinition[childKey];
+    const relationField = isRelationField(optsForField);
+    return relationField ? `${key}/id` : key;
+  });
