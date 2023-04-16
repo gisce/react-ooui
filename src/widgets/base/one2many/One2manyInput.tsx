@@ -83,7 +83,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     formContext || {};
   const { lang, t } = useContext(LocaleContext) as LocaleContextType;
 
-  const formRef = useRef();
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
@@ -512,7 +511,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           formView={views.get("form")}
           values={itemsToShow[itemIndex]?.values}
           parentContext={{ ...getContext?.(), ...context }}
-          ref={formRef}
           model={relation}
           id={itemsToShow[itemIndex]?.id}
           submitMode={"values"}
