@@ -28,6 +28,7 @@ export const useExport = ({
   onClose: () => void;
 }) => {
   const fields = useRef<any>({});
+  const exportModelFields = useRef<Map<string, any>>(new Map<string, any>());
 
   const onExport = useCallback(
     async (options: ExportOptions) => {
@@ -144,14 +145,65 @@ export const useExport = ({
 
   const onSavePredefinedExport = useCallback(
     async (pExport: PredefinedExport) => {
-      return {};
+      const fieldsForExport = await getModelFields("ir.exports");
+      const fieldsForExportLine = await getModelFields("ir.exports.line");
+
+      // First we must create the parent object
+      const exportId = await ConnectionProvider.getHandler().create({
+        model: "ir.exports",
+        values: {
+          name: pExport.name,
+          resource: model,
+        },
+        fields: fieldsForExport,
+        context,
+      });
+
+      // We create the lines
+      await Promise.all(
+        pExport.fields.map(async (field) => {
+          return await ConnectionProvider.getHandler().create({
+            model: "ir.exports.line",
+            values: {
+              name: field.key,
+              export_id: exportId,
+            },
+            fields: fieldsForExportLine,
+            context,
+          });
+        })
+      );
+
+      return { ...pExport, id: exportId };
     },
     []
   );
 
   const onRemovePredefinedExport = useCallback(
-    async (pExport: PredefinedExport) => {},
+    async (pExport: PredefinedExport) => {
+      await ConnectionProvider.getHandler().delete({
+        model: "ir.exports",
+        ids: [pExport.id!],
+      });
+    },
     []
+  );
+
+  const getModelFields = useCallback(
+    async (model: string) => {
+      if (exportModelFields.current.has(model)) {
+        return exportModelFields.current.get(model);
+      }
+
+      const fieldsForModel = ConnectionProvider.getHandler().getFields({
+        model,
+        context,
+        fields: [],
+      });
+
+      exportModelFields.current.set(model, fieldsForModel);
+    },
+    [exportModelFields, context]
   );
 
   return {
