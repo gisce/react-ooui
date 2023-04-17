@@ -57,7 +57,12 @@ export const GraphChart = (props: GraphChartProps) => {
   return (
     <div style={{ padding: "1rem" }}>
       <p style={{ textAlign: "right" }}>
-        {`${t("totalRegisters")} ${evaluatedEntries?.length}`}
+        {`${t("totalRegisters")} ${evaluatedEntries?.length?.toLocaleString(
+          "es-ES",
+          {
+            useGrouping: true,
+          }
+        )}`}
       </p>
       <Chart
         {...getGraphProps({

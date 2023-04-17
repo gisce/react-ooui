@@ -14,6 +14,15 @@ const DefaultGraphOptions = {
     xAxis: {
       tickCount: 5,
     },
+    yAxis: {
+      label: {
+        formatter: (value: number) => {
+          return value.toLocaleString("es-ES", {
+            useGrouping: true,
+          });
+        },
+      },
+    },
     legend: {
       maxWidthRatio: 0.5,
       maxItemWidth: 1000,
@@ -55,6 +64,15 @@ const DefaultGraphOptions = {
     },
     tooltip: {
       formatter: formatter("barGrouped"),
+    },
+    yAxis: {
+      label: {
+        formatter: (value: number) => {
+          return value.toLocaleString("es-ES", {
+            useGrouping: true,
+          });
+        },
+      },
     },
     label: {
       position: "middle",
