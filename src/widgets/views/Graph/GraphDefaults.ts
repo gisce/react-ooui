@@ -8,19 +8,41 @@ const formatter = (graphType: "pie" | "default" | "barGrouped") => {
   };
 };
 
+const axisFormatter = (value: any) => {
+  if (typeof value === "string" && stringIsValidNumeric(value)) {
+    return parseFloat(value).toLocaleString("es-ES", {
+      useGrouping: true,
+    });
+  } else if (isNumber(value)) {
+    return value.toLocaleString("es-ES", {
+      useGrouping: true,
+    });
+  } else {
+    return value;
+  }
+};
+
+const stringIsValidNumeric = (value: string) => {
+  const regex = /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/;
+  return regex.test(value);
+};
+
+const isNumber = (value: any) => {
+  return typeof value === "number" && !isNaN(value);
+};
+
 const DefaultGraphOptions = {
   default: {
     padding: "auto",
     xAxis: {
       tickCount: 5,
+      label: {
+        formatter: axisFormatter,
+      },
     },
     yAxis: {
       label: {
-        formatter: (value: number) => {
-          return value.toLocaleString("es-ES", {
-            useGrouping: true,
-          });
-        },
+        formatter: axisFormatter,
       },
     },
     legend: {
@@ -65,13 +87,14 @@ const DefaultGraphOptions = {
     tooltip: {
       formatter: formatter("barGrouped"),
     },
+    xAxis: {
+      label: {
+        formatter: axisFormatter,
+      },
+    },
     yAxis: {
       label: {
-        formatter: (value: number) => {
-          return value.toLocaleString("es-ES", {
-            useGrouping: true,
-          });
-        },
+        formatter: axisFormatter,
       },
     },
     label: {
