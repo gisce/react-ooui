@@ -338,22 +338,23 @@ const getKeysWithoutChildsInFields = ({
   fields: any;
   keys: string[];
 }) => {
-  return [
+  return splitAndSortKeys([
     ...new Set(
       keys
         .filter((key) => {
           if (key.indexOf("/") === -1) {
-            return !fields["/"][key];
+            return !fields["/"]?.[key];
           } else {
-            return !fields[getParentKey(key)];
+            const parentKey = getParentKey(key);
+            console.log({ key, parentKey, fields });
+            const exists = fields?.[getParentKey(key)]?.[key];
+            console.log({ exists });
+            return !fields?.[getParentKey(key)]?.[key];
           }
         })
         .map((key) => getParentKey(key))
-        .sort((a, b) => {
-          return a.split("/").length - b.split("/").length;
-        })
     ),
-  ];
+  ]);
 };
 
 const retrieveKeyFieldsForPredefinedExports = async ({
@@ -398,3 +399,40 @@ const addIdToRelationFields = ({
     const relationField = isRelationField(optsForField);
     return relationField ? `${key}/id` : key;
   });
+
+const splitAndSortKeys = (keys: string[]): string[] => {
+  // We must split the keys that have more than one level (character / ocurrences in the string > 1)
+  // Into an array of keys with only one level
+  // For example: "partner_id/country_id/name" => ["partner_id", "partner_id/country_id", "partner_id/country_id/name"]
+  // We must do this because we must load the fields info for each key if not loaded yet in fields
+  // And we must load the fields info for the parent key first
+  //
+  // We must also sort the keys by the number of levels they have
+  // For example: ["partner_id", "partner_id/country_id", "partner_id/country_id/name"]
+
+  const keysMap: Map<string, boolean> = new Map();
+  const result: string[] = [];
+
+  // Split keys with more than one level
+  for (const key of keys) {
+    const subKeys = key.split("/");
+    let parentKey = "";
+    for (const subKey of subKeys) {
+      const currentKey = parentKey ? `${parentKey}/${subKey}` : subKey;
+      if (!keysMap.has(currentKey)) {
+        result.push(currentKey);
+        keysMap.set(currentKey, true);
+      }
+      parentKey = currentKey;
+    }
+  }
+
+  // Sort keys by number of levels
+  result.sort((a, b) => {
+    const aLevels = a.split("/").length;
+    const bLevels = b.split("/").length;
+    return aLevels - bLevels;
+  });
+
+  return result;
+};
