@@ -111,6 +111,7 @@ export const TimelineInput = (props: TimelineInputProps) => {
         model: relation,
         items,
         context: { ...getContext?.(), ...context },
+        currentView: "form",
       });
 
       triggerChange(itemsWithValues);
