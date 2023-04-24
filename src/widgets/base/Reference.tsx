@@ -49,6 +49,8 @@ export const ReferenceInput: React.FC<ReferenceInputProps> = (
 
   useEffect(() => {
     if (!value) {
+      setSelectionValue(undefined);
+      setMany2oneValue([]);
       return;
     }
 
@@ -73,8 +75,16 @@ export const ReferenceInput: React.FC<ReferenceInputProps> = (
           }
           onChange={(changedValue: string) => {
             setSelectionValue(changedValue);
-            setMany2oneValue([]);
-            onChange?.(undefined);
+            let m2oValue = many2oneValue[0] || 0;
+            if (changedValue !== selectionValue) {
+              setMany2oneValue([]);
+              m2oValue = 0;
+            }
+            const referenceValue = `${changedValue},${m2oValue}`;
+            if (referenceValue === value) {
+              return;
+            }
+            onChange?.(referenceValue);
           }}
           value={selectionValue}
         />
@@ -92,7 +102,7 @@ export const ReferenceInput: React.FC<ReferenceInputProps> = (
           value={many2oneValue}
           onChange={(changedValue: any[]) => {
             setMany2oneValue(changedValue);
-            const referenceValue = `${selectionValue},${changedValue[0]}`;
+            const referenceValue = `${selectionValue},${changedValue[0] || 0}`;
             if (referenceValue === value) {
               return;
             }
