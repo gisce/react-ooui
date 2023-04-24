@@ -1,5 +1,6 @@
 import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
 import ConnectionProvider from "@/ConnectionProvider";
+import { ViewType } from "@/types";
 
 type ReadObjectValuesOptions = {
   items: One2manyItem[];
@@ -7,12 +8,20 @@ type ReadObjectValuesOptions = {
   treeFields: any;
   formFields: any;
   context?: any;
+  currentView: ViewType;
 };
 
 const readObjectValues = async (
   options: ReadObjectValuesOptions
 ): Promise<One2manyItem[]> => {
-  const { items, model, formFields, treeFields, context = {} } = options;
+  const {
+    items,
+    model,
+    formFields,
+    treeFields,
+    context,
+    currentView = {},
+  } = options;
 
   const temporalItems: One2manyItem = items.filter(
     (item) => item.operation !== "original"
@@ -23,47 +32,47 @@ const readObjectValues = async (
     .filter((item) => item.operation === "original")
     .map((item) => item.id) as number[];
 
+  const fieldsToRetrieve: { [key: string]: any } = {
+    form: formFields,
+    tree: treeFields,
+  };
+
   const values = await ConnectionProvider.getHandler().readObjects({
     model,
     ids: idsToFetch,
-    fields: { ...formFields, ...treeFields },
+    fields: fieldsToRetrieve[currentView as string],
     context,
   });
 
-  const formValues = values.map((result: any) => {
+  const filteredValues = values.map((result: any) => {
     const resultFormValues: any = {};
     Object.keys(result).forEach((key) => {
-      if (formFields.hasOwnProperty(key) || key === "id") {
+      if (
+        fieldsToRetrieve[currentView as string].hasOwnProperty(key) ||
+        key === "id"
+      ) {
         resultFormValues[key] = result[key];
       }
     });
     return resultFormValues;
   });
 
-  const treeValues = values.map((result: any) => {
-    const resultTreeValues: any = {};
-    Object.keys(result).forEach((key) => {
-      if (treeFields.hasOwnProperty(key) || key === "id") {
-        resultTreeValues[key] = result[key];
-      }
-    });
-    return resultTreeValues;
-  });
-
   // We fill the values property of the One2manyItem with the retrieved values from the API
   const originalItemsWithFetchedValues: One2manyItem[] = items.map((item) => {
-    const fetchedFormItemValues = formValues.find(
-      (itemValues: any) => itemValues.id === item.id
-    );
-    const fetchedTreeItemValues = treeValues.find(
+    const fetchedItemValues = filteredValues.find(
       (itemValues: any) => itemValues.id === item.id
     );
 
-    return {
+    const itemWithFetchedValues = {
       ...item,
-      values: fetchedFormItemValues,
-      treeValues: fetchedTreeItemValues,
     };
+
+    if (currentView === "form") {
+      itemWithFetchedValues["values"] = fetchedItemValues;
+    } else if (currentView === "tree") {
+      itemWithFetchedValues["treeValues"] = fetchedItemValues;
+    }
+    return itemWithFetchedValues;
   });
 
   return originalItemsWithFetchedValues.concat(temporalItems);
