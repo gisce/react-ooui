@@ -1,4 +1,10 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
 import { One2many as One2manyOoui } from "@gisce/ooui";
 import { Alert, Spin } from "antd";
 import { Form } from "@/index";
@@ -83,7 +89,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     formContext || {};
   const { lang, t } = useContext(LocaleContext) as LocaleContextType;
 
-  const formRef = useRef();
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
@@ -106,14 +111,31 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const isMany2many = ooui.type === "many2many";
   const { id: fieldName } = ooui;
   const itemsToShow = items.filter(
-    (item) => item.values && item.operation !== "pendingRemove"
+    (item) =>
+      (item.values || item.treeValues) && item.operation !== "pendingRemove"
   );
+  const previousCurrentView = useRef<ViewType>();
 
   useEffect(() => {
-    if (items.some((item) => !item.values)) {
+    if (previousCurrentView.current !== currentView) {
+      previousCurrentView.current = currentView;
+      fetchDataIfNeeded();
+      return;
+    }
+
+    fetchDataIfNeeded();
+  }, [items, currentView]);
+
+  const fetchDataIfNeeded = useCallback(() => {
+    if (currentView === "form" && items.some((item) => !item.values)) {
+      fetchData();
+    } else if (
+      currentView === "tree" &&
+      items.some((item) => !item.treeValues)
+    ) {
       fetchData();
     }
-  }, [items]);
+  }, [items, currentView]);
 
   useEffect(() => {
     parseDomain();
@@ -133,7 +155,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     }
   };
 
-  const fetchOriginalItemsFromApi = async () => {
+  const fetchOriginalItemsFromApi = async (mode?: ViewType) => {
     setIsLoading(true);
     setFormHasChanges(false);
     setError(undefined);
@@ -145,6 +167,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         model: relation,
         items,
         context: { ...getContext?.(), ...context },
+        currentView: mode || currentView,
       });
 
       if (!originalSortItemIds.current) {
@@ -152,6 +175,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       }
 
       triggerChange(itemsWithValues);
+      return itemsWithValues;
     } catch (err) {
       setError(err as any);
     } finally {
@@ -438,10 +462,19 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     }
   };
 
-  const onTreeRowClicked = (record: any) => {
+  const onTreeRowClicked = async (record: any) => {
     const { id: itemId } = record;
+
+    let itemsToLoadFrom: One2manyItem[] | undefined = items;
+
+    // We should fetch the form data if needed in order to get the form values
+    const modalItem = items.find((item) => item.id === itemId);
+    if (modalItem?.values === undefined) {
+      itemsToLoadFrom = await fetchOriginalItemsFromApi("form");
+    }
+
     // We show the detail for the clicked item in a Form modal
-    setModalItem(items.find((item) => item.id === itemId));
+    setModalItem(itemsToLoadFrom!.find((item) => item.id === itemId));
     setContinuousEntryMode(false);
     setShowFormModal(true);
   };
@@ -507,12 +540,18 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         return t("noCurrentEntries");
       }
 
+      if (
+        currentView !== previousCurrentView.current &&
+        items.some((item) => !item.values)
+      ) {
+        return <Spin />;
+      }
+
       return (
         <Form
           formView={views.get("form")}
           values={itemsToShow[itemIndex]?.values}
           parentContext={{ ...getContext?.(), ...context }}
-          ref={formRef}
           model={relation}
           id={itemsToShow[itemIndex]?.id}
           submitMode={"values"}
