@@ -49,6 +49,8 @@ export const ReferenceInput: React.FC<ReferenceInputProps> = (
 
   useEffect(() => {
     if (!value) {
+      setSelectionValue(undefined);
+      setMany2oneValue([]);
       return;
     }
 
