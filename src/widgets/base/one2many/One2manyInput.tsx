@@ -582,16 +582,20 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       );
     }
 
-    const resultsToShow = sorter
-      ? sortResults({
-          resultsToSort: itemsToShow.map((item) => item.treeValues),
-          sorter,
-          fields: {
-            ...views.get("tree").fields,
-            ...(views.get("form")?.fields || {}),
-          },
-        })
-      : itemsToShow.map((item) => item.treeValues);
+    let resultsToShow = [];
+
+    if (itemsToShow.some((item) => item.treeValues)) {
+      resultsToShow = sorter
+        ? sortResults({
+            resultsToSort: itemsToShow.map((item) => item.treeValues),
+            sorter,
+            fields: {
+              ...views.get("tree").fields,
+              ...(views.get("form")?.fields || {}),
+            },
+          })
+        : itemsToShow.map((item) => item.treeValues);
+    }
 
     if (currentView === "tree") {
       return (
