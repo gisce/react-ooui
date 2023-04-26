@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "1.1.44",
+  "version": "1.1.45",
   "files": [
     "dist",
     "src",
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@ant-design/plots": "^1.0.9",
-    "@gisce/ooui": "^0.18.0",
+    "@gisce/ooui": "^0.18.1",
     "@gisce/react-formiga-table": "^0.5.0",
     "@monaco-editor/react": "^4.4.5",
     "@tabler/icons-react": "^2.11.0",
