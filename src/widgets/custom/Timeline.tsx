@@ -105,9 +105,14 @@ export const TimelineInput = (props: TimelineInputProps) => {
     setError(undefined);
 
     try {
-      const itemsWithValues = await readObjectValues({
-        treeFields: views.get("tree").fields,
-        formFields: views.get("form").fields,
+      const [itemsWithValues] = await readObjectValues({
+        treeView: {
+          fields: views.get("tree").fields,
+          arch: views.get("tree").arch
+        },
+        formView: {
+          fields: views.get("form").fields,
+        },
         model: relation,
         items,
         context: { ...getContext?.(), ...context },
