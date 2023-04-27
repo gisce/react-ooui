@@ -47,14 +47,15 @@ const readObjectValues = async (
     evaluatedColorsForTree;
 
   if (currentView === "tree" && treeView?.arch) {
+    const colors = getTree(treeView as TreeView)?.colors;
     const results = await ConnectionProvider.getHandler().readEvalUiObjects({
       model,
       ids: idsToFetch,
       arch: treeView?.arch!,
       fields: treeView!.fields,
       context,
-      attrs: {
-        colors: getTree(treeView as TreeView)?.colors,
+      attrs: colors && {
+        colors,
       },
     });
     values = results[0];
