@@ -31,7 +31,7 @@ import { One2manyTopBar } from "@/widgets/base/one2many/One2manyTopBar";
 import { readObjectValues, getNextPendingId } from "@/helpers/one2manyHelper";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
-import { sortResults } from "@/helpers/treeHelper";
+import { getColorMap, getTree, sortResults } from "@/helpers/treeHelper";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
 
 type One2manyValue = {
@@ -101,6 +101,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const transformedDomain = useRef<any[]>([]);
   const [sorter, setSorter] = useState<any>();
   const originalSortItemIds = useRef<number[]>();
+  const [colorsForResults, setColorsForResults] = useState<any>(undefined);
 
   const {
     readOnly,
@@ -161,9 +162,14 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     setError(undefined);
 
     try {
-      const itemsWithValues = await readObjectValues({
-        treeFields: views.get("tree").fields,
-        formFields: views.get("form")?.fields || {},
+      const [itemsWithValues, evaluatedColorsForTree] = await readObjectValues({
+        treeView: {
+          arch: views.get("tree")?.arch,
+          fields: views.get("tree")?.fields,
+        },
+        formView: {
+          fields: views.get("form")?.fields || {},
+        },
         model: relation,
         items,
         context: { ...getContext?.(), ...context },
@@ -172,6 +178,10 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
       if (!originalSortItemIds.current) {
         originalSortItemIds.current = itemsWithValues.map((item) => item.id!);
+      }
+
+      if ((currentView || mode) === "tree" && evaluatedColorsForTree) {
+        setColorsForResults(evaluatedColorsForTree);
       }
 
       triggerChange(itemsWithValues);
@@ -618,6 +628,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           sorter={sorter}
           onChangeSort={setSorter}
           context={{ ...getContext?.(), ...context }}
+          colorsForResults={colorsForResults}
         />
       );
     }
