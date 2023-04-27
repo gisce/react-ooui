@@ -1,24 +1,30 @@
 import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
 import ConnectionProvider from "@/ConnectionProvider";
-import { ViewType } from "@/types";
+import { TreeView, View, ViewType } from "@/types";
+import { getColorMap, getTree } from "./treeHelper";
 
 type ReadObjectValuesOptions = {
   items: One2manyItem[];
   model: string;
-  treeFields: any;
-  formFields: any;
   context?: any;
   currentView: ViewType;
+  formView: {
+    fields: any;
+  };
+  treeView: {
+    arch?: string;
+    fields: any;
+  };
 };
 
 const readObjectValues = async (
   options: ReadObjectValuesOptions
-): Promise<One2manyItem[]> => {
+): Promise<[One2manyItem[], any]> => {
   const {
     items,
     model,
-    formFields,
-    treeFields,
+    formView,
+    treeView,
     context,
     currentView = {},
   } = options;
@@ -33,16 +39,34 @@ const readObjectValues = async (
     .map((item) => item.id) as number[];
 
   const fieldsToRetrieve: { [key: string]: any } = {
-    form: formFields,
-    tree: treeFields,
+    form: formView.fields,
+    tree: treeView.fields,
   };
 
-  const values = await ConnectionProvider.getHandler().readObjects({
-    model,
-    ids: idsToFetch,
-    fields: fieldsToRetrieve[currentView as string],
-    context,
-  });
+  let values = [],
+    evaluatedColorsForTree;
+
+  if (currentView === "tree" && treeView?.arch) {
+    const results = await ConnectionProvider.getHandler().readEvalUiObjects({
+      model,
+      ids: idsToFetch,
+      arch: treeView?.arch!,
+      fields: treeView!.fields,
+      context,
+      attrs: {
+        colors: getTree(treeView as TreeView)?.colors,
+      },
+    });
+    values = results[0];
+    evaluatedColorsForTree = getColorMap(results[1]);
+  } else {
+    values = await ConnectionProvider.getHandler().readObjects({
+      model,
+      ids: idsToFetch,
+      fields: fieldsToRetrieve[currentView as string],
+      context,
+    });
+  }
 
   const filteredValues = values.map((result: any) => {
     const resultFormValues: any = {};
@@ -75,7 +99,10 @@ const readObjectValues = async (
     return itemWithFetchedValues;
   });
 
-  return originalItemsWithFetchedValues.concat(temporalItems);
+  return [
+    originalItemsWithFetchedValues.concat(temporalItems),
+    evaluatedColorsForTree,
+  ];
 };
 
 type RemoveItemOptions = {

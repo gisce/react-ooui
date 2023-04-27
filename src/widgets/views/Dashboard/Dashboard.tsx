@@ -105,14 +105,19 @@ function Dashboard(props: DashboardProps, ref: any) {
       })) as FormView
     ).fields;
 
-    return await readObjectValues({
-      treeFields: itemsFields.current,
-      formFields: itemsFields.current,
+    const [results] = await readObjectValues({
+      treeView: {
+        fields: itemsFields.current,
+      },
+      formView: {
+        fields: itemsFields.current,
+      },
       model,
       items,
       context,
       currentView: "form",
     });
+    return results;
   }
 
   async function fetchValues(view: FormView) {
