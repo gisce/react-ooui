@@ -19,3 +19,15 @@ export const Default = (): React.ReactElement => {
     </LocaleProvider>
   );
 };
+
+export const WithIcon = (): React.ReactElement => {
+  const ooui = new SeparatorOoui({
+    string: "General",
+    icon: "home"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Separator ooui={ooui} showLabel />
+    </LocaleProvider>
+  );
+};
