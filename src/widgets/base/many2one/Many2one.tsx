@@ -80,7 +80,6 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     getValues,
     getFields,
     getContext,
-    setOriginalValue,
     elementHasLostFocus,
   } = formContext || {};
   const transformedDomain = useRef<any[]>([]);
@@ -166,7 +165,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       });
 
       if (resultIds.length === 1) {
-        fetchNameAndUpdate(resultIds[0], true);
+        fetchNameAndUpdate(resultIds[0]);
       } else {
         setSearchText(text);
         setShowSearchModal(true);
@@ -178,10 +177,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     setShowSearchModal(true);
   };
 
-  const fetchNameAndUpdate = async (
-    id: number,
-    mustUpdateOriginalForm?: boolean
-  ) => {
+  const fetchNameAndUpdate = async (id: number) => {
     setSearching(true);
 
     try {
@@ -193,10 +189,6 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
       });
 
       triggerChange([id, value[0][1]]);
-
-      if (mustUpdateOriginalForm) {
-        setOriginalValue(ooui.id, [id, value[0][1]]);
-      }
     } catch (err) {
       showErrorDialog(err);
     } finally {

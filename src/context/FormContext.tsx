@@ -18,7 +18,6 @@ export type FormContextType = {
   getValues: () => Promise<any>;
   getPlainValues: () => { [key: string]: any };
   getFields: () => Promise<any>;
-  setOriginalValue: (field: string, value: any) => void;
   domain: any[];
   submitForm?: (options?: {
     callOnSubmitSucceed?: boolean;
@@ -45,7 +44,6 @@ const FormProvider = (props: FormProviderProps): any => {
     getContext,
     getValues,
     getPlainValues,
-    setOriginalValue,
     domain,
     submitForm,
     fetchValues,
@@ -67,7 +65,6 @@ const FormProvider = (props: FormProviderProps): any => {
         getFieldValue,
         executeButtonAction,
         getContext,
-        setOriginalValue,
         submitForm,
         fetchValues,
         formHasChanges,

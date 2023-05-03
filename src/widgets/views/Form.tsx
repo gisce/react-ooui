@@ -432,11 +432,6 @@ function Form(props: FormProps, ref: any) {
     }
   };
 
-  function setOriginalValue(field: string, value: any) {
-    originalFormValues.current[field] = value;
-    setFormHasChanges?.(formHasChanges());
-  }
-
   const cancelUnsavedChanges = async () => {
     return new Promise(async (resolve) => {
       if (formHasChanges()) {
@@ -994,7 +989,6 @@ function Form(props: FormProps, ref: any) {
           getFieldValue={getFieldValue}
           executeButtonAction={executeButtonAction}
           getContext={getContext}
-          setOriginalValue={setOriginalValue}
           submitForm={submitForm}
           fetchValues={fetchValues}
           formHasChanges={formHasChanges}
