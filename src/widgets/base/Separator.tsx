@@ -1,6 +1,7 @@
 import React from "react";
-import { Divider } from "antd";
+import { Divider, Space } from "antd";
 import { Separator as SeparatorOoui } from "@gisce/ooui";
+import iconMapper from "@/helpers/iconMapper";
 
 type Props = {
   ooui: SeparatorOoui;
@@ -8,11 +9,16 @@ type Props = {
 
 export const Separator = (props: Props) => {
   const { ooui } = props;
-  const { label } = ooui;
+  const { label, icon } = ooui;
+  const Icon : React.ElementType | undefined = iconMapper(icon || "");
+
 
   return (
     <Divider orientation="left" className="text-sm">
-      {label}
+      <Space>
+        {Icon ? <Icon /> : null}
+        {label}
+      </Space>
     </Divider>
   );
 };
