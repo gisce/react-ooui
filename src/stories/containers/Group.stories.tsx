@@ -61,3 +61,15 @@ export const Default = (): React.ReactElement => {
     </LocaleProvider>
   );
 };
+
+export const WithIcon = (): React.ReactElement => {
+  const ooui = new GroupOoui({
+    string: "General",
+    icon: "home"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Group ooui={ooui} />
+    </LocaleProvider>
+  );
+};
