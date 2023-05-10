@@ -15,10 +15,12 @@ export const Separator = (props: Props) => {
 
   return (
     <Divider orientation="left" className="text-sm">
-      <Space>
-        {Icon ? <Icon /> : null}
-        {label}
-      </Space>
+      { (Icon || label) &&
+        <Space>
+          {Icon ? <Icon /> : null}
+          {label}
+        </Space>
+      }
     </Divider>
   );
 };
