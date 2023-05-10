@@ -73,3 +73,15 @@ export const WithIcon = (): React.ReactElement => {
     </LocaleProvider>
   );
 };
+
+
+export const OnlyIcon = (): React.ReactElement => {
+  const ooui = new GroupOoui({
+    icon: "home"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Group ooui={ooui} />
+    </LocaleProvider>
+  );
+};

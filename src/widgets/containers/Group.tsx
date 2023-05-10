@@ -17,7 +17,7 @@ function Group(props: Props): React.ReactElement {
 
   return (
     <>
-      {ooui.label && showLabel ? (
+      {(ooui.label || icon) && showLabel ? (
         <FieldSet label={ooui.label} icon={icon}>
           <Container
             container={ooui!.container}
