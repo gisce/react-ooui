@@ -20,6 +20,27 @@ export const Default = (): React.ReactElement => {
   );
 };
 
+export const WithoutText = (): React.ReactElement => {
+  const ooui = new SeparatorOoui({
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Separator ooui={ooui} showLabel />
+    </LocaleProvider>
+  );
+};
+
+export const OnlyIcon = (): React.ReactElement => {
+  const ooui = new SeparatorOoui({
+    icon: "home"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Separator ooui={ooui} showLabel />
+    </LocaleProvider>
+  );
+};
+
 export const WithIcon = (): React.ReactElement => {
   const ooui = new SeparatorOoui({
     string: "General",
