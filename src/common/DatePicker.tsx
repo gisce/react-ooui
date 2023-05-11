@@ -14,15 +14,16 @@ type DatePickerProps = WidgetProps & {
 const DatePickerConfig = {
   date: {
     placeholder: "__/__/____",
-    dateDisplayFormat: "YYYY-MM-DD",
-    dateInternalFormat: "YYYY-MM-DD",
+    dateDisplayFormat: "DD/MM/YYYY",
+    dateInternalFormat: "DD/MM/YYYY",
   },
   time: {
     placeholder: "__/__/____ __:__:__",
-    dateDisplayFormat: "YYYY-MM-DD HH:mm:ss",
-    dateInternalFormat: "YYYY-MM-DD HH:mm:ss",
+    dateDisplayFormat: "DD/MM/YYYY HH:mm:ss",
+    dateInternalFormat: "DD/MM/YYYY HH:mm:ss",
   },
 };
+
 const DatePicker = (props: DatePickerProps) => {
   const { ooui, showTime = false } = props;
   const { required } = ooui;
