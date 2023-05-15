@@ -22,6 +22,8 @@ import {
 } from "@/context/ActionViewContext";
 import { Many2oneTree } from "../base/many2one/Many2oneTree";
 import { ReferenceTree } from "../base/ReferenceTree";
+import moment from "moment";
+import { DatePickerConfig } from "@/common/DatePicker";
 
 type Props = {
   total?: number;
@@ -64,6 +66,25 @@ const many2OneComponentFn = (m2oField: any): React.ReactElement => {
 
 const textComponentFn = (value: any): React.ReactElement => {
   return <Interweave content={value?.replace(/(?:\r\n|\r|\n)/g, "<br>")} />;
+};
+
+const dateComponentFn = (value: any): React.ReactElement => {
+  if (!value || (value && value.length === 0)) return <></>;
+
+  const formattedValue = moment(
+    value,
+    DatePickerConfig.date.dateInternalFormat
+  ).format(DatePickerConfig.date.dateDisplayFormat);
+  return <>{formattedValue}</>;
+};
+
+const dateTimeComponentFn = (value: any): React.ReactElement => {
+  if (!value || (value && value.length === 0)) return <></>;
+  const formattedValue = moment(
+    value,
+    DatePickerConfig.time.dateInternalFormat
+  ).format(DatePickerConfig.time.dateDisplayFormat);
+  return <>{formattedValue}</>;
 };
 
 const one2ManyComponentFn = (value: One2manyValue): React.ReactElement => {
@@ -190,6 +211,8 @@ function Tree(props: Props): React.ReactElement {
         reference: referenceComponent,
         tag: TagComponent,
         selection: SelectionComponent,
+        date: dateComponentFn,
+        datetime: dateTimeComponentFn,
       },
       context
     );

@@ -11,18 +11,19 @@ type DatePickerProps = WidgetProps & {
   showTime?: boolean;
 };
 
-const DatePickerConfig = {
+export const DatePickerConfig = {
   date: {
     placeholder: "__/__/____",
-    dateDisplayFormat: "YYYY-MM-DD",
+    dateDisplayFormat: "DD/MM/YYYY",
     dateInternalFormat: "YYYY-MM-DD",
   },
   time: {
     placeholder: "__/__/____ __:__:__",
-    dateDisplayFormat: "YYYY-MM-DD HH:mm:ss",
+    dateDisplayFormat: "DD/MM/YYYY HH:mm:ss",
     dateInternalFormat: "YYYY-MM-DD HH:mm:ss",
   },
 };
+
 const DatePicker = (props: DatePickerProps) => {
   const { ooui, showTime = false } = props;
   const { required } = ooui;
