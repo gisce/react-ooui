@@ -27,9 +27,9 @@
     "prerelease": "npm version prerelease --preid rc",
     "prepatch": "npm version prepatch --preid rc",
     "premajor": "npm version premajor --preid rc",
-    "start": "while :; do vite build --watch --force; done",
+    "start": "while :; do tsc && vite build --watch --force; done",
     "build:tailwind": "postcss src/tailwind.css -o src/tailwind.generated.css",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "test": "jest",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
