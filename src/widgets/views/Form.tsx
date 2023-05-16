@@ -949,8 +949,10 @@ function Form(props: FormProps, ref: any) {
     }
 
     try {
-      await submitForm({ callOnSubmitSucceed: false });
-
+      if (formHasChanges()) {
+        await submitForm({ callOnSubmitSucceed: false });
+      }
+      
       if (type === "object") {
         await runObjectButton({ action, context });
       } else if (type === "workflow") {
