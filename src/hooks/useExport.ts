@@ -3,7 +3,7 @@ import {
   ExportOptions,
   PredefinedExport,
   PredefinedExportField,
-} from "@/../../react-formiga-components/dist/components/other/ExportModal/ExportModal.types";
+} from "@gisce/react-formiga-components";
 import { useCallback, useRef } from "react";
 import { ConnectionProvider } from "..";
 import showInfo from "@/ui/InfoDialog";
@@ -161,7 +161,7 @@ export const useExport = ({
 
       // We create the lines
       await Promise.all(
-        pExport.fields.map(async (field) => {
+        pExport.fields.map(async (field: any) => {
           return await ConnectionProvider.getHandler().create({
             model: "ir.exports.line",
             values: {
@@ -367,7 +367,8 @@ const retrieveKeyFieldsForPredefinedExports = async ({
   onGetFieldChilds: (key: string) => Promise<ExportField[]>;
 }) => {
   const allPredefinedExportKeys = predefinedExports.flatMap(
-    (exp: PredefinedExport) => exp.fields.map((field) => field.key)
+    (exp: PredefinedExport) =>
+      exp.fields.map((field: any) => field.key)
   );
 
   const keysWithoutChildsInFields = getKeysWithoutChildsInFields({
