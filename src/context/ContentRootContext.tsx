@@ -1,4 +1,4 @@
-import { FormView, GenerateReportOptions } from "@/types";
+import { FormView, GenerateReportOptions, ViewType } from "@/types";
 import React, {
   useContext,
   useRef,
@@ -261,33 +261,12 @@ const ContentRootProvider = (
 
       return {};
     } else {
-      let initialView;
-      const viewTypes = actionData.view_mode.split(",");
-      const views = [];
-
-      for (const viewType of viewTypes) {
-        const viewData = await ConnectionProvider.getHandler().getView({
-          model: actionData.res_model,
-          type: viewType,
-          context: mergedContext,
-        });
-        views.push([viewData.view_id, viewType]);
-      }
-
-      if (!actionData.view_id) {
-        const type = actionData.view_mode.split(",")[0];
-
-        const [retrievedViewId] = views.find(
-          ([_, viewType]) => viewType === type
-        )!;
-
-        initialView = { id: retrievedViewId, type };
-      } else {
-        initialView = {
-          id: actionData.view_id,
-          type: actionData.view_mode.split(",")[0],
-        };
-      }
+      const { initialView, views } = await getViewsAndInitialView({
+        model: actionData.res_model,
+        context: mergedContext,
+        view_mode: actionData.view_mode,
+        views: actionData.views,
+      });
 
       openAction?.({
         target: "current",
@@ -414,5 +393,62 @@ const ContentRootProvider = (
     </>
   );
 };
+
+async function getViewsAndInitialView({
+  views,
+  view_mode,
+  model,
+  context,
+  view_id,
+}: {
+  views: any[];
+  view_mode: string;
+  model: string;
+  context: any;
+  view_id?: number;
+}) {
+  const retriedViewData = [];
+  let initialView;
+
+  if (views) {
+    for (const view of views) {
+      const viewData = await ConnectionProvider.getHandler().getView({
+        model,
+        type: view[1],
+        id: view[0],
+        context,
+      });
+      retriedViewData.push([viewData.view_id, view[1]]);
+    }
+  } else {
+    const viewTypes = view_mode.split(",");
+    for (const viewType of viewTypes) {
+      const viewData = await ConnectionProvider.getHandler().getView({
+        model,
+        type: viewType as ViewType,
+        context,
+      });
+      retriedViewData.push([viewData.view_id, viewType]);
+    }
+  }
+  if (views && views.length > 0) {
+    const { id, type } = views[0];
+    initialView = {
+      id,
+      type,
+    };
+  } else if (!view_id) {
+    const type = view_mode.split(",")[0];
+    const [retrievedViewId] = views.find(([_, viewType]) => viewType === type)!;
+    initialView = { id: retrievedViewId, type };
+  } else {
+    initialView = {
+      id: view_id,
+      type: view_mode.split(",")[0],
+    };
+  }
+
+  return { views: retriedViewData, initialView };
+}
 
 export default forwardRef(ContentRootProvider);
