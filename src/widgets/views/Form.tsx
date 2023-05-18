@@ -949,7 +949,9 @@ function Form(props: FormProps, ref: any) {
     }
 
     try {
-      await submitForm({ callOnSubmitSucceed: false });
+      if (formHasChanges() || getCurrentId() === undefined) {
+        await submitForm({ callOnSubmitSucceed: false });
+      }
 
       if (type === "object") {
         await runObjectButton({ action, context });
