@@ -949,7 +949,7 @@ function Form(props: FormProps, ref: any) {
     }
 
     try {
-      if (formHasChanges()) {
+      if (formHasChanges() || getCurrentId() === undefined) {
         await submitForm({ callOnSubmitSucceed: false });
       }
       
