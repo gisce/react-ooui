@@ -41,6 +41,7 @@ export default defineConfig({
         "@monaco-editor/react",
         "fiber-diagram",
         "file-type",
+        "react-markdown",
         "react-grid-layout",
         "react-hotkeys-hook",
         "react-measure",
