@@ -78,15 +78,6 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     TabManagerContext
   ) as TabManagerContextType;
   const { openRelate, openDefaultActionForModel } = tabManagerContext || {};
-  const prevFormIsSavingRef = useRef<boolean>(false);
-
-  useEffect(() => {
-    if (!formIsSaving && prevFormIsSavingRef.current) {
-      message.success(t("savedRegisters"));
-    }
-
-    prevFormIsSavingRef.current = formIsSaving || false;
-  }, [formIsSaving]);
 
   function tryRefresh(callback: any) {
     if (formHasChanges) {

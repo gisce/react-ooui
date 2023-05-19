@@ -1,38 +1,21 @@
 import React from "react";
 import { Modal } from "antd";
 import { ExclamationCircleOutlined, WarningOutlined } from "@ant-design/icons";
+import { parseError } from "@/helpers/errorHelper";
 
 const { error, warning } = Modal;
 
 const showDialog = (err: string) => {
-  let message;
-  let type;
-  let title;
+  const { message, type, title } = parseError(err);
 
-  if (
-    typeof err === "string" &&
-    err.indexOf(" -- ") !== -1 &&
-    err.indexOf("\n\n") !== -1
-  ) {
-    const splitted = err.split("\n\n");
-    message = splitted[1];
-    const args = splitted[0].split(" -- ");
-    type = args[0];
-    title = args[1];
-  } else {
-    message = err;
-    type = "error";
-    title = "Error";
-  }
-
-  const icon =
+  const iconComponent =
     type === "error" ? <ExclamationCircleOutlined /> : <WarningOutlined />;
 
   const modalType = type === "error" ? error : warning;
 
   modalType({
     title,
-    icon,
+    icon: iconComponent,
     centered: true,
     content: message,
   });

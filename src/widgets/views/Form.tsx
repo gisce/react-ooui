@@ -55,6 +55,7 @@ import {
   ContentRootContextType,
 } from "@/context/ContentRootContext";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { ErrorAlert } from "@/ui/ErrorAlert";
 
 export type FormProps = {
   model: string;
@@ -635,6 +636,7 @@ function Form(props: FormProps, ref: any) {
 
       await fetchValues();
       submitSucceed = true;
+      message.success(t("savedRegisters"));
     } catch (err) {
       formSubmitting.current = false;
       setIsSubmitting(false);
@@ -869,6 +871,10 @@ function Form(props: FormProps, ref: any) {
       model,
       action,
       payload: getCurrentId()!,
+      context: {
+        ...parentContext,
+        ...formOoui?.context,
+      },
     });
 
     if (response.type && response.type === "ir.actions.act_window_close") {
@@ -1058,14 +1064,7 @@ function Form(props: FormProps, ref: any) {
     >
       {({ measureRef }) => (
         <div className="pb-2" ref={measureRef}>
-          {error && (
-            <Alert
-              className="mt-10 mb-20"
-              message={JSON.stringify(error)}
-              type="error"
-              banner
-            />
-          )}
+          {error && <ErrorAlert className="mt-10 mb-20" error={error} />}
           {content()}
           {showFooter && footer()}
         </div>
