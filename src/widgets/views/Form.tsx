@@ -871,10 +871,6 @@ function Form(props: FormProps, ref: any) {
       model,
       action,
       payload: getCurrentId()!,
-      context: {
-        ...parentContext,
-        ...formOoui?.context,
-      },
     });
 
     if (response.type && response.type === "ir.actions.act_window_close") {
