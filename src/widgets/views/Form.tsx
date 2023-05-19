@@ -636,6 +636,7 @@ function Form(props: FormProps, ref: any) {
 
       await fetchValues();
       submitSucceed = true;
+      message.success(t("savedRegisters"));
     } catch (err) {
       formSubmitting.current = false;
       setIsSubmitting(false);
@@ -870,6 +871,10 @@ function Form(props: FormProps, ref: any) {
       model,
       action,
       payload: getCurrentId()!,
+      context: {
+        ...parentContext,
+        ...formOoui?.context,
+      },
     });
 
     if (response.type && response.type === "ir.actions.act_window_close") {
