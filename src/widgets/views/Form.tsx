@@ -56,6 +56,7 @@ import {
 } from "@/context/ContentRootContext";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { convertToPlain2ManyValues } from "@/helpers/one2manyHelper";
+import { ErrorAlert } from "@/ui/ErrorAlert";
 
 export type FormProps = {
   model: string;
@@ -632,6 +633,7 @@ function Form(props: FormProps, ref: any) {
 
       await fetchValues();
       submitSucceed = true;
+      message.success(t("savedRegisters"));
     } catch (err) {
       formSubmitting.current = false;
       setIsSubmitting(false);
@@ -1060,14 +1062,7 @@ function Form(props: FormProps, ref: any) {
     >
       {({ measureRef }) => (
         <div className="pb-2" ref={measureRef}>
-          {error && (
-            <Alert
-              className="mt-10 mb-20"
-              message={JSON.stringify(error)}
-              type="error"
-              banner
-            />
-          )}
+          {error && <ErrorAlert className="mt-10 mb-20" error={error} />}
           {content()}
           {showFooter && footer()}
         </div>
