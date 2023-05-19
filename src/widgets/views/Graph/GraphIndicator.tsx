@@ -396,10 +396,8 @@ function PercentageIndicator({
     >
       <Row align={"middle"}>
         {IconElement && (
-          <Col>
-            <IconElement
-              style={{ fontSize: fontSize * 1, color, paddingRight: "10px" }}
-            />
+          <Col style={{ fontSize: fontSize * 1, color, paddingRight: "10px" }}>
+            <IconElement />
           </Col>
         )}
         <Col>
