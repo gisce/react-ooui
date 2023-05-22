@@ -432,7 +432,7 @@ async function getViewsAndInitialView({
     }
   }
   if (views && views.length > 0) {
-    const { id, type } = views[0];
+    const [id, type] = views[0];
     initialView = {
       id,
       type,
