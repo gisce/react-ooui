@@ -12,8 +12,11 @@ export  const Markdown = (props: WidgetProps) => {
 };
 
 export const MarkdownInput = (props: any) => {
-  const {value} = props;
+  const {value, ooui} = props;
   return (
-    <ReactMarkdown children={value}/>
+    <div style={{height: ooui.height ? ooui.height + 'px' : '100%'}}>
+      <ReactMarkdown children={value} />
+    </div>
+
   )
 }
