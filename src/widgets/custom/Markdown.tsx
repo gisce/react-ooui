@@ -15,7 +15,7 @@ export const MarkdownInput = (props: any) => {
   const {value, ooui} = props;
   return (
     <div style={{height: ooui.height ? ooui.height + 'px' : '100%'}}>
-      <ReactMarkdown children={value} />
+      <ReactMarkdown children={value} className="ant-typography"/>
     </div>
 
   )
