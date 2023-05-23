@@ -77,7 +77,7 @@ export const LabelH1 = (): React.ReactElement => {
   const ooui = new LabelOoui({
     name: "field",
     string: "Lorem ipsum",
-    widget_props: "{'label_size': 'h1'}",
+    widget_props: "{'label_size': 1}",
   });
   return (
     <LocaleProvider lang="en_US">
@@ -90,7 +90,7 @@ export const LabelH2Warning = (): React.ReactElement => {
   const ooui = new LabelOoui({
     name: "field",
     string: "Lorem ipsum",
-    widget_props: "{'label_size': 'h1', 'label_type': 'warning'}",
+    widget_props: "{'label_size': 2, 'label_type': 'warning'}",
   });
   return (
     <LocaleProvider lang="en_US">
