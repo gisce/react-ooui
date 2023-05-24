@@ -26,7 +26,7 @@ const Label = (props: Props) => {
   const responsiveAlign = responsiveBehaviour ? "left" : "right";
   const labelAlgin = align ? align : fieldForLabel ? responsiveAlign : "left";
 
-  const TextType = labelSize === "text" ? Text : Title;
+  const TextType = labelSize === undefined ? Text : Title;
 
   return (
     <div
@@ -39,7 +39,7 @@ const Label = (props: Props) => {
       )}
       <span className="pr-2">
         <TextType
-          level={labelSize !== "text" ? (labelSize as string as any) : null}
+          level={labelSize}
           type={labelType as any}
         >
           <Interweave content={labelText} />
