@@ -14,7 +14,7 @@ export  const Markdown = (props: WidgetProps) => {
 export const MarkdownInput = (props: any) => {
   const {value, ooui} = props;
   return (
-    <div style={{height: ooui.height ? ooui.height + 'px' : '100%'}}>
+    <div style={{height: ooui.height ? ooui.height + 'px' : '100%', overflow: 'auto'}}>
       <ReactMarkdown children={value} className="ant-typography"/>
     </div>
 
