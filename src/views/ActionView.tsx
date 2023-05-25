@@ -107,6 +107,7 @@ function ActionView(props: Props, ref: any) {
     tabs,
     activeKey,
     openAction,
+    onRemoveTab,
   } = tabManagerContext || {};
 
   useHotkeys(
@@ -240,8 +241,9 @@ function ActionView(props: Props, ref: any) {
 
     if (!currentViewToAssign) {
       showErrorDialog(
-        "Error determining the first view to show.\nPlease, make sure the view ids on the fields_view_get responses are the same as the ones defined in the action"
+        `Error determining the first view to show for model ${model}.\nPlease, make sure the view ids on the fields_view_get responses are the same as the ones defined in the action`
       );
+      onRemoveTab?.(tabKey);
     }
 
     setCurrentView(currentViewToAssign);
@@ -279,7 +281,9 @@ function ActionView(props: Props, ref: any) {
   }, [tabs, activeKey]);
 
   async function canWeClose() {
-    if (currentView!.type === "form") {
+    if (!currentView) {
+      return true;
+    } else if (currentView!.type === "form") {
       return await (formRef.current as any).cancelUnsavedChanges();
     } else {
       return true;
