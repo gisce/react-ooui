@@ -57,9 +57,7 @@ function ChangeViewButton(props: Props) {
               {getIconForView(view)}
             </Col>
             <Col flex="auto" style={{ paddingRight: 20 }}>
-              {view.type === "graph"
-                ? (view as GraphView).name
-                : view.type.charAt(0).toUpperCase() + view.type.slice(1)}
+              {view.type.charAt(0).toUpperCase() + view.type.slice(1)}
             </Col>
             <Col flex="none">
               <CheckOutlined
