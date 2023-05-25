@@ -26,6 +26,7 @@ import {
   FloatTime,
   ProgressBar,
   MultiCheckbox,
+  Markdown,
   Radio,
   Switch,
   Steps,
@@ -104,6 +105,8 @@ const getWidgetType = (type: string) => {
       return Tag;
     case "multicheckbox":
       return MultiCheckbox;
+    case "markdown":
+      return Markdown;
     case "radio":
       return Radio;
     case "switch":

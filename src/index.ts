@@ -38,6 +38,7 @@ import Dashboard from "@/widgets/views/Dashboard/Dashboard";
 import { Tags } from "@/widgets/custom/Tags";
 import { Tag } from "@/widgets/custom/Tag";
 import { MultiCheckbox } from "./widgets/custom/MultiCheckbox";
+import { Markdown } from "@/widgets/custom/Markdown";
 import { Radio } from "@/widgets/custom/Radio";
 import { Switch } from "@/widgets/custom/Switch";
 import { Steps } from "@/widgets/custom/Steps";
@@ -147,6 +148,7 @@ export {
   Tags,
   Tag,
   MultiCheckbox,
+  Markdown,
   Radio,
   Switch,
   Steps,
