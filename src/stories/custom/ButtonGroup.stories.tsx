@@ -4,7 +4,10 @@ import { Dropdown, Menu } from 'antd';
 import { DownOutlined, UserOutlined } from '@ant-design/icons';
 import { ButtonGroup as ButtonGroupOoui, Button as ButtonOoui } from "@gisce/ooui";
 import { ButtonGroup } from "../../widgets/custom/ButtonGroup";
-import "antd/dist/antd.css";
+
+// import "antd/dist/antd.css";
+
+
 import LocaleProvider from "../../context/LocaleContext";
 
 export default {

@@ -3,7 +3,9 @@ import React from "react";
 import SearchTree from "../../widgets/views/SearchTree";
 import ConnectionProvider from "../../ConnectionProvider";
 
-import "antd/dist/antd.css";
+// import "antd/dist/antd.css";
+
+
 import LocaleProvider from "../../context/LocaleContext";
 
 export default {

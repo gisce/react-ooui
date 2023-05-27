@@ -1,7 +1,10 @@
 import React from "react";
 
 import { Tag as TagOoui } from "@gisce/ooui";
-import "antd/dist/antd.css";
+
+// import "antd/dist/antd.css";
+
+
 import LocaleProvider from "../../context/LocaleContext";
 import { TagInput } from "../../widgets/custom/Tag";
 

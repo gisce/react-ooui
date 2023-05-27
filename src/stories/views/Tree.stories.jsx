@@ -1,7 +1,10 @@
 import React from "react";
 
 import { Tree } from "../..";
-import "antd/dist/antd.css";
+
+// import "antd/dist/antd.css";
+
+
 import "@/tailwind.generated.css";
 import LocaleProvider from "../../context/LocaleContext";
 

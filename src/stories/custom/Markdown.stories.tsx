@@ -1,6 +1,9 @@
 import React from "react";
 import { Markdown as MarkdownOOui } from "@gisce/ooui";
-import "antd/dist/antd.css";
+
+// import "antd/dist/antd.css";
+
+
 import LocaleProvider from "../../context/LocaleContext";
 import { MarkdownInput } from "../../widgets/custom/Markdown";
 

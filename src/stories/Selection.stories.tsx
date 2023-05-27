@@ -2,7 +2,10 @@ import React from "react";
 
 import { SelectionInput } from "../widgets/base/Selection";
 import { Selection as SelectionOoui } from "@gisce/ooui";
-import "antd/dist/antd.css";
+
+// import "antd/dist/antd.css";
+
+
 import LocaleProvider from "../context/LocaleContext";
 
 import { withKnobs, text } from "@storybook/addon-knobs";
