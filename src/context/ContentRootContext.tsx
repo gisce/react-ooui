@@ -439,7 +439,7 @@ async function getViewsAndInitialView({
     };
   } else if (!view_id) {
     const type = view_mode.split(",")[0];
-    const [retrievedViewId] = views.find(([_, viewType]) => viewType === type)!;
+    const [retrievedViewId] = retriedViewData.find(([_, viewType]) => viewType === type)!;
     initialView = { id: retrievedViewId, type };
   } else {
     initialView = {
