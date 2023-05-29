@@ -8,7 +8,11 @@ import {
   TableOutlined,
 } from "@ant-design/icons";
 import { Popover, Button, Row, Col, Tooltip, Spin } from "antd";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import {
+  LocaleContext,
+  LocaleContextType,
+  tForLang,
+} from "@/context/LocaleContext";
 
 export type Attachment = {
   id: number;
@@ -32,7 +36,7 @@ export const AttachmentsButtonWrapper = (
   props: AttachmentsButtonWrapperProps
 ) => {
   const { numberOfAttachments, disabled } = props;
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t, lang } = useContext(LocaleContext) as LocaleContextType;
   const [popoverVisible, setPopoverVisible] = useState<boolean>(false);
 
   const button = (
@@ -52,7 +56,7 @@ export const AttachmentsButtonWrapper = (
       onVisibleChange={(visible: boolean) => setPopoverVisible(visible)}
       visible={popoverVisible}
       placement="bottom"
-      content={Content(props, setPopoverVisible)}
+      content={Content(props, setPopoverVisible, lang)}
       title={t("attachments")}
       arrowContent={null}
     >
@@ -63,7 +67,8 @@ export const AttachmentsButtonWrapper = (
 
 const Content = (
   props: AttachmentsButtonWrapperProps,
-  setPopoverVisible: (visible: boolean) => void
+  setPopoverVisible: (visible: boolean) => void,
+  locale: string
 ) => {
   const {
     attachments = [],
@@ -73,8 +78,6 @@ const Content = (
     onOpenAttachmentDetail,
     onListAllAttachments,
   } = props;
-  const { t } = useContext(LocaleContext) as LocaleContextType;
-
   if (loading) {
     return <Spin style={{ padding: 20 }} />;
   }
@@ -89,7 +92,7 @@ const Content = (
           onListAllAttachments();
         }}
       >
-        <TableOutlined /> {t("listAllAttachments")}
+        <TableOutlined /> {tForLang("listAllAttachments", locale)}
       </a>
       <a
         style={{ display: "block" }}
@@ -99,11 +102,11 @@ const Content = (
           onAddNewAttachment();
         }}
       >
-        <FileAddOutlined /> {t("addNewAttachment")}
+        <FileAddOutlined /> {tForLang("addNewAttachment", locale)}
       </a>
       {attachments.length > 0 && (
         <>
-          <li className=" ant-dropdown-menu-item-divider"></li>
+          <li className="ant-dropdown-menu-item-divider"></li>
           {attachments.map((attachment: any) => {
             const Icon = attachment.link ? LinkOutlined : DownloadOutlined;
             return (
@@ -119,8 +122,8 @@ const Content = (
                     <Tooltip
                       title={
                         attachment.link
-                          ? t("openAttachmentLink")
-                          : t("download")
+                          ? tForLang("openAttachmentLink", locale)
+                          : tForLang("download", locale)
                       }
                     >
                       <Icon
@@ -134,7 +137,7 @@ const Content = (
                   )}
                 </Col>
                 <Col flex="25px" style={{ textAlign: "center" }}>
-                  <Tooltip title={t("openAttachment")}>
+                  <Tooltip title={tForLang("openAttachment", locale)}>
                     <FormOutlined
                       style={{ cursor: "pointer" }}
                       onClick={() => {
