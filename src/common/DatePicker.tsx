@@ -82,12 +82,13 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
       }
       disabled={readOnly}
       id={id}
+      picker={showTime ? "time" : "date"}
       showTime={showTimeParms}
       className={requiredClass}
       format={DatePickerConfig[mode].dateDisplayFormat}
       value={dateValue}
       onChange={onValueStringChange}
-    ></AntDatePicker>
+    />
   );
 };
 
