@@ -5,7 +5,7 @@ import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 import Config from "@/Config";
 import { Date as DateOoui } from "@gisce/ooui";
-import moment from "moment";
+import dayjs from "dayjs";
 
 type DatePickerProps = WidgetProps & {
   showTime?: boolean;
@@ -66,10 +66,10 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
   };
 
   const showTimeParms = showTime
-    ? { defaultValue: moment("00:00:00", "HH:mm:ss") }
+    ? { defaultValue: dayjs("00:00:00", "HH:mm:ss") }
     : undefined;
   const dateValue = value
-    ? moment(value, DatePickerConfig[mode].dateInternalFormat)
+    ? dayjs(value, DatePickerConfig[mode].dateInternalFormat)
     : undefined;
 
   return (

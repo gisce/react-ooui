@@ -3,7 +3,7 @@ import {
   groupDateTimeValuesIfNeeded,
   getParamsForFields,
 } from "../helpers/searchFilterHelper";
-import moment from "moment";
+import dayjs from "dayjs";
 
 describe("A SearchFilterHelper instance", () => {
   describe("removeUndefinedFields method", () => {
@@ -73,10 +73,10 @@ describe("A SearchFilterHelper instance", () => {
       const object = {
         charValue: "test",
         floatValue: 0.5,
-        "dateField#date": [moment("2021-01-01"), moment("2021-01-02")],
+        "dateField#date": [dayjs("2021-01-01"), dayjs("2021-01-02")],
         "dateField#time": [
-          moment("1970-01-01 00:00"),
-          moment("1970-01-01 04:00"),
+          dayjs("1970-01-01 00:00"),
+          dayjs("1970-01-01 04:00"),
         ],
       };
 
@@ -338,7 +338,7 @@ describe("A SearchFilterHelper instance", () => {
         },
       };
       const values = {
-        field: [moment("2021-01-01"), moment("2021-01-02")],
+        field: [dayjs("2021-01-01"), dayjs("2021-01-02")],
       };
       const params = getParamsForFields(values, fields);
       expect(Array.isArray(params)).toBeTruthy();
@@ -363,8 +363,8 @@ describe("A SearchFilterHelper instance", () => {
         },
       };
       const values = {
-        "field#date": [moment("2021-01-01"), moment("2021-01-02")],
-        "field#time": [moment("1970-01-01 03:31"), moment("1970-01-01 03:32")],
+        "field#date": [dayjs("2021-01-01"), dayjs("2021-01-02")],
+        "field#time": [dayjs("1970-01-01 03:31"), dayjs("1970-01-01 03:32")],
       };
       const params = getParamsForFields(values, fields);
       expect(Array.isArray(params)).toBeTruthy();
