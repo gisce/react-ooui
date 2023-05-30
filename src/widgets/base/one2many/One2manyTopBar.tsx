@@ -56,7 +56,10 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
 
   function title() {
     return (
-      <div className="flex flex-grow h-8 text-gray-200 bg-gray-700">
+      <div
+        className="flex flex-grow h-8 text-gray-200 bg-gray-700"
+        style={{ borderRadius: "6px" }}
+      >
         <div className="flex flex-col items-center justify-center h-full">
           <span className="pl-2 font-bold">{titleString}</span>
         </div>

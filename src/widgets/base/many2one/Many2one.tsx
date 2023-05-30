@@ -263,6 +263,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           onClick={() => {
             setShowFormModal(true);
           }}
+          style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
           tabIndex={-1}
         />
       </Col>
@@ -274,6 +275,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
             searchButtonTappedRef.current = true;
             tryFetchFirstResultOrShowSearch(text);
           }}
+          style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
           tabIndex={-1}
         />
       </Col>

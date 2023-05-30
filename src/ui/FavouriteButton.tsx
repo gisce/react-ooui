@@ -229,31 +229,41 @@ const FavouriteButton = (props: Props) => {
     setIsFavourite(!isFavourite);
   }
 
-  return (<>
-    <Button
-      type={isFavourite ? "primary" : "default"}
-      icon={
-        isFavourite ? (
-          <StarFilled style={{ color: "white" }} />
-        ) : (
-          <StarOutlined />
-        )
-      }
-      style={{ width: 50 }}
-      onClick={toggleFavourite}
-    ></Button>
-    <Dropdown
-      overlay={menu}
-      onVisibleChange={handleVisibleChange}
-      open={dropdownVisible}
-    >
+  return (
+    <>
       <Button
-        style={{ width: 25 }}
-        icon={<DownOutlined style={{ fontSize: "0.5em" }} />}
-        onClick={(e) => e.preventDefault()}
+        type={isFavourite ? "primary" : "default"}
+        icon={
+          isFavourite ? (
+            <StarFilled style={{ color: "white" }} />
+          ) : (
+            <StarOutlined />
+          )
+        }
+        style={{
+          width: 50,
+          borderTopRightRadius: 0,
+          borderBottomRightRadius: 0,
+        }}
+        onClick={toggleFavourite}
       ></Button>
-    </Dropdown>
-  </>);
+      <Dropdown
+        overlay={menu}
+        onVisibleChange={handleVisibleChange}
+        open={dropdownVisible}
+      >
+        <Button
+          style={{
+            width: 25,
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
+          }}
+          icon={<DownOutlined style={{ fontSize: "0.5em" }} />}
+          onClick={(e) => e.preventDefault()}
+        ></Button>
+      </Dropdown>
+    </>
+  );
 };
 
 export default FavouriteButton;

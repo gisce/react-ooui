@@ -52,6 +52,7 @@ export const LinkInput = (props: LinkInputProps) => {
                   setShowInput(false);
                 }
               }}
+              style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
               tabIndex={-1}
             />
           ) : (
@@ -61,6 +62,7 @@ export const LinkInput = (props: LinkInputProps) => {
                 setEditMode(true);
                 setShowInput(true);
               }}
+              style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
               tabIndex={-1}
             />
           )}
@@ -69,6 +71,7 @@ export const LinkInput = (props: LinkInputProps) => {
       <Col flex="auto">
         {showInput ? (
           <Input
+            style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
             id={id}
             onChange={onValueStringChange}
             className={requiredClass}

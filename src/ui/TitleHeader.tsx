@@ -74,8 +74,8 @@ function TitleHeader(props: Props) {
   return (
     <div style={{ position: "sticky", top: 80, zIndex: 3 }}>
       <Row
-        className="rounded shadow-md bg-blueGray-100"
-        style={{ padding: "1em" }}
+        className="shadow-md bg-blueGray-100"
+        style={{ padding: "1em", borderRadius: "6px" }}
         align="middle"
       >
         <Col flex={2}>

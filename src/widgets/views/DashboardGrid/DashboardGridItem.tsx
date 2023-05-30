@@ -11,7 +11,7 @@ export const DashboardGridItem = (props: DashboardGridItemProps) => {
 
   return (
     <div
-      className={"shadow-md rounded"}
+      className={"shadow-md"}
       style={{
         height: "100%",
         display: "flex",
@@ -19,6 +19,7 @@ export const DashboardGridItem = (props: DashboardGridItemProps) => {
         overflow: "hidden",
         border: "1px solid #eee",
         backgroundColor: "white",
+        borderRadius: "6px"
       }}
     >
       <Row
