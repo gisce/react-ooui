@@ -1,10 +1,13 @@
 import React, { useContext } from "react";
-import { Row, Col, Typography } from "antd";
+import { Row, Col, Typography, theme } from "antd";
 import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { CopyOutlined } from "@ant-design/icons";
+
+const { useToken } = theme;
 
 const { Title, Text } = Typography;
 
@@ -25,6 +28,7 @@ function TitleHeader(props: Props) {
     selectedRowItems,
   } = useContext(ActionViewContext) as ActionViewContextType;
   const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { token } = useToken();
 
   function getSummary() {
     if (currentView?.type === "form") {
@@ -35,7 +39,13 @@ function TitleHeader(props: Props) {
       if (totalItems === 0) {
         return (
           <>
-            {t("editingDocument")} (id: <Text copyable>{currentId}</Text>)
+            {t("editingDocument")} (id:{" "}
+            <Text
+              copyable={{ icon: <CopyOutlined style={{ color: "red" }} /> }}
+            >
+              {currentId}
+            </Text>
+            )
           </>
         );
       }
@@ -74,8 +84,12 @@ function TitleHeader(props: Props) {
   return (
     <div style={{ position: "sticky", top: 80, zIndex: 3 }}>
       <Row
-        className="shadow-md bg-blueGray-100"
-        style={{ padding: "1em", borderRadius: "6px" }}
+        className="shadow-md"
+        style={{
+          padding: "1em",
+          borderRadius: "6px",
+          backgroundColor: token.colorPrimaryBg,
+        }}
         align="middle"
       >
         <Col flex={2}>

@@ -1,13 +1,14 @@
 import React from "react";
 import { DashboardGridItemProps } from "./DashboardGridItem.types";
 import { ExportOutlined } from "@ant-design/icons";
-import { Row, Col } from "antd";
-import { Typography } from "antd";
+import { Row, Col, Typography, theme } from "antd";
+const { useToken } = theme;
 
 const { Text } = Typography;
 
 export const DashboardGridItem = (props: DashboardGridItemProps) => {
-  const { id, title, children, action, openAction } = props;
+  const { title, children, action, openAction } = props;
+  const { token } = useToken();
 
   return (
     <div
@@ -19,13 +20,15 @@ export const DashboardGridItem = (props: DashboardGridItemProps) => {
         overflow: "hidden",
         border: "1px solid #eee",
         backgroundColor: "white",
-        borderRadius: "6px"
+        borderRadius: "6px",
       }}
     >
       <Row
-        className="bg-blueGray-100"
         align="middle"
-        style={{ borderBottom: "1px solid #ddd" }}
+        style={{
+          borderBottom: "1px solid #ddd",
+          backgroundColor: token.colorPrimaryBg,
+        }}
         wrap={false}
       >
         <Col

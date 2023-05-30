@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
-import { InputNumber } from "antd";
+import { InputNumber, theme } from "antd";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
-import Config from "@/Config";
 import { FormContext, FormContextType } from "@/context/FormContext";
+const { useToken } = theme;
 
 type IntegerProps = WidgetProps & {
   onChange?: (newValue: number) => void;
@@ -12,8 +12,11 @@ type IntegerProps = WidgetProps & {
 export const Integer = (props: IntegerProps) => {
   const { ooui, onChange } = props;
   const { id, readOnly, required } = ooui;
-  const requiredClass =
-    required && !readOnly ? Config.requiredClass : undefined;
+  const { token } = useToken();
+  const requiredStyle =
+    required && !readOnly
+      ? { backgroundColor: token.colorPrimaryBg }
+      : undefined;
   const formContext = useContext(FormContext) as FormContextType;
   const { elementHasLostFocus } = formContext || {};
 
@@ -21,7 +24,7 @@ export const Integer = (props: IntegerProps) => {
     <Field required={required} type={"number"} {...props}>
       <InputNumber
         id={id}
-        className={"w-full " + requiredClass}
+        className={"w-full "}
         disabled={readOnly}
         formatter={(value) => {
           return `${value}`.replace(/[^0-9\-]+/g, "");
@@ -33,6 +36,7 @@ export const Integer = (props: IntegerProps) => {
         defaultValue={0}
         onBlur={elementHasLostFocus}
         precision={0}
+        style={requiredStyle}
       />
     </Field>
   );

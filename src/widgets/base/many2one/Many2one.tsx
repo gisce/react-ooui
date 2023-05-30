@@ -6,13 +6,17 @@ import {
   LoadingOutlined,
 } from "@ant-design/icons";
 import styled from "styled-components";
+import { theme } from "antd";
+
+const { defaultAlgorithm, defaultSeed } = theme;
+
+const mapToken = defaultAlgorithm(defaultSeed);
 
 import {
   Many2one as Many2oneOoui,
   transformDomainForChildWidget,
 } from "@gisce/ooui";
 import Field from "@/common/Field";
-import Config from "@/Config";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import { FormModal } from "@/widgets/modals/FormModal";
 import ConnectionProvider from "@/ConnectionProvider";
@@ -65,8 +69,10 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     id: fieldName,
     domain: widgetDomain,
   } = ooui;
-  const requiredClass =
-    required && !readOnly ? Config.requiredClass : undefined;
+  const requiredStyle =
+    required && !readOnly
+      ? { backgroundColor: mapToken.colorPrimaryBg }
+      : undefined;
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(false);
@@ -75,13 +81,8 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const [inputText, setInputText] = useState<string>("");
   const inputTextRef = useRef<string>();
   const formContext = useContext(FormContext) as FormContextType;
-  const {
-    domain,
-    getValues,
-    getFields,
-    getContext,
-    elementHasLostFocus,
-  } = formContext || {};
+  const { domain, getValues, getFields, getContext, elementHasLostFocus } =
+    formContext || {};
   const transformedDomain = useRef<any[]>([]);
   const [searchDomain, setSearchDomain] = useState<any>([]);
 
@@ -244,7 +245,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           value={inputText}
           disabled={readOnly}
           onChange={onValueStringChange}
-          className={requiredClass}
+          style={requiredStyle}
           onBlur={onElementLostFocus}
           onKeyDown={onKeyDown}
           suffix={
@@ -317,6 +318,6 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
 
 const RequiredInput = styled(Input)`
   .ant-input {
-    background-color: ${Config.requiredColor};
+    background-color: ${mapToken.colorPrimaryBg};
   }
 `;

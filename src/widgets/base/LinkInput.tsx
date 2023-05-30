@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Input, Button, Row, Col } from "antd";
+import { Input, Button, Row, Col, theme } from "antd";
 import { Char as CharOoui } from "@gisce/ooui";
-import Config from "@/Config";
 import { EditOutlined, CheckOutlined } from "@ant-design/icons";
 import { FormContext, FormContextType } from "@/context/FormContext";
+const { useToken } = theme;
 
 interface LinkInputProps {
   ooui: CharOoui;
@@ -16,8 +16,11 @@ interface LinkInputProps {
 export const LinkInput = (props: LinkInputProps) => {
   const { ooui, value, onChange, valueValidator, linkPrefix = "" } = props;
   const { id, readOnly, required } = ooui as CharOoui;
-  const requiredClass =
-    required && !readOnly ? Config.requiredClass : undefined;
+  const { token } = useToken();
+  const requiredStyle =
+    required && !readOnly
+      ? { backgroundColor: token.colorPrimaryBg }
+      : undefined;
   const formContext = useContext(FormContext) as FormContextType;
   const { elementHasLostFocus } = formContext || {};
 
@@ -71,10 +74,9 @@ export const LinkInput = (props: LinkInputProps) => {
       <Col flex="auto">
         {showInput ? (
           <Input
-            style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+            style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, ...requiredStyle }}
             id={id}
             onChange={onValueStringChange}
-            className={requiredClass}
             value={value}
             onBlur={() => {
               if (valueValidator(value)) {
@@ -87,7 +89,7 @@ export const LinkInput = (props: LinkInputProps) => {
         ) : (
           <a
             href={`${linkPrefix}${value}`}
-            style={{ color: "#1890ff", paddingRight: 15 }}
+            style={{ color: token.colorPrimary, paddingRight: 15 }}
             target="_blank"
           >
             {value}
