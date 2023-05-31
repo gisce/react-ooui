@@ -8,25 +8,11 @@ import { PairFields } from "./PairFields";
 
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
-import { Field, Selection as SelectionOoui } from "@gisce/ooui";
+import { Field, SearchFieldTypes, Selection as SelectionOoui } from "@gisce/ooui";
 import { MultiSelection } from "@/widgets/base/MultiSelection";
 
 type Props = {
   field: Field;
-};
-
-const types = {
-  text: "text",
-  many2one: "many2one",
-  char: "char",
-  boolean: "boolean",
-  selection: "selection",
-  float: "float",
-  float_time: "float_time",
-  progressbar: "progressbar",
-  integer: "integer",
-  date: "date",
-  datetime: "datetime",
 };
 
 export function SearchField(props: Props) {
@@ -39,7 +25,7 @@ export function SearchField(props: Props) {
   const widgetType = field.type;
 
   switch (widgetType) {
-    case types.boolean: {
+    case SearchFieldTypes.boolean: {
       const ooui = new SelectionOoui({
         name: field._id,
         string: field.label,
@@ -51,19 +37,19 @@ export function SearchField(props: Props) {
 
       return <Selection layout="vertical" ooui={ooui} showLabel />;
     }
-    case types.float:
-    case types.progressbar:
-    case types.float_time:
-    case types.integer: {
+    case SearchFieldTypes.float:
+    case SearchFieldTypes.progressbar:
+    case SearchFieldTypes.float_time:
+    case SearchFieldTypes.integer: {
       return <PairFields ooui={field} showLabel />;
     }
-    case types.date: {
+    case SearchFieldTypes.date: {
       return <DateRangePicker ooui={field} layout="vertical" showLabel />;
     }
-    case types.datetime: {
+    case SearchFieldTypes.datetime: {
       return <DateTimeRangePicker ooui={field} layout="vertical" showLabel />;
     }
-    case types.selection: {
+    case SearchFieldTypes.selection: {
       return <MultiSelection layout="vertical" ooui={field} showLabel />;
     }
     default: {
