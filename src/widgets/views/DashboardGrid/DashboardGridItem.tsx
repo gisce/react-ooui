@@ -20,7 +20,7 @@ export const DashboardGridItem = (props: DashboardGridItemProps) => {
         overflow: "hidden",
         border: "1px solid #eee",
         backgroundColor: "white",
-        borderRadius: "6px",
+        borderRadius: token.borderRadius,
       }}
     >
       <Row

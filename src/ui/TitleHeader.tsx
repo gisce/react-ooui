@@ -87,7 +87,7 @@ function TitleHeader(props: Props) {
         className="shadow-md"
         style={{
           padding: "1em",
-          borderRadius: "6px",
+          borderRadius: token.borderRadius,
           backgroundColor: token.colorPrimaryBg,
         }}
         align="middle"

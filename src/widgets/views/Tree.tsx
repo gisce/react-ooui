@@ -302,7 +302,7 @@ function Tree(props: Props): React.ReactElement {
     });
 
     return (
-      <div className="p-1 pb-0 pl-2 mt-2 bg-gray-50">{summary.join(", ")}</div>
+      <div className="p-1 pb-0 pl-2 mt-2 ">{summary.join(", ")}</div>
     );
   }
 

@@ -24,7 +24,7 @@ function ButtonWithBadge(props: Props) {
               fontSize: "12px",
               textAlign: "center",
               background: token.colorPrimaryBg,
-              color: "#fefefe",
+              color: token.colorPrimaryHover,
             }}
           >
             {badgeNumber}

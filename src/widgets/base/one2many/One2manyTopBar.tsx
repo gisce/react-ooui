@@ -62,7 +62,7 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
       <div
         className="flex flex-grow h-8 text-white"
         style={{
-          borderRadius: "6px",
+          borderRadius: token.borderRadius,
           backgroundColor: token.colorPrimaryActive,
         }}
       >
