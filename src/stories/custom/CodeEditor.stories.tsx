@@ -2,7 +2,10 @@ import React from "react";
 
 import { CodeEditor } from "../../widgets/custom/CodeEditor";
 import { CodeEditor as CodeEditorOoui } from "@gisce/ooui";
-import "antd/dist/antd.css";
+
+// import "antd/dist/antd.css";
+
+
 import LocaleProvider from "../../context/LocaleContext";
 
 export default {

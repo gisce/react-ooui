@@ -1,14 +1,15 @@
 import React from "react";
-import { Tooltip } from "antd";
+import { Tooltip, theme } from "antd";
 import { Statistic, Card } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Field from "@/common/Field";
-import {QuestionCircleOutlined} from "@ant-design/icons";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import iconMapper from "@/helpers/iconMapper";
+const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
-  ooui: IndicatorOoui
+  ooui: IndicatorOoui;
   value?: number;
 };
 
@@ -25,18 +26,22 @@ export const Indicator = (props: IndicatorProps) => {
 type IndicatorInputProps = {
   ooui: IndicatorOoui;
   value?: any;
-}
+};
 
 const IndicatorInput = (props: IndicatorInputProps) => {
+  const { token } = useToken();
   const { ooui, value } = props;
   const title = (
     <>
       <span>{ooui.label} </span>
-      {ooui.tooltip &&
+      {ooui.tooltip && (
         <Tooltip title={ooui.tooltip}>
-          <QuestionCircleOutlined className="pr-1 text-xs text-blue-400"/>
+          <QuestionCircleOutlined
+            className="pr-1 text-xs"
+            style={{ color: token.colorPrimaryBg }}
+          />
         </Tooltip>
-      }
+      )}
     </>
   );
   const Icon: React.ElementType = iconMapper(ooui.icon) as any;
@@ -49,18 +54,14 @@ const IndicatorInput = (props: IndicatorInputProps) => {
   const field = (
     <Statistic
       title={title}
-      prefix={Icon && <Icon/>}
+      prefix={Icon && <Icon />}
       suffix={ooui.suffix}
       value={formattedValue}
     />
-  )
+  );
   if (ooui.card) {
-    return (
-      <Card>
-        {field}
-      </Card>
-    );
+    return <Card>{field}</Card>;
   } else {
     return field;
   }
-}
+};

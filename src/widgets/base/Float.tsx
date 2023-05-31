@@ -1,16 +1,21 @@
 import React, { useContext } from "react";
-import { InputNumber } from "antd";
+import { InputNumber, theme } from "antd";
 import Field from "@/common/Field";
 import { Float as FloatOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
-import Config from "@/Config";
+const { useToken } = theme;
+
 import { FormContext, FormContextType } from "@/context/FormContext";
 
 export const Float = (props: WidgetProps) => {
   const { ooui } = props;
   const { id, decimalDigits, readOnly, required } = ooui as FloatOoui;
-  const requiredClass =
-    required && !readOnly ? Config.requiredClass : undefined;
+  const { token } = useToken();
+
+  const requiredStyle =
+    required && !readOnly
+      ? { backgroundColor: token.colorPrimaryBg }
+      : undefined;
   const formContext = useContext(FormContext) as FormContextType;
   const { elementHasLostFocus } = formContext || {};
 
@@ -18,7 +23,8 @@ export const Float = (props: WidgetProps) => {
     <Field required={required} type={"number"} {...props}>
       <InputNumber
         disabled={readOnly}
-        className={"w-full " + requiredClass}
+        className={"w-full"}
+        style={requiredStyle}
         id={id}
         precision={decimalDigits}
         formatter={(value) => {

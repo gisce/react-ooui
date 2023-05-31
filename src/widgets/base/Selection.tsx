@@ -5,7 +5,11 @@ import styled from "styled-components";
 import Field from "@/common/Field";
 import { Selection as SelectionOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
-import Config from "@/Config";
+import { theme } from "antd";
+
+const { defaultAlgorithm, defaultSeed } = theme;
+
+const mapToken = defaultAlgorithm(defaultSeed);
 
 const { Option } = Select;
 
@@ -56,6 +60,6 @@ export const SelectionInput = (props: SelectionInputProps) => {
 
 const RequiredSelect = styled(Select)`
   &.ant-select:not(.ant-select-customize-input) .ant-select-selector {
-    background-color: ${Config.requiredColor};
+    background-color: ${mapToken.colorPrimaryBg};
   }
 `;

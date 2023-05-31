@@ -1,5 +1,7 @@
 import React from "react";
 import { CloseOutlined } from "@ant-design/icons";
+import { theme } from "antd";
+const { useToken } = theme;
 
 type TabProps = {
   tabKey: string;
@@ -11,8 +13,8 @@ type TabProps = {
 
 function Tab(props: TabProps) {
   const { label, onClose, tabKey, isActive, onSelected } = props;
-
-  const bgColor = isActive ? "#ffffff" : "#F1F5F9";
+  const { token } = useToken();
+  const bgColor = isActive ? token.colorBgContainer : token.colorPrimaryBg;
 
   return (
     <div
@@ -32,14 +34,14 @@ function Tab(props: TabProps) {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        borderTopLeftRadius: 8,
-        borderTopRightRadius: 8,
+        borderTopLeftRadius: token.borderRadius,
+        borderTopRightRadius: token.borderRadius,
         marginLeft: 2,
       }}
     >
       <div
         style={{
-          color: isActive ? "#001529" : "#ADB0B3",
+          color: isActive ? token.colorPrimaryActive : token.colorPrimaryBorder,
           userSelect: "none",
           height: 40,
           display: "flex",
@@ -63,7 +65,11 @@ function Tab(props: TabProps) {
         }}
       >
         <CloseOutlined
-          style={{ color: isActive ? "#001529" : "#ADB0B3" }}
+          style={{
+            color: isActive
+              ? token.colorPrimaryActive
+              : token.colorPrimaryBorder,
+          }}
           onClick={(e) => {
             e.stopPropagation();
             onClose(tabKey);

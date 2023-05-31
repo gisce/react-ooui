@@ -2,14 +2,11 @@ import React from "react";
 import Field from "@/common/Field";
 import { Char as CharOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
-import Config from "@/Config";
 import { GridUi } from "fiber-diagram";
 
 export const FiberGrid = (props: WidgetProps) => {
   const { ooui } = props;
-  const { id, readOnly, required } = ooui as CharOoui;
-  // const requiredClass =
-  //   required && !readOnly ? Config.requiredClass : undefined;
+  const { required } = ooui as CharOoui;
 
   return (
     <Field required={required} {...props}>

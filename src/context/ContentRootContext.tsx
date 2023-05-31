@@ -344,54 +344,52 @@ const ContentRootProvider = (
     });
   }
 
-  return (
-    <>
-      <ContentRootContext.Provider
-        value={{
-          processAction,
-          globalValues,
-        }}
-      >
-        <>
-          {children}
-          <Modal
-            title={t("generatingReport")}
-            visible={reportGenerating}
-            footer={null}
-            closable={false}
-            centered
-            maskClosable={false}
-          >
-            <Spin />
-          </Modal>
-          <FormModal
-            buttonModal
-            parentContext={actionModalOptions.context}
-            model={actionModalOptions.model!}
-            formView={actionModalOptions.formView}
-            visible={actionModalVisible}
-            onSubmitSucceed={onFormModalSucceed}
-            onCancel={() => {
-              callRefreshValues(onRefreshParentValues.current);
-              onRefreshParentValues.current = [];
-              setActionModalVisible(false);
-              setActionModalOptions({
-                domain: undefined,
-                model: undefined,
-                context: {},
-                formView: undefined,
-                actionData: undefined,
-              });
-            }}
-            showFooter={false}
-            actionDomain={actionModalOptions.domain}
-            isMenuAction={actionModalOptions?.actionData !== undefined}
-            actionData={actionModalOptions?.actionData}
-          />
-        </>
-      </ContentRootContext.Provider>
-    </>
-  );
+  return (<>
+    <ContentRootContext.Provider
+      value={{
+        processAction,
+        globalValues,
+      }}
+    >
+      <>
+        {children}
+        <Modal
+          title={t("generatingReport")}
+          open={reportGenerating}
+          footer={null}
+          closable={false}
+          centered
+          maskClosable={false}
+        >
+          <Spin />
+        </Modal>
+        <FormModal
+          buttonModal
+          parentContext={actionModalOptions.context}
+          model={actionModalOptions.model!}
+          formView={actionModalOptions.formView}
+          visible={actionModalVisible}
+          onSubmitSucceed={onFormModalSucceed}
+          onCancel={() => {
+            callRefreshValues(onRefreshParentValues.current);
+            onRefreshParentValues.current = [];
+            setActionModalVisible(false);
+            setActionModalOptions({
+              domain: undefined,
+              model: undefined,
+              context: {},
+              formView: undefined,
+              actionData: undefined,
+            });
+          }}
+          showFooter={false}
+          actionDomain={actionModalOptions.domain}
+          isMenuAction={actionModalOptions?.actionData !== undefined}
+          actionData={actionModalOptions?.actionData}
+        />
+      </>
+    </ContentRootContext.Provider>
+  </>);
 };
 
 async function getViewsAndInitialView({

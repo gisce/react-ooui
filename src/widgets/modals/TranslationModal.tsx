@@ -185,11 +185,11 @@ export const TranslationModal = (props: TranslationModalProps) => {
   }
 
   return (
-    <Modal
+    (<Modal
       title={t("translate")}
       centered
       width={modalWidth}
-      visible={visible}
+      open={visible}
       closable={true}
       onCancel={onCloseModal}
       footer={null}
@@ -197,6 +197,6 @@ export const TranslationModal = (props: TranslationModalProps) => {
       maskClosable={false}
     >
       {content()}
-    </Modal>
+    </Modal>)
   );
 };

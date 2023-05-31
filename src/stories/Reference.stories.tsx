@@ -2,7 +2,10 @@ import React from "react";
 
 import { ReferenceInput } from "../widgets/base/Reference";
 import { Reference as ReferenceOoui } from "@gisce/ooui";
-import "antd/dist/antd.css";
+
+// import "antd/dist/antd.css";
+
+
 import LocaleProvider from "../context/LocaleContext";
 
 export default {

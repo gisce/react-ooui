@@ -7,7 +7,7 @@ import {
   FormOutlined,
   EditOutlined,
 } from "@ant-design/icons";
-import { Button, Col, Row, Spin, Tooltip } from "antd";
+import { Button, Col, Row, Spin, Tooltip, theme } from "antd";
 import { Menu, Dropdown } from "antd";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import {
@@ -16,6 +16,7 @@ import {
 } from "@/context/TabManagerContext";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { ViewType } from "@/types";
+const { useToken } = theme;
 
 export type ShortcutApi = {
   action_id: number;
@@ -56,6 +57,8 @@ const FavouriteButton = (props: Props) => {
   const [loading, setLoading] = useState(true);
   const [currentShortcutId, setCurrentShortcutId] = useState<number>();
   const { t } = (useContext(LocaleContext) as LocaleContextType) || {};
+
+  const { token } = useToken();
 
   const tabManagerContext = useContext(
     TabManagerContext
@@ -155,7 +158,7 @@ const FavouriteButton = (props: Props) => {
         <div style={{ flexGrow: 1, paddingLeft: 10 }}>
           <Tooltip title={t?.("edit_favorites")}>
             <EditOutlined
-              style={{ color: "#1890FF", cursor: "pointer" }}
+              style={{ color: token.colorPrimary, cursor: "pointer" }}
               onClick={editFavourites}
             />
           </Tooltip>
@@ -240,16 +243,24 @@ const FavouriteButton = (props: Props) => {
             <StarOutlined />
           )
         }
-        style={{ width: 50 }}
+        style={{
+          width: 50,
+          borderTopRightRadius: 0,
+          borderBottomRightRadius: 0,
+        }}
         onClick={toggleFavourite}
       ></Button>
       <Dropdown
         overlay={menu}
         onVisibleChange={handleVisibleChange}
-        visible={dropdownVisible}
+        open={dropdownVisible}
       >
         <Button
-          style={{ width: 25 }}
+          style={{
+            width: 25,
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
+          }}
           icon={<DownOutlined style={{ fontSize: "0.5em" }} />}
           onClick={(e) => e.preventDefault()}
         ></Button>

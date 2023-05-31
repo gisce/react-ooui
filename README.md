@@ -16,12 +16,6 @@ Import library components:
 import { Button, Char } from "react-ooui";
 ```
 
-Import `ant-design` CSS:
-
-```javascript
-import "antd/dist/antd.css";
-```
-
 And then you can use it:
 
 ```javascript

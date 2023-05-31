@@ -22,7 +22,7 @@ import {
 } from "@/context/ActionViewContext";
 import { Many2oneTree } from "../base/many2one/Many2oneTree";
 import { ReferenceTree } from "../base/ReferenceTree";
-import moment from "moment";
+import dayjs from "dayjs";
 import { DatePickerConfig } from "@/common/DatePicker";
 
 type Props = {
@@ -71,7 +71,7 @@ const textComponentFn = (value: any): React.ReactElement => {
 const dateComponentFn = (value: any): React.ReactElement => {
   if (!value || (value && value.length === 0)) return <></>;
 
-  const formattedValue = moment(
+  const formattedValue = dayjs(
     value,
     DatePickerConfig.date.dateInternalFormat
   ).format(DatePickerConfig.date.dateDisplayFormat);
@@ -80,7 +80,7 @@ const dateComponentFn = (value: any): React.ReactElement => {
 
 const dateTimeComponentFn = (value: any): React.ReactElement => {
   if (!value || (value && value.length === 0)) return <></>;
-  const formattedValue = moment(
+  const formattedValue = dayjs(
     value,
     DatePickerConfig.time.dateInternalFormat
   ).format(DatePickerConfig.time.dateDisplayFormat);
@@ -302,7 +302,7 @@ function Tree(props: Props): React.ReactElement {
     });
 
     return (
-      <div className="p-1 pb-0 pl-2 mt-2 bg-gray-50">{summary.join(", ")}</div>
+      <div className="p-1 pb-0 pl-2 mt-2 ">{summary.join(", ")}</div>
     );
   }
 
