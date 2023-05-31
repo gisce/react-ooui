@@ -79,6 +79,7 @@ import TabSelector from "./views/TabSelector";
 import CurrentTabContent from "./views/CurrentTabContent";
 import ContentRootProvider from "./context/ContentRootContext";
 import FavouriteButton from "./ui/FavouriteButton";
+import { ConfigContext } from "./context/ConfigContext";
 
 export {
   Button,
@@ -155,4 +156,5 @@ export {
   Steps,
   CodeEditor,
   ExportModal,
+  ConfigContext,
 };
