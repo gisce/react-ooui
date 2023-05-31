@@ -241,6 +241,15 @@ type TreeButOpenOptions = {
   context?: any;
 };
 
+type ExportDataOptions = {
+  model: string;
+  domain: any[];
+  fields?: string[];
+  format: string;
+  limit?: number;
+  context?: any;
+};
+
 type ConnectionProviderType = {
   getActionStringForModel: (model: string) => Promise<string>;
   getViewsForAction: ({
@@ -287,6 +296,7 @@ type ConnectionProviderType = {
   removeFavourite: ({ shortcut_id }: { shortcut_id: number }) => Promise<void>;
   addFavourite: (options: IsShortcutFavoriteOptions) => Promise<void>;
   treeButOpen: (options: TreeButOpenOptions) => Promise<any>;
+  exportData: (options: ExportDataOptions) => Promise<any>;
 };
 
 type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar";

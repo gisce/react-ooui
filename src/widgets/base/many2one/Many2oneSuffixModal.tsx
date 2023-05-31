@@ -14,10 +14,10 @@ export const Many2oneSuffixModal = (props: Props) => {
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
   return (
-    <Modal
+    (<Modal
       title={t("selectAction")}
       centered
-      visible={visible}
+      open={visible}
       footer={null}
       destroyOnClose
       onCancel={onCancel}
@@ -37,6 +37,6 @@ export const Many2oneSuffixModal = (props: Props) => {
           );
         })}
       </Space>
-    </Modal>
+    </Modal>)
   );
 };

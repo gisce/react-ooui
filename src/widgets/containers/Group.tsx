@@ -1,7 +1,7 @@
 import React from "react";
 import { Group as GroupOoui } from "@gisce/ooui";
 import Container from "./Container";
-import Fieldset from "@/ui/Fieldset";
+import { FieldSet } from "@gisce/react-formiga-components";
 import { Space } from "antd";
 import iconMapper from "@/helpers/iconMapper";
 
@@ -13,23 +13,17 @@ type Props = {
 
 function Group(props: Props): React.ReactElement {
   const { ooui, showLabel = true, responsiveBehaviour } = props;
-  const Icon : React.ElementType | undefined = iconMapper(ooui.icon || "");
-  const label = (
-    <Space>
-        {Icon ? <Icon /> : null}
-        {ooui.label}
-      </Space>
-  )
+  const icon: React.ElementType | undefined = iconMapper(ooui.icon || "");
 
   return (
     <>
-      {(ooui.label || Icon) && showLabel ? (
-        <Fieldset label={label}>
+      {(ooui.label || icon) && showLabel ? (
+        <FieldSet label={ooui.label} icon={icon}>
           <Container
             container={ooui!.container}
             responsiveBehaviour={responsiveBehaviour}
           />
-        </Fieldset>
+        </FieldSet>
       ) : (
         <Container
           container={ooui!.container}

@@ -1,15 +1,15 @@
-import React, { useContext, useState } from "react";
-import { Col, Input, Row } from "antd";
+import React, { CSSProperties, useContext, useState } from "react";
+import { Col, Input, Row, theme } from "antd";
 import Field from "@/common/Field";
 import { Char as CharOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
-import Config from "@/Config";
 import { TranslationModal } from "../modals/TranslationModal";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
 import { TranslationOutlined } from "@ant-design/icons";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showInfo from "@/ui/InfoDialog";
+const { useToken } = theme;
 
 type CharProps = WidgetProps & {
   isSearchField?: boolean;
@@ -18,8 +18,11 @@ type CharProps = WidgetProps & {
 export const Char = (props: CharProps) => {
   const { ooui, isSearchField = false } = props;
   const { id, readOnly, isPassword, required, translatable } = ooui as CharOoui;
-  const requiredClass =
-    required && !readOnly ? Config.requiredClass : undefined;
+  const { token } = useToken();
+  const requiredStyle =
+    required && !readOnly
+      ? { backgroundColor: token.colorPrimaryBg }
+      : undefined;
   const formContext = useContext(FormContext) as FormContextType;
   const { elementHasLostFocus } = formContext || {};
 
@@ -27,7 +30,7 @@ export const Char = (props: CharProps) => {
     <Input
       disabled={readOnly || (translatable && !isSearchField)}
       id={id}
-      className={requiredClass}
+      style={requiredStyle}
       maxLength={(ooui as CharOoui).size}
       onBlur={elementHasLostFocus}
     />
@@ -44,7 +47,7 @@ export const Char = (props: CharProps) => {
   }
 
   if (translatable && !readOnly && !isSearchField) {
-    input = <TranslatableChar field={id} requiredClass={requiredClass} />;
+    input = <TranslatableChar field={id} requiredStyle={requiredStyle} />;
   }
 
   return (
@@ -57,12 +60,12 @@ export const Char = (props: CharProps) => {
 const TranslatableChar = ({
   value,
   field,
-  requiredClass,
+  requiredStyle,
   onChange,
 }: {
   value?: string;
   field: string;
-  requiredClass: string | undefined;
+  requiredStyle: CSSProperties | undefined;
   onChange?: (value: string) => void;
 }) => {
   const formContext = useContext(FormContext) as FormContextType;
@@ -84,7 +87,7 @@ const TranslatableChar = ({
             <Input
               value={value}
               id={field}
-              className={requiredClass}
+              style={requiredStyle}
               onChange={(event: any) => {
                 onChange?.(event.target.value);
               }}
@@ -129,12 +132,11 @@ const TranslatableChar = ({
           value={value}
           disabled={true}
           id={field}
-          className={requiredClass}
           onChange={(event: any) => {
             onChange?.(event.target.value);
           }}
           onBlur={elementHasLostFocus}
-          style={{ cursor: "pointer" }}
+          style={{ cursor: "pointer", ...requiredStyle }}
         />
       </div>
       <TranslationModal

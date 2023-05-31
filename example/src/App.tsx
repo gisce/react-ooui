@@ -1,7 +1,6 @@
 import React from "react";
 import "./App.css";
 import { Button, Char } from "react-ooui";
-import "antd/dist/antd.css";
 
 function App() {
   return (

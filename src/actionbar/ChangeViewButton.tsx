@@ -102,11 +102,15 @@ function ChangeViewButton(props: Props) {
   }
 
   return (
-    <>
+    <div style={{ display: "flex" }}>
       <ButtonWithTooltip
         tooltip={previousView ? t("viewAs") + " " + t(previousView.type) : ""}
         icon={getIconForView(previousView)}
-        style={{ width: 50 }}
+        style={{
+          width: 50,
+          borderTopRightRadius: 0,
+          borderBottomRightRadius: 0,
+        }}
         onClick={() => {
           handleMenuClick({ key: previousView?.view_id });
         }}
@@ -117,12 +121,16 @@ function ChangeViewButton(props: Props) {
         disabled={disabled || availableViews.length === 1}
       >
         <Button
-          style={{ width: 25 }}
+          style={{
+            width: 25,
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
+          }}
           icon={<DownOutlined style={{ fontSize: "0.5em" }} />}
           onClick={(e) => e.preventDefault()}
         ></Button>
       </Dropdown>
-    </>
+    </div>
   );
 }
 

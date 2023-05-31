@@ -1,8 +1,8 @@
 import React, { useRef, useContext } from "react";
-import { Row, Col, Button, Input, Space } from "antd";
+import { Row, Col, Button, Input, Space, theme } from "antd";
 import Field from "@/common/Field";
 import { Binary as BinaryOoui } from "@gisce/ooui";
-import Config from "@/Config";
+const { useToken } = theme;
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
 import {
   FolderOpenOutlined,
@@ -44,8 +44,11 @@ interface BinaryInputProps {
 export const BinaryInput = (props: BinaryInputProps) => {
   const { ooui, value, onChange } = props;
   const { readOnly, required, filenameField } = ooui as BinaryOoui;
-  const requiredClass =
-    required && !readOnly ? Config.requiredClass : undefined;
+  const { token } = useToken();
+  const requiredStyle =
+    required && !readOnly
+      ? { backgroundColor: token.colorPrimaryBg }
+      : undefined;
   const inputFile = useRef(null);
   const { setFieldValue, getFieldValue } =
     (useContext(FormContext) as FormContextType) || {};
@@ -104,7 +107,7 @@ export const BinaryInput = (props: BinaryInputProps) => {
         <Input
           type="text"
           disabled={true}
-          className={requiredClass}
+          style={requiredStyle}
           value={filesize}
         />
       </Col>

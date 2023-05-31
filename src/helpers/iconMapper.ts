@@ -1,4 +1,4 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 import * as AntIcons from "@ant-design/icons";
 import * as TablerIcons from "@tabler/icons-react";
 import Icon from "@ant-design/icons";
@@ -100,17 +100,20 @@ const iconMapping: { [key: string]: string } = {
   STOCK_PREFERENCES: "Setting",
 };
 
-export default (key: string, className?: any) => {
+export default (
+  key: string,
+  props?: { className?: any; style: CSSProperties }
+) => {
   if (key.indexOf("gtk-") !== -1) {
     const rootIcon = key.replace("gtk-", "").replace(/\-/g, "_");
     key = `STOCK_${rootIcon.toUpperCase()}`;
   }
 
   if (iconMapping.hasOwnProperty(key)) {
-    return getIconForKey(iconMapping[key], className);
+    return getIconForKey(iconMapping[key], props);
   }
 
-  return getIconForKey(key, className);
+  return getIconForKey(key, props);
 };
 
 function toCamelCase(key: string): string {
@@ -125,7 +128,10 @@ function toCamelCase(key: string): string {
     .join("")}`;
 }
 
-function getIconForKey(key: string, className?: any) {
+function getIconForKey(
+  key: string,
+  props?: { className?: any; style: CSSProperties }
+) {
   let IconCamelCase = key.charAt(0).toUpperCase() + key.slice(1); // Capitalize first letter
   if (IconCamelCase.indexOf("-") !== -1) {
     IconCamelCase = toCamelCase(IconCamelCase);
@@ -135,7 +141,7 @@ function getIconForKey(key: string, className?: any) {
   if (AntIcons[antKey]) {
     return () =>
       React.createElement(AntIcons[antKey] as any, {
-        className,
+        ...props,
       });
   }
 
@@ -150,7 +156,7 @@ function getIconForKey(key: string, className?: any) {
     const CustomIcon = () =>
       React.createElement(Icon, {
         component: TablerIcon,
-        className,
+        ...props,
       });
     return CustomIcon;
   }

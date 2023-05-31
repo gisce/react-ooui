@@ -1,10 +1,11 @@
 import React from "react";
-import { Tooltip, Typography } from "antd";
+import { Tooltip, Typography, theme } from "antd";
 import { WidgetProps } from "@/types";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Label as LabelOoui } from "@gisce/ooui";
 import { Interweave } from "interweave";
 const { Text, Title } = Typography;
+const { useToken } = theme;
 
 type Props = WidgetProps & {
   align?: "left" | "center" | "right";
@@ -25,6 +26,7 @@ const Label = (props: Props) => {
   const labelText = addColon && label.length > 1 ? label + " :" : label;
   const responsiveAlign = responsiveBehaviour ? "left" : "right";
   const labelAlgin = align ? align : fieldForLabel ? responsiveAlign : "left";
+  const { token } = useToken();
 
   const TextType = labelSize === undefined ? Text : Title;
 
@@ -34,7 +36,9 @@ const Label = (props: Props) => {
     >
       {tooltip && (
         <Tooltip title={tooltip}>
-          <QuestionCircleOutlined className="pr-1 text-xs text-blue-400" />
+          <QuestionCircleOutlined className="pr-1 text-xs" style={{
+            color: token.colorPrimary
+          }} />
         </Tooltip>
       )}
       <span className="pr-2">

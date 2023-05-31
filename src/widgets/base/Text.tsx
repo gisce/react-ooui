@@ -1,7 +1,6 @@
-import React, { useContext, useState } from "react";
-import { Input, Row } from "antd";
+import React, { CSSProperties, useContext, useState } from "react";
+import { Input, Row, theme } from "antd";
 import Field from "@/common/Field";
-import Config from "@/Config";
 import { Text as TextOoui } from "@gisce/ooui";
 import { TranslationModal } from "../modals/TranslationModal";
 import { FormContext, FormContextType } from "@/context/FormContext";
@@ -9,6 +8,7 @@ import ButtonWithTooltip from "@/common/ButtonWithTooltip";
 import { TranslationOutlined } from "@ant-design/icons";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showInfo from "@/ui/InfoDialog";
+const { useToken } = theme;
 
 const { TextArea } = Input;
 
@@ -19,8 +19,11 @@ type Props = {
 const Text = (props: Props) => {
   const { ooui } = props;
   const { id, readOnly, required, height, translatable } = ooui;
-  const requiredClass =
-    required && !readOnly ? Config.requiredClass : undefined;
+  const { token } = useToken();
+  const requiredStyle =
+    required && !readOnly
+      ? { backgroundColor: token.colorPrimaryBg }
+      : undefined;
   const formContext = useContext(FormContext) as FormContextType;
   const { elementHasLostFocus } = formContext || {};
 
@@ -29,14 +32,13 @@ const Text = (props: Props) => {
       {translatable ? (
         <TranslatableText
           field={id}
-          requiredClass={requiredClass}
           height={height}
+          requiredStyle={requiredStyle}
         />
       ) : (
         <TextArea
           disabled={readOnly || translatable}
-          className={requiredClass}
-          style={{ height: height ? height + "px" : "100%" }}
+          style={{ height: height ? height + "px" : "100%", ...requiredStyle }}
           rows={4}
           onBlur={elementHasLostFocus}
         />
@@ -48,13 +50,13 @@ const Text = (props: Props) => {
 const TranslatableText = ({
   value,
   field,
-  requiredClass,
+  requiredStyle,
   onChange,
   height,
 }: {
   value?: string;
   field: string;
-  requiredClass: string | undefined;
+  requiredStyle: CSSProperties | undefined;
   height: number | undefined;
   onChange?: (value: string) => void;
 }) => {
@@ -80,9 +82,9 @@ const TranslatableText = ({
             }}
             style={{
               height: height ? height + "px" : "100%",
+              ...requiredStyle
             }}
             id={field}
-            className={requiredClass}
             rows={4}
             onBlur={elementHasLostFocus}
           />
@@ -128,10 +130,10 @@ const TranslatableText = ({
           style={{
             height: height ? height + "px" : "100%",
             cursor: "pointer",
+            ...requiredStyle
           }}
           id={field}
           disabled={true}
-          className={requiredClass}
           rows={4}
           onBlur={elementHasLostFocus}
         />

@@ -4,7 +4,9 @@ import { Field as FieldOoui } from "@gisce/ooui";
 import LocaleProvider from "../../../context/LocaleContext";
 
 import { DateRangePicker } from "../../../widgets/views/searchFilter/DateRangePicker";
-import "antd/dist/antd.css";
+
+// import "antd/dist/antd.css";
+
 
 export default {
   title: "Components/Widgets/Views/SearchFilter/DateRangePicker",

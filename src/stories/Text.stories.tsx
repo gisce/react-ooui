@@ -2,7 +2,10 @@ import React from "react";
 
 import { Text } from "..";
 import { Text as TextOoui } from "@gisce/ooui";
-import "antd/dist/antd.css";
+
+// import "antd/dist/antd.css";
+
+
 import LocaleProvider from "../context/LocaleContext";
 
 export default {

@@ -1,5 +1,8 @@
 import React from "react";
-import "antd/dist/antd.css";
+
+// import "antd/dist/antd.css";
+
+
 import "@/tailwind.generated.css";
 
 import { withKnobs, number, text } from "@storybook/addon-knobs";

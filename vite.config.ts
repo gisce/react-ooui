@@ -37,6 +37,7 @@ export default defineConfig({
         "@ant-design/plots",
         "@gisce/ooui",
         "@gisce/react-formiga-table",
+        "@gisce/react-formiga-components",
         "@monaco-editor/react",
         "fiber-diagram",
         "file-type",
@@ -50,10 +51,6 @@ export default defineConfig({
         "interweave",
       ],
       output: {
-        assetFileNames: (assetInfo) => {
-          if (assetInfo.name == "style.css") return "main.css";
-          return assetInfo.name as any;
-        },
         globals: {
           react: "React",
           "react-dom": "ReactDOM",
