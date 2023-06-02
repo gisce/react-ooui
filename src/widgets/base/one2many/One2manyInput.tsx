@@ -195,8 +195,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
   async function parseDomain() {
     if (widgetDomain) {
-      transformedDomain.current = transformDomainForChildWidget({
-        domain: await ConnectionProvider.getHandler().evalDomain({
+      transformedDomain.current =
+        await ConnectionProvider.getHandler().evalDomain({
           domain: widgetDomain,
           values: transformPlainMany2Ones({
             fields: getFields(),
@@ -204,9 +204,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           }),
           fields: getFields(),
           context: getContext(),
-        }),
-        widgetFieldName: fieldName,
-      });
+        });
     }
 
     if (domain && domain.length > 0) {
