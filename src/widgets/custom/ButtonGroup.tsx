@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import Field from "@/common/Field";
 import { DownOutlined } from "@ant-design/icons";
 import { Dropdown, Menu } from "antd";
+import { Button } from "@/widgets/base/Button";
 import {
   ButtonGroup as ButtonGroupOoui,
   Button as ButtonOoui,
@@ -20,6 +21,8 @@ type ButtonGroupProps = {
 
 type ItemsProps = {
   ooui: ButtonOoui[];
+  executeButtonAction: any,
+  lang: string
 };
 
 export const ButtonGroup = (props: ButtonGroupProps) => {
@@ -73,27 +76,37 @@ export const ButtonGroup = (props: ButtonGroupProps) => {
 
     onClick_confirm();
   }
-
-  return (
-    <Field ooui={new FieldOoui({ ...{ ooui } })}>
-      <Dropdown.Button
-        disabled={!activated || readOnly}
-        onClick={onClick}
-        icon={<DownOutlined />}
-        type={primary ? "primary" : undefined}
-        //danger={danger ? true : undefined} This works but typescript
-        // doesn't accept
-        overlay={Items({ooui: secondaryButtons})}
-      >
-        {getButtonIcon()}
-        {caption}
-      </Dropdown.Button>
-    </Field>
-  );
+  if (ooui.buttons.length === 0) {
+    return null;
+  } else if (ooui.buttons.length > 1) {
+    return (
+      <Field ooui={new FieldOoui({ ...{ ooui } })}>
+        <Dropdown.Button
+          disabled={!activated || readOnly}
+          onClick={onClick}
+          icon={<DownOutlined />}
+          type={primary ? "primary" : undefined}
+          //danger={danger ? true : undefined} This works but typescript
+          // doesn't accept
+          overlay={<Items ooui={secondaryButtons} executeButtonAction={executeButtonAction} lang={lang} /> }
+        >
+          {getButtonIcon()}
+          {caption}
+        </Dropdown.Button>
+      </Field>
+    );
+  }  else if (defaultButton) {
+    return (
+      <Button ooui={defaultButton} />
+    )
+  }
 };
 
 const Items = (props: ItemsProps) => {
-  const { ooui } = props;
+  const { ooui, executeButtonAction, lang } = props;
+  if (!ooui) {
+    return null;
+  }
   const items = ooui.map((button) => {
     const {
       id,
@@ -106,10 +119,7 @@ const Items = (props: ItemsProps) => {
       readOnly,
       danger,
     } = button;
-    const formContext = useContext(FormContext) as FormContextType;
-    const { executeButtonAction } = formContext || {};
     const [isRunning, setIsRunning] = useState<boolean>(false);
-    const { lang } = useContext(LocaleContext) as LocaleContextType;
 
     async function onClick_confirm() {
       setIsRunning(true);
