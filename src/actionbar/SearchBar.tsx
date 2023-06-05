@@ -13,9 +13,8 @@ function SearchBar(props: Props) {
   const { onSearch, disabled = false, searchText } = props;
   const { t } = useContext(LocaleContext) as LocaleContextType;
   const [form] = Form.useForm();
-  const [mustShowClearSuffix, setMustShowClearSuffix] = useState<boolean>(
-    false
-  );
+  const [mustShowClearSuffix, setMustShowClearSuffix] =
+    useState<boolean>(false);
 
   function handleSubmit(values: any) {
     onSearch(values.search);
@@ -42,6 +41,7 @@ function SearchBar(props: Props) {
               onChange={(e) => {
                 setMustShowClearSuffix(e.target.value.length > 0);
               }}
+              style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
               suffix={
                 (mustShowClearSuffix ||
                   (searchText && searchText.length > 0)) && (
@@ -57,7 +57,11 @@ function SearchBar(props: Props) {
           </Form.Item>
         </Col>
         <Col>
-          <Button htmlType="submit" disabled={disabled}>
+          <Button
+            htmlType="submit"
+            disabled={disabled}
+            style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+          >
             {t("search")}
           </Button>
         </Col>
