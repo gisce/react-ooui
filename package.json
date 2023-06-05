@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "1.2.0-rc.83",
+  "version": "1.2.0-rc.84",
   "files": [
     "dist",
     "src",
@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@ant-design/plots": "^1.0.9",
-    "@gisce/ooui": "^0.19.5-rc.1",
+    "@gisce/ooui": "^0.19.6",
     "@gisce/react-formiga-components": "^1.0.9-rc.21",
     "@gisce/react-formiga-table": "^0.5.0",
     "@monaco-editor/react": "^4.4.5",
