@@ -22,6 +22,7 @@ import {
 } from "@/context/ActionViewContext";
 import { Many2oneTree } from "../base/many2one/Many2oneTree";
 import { ReferenceTree } from "../base/ReferenceTree";
+import Avatar from "../custom/Avatar";
 import moment from "moment";
 import { DatePickerConfig } from "@/common/DatePicker";
 
@@ -154,6 +155,10 @@ const referenceComponent = (
   );
 };
 
+const AvatarFn = (value: any, key:string, ooui: any, context: any): React.ReactElement => (
+  <Avatar ooui={ooui} value={value} />
+)
+
 function Tree(props: Props): React.ReactElement {
   const {
     page = 1,
@@ -213,6 +218,7 @@ function Tree(props: Props): React.ReactElement {
         selection: SelectionComponent,
         date: dateComponentFn,
         datetime: dateTimeComponentFn,
+        avatar: AvatarFn,
       },
       context
     );
