@@ -25,6 +25,7 @@ Default.args = {
   results: [
     {
       city: false,
+      user_id: [1, "John Wick"],
       country: false,
       id: 62,
       lang: false,
@@ -36,6 +37,7 @@ Default.args = {
     },
     {
       city: "Wavre",
+      user_id: [2, "JIGNACIO FERREIRO ANDRES"],
       country: [20, "Belgium"],
       id: 3,
       lang: false,
@@ -47,6 +49,7 @@ Default.args = {
     },
     {
       city: false,
+      user_id: [3, "JOSEFA REINA GUTIERREZ"],
       country: false,
       id: 106,
       lang: "ca_ES",
@@ -58,6 +61,7 @@ Default.args = {
     },
     {
       city: "Sevilla",
+      user_id: [4, "GUADALUPE CALERO CATALAN"],
       country: [67, "España"],
       id: 32,
       lang: false,
@@ -70,6 +74,7 @@ Default.args = {
     {
       city: false,
       country: [67, "España"],
+      user_id: [5, "ANDER BAUTISTA ROLDAN"],
       id: 82,
       lang: "es_ES",
       name: "Apellido2 Apellido2, Nombre",
@@ -80,6 +85,7 @@ Default.args = {
     },
     {
       city: "Zaragoza",
+      user_id: [7, "FELICIDAD PAEZ BARRERA"],
       country: [67, "España"],
       id: 33,
       lang: false,
@@ -92,11 +98,16 @@ Default.args = {
   ],
   treeView: {
     arch:
-      `<tree string="Partners">\n<field name="numeric" sum="Numeric"/><field name="name"/>\n                    <field name="title" widget="tag" widget_props="{'colors': {'corp': 'red', 'ltd': 'green'}}"/>\n                    <field name="ref"/>\n                    <field name="city" select="2"/>\n                    <field name="country" select="2"/>\n                    <field name="lang"/>\n <field name="progressbar" string="Progress" />               </tree>`,
+      `<tree string="Partners">\n<field name="numeric" sum="Numeric"/><field name="user_id" widget="avatar"/><field name="name"/>\n                    <field name="title" widget="tag" widget_props="{'colors': {'corp': 'red', 'ltd': 'green'}}"/>\n                    <field name="ref"/>\n                    <field name="city" select="2"/>\n                    <field name="country" select="2"/>\n                    <field name="lang"/>\n <field name="progressbar" string="Progress" />               </tree>`,
     fields: {
       progressbar: {
         string: "Progress bar",
         type: "progressbar",
+      },
+      user_id: {
+        string: "User",
+        type: "many2one",
+        relation: "res.users",
       },
       numeric: {
         digits: [16, 3],
