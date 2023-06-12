@@ -11,7 +11,9 @@ export default defineConfig({
     },
   },
   plugins: [
-    peerDepsExternal(),
+    peerDepsExternal({
+      includeDependencies: true,
+    }),
     react(),
     dts({
       insertTypesEntry: true,
@@ -27,34 +29,7 @@ export default defineConfig({
       fileName: (format) => `react-ooui.${format}.js`,
     },
     rollupOptions: {
-      external: [
-        "buffer",
-        "react",
-        "react-dom",
-        "styled-components",
-        "antd",
-        "@ant-design/icons",
-        "@ant-design/plots",
-        "@gisce/ooui",
-        "@gisce/react-formiga-table",
-        "@monaco-editor/react",
-        "@gisce/fiber-diagram",
-        "rc-util",
-        "react-konva",
-        "konva/lib",
-        "rc-notification",
-        "@ant-design/icons",
-        "moment",
-        "file-type",
-        "react-markdown",
-        "react-grid-layout",
-        "react-hotkeys-hook",
-        "react-measure",
-        "@tabler/icons-react",
-        "use-deep-compare-effect",
-        "validator",
-        "interweave",
-      ],
+      external: ["@ant-design/icons", "uuid", "lodash", "moment"],
       output: {
         assetFileNames: (assetInfo) => {
           if (assetInfo.name == "style.css") return "main.css";
