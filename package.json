@@ -42,7 +42,7 @@
     "@tabler/icons-react": "^2.11.0",
     "antd": "^4.12.3",
     "buffer": "^6.0.3",
-    "fiber-diagram": "github:gisce/fiber-diagram",
+    "@gisce/fiber-diagram": "1.0.0",
     "file-type": "^16.5.0",
     "interweave": "^13.0.0",
     "react": "^17.0.1",

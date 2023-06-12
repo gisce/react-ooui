@@ -9,13 +9,13 @@
       "version": "1.1.68",
       "dependencies": {
         "@ant-design/plots": "^1.0.9",
+        "@gisce/fiber-diagram": "1.0.0",
         "@gisce/ooui": "^0.20.0",
         "@gisce/react-formiga-table": "^0.5.0",
         "@monaco-editor/react": "^4.4.5",
         "@tabler/icons-react": "^2.11.0",
         "antd": "^4.12.3",
         "buffer": "^6.0.3",
-        "fiber-diagram": "github:gisce/fiber-diagram",
         "file-type": "^16.5.0",
         "interweave": "^13.0.0",
         "react": "^17.0.1",
@@ -13863,6 +13863,7 @@
     "node_modules/fiber-diagram": {
       "version": "1.0.0",
       "resolved": "git+ssh://git@github.com/gisce/fiber-diagram.git#c9efd7341ec91f41851185b658b658f7cd98aa81",
+      "extraneous": true,
       "license": "ISC",
       "dependencies": {
         "konva": "^8.3.1",
@@ -19488,6 +19489,7 @@
       "version": "8.3.2",
       "resolved": "https://registry.npmjs.org/konva/-/konva-8.3.2.tgz",
       "integrity": "sha512-vWi51qFTFkEIp+HxMek1eH1fA1zFo0DPD3uqUez+v2gy/IfZF2eLu9DcEj7Exk532hxfHJi/2oZ0GQYHlhg/dQ==",
+      "extraneous": true,
       "funding": [
         {
           "type": "patreon",
@@ -23775,6 +23777,7 @@
       "version": "17.0.2-5",
       "resolved": "https://registry.npmjs.org/react-konva/-/react-konva-17.0.2-5.tgz",
       "integrity": "sha512-IyzdfqRDK8r1ulp/jbLPX18AuO+n5yNtL0+4T0QEUsgArRqIl/VRCG1imA5mYJBk0cBNC5+fWDHN+HWEW62ZEQ==",
+      "extraneous": true,
       "funding": [
         {
           "type": "patreon",
@@ -23803,6 +23806,7 @@
       "version": "0.26.2",
       "resolved": "https://registry.npmjs.org/react-reconciler/-/react-reconciler-0.26.2.tgz",
       "integrity": "sha512-nK6kgY28HwrMNwDnMui3dvm3rCFjZrcGiuwLc5COUipBK5hWHLOxMJhSnSomirqWwjPBJKV1QcbkI0VJr7Gl1Q==",
+      "extraneous": true,
       "dependencies": {
         "loose-envify": "^1.1.0",
         "object-assign": "^4.1.1",
@@ -40188,7 +40192,8 @@
     },
     "fiber-diagram": {
       "version": "git+ssh://git@github.com/gisce/fiber-diagram.git#c9efd7341ec91f41851185b658b658f7cd98aa81",
-      "from": "fiber-diagram@github:gisce/fiber-diagram",
+      "extraneous": true,
+      "from": "git+ssh://git@github.com/gisce/fiber-diagram.git#c9efd7341ec91f41851185b658b658f7cd98aa81",
       "requires": {
         "konva": "^8.3.1",
         "react-konva": "^17.0.2-5"
@@ -44484,7 +44489,8 @@
     "konva": {
       "version": "8.3.2",
       "resolved": "https://registry.npmjs.org/konva/-/konva-8.3.2.tgz",
-      "integrity": "sha512-vWi51qFTFkEIp+HxMek1eH1fA1zFo0DPD3uqUez+v2gy/IfZF2eLu9DcEj7Exk532hxfHJi/2oZ0GQYHlhg/dQ=="
+      "integrity": "sha512-vWi51qFTFkEIp+HxMek1eH1fA1zFo0DPD3uqUez+v2gy/IfZF2eLu9DcEj7Exk532hxfHJi/2oZ0GQYHlhg/dQ==",
+      "extraneous": true
     },
     "lazy-cache": {
       "version": "1.0.4",
@@ -47687,6 +47693,7 @@
       "version": "17.0.2-5",
       "resolved": "https://registry.npmjs.org/react-konva/-/react-konva-17.0.2-5.tgz",
       "integrity": "sha512-IyzdfqRDK8r1ulp/jbLPX18AuO+n5yNtL0+4T0QEUsgArRqIl/VRCG1imA5mYJBk0cBNC5+fWDHN+HWEW62ZEQ==",
+      "extraneous": true,
       "requires": {
         "react-reconciler": "~0.26.2",
         "scheduler": "^0.20.2"
@@ -47696,6 +47703,7 @@
           "version": "0.26.2",
           "resolved": "https://registry.npmjs.org/react-reconciler/-/react-reconciler-0.26.2.tgz",
           "integrity": "sha512-nK6kgY28HwrMNwDnMui3dvm3rCFjZrcGiuwLc5COUipBK5hWHLOxMJhSnSomirqWwjPBJKV1QcbkI0VJr7Gl1Q==",
+          "extraneous": true,
           "requires": {
             "loose-envify": "^1.1.0",
             "object-assign": "^4.1.1",
