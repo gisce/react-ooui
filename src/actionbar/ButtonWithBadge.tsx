@@ -23,8 +23,8 @@ function ButtonWithBadge(props: Props) {
               borderRadius: "50%",
               fontSize: "12px",
               textAlign: "center",
-              background: token.colorPrimaryBg,
-              color: token.colorPrimaryHover,
+              background: token.colorPrimaryHover,
+              color: token.colorPrimaryBg,
             }}
           >
             {badgeNumber}
