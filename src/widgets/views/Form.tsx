@@ -1062,7 +1062,7 @@ function Form(props: FormProps, ref: any) {
     >
       {({ measureRef }) => (
         <div className="pb-2" ref={measureRef}>
-          {error && <ErrorAlert className="mt-10 mb-20" error={error} />}
+          {error && <ErrorAlert className="mt-5 mb-10" error={error} />}
           {content()}
           {showFooter && footer()}
         </div>
