@@ -1,5 +1,4 @@
-import FileType from "file-type/browser";
-import { Buffer } from "buffer";
+import { fileTypeFromBuffer } from "file-type-buffer-browser";
 
 export function getFilesize(base64string: string) {
   const buffer = Buffer.from(base64string, "base64");
@@ -8,7 +7,7 @@ export function getFilesize(base64string: string) {
 }
 
 export async function getMimeType(base64string: string) {
-  const mimeInfo = await FileType.fromBuffer(
+  const mimeInfo = await fileTypeFromBuffer(
     Buffer.from(base64string, "base64")
   );
   if (!mimeInfo) {
