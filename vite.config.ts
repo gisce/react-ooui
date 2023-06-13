@@ -11,7 +11,9 @@ export default defineConfig({
     },
   },
   plugins: [
-    peerDepsExternal(),
+    peerDepsExternal({
+      includeDependencies: true,
+    }),
     react(),
     dts({
       insertTypesEntry: true,
@@ -27,29 +29,7 @@ export default defineConfig({
       fileName: (format) => `react-ooui.${format}.js`,
     },
     rollupOptions: {
-      external: [
-        "buffer",
-        "react",
-        "react-dom",
-        "styled-components",
-        "antd",
-        "@ant-design/icons",
-        "@ant-design/plots",
-        "@gisce/ooui",
-        "@gisce/react-formiga-table",
-        "@gisce/react-formiga-components",
-        "@monaco-editor/react",
-        "fiber-diagram",
-        "file-type",
-        "react-markdown",
-        "react-grid-layout",
-        "react-hotkeys-hook",
-        "react-measure",
-        "@tabler/icons-react",
-        "use-deep-compare-effect",
-        "validator",
-        "interweave",
-      ],
+      external: ["@ant-design/icons", "uuid", "lodash", "moment"],
       output: {
         globals: {
           react: "React",
