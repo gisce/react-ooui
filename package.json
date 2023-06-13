@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "1.2.0-rc.86",
+  "version": "1.2.0-rc.87",
   "files": [
     "dist",
     "src",
@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@ant-design/plots": "^1.0.9",
+    "@gisce/fiber-diagram": "^1.0.1",
     "@gisce/ooui": "^0.20.0",
     "@gisce/react-formiga-components": "^1.0.9-rc.21",
     "@gisce/react-formiga-table": "^0.5.0",
@@ -39,7 +40,6 @@
     "@tabler/icons-react": "^2.11.0",
     "antd": "^5.5.2",
     "buffer": "^6.0.3",
-    "@gisce/fiber-diagram": "^1.0.1",
     "file-type-buffer-browser": "git+ssh://git@github.com/mguellsegarra/file-type-buffer-browser.git",
     "interweave": "^13.0.0",
     "react": "^17.0.1",
@@ -49,6 +49,7 @@
     "react-markdown": "^8.0.7",
     "react-measure": "^2.5.2",
     "use-deep-compare-effect": "^1.8.1",
+    "uuid": "^3.4.0",
     "validator": "^13.6.0"
   },
   "devDependencies": {
