@@ -1,15 +1,15 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "1.2.0-rc.92",
+  "version": "1.2.0-rc.93",
   "lockfileVersion": 2,
   "requires": true,
   "packages": {
     "": {
       "name": "@gisce/react-ooui",
-      "version": "1.2.0-rc.92",
+      "version": "1.2.0-rc.93",
       "dependencies": {
         "@ant-design/plots": "^1.0.9",
-        "@gisce/fiber-diagram": "^1.1.0-rc.1",
+        "@gisce/fiber-diagram": "^1.1.0-rc.2",
         "@gisce/ooui": "^0.20.0",
         "@gisce/react-formiga-components": "^1.0.9-rc.21",
         "@gisce/react-formiga-table": "^0.5.0",
@@ -2708,9 +2708,9 @@
       "dev": true
     },
     "node_modules/@gisce/fiber-diagram": {
-      "version": "1.1.0-rc.1",
-      "resolved": "https://registry.npmjs.org/@gisce/fiber-diagram/-/fiber-diagram-1.1.0-rc.1.tgz",
-      "integrity": "sha512-/vmMi3GAjctqhJQyxxTk0EvRkiKCM9JrXzjO4bONYyClVxFgZSuK4bmi0Xq4i4B+yQcB30ru0E8uMlso9kTZXA==",
+      "version": "1.1.0-rc.2",
+      "resolved": "https://registry.npmjs.org/@gisce/fiber-diagram/-/fiber-diagram-1.1.0-rc.2.tgz",
+      "integrity": "sha512-2Ndy1dqgs6UijISZHTltRhgMt8NGedhMylvFHE6hA+4uZpLt01GSxttFj/uzt9ScMp2WNWa/5pE2OzSx4rFJ3A==",
       "dependencies": {
         "antd": "^5.5.2",
         "konva": "^8.3.1",
@@ -31526,9 +31526,9 @@
       "dev": true
     },
     "@gisce/fiber-diagram": {
-      "version": "1.1.0-rc.1",
-      "resolved": "https://registry.npmjs.org/@gisce/fiber-diagram/-/fiber-diagram-1.1.0-rc.1.tgz",
-      "integrity": "sha512-/vmMi3GAjctqhJQyxxTk0EvRkiKCM9JrXzjO4bONYyClVxFgZSuK4bmi0Xq4i4B+yQcB30ru0E8uMlso9kTZXA==",
+      "version": "1.1.0-rc.2",
+      "resolved": "https://registry.npmjs.org/@gisce/fiber-diagram/-/fiber-diagram-1.1.0-rc.2.tgz",
+      "integrity": "sha512-2Ndy1dqgs6UijISZHTltRhgMt8NGedhMylvFHE6hA+4uZpLt01GSxttFj/uzt9ScMp2WNWa/5pE2OzSx4rFJ3A==",
       "requires": {
         "antd": "^5.5.2",
         "konva": "^8.3.1",
