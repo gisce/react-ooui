@@ -69,7 +69,7 @@ export const ReferenceInput: React.FC<ReferenceInputProps> = (
             new SelectionOoui({
               name: "model_selection",
               selection: selectionValues,
-              readOnly,
+              readonly: readOnly,
               required,
             })
           }
@@ -95,7 +95,7 @@ export const ReferenceInput: React.FC<ReferenceInputProps> = (
             new Many2oneOoui({
               name: "object_value",
               relation: selectionValue,
-              readOnly,
+              readonly: readOnly,
               required,
             })
           }
