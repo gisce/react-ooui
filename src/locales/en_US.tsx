@@ -81,6 +81,10 @@ export default {
   openAttachmentLink: "Open attachment link",
   uninformed: "Uninformed",
   totalRegisters: "Total registers:",
+  export: "Export",
+  selectAtLeastOneField: "Select at least one field for the export",
+  printScreen: "Print screen",
+  advancedExport: "Advanced export",
   savedRegisters: "Record successfully saved",
   errorWhileSavingForm: "Error while saving form",
 };

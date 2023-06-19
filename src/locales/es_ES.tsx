@@ -85,6 +85,10 @@ export default {
   openAttachmentLink: "Abrir enlace del adjunto",
   uninformed: "Sin informar",
   totalRegisters: "Registros totales:",
+  export: "Exportar",
+  selectAtLeastOneField: "Selecciona al menos un campo para la exportación",
+  printScreen: "Imprimir pantalla",
+  advancedExport: "Exportación avanzada",
   savedRegisters: "Registro guardado correctamente",
   errorWhileSavingForm: "Error al guardar el formulario",
 };

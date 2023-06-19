@@ -11,6 +11,8 @@ import {
   ApiOutlined,
 } from "@ant-design/icons";
 import { ViewType } from "@/types";
+import { theme } from "antd";
+const { useToken } = theme;
 
 type One2manyTopBarProps = {
   title: string;
@@ -49,6 +51,7 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
     showCreateButton,
     showToggleButton,
   } = props;
+  const { token } = useToken();
 
   function separator() {
     return <div className="inline-block w-3" />;
@@ -56,7 +59,13 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
 
   function title() {
     return (
-      <div className="flex flex-grow h-8 text-gray-200 bg-gray-700">
+      <div
+        className="flex flex-grow h-8 text-white"
+        style={{
+          borderRadius: token.borderRadius,
+          backgroundColor: token.colorPrimaryActive,
+        }}
+      >
         <div className="flex flex-col items-center justify-center h-full">
           <span className="pl-2 font-bold">{titleString}</span>
         </div>

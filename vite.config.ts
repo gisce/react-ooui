@@ -31,10 +31,6 @@ export default defineConfig({
     rollupOptions: {
       external: ["@ant-design/icons", "uuid", "lodash", "moment"],
       output: {
-        assetFileNames: (assetInfo) => {
-          if (assetInfo.name == "style.css") return "main.css";
-          return assetInfo.name as any;
-        },
         globals: {
           react: "React",
           "react-dom": "ReactDOM",

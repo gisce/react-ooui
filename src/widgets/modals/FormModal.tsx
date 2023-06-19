@@ -96,12 +96,12 @@ export const FormModal = (props: FormModalProps) => {
   }
 
   return (
-    <FormModalProvider setTitle={setFormTitle}>
+    (<FormModalProvider setTitle={setFormTitle}>
       <Modal
         title={isMenuAction ? header() : formTitle}
         centered
         width={modalWidth}
-        visible={visible}
+        open={visible}
         footer={null}
         destroyOnClose
         onCancel={onCancel}
@@ -115,6 +115,6 @@ export const FormModal = (props: FormModalProps) => {
           {...rest}
         />
       </Modal>
-    </FormModalProvider>
+    </FormModalProvider>)
   );
 };

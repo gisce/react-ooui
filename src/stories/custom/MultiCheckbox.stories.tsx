@@ -3,7 +3,10 @@ import React from "react";
 import { MultiCheckboxInput } from "../../widgets/custom/MultiCheckbox";
 import { Checkbox, Space, Row, Col } from "antd";
 import { MultiCheckbox as MultiCheckboxOoui } from "@gisce/ooui";
-import "antd/dist/antd.css";
+
+// import "antd/dist/antd.css";
+
+
 import LocaleProvider from "../../context/LocaleContext";
 
 export default {

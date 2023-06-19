@@ -4,17 +4,18 @@ import styled from "styled-components";
 
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
-import Config from "@/Config";
+import { theme } from "antd";
+
+const { defaultAlgorithm, defaultSeed } = theme;
+
+const mapToken = defaultAlgorithm(defaultSeed);
 
 export const Boolean = (props: WidgetProps) => {
   const { ooui } = props;
   const { id, readOnly, required } = ooui;
 
   return (
-    <Field
-      {...props}
-      valuePropName="checked"
-    >
+    <Field {...props} valuePropName="checked">
       <BooleanInput id={id} readOnly={readOnly} required={required} />
     </Field>
   );
@@ -35,10 +36,10 @@ const BooleanInput = (props: any) => {
 
 const RequiredCheckbox = styled(AntCheckbox)`
   .ant-checkbox-inner {
-    background-color: ${Config.requiredColor};
+    background-color: ${mapToken.colorPrimaryBg};
   }
 
   .ant-checkbox-checked .ant-checkbox-inner {
-    background-color: #089cff;
+    background-color: ${mapToken.colorPrimary};
   }
 `;

@@ -1,5 +1,7 @@
 import React from "react";
 import ButtonWithTooltip, {Props as ButtonWithTooltipProps } from "@/common/ButtonWithTooltip";
+import { theme } from 'antd';
+const { useToken } = theme;
 
 type Props = ButtonWithTooltipProps & {
   badgeNumber?: number;
@@ -7,6 +9,7 @@ type Props = ButtonWithTooltipProps & {
 
 function ButtonWithBadge(props: Props) {
   const { badgeNumber = 0, ...restProps } = props;
+  const { token } = useToken();
 
   return (
     <div style={{ position: "relative" }}>
@@ -20,8 +23,8 @@ function ButtonWithBadge(props: Props) {
               borderRadius: "50%",
               fontSize: "12px",
               textAlign: "center",
-              background: "#1890FF",
-              color: "#fefefe",
+              background: token.colorPrimaryHover,
+              color: token.colorPrimaryBg,
             }}
           >
             {badgeNumber}

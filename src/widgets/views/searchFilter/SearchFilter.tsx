@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Form, Row, Col, Alert } from "antd";
+import { Form, Row, Col, Alert, theme } from "antd";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
 import {
@@ -15,6 +15,7 @@ import { SearchParams } from "./SearchParams";
 
 import { getParamsForFields } from "@/helpers/searchHelper";
 import Measure from "react-measure";
+const { useToken } = theme;
 
 type Props = {
   fields: any;
@@ -55,6 +56,7 @@ function SearchFilter(props: Props) {
   const [advancedSearchFields, setAdvancedSearchFields] = useState<Container>();
   const [advancedFilter, setAdvancedFilter] = useState(false);
   const sfo = useRef<SearchFilterOoui>();
+  const { token } = useToken();
 
   const [form] = Form.useForm();
 
@@ -118,7 +120,8 @@ function SearchFilter(props: Props) {
         <div ref={measureRef}>
           <div style={{ display: searchVisible ? "block" : "none" }}>
             <Form
-              className="p-3 rounded shadow-md bg-gray-50"
+              className="p-3 shadow-md"
+              style={{ borderRadius: token.borderRadius }}
               form={form}
               onFinish={onFinish}
               initialValues={{ offset, limit }}
