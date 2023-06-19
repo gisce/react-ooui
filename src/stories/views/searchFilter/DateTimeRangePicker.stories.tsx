@@ -3,7 +3,10 @@ import React from "react";
 import { Field as FieldOoui } from "@gisce/ooui";
 
 import { DateTimeRangePicker } from "../../../widgets/views/searchFilter/DateTimeRangePicker";
-import "antd/dist/antd.css";
+
+// import "antd/dist/antd.css";
+
+
 import LocaleProvider from "../../../context/LocaleContext";
 
 export default {

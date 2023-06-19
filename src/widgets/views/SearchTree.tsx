@@ -155,6 +155,8 @@ function SearchTree(props: Props, ref: any) {
       searchNameGetDoneRef.current = false;
       fetchResults();
     },
+    getFields: () => treeView?.fields,
+    getDomain: () => domain,
   }));
 
   useEffect(() => {

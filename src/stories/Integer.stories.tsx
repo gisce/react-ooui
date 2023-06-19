@@ -2,7 +2,10 @@ import React from "react";
 
 import { Integer } from "..";
 import { Integer as IntegerOoui } from "@gisce/ooui";
-import "antd/dist/antd.css";
+
+// import "antd/dist/antd.css";
+
+
 import LocaleProvider from "../context/LocaleContext";
 
 export default {

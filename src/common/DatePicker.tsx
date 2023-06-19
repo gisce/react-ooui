@@ -1,11 +1,11 @@
-import { DatePicker as AntDatePicker } from "antd";
+import { DatePicker as AntDatePicker, theme } from "antd";
 
 import React from "react";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
-import Config from "@/Config";
 import { Date as DateOoui } from "@gisce/ooui";
-import moment from "moment";
+import dayjs from "dayjs";
+const { useToken } = theme;
 
 type DatePickerProps = WidgetProps & {
   showTime?: boolean;
@@ -47,8 +47,12 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
 ) => {
   const { value, onChange, ooui, showTime } = props;
   const { id, readOnly, required } = ooui as DateOoui;
-  const requiredClass =
-    required && !readOnly ? Config.requiredClass : undefined;
+  const { token } = useToken();
+
+  const requiredStyle =
+    required && !readOnly
+      ? { backgroundColor: token.colorPrimaryBg }
+      : undefined;
 
   const mode = showTime ? "time" : "date";
 
@@ -66,15 +70,15 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
   };
 
   const showTimeParms = showTime
-    ? { defaultValue: moment("00:00:00", "HH:mm:ss") }
+    ? { defaultValue: dayjs("00:00:00", "HH:mm:ss") }
     : undefined;
   const dateValue = value
-    ? moment(value, DatePickerConfig[mode].dateInternalFormat)
+    ? dayjs(value, DatePickerConfig[mode].dateInternalFormat)
     : undefined;
 
   return (
     <AntDatePicker
-      style={{ width: "100%" }}
+      style={{ width: "100%", ...requiredStyle }}
       placeholder={
         showTime
           ? DatePickerConfig.time.placeholder
@@ -82,12 +86,12 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
       }
       disabled={readOnly}
       id={id}
+      picker={showTime ? "time" : "date"}
       showTime={showTimeParms}
-      className={requiredClass}
       format={DatePickerConfig[mode].dateDisplayFormat}
       value={dateValue}
       onChange={onValueStringChange}
-    ></AntDatePicker>
+    />
   );
 };
 

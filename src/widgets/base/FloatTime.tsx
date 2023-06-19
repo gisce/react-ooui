@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Input } from "antd";
+import { Input, theme } from "antd";
 import Field from "@/common/Field";
 import { Float as FloatOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
-import Config from "@/Config";
 import { parseFloatToString, parseStringToFloat } from "@/helpers/timeHelper";
 import { FormContext, FormContextType } from "@/context/FormContext";
+const { useToken } = theme;
 
 export const FloatTime = (props: WidgetProps) => {
   const { ooui } = props;
@@ -29,8 +29,11 @@ export const FloatTimeInput: React.FC<FloatTimeInputProps> = (
 ) => {
   const { ooui, value, onChange } = props;
   const { id, readOnly, required } = ooui as FloatOoui;
-  const requiredClass =
-    required && !readOnly ? Config.requiredClass : undefined;
+  const { token } = useToken();
+  const requiredStyle =
+    required && !readOnly
+      ? { backgroundColor: token.colorPrimaryBg }
+      : undefined;
   const inputTextRef = useRef<string>();
   const [inputText, setInputText] = useState<string>();
   const formContext = useContext(FormContext) as FormContextType;
@@ -59,7 +62,8 @@ export const FloatTimeInput: React.FC<FloatTimeInputProps> = (
     <Input
       value={inputText}
       disabled={readOnly}
-      className={"w-full " + requiredClass}
+      className={"w-full"}
+      style={requiredStyle}
       id={id}
       placeholder={"00:00"}
       onChange={onValueStringChange}

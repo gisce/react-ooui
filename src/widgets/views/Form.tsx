@@ -55,6 +55,8 @@ import {
   ContentRootContextType,
 } from "@/context/ContentRootContext";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { convertToPlain2ManyValues } from "@/helpers/one2manyHelper";
+import { ErrorAlert } from "@/ui/ErrorAlert";
 
 export type FormProps = {
   model: string;
@@ -403,13 +405,11 @@ function Form(props: FormProps, ref: any) {
     if (valuesProps) {
       values = valuesProps;
     } else {
-      ({
-        values,
-        defaultGetCalled: hasDefaultGetCalled,
-      } = await fetchValuesFromApi({
-        fields: _fields,
-        arch: _arch!,
-      }));
+      ({ values, defaultGetCalled: hasDefaultGetCalled } =
+        await fetchValuesFromApi({
+          fields: _fields,
+          arch: _arch!,
+        }));
     }
 
     if (actionDomain) {
@@ -455,15 +455,13 @@ function Form(props: FormProps, ref: any) {
 
   const getFormView = async (): Promise<FormView> => {
     if (getDataFromAction) {
-      const action = await ConnectionProvider.getHandler().getActionStringForModel(
-        model
-      );
-      const viewsForAction = await ConnectionProvider.getHandler().getViewsForAction(
-        {
+      const action =
+        await ConnectionProvider.getHandler().getActionStringForModel(model);
+      const viewsForAction =
+        await ConnectionProvider.getHandler().getViewsForAction({
           action,
           context: parentContext,
-        }
-      );
+        });
       return viewsForAction.views.get("form");
     }
 
@@ -635,6 +633,7 @@ function Form(props: FormProps, ref: any) {
 
       await fetchValues();
       submitSucceed = true;
+      message.success(t("savedRegisters"));
     } catch (err) {
       formSubmitting.current = false;
       setIsSubmitting(false);
@@ -664,10 +663,13 @@ function Form(props: FormProps, ref: any) {
     // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
     ooui.parse(arch, {
       readOnly,
-      values: {
-        ...values,
-        ...getAdditionalValues(),
-      },
+      values: convertToPlain2ManyValues(
+        {
+          ...values,
+          ...getAdditionalValues(),
+        },
+        fields
+      ),
     });
     setFormOoui(ooui);
 
@@ -949,7 +951,9 @@ function Form(props: FormProps, ref: any) {
     }
 
     try {
-      await submitForm({ callOnSubmitSucceed: false });
+      if (formHasChanges() || getCurrentId() === undefined) {
+        await submitForm({ callOnSubmitSucceed: false });
+      }
 
       if (type === "object") {
         await runObjectButton({ action, context });
@@ -1058,14 +1062,7 @@ function Form(props: FormProps, ref: any) {
     >
       {({ measureRef }) => (
         <div className="pb-2" ref={measureRef}>
-          {error && (
-            <Alert
-              className="mt-10 mb-20"
-              message={JSON.stringify(error)}
-              type="error"
-              banner
-            />
-          )}
+          {error && <ErrorAlert className="mt-5 mb-10" error={error} />}
           {content()}
           {showFooter && footer()}
         </div>

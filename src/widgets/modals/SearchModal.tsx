@@ -98,35 +98,33 @@ export const SearchModal = (props: SearchSelectionProps) => {
     );
   };
 
-  return (
-    <>
-      <Modal
-        title={t("search")}
-        centered
-        width={modalWidth}
-        visible={visible && !showCreateModal}
-        closable={true}
-        onCancel={onCloseModal}
-        footer={null}
-        destroyOnClose
-        maskClosable={false}
-      >
-        {content()}
-      </Modal>
-      <FormModal
-        model={model}
-        visible={showCreateModal}
-        parentContext={context}
-        onSubmitSucceed={(id?: number) => {
-          setShowCreateModal(false);
-          onCloseModal();
-          onSelectValues([id!]);
-        }}
-        onCancel={() => {
-          setShowCreateModal(false);
-          onCloseModal();
-        }}
-      />
-    </>
-  );
+  return (<>
+    <Modal
+      title={t("search")}
+      centered
+      width={modalWidth}
+      open={visible && !showCreateModal}
+      closable={true}
+      onCancel={onCloseModal}
+      footer={null}
+      destroyOnClose
+      maskClosable={false}
+    >
+      {content()}
+    </Modal>
+    <FormModal
+      model={model}
+      visible={showCreateModal}
+      parentContext={context}
+      onSubmitSucceed={(id?: number) => {
+        setShowCreateModal(false);
+        onCloseModal();
+        onSelectValues([id!]);
+      }}
+      onCancel={() => {
+        setShowCreateModal(false);
+        onCloseModal();
+      }}
+    />
+  </>);
 };

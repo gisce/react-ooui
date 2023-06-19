@@ -103,30 +103,28 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
     preloadAttachments();
   }, [preloadAttachments]);
 
-  return (
-    <>
-      <AttachmentsButtonWrapper
-        numberOfAttachments={attachments.length}
-        attachments={preloadedAttachments}
-        disabled={disabled}
-        loading={preloading}
-        onAddNewAttachment={onAddNewAttachment}
-        onListAllAttachments={onListAllAttachments}
-        onopenAttachmentLink={openAttachmentLink}
-        onOpenAttachmentDetail={openAttachmentDetail}
-      />
-      <Modal
-        title={t("downloadingAttachment")}
-        visible={downloading}
-        footer={null}
-        closable={false}
-        centered
-        maskClosable={false}
-      >
-        <Spin />
-      </Modal>
-    </>
-  );
+  return (<>
+    <AttachmentsButtonWrapper
+      numberOfAttachments={attachments.length}
+      attachments={preloadedAttachments}
+      disabled={disabled}
+      loading={preloading}
+      onAddNewAttachment={onAddNewAttachment}
+      onListAllAttachments={onListAllAttachments}
+      onopenAttachmentLink={openAttachmentLink}
+      onOpenAttachmentDetail={openAttachmentDetail}
+    />
+    <Modal
+      title={t("downloadingAttachment")}
+      open={downloading}
+      footer={null}
+      closable={false}
+      centered
+      maskClosable={false}
+    >
+      <Spin />
+    </Modal>
+  </>);
 }
 
 export default AttachmentsButton;

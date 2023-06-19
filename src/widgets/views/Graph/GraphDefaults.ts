@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 
 const formatter = (graphType: "pie" | "default" | "barGrouped") => {
   return (object: any) => {
@@ -24,7 +24,7 @@ const axisFormatter = (value: any) => {
     if (dateType === null) {
       return value;
     }
-    return moment(value, (dateFormats.input as any)[dateType]).format(
+    return dayjs(value, (dateFormats.input as any)[dateType]).format(
       (dateFormats.output as any)[dateType]
     );
   } else {
@@ -154,7 +154,7 @@ const dateFormats = {
 
 function getDateType(dateString: string): string | null {
   for (const format in dateFormats.input) {
-    const isValidFormat = moment(
+    const isValidFormat = dayjs(
       dateString,
       (dateFormats.input as any)[format],
       true

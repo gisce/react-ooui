@@ -1,4 +1,3 @@
-import "antd/dist/antd.css";
 import "@/tailwind.generated.css";
 import mockProvider from "../src/stories/mocks/mockProvider";
 

@@ -84,6 +84,10 @@ export default {
   openAttachmentLink: "Obrir enllaç de l'adjunt",
   uninformed: "Sense informar",
   totalRegisters: "Registres totals:",
+  export: "Exportar",
+  selectAtLeastOneField: "Selecciona almenys un camp per a l'exportació",
+  printScreen: "Imprimir pantalla",
+  advancedExport: "Exportació avançada",
   savedRegisters: "Registre guardat correctament",
   errorWhileSavingForm: "Error en guardar el formulari",
 };

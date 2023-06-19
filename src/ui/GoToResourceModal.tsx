@@ -20,10 +20,10 @@ export const GoToResourceModal = (props: Props) => {
   }
 
   return (
-    <Modal
+    (<Modal
       title={t("goToResourceId")}
       centered
-      visible={visible}
+      open={visible}
       footer={null}
       destroyOnClose
       onCancel={onCancel}
@@ -67,6 +67,6 @@ export const GoToResourceModal = (props: Props) => {
           </Col>
         </Row>
       </Form>
-    </Modal>
+    </Modal>)
   );
 };
