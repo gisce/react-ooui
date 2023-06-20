@@ -41,7 +41,7 @@ function Tab(props: TabProps) {
     >
       <div
         style={{
-          color: isActive ? token.colorPrimaryActive : token.colorPrimaryBorder,
+          color: isActive ? token.colorPrimaryActive : token.colorPrimaryBorderHover,
           userSelect: "none",
           height: 40,
           display: "flex",
@@ -68,7 +68,7 @@ function Tab(props: TabProps) {
           style={{
             color: isActive
               ? token.colorPrimaryActive
-              : token.colorPrimaryBorder,
+              : token.colorPrimaryBorderHover,
           }}
           onClick={(e) => {
             e.stopPropagation();
