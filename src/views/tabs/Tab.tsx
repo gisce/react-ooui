@@ -41,7 +41,7 @@ function Tab(props: TabProps) {
     >
       <div
         style={{
-          color: isActive ? token.colorPrimaryActive : token.colorPrimaryBorder,
+          color: token.colorPrimaryActive,
           userSelect: "none",
           height: 40,
           display: "flex",
@@ -50,6 +50,7 @@ function Tab(props: TabProps) {
           paddingLeft: 5,
           paddingRight: 5,
           marginBottom: 2,
+          fontWeight: isActive ? 500 : "normal",
         }}
       >
         {label}
@@ -66,9 +67,7 @@ function Tab(props: TabProps) {
       >
         <CloseOutlined
           style={{
-            color: isActive
-              ? token.colorPrimaryActive
-              : token.colorPrimaryBorder,
+            color: token.colorPrimaryActive,
           }}
           onClick={(e) => {
             e.stopPropagation();
