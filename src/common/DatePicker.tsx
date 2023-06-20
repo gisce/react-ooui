@@ -6,6 +6,10 @@ import { WidgetProps } from "@/types";
 import { Date as DateOoui } from "@gisce/ooui";
 import dayjs from "dayjs";
 const { useToken } = theme;
+import weekday from "dayjs/plugin/weekday";
+import localeData from "dayjs/plugin/localeData";
+dayjs.extend(weekday);
+dayjs.extend(localeData);
 
 type DatePickerProps = WidgetProps & {
   showTime?: boolean;
