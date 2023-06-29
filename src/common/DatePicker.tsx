@@ -73,9 +73,6 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
     triggerChange(momentDate.format(DatePickerConfig[mode].dateInternalFormat));
   };
 
-  const showTimeParms = showTime
-    ? { defaultValue: dayjs("00:00:00", "HH:mm:ss") }
-    : undefined;
   const dateValue = value
     ? dayjs(value, DatePickerConfig[mode].dateInternalFormat)
     : undefined;
@@ -91,7 +88,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
       disabled={readOnly}
       id={id}
       picker={"date"}
-      showTime={showTimeParms}
+      showTime={showTime}
       format={DatePickerConfig[mode].dateDisplayFormat}
       value={dateValue}
       onChange={onValueStringChange}
