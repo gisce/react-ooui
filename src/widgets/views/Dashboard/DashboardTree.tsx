@@ -85,8 +85,6 @@ function DashboardTree(props: Props) {
         context: parentContext,
         attrs: colors && { colors },
       });
-    const totalItemsResult = await totalItems;
-    setTotalItems(totalItemsResult);
     setColorsForResults(getColorMap(attrsEvaluated));
 
     const resultsSorted = sortResults({
@@ -94,8 +92,11 @@ function DashboardTree(props: Props) {
       sorter: sorter,
       fields: { ...treeView!.fields, ...formView!.fields },
     });
+    setTableRefreshing(false);
 
     setResults(resultsSorted);
+    const totalItemsResult = await totalItems;
+    setTotalItems(totalItemsResult);
   };
 
   const fetchResults = async () => {
@@ -104,8 +105,6 @@ function DashboardTree(props: Props) {
       await searchResults();
     } catch (error) {
       setSearchError(JSON.stringify(error));
-    } finally {
-      setTableRefreshing(false);
     }
   };
 
