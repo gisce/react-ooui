@@ -255,7 +255,7 @@ function Tree(props: Props): React.ReactElement {
     }
 
     return loading ? null : total === undefined ? (
-      <Spin />
+      <Spin className="pb-4" />
     ) : (
       <Row align="bottom" className="pb-4">
         <Col span={12}>
