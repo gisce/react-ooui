@@ -34,6 +34,8 @@ import { GraphActionView } from "@/views/actionViews/GraphActionView";
 import { FormActionView } from "./actionViews/FormActionView";
 import { TreeActionView } from "./actionViews/TreeActionView";
 import { DashboardActionView } from "./actionViews/DashboardActionView";
+import { info } from "console";
+import { resolveViewInfoPromises } from "@/helpers/viewHelper";
 
 type Props = {
   domain: any;
@@ -138,27 +140,37 @@ function ActionView(props: Props, ref: any) {
 
     const viewDataRetrieved: View[] = [];
 
+    const getViewsPromises = [];
+
     for (const viewArray of views) {
       const [id, viewType] = viewArray;
-
-      let viewInfo;
-
-      try {
-        if (viewType !== "dashboard") {
-          viewInfo = await ConnectionProvider.getHandler().getView({
+      if (viewType !== "dashboard") {
+        getViewsPromises.push({
+          viewTuple: viewArray,
+          promise: ConnectionProvider.getHandler().getView({
             model,
             type: viewType,
             id,
             context,
-          });
-        }
-      } catch (err) {
-        console.error(
-          `${model} - ${viewType} - ${JSON.stringify(err, null, 2)}`
-        );
+          }),
+        });
+      } else {
+        getViewsPromises.push({
+          viewTuple: viewArray,
+        });
+      }
+    }
 
+    const viewsRetrieved = await resolveViewInfoPromises(getViewsPromises);
+
+    for (const view of viewsRetrieved) {
+      if (!view) {
         continue;
       }
+
+      const [, viewType] = view.viewTuple;
+
+      let viewInfo = view.info;
 
       switch (viewType) {
         case "dashboard": {

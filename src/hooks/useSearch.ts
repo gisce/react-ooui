@@ -148,7 +148,7 @@ export const useSearch = (opts: UseSearchOpts) => {
       setResults([]);
       setCurrentItemIndex?.(undefined);
     }
-
+    setTableRefreshing(false);
     searchNameGetDoneRef.current = true;
   }, [
     setResults,
@@ -211,6 +211,7 @@ export const useSearch = (opts: UseSearchOpts) => {
       } else {
         setCurrentItemIndex?.(undefined);
       }
+      setTableRefreshing(false);
 
       const totalItemsValue = await totalItems;
 
@@ -248,7 +249,6 @@ export const useSearch = (opts: UseSearchOpts) => {
       } catch (error) {
         setSearchError(error.message);
       } finally {
-        setTableRefreshing(false);
         setSearchFilterLoading(false);
         setTreeIsLoading?.(false);
       }
