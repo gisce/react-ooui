@@ -300,6 +300,7 @@ type ConnectionProviderType = {
 };
 
 type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar";
+type ViewTuple = [number | undefined, ViewType];
 
 export type {
   Strings,
@@ -335,4 +336,5 @@ export type {
   IsShortcutFavoriteOptions,
   ParseConditionRequest,
   TreeButOpenOptions,
+  ViewTuple,
 };
