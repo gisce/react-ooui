@@ -15,6 +15,7 @@ import {
   Float,
   Date,
   DateTime,
+  Time,
   One2many,
   Separator,
   Form,
@@ -75,6 +76,8 @@ const getWidgetType = (type: string) => {
       return Date;
     case "datetime":
       return DateTime;
+    case "time":
+      return Time;
     case "one2many":
     case "one2many_list":
     case "many2many":

@@ -5,13 +5,17 @@ import { Time as TimeOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import dayjs from "dayjs";
 import { Dayjs } from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 
-export const Time = (props: WidgetProps) => {
+
+dayjs.extend(customParseFormat)
+
+const Time = (props: WidgetProps) => {
   const { ooui } = props;
 
   return (
     <Field {...props}>
-      <TimeInput ooui={ooui as FloatOoui} />
+      <TimeInput ooui={ooui as TimeOoui} />
     </Field>
   );
 };
@@ -26,10 +30,12 @@ export const TimeInput = (props: TimeInputProps) => {
 
   const onChange = (time: Dayjs | null, timestring: string) => {
     if (props.onChange) {
-      props.onChange(time ?.format('HH:mm:ss'))
+      props.onChange(timestring)
     }
   }
 
-  return <TimePicker onChange={onChange} value={props.value ? dayjs(props.value, 'HH:mm:ss') : null} />
+  return <TimePicker onChange={onChange} value={props.value ? dayjs(props.value, 'HH:mm:ss') : undefined} />
 
 }
+
+export default Time;
