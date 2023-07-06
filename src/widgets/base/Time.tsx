@@ -1,0 +1,35 @@
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { TimePicker, theme } from "antd";
+import Field from "@/common/Field";
+import { Time as TimeOoui } from "@gisce/ooui";
+import { WidgetProps } from "@/types";
+import dayjs from "dayjs";
+import { Dayjs } from 'dayjs';
+
+export const Time = (props: WidgetProps) => {
+  const { ooui } = props;
+
+  return (
+    <Field {...props}>
+      <TimeInput ooui={ooui as FloatOoui} />
+    </Field>
+  );
+};
+
+type TimeInputProps = {
+  ooui: TimeOoui;
+  value?: string;
+  onChange?: (value?: string) => void;
+}
+
+export const TimeInput = (props: TimeInputProps) => {
+
+  const onChange = (time: Dayjs | null, timestring: string) => {
+    if (props.onChange) {
+      props.onChange(time ?.format('HH:mm:ss'))
+    }
+  }
+
+  return <TimePicker onChange={onChange} value={props.value ? dayjs(props.value, 'HH:mm:ss') : null} />
+
+}
