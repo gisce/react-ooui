@@ -307,7 +307,6 @@ function SearchTree(props: Props, ref: any) {
           searchVisible={searchVisible}
           searchValues={searchValues}
         />
-        {tableRefreshing && <Spin />}
         <Tree
           context={parentContext}
           total={totalItems}
@@ -316,7 +315,7 @@ function SearchTree(props: Props, ref: any) {
           treeView={treeView}
           results={getResults()}
           onRequestPageChange={requestPageChange}
-          loading={false}
+          loading={tableRefreshing}
           onRowClicked={onRowClickedHandler}
           scrollY={treeScrollY || calculateTableHeight()}
           colorsForResults={colorsForResults}

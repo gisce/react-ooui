@@ -115,27 +115,27 @@ const imageComponent = (value: string): React.ReactElement => {
 };
 
 const TagComponent = (
-value: any,
+  value: any,
   key: string,
   ooui: any,
   context: any
 ): React.ReactElement => {
   return (
     <>
-      {value ? <Tag color={ooui.colors[value]}>{ooui.selectionValues.get(value)}</Tag> : null}
+      {value ? (
+        <Tag color={ooui.colors[value]}>{ooui.selectionValues.get(value)}</Tag>
+      ) : null}
     </>
   );
 };
 
 const SelectionComponent = (
-value: any,
+  value: any,
   key: string,
   ooui: any,
   context: any
 ): React.ReactElement => {
-  return (
-    <>{ooui.selectionValues.get(value)}</>
-  );
+  return <>{ooui.selectionValues.get(value)}</>;
 };
 
 const referenceComponent = (
@@ -155,9 +155,12 @@ const referenceComponent = (
   );
 };
 
-const AvatarFn = (value: any, key:string, ooui: any, context: any): React.ReactElement => (
-  <Avatar ooui={ooui} value={value} />
-)
+const AvatarFn = (
+  value: any,
+  key: string,
+  ooui: any,
+  context: any
+): React.ReactElement => <Avatar ooui={ooui} value={value} />;
 
 function Tree(props: Props): React.ReactElement {
   const {
@@ -307,9 +310,7 @@ function Tree(props: Props): React.ReactElement {
       summary.push(`${sumField.label}: ${Math.round(total * 100) / 100}`);
     });
 
-    return (
-      <div className="p-1 pb-0 pl-2 mt-2 ">{summary.join(", ")}</div>
-    );
+    return <div className="p-1 pb-0 pl-2 mt-2 ">{summary.join(", ")}</div>;
   }
 
   let dataTable;
@@ -332,11 +333,12 @@ function Tree(props: Props): React.ReactElement {
   ) : (
     <div>
       {pagination()}
+      {loading && <Spin className="pb-4" />}
       <GisceTable
         height={adjustedHeight!}
         columns={dataTable.columns}
         dataSource={items}
-        loading={loading}
+        loading={false}
         loadingComponent={<Spin />}
         onRowStyle={(record: any) => {
           if (colorsForResults![record.id]) {
