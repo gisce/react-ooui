@@ -23,6 +23,7 @@ import { ExportModal } from "@/widgets/modals/ExportModal";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import Date from "@/widgets/base/Date";
 import DateTime from "@/widgets/base/DateTime";
+import Time from "@/widgets/base/Time";
 import type {
   One2manyValue,
   One2manyItem,
@@ -122,6 +123,7 @@ export {
   One2manyValue,
   Date,
   DateTime,
+  Time,
   Reference,
   Binary,
   iconMapper,
