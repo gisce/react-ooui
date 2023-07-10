@@ -181,9 +181,9 @@ function SearchTree(props: Props, ref: any) {
       setInitialFetchDone(true);
     } catch (error) {
       setInitialError(error);
+      setTreeIsLoading?.(false);
     } finally {
       setIsLoading(false);
-      setTreeIsLoading?.(false);
     }
   };
 
