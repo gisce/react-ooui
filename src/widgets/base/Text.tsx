@@ -38,7 +38,10 @@ const Text = (props: Props) => {
       ) : (
         <TextArea
           disabled={readOnly || translatable}
-          style={{ height: height ? height + "px" : "100%", ...requiredStyle }}
+          style={{
+            minHeight: height ? height + "px" : "100%",
+            ...requiredStyle,
+          }}
           rows={4}
           onBlur={elementHasLostFocus}
         />
