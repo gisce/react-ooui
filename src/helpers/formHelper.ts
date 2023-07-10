@@ -248,6 +248,7 @@ export const transformPlainMany2Ones = ({
 
 export const colorFromString = (text: string) => {
   let hash = 0;
+  text = text.toString().padEnd(10, '0');
   for (let i = 0; i < text.length; i++) {
     hash = text.charCodeAt(i) + ((hash << 5) - hash);
   }
@@ -257,4 +258,48 @@ export const colorFromString = (text: string) => {
     hexColour += ('00' + value.toString(16)).slice(-2);
   }
   return hexColour;
+}
+
+export const colorTextFromBackground = (color: string) => {
+  function getRGB(c: string): number {
+    return parseInt(c, 16) || parseInt(c)
+  }
+
+  function getsRGB(c: string ) {
+    return getRGB(c) / 255 <= 0.03928
+      ? getRGB(c) / 255 / 12.92
+      : Math.pow((getRGB(c) / 255 + 0.055) / 1.055, 2.4)
+  }
+
+  function getLuminance(hexColor: string) {
+    return (
+      0.2126 * getsRGB(hexColor.substr(1, 2)) +
+      0.7152 * getsRGB(hexColor.substr(3, 2)) +
+      0.0722 * getsRGB(hexColor.substr(-2))
+    )
+  }
+
+  function getContrast(f: string, b: string) {
+    const L1 = getLuminance(f)
+    const L2 = getLuminance(b)
+    return (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05)
+  }
+
+  function getTextColor(bgColor: string) {
+    const whiteContrast = getContrast(bgColor, '#ffffff')
+    const blackContrast = getContrast(bgColor, '#000000')
+
+    return whiteContrast > blackContrast ? '#ffffff' : '#000000'
+  }
+
+  return getTextColor(color);
+
+}
+
+export const colorsFromString = (text: string): any => {
+  const backgroundColor = colorFromString(text)
+  return {
+    backgroundColor,
+    textColor: colorTextFromBackground(backgroundColor)
+  }
 }
