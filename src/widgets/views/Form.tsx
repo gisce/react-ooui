@@ -80,6 +80,7 @@ export type FormProps = {
   rootForm?: boolean;
   defaultValues?: any;
   forcedValues?: any;
+  parentWidth?: number;
 };
 
 const WIDTH_BREAKPOINT = 800;
@@ -107,6 +108,7 @@ function Form(props: FormProps, ref: any) {
     rootForm = false,
     defaultValues,
     forcedValues = {},
+    parentWidth,
   } = props;
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
 
@@ -126,7 +128,9 @@ function Form(props: FormProps, ref: any) {
   const warningIsShown = useRef<boolean>(false);
   const formSubmitting = useRef<boolean>(false);
 
-  const responsiveBehaviour = containerWidth < WIDTH_BREAKPOINT;
+  const widthToEvaluate =
+    parentWidth !== undefined ? parentWidth : containerWidth;
+  const responsiveBehaviour = widthToEvaluate < WIDTH_BREAKPOINT;
 
   const formContext = useContext(FormContext) as FormContextType;
   const { activeId: parentId, getPlainValues: getParentPlainValues } =
