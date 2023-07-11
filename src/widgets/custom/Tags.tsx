@@ -6,7 +6,7 @@ import { One2manyItem, One2manyValue } from "../base/one2many/One2manyInput";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { Alert, Tag as AntTag, Select } from "antd";
-import { colorFromString, transformPlainMany2Ones } from "@/helpers/formHelper";
+import { colorsFromString, transformPlainMany2Ones } from "@/helpers/formHelper";
 import ConnectionProvider from "@/ConnectionProvider";
 
 type TagsProps = WidgetProps & {
@@ -126,11 +126,12 @@ export const TagsInput = (props: TagsInputProps) => {
       event.preventDefault();
       event.stopPropagation();
     };
+    const colors = colorsFromString(label);
     return (
       <AntTag
-        color={colorFromString(label)}
+        color={colors.backgroundColor}
         onMouseDown={onPreventMouseDown}
-        style={{ margin: "5px" }}
+        style={{ margin: "5px", color: colors.textColor }}
         closable={closable}
         onClose={onClose}
       >
