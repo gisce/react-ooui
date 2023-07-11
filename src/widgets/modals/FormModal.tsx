@@ -95,8 +95,9 @@ export const FormModal = (props: FormModalProps) => {
     );
   }
 
+  const contentWidth = modalWidth * 0.95;
   return (
-    (<FormModalProvider setTitle={setFormTitle}>
+    <FormModalProvider setTitle={setFormTitle}>
       <Modal
         title={isMenuAction ? header() : formTitle}
         centered
@@ -112,9 +113,10 @@ export const FormModal = (props: FormModalProps) => {
           showFooter={true}
           insideButtonModal={buttonModal}
           onCancel={onCancel}
+          parentWidth={contentWidth}
           {...rest}
         />
       </Modal>
-    </FormModalProvider>)
+    </FormModalProvider>
   );
 };
