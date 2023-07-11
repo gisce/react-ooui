@@ -46,6 +46,7 @@ type Props = {
   childField?: string;
   rootTree?: boolean;
   context?: any;
+  readonly?: boolean;
 };
 
 const booleanComponentFn = (value: boolean): React.ReactElement => {
@@ -176,6 +177,7 @@ function Tree(props: Props): React.ReactElement {
     childField,
     rootTree = false,
     context,
+    readonly,
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
@@ -345,6 +347,7 @@ function Tree(props: Props): React.ReactElement {
         onRowSelectionChange={rowSelection?.onChange}
         onChangeSort={onChangeSort}
         sorter={sorter}
+        readonly={readonly}
         expandableOpts={
           onFetchChildrenForRecord
             ? {
