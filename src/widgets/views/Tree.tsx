@@ -24,6 +24,7 @@ import { Many2oneTree } from "../base/many2one/Many2oneTree";
 import { ReferenceTree } from "../base/ReferenceTree";
 import dayjs from "dayjs";
 import Avatar from "../custom/Avatar";
+import { TagInput } from "../custom/Tag";
 import { DatePickerConfig } from "@/common/DatePicker";
 
 type Props = {
@@ -120,11 +121,7 @@ value: any,
   ooui: any,
   context: any
 ): React.ReactElement => {
-  return (
-    <>
-      {value ? <Tag color={ooui.colors[value]}>{ooui.selectionValues.get(value)}</Tag> : null}
-    </>
-  );
+  return <TagInput ooui={ooui} value={value} />
 };
 
 const SelectionComponent = (
