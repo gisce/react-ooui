@@ -387,6 +387,7 @@ function Form(props: FormProps, ref: any) {
   type FetchValuesOptions = {
     fields?: any;
     arch?: string;
+    forceRefresh?: boolean;
   };
 
   const fetchValues = async (options?: FetchValuesOptions) => {
@@ -398,7 +399,7 @@ function Form(props: FormProps, ref: any) {
     setFormIsLoading?.(true);
     setError(undefined);
 
-    if (options) {
+    if (options?.fields) {
       _fields = options.fields;
       _arch = options.arch;
     } else {
@@ -406,7 +407,7 @@ function Form(props: FormProps, ref: any) {
       _arch = arch;
     }
 
-    if (valuesProps) {
+    if (valuesProps && options?.forceRefresh !== true) {
       values = valuesProps;
     } else {
       ({ values, defaultGetCalled: hasDefaultGetCalled } =
@@ -635,7 +636,7 @@ function Form(props: FormProps, ref: any) {
         assignNewValuesToForm({ values: {}, fields, reset: true });
       }
 
-      await fetchValues();
+      await fetchValues({ forceRefresh: true });
       submitSucceed = true;
       message.success(t("savedRegisters"));
     } catch (err) {
@@ -866,7 +867,7 @@ function Form(props: FormProps, ref: any) {
         context: { ...context, ...responseContext },
       });
     } else {
-      await fetchValues();
+      await fetchValues({ forceRefresh: true });
     }
   }
 
@@ -880,7 +881,7 @@ function Form(props: FormProps, ref: any) {
     if (response.type && response.type === "ir.actions.act_window_close") {
       onSubmitSucceed?.(getCurrentId(), getValues(), getFormValues());
     } else {
-      await fetchValues();
+      await fetchValues({ forceRefresh: true });
     }
   }
 
@@ -920,7 +921,7 @@ function Form(props: FormProps, ref: any) {
           ...context,
         },
         onRefreshParentValues: () => {
-          fetchValues();
+          fetchValues({ forceRefresh: true });
         },
       })) || {};
 
