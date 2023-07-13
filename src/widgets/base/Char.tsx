@@ -136,7 +136,7 @@ const TranslatableChar = ({
             onChange?.(event.target.value);
           }}
           onBlur={elementHasLostFocus}
-          style={{ cursor: "pointer", ...requiredStyle }}
+          style={{ cursor: "pointer", pointerEvents: "none", ...requiredStyle }}
         />
       </div>
       <TranslationModal
