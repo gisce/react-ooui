@@ -85,7 +85,7 @@ const TranslatableText = ({
             }}
             style={{
               height: height ? height + "px" : "100%",
-              ...requiredStyle
+              ...requiredStyle,
             }}
             id={field}
             rows={4}
@@ -133,7 +133,8 @@ const TranslatableText = ({
           style={{
             height: height ? height + "px" : "100%",
             cursor: "pointer",
-            ...requiredStyle
+            pointerEvents: "none",
+            ...requiredStyle,
           }}
           id={field}
           disabled={true}
