@@ -1,6 +1,6 @@
 import { mergeParams } from "@/helpers/searchHelper";
 import {
-  getColorMap,
+  getColorMap, getStatusMap,
   getTableItems,
   getTree,
   sortResults,
@@ -72,6 +72,7 @@ export const useSearch = (opts: UseSearchOpts) => {
   const [totalItems, setTotalItems] = useState<number>();
   const [resultsInternal, setResultsInternal] = useState<any>([]);
   const [colorsForResults, setColorsForResults] = useState<any>(undefined);
+  const [statusForResults, setStatusForResults] = useState<any>(undefined);
   const internalLimit = useRef(limit || DEFAULT_SEARCH_LIMIT);
 
   const originalResults = useRef<any[]>([]);
@@ -105,7 +106,8 @@ export const useSearch = (opts: UseSearchOpts) => {
         return item?.[0];
       });
 
-      const { colors } = getTree(treeView!);
+      const { colors, status } = getTree(treeView!);
+      console.log(colors, status);
 
       const resultsWithData =
         await ConnectionProvider.getHandler().readEvalUiObjects({
@@ -116,8 +118,9 @@ export const useSearch = (opts: UseSearchOpts) => {
             ? { ...treeView!.fields, [treeView!.field_parent]: {} }
             : treeView!.fields,
           context,
-          attrs: colors && {
+          attrs: {
             colors,
+            status,
           },
         });
       const resultsData = resultsWithData[0];
@@ -125,6 +128,7 @@ export const useSearch = (opts: UseSearchOpts) => {
       originalResults.current = [...resultsData];
 
       setColorsForResults(getColorMap(resultsWithData[1]));
+      setStatusForResults(getStatusMap(resultsWithData[1]));
 
       const newResultIds = resultsData.map((item: any) => item.id);
 
@@ -169,7 +173,7 @@ export const useSearch = (opts: UseSearchOpts) => {
       const { params, newOffset } = opts || {};
 
       const mergedParams = mergeParams(params || searchParams, domain);
-      const { colors } = getTree(treeView!);
+      const { colors, status } = getTree(treeView!);
 
       const { totalItems, results, attrsEvaluated } =
         await ConnectionProvider.getHandler().searchForTree({
@@ -181,9 +185,10 @@ export const useSearch = (opts: UseSearchOpts) => {
             ? { ...treeView!.fields, [treeView!.field_parent]: {} }
             : treeView!.fields,
           context,
-          attrs: colors && { colors },
+          attrs: { colors, status },
         });
       setColorsForResults(getColorMap(attrsEvaluated));
+      setStatusForResults(getStatusMap(attrsEvaluated));
 
       originalResults.current = [...results];
 
@@ -400,6 +405,7 @@ export const useSearch = (opts: UseSearchOpts) => {
     changeSort,
     fetchChildrenForRecord,
     colorsForResults,
+    statusForResults,
     totalItems,
   };
 };

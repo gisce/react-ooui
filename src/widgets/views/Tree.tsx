@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Pagination, Checkbox, Space, Row, Col, Spin, Tag } from "antd";
+import { Pagination, Checkbox, Space, Row, Col, Spin, Tag, Badge } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
 
@@ -344,6 +344,12 @@ function Tree(props: Props): React.ReactElement {
             return { color: colorsForResults![record.id] };
           }
           return undefined;
+        }}
+        onRowStatus={(record: any) => {
+          if (statusForResults![record.id]) {
+            return <Badge color={statusForResults[record.id]}/>
+          }
+          return undefined
         }}
         onRowDoubleClick={onRowClicked}
         onRowSelectionChange={rowSelection?.onChange}
