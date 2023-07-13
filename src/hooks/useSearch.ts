@@ -107,7 +107,13 @@ export const useSearch = (opts: UseSearchOpts) => {
       });
 
       const { colors, status } = getTree(treeView!);
-      console.log(colors, status);
+      const attrs: any = {};
+      if (colors) {
+        attrs.colors = colors;
+      }
+      if (status) {
+        attrs.status = status;
+      }
 
       const resultsWithData =
         await ConnectionProvider.getHandler().readEvalUiObjects({
@@ -118,10 +124,7 @@ export const useSearch = (opts: UseSearchOpts) => {
             ? { ...treeView!.fields, [treeView!.field_parent]: {} }
             : treeView!.fields,
           context,
-          attrs: {
-            colors,
-            status,
-          },
+          attrs,
         });
       const resultsData = resultsWithData[0];
 
@@ -173,7 +176,14 @@ export const useSearch = (opts: UseSearchOpts) => {
       const { params, newOffset } = opts || {};
 
       const mergedParams = mergeParams(params || searchParams, domain);
-      const { colors, status } = getTree(treeView!);
+      const { colors, status } = getTree(treeView!);      const attrs: any = {};
+      if (colors) {
+        attrs.colors = colors;
+      }
+      if (status) {
+        attrs.status = status;
+      }
+
 
       const { totalItems, results, attrsEvaluated } =
         await ConnectionProvider.getHandler().searchForTree({
@@ -185,7 +195,7 @@ export const useSearch = (opts: UseSearchOpts) => {
             ? { ...treeView!.fields, [treeView!.field_parent]: {} }
             : treeView!.fields,
           context,
-          attrs: { colors, status },
+          attrs,
         });
       setColorsForResults(getColorMap(attrsEvaluated));
       setStatusForResults(getStatusMap(attrsEvaluated));
