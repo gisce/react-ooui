@@ -123,6 +123,7 @@ function SearchTree(props: Props, ref: any) {
     changeSort,
     fetchChildrenForRecord,
     colorsForResults,
+    statusForResults,
     totalItems,
   } = useSearch({
     model: currentModel!,
@@ -319,6 +320,7 @@ function SearchTree(props: Props, ref: any) {
           onRowClicked={onRowClickedHandler}
           scrollY={treeScrollY || calculateTableHeight()}
           colorsForResults={colorsForResults}
+          statusForResults={statusForResults}
           rowSelection={{
             selectedRowKeys: selectedRowItems?.map((item) => item.id),
             onChange: changeSelectedRowKeys,
