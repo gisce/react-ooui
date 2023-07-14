@@ -99,6 +99,10 @@ Default.args = {
       progressbar: 20.01,
     },
   ],
+  colorsForResults: {
+    32: "red",
+    33: "red"
+  },
   treeView: {
     arch:
       `<tree string="Partners">\n<field name="numeric" sum="Numeric"/><field name="user_id" widget="avatar"/><field name="name"/>\n                    <field name="title" widget="tag" widget_props="{'colors': {'corp': 'red', 'ltd': 'green'}}"/>\n                    <field name="ref"/>\n                    <field name="city" select="2"/>\n                    <field name="country" select="2"/>\n                    <field name="lang"/>\n <field name="progressbar" string="Progress" />               </tree>`,

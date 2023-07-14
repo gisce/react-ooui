@@ -6,6 +6,7 @@ import {
   Reference,
 } from "@gisce/ooui";
 import { TreeView, Column } from "@/types";
+import {object} from "@storybook/addon-knobs";
 
 const getTree = (treeView: TreeView): TreeOoui => {
   const xml = treeView.arch;
@@ -121,12 +122,20 @@ function convertBooleansToNumeric({
 }
 
 function getColorMap(colorsValue: any) {
-  if (!colorsValue) {
-    return undefined;
+  return getItemsAttributes(colorsValue, "colors");
+}
+
+function getStatusMap(values: any){
+  return getItemsAttributes(values, "status");
+}
+
+function getItemsAttributes(attributes: object[], attribute: string) {
+  if (!attributes) {
+    return undefined
   }
   const map: any = {};
-  colorsValue.forEach((colorEntry: any) => {
-    map[colorEntry.id] = colorEntry.colors;
+  attributes.forEach((entry: any) => {
+    map[entry.id] = entry[attribute];
   });
   return map;
 }
@@ -179,5 +188,6 @@ export {
   convertBooleansToNumeric,
   itemHasBooleans,
   getColorMap,
+  getStatusMap,
   sortResults,
 };
