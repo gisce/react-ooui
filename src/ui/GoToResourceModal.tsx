@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef } from "react";
 import { Button, Col, Form, InputNumber, Modal, Row, Space } from "antd";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
@@ -15,6 +15,8 @@ export const GoToResourceModal = (props: Props) => {
 
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
+  const inputRef = useRef<null | HTMLElement>();
+
   function handleSubmit(values: any) {
     onIdSubmitted(values.id);
   }
@@ -28,6 +30,7 @@ export const GoToResourceModal = (props: Props) => {
       destroyOnClose
       onCancel={onCancel}
       maskClosable={false}
+      afterOpenChange={(open) => open && inputRef.current?.focus()}
     >
       <Form layout="vertical" onFinish={handleSubmit} autoComplete="off">
         <Form.Item
@@ -40,7 +43,7 @@ export const GoToResourceModal = (props: Props) => {
             },
           ]}
         >
-          <InputNumber style={{ width: "100%" }} autoFocus />
+          <InputNumber style={{ width: "100%" }} autoFocus ref={inputRef as any}/>
         </Form.Item>
         <Row align="middle" justify="end">
           <Col>
