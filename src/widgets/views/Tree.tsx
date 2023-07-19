@@ -69,7 +69,7 @@ const many2OneComponentFn = (m2oField: any): React.ReactElement => {
 };
 
 const textComponentFn = (value: any): React.ReactElement => {
-  return <Interweave content={value?.replace(/(?:\r\n|\r|\n)/g, "<br>")} />;
+  return <Interweave content={value?.toString().replace(/(?:\r\n|\r|\n)/g, "<br>")} />;
 };
 
 const dateComponentFn = (value: any): React.ReactElement => {
