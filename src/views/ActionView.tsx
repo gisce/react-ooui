@@ -95,7 +95,7 @@ function ActionView(props: Props, ref: any) {
     useState<boolean>(false);
   const [searchTreeNameSearch, setSearchTreeNameSearch] = useState<string>();
 
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = (useContext(LocaleContext) as LocaleContextType) || {};
 
   const formRef = useRef();
   const searchTreeRef = useRef();

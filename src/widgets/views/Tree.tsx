@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Pagination, Checkbox, Space, Row, Col, Spin, Tag, Badge } from "antd";
 import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
@@ -69,7 +75,11 @@ const many2OneComponentFn = (m2oField: any): React.ReactElement => {
 };
 
 const textComponentFn = (value: any): React.ReactElement => {
-  return <Interweave content={value?.toString().replace(/(?:\r\n|\r|\n)/g, "<br>")} />;
+  return (
+    <Interweave
+      content={value?.toString().replace(/(?:\r\n|\r|\n)/g, "<br>")}
+    />
+  );
 };
 
 const dateComponentFn = (value: any): React.ReactElement => {
@@ -104,8 +114,8 @@ const floatTimeComponent = (value: number): React.ReactElement => {
   return <>{parseFloatToString(value)}</>;
 };
 
-const numberComponent = (value: number): React.ReactElement => {
-  return <div style={{ textAlign: "right" }}>{value}</div>;
+const numberComponent = (value: any): React.ReactElement => {
+  return <div style={{ textAlign: "right" }}>{JSON.stringify(value)}</div>;
 };
 
 const imageComponent = (value: string): React.ReactElement => {
@@ -118,23 +128,21 @@ const imageComponent = (value: string): React.ReactElement => {
 };
 
 const TagComponent = (
-value: any,
+  value: any,
   key: string,
   ooui: any,
   context: any
 ): React.ReactElement => {
-  return <TagInput ooui={ooui} value={value} />
+  return <TagInput ooui={ooui} value={value} />;
 };
 
 const SelectionComponent = (
-value: any,
+  value: any,
   key: string,
   ooui: any,
   context: any
 ): React.ReactElement => {
-  return (
-    <>{ooui.selectionValues.get(value)}</>
-  );
+  return <>{ooui.selectionValues.get(value)}</>;
 };
 
 const referenceComponent = (
@@ -154,9 +162,12 @@ const referenceComponent = (
   );
 };
 
-const AvatarFn = (value: any, key:string, ooui: any, context: any): React.ReactElement => (
-  <Avatar ooui={ooui} value={value} />
-)
+const AvatarFn = (
+  value: any,
+  key: string,
+  ooui: any,
+  context: any
+): React.ReactElement => <Avatar ooui={ooui} value={value} />;
 
 function Tree(props: Props): React.ReactElement {
   const {
@@ -204,22 +215,22 @@ function Tree(props: Props): React.ReactElement {
     const columns = getTableColumns(
       treeOoui.current,
       {
-        boolean: booleanComponentFn,
-        many2one: many2OneComponentFn,
-        text: textComponentFn,
-        one2many: one2ManyComponentFn,
-        many2many: one2ManyComponentFn,
-        progressbar: progressBarComponentFn,
-        float_time: floatTimeComponent,
-        image: imageComponent,
+        boolean: numberComponent,
+        many2one: numberComponent,
+        text: numberComponent,
+        one2many: numberComponent,
+        many2many: numberComponent,
+        progressbar: numberComponent,
+        float_time: numberComponent,
+        image: numberComponent,
         integer: numberComponent,
         float: numberComponent,
-        reference: referenceComponent,
-        tag: TagComponent,
-        selection: SelectionComponent,
-        date: dateComponentFn,
-        datetime: dateTimeComponentFn,
-        avatar: AvatarFn,
+        reference: numberComponent,
+        tag: numberComponent,
+        selection: numberComponent,
+        date: numberComponent,
+        datetime: numberComponent,
+        avatar: numberComponent,
       },
       context
     );
@@ -308,9 +319,7 @@ function Tree(props: Props): React.ReactElement {
       summary.push(`${sumField.label}: ${Math.round(total * 100) / 100}`);
     });
 
-    return (
-      <div className="p-1 pb-0 pl-2 mt-2 ">{summary.join(", ")}</div>
-    );
+    return <div className="p-1 pb-0 pl-2 mt-2 ">{summary.join(", ")}</div>;
   }
 
   let dataTable;
@@ -328,6 +337,26 @@ function Tree(props: Props): React.ReactElement {
     }
   }
 
+  const onRowStyle = useCallback(
+    (record: any) => {
+      if (colorsForResults![record.id]) {
+        return { color: colorsForResults![record.id] };
+      }
+      return undefined;
+    },
+    [colorsForResults]
+  );
+
+  const onRowStatus = useCallback(
+    (record: any) => {
+      if (statusForResults![record.id]) {
+        return <Badge color={statusForResults[record.id]} />;
+      }
+      return undefined;
+    },
+    [statusForResults]
+  );
+
   return treeOoui.current === null ? (
     <Spin style={{ padding: "2rem" }} />
   ) : (
@@ -339,18 +368,8 @@ function Tree(props: Props): React.ReactElement {
         dataSource={items}
         loading={loading}
         loadingComponent={<Spin />}
-        onRowStyle={(record: any) => {
-          if (colorsForResults![record.id]) {
-            return { color: colorsForResults![record.id] };
-          }
-          return undefined;
-        }}
-        onRowStatus={(record: any) => {
-          if (statusForResults![record.id]) {
-            return <Badge color={statusForResults[record.id]}/>
-          }
-          return undefined
-        }}
+        onRowStyle={onRowStyle}
+        onRowStatus={onRowStatus}
         onRowDoubleClick={onRowClicked}
         onRowSelectionChange={rowSelection?.onChange}
         onChangeSort={onChangeSort}

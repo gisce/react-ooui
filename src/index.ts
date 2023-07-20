@@ -81,6 +81,8 @@ import CurrentTabContent from "./views/CurrentTabContent";
 import ContentRootProvider from "./context/ContentRootContext";
 import FavouriteButton from "./ui/FavouriteButton";
 import { ConfigContext } from "./context/ConfigContext";
+import Tab from "./views/tabs/Tab";
+import ActionView from "./views/ActionView";
 
 export {
   Button,
@@ -159,4 +161,6 @@ export {
   CodeEditor,
   ExportModal,
   ConfigContext,
+  Tab,
+  ActionView,
 };
