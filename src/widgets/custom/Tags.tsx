@@ -5,9 +5,10 @@ import { WidgetProps } from "@/types";
 import { One2manyItem, One2manyValue } from "../base/one2many/One2manyInput";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { FormContext, FormContextType } from "@/context/FormContext";
-import { Alert, Tag as AntTag, Select } from "antd";
-import { colorsFromString, transformPlainMany2Ones } from "@/helpers/formHelper";
+import { Alert, Select } from "antd";
+import { colorFromString, transformPlainMany2Ones } from "@/helpers/formHelper";
 import ConnectionProvider from "@/ConnectionProvider";
+import { CustomTag } from "@/widgets/custom/Tag";
 
 type TagsProps = WidgetProps & {
   ooui: TagsOoui;
@@ -126,17 +127,17 @@ export const TagsInput = (props: TagsInputProps) => {
       event.preventDefault();
       event.stopPropagation();
     };
-    const colors = colorsFromString(label);
+    const color = colorFromString(label);
     return (
-      <AntTag
-        color={colors.backgroundColor}
+      <CustomTag
+        color={color}
         onMouseDown={onPreventMouseDown}
-        style={{ margin: "5px", color: colors.textColor }}
         closable={closable}
         onClose={onClose}
+        closeIcon={<span style={{color}}>X</span>}
       >
         {label}
-      </AntTag>
+      </CustomTag>
     );
   };
 

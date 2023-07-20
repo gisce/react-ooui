@@ -1,9 +1,9 @@
 import React from "react";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
-import { Tag as AntdTag } from 'antd';
-import { isPresetStatusColor } from 'antd/lib/_util/colors'
-import { colorFromString, colorTextFromBackground } from "@/helpers/formHelper";
+import { Tag as AntdTag, TagProps } from 'antd';
+import { isPresetStatusColor, isPresetColor } from 'antd/lib/_util/colors'
+import { colorFromString } from "@/helpers/formHelper";
 
 export const Tag = (props: WidgetProps) => {
   return (
@@ -28,6 +28,22 @@ export const TagInput = (props: any) => {
   }
   const color = ooui.colors === "auto" ? colorFromString(colorValue) : ooui.colors[colorValue] || colorFromString(colorValue);
   return (
-    <AntdTag color={color} style={isPresetStatusColor(color) ? {} : {color: colorTextFromBackground(color)}}>{formattedValue}</AntdTag>
+    <CustomTag color={color}>{formattedValue}</CustomTag>
   );
+}
+
+
+export const CustomTag = (props: TagProps) => {
+  let { color } = props;
+  let style = {}
+  if (!isPresetStatusColor(props.color) && !isPresetColor(props.color)) {
+    style = {
+      color: color,
+      borderColor: color,
+      borderStyle: "solid",
+      borderWidth: "1px",
+    }
+    color = `${color}20`;
+  }
+  return <AntdTag {...props} style={style} color={color}>{props.children}</AntdTag>
 }
