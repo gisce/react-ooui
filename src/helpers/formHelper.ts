@@ -295,11 +295,3 @@ export const colorTextFromBackground = (color: string) => {
   return getTextColor(color);
 
 }
-
-export const colorsFromString = (text: string): any => {
-  const backgroundColor = colorFromString(text)
-  return {
-    backgroundColor,
-    textColor: colorTextFromBackground(backgroundColor)
-  }
-}
