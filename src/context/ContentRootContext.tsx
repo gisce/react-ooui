@@ -17,7 +17,7 @@ import {
 } from "@/context/TabManagerContext";
 import { FormModal } from "@/widgets/modals/FormModal";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
-import { transformPlainMany2Ones } from "@/helpers/formHelper";
+import { transformPlainMany2Ones, stringFormat } from "@/helpers/formHelper";
 
 export type ContentRootContextType = {
   processAction: ({
@@ -182,7 +182,9 @@ const ContentRootProvider = (
         context,
       });
     } else if (type === "ir.actions.act_window") {
-      return await runAction({ actionData, fields, values, context });
+      return await runAction({actionData, fields, values, context});
+    } else if (type === "ir.actions.act_url") {
+      window.open(stringFormat(actionData.url, {...values, context}), "_blank");
     } else {
       showErrorDialog(`${type} action not supported`);
       return {};
