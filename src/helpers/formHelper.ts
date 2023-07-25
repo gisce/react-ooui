@@ -295,3 +295,8 @@ export const colorTextFromBackground = (color: string) => {
   return getTextColor(color);
 
 }
+
+
+export const stringFormat = (text: string, values: any): string => {
+  return text.replace(/\{([^}]+)\}/g, (match, key)  => values[key] !== undefined ? values[key] : match);
+}

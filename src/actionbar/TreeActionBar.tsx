@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Space } from "antd";
+import { Space, Spin } from "antd";
 import ChangeViewButton from "./ChangeViewButton";
 import {
   ActionViewContext,
@@ -151,6 +151,13 @@ function TreeActionBar(props: Props) {
 
   return (
     <Space wrap={true}>
+      {treeIsLoading && (
+        <>
+          <Spin />
+          {separator()}
+          {separator()}
+        </>
+      )}
       {treeExpandable ? null : (
         <>
           <SearchBar

@@ -362,11 +362,12 @@ function Tree(props: Props): React.ReactElement {
   ) : (
     <div>
       {pagination()}
+      {loading && <Spin className="pb-4" />}
       <GisceTable
         height={adjustedHeight!}
         columns={dataTable.columns}
         dataSource={items}
-        loading={loading}
+        loading={false}
         loadingComponent={<Spin />}
         onRowStyle={onRowStyle}
         onRowStatus={onRowStatus}
