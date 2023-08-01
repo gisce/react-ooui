@@ -69,7 +69,11 @@ const many2OneComponentFn = (m2oField: any): React.ReactElement => {
 };
 
 const textComponentFn = (value: any): React.ReactElement => {
-  return <Interweave content={value?.toString().replace(/(?:\r\n|\r|\n)/g, "<br>")} />;
+  return (
+    <Interweave
+      content={value?.toString().replace(/(?:\r\n|\r|\n)/g, "<br>")}
+    />
+  );
 };
 
 const dateComponentFn = (value: any): React.ReactElement => {
@@ -118,23 +122,21 @@ const imageComponent = (value: string): React.ReactElement => {
 };
 
 const TagComponent = (
-value: any,
+  value: any,
   key: string,
   ooui: any,
   context: any
 ): React.ReactElement => {
-  return <TagInput ooui={ooui} value={value} />
+  return <TagInput ooui={ooui} value={value} />;
 };
 
 const SelectionComponent = (
-value: any,
+  value: any,
   key: string,
   ooui: any,
   context: any
 ): React.ReactElement => {
-  return (
-    <>{ooui.selectionValues.get(value)}</>
-  );
+  return <>{ooui.selectionValues.get(value)}</>;
 };
 
 const referenceComponent = (
@@ -154,9 +156,12 @@ const referenceComponent = (
   );
 };
 
-const AvatarFn = (value: any, key:string, ooui: any, context: any): React.ReactElement => (
-  <Avatar ooui={ooui} value={value} />
-)
+const AvatarFn = (
+  value: any,
+  key: string,
+  ooui: any,
+  context: any
+): React.ReactElement => <Avatar ooui={ooui} value={value} />;
 
 function Tree(props: Props): React.ReactElement {
   const {
@@ -308,9 +313,7 @@ function Tree(props: Props): React.ReactElement {
       summary.push(`${sumField.label}: ${Math.round(total * 100) / 100}`);
     });
 
-    return (
-      <div className="p-1 pb-0 pl-2 mt-2 ">{summary.join(", ")}</div>
-    );
+    return <div className="p-1 pb-0 pl-2 mt-2 ">{summary.join(", ")}</div>;
   }
 
   let dataTable;
@@ -347,9 +350,9 @@ function Tree(props: Props): React.ReactElement {
         }}
         onRowStatus={(record: any) => {
           if (statusForResults![record.id]) {
-            return <Badge color={statusForResults[record.id]}/>
+            return <Badge color={statusForResults[record.id]} />;
           }
-          return undefined
+          return undefined;
         }}
         onRowDoubleClick={onRowClicked}
         onRowSelectionChange={rowSelection?.onChange}
