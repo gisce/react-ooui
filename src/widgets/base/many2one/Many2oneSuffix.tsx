@@ -20,6 +20,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { processValues } from "@/helpers/formHelper";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { parseContextFields, parseDomainFields } from "@gisce/ooui";
 
 type Props = {
   id: number;
@@ -52,6 +53,7 @@ export const Many2oneSuffix = (props: Props) => {
 
   async function fetchData() {
     setIsLoading(true);
+    console.log('Fetching!')
 
     try {
       const formView = await ConnectionProvider.getHandler().getView({
@@ -60,18 +62,29 @@ export const Many2oneSuffix = (props: Props) => {
         context,
       }) as FormView;
       setFormView(formView);
-      const { fields, arch } = formView;
+      let fields: string[] = [];
+      const { toolbar } = formView;
+      toolbar.action?.map((item: any) => fields.push(...parseContextFields(item.context)));
+      toolbar.relate?.map((item: any) => fields.push(...parseContextFields(item.context)));
+      toolbar.print?.map((item: any) => fields.push(...parseContextFields(item.context)));
+      console.log(fields);
+      fields = fields.filter((i) => Object.keys(formView.fields).indexOf(i) > -1)
 
-      const values = (
-        await ConnectionProvider.getHandler().readObjects({
-          model,
-          ids: [id],
-          fields,
-          context,
-        })
-      )[0];
+      let values = {}
 
-      setTargetValues({ ...processValues(values, fields), active_id: id });
+      if (fields.length > 0) {
+        values = (
+          await ConnectionProvider.getHandler().readObjects({
+            model,
+            ids: [id],
+            fields,
+            context,
+          })
+        )[0];
+      }
+      values = { ...processValues(values, fields), active_id: id };
+      setTargetValues(values);
+      console.log('Values', targetValues, values);
 
       setIsLoading(false);
     } catch (err) {
@@ -148,6 +161,8 @@ export const Many2oneSuffix = (props: Props) => {
       if (!relateItemClicked) {
         return;
       }
+
+      console.log(targetValues);
 
       openRelate({
         relateData: relateItemClicked,
