@@ -35,7 +35,7 @@
     "@gisce/fiber-diagram": "^1.1.0-rc.3",
     "@gisce/ooui": "^0.22.0",
     "@gisce/react-formiga-components": "^1.0.9-rc.21",
-    "@gisce/react-formiga-table": "^0.8.1",
+    "@gisce/react-formiga-table": "^0.8.3",
     "@monaco-editor/react": "^4.4.5",
     "@tabler/icons-react": "^2.11.0",
     "antd": "^5.5.2",
