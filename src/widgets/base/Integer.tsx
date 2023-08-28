@@ -27,7 +27,20 @@ export const Integer = (props: IntegerProps) => {
         className={"w-full "}
         disabled={readOnly}
         formatter={(value) => {
-          return `${value}`.replace(/[^0-9\-]+/g, "");
+          // Check if value is not undefined and is a valid number
+          if (
+            value === undefined ||
+            typeof value !== "number" ||
+            isNaN(value)
+          ) {
+            return "";
+          }
+
+          // Truncate the value to remove decimals
+          let truncatedValue = Math.trunc(value);
+
+          // Replace non-numeric and non-hyphen characters
+          return `${truncatedValue}`.replace(/[^0-9\-]+/g, "");
         }}
         onChange={(newValue: any) => {
           const newNumber = newValue as number;
