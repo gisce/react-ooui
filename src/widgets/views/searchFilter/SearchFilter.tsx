@@ -31,7 +31,6 @@ type Props = {
   searchError?: string;
   searchValues?: any;
   showLimitOptions?: boolean;
-  formXml: string;
 };
 
 function SearchFilter(props: Props) {
@@ -49,7 +48,6 @@ function SearchFilter(props: Props) {
     searchError,
     searchValues,
     showLimitOptions = true,
-    formXml,
   } = props;
 
   const [simpleSearchFields, setSimpleSearchFields] = useState<Container>();
@@ -89,7 +87,7 @@ function SearchFilter(props: Props) {
 
   useDeepCompareEffect(() => {
     setAdvancedFilter(false);
-    sfo.current = new SearchFilterOoui(searchFields, fields, formXml);
+    sfo.current = new SearchFilterOoui(searchFields, fields);
     sfo.current.parse();
     setSimpleSearchFields(sfo.current._simpleSearchContainer);
     setAdvancedSearchFields(sfo.current._advancedSearchContainer);

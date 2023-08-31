@@ -113,7 +113,6 @@ export const GraphActionView = (props: GraphActionViewProps) => {
           formView.search_fields,
           treeView.search_fields,
         ])}
-        formXml={formView.arch}
         limit={limit!}
         onClear={clear}
         offset={offset}
