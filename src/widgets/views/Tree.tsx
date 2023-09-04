@@ -1,6 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Pagination, Checkbox, Space, Row, Col, Spin, Tag, Badge } from "antd";
-import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
+import {
+  getTree,
+  getTableColumns,
+  getTableItems,
+  hasActualValues,
+} from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
 
 import { TreeView, Column } from "@/types";
@@ -69,7 +74,11 @@ const many2OneComponentFn = (m2oField: any): React.ReactElement => {
 };
 
 const textComponentFn = (value: any): React.ReactElement => {
-  return <Interweave content={value?.toString().replace(/(?:\r\n|\r|\n)/g, "<br>")} />;
+  return (
+    <Interweave
+      content={value?.toString().replace(/(?:\r\n|\r|\n)/g, "<br>")}
+    />
+  );
 };
 
 const dateComponentFn = (value: any): React.ReactElement => {
@@ -123,7 +132,7 @@ const TagComponent = (
   ooui: any,
   context: any
 ): React.ReactElement => {
-  return <TagInput ooui={ooui} value={value} />
+  return <TagInput ooui={ooui} value={value} />;
 };
 
 const SelectionComponent = (
@@ -345,12 +354,16 @@ function Tree(props: Props): React.ReactElement {
           }
           return undefined;
         }}
-        onRowStatus={(record: any) => {
-          if (statusForResults![record.id]) {
-            return <Badge color={statusForResults[record.id]}/>
-          }
-          return undefined
-        }}
+        onRowStatus={
+          hasActualValues(statusForResults)
+            ? (record: any) => {
+                if (statusForResults![record.id]) {
+                  return <Badge color={statusForResults[record.id]} />;
+                }
+                return undefined;
+              }
+            : undefined
+        }
         onRowDoubleClick={onRowClicked}
         onRowSelectionChange={rowSelection?.onChange}
         onChangeSort={onChangeSort}
