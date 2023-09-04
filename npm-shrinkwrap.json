@@ -1,18 +1,18 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "lockfileVersion": 2,
   "requires": true,
   "packages": {
     "": {
       "name": "@gisce/react-ooui",
-      "version": "1.4.6",
+      "version": "1.4.7",
       "dependencies": {
         "@ant-design/plots": "^1.0.9",
         "@gisce/fiber-diagram": "^1.1.0-rc.3",
         "@gisce/ooui": "^0.22.0",
         "@gisce/react-formiga-components": "^1.0.9-rc.21",
-        "@gisce/react-formiga-table": "^0.8.3",
+        "@gisce/react-formiga-table": "^0.8.4",
         "@monaco-editor/react": "^4.4.5",
         "@tabler/icons-react": "^2.11.0",
         "antd": "^5.5.2",
@@ -2751,9 +2751,9 @@
       }
     },
     "node_modules/@gisce/react-formiga-table": {
-      "version": "0.8.3",
-      "resolved": "https://registry.npmjs.org/@gisce/react-formiga-table/-/react-formiga-table-0.8.3.tgz",
-      "integrity": "sha512-Z2DZBYd+rCQHCVCAMYlOuTAWN8VZv+npJ3/fDqm26cfvIXwO6Z7cQU4pjbEGfRGzY4OkHvsQCpPu98lt8AUKcg==",
+      "version": "0.8.4",
+      "resolved": "https://registry.npmjs.org/@gisce/react-formiga-table/-/react-formiga-table-0.8.4.tgz",
+      "integrity": "sha512-R8FWd0VFM9g2iDH9xXv+54851fAu68T+NVcbEERZxUj5aH4MH8BmLfj/M4ghmS1mwWm/XLSGybKb5R6tg0iUkQ==",
       "dependencies": {
         "react": "^16.8.0 || 17.x",
         "react-dom": "^16.8.0 || 17.x",
@@ -31560,9 +31560,9 @@
       }
     },
     "@gisce/react-formiga-table": {
-      "version": "0.8.3",
-      "resolved": "https://registry.npmjs.org/@gisce/react-formiga-table/-/react-formiga-table-0.8.3.tgz",
-      "integrity": "sha512-Z2DZBYd+rCQHCVCAMYlOuTAWN8VZv+npJ3/fDqm26cfvIXwO6Z7cQU4pjbEGfRGzY4OkHvsQCpPu98lt8AUKcg==",
+      "version": "0.8.4",
+      "resolved": "https://registry.npmjs.org/@gisce/react-formiga-table/-/react-formiga-table-0.8.4.tgz",
+      "integrity": "sha512-R8FWd0VFM9g2iDH9xXv+54851fAu68T+NVcbEERZxUj5aH4MH8BmLfj/M4ghmS1mwWm/XLSGybKb5R6tg0iUkQ==",
       "requires": {
         "react": "^16.8.0 || 17.x",
         "react-dom": "^16.8.0 || 17.x",
