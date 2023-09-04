@@ -67,8 +67,13 @@ export type FormProps = {
   showFooter?: boolean;
   getDataFromAction?: boolean;
   mustClearAfterSave?: boolean;
-  submitMode?: "api" | "values";
-  onSubmitSucceed?: (id?: number, values?: any, formValues?: any) => void;
+  submitMode?: "api" | "values" | "2many";
+  onSubmitSucceed?: (
+    id?: number,
+    values?: any,
+    formValues?: any,
+    x2manyPendingLink?: boolean
+  ) => void;
   onSubmitError?: (error: any) => void;
   onCancel?: () => void;
   onFieldsChange?: (values: any) => void;
@@ -127,6 +132,7 @@ function Form(props: FormProps, ref: any) {
   const lastAssignedValues = useRef<any>({});
   const warningIsShown = useRef<boolean>(false);
   const formSubmitting = useRef<boolean>(false);
+  const x2manyPendingLink = useRef<boolean>(false);
 
   const widthToEvaluate =
     parentWidth !== undefined ? parentWidth : containerWidth;
@@ -203,10 +209,15 @@ function Form(props: FormProps, ref: any) {
     }
   }, [defaultGetCalled]);
 
-  const onSubmitSucceed = (id?: number, values?: any, formValues?: any) => {
+  const onSubmitSucceed = (
+    id?: number,
+    values?: any,
+    formValues?: any,
+    x2manyPendingLink?: boolean
+  ) => {
     setFormHasChanges?.(false);
     setFormIsSaving?.(false);
-    propsOnSubmitSucceed?.(id, values, formValues);
+    propsOnSubmitSucceed?.(id, values, formValues, x2manyPendingLink);
     setCurrentId?.(id);
   };
 
@@ -292,6 +303,15 @@ function Form(props: FormProps, ref: any) {
 
   function getContext() {
     return { ...parentContext, ...formOoui?.context };
+  }
+
+  function getActiveIdsContext() {
+    const currentId = getCurrentId()!;
+
+    if (!currentId) {
+      return {};
+    }
+    return { active_id: getCurrentId()!, active_ids: [getCurrentId()!] };
   }
 
   function getAdditionalValues() {
@@ -608,6 +628,32 @@ function Form(props: FormProps, ref: any) {
     formSubmitting.current = true;
 
     setError(undefined);
+
+    if (
+      x2manyPendingLink.current &&
+      !formHasChanges() &&
+      getCurrentId()! &&
+      callOnSubmitSucceed
+    ) {
+      formSubmitting.current = false;
+      setFormHasChanges?.(false);
+      onSubmitSucceed?.(
+        getCurrentId(),
+        getValues(),
+        getFormValues(),
+        x2manyPendingLink.current
+      );
+      x2manyPendingLink.current = false;
+      const currentId = getCurrentId()!;
+
+      if (mustClearAfterSave) {
+        createdId.current = undefined;
+        assignNewValuesToForm({ values: {}, fields, reset: true });
+      }
+
+      return { succeed: true, id: currentId };
+    }
+
     if (!formHasChanges() && getCurrentId()! && callOnSubmitSucceed) {
       formSubmitting.current = false;
       setFormHasChanges?.(false);
@@ -957,15 +1003,22 @@ function Form(props: FormProps, ref: any) {
 
     try {
       if (formHasChanges() || getCurrentId() === undefined) {
-        await submitForm({ callOnSubmitSucceed: false });
+        if (submitMode === "2many") {
+          await submitApi({ callOnSubmitSucceed: false });
+          x2manyPendingLink.current = true;
+        } else {
+          await submitForm({ callOnSubmitSucceed: false });
+        }
       }
 
+      const updatedContext = { ...context, ...getActiveIdsContext() };
+
       if (type === "object") {
-        await runObjectButton({ action, context });
+        await runObjectButton({ action, context: updatedContext });
       } else if (type === "workflow") {
         await runWorkflowButton({ action });
       } else if (type === "action") {
-        await runActionButton({ action, context });
+        await runActionButton({ action, context: updatedContext });
       }
     } catch (err) {
       showErrorDialog(err);
