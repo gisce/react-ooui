@@ -437,11 +437,19 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const onFormModalSubmitSucceed = (
     id: number | undefined,
     _: any,
-    values: any
+    values: any,
+    x2manyPendingLink: boolean = false
   ) => {
     let updatedItems: One2manyItem[];
 
-    if (id) {
+    if (x2manyPendingLink) {
+      updatedItems = items.concat({
+        id,
+        operation: "pendingLink",
+        values: { ...values, id },
+        treeValues: { ...values, id },
+      });
+    } else if (id) {
       updatedItems = items.map((item: One2manyItem) => {
         if (item.id === id) {
           return {
@@ -683,7 +691,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         formView={views.get("form")}
         model={relation}
         id={modalItem?.id}
-        submitMode={"values"}
+        submitMode={"2many"}
         values={modalItem?.values}
         defaultValues={modalItem?.defaultValues}
         visible={showFormModal}
