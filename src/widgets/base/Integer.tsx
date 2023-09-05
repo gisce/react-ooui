@@ -28,19 +28,19 @@ export const Integer = (props: IntegerProps) => {
         disabled={readOnly}
         formatter={(value) => {
           // Check if value is not undefined and is a valid number
-          if (
-            value === undefined ||
-            typeof value !== "number" ||
-            isNaN(value)
-          ) {
+          if (value === undefined) {
             return "";
           }
 
-          // Truncate the value to remove decimals
-          let truncatedValue = Math.trunc(value);
+          if (typeof value === "string" && !isNaN(parseFloat(value))) {
+            let truncatedValue = Math.trunc(parseFloat(value));
+            return `${truncatedValue}`.replace(/[^0-9\-]+/g, "");
+          } else if (typeof value === "number") {
+            let truncatedValue = Math.trunc(value);
+            return `${truncatedValue}`.replace(/[^0-9\-]+/g, "");
+          }
 
-          // Replace non-numeric and non-hyphen characters
-          return `${truncatedValue}`.replace(/[^0-9\-]+/g, "");
+          return "";
         }}
         onChange={(newValue: any) => {
           const newNumber = newValue as number;
