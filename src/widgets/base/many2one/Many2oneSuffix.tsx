@@ -53,7 +53,6 @@ export const Many2oneSuffix = (props: Props) => {
 
   async function fetchData() {
     setIsLoading(true);
-    console.log('Fetching!')
 
     try {
       const formView = await ConnectionProvider.getHandler().getView({
@@ -64,10 +63,11 @@ export const Many2oneSuffix = (props: Props) => {
       setFormView(formView);
       let fields: string[] = [];
       const { toolbar } = formView;
-      toolbar.action?.map((item: any) => fields.push(...parseContextFields(item.context)));
-      toolbar.relate?.map((item: any) => fields.push(...parseContextFields(item.context)));
-      toolbar.print?.map((item: any) => fields.push(...parseContextFields(item.context)));
-      console.log(fields);
+      toolbar.action?.filter((item: any) => item.hasOwnProperty('context')).map((item: any) => fields.push(...parseContextFields(item.context)));
+      toolbar.action?.filter((item: any) => item.hasOwnProperty('domain')).map((item: any) => fields.push(...parseDomainFields(item.domain)));
+      toolbar.relate?.filter((item: any) => item.hasOwnProperty('context')).map((item: any) => fields.push(...parseContextFields(item.context)));
+      toolbar.relate?.filter((item: any) => item.hasOwnProperty('domain')).map((item: any) => fields.push(...parseDomainFields(item.domain)));
+      toolbar.print?.filter((item: any) => item.hasOwnProperty('context')).map((item: any) => fields.push(...parseContextFields(item.context)));
       fields = fields.filter((i) => Object.keys(formView.fields).indexOf(i) > -1)
 
       let values = {}
@@ -77,7 +77,7 @@ export const Many2oneSuffix = (props: Props) => {
           await ConnectionProvider.getHandler().readObjects({
             model,
             ids: [id],
-            fields,
+            fieldsToRetrieve: fields,
             context,
           })
         )[0];
