@@ -12,7 +12,7 @@
         "@gisce/fiber-diagram": "^1.1.0-rc.3",
         "@gisce/ooui": "^0.22.2",
         "@gisce/react-formiga-components": "^1.0.9-rc.21",
-        "@gisce/react-formiga-table": "^0.8.5-rc.0",
+        "@gisce/react-formiga-table": "^0.8.5",
         "@monaco-editor/react": "^4.4.5",
         "@tabler/icons-react": "^2.11.0",
         "antd": "^5.5.2",
@@ -2751,9 +2751,9 @@
       }
     },
     "node_modules/@gisce/react-formiga-table": {
-      "version": "0.8.5-rc.0",
-      "resolved": "https://registry.npmjs.org/@gisce/react-formiga-table/-/react-formiga-table-0.8.5-rc.0.tgz",
-      "integrity": "sha512-YQINngNB74yaJKfE3Nfd8X9V4EhAhdT+1yeuddPQ+Nux57DBiVGhrDIideZh6Wm/ftJNVDaGRH6U0s82oUG7uA==",
+      "version": "0.8.5",
+      "resolved": "https://registry.npmjs.org/@gisce/react-formiga-table/-/react-formiga-table-0.8.5.tgz",
+      "integrity": "sha512-3vOvzzR9LyFBbQ/Aiq1WWnYwcAvzYtBJ3nVAuEUBDQIG9CHoXqfChArVOQ738Rf0flu5XEcB52xiQBLORuFvXg==",
       "dependencies": {
         "react": "^16.8.0 || 17.x",
         "react-dom": "^16.8.0 || 17.x",
@@ -31561,9 +31561,9 @@
       }
     },
     "@gisce/react-formiga-table": {
-      "version": "0.8.5-rc.0",
-      "resolved": "https://registry.npmjs.org/@gisce/react-formiga-table/-/react-formiga-table-0.8.5-rc.0.tgz",
-      "integrity": "sha512-YQINngNB74yaJKfE3Nfd8X9V4EhAhdT+1yeuddPQ+Nux57DBiVGhrDIideZh6Wm/ftJNVDaGRH6U0s82oUG7uA==",
+      "version": "0.8.5",
+      "resolved": "https://registry.npmjs.org/@gisce/react-formiga-table/-/react-formiga-table-0.8.5.tgz",
+      "integrity": "sha512-3vOvzzR9LyFBbQ/Aiq1WWnYwcAvzYtBJ3nVAuEUBDQIG9CHoXqfChArVOQ738Rf0flu5XEcB52xiQBLORuFvXg==",
       "requires": {
         "react": "^16.8.0 || 17.x",
         "react-dom": "^16.8.0 || 17.x",
