@@ -365,6 +365,7 @@ function Tree(props: Props): React.ReactElement {
             : undefined
         }
         onRowDoubleClick={onRowClicked}
+        selectionRowKeys={rowSelection?.selectedRowKeys}
         onRowSelectionChange={rowSelection?.onChange}
         onChangeSort={onChangeSort}
         sorter={sorter}
