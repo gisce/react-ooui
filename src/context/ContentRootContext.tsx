@@ -224,8 +224,8 @@ const ContentRootProvider = (
         : actionData.context;
 
     const mergedContext = {
-      ...responseContext,
       ...context,
+      ...responseContext,
     };
 
     let parsedDomain = [];

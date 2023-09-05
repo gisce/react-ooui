@@ -264,6 +264,7 @@ export const useSearch = (opts: UseSearchOpts) => {
       } catch (error) {
         setSearchError(error.message);
       } finally {
+        setSelectedRowItems?.([]);
         setSearchFilterLoading(false);
         setTreeIsLoading?.(false);
       }
@@ -293,6 +294,7 @@ export const useSearch = (opts: UseSearchOpts) => {
 
   const changeSort = useCallback(
     (newSorter: any) => {
+      if (JSON.stringify(newSorter) === JSON.stringify(sorter)) return;
       setSorter?.(newSorter);
       const sortedResults =
         newSorter !== undefined
