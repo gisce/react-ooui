@@ -128,7 +128,7 @@ function SearchTree(props: Props, ref: any) {
   } = useSearch({
     model: currentModel!,
     setSearchTreeNameSearch,
-    setSelectedRowItems,
+    setSelectedRowItems: changeSelectedRowKeys,
     setSearchParams,
     setSearchValues,
     searchParams,
