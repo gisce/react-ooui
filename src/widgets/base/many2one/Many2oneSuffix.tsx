@@ -84,7 +84,6 @@ export const Many2oneSuffix = (props: Props) => {
       }
       values = { ...processValues(values, fields), active_id: id };
       setTargetValues(values);
-      console.log('Values', targetValues, values);
 
       setIsLoading(false);
     } catch (err) {
@@ -161,8 +160,6 @@ export const Many2oneSuffix = (props: Props) => {
       if (!relateItemClicked) {
         return;
       }
-
-      console.log(targetValues);
 
       openRelate({
         relateData: relateItemClicked,
