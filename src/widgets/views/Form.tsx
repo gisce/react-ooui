@@ -879,9 +879,9 @@ function Form(props: FormProps, ref: any) {
       action,
       payload: [getCurrentId()!],
       context: {
-        ...context,
         ...formOoui?.context,
         ...parentContext,
+        ...context,
       },
     });
 
@@ -1011,7 +1011,11 @@ function Form(props: FormProps, ref: any) {
         }
       }
 
-      const updatedContext = { ...context, ...getActiveIdsContext() };
+      const additionalContext = x2manyPendingLink.current
+        ? getActiveIdsContext()
+        : {};
+
+      const updatedContext = { ...context, ...additionalContext };
 
       if (type === "object") {
         await runObjectButton({ action, context: updatedContext });
