@@ -20,6 +20,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { processValues } from "@/helpers/formHelper";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { parseContextFields, parseDomainFields } from "@gisce/ooui";
 
 type Props = {
   id: number;
@@ -60,18 +61,29 @@ export const Many2oneSuffix = (props: Props) => {
         context,
       }) as FormView;
       setFormView(formView);
-      const { fields, arch } = formView;
+      let fields: string[] = [];
+      const { toolbar } = formView;
+      toolbar.action?.filter((item: any) => item.hasOwnProperty('context')).map((item: any) => fields.push(...parseContextFields(item.context)));
+      toolbar.action?.filter((item: any) => item.hasOwnProperty('domain')).map((item: any) => fields.push(...parseDomainFields(item.domain)));
+      toolbar.relate?.filter((item: any) => item.hasOwnProperty('context')).map((item: any) => fields.push(...parseContextFields(item.context)));
+      toolbar.relate?.filter((item: any) => item.hasOwnProperty('domain')).map((item: any) => fields.push(...parseDomainFields(item.domain)));
+      toolbar.print?.filter((item: any) => item.hasOwnProperty('context')).map((item: any) => fields.push(...parseContextFields(item.context)));
+      fields = fields.filter((i) => Object.keys(formView.fields).indexOf(i) > -1)
 
-      const values = (
-        await ConnectionProvider.getHandler().readObjects({
-          model,
-          ids: [id],
-          fields,
-          context,
-        })
-      )[0];
+      let values = {}
 
-      setTargetValues({ ...processValues(values, fields), active_id: id });
+      if (fields.length > 0) {
+        values = (
+          await ConnectionProvider.getHandler().readObjects({
+            model,
+            ids: [id],
+            fieldsToRetrieve: fields,
+            context,
+          })
+        )[0];
+      }
+      values = { ...processValues(values, fields), active_id: id };
+      setTargetValues(values);
 
       setIsLoading(false);
     } catch (err) {
