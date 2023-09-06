@@ -128,7 +128,7 @@ function SearchTree(props: Props, ref: any) {
   } = useSearch({
     model: currentModel!,
     setSearchTreeNameSearch,
-    setSelectedRowItems,
+    setSelectedRowItems: changeSelectedRowKeys,
     setSearchParams,
     setSearchValues,
     searchParams,
@@ -291,12 +291,11 @@ function SearchTree(props: Props, ref: any) {
     return (
       <>
         <SearchFilter
-          fields={{ ...treeView.fields, ...formView.fields }}
+          fields={{ ...formView.fields, ...treeView.fields }}
           searchFields={mergeSearchFields([
             formView.search_fields,
             treeView.search_fields,
           ])}
-          formXml={formView.arch}
           onClear={clear}
           limit={limit}
           offset={offset}

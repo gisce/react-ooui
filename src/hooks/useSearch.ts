@@ -264,6 +264,7 @@ export const useSearch = (opts: UseSearchOpts) => {
       } catch (error) {
         setSearchError(error.message);
       } finally {
+        setSelectedRowItems?.([]);
         setSearchFilterLoading(false);
         setTreeIsLoading?.(false);
       }
