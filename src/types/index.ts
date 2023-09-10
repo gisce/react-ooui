@@ -251,52 +251,102 @@ type ExportDataOptions = {
 };
 
 type ConnectionProviderType = {
-  getActionStringForModel: (model: string) => Promise<string>;
-  getViewsForAction: ({
-    action,
-    context,
-  }: {
-    action: string;
-    context?: any;
-  }) => Promise<ViewData>;
+  getActionStringForModel: (
+    model: string,
+    requestConfig?: any
+  ) => Promise<string>;
+  getViewsForAction: (
+    {
+      action,
+      context,
+    }: {
+      action: string;
+      context?: any;
+    },
+    requestConfig?: any
+  ) => Promise<ViewData>;
   getView: (
-    options: GetViewRequest
+    options: GetViewRequest,
+    requestConfig?: any
   ) => Promise<FormView | TreeView | GraphView>;
-  getFields: (options: GetFieldsRequest) => Promise<any>;
-  searchAllIds: (options: SearchAllIdsRequest) => Promise<number[]>;
-  searchCount: (options: SearchCountRequest) => Promise<number>;
+  getFields: (options: GetFieldsRequest, requestConfig?: any) => Promise<any>;
+  searchAllIds: (
+    options: SearchAllIdsRequest,
+    requestConfig?: any
+  ) => Promise<number[]>;
+  searchCount: (
+    options: SearchCountRequest,
+    requestConfig?: any
+  ) => Promise<number>;
   search: (options: SearchRequest) => Promise<any[]>;
-  searchForTree: (options: SearchRequest) => Promise<SearchResponse>;
-  update: (options: UpdateObjectRequest) => Promise<any>;
-  create: (options: CreateObjectRequest) => Promise<any>;
-  deleteObjects: (options: DeleteObjectsRequest) => Promise<any>;
-  execute: (options: ExecuteRequest) => Promise<any>;
-  readObjects: (options: ReadObjectsRequest) => Promise<any>;
-  readEvalUiObjects: (options: ReadEvalUiObjectsRequest) => Promise<any>;
-  parseCondition: (options: ParseConditionRequest) => Promise<any>;
-  executeWorkflow: (options: ExecuteRequest) => Promise<any>;
-  createReport: (options: CreateReportRequest) => Promise<any>;
-  getReport: (options: GetReportRequest) => Promise<any>;
-  executeOnChange: (options: ExecuteOnChangeRequest) => Promise<any>;
-  defaultGet: (options: DefaultGetRequest) => Promise<any>;
-  getActionData: ({
-    action,
-    context,
-  }: {
-    action: string;
-    context?: any;
-  }) => Promise<any>;
-  nameSearch: (options: NameSearchRequest) => Promise<any>;
-  duplicate: (options: DuplicateRequest) => Promise<any>;
-  evalDomain: (options: EvalDomainRequest) => Promise<any>;
-  getLogInfo: (options: GetLogInfoRequest) => Promise<any>;
+  searchForTree: (
+    options: SearchRequest,
+    requestConfig?: any
+  ) => Promise<SearchResponse>;
+  update: (options: UpdateObjectRequest, requestConfig?: any) => Promise<any>;
+  create: (options: CreateObjectRequest, requestConfig?: any) => Promise<any>;
+  deleteObjects: (
+    options: DeleteObjectsRequest,
+    requestConfig?: any
+  ) => Promise<any>;
+  execute: (options: ExecuteRequest, requestConfig?: any) => Promise<any>;
+  readObjects: (
+    options: ReadObjectsRequest,
+    requestConfig?: any
+  ) => Promise<any>;
+  readEvalUiObjects: (
+    options: ReadEvalUiObjectsRequest,
+    requestConfig?: any
+  ) => Promise<any>;
+  parseCondition: (
+    options: ParseConditionRequest,
+    requestConfig?: any
+  ) => Promise<any>;
+  executeWorkflow: (
+    options: ExecuteRequest,
+    requestConfig?: any
+  ) => Promise<any>;
+  createReport: (
+    options: CreateReportRequest,
+    requestConfig?: any
+  ) => Promise<any>;
+  getReport: (options: GetReportRequest, requestConfig?: any) => Promise<any>;
+  executeOnChange: (
+    options: ExecuteOnChangeRequest,
+    requestConfig?: any
+  ) => Promise<any>;
+  defaultGet: (options: DefaultGetRequest, requestConfig?: any) => Promise<any>;
+  getActionData: (
+    {
+      action,
+      context,
+    }: {
+      action: string;
+      context?: any;
+    },
+    requestConfig?: any
+  ) => Promise<any>;
+  nameSearch: (options: NameSearchRequest, requestConfig?: any) => Promise<any>;
+  duplicate: (options: DuplicateRequest, requestConfig?: any) => Promise<any>;
+  evalDomain: (options: EvalDomainRequest, requestConfig?: any) => Promise<any>;
+  getLogInfo: (options: GetLogInfoRequest, requestConfig?: any) => Promise<any>;
   isShortcutFavorite: (
-    options: IsShortcutFavoriteOptions
+    options: IsShortcutFavoriteOptions,
+    requestConfig?: any
   ) => Promise<number | boolean>;
-  removeFavourite: ({ shortcut_id }: { shortcut_id: number }) => Promise<void>;
-  addFavourite: (options: IsShortcutFavoriteOptions) => Promise<void>;
-  treeButOpen: (options: TreeButOpenOptions) => Promise<any>;
-  exportData: (options: ExportDataOptions) => Promise<any>;
+  removeFavourite: (
+    { shortcut_id }: { shortcut_id: number },
+    requestConfig?: any
+  ) => Promise<void>;
+  addFavourite: (
+    options: IsShortcutFavoriteOptions,
+    requestConfig?: any
+  ) => Promise<void>;
+  treeButOpen: (
+    options: TreeButOpenOptions,
+    requestConfig?: any
+  ) => Promise<any>;
+  exportData: (options: ExportDataOptions, requestConfig?: any) => Promise<any>;
 };
 
 type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar";
