@@ -1,6 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Pagination, Checkbox, Space, Row, Col, Spin, Tag, Badge } from "antd";
-import { getTree, getTableColumns, getTableItems } from "@/helpers/treeHelper";
+import {
+  getTree,
+  getTableColumns,
+  getTableItems,
+  hasActualValues,
+} from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
 
 import { TreeView, Column } from "@/types";
@@ -348,13 +353,18 @@ function Tree(props: Props): React.ReactElement {
           }
           return undefined;
         }}
-        onRowStatus={(record: any) => {
-          if (statusForResults![record.id]) {
-            return <Badge color={statusForResults[record.id]} />;
-          }
-          return undefined;
-        }}
+        onRowStatus={
+          hasActualValues(statusForResults)
+            ? (record: any) => {
+                if (statusForResults![record.id]) {
+                  return <Badge color={statusForResults[record.id]} />;
+                }
+                return undefined;
+              }
+            : undefined
+        }
         onRowDoubleClick={onRowClicked}
+        selectionRowKeys={rowSelection?.selectedRowKeys}
         onRowSelectionChange={rowSelection?.onChange}
         onChangeSort={onChangeSort}
         sorter={sorter}

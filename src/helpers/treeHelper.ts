@@ -6,7 +6,6 @@ import {
   Reference,
 } from "@gisce/ooui";
 import { TreeView, Column } from "@/types";
-import {object} from "@storybook/addon-knobs";
 
 const getTree = (treeView: TreeView): TreeOoui => {
   const xml = treeView.arch;
@@ -125,13 +124,13 @@ function getColorMap(colorsValue: any) {
   return getItemsAttributes(colorsValue, "colors");
 }
 
-function getStatusMap(values: any){
+function getStatusMap(values: any) {
   return getItemsAttributes(values, "status");
 }
 
 function getItemsAttributes(attributes: object[], attribute: string) {
   if (!attributes) {
-    return undefined
+    return undefined;
   }
   const map: any = {};
   attributes.forEach((entry: any) => {
@@ -181,6 +180,17 @@ function sortResults({
   return resultsToSort.sort(sortFn);
 }
 
+function hasActualValues(obj: Record<string, any>): boolean {
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      if (obj[key] !== undefined) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 export {
   getTableColumns,
   getTableItems,
@@ -190,4 +200,5 @@ export {
   getColorMap,
   getStatusMap,
   sortResults,
+  hasActualValues,
 };

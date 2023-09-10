@@ -141,7 +141,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     try {
       setRemovingItem?.(true);
 
-      await ConnectionProvider.getHandler().delete({
+      await ConnectionProvider.getHandler().deleteObjects({
         model: currentModel!,
         ids: [currentId!],
       });

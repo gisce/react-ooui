@@ -92,7 +92,7 @@ function TreeActionBar(props: Props) {
     try {
       setRemovingItem?.(true);
 
-      await ConnectionProvider.getHandler().delete({
+      await ConnectionProvider.getHandler().deleteObjects({
         model: currentModel!,
         ids: selectedRowItems!.map((item) => item.id),
       });

@@ -181,7 +181,7 @@ export const useExport = ({
 
   const onRemovePredefinedExport = useCallback(
     async (pExport: PredefinedExport) => {
-      await ConnectionProvider.getHandler().delete({
+      await ConnectionProvider.getHandler().deleteObjects({
         model: "ir.exports",
         ids: [pExport.id!],
       });
@@ -367,8 +367,7 @@ const retrieveKeyFieldsForPredefinedExports = async ({
   onGetFieldChilds: (key: string) => Promise<ExportField[]>;
 }) => {
   const allPredefinedExportKeys = predefinedExports.flatMap(
-    (exp: PredefinedExport) =>
-      exp.fields.map((field: any) => field.key)
+    (exp: PredefinedExport) => exp.fields.map((field: any) => field.key)
   );
 
   const keysWithoutChildsInFields = getKeysWithoutChildsInFields({
