@@ -336,7 +336,9 @@ function Tree(props: Props): React.ReactElement {
     }
   }
 
-  return treeOoui.current === null ? (
+  return treeOoui.current === null ||
+    !dataTable ||
+    dataTable.columns?.length === 0 ? (
     <Spin style={{ padding: "2rem" }} />
   ) : (
     <div>

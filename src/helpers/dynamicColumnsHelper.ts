@@ -23,7 +23,7 @@ export const calculateColumnsWidth = (
   maxWidthPerCell = 500
 ) => {
   if (columns.length === 0) {
-    return columns;
+    return { columns };
   }
 
   // First we calculate the width for each column
