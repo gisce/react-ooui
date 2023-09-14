@@ -705,15 +705,17 @@ function Form(props: FormProps, ref: any) {
     fields,
     arch,
     values,
+    operationInProgress = false,
   }: {
     arch: string;
     fields: any;
     values: any;
+    operationInProgress?: boolean;
   }) => {
     const ooui = new FormOoui(fields);
     // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
     ooui.parse(arch, {
-      readOnly,
+      readOnly: readOnly || operationInProgress,
       values: convertToPlain2ManyValues(
         {
           ...values,
@@ -980,6 +982,15 @@ function Form(props: FormProps, ref: any) {
     checkFieldsChanges({ elementHasLostFocus: true });
   }
 
+  function updateOperationInProgress(value: boolean) {
+    parseForm({
+      fields,
+      arch: arch!,
+      values: getCurrentValues(fields),
+      operationInProgress: value,
+    });
+  }
+
   async function executeButtonAction({
     type,
     action,
@@ -1016,6 +1027,7 @@ function Form(props: FormProps, ref: any) {
         : {};
 
       const updatedContext = { ...context, ...additionalContext };
+      updateOperationInProgress(true);
 
       if (type === "object") {
         await runObjectButton({ action, context: updatedContext });
@@ -1024,7 +1036,9 @@ function Form(props: FormProps, ref: any) {
       } else if (type === "action") {
         await runActionButton({ action, context: updatedContext });
       }
+      updateOperationInProgress(false);
     } catch (err) {
+      updateOperationInProgress(false);
       showErrorDialog(err);
     }
   }
