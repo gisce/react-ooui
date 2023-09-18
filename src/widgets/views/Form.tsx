@@ -1012,8 +1012,12 @@ function Form(props: FormProps, ref: any) {
       return;
     }
 
+    let mustBlockButtons = false;
+
     try {
       if (formHasChanges() || getCurrentId() === undefined) {
+        mustBlockButtons = true;
+        updateOperationInProgress(true);
         if (submitMode === "2many") {
           await submitApi({ callOnSubmitSucceed: false });
           x2manyPendingLink.current = true;
@@ -1027,7 +1031,6 @@ function Form(props: FormProps, ref: any) {
         : {};
 
       const updatedContext = { ...context, ...additionalContext };
-      updateOperationInProgress(true);
 
       if (type === "object") {
         await runObjectButton({ action, context: updatedContext });
@@ -1036,9 +1039,9 @@ function Form(props: FormProps, ref: any) {
       } else if (type === "action") {
         await runActionButton({ action, context: updatedContext });
       }
-      updateOperationInProgress(false);
+      mustBlockButtons && updateOperationInProgress(false);
     } catch (err) {
-      updateOperationInProgress(false);
+      mustBlockButtons && updateOperationInProgress(false);
       showErrorDialog(err);
     }
   }
