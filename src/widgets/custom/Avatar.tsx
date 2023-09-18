@@ -10,7 +10,6 @@ type AvatarProps = WidgetProps & {
 };
 
 const Avatar = (props: AvatarProps): React.ReactElement | null => {
-  console.log("Avatar Props", props);
   const {ooui, value} = props;
   if (!value) {
     return null;
