@@ -33,6 +33,7 @@ import {
   Steps,
   Tag,
   CodeEditor,
+  CommentsTimelineField,
 } from "@/index";
 import { Image } from "./base/Image";
 import { FiberGrid } from "./custom/FiberGrid";
@@ -118,6 +119,8 @@ const getWidgetType = (type: string) => {
       return Steps;
     case "codeeditor":
       return CodeEditor;
+    case "comments_timeline":
+      return CommentsTimelineField;
     default:
       return undefined;
   }

@@ -87,4 +87,5 @@ export default {
   advancedExport: "Advanced export",
   savedRegisters: "Record successfully saved",
   errorWhileSavingForm: "Error while saving form",
+  author: "Author",
 };

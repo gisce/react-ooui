@@ -45,6 +45,7 @@ import { Radio } from "@/widgets/custom/Radio";
 import { Switch } from "@/widgets/custom/Switch";
 import { Steps } from "@/widgets/custom/Steps";
 import { CodeEditor } from "@/widgets/custom/CodeEditor";
+import { CommentsTimelineField } from "@/widgets/custom/Comments";
 import {
   DashboardGridItem,
   DashboardGrid,
@@ -159,6 +160,7 @@ export {
   Switch,
   Steps,
   CodeEditor,
+  CommentsTimelineField,
   ExportModal,
   ConfigContext,
   Tab,
