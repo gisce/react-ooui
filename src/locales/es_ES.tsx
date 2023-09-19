@@ -91,4 +91,5 @@ export default {
   advancedExport: "Exportación avanzada",
   savedRegisters: "Registro guardado correctamente",
   errorWhileSavingForm: "Error al guardar el formulario",
+  author: "Autor",
 };
