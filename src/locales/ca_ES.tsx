@@ -90,4 +90,5 @@ export default {
   advancedExport: "Exportació avançada",
   savedRegisters: "Registre guardat correctament",
   errorWhileSavingForm: "Error en guardar el formulari",
+  autor: "Autor",
 };
