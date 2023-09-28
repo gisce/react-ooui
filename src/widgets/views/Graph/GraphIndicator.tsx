@@ -297,7 +297,7 @@ function CommonIndicator({
     fontSize = maxFontSize;
   }
 
-  const IconElement: any = icon && iconMapper(icon);
+  const IconElement: any = icon && iconMapper(icon, {style: {fontSize: fontSize * 0.7}});
 
   return (
     <div
@@ -373,12 +373,12 @@ function PercentageIndicator({
     tw = tw * 1.5;
   }
 
-  const IconElement: any = icon && iconMapper(icon);
-
   if (tw >= width * 0.85 || fontSize * 2 < twoLinesHeight) {
     const maxFontSize = ((width * 0.85) / tw) * fontSize;
     fontSize = maxFontSize;
   }
+
+  const IconElement: any = icon && iconMapper(icon, {style: {fontSize}});
 
   return (
     <div
