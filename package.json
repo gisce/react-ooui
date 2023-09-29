@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "1.4.15",
+  "version": "1.4.16",
   "files": [
     "dist",
     "src",
