@@ -385,6 +385,11 @@ function Tree(props: Props): React.ReactElement {
         }
         onSelectAllRecords={onSelectAllRecords}
         totalItems={total || 0}
+        translations={{
+          recordsSelected: t("recordsSelected"),
+          selectAllRecords: t("selectAllRecords"),
+          allRecordsSelected: t("allRecordsSelected"),
+        }}
       />
       {getSums()}
     </div>
