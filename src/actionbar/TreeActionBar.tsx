@@ -287,89 +287,84 @@ function TreeActionBar(props: Props) {
         }}
       />
 
-      {previewFeatures && (
-        <>
-          {separator()}
-          <DropdownButton
-            icon={
-              <Icon
-                component={() => (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="icon icon-tabler icon-tabler-database-export"
-                    width="1em"
-                    height="1em"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <ellipse cx="12" cy="6" rx="8" ry="3" />
-                    <path d="M4 6v6c0 1.657 3.582 3 8 3a19.84 19.84 0 0 0 3.302 -.267m4.698 -2.733v-6" />
-                    <path d="M4 12v6c0 1.599 3.335 2.905 7.538 2.995m8.462 -6.995v-2m-6 7h7m-3 -3l3 3l-3 3" />
-                  </svg>
-                )}
-              />
-            }
-            tooltip={t("export")}
-            items={[
-              {
-                id: "print_screen",
-                name: t("printScreen"),
-              },
-              {
-                id: "export",
-                name: t("advancedExport"),
-              },
-            ]}
-            onItemClick={(itemClicked: any) => {
-              if (itemClicked.id === "print_screen") {
-                let idsToExport =
-                  selectedRowItems?.map((item) => item.id) || [];
-
-                if (idsToExport.length === 0) {
-                  idsToExport = results?.map((item) => item.id) || [];
-                }
-
-                runAction({
-                  id: -1,
-                  model: currentModel,
-                  report_name: "printscreen.list",
-                  type: "ir.actions.report.xml",
-                  datas: {
-                    model: currentModel,
-                    ids: idsToExport,
-                  },
-                });
-                return;
-              }
-
-              setExportModalVisible(true);
-            }}
-            disabled={
-              duplicatingItem || removingItem || treeIsLoading || hasNameSearch
-            }
-          />
-          <ExportModal
-            visible={exportModalVisible}
-            locale={lang}
-            onClose={() => setExportModalVisible(false)}
-            model={currentModel!}
-            domain={mergeParams(
-              searchTreeRef?.current?.getDomain() || [],
-              searchParams || []
+      {separator()}
+      <DropdownButton
+        icon={
+          <Icon
+            component={() => (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="icon icon-tabler icon-tabler-database-export"
+                width="1em"
+                height="1em"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <ellipse cx="12" cy="6" rx="8" ry="3" />
+                <path d="M4 6v6c0 1.657 3.582 3 8 3a19.84 19.84 0 0 0 3.302 -.267m4.698 -2.733v-6" />
+                <path d="M4 12v6c0 1.599 3.335 2.905 7.538 2.995m8.462 -6.995v-2m-6 7h7m-3 -3l3 3l-3 3" />
+              </svg>
             )}
-            limit={limit}
-            totalRegisters={totalItems || 0}
-            selectedRegistersToExport={selectedRowItems}
-            visibleRegisters={results?.length || 0}
-            context={parentContext}
           />
-        </>
-      )}
+        }
+        tooltip={t("export")}
+        items={[
+          {
+            id: "print_screen",
+            name: t("printScreen"),
+          },
+          {
+            id: "export",
+            name: t("advancedExport"),
+          },
+        ]}
+        onItemClick={(itemClicked: any) => {
+          if (itemClicked.id === "print_screen") {
+            let idsToExport = selectedRowItems?.map((item) => item.id) || [];
+
+            if (idsToExport.length === 0) {
+              idsToExport = results?.map((item) => item.id) || [];
+            }
+
+            runAction({
+              id: -1,
+              model: currentModel,
+              report_name: "printscreen.list",
+              type: "ir.actions.report.xml",
+              datas: {
+                model: currentModel,
+                ids: idsToExport,
+              },
+            });
+            return;
+          }
+
+          setExportModalVisible(true);
+        }}
+        disabled={
+          duplicatingItem || removingItem || treeIsLoading || hasNameSearch
+        }
+      />
+      <ExportModal
+        visible={exportModalVisible}
+        locale={lang}
+        onClose={() => setExportModalVisible(false)}
+        model={currentModel!}
+        domain={mergeParams(
+          searchTreeRef?.current?.getDomain() || [],
+          searchParams || []
+        )}
+        limit={limit}
+        totalRegisters={totalItems || 0}
+        selectedRegistersToExport={selectedRowItems}
+        visibleRegisters={results?.length || 0}
+        context={parentContext}
+      />
     </Space>
   );
 }

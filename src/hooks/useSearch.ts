@@ -1,6 +1,7 @@
 import { mergeParams } from "@/helpers/searchHelper";
 import {
-  getColorMap, getStatusMap,
+  getColorMap,
+  getStatusMap,
   getTableItems,
   getTree,
   sortResults,
@@ -176,14 +177,14 @@ export const useSearch = (opts: UseSearchOpts) => {
       const { params, newOffset } = opts || {};
 
       const mergedParams = mergeParams(params || searchParams, domain);
-      const { colors, status } = getTree(treeView!);      const attrs: any = {};
+      const { colors, status } = getTree(treeView!);
+      const attrs: any = {};
       if (colors) {
         attrs.colors = colors;
       }
       if (status) {
         attrs.status = status;
       }
-
 
       const { totalItems, results, attrsEvaluated } =
         await ConnectionProvider.getHandler().searchForTree({
@@ -402,6 +403,15 @@ export const useSearch = (opts: UseSearchOpts) => {
     [treeView, model, context, getResults, setResults]
   );
 
+  const getAllIds = useCallback(async () => {
+    return await ConnectionProvider.getHandler().searchAllIds({
+      params: mergeParams(searchParams, domain),
+      model,
+      context,
+      totalItems,
+    });
+  }, [model, context, totalItems, searchParams, domain]);
+
   return {
     submit,
     clear,
@@ -419,5 +429,6 @@ export const useSearch = (opts: UseSearchOpts) => {
     colorsForResults,
     statusForResults,
     totalItems,
+    getAllIds,
   };
 };
