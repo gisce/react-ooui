@@ -53,6 +53,7 @@ type Props = {
   rootTree?: boolean;
   context?: any;
   readonly?: boolean;
+  onSelectAllRecords?: () => Promise<void>;
 };
 
 const booleanComponentFn = (value: boolean): React.ReactElement => {
@@ -190,6 +191,7 @@ function Tree(props: Props): React.ReactElement {
     rootTree = false,
     context,
     readonly,
+    onSelectAllRecords,
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
@@ -381,6 +383,13 @@ function Tree(props: Props): React.ReactElement {
               }
             : undefined
         }
+        onSelectAllRecords={onSelectAllRecords}
+        totalItems={total || 0}
+        translations={{
+          recordsSelected: t("recordsSelected"),
+          selectAllRecords: t("selectAllRecords"),
+          allRecordsSelected: t("allRecordsSelected"),
+        }}
       />
       {getSums()}
     </div>

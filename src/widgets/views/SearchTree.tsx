@@ -125,6 +125,7 @@ function SearchTree(props: Props, ref: any) {
     colorsForResults,
     statusForResults,
     totalItems,
+    getAllIds,
   } = useSearch({
     model: currentModel!,
     setSearchTreeNameSearch,
@@ -269,11 +270,14 @@ function SearchTree(props: Props, ref: any) {
   };
 
   function changeSelectedRowKeys(selectedRowKeys: any[]) {
-    const selectedRowItems = getResults().filter((entry: any) =>
-      selectedRowKeys.includes(entry.id)
-    );
-    setSelectedRowItems?.(selectedRowItems);
+    setSelectedRowItems?.(selectedRowKeys.map((id: number) => ({ id })));
     onChangeSelectedRowKeys?.(selectedRowKeys);
+  }
+
+  async function selectAllRecords() {
+    const allIds = await getAllIds();
+    setSelectedRowItems?.(allIds.map((id: number) => ({ id })));
+    onChangeSelectedRowKeys?.(allIds);
   }
 
   function calculateTableHeight() {
@@ -331,6 +335,7 @@ function SearchTree(props: Props, ref: any) {
           }
           childField={treeView.field_parent}
           rootTree={rootTree}
+          onSelectAllRecords={selectAllRecords}
         />
       </>
     );

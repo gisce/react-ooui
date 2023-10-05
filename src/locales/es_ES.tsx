@@ -92,4 +92,8 @@ export default {
   savedRegisters: "Registro guardado correctamente",
   errorWhileSavingForm: "Error al guardar el formulario",
   author: "Autor",
+  recordsSelected:
+    "Hay {numberOfSelectedRows} registros seleccionados en ésta página.",
+  selectAllRecords: "Seleccionar todos los {totalRecords} registros.",
+  allRecordsSelected: "Hay {totalRecords} registros seleccionados.",
 };
