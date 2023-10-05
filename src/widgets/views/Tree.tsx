@@ -53,7 +53,7 @@ type Props = {
   rootTree?: boolean;
   context?: any;
   readonly?: boolean;
-  onSelectAllRecords: () => Promise<void>;
+  onSelectAllRecords?: () => Promise<void>;
 };
 
 const booleanComponentFn = (value: boolean): React.ReactElement => {
