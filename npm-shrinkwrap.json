@@ -1,18 +1,18 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "2.0.0-rc.9",
+  "version": "2.0.0-rc.10",
   "lockfileVersion": 2,
   "requires": true,
   "packages": {
     "": {
       "name": "@gisce/react-ooui",
-      "version": "2.0.0-rc.9",
+      "version": "2.0.0-rc.10",
       "dependencies": {
         "@ant-design/plots": "^1.0.9",
         "@gisce/fiber-diagram": "^1.1.0-rc.3",
         "@gisce/ooui": "^0.22.3",
         "@gisce/react-formiga-components": "^1.0.9-rc.21",
-        "@gisce/react-formiga-table": "^0.8.7-rc.1",
+        "@gisce/react-formiga-table": "^0.8.6",
         "@monaco-editor/react": "^4.4.5",
         "@tabler/icons-react": "^2.11.0",
         "antd": "^5.5.2",
@@ -2753,9 +2753,9 @@
       }
     },
     "node_modules/@gisce/react-formiga-table": {
-      "version": "0.8.7-rc.1",
-      "resolved": "https://registry.npmjs.org/@gisce/react-formiga-table/-/react-formiga-table-0.8.7-rc.1.tgz",
-      "integrity": "sha512-Y+8tfwc77TYNy2LgoNyI6Ho6e0z0PpaCG8+oqPx+88XBbpHevPcgnHzlKJXttbLGW/ECmsXP4SOtoPbgUOkQBg==",
+      "version": "0.8.6",
+      "resolved": "https://registry.npmjs.org/@gisce/react-formiga-table/-/react-formiga-table-0.8.6.tgz",
+      "integrity": "sha512-T5uMX30NiUiBnFUuZDH39pYuaCJNeZYupJ/iPJOBCV9XnanXaPZSfPmH12kH/dxtO/1PsSYPljbPH/GqR4KuKA==",
       "dependencies": {
         "react": "^16.8.0 || 17.x",
         "react-dom": "^16.8.0 || 17.x",
@@ -31595,9 +31595,9 @@
       }
     },
     "@gisce/react-formiga-table": {
-      "version": "0.8.7-rc.1",
-      "resolved": "https://registry.npmjs.org/@gisce/react-formiga-table/-/react-formiga-table-0.8.7-rc.1.tgz",
-      "integrity": "sha512-Y+8tfwc77TYNy2LgoNyI6Ho6e0z0PpaCG8+oqPx+88XBbpHevPcgnHzlKJXttbLGW/ECmsXP4SOtoPbgUOkQBg==",
+      "version": "0.8.6",
+      "resolved": "https://registry.npmjs.org/@gisce/react-formiga-table/-/react-formiga-table-0.8.6.tgz",
+      "integrity": "sha512-T5uMX30NiUiBnFUuZDH39pYuaCJNeZYupJ/iPJOBCV9XnanXaPZSfPmH12kH/dxtO/1PsSYPljbPH/GqR4KuKA==",
       "requires": {
         "react": "^16.8.0 || 17.x",
         "react-dom": "^16.8.0 || 17.x",
