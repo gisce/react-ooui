@@ -44,6 +44,10 @@ export const SelectAllRecordsRow = ({
     return null;
   }
 
+  if (totalRecords === numberOfVisibleSelectedRows) {
+    return null;
+  }
+
   const handleClick = async (event: any) => {
     event.preventDefault(); // prevent the default action (navigation) from happening
     event.stopPropagation();
