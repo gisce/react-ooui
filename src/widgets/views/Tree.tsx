@@ -31,6 +31,7 @@ import dayjs from "dayjs";
 import Avatar from "../custom/Avatar";
 import { TagInput } from "../custom/Tag";
 import { DatePickerConfig } from "@/common/DatePicker";
+import { SelectAllRecordsRow } from "@/common/SelectAllRecordsRow";
 
 type Props = {
   total?: number;
@@ -53,6 +54,7 @@ type Props = {
   rootTree?: boolean;
   context?: any;
   readonly?: boolean;
+  onSelectAllRecords?: () => Promise<void>;
 };
 
 const booleanComponentFn = (value: boolean): React.ReactElement => {
@@ -190,6 +192,7 @@ function Tree(props: Props): React.ReactElement {
     rootTree = false,
     context,
     readonly,
+    onSelectAllRecords,
   } = props;
 
   const [items, setItems] = useState<Array<any>>([]);
@@ -269,7 +272,7 @@ function Tree(props: Props): React.ReactElement {
       <Spin className="pb-4" />
     ) : (
       <Row align="bottom" className="pb-4">
-        <Col span={12}>
+        <Col span={8}>
           <Pagination
             total={total}
             pageSize={
@@ -280,7 +283,18 @@ function Tree(props: Props): React.ReactElement {
             onChange={onRequestPageChange}
           />
         </Col>
-        <Col span={12} className="text-right">
+        <Col span={8} className="text-center">
+          {onSelectAllRecords && (
+            <SelectAllRecordsRow
+              numberOfVisibleSelectedRows={numberOfVisibleSelectedRows}
+              numberOfRealSelectedRows={rowSelection?.selectedRowKeys.length}
+              numberOfTotalRows={items.length}
+              totalRecords={total || 0}
+              onSelectAllRecords={onSelectAllRecords}
+            />
+          )}
+        </Col>
+        <Col span={8} className="text-right">
           {summary}
         </Col>
       </Row>
@@ -336,7 +350,13 @@ function Tree(props: Props): React.ReactElement {
     }
   }
 
-  return treeOoui.current === null ? (
+  const numberOfVisibleSelectedRows = items.filter((entry) =>
+    rowSelection?.selectedRowKeys.includes(entry.id)
+  ).length;
+
+  return treeOoui.current === null ||
+    !dataTable ||
+    dataTable.columns?.length === 0 ? (
     <Spin style={{ padding: "2rem" }} />
   ) : (
     <div>

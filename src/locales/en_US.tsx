@@ -88,4 +88,8 @@ export default {
   savedRegisters: "Record successfully saved",
   errorWhileSavingForm: "Error while saving form",
   author: "Author",
+  recordsSelected:
+    "Hi ha {numberOfSelectedRows} registres seleccionats en aquesta pàgina.",
+  selectAllRecords: "Seleccionar tots els {totalRecords} registres.",
+  allRecordsSelected: "Hi ha {totalRecords} registres seleccionats.",
 };
