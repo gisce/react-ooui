@@ -268,11 +268,17 @@ function Tree(props: Props): React.ReactElement {
       return null;
     }
 
+    const numberOfVisibleSelectedRows = items?.filter(
+      (entry) =>
+        rowSelection?.selectedRowKeys &&
+        rowSelection?.selectedRowKeys.includes(entry.id)
+    ).length;
+
     return loading ? null : total === undefined ? (
       <Spin className="pb-4" />
     ) : (
       <Row align="bottom" className="pb-4">
-        <Col span={8}>
+        <Col span={onSelectAllRecords ? 8 : 12}>
           <Pagination
             total={total}
             pageSize={
@@ -283,18 +289,20 @@ function Tree(props: Props): React.ReactElement {
             onChange={onRequestPageChange}
           />
         </Col>
-        <Col span={8} className="text-center">
-          {onSelectAllRecords && (
+        {onSelectAllRecords && (
+          <Col span={8} className="text-center">
             <SelectAllRecordsRow
               numberOfVisibleSelectedRows={numberOfVisibleSelectedRows}
-              numberOfRealSelectedRows={rowSelection?.selectedRowKeys.length}
+              numberOfRealSelectedRows={
+                rowSelection?.selectedRowKeys?.length || 0
+              }
               numberOfTotalRows={items.length}
               totalRecords={total || 0}
               onSelectAllRecords={onSelectAllRecords}
             />
-          )}
-        </Col>
-        <Col span={8} className="text-right">
+          </Col>
+        )}
+        <Col span={onSelectAllRecords ? 8 : 12} className="text-right">
           {summary}
         </Col>
       </Row>
@@ -349,11 +357,6 @@ function Tree(props: Props): React.ReactElement {
       adjustedHeight = scrollY - 30;
     }
   }
-
-  const numberOfVisibleSelectedRows = items.filter((entry) =>
-    rowSelection?.selectedRowKeys.includes(entry.id)
-  ).length;
-
   return treeOoui.current === null ||
     !dataTable ||
     dataTable.columns?.length === 0 ? (
