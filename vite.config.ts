@@ -1,15 +1,11 @@
-import react from "@vitejs/plugin-react";
-import * as path from "path";
+import react from "@vitejs/plugin-react-swc";
+import path from "path";
+import peerDepsExternal from "rollup-plugin-peer-deps-external";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
-import peerDepsExternal from "rollup-plugin-peer-deps-external";
+import viteTsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
   plugins: [
     peerDepsExternal({
       includeDependencies: true,
@@ -18,6 +14,7 @@ export default defineConfig({
     dts({
       insertTypesEntry: true,
     }),
+    viteTsconfigPaths(),
   ],
   build: {
     emptyOutDir: true,
