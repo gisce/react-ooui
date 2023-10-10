@@ -25,7 +25,7 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, "src/index.ts"),
       name: "react-ooui",
-      formats: ["es", "umd"],
+      formats: ["es"],
       fileName: (format) => `react-ooui.${format}.js`,
     },
     rollupOptions: {

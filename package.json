@@ -1,18 +1,19 @@
 {
   "name": "@gisce/react-ooui",
   "version": "2.0.0-rc.13",
+  "engines": {
+    "node": "20.5.0"
+  },
   "files": [
     "dist",
     "src",
     "README.md"
   ],
-  "main": "./dist/react-ooui.umd.js",
   "module": "./dist/react-ooui.es.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/react-ooui.es.js",
-      "require": "./dist/react-ooui.umd.js"
+      "import": "./dist/react-ooui.es.js"
     }
   },
   "publishConfig": {
