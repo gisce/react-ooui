@@ -1,4 +1,4 @@
-name: [alpha] Create PR on WebClient
+name: ALPHA - Create PR on WebClient
 
 on:
   release:
