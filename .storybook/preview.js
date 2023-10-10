@@ -1,4 +1,4 @@
-import "@/tailwind.generated.css";
+import "./styles.css";
 import mockProvider from "../src/stories/mocks/mockProvider";
 
 mockProvider.init();
