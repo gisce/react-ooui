@@ -166,11 +166,11 @@ function SearchTree(props: Props, ref: any) {
       return;
     }
 
-    if (visible) {
+    if (visible && treeView) {
       searchNameGetDoneRef.current = false;
       fetchResults();
     }
-  }, [page, offset, initialFetchDone, visible, nameSearch]);
+  }, [page, offset, initialFetchDone, visible, nameSearch, treeView]);
 
   const fetchData = async () => {
     setInitialFetchDone(false);
