@@ -30,6 +30,7 @@
     "@typescript-eslint/naming-convention": "off",
     "react/react-in-jsx-scope": "off",
     // These have to be reviewed and turn to on/warn
+    "no-empty": "warn",
     "one-var": "warn",
     "react/prop-types": "warn",
     "react/display-name": "warn",
