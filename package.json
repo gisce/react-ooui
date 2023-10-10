@@ -101,5 +101,30 @@
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": "eslint --fix",
     "src/**/*.{js,jsx,ts,tsx,json,css,md}": "prettier --write"
+  },
+  "release": {
+    "branches": [
+      "master",
+      {
+        "name": "develop",
+        "prerelease": "rc"
+      },
+      {
+        "name": "alpha",
+        "prerelease": true
+      }
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/npm",
+        {
+          "npmPublish": true
+        }
+      ],
+      "@semantic-release/github",
+      "@semantic-release/git"
+    ]
   }
 }
