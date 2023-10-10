@@ -2,7 +2,6 @@ import React, { useRef, useContext } from "react";
 import { Row, Col, Button, Input, Space, theme } from "antd";
 import Field from "@/common/Field";
 import { Binary as BinaryOoui } from "@gisce/ooui";
-const { useToken } = theme;
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
 import {
   FolderOpenOutlined,
@@ -19,6 +18,7 @@ import {
   openBase64InNewTab,
   toBase64,
 } from "@/helpers/filesHelper";
+const { useToken } = theme;
 
 type Props = {
   ooui: BinaryOoui;
@@ -68,7 +68,7 @@ export const BinaryInput = (props: BinaryInputProps) => {
     const name = getFieldValue("name");
 
     downloadLink.href = linkSource;
-    downloadLink.download = fileName || name;
+    downloadLink.download = fileName || name;
     downloadLink.click();
   }
 

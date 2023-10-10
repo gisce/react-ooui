@@ -18,8 +18,8 @@ const getTree = (treeView: TreeView): TreeOoui => {
 const getTableColumns = (
   tree: TreeOoui,
   components: any,
-  context: any
-): Array<Column> => {
+  context: any,
+): Column[] => {
   const tableColumns = tree.columns.map((column) => {
     const type = column.type;
     const key = column.id;
@@ -38,8 +38,8 @@ const getTableColumns = (
       title: column.label,
       render,
       sorter: (a: any, b: any) => {
-        let aItem = a[key] || "",
-          bItem = b[key] || "";
+        let aItem = a[key] || "";
+        let bItem = b[key] || "";
 
         if (type === "many2one") {
           aItem = a[key]?.value || "";
@@ -55,7 +55,7 @@ const getTableColumns = (
   return tableColumns;
 };
 
-const getTableItems = (treeOoui: TreeOoui, results: Array<any>): Array<any> => {
+const getTableItems = (treeOoui: TreeOoui, results: any[]): any[] => {
   const tableItems = results.map((item: any) => {
     const parsedItem: any = {};
     Object.keys(item).map((key) => {
@@ -158,8 +158,8 @@ function sortResults({
   const type = fields[field].type;
 
   const sortFn = (a: any, b: any) => {
-    let aItem = a[field] || "",
-      bItem = b[field] || "";
+    let aItem = a[field] || "";
+    let bItem = b[field] || "";
 
     if (type === "many2one") {
       aItem = a[field]?.[1] || "";

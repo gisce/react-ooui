@@ -3,12 +3,10 @@ import { TimePicker, theme } from "antd";
 import Field from "@/common/Field";
 import { Time as TimeOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
-import dayjs from "dayjs";
-import { Dayjs } from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat'
+import dayjs, { Dayjs } from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 
-
-dayjs.extend(customParseFormat)
+dayjs.extend(customParseFormat);
 
 const Time = (props: WidgetProps) => {
   const { ooui } = props;
@@ -24,18 +22,21 @@ type TimeInputProps = {
   ooui: TimeOoui;
   value?: string;
   onChange?: (value?: string) => void;
-}
+};
 
 export const TimeInput = (props: TimeInputProps) => {
-
   const onChange = (time: Dayjs | null, timestring: string) => {
     if (props.onChange) {
-      props.onChange(timestring)
+      props.onChange(timestring);
     }
-  }
+  };
 
-  return <TimePicker onChange={onChange} value={props.value ? dayjs(props.value, 'HH:mm:ss') : undefined} />
-
-}
+  return (
+    <TimePicker
+      onChange={onChange}
+      value={props.value ? dayjs(props.value, "HH:mm:ss") : undefined}
+    />
+  );
+};
 
 export default Time;

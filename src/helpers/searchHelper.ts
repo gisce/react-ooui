@@ -8,7 +8,10 @@ const convertBooleanParamIfNeeded = (value: any) => {
 export const getParamsForFields = (values: any, widgetContainer: any) => {
   const filteredValues = removeUndefinedFields(values);
   const groupedDateTime = groupDateTimeValuesIfNeeded(filteredValues);
-  const groupedValues = ungroupDateValuesIfNeeded(groupedDateTime, widgetContainer);
+  const groupedValues = ungroupDateValuesIfNeeded(
+    groupedDateTime,
+    widgetContainer,
+  );
 
   const params = [
     ...Object.keys(groupedValues).map((key) => {
@@ -64,7 +67,7 @@ const getParamForField = (key: string, value: any, widgetContainer: any) => {
       key,
       "in",
       value.map((valueEntry: string) =>
-        convertBooleanParamIfNeeded(valueEntry)
+        convertBooleanParamIfNeeded(valueEntry),
       ),
     ];
   } else {
@@ -83,7 +86,7 @@ const removeDateTimeSingleFields = (values: any) => {
   Object.keys(newValues).forEach(
     (key) =>
       (key.indexOf("#time") !== -1 || key.indexOf("#date") !== -1) &&
-      delete newValues[key]
+      delete newValues[key],
   );
   return newValues;
 };
@@ -133,7 +136,7 @@ const ungroupDateValuesIfNeeded = (values: any, widgetContainer: any) => {
     return widget && widget.type === "date";
   });
 
-  let newValues: any = { ...values };
+  const newValues: any = { ...values };
 
   dateFields.forEach((key) => {
     delete newValues[key];
@@ -156,7 +159,7 @@ export const removeUndefinedFields = (values: any) => {
       (newValues[key] === undefined ||
         newValues[key] === null ||
         newValues[key] === "") &&
-      delete newValues[key]
+      delete newValues[key],
   );
   return newValues;
 };

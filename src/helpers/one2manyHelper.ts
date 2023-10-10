@@ -18,7 +18,7 @@ type ReadObjectValuesOptions = {
 };
 
 const readObjectValues = async (
-  options: ReadObjectValuesOptions
+  options: ReadObjectValuesOptions,
 ): Promise<[One2manyItem[], any]> => {
   const {
     items,
@@ -30,7 +30,7 @@ const readObjectValues = async (
   } = options;
 
   const temporalItems: One2manyItem = items.filter(
-    (item) => item.operation !== "original"
+    (item) => item.operation !== "original",
   );
 
   // We get a number array of id's
@@ -43,8 +43,8 @@ const readObjectValues = async (
     tree: treeView.fields,
   };
 
-  let values = [],
-    evaluatedColorsForTree;
+  let values = [];
+  let evaluatedColorsForTree;
 
   if (currentView === "tree" && treeView?.arch) {
     const colors = getTree(treeView as TreeView)?.colors;
@@ -85,7 +85,7 @@ const readObjectValues = async (
   // We fill the values property of the One2manyItem with the retrieved values from the API
   const originalItemsWithFetchedValues: One2manyItem[] = items.map((item) => {
     const fetchedItemValues = filteredValues.find(
-      (itemValues: any) => itemValues.id === item.id
+      (itemValues: any) => itemValues.id === item.id,
     );
 
     const itemWithFetchedValues = {
@@ -177,7 +177,7 @@ const convertToPlain2ManyValues = (values: any, fields: any) => {
       values[key]?.items
     ) {
       result[key] = values[key].items.filter(
-        (item: One2manyItem) => item.operation !== "pendingRemove"
+        (item: One2manyItem) => item.operation !== "pendingRemove",
       );
     } else {
       result[key] = values[key];

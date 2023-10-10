@@ -1,16 +1,11 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
-import { Input, Button, Row, Col } from "antd";
+import { Input, Button, Row, Col, theme } from "antd";
 import {
   SearchOutlined,
   FolderOpenOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
 import styled from "styled-components";
-import { theme } from "antd";
-
-const { defaultAlgorithm, defaultSeed } = theme;
-
-const mapToken = defaultAlgorithm(defaultSeed);
 
 import {
   Many2one as Many2oneOoui,
@@ -24,6 +19,10 @@ import { Many2oneSuffix } from "./Many2oneSuffix";
 import showErrorDialog from "@/ui/GenericErrorDialog";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
+
+const { defaultAlgorithm, defaultSeed } = theme;
+
+const mapToken = defaultAlgorithm(defaultSeed);
 
 type Props = {
   ooui: Many2oneOoui;
@@ -58,7 +57,7 @@ interface Many2oneInputProps {
 }
 
 export const Many2oneInput: React.FC<Many2oneInputProps> = (
-  props: Many2oneInputProps
+  props: Many2oneInputProps,
 ) => {
   const { value, onChange, ooui } = props;
   const {
@@ -216,7 +215,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
         transformDomainForChildWidget({
           domain,
           widgetFieldName: fieldName,
-        })
+        }),
       );
     }
 

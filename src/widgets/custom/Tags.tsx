@@ -48,7 +48,7 @@ export const TagsInput = (props: TagsInputProps) => {
     fetchOptions();
   }, [items]);
 
-  const triggerChange = (changedValue: Array<One2manyItem>) => {
+  const triggerChange = (changedValue: One2manyItem[]) => {
     onChange?.({
       items: changedValue,
     });
@@ -77,7 +77,7 @@ export const TagsInput = (props: TagsInputProps) => {
 
       const optionsRead = await ConnectionProvider.getHandler().search({
         model: relation,
-        params: params,
+        params,
         fields: [field],
         context: { ...getContext?.(), ...context },
       });
@@ -134,7 +134,7 @@ export const TagsInput = (props: TagsInputProps) => {
         onMouseDown={onPreventMouseDown}
         closable={closable}
         onClose={onClose}
-        closeIcon={<span style={{color}}>X</span>}
+        closeIcon={<span style={{ color }}>X</span>}
       >
         {label}
       </CustomTag>

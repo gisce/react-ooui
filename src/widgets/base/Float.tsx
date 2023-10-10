@@ -3,9 +3,9 @@ import { InputNumber, theme } from "antd";
 import Field from "@/common/Field";
 import { Float as FloatOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
-const { useToken } = theme;
 
 import { FormContext, FormContextType } from "@/context/FormContext";
+const { useToken } = theme;
 
 export const Float = (props: WidgetProps) => {
   const { ooui } = props;

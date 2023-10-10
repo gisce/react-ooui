@@ -207,7 +207,7 @@ export const useSearch = (opts: UseSearchOpts) => {
         sorter !== undefined
           ? sortResults({
               resultsToSort: results,
-              sorter: sorter,
+              sorter,
               fields: { ...treeView!.fields, ...formView!.fields },
             })
           : [...originalResults.current];
@@ -216,7 +216,7 @@ export const useSearch = (opts: UseSearchOpts) => {
 
       if (resultsActionView && resultsSorted.length > 0) {
         const newCurrentItemIndex = resultsSorted.findIndex(
-          (item) => currentId === item.id
+          (item) => currentId === item.id,
         );
 
         if (newCurrentItemIndex === -1) {
@@ -249,7 +249,7 @@ export const useSearch = (opts: UseSearchOpts) => {
       limit,
       offset,
       searchParams,
-    ]
+    ],
   );
 
   const fetchResults = useCallback(
@@ -290,7 +290,7 @@ export const useSearch = (opts: UseSearchOpts) => {
       setTreeIsLoading,
       sorter,
       treeView,
-    ]
+    ],
   );
 
   const changeSort = useCallback(
@@ -307,7 +307,7 @@ export const useSearch = (opts: UseSearchOpts) => {
           : [...originalResults.current];
       setResults(sortedResults);
     },
-    [setSorter, getResults, treeView, formView, setResults]
+    [setSorter, getResults, treeView, formView, setResults],
   );
 
   const submit = useCallback(
@@ -351,7 +351,7 @@ export const useSearch = (opts: UseSearchOpts) => {
       setLimit,
       setOffset,
       fetchResults,
-    ]
+    ],
   );
 
   const requestPageChange = useCallback(
@@ -360,7 +360,7 @@ export const useSearch = (opts: UseSearchOpts) => {
       setPage(page);
       setOffset((page - 1) * limit!);
     },
-    [setTableRefreshing, limit, setOffset, setPage]
+    [setTableRefreshing, limit, setOffset, setPage],
   );
 
   const clear = useCallback(() => {
@@ -400,7 +400,7 @@ export const useSearch = (opts: UseSearchOpts) => {
 
       return getTableItems(getTree(treeView!), children);
     },
-    [treeView, model, context, getResults, setResults]
+    [treeView, model, context, getResults, setResults],
   );
 
   const getAllIds = useCallback(async () => {

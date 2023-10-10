@@ -1,10 +1,9 @@
 import React from "react";
-import { Checkbox as AntCheckbox } from "antd";
+import { Checkbox as AntCheckbox, theme } from "antd";
 import styled from "styled-components";
 
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
-import { theme } from "antd";
 
 const { defaultAlgorithm, defaultSeed } = theme;
 

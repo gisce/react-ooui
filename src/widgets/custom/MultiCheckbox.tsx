@@ -46,7 +46,7 @@ export const MultiCheckboxInput = (props: MultiCheckboxInputProps) => {
     fetchOptions();
   }, [items]);
 
-  const triggerChange = (changedValue: Array<One2manyItem>) => {
+  const triggerChange = (changedValue: One2manyItem[]) => {
     onChange?.({
       items: changedValue,
     });
@@ -70,7 +70,7 @@ export const MultiCheckboxInput = (props: MultiCheckboxInputProps) => {
     try {
       const optionsRead = await ConnectionProvider.getHandler().search({
         model: relation,
-        params: params,
+        params,
         fields: [field],
         context: { ...getContext?.(), ...context },
       });

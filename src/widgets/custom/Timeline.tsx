@@ -94,7 +94,7 @@ export const TimelineInput = (props: TimelineInputProps) => {
     fetchData();
   }, [items]);
 
-  const triggerChange = (changedValue: Array<One2manyItem>) => {
+  const triggerChange = (changedValue: One2manyItem[]) => {
     onChange?.({
       items: changedValue,
     });
@@ -108,7 +108,7 @@ export const TimelineInput = (props: TimelineInputProps) => {
       const [itemsWithValues] = await readObjectValues({
         treeView: {
           fields: views.get("tree").fields,
-          arch: views.get("tree").arch
+          arch: views.get("tree").arch,
         },
         formView: {
           fields: views.get("form").fields,
@@ -147,8 +147,8 @@ export const TimelineInput = (props: TimelineInputProps) => {
                   onClick={() => {
                     setModalItem(
                       itemsToShow.find(
-                        (searchItem) => item.id === searchItem.id
-                      )
+                        (searchItem) => item.id === searchItem.id,
+                      ),
                     );
                     setShowFormModal(true);
                   }}
@@ -161,8 +161,8 @@ export const TimelineInput = (props: TimelineInputProps) => {
                   onClick={() => {
                     setModalItem(
                       itemsToShow.find(
-                        (searchItem) => item.id === searchItem.id
-                      )
+                        (searchItem) => item.id === searchItem.id,
+                      ),
                     );
                     setShowFormModal(true);
                   }}

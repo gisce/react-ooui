@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import Field from "@/common/Field";
-import { DownOutlined } from "@ant-design/icons";
+import { DownOutlined, LoadingOutlined } from "@ant-design/icons";
 import { Dropdown, Menu } from "antd";
 import { Button } from "@/widgets/base/Button";
 import {
@@ -10,7 +10,6 @@ import {
 } from "@gisce/ooui";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { FormContext, FormContextType } from "@/context/FormContext";
-import { LoadingOutlined } from "@ant-design/icons";
 import iconMapper from "@/helpers/iconMapper";
 import { WidgetProps } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
@@ -21,8 +20,8 @@ type ButtonGroupProps = {
 
 type ItemsProps = {
   ooui: ButtonOoui[];
-  executeButtonAction: any,
-  lang: string
+  executeButtonAction: any;
+  lang: string;
 };
 
 export const ButtonGroup = (props: ButtonGroupProps) => {
@@ -86,19 +85,23 @@ export const ButtonGroup = (props: ButtonGroupProps) => {
           onClick={onClick}
           icon={<DownOutlined />}
           type={primary ? "primary" : undefined}
-          //danger={danger ? true : undefined} This works but typescript
+          // danger={danger ? true : undefined} This works but typescript
           // doesn't accept
-          overlay={<Items ooui={secondaryButtons} executeButtonAction={executeButtonAction} lang={lang} /> }
+          overlay={
+            <Items
+              ooui={secondaryButtons}
+              executeButtonAction={executeButtonAction}
+              lang={lang}
+            />
+          }
         >
           {getButtonIcon()}
           {caption}
         </Dropdown.Button>
       </Field>
     );
-  }  else if (defaultButton) {
-    return (
-      <Button ooui={defaultButton} />
-    )
+  } else if (defaultButton) {
+    return <Button ooui={defaultButton} />;
   }
 };
 

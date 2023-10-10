@@ -76,7 +76,7 @@ type SearchResponse = {
 };
 
 type SearchRequest = {
-  params: Array<any>;
+  params: any[];
   limit?: number;
   offset?: number;
   model: string;
@@ -92,7 +92,7 @@ type SearchAllIdsRequest = SearchCountRequest & {
 };
 
 type SearchCountRequest = {
-  params: Array<any>;
+  params: any[];
   model: string;
   context?: any;
 };
@@ -254,7 +254,7 @@ type ExportDataOptions = {
 type ConnectionProviderType = {
   getActionStringForModel: (
     model: string,
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<string>;
   getViewsForAction: (
     {
@@ -264,57 +264,57 @@ type ConnectionProviderType = {
       action: string;
       context?: any;
     },
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<ViewData>;
   getView: (
     options: GetViewRequest,
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<FormView | TreeView | GraphView>;
   getFields: (options: GetFieldsRequest, requestConfig?: any) => Promise<any>;
   searchAllIds: (
     options: SearchAllIdsRequest,
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<number[]>;
   searchCount: (
     options: SearchCountRequest,
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<number>;
   search: (options: SearchRequest) => Promise<any[]>;
   searchForTree: (
     options: SearchRequest,
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<SearchResponse>;
   update: (options: UpdateObjectRequest, requestConfig?: any) => Promise<any>;
   create: (options: CreateObjectRequest, requestConfig?: any) => Promise<any>;
   deleteObjects: (
     options: DeleteObjectsRequest,
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<any>;
   execute: (options: ExecuteRequest, requestConfig?: any) => Promise<any>;
   readObjects: (
     options: ReadObjectsRequest,
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<any>;
   readEvalUiObjects: (
     options: ReadEvalUiObjectsRequest,
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<any>;
   parseCondition: (
     options: ParseConditionRequest,
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<any>;
   executeWorkflow: (
     options: ExecuteRequest,
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<any>;
   createReport: (
     options: CreateReportRequest,
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<any>;
   getReport: (options: GetReportRequest, requestConfig?: any) => Promise<any>;
   executeOnChange: (
     options: ExecuteOnChangeRequest,
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<any>;
   defaultGet: (options: DefaultGetRequest, requestConfig?: any) => Promise<any>;
   getActionData: (
@@ -325,7 +325,7 @@ type ConnectionProviderType = {
       action: string;
       context?: any;
     },
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<any>;
   nameSearch: (options: NameSearchRequest, requestConfig?: any) => Promise<any>;
   duplicate: (options: DuplicateRequest, requestConfig?: any) => Promise<any>;
@@ -333,19 +333,19 @@ type ConnectionProviderType = {
   getLogInfo: (options: GetLogInfoRequest, requestConfig?: any) => Promise<any>;
   isShortcutFavorite: (
     options: IsShortcutFavoriteOptions,
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<number | boolean>;
   removeFavourite: (
     { shortcut_id }: { shortcut_id: number },
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<void>;
   addFavourite: (
     options: IsShortcutFavoriteOptions,
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<void>;
   treeButOpen: (
     options: TreeButOpenOptions,
-    requestConfig?: any
+    requestConfig?: any,
   ) => Promise<any>;
   exportData: (options: ExportDataOptions, requestConfig?: any) => Promise<any>;
 };

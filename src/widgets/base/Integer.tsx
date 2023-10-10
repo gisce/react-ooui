@@ -33,10 +33,10 @@ export const Integer = (props: IntegerProps) => {
           }
 
           if (typeof value === "string" && !isNaN(parseFloat(value))) {
-            let truncatedValue = Math.trunc(parseFloat(value));
+            const truncatedValue = Math.trunc(parseFloat(value));
             return `${truncatedValue}`.replace(/[^0-9\-]+/g, "");
           } else if (typeof value === "number") {
-            let truncatedValue = Math.trunc(value);
+            const truncatedValue = Math.trunc(value);
             return `${truncatedValue}`.replace(/[^0-9\-]+/g, "");
           }
 

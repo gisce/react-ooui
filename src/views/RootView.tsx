@@ -10,8 +10,7 @@ import Welcome from "./Welcome";
 import TabManagerProvider from "@/context/TabManagerContext";
 import ActionView from "./ActionView";
 import { parseContext } from "@gisce/ooui";
-import LocaleContextProvider from "@/context/LocaleContext";
-import { tForLang } from "@/context/LocaleContext";
+import LocaleContextProvider, { tForLang } from "@/context/LocaleContext";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import { InitialViewData, ViewType } from "@/types";
@@ -154,7 +153,7 @@ function RootView(props: RootViewProps, ref: any) {
 
     if (initialViewType) {
       const [id, type] = finalViews.find(
-        ([_, type]) => type === initialViewType
+        ([_, type]) => type === initialViewType,
       );
       initialView = { id, type };
     } else {
@@ -245,7 +244,7 @@ function RootView(props: RootViewProps, ref: any) {
 
     const parsedDomain = domain
       ? await ConnectionProvider.getHandler().evalDomain({
-          domain: domain,
+          domain,
           values: transformPlainMany2Ones({
             fields,
             values: { ...values, ...globalValues },
@@ -403,7 +402,7 @@ function RootView(props: RootViewProps, ref: any) {
     domain: any;
     context: any;
     model: string;
-    views: Array<any>;
+    views: any[];
     title: string;
     target: string;
     initialView: InitialViewData;
@@ -484,7 +483,7 @@ function RootView(props: RootViewProps, ref: any) {
         activeKey={activeKey}
         onRemoveTab={async (key: string) => {
           const canWeCloseFn = tabViewsCloseFunctions.current.get(
-            key as string
+            key as string,
           );
           const canWeClose = await canWeCloseFn?.();
 

@@ -8,7 +8,7 @@ export function getFilesize(base64string: string) {
 
 export async function getMimeType(base64string: string) {
   const mimeInfo = await fileTypeFromBuffer(
-    Buffer.from(base64string, "base64")
+    Buffer.from(base64string, "base64"),
   );
   if (!mimeInfo) {
     return {
@@ -29,13 +29,13 @@ export const toBase64 = (file: File): Promise<string> =>
   });
 
 export function openBase64InNewTab(data: string, mimeType: string) {
-  var byteCharacters = atob(data);
-  var byteNumbers = new Array(byteCharacters.length);
-  for (var i = 0; i < byteCharacters.length; i++) {
+  const byteCharacters = atob(data);
+  const byteNumbers = new Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
     byteNumbers[i] = byteCharacters.charCodeAt(i);
   }
-  var byteArray = new Uint8Array(byteNumbers);
-  var file = new Blob([byteArray], { type: mimeType + ";base64" });
-  var fileURL = URL.createObjectURL(file);
+  const byteArray = new Uint8Array(byteNumbers);
+  const file = new Blob([byteArray], { type: mimeType + ";base64" });
+  const fileURL = URL.createObjectURL(file);
   window.open(fileURL);
 }

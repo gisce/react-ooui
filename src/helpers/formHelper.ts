@@ -57,7 +57,7 @@ export const getTouchedValues = ({
 
       const nonOriginalItems =
         target[key]?.items?.filter(
-          (item: One2manyItem) => item.operation !== "original"
+          (item: One2manyItem) => item.operation !== "original",
         ) || [];
 
       if (nonOriginalItems.length > 0) {
@@ -203,7 +203,7 @@ export const mergeSearchFields = (searchFields: any[]) => {
 
     mergedSearchFields.primary = mergedSearchFields.primary.concat(sf.primary);
     mergedSearchFields.secondary = mergedSearchFields.secondary.concat(
-      sf.secondary
+      sf.secondary,
     );
   });
 
@@ -224,7 +224,7 @@ export const transformPlainMany2Ones = ({
   values: any;
   fields: any;
 }) => {
-  let reformattedValues: { [key: string]: any } = {};
+  const reformattedValues: { [key: string]: any } = {};
 
   Object.keys(values).forEach((key) => {
     const value = values[key];
@@ -245,30 +245,29 @@ export const transformPlainMany2Ones = ({
   return reformattedValues;
 };
 
-
 export const colorFromString = (text: string) => {
   let hash = 0;
-  text = text.toString().padEnd(10, '0');
+  text = text.toString().padEnd(10, "0");
   for (let i = 0; i < text.length; i++) {
     hash = text.charCodeAt(i) + ((hash << 5) - hash);
   }
-  let hexColour = '#';
+  let hexColour = "#";
   for (let i = 0; i < 3; i++) {
-    var value = (hash >> (i * 8)) & 0xFF;
-    hexColour += ('00' + value.toString(16)).slice(-2);
+    const value = (hash >> (i * 8)) & 0xff;
+    hexColour += ("00" + value.toString(16)).slice(-2);
   }
   return hexColour;
-}
+};
 
 export const colorTextFromBackground = (color: string) => {
   function getRGB(c: string): number {
-    return parseInt(c, 16) || parseInt(c)
+    return parseInt(c, 16) || parseInt(c);
   }
 
-  function getsRGB(c: string ) {
+  function getsRGB(c: string) {
     return getRGB(c) / 255 <= 0.03928
       ? getRGB(c) / 255 / 12.92
-      : Math.pow((getRGB(c) / 255 + 0.055) / 1.055, 2.4)
+      : Math.pow((getRGB(c) / 255 + 0.055) / 1.055, 2.4);
   }
 
   function getLuminance(hexColor: string) {
@@ -276,27 +275,27 @@ export const colorTextFromBackground = (color: string) => {
       0.2126 * getsRGB(hexColor.substr(1, 2)) +
       0.7152 * getsRGB(hexColor.substr(3, 2)) +
       0.0722 * getsRGB(hexColor.substr(-2))
-    )
+    );
   }
 
   function getContrast(f: string, b: string) {
-    const L1 = getLuminance(f)
-    const L2 = getLuminance(b)
-    return (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05)
+    const L1 = getLuminance(f);
+    const L2 = getLuminance(b);
+    return (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05);
   }
 
   function getTextColor(bgColor: string) {
-    const whiteContrast = getContrast(bgColor, '#ffffff')
-    const blackContrast = getContrast(bgColor, '#000000')
+    const whiteContrast = getContrast(bgColor, "#ffffff");
+    const blackContrast = getContrast(bgColor, "#000000");
 
-    return whiteContrast > blackContrast ? '#ffffff' : '#000000'
+    return whiteContrast > blackContrast ? "#ffffff" : "#000000";
   }
 
   return getTextColor(color);
-
-}
-
+};
 
 export const stringFormat = (text: string, values: any): string => {
-  return text.replace(/\{([^}]+)\}/g, (match, key)  => values[key] !== undefined ? values[key] : match);
-}
+  return text.replace(/\{([^}]+)\}/g, (match, key) =>
+    values[key] !== undefined ? values[key] : match,
+  );
+};

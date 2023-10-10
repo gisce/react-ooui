@@ -1,7 +1,7 @@
 import { ViewTuple, ViewType } from "@/types";
 
 export async function resolveViewInfoPromises(
-  viewsToRetrieve: { viewTuple: ViewTuple; promise?: Promise<any> }[]
+  viewsToRetrieve: Array<{ viewTuple: ViewTuple; promise?: Promise<any> }>,
 ) {
   const results = await Promise.all(
     viewsToRetrieve.map(async (item) => {
@@ -11,7 +11,7 @@ export async function resolveViewInfoPromises(
         console.error(`Error for ${item.viewTuple}:`, error);
         return null;
       }
-    })
+    }),
   );
 
   const updatedViews = viewsToRetrieve.map((item, index) => ({

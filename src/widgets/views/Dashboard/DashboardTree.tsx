@@ -48,7 +48,7 @@ function DashboardTree(props: Props) {
   const [offset, setOffset] = useState<number>(0);
   const limitRef = useRef<number>(DEFAULT_SEARCH_LIMIT);
 
-  const paramsRef = useRef<Array<any>>([]);
+  const paramsRef = useRef<any[]>([]);
 
   const [totalItems, setTotalItems] = useState<number>(0);
   const [results, setResults] = useState<any>([]);
@@ -89,7 +89,7 @@ function DashboardTree(props: Props) {
 
     const resultsSorted = sortResults({
       resultsToSort: results,
-      sorter: sorter,
+      sorter,
       fields: { ...treeView!.fields, ...formView!.fields },
     });
     setTableRefreshing(false);

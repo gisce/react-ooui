@@ -82,8 +82,9 @@ function ActionView(props: Props, ref: any) {
     ? (res_id as number)
     : undefined;
 
-  const [currentId, setCurrentIdInternal] =
-    useState<number | undefined>(res_id_parsed);
+  const [currentId, setCurrentIdInternal] = useState<number | undefined>(
+    res_id_parsed,
+  );
   const [selectedRowItems, setSelectedRowItems] = useState<any[]>([]);
   const [currentItemIndex, setCurrentItemIndex] = useState<number>();
   const [results, setResults] = useState<any>([]);
@@ -101,7 +102,7 @@ function ActionView(props: Props, ref: any) {
   const searchTreeRef = useRef();
 
   const tabManagerContext = useContext(
-    TabManagerContext
+    TabManagerContext,
   ) as TabManagerContextType;
   const {
     setCurrentView: setCurrentViewTabContext,
@@ -118,7 +119,7 @@ function ActionView(props: Props, ref: any) {
       event.preventDefault();
       handleGoToRecordShortcut();
     },
-    [activeKey, tabs, currentView, currentItemIndex, results]
+    [activeKey, tabs, currentView, currentItemIndex, results],
   );
 
   function setCurrentId(id?: number) {
@@ -170,7 +171,7 @@ function ActionView(props: Props, ref: any) {
 
       const [, viewType] = view.viewTuple;
 
-      let viewInfo = view.info;
+      const viewInfo = view.info;
 
       switch (viewType) {
         case "dashboard": {
@@ -228,16 +229,16 @@ function ActionView(props: Props, ref: any) {
           break;
       }
     }
-    let currentViewToAssign = undefined;
+    let currentViewToAssign;
 
     if (!initialView && viewDataRetrieved.find((v) => v.type === "tree")) {
       const treeView: TreeView = viewDataRetrieved.find(
-        (v) => v.type === "tree"
+        (v) => v.type === "tree",
       ) as TreeView;
       currentViewToAssign = treeView;
     } else if (!initialView) {
       const formView: TreeView = viewDataRetrieved.find(
-        (v) => v.type === "form"
+        (v) => v.type === "form",
       ) as TreeView;
       currentViewToAssign = formView;
     } else {
@@ -253,7 +254,7 @@ function ActionView(props: Props, ref: any) {
 
     if (!currentViewToAssign) {
       showErrorDialog(
-        `Error determining the first view to show for model ${model}.\nPlease, make sure the view ids on the fields_view_get responses are the same as the ones defined in the action`
+        `Error determining the first view to show for model ${model}.\nPlease, make sure the view ids on the fields_view_get responses are the same as the ones defined in the action`,
       );
       onRemoveTab?.(tabKey);
     }
@@ -457,7 +458,7 @@ function ActionView(props: Props, ref: any) {
     } else {
       setCurrentId(undefined);
       const formView: FormView = availableViews.find(
-        (v) => v.type === "form"
+        (v) => v.type === "form",
       ) as FormView;
       setCurrentView(formView);
     }

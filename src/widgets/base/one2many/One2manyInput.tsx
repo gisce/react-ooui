@@ -5,17 +5,16 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { One2many as One2manyOoui } from "@gisce/ooui";
-import { Alert, Spin } from "antd";
-import { Form } from "@/index";
-import { Tree } from "@/index";
-import { Graph } from "@/widgets/views/Graph/Graph";
 import {
+  One2many as One2manyOoui,
   Form as FormOoui,
   Tree as TreeOoui,
   parseGraph,
   transformDomainForChildWidget,
 } from "@gisce/ooui";
+import { Alert, Spin } from "antd";
+import { Form, Tree } from "@/index";
+import { Graph } from "@/widgets/views/Graph/Graph";
 import { Views, ViewType } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import { FormModal } from "@/widgets/modals/FormModal";
@@ -36,7 +35,7 @@ import { transformPlainMany2Ones } from "@/helpers/formHelper";
 
 type One2manyValue = {
   fields?: any;
-  items: Array<One2manyItem>;
+  items: One2manyItem[];
 };
 
 const ViewObjects = {
@@ -75,13 +74,13 @@ function filterDuplicateItems(items: any) {
 }
 
 const One2manyInput: React.FC<One2manyInputProps> = (
-  props: One2manyInputProps
+  props: One2manyInputProps,
 ) => {
   const { value, onChange, ooui, views } = props;
   const { items = [] } = value || {};
 
   const { currentView, setCurrentView, itemIndex, setItemIndex } = useContext(
-    One2manyContext
+    One2manyContext,
   ) as One2manyContextType;
 
   const formContext = useContext(FormContext) as FormContextType;
@@ -113,7 +112,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const { id: fieldName } = ooui;
   const itemsToShow = items.filter(
     (item) =>
-      (item.values || item.treeValues) && item.operation !== "pendingRemove"
+      (item.values || item.treeValues) && item.operation !== "pendingRemove",
   );
   const previousCurrentView = useRef<ViewType>();
 
@@ -142,7 +141,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     parseDomain();
   }, [domain]);
 
-  const triggerChange = (changedValue: Array<One2manyItem>) => {
+  const triggerChange = (changedValue: One2manyItem[]) => {
     onChange?.({
       fields: views.get("form")?.fields || views.get("tree")?.fields,
       items: filterDuplicateItems(changedValue),
@@ -212,7 +211,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         transformDomainForChildWidget({
           domain,
           widgetFieldName: fieldName,
-        })
+        }),
       );
     }
   }
@@ -384,7 +383,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         triggerChange(updatedItems);
       } else {
         triggerChange(
-          items.filter((item) => item.id !== itemsToShow[itemIndex].id!)
+          items.filter((item) => item.id !== itemsToShow[itemIndex].id!),
         );
       }
     } catch (err) {
@@ -438,7 +437,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     id: number | undefined,
     _: any,
     values: any,
-    x2manyPendingLink: boolean = false
+    x2manyPendingLink: boolean = false,
   ) => {
     let updatedItems: One2manyItem[];
 
@@ -498,7 +497,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const onSearchModalSelectValue = async (ids: number[]) => {
     setIsLoading(true);
 
-    let updatedItems = items;
+    const updatedItems = items;
     const filteredIds = ids.filter((id) => {
       return !items.find((item) => item.id === id);
     });

@@ -1,6 +1,5 @@
 import styled from "styled-components";
-import { useContext, useState } from "react";
-import React from "react";
+import React, { useContext, useState } from "react";
 import { Spin } from "antd";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import Link from "antd/es/typography/Link";
@@ -60,7 +59,7 @@ export const SelectAllRecordsRow = ({
     <span>
       {translations.recordsSelected.replace(
         "{numberOfSelectedRows}",
-        numberOfVisibleSelectedRows.toString()
+        numberOfVisibleSelectedRows.toString(),
       ) + " "}
 
       {loading ? (
@@ -69,7 +68,7 @@ export const SelectAllRecordsRow = ({
         <Link onClick={handleClick} style={{ fontWeight: 600 }}>
           {translations.selectAllRecords.replace(
             "{totalRecords}",
-            totalRecords.toString()
+            totalRecords.toString(),
           )}
         </Link>
       )}
@@ -80,7 +79,7 @@ export const SelectAllRecordsRow = ({
     <span style={{ fontWeight: 600 }}>
       {translations.allRecordsSelected.replace(
         "{totalRecords}",
-        numberOfRealSelectedRows.toString()
+        numberOfRealSelectedRows.toString(),
       ) + " "}
     </span>
   );

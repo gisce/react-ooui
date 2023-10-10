@@ -20,7 +20,7 @@ export type TabManagerContextType = {
     domain: any;
     context: any;
     model: string;
-    views: Array<any>;
+    views: any[];
     title: string;
     target: string;
     initialView: InitialViewData;
@@ -69,9 +69,8 @@ export type TabManagerContextType = {
   setCurrentId?: (id?: number) => void;
 };
 
-export const TabManagerContext = React.createContext<TabManagerContextType | null>(
-  null
-);
+export const TabManagerContext =
+  React.createContext<TabManagerContextType | null>(null);
 
 type TabManagerProviderProps = TabManagerContextType & {
   children: React.ReactNode;

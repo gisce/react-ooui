@@ -1,12 +1,10 @@
-import { DatePicker, TimePicker } from "antd";
+import { DatePicker, TimePicker, Row, Col } from "antd";
 
 import React from "react";
 import Field from "@/common/Field";
 import { Field as FieldOoui, Label as LabelOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Label from "@/widgets/base/Label";
-
-import { Row, Col } from "antd";
 
 export const DateTimeRangePicker = (props: WidgetProps) => {
   const { ooui, showLabel = false } = props;

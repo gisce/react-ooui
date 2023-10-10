@@ -1,6 +1,5 @@
 import React from "react";
-import { Tooltip, theme } from "antd";
-import { Statistic, Card } from "antd";
+import { Tooltip, theme, Statistic, Card } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Field from "@/common/Field";

@@ -5,9 +5,8 @@ import Title from "antd/lib/typography/Title";
 import Measure from "react-measure";
 import iconMapper from "@/helpers/iconMapper";
 import { Alert, Col, Row } from "antd";
-import { Operator } from "@gisce/ooui";
+import { Operator, graphProcessor } from "@gisce/ooui";
 
-import { graphProcessor } from "@gisce/ooui";
 const { getValueForOperator } = graphProcessor;
 
 const fontGrowFactor = 0.7;
@@ -173,7 +172,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
               condition: iconProps,
               values: { value: retrievedValue, percent },
               context,
-            }
+            },
           );
           setIcon(iconEval);
         } else {
@@ -285,7 +284,7 @@ function CommonIndicator({
 
   let tw = getTextWidth(
     finalValue,
-    `bold ${Math.floor(fontSize * 1.03)}px sans-serif`
+    `bold ${Math.floor(fontSize * 1.03)}px sans-serif`,
   );
 
   if (icon) {
@@ -297,7 +296,8 @@ function CommonIndicator({
     fontSize = maxFontSize;
   }
 
-  const IconElement: any = icon && iconMapper(icon, {style: {fontSize: fontSize * 0.7}});
+  const IconElement: any =
+    icon && iconMapper(icon, { style: { fontSize: fontSize * 0.7 } });
 
   return (
     <div
@@ -366,7 +366,7 @@ function PercentageIndicator({
 
   let tw = getTextWidth(
     percentValue,
-    `bold ${Math.floor(fontSize * 1.03)}px sans-serif`
+    `bold ${Math.floor(fontSize * 1.03)}px sans-serif`,
   );
 
   if (icon) {
@@ -378,7 +378,7 @@ function PercentageIndicator({
     fontSize = maxFontSize;
   }
 
-  const IconElement: any = icon && iconMapper(icon, {style: {fontSize}});
+  const IconElement: any = icon && iconMapper(icon, { style: { fontSize } });
 
   return (
     <div

@@ -38,12 +38,12 @@ export const Many2oneSuffix = (props: Props) => {
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
   const tabManagerContext = useContext(
-    TabManagerContext
+    TabManagerContext,
   ) as TabManagerContextType;
   const { openRelate } = tabManagerContext || {};
 
   const contentRootContext = useContext(
-    ContentRootContext
+    ContentRootContext,
   ) as ContentRootContextType;
   const { processAction } = contentRootContext || {};
 
@@ -55,22 +55,34 @@ export const Many2oneSuffix = (props: Props) => {
     setIsLoading(true);
 
     try {
-      const formView = await ConnectionProvider.getHandler().getView({
+      const formView = (await ConnectionProvider.getHandler().getView({
         model,
         type: "form",
         context,
-      }) as FormView;
+      })) as FormView;
       setFormView(formView);
       let fields: string[] = [];
       const { toolbar } = formView;
-      toolbar.action?.filter((item: any) => item.hasOwnProperty('context')).map((item: any) => fields.push(...parseContextFields(item.context)));
-      toolbar.action?.filter((item: any) => item.hasOwnProperty('domain')).map((item: any) => fields.push(...parseDomainFields(item.domain)));
-      toolbar.relate?.filter((item: any) => item.hasOwnProperty('context')).map((item: any) => fields.push(...parseContextFields(item.context)));
-      toolbar.relate?.filter((item: any) => item.hasOwnProperty('domain')).map((item: any) => fields.push(...parseDomainFields(item.domain)));
-      toolbar.print?.filter((item: any) => item.hasOwnProperty('context')).map((item: any) => fields.push(...parseContextFields(item.context)));
-      fields = fields.filter((i) => Object.keys(formView.fields).indexOf(i) > -1)
+      toolbar.action
+        ?.filter((item: any) => item.hasOwnProperty("context"))
+        .map((item: any) => fields.push(...parseContextFields(item.context)));
+      toolbar.action
+        ?.filter((item: any) => item.hasOwnProperty("domain"))
+        .map((item: any) => fields.push(...parseDomainFields(item.domain)));
+      toolbar.relate
+        ?.filter((item: any) => item.hasOwnProperty("context"))
+        .map((item: any) => fields.push(...parseContextFields(item.context)));
+      toolbar.relate
+        ?.filter((item: any) => item.hasOwnProperty("domain"))
+        .map((item: any) => fields.push(...parseDomainFields(item.domain)));
+      toolbar.print
+        ?.filter((item: any) => item.hasOwnProperty("context"))
+        .map((item: any) => fields.push(...parseContextFields(item.context)));
+      fields = fields.filter(
+        (i) => Object.keys(formView.fields).indexOf(i) > -1,
+      );
 
-      let values = {}
+      let values = {};
 
       if (fields.length > 0) {
         values = (
@@ -89,7 +101,6 @@ export const Many2oneSuffix = (props: Props) => {
     } catch (err) {
       setIsLoading(false);
       showErrorDialog(err);
-      return;
     }
   }
 

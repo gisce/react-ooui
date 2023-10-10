@@ -74,7 +74,11 @@ export const LinkInput = (props: LinkInputProps) => {
       <Col flex="auto">
         {showInput ? (
           <Input
-            style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, ...requiredStyle }}
+            style={{
+              borderTopLeftRadius: 0,
+              borderBottomLeftRadius: 0,
+              ...requiredStyle,
+            }}
             id={id}
             onChange={onValueStringChange}
             value={value}
@@ -91,6 +95,7 @@ export const LinkInput = (props: LinkInputProps) => {
             href={`${linkPrefix}${value}`}
             style={{ color: token.colorPrimary, paddingRight: 15 }}
             target="_blank"
+            rel="noreferrer"
           >
             {value}
           </a>

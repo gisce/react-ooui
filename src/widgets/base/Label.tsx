@@ -22,10 +22,10 @@ const Label = (props: Props) => {
   const { ooui, align, responsiveBehaviour } = props;
   const { label, tooltip, fieldForLabel, labelSize, labelType } =
     ooui as LabelOoui;
-  const addColon = fieldForLabel !== null ? true : false;
+  const addColon = fieldForLabel !== null;
   const labelText = addColon && label.length > 1 ? label + " :" : label;
   const responsiveAlign = responsiveBehaviour ? "left" : "right";
-  const labelAlgin = align ? align : fieldForLabel ? responsiveAlign : "left";
+  const labelAlgin = align || (fieldForLabel ? responsiveAlign : "left");
   const { token } = useToken();
 
   const TextType = labelSize === undefined ? Text : Title;
@@ -36,16 +36,16 @@ const Label = (props: Props) => {
     >
       {tooltip && (
         <Tooltip title={tooltip}>
-          <QuestionCircleOutlined className="pr-1 text-xs" style={{
-            color: token.colorPrimary
-          }} />
+          <QuestionCircleOutlined
+            className="pr-1 text-xs"
+            style={{
+              color: token.colorPrimary,
+            }}
+          />
         </Tooltip>
       )}
       <span className="pr-2">
-        <TextType
-          level={labelSize}
-          type={labelType as any}
-        >
+        <TextType level={labelSize} type={labelType as any}>
           <Interweave content={labelText} />
         </TextType>
       </span>

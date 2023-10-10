@@ -5,9 +5,9 @@ import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 import { Date as DateOoui } from "@gisce/ooui";
 import dayjs from "dayjs";
-const { useToken } = theme;
 import weekday from "dayjs/plugin/weekday";
 import localeData from "dayjs/plugin/localeData";
+const { useToken } = theme;
 dayjs.extend(weekday);
 dayjs.extend(localeData);
 
@@ -47,7 +47,7 @@ interface DatePickerInputProps {
 }
 
 const DatePickerInput: React.FC<DatePickerInputProps> = (
-  props: DatePickerInputProps
+  props: DatePickerInputProps,
 ) => {
   const { value, onChange, ooui, showTime } = props;
   const { id, readOnly, required } = ooui as DateOoui;

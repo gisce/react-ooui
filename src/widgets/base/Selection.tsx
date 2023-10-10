@@ -1,11 +1,10 @@
 import React from "react";
-import { Select } from "antd";
+import { Select, theme } from "antd";
 import styled from "styled-components";
 
 import Field from "@/common/Field";
 import { Selection as SelectionOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
-import { theme } from "antd";
 
 const { defaultAlgorithm, defaultSeed } = theme;
 
@@ -50,9 +49,16 @@ export const SelectionInput = (props: SelectionInputProps) => {
   const CustomSelect: any = required && !readOnly ? RequiredSelect : Select;
 
   return (
-    <CustomSelect disabled={readOnly} onChange={onChange} value={value} optionFilterProp="children" filterOption={
-      (input: string, option: any) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-    } showSearch>
+    <CustomSelect
+      disabled={readOnly}
+      onChange={onChange}
+      value={value}
+      optionFilterProp="children"
+      filterOption={(input: string, option: any) =>
+        option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      }
+      showSearch
+    >
       {options}
     </CustomSelect>
   );

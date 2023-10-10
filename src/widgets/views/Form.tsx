@@ -72,7 +72,7 @@ export type FormProps = {
     id?: number,
     values?: any,
     formValues?: any,
-    x2manyPendingLink?: boolean
+    x2manyPendingLink?: boolean,
   ) => void;
   onSubmitError?: (error: any) => void;
   onCancel?: () => void;
@@ -143,7 +143,7 @@ function Form(props: FormProps, ref: any) {
     formContext || {};
 
   const actionViewContext = useContext(
-    ActionViewContext
+    ActionViewContext,
   ) as ActionViewContextType;
   const {
     setFormIsSaving = undefined,
@@ -156,7 +156,7 @@ function Form(props: FormProps, ref: any) {
   } = (rootForm ? actionViewContext : {}) || {};
 
   const contentRootContext = useContext(
-    ContentRootContext
+    ContentRootContext,
   ) as ContentRootContextType;
   const { processAction, globalValues } = contentRootContext || {};
 
@@ -213,7 +213,7 @@ function Form(props: FormProps, ref: any) {
     id?: number,
     values?: any,
     formValues?: any,
-    x2manyPendingLink?: boolean
+    x2manyPendingLink?: boolean,
   ) => {
     setFormHasChanges?.(false);
     setFormIsSaving?.(false);
@@ -257,7 +257,7 @@ function Form(props: FormProps, ref: any) {
   function getPlainValues() {
     const values: any = getValues();
     const fields: any = getFields();
-    let reformattedValues: { [key: string]: any } = {};
+    const reformattedValues: { [key: string]: any } = {};
 
     Object.keys(values).forEach((key) => {
       const value = values[key];
@@ -341,7 +341,7 @@ function Form(props: FormProps, ref: any) {
           source: originalFormValues.current,
           target: getCurrentValues(fields),
           fields,
-        })
+        }),
       ).length !== 0
     );
   };
@@ -641,7 +641,7 @@ function Form(props: FormProps, ref: any) {
         getCurrentId(),
         getValues(),
         getFormValues(),
-        x2manyPendingLink.current
+        x2manyPendingLink.current,
       );
       x2manyPendingLink.current = false;
       const currentId = getCurrentId()!;
@@ -721,7 +721,7 @@ function Form(props: FormProps, ref: any) {
           ...values,
           ...getAdditionalValues(),
         },
-        fields
+        fields,
       ),
     });
     setFormOoui(ooui);
@@ -770,7 +770,6 @@ function Form(props: FormProps, ref: any) {
         }) &&
         elementHasLostFocus !== true
       ) {
-        return;
       } else {
         const values = processValues(antForm.getFieldsValue(true), fields);
         lastAssignedValues.current = values;
@@ -836,7 +835,7 @@ function Form(props: FormProps, ref: any) {
       parseForm({ fields, arch: arch!, values: processedValues });
       assignNewValuesToForm({
         values: processedValues,
-        fields: fields,
+        fields,
         reset: false,
       });
     }

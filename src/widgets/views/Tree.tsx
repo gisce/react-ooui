@@ -39,7 +39,7 @@ type Props = {
   page?: number;
   loading: boolean;
   treeView: TreeView;
-  results: Array<any>;
+  results: any[];
   showPagination?: boolean;
   onRequestPageChange?: (page: number, pageSize?: number) => void;
   onRowClicked?: (record: any) => void;
@@ -88,7 +88,7 @@ const dateComponentFn = (value: any): React.ReactElement => {
 
   const formattedValue = dayjs(
     value,
-    DatePickerConfig.date.dateInternalFormat
+    DatePickerConfig.date.dateInternalFormat,
   ).format(DatePickerConfig.date.dateDisplayFormat);
   return <>{formattedValue}</>;
 };
@@ -97,7 +97,7 @@ const dateTimeComponentFn = (value: any): React.ReactElement => {
   if (!value || (value && value.length === 0)) return <></>;
   const formattedValue = dayjs(
     value,
-    DatePickerConfig.time.dateInternalFormat
+    DatePickerConfig.time.dateInternalFormat,
   ).format(DatePickerConfig.time.dateDisplayFormat);
   return <>{formattedValue}</>;
 };
@@ -132,7 +132,7 @@ const TagComponent = (
   value: any,
   key: string,
   ooui: any,
-  context: any
+  context: any,
 ): React.ReactElement => {
   return <TagInput ooui={ooui} value={value} />;
 };
@@ -141,7 +141,7 @@ const SelectionComponent = (
   value: any,
   key: string,
   ooui: any,
-  context: any
+  context: any,
 ): React.ReactElement => {
   return <>{ooui.selectionValues.get(value)}</>;
 };
@@ -150,7 +150,7 @@ const referenceComponent = (
   value: any,
   key: string,
   ooui: any,
-  context: any
+  context: any,
 ): React.ReactElement => {
   return (
     <>
@@ -167,7 +167,7 @@ const AvatarFn = (
   value: any,
   key: string,
   ooui: any,
-  context: any
+  context: any,
 ): React.ReactElement => <Avatar ooui={ooui} value={value} />;
 
 function Tree(props: Props): React.ReactElement {
@@ -195,8 +195,8 @@ function Tree(props: Props): React.ReactElement {
     onSelectAllRecords,
   } = props;
 
-  const [items, setItems] = useState<Array<any>>([]);
-  const [columns, setColumns] = useState<Array<Column>>([]);
+  const [items, setItems] = useState<any[]>([]);
+  const [columns, setColumns] = useState<Column[]>([]);
 
   const errorInParseColors = useRef<boolean>(false);
 
@@ -206,7 +206,7 @@ function Tree(props: Props): React.ReactElement {
   const internalLimit = useRef(limit);
 
   const actionViewContext = useContext(
-    ActionViewContext
+    ActionViewContext,
   ) as ActionViewContextType;
   const { title = undefined, setTitle = undefined } =
     (rootTree ? actionViewContext : {}) || {};
@@ -234,7 +234,7 @@ function Tree(props: Props): React.ReactElement {
         datetime: dateTimeComponentFn,
         avatar: AvatarFn,
       },
-      context
+      context,
     );
 
     setColumns(columns);
@@ -271,7 +271,7 @@ function Tree(props: Props): React.ReactElement {
     const numberOfVisibleSelectedRows = items?.filter(
       (entry) =>
         rowSelection?.selectedRowKeys &&
-        rowSelection?.selectedRowKeys.includes(entry.id)
+        rowSelection?.selectedRowKeys.includes(entry.id),
     ).length;
 
     return loading ? null : total === undefined ? (
@@ -322,8 +322,8 @@ function Tree(props: Props): React.ReactElement {
       return null;
     }
 
-    let summary: string[] = [];
-    let sumItems =
+    const summary: string[] = [];
+    const sumItems =
       rowSelection?.selectedRowKeys?.length > 0
         ? items.filter((result: any) => {
             return rowSelection?.selectedRowKeys.includes(result.id);

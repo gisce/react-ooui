@@ -7,8 +7,7 @@ import {
   FormOutlined,
   EditOutlined,
 } from "@ant-design/icons";
-import { Button, Col, Row, Spin, Tooltip, theme } from "antd";
-import { Menu, Dropdown } from "antd";
+import { Button, Col, Row, Spin, Tooltip, theme, Menu, Dropdown } from "antd";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import {
   TabManagerContext,
@@ -61,7 +60,7 @@ const FavouriteButton = (props: Props) => {
   const { token } = useToken();
 
   const tabManagerContext = useContext(
-    TabManagerContext
+    TabManagerContext,
   ) as TabManagerContextType;
   const {
     openShortcut,

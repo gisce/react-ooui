@@ -1,11 +1,10 @@
 import React from "react";
-import { Select } from "antd";
+import { Select, theme } from "antd";
 import styled from "styled-components";
 
 import Field from "@/common/Field";
 import { Selection as SelectionOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
-import { theme } from "antd";
 
 const { defaultAlgorithm, defaultSeed } = theme;
 

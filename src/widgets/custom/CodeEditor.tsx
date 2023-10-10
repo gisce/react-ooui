@@ -17,12 +17,16 @@ export const CodeEditor = (props: CodeEditorProps) => {
   const { elementHasLostFocus } = formContext || {};
 
   const onMount = (editor: any) => {
-    editor.onDidBlurEditorWidget(elementHasLostFocus)
-  }
+    editor.onDidBlurEditorWidget(elementHasLostFocus);
+  };
 
   return (
     <Field {...props}>
-      <Editor defaultLanguage={lang ? lang : ''} height={height ? height : 300} onMount={onMount}/>
+      <Editor
+        defaultLanguage={lang || ""}
+        height={height || 300}
+        onMount={onMount}
+      />
     </Field>
   );
 };
