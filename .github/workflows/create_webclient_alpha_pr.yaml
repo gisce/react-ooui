@@ -20,7 +20,11 @@ jobs:
 
     - name: Update library version in package.json
       run: |
-        sed -i 's|"@gisce/react-ooui": "[^"]*"|"@gisce/react-ooui": "${{ github.event.release.tag_name }}"|' package.json
+        NEW_VERSION=${{ github.event.release.tag_name#v }}  # Remove the leading 'v'
+        sed -i 's|"@gisce/react-ooui": "[^"]*"|"@gisce/react-ooui": "'"$NEW_VERSION"'"|' package.json
+
+    - name: Display content of package.json
+      run: cat package.json
 
     - name: Setup Node.js
       uses: actions/setup-node@v2
