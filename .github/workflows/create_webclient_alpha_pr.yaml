@@ -40,6 +40,6 @@ jobs:
       uses: peter-evans/create-pull-request@v3
       with:
         token: ${{ secrets.GH_PAT }}
-        commit-message: "Update @gisce/react-ooui to ${{ github.event.release.tag_name }}"
+        commit-message: "fix: Update @gisce/react-ooui to ${{ github.event.release.tag_name }}"
         title: "Update @gisce/react-ooui to ${{ github.event.release.tag_name }}"
         branch: "update-react-ooui-${{ github.event.release.tag_name }}"
