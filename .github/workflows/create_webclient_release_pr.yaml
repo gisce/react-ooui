@@ -14,7 +14,7 @@ jobs:
     - name: Checkout webclient repository
       uses: actions/checkout@v2
       with:
-        repository: '@gisce/webclient'
+        repository: 'gisce/webclient'
         ref: main
         token: ${{ secrets.GH_PAT }}
 
