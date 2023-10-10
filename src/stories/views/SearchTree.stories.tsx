@@ -3,9 +3,6 @@ import React from "react";
 import SearchTree from "../../widgets/views/SearchTree";
 import ConnectionProvider from "../../ConnectionProvider";
 
-// import "antd/dist/antd.css";
-
-
 import LocaleProvider from "../../context/LocaleContext";
 
 export default {
@@ -62,8 +59,7 @@ const data = {
       views: {},
     },
     lang: {
-      help:
-        "If the selected language is loaded in the system, all documents related to this partner will be printed in this language. If not, it will be english.",
+      help: "If the selected language is loaded in the system, all documents related to this partner will be printed in this language. If not, it will be english.",
       selection: [
         ["en_US", "English"],
         ["ca_ES", "Catalan / Català"],
@@ -277,8 +273,7 @@ const data = {
       context: "",
       digits: [16, 2],
       domain: "[('type', '=', 'receivable')]",
-      help:
-        "This account will be used as the debtor account for the current partner",
+      help: "This account will be used as the debtor account for the current partner",
       relation: "account.account",
       required: true,
       string: "Account Debtor",
@@ -289,8 +284,7 @@ const data = {
       context: "",
       digits: [16, 2],
       domain: "[('type', '=', 'payable')]",
-      help:
-        "This account will be used instead of the default one as the payable account for the current partner",
+      help: "This account will be used instead of the default one as the payable account for the current partner",
       relation: "account.account",
       required: true,
       string: "Account Payable",
@@ -301,8 +295,7 @@ const data = {
       context: "",
       digits: [16, 2],
       domain: [],
-      help:
-        "The fiscal position will determine taxes and the accounts used for the the partner.",
+      help: "The fiscal position will determine taxes and the accounts used for the the partner.",
       relation: "account.fiscal.position",
       string: "Fiscal Position",
       type: "many2one",
@@ -312,8 +305,7 @@ const data = {
       context: "",
       digits: [16, 2],
       domain: "[('type', '=', 'receivable')]",
-      help:
-        "This account will be used instead of the default one as the receivable account for the current partner",
+      help: "This account will be used instead of the default one as the receivable account for the current partner",
       relation: "account.account",
       required: true,
       string: "Account Receivable",
@@ -324,8 +316,7 @@ const data = {
       context: "",
       digits: [16, 2],
       domain: [],
-      help:
-        "This payment term will be used instead of the default one for the current partner",
+      help: "This payment term will be used instead of the default one for the current partner",
       relation: "account.payment.term",
       string: "Payment Term",
       type: "many2one",
@@ -335,8 +326,7 @@ const data = {
       context: "",
       digits: [16, 2],
       domain: [["type", "=", "sale"]],
-      help:
-        "This pricelist will be used, instead of the default one,                     for sales to the current partner",
+      help: "This pricelist will be used, instead of the default one,                     for sales to the current partner",
       relation: "product.pricelist",
       string: "Sale Pricelist",
       type: "many2one",
@@ -346,8 +336,7 @@ const data = {
       context: "",
       digits: [16, 2],
       domain: [["type", "=", "purchase"]],
-      help:
-        "This pricelist will be used, instead of the default one, for purchases from the current partner",
+      help: "This pricelist will be used, instead of the default one, for purchases from the current partner",
       relation: "product.pricelist",
       string: "Purchase Pricelist",
       type: "many2one",
@@ -357,8 +346,7 @@ const data = {
       context: "",
       digits: [16, 2],
       domain: [],
-      help:
-        "This stock location will be used, instead of the default one, as the destination location for goods you send to this partner",
+      help: "This stock location will be used, instead of the default one, as the destination location for goods you send to this partner",
       relation: "stock.location",
       string: "Customer Location",
       type: "many2one",
@@ -368,8 +356,7 @@ const data = {
       context: "",
       digits: [16, 2],
       domain: [],
-      help:
-        "This stock location will be used, instead of the default one, as the source location for goods you receive from the current partner",
+      help: "This stock location will be used, instead of the default one, as the source location for goods you receive from the current partner",
       relation: "stock.location",
       string: "Supplier Location",
       type: "many2one",
@@ -379,8 +366,7 @@ const data = {
       context: "",
       digits: [16, 2],
       domain: [["name", "!=", false]],
-      help:
-        "Encoding XML amb el qual es generaran els XML's de switching per aquesta empresa",
+      help: "Encoding XML amb el qual es generaran els XML's de switching per aquesta empresa",
       relation: "giscedata.switching.xml.encoding",
       required: true,
       string: "Encoding XML switching",
@@ -403,8 +389,7 @@ const data = {
       views: {},
     },
     supplier: {
-      help:
-        "Check this box if the partner is a supplier. If it's not checked, purchase people will not see it when encoding a purchase order.",
+      help: "Check this box if the partner is a supplier. If it's not checked, purchase people will not see it when encoding a purchase order.",
       string: "Supplier",
       type: "boolean",
       views: {},
@@ -420,8 +405,7 @@ const data = {
     user_id: {
       context: "",
       domain: [],
-      help:
-        "The internal user that is in charge of communicating with this partner if any.",
+      help: "The internal user that is in charge of communicating with this partner if any.",
       relation: "res.users",
       size: 64,
       string: "Dedicated Salesman",
@@ -429,8 +413,7 @@ const data = {
       views: {},
     },
     vat: {
-      help:
-        "Value Added Tax number. Check the box if the partner is subjected to the VAT. Used by the VAT legal statement.",
+      help: "Value Added Tax number. Check the box if the partner is subjected to the VAT. Used by the VAT legal statement.",
       select: true,
       size: 32,
       string: "VAT",
@@ -438,8 +421,7 @@ const data = {
       views: {},
     },
     vat_subjected: {
-      help:
-        "Check this box if the partner is subjected to the VAT. It will be used for the VAT legal statement.",
+      help: "Check this box if the partner is subjected to the VAT. It will be used for the VAT legal statement.",
       string: "VAT Legal Statement",
       type: "boolean",
       views: {},
@@ -503,8 +485,7 @@ const data = {
       type: "char",
     },
   },
-  arch:
-    '<tree string="Partners">\n                    <field name="id" sum="Sumtest" /><field name="name"/><field name="test"/><field name="test1"/><field name="test2"/><field name="test3"/><field name="test4"/><field name="test5"/><field name="test6"/><field name="test7"/><field name="test8"/><field name="test9"/><field name="test10"/><field name="test11"/><field name="test5"/><field name="test12"/>\n                    <field name="title"/>\n                    <field name="ref"/>\n                    <field name="city" select="2"/>\n                    <field name="country" select="2"/>\n                    <field name="lang"/>\n                </tree>',
+  arch: '<tree string="Partners">\n                    <field name="id" sum="Sumtest" /><field name="name"/><field name="test"/><field name="test1"/><field name="test2"/><field name="test3"/><field name="test4"/><field name="test5"/><field name="test6"/><field name="test7"/><field name="test8"/><field name="test9"/><field name="test10"/><field name="test11"/><field name="test5"/><field name="test12"/>\n                    <field name="title"/>\n                    <field name="ref"/>\n                    <field name="city" select="2"/>\n                    <field name="country" select="2"/>\n                    <field name="lang"/>\n                </tree>',
 };
 
 export const Default = (): React.ReactElement => {
@@ -530,8 +511,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -551,8 +531,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -572,8 +551,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -593,8 +571,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -614,8 +591,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -635,8 +611,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -656,8 +631,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -677,8 +651,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -698,8 +671,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -719,8 +691,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -740,8 +711,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -761,8 +731,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -782,8 +751,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -803,8 +771,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -824,8 +791,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -845,8 +811,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -866,8 +831,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -887,8 +851,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -908,8 +871,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -929,8 +891,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -950,8 +911,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -971,8 +931,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -992,8 +951,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -1013,8 +971,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -1034,8 +991,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -1055,8 +1011,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:
@@ -1076,8 +1031,7 @@ export const Default = (): React.ReactElement => {
             name: "ASUStek",
             ref: "1234",
             title: false,
-            test:
-              "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
+            test: "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test1:
               "itjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjtitjtijtitjiitjt",
             test2:

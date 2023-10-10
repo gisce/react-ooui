@@ -3,9 +3,6 @@ import React from "react";
 import { Button } from "..";
 import { Button as ButtonOoui } from "@gisce/ooui";
 
-// import "antd/dist/antd.css";
-
-
 import LocaleProvider from "../context/LocaleContext";
 
 export default {
@@ -28,7 +25,7 @@ export const WithStockIcon = (): React.ReactElement => {
   const ooui = new ButtonOoui({
     name: "button_field",
     string: "Lorem ipsum",
-    icon: "gtk-ok"
+    icon: "gtk-ok",
   });
   return (
     <LocaleProvider lang="en_US">
@@ -41,7 +38,7 @@ export const WithCustomIcon = (): React.ReactElement => {
   const ooui = new ButtonOoui({
     name: "button_field",
     string: "Lorem ipsum",
-    icon: "terp-purchase"
+    icon: "terp-purchase",
   });
   return (
     <LocaleProvider lang="en_US">
@@ -54,7 +51,7 @@ export const WithAntdIcon = (): React.ReactElement => {
   const ooui = new ButtonOoui({
     name: "button_field",
     string: "Lorem ipsum",
-    icon: "ant-design"
+    icon: "ant-design",
   });
   return (
     <LocaleProvider lang="en_US">
@@ -67,7 +64,7 @@ export const WithUnexistingdIcon = (): React.ReactElement => {
   const ooui = new ButtonOoui({
     name: "button_field",
     string: "Lorem ipsum",
-    icon: "foo"
+    icon: "foo",
   });
   return (
     <LocaleProvider lang="en_US">
@@ -80,7 +77,7 @@ export const WithTablerIcon = (): React.ReactElement => {
   const ooui = new ButtonOoui({
     name: "button_field",
     string: "Lorem ipsum",
-    icon: "bulb-off"
+    icon: "bulb-off",
   });
   return (
     <LocaleProvider lang="en_US">
@@ -94,7 +91,7 @@ export const PrimaryButton = (): React.ReactElement => {
     name: "button_field",
     string: "Lorem ipsum",
     icon: "send",
-    primary: "1"
+    primary: "1",
   });
   return (
     <LocaleProvider lang="en_US">
@@ -108,7 +105,7 @@ export const DangerButton = (): React.ReactElement => {
     name: "button_field",
     string: "Lorem ipsum",
     icon: "exclamation-circle",
-    danger: "1"
+    danger: "1",
   });
   return (
     <LocaleProvider lang="en_US">
@@ -116,7 +113,6 @@ export const DangerButton = (): React.ReactElement => {
     </LocaleProvider>
   );
 };
-
 
 export const PrimaryDangerButton = (): React.ReactElement => {
   const ooui = new ButtonOoui({
@@ -124,7 +120,7 @@ export const PrimaryDangerButton = (): React.ReactElement => {
     string: "Lorem ipsum",
     icon: "exclamation-circle",
     danger: "1",
-    primary: "1"
+    primary: "1",
   });
   return (
     <LocaleProvider lang="en_US">
@@ -132,5 +128,3 @@ export const PrimaryDangerButton = (): React.ReactElement => {
     </LocaleProvider>
   );
 };
-
-

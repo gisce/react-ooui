@@ -4,9 +4,6 @@ import { Field as FieldOoui } from "@gisce/ooui";
 
 import { PairFields } from "../../../widgets/views/searchFilter/PairFields";
 
-// import "antd/dist/antd.css";
-
-
 import LocaleProvider from "../../../context/LocaleContext";
 
 export default {

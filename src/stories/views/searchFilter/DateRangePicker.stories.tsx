@@ -5,9 +5,6 @@ import LocaleProvider from "../../../context/LocaleContext";
 
 import { DateRangePicker } from "../../../widgets/views/searchFilter/DateRangePicker";
 
-// import "antd/dist/antd.css";
-
-
 export default {
   title: "Components/Widgets/Views/SearchFilter/DateRangePicker",
 };

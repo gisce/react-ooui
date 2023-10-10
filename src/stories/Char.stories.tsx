@@ -3,9 +3,6 @@ import React from "react";
 import { Char } from "..";
 import { Char as CharOoui } from "@gisce/ooui";
 
-// import "antd/dist/antd.css";
-
-
 import LocaleProvider from "../context/LocaleContext";
 
 export default {

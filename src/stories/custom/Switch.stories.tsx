@@ -3,9 +3,6 @@ import React from "react";
 import { Switch } from "../../widgets/custom/Switch";
 import { Switch as SwitchOoui } from "@gisce/ooui";
 
-// import "antd/dist/antd.css";
-
-
 import LocaleProvider from "../../context/LocaleContext";
 
 export default {

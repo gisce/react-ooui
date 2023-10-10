@@ -3,9 +3,6 @@ import React, { useState } from "react";
 import { BinaryInput } from "../widgets/base/Binary";
 import { Binary as BinaryOoui } from "@gisce/ooui";
 
-// import "antd/dist/antd.css";
-
-
 import LocaleProvider from "../context/LocaleContext";
 
 export default {

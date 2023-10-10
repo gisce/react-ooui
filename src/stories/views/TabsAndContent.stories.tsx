@@ -2,9 +2,6 @@ import React from "react";
 
 import Tab from "../../views/tabs/Tab";
 
-// import "antd/dist/antd.css";
-
-
 import LocaleProvider from "../../context/LocaleContext";
 
 export default {

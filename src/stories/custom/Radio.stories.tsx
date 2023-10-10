@@ -3,9 +3,6 @@ import React from "react";
 import { Radio } from "../../widgets/custom/Radio";
 import { Radio as RadioOoui } from "@gisce/ooui";
 
-// import "antd/dist/antd.css";
-
-
 import LocaleProvider from "../../context/LocaleContext";
 
 export default {
@@ -18,10 +15,10 @@ export const Default = (): React.ReactElement => {
     string: "Level",
     required: true,
     selection: [
-      ['easy', 'Easy'],
-      ['medium', 'Medium'],
-      ['hard', 'Hard']
-    ]
+      ["easy", "Easy"],
+      ["medium", "Medium"],
+      ["hard", "Hard"],
+    ],
   });
 
   return (
@@ -37,10 +34,10 @@ export const Readonly = (): React.ReactElement => {
     string: "Level",
     readonly: true,
     selection: [
-      ['easy', 'Easy'],
-      ['medium', 'Medium'],
-      ['hard', 'Hard']
-    ]
+      ["easy", "Easy"],
+      ["medium", "Medium"],
+      ["hard", "Hard"],
+    ],
   });
 
   return (
@@ -56,11 +53,11 @@ export const RadioVertical = (): React.ReactElement => {
     string: "Level",
     readonly: true,
     selection: [
-      ['easy', 'Easy'],
-      ['medium', 'Medium'],
-      ['hard', 'Hard']
+      ["easy", "Easy"],
+      ["medium", "Medium"],
+      ["hard", "Hard"],
     ],
-    widget_props: "{'direction': 'vertical'}"
+    widget_props: "{'direction': 'vertical'}",
   });
 
   return (

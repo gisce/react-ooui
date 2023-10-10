@@ -3,9 +3,6 @@ import React from "react";
 import { Many2one } from "..";
 import { Many2one as Many2oneOoui } from "@gisce/ooui";
 
-// import "antd/dist/antd.css";
-
-
 import LocaleProvider from "../context/LocaleContext";
 
 export default {

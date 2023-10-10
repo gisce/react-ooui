@@ -1,10 +1,7 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 
-import {Indicator} from "../../widgets/custom/Indicator";
+import { Indicator } from "../../widgets/custom/Indicator";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
-
-// import "antd/dist/antd.css";
-
 
 import LocaleProvider from "../../context/LocaleContext";
 
@@ -24,7 +21,6 @@ export const Default = (): React.ReactElement => {
   );
 };
 
-
 export const WithIconAndSuffix = (): React.ReactElement => {
   const ooui = new IndicatorOoui({
     name: "test",
@@ -34,11 +30,7 @@ export const WithIconAndSuffix = (): React.ReactElement => {
 
   return (
     <LocaleProvider lang="en_US">
-      <Indicator ooui={ooui} value={300}/>
+      <Indicator ooui={ooui} value={300} />
     </LocaleProvider>
   );
 };
-
-
-
-

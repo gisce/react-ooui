@@ -3,9 +3,6 @@ import React from "react";
 import { FiberGrid } from "../widgets/custom/FiberGrid";
 import { Char as CharOoui } from "@gisce/ooui";
 
-// import "antd/dist/antd.css";
-
-
 import LocaleProvider from "../context/LocaleContext";
 import { Form } from "antd";
 
