@@ -20,10 +20,6 @@
     "access": "public"
   },
   "scripts": {
-    "preminor": "npm version preminor --preid rc",
-    "prerelease": "npm version prerelease --preid rc",
-    "prepatch": "npm version prepatch --preid rc",
-    "premajor": "npm version premajor --preid rc",
     "start": "while :; do tsc && vite build --watch --force; done",
     "build": "tsc && vite build",
     "test": "jest",
