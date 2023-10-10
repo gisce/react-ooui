@@ -1,7 +1,7 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 
 import { Avatar as AvatarOoui } from "@gisce/ooui";
-import Avatar from "@/widgets/custom/Avatar";
+import Avatar from "../../widgets/custom/Avatar";
 import LocaleProvider from "../../context/LocaleContext";
 
 export default {
@@ -20,7 +20,3 @@ export const Default = (): React.ReactElement => {
     </LocaleProvider>
   );
 };
-
-
-
-
