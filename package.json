@@ -4,6 +4,9 @@
   "engines": {
     "node": "20.5.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "dist",
     "src",
@@ -15,9 +18,6 @@
     ".": {
       "import": "./dist/react-ooui.es.js"
     }
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "scripts": {
     "preinstall": "npx only-allow npm",
