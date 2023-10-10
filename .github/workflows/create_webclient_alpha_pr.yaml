@@ -20,7 +20,7 @@ jobs:
 
     - name: Update library version in package.json
       run: |
-        sed -i 's/"@gisce/react-ooui": "[^"]*"/"@gisce/react-ooui": "${{ github.event.release.tag_name }}"/' package.json
+        sed -i 's|"@gisce/react-ooui": "[^"]*"|"@gisce/react-ooui": "${{ github.event.release.tag_name }}"|' package.json
 
     - name: Install npm dependencies and generate package-lock.json
       run: |
