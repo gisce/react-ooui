@@ -1,4 +1,4 @@
-name: Create PR on WebClient on Alpha Prerelease
+name: Create PR on WebClient on a new release
 
 on:
   release:
