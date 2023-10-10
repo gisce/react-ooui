@@ -1,14 +1,13 @@
-name: Create PR on WebClient on Alpha Prerelease
+name: Create PR on WebClient on beta Prerelease
 
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   create-pr:
-    env:
-      TARGET_BRANCH: develop  # This sets the variable for the branch
-    if: github.event.release.prerelease == true && startsWith(github.event.release.tag_name, 'v') && contains(github.event.release.tag_name, '-beta.')
+    if: github.event.release.prerelease == true && contains(github.event.release.tag_name, '-beta.')
     runs-on: ubuntu-latest
 
     steps:
@@ -16,7 +15,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: '@gisce/webclient'
-        ref: ${{ env.TARGET_BRANCH }}
+        ref: develop
         token: ${{ secrets.GH_PAT }}
 
     - name: Update library version in package.json
