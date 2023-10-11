@@ -23,7 +23,7 @@
     "preinstall": "npx only-allow npm",
     "build": "tsc --noEmit && vite build",
     "preview": "npm run build && vite preview",
-    "dev:vite": "while :; do tsc && vite build --watch --force; done",
+    "dev:vite": "vite build --watch --force",
     "dev:tsc": "tsc --noEmit --watch",
     "prepare": "husky install",
     "start": "concurrently npm:dev:*",
@@ -53,7 +53,7 @@
     "react-measure": "^2.5.2",
     "styled-components": "5.3.5",
     "use-deep-compare-effect": "^1.8.1",
-    "uuid": "^3.4.0",
+    "uuid": "^9.0.1",
     "validator": "^13.6.0"
   },
   "devDependencies": {
