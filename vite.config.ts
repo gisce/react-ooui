@@ -26,6 +26,8 @@ export default defineConfig({
       fileName: (format) => `react-ooui.${format}.js`,
     },
     rollupOptions: {
+      // We manually add these since they are not directly in package.json, but they end up in the bundle if we don't exclude them.
+      // Reason for this is using imports for specific components
       external: [
         "@ant-design/icons",
         "uuid",
@@ -35,8 +37,8 @@ export default defineConfig({
         "dayjs/plugin/relativeTime",
         "dayjs/plugin/weekday",
         "dayjs/plugin/localeData",
-        "dayjs/plugin/customParseFormat"
-      ], // We manually add these since they are not directly in package.json, but they end up in the bundle if we don't exclude them
+        "dayjs/plugin/customParseFormat",
+      ],
     },
   },
 });
