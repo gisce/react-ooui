@@ -102,6 +102,7 @@
     "storybook": "^7.4.6",
     "typescript": "^5.0.4",
     "vite": "4.4.8",
+    "vite-bundle-visualizer": "^0.10.0",
     "vite-plugin-dts": "^3.6.0",
     "vite-plugin-package-version": "1.0.2",
     "vite-tsconfig-paths": "3.5.0"
