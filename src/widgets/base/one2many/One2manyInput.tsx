@@ -670,7 +670,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       <One2manyTopBar
         mode={currentView}
         title={getTitle()}
-        readOnly={readOnly}
+        readOnly={readOnly || false}
         isMany2Many={isMany2many}
         formHasChanges={formHasChanges}
         totalItems={itemsToShow.length}
