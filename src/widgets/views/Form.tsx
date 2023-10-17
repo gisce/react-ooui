@@ -1015,7 +1015,7 @@ function Form(props: FormProps, ref: any) {
     let mustBlockButtons = false;
 
     try {
-      if (formHasChanges() || getCurrentId() === undefined) {
+      if (!readOnly && (formHasChanges() || getCurrentId() === undefined)) {
         mustBlockButtons = true;
         updateOperationInProgress(true);
         if (submitMode === "2many") {
