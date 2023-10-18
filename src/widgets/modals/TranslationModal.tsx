@@ -185,7 +185,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
   }
 
   return (
-    (<Modal
+    <Modal
       title={t("translate")}
       centered
       width={modalWidth}
@@ -197,6 +197,6 @@ export const TranslationModal = (props: TranslationModalProps) => {
       maskClosable={false}
     >
       {content()}
-    </Modal>)
+    </Modal>
   );
 };

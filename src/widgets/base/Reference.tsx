@@ -37,7 +37,7 @@ interface ReferenceInputProps {
 }
 
 export const ReferenceInput: React.FC<ReferenceInputProps> = (
-  props: ReferenceInputProps
+  props: ReferenceInputProps,
 ) => {
   const { value, onChange, ooui } = props;
   const { required, selectionValues, readOnly } = ooui;

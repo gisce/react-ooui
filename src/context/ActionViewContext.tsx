@@ -105,7 +105,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [previousView, setPreviousView] = useState<View>();
   const [searchValues, setSearchValues] = useState<any>({});
   const [limit, setLimit] = useState<number>(
-    limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT
+    limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT,
   );
   const [title, setTitle] = useState<string>(titleProps);
 
@@ -125,7 +125,9 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
       setPreviousView(availableViews[0]);
     } else if (availableViews.length > 1) {
       setPreviousView(
-        availableViews.filter((view) => view.view_id !== currentView.view_id)[0]
+        availableViews.filter(
+          (view) => view.view_id !== currentView.view_id,
+        )[0],
       );
     }
   }, [availableViews]);
@@ -136,7 +138,9 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
       availableViews.length > 1
     ) {
       setPreviousView(
-        availableViews.filter((view) => view.view_id !== currentView.view_id)[0]
+        availableViews.filter(
+          (view) => view.view_id !== currentView.view_id,
+        )[0],
       );
     }
   }, [currentView]);

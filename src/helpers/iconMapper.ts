@@ -102,7 +102,7 @@ const iconMapping: { [key: string]: string } = {
 
 export default (
   key: string,
-  props?: { className?: any; style: CSSProperties }
+  props?: { className?: any; style: CSSProperties },
 ) => {
   if (key.indexOf("gtk-") !== -1) {
     const rootIcon = key.replace("gtk-", "").replace(/\-/g, "_");
@@ -122,15 +122,15 @@ function toCamelCase(key: string): string {
     .map((word) =>
       word.replace(
         /\w\S*/g,
-        (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
-      )
+        (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(),
+      ),
     )
     .join("")}`;
 }
 
 function getIconForKey(
   key: string,
-  props?: { className?: any; style: CSSProperties }
+  props?: { className?: any; style: CSSProperties },
 ) {
   let IconCamelCase = key.charAt(0).toUpperCase() + key.slice(1); // Capitalize first letter
   if (IconCamelCase.indexOf("-") !== -1) {
@@ -150,7 +150,7 @@ function getIconForKey(
     const TablerIcon = () =>
       React.createElement(TablerIcons[tablerKey] as any, {
         fill: "transparent",
-        size: props?.style?.fontSize || 17
+        size: props?.style?.fontSize || 17,
       });
     const CustomIcon = () =>
       React.createElement(Icon, {

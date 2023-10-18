@@ -38,7 +38,7 @@ import {
 import { Image } from "./base/Image";
 import { FiberGrid } from "./custom/FiberGrid";
 import { Timeline } from "./custom/Timeline";
-import { Indicator} from "./custom/Indicator";
+import { Indicator } from "./custom/Indicator";
 import { Tags } from "./custom/Tags";
 
 const getWidgetType = (type: string) => {

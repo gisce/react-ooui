@@ -97,11 +97,10 @@ Default.args = {
   ],
   colorsForResults: {
     32: "red",
-    33: "red"
+    33: "red",
   },
   treeView: {
-    arch:
-      `<tree string="Partners">\n<field name="numeric" sum="Numeric"/><field name="user_id" widget="avatar"/><field name="name"/>\n                    <field name="title" widget="tag" widget_props="{'colors': {'corp': 'red', 'ltd': 'green'}}"/>\n                    <field name="ref"/>\n                    <field name="city" select="2"/>\n                    <field name="country" select="2"/>\n                    <field name="lang"/>\n <field name="progressbar" string="Progress" />               </tree>`,
+    arch: `<tree string="Partners">\n<field name="numeric" sum="Numeric"/><field name="user_id" widget="avatar"/><field name="name"/>\n                    <field name="title" widget="tag" widget_props="{'colors': {'corp': 'red', 'ltd': 'green'}}"/>\n                    <field name="ref"/>\n                    <field name="city" select="2"/>\n                    <field name="country" select="2"/>\n                    <field name="lang"/>\n <field name="progressbar" string="Progress" />               </tree>`,
     fields: {
       progressbar: {
         string: "Progress bar",
@@ -133,8 +132,7 @@ Default.args = {
         views: {},
       },
       lang: {
-        help:
-          "If the selected language is loaded in the system, all documents related to this partner will be printed in this language. If not, it will be english.",
+        help: "If the selected language is loaded in the system, all documents related to this partner will be printed in this language. If not, it will be english.",
         selection: [
           ["en_US", "English"],
           ["ca_ES", "Catalan / Català"],

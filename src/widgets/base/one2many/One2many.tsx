@@ -47,9 +47,9 @@ export const One2many = (props: Props) => {
       if (mode && mode.length > 0) {
         for (const m of mode as ViewType[]) {
           const v = await getViewData(m);
-          views.set(m, v)
+          views.set(m, v);
         }
-        setViews(views)
+        setViews(views);
       } else {
         const formView = await getViewData("form");
         const treeView = await getViewData("tree");

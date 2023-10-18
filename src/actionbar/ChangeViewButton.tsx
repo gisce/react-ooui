@@ -95,7 +95,7 @@ function ChangeViewButton(props: Props) {
   function handleMenuClick(event: any) {
     tryNavigate(() => {
       const selectedView = availableViews.find(
-        (view) => view.view_id === parseInt(event.key)
+        (view) => view.view_id === parseInt(event.key),
       );
       onChangeView(selectedView!);
     });

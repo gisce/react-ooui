@@ -6,11 +6,10 @@ import { Steps as StepsOoui } from "@gisce/ooui";
 
 type StepsProps = {
   ooui: StepsOoui;
-  value: any,
-}
+  value: any;
+};
 
-type StatusType = 'wait' | 'process' | 'finish' | 'error';
-
+type StatusType = "wait" | "process" | "finish" | "error";
 
 export const Steps = (props: StepsProps) => {
   const { ooui } = props;
@@ -33,10 +32,10 @@ export const StepsInput = (props: StepsInputProps) => {
   const formContext = useContext(FormContext) as FormContextType;
 
   const values = Array.from(selectionValues.entries());
-  const current = values.map(val => val[0]).indexOf(value);
+  const current = values.map((val) => val[0]).indexOf(value);
   let status: StatusType = "process";
   let error = "";
-  
+
   if (errorField) {
     error = formContext.getFieldValue(errorField);
     if (error) {
@@ -44,11 +43,13 @@ export const StepsInput = (props: StepsInputProps) => {
     }
   }
 
-
   return (
     <AntdSteps current={current} status={status}>
       {values.map((val, idx) => (
-        <AntdSteps.Step title={val[1]} description={idx === current && status === "error" ? error : null}/>
+        <AntdSteps.Step
+          title={val[1]}
+          description={idx === current && status === "error" ? error : null}
+        />
       ))}
     </AntdSteps>
   );

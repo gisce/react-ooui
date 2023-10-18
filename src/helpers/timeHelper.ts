@@ -8,7 +8,7 @@ function parseStringToFloat(text?: string) {
       const splitted = text.trim().split(":");
       return (
         Math.round(
-          (parseInt(splitted[0]) + parseInt(splitted[1]) / 60.0) * 10000
+          (parseInt(splitted[0]) + parseInt(splitted[1]) / 60.0) * 10000,
         ) / 10000
       );
     } else {

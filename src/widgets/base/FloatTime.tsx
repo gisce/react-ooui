@@ -25,7 +25,7 @@ interface FloatTimeInputProps {
 }
 
 export const FloatTimeInput: React.FC<FloatTimeInputProps> = (
-  props: FloatTimeInputProps
+  props: FloatTimeInputProps,
 ) => {
   const { ooui, value, onChange } = props;
   const { id, readOnly, required } = ooui as FloatOoui;

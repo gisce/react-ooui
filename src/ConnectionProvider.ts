@@ -9,7 +9,7 @@ export default class ConnectionProvider {
 
   public static getHandler(): ConnectionProviderType {
     if (!ConnectionProvider.handler) {
-      throw 'Must call init() first with a valid ConnectionProvider instance';
+      throw "Must call init() first with a valid ConnectionProvider instance";
     }
     return ConnectionProvider.handler;
   }

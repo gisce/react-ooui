@@ -69,7 +69,7 @@ function TreeActionBar(props: Props) {
   const { previewFeatures } = useContext(ConfigContext);
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
   const contentRootContext = useContext(
-    ContentRootContext
+    ContentRootContext,
   ) as ContentRootContextType;
   const { processAction } = contentRootContext || {};
   const [exportModalVisible, setExportModalVisible] = useState(false);
@@ -357,7 +357,7 @@ function TreeActionBar(props: Props) {
         model={currentModel!}
         domain={mergeParams(
           searchTreeRef?.current?.getDomain() || [],
-          searchParams || []
+          searchParams || [],
         )}
         limit={limit}
         totalRegisters={totalItems || 0}

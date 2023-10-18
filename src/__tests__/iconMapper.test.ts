@@ -15,16 +15,16 @@ describe("A IconMapper instance", () => {
     const findAndReplaceIcon = Icons.FileSearchOutlined;
     const icon = iconMapper("gtk-find-and-replace");
     expect(icon).toBe(findAndReplaceIcon);
-  })
+  });
   test("should return gtk-go", () => {
     const findAndReplaceIcon = Icons.FileSearchOutlined;
     const icon = iconMapper("gtk-find-and-replace");
     expect(icon).toBe(findAndReplaceIcon);
-  })
+  });
   describe("If key doesn't exist in iconMapper", () => {
     test("should return undefined", () => {
       const icon = iconMapper("gtk-foo-bar");
       expect(icon).toBe(undefined);
-    })
-  })
+    });
+  });
 });

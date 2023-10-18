@@ -16,7 +16,7 @@ function NewButton(props: Props) {
   const { disabled = false } = props;
 
   const { formHasChanges, onNewClicked: onNewClickedProps } = useContext(
-    ActionViewContext
+    ActionViewContext,
   ) as ActionViewContextType;
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
 

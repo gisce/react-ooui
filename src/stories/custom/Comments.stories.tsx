@@ -1,19 +1,22 @@
 // @ts-ignore
 import React from "react";
 import LocaleProvider from "../../context/LocaleContext";
-import { Comments, CommentsTimeline, EventsType } from "../../widgets/custom/Comments";
-
+import {
+  Comments,
+  CommentsTimeline,
+  EventsType,
+} from "../../widgets/custom/Comments";
 
 export default {
   title: "Components/Widgets/Custom/Comments",
 };
 
 export const Default = (): React.ReactElement => {
-
   const data = [
     {
       id: 1,
-      text: "Totam odit eum distinctio tempore. Numquam illo dolorum laboriosam vel illum. Sunt saepe ab nihil soluta placeat ullam.\n" +
+      text:
+        "Totam odit eum distinctio tempore. Numquam illo dolorum laboriosam vel illum. Sunt saepe ab nihil soluta placeat ullam.\n" +
         "Eius ea enim ut. Unde consequatur ducimus esse ullam. Odio fugit reprehenderit sunt.\n" +
         "Recusandae a aliquid. Iusto quisquam temporibus a assumenda aut fuga. Tenetur cum quis saepe et alias delectus quos.\n" +
         "Corporis adipisci eaque quod. Aperiam voluptatum doloribus accusamus suscipit.\n" +
@@ -30,7 +33,8 @@ export const Default = (): React.ReactElement => {
     },
     {
       id: 2,
-      text: "Dicta eligendi pariatur ratione ipsam accusantium. Ad minus nesciunt optio id ipsum.\n" +
+      text:
+        "Dicta eligendi pariatur ratione ipsam accusantium. Ad minus nesciunt optio id ipsum.\n" +
         "Incidunt eligendi doloremque molestias. Voluptate sapiente nulla veritatis.\n" +
         "Nostrum minima ad repudiandae optio laborum.\n" +
         "Adipisci sint quasi laudantium explicabo ab nostrum. Rerum nemo itaque officia. Velit accusamus itaque accusantium ducimus quidem quae cum.\n" +
@@ -46,7 +50,8 @@ export const Default = (): React.ReactElement => {
     },
     {
       id: 3,
-      text: "Amet tempora ipsum ipsum delectus.\n" +
+      text:
+        "Amet tempora ipsum ipsum delectus.\n" +
         "Autem minus magnam in eveniet. Veniam voluptas deleniti eaque sequi autem.\n" +
         "Occaecati laborum ut voluptatum maxime iure cupiditate. Facere vitae aliquid.\n" +
         "Nemo nihil enim quia exercitationem. Quisquam aut autem magni occaecati velit.\n" +
@@ -65,7 +70,8 @@ export const Default = (): React.ReactElement => {
     },
     {
       id: 4,
-      text: "Esse tempora amet consectetur asperiores dicta. Quidem est harum tempora voluptatum mollitia.\n" +
+      text:
+        "Esse tempora amet consectetur asperiores dicta. Quidem est harum tempora voluptatum mollitia.\n" +
         "Voluptate reprehenderit sint vitae laborum animi placeat nihil. Maxime iure porro delectus voluptate. Molestiae dolorem natus alias ipsam consequuntur. Nisi nam exercitationem voluptas saepe occaecati.\n" +
         "Reprehenderit quam ex est vel.\n" +
         "Magnam quidem laudantium reprehenderit rerum nam ducimus perspiciatis. Vero omnis sed ducimus quidem dolores dolor illum.\n" +
@@ -80,8 +86,8 @@ export const Default = (): React.ReactElement => {
       date: "2023-04-01 13:00:00",
       isSender: true,
       isAuthor: false,
-    }
-  ]
+    },
+  ];
   return (
     <LocaleProvider lang="es_ES">
       <Comments data={data} />
@@ -96,13 +102,14 @@ export const Timeline = () => {
       event: {
         date: "2023-04-01 10:00",
         action: "Draft",
-      }
+      },
     },
     {
       type: "comment",
       event: {
         id: 1,
-        text: "Totam odit eum distinctio tempore. Numquam illo dolorum laboriosam vel illum. Sunt saepe ab nihil soluta placeat ullam.\n" +
+        text:
+          "Totam odit eum distinctio tempore. Numquam illo dolorum laboriosam vel illum. Sunt saepe ab nihil soluta placeat ullam.\n" +
           "Eius ea enim ut. Unde consequatur ducimus esse ullam. Odio fugit reprehenderit sunt.\n" +
           "Recusandae a aliquid. Iusto quisquam temporibus a assumenda aut fuga. Tenetur cum quis saepe et alias delectus quos.\n" +
           "Corporis adipisci eaque quod. Aperiam voluptatum doloribus accusamus suscipit.\n" +
@@ -116,20 +123,21 @@ export const Timeline = () => {
         date: "2023-04-01 10:00:00",
         isSender: true,
         isAuthor: true,
-      }
+      },
     },
     {
       type: "action",
       event: {
         date: "2023-04-01 10:10",
         action: "Open",
-      }
+      },
     },
     {
       type: "comment",
       event: {
         id: 2,
-        text: "Dicta eligendi pariatur ratione ipsam accusantium. Ad minus nesciunt optio id ipsum.\n" +
+        text:
+          "Dicta eligendi pariatur ratione ipsam accusantium. Ad minus nesciunt optio id ipsum.\n" +
           "Incidunt eligendi doloremque molestias. Voluptate sapiente nulla veritatis.\n" +
           "Nostrum minima ad repudiandae optio laborum.\n" +
           "Adipisci sint quasi laudantium explicabo ab nostrum. Rerum nemo itaque officia. Velit accusamus itaque accusantium ducimus quidem quae cum.\n" +
@@ -148,7 +156,8 @@ export const Timeline = () => {
       type: "comment",
       event: {
         id: 4,
-        text: "Esse tempora amet consectetur asperiores dicta. Quidem est harum tempora voluptatum mollitia.\n" +
+        text:
+          "Esse tempora amet consectetur asperiores dicta. Quidem est harum tempora voluptatum mollitia.\n" +
           "Voluptate reprehenderit sint vitae laborum animi placeat nihil. Maxime iure porro delectus voluptate. Molestiae dolorem natus alias ipsam consequuntur. Nisi nam exercitationem voluptas saepe occaecati.\n" +
           "Reprehenderit quam ex est vel.\n" +
           "Magnam quidem laudantium reprehenderit rerum nam ducimus perspiciatis. Vero omnis sed ducimus quidem dolores dolor illum.\n" +
@@ -163,28 +172,26 @@ export const Timeline = () => {
         date: "2023-04-01 13:00:00",
         isSender: true,
         isAuthor: false,
-      }
+      },
     },
     {
       type: "action",
       event: {
         action: "Pendent",
-        date: "2023-04-01 13:05:00"
-      }
+        date: "2023-04-01 13:05:00",
+      },
     },
     {
       type: "action",
       event: {
         action: "Close",
-        date: "2023-04-01 13:35:00"
-      }
-    }
-  ] as EventsType[]
+        date: "2023-04-01 13:35:00",
+      },
+    },
+  ] as EventsType[];
   return (
     <LocaleProvider lang="es_ES">
       <CommentsTimeline value={data} />
     </LocaleProvider>
   );
-}
-
-
+};

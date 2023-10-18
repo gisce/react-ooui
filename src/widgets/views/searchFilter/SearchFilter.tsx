@@ -101,7 +101,7 @@ function SearchFilter(props: Props) {
     delete values.limit;
     const newParams = getParamsForFields(
       values,
-      sfo.current?._advancedSearchContainer
+      sfo.current?._advancedSearchContainer,
     );
 
     onSubmit({ params: newParams, offset, limit, searchValues: values });

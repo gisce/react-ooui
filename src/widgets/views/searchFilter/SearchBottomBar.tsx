@@ -18,12 +18,8 @@ type Props = {
 };
 
 export function SearchBottomBar(props: Props): React.ReactElement {
-  const {
-    onAdvancedFilterToggle,
-    advancedFilter,
-    onClear,
-    isSearching,
-  } = props;
+  const { onAdvancedFilterToggle, advancedFilter, onClear, isSearching } =
+    props;
 
   const { t } = useContext(LocaleContext) as LocaleContextType;
 

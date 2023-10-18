@@ -36,7 +36,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
   const [graphOoui, setGraphOoui] = useState<GraphOoui>();
   const [graphXml, setGraphXml] = useState<string>();
   const actionViewContext = useContext(
-    ActionViewContext
+    ActionViewContext,
   ) as ActionViewContextType;
   const { setGraphIsLoading = undefined } = actionViewContext || {};
 

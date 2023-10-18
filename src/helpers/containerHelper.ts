@@ -72,7 +72,7 @@ const expandWidgetsIfNeeded = ({
 
 const getSingleRowTemplateColumns = (
   row: Widget[],
-  numberOfColumns: number
+  numberOfColumns: number,
 ) => {
   const gridOptions = row.map((item: Widget) => {
     if (item instanceof Label && (item as Label).fieldForLabel) {

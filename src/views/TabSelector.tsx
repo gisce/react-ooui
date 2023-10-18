@@ -8,7 +8,7 @@ import Tab from "./tabs/Tab";
 
 function TabSelector() {
   const tabManagerContext = useContext(
-    TabManagerContext
+    TabManagerContext,
   ) as TabManagerContextType;
   const { activeKey, tabs, onRemoveTab, onChangeTab } = tabManagerContext || {};
 

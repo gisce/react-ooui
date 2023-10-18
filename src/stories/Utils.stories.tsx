@@ -7,10 +7,8 @@ export default {
   title: "Components/Pure",
 };
 
-
-
 export const CustomTagWithColor = (): React.ReactElement => {
   const text = "Hacker";
   const color = colorFromString(text);
-  return <CustomTag color={color}>{text}</CustomTag>
+  return <CustomTag color={color}>{text}</CustomTag>;
 };

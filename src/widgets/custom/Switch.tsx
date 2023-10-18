@@ -9,10 +9,7 @@ export const Switch = (props: WidgetProps) => {
   const { id, readOnly, required } = ooui;
 
   return (
-    <Field
-      {...props}
-      valuePropName="checked"
-    >
+    <Field {...props} valuePropName="checked">
       <SwitchInput id={id} readOnly={readOnly} required={required} />
     </Field>
   );
@@ -20,7 +17,6 @@ export const Switch = (props: WidgetProps) => {
 
 const SwitchInput = (props: any) => {
   const { required, readOnly, ...restProps } = props;
-
 
   return (
     <div className="flex flex-row">

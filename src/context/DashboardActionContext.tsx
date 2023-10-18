@@ -10,9 +10,8 @@ export type DashboardActionContextType = {
   setMoveItemsEnabled: (value: boolean) => void;
 };
 
-export const DashboardActionContext = React.createContext<DashboardActionContextType | null>(
-  null
-);
+export const DashboardActionContext =
+  React.createContext<DashboardActionContextType | null>(null);
 
 type DashboardActionProviderProps = {
   children: React.ReactNode;

@@ -63,7 +63,7 @@ export const Default = (): React.ReactElement => {
 export const WithIcon = (): React.ReactElement => {
   const ooui = new GroupOoui({
     string: "General",
-    icon: "home"
+    icon: "home",
   });
   return (
     <LocaleProvider lang="en_US">
@@ -72,10 +72,9 @@ export const WithIcon = (): React.ReactElement => {
   );
 };
 
-
 export const OnlyIcon = (): React.ReactElement => {
   const ooui = new GroupOoui({
-    icon: "home"
+    icon: "home",
   });
   return (
     <LocaleProvider lang="en_US">

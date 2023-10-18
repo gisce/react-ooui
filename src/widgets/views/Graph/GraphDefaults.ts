@@ -25,7 +25,7 @@ const axisFormatter = (value: any) => {
       return value;
     }
     return dayjs(value, (dateFormats.input as any)[dateType]).format(
-      (dateFormats.output as any)[dateType]
+      (dateFormats.output as any)[dateType],
     );
   } else {
     return value;
@@ -157,7 +157,7 @@ function getDateType(dateString: string): string | null {
     const isValidFormat = dayjs(
       dateString,
       (dateFormats.input as any)[format],
-      true
+      true,
     ).isValid();
     if (isValidFormat) {
       return format;

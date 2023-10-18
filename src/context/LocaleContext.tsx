@@ -15,7 +15,7 @@ export type LocaleContextType = {
 };
 
 export const LocaleContext = React.createContext<LocaleContextType | null>(
-  null
+  null,
 );
 
 type LocaleContextProps = {

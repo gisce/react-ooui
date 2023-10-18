@@ -156,7 +156,7 @@ function Dashboard(props: DashboardProps, ref: any) {
 
     const differences = itemPositions.filter((itemPosition) => {
       const dashboardItem = dashboardItems.find(
-        (dashboardItem) => dashboardItem.id === itemPosition.id
+        (dashboardItem) => dashboardItem.id === itemPosition.id,
       );
       if (!dashboardItem) {
         return false;
@@ -265,7 +265,7 @@ function Dashboard(props: DashboardProps, ref: any) {
             <Graph
               view_id={
                 views.filter(
-                  (view: [number, string]) => view[1] === "graph"
+                  (view: [number, string]) => view[1] === "graph",
                 )[0][0]
               }
               model={model}
@@ -283,7 +283,7 @@ function Dashboard(props: DashboardProps, ref: any) {
               domain={domain}
               view_id={
                 views.filter(
-                  (view: [number, string]) => view[1] === "tree"
+                  (view: [number, string]) => view[1] === "tree",
                 )[0][0]
               }
               onRowClicked={(record) => {

@@ -61,7 +61,7 @@ export const GraphChart = (props: GraphChartProps) => {
           "es-ES",
           {
             useGrouping: true,
-          }
+          },
         )}`}
       </p>
       <Chart

@@ -22,7 +22,7 @@ export const GoToResourceModal = (props: Props) => {
   }
 
   return (
-    (<Modal
+    <Modal
       title={t("goToResourceId")}
       centered
       open={visible}
@@ -43,7 +43,11 @@ export const GoToResourceModal = (props: Props) => {
             },
           ]}
         >
-          <InputNumber style={{ width: "100%" }} autoFocus ref={inputRef as any}/>
+          <InputNumber
+            style={{ width: "100%" }}
+            autoFocus
+            ref={inputRef as any}
+          />
         </Form.Item>
         <Row align="middle" justify="end">
           <Col>
@@ -70,6 +74,6 @@ export const GoToResourceModal = (props: Props) => {
           </Col>
         </Row>
       </Form>
-    </Modal>)
+    </Modal>
   );
 };

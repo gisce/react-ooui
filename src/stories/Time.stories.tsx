@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { TimeInput } from "../widgets/base/Time";
 import { Time as TimeOoui } from "@gisce/ooui";
 
-
 import LocaleProvider from "../context/LocaleContext";
 
 export default {
@@ -17,12 +16,12 @@ export const Default = (): React.ReactElement => {
     string: "Lorem ipsum",
   });
 
-  const [value, setValue] = useState<string>('23:12:34');
+  const [value, setValue] = useState<string>("23:12:34");
 
   const onChange = (value: string) => {
     console.log(value);
     setValue(value);
-  }
+  };
 
   return (
     <LocaleProvider lang="en_US">

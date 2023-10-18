@@ -13,12 +13,8 @@ import {
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 function DashboardActionBar() {
-  const {
-    isLoading,
-    dashboardRef,
-    moveItemsEnabled,
-    setMoveItemsEnabled,
-  } = useContext(DashboardActionContext) as DashboardActionContextType;
+  const { isLoading, dashboardRef, moveItemsEnabled, setMoveItemsEnabled } =
+    useContext(DashboardActionContext) as DashboardActionContextType;
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
   return (

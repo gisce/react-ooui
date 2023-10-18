@@ -17,7 +17,7 @@ export const DashboardActionView = (props: DashboardActionViewProps) => {
   const { dashboardData } = props;
   const dashboardRef = useRef();
   const tabManagerContext = useContext(
-    TabManagerContext
+    TabManagerContext,
   ) as TabManagerContextType;
   const { openShortcut } = tabManagerContext || {};
 

@@ -70,12 +70,12 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
 
   const contentRootContext = useContext(
-    ContentRootContext
+    ContentRootContext,
   ) as ContentRootContextType;
   const { processAction } = contentRootContext || {};
 
   const tabManagerContext = useContext(
-    TabManagerContext
+    TabManagerContext,
   ) as TabManagerContextType;
   const { openRelate, openDefaultActionForModel } = tabManagerContext || {};
 

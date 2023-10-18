@@ -16,7 +16,7 @@ export const DashboardGrid = (props: DashboardGridProps) => {
         | boolean
         | React.ReactChild
         | React.ReactFragment
-        | React.ReactPortal
+        | React.ReactPortal,
     ) => {
       const { parms, id } = (child as any).props;
       return (
@@ -24,7 +24,7 @@ export const DashboardGrid = (props: DashboardGridProps) => {
           {child}
         </div>
       );
-    }
+    },
   );
 
   return (
@@ -43,7 +43,7 @@ export const DashboardGrid = (props: DashboardGridProps) => {
               w: item.w,
               h: item.h,
             };
-          })
+          }),
         );
       }}
     >

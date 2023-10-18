@@ -2,8 +2,7 @@ export default {
   model: "giscedata.autoconsum.cups.autoconsum",
   exampleValues: {},
   tree: {
-    arch:
-      '<tree string="Autoconsum-CUPS">\n                    <field name="autoconsum_id"/>\n                    <field name="cups_id"/>\n                    <field name="data_inici"/>\n                    <field name="data_final"/>\n                </tree>',
+    arch: '<tree string="Autoconsum-CUPS">\n                    <field name="autoconsum_id"/>\n                    <field name="cups_id"/>\n                    <field name="data_inici"/>\n                    <field name="data_final"/>\n                </tree>',
     field_parent: false,
     fields: {
       autoconsum_id: {
@@ -74,8 +73,7 @@ export default {
     view_id: 509,
   },
   form: {
-    arch:
-      '<form string="Autoconsum">\n                    <field name="cups_id" colspan="4"/>\n                    <field name="autoconsum_id" colspan="4"/>\n                    <field name="data_inici"/>\n                    <field name="data_final"/>\n                </form>',
+    arch: '<form string="Autoconsum">\n                    <field name="cups_id" colspan="4"/>\n                    <field name="autoconsum_id" colspan="4"/>\n                    <field name="data_inici"/>\n                    <field name="data_final"/>\n                </form>',
     field_parent: false,
     fields: {
       autoconsum_id: {

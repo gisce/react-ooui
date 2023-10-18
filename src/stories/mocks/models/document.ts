@@ -15,8 +15,7 @@ export default {
     status: "completed",
   },
   tree: {
-    arch:
-      '<tree string="Documents">\n                    <field name="process_id"/>\n                    <field name="signature_id"/>\n                    <field name="doc_file" colspan="4"/>\n                    <field name="status"/>\n                </tree>',
+    arch: '<tree string="Documents">\n                    <field name="process_id"/>\n                    <field name="signature_id"/>\n                    <field name="doc_file" colspan="4"/>\n                    <field name="status"/>\n                </tree>',
     field_parent: false,
     fields: {
       filename: {
@@ -102,8 +101,7 @@ export default {
     view_id: 1827,
   },
   form: {
-    arch:
-      '<form>\n                                    <field name="process_id"/>\n                                    <group colspan="4" col="3">\n                                        <field name="model" colspan="3"/>\n                                        <field name="report_id"/>\n                                        <button string="Generar" type="object" name="generate_report" icon="gtk-print"/>\n                                    </group>\n                                    <field name="doc_file" colspan="4" filename="filename" widget="binary"/>\n                                    <field name="filename"/>\n                                    <field name="category_id"/>\n                                    <group colspan="4" col="4" string="Estado">\n                                        <field name="signature_id"/>\n                                        <field name="status"/>\n                                    </group>\n                                </form>',
+    arch: '<form>\n                                    <field name="process_id"/>\n                                    <group colspan="4" col="3">\n                                        <field name="model" colspan="3"/>\n                                        <field name="report_id"/>\n                                        <button string="Generar" type="object" name="generate_report" icon="gtk-print"/>\n                                    </group>\n                                    <field name="doc_file" colspan="4" filename="filename" widget="binary"/>\n                                    <field name="filename"/>\n                                    <field name="category_id"/>\n                                    <group colspan="4" col="4" string="Estado">\n                                        <field name="signature_id"/>\n                                        <field name="status"/>\n                                    </group>\n                                </form>',
     field_parent: false,
     fields: {
       category_id: {

@@ -29,7 +29,7 @@ export const GraphActionView = (props: GraphActionViewProps) => {
   const graphRef = useRef();
 
   const actionViewContext = useContext(
-    ActionViewContext
+    ActionViewContext,
   ) as ActionViewContextType;
   const {
     setResults: setResultsActionView = undefined,

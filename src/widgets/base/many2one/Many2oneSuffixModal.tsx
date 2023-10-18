@@ -14,7 +14,7 @@ export const Many2oneSuffixModal = (props: Props) => {
   const { t } = useContext(LocaleContext) as LocaleContextType;
 
   return (
-    (<Modal
+    <Modal
       title={t("selectAction")}
       centered
       open={visible}
@@ -37,6 +37,6 @@ export const Many2oneSuffixModal = (props: Props) => {
           );
         })}
       </Space>
-    </Modal>)
+    </Modal>
   );
 };

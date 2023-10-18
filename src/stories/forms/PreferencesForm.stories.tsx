@@ -674,8 +674,7 @@ Default.args = {
       views: {},
     },
     password: {
-      help:
-        "Keep empty if you don't want the user to be able to connect on the system.",
+      help: "Keep empty if you don't want the user to be able to connect on the system.",
       invisible: true,
       size: 64,
       string: "Password",

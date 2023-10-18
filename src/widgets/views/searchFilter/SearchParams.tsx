@@ -8,7 +8,7 @@ import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 type SearchParamsProps = {
   onLimitChange?: (limit: number) => void;
-}
+};
 
 export function SearchParams(props: SearchParamsProps): React.ReactElement {
   const { onLimitChange } = props;
@@ -21,9 +21,12 @@ export function SearchParams(props: SearchParamsProps): React.ReactElement {
       <Row key={"count_params"}>{t("parameters")}</Row>
       <Space align="center">
         {t("limit") + " :"}
-        <Integer ooui={limitOoui} onChange={(newValue: number) => {
-          onLimitChange?.(newValue);
-        }}/>
+        <Integer
+          ooui={limitOoui}
+          onChange={(newValue: number) => {
+            onLimitChange?.(newValue);
+          }}
+        />
         {t("first") + " :"}
         <Integer ooui={offsetOoui} />
       </Space>

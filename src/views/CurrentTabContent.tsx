@@ -8,7 +8,7 @@ import TabContent from "./TabContent";
 
 function CurrentTabContent() {
   const tabManagerContext = useContext(
-    TabManagerContext
+    TabManagerContext,
   ) as TabManagerContextType;
   const { tabs } = tabManagerContext || {};
 

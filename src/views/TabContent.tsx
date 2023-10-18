@@ -13,7 +13,7 @@ function TabContent(props: Props) {
   const { tab } = props;
 
   const tabManagerContext = useContext(
-    TabManagerContext
+    TabManagerContext,
   ) as TabManagerContextType;
   const { activeKey } = tabManagerContext || {};
 

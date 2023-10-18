@@ -8,7 +8,7 @@ const { confirm } = Modal;
 const showDialog = ({
   onOk,
   confirmMessage,
-  lang
+  lang,
 }: {
   onOk: () => void;
   confirmMessage: string;

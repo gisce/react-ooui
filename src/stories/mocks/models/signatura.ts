@@ -2,210 +2,155 @@ export default {
   model: "giscedata.signatura.process",
   exampleValues: [
     {
-      "all_signed": false,
-      "body": "",
-      "cc": false,
-      "create_date": "2021-04-15 16:29:50",
-      "create_uid": [
-        1,
-        "Administrator1"
-      ],
-      "data": {
-        "callback_method": "bank_account_change",
-        "process_data": {
-          "account_iban": "ES3231797283092974325421",
-          "account_owner": 93,
-          "change_date": "2021-04-15",
-          "delivery_type": "email",
-          "digital_sign": 1,
-          "email": "lalal@lapunxa.com",
-          "id": 3,
-          "info": false,
-          "mandate_scheme": "core",
-          "owner_address": 146,
-          "pagador": 149,
-          "payment_mode": 8,
-          "print_mandate": 0,
-          "state": "init"
-        }
+      all_signed: false,
+      body: "",
+      cc: false,
+      create_date: "2021-04-15 16:29:50",
+      create_uid: [1, "Administrator1"],
+      data: {
+        callback_method: "bank_account_change",
+        process_data: {
+          account_iban: "ES3231797283092974325421",
+          account_owner: 93,
+          change_date: "2021-04-15",
+          delivery_type: "email",
+          digital_sign: 1,
+          email: "lalal@lapunxa.com",
+          id: 3,
+          info: false,
+          mandate_scheme: "core",
+          owner_address: 146,
+          pagador: 149,
+          payment_mode: 8,
+          print_mandate: 0,
+          state: "init",
+        },
       },
-      "delivery_type": "poweremail",
-      "enviat": true,
-      "enviat_carpeta": "outbox",
-      "enviat_data": false,
-      "expire_time": false,
-      "files": [
-        153
-      ],
-      "id": 99,
-      "lang": "ca_ES",
-      "qr": "iVBORw0KGgoAAAANSUhEUgAAAhIAAAISAQAAAACxRhsSAAAEfElEQVR4nO2dTY7bOBCFX40M9JIGcoAchb5ZY46UG0hH6QMMQO3VqFmQVSzazmAGaTMe43ERRDL1QQIK5Ks/tih+dWx//DICIIMMMsgggwwyyCCDjM6QNk4A8CnYzoBcAAC73xOROvmy2/zLF78HGWT8ZKiqKrKqqpZFda33DqgW+7WOpKprOlDn9cfWZ/kWMl6fsbfVUd71gFzqzUWxnQEgqSJ/nPwHwBbfr34PMsj4V4ztDGCTNxU5A/L+cYLqh4j+eQZ0hQuCB78HGWSEcbq+kX+8qeQf36CmVAVICsnlGyR/3DzwPN9CxusyrvVplaHql1lVkYtp1jWZjqU+JWM+YxMRkTPQZOjuWrT6+4vKZX9Tea8i9bO6+1//HmSQcX/oOAAsCqSjatG6ngIAcgGAdKAtvj64npLxcIbt+wUA0OJS1U612JxcA1aLtliVT6adkjGH0dbTFYCudbE82v9g9+6p0voz9SkZcxhmp7bR92WzBfaxND/Kp9TH1v7ss3wLGa/LsIxT8nXS0k7IGrVom1KaKYP7PhkTGcO+jxZ+QlOqzRzNOmEp04KqBbjvkzGJ4fHTwzz/Ynu86o1cDUuuFlCfkjGLMcSluqdUgBaDKovH+d06C/d9MuYy3E59AS3j5m8BU7NO2/Jpp2RMZLg+tZK+ZoRogX1fWYMgWOGlf7RTMqYwQoVpc41Kj1VFLXATYgWoT8mYxQj5KAuOLr68jv5+MlVQ5yVTDLRTMh7OaGV623k5JOvnSQFAsgLI+ikKAAocJ0Hyh9JfJ2AX6Ne9Bxlk/OOwfX/x9pLD+06WseWk+Vt1ZOpTMuYxQv1pd+stOOquvnpW1d1/ANSnZMxiDHnTWhh9hJz/ECu1NfYqpko7JePhjBCXsmSTm6NquAd0t0oZPyVjLmPofA6jdaDUi2ypqDg5UZ+SMY0R46choQ+Mcf4+RQcFQDslYwpjrJeyRCnsssnV4n183pXCfBQZExnBj2omOiT0WyCqV6To4W0ooL9PxixGyJHWy3WIlca+E1tPbcvnekrGNEas6wtlpi4+3XuyXpS+nlKfkjGNEVyjeJxEN8Lk6nXY/KlPyZjJcH1q9afevWcxfZvY60+9OZp2SsYkRvT3+7mSXgl9ZbYhyd+7/GinZDyc4XV9vXa/Ofi2bPbg1BIz/eyPImMiI/hRPRDVtAC80QS9FwVop/okd7+e5VvIeF1G2PeHOv0jOP29GKU+Uv2tXuj/LN9CxusyQl90S5RqT/ffqUlV5vfJ+A2M2/P60k2HfrDinq0CQH1KxizGWC/l+dAChGxp65B222X9KRmTGTfnSeerf+zXmN/XoXyKdkrGwxnx/NMYye/9pkCPWoUzUdlvSsZExh079eN4XZoiRS/LjkBjnJ+MaYxbO029SqpXTPfMlD22gvs+GdMY9md2kgLYAcV+gtT7+5sKUgG27weQV0CQCiSvAIDF4v7P8i1kvC7j2t/vfnw4pD/30lP1jj7GT8mYx5A7PXz/cWzP8i1kkEEGGWSQQQYZZPz/GX8Dr5vS+0WwwpgAAAAASUVORK5CYII=",
-      "recipients": [
-        99
-      ],
-      "reminders": 0,
-      "signature_id": "f64c2e4f-566a-451f-8773-88ced14c0a81",
-      "signature_url": "https://sign-app.sandbox.signaturit.com/v1/ca/f64c2e4f-566a-451f-8773-88ced14c0a81/552c530f-d7c0-4dd6-93e6-b91b6a92b79d",
-      "status": "completed",
-      "subject": "Canvi de compte corrent de Clean and iron",
-      "template_id": [
-        75,
-        "Canvi de compte corrent"
-      ],
-      "template_res_id": 78,
-      "traceback": false,
-      "type": "advanced",
-      "write_date": "2021-04-15 16:32:55"
-    }
+      delivery_type: "poweremail",
+      enviat: true,
+      enviat_carpeta: "outbox",
+      enviat_data: false,
+      expire_time: false,
+      files: [153],
+      id: 99,
+      lang: "ca_ES",
+      qr: "iVBORw0KGgoAAAANSUhEUgAAAhIAAAISAQAAAACxRhsSAAAEfElEQVR4nO2dTY7bOBCFX40M9JIGcoAchb5ZY46UG0hH6QMMQO3VqFmQVSzazmAGaTMe43ERRDL1QQIK5Ks/tih+dWx//DICIIMMMsgggwwyyCCDjM6QNk4A8CnYzoBcAAC73xOROvmy2/zLF78HGWT8ZKiqKrKqqpZFda33DqgW+7WOpKprOlDn9cfWZ/kWMl6fsbfVUd71gFzqzUWxnQEgqSJ/nPwHwBbfr34PMsj4V4ztDGCTNxU5A/L+cYLqh4j+eQZ0hQuCB78HGWSEcbq+kX+8qeQf36CmVAVICsnlGyR/3DzwPN9CxusyrvVplaHql1lVkYtp1jWZjqU+JWM+YxMRkTPQZOjuWrT6+4vKZX9Tea8i9bO6+1//HmSQcX/oOAAsCqSjatG6ngIAcgGAdKAtvj64npLxcIbt+wUA0OJS1U612JxcA1aLtliVT6adkjGH0dbTFYCudbE82v9g9+6p0voz9SkZcxhmp7bR92WzBfaxND/Kp9TH1v7ss3wLGa/LsIxT8nXS0k7IGrVom1KaKYP7PhkTGcO+jxZ+QlOqzRzNOmEp04KqBbjvkzGJ4fHTwzz/Ynu86o1cDUuuFlCfkjGLMcSluqdUgBaDKovH+d06C/d9MuYy3E59AS3j5m8BU7NO2/Jpp2RMZLg+tZK+ZoRogX1fWYMgWOGlf7RTMqYwQoVpc41Kj1VFLXATYgWoT8mYxQj5KAuOLr68jv5+MlVQ5yVTDLRTMh7OaGV623k5JOvnSQFAsgLI+ikKAAocJ0Hyh9JfJ2AX6Ne9Bxlk/OOwfX/x9pLD+06WseWk+Vt1ZOpTMuYxQv1pd+stOOquvnpW1d1/ANSnZMxiDHnTWhh9hJz/ECu1NfYqpko7JePhjBCXsmSTm6NquAd0t0oZPyVjLmPofA6jdaDUi2ypqDg5UZ+SMY0R46choQ+Mcf4+RQcFQDslYwpjrJeyRCnsssnV4n183pXCfBQZExnBj2omOiT0WyCqV6To4W0ooL9PxixGyJHWy3WIlca+E1tPbcvnekrGNEas6wtlpi4+3XuyXpS+nlKfkjGNEVyjeJxEN8Lk6nXY/KlPyZjJcH1q9afevWcxfZvY60+9OZp2SsYkRvT3+7mSXgl9ZbYhyd+7/GinZDyc4XV9vXa/Ofi2bPbg1BIz/eyPImMiI/hRPRDVtAC80QS9FwVop/okd7+e5VvIeF1G2PeHOv0jOP29GKU+Uv2tXuj/LN9CxusyQl90S5RqT/ffqUlV5vfJ+A2M2/P60k2HfrDinq0CQH1KxizGWC/l+dAChGxp65B222X9KRmTGTfnSeerf+zXmN/XoXyKdkrGwxnx/NMYye/9pkCPWoUzUdlvSsZExh079eN4XZoiRS/LjkBjnJ+MaYxbO029SqpXTPfMlD22gvs+GdMY9md2kgLYAcV+gtT7+5sKUgG27weQV0CQCiSvAIDF4v7P8i1kvC7j2t/vfnw4pD/30lP1jj7GT8mYx5A7PXz/cWzP8i1kkEEGGWSQQQYZZPz/GX8Dr5vS+0WwwpgAAAAASUVORK5CYII=",
+      recipients: [99],
+      reminders: 0,
+      signature_id: "f64c2e4f-566a-451f-8773-88ced14c0a81",
+      signature_url:
+        "https://sign-app.sandbox.signaturit.com/v1/ca/f64c2e4f-566a-451f-8773-88ced14c0a81/552c530f-d7c0-4dd6-93e6-b91b6a92b79d",
+      status: "completed",
+      subject: "Canvi de compte corrent de Clean and iron",
+      template_id: [75, "Canvi de compte corrent"],
+      template_res_id: 78,
+      traceback: false,
+      type: "advanced",
+      write_date: "2021-04-15 16:32:55",
+    },
   ],
   tree: {
-    "arch": "<tree string=\"Signatures digitals\">\n                    <field name=\"create_date\" select=\"1\"/>\n                    <field name=\"subject\" select=\"1\"/>\n                    <field name=\"status\" select=\"1\"/>\n                    <field name=\"delivery_type\" select=\"1\"/>\n                    <field name=\"all_signed\" string=\"Requiere todos firmados\" select=\"2\"/>\n                    <field name=\"create_uid\" select=\"2\"/>\n                </tree>",
-    "field_parent": false,
-    "fields": {
-      "all_signed": {
-        "help": "Si se marca esta casilla todos los documentos deben de estar firmados para poder continuar con el proceso ya que son bloqueantes.",
-        "string": "Todos los documentos firmados",
-        "type": "boolean",
-        "views": {}
-      },
-      "create_date": {
-        "readonly": true,
-        "string": "Fecha de creación",
-        "type": "datetime",
-        "views": {}
-      },
-      "create_uid": {
-        "context": "",
-        "domain": [],
-        "readonly": true,
-        "relation": "res.users",
-        "size": 64,
-        "string": "Creador",
-        "type": "many2one",
-        "views": {}
-      },
-      "delivery_type": {
-        "selection": [
-          [
-            "poweremail",
-            "PowerEmail"
-          ],
-          [
-            "email",
-            "E-mail"
-          ],
-          [
-            "sms",
-            "SMS"
-          ],
-          [
-            "url",
-            "URL"
-          ]
-        ],
-        "string": "Modo de envio",
-        "type": "selection",
-        "views": {}
-      },
-      "status": {
-        "selection": [
-          [
-            "wait",
-            "En Espera"
-          ],
-          [
-            "doing",
-            "En Proceso"
-          ],
-          [
-            "completed",
-            "Completado"
-          ],
-          [
-            "error",
-            "Error"
-          ],
-          [
-            "expired",
-            "Expirado"
-          ],
-          [
-            "canceled",
-            "Cancelado"
-          ]
-        ],
-        "string": "Estado",
-        "type": "selection",
-        "views": {}
-      },
-      "subject": {
-        "required": true,
-        "size": 256,
-        "string": "Asunto",
-        "type": "char",
-        "views": {}
-      }
-    },
-    "model": "giscedata.signatura.process",
-    "name": "giscedata_signatura.tree",
-    "search_fields": {
-      "primary": [
-        "create_date",
-        "subject",
-        "status",
-        "delivery_type"
-      ],
-      "secondary": [
-        "create_uid",
-        "all_signed"
-      ]
-    },
-    "toolbar": {
-      "action": [],
-      "print": [],
-      "relate": [
-        {
-          "auto_refresh": 0,
-          "context": "{}",
-          "domain": "[('id', '=', active_id)]",
-          "groups_id": [],
-          "id": -1,
-          "limit": 0,
-          "name": "giscedata.signatura.process",
-          "res_model": "giscedata.signatura.process",
-          "src_model": "giscedata.signatura.process",
-          "string": "giscedata.signatura.process",
-          "target": "current",
-          "type": "ir.actions.act_window",
-          "usage": "",
-          "view_id": false,
-          "view_ids": [],
-          "view_mode": "tree,form",
-          "view_type": "form",
-          "views": [
-            [
-              false,
-              "tree"
-            ],
-            [
-              false,
-              "form"
-            ]
-          ]
-        }
-      ]
-    },
-    "type": "tree",
-    "view_id": 1825
-  },
-  form: {
-    arch:
-      '<form string="Signatura digital"><group colspan="4" col="4">\n                        <separator string="Gestió SIPS" colspan="4"/>\n                        <button string="Sol·licitar no cessió" type="action" icon="gtk-no" name="1621" colspan="1" readonly="0"/>\n                    </group></form>',
+    arch: '<tree string="Signatures digitals">\n                    <field name="create_date" select="1"/>\n                    <field name="subject" select="1"/>\n                    <field name="status" select="1"/>\n                    <field name="delivery_type" select="1"/>\n                    <field name="all_signed" string="Requiere todos firmados" select="2"/>\n                    <field name="create_uid" select="2"/>\n                </tree>',
     field_parent: false,
     fields: {
       all_signed: {
-        help:
-          "Si se marca esta casilla todos los documentos deben de estar firmados para poder continuar con el proceso ya que son bloqueantes.",
+        help: "Si se marca esta casilla todos los documentos deben de estar firmados para poder continuar con el proceso ya que son bloqueantes.",
+        string: "Todos los documentos firmados",
+        type: "boolean",
+        views: {},
+      },
+      create_date: {
+        readonly: true,
+        string: "Fecha de creación",
+        type: "datetime",
+        views: {},
+      },
+      create_uid: {
+        context: "",
+        domain: [],
+        readonly: true,
+        relation: "res.users",
+        size: 64,
+        string: "Creador",
+        type: "many2one",
+        views: {},
+      },
+      delivery_type: {
+        selection: [
+          ["poweremail", "PowerEmail"],
+          ["email", "E-mail"],
+          ["sms", "SMS"],
+          ["url", "URL"],
+        ],
+        string: "Modo de envio",
+        type: "selection",
+        views: {},
+      },
+      status: {
+        selection: [
+          ["wait", "En Espera"],
+          ["doing", "En Proceso"],
+          ["completed", "Completado"],
+          ["error", "Error"],
+          ["expired", "Expirado"],
+          ["canceled", "Cancelado"],
+        ],
+        string: "Estado",
+        type: "selection",
+        views: {},
+      },
+      subject: {
+        required: true,
+        size: 256,
+        string: "Asunto",
+        type: "char",
+        views: {},
+      },
+    },
+    model: "giscedata.signatura.process",
+    name: "giscedata_signatura.tree",
+    search_fields: {
+      primary: ["create_date", "subject", "status", "delivery_type"],
+      secondary: ["create_uid", "all_signed"],
+    },
+    toolbar: {
+      action: [],
+      print: [],
+      relate: [
+        {
+          auto_refresh: 0,
+          context: "{}",
+          domain: "[('id', '=', active_id)]",
+          groups_id: [],
+          id: -1,
+          limit: 0,
+          name: "giscedata.signatura.process",
+          res_model: "giscedata.signatura.process",
+          src_model: "giscedata.signatura.process",
+          string: "giscedata.signatura.process",
+          target: "current",
+          type: "ir.actions.act_window",
+          usage: "",
+          view_id: false,
+          view_ids: [],
+          view_mode: "tree,form",
+          view_type: "form",
+          views: [
+            [false, "tree"],
+            [false, "form"],
+          ],
+        },
+      ],
+    },
+    type: "tree",
+    view_id: 1825,
+  },
+  form: {
+    arch: '<form string="Signatura digital"><group colspan="4" col="4">\n                        <separator string="Gestió SIPS" colspan="4"/>\n                        <button string="Sol·licitar no cessió" type="action" icon="gtk-no" name="1621" colspan="1" readonly="0"/>\n                    </group></form>',
+    field_parent: false,
+    fields: {
+      all_signed: {
+        help: "Si se marca esta casilla todos los documentos deben de estar firmados para poder continuar con el proceso ya que son bloqueantes.",
         string: "Todos los documentos firmados",
         type: "boolean",
         views: {},
@@ -271,8 +216,7 @@ export default {
         type: "one2many",
         views: {
           form: {
-            arch:
-              '<form>\n                                    <field name="process_id"/>\n                                    <group colspan="4" col="3">\n                                        <field name="model" colspan="3"/>\n                                        <field name="report_id"/>\n                                        <button string="Generar" type="object" name="generate_report" icon="gtk-print"/>\n                                    </group>\n                                    <field name="doc_file" colspan="4" filename="filename" widget="binary"/>\n                                    <field name="filename"/>\n                                    <field name="category_id"/>\n                                    <group colspan="4" col="4" string="Estado">\n                                        <field name="signature_id"/>\n                                        <field name="status"/>\n                                    </group>\n                                </form>\n                                ',
+            arch: '<form>\n                                    <field name="process_id"/>\n                                    <group colspan="4" col="3">\n                                        <field name="model" colspan="3"/>\n                                        <field name="report_id"/>\n                                        <button string="Generar" type="object" name="generate_report" icon="gtk-print"/>\n                                    </group>\n                                    <field name="doc_file" colspan="4" filename="filename" widget="binary"/>\n                                    <field name="filename"/>\n                                    <field name="category_id"/>\n                                    <group colspan="4" col="4" string="Estado">\n                                        <field name="signature_id"/>\n                                        <field name="status"/>\n                                    </group>\n                                </form>\n                                ',
             fields: {
               category_id: {
                 context: "",
@@ -354,8 +298,7 @@ export default {
             },
           },
           tree: {
-            arch:
-              '<tree string="Documentos">\n                                    <field name="report_id"/>\n                                    <field name="model_str"/>\n                                    <field name="filename"/>\n                                    <field name="status"/>\n                                </tree>\n                            ',
+            arch: '<tree string="Documentos">\n                                    <field name="report_id"/>\n                                    <field name="model_str"/>\n                                    <field name="filename"/>\n                                    <field name="status"/>\n                                </tree>\n                            ',
             fields: {
               filename: {
                 size: 256,
@@ -402,8 +345,7 @@ export default {
         },
       },
       lang: {
-        help:
-          "Idioma con el que se generará todo lo referente a este proceso de firma digital",
+        help: "Idioma con el que se generará todo lo referente a este proceso de firma digital",
         selection: [
           ["en_US", "English"],
           ["ca_ES", "Catalan / Català"],
@@ -429,8 +371,7 @@ export default {
         type: "one2many",
         views: {
           form: {
-            arch:
-              '<form>\n                                    <field name="partner_address_id" colspan="4" on_change="on_change_partner_address_id(partner_address_id, context)"/>\n                                    <field name="name"/>\n                                    <field name="email"/>\n                                    <field name="phone"/>\n                                    <field name="type"/>\n                                </form>\n                            ',
+            arch: '<form>\n                                    <field name="partner_address_id" colspan="4" on_change="on_change_partner_address_id(partner_address_id, context)"/>\n                                    <field name="name"/>\n                                    <field name="email"/>\n                                    <field name="phone"/>\n                                    <field name="type"/>\n                                </form>\n                            ',
             fields: {
               email: {
                 required: true,
@@ -473,8 +414,7 @@ export default {
             },
           },
           tree: {
-            arch:
-              '<tree string="Destinatarios">\n                                    <field name="name"/>\n                                    <field name="email"/>\n                                    <field name="phone"/>\n                                    <field name="type"/>\n                                </tree>\n                                ',
+            arch: '<tree string="Destinatarios">\n                                    <field name="name"/>\n                                    <field name="email"/>\n                                    <field name="phone"/>\n                                    <field name="type"/>\n                                </tree>\n                                ',
             fields: {
               email: {
                 required: true,

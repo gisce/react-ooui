@@ -55,9 +55,12 @@ const init = () => {
       const { model, fields } = options;
       await new Promise((resolve) => setTimeout(resolve, timeout));
       const data = getMock(model);
-      const fieldsDef = Object.fromEntries(Object.entries(data.form.fields).filter(([key]) => fields.includes(key)));
+      const fieldsDef = Object.fromEntries(
+        Object.entries(data.form.fields).filter(([key]) =>
+          fields.includes(key),
+        ),
+      );
       return fieldsDef;
-
     },
     searchAllIds: async (options: SearchCountRequest) => {
       await new Promise((resolve) => setTimeout(resolve, timeout));

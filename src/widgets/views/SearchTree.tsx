@@ -80,12 +80,12 @@ function SearchTree(props: Props, ref: any) {
   const { height } = useWindowDimensions();
 
   const contentRootContext = useContext(
-    ContentRootContext
+    ContentRootContext,
   ) as ContentRootContextType;
   const { processAction } = contentRootContext || {};
 
   const actionViewContext = useContext(
-    ActionViewContext
+    ActionViewContext,
   ) as ActionViewContextType;
   const {
     setResults: setResultsActionView = undefined,

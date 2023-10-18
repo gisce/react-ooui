@@ -70,7 +70,7 @@ export const useExport = ({
       const fileType: any = await getMimeType(datas);
       openBase64InNewTab(datas, fileType.mime);
     },
-    [locale, model, domain, limit, context, onClose]
+    [locale, model, domain, limit, context, onClose],
   );
 
   const onGetFields = useCallback(async () => {
@@ -109,7 +109,7 @@ export const useExport = ({
         parentKey: key,
       });
     },
-    [fields.current, model, context]
+    [fields.current, model, context],
   );
 
   const onGetPredefinedExports = useCallback(async () => {
@@ -171,12 +171,12 @@ export const useExport = ({
             fields: fieldsForExportLine,
             context,
           });
-        })
+        }),
       );
 
       return { ...pExport, id: exportId };
     },
-    []
+    [],
   );
 
   const onRemovePredefinedExport = useCallback(
@@ -186,7 +186,7 @@ export const useExport = ({
         ids: [pExport.id!],
       });
     },
-    []
+    [],
   );
 
   const getModelFields = useCallback(
@@ -203,7 +203,7 @@ export const useExport = ({
 
       exportModelFields.current.set(model, fieldsForModel);
     },
-    [exportModelFields, context]
+    [exportModelFields, context],
   );
 
   return {
@@ -352,7 +352,7 @@ const getKeysWithoutChildsInFields = ({
             return !fields?.[getParentKey(key)]?.[key];
           }
         })
-        .map((key) => getParentKey(key))
+        .map((key) => getParentKey(key)),
     ),
   ]);
 };
@@ -367,7 +367,7 @@ const retrieveKeyFieldsForPredefinedExports = async ({
   onGetFieldChilds: (key: string) => Promise<ExportField[]>;
 }) => {
   const allPredefinedExportKeys = predefinedExports.flatMap(
-    (exp: PredefinedExport) => exp.fields.map((field: any) => field.key)
+    (exp: PredefinedExport) => exp.fields.map((field: any) => field.key),
   );
 
   const keysWithoutChildsInFields = getKeysWithoutChildsInFields({

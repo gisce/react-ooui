@@ -43,7 +43,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
   } = props;
 
   const { currentView, setPreviousView } = useContext(
-    ActionViewContext
+    ActionViewContext,
   ) as ActionViewContextType;
 
   if (!visible) {
@@ -77,7 +77,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
           setPreviousView?.(currentView);
           setCurrentItemIndex(itemIndex);
           const formView = availableViews.find(
-            (v) => v.type === "form"
+            (v) => v.type === "form",
           ) as FormView;
           setCurrentView(formView);
         }}

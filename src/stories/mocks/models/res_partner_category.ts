@@ -10,6 +10,6 @@ export default {
         string: "Name",
         type: "char",
       },
-    }
-  }
-}
+    },
+  },
+};

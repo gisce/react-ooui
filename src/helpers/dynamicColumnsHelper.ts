@@ -20,7 +20,7 @@ const getTextWidth = (text: string, font = "14px -apple-system") => {
 export const calculateColumnsWidth = (
   columns: any,
   source: any,
-  maxWidthPerCell = 500
+  maxWidthPerCell = 500,
 ) => {
   if (columns.length === 0) {
     return { columns };
@@ -32,7 +32,7 @@ export const calculateColumnsWidth = (
   const columnsWithWidth = columns.map((column: any) =>
     Object.assign(column, {
       width: getTextWidth(column.title),
-    })
+    }),
   );
 
   // Since we have a minimum width (column's width already calculated),

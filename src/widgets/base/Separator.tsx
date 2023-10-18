@@ -10,17 +10,16 @@ type Props = {
 export const Separator = (props: Props) => {
   const { ooui } = props;
   const { label, icon } = ooui;
-  const Icon : React.ElementType | undefined = iconMapper(icon || "");
-
+  const Icon: React.ElementType | undefined = iconMapper(icon || "");
 
   return (
     <Divider orientation="left" className="text-sm">
-      { (Icon || label) &&
+      {(Icon || label) && (
         <Space>
           {Icon ? <Icon /> : null}
           {label}
         </Space>
-      }
+      )}
     </Divider>
   );
 };

@@ -11,7 +11,7 @@ export type One2manyContextType = {
 };
 
 export const One2manyContext = React.createContext<One2manyContextType | null>(
-  null
+  null,
 );
 
 const One2manyProvider = ({
@@ -23,9 +23,8 @@ const One2manyProvider = ({
 }): any => {
   const [currentView, setCurrentView] = useState<ViewType>(initialView);
   const [itemIndex, setItemIndex] = useState<number>(0);
-  const [manualTriggerChange, setManualTriggerChange] = useState<boolean>(
-    false
-  );
+  const [manualTriggerChange, setManualTriggerChange] =
+    useState<boolean>(false);
 
   return (
     <One2manyContext.Provider

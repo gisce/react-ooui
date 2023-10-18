@@ -11,7 +11,7 @@ const usePrevious = (value: any, initialValue: any) => {
 const useEffectDebugger = (
   effectHook: any,
   dependencies: any,
-  dependencyNames = []
+  dependencyNames = [],
 ) => {
   const previousDeps = usePrevious(dependencies, []);
 
@@ -30,7 +30,7 @@ const useEffectDebugger = (
 
       return accum;
     },
-    {}
+    {},
   );
 
   if (Object.keys(changedDeps).length) {

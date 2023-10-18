@@ -4,9 +4,8 @@ export type FormModalContextType = {
   setTitle?: (title: string) => void;
 };
 
-export const FormModalContext = React.createContext<FormModalContextType | null>(
-  null
-);
+export const FormModalContext =
+  React.createContext<FormModalContextType | null>(null);
 
 type FormModalProviderProps = FormModalContextType & {
   children: React.ReactNode;

@@ -1,6 +1,8 @@
 import React from "react";
-import ButtonWithTooltip, {Props as ButtonWithTooltipProps } from "@/common/ButtonWithTooltip";
-import { theme } from 'antd';
+import ButtonWithTooltip, {
+  Props as ButtonWithTooltipProps,
+} from "@/common/ButtonWithTooltip";
+import { theme } from "antd";
 const { useToken } = theme;
 
 type Props = ButtonWithTooltipProps & {

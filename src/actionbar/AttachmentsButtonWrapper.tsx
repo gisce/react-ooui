@@ -33,7 +33,7 @@ export type AttachmentsButtonWrapperProps = {
 };
 
 export const AttachmentsButtonWrapper = (
-  props: AttachmentsButtonWrapperProps
+  props: AttachmentsButtonWrapperProps,
 ) => {
   const { numberOfAttachments, disabled } = props;
   const { t, lang } = useContext(LocaleContext) as LocaleContextType;
@@ -68,7 +68,7 @@ export const AttachmentsButtonWrapper = (
 const Content = (
   props: AttachmentsButtonWrapperProps,
   setPopoverVisible: (visible: boolean) => void,
-  locale: string
+  locale: string,
 ) => {
   const {
     attachments = [],

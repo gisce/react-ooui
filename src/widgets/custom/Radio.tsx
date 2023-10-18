@@ -41,9 +41,7 @@ export const SelectionInput = (props: RadioInputProps) => {
 
   return (
     <RadioAnt.Group disabled={readOnly} onChange={onChange} value={value}>
-      <Space direction={direction}>
-        {options}
-      </Space>
+      <Space direction={direction}>{options}</Space>
     </RadioAnt.Group>
   );
 };

@@ -66,8 +66,7 @@ export default {
     website: false,
   },
   form: {
-    arch:
-      '<form string="Partners"><field colspan="4" name="property_product_pricelist" /><field colspan="4" name="category_id" nolabel="1" select="2" widget="timeline" widget_props="{\'titleField\':\'id\',\'summaryField\':\'id\'}" summaryField="notes" titleField="id" /><field name="debit" widget="indicator" /><field name="user_id" widget="indicator" widget_props="{\'card\': true}"/><field name="test_selection" widget="indicator" widget_props="{\'card\': true}"/></form>',
+    arch: '<form string="Partners"><field colspan="4" name="property_product_pricelist" /><field colspan="4" name="category_id" nolabel="1" select="2" widget="timeline" widget_props="{\'titleField\':\'id\',\'summaryField\':\'id\'}" summaryField="notes" titleField="id" /><field name="debit" widget="indicator" /><field name="user_id" widget="indicator" widget_props="{\'card\': true}"/><field name="test_selection" widget="indicator" widget_props="{\'card\': true}"/></form>',
     x: '<form string="Partners"><field name="parent_id"></form>',
     field_parent: false,
     fields: {
@@ -107,14 +106,12 @@ export default {
         type: "one2many",
         views: {
           form: {
-            arch:
-              '<form string="Bank account">\n                            <field name="state" select="2"/>\n                            <newline/>\n                            <field name="acc_number" on_change="onchange_banco(acc_number, acc_country_id, context)"/>\n                <field name="acc_country_id" on_change="onchange_banco(acc_number, acc_country_id, context)"/>\n            <newline/>\n                    <field name="iban" on_change="onchange_iban(iban, context)"/>\n            <newline/>\n                    <field name="printable_iban"/>\n                    <newline/>\n                <newline/>\n                            <field name="bank"/>\n                            <newline/>\n                            <field name="sequence"/>\n                            <field name="default_bank"/>\n            <field colspan="4" name="name" select="2"/>\n                            <separator colspan="4" string="Bank account owner"/>\n                            <field colspan="4" name="owner_name" select="2" invisible="1"/>\n                    <field colspan="4" name="owner_id" required="0"/>\n                <field colspan="4" name="street" invisible="1"/>\n                    <field colspan="4" name="owner_address_id" domain="[(\'partner_id\', \'=\', owner_id)]"/>\n                <newline/>\n                            <field name="zip" invisible="1"/>\n                <field name="city" invisible="1"/>\n                <newline/>\n                            <field invisible="1" name="country_id" select="2"/>\n                <field name="state_id" select="2" invisible="1"/>\n                </form>\n                        ',
+            arch: '<form string="Bank account">\n                            <field name="state" select="2"/>\n                            <newline/>\n                            <field name="acc_number" on_change="onchange_banco(acc_number, acc_country_id, context)"/>\n                <field name="acc_country_id" on_change="onchange_banco(acc_number, acc_country_id, context)"/>\n            <newline/>\n                    <field name="iban" on_change="onchange_iban(iban, context)"/>\n            <newline/>\n                    <field name="printable_iban"/>\n                    <newline/>\n                <newline/>\n                            <field name="bank"/>\n                            <newline/>\n                            <field name="sequence"/>\n                            <field name="default_bank"/>\n            <field colspan="4" name="name" select="2"/>\n                            <separator colspan="4" string="Bank account owner"/>\n                            <field colspan="4" name="owner_name" select="2" invisible="1"/>\n                    <field colspan="4" name="owner_id" required="0"/>\n                <field colspan="4" name="street" invisible="1"/>\n                    <field colspan="4" name="owner_address_id" domain="[(\'partner_id\', \'=\', owner_id)]"/>\n                <newline/>\n                            <field name="zip" invisible="1"/>\n                <field name="city" invisible="1"/>\n                <newline/>\n                            <field invisible="1" name="country_id" select="2"/>\n                <field name="state_id" select="2" invisible="1"/>\n                </form>\n                        ',
             fields: {
               acc_country_id: {
                 context: "",
                 domain: [],
-                help:
-                  "If the country of the bank is Spain, it validates the bank code. It only reads the digit characters of the bank code:\n- If the number of digits is 18, computes the two digits of control.\n- If the number of digits is 20, computes the two digits of control and ignores the current ones.\n- If the number of digits is different from 18 or 20, it leaves the bank code unaltered.\nThe result is shown in the '1234 5678 06 1234567890' format.",
+                help: "If the country of the bank is Spain, it validates the bank code. It only reads the digit characters of the bank code:\n- If the number of digits is 18, computes the two digits of control.\n- If the number of digits is 20, computes the two digits of control and ignores the current ones.\n- If the number of digits is different from 18 or 20, it leaves the bank code unaltered.\nThe result is shown in the '1234 5678 06 1234567890' format.",
                 relation: "res.country",
                 required: true,
                 size: 64,
@@ -213,8 +210,7 @@ export default {
               owner_id: {
                 context: "",
                 domain: [],
-                help:
-                  "If no owner is selected, the related partner will be used as owner",
+                help: "If no owner is selected, the related partner will be used as owner",
                 relation: "res.partner",
                 required: true,
                 select: true,
@@ -291,8 +287,7 @@ export default {
             },
           },
           tree: {
-            arch:
-              '<tree string="Bank Details">\n                            <field name="test"/><field name="test1"/><field name="test2"/><field name="test3"/><field name="test4"/><field name="test5"/><field name="state"/>\n                            <field name="bank"/>\n                            <field name="owner_name"/>\n                            <field name="acc_number"/>\n                        <field name="iban"/>\n                <field name="default_bank"/>\n            </tree>\n                    ',
+            arch: '<tree string="Bank Details">\n                            <field name="test"/><field name="test1"/><field name="test2"/><field name="test3"/><field name="test4"/><field name="test5"/><field name="state"/>\n                            <field name="bank"/>\n                            <field name="owner_name"/>\n                            <field name="acc_number"/>\n                        <field name="iban"/>\n                <field name="default_bank"/>\n            </tree>\n                    ',
             fields: {
               acc_number: {
                 size: 64,
@@ -481,8 +476,7 @@ export default {
         views: {},
       },
       lang: {
-        help:
-          "If the selected language is loaded in the system, all documents related to this partner will be printed in this language. If not, it will be english.",
+        help: "If the selected language is loaded in the system, all documents related to this partner will be printed in this language. If not, it will be english.",
         selection: [
           ["en_US", "English"],
           ["ca_ES", "Catalan / Català"],
@@ -547,8 +541,7 @@ export default {
         context: "",
         digits: [16, 2],
         domain: "[('type', '=', 'receivable')]",
-        help:
-          "This account will be used as the debtor account for the current partner",
+        help: "This account will be used as the debtor account for the current partner",
         relation: "account.account",
         required: true,
         string: "Account Debtor",
@@ -559,8 +552,7 @@ export default {
         context: "",
         digits: [16, 2],
         domain: "[('type', '=', 'payable')]",
-        help:
-          "This account will be used instead of the default one as the payable account for the current partner",
+        help: "This account will be used instead of the default one as the payable account for the current partner",
         relation: "account.account",
         required: true,
         string: "Account Payable",
@@ -571,8 +563,7 @@ export default {
         context: "",
         digits: [16, 2],
         domain: [],
-        help:
-          "The fiscal position will determine taxes and the accounts used for the the partner.",
+        help: "The fiscal position will determine taxes and the accounts used for the the partner.",
         relation: "account.fiscal.position",
         string: "Fiscal Position",
         type: "many2one",
@@ -582,8 +573,7 @@ export default {
         context: "",
         digits: [16, 2],
         domain: "[('type', '=', 'receivable')]",
-        help:
-          "This account will be used instead of the default one as the receivable account for the current partner",
+        help: "This account will be used instead of the default one as the receivable account for the current partner",
         relation: "account.account",
         required: true,
         string: "Account Receivable",
@@ -594,8 +584,7 @@ export default {
         context: "",
         digits: [16, 2],
         domain: [],
-        help:
-          "This payment term will be used instead of the default one for the current partner",
+        help: "This payment term will be used instead of the default one for the current partner",
         relation: "account.payment.term",
         string: "Payment Term",
         type: "many2one",
@@ -605,8 +594,7 @@ export default {
         context: "",
         digits: [16, 2],
         domain: [["type", "=", "sale"]],
-        help:
-          "This pricelist will be used, instead of the default one,                     for sales to the current partner",
+        help: "This pricelist will be used, instead of the default one,                     for sales to the current partner",
         relation: "product.pricelist",
         string: "Sale Pricelist",
         type: "many2one",
@@ -616,8 +604,7 @@ export default {
         context: "",
         digits: [16, 2],
         domain: [["type", "=", "purchase"]],
-        help:
-          "This pricelist will be used, instead of the default one, for purchases from the current partner",
+        help: "This pricelist will be used, instead of the default one, for purchases from the current partner",
         relation: "product.pricelist",
         string: "Purchase Pricelist",
         type: "many2one",
@@ -627,8 +614,7 @@ export default {
         context: "",
         digits: [16, 2],
         domain: [],
-        help:
-          "This stock location will be used, instead of the default one, as the destination location for goods you send to this partner",
+        help: "This stock location will be used, instead of the default one, as the destination location for goods you send to this partner",
         relation: "stock.location",
         string: "Customer Location",
         type: "many2one",
@@ -638,8 +624,7 @@ export default {
         context: "",
         digits: [16, 2],
         domain: [],
-        help:
-          "This stock location will be used, instead of the default one, as the source location for goods you receive from the current partner",
+        help: "This stock location will be used, instead of the default one, as the source location for goods you receive from the current partner",
         relation: "stock.location",
         string: "Supplier Location",
         type: "many2one",
@@ -649,8 +634,7 @@ export default {
         context: "",
         digits: [16, 2],
         domain: [["name", "!=", false]],
-        help:
-          "Encoding XML amb el qual es generaran els XML's de switching per aquesta empresa",
+        help: "Encoding XML amb el qual es generaran els XML's de switching per aquesta empresa",
         relation: "giscedata.switching.xml.encoding",
         required: true,
         string: "Encoding XML switching",
@@ -680,8 +664,7 @@ export default {
         views: {},
       },
       supplier: {
-        help:
-          "Check this box if the partner is a supplier. If it's not checked, purchase people will not see it when encoding a purchase order.",
+        help: "Check this box if the partner is a supplier. If it's not checked, purchase people will not see it when encoding a purchase order.",
         string: "Supplier",
         type: "boolean",
         views: {},
@@ -708,8 +691,7 @@ export default {
       user_id: {
         context: "",
         domain: [],
-        help:
-          "The internal user that is in charge of communicating with this partner if any.",
+        help: "The internal user that is in charge of communicating with this partner if any.",
         relation: "res.users",
         size: 64,
         string: "Dedicated Salesman",
@@ -717,8 +699,7 @@ export default {
         views: {},
       },
       vat: {
-        help:
-          "Value Added Tax number. Check the box if the partner is subjected to the VAT. Used by the VAT legal statement.",
+        help: "Value Added Tax number. Check the box if the partner is subjected to the VAT. Used by the VAT legal statement.",
         select: true,
         size: 32,
         string: "VAT",
@@ -726,8 +707,7 @@ export default {
         views: {},
       },
       vat_subjected: {
-        help:
-          "Check this box if the partner is subjected to the VAT. It will be used for the VAT legal statement.",
+        help: "Check this box if the partner is subjected to the VAT. It will be used for the VAT legal statement.",
         string: "VAT Legal Statement",
         type: "boolean",
         views: {},

@@ -1,12 +1,7 @@
 {
   "extends": "./tsconfig.paths.json",
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "src/__tests__",
-    "src/stories"
-  ],
+  "include": ["src"],
+  "exclude": ["src/__tests__", "src/stories"],
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
@@ -23,11 +18,11 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "useUnknownInCatchVariables": false,
-    "declaration": true, /* Generates corresponding '.d.ts' file. */
-    "declarationMap": true, /* Generates a sourcemap for each corresponding '.d.ts' file. */
+    "declaration": true /* Generates corresponding '.d.ts' file. */,
+    "declarationMap": true /* Generates a sourcemap for each corresponding '.d.ts' file. */,
     "sourceMap": true /* Generates corresponding '.map' file. */,
     "outDir": "./dist" /* Redirect output structure to the directory. */,
-    "downlevelIteration": true, /* Provide full support for iterables in 'for-of', spread, and destructuring when targeting 'ES5' or 'ES3'. */
-    "strictBindCallApply": false /* Enable strict 'bind', 'call', and 'apply' methods on functions. */,
+    "downlevelIteration": true /* Provide full support for iterables in 'for-of', spread, and destructuring when targeting 'ES5' or 'ES3'. */,
+    "strictBindCallApply": false /* Enable strict 'bind', 'call', and 'apply' methods on functions. */
   }
 }

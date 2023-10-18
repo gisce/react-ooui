@@ -11,7 +11,7 @@ export type ReferenceTreeProps = {
 };
 
 export const ReferenceTree = (
-  props: ReferenceTreeProps
+  props: ReferenceTreeProps,
 ): React.ReactElement => {
   const { value, context, selectionValues } = props;
   const [name, setName] = useState();

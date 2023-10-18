@@ -88,7 +88,6 @@ export const Test = (): React.ReactElement => {
 };
 
 export const BottomPosition = (): React.ReactElement => {
-
   const arch = `<form>
     <notebook name="notebook" tabpos="bottom">
       <page string="General">
@@ -113,9 +112,7 @@ export const BottomPosition = (): React.ReactElement => {
   );
 };
 
-
 export const LeftPosition = (): React.ReactElement => {
-
   const arch = `<form>
     <notebook name="notebook" tabpos="left">
       <page string="General">
@@ -141,7 +138,6 @@ export const LeftPosition = (): React.ReactElement => {
 };
 
 export const IconTabs = (): React.ReactElement => {
-
   const arch = `<form>
     <notebook name="notebook">
       <page string="Home" icon="home">
@@ -166,9 +162,7 @@ export const IconTabs = (): React.ReactElement => {
   );
 };
 
-
 export const IconTablerTabs = (): React.ReactElement => {
-
   const arch = `<form>
     <notebook name="notebook">
       <page string="Home" icon="bolt">
