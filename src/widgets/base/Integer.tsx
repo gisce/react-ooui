@@ -46,6 +46,7 @@ export const Integer = (props: IntegerProps) => {
           const newNumber = newValue as number;
           onChange?.(newNumber);
         }}
+        defaultValue={0}
         onBlur={elementHasLostFocus}
         precision={0}
         style={requiredStyle}
