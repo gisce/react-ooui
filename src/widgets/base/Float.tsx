@@ -30,7 +30,6 @@ export const Float = (props: WidgetProps) => {
         formatter={(value) => {
           return `${value}`.replace(/[^0-9\.\-]+/g, "");
         }}
-        defaultValue={0}
         decimalSeparator={"."}
         onBlur={elementHasLostFocus}
       />
