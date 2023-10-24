@@ -13,6 +13,7 @@ export const Default = (): React.ReactElement => {
       <Form
         model={"giscedata.polissa.modcontractual"}
         id={6}
+        readOnly={true}
         onCancel={() => {
           console.log();
         }}
