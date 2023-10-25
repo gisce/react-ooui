@@ -190,898 +190,705 @@ export default {
     view_id: 482,
   },
   form: {
-    arch: `<form string="Modificacions contractuals"> <group string="Tests">\n                        <button type="action" name="417" string="readonly1" icon="gtk-print" readonly="0"/>\n                        <button type="action" name="417" string="readonly0" icon="gtk-print" readonly="0"/>\n                        <button type="action" name="417" string="readonlyVariable1" icon="gtk-print" attrs="{'readonly':[('state','!=','actiu')]}" readonly="0"/>\n                        <button type="action" name="417" string="readonlyVariable2" icon="gtk-print" attrs="{'readonly':[('state','==','actiu')]}" readonly="0"/>\n\n                \n                        <button type="object" name="417" string="readonly1" icon="gtk-print" readonly="1"/>\n                        <button type="object" name="417" string="readonly0" icon="gtk-print" readonly="0"/>\n                        <button type="object" name="417" string="readonlyVariable3" icon="gtk-print" attrs="{'readonly':[('state','!=','actiu')]}"/>\n                        <button type="object" name="417" string="readonlyVariable4" icon="gtk-print" attrs="{'readonly':[('state','==','actiu')]}"/>\n                    </group> </form>`,
+    arch: `<form string="Modificacions contractuals">\n                    <group colspan="4">\n                        <group colspan="2" col="2" rowspan="1">\n                            <field name="name"/>\n                            <field name="polissa_id" select="1" readonly="1"/>\n                            <field name="contract_type"/>\n                        </group>\n                        <group colspan="2" col="2" rowspan="1">\n                            <field name="create_date" select="1"/>\n                            <field name="data_inici" select="1"/>\n                            <field name="data_final" select="1"/>\n                            <field name="data_firma_contracte"/>\n                        </group>\n                        <group colspan="2" col="4" rowspan="1">\n                            <field name="state" select="1"/>\n                            <field name="active" select="1"/>\n                            <field name="tipus" select="1"/>\n                        </group>\n                        <group colspan="2" col="2" rowspan="1">\n                            <field name="modcontractual_ant"/>\n                            <field name="modcontractual_seg"/>\n                        </group>\n                    </group>\n                    <notebook>\n                        <page string="Dades del client">\n                            <field name="titular" colspan="4"/>\n                            <group col="4" colspan="4">\n                        <field name="bono_social_disponible" colspan="2"/>\n                    </group>\n                <field name="cnae"/>\n                            <field name="pagador" colspan="4"/>\n                    <field name="direccio_pagament" colspan="4"/>\n                    <field name="enviament"/>\n                    <group colspan="2" col="2" attrs="{'invisible': [('enviament', '=', 'postal')]}">\n                        <field name="pagador_email"/>\n                    </group>\n                <field name="notificacio" colspan="4"/>\n                    <group attrs="{'invisible': [('notificacio', '!=', 'altre_p')]}" colspan="4">\n                        <field name="altre_p" colspan="4"/>\n                    </group>\n                    <field name="direccio_notificacio" colspan="4"/>\n                <group colspan="2" col="2" attrs="{'invisible': [('enviament', '=', 'postal')]}">\n                        <field name="notificacio_email"/>\n                    </group>\n                <field name="tipus_vivenda" colspan="4"/>\n                            <newline/>\n                        </page>\n                        <page string="Facturació"><field name="comissio" select="2"/>\n                <group col="4" colspan="4">\n                        <group colspan="2">\n                            <field name="facturacio_distri"/>\n                        </group>\n                    </group>\n                <field name="facturacio" select="1"/>\n                    <group colspan="2" col="3" attrs="{'invisible':[('contract_type', '!=', '09')]}">\n                            <field name="expected_consumption"/>\n                    </group>\n                    <field name="facturacio_potencia"/>\n                    <field name="mode_facturacio_generacio" invisible="1"/>\n                <field name="mode_facturacio" select="2" invisible="1"/>\n                    <field name="property_unitat_potencia"/>\n                    <field name="llista_preu" select="1"/>\n                    <field name="peatge_directe" select="2"/>\n                <field name="payment_term" select="2"/>\n                    <field name="tipo_pago" colspan="4"/>\n                    <field name="bank" colspan="4" select="2"/>\n                    <field name="payment_mode_id" colspan="4"/>\n                <field name="es_electrointensiu" select="2"/>\n                    <field name="codi_sollicitud_electrointensiu"/>\n                    <field name="versio_sollicitud"/>\n                </page>\n                        <page string="CUPS">\n                            <field name="cups" select="1" colspan="4"/>\n                        </page>\n                        <page string="Dades tècniques">\n                            <field name="distribuidora" colspan="4" select="2"/>\n                    <field name="ref_dist" select="1"/>\n                <field name="tarifa"/>\n                            <field name="potencia"/>\n                            <field name="tensio"/>\n                            <field name="lectura_en_baja" select="2"/>\n                    <field name="trafo"/>\n                <field name="tensio_normalitzada"/>\n                            <field name="tipo_medida"/>\n                <field name="potencies_periode" colspan="4"/>\n                            <field name="comptador" colspan="4"/>\n                <field name="tg" select="2"/>\n                            <field name="condicions_generals_id" select="2"/>\n                <field name="autoconsumo" select="2"/>\n                            <field name="nocutoff"/>\n                            <button type="action" name="420" colspan="4" string="Actualitzar Potències" icon="gtk-convert" readonly="0"/>\n                        </page>\n                        <page string="Contactes">\n                        <field name="representante_id" colspan="4"/>\n                </page>\n                        <page string="Observacions">\n                            <field name="observacions" colspan="4" nolabel="1"/>\n                        </page>\n                        <page string="Agregació">\n                            <group colspan="2" col="4" string="Nivells d'agregació">\n                                <separator string="Tensió" colspan="1"/>\n                                <separator string="Tarifa" colspan="1"/>\n                                <separator string="DH" colspan="1"/>\n                                <separator string="Tipus" colspan="1"/>\n                                <field name="agree_tensio" nolabel="1" select="2"/>\n                                <field name="agree_tarifa" nolabel="1" select="2"/>\n                                <field name="agree_dh" nolabel="1" select="2"/>\n                                <field name="agree_tipus" nolabel="1" select="2"/>\n                            </group>\n                        </page>\n                    </notebook>\n                    <group string="Tests">\n                        <button type="action" name="417" string="readonly1" icon="gtk-print" readonly="0"/>\n                        <button type="action" name="417" string="readonly0" icon="gtk-print" readonly="0"/>\n                        <button type="action" name="417" string="readonlyVariable1" icon="gtk-print" attrs="{'readonly':[('state','!=','actiu')]}" readonly="0"/>\n                        <button type="action" name="417" string="readonlyVariable2" icon="gtk-print" attrs="{'readonly':[('state','==','actiu')]}" readonly="0"/>\n\n                \n                        <button type="object" name="417" string="readonly1" icon="gtk-print" readonly="1"/>\n                        <button type="object" name="417" string="readonly0" icon="gtk-print" readonly="0"/>\n                        <button type="object" name="417" string="readonlyVariable3" icon="gtk-print" attrs="{'readonly':[('state','!=','actiu')]}"/>\n                        <button type="object" name="417" string="readonlyVariable4" icon="gtk-print" attrs="{'readonly':[('state','==','actiu')]}"/>\n                    </group>\n                    <group string="Accions" colspan="4" col="8">\n                        <button type="object" name="unlink" string="Cancel·lar" states="pendent" icon="gtk-delete"/>\n                        <button type="action" name="417" string="Imprimir" icon="gtk-print" readonly="0"/>\n                        <button type="action" name="414" string="Canviar dates" icon="gtk-edit" readonly="0"/>\n                        <button type="object" name="undo_last_modcontractual" string="Desfer mod. contractual" context="{'from_model': 'giscedata.polissa.modcontractual'}" attrs="{'invisible':[('state','!=','actiu')]}" confirm="Aquesta opció no es pot desfer. Vol continuar?"/>\n                    </group>\n                </form>`,
     field_parent: false,
     fields: {
-      "active": {
-        "is_function": false,
-        "readonly": true,
-        "required": true,
-        "string": "Activa",
-        "type": "boolean",
-        "views": {}
+      active: {
+        is_function: false,
+        readonly: true,
+        required: true,
+        string: "Activa",
+        type: "boolean",
+        views: {},
       },
-      "agree_dh": {
-        "digits": [
-          16,
-          2
-        ],
-        "is_function": true,
-        "readonly": 1,
-        "size": 2,
-        "string": "Codi DH",
-        "type": "char",
-        "views": {}
+      agree_dh: {
+        digits: [16, 2],
+        is_function: true,
+        readonly: 1,
+        size: 2,
+        string: "Codi DH",
+        type: "char",
+        views: {},
       },
-      "agree_tarifa": {
-        "digits": [
-          16,
-          2
-        ],
-        "is_function": true,
-        "readonly": 1,
-        "size": 2,
-        "string": "Codi Tarifa",
-        "type": "char",
-        "views": {}
+      agree_tarifa: {
+        digits: [16, 2],
+        is_function: true,
+        readonly: 1,
+        size: 2,
+        string: "Codi Tarifa",
+        type: "char",
+        views: {},
       },
-      "agree_tensio": {
-        "digits": [
-          16,
-          2
-        ],
-        "is_function": true,
-        "readonly": 1,
-        "size": 2,
-        "string": "Codi Tensió",
-        "type": "char",
-        "views": {}
+      agree_tensio: {
+        digits: [16, 2],
+        is_function: true,
+        readonly: 1,
+        size: 2,
+        string: "Codi Tensió",
+        type: "char",
+        views: {},
       },
-      "agree_tipus": {
-        "digits": [
-          16,
-          2
-        ],
-        "is_function": true,
-        "readonly": 1,
-        "size": 2,
-        "string": "Tipus Punt",
-        "type": "char",
-        "views": {}
+      agree_tipus: {
+        digits: [16, 2],
+        is_function: true,
+        readonly: 1,
+        size: 2,
+        string: "Tipus Punt",
+        type: "char",
+        views: {},
       },
-      "altre_p": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "res.partner",
-        "size": 64,
-        "string": "Contacte alternatiu",
-        "type": "many2one",
-        "views": {}
+      altre_p: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "res.partner",
+        size: 64,
+        string: "Contacte alternatiu",
+        type: "many2one",
+        views: {},
       },
-      "autoconsumo": {
-        "help": "Tipus de autoconsum del contracte segons RD. 900/2015",
-        "is_function": false,
-        "readonly": true,
-        "selection": [
-          [
-            "00",
-            "[00] - Sin Autoconsumo"
-          ],
-          [
-            "01",
-            "[01] - Autoconsumo Tipo 1"
-          ],
+      autoconsumo: {
+        help: "Tipus de autoconsum del contracte segons RD. 900/2015",
+        is_function: false,
+        readonly: true,
+        selection: [
+          ["00", "[00] - Sin Autoconsumo"],
+          ["01", "[01] - Autoconsumo Tipo 1"],
           [
             "2A",
-            "[2A] - Autoconsumo tipo 2 (según el Art. 13. 2. a) RD 900/2015)"
+            "[2A] - Autoconsumo tipo 2 (según el Art. 13. 2. a) RD 900/2015)",
           ],
           [
             "2B",
-            "[2B] - Autoconsumo tipo 2 (según el Art. 13. 2. b) RD 900/2015)"
+            "[2B] - Autoconsumo tipo 2 (según el Art. 13. 2. b) RD 900/2015)",
           ],
           [
             "2G",
-            "[2G] - Servicios auxiliares de generación ligada a un autoconsumo tipo 2"
+            "[2G] - Servicios auxiliares de generación ligada a un autoconsumo tipo 2",
           ],
-          [
-            "31",
-            "[31] - Sin Excedentes Individual – Consumo"
-          ],
-          [
-            "32",
-            "[32] - Sin Excedentes Colectivo – Consumo"
-          ],
+          ["31", "[31] - Sin Excedentes Individual – Consumo"],
+          ["32", "[32] - Sin Excedentes Colectivo – Consumo"],
           [
             "33",
-            "[33] - Sin Excedentes Colectivo con acuerdo de compensación – Consumo"
+            "[33] - Sin Excedentes Colectivo con acuerdo de compensación – Consumo",
           ],
-          [
-            "41",
-            "[41] - Con excedentes y compensación Individual - Consumo"
-          ],
-          [
-            "42",
-            "[42] - Con excedentes y compensación Colectivo– Consumo"
-          ],
+          ["41", "[41] - Con excedentes y compensación Individual - Consumo"],
+          ["42", "[42] - Con excedentes y compensación Colectivo– Consumo"],
           [
             "43",
-            "[43] - Con excedentes y compensación Colectivo a través de red– Consumo"
+            "[43] - Con excedentes y compensación Colectivo a través de red– Consumo",
           ],
           [
             "51",
-            "[51] - Con excedentes sin compensación Individual sin cto de SSAA en Red Interior– Consumo"
+            "[51] - Con excedentes sin compensación Individual sin cto de SSAA en Red Interior– Consumo",
           ],
           [
             "52",
-            "[52] - Con excedentes sin compensación Colectivo sin cto de SSAA en Red Interior– Consumo"
+            "[52] - Con excedentes sin compensación Colectivo sin cto de SSAA en Red Interior– Consumo",
           ],
           [
             "53",
-            "[53] - Con excedentes sin compensación Individual con cto SSAA en Red Interior– Consumo"
+            "[53] - Con excedentes sin compensación Individual con cto SSAA en Red Interior– Consumo",
           ],
           [
             "54",
-            "[54] - Con excedentes sin compensación individual con cto SSAA en Red Interior– SSAA"
+            "[54] - Con excedentes sin compensación individual con cto SSAA en Red Interior– SSAA",
           ],
           [
             "55",
-            "[55] - Con excedentes sin compensación Colectivo/en Red Interior– Consumo"
+            "[55] - Con excedentes sin compensación Colectivo/en Red Interior– Consumo",
           ],
           [
             "56",
-            "[56] - Con excedentes sin compensación Colectivo/en Red Interior - SSAA"
+            "[56] - Con excedentes sin compensación Colectivo/en Red Interior - SSAA",
           ],
           [
             "57",
-            "[57] - Con excedentes sin compensación Colectivo sin cto de SSAA (despreciable) en red interior – Consumo"
+            "[57] - Con excedentes sin compensación Colectivo sin cto de SSAA (despreciable) en red interior – Consumo",
           ],
           [
             "58",
-            "[58] - Con excedentes sin compensación Colectivo sin cto de SSAA a través de red - Consumo"
+            "[58] - Con excedentes sin compensación Colectivo sin cto de SSAA a través de red - Consumo",
           ],
           [
             "61",
-            "[61] - Con excedentes sin compensación Individual con cto SSAA a través de red – Consumo"
+            "[61] - Con excedentes sin compensación Individual con cto SSAA a través de red – Consumo",
           ],
           [
             "62",
-            "[62] - Con excedentes sin compensación individual con cto SSAA a través de red – SSAA"
+            "[62] - Con excedentes sin compensación individual con cto SSAA a través de red – SSAA",
           ],
           [
             "63",
-            "[63] - Con excedentes sin compensación Colectivo a través de red – Consumo"
+            "[63] - Con excedentes sin compensación Colectivo a través de red – Consumo",
           ],
           [
             "64",
-            "[64] - Con excedentes sin compensación Colectivo a través de red - SSAA"
+            "[64] - Con excedentes sin compensación Colectivo a través de red - SSAA",
           ],
           [
             "71",
-            "[71] - Con excedentes sin compensación Individual con cto SSAA a través de red y red interior – Consumo"
+            "[71] - Con excedentes sin compensación Individual con cto SSAA a través de red y red interior – Consumo",
           ],
           [
             "72",
-            "[72] - Con excedentes sin compensación individual con cto SSAA a través de red y red interior – SSAA"
+            "[72] - Con excedentes sin compensación individual con cto SSAA a través de red y red interior – SSAA",
           ],
           [
             "73",
-            "[73] - Con excedentes sin compensación Colectivo con cto de SSAA  a través de red y red interior – Consumo"
+            "[73] - Con excedentes sin compensación Colectivo con cto de SSAA  a través de red y red interior – Consumo",
           ],
           [
             "74",
-            "[74] - Con excedentes sin compensación Colectivo con cto de SSAA a través de red y red interior - SSAA"
-          ]
+            "[74] - Con excedentes sin compensación Colectivo con cto de SSAA a través de red y red interior - SSAA",
+          ],
         ],
-        "states": {
-          "esborrany": [
-            [
-              "readonly",
-              false
-            ]
-          ],
-          "modcontractual": [
-            [
-              "readonly",
-              false
-            ]
-          ],
-          "validar": [
-            [
-              "readonly",
-              false
-            ]
-          ]
+        states: {
+          esborrany: [["readonly", false]],
+          modcontractual: [["readonly", false]],
+          validar: [["readonly", false]],
         },
-        "string": "Autoconsum",
-        "type": "selection",
-        "views": {}
+        string: "Autoconsum",
+        type: "selection",
+        views: {},
       },
-      "bank": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "res.partner.bank",
-        "size": 64,
-        "string": "Compte bancari",
-        "type": "many2one",
-        "views": {}
+      bank: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "res.partner.bank",
+        size: 64,
+        string: "Compte bancari",
+        type: "many2one",
+        views: {},
       },
-      "bono_social_disponible": {
-        "is_function": false,
-        "string": "Bo social disponible",
-        "type": "boolean",
-        "views": {}
+      bono_social_disponible: {
+        is_function: false,
+        string: "Bo social disponible",
+        type: "boolean",
+        views: {},
       },
-      "cnae": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "giscemisc.cnae",
-        "size": 64,
-        "string": "CNAE",
-        "type": "many2one",
-        "views": {}
+      cnae: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "giscemisc.cnae",
+        size: 64,
+        string: "CNAE",
+        type: "many2one",
+        views: {},
       },
-      "codi_sollicitud_electrointensiu": {
-        "is_function": false,
-        "size": 25,
-        "string": "Codi sol·licitud",
-        "type": "char",
-        "views": {}
+      codi_sollicitud_electrointensiu: {
+        is_function: false,
+        size: 25,
+        string: "Codi sol·licitud",
+        type: "char",
+        views: {},
       },
-      "comissio": {
-        "is_function": false,
-        "select": 2,
-        "selection": [
-          [
-            "giscedata.polissa.comissio.kw",
-            "Comissió per Kw Facturats"
-          ],
-          [
-            "giscedata.polissa.comissio.unica",
-            "Comissió Única"
-          ]
+      comissio: {
+        is_function: false,
+        select: 2,
+        selection: [
+          ["giscedata.polissa.comissio.kw", "Comissió per Kw Facturats"],
+          ["giscedata.polissa.comissio.unica", "Comissió Única"],
         ],
-        "size": 256,
-        "string": "Comissió Assignada",
-        "type": "reference",
-        "views": {}
+        size: 256,
+        string: "Comissió Assignada",
+        type: "reference",
+        views: {},
       },
-      "comptador": {
-        "digits": [
-          16,
-          2
+      comptador: {
+        digits: [16, 2],
+        is_function: true,
+        readonly: 1,
+        size: 64,
+        string: "Comptador",
+        type: "char",
+        views: {},
+      },
+      condicions_generals_id: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "giscedata.polissa.condicions.generals",
+        size: 64,
+        string: "Condicions generals",
+        type: "many2one",
+        views: {},
+      },
+      contract_type: {
+        help: "Distintos tipos de contratos. Ver REAL DECRETO 1164/2001",
+        is_function: false,
+        required: true,
+        selection: [
+          ["01", "Anual"],
+          ["02", "Eventual medido"],
+          ["03", "Temporada"],
+          ["05", "RECORE"],
+          ["07", "Suministro de Obras"],
+          ["08", "Suministro de Socorro"],
+          ["09", "Eventual a tanto alzado"],
+          ["10", "Pruebas"],
+          ["11", "Duplicado"],
+          ["12", "De reserva"],
         ],
-        "is_function": true,
-        "readonly": 1,
-        "size": 64,
-        "string": "Comptador",
-        "type": "char",
-        "views": {}
+        string: "Tipus de contracte",
+        type: "selection",
+        views: {},
       },
-      "condicions_generals_id": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "giscedata.polissa.condicions.generals",
-        "size": 64,
-        "string": "Condicions generals",
-        "type": "many2one",
-        "views": {}
+      create_date: {
+        is_function: false,
+        readonly: true,
+        string: "Date Created",
+        type: "datetime",
+        views: {},
       },
-      "contract_type": {
-        "help": "Distintos tipos de contratos. Ver REAL DECRETO 1164/2001",
-        "is_function": false,
-        "required": true,
-        "selection": [
-          [
-            "01",
-            "Anual"
-          ],
-          [
-            "02",
-            "Eventual medido"
-          ],
-          [
-            "03",
-            "Temporada"
-          ],
-          [
-            "05",
-            "RECORE"
-          ],
-          [
-            "07",
-            "Suministro de Obras"
-          ],
-          [
-            "08",
-            "Suministro de Socorro"
-          ],
-          [
-            "09",
-            "Eventual a tanto alzado"
-          ],
-          [
-            "10",
-            "Pruebas"
-          ],
-          [
-            "11",
-            "Duplicado"
-          ],
-          [
-            "12",
-            "De reserva"
-          ]
+      cups: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "giscedata.cups.ps",
+        required: true,
+        size: 64,
+        string: "CUPS",
+        type: "many2one",
+        views: {},
+      },
+      data_final: {
+        is_function: false,
+        select: true,
+        string: "Data final",
+        type: "date",
+        views: {},
+      },
+      data_firma_contracte: {
+        is_function: false,
+        string: "Data firma contracte",
+        type: "datetime",
+        views: {},
+      },
+      data_inici: {
+        is_function: false,
+        required: true,
+        select: true,
+        string: "Data inici",
+        type: "date",
+        views: {},
+      },
+      direccio_notificacio: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "res.partner.address",
+        size: 64,
+        string: "Adreça notificació",
+        type: "many2one",
+        views: {},
+      },
+      direccio_pagament: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "res.partner.address",
+        size: 64,
+        string: "Adreça fiscal",
+        type: "many2one",
+        views: {},
+      },
+      distribuidora: {
+        context: "",
+        domain: [["supplier", "=", 1]],
+        is_function: false,
+        relation: "res.partner",
+        required: true,
+        size: 64,
+        string: "Distribuidora",
+        type: "many2one",
+        views: {},
+      },
+      enviament: {
+        is_function: false,
+        selection: [
+          ["postal", "Correu postal"],
+          ["email", "E-mail"],
+          ["postal+email", "Correu postal i e-mail"],
         ],
-        "string": "Tipus de contracte",
-        "type": "selection",
-        "views": {}
+        string: "Enviar factura via",
+        type: "selection",
+        views: {},
       },
-      "create_date": {
-        "is_function": false,
-        "readonly": true,
-        "string": "Date Created",
-        "type": "datetime",
-        "views": {}
+      es_electrointensiu: {
+        is_function: false,
+        string: "Consumidor electrointensiu",
+        type: "boolean",
+        views: {},
       },
-      "cups": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "giscedata.cups.ps",
-        "required": true,
-        "size": 64,
-        "string": "CUPS",
-        "type": "many2one",
-        "views": {}
+      expected_consumption: {
+        help: "Aquest camp calcula el consum total pactat per contractes eventuals sense comptador",
+        is_function: false,
+        readonly: true,
+        string: "Consum pactat",
+        type: "float",
+        views: {},
       },
-      "data_final": {
-        "is_function": false,
-        "select": true,
-        "string": "Data final",
-        "type": "date",
-        "views": {}
-      },
-      "data_firma_contracte": {
-        "is_function": false,
-        "string": "Data firma contracte",
-        "type": "datetime",
-        "views": {}
-      },
-      "data_inici": {
-        "is_function": false,
-        "required": true,
-        "select": true,
-        "string": "Data inici",
-        "type": "date",
-        "views": {}
-      },
-      "direccio_notificacio": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "res.partner.address",
-        "size": 64,
-        "string": "Adreça notificació",
-        "type": "many2one",
-        "views": {}
-      },
-      "direccio_pagament": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "res.partner.address",
-        "size": 64,
-        "string": "Adreça fiscal",
-        "type": "many2one",
-        "views": {}
-      },
-      "distribuidora": {
-        "context": "",
-        "domain": [
-          [
-            "supplier",
-            "=",
-            1
-          ]
+      facturacio: {
+        is_function: false,
+        required: true,
+        selection: [
+          [1, "Mensual"],
+          [2, "Bimestral"],
         ],
-        "is_function": false,
-        "relation": "res.partner",
-        "required": true,
-        "size": 64,
-        "string": "Distribuidora",
-        "type": "many2one",
-        "views": {}
+        string: "Facturació",
+        type: "selection",
+        views: {},
       },
-      "enviament": {
-        "is_function": false,
-        "selection": [
-          [
-            "postal",
-            "Correu postal"
-          ],
-          [
-            "email",
-            "E-mail"
-          ],
-          [
-            "postal+email",
-            "Correu postal i e-mail"
-          ]
+      facturacio_distri: {
+        help: "Periodicitat de facturació de distribuidora",
+        is_function: false,
+        selection: [
+          [1, "Mensual"],
+          [2, "Bimestral"],
         ],
-        "string": "Enviar factura via",
-        "type": "selection",
-        "views": {}
+        string: "Facturació de distribuïdora",
+        type: "selection",
+        views: {},
       },
-      "es_electrointensiu": {
-        "is_function": false,
-        "string": "Consumidor electrointensiu",
-        "type": "boolean",
-        "views": {}
-      },
-      "expected_consumption": {
-        "help": "Aquest camp calcula el consum total pactat per contractes eventuals sense comptador",
-        "is_function": false,
-        "readonly": true,
-        "string": "Consum pactat",
-        "type": "float",
-        "views": {}
-      },
-      "facturacio": {
-        "is_function": false,
-        "required": true,
-        "selection": [
-          [
-            1,
-            "Mensual"
-          ],
-          [
-            2,
-            "Bimestral"
-          ]
+      facturacio_potencia: {
+        is_function: false,
+        required: true,
+        selection: [
+          ["max", "Maxímetro"],
+          ["icp", "ICP"],
+          ["recarrec", "Recàrrec ICP"],
         ],
-        "string": "Facturació",
-        "type": "selection",
-        "views": {}
+        string: "Facturación Potencia",
+        type: "selection",
+        views: {},
       },
-      "facturacio_distri": {
-        "help": "Periodicitat de facturació de distribuidora",
-        "is_function": false,
-        "selection": [
-          [
-            1,
-            "Mensual"
-          ],
-          [
-            2,
-            "Bimestral"
-          ]
+      lectura_en_baja: {
+        is_function: false,
+        required: true,
+        string: "Lectura en baixa",
+        type: "boolean",
+        views: {},
+      },
+      llista_preu: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "product.pricelist",
+        size: 64,
+        string: "Tarifa Comercialitzadora",
+        type: "many2one",
+        views: {},
+      },
+      modcontractual_ant: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "giscedata.polissa.modcontractual",
+        size: 64,
+        string: "Modificació anterior",
+        type: "many2one",
+        views: {},
+      },
+      modcontractual_seg: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "giscedata.polissa.modcontractual",
+        size: 64,
+        string: "Modificació següent",
+        type: "many2one",
+        views: {},
+      },
+      mode_facturacio: {
+        is_function: false,
+        selection: [["atr", "ATR"]],
+        string: "Mode facturació",
+        type: "selection",
+        views: {},
+      },
+      mode_facturacio_generacio: {
+        is_function: false,
+        selection: [["atr", "ATR"]],
+        string: "Mode facturació generacio",
+        type: "selection",
+        views: {},
+      },
+      name: {
+        is_function: false,
+        readonly: true,
+        required: true,
+        size: 64,
+        string: "Codi modificació",
+        type: "char",
+        views: {},
+      },
+      nocutoff: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "giscedata.polissa.nocutoff",
+        size: 64,
+        string: "Subministrament no tallable",
+        type: "many2one",
+        views: {},
+      },
+      notificacio: {
+        is_function: false,
+        required: true,
+        selection: [
+          ["titular", "Titular"],
+          ["pagador", "Fiscal"],
+          ["altre_p", "Altra"],
         ],
-        "string": "Facturació de distribuïdora",
-        "type": "selection",
-        "views": {}
+        string: "Persona notificació",
+        type: "selection",
+        views: {},
       },
-      "facturacio_potencia": {
-        "is_function": false,
-        "required": true,
-        "selection": [
-          [
-            "max",
-            "Maxímetro"
-          ],
-          [
-            "icp",
-            "ICP"
-          ],
-          [
-            "recarrec",
-            "Recàrrec ICP"
-          ]
+      notificacio_email: {
+        is_function: false,
+        readonly: true,
+        size: 240,
+        string: "Email dir. notif.",
+        type: "char",
+        views: {},
+      },
+      observacions: {
+        is_function: false,
+        string: "Observacions",
+        type: "text",
+        views: {},
+      },
+      pagador: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "res.partner",
+        required: true,
+        size: 64,
+        string: "Raó fiscal",
+        type: "many2one",
+        views: {},
+      },
+      pagador_email: {
+        is_function: false,
+        readonly: true,
+        size: 240,
+        string: "Email dir. fiscal",
+        type: "char",
+        views: {},
+      },
+      payment_mode_id: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "payment.mode",
+        size: 64,
+        string: "Grup de pagament",
+        type: "many2one",
+        views: {},
+      },
+      payment_term: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "account.payment.term",
+        size: 64,
+        string: "Plazo de pago",
+        type: "many2one",
+        views: {},
+      },
+      peatge_directe: {
+        is_function: false,
+        required: true,
+        string: "Peatge directe",
+        type: "boolean",
+        views: {},
+      },
+      polissa_id: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "giscedata.polissa",
+        required: true,
+        select: true,
+        size: 64,
+        string: "Pòlissa",
+        type: "many2one",
+        views: {},
+      },
+      potencia: {
+        digits: [16, 3],
+        is_function: false,
+        required: true,
+        string: "Potència contractada (kW)",
+        type: "float",
+        views: {},
+      },
+      potencies_periode: {
+        is_function: false,
+        readonly: true,
+        size: 256,
+        string: "Potències contractades",
+        type: "char",
+        views: {},
+      },
+      property_unitat_potencia: {
+        context: "",
+        digits: [16, 2],
+        domain: "[('category_id.name', '=', 'POT ELEC')]",
+        help: "Amb quina unitat es vol facturar la potència",
+        is_function: true,
+        relation: "product.uom",
+        required: true,
+        string: "Unitat de facturació potència",
+        type: "many2one",
+        views: {},
+      },
+      ref_dist: {
+        is_function: false,
+        size: 60,
+        string: "Referència distribuidora",
+        type: "char",
+        views: {},
+      },
+      representante_id: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "res.partner",
+        size: 64,
+        string: "Representante",
+        type: "many2one",
+        views: {},
+      },
+      state: {
+        is_function: false,
+        readonly: true,
+        required: true,
+        selection: [
+          ["esborrany", "Borrador"],
+          ["actiu", "Activo"],
+          ["pendent", "Pendiente de activación"],
+          ["baixa", "Baja"],
+          ["baixa2", "Baja por modificación"],
+          ["baixa3", "Baja por renovación"],
+          ["baixa4", "Baja por nueva póliza"],
         ],
-        "string": "Facturación Potencia",
-        "type": "selection",
-        "views": {}
+        string: "Estat",
+        type: "selection",
+        views: {},
       },
-      "lectura_en_baja": {
-        "is_function": false,
-        "required": true,
-        "string": "Lectura en baixa",
-        "type": "boolean",
-        "views": {}
+      tarifa: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "giscedata.polissa.tarifa",
+        required: true,
+        size: 64,
+        string: "Tarifa",
+        type: "many2one",
+        views: {},
       },
-      "llista_preu": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "product.pricelist",
-        "size": 64,
-        "string": "Tarifa Comercialitzadora",
-        "type": "many2one",
-        "views": {}
+      tensio: {
+        is_function: false,
+        required: true,
+        string: "Tensió (V)",
+        type: "integer",
+        views: {},
       },
-      "modcontractual_ant": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "giscedata.polissa.modcontractual",
-        "size": 64,
-        "string": "Modificació anterior",
-        "type": "many2one",
-        "views": {}
+      tensio_normalitzada: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "giscedata.tensions.tensio",
+        required: true,
+        size: 64,
+        string: "Tensió normalitzada",
+        type: "many2one",
+        views: {},
       },
-      "modcontractual_seg": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "giscedata.polissa.modcontractual",
-        "size": 64,
-        "string": "Modificació següent",
-        "type": "many2one",
-        "views": {}
-      },
-      "mode_facturacio": {
-        "is_function": false,
-        "selection": [
-          [
-            "atr",
-            "ATR"
-          ]
+      tg: {
+        help: "Telegestió operativa amb o sense corba de càrrega (CCH)",
+        is_function: false,
+        selection: [
+          ["1", "Operativa amb CCH"],
+          ["2", "No operativa"],
+          ["3", "Operativa Sense CCH"],
         ],
-        "string": "Mode facturació",
-        "type": "selection",
-        "views": {}
+        string: "Telegestió",
+        type: "selection",
+        views: {},
       },
-      "mode_facturacio_generacio": {
-        "is_function": false,
-        "selection": [
-          [
-            "atr",
-            "ATR"
-          ]
+      tipo_medida: {
+        is_function: false,
+        readonly: true,
+        size: 2,
+        string: "Tipus de Punt de Mesura",
+        type: "char",
+        views: {},
+      },
+      tipo_pago: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "payment.type",
+        required: true,
+        size: 64,
+        string: "Tipo de pago",
+        type: "many2one",
+        views: {},
+      },
+      tipus: {
+        is_function: false,
+        required: true,
+        selection: [
+          ["alta", "Alta"],
+          ["baixa", "Baja"],
+          ["mod", "Modificación"],
+          ["reno", "Renovación"],
         ],
-        "string": "Mode facturació generacio",
-        "type": "selection",
-        "views": {}
+        string: "Tipus",
+        type: "selection",
+        views: {},
       },
-      "name": {
-        "is_function": false,
-        "readonly": true,
-        "required": true,
-        "size": 64,
-        "string": "Codi modificació",
-        "type": "char",
-        "views": {}
-      },
-      "nocutoff": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "giscedata.polissa.nocutoff",
-        "size": 64,
-        "string": "Subministrament no tallable",
-        "type": "many2one",
-        "views": {}
-      },
-      "notificacio": {
-        "is_function": false,
-        "required": true,
-        "selection": [
-          [
-            "titular",
-            "Titular"
-          ],
-          [
-            "pagador",
-            "Fiscal"
-          ],
-          [
-            "altre_p",
-            "Altra"
-          ]
+      tipus_vivenda: {
+        is_function: false,
+        readonly: true,
+        selection: [
+          ["habitual", "Habitual"],
+          ["no_habitual", "No habitual"],
         ],
-        "string": "Persona notificació",
-        "type": "selection",
-        "views": {}
+        string: "Tipus vivenda",
+        type: "selection",
+        views: {},
       },
-      "notificacio_email": {
-        "is_function": false,
-        "readonly": true,
-        "size": 240,
-        "string": "Email dir. notif.",
-        "type": "char",
-        "views": {}
+      titular: {
+        context: "",
+        domain: [],
+        is_function: false,
+        relation: "res.partner",
+        size: 64,
+        string: "Titular",
+        type: "many2one",
+        views: {},
       },
-      "observacions": {
-        "is_function": false,
-        "string": "Observacions",
-        "type": "text",
-        "views": {}
+      trafo: {
+        is_function: false,
+        required: true,
+        string: "Trafo KVA",
+        type: "float",
+        views: {},
       },
-      "pagador": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "res.partner",
-        "required": true,
-        "size": 64,
-        "string": "Raó fiscal",
-        "type": "many2one",
-        "views": {}
+      versio_sollicitud: {
+        is_function: false,
+        size: 6,
+        string: "Versió sol.licitud",
+        type: "char",
+        views: {},
       },
-      "pagador_email": {
-        "is_function": false,
-        "readonly": true,
-        "size": 240,
-        "string": "Email dir. fiscal",
-        "type": "char",
-        "views": {}
-      },
-      "payment_mode_id": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "payment.mode",
-        "size": 64,
-        "string": "Grup de pagament",
-        "type": "many2one",
-        "views": {}
-      },
-      "payment_term": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "account.payment.term",
-        "size": 64,
-        "string": "Plazo de pago",
-        "type": "many2one",
-        "views": {}
-      },
-      "peatge_directe": {
-        "is_function": false,
-        "required": true,
-        "string": "Peatge directe",
-        "type": "boolean",
-        "views": {}
-      },
-      "polissa_id": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "giscedata.polissa",
-        "required": true,
-        "select": true,
-        "size": 64,
-        "string": "Pòlissa",
-        "type": "many2one",
-        "views": {}
-      },
-      "potencia": {
-        "digits": [
-          16,
-          3
-        ],
-        "is_function": false,
-        "required": true,
-        "string": "Potència contractada (kW)",
-        "type": "float",
-        "views": {}
-      },
-      "potencies_periode": {
-        "is_function": false,
-        "readonly": true,
-        "size": 256,
-        "string": "Potències contractades",
-        "type": "char",
-        "views": {}
-      },
-      "property_unitat_potencia": {
-        "context": "",
-        "digits": [
-          16,
-          2
-        ],
-        "domain": "[('category_id.name', '=', 'POT ELEC')]",
-        "help": "Amb quina unitat es vol facturar la potència",
-        "is_function": true,
-        "relation": "product.uom",
-        "required": true,
-        "string": "Unitat de facturació potència",
-        "type": "many2one",
-        "views": {}
-      },
-      "ref_dist": {
-        "is_function": false,
-        "size": 60,
-        "string": "Referència distribuidora",
-        "type": "char",
-        "views": {}
-      },
-      "representante_id": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "res.partner",
-        "size": 64,
-        "string": "Representante",
-        "type": "many2one",
-        "views": {}
-      },
-      "state": {
-        "is_function": false,
-        "readonly": true,
-        "required": true,
-        "selection": [
-          [
-            "esborrany",
-            "Borrador"
-          ],
-          [
-            "actiu",
-            "Activo"
-          ],
-          [
-            "pendent",
-            "Pendiente de activación"
-          ],
-          [
-            "baixa",
-            "Baja"
-          ],
-          [
-            "baixa2",
-            "Baja por modificación"
-          ],
-          [
-            "baixa3",
-            "Baja por renovación"
-          ],
-          [
-            "baixa4",
-            "Baja por nueva póliza"
-          ]
-        ],
-        "string": "Estat",
-        "type": "selection",
-        "views": {}
-      },
-      "tarifa": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "giscedata.polissa.tarifa",
-        "required": true,
-        "size": 64,
-        "string": "Tarifa",
-        "type": "many2one",
-        "views": {}
-      },
-      "tensio": {
-        "is_function": false,
-        "required": true,
-        "string": "Tensió (V)",
-        "type": "integer",
-        "views": {}
-      },
-      "tensio_normalitzada": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "giscedata.tensions.tensio",
-        "required": true,
-        "size": 64,
-        "string": "Tensió normalitzada",
-        "type": "many2one",
-        "views": {}
-      },
-      "tg": {
-        "help": "Telegestió operativa amb o sense corba de càrrega (CCH)",
-        "is_function": false,
-        "selection": [
-          [
-            "1",
-            "Operativa amb CCH"
-          ],
-          [
-            "2",
-            "No operativa"
-          ],
-          [
-            "3",
-            "Operativa Sense CCH"
-          ]
-        ],
-        "string": "Telegestió",
-        "type": "selection",
-        "views": {}
-      },
-      "tipo_medida": {
-        "is_function": false,
-        "readonly": true,
-        "size": 2,
-        "string": "Tipus de Punt de Mesura",
-        "type": "char",
-        "views": {}
-      },
-      "tipo_pago": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "payment.type",
-        "required": true,
-        "size": 64,
-        "string": "Tipo de pago",
-        "type": "many2one",
-        "views": {}
-      },
-      "tipus": {
-        "is_function": false,
-        "required": true,
-        "selection": [
-          [
-            "alta",
-            "Alta"
-          ],
-          [
-            "baixa",
-            "Baja"
-          ],
-          [
-            "mod",
-            "Modificación"
-          ],
-          [
-            "reno",
-            "Renovación"
-          ]
-        ],
-        "string": "Tipus",
-        "type": "selection",
-        "views": {}
-      },
-      "tipus_vivenda": {
-        "is_function": false,
-        "readonly": true,
-        "selection": [
-          [
-            "habitual",
-            "Habitual"
-          ],
-          [
-            "no_habitual",
-            "No habitual"
-          ]
-        ],
-        "string": "Tipus vivenda",
-        "type": "selection",
-        "views": {}
-      },
-      "titular": {
-        "context": "",
-        "domain": [],
-        "is_function": false,
-        "relation": "res.partner",
-        "size": 64,
-        "string": "Titular",
-        "type": "many2one",
-        "views": {}
-      },
-      "trafo": {
-        "is_function": false,
-        "required": true,
-        "string": "Trafo KVA",
-        "type": "float",
-        "views": {}
-      },
-      "versio_sollicitud": {
-        "is_function": false,
-        "size": 6,
-        "string": "Versió sol.licitud",
-        "type": "char",
-        "views": {}
-      }
     },
     model: "giscedata.polissa.modcontractual",
     name: "giscedata.polissa.modcontractual.form",
