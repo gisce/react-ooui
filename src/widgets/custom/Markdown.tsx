@@ -1,9 +1,9 @@
 import Field from "@/common/Field";
 import ReactMarkdown from "react-markdown";
 import React from "react";
-import {WidgetProps} from "@/types";
+import { WidgetProps } from "@/types";
 
-export  const Markdown = (props: WidgetProps) => {
+export const Markdown = (props: WidgetProps) => {
   return (
     <Field {...props}>
       <MarkdownInput {...props} />
@@ -12,11 +12,15 @@ export  const Markdown = (props: WidgetProps) => {
 };
 
 export const MarkdownInput = (props: any) => {
-  const {value, ooui} = props;
+  const { value, ooui } = props;
   return (
-    <div style={{height: ooui.height ? ooui.height + 'px' : '100%', overflow: 'auto'}}>
-      <ReactMarkdown children={value} className="ant-typography"/>
+    <div
+      style={{
+        height: ooui?.height ? ooui.height + "px" : "100%",
+        overflow: "auto",
+      }}
+    >
+      <ReactMarkdown className="markdown-typography">{value}</ReactMarkdown>
     </div>
-
-  )
-}
+  );
+};
