@@ -2,7 +2,6 @@ import Field from "@/common/Field";
 import ReactMarkdown from "react-markdown";
 import React from "react";
 import { WidgetProps } from "@/types";
-import remarkGfm from "remark-gfm";
 
 export const Markdown = (props: WidgetProps) => {
   return (
@@ -21,12 +20,7 @@ export const MarkdownInput = (props: any) => {
         overflow: "auto",
       }}
     >
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        className="markdown-typography"
-      >
-        {value}
-      </ReactMarkdown>
+      <ReactMarkdown className="markdown-typography">{value}</ReactMarkdown>
     </div>
   );
 };
