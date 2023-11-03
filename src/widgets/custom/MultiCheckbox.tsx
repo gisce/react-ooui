@@ -71,7 +71,7 @@ export const MultiCheckboxInput = (props: MultiCheckboxInputProps) => {
       const optionsRead = await ConnectionProvider.getHandler().search({
         model: relation,
         params,
-        fields: [field],
+        fieldsToRetrieve: [field],
         context: { ...getContext?.(), ...context },
       });
       const options = optionsRead.map((item: any) => {

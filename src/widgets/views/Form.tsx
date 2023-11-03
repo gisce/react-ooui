@@ -555,7 +555,7 @@ function Form(props: FormProps, ref: any) {
           ["res_model", "=", model],
           ["res_id", "=", getCurrentId()!],
         ],
-        fields: ["id", "name"],
+        fieldsToRetrieve: ["id", "name"],
         context: getContext(),
         model: "ir.attachment",
       });

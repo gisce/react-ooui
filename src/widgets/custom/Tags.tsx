@@ -78,7 +78,7 @@ export const TagsInput = (props: TagsInputProps) => {
       const optionsRead = await ConnectionProvider.getHandler().search({
         model: relation,
         params,
-        fields: [field],
+        fieldsToRetrieve: [field],
         context: { ...getContext?.(), ...context },
       });
       const options = optionsRead.map((item: any) => {

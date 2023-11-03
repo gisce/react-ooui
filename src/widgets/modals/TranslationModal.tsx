@@ -65,7 +65,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
   async function getLangs() {
     const results: any[] = (await ConnectionProvider.getHandler().search({
       params: [["translatable", "=", "1"]],
-      fields: ["code", "name"],
+      fieldsToRetrieve: ["code", "name"],
       model: "res.lang",
     })) as any;
 

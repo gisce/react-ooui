@@ -81,10 +81,10 @@ type SearchRequest = {
   offset?: number;
   model: string;
   fields?: any;
+  fieldsToRetrieve?: string[];
   context?: any;
   attrs?: any;
   order?: number | string | null;
-  fieldsToRetrieve?: string[];
 };
 
 type SearchAllIdsRequest = SearchCountRequest & {

@@ -164,7 +164,7 @@ async function retrieveData({
   const values: any[] = (await ConnectionProvider.getHandler().search({
     model,
     params: domain,
-    fields,
+    fieldsToRetrieve: fields,
     context,
     limit,
     order,
