@@ -63,7 +63,7 @@ export const Button = (props: Props) => {
     <Field ooui={ooui}>
       <AntButton
         block
-        disabled={!activated || readOnly}
+        disabled={!activated || readOnly || isRunning}
         onClick={onClick}
         icon={getButtonIcon()}
         type={ooui.primary ? "primary" : "default"}
