@@ -71,6 +71,7 @@ export default {
   lastUpdatedDate: "Data última modificació",
   goToResourceId: "Vés al recurs amb ID",
   searchId: "ID de cerca:",
+  searchIdHelp: "Es pot utiltizar un ID o una llista d'IDs separats per comes",
   idNotFound: "No es troba aquesta id de recurs per l'objecte",
   selectedRegisters: "registres seleccionats",
   translate: "Traduïr",
