@@ -42,6 +42,7 @@ export const GoToResourceModal = (props: Props) => {
               required: true,
             },
           ]}
+          help={t("searchIdHelp")}
         >
           <Input style={{ width: "100%" }} autoFocus ref={inputRef as any}/>
         </Form.Item>
