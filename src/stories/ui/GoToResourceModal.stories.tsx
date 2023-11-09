@@ -12,11 +12,12 @@ export const Default = (): React.ReactElement => {
     <LocaleProvider lang="en_US">
       <GoToResourceModal
         visible={true}
+        isSearching={false}
         onCancel={() => {
           alert("cancel");
         }}
-        onIdSubmitted={(id) => {
-          alert(id);
+        onIdSubmitted={(ids) => {
+          alert(ids);
         }}
       />
     </LocaleProvider>

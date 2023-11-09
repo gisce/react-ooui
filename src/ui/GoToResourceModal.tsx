@@ -1,11 +1,11 @@
 import React, { useContext, useRef } from "react";
-import { Button, Col, Form, InputNumber, Modal, Row, Space } from "antd";
+import { Button, Col, Form, Input, Modal, Row, Space } from "antd";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
 type Props = {
   visible: boolean;
-  onIdSubmitted: (id: number) => void;
+  onIdSubmitted: (ids: number[]) => void;
   onCancel: () => void;
   isSearching: boolean;
 };
@@ -18,7 +18,8 @@ export const GoToResourceModal = (props: Props) => {
   const inputRef = useRef<null | HTMLElement>();
 
   function handleSubmit(values: any) {
-    onIdSubmitted(values.id);
+    const ids = values.id.split(",").map((id: string) => parseInt(id.trim()));
+    onIdSubmitted(ids);
   }
 
   return (
@@ -39,15 +40,11 @@ export const GoToResourceModal = (props: Props) => {
           rules={[
             {
               required: true,
-              type: "number",
             },
           ]}
+          help={t("searchIdHelp")}
         >
-          <InputNumber
-            style={{ width: "100%" }}
-            autoFocus
-            ref={inputRef as any}
-          />
+          <Input style={{ width: "100%" }} autoFocus ref={inputRef as any} />
         </Form.Item>
         <Row align="middle" justify="end">
           <Col>
