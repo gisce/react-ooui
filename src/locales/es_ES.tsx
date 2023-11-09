@@ -72,6 +72,7 @@ export default {
   lastUpdatedDate: "Fecha última modificación",
   goToResourceId: "Ir al recurso con ID",
   searchId: "ID de búsqueda:",
+  searchIdHelp: "Se puede utilizar un ID o una lista de IDs separados por comas",
   idNotFound: "No se encuentra ésta ID de recursos para el objeto",
   selectedRegisters: "registros seleccionados",
   translate: "Traducir",

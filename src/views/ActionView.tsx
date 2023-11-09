@@ -318,52 +318,60 @@ function ActionView(props: Props, ref: any) {
     setGtResourceModalVisible(true);
   }
 
-  async function goToResourceId(id: number) {
+  async function goToResourceId(ids: number[]) {
     setSearchingForResourceId(true);
 
-    const itemIndex = results!.findIndex((item: any) => {
-      return item.id === id;
-    });
+    let mode: ViewType;
+    let domain: any[];
+    if (ids.length === 1) {
+      mode = "form";
+      domain = [];
+      const id = ids[0];
+      const itemIndex = results!.findIndex((item: any) => {
+        return item.id === id;
+      });
+      let resource;
 
-    let resource;
+      if (itemIndex === -1) {
+        try {
+          resource = (
+            await ConnectionProvider.getHandler().readObjects({
+              model,
+              ids: [id],
+              context,
+            })
+          )?.[0];
+        } catch (err) {
+        }
 
-    if (itemIndex === -1) {
-      try {
-        resource = (
-          await ConnectionProvider.getHandler().readObjects({
-            model,
-            ids: [id],
-            context,
-          })
-        )?.[0];
-      } catch (err) {}
-
-      if (!resource) {
-        setSearchingForResourceId(false);
-        setGtResourceModalVisible(false);
-        showInfo(t("idNotFound"));
-        return;
+        if (!resource) {
+          setSearchingForResourceId(false);
+          setGtResourceModalVisible(false);
+          showInfo(t("idNotFound"));
+          return;
+        }
+      } else {
+        resource = results[itemIndex];
       }
     } else {
-      resource = results[itemIndex];
+      mode = "tree";
+      domain = [["id", "in", ids]]
     }
 
     setSearchingForResourceId(false);
     setGtResourceModalVisible(false);
-
-    const viewForm = views.find((v) => v[1] === "form");
-
+    const viewForm = views.find((v) => v[1] === mode);
     openAction({
-      domain: [],
+      domain: domain,
       context,
       model,
       views,
       title,
       target: "current",
-      initialView: { id: viewForm?.[0]!, type: "form" },
+      initialView: {id: viewForm?.[0]!, type: mode},
       action_id,
       action_type,
-      res_id: id,
+      res_id: ids[0],
     });
   }
 
