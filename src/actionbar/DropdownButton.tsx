@@ -11,7 +11,7 @@ type Props = {
   icon: any;
   label?: string;
   disabled?: boolean;
-  searchable?: true | false | 'auto';
+  searchable?: true | false | "auto";
 };
 
 function DropdownButton(props: Props) {
@@ -22,30 +22,56 @@ function DropdownButton(props: Props) {
     onItemClick,
     label,
     disabled = false,
-    searchable = 'auto',
+    searchable = "auto",
   } = props;
-  const [ filteredItems, setFilteredItems ] = useState([...items]);
+  const [searchValue, setSearchValue] = useState<string>();
 
-  const onSearch = (value:string) => {
+  const onSearch = (value?: string) => {
     if (!value) {
-      setFilteredItems([...items]);
-    } else {
-      setFilteredItems(items.filter((item) => item.name.toLowerCase().indexOf(value.toLowerCase()) !== -1))
+      setSearchValue(undefined);
+      return;
     }
-  }
+
+    const sanitizedValue = value.trim();
+
+    if (sanitizedValue.length === 0) {
+      setSearchValue(undefined);
+      return;
+    }
+
+    setSearchValue(sanitizedValue);
+  };
 
   function getMenu() {
-    const menuItems = filteredItems?.map((item, idx) => {
+    let itemsData = [];
+    if (searchValue) {
+      itemsData = items.filter((item) => {
+        return item.name.toLowerCase().includes(searchValue.toLowerCase());
+      });
+    } else {
+      itemsData = items;
+    }
+
+    const menuItems = itemsData.map((item, idx) => {
       if (item.name === "divider") {
         return <Menu.Divider key={"divider" + idx} />;
       }
       return <Menu.Item key={item.id}>{item.name}</Menu.Item>;
     });
 
+    const mustShowSearch =
+      searchable === true || (searchable === "auto" && items.length > 3);
+
     return (
       <Menu onClick={handleMenuClick}>
-        {((searchable === 'auto' && items.length > 3) || searchable === true)
-          && <Search onChange={(e) => onSearch(e.target.value)} onSearch={onSearch} allowClear />}
+        {mustShowSearch && (
+          <Search
+            onChange={(e: any) => onSearch(e.target.value)}
+            onSearch={onSearch}
+            allowClear
+            style={{ padding: 5 }}
+          />
+        )}
         <Menu.ItemGroup title={tooltip}>{menuItems}</Menu.ItemGroup>
       </Menu>
     );
