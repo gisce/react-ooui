@@ -69,6 +69,7 @@ export default {
   lastUpdatedDate: "Date of last modification",
   goToResourceId: "Go to resource ID",
   searchId: "Search ID:",
+  searchIdHelp: "You can use an ID or a list of IDs separated by commas.",
   idNotFound: "Resource ID does not exist for this object!",
   selectedRegisters: "selected registers",
   translate: "Translate",
