@@ -1,6 +1,8 @@
-import React from "react";
-import { Menu, Dropdown, Button } from "antd";
+import React, { useState } from "react";
+import { Menu, Dropdown, Button, Input } from "antd";
 import { DownOutlined } from "@ant-design/icons";
+
+const { Search } = Input;
 
 type Props = {
   onItemClick: (event: any) => void;
@@ -9,6 +11,7 @@ type Props = {
   icon: any;
   label?: string;
   disabled?: boolean;
+  searchable?: true | false | "auto";
 };
 
 function DropdownButton(props: Props) {
@@ -19,10 +22,24 @@ function DropdownButton(props: Props) {
     onItemClick,
     label,
     disabled = false,
+    searchable = "auto",
   } = props;
+  const [filteredItems, setFilteredItems] = useState([...items]);
+
+  const onSearch = (value: string) => {
+    if (!value) {
+      setFilteredItems([...items]);
+    } else {
+      setFilteredItems(
+        items.filter(
+          (item) => item.name.toLowerCase().indexOf(value.toLowerCase()) !== -1,
+        ),
+      );
+    }
+  };
 
   function getMenu() {
-    const menuItems = items?.map((item, idx) => {
+    const menuItems = filteredItems?.map((item, idx) => {
       if (item.name === "divider") {
         return <Menu.Divider key={"divider" + idx} />;
       }
@@ -31,6 +48,14 @@ function DropdownButton(props: Props) {
 
     return (
       <Menu onClick={handleMenuClick}>
+        {((searchable === "auto" && items.length > 3) ||
+          searchable === true) && (
+          <Search
+            onChange={(e) => onSearch(e.target.value)}
+            onSearch={onSearch}
+            allowClear
+          />
+        )}
         <Menu.ItemGroup title={tooltip}>{menuItems}</Menu.ItemGroup>
       </Menu>
     );
