@@ -182,7 +182,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       });
 
       if (newId) {
-        await goToResourceId?.(newId);
+        await goToResourceId?.([newId]);
       }
     } catch (e) {
       showErrorDialog(JSON.stringify(e));
