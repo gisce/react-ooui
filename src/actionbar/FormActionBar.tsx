@@ -144,6 +144,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       await ConnectionProvider.getHandler().delete({
         model: currentModel!,
         ids: [currentId!],
+        context: (formRef.current as any).getContext(),
       });
 
       const filteredResults = results?.filter((item: any) => {
