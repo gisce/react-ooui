@@ -173,6 +173,7 @@ type ParseConditionRequest = {
 type DeleteObjectsRequest = {
   model: string;
   ids: number[];
+  context?: any;
 };
 
 type CreateReportRequest = {
@@ -260,7 +261,7 @@ type ConnectionProviderType = {
     context?: any;
   }) => Promise<ViewData>;
   getView: (
-    options: GetViewRequest
+    options: GetViewRequest,
   ) => Promise<FormView | TreeView | GraphView>;
   getFields: (options: GetFieldsRequest) => Promise<any>;
   searchAllIds: (options: SearchAllIdsRequest) => Promise<number[]>;
@@ -291,7 +292,7 @@ type ConnectionProviderType = {
   evalDomain: (options: EvalDomainRequest) => Promise<any>;
   getLogInfo: (options: GetLogInfoRequest) => Promise<any>;
   isShortcutFavorite: (
-    options: IsShortcutFavoriteOptions
+    options: IsShortcutFavoriteOptions,
   ) => Promise<number | boolean>;
   removeFavourite: ({ shortcut_id }: { shortcut_id: number }) => Promise<void>;
   addFavourite: (options: IsShortcutFavoriteOptions) => Promise<void>;

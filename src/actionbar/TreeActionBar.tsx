@@ -95,6 +95,7 @@ function TreeActionBar(props: Props) {
       await ConnectionProvider.getHandler().delete({
         model: currentModel!,
         ids: selectedRowItems!.map((item) => item.id),
+        context: { ...parentContext },
       });
 
       setCurrentId?.(undefined);
