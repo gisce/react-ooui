@@ -8,11 +8,8 @@ import dayjs from "dayjs";
 const { useToken } = theme;
 import weekday from "dayjs/plugin/weekday";
 import localeData from "dayjs/plugin/localeData";
-import utc from "dayjs/plugin/utc";
-
 dayjs.extend(weekday);
 dayjs.extend(localeData);
-dayjs.extend(utc);
 
 type DatePickerProps = WidgetProps & {
   showTime?: boolean;
@@ -49,7 +46,7 @@ interface DatePickerInputProps {
   showTime?: boolean;
 }
 
-export const DatePickerInput: React.FC<DatePickerInputProps> = (
+const DatePickerInput: React.FC<DatePickerInputProps> = (
   props: DatePickerInputProps
 ) => {
   const { value, onChange, ooui, showTime } = props;
@@ -77,7 +74,7 @@ export const DatePickerInput: React.FC<DatePickerInputProps> = (
   };
 
   const dateValue = value
-    ? dayjs.utc(value, DatePickerConfig[mode].dateInternalFormat)
+    ? dayjs(value, DatePickerConfig[mode].dateInternalFormat)
     : undefined;
 
   return (

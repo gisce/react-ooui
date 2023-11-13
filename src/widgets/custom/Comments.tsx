@@ -10,10 +10,9 @@ const { Text} = Typography;
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import md5 from "md5";
-import utc from "dayjs/plugin/utc";
+
 
 dayjs.extend(relativeTime);
-dayjs.extend(utc);
 
 type GravatarProps = {
   email: string,
@@ -90,7 +89,7 @@ export const Comment = (props: CommentProps) => {
             title={data.author}
             description={(
               <Space direction="horizontal">
-                <span title={data.date}>{dayjs.utc(data.date).fromNow()}</span>
+                <span title={data.date}>{dayjs(data.date).fromNow()}</span>
                 {data.isAuthor && <Tag color="blue">{t('author')}</Tag>}
               </Space>
             )} style={{marginBottom: '5px'}}/>

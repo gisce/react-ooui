@@ -32,9 +32,6 @@ import Avatar from "../custom/Avatar";
 import { TagInput } from "../custom/Tag";
 import { DatePickerConfig } from "@/common/DatePicker";
 import { SelectAllRecordsRow } from "@/common/SelectAllRecordsRow";
-import utc from "dayjs/plugin/utc";
-
-dayjs.extend(utc);
 
 type Props = {
   total?: number;
@@ -89,7 +86,7 @@ const textComponentFn = (value: any): React.ReactElement => {
 const dateComponentFn = (value: any): React.ReactElement => {
   if (!value || (value && value.length === 0)) return <></>;
 
-  const formattedValue = dayjs.utc(
+  const formattedValue = dayjs(
     value,
     DatePickerConfig.date.dateInternalFormat
   ).format(DatePickerConfig.date.dateDisplayFormat);
