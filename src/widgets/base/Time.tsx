@@ -5,10 +5,8 @@ import { Time as TimeOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import dayjs, { Dayjs } from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import utc from "dayjs/plugin/utc";
 
 dayjs.extend(customParseFormat);
-dayjs.extend(utc);
 
 const Time = (props: WidgetProps) => {
   const { ooui } = props;
@@ -36,7 +34,7 @@ export const TimeInput = (props: TimeInputProps) => {
   return (
     <TimePicker
       onChange={onChange}
-      value={props.value ? dayjs.utc(props.value, "HH:mm:ss") : undefined}
+      value={props.value ? dayjs(props.value, "HH:mm:ss") : undefined}
     />
   );
 };
