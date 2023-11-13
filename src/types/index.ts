@@ -174,6 +174,7 @@ type ParseConditionRequest = {
 type DeleteObjectsRequest = {
   model: string;
   ids: number[];
+  context?: any;
 };
 
 type CreateReportRequest = {

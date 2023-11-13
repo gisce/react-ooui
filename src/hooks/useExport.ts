@@ -184,6 +184,7 @@ export const useExport = ({
       await ConnectionProvider.getHandler().deleteObjects({
         model: "ir.exports",
         ids: [pExport.id!],
+        context,
       });
     },
     [],
