@@ -1,4 +1,7 @@
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 const formatter = (graphType: "pie" | "default" | "barGrouped") => {
   return (object: any) => {
@@ -24,9 +27,9 @@ const axisFormatter = (value: any) => {
     if (dateType === null) {
       return value;
     }
-    return dayjs(value, (dateFormats.input as any)[dateType]).format(
-      (dateFormats.output as any)[dateType],
-    );
+    return dayjs
+      .utc(value, (dateFormats.input as any)[dateType])
+      .format((dateFormats.output as any)[dateType]);
   } else {
     return value;
   }
