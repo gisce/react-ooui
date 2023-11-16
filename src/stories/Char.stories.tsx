@@ -50,3 +50,30 @@ export const Translatable = (): React.ReactElement => {
     </LocaleProvider>
   );
 };
+
+export const Tooltip = (): React.ReactElement => {
+  const ooui = new CharOoui({
+    name: "field",
+    string: "Lorem ipsum",
+    help: "This is a simple help",
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Char ooui={ooui} showLabel />
+    </LocaleProvider>
+  );
+}
+
+export const TooltipInline = (): React.ReactElement => {
+  const ooui = new CharOoui({
+    name: "field",
+    string: "Lorem ipsum",
+    help: "This is a simple help",
+    help_inline: "true"
+  });
+  return (
+    <LocaleProvider lang="en_US">
+      <Char ooui={ooui} showLabel />
+    </LocaleProvider>
+  );
+}
