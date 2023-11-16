@@ -45,6 +45,7 @@ export default function Field({
       name={id}
       valuePropName={valuePropName}
       rules={rules}
+      help={ooui.tooltipInline ? ooui.tooltip : null}
     >
       {children}
     </Form.Item>
@@ -60,7 +61,7 @@ export default function Field({
         new LabelOoui({
           name: id + "_label",
           string: label,
-          help: tooltip,
+          help: ooui.tooltipInline ? false : tooltip,
           fieldForLabel: id,
         })
       }
