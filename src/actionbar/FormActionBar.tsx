@@ -415,14 +415,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           const res_id = result.currentId as number;
           const res_model = currentModel as string;
           openDefaultActionForModel({
-            model: "ir.attachment",
-            values: {
-              selection_associated_object: `${res_model},${res_id}`,
-            },
-            forced_values: {
-              res_model,
-              res_id,
-            },
+            ...getAttachmentActionPayload(res_model, res_id),
             initialViewType: "form",
           });
         }}
@@ -438,11 +431,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           const res_id = result.currentId as number;
           const res_model = currentModel as string;
           openDefaultActionForModel({
-            model: "ir.attachment",
-            domain: [
-              ["res_model", "=", `${res_model}`],
-              ["res_id", "=", `${res_id}`],
-            ],
+            ...getAttachmentActionPayload(res_model, res_id),
             initialViewType: "tree",
           });
         }}
@@ -483,4 +472,20 @@ async function saveDocument({
   }
 }
 
+function getAttachmentActionPayload(res_model: string, res_id: number) {
+  return {
+    model: "ir.attachment",
+    domain: [
+      ["res_model", "=", `${res_model}`],
+      ["res_id", "=", `${res_id}`],
+    ],
+    values: {
+      selection_associated_object: `${res_model},${res_id}`,
+    },
+    forced_values: {
+      res_model,
+      res_id,
+    },
+  };
+}
 export default FormActionBar;
