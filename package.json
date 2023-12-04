@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "2.0.0-alpha.45",
+  "version": "2.0.0-alpha.46",
   "engines": {
     "node": "20.5.0"
   },
@@ -33,7 +33,7 @@
   "dependencies": {
     "@ant-design/plots": "^1.0.9",
     "@gisce/fiber-diagram": "^1.1.0-rc.3",
-    "@gisce/ooui": "1.0.0-alpha.19",
+    "@gisce/ooui": "1.0.0-alpha.21",
     "@gisce/react-formiga-components": "^1.0.9-rc.21",
     "@gisce/react-formiga-table": "1.0.0-alpha.1",
     "@monaco-editor/react": "^4.4.5",
@@ -57,7 +57,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",
-    "@gisce/commitlint-rules": "^1.0.1",
+    "@gisce/commitlint-rules": "1.0.5",
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
     "@semantic-release/npm": "10.0.4",
