@@ -16,7 +16,8 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/react-ooui.es.js"
+      "import": "./dist/react-ooui.es.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
