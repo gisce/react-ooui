@@ -7,17 +7,16 @@ on:
 
 env:
   LIBRARY_NAME: "gisce/react-ooui"
-  BRANCH_NAME: "alpha"
 
 jobs:
   update-dependents:
-    if: github.event.release.prerelease == false && !contains(github.event.release.tag_name, '-alpha.') && !contains(github.event.release.tag_name, '-rc.')
+    if: github.event.release.prerelease == true && contains(github.event.release.tag_name, '-alpha.') && !contains(github.event.release.tag_name, '-rc.')
     runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
           - project: "gisce/webclient"
-            branch: ${{ env.BRANCH_NAME }}
+            branch: "alpha"
     steps:
       - name: Call Reusable Workflow for each project
         uses: gisce/create-update-version-pr@v0.0.5
