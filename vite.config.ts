@@ -42,6 +42,7 @@ export default defineConfig({
         "dayjs/plugin/weekday",
         "dayjs/plugin/localeData",
         "dayjs/plugin/customParseFormat",
+        "antd/es/alert/ErrorBoundary",
       ],
     },
   },

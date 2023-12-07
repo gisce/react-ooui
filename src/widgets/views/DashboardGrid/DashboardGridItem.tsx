@@ -1,7 +1,7 @@
-import React from "react";
 import { DashboardGridItemProps } from "./DashboardGridItem.types";
 import { ExportOutlined } from "@ant-design/icons";
 import { Row, Col, Typography, theme } from "antd";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 const { useToken } = theme;
 
 const { Text } = Typography;
@@ -56,7 +56,7 @@ export const DashboardGridItem = (props: DashboardGridItemProps) => {
           </Col>
         )}
       </Row>
-      {children}
+      <ErrorBoundary>{children}</ErrorBoundary>
     </div>
   );
 };

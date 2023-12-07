@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Line, Column, Pie } from "@ant-design/plots";
 import GraphDefaults from "./GraphDefaults";
 import { useGraphData } from "./useGraphData";
