@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { Fragment, useContext } from "react";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 import {
@@ -12,14 +12,11 @@ import {
 } from "antd";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
+import dayjs from "@/helpers/dayjs";
 import md5 from "md5";
 
 const { Meta } = Card;
 const { Text } = Typography;
-
-dayjs.extend(relativeTime);
 
 type GravatarProps = {
   email: string;
@@ -75,10 +72,10 @@ function TextWithNewlines({ text }: { text: string }) {
   return (
     <div>
       {textParts.map((part, index) => (
-        <React.Fragment key={index}>
+        <Fragment key={index}>
           {part}
           {index !== textParts.length - 1 && <br />}
-        </React.Fragment>
+        </Fragment>
       ))}
     </div>
   );

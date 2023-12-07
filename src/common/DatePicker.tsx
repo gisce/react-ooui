@@ -4,12 +4,8 @@ import React from "react";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 import { Date as DateOoui } from "@gisce/ooui";
-import dayjs from "dayjs";
-import weekday from "dayjs/plugin/weekday";
-import localeData from "dayjs/plugin/localeData";
+import dayjs from "@/helpers/dayjs";
 const { useToken } = theme;
-dayjs.extend(weekday);
-dayjs.extend(localeData);
 
 type DatePickerProps = WidgetProps & {
   showTime?: boolean;

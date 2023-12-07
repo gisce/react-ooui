@@ -1,12 +1,9 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { TimePicker, theme } from "antd";
+import { TimePicker } from "antd";
 import Field from "@/common/Field";
 import { Time as TimeOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
-import dayjs, { Dayjs } from "dayjs";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-
-dayjs.extend(customParseFormat);
+import dayjs from "@/helpers/dayjs";
+import { Dayjs } from "dayjs";
 
 const Time = (props: WidgetProps) => {
   const { ooui } = props;
