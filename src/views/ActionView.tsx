@@ -452,6 +452,10 @@ function ActionView(props: Props, ref: any) {
             <DashboardActionView
               key={`${view.type}-${view.view_id}`}
               dashboardData={view as DashboardView}
+              visible={
+                currentView!.type === view.type &&
+                currentView!.view_id === view.view_id
+              }
             />
           );
         }

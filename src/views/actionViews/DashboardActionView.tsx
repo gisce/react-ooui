@@ -11,10 +11,11 @@ import { DashboardProps } from "@/types";
 
 export type DashboardActionViewProps = {
   dashboardData: DashboardProps;
+  visible: boolean;
 };
 
 export const DashboardActionView = (props: DashboardActionViewProps) => {
-  const { dashboardData } = props;
+  const { dashboardData, visible } = props;
   const dashboardRef = useRef();
   const tabManagerContext = useContext(
     TabManagerContext,
@@ -22,6 +23,10 @@ export const DashboardActionView = (props: DashboardActionViewProps) => {
   const { openShortcut } = tabManagerContext || {};
 
   if (!dashboardData) {
+    return null;
+  }
+
+  if (!visible) {
     return null;
   }
 
