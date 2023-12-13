@@ -64,15 +64,19 @@ function DropdownButton(props: Props) {
 
     return (
       <Menu onClick={handleMenuClick}>
-        {mustShowSearch && (
-          <Search
-            onChange={(e: any) => onSearch(e.target.value)}
-            onSearch={onSearch}
-            allowClear
-            style={{ padding: 5 }}
-          />
-        )}
-        <Menu.ItemGroup title={tooltip}>{menuItems}</Menu.ItemGroup>
+        <div>
+          {mustShowSearch && (
+            <Search
+              onChange={(e: any) => onSearch(e.target.value)}
+              onSearch={onSearch}
+              allowClear
+              style={{ padding: 5 }}
+            />
+          )}
+        </div>
+        <div style={{ maxHeight: 300, overflowY: "auto" }}>
+          <Menu.ItemGroup title={tooltip}>{menuItems}</Menu.ItemGroup>
+        </div>
       </Menu>
     );
   }
