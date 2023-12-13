@@ -26,20 +26,22 @@ export const FormModal = (props: FormModalProps) => {
     ...rest
   } = props;
 
+  const { model } = rest;
+
   const { modalWidth } = useWindowDimensions();
   const [formTitle, setFormTitle] = useState<string>(title!);
   const [isFavourite, setIsFavourite] = useState(false);
   const [currentShortcutId, setCurrentShortcutId] = useState<number>();
+  const { action_id, res_id, action_type, view_id } = actionData || {};
 
   useEffect(() => {
     if (isMenuAction) {
       checkFavourite();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actionData, isMenuAction]);
 
   async function checkFavourite() {
-    const { action_id, res_id, action_type, view_id } = actionData;
-
     const result = await ConnectionProvider.getHandler().isShortcutFavorite({
       action_id,
       action_type,
@@ -109,6 +111,7 @@ export const FormModal = (props: FormModalProps) => {
         maskClosable={false}
       >
         <Form
+          key={`${model}-${id}-${action_id}-${res_id}-${action_type}-${view_id}-${title}`}
           id={id}
           showFooter={true}
           insideButtonModal={buttonModal}
