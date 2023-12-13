@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { Pagination, Checkbox, Space, Row, Col, Spin, Tag, Badge } from "antd";
+import { memo, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { Pagination, Row, Col, Spin, Badge } from "antd";
 import {
   getTree,
   getTableColumns,
@@ -7,31 +7,36 @@ import {
   hasActualValues,
 } from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
-
-import { TreeView, Column } from "@/types";
+import { TreeView } from "@/types";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { calculateColumnsWidth } from "@/helpers/dynamicColumnsHelper";
-import { parseFloatToString } from "@/helpers/timeHelper";
-import { ProgressBarInput } from "../base/ProgressBar";
 import { Table as GisceTable } from "@gisce/react-formiga-table";
 import {
   PlusSquareOutlined,
   MinusSquareOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
-import { One2manyValue } from "../base/one2many/One2manyInput";
-import { Interweave } from "interweave";
 import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
-import { Many2oneTree } from "../base/many2one/Many2oneTree";
-import { ReferenceTree } from "../base/ReferenceTree";
-import dayjs from "dayjs";
-import Avatar from "../custom/Avatar";
-import { TagInput } from "../custom/Tag";
-import { DatePickerConfig } from "@/common/DatePicker";
 import { SelectAllRecordsRow } from "@/common/SelectAllRecordsRow";
+import {
+  AvatarComponent,
+  BooleanComponent,
+  DateComponent,
+  DateTimeComponent,
+  FloatTimeComponent,
+  ImageComponent,
+  Many2OneComponent,
+  NumberComponent,
+  One2ManyComponent,
+  ProgressBarComponent,
+  ReferenceComponent,
+  SelectionComponent,
+  TagComponent,
+  TextComponent,
+} from "./treeComponents";
 
 type Props = {
   total?: number;
@@ -57,120 +62,7 @@ type Props = {
   onSelectAllRecords?: () => Promise<void>;
 };
 
-const booleanComponentFn = (value: boolean): React.ReactElement => {
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignContent: "center",
-      }}
-    >
-      <Checkbox checked={value} disabled />
-    </div>
-  );
-};
-
-const many2OneComponentFn = (m2oField: any): React.ReactElement => {
-  return <Many2oneTree m2oField={m2oField} />;
-};
-
-const textComponentFn = (value: any): React.ReactElement => {
-  return (
-    <Interweave
-      content={value?.toString().replace(/(?:\r\n|\r|\n)/g, "<br>")}
-    />
-  );
-};
-
-const dateComponentFn = (value: any): React.ReactElement => {
-  if (!value || (value && value.length === 0)) return <></>;
-
-  const formattedValue = dayjs(
-    value,
-    DatePickerConfig.date.dateInternalFormat,
-  ).format(DatePickerConfig.date.dateDisplayFormat);
-  return <>{formattedValue}</>;
-};
-
-const dateTimeComponentFn = (value: any): React.ReactElement => {
-  if (!value || (value && value.length === 0)) return <></>;
-  const formattedValue = dayjs(
-    value,
-    DatePickerConfig.time.dateInternalFormat,
-  ).format(DatePickerConfig.time.dateDisplayFormat);
-  return <>{formattedValue}</>;
-};
-
-const one2ManyComponentFn = (value: One2manyValue): React.ReactElement => {
-  const length = Array.isArray(value?.items) ? value?.items.length : 0;
-  return <>{`( ${length} )`}</>;
-};
-
-const progressBarComponentFn = (value: any): React.ReactElement => {
-  return <ProgressBarInput value={value} />;
-};
-
-const floatTimeComponent = (value: number): React.ReactElement => {
-  return <>{parseFloatToString(value)}</>;
-};
-
-const numberComponent = (value: number): React.ReactElement => {
-  return <div style={{ textAlign: "right" }}>{value}</div>;
-};
-
-const imageComponent = (value: string): React.ReactElement => {
-  return (
-    <img
-      src={`data:image/*;base64,${value}`}
-      style={{ maxWidth: "50px", padding: "5px" }}
-    />
-  );
-};
-
-const TagComponent = (
-  value: any,
-  key: string,
-  ooui: any,
-  context: any,
-): React.ReactElement => {
-  return <TagInput ooui={ooui} value={value} />;
-};
-
-const SelectionComponent = (
-  value: any,
-  key: string,
-  ooui: any,
-  context: any,
-): React.ReactElement => {
-  return <>{ooui.selectionValues.get(value)}</>;
-};
-
-const referenceComponent = (
-  value: any,
-  key: string,
-  ooui: any,
-  context: any,
-): React.ReactElement => {
-  return (
-    <>
-      <ReferenceTree
-        value={value}
-        selectionValues={ooui.selectionValues}
-        context={context}
-      />
-    </>
-  );
-};
-
-const AvatarFn = (
-  value: any,
-  key: string,
-  ooui: any,
-  context: any,
-): React.ReactElement => <Avatar ooui={ooui} value={value} />;
-
-function Tree(props: Props): React.ReactElement {
+export const Tree = memo((props: Props) => {
   const {
     page = 1,
     limit,
@@ -196,11 +88,10 @@ function Tree(props: Props): React.ReactElement {
   } = props;
 
   const [items, setItems] = useState<any[]>([]);
-  const [columns, setColumns] = useState<Column[]>([]);
 
   const errorInParseColors = useRef<boolean>(false);
 
-  const treeOoui = useRef<any>(null);
+  const [treeOoui, setTreeOoui] = useState<TreeOoui>();
 
   const { t } = useContext(LocaleContext) as LocaleContextType;
   const internalLimit = useRef(limit);
@@ -211,44 +102,53 @@ function Tree(props: Props): React.ReactElement {
   const { title = undefined, setTitle = undefined } =
     (rootTree ? actionViewContext : {}) || {};
 
-  useEffect(() => {
-    treeOoui.current = getTree(treeView);
+  const columns = useMemo(() => {
+    if (!treeOoui) {
+      return undefined;
+    }
 
-    const columns = getTableColumns(
-      treeOoui.current,
+    return getTableColumns(
+      treeOoui,
       {
-        boolean: booleanComponentFn,
-        many2one: many2OneComponentFn,
-        text: textComponentFn,
-        one2many: one2ManyComponentFn,
-        many2many: one2ManyComponentFn,
-        progressbar: progressBarComponentFn,
-        float_time: floatTimeComponent,
-        image: imageComponent,
-        integer: numberComponent,
-        float: numberComponent,
-        reference: referenceComponent,
+        boolean: BooleanComponent,
+        many2one: Many2OneComponent,
+        text: TextComponent,
+        one2many: One2ManyComponent,
+        many2many: One2ManyComponent,
+        progressbar: ProgressBarComponent,
+        float_time: FloatTimeComponent,
+        image: ImageComponent,
+        integer: NumberComponent,
+        float: NumberComponent,
+        reference: ReferenceComponent,
         tag: TagComponent,
         selection: SelectionComponent,
-        date: dateComponentFn,
-        datetime: dateTimeComponentFn,
-        avatar: AvatarFn,
+        date: DateComponent,
+        datetime: DateTimeComponent,
+        avatar: AvatarComponent,
       },
       context,
     );
+  }, [context, treeOoui]);
 
-    setColumns(columns);
-
-    if (treeOoui.current.string && title !== treeOoui.current.string) {
-      setTitle?.(treeOoui.current.string);
+  useEffect(() => {
+    const treeOoui = getTree(treeView);
+    setTreeOoui(treeOoui);
+    if (treeOoui.string && title !== treeOoui.string) {
+      setTitle?.(treeOoui.string);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [treeView]);
 
   useEffect(() => {
+    if (!treeOoui) {
+      return;
+    }
     errorInParseColors.current = false;
-    const items = getTableItems(treeOoui.current, results);
+    const items = getTableItems(treeOoui, results);
     setItems(items);
     internalLimit.current = limit;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results]);
 
   const from = (page - 1) * internalLimit.current + 1;
@@ -310,9 +210,10 @@ function Tree(props: Props): React.ReactElement {
   };
 
   function getSums() {
-    const tree = treeOoui.current as TreeOoui;
-
-    const sumFields = tree.columns
+    if (!treeOoui) {
+      return null;
+    }
+    const sumFields = treeOoui.columns
       .filter((it) => it.sum !== undefined)
       .map((it) => {
         return { label: it.sum, field: it.id };
@@ -343,25 +244,26 @@ function Tree(props: Props): React.ReactElement {
     return <div className="p-1 pb-0 pl-2 mt-2 ">{summary.join(", ")}</div>;
   }
 
-  let dataTable;
-  let adjustedHeight = scrollY;
-
-  // This helper function helps to calculate the width for each column
-  // based on all table cells - column cell and source cell
-  if (treeOoui.current !== null) {
-    const maxWidthPerCell = 600;
-    dataTable = calculateColumnsWidth(columns, items, maxWidthPerCell);
-    const tree = treeOoui.current as TreeOoui;
-
-    if (scrollY && tree.columns.some((it) => it.sum !== undefined)) {
-      adjustedHeight = scrollY - 30;
+  const dataTable = useMemo(() => {
+    if (treeOoui !== null && columns && columns.length > 0) {
+      const maxWidthPerCell = 600;
+      return calculateColumnsWidth(columns, items, maxWidthPerCell);
     }
+    return undefined;
+  }, [columns, items, treeOoui]);
+
+  const adjustedHeight = useMemo(() => {
+    if (scrollY && treeOoui?.columns.some((it: any) => it.sum !== undefined)) {
+      return scrollY - 30;
+    }
+    return scrollY;
+  }, [scrollY, treeOoui?.columns]);
+
+  if (treeOoui === null || !dataTable || dataTable?.columns?.length === 0) {
+    return <Spin style={{ padding: "2rem" }} />;
   }
-  return treeOoui.current === null ||
-    !dataTable ||
-    dataTable.columns?.length === 0 ? (
-    <Spin style={{ padding: "2rem" }} />
-  ) : (
+
+  return (
     <div>
       {pagination()}
       <GisceTable
@@ -407,6 +309,6 @@ function Tree(props: Props): React.ReactElement {
       {getSums()}
     </div>
   );
-}
+});
 
-export default Tree;
+Tree.displayName = "Tree";

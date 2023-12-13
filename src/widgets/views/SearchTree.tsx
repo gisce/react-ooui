@@ -9,7 +9,7 @@ import React, {
 import { Alert, Spin } from "antd";
 
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
-import Tree from "@/widgets/views/Tree";
+import { Tree } from "@/widgets/views/Tree";
 import { FormView, TreeView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 
