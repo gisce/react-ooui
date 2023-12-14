@@ -29,9 +29,11 @@ import { Many2oneTree } from "../base/many2one/Many2oneTree";
 import { ReferenceTree } from "../base/ReferenceTree";
 import dayjs from "dayjs";
 import Avatar from "../custom/Avatar";
-import { TagInput } from "../custom/Tag";
+import { CustomTag, TagInput } from "../custom/Tag";
 import { DatePickerConfig } from "@/common/DatePicker";
 import { SelectAllRecordsRow } from "@/common/SelectAllRecordsRow";
+import ConnectionProvider from "@/ConnectionProvider";
+import { colorFromString } from "@/helpers/formHelper";
 
 type Props = {
   total?: number;
@@ -137,6 +139,41 @@ const TagComponent = (
   return <TagInput ooui={ooui} value={value} />;
 };
 
+const TagsComponent = (
+  value: any,
+  key: string,
+  ooui: any,
+  context: any,
+): React.ReactElement => {
+  const [values, setValues] = useState<string[]>([]);
+  const { relation, field } = ooui;
+  useEffect(() => {
+    const loadValues = async () => {
+      try {
+        const optionsRead = await ConnectionProvider.getHandler().search({
+          model: relation,
+          params: [["id", "in", value.items.map((v: any) => v.id)]],
+          fields: [field],
+          context,
+        });
+        setValues(optionsRead.map((i: any) => i.name));
+      } catch (error) {
+        console.log("Error loading data", error);
+      }
+    };
+    if (value) {
+      loadValues();
+    }
+  }, []);
+  const tags = values.map((v) => {
+    const color = colorFromString(v);
+    return <CustomTag color={color}>{v}</CustomTag>;
+  });
+  return (
+    <div style={{ maxWidth: "300px", whiteSpace: "break-spaces" }}>{tags}</div>
+  );
+};
+
 const SelectionComponent = (
   value: any,
   key: string,
@@ -233,6 +270,7 @@ function Tree(props: Props): React.ReactElement {
         date: dateComponentFn,
         datetime: dateTimeComponentFn,
         avatar: AvatarFn,
+        tags: TagsComponent,
       },
       context,
     );
