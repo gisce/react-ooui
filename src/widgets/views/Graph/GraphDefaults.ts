@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs from "@/helpers/dayjs";
 
 const formatter = (graphType: "pie" | "default" | "barGrouped") => {
   return (object: any) => {

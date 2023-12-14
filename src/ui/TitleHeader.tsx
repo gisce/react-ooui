@@ -82,13 +82,22 @@ function TitleHeader(props: Props) {
     return null;
   }
   return (
-    <div style={{ position: "sticky", top: 80, zIndex: 3 }}>
+    <div
+      style={{
+        position: "sticky",
+        top: 80,
+        zIndex: 3,
+      }}
+    >
       <Row
         className="shadow-md"
         style={{
           padding: "1em",
           borderRadius: token.borderRadius,
           backgroundColor: token.colorPrimaryBg,
+          height: "82px",
+          minHeight: "82px",
+          maxHeight: "82px",
         }}
         align="middle"
       >

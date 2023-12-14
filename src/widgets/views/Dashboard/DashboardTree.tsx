@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Alert, Spin } from "antd";
 
-import Tree from "@/widgets/views/Tree";
+import { Tree } from "@/widgets/views/Tree";
 import { FormView, TreeView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 

@@ -9,7 +9,7 @@ import React, {
 import { Alert, Spin } from "antd";
 
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
-import Tree from "@/widgets/views/Tree";
+import { Tree } from "@/widgets/views/Tree";
 import { FormView, TreeView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 
@@ -284,7 +284,7 @@ function SearchTree(props: Props, ref: any) {
     if (treeView?.isExpandable) {
       return height - 160;
     }
-    return height - (searchFilterHeight + 210);
+    return height - (searchFilterHeight + 240);
   }
 
   const content = () => {

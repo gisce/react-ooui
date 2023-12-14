@@ -15,6 +15,15 @@ const getTree = (treeView: TreeView): TreeOoui => {
   return tree;
 };
 
+function isPrimitive(value: any): boolean {
+  return (
+    typeof value === "number" ||
+    typeof value === "string" ||
+    typeof value === "boolean" ||
+    value === null
+  );
+}
+
 const getTableColumns = (
   tree: TreeOoui,
   components: any,
@@ -27,8 +36,21 @@ const getTableColumns = (
     let render;
 
     if (component) {
-      render = (item: any) => {
-        return component(item, key, column, context);
+      render = (value: any) => {
+        return component({ value, key, ooui: column, context });
+      };
+    } else {
+      render = (value: any) => {
+        return isPrimitive(value) ? (
+          value
+        ) : (
+          <p style={{ color: "red" }}>
+            Unsupported widget type for a Tree cell:
+            <pre>
+              <strong>{type}:</strong>
+            </pre>
+          </p>
+        );
       };
     }
 
@@ -58,7 +80,7 @@ const getTableColumns = (
 const getTableItems = (treeOoui: TreeOoui, results: any[]): any[] => {
   const tableItems = results.map((item: any) => {
     const parsedItem: any = {};
-    Object.keys(item).map((key) => {
+    Object.keys(item).forEach((key) => {
       if (key === "id") {
         parsedItem[key] = item[key];
       } else {
@@ -67,7 +89,6 @@ const getTableItems = (treeOoui: TreeOoui, results: any[]): any[] => {
         if (widget instanceof Reference) {
           parsedItem[key] = item[key];
         } else if (widget instanceof Selection) {
-          const selection = widget;
           parsedItem[key] = item[key];
         } else if (widget instanceof Many2one) {
           parsedItem[key] = item[key] &&
