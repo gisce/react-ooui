@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { ReactElement, useContext } from "react";
 
 import { Row, Col, Button } from "antd";
 import {
@@ -17,7 +17,7 @@ type Props = {
   onClear: () => void;
 };
 
-export function SearchBottomBar(props: Props): React.ReactElement {
+export function SearchBottomBar(props: Props): ReactElement {
   const { onAdvancedFilterToggle, advancedFilter, onClear, isSearching } =
     props;
 
