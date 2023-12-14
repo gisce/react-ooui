@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { ReactElement, useCallback, useEffect, useMemo, useState } from "react";
 import { Checkbox } from "antd";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../../base/ProgressBar";
@@ -13,7 +13,11 @@ import { DatePickerConfig } from "@/common/DatePicker";
 import ConnectionProvider from "@/ConnectionProvider";
 import { colorFromString } from "@/helpers/formHelper";
 
-export const BooleanComponent = (value: boolean): React.ReactElement => {
+export const BooleanComponent = ({
+  value,
+}: {
+  value: boolean;
+}): ReactElement => {
   return (
     <div
       style={{
@@ -27,11 +31,11 @@ export const BooleanComponent = (value: boolean): React.ReactElement => {
   );
 };
 
-export const Many2OneComponent = (m2oField: any): React.ReactElement => {
-  return <Many2oneTree m2oField={m2oField} />;
+export const Many2OneComponent = ({ value }: { value: any }): ReactElement => {
+  return <Many2oneTree m2oField={value} />;
 };
 
-export const TextComponent = (value: any): React.ReactElement => {
+export const TextComponent = ({ value }: { value: any }): ReactElement => {
   return (
     <Interweave
       content={value?.toString().replace(/(?:\r\n|\r|\n)/g, "<br>")}
@@ -39,7 +43,7 @@ export const TextComponent = (value: any): React.ReactElement => {
   );
 };
 
-export const DateComponent = (value: any): React.ReactElement => {
+export const DateComponent = ({ value }: { value: any }): ReactElement => {
   if (!value || (value && value.length === 0)) return <></>;
 
   const formattedValue = dayjs(
@@ -49,7 +53,7 @@ export const DateComponent = (value: any): React.ReactElement => {
   return <>{formattedValue}</>;
 };
 
-export const DateTimeComponent = (value: any): React.ReactElement => {
+export const DateTimeComponent = ({ value }: { value: any }): ReactElement => {
   if (!value || (value && value.length === 0)) return <></>;
   const formattedValue = dayjs(
     value,
@@ -58,24 +62,32 @@ export const DateTimeComponent = (value: any): React.ReactElement => {
   return <>{formattedValue}</>;
 };
 
-export const One2ManyComponent = (value: One2manyValue): React.ReactElement => {
+export const One2ManyComponent = ({
+  value,
+}: {
+  value: One2manyValue;
+}): ReactElement => {
   const length = Array.isArray(value?.items) ? value?.items.length : 0;
   return <>{`( ${length} )`}</>;
 };
 
-export const ProgressBarComponent = (value: any): React.ReactElement => {
+export const ProgressBarComponent = ({
+  value,
+}: {
+  value: any;
+}): ReactElement => {
   return <ProgressBarInput value={value} />;
 };
 
-export const FloatTimeComponent = (value: number): React.ReactElement => {
+export const FloatTimeComponent = ({ value }: { value: any }): ReactElement => {
   return <>{parseFloatToString(value)}</>;
 };
 
-export const NumberComponent = (value: number): React.ReactElement => {
+export const NumberComponent = ({ value }: { value: number }): ReactElement => {
   return <div style={{ textAlign: "right" }}>{value}</div>;
 };
 
-export const ImageComponent = (value: string): React.ReactElement => {
+export const ImageComponent = ({ value }: { value: string }): ReactElement => {
   return (
     <img
       src={`data:image/*;base64,${value}`}
@@ -84,30 +96,45 @@ export const ImageComponent = (value: string): React.ReactElement => {
   );
 };
 
-export const TagComponent = (
-  value: any,
-  key: string,
-  ooui: any,
-  context: any,
-): React.ReactElement => {
+export const TagComponent = ({
+  value,
+  key,
+  ooui,
+  context,
+}: {
+  value: any;
+  key: string;
+  ooui: any;
+  context: any;
+}): ReactElement => {
   return <TagInput ooui={ooui} value={value} />;
 };
 
-export const SelectionComponent = (
-  value: any,
-  key: string,
-  ooui: any,
-  context: any,
-): React.ReactElement => {
+export const SelectionComponent = ({
+  value,
+  key,
+  ooui,
+  context,
+}: {
+  value: any;
+  key: string;
+  ooui: any;
+  context: any;
+}): ReactElement => {
   return <>{ooui.selectionValues.get(value)}</>;
 };
 
-export const ReferenceComponent = (
-  value: any,
-  key: string,
-  ooui: any,
-  context: any,
-): React.ReactElement => {
+export const ReferenceComponent = ({
+  value,
+  key,
+  ooui,
+  context,
+}: {
+  value: any;
+  key: string;
+  ooui: any;
+  context: any;
+}): ReactElement => {
   return (
     <>
       <ReferenceTree
@@ -119,19 +146,29 @@ export const ReferenceComponent = (
   );
 };
 
-export const AvatarComponent = (
-  value: any,
-  key: string,
-  ooui: any,
-  context: any,
-): React.ReactElement => <Avatar ooui={ooui} value={value} />;
+export const AvatarComponent = ({
+  value,
+  key,
+  ooui,
+  context,
+}: {
+  value: any;
+  key: string;
+  ooui: any;
+  context: any;
+}): ReactElement => <Avatar ooui={ooui} value={value} />;
 
-export const TagsComponent = (
-  value: any,
-  key: string,
-  ooui: any,
-  context: any,
-): React.ReactElement => {
+export const TagsComponent = ({
+  value,
+  key,
+  ooui,
+  context,
+}: {
+  value: any;
+  key: string;
+  ooui: any;
+  context: any;
+}): ReactElement => {
   const [values, setValues] = useState<string[]>([]);
   const { relation, field } = ooui;
 

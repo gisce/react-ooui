@@ -27,8 +27,8 @@ const getTableColumns = (
     let render;
 
     if (component) {
-      render = (item: any) => {
-        return component(item, key, column, context);
+      render = (value: any) => {
+        return component({ value, key, ooui: column, context });
       };
     }
 
@@ -58,7 +58,7 @@ const getTableColumns = (
 const getTableItems = (treeOoui: TreeOoui, results: any[]): any[] => {
   const tableItems = results.map((item: any) => {
     const parsedItem: any = {};
-    Object.keys(item).map((key) => {
+    Object.keys(item).forEach((key) => {
       if (key === "id") {
         parsedItem[key] = item[key];
       } else {
@@ -67,7 +67,6 @@ const getTableItems = (treeOoui: TreeOoui, results: any[]): any[] => {
         if (widget instanceof Reference) {
           parsedItem[key] = item[key];
         } else if (widget instanceof Selection) {
-          const selection = widget;
           parsedItem[key] = item[key];
         } else if (widget instanceof Many2one) {
           parsedItem[key] = item[key] &&

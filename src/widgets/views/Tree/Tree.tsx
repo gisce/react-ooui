@@ -38,6 +38,7 @@ import {
   TextComponent,
   TagsComponent,
 } from "./treeComponents";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 
 type Props = {
   total?: number;
@@ -266,7 +267,7 @@ export const Tree = memo((props: Props) => {
   }
 
   return (
-    <div>
+    <ErrorBoundary>
       {pagination()}
       <GisceTable
         height={adjustedHeight!}
@@ -309,7 +310,7 @@ export const Tree = memo((props: Props) => {
         }
       />
       {getSums()}
-    </div>
+    </ErrorBoundary>
   );
 });
 
