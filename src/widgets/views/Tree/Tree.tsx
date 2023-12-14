@@ -1,5 +1,5 @@
 import { memo, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { Pagination, Row, Col, Spin, Badge } from "antd";
+import { Pagination as AntPagination, Row, Col, Spin, Badge } from "antd";
 import {
   getTree,
   getTableColumns,
@@ -21,23 +21,7 @@ import {
   ActionViewContextType,
 } from "@/context/ActionViewContext";
 import { SelectAllRecordsRow } from "@/common/SelectAllRecordsRow";
-import {
-  AvatarComponent,
-  BooleanComponent,
-  DateComponent,
-  DateTimeComponent,
-  FloatTimeComponent,
-  ImageComponent,
-  Many2OneComponent,
-  NumberComponent,
-  One2ManyComponent,
-  ProgressBarComponent,
-  ReferenceComponent,
-  SelectionComponent,
-  TagComponent,
-  TextComponent,
-  TagsComponent,
-} from "./treeComponents";
+import { COLUMN_COMPONENTS } from "./treeComponents";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 
 type Props = {
@@ -63,7 +47,6 @@ type Props = {
   readonly?: boolean;
   onSelectAllRecords?: () => Promise<void>;
 };
-
 export const Tree = memo((props: Props) => {
   const {
     page = 1,
@@ -112,23 +95,7 @@ export const Tree = memo((props: Props) => {
     return getTableColumns(
       treeOoui,
       {
-        boolean: BooleanComponent,
-        many2one: Many2OneComponent,
-        text: TextComponent,
-        one2many: One2ManyComponent,
-        many2many: One2ManyComponent,
-        progressbar: ProgressBarComponent,
-        float_time: FloatTimeComponent,
-        image: ImageComponent,
-        integer: NumberComponent,
-        float: NumberComponent,
-        reference: ReferenceComponent,
-        tag: TagComponent,
-        selection: SelectionComponent,
-        date: DateComponent,
-        datetime: DateTimeComponent,
-        avatar: AvatarComponent,
-        tags: TagsComponent,
+        ...COLUMN_COMPONENTS,
       },
       context,
     );
@@ -141,7 +108,7 @@ export const Tree = memo((props: Props) => {
       setTitle?.(treeOoui.string);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [treeView]);
+  }, [treeView, title]);
 
   useEffect(() => {
     if (!treeOoui) {
@@ -150,9 +117,12 @@ export const Tree = memo((props: Props) => {
     errorInParseColors.current = false;
     const items = getTableItems(treeOoui, results);
     setItems(items);
-    internalLimit.current = limit;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results]);
+
+  useEffect(() => {
+    internalLimit.current = limit;
+  }, [limit]);
 
   const from = (page - 1) * internalLimit.current + 1;
   const to = from - 1 + items.length;
@@ -166,7 +136,7 @@ export const Tree = memo((props: Props) => {
           .replace("{to}", to?.toString())
           .replace("{total}", total?.toString());
 
-  const pagination = () => {
+  const pagination = useMemo(() => {
     if (!showPagination || treeView.isExpandable) {
       return null;
     }
@@ -182,7 +152,7 @@ export const Tree = memo((props: Props) => {
     ) : (
       <Row align="bottom" className="pb-4">
         <Col span={onSelectAllRecords ? 8 : 12}>
-          <Pagination
+          <AntPagination
             total={total}
             pageSize={
               internalLimit.current === 0 ? total : internalLimit.current
@@ -210,9 +180,20 @@ export const Tree = memo((props: Props) => {
         </Col>
       </Row>
     );
-  };
+  }, [
+    items,
+    loading,
+    onRequestPageChange,
+    onSelectAllRecords,
+    page,
+    rowSelection?.selectedRowKeys,
+    showPagination,
+    summary,
+    total,
+    treeView.isExpandable,
+  ]);
 
-  function getSums() {
+  const sums = useMemo(() => {
     if (!treeOoui) {
       return null;
     }
@@ -245,7 +226,7 @@ export const Tree = memo((props: Props) => {
     });
 
     return <div className="p-1 pb-0 pl-2 mt-2 ">{summary.join(", ")}</div>;
-  }
+  }, [items, rowSelection?.selectedRowKeys, treeOoui]);
 
   const dataTable = useMemo(() => {
     if (treeOoui !== null && columns && columns.length > 0) {
@@ -268,7 +249,7 @@ export const Tree = memo((props: Props) => {
 
   return (
     <ErrorBoundary>
-      {pagination()}
+      {pagination}
       <GisceTable
         height={adjustedHeight!}
         columns={dataTable.columns}
@@ -309,7 +290,7 @@ export const Tree = memo((props: Props) => {
             : undefined
         }
       />
-      {getSums()}
+      {sums}
     </ErrorBoundary>
   );
 });

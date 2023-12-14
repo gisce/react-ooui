@@ -1,5 +1,5 @@
 import { ReactElement, useCallback, useEffect, useMemo, useState } from "react";
-import { Checkbox } from "antd";
+import { Checkbox, Spin } from "antd";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../../base/ProgressBar";
 import { One2manyValue } from "../../base/one2many/One2manyInput";
@@ -170,10 +170,12 @@ export const TagsComponent = ({
   context: any;
 }): ReactElement => {
   const [values, setValues] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const { relation, field } = ooui;
 
   const loadValues = useCallback(async () => {
     try {
+      setLoading(true);
       const optionsRead = await ConnectionProvider.getHandler().search({
         model: relation,
         params: [["id", "in", value.items.map((v: any) => v.id)]],
@@ -183,15 +185,17 @@ export const TagsComponent = ({
       setValues(optionsRead.map((i: any) => i.name));
     } catch (error) {
       console.error("Error loading data", error);
+    } finally {
+      setLoading(false);
     }
   }, [context, field, relation, value.items]);
 
   useEffect(() => {
-    if (value) {
+    if (value?.items && value?.items.length > 0) {
       loadValues();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
+  }, [value?.items]);
 
   const tags = useMemo(
     () =>
@@ -206,7 +210,39 @@ export const TagsComponent = ({
     [values],
   );
 
+  if (loading) {
+    return <Spin />;
+  }
+
   return (
-    <div style={{ maxWidth: "300px", whiteSpace: "break-spaces" }}>{tags}</div>
+    <div
+      style={{
+        maxWidth: "300px",
+        whiteSpace: "break-spaces",
+        lineHeight: "30px",
+      }}
+    >
+      {tags}
+    </div>
   );
+};
+
+export const COLUMN_COMPONENTS = {
+  boolean: BooleanComponent,
+  many2one: Many2OneComponent,
+  text: TextComponent,
+  one2many: One2ManyComponent,
+  many2many: One2ManyComponent,
+  progressbar: ProgressBarComponent,
+  float_time: FloatTimeComponent,
+  image: ImageComponent,
+  integer: NumberComponent,
+  float: NumberComponent,
+  reference: ReferenceComponent,
+  tag: TagComponent,
+  selection: SelectionComponent,
+  date: DateComponent,
+  datetime: DateTimeComponent,
+  avatar: AvatarComponent,
+  tags: TagsComponent,
 };
