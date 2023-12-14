@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Form, Row, Col, Alert, theme } from "antd";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
@@ -60,6 +60,7 @@ function SearchFilter(props: Props) {
 
   useEffect(() => {
     form.setFieldsValue(searchValues);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValues]);
 
   const getRowsAndCols = () => {
