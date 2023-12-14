@@ -284,7 +284,7 @@ function SearchTree(props: Props, ref: any) {
     if (treeView?.isExpandable) {
       return height - 160;
     }
-    return height - (searchFilterHeight + 210);
+    return height - (searchFilterHeight + 240);
   }
 
   const content = () => {
