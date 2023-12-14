@@ -3,6 +3,7 @@ import Field from "@/common/Field";
 import { Field as FieldOoui, Label as LabelOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Label from "@/widgets/base/Label";
+import React from "react";
 
 export const DateTimeRangePicker = (props: WidgetProps) => {
   const { ooui, showLabel = false } = props;
