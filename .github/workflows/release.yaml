@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    branches:
+      # - main
+      # - develop
+      - alpha
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20.5.0'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          NPM_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
+        run: npx semantic-release

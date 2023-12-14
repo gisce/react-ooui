@@ -1,0 +1,28 @@
+name: Update dependent projects (ALPHA)
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+env:
+  LIBRARY_NAME: "gisce/react-ooui"
+
+jobs:
+  update-dependents:
+    if: github.event.release.prerelease == true && contains(github.event.release.tag_name, '-alpha.') && !contains(github.event.release.tag_name, '-rc.')
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - project: "gisce/webclient"
+            branch: "alpha"
+    steps:
+      - name: Call Reusable Workflow for each project
+        uses: gisce/create-update-version-pr@v0.0.5
+        with:
+          dependentProject: ${{ matrix.project }}
+          tagName: ${{ github.event.release.tag_name }}
+          dependentProjectBranch: ${{ matrix.branch }}
+          libraryName: ${{ env.LIBRARY_NAME }}
+          githubToken: ${{ secrets.GH_PAT }}
