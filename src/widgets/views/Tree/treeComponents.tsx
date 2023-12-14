@@ -18,48 +18,58 @@ export const BooleanComponent = ({
 }: {
   value: boolean;
 }): ReactElement => {
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignContent: "center",
-      }}
-    >
-      <Checkbox checked={value} disabled />
-    </div>
+  return useMemo(
+    () => (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignContent: "center",
+        }}
+      >
+        <Checkbox checked={value} disabled />
+      </div>
+    ),
+    [value],
   );
 };
 
 export const Many2OneComponent = ({ value }: { value: any }): ReactElement => {
-  return <Many2oneTree m2oField={value} />;
+  return useMemo(() => <Many2oneTree m2oField={value} />, [value]);
 };
 
 export const TextComponent = ({ value }: { value: any }): ReactElement => {
-  return (
-    <Interweave
-      content={value?.toString().replace(/(?:\r\n|\r|\n)/g, "<br>")}
-    />
+  return useMemo(
+    () => (
+      <Interweave
+        content={value?.toString().replace(/(?:\r\n|\r|\n)/g, "<br>")}
+      />
+    ),
+    [value],
   );
 };
 
 export const DateComponent = ({ value }: { value: any }): ReactElement => {
-  if (!value || (value && value.length === 0)) return <></>;
+  return useMemo(() => {
+    if (!value || (value && value.length === 0)) return <></>;
 
-  const formattedValue = dayjs(
-    value,
-    DatePickerConfig.date.dateInternalFormat,
-  ).format(DatePickerConfig.date.dateDisplayFormat);
-  return <>{formattedValue}</>;
+    const formattedValue = dayjs(
+      value,
+      DatePickerConfig.date.dateInternalFormat,
+    ).format(DatePickerConfig.date.dateDisplayFormat);
+    return <>{formattedValue}</>;
+  }, [value]);
 };
 
 export const DateTimeComponent = ({ value }: { value: any }): ReactElement => {
-  if (!value || (value && value.length === 0)) return <></>;
-  const formattedValue = dayjs(
-    value,
-    DatePickerConfig.time.dateInternalFormat,
-  ).format(DatePickerConfig.time.dateDisplayFormat);
-  return <>{formattedValue}</>;
+  return useMemo(() => {
+    if (!value || (value && value.length === 0)) return <></>;
+    const formattedValue = dayjs(
+      value,
+      DatePickerConfig.time.dateInternalFormat,
+    ).format(DatePickerConfig.time.dateDisplayFormat);
+    return <>{formattedValue}</>;
+  }, [value]);
 };
 
 export const One2ManyComponent = ({
@@ -67,8 +77,10 @@ export const One2ManyComponent = ({
 }: {
   value: One2manyValue;
 }): ReactElement => {
-  const length = Array.isArray(value?.items) ? value?.items.length : 0;
-  return <>{`( ${length} )`}</>;
+  return useMemo(() => {
+    const length = Array.isArray(value?.items) ? value?.items.length : 0;
+    return <>{`( ${length} )`}</>;
+  }, [value]);
 };
 
 export const ProgressBarComponent = ({
@@ -76,23 +88,29 @@ export const ProgressBarComponent = ({
 }: {
   value: any;
 }): ReactElement => {
-  return <ProgressBarInput value={value} />;
+  return useMemo(() => <ProgressBarInput value={value} />, [value]);
 };
 
 export const FloatTimeComponent = ({ value }: { value: any }): ReactElement => {
-  return <>{parseFloatToString(value)}</>;
+  return useMemo(() => <>{parseFloatToString(value)}</>, [value]);
 };
 
 export const NumberComponent = ({ value }: { value: number }): ReactElement => {
-  return <div style={{ textAlign: "right" }}>{value}</div>;
+  return useMemo(
+    () => <div style={{ textAlign: "right" }}>{value}</div>,
+    [value],
+  );
 };
 
 export const ImageComponent = ({ value }: { value: string }): ReactElement => {
-  return (
-    <img
-      src={`data:image/*;base64,${value}`}
-      style={{ maxWidth: "50px", padding: "5px" }}
-    />
+  return useMemo(
+    () => (
+      <img
+        src={`data:image/*;base64,${value}`}
+        style={{ maxWidth: "50px", padding: "5px" }}
+      />
+    ),
+    [value],
   );
 };
 
@@ -107,7 +125,7 @@ export const TagComponent = ({
   ooui: any;
   context: any;
 }): ReactElement => {
-  return <TagInput ooui={ooui} value={value} />;
+  return useMemo(() => <TagInput ooui={ooui} value={value} />, [ooui, value]);
 };
 
 export const SelectionComponent = ({
@@ -121,7 +139,7 @@ export const SelectionComponent = ({
   ooui: any;
   context: any;
 }): ReactElement => {
-  return <>{ooui.selectionValues.get(value)}</>;
+  return useMemo(() => <>{ooui.selectionValues.get(value)}</>, [ooui, value]);
 };
 
 export const ReferenceComponent = ({
@@ -135,14 +153,15 @@ export const ReferenceComponent = ({
   ooui: any;
   context: any;
 }): ReactElement => {
-  return (
-    <>
+  return useMemo(
+    () => (
       <ReferenceTree
         value={value}
         selectionValues={ooui.selectionValues}
         context={context}
       />
-    </>
+    ),
+    [context, ooui.selectionValues, value],
   );
 };
 
@@ -156,7 +175,9 @@ export const AvatarComponent = ({
   key: string;
   ooui: any;
   context: any;
-}): ReactElement => <Avatar ooui={ooui} value={value} />;
+}): ReactElement => {
+  return useMemo(() => <Avatar ooui={ooui} value={value} />, [ooui, value]);
+};
 
 export const TagsComponent = ({
   value,
@@ -169,7 +190,7 @@ export const TagsComponent = ({
   ooui: any;
   context: any;
 }): ReactElement => {
-  const [values, setValues] = useState<string[]>([]);
+  const [values, setValues] = useState<Array<{ id: number; name: string }>>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { relation, field } = ooui;
 
@@ -182,7 +203,12 @@ export const TagsComponent = ({
         fields: [field],
         context,
       });
-      setValues(optionsRead.map((i: any) => i.name));
+      setValues(
+        optionsRead.map((i: any) => {
+          const { id, name } = i;
+          return { id, name };
+        }),
+      );
     } catch (error) {
       console.error("Error loading data", error);
     } finally {
@@ -199,32 +225,34 @@ export const TagsComponent = ({
 
   const tags = useMemo(
     () =>
-      values.map((v) => {
-        const color = colorFromString(v);
+      values.map((entry) => {
+        const { id, name } = entry;
+        const color = colorFromString(name);
         return (
-          <CustomTag key={v} color={color}>
-            {v}
+          <CustomTag key={`${id}`} color={color}>
+            {name}
           </CustomTag>
         );
       }),
     [values],
   );
 
-  if (loading) {
-    return <Spin />;
-  }
-
-  return (
-    <div
-      style={{
-        maxWidth: "300px",
-        whiteSpace: "break-spaces",
-        lineHeight: "30px",
-      }}
-    >
-      {tags}
-    </div>
-  );
+  return useMemo(() => {
+    if (loading) {
+      return <Spin />;
+    }
+    return (
+      <div
+        style={{
+          maxWidth: "300px",
+          whiteSpace: "break-spaces",
+          lineHeight: "30px",
+        }}
+      >
+        {tags}
+      </div>
+    );
+  }, [tags, loading]);
 };
 
 export const COLUMN_COMPONENTS = {

@@ -15,6 +15,15 @@ const getTree = (treeView: TreeView): TreeOoui => {
   return tree;
 };
 
+function isPrimitive(value: any): boolean {
+  return (
+    typeof value === "number" ||
+    typeof value === "string" ||
+    typeof value === "boolean" ||
+    value === null
+  );
+}
+
 const getTableColumns = (
   tree: TreeOoui,
   components: any,
@@ -29,6 +38,19 @@ const getTableColumns = (
     if (component) {
       render = (value: any) => {
         return component({ value, key, ooui: column, context });
+      };
+    } else {
+      render = (value: any) => {
+        return isPrimitive(value) ? (
+          value
+        ) : (
+          <p style={{ color: "red" }}>
+            Unsupported widget type for a Tree cell:
+            <pre>
+              <strong>{type}:</strong>
+            </pre>
+          </p>
+        );
       };
     }
 
