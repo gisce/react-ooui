@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef, useEffect } from "react";
+import { useState, useContext } from "react";
 import { Modal, Button, Divider, Row, Space } from "antd";
 import { FormModal } from "./FormModal";
 import SearchTree from "@/widgets/views/SearchTree";
@@ -65,9 +65,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
           treeScrollY={modalHeight * 0.3}
           domain={domain}
           parentContext={context}
-          onChangeSelectedRowKeys={(selectedRowKeys: any) => {
-            setSelectedRowKeys(selectedRowKeys);
-          }}
+          onChangeSelectedRowKeys={setSelectedRowKeys}
         />
         <Divider />
         <Row justify="end">

@@ -116,6 +116,7 @@ function DashboardTree(props: Props) {
     if (visible) {
       fetchResults();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, offset, initialFetchDone, visible]);
 
   const fetchData = async (type: "action" | "model") => {
@@ -176,6 +177,7 @@ function DashboardTree(props: Props) {
     } else if (model) {
       fetchData("model");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [action, model]);
 
   const onRowClickedHandler = (record: any) => {

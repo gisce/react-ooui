@@ -124,6 +124,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     }
 
     fetchDataIfNeeded();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items, currentView]);
 
   const fetchDataIfNeeded = useCallback(() => {
@@ -135,10 +136,12 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     ) {
       fetchData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items, currentView]);
 
   useEffect(() => {
     parseDomain();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [domain]);
 
   const triggerChange = (changedValue: One2manyItem[]) => {
@@ -626,10 +629,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
               : undefined
           }
           showPagination={false}
-          rowSelection={{
-            selectedRowKeys,
-            onChange: setSelectedRowKeys,
-          }}
+          selectedRowKeys={selectedRowKeys}
+          onRowSelectionChange={setSelectedRowKeys}
           sorter={sorter}
           onChangeSort={setSorter}
           context={{ ...getContext?.(), ...context }}

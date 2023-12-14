@@ -5,6 +5,8 @@ import React, {
   useContext,
   forwardRef,
   useImperativeHandle,
+  useMemo,
+  useCallback,
 } from "react";
 import { Alert, Spin } from "antd";
 
@@ -109,6 +111,14 @@ function SearchTree(props: Props, ref: any) {
     setLimit = undefined,
   } = (rootTree ? actionViewContext : {}) || {};
 
+  const changeSelectedRowKeys = useCallback(
+    (newSelectedRowKeys: any[]) => {
+      setSelectedRowItems?.(newSelectedRowKeys.map((id: number) => ({ id })));
+      onChangeSelectedRowKeys?.(newSelectedRowKeys);
+    },
+    [onChangeSelectedRowKeys, setSelectedRowItems],
+  );
+
   const {
     submit,
     clear,
@@ -170,6 +180,7 @@ function SearchTree(props: Props, ref: any) {
       searchNameGetDoneRef.current = false;
       fetchResults();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, offset, initialFetchDone, visible, nameSearch, treeView]);
 
   const fetchData = async () => {
@@ -218,6 +229,7 @@ function SearchTree(props: Props, ref: any) {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model]);
 
   const onSearchTreeLimitChange = (newLimit: number) => {
@@ -269,11 +281,6 @@ function SearchTree(props: Props, ref: any) {
     });
   };
 
-  function changeSelectedRowKeys(selectedRowKeys: any[]) {
-    setSelectedRowItems?.(selectedRowKeys.map((id: number) => ({ id })));
-    onChangeSelectedRowKeys?.(selectedRowKeys);
-  }
-
   async function selectAllRecords() {
     const allIds = await getAllIds();
     setSelectedRowItems?.(allIds.map((id: number) => ({ id })));
@@ -286,6 +293,11 @@ function SearchTree(props: Props, ref: any) {
     }
     return height - (searchFilterHeight + 240);
   }
+
+  const selectedRowKeys = useMemo(
+    () => selectedRowItems?.map((item) => item.id),
+    [selectedRowItems],
+  );
 
   const content = () => {
     if (!treeView || !formView) {
@@ -324,10 +336,8 @@ function SearchTree(props: Props, ref: any) {
           scrollY={treeScrollY || calculateTableHeight()}
           colorsForResults={colorsForResults}
           statusForResults={statusForResults}
-          rowSelection={{
-            selectedRowKeys: selectedRowItems?.map((item) => item.id),
-            onChange: changeSelectedRowKeys,
-          }}
+          selectedRowKeys={selectedRowKeys}
+          onRowSelectionChange={changeSelectedRowKeys}
           sorter={sorter}
           onChangeSort={changeSort}
           onFetchChildrenForRecord={

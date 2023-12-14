@@ -34,7 +34,8 @@ type Props = {
   showPagination?: boolean;
   onRequestPageChange?: (page: number, pageSize?: number) => void;
   onRowClicked?: (record: any) => void;
-  rowSelection?: any;
+  onRowSelectionChange?: (selectedRowKeys: any[]) => void;
+  selectedRowKeys?: number[];
   scrollY?: number;
   colorsForResults?: { [key: number]: string };
   statusForResults?: { [key: number]: string };
@@ -58,7 +59,8 @@ export const Tree = memo((props: Props) => {
     loading,
     onRowClicked,
     showPagination = true,
-    rowSelection,
+    selectedRowKeys = [],
+    onRowSelectionChange,
     scrollY,
     colorsForResults = {},
     statusForResults = {},
@@ -142,9 +144,7 @@ export const Tree = memo((props: Props) => {
     }
 
     const numberOfVisibleSelectedRows = items?.filter(
-      (entry) =>
-        rowSelection?.selectedRowKeys &&
-        rowSelection?.selectedRowKeys.includes(entry.id),
+      (entry) => selectedRowKeys && selectedRowKeys.includes(entry.id),
     ).length;
 
     return loading ? null : total === undefined ? (
@@ -166,9 +166,7 @@ export const Tree = memo((props: Props) => {
           <Col span={8} className="text-center">
             <SelectAllRecordsRow
               numberOfVisibleSelectedRows={numberOfVisibleSelectedRows}
-              numberOfRealSelectedRows={
-                rowSelection?.selectedRowKeys?.length || 0
-              }
+              numberOfRealSelectedRows={selectedRowKeys?.length || 0}
               numberOfTotalRows={items.length}
               totalRecords={total || 0}
               onSelectAllRecords={onSelectAllRecords}
@@ -186,7 +184,7 @@ export const Tree = memo((props: Props) => {
     onRequestPageChange,
     onSelectAllRecords,
     page,
-    rowSelection?.selectedRowKeys,
+    selectedRowKeys,
     showPagination,
     summary,
     total,
@@ -209,9 +207,9 @@ export const Tree = memo((props: Props) => {
 
     const summary: string[] = [];
     const sumItems =
-      rowSelection?.selectedRowKeys?.length > 0
+      selectedRowKeys?.length > 0
         ? items.filter((result: any) => {
-            return rowSelection?.selectedRowKeys.includes(result.id);
+            return selectedRowKeys.includes(result.id);
           })
         : items;
 
@@ -226,7 +224,7 @@ export const Tree = memo((props: Props) => {
     });
 
     return <div className="p-1 pb-0 pl-2 mt-2 ">{summary.join(", ")}</div>;
-  }, [items, rowSelection?.selectedRowKeys, treeOoui]);
+  }, [items, selectedRowKeys, treeOoui]);
 
   const dataTable = useMemo(() => {
     if (treeOoui !== null && columns && columns.length > 0) {
@@ -273,8 +271,7 @@ export const Tree = memo((props: Props) => {
             : undefined
         }
         onRowDoubleClick={onRowClicked}
-        selectionRowKeys={rowSelection?.selectedRowKeys}
-        onRowSelectionChange={rowSelection?.onChange}
+        onRowSelectionChange={onRowSelectionChange}
         onChangeSort={onChangeSort}
         sorter={sorter}
         readonly={readonly}
