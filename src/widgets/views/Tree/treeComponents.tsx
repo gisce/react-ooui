@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Checkbox } from "antd";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../../base/ProgressBar";
@@ -8,8 +8,10 @@ import { Many2oneTree } from "../../base/many2one/Many2oneTree";
 import { ReferenceTree } from "../../base/ReferenceTree";
 import dayjs from "@/helpers/dayjs";
 import Avatar from "../../custom/Avatar";
-import { TagInput } from "../../custom/Tag";
+import { CustomTag, TagInput } from "../../custom/Tag";
 import { DatePickerConfig } from "@/common/DatePicker";
+import ConnectionProvider from "@/ConnectionProvider";
+import { colorFromString } from "@/helpers/formHelper";
 
 export const BooleanComponent = (value: boolean): React.ReactElement => {
   return (
@@ -123,3 +125,51 @@ export const AvatarComponent = (
   ooui: any,
   context: any,
 ): React.ReactElement => <Avatar ooui={ooui} value={value} />;
+
+export const TagsComponent = (
+  value: any,
+  key: string,
+  ooui: any,
+  context: any,
+): React.ReactElement => {
+  const [values, setValues] = useState<string[]>([]);
+  const { relation, field } = ooui;
+
+  const loadValues = useCallback(async () => {
+    try {
+      const optionsRead = await ConnectionProvider.getHandler().search({
+        model: relation,
+        params: [["id", "in", value.items.map((v: any) => v.id)]],
+        fields: [field],
+        context,
+      });
+      setValues(optionsRead.map((i: any) => i.name));
+    } catch (error) {
+      console.error("Error loading data", error);
+    }
+  }, [context, field, relation, value.items]);
+
+  useEffect(() => {
+    if (value) {
+      loadValues();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  const tags = useMemo(
+    () =>
+      values.map((v) => {
+        const color = colorFromString(v);
+        return (
+          <CustomTag key={v} color={color}>
+            {v}
+          </CustomTag>
+        );
+      }),
+    [values],
+  );
+
+  return (
+    <div style={{ maxWidth: "300px", whiteSpace: "break-spaces" }}>{tags}</div>
+  );
+};

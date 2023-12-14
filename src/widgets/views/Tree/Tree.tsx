@@ -36,6 +36,7 @@ import {
   SelectionComponent,
   TagComponent,
   TextComponent,
+  TagsComponent,
 } from "./treeComponents";
 
 type Props = {
@@ -126,6 +127,7 @@ export const Tree = memo((props: Props) => {
         date: DateComponent,
         datetime: DateTimeComponent,
         avatar: AvatarComponent,
+        tags: TagsComponent,
       },
       context,
     );
