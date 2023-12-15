@@ -15,7 +15,6 @@ import { SearchParams } from "./SearchParams";
 
 import { getParamsForFields } from "@/helpers/searchHelper";
 import Measure from "react-measure";
-import React from "react";
 const { useToken } = theme;
 
 type Props = {
