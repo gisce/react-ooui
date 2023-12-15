@@ -1,8 +1,12 @@
-import { DatePicker, TimePicker, Row, Col } from "antd";
+import { DatePicker, TimePicker } from "antd";
+
+import React from "react";
 import Field from "@/common/Field";
 import { Field as FieldOoui, Label as LabelOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Label from "@/widgets/base/Label";
+
+import { Row, Col } from "antd";
 
 export const DateTimeRangePicker = (props: WidgetProps) => {
   const { ooui, showLabel = false } = props;
@@ -46,41 +50,14 @@ export const DateTimeRangePicker = (props: WidgetProps) => {
         </Col>
         <Col>
           <Field {...props} ooui={fields[1]} showLabel={false}>
-            <TimeRangePicker />
+            <TimePicker.RangePicker
+              className="w-60"
+              allowEmpty={[true, true]}
+              format={"HH:mm"}
+            ></TimePicker.RangePicker>
           </Field>
         </Col>
       </Row>
     </>
-  );
-};
-
-const TimeRangePicker = ({
-  value,
-  onChange,
-}: {
-  value?: any;
-  onChange?: (newValue: any) => void;
-}) => {
-  return (
-    <div style={{ marginTop: 5 }}>
-      <TimePicker
-        placeholder="Start time"
-        style={{ width: 115, marginRight: 10 }}
-        format={"HH:mm"}
-        value={value?.[0]}
-        onChange={(newValue) => {
-          onChange?.([newValue, value?.[1]]);
-        }}
-      />
-      <TimePicker
-        placeholder="End time"
-        style={{ width: 115 }}
-        format={"HH:mm"}
-        value={value?.[1]}
-        onChange={(newValue) => {
-          onChange?.([value?.[0], newValue]);
-        }}
-      />
-    </div>
   );
 };
