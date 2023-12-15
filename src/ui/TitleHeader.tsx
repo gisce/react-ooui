@@ -95,9 +95,7 @@ function TitleHeader(props: Props) {
           padding: "1em",
           borderRadius: token.borderRadius,
           backgroundColor: token.colorPrimaryBg,
-          height: "82px",
           minHeight: "82px",
-          maxHeight: "82px",
         }}
         align="middle"
       >

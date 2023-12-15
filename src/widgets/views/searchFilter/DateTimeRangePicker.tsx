@@ -1,8 +1,9 @@
-import { DatePicker, TimePicker, Row, Col } from "antd";
+import { DatePicker, Row, Col } from "antd";
 import Field from "@/common/Field";
 import { Field as FieldOoui, Label as LabelOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Label from "@/widgets/base/Label";
+import { TimePicker } from "../../../common/TimePicker";
 
 export const DateTimeRangePicker = (props: WidgetProps) => {
   const { ooui, showLabel = false } = props;
@@ -65,8 +66,8 @@ const TimeRangePicker = ({
     <div style={{ marginTop: 5 }}>
       <TimePicker
         placeholder="Start time"
-        style={{ width: 115, marginRight: 10 }}
         format={"HH:mm"}
+        style={{ width: 115, marginRight: 10 }}
         value={value?.[0]}
         onChange={(newValue) => {
           onChange?.([newValue, value?.[1]]);

@@ -88,6 +88,9 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
       format={DatePickerConfig[mode].dateDisplayFormat}
       value={dateValue}
       onChange={onValueStringChange}
+      showNow={false}
+      showToday={false}
+      changeOnBlur={true}
     />
   );
 };
