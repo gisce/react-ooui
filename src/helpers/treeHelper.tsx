@@ -15,12 +15,13 @@ const getTree = (treeView: TreeView): TreeOoui => {
   return tree;
 };
 
-function isPrimitive(value: any): boolean {
+function canRenderValue(value: any): boolean {
   return (
     typeof value === "number" ||
     typeof value === "string" ||
     typeof value === "boolean" ||
-    value === null
+    value === null ||
+    value === undefined
   );
 }
 
@@ -41,7 +42,7 @@ const getTableColumns = (
       };
     } else {
       render = (value: any) => {
-        return isPrimitive(value) ? (
+        return canRenderValue(value) ? (
           value
         ) : (
           <p style={{ color: "red" }}>
