@@ -39,11 +39,22 @@ const DropdownButton: React.FC<Props> = memo(
     }, []);
 
     const filteredItems = useMemo(() => {
-      return searchValue
-        ? items.filter((item) =>
-            item.name.toLowerCase().includes(searchValue.toLowerCase()),
-          )
-        : items;
+      if (searchValue) {
+        return items
+          .map((item) => {
+            if (item.name.toLowerCase().includes(searchValue.toLowerCase())) {
+              return { ...item };
+            }
+            return { ...item, name: "no_match" };
+          })
+          .sort((a, b) => {
+            // all the items with name "no_match" have to be in the end of the array
+            if (a.name === "no_match") return 1;
+            if (b.name === "no_match") return -1;
+            return 0;
+          });
+      }
+      return items;
     }, [items, searchValue]);
 
     const handleMenuClick = useCallback(
@@ -51,19 +62,27 @@ const DropdownButton: React.FC<Props> = memo(
         const itemClicked = filteredItems.find(
           (item: any) => item.id.toString() === event.key,
         );
-        if (itemClicked) onItemClick(itemClicked);
+        if (itemClicked && itemClicked.name !== "no_match")
+          onItemClick(itemClicked);
       },
       [onItemClick, filteredItems],
     );
 
     const getMenu = useMemo(() => {
-      const menuItems = filteredItems.map((item, idx) =>
-        item.name === "divider" ? (
-          <Menu.Divider key={"divider" + idx} />
-        ) : (
-          <Menu.Item key={item.id}>{item.name}</Menu.Item>
-        ),
-      );
+      const menuItems = filteredItems.map((item, idx) => {
+        if (item.name === "divider")
+          return <Menu.Divider key={"divider" + idx} />;
+        if (item.name === "no_match")
+          return (
+            <Menu.Item
+              key={"no_match" + idx}
+              style={{ cursor: "auto", pointerEvents: "none", opacity: 0 }}
+            >
+              {item.name}
+            </Menu.Item>
+          );
+        return <Menu.Item key={item.id}>{item.name}</Menu.Item>;
+      });
 
       return (
         <Menu onClick={handleMenuClick}>
@@ -76,7 +95,13 @@ const DropdownButton: React.FC<Props> = memo(
               />
             </div>
           )}
-          <div style={{ maxHeight: 300, overflowY: "auto" }}>
+          <div
+            style={{
+              width: 300,
+              maxHeight: 300,
+              overflowY: "auto",
+            }}
+          >
             <Menu.ItemGroup title={tooltip}>{menuItems}</Menu.ItemGroup>
           </div>
         </Menu>
