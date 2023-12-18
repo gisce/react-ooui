@@ -139,7 +139,14 @@ export const SelectionComponent = ({
   ooui: any;
   context: any;
 }): ReactElement => {
-  return useMemo(() => <>{ooui.selectionValues.get(value)}</>, [ooui, value]);
+  return useMemo(() => {
+    let selectionKey = value;
+
+    if (Array.isArray(value) && value.length === 2) {
+      selectionKey = value[0];
+    }
+    return <>{ooui.selectionValues.get(selectionKey)}</>;
+  }, [ooui, value]);
 };
 
 export const ReferenceComponent = ({
