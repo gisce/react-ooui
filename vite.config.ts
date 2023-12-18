@@ -30,7 +30,6 @@ export default defineConfig({
       // Reason for this is using imports for specific components
       external: [
         "@ant-design/icons",
-        "uuid",
         "lodash/debounce",
         "moment",
         "dayjs",

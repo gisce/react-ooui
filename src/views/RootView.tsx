@@ -5,7 +5,6 @@ import React, {
   useRef,
 } from "react";
 import { ConnectionProvider, ContentRootProvider, FormView } from "..";
-import { v4 as uuidv4 } from "uuid";
 import Welcome from "./Welcome";
 import TabManagerProvider from "@/context/TabManagerContext";
 import ActionView from "./ActionView";
@@ -15,6 +14,7 @@ import { ShortcutApi } from "@/ui/FavouriteButton";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import { InitialViewData, ViewType } from "@/types";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
+import { nanoid } from "nanoid";
 
 type RootViewProps = {
   children: React.ReactNode;
@@ -414,7 +414,7 @@ function RootView(props: RootViewProps, ref: any) {
     treeExpandable?: boolean;
     limit?: number;
   }) {
-    const key = uuidv4();
+    const key = nanoid();
 
     if (target !== "current") {
       const formView = (await ConnectionProvider.getHandler().getView({
