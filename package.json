@@ -9,9 +9,7 @@
     "access": "public"
   },
   "files": [
-    "dist",
-    "src",
-    "README.md"
+    "dist"
   ],
   "module": "./dist/react-ooui.es.js",
   "types": "./dist/index.d.ts",
