@@ -180,7 +180,11 @@ const SelectionComponent = (
   ooui: any,
   context: any
 ): React.ReactElement => {
-  return <>{ooui.selectionValues.get(value)}</>;
+  let selectionKey = value;
+  if (Array.isArray(value) && value.length === 2) {
+    selectionKey = value[0];
+  }
+  return <>{ooui.selectionValues.get(selectionKey)}</>;
 };
 
 const referenceComponent = (
