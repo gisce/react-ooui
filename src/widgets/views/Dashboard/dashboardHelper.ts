@@ -1,6 +1,6 @@
 import ConnectionProvider from "@/ConnectionProvider";
-import { DashboardItem as DashboardItemOoui, parseContext } from "@gisce/ooui";
-import { v4 as uuidv4 } from "uuid";
+import { parseContext } from "@gisce/ooui";
+import { nanoid } from "nanoid";
 
 export async function fetchAction({
   actionId,
@@ -67,7 +67,7 @@ export async function fetchAction({
     title,
     actionId,
     actionType,
-    key: uuidv4(),
+    key: nanoid(),
     views,
     model,
     context: { ...rootContext, ...parsedContext },
