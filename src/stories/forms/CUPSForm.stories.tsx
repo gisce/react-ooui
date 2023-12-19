@@ -1,7 +1,7 @@
 import React from "react";
 
-import { Form } from "../..";
-import LocaleProvider from "../../context/LocaleContext";
+import LocaleProvider from "@/context/LocaleContext";
+import { Form } from "@/index";
 
 export default {
   title: "Components/Widgets/Forms/CUPS",

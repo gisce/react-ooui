@@ -13,6 +13,7 @@ export default defineConfig({
     react(),
     dts({
       insertTypesEntry: true,
+      tsconfigPath: path.resolve(__dirname, "./tsconfig.build.json"),
     }),
     viteTsconfigPaths(),
   ],
