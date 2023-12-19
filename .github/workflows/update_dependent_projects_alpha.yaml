@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
           - project: "gisce/webclient"
-            branch: "alpha"
+            branch: "v2"
     steps:
       - name: Call Reusable Workflow for each project
         uses: gisce/create-update-version-pr@v0.0.5

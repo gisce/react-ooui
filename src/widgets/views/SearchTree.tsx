@@ -1,4 +1,4 @@
-import React, {
+import {
   useEffect,
   useState,
   useRef,
@@ -232,74 +232,83 @@ function SearchTree(props: Props, ref: any) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model]);
 
-  const onSearchTreeLimitChange = (newLimit: number) => {
-    setLimit?.(newLimit);
-  };
+  const onSearchTreeLimitChange = useCallback(
+    (newLimit: number) => {
+      setLimit?.(newLimit);
+    },
+    [setLimit],
+  );
 
-  const treeButOpen = async (record: any) => {
-    const { id } = record;
+  const treeButOpen = useCallback(
+    async (record: any) => {
+      const { id } = record;
 
-    if (!expandableClickActionData.current) {
-      expandableClickActionData.current =
-        await ConnectionProvider.getHandler().treeButOpen({
-          id: treeView!.view_id,
-          model: currentModel!,
-          context: parentContext,
-        });
-    }
-
-    const actionData: any = expandableClickActionData.current[0][2];
-
-    await processAction?.({
-      actionData,
-      fields: treeView!.fields,
-      values: {
-        active_id: id,
-        ...record,
-      },
-      context: parentContext,
-    });
-  };
-
-  const onRowClickedHandler = async (record: any) => {
-    const { id } = record;
-
-    if (treeView?.isExpandable) {
-      try {
-        await treeButOpen(record);
-      } catch (err) {
-        showErrorDialog(err);
+      if (!expandableClickActionData.current) {
+        expandableClickActionData.current =
+          await ConnectionProvider.getHandler().treeButOpen({
+            id: treeView!.view_id,
+            model: currentModel!,
+            context: parentContext,
+          });
       }
-      return;
-    }
 
-    onRowClicked({
-      id,
-      model: currentModel!,
-      formView: formView!,
-      treeView: treeView!,
-    });
-  };
+      const actionData: any = expandableClickActionData.current[0][2];
 
-  async function selectAllRecords() {
+      await processAction?.({
+        actionData,
+        fields: treeView!.fields,
+        values: {
+          active_id: id,
+          ...record,
+        },
+        context: parentContext,
+      });
+    },
+    [currentModel, parentContext, processAction, treeView],
+  );
+
+  const onRowClickedHandler = useCallback(
+    async (record: any) => {
+      const { id } = record;
+
+      if (treeView?.isExpandable) {
+        try {
+          await treeButOpen(record);
+        } catch (err) {
+          showErrorDialog(err);
+        }
+        return;
+      }
+
+      onRowClicked({
+        id,
+        model: currentModel!,
+        formView: formView!,
+        treeView: treeView!,
+      });
+    },
+    [currentModel, formView, onRowClicked, treeButOpen, treeView],
+  );
+
+  const selectAllRecords = useCallback(async () => {
     const allIds = await getAllIds();
     setSelectedRowItems?.(allIds.map((id: number) => ({ id })));
     onChangeSelectedRowKeys?.(allIds);
-  }
+  }, [getAllIds, onChangeSelectedRowKeys, setSelectedRowItems]);
 
-  function calculateTableHeight() {
+  const calculatedTableHeight = useMemo(() => {
     if (treeView?.isExpandable) {
       return height - 160;
     }
     return height - (searchFilterHeight + 240);
-  }
+  }, [height, searchFilterHeight, treeView?.isExpandable]);
 
   const selectedRowKeys = useMemo(
     () => selectedRowItems?.map((item) => item.id),
     [selectedRowItems],
   );
 
-  const content = () => {
+  const content = useCallback(() => {
     if (!treeView || !formView) {
       return null;
     }
@@ -333,7 +342,7 @@ function SearchTree(props: Props, ref: any) {
           onRequestPageChange={requestPageChange}
           loading={tableRefreshing}
           onRowClicked={onRowClickedHandler}
-          scrollY={treeScrollY || calculateTableHeight()}
+          scrollY={treeScrollY || calculatedTableHeight}
           colorsForResults={colorsForResults}
           statusForResults={statusForResults}
           selectedRowKeys={selectedRowKeys}
@@ -349,7 +358,37 @@ function SearchTree(props: Props, ref: any) {
         />
       </>
     );
-  };
+  }, [
+    calculatedTableHeight,
+    changeSelectedRowKeys,
+    changeSort,
+    clear,
+    colorsForResults,
+    fetchChildrenForRecord,
+    formView,
+    getResults,
+    limit,
+    offset,
+    onRowClickedHandler,
+    onSearchTreeLimitChange,
+    page,
+    parentContext,
+    requestPageChange,
+    rootTree,
+    searchError,
+    searchFilterLoading,
+    searchValues,
+    searchVisible,
+    selectAllRecords,
+    selectedRowKeys,
+    sorter,
+    statusForResults,
+    submit,
+    tableRefreshing,
+    totalItems,
+    treeScrollY,
+    treeView,
+  ]);
 
   const error = initialError || searchError;
 

@@ -78,10 +78,13 @@ export const useSearch = (opts: UseSearchOpts) => {
 
   const originalResults = useRef<any[]>([]);
 
-  const setResults = useCallback((results: any) => {
-    setResultsActionView?.([...results]);
-    setResultsInternal([...results]);
-  }, []);
+  const setResults = useCallback(
+    (results: any) => {
+      setResultsActionView?.([...results]);
+      setResultsInternal([...results]);
+    },
+    [setResultsActionView],
+  );
 
   const getResults = useCallback(() => {
     if (!resultsActionView) {
@@ -246,7 +249,6 @@ export const useSearch = (opts: UseSearchOpts) => {
       formView,
       sorter,
       setActionViewTotalItems,
-      limit,
       offset,
       searchParams,
     ],
@@ -263,7 +265,8 @@ export const useSearch = (opts: UseSearchOpts) => {
           await searchResults(opts);
         }
       } catch (error) {
-        setSearchError(error.message);
+        setSearchError(typeof error === "string" ? error : error.message);
+        setTableRefreshing(false);
       } finally {
         setSelectedRowItems?.([]);
         setSearchFilterLoading(false);
@@ -271,25 +274,12 @@ export const useSearch = (opts: UseSearchOpts) => {
       }
     },
     [
-      context,
-      currentId,
-      domain,
-      formView,
-      limit,
-      model,
       nameSearch,
-      offset,
-      resultsActionView,
+      searchByNameSearch,
       searchNameGetDoneRef,
-      setActionViewTotalItems,
-      setCurrentItemIndex,
-      setResults,
-      setSearchError,
-      setSearchFilterLoading,
-      setTableRefreshing,
+      searchResults,
+      setSelectedRowItems,
       setTreeIsLoading,
-      sorter,
-      treeView,
     ],
   );
 
@@ -307,7 +297,14 @@ export const useSearch = (opts: UseSearchOpts) => {
           : [...originalResults.current];
       setResults(sortedResults);
     },
-    [setSorter, getResults, treeView, formView, setResults],
+    [
+      sorter,
+      setSorter,
+      getResults,
+      treeView?.fields,
+      formView?.fields,
+      setResults,
+    ],
   );
 
   const submit = useCallback(
@@ -343,14 +340,11 @@ export const useSearch = (opts: UseSearchOpts) => {
       tableRefreshing,
       setSearchTreeNameSearch,
       setSelectedRowItems,
+      setSearchValues,
       setSearchParams,
       setSearchVisible,
-      setSearchFilterLoading,
-      setSearchError,
-      setPage,
-      setLimit,
-      setOffset,
       fetchResults,
+      setLimit,
     ],
   );
 
@@ -376,9 +370,7 @@ export const useSearch = (opts: UseSearchOpts) => {
     tableRefreshing,
     setSearchTreeNameSearch,
     setSearchParams,
-    setSearchError,
-    setOffset,
-    setPage,
+    setSearchValues,
     setLimit,
     limit,
   ]);
