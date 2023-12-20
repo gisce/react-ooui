@@ -85,10 +85,10 @@ type GetGraphPropsType = {
 
 function getGraphProps(props: GetGraphPropsType) {
   const { type, data, isGroup, isStack } = props;
-  let graphProps = (GraphDefaults as any)[type];
+  let graphProps = { ...(GraphDefaults as any)[type] };
 
   if (!graphProps) {
-    graphProps = (GraphDefaults as any)["default"];
+    graphProps = { ...(GraphDefaults as any)["default"] };
   }
 
   graphProps.data = data;
