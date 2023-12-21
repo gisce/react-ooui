@@ -6,6 +6,11 @@ import dts from "vite-plugin-dts";
 import viteTsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      react: path.resolve("./node_modules/react"),
+    },
+  },
   plugins: [
     peerDepsExternal({
       includeDependencies: true,
