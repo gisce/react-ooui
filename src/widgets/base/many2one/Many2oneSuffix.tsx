@@ -72,6 +72,9 @@ export const Many2oneSuffix = (props: Props) => {
 
       let values = {}
 
+      // Remove duplicates in fields string[] array
+      fields = [...new Set(fields)];
+      
       if (fields.length > 0) {
         values = (
           await ConnectionProvider.getHandler().readObjects({
