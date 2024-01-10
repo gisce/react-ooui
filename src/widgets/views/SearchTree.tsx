@@ -162,12 +162,12 @@ function SearchTree(props: Props, ref: any) {
     setActionViewTotalItems,
     limit,
     setLimit,
+    clearSelection: tableRef.current?.unselectAll,
   });
 
   useImperativeHandle(ref, () => ({
     refreshResults: () => {
       searchNameGetDoneRef.current = false;
-      tableRef.current?.unselectAll();
       fetchResults();
     },
     getFields: () => treeView?.fields,
