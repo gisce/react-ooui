@@ -33,6 +33,7 @@ type UseSearchOpts = {
   limit?: number;
   setLimit?: (value: number) => void;
   setSearchValues?: (value: any) => void;
+  clearSelection?: () => void;
 };
 
 export const DEFAULT_SEARCH_LIMIT = 80;
@@ -62,6 +63,7 @@ export const useSearch = (opts: UseSearchOpts) => {
     setLimit,
     searchParams = [],
     setSearchValues,
+    clearSelection,
   } = opts;
 
   const [tableRefreshing, setTableRefreshing] = useState<boolean>(false);
@@ -264,6 +266,7 @@ export const useSearch = (opts: UseSearchOpts) => {
         } else {
           await searchResults(opts);
         }
+        clearSelection?.();
       } catch (error) {
         setSearchError(typeof error === "string" ? error : error.message);
         setTableRefreshing(false);
