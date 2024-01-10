@@ -27,6 +27,7 @@ import {
 } from "@/context/ContentRootContext";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import { DEFAULT_SEARCH_LIMIT, useSearch } from "@/hooks/useSearch";
+import { TableRef } from "@gisce/react-formiga-table";
 
 type OnRowClickedData = {
   id: number;
@@ -68,6 +69,7 @@ function SearchTree(props: Props, ref: any) {
   const [initialFetchDone, setInitialFetchDone] = useState<boolean>(false);
 
   const searchNameGetDoneRef = useRef(false);
+  const tableRef = useRef<TableRef>(null);
 
   const [currentModel, setCurrentModel] = useState<string>();
   const [treeView, setTreeView] = useState<TreeView>();
@@ -165,6 +167,7 @@ function SearchTree(props: Props, ref: any) {
   useImperativeHandle(ref, () => ({
     refreshResults: () => {
       searchNameGetDoneRef.current = false;
+      tableRef.current?.unselectAll();
       fetchResults();
     },
     getFields: () => treeView?.fields,
@@ -333,6 +336,7 @@ function SearchTree(props: Props, ref: any) {
           searchValues={searchValues}
         />
         <Tree
+          ref={tableRef}
           context={parentContext}
           total={totalItems}
           limit={limit}
