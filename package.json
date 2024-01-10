@@ -114,9 +114,9 @@
   },
   "release": {
     "branches": [
-      "master",
+      "v2",
       {
-        "name": "develop",
+        "name": "v2-develop",
         "prerelease": "rc"
       },
       {
