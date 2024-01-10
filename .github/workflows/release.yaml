@@ -3,8 +3,8 @@ name: Release
 on:
   push:
     branches:
-      # - main
-      # - develop
+      - v2
+      - v2-develop
       - alpha
   workflow_dispatch:
 

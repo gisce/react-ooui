@@ -1,4 +1,4 @@
-name: Update dependent projects (alpha)
+name: Update dependent projects (v2)
 
 on:
   release:
@@ -10,13 +10,13 @@ env:
 
 jobs:
   update-dependents:
-    if: github.event.release.prerelease == true && contains(github.event.release.tag_name, '-alpha.') && !contains(github.event.release.tag_name, '-rc.')
+    if: github.event.release.prerelease == false && contains(github.event.release.tag_name, 'v2')
     runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
           - project: "gisce/webclient"
-            branch: "alpha"
+            branch: "v2"
     steps:
       - name: Call Reusable Workflow for each project
         uses: gisce/create-update-version-pr@v0.0.5
