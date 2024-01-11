@@ -25,11 +25,18 @@ jobs:
           - project: "gisce/webclient"
             branch: "v2"
     steps:
-      - name: Set environment variables
+      - name: Set environment variables and check condition
         run: |
-          echo "TAG_NAME=${{ github.event.release.tag_name || github.event.inputs.tag_name }}" >> $GITHUB_ENV
-          echo "PRERELEASE=${{ github.event.release.prerelease || github.event.inputs.prerelease }}" >> $GITHUB_ENV
-          echo "SHOULD_RUN=$( [ \"$PRERELEASE\" == 'false' ] && [[ \"$TAG_NAME\" == *'v2'* ]] && echo 'true' || echo 'false' )" >> $GITHUB_ENV
+          TAG_NAME="${{ github.event.release.tag_name || github.event.inputs.tag_name }}"
+          PRERELEASE="${{ github.event.release.prerelease || github.event.inputs.prerelease }}"
+          if [ "$PRERELEASE" == "false" ] && [[ "$TAG_NAME" == *'v2'* ]]; then
+            SHOULD_RUN="true"
+          else
+            SHOULD_RUN="false"
+          fi
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          echo "PRERELEASE=$PRERELEASE" >> $GITHUB_ENV
+          echo "SHOULD_RUN=$SHOULD_RUN" >> $GITHUB_ENV
       - name: Check Prerelease and Tag Version
         if: env.SHOULD_RUN == 'true'
         run: echo "Running update for tag ${{ env.TAG_NAME }}"
