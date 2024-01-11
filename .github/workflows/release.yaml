@@ -54,7 +54,7 @@ jobs:
           git config --local user.name "GitHub Action"
           npm version ${{ env.PARENT_VERSION }} --no-git-tag-version
           git add .
-          git commit -am "Update version to ${{ env.PARENT_VERSION }}"
+          git commit -am "chore: sync version to ${{ env.PARENT_VERSION }}"
           git push
 
       - name: Release
