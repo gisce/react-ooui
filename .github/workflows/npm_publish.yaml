@@ -1,0 +1,35 @@
+name: Manual NPM publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Version tag'
+        required: true
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20.5.0'
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.version_tag }}
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: NPM publish
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
