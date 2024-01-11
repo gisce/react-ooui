@@ -18,6 +18,10 @@ jobs:
         with:
           node-version: '20.5.0'
 
+      - name: Install semver globally (For v2-develop only)
+        if: github.ref == 'refs/heads/v2-develop'
+        run: npm install -g semver
+
       - name: Checkout v2 Branch (For v2-develop only)
         if: github.ref == 'refs/heads/v2-develop'
         uses: actions/checkout@v2
@@ -40,10 +44,9 @@ jobs:
       - name: Get child version and compare with parent version (For v2-develop only)
         if: github.ref == 'refs/heads/v2-develop'
         run: |
-          npm install semver
           CHILD_VERSION=$(node -p "require('./package.json').version")
           echo "CHILD_VERSION=$CHILD_VERSION" >> $GITHUB_ENV
-          if node -p "require('semver').lt('$CHILD_VERSION', '$PARENT_VERSION')"; then
+          if [ $(semver $CHILD_VERSION $PARENT_VERSION -l) == "true" ]; then
             echo "CHILD_BEHIND_PARENT=true" >> $GITHUB_ENV
           else
             echo "CHILD_BEHIND_PARENT=false" >> $GITHUB_ENV
