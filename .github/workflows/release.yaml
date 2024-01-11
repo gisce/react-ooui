@@ -36,6 +36,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install Dependencies
+        run: npm ci
+
       - name: Get child version and compare with parent version (For v2-develop only)
         if: github.ref == 'refs/heads/v2-develop'
         run: |
@@ -52,9 +55,6 @@ jobs:
           npm version ${{ env.PARENT_VERSION }} --no-git-tag-version
           git commit -am "Update version to ${{ env.PARENT_VERSION }}"
           git push
-
-      - name: Install Dependencies
-        run: npm ci
 
       - name: Release
         env:
