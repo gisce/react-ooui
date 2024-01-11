@@ -13,10 +13,37 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout v2 Branch (For v2-develop only)
+        if: github.ref == 'refs/heads/v2-develop'
+        uses: actions/checkout@v2
+        with:
+          ref: v2
+          fetch-depth: 0
+
+      - name: Get parent version (For v2-develop only)
+        if: github.ref == 'refs/heads/v2-develop'
+        id: get_parent_version
+        run: |
+          PARENT_VERSION=$(node -p "require('./package.json').version")
+          echo "PARENT_VERSION=$PARENT_VERSION" >> $GITHUB_ENV
+
       - name: Checkout Repository
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+
+      - name: Get child version
+        if: github.ref == 'refs/heads/v2-develop'
+        run: |
+          CHILD_VERSION=$(node -p "require('./package.json').version")
+          echo "CHILD_VERSION=$CHILD_VERSION" >> $GITHUB_ENV
+
+      - name: Update version if behind (For v2-develop only)
+        if: github.ref == 'refs/heads/v2-develop' && env.CHILD_VERSION != env.PARENT_VERSION
+        run: |
+          npm version ${{ env.PARENT_VERSION }} --no-git-tag-version
+          git commit -am "Update version to ${{ env.PARENT_VERSION }}"
+          git push
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
