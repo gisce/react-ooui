@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - v2
-      - v2-develop
+      # - v2-develop
       - alpha
   workflow_dispatch:
 
