@@ -41,10 +41,8 @@ jobs:
         run: |
           CHILD_VERSION=$(node -p "require('./package.json').version")
           echo "CHILD_VERSION=$CHILD_VERSION" >> $GITHUB_ENV
-          if [ "$(npx semver $CHILD_VERSION $PARENT_VERSION --lt)" = "$CHILD_VERSION" ]; then
-            echo "CHILD_BEHIND_PARENT=true" >> $GITHUB_ENV
-          else
-            echo "CHILD_BEHIND_PARENT=false" >> $GITHUB_ENV
+          IS_BEHIND=$(node -e "const semver = require('semver'); console.log(semver.lt(process.argv[1], process.argv[2]) ? 'true' : 'false')" $CHILD_VERSION $PARENT_VERSION)
+          echo "CHILD_BEHIND_PARENT=$IS_BEHIND" >> $GITHUB_ENV
 
       - name: Update version if behind (For v2-develop only)
         if: github.ref == 'refs/heads/v2-develop' && env.CHILD_BEHIND_PARENT == 'true'
