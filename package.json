@@ -96,7 +96,6 @@
     "prettier": "3.0.1",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "semantic-release": "21.0.7",
-    "semver": "^7.5.4",
     "storybook": "^7.6.5",
     "typescript": "^5.0.4",
     "vite": "4.5.1",
