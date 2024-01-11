@@ -53,6 +53,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           npm version ${{ env.PARENT_VERSION }} --no-git-tag-version
+          git add .
           git commit -am "Update version to ${{ env.PARENT_VERSION }}"
           git push
 
