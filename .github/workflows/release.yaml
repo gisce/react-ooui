@@ -13,6 +13,11 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20.5.0'
+
       - name: Checkout v2 Branch (For v2-develop only)
         if: github.ref == 'refs/heads/v2-develop'
         uses: actions/checkout@v2
@@ -32,23 +37,25 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get child version
+      - name: Get child version and compare with parent version (For v2-develop only)
         if: github.ref == 'refs/heads/v2-develop'
         run: |
+          npm install semver
           CHILD_VERSION=$(node -p "require('./package.json').version")
           echo "CHILD_VERSION=$CHILD_VERSION" >> $GITHUB_ENV
+          if node -p "require('semver').lt('$CHILD_VERSION', '$PARENT_VERSION')"; then
+            echo "CHILD_BEHIND_PARENT=true" >> $GITHUB_ENV
+          else
+            echo "CHILD_BEHIND_PARENT=false" >> $GITHUB_ENV
 
       - name: Update version if behind (For v2-develop only)
-        if: github.ref == 'refs/heads/v2-develop' && env.CHILD_VERSION != env.PARENT_VERSION
+        if: github.ref == 'refs/heads/v2-develop' && env.CHILD_BEHIND_PARENT == 'true'
         run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           npm version ${{ env.PARENT_VERSION }} --no-git-tag-version
           git commit -am "Update version to ${{ env.PARENT_VERSION }}"
           git push
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '20.5.0'
 
       - name: Install Dependencies
         run: npm ci
