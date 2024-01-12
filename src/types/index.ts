@@ -31,7 +31,7 @@ export type InitialViewData = {
 export type BaseView = {
   type: ViewType;
   view_id: number;
-  name: string;
+  title?: string;
 };
 
 type TreeView = BaseView & {
@@ -56,6 +56,7 @@ export type DashboardView = {
   id: number;
   context?: any;
   configAction?: ShortcutApi;
+  title?: string;
 };
 
 export type DashboardProps = Omit<DashboardView, "type">;
@@ -65,6 +66,7 @@ export type GraphView = {
   type: ViewType;
   view_id: number;
   name: string;
+  title?: string;
 };
 
 export type View = TreeView | FormView | DashboardView | GraphView;
