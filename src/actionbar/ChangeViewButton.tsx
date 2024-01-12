@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Menu, Dropdown, Row, Col, Button } from "antd";
 import {
   DownOutlined,
@@ -11,7 +11,7 @@ import {
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
-import { GraphView, View } from "@/types";
+import { View } from "@/types";
 
 type Props = {
   onChangeView: (view: View) => void;
@@ -50,6 +50,8 @@ function ChangeViewButton(props: Props) {
 
   function getMenu() {
     const menuItems = availableViews.map((view, idx) => {
+      const fallbackTitle =
+        view.type.charAt(0).toUpperCase() + view.type.slice(1);
       return (
         <Menu.Item key={view.view_id || idx}>
           <Row wrap={false}>
@@ -57,7 +59,7 @@ function ChangeViewButton(props: Props) {
               {getIconForView(view)}
             </Col>
             <Col flex="auto" style={{ paddingRight: 20 }}>
-              {view.type.charAt(0).toUpperCase() + view.type.slice(1)}
+              {view.title || fallbackTitle}
             </Col>
             <Col flex="none">
               <CheckOutlined
