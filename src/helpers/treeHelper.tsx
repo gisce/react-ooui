@@ -21,7 +21,8 @@ function canRenderValue(value: any): boolean {
     typeof value === "string" ||
     typeof value === "boolean" ||
     value === null ||
-    value === undefined
+    value === undefined ||
+    (Array.isArray(value) && value.length === 0)
   );
 }
 
@@ -46,9 +47,11 @@ const getTableColumns = (
           value
         ) : (
           <p style={{ color: "red" }}>
-            Unsupported widget type for a Tree cell:
+            Unsupported widget value for a Tree cell:
             <pre>
-              <strong>{type}:</strong>
+              <strong>
+                Type: {type} - Value: {JSON.stringify(value)}
+              </strong>
             </pre>
           </p>
         );
