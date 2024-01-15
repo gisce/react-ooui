@@ -100,7 +100,7 @@ export const GraphActionView = (props: GraphActionViewProps) => {
 
   return (
     <>
-      <TitleHeader title={viewData.name}>
+      <TitleHeader title={viewData.title || viewData.name}>
         <GraphActionBar
           refreshGraph={() => {
             (graphRef.current as any).refresh();

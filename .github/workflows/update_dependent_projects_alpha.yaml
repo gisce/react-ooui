@@ -4,13 +4,20 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name'
+        required: false
+      prerelease:
+        description: 'Prerelease'
+        required: false
+        default: 'false'
 
 env:
   LIBRARY_NAME: "gisce/react-ooui"
 
 jobs:
   update-dependents:
-    if: github.event.release.prerelease == true && contains(github.event.release.tag_name, '-alpha.') && !contains(github.event.release.tag_name, '-rc.')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -18,11 +25,27 @@ jobs:
           - project: "gisce/webclient"
             branch: "alpha"
     steps:
+      - name: Set environment variables and check condition
+        run: |
+          TAG_NAME="${{ github.event.release.tag_name || github.event.inputs.tag_name }}"
+          PRERELEASE="${{ github.event.release.prerelease || github.event.inputs.prerelease }}"
+          if [ "$PRERELEASE" == "true" ] && [[ "$TAG_NAME" != *'-rc.'* ]] && [[ "$TAG_NAME" == *'-alpha.'* ]]; then
+            SHOULD_RUN="true"
+          else
+            SHOULD_RUN="false"
+          fi
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          echo "PRERELEASE=$PRERELEASE" >> $GITHUB_ENV
+          echo "SHOULD_RUN=$SHOULD_RUN" >> $GITHUB_ENV
+      - name: Check Prerelease and Tag Version
+        if: env.SHOULD_RUN == 'true'
+        run: echo "Running update for tag ${{ env.TAG_NAME }}"
       - name: Call Reusable Workflow for each project
+        if: env.SHOULD_RUN == 'true'
         uses: gisce/create-update-version-pr@v0.0.5
         with:
           dependentProject: ${{ matrix.project }}
-          tagName: ${{ github.event.release.tag_name }}
+          tagName: ${{ env.TAG_NAME }}
           dependentProjectBranch: ${{ matrix.branch }}
           libraryName: ${{ env.LIBRARY_NAME }}
           githubToken: ${{ secrets.GH_PAT }}

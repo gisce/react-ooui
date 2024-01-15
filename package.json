@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "2.0.0",
+  "version": "2.0.9",
   "engines": {
     "node": "20.5.0"
   },
@@ -20,25 +20,27 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json --noEmit && vite build",
-    "dev:vite": "vite build --watch --force",
-    "dev:tsc": "tsc -p tsconfig.build.json --noEmit --watch",
-    "prepare": "husky install",
+    "build:tsc": "tsc -p tsconfig.build.json --noEmit",
+    "build:vite": "vite build",
+    "build": "concurrently npm:build:*",
+    "dev:vite": "npm run build:vite -- --watch --force",
+    "dev:tsc": "npm run build:tsc -- --watch",
     "start": "concurrently npm:dev:*",
+    "prepare": "husky install",
     "check": "lint-staged",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "analyze": "npx vite-bundle-visualizer"
+    "analyze": "vite-bundle-visualizer"
   },
   "dependencies": {
     "@ant-design/plots": "^1.0.9",
     "@gisce/fiber-diagram": "^1.1.0-rc.3",
-    "@gisce/ooui": "1.0.0-alpha.24",
+    "@gisce/ooui": "2.0.1",
     "@gisce/react-formiga-components": "1.2.0-alpha.1",
-    "@gisce/react-formiga-table": "1.0.0-alpha.12",
+    "@gisce/react-formiga-table": "1.2.0",
     "@monaco-editor/react": "^4.4.5",
     "@tabler/icons-react": "^2.11.0",
-    "antd": "^5.5.2",
+    "antd": "5.13.1",
     "buffer": "^6.0.3",
     "file-type-buffer-browser": "git+ssh://git@github.com/mguellsegarra/file-type-buffer-browser.git",
     "interweave": "^13.0.0",
@@ -144,7 +146,7 @@
     ]
   },
   "overrides": {
-    "rc-dropdown": "3.2.0",
+    "antd": "5.13.1",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   }

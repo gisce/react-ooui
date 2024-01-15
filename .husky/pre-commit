@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npx tsc -p tsconfig.build.json --noEmit
 npx lint-staged
