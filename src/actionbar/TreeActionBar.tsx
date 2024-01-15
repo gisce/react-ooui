@@ -20,7 +20,7 @@ import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import ConnectionProvider from "@/ConnectionProvider";
 import showErrorDialog from "@/ui/ActionErrorDialog";
-import DropdownButton from "./DropdownButton";
+import { DropdownButton } from "@gisce/react-formiga-components";
 import {
   ContentRootContext,
   ContentRootContextType,
@@ -254,12 +254,12 @@ function TreeActionBar(props: Props) {
       )}
       {separator()}
       <DropdownButton
+        trigger={["click"]}
         icon={<ThunderboltOutlined />}
         disabled={
           !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
         }
-        tooltip={t("actions")}
-        items={toolbar?.action}
+        data={[{ label: t("actions"), items: toolbar?.action }]}
         onItemClick={(action: any) => {
           if (!action) {
             return;
@@ -273,8 +273,7 @@ function TreeActionBar(props: Props) {
         disabled={
           !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
         }
-        tooltip={t("reports")}
-        items={toolbar?.print}
+        data={[{ label: t("reports"), items: toolbar?.print }]}
         onItemClick={(report: any) => {
           if (!report) {
             return;
@@ -316,15 +315,19 @@ function TreeActionBar(props: Props) {
                 )}
               />
             }
-            tooltip={t("export")}
-            items={[
+            data={[
               {
-                id: "print_screen",
-                name: t("printScreen"),
-              },
-              {
-                id: "export",
-                name: t("advancedExport"),
+                label: t("export"),
+                items: [
+                  {
+                    id: "print_screen",
+                    name: t("printScreen"),
+                  },
+                  {
+                    id: "export",
+                    name: t("advancedExport"),
+                  },
+                ],
               },
             ]}
             onItemClick={(itemClicked: any) => {
