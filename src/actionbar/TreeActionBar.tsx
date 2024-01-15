@@ -254,7 +254,6 @@ function TreeActionBar(props: Props) {
       )}
       {separator()}
       <DropdownButton
-        trigger={["click"]}
         icon={<ThunderboltOutlined />}
         disabled={
           !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
