@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { Space, Spin } from "antd";
 import ChangeViewButton from "./ChangeViewButton";
 import {
@@ -255,10 +255,13 @@ function TreeActionBar(props: Props) {
       {separator()}
       <DropdownButton
         icon={<ThunderboltOutlined />}
+        placement="bottomRight"
         disabled={
           !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
         }
-        data={[{ label: t("actions"), items: toolbar?.action }]}
+        onRetrieveData={async () => [
+          { label: t("actions"), items: toolbar?.action },
+        ]}
         onItemClick={(action: any) => {
           if (!action) {
             return;
@@ -269,10 +272,13 @@ function TreeActionBar(props: Props) {
       />
       <DropdownButton
         icon={<PrinterOutlined />}
+        placement="bottomRight"
         disabled={
           !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
         }
-        data={[{ label: t("reports"), items: toolbar?.print }]}
+        onRetrieveData={async () => [
+          { label: t("reports"), items: toolbar?.print },
+        ]}
         onItemClick={(report: any) => {
           if (!report) {
             return;
@@ -291,6 +297,7 @@ function TreeActionBar(props: Props) {
         <>
           {separator()}
           <DropdownButton
+            placement="bottomRight"
             icon={
               <Icon
                 component={() => (
@@ -314,7 +321,7 @@ function TreeActionBar(props: Props) {
                 )}
               />
             }
-            data={[
+            onRetrieveData={async () => [
               {
                 label: t("export"),
                 items: [

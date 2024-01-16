@@ -328,6 +328,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       {separator()}
       <DropdownButton
         icon={<ThunderboltOutlined />}
+        placement="bottomRight"
         disabled={mustDisableButtons}
         data={[{ label: t("actions"), items: toolbar?.action }]}
         onItemClick={async (action: any) => {
@@ -349,6 +350,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       <DropdownButton
         icon={<PrinterOutlined />}
         disabled={mustDisableButtons}
+        placement="bottomRight"
         data={[{ label: t("reports"), items: toolbar?.print }]}
         onItemClick={async (report: any) => {
           if (!report) {
@@ -374,6 +376,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       <DropdownButton
         icon={<EnterOutlined />}
         disabled={mustDisableButtons}
+        placement="bottomRight"
         data={[{ label: t("related"), items: toolbar?.relate }]}
         onItemClick={async (relate: any) => {
           if (!relate) {
