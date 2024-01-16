@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { Space, Spin } from "antd";
 import ChangeViewButton from "./ChangeViewButton";
 import {
@@ -20,7 +20,7 @@ import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import ConnectionProvider from "@/ConnectionProvider";
 import showErrorDialog from "@/ui/ActionErrorDialog";
-import DropdownButton from "./DropdownButton";
+import { DropdownButton } from "@gisce/react-formiga-components";
 import {
   ContentRootContext,
   ContentRootContextType,
@@ -255,11 +255,13 @@ function TreeActionBar(props: Props) {
       {separator()}
       <DropdownButton
         icon={<ThunderboltOutlined />}
+        placement="bottomRight"
         disabled={
           !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
         }
-        tooltip={t("actions")}
-        items={toolbar?.action}
+        onRetrieveData={async () => [
+          { label: t("actions"), items: toolbar?.action },
+        ]}
         onItemClick={(action: any) => {
           if (!action) {
             return;
@@ -270,11 +272,13 @@ function TreeActionBar(props: Props) {
       />
       <DropdownButton
         icon={<PrinterOutlined />}
+        placement="bottomRight"
         disabled={
           !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
         }
-        tooltip={t("reports")}
-        items={toolbar?.print}
+        onRetrieveData={async () => [
+          { label: t("reports"), items: toolbar?.print },
+        ]}
         onItemClick={(report: any) => {
           if (!report) {
             return;
@@ -293,6 +297,7 @@ function TreeActionBar(props: Props) {
         <>
           {separator()}
           <DropdownButton
+            placement="bottomRight"
             icon={
               <Icon
                 component={() => (
@@ -316,15 +321,19 @@ function TreeActionBar(props: Props) {
                 )}
               />
             }
-            tooltip={t("export")}
-            items={[
+            onRetrieveData={async () => [
               {
-                id: "print_screen",
-                name: t("printScreen"),
-              },
-              {
-                id: "export",
-                name: t("advancedExport"),
+                label: t("export"),
+                items: [
+                  {
+                    id: "print_screen",
+                    name: t("printScreen"),
+                  },
+                  {
+                    id: "export",
+                    name: t("advancedExport"),
+                  },
+                ],
               },
             ]}
             onItemClick={(itemClicked: any) => {

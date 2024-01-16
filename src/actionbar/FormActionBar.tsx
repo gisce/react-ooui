@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useRef } from "react";
-import { Space, Spin, message } from "antd";
+import { useContext } from "react";
+import { Space, Spin } from "antd";
 import {
   SaveOutlined,
   RightOutlined,
@@ -13,7 +13,6 @@ import {
   InfoCircleOutlined,
 } from "@ant-design/icons";
 import ChangeViewButton from "./ChangeViewButton";
-import DropdownButton from "./DropdownButton";
 import ActionButton from "./ActionButton";
 import {
   ActionViewContext,
@@ -26,6 +25,7 @@ import showErrorDialog from "@/ui/GenericErrorDialog";
 import ConnectionProvider from "@/ConnectionProvider";
 import refreshChangesDialog from "@/ui/RefreshItemDialog";
 import { showLogInfo } from "@/helpers/logInfoHelper";
+import { DropdownButton } from "@gisce/react-formiga-components";
 
 import {
   TabManagerContext,
@@ -328,9 +328,9 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       {separator()}
       <DropdownButton
         icon={<ThunderboltOutlined />}
+        placement="bottomRight"
         disabled={mustDisableButtons}
-        tooltip={t("actions")}
-        items={toolbar?.action}
+        data={[{ label: t("actions"), items: toolbar?.action }]}
         onItemClick={async (action: any) => {
           if (!action) {
             return;
@@ -350,8 +350,8 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       <DropdownButton
         icon={<PrinterOutlined />}
         disabled={mustDisableButtons}
-        tooltip={t("reports")}
-        items={toolbar?.print}
+        placement="bottomRight"
+        data={[{ label: t("reports"), items: toolbar?.print }]}
         onItemClick={async (report: any) => {
           if (!report) {
             return;
@@ -376,8 +376,8 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       <DropdownButton
         icon={<EnterOutlined />}
         disabled={mustDisableButtons}
-        tooltip={t("related")}
-        items={toolbar?.relate}
+        placement="bottomRight"
+        data={[{ label: t("related"), items: toolbar?.relate }]}
         onItemClick={async (relate: any) => {
           if (!relate) {
             return;

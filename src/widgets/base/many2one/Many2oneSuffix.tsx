@@ -1,11 +1,10 @@
-import React, { useContext, useState, useEffect } from "react";
+import { useCallback, useContext, useState } from "react";
 import {
   RightCircleOutlined,
   PrinterOutlined,
   ThunderboltOutlined,
   EnterOutlined,
 } from "@ant-design/icons";
-import { Menu, Dropdown, Spin } from "antd";
 import {
   TabManagerContext,
   TabManagerContextType,
@@ -18,9 +17,13 @@ import {
 } from "@/context/ContentRootContext";
 import ConnectionProvider from "@/ConnectionProvider";
 import { processValues } from "@/helpers/formHelper";
-import showErrorDialog from "@/ui/ActionErrorDialog";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { parseContextFields, parseDomainFields } from "@gisce/ooui";
+import {
+  Dropdown,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+} from "@gisce/react-formiga-components";
 
 type Props = {
   id: number;
@@ -47,129 +50,96 @@ export const Many2oneSuffix = (props: Props) => {
   ) as ContentRootContextType;
   const { processAction } = contentRootContext || {};
 
+  const fetchData = useCallback(async (): Promise<DropdownMenuGroup[]> => {
+    const formView = (await ConnectionProvider.getHandler().getView({
+      model,
+      type: "form",
+      context,
+    })) as FormView;
+    setFormView(formView);
+    let fields: string[] = [];
+    const { toolbar } = formView;
+    toolbar.action
+      ?.filter((item: any) => "context" in item)
+      .map((item: any) => fields.push(...parseContextFields(item.context)));
+    toolbar.action
+      ?.filter((item: any) => "domain" in item)
+      .map((item: any) => fields.push(...parseDomainFields(item.domain)));
+    toolbar.relate
+      ?.filter((item: any) => "context" in item)
+      .map((item: any) => fields.push(...parseContextFields(item.context)));
+    toolbar.relate
+      ?.filter((item: any) => "domain" in item)
+      .map((item: any) => fields.push(...parseDomainFields(item.domain)));
+    toolbar.print
+      ?.filter((item: any) => "context" in item)
+      .map((item: any) => fields.push(...parseContextFields(item.context)));
+    fields = fields.filter((i) => Object.keys(formView.fields).indexOf(i) > -1);
+
+    let values = {};
+
+    // Remove duplicates in fields string[] array
+    fields = [...new Set(fields)];
+
+    if (fields.length > 0) {
+      values = (
+        await ConnectionProvider.getHandler().readObjects({
+          model,
+          ids: [id],
+          fieldsToRetrieve: fields,
+          context,
+        })
+      )[0];
+    }
+    values = { ...processValues(values, fields), active_id: id };
+    setTargetValues(values);
+    if (!formView || !formView.toolbar) {
+      return [];
+    }
+    return [
+      {
+        items: [
+          {
+            id: "action",
+            name: t("action"),
+            disabled:
+              !formView!.toolbar.action ||
+              formView!.toolbar.action.length === 0,
+            icon: <ThunderboltOutlined />,
+          },
+          {
+            id: "print",
+            name: t("report"),
+            disabled:
+              !formView!.toolbar.print || formView!.toolbar.print.length === 0,
+            icon: <PrinterOutlined />,
+          },
+          {
+            id: "divider",
+            type: "divider",
+          },
+        ],
+      },
+      {
+        label: t("related"),
+        icon: <EnterOutlined />,
+        items: formView?.toolbar?.relate,
+      },
+    ];
+  }, [context, id, model, t]);
+
   if (!id) {
     return null;
   }
 
-  async function fetchData() {
-    setIsLoading(true);
-
-    try {
-      const formView = (await ConnectionProvider.getHandler().getView({
-        model,
-        type: "form",
-        context,
-      })) as FormView;
-      setFormView(formView);
-      let fields: string[] = [];
-      const { toolbar } = formView;
-      toolbar.action
-        ?.filter((item: any) => item.hasOwnProperty("context"))
-        .map((item: any) => fields.push(...parseContextFields(item.context)));
-      toolbar.action
-        ?.filter((item: any) => item.hasOwnProperty("domain"))
-        .map((item: any) => fields.push(...parseDomainFields(item.domain)));
-      toolbar.relate
-        ?.filter((item: any) => item.hasOwnProperty("context"))
-        .map((item: any) => fields.push(...parseContextFields(item.context)));
-      toolbar.relate
-        ?.filter((item: any) => item.hasOwnProperty("domain"))
-        .map((item: any) => fields.push(...parseDomainFields(item.domain)));
-      toolbar.print
-        ?.filter((item: any) => item.hasOwnProperty("context"))
-        .map((item: any) => fields.push(...parseContextFields(item.context)));
-      fields = fields.filter(
-        (i) => Object.keys(formView.fields).indexOf(i) > -1,
-      );
-
-      let values = {};
-
-      // Remove duplicates in fields string[] array
-      fields = [...new Set(fields)];
-
-      if (fields.length > 0) {
-        values = (
-          await ConnectionProvider.getHandler().readObjects({
-            model,
-            ids: [id],
-            fieldsToRetrieve: fields,
-            context,
-          })
-        )[0];
-      }
-      values = { ...processValues(values, fields), active_id: id };
-      setTargetValues(values);
-
-      setIsLoading(false);
-    } catch (err) {
-      setIsLoading(false);
-      showErrorDialog(err);
-    }
-  }
-
-  function menu() {
-    if (isLoading) {
-      return (
-        <Menu>
-          <div style={{ padding: 15 }}>
-            <Spin />
-          </div>
-        </Menu>
-      );
-    }
-
-    if (!formView || !formView.toolbar) {
-      return <Menu />;
-    }
-
-    const relateItems = formView?.toolbar?.relate.map((item: any) => {
-      return <Menu.Item key={item.id}>{item.name}</Menu.Item>;
-    });
-
-    return (
-      <Menu onClick={handleMenuClick}>
-        {[
-          <Menu.Item
-            key="action"
-            disabled={
-              !formView!.toolbar.action || formView!.toolbar.action.length === 0
-            }
-            icon={<ThunderboltOutlined />}
-          >
-            {t("action")}
-          </Menu.Item>,
-          <Menu.Item
-            key="print"
-            disabled={
-              !formView!.toolbar.print || formView!.toolbar.print.length === 0
-            }
-            icon={<PrinterOutlined />}
-          >
-            {t("report")}
-          </Menu.Item>,
-          <Menu.Divider />,
-          <Menu.ItemGroup
-            title={
-              <>
-                <EnterOutlined /> <span> {t("related")}</span>
-              </>
-            }
-          >
-            {relateItems}
-          </Menu.ItemGroup>,
-        ]}
-      </Menu>
-    );
-  }
-
-  function handleMenuClick(event: any) {
-    if (event.key === "action") {
+  function handleMenuClick(item: DropdownMenuItem) {
+    if (item.id === "action") {
       setActionModalVisible(true);
-    } else if (event.key === "print") {
+    } else if (item.id === "print") {
       setPrintModalVisible(true);
     } else {
       const relateItemClicked = formView!.toolbar.relate.find((item: any) => {
-        return item.id === parseInt(event.key);
+        return item.id === parseInt(item.id);
       });
       if (!relateItemClicked) {
         return;
@@ -209,14 +179,13 @@ export const Many2oneSuffix = (props: Props) => {
 
   return (
     <>
-      <Dropdown overlay={menu()} trigger={["click"]}>
-        <RightCircleOutlined
-          style={{ color: "rgba(0,0,0,.45)" }}
-          onClick={(e) => {
-            e.preventDefault();
-            fetchData();
-          }}
-        />
+      <Dropdown
+        onRetrieveData={fetchData}
+        onItemClick={handleMenuClick}
+        maxHeight={300}
+        trigger={["click"]}
+      >
+        <RightCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
       </Dropdown>
       <Many2oneSuffixModal
         visible={actionModalVisible}
