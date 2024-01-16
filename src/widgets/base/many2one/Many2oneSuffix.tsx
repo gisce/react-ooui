@@ -98,6 +98,7 @@ export const Many2oneSuffix = (props: Props) => {
     }
     return [
       {
+        sticky: true,
         items: [
           {
             id: "action",
