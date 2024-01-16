@@ -330,7 +330,9 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         icon={<ThunderboltOutlined />}
         placement="bottomRight"
         disabled={mustDisableButtons}
-        data={[{ label: t("actions"), items: toolbar?.action }]}
+        onRetrieveData={async () => [
+          { label: t("actions"), items: toolbar?.action },
+        ]}
         onItemClick={async (action: any) => {
           if (!action) {
             return;
@@ -351,7 +353,9 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         icon={<PrinterOutlined />}
         disabled={mustDisableButtons}
         placement="bottomRight"
-        data={[{ label: t("reports"), items: toolbar?.print }]}
+        onRetrieveData={async () => [
+          { label: t("reports"), items: toolbar?.print },
+        ]}
         onItemClick={async (report: any) => {
           if (!report) {
             return;
@@ -377,7 +381,9 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         icon={<EnterOutlined />}
         disabled={mustDisableButtons}
         placement="bottomRight"
-        data={[{ label: t("related"), items: toolbar?.relate }]}
+        onRetrieveData={async () => [
+          { label: t("related"), items: toolbar?.relate },
+        ]}
         onItemClick={async (relate: any) => {
           if (!relate) {
             return;
