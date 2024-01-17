@@ -35,7 +35,6 @@ export const Many2oneSuffix = (props: Props) => {
   const { id, model, context = {} } = props;
   const [actionModalVisible, setActionModalVisible] = useState<boolean>(false);
   const [printModalVisible, setPrintModalVisible] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formView, setFormView] = useState<FormView>();
   const [targetValues, setTargetValues] = useState<any>();
   const { t } = useContext(LocaleContext) as LocaleContextType;
@@ -139,19 +138,12 @@ export const Many2oneSuffix = (props: Props) => {
     } else if (item.id === "print") {
       setPrintModalVisible(true);
     } else {
-      const relateItemClicked = formView!.toolbar.relate.find((item: any) => {
-        return item.id === parseInt(item.id);
-      });
-      if (!relateItemClicked) {
-        return;
-      }
-
       openRelate({
-        relateData: relateItemClicked,
+        relateData: item,
         values: targetValues,
         fields: formView!.fields,
-        action_id: relateItemClicked.id,
-        action_type: relateItemClicked.type,
+        action_id: item.id as number,
+        action_type: item.type!,
       });
     }
   }
