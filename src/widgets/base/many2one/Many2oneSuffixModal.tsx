@@ -1,11 +1,12 @@
 import React, { useContext } from "react";
 import { Modal, Button, Space } from "antd";
 import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { DropdownMenuItem } from "@gisce/react-formiga-components";
 
 type Props = {
   visible: boolean;
-  items: any[];
-  onItemClicked: (item: any) => void;
+  items: DropdownMenuItem[];
+  onItemClicked?: (item: DropdownMenuItem) => void;
   onCancel: () => void;
 };
 
@@ -27,9 +28,10 @@ export const Many2oneSuffixModal = (props: Props) => {
         {items.map((item) => {
           return (
             <Button
+              key={item.id}
               className="w-full"
               onClick={() => {
-                onItemClicked(item);
+                onItemClicked?.(item);
               }}
             >
               {item.name}
