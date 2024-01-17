@@ -30,7 +30,8 @@ import { showLogInfo } from "@/helpers/logInfoHelper";
 import SearchBar from "./SearchBar";
 import { ExportModal } from "..";
 import { mergeParams } from "@/helpers/searchHelper";
-import { ErpFeatureKeys, useFeatureIsEnabled } from "@/context/ConfigContext";
+import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
 
 type Props = {
   parentContext?: any;
