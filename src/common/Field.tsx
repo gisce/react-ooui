@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Form, Row, Col } from "antd";
 import { Field as FieldOoui, Label as LabelOoui } from "@gisce/ooui";
 import Label from "@/widgets/base/Label";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 
 export default function Field({
   ooui,
@@ -26,7 +26,7 @@ export default function Field({
   validator?: any;
 }) {
   const { id, label, tooltip } = ooui;
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   const rules = required
     ? [

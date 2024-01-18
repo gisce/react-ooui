@@ -10,18 +10,16 @@ import Welcome from "./Welcome";
 import TabManagerProvider from "@/context/TabManagerContext";
 import ActionView from "./ActionView";
 import { parseContext } from "@gisce/ooui";
-import { tForLang } from "@/context/LocaleContext";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import { InitialViewData, ViewType } from "@/types";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
 import { nanoid } from "nanoid";
+import { useLocale } from "@gisce/react-formiga-components";
+import { useConfigContext } from "@/context/ConfigContext";
 
 type RootViewProps = {
   children: ReactNode;
-  globalValues?: any;
-  rootContext?: any;
-  lang: string;
 };
 
 export type ActionInfo = {
@@ -30,12 +28,14 @@ export type ActionInfo = {
 };
 
 function RootView(props: RootViewProps, ref: any) {
-  const { children, globalValues = {}, rootContext = {}, lang } = props;
+  const { children } = props;
   const [activeKey, setActiveKey] = useState<string>("welcome");
+  const { t } = useLocale();
+  const { globalValues, rootContext } = useConfigContext();
 
   const [tabs, setTabs] = useState<any>([
     {
-      title: tForLang("welcome", lang),
+      title: t("welcome"),
       key: "welcome",
       closable: true,
       content: <Welcome />,

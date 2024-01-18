@@ -10,12 +10,12 @@ import {
   SettingOutlined,
   BorderOuterOutlined,
 } from "@ant-design/icons";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 
 function DashboardActionBar() {
   const { isLoading, dashboardRef, moveItemsEnabled, setMoveItemsEnabled } =
     useContext(DashboardActionContext) as DashboardActionContextType;
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   return (
     <Space wrap={true}>

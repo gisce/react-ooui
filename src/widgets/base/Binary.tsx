@@ -10,7 +10,7 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import { FormContext, FormContextType } from "@/context/FormContext";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 
 import {
   getFilesize,
@@ -52,7 +52,7 @@ export const BinaryInput = (props: BinaryInputProps) => {
   const inputFile = useRef(null);
   const { setFieldValue, getFieldValue } =
     (useContext(FormContext) as FormContextType) || {};
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   const filesize = value ? getFilesize(value) : "";
 

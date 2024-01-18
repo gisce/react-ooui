@@ -1,7 +1,7 @@
 import React, { useContext, useRef } from "react";
 import { Button, Col, Form, Input, Modal, Row, Space } from "antd";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 
 type Props = {
   visible: boolean;
@@ -13,7 +13,7 @@ type Props = {
 export const GoToResourceModal = (props: Props) => {
   const { visible, onIdSubmitted, onCancel, isSearching } = props;
 
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   const inputRef = useRef<null | HTMLElement>();
 

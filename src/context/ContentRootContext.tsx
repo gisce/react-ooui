@@ -16,7 +16,7 @@ import {
   TabManagerContextType,
 } from "@/context/TabManagerContext";
 import { FormModal } from "@/widgets/modals/FormModal";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 import { transformPlainMany2Ones, stringFormat } from "@/helpers/formHelper";
 
 export type ContentRootContextType = {
@@ -70,7 +70,7 @@ const ContentRootProvider = (
   ) as TabManagerContextType;
   const { openAction } = tabManagerContext || {};
   const onRefreshParentValues = useRef<any>([]);
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   useImperativeHandle(ref, () => ({
     openActionModal,

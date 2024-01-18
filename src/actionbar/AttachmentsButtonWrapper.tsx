@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useState } from "react";
 import {
   DownOutlined,
   FormOutlined,
@@ -8,11 +8,7 @@ import {
   TableOutlined,
 } from "@ant-design/icons";
 import { Popover, Button, Row, Col, Tooltip, Spin } from "antd";
-import {
-  LocaleContext,
-  LocaleContextType,
-  tForLang,
-} from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 
 export type Attachment = {
   id: number;
@@ -36,7 +32,7 @@ export const AttachmentsButtonWrapper = (
   props: AttachmentsButtonWrapperProps,
 ) => {
   const { numberOfAttachments, disabled } = props;
-  const { t, lang } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
   const [popoverVisible, setPopoverVisible] = useState<boolean>(false);
 
   const button = (
@@ -56,7 +52,7 @@ export const AttachmentsButtonWrapper = (
       onVisibleChange={(visible: boolean) => setPopoverVisible(visible)}
       visible={popoverVisible}
       placement="bottom"
-      content={Content(props, setPopoverVisible, lang)}
+      content={Content(props, setPopoverVisible)}
       title={t("attachments")}
       arrowContent={null}
     >
@@ -68,8 +64,8 @@ export const AttachmentsButtonWrapper = (
 const Content = (
   props: AttachmentsButtonWrapperProps,
   setPopoverVisible: (visible: boolean) => void,
-  locale: string,
 ) => {
+  const { t } = useLocale();
   const {
     attachments = [],
     loading,
@@ -92,7 +88,7 @@ const Content = (
           onListAllAttachments();
         }}
       >
-        <TableOutlined /> {tForLang("listAllAttachments", locale)}
+        <TableOutlined /> {t("listAllAttachments")}
       </a>
       <a
         style={{ display: "block" }}
@@ -102,7 +98,7 @@ const Content = (
           onAddNewAttachment();
         }}
       >
-        <FileAddOutlined /> {tForLang("addNewAttachment", locale)}
+        <FileAddOutlined /> {t("addNewAttachment")}
       </a>
       {attachments.length > 0 && (
         <>
@@ -122,8 +118,8 @@ const Content = (
                     <Tooltip
                       title={
                         attachment.link
-                          ? tForLang("openAttachmentLink", locale)
-                          : tForLang("download", locale)
+                          ? t("openAttachmentLink")
+                          : t("download")
                       }
                     >
                       <Icon
@@ -137,7 +133,7 @@ const Content = (
                   )}
                 </Col>
                 <Col flex="25px" style={{ textAlign: "center" }}>
-                  <Tooltip title={tForLang("openAttachment", locale)}>
+                  <Tooltip title={t("openAttachment")}>
                     <FormOutlined
                       style={{ cursor: "pointer" }}
                       onClick={() => {

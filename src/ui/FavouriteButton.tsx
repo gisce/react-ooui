@@ -13,7 +13,7 @@ import {
   TabManagerContext,
   TabManagerContextType,
 } from "@/context/TabManagerContext";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 import { ViewType } from "@/types";
 const { useToken } = theme;
 
@@ -55,7 +55,7 @@ const FavouriteButton = (props: Props) => {
   const [shortcuts, setShortcuts] = useState<ShortcutApi[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentShortcutId, setCurrentShortcutId] = useState<number>();
-  const { t } = (useContext(LocaleContext) as LocaleContextType) || {};
+  const { t } = useLocale();
 
   const { token } = useToken();
 

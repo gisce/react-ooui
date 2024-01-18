@@ -17,7 +17,7 @@ import {
 } from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { TreeView } from "@/types";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 import { calculateColumnsWidth } from "@/helpers/dynamicColumnsHelper";
 import { Table as GisceTable, TableRef } from "@gisce/react-formiga-table";
 import {
@@ -93,7 +93,7 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
 
     const [treeOoui, setTreeOoui] = useState<TreeOoui>();
 
-    const { t } = useContext(LocaleContext) as LocaleContextType;
+    const { t } = useLocale();
     const internalLimit = useRef(limit);
 
     const actionViewContext = useContext(

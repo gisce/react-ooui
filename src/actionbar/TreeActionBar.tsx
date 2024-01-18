@@ -16,11 +16,10 @@ import Icon, {
   InfoCircleOutlined,
   FilterOutlined,
 } from "@ant-design/icons";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale, DropdownButton } from "@gisce/react-formiga-components";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import ConnectionProvider from "@/ConnectionProvider";
 import showErrorDialog from "@/ui/ActionErrorDialog";
-import { DropdownButton } from "@gisce/react-formiga-components";
 import {
   ContentRootContext,
   ContentRootContextType,
@@ -70,7 +69,7 @@ function TreeActionBar(props: Props) {
   const advancedExportEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_ADVANCED_EXPORT,
   );
-  const { t, lang } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
   const contentRootContext = useContext(
     ContentRootContext,
   ) as ContentRootContextType;
@@ -84,7 +83,7 @@ function TreeActionBar(props: Props) {
   function tryDelete() {
     showConfirmDialog({
       confirmMessage: t("confirmRemove"),
-      lang,
+      t,
       onOk: () => {
         remove();
       },
@@ -367,7 +366,6 @@ function TreeActionBar(props: Props) {
           />
           <ExportModal
             visible={exportModalVisible}
-            locale={lang}
             onClose={() => setExportModalVisible(false)}
             model={currentModel!}
             domain={mergeParams(

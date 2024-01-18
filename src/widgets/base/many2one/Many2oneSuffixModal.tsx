@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import { Modal, Button, Space } from "antd";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
-import { DropdownMenuItem } from "@gisce/react-formiga-components";
+import { useLocale, DropdownMenuItem } from "@gisce/react-formiga-components";
 
 type Props = {
   visible: boolean;
@@ -12,7 +11,7 @@ type Props = {
 
 export const Many2oneSuffixModal = (props: Props) => {
   const { visible, onCancel, items = [], onItemClicked } = props;
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   return (
     <Modal

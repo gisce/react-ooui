@@ -8,7 +8,7 @@ import {
   CheckOutlined,
 } from "@ant-design/icons";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 
 type SearchSelectionProps = {
   visible: boolean;
@@ -33,7 +33,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
 
   const { modalWidth, modalHeight } = useWindowDimensions();
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
   const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
 
   const onCloseModal = async () => {

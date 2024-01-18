@@ -1,21 +1,32 @@
 import React, { memo, useContext, useMemo } from "react";
 import { ErpFeatureKeys, ErpFeaturesMap } from "@/models/erpFeature";
-import { Locale } from "@gisce/react-formiga-components";
-import LocaleContextProvider from "./LocaleContext";
+import {
+  FormigaConfigProvider,
+  Locale,
+  Strings,
+  mergeStrings,
+} from "@gisce/react-formiga-components";
+import { strings } from "@/locales";
 
-const DEFAULT_LOCALE = "en_US";
-interface ConfigContextProps {
-  erpFeatures: ErpFeaturesMap;
+type ConfigContextProps = ConfigContextValues & {
   locale: Locale;
-}
+  localizedStrings?: Strings;
+};
 
-const defaultConfigContext: ConfigContextProps = {
+type ConfigContextValues = {
+  erpFeatures: ErpFeaturesMap;
+  globalValues?: Record<string, any>;
+  rootContext?: Record<string, any>;
+};
+
+const defaultConfigContext: ConfigContextValues = {
   erpFeatures: {},
-  locale: DEFAULT_LOCALE,
+  globalValues: {},
+  rootContext: {},
 };
 
 export const ConfigContext =
-  React.createContext<ConfigContextProps>(defaultConfigContext);
+  React.createContext<ConfigContextValues>(defaultConfigContext);
 
 export const useConfigContext = () => {
   const context = useContext(ConfigContext);
@@ -34,33 +45,33 @@ export const useFeatureIsEnabled = (featureKey: ErpFeatureKeys): boolean => {
   return !!erpFeatures[featureKey];
 };
 
-interface ConfigContextProviderProps {
-  erpFeatures: ErpFeaturesMap;
-  locale?: Locale;
-}
-
 export const ConfigContextProvider = memo(
   ({
     erpFeatures,
-    locale = DEFAULT_LOCALE,
+    locale,
+    localizedStrings = {},
+    globalValues,
+    rootContext,
     children,
-  }: ConfigContextProviderProps & { children?: React.ReactNode }) => {
+  }: ConfigContextProps & { children?: React.ReactNode }) => {
     const providerValue = useMemo(
-      () => ({ erpFeatures, locale }),
-      [erpFeatures, locale],
+      () => ({
+        erpFeatures,
+        globalValues,
+        rootContext,
+      }),
+      [erpFeatures, globalValues, rootContext],
     );
 
     return (
-      <LocaleContextProvider lang={locale}>
-        {
-          // We add LocaleContextProvider here in order to mantain compatibility
-          // with the older locale management system in react-ooui
-          // We should remove it once we migrate all the widgets to react-formiga-components locale handling.
-        }
-        <ConfigContext.Provider value={providerValue}>
+      <ConfigContext.Provider value={providerValue}>
+        <FormigaConfigProvider
+          locale={locale}
+          localizedStrings={mergeStrings(strings, localizedStrings)}
+        >
           {children}
-        </ConfigContext.Provider>
-      </LocaleContextProvider>
+        </FormigaConfigProvider>
+      </ConfigContext.Provider>
     );
   },
 );

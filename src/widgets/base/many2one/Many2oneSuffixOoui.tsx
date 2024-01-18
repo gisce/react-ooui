@@ -5,8 +5,8 @@ import {
   EnterOutlined,
 } from "@ant-design/icons";
 import { Many2oneSuffixModal } from "./Many2oneSuffixModal";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import {
+  useLocale,
   DropdownMenuGroup,
   DropdownMenuItem,
 } from "@gisce/react-formiga-components";
@@ -49,7 +49,7 @@ export const Many2oneSuffixOoui = ({
 }: Many2oneSuffixProps) => {
   const [actionModalVisible, setActionModalVisible] = useState<boolean>(false);
   const [printModalVisible, setPrintModalVisible] = useState<boolean>(false);
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
   const [data, setData] = useState<{
     actionItems: Action[];
     relateItems: Action[];

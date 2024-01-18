@@ -3,7 +3,7 @@ import { Line, Column, Pie } from "@ant-design/plots";
 import GraphDefaults from "./GraphDefaults";
 import { useGraphData } from "./useGraphData";
 import { Alert, Spin } from "antd";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 
 const types = {
   line: Line,
@@ -22,7 +22,7 @@ export type GraphChartProps = {
 
 export const GraphChart = (props: GraphChartProps) => {
   const { model, domain, context, xml, limit, manualIds } = props;
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   const { error, loading, values, type, evaluatedEntries } = useGraphData({
     model,
