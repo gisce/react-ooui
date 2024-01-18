@@ -238,13 +238,16 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
 
   return (
     <Row gutter={8} wrap={false}>
-      <Col flex="auto">
+      <Col flex="auto" style={{ paddingRight: 0 }}>
         <CustomInput
           type="text"
           value={inputText}
           disabled={readOnly}
           onChange={onValueStringChange}
-          style={requiredStyle}
+          style={{
+            ...requiredStyle,
+            ...{ borderTopRightRadius: 0, borderBottomRightRadius: 0 },
+          }}
           onBlur={onElementLostFocus}
           onKeyDown={onKeyDown}
           suffix={
@@ -256,14 +259,14 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           }
         />
       </Col>
-      <Col flex="32px" style={{ paddingRight: 0 }}>
+      <Col flex="32px" style={{ paddingRight: 0, paddingLeft: 0 }}>
         <Button
           icon={<FolderOpenOutlined />}
           disabled={id === undefined || text === "" || inputText === undefined}
           onClick={() => {
             setShowFormModal(true);
           }}
-          style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+          style={{ borderRadius: 0 }}
           tabIndex={-1}
         />
       </Col>
