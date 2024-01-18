@@ -99,7 +99,7 @@
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "semantic-release": "21.0.7",
     "storybook": "^7.6.5",
-    "typescript": "^5.0.4",
+    "typescript": "5.3.3",
     "vite": "4.5.1",
     "vite-bundle-visualizer": "^0.10.0",
     "vite-plugin-dts": "^3.6.0",

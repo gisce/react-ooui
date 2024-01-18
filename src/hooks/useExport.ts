@@ -3,17 +3,16 @@ import {
   ExportOptions,
   PredefinedExport,
   PredefinedExportField,
+  useLocale,
 } from "@gisce/react-formiga-components";
 import { useCallback, useRef } from "react";
 import { ConnectionProvider } from "..";
 import showInfo from "@/ui/InfoDialog";
-import { tForLang } from "@/context/LocaleContext";
 import { getMimeType, openBase64InNewTab } from "@/helpers/filesHelper";
 
 export const useExport = ({
   model,
   context,
-  locale,
   selectedRegistersToExport,
   domain,
   limit,
@@ -21,7 +20,6 @@ export const useExport = ({
 }: {
   model: string;
   context: any;
-  locale: string;
   selectedRegistersToExport?: any[];
   domain: any[];
   limit?: number;
@@ -29,6 +27,7 @@ export const useExport = ({
 }) => {
   const fields = useRef<any>({});
   const exportModelFields = useRef<Map<string, any>>(new Map<string, any>());
+  const { t } = useLocale();
 
   const onExport = useCallback(
     async (options: ExportOptions) => {
@@ -36,7 +35,7 @@ export const useExport = ({
         options.selectedKeys === undefined ||
         options.selectedKeys.length === 0
       ) {
-        showInfo(tForLang("selectAtLeastOneField", locale));
+        showInfo(t("selectAtLeastOneField"));
         return;
       }
 
@@ -70,7 +69,7 @@ export const useExport = ({
       const fileType: any = await getMimeType(datas);
       openBase64InNewTab(datas, fileType.mime);
     },
-    [locale, model, domain, limit, context, onClose],
+    [model, domain, limit, context, onClose],
   );
 
   const onGetFields = useCallback(async () => {

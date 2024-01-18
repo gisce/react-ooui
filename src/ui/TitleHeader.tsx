@@ -4,7 +4,7 @@ import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 import { CopyOutlined } from "@ant-design/icons";
 
 const { useToken } = theme;
@@ -27,7 +27,7 @@ function TitleHeader(props: Props) {
     totalItems,
     selectedRowItems,
   } = useContext(ActionViewContext) as ActionViewContextType;
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
   const { token } = useToken();
 
   function getSummary() {

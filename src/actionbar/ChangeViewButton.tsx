@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import { Button } from "antd";
 import {
   DownOutlined,
@@ -7,11 +7,14 @@ import {
   AreaChartOutlined,
   CalendarOutlined,
 } from "@ant-design/icons";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import {
+  useLocale,
+  Dropdown,
+  DropdownMenuItem,
+} from "@gisce/react-formiga-components";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
 import { View } from "@/types";
-import { Dropdown, DropdownMenuItem } from "@gisce/react-formiga-components";
 
 type Props = {
   onChangeView: (view: View) => void;
@@ -46,7 +49,7 @@ function ChangeViewButton(props: Props) {
     formHasChanges = false,
     previousView,
   } = props;
-  const { t, lang } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   const dropdownData = useMemo(() => {
     return [
@@ -69,7 +72,7 @@ function ChangeViewButton(props: Props) {
   function tryNavigate(callback: any) {
     if (formHasChanges) {
       showUnsavedChangesDialog({
-        lang,
+        t,
         onOk: () => {
           callback();
         },

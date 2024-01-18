@@ -6,13 +6,13 @@ import {
   ActionViewContextType,
 } from "@/context/ActionViewContext";
 import ActionButton from "./ActionButton";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 import ButtonWithBadge from "./ButtonWithBadge";
 import { ReloadOutlined, FilterOutlined } from "@ant-design/icons";
 import { View } from "@/types";
 
 function GraphActionBar({ refreshGraph }: { refreshGraph: () => void }) {
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
   const {
     availableViews,
     currentView,

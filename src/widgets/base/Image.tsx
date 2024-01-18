@@ -11,7 +11,7 @@ import {
 
 import { toBase64, getMimeType } from "@/helpers/filesHelper";
 import iconMapper from "@/helpers/iconMapper";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 
 type Props = {
   ooui: ImageOoui;
@@ -44,7 +44,7 @@ export const ImageInput = (props: ImageInputProps) => {
   const { ooui, value, onChange } = props;
   const { readOnly } = ooui as ImageOoui;
   const inputFile = useRef(null);
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   const triggerChange = (changedValue?: string) => {
     onChange?.(changedValue);

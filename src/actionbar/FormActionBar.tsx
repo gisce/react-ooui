@@ -25,7 +25,7 @@ import showErrorDialog from "@/ui/GenericErrorDialog";
 import ConnectionProvider from "@/ConnectionProvider";
 import refreshChangesDialog from "@/ui/RefreshItemDialog";
 import { showLogInfo } from "@/helpers/logInfoHelper";
-import { DropdownButton } from "@gisce/react-formiga-components";
+import { DropdownButton, useLocale } from "@gisce/react-formiga-components";
 
 import {
   TabManagerContext,
@@ -37,7 +37,6 @@ import {
   ContentRootContextType,
 } from "@/context/ContentRootContext";
 import AttachmentsButton from "./AttachmentsButton";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { Attachment } from "./AttachmentsButtonWrapper";
 
 function FormActionBar({ toolbar }: { toolbar: any }) {
@@ -67,7 +66,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     setPreviousView,
     goToResourceId,
   } = useContext(ActionViewContext) as ActionViewContextType;
-  const { t, lang } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   const contentRootContext = useContext(
     ContentRootContext,
@@ -82,7 +81,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
   function tryRefresh(callback: any) {
     if (formHasChanges) {
       refreshChangesDialog({
-        lang,
+        t,
         onOk: () => {
           callback();
         },
@@ -96,7 +95,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
   function tryNavigate(callback: any) {
     if (formHasChanges) {
       showUnsavedChangesDialog({
-        lang,
+        t,
         onOk: () => {
           callback();
         },
@@ -130,7 +129,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
   function tryDelete() {
     showConfirmDialog({
       confirmMessage: t("confirmRemoveItem"),
-      lang,
+      t,
       onOk: () => {
         remove();
       },
