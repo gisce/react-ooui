@@ -45,7 +45,7 @@ export const LinkInput = (props: LinkInputProps) => {
   return (
     <Row gutter={8} wrap={false} align="middle">
       {!readOnly ? (
-        <Col flex="32px">
+        <Col flex="none">
           {editMode ? (
             <Button
               icon={<CheckOutlined />}
