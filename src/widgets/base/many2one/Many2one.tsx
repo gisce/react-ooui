@@ -259,7 +259,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           }
         />
       </Col>
-      <Col flex="32px" style={{ paddingRight: 0, paddingLeft: 0 }}>
+      <Col flex="none" style={{ paddingRight: 0, paddingLeft: 0 }}>
         <Button
           icon={<FolderOpenOutlined />}
           disabled={id === undefined || text === "" || inputText === undefined}
@@ -270,7 +270,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           tabIndex={-1}
         />
       </Col>
-      <Col flex="32px" style={{ paddingLeft: 0 }}>
+      <Col flex="none" style={{ paddingLeft: 0 }}>
         <Button
           icon={searching ? <LoadingOutlined /> : <SearchOutlined />}
           disabled={readOnly || searching}
