@@ -11,6 +11,7 @@ export const useNetworkRequest = (
     return () => {
       cancelRequest();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchData = useCallback(
@@ -19,6 +20,7 @@ export const useNetworkRequest = (
       if (abortControllersRef.current.has(requestId)) {
         abortControllersRef.current.get(requestId)?.abort();
       }
+
       const abortController = new AbortController();
       abortControllersRef.current.set(requestId, abortController);
 
