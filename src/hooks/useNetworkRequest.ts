@@ -1,6 +1,5 @@
 import { nanoid } from "nanoid";
 import { useCallback, useEffect, useRef } from "react";
-import { useEffectOnceOnChange } from "./useEffectOnceOnChange";
 
 export const useNetworkRequest = (
   fn: (payload: any, requestConfig: any) => Promise<any>,
@@ -8,20 +7,14 @@ export const useNetworkRequest = (
   const abortControllersRef = useRef<Map<string, AbortController>>(new Map());
   const isMountedRef = useRef(false);
 
-  useEffectOnceOnChange(() => {
-    isMountedRef.current = true;
+  useEffect(() => {
     return () => {
-      isMountedRef.current = false;
       cancelRequest();
     };
   }, []);
 
   const fetchData = useCallback(
     async (payload: any, manualRequestId?: string) => {
-      if (!isMountedRef.current) {
-        return Promise.reject(new Error("Component is not mounted"));
-      }
-
       const requestId = manualRequestId || nanoid();
       if (abortControllersRef.current.has(requestId)) {
         abortControllersRef.current.get(requestId)?.abort();

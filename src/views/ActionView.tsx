@@ -35,7 +35,6 @@ import { FormActionView } from "./actionViews/FormActionView";
 import { TreeActionView } from "./actionViews/TreeActionView";
 import { DashboardActionView } from "./actionViews/DashboardActionView";
 import { resolveViewInfoPromises } from "@/helpers/viewHelper";
-import { useEffectOnceOnChange } from "@/hooks/useEffectOnceOnChange";
 
 type Props = {
   domain: any;
@@ -266,7 +265,7 @@ function ActionView(props: Props, ref: any) {
 
   setCanWeClose({ tabKey, canWeClose });
 
-  useEffectOnceOnChange(() => {
+  useEffect(() => {
     const treeView = availableViews.find((v) => v.type === "tree") as TreeView;
     const initialViewWithData: View = availableViews.find((v) => {
       if (!initialView.id) {

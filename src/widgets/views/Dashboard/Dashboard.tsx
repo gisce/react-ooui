@@ -26,7 +26,6 @@ import { ShortcutApi } from "@/ui/FavouriteButton";
 import DashboardTree from "./DashboardTree";
 import { DashboardForm } from "./DashboardForm";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
-import { useEffectOnceOnChange } from "@/hooks/useEffectOnceOnChange";
 
 const itemsField = "line_ids";
 
@@ -49,7 +48,7 @@ function Dashboard(props: DashboardProps, ref: any) {
   );
   const [update] = useNetworkRequest(ConnectionProvider.getHandler().update);
 
-  useEffectOnceOnChange(() => {
+  useEffect(() => {
     fetchData();
   }, [model, id, context]);
 
@@ -79,6 +78,7 @@ function Dashboard(props: DashboardProps, ref: any) {
       });
 
       const itemsWithActions = await getItemsWithActions(originalItems);
+      setError(undefined);
       setDashboardItems(itemsWithActions);
       setIsLoading(false);
       setActionBarLoading(false);
@@ -226,14 +226,14 @@ function Dashboard(props: DashboardProps, ref: any) {
     openAction(configAction);
   }
 
+  if (isLoading) {
+    return <LoadingOutlined />;
+  }
+
   if (error) {
     return (
       <Alert className="mt-10 mb-20" message={error} type="error" banner />
     );
-  }
-
-  if (isLoading) {
-    return <LoadingOutlined />;
   }
 
   return (

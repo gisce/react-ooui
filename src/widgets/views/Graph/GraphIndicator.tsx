@@ -7,7 +7,6 @@ import iconMapper from "@/helpers/iconMapper";
 import { Alert, Col, Row } from "antd";
 import { Operator, graphProcessor } from "@gisce/ooui";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
-import { useEffectOnceOnChange } from "@/hooks/useEffectOnceOnChange";
 
 const { getValueForOperator } = graphProcessor;
 
@@ -68,7 +67,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
     ConnectionProvider.getHandler().parseCondition,
   );
 
-  useEffectOnceOnChange(() => {
+  useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model, colorCondition]);
@@ -144,6 +143,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
   }
   async function fetchData() {
     setLoading(true);
+    setError(undefined);
     let totalRetrievedValue;
     let percent;
 
@@ -195,15 +195,12 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
           setIcon(iconProps);
         }
       }
+      setError(undefined);
     } catch (err) {
       setError(JSON.stringify(err));
     }
 
     setLoading(false);
-  }
-
-  if (error) {
-    return <Alert className="mt-10" message={error} type="error" banner />;
   }
 
   if (loading) {
@@ -212,6 +209,10 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
         <LoadingOutlined style={{ height: "12px" }} />
       </div>
     );
+  }
+
+  if (error) {
+    return <Alert className="mt-10" message={error} type="error" banner />;
   }
 
   return (
