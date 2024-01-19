@@ -345,10 +345,6 @@ const getKeysWithoutChildsInFields = ({
           if (key.indexOf("/") === -1) {
             return !fields["/"]?.[key];
           } else {
-            const parentKey = getParentKey(key);
-            console.log({ key, parentKey, fields });
-            const exists = fields?.[getParentKey(key)]?.[key];
-            console.log({ exists });
             return !fields?.[getParentKey(key)]?.[key];
           }
         })

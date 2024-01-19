@@ -1,16 +1,16 @@
-import { Fragment, useCallback, useContext, useState } from "react";
+import { Fragment, useCallback, useState } from "react";
 import {
   PrinterOutlined,
   ThunderboltOutlined,
   EnterOutlined,
 } from "@ant-design/icons";
-import { Many2oneSuffixModal } from "./Many2oneSuffixModal";
 import {
   useLocale,
   DropdownMenuGroup,
   DropdownMenuItem,
+  Many2OneSuffixModal,
+  Many2OneSuffix as Many2OneSuffixUi,
 } from "@gisce/react-formiga-components";
-import { Many2oneSuffixUi } from "./Many2oneSuffixUi";
 
 export type Action = Record<string, any> & {
   id: number;
@@ -41,11 +41,13 @@ type Many2oneSuffixProps = {
     | undefined
   >;
   onItemClick?: (opts: Many2OneSuffixOnItemClickOpts) => void;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export const Many2oneSuffixOoui = ({
   onRetrieveData,
   onItemClick,
+  onOpenChange,
 }: Many2oneSuffixProps) => {
   const [actionModalVisible, setActionModalVisible] = useState<boolean>(false);
   const [printModalVisible, setPrintModalVisible] = useState<boolean>(false);
@@ -95,7 +97,7 @@ export const Many2oneSuffixOoui = ({
 
   return (
     <Fragment>
-      <Many2oneSuffixUi
+      <Many2OneSuffixUi
         onRetrieveData={fetchMenuItems}
         onItemClick={(item) => {
           if (item.id === "action") {
@@ -106,8 +108,15 @@ export const Many2oneSuffixOoui = ({
             onItemClick?.({ item, type: "relate" });
           }
         }}
+        onOpenChange={(open) => {
+          onOpenChange?.(open);
+          if (!open) {
+            setActionModalVisible(false);
+            setPrintModalVisible(false);
+          }
+        }}
       />
-      <Many2oneSuffixModal
+      <Many2OneSuffixModal
         visible={actionModalVisible}
         items={data?.actionItems as DropdownMenuItem[]}
         onItemClicked={(item) => {
@@ -116,7 +125,7 @@ export const Many2oneSuffixOoui = ({
         }}
         onCancel={() => setActionModalVisible(false)}
       />
-      <Many2oneSuffixModal
+      <Many2OneSuffixModal
         visible={printModalVisible}
         items={data?.printItems as DropdownMenuItem[]}
         onItemClicked={(item) => {

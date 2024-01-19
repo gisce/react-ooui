@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {
   TabManagerContext,
   TabManagerContextType,
@@ -16,6 +16,7 @@ import {
   Many2OneSuffixOnItemClickOpts,
   Many2oneSuffixOoui,
 } from "./Many2oneSuffixOoui";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 
 type Props = {
   id: number;
@@ -38,10 +39,22 @@ export const Many2oneSuffix = (props: Props) => {
   ) as ContentRootContextType;
   const { processAction } = contentRootContext || {};
 
+  const [getView, cancelGetViewRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().getView,
+  );
+  const [readObjects, cancelReadObjectsRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().readObjects,
+  );
+
+  const cancelRequests = useCallback(() => {
+    cancelGetViewRequest();
+    cancelReadObjectsRequest();
+  }, [cancelGetViewRequest, cancelReadObjectsRequest]);
+
   const fetchData = useCallback(async (): Promise<
     ActionRelatePrint | undefined
   > => {
-    const formView = (await ConnectionProvider.getHandler().getView({
+    const formView = (await getView({
       model,
       type: "form",
       context,
@@ -55,14 +68,15 @@ export const Many2oneSuffix = (props: Props) => {
     let values = {};
 
     if (fields.length > 0) {
-      values = (
-        await ConnectionProvider.getHandler().readObjects({
+      const objectValues = (
+        await readObjects({
           model,
           ids: [id],
           fieldsToRetrieve: fields,
           context,
         })
-      )[0];
+      )?.[0];
+      values = { ...objectValues };
     }
     values = { ...processValues(values, fields), active_id: id };
     setTargetValues(values);
@@ -76,7 +90,7 @@ export const Many2oneSuffix = (props: Props) => {
       relateItems: formView.toolbar.relate,
       printItems: formView.toolbar.print,
     };
-  }, [context, id, model]);
+  }, [context, getView, id, model, readObjects]);
 
   // If there is no id (no record attached to the Many2one), we don't show the suffix
   if (!id) {
@@ -123,6 +137,11 @@ export const Many2oneSuffix = (props: Props) => {
     <Many2oneSuffixOoui
       onRetrieveData={fetchData}
       onItemClick={handleMenuClick}
+      onOpenChange={(open) => {
+        if (!open) {
+          cancelRequests();
+        }
+      }}
     />
   );
 };

@@ -25,6 +25,8 @@ import {
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import DashboardTree from "./DashboardTree";
 import { DashboardForm } from "./DashboardForm";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import { useEffectOnceOnChange } from "@/hooks/useEffectOnceOnChange";
 
 const itemsField = "line_ids";
 
@@ -41,8 +43,13 @@ function Dashboard(props: DashboardProps, ref: any) {
 
   const itemsFields = useRef<any>();
   const boardFields = useRef<any>();
+  const [getView] = useNetworkRequest(ConnectionProvider.getHandler().getView);
+  const [readObjects] = useNetworkRequest(
+    ConnectionProvider.getHandler().readObjects,
+  );
+  const [update] = useNetworkRequest(ConnectionProvider.getHandler().update);
 
-  useEffect(() => {
+  useEffectOnceOnChange(() => {
     fetchData();
   }, [model, id, context]);
 
@@ -81,7 +88,7 @@ function Dashboard(props: DashboardProps, ref: any) {
   }
 
   async function fetchView() {
-    return await ConnectionProvider.getHandler().getView({
+    return await getView({
       model,
       type: "form",
       context,
@@ -98,7 +105,7 @@ function Dashboard(props: DashboardProps, ref: any) {
     context: any;
   }) {
     itemsFields.current = (
-      (await ConnectionProvider.getHandler().getView({
+      (await getView({
         model,
         type: "form",
         context,
@@ -122,7 +129,7 @@ function Dashboard(props: DashboardProps, ref: any) {
 
   async function fetchValues(view: FormView) {
     return (
-      await ConnectionProvider.getHandler().readObjects({
+      await readObjects({
         model,
         ids: [id],
         fields: view.fields,
@@ -206,7 +213,7 @@ function Dashboard(props: DashboardProps, ref: any) {
       items: itemsToUpdateWithUpdatedPos,
     };
 
-    await ConnectionProvider.getHandler().update({
+    await update({
       model,
       id,
       values: { [itemsField]: valueToUpdate },
@@ -220,7 +227,6 @@ function Dashboard(props: DashboardProps, ref: any) {
   }
 
   if (error) {
-    console.log(error);
     return (
       <Alert className="mt-10 mb-20" message={error} type="error" banner />
     );

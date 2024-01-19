@@ -17,12 +17,14 @@ type ConfigContextValues = {
   erpFeatures: ErpFeaturesMap;
   globalValues?: Record<string, any>;
   rootContext?: Record<string, any>;
+  devMode?: boolean;
 };
 
 const defaultConfigContext: ConfigContextValues = {
   erpFeatures: {},
   globalValues: {},
   rootContext: {},
+  devMode: false,
 };
 
 export const ConfigContext =
@@ -52,6 +54,7 @@ export const ConfigContextProvider = memo(
     localizedStrings = {},
     globalValues,
     rootContext,
+    devMode,
     children,
   }: ConfigContextProps & { children?: React.ReactNode }) => {
     const providerValue = useMemo(
@@ -59,8 +62,9 @@ export const ConfigContextProvider = memo(
         erpFeatures,
         globalValues,
         rootContext,
+        devMode,
       }),
-      [erpFeatures, globalValues, rootContext],
+      [erpFeatures, globalValues, rootContext, devMode],
     );
 
     return (
