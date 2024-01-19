@@ -34,7 +34,6 @@ import { GraphActionView } from "@/views/actionViews/GraphActionView";
 import { FormActionView } from "./actionViews/FormActionView";
 import { TreeActionView } from "./actionViews/TreeActionView";
 import { DashboardActionView } from "./actionViews/DashboardActionView";
-import { info } from "console";
 import { resolveViewInfoPromises } from "@/helpers/viewHelper";
 import { useEffectOnceOnChange } from "@/hooks/useEffectOnceOnChange";
 
