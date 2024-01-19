@@ -1,4 +1,4 @@
-import React, {
+import {
   useState,
   useEffect,
   useContext,
@@ -54,9 +54,6 @@ const GraphComp = (props: GraphProps, ref: any) => {
   }, [view_id]);
 
   async function fetchData() {
-    if (loading) {
-      return;
-    }
     setLoading(true);
     setGraphIsLoading?.(true);
 
@@ -71,13 +68,14 @@ const GraphComp = (props: GraphProps, ref: any) => {
       setGraphXml(viewData.arch);
       const graph = parseGraph(viewData.arch);
       setGraphOoui(graph);
+      setLoading(false);
+      setGraphIsLoading?.(false);
     } catch (err) {
       console.error(err);
+      setLoading(false);
+      setGraphIsLoading?.(false);
       return <>{JSON.stringify(err)}</>;
     }
-
-    setLoading(false);
-    setGraphIsLoading?.(false);
   }
 
   if (loading) {
