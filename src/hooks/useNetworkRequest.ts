@@ -5,7 +5,6 @@ export const useNetworkRequest = (
   fn: (payload: any, requestConfig: any) => Promise<any>,
 ): [(payload: any) => Promise<any>, (requestId?: string) => void] => {
   const abortControllersRef = useRef<Map<string, AbortController>>(new Map());
-  const isMountedRef = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -29,9 +28,7 @@ export const useNetworkRequest = (
           signal: abortController.signal,
         });
       } finally {
-        if (isMountedRef.current) {
-          abortControllersRef.current.delete(requestId);
-        }
+        abortControllersRef.current.delete(requestId);
       }
     },
     [fn],
