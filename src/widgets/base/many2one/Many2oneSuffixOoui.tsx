@@ -41,11 +41,13 @@ type Many2oneSuffixProps = {
     | undefined
   >;
   onItemClick?: (opts: Many2OneSuffixOnItemClickOpts) => void;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export const Many2oneSuffixOoui = ({
   onRetrieveData,
   onItemClick,
+  onOpenChange,
 }: Many2oneSuffixProps) => {
   const [actionModalVisible, setActionModalVisible] = useState<boolean>(false);
   const [printModalVisible, setPrintModalVisible] = useState<boolean>(false);
@@ -104,6 +106,13 @@ export const Many2oneSuffixOoui = ({
             setPrintModalVisible(true);
           } else {
             onItemClick?.({ item, type: "relate" });
+          }
+        }}
+        onOpenChange={(open) => {
+          onOpenChange?.(open);
+          if (!open) {
+            setActionModalVisible(false);
+            setPrintModalVisible(false);
           }
         }}
       />

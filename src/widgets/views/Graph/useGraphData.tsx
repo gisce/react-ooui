@@ -8,6 +8,7 @@ import {
 } from "@gisce/ooui";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import ConnectionProvider from "@/ConnectionProvider";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 
 const { processGraphData } = graphProcessor;
 const { getFieldsToRetrieve } = graphFieldUtils;
@@ -40,6 +41,13 @@ export const useGraphData = (opts: GraphDataOpts) => {
   const [processedValues, setProcessedValues] = useState<any>();
   const [evaluatedEntries, setEvaluatedEntries] = useState<any[]>();
   const [type, setType] = useState<GraphType>("line");
+  const [getFields] = useNetworkRequest(
+    ConnectionProvider.getHandler().getFields,
+  );
+  const [readObjects] = useNetworkRequest(
+    ConnectionProvider.getHandler().readObjects,
+  );
+  const [search] = useNetworkRequest(ConnectionProvider.getHandler().search);
 
   useDeepCompareEffect(() => {
     (async () => {
@@ -64,6 +72,11 @@ export const useGraphData = (opts: GraphDataOpts) => {
           order: ooui.timerange ? ooui.x.name : null,
           fields: fieldsToRetrieve,
           manualIds,
+          methods: {
+            getFields,
+            readObjects,
+            search,
+          },
         }));
       } catch (e) {
         setError("Error fetching graph data values: " + JSON.stringify(e));
@@ -111,12 +124,14 @@ async function getFieldsForModel({
   model,
   context,
   fields,
+  getFields,
 }: {
   model: string;
   context: any;
   fields: string[];
+  getFields: (payload: any) => Promise<any>;
 }) {
-  const viewData = await ConnectionProvider.getHandler().getFields({
+  const viewData = await getFields({
     model,
     context,
     fields,
@@ -132,6 +147,7 @@ async function retrieveData({
   order,
   limit,
   manualIds,
+  methods,
 }: {
   fields: string[];
   model: string;
@@ -140,11 +156,23 @@ async function retrieveData({
   order: string | null;
   limit?: number;
   manualIds?: number[];
+  methods: {
+    getFields: (payload: any) => Promise<any>;
+    readObjects: (payload: any) => Promise<any>;
+    search: (payload: any) => Promise<any>;
+  };
 }) {
-  const fieldsDefinition = await getFieldsForModel({ model, context, fields });
+  const { getFields, readObjects, search } = methods;
+
+  const fieldsDefinition = await getFieldsForModel({
+    model,
+    context,
+    fields,
+    getFields,
+  });
 
   if (manualIds) {
-    let values: any[] = (await ConnectionProvider.getHandler().readObjects({
+    let values: any[] = (await readObjects({
       model,
       ids: manualIds,
       fieldsToRetrieve: fields,
@@ -161,7 +189,7 @@ async function retrieveData({
     };
   }
 
-  const values: any[] = (await ConnectionProvider.getHandler().search({
+  const values: any[] = (await search({
     model,
     params: domain,
     fieldsToRetrieve: fields,

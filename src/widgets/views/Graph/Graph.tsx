@@ -20,6 +20,7 @@ import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 
 export type GraphProps = {
   view_id: number;
@@ -40,6 +41,8 @@ const GraphComp = (props: GraphProps, ref: any) => {
   ) as ActionViewContextType;
   const { setGraphIsLoading = undefined } = actionViewContext || {};
 
+  const [getView] = useNetworkRequest(ConnectionProvider.getHandler().getView);
+
   useImperativeHandle(ref, () => ({
     refresh: () => {
       fetchData();
@@ -51,11 +54,14 @@ const GraphComp = (props: GraphProps, ref: any) => {
   }, [view_id]);
 
   async function fetchData() {
+    if (loading) {
+      return;
+    }
     setLoading(true);
     setGraphIsLoading?.(true);
 
     try {
-      const viewData = (await ConnectionProvider.getHandler().getView({
+      const viewData = (await getView({
         model,
         id: view_id,
         type: "graph",
