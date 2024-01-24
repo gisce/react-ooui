@@ -29,7 +29,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { GoToResourceModal } from "@/ui/GoToResourceModal";
 import showInfo from "@/ui/InfoDialog";
 import showErrorDialog from "@/ui/ActionErrorDialog";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 import { GraphActionView } from "@/views/actionViews/GraphActionView";
 import { FormActionView } from "./actionViews/FormActionView";
 import { TreeActionView } from "./actionViews/TreeActionView";
@@ -96,7 +96,7 @@ function ActionView(props: Props, ref: any) {
     useState<boolean>(false);
   const [searchTreeNameSearch, setSearchTreeNameSearch] = useState<string>();
 
-  const { t } = (useContext(LocaleContext) as LocaleContextType) || {};
+  const { t } = useLocale();
 
   const formRef = useRef();
   const searchTreeRef = useRef();

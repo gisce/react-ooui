@@ -8,7 +8,7 @@ import {
   ClearOutlined,
 } from "@ant-design/icons";
 
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 
 type Props = {
   advancedFilter: boolean;
@@ -21,7 +21,7 @@ export function SearchBottomBar(props: Props): ReactElement {
   const { onAdvancedFilterToggle, advancedFilter, onClear, isSearching } =
     props;
 
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   return (
     <Row>

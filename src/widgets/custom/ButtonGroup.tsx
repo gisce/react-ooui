@@ -11,8 +11,7 @@ import {
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import iconMapper from "@/helpers/iconMapper";
-import { WidgetProps } from "@/types";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 
 type ButtonGroupProps = {
   ooui: ButtonGroupOoui;
@@ -21,7 +20,6 @@ type ButtonGroupProps = {
 type ItemsProps = {
   ooui: ButtonOoui[];
   executeButtonAction: any;
-  lang: string;
 };
 
 export const ButtonGroup = (props: ButtonGroupProps) => {
@@ -35,14 +33,13 @@ export const ButtonGroup = (props: ButtonGroupProps) => {
     confirmMessage,
     icon,
     primary,
-    danger,
     context,
     readOnly,
   } = defaultButton || {};
   const formContext = useContext(FormContext) as FormContextType;
   const { executeButtonAction } = formContext || {};
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const { lang } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   function getButtonIcon() {
     if (isRunning) return <LoadingOutlined />;
@@ -65,7 +62,7 @@ export const ButtonGroup = (props: ButtonGroupProps) => {
     if (confirmMessage) {
       showConfirmDialog({
         confirmMessage,
-        lang,
+        t,
         onOk: () => {
           onClick_confirm();
         },
@@ -91,7 +88,6 @@ export const ButtonGroup = (props: ButtonGroupProps) => {
             <Items
               ooui={secondaryButtons}
               executeButtonAction={executeButtonAction}
-              lang={lang}
             />
           }
         >
@@ -106,7 +102,8 @@ export const ButtonGroup = (props: ButtonGroupProps) => {
 };
 
 const Items = (props: ItemsProps) => {
-  const { ooui, executeButtonAction, lang } = props;
+  const { t } = useLocale();
+  const { ooui, executeButtonAction } = props;
   if (!ooui) {
     return null;
   }
@@ -134,7 +131,7 @@ const Items = (props: ItemsProps) => {
       if (confirmMessage) {
         showConfirmDialog({
           confirmMessage,
-          lang,
+          t,
           onOk: () => {
             onClick_confirm();
           },
@@ -156,6 +153,7 @@ const Items = (props: ItemsProps) => {
 
     return (
       <Menu.Item
+        key={`menuitem-${caption}`}
         disabled={!activated || readOnly}
         onClick={onClick}
         icon={getButtonIcon()}

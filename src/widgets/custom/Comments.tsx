@@ -10,7 +10,7 @@ import {
   Timeline,
   TimelineItemProps,
 } from "antd";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 
 import dayjs from "@/helpers/dayjs";
 import md5 from "md5";
@@ -83,7 +83,7 @@ function TextWithNewlines({ text }: { text: string }) {
 
 export const Comment = (props: CommentProps) => {
   const { data, style } = props;
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
   return (
     <Card key={data.id} style={{ ...style, ...{ textAlign: "start" } }}>
       <Meta

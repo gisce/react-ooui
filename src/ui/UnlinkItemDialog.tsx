@@ -1,19 +1,23 @@
-import React from "react";
 import { Modal } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
-import { tForLang } from "@/context/LocaleContext";
 
 const { confirm } = Modal;
 
-const showDialog = ({ onOk, lang }: { onOk: () => void; lang: string }) => {
+const showDialog = ({
+  onOk,
+  t,
+}: {
+  onOk: () => void;
+  t: (key: string) => string;
+}) => {
   confirm({
-    title: tForLang("unlinkItems", lang),
+    title: t("unlinkItems"),
     icon: <ExclamationCircleOutlined />,
     centered: true,
-    content: tForLang("confirmUnlink", lang),
-    okText: tForLang("yesConfirmUnlink", lang),
+    content: t("confirmUnlink"),
+    okText: t("yesConfirmUnlink"),
     onOk,
-    cancelText: tForLang("cancel", lang),
+    cancelText: t("cancel"),
   });
 };
 

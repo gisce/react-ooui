@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Input, Row, Tooltip } from "antd";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 import { CloseCircleFilled } from "@ant-design/icons";
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 
 function SearchBar(props: Props) {
   const { onSearch, disabled = false, searchText } = props;
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
   const [form] = Form.useForm();
   const [mustShowClearSuffix, setMustShowClearSuffix] =
     useState<boolean>(false);

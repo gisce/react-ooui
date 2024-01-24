@@ -6,7 +6,7 @@ import {
   LoadingOutlined,
 } from "@ant-design/icons";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 import ConnectionProvider from "@/ConnectionProvider";
 import TextArea from "antd/lib/input/TextArea";
 import showErrorDialog from "@/ui/ActionErrorDialog";
@@ -33,7 +33,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
   const { visible, onCloseModal, model, id, field, onSubmitSucceed } = props;
 
   const { modalWidth } = useWindowDimensions();
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
   const [langs, setLangs] = useState<Lang[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);

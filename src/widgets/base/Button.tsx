@@ -6,7 +6,7 @@ import showConfirmDialog from "@/ui/ConfirmDialog";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { LoadingOutlined } from "@ant-design/icons";
 import iconMapper from "@/helpers/iconMapper";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 
 type Props = {
   ooui: ButtonOoui;
@@ -27,7 +27,7 @@ export const Button = (props: Props) => {
   const formContext = useContext(FormContext) as FormContextType;
   const { executeButtonAction } = formContext || {};
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const { lang } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   async function onClick_confirm() {
     setIsRunning(true);
@@ -39,7 +39,7 @@ export const Button = (props: Props) => {
     if (confirmMessage) {
       showConfirmDialog({
         confirmMessage,
-        lang,
+        t,
         onOk: () => {
           onClick_confirm();
         },
