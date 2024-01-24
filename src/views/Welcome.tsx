@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
 import { Layout, Typography } from "antd";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 
 const { Content } = Layout;
 const { Title } = Typography;
 
 function Welcome(): React.ReactElement {
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   return (
     <Content className="m-5 select-none">

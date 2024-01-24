@@ -1,9 +1,9 @@
-import { useContext } from "react";
 import { Line, Column, Pie } from "@ant-design/plots";
 import GraphDefaults from "./GraphDefaults";
 import { useGraphData } from "./useGraphData";
 import { Alert, Spin } from "antd";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 const types = {
   line: Line,
@@ -22,21 +22,22 @@ export type GraphChartProps = {
 
 export const GraphChart = (props: GraphChartProps) => {
   const { model, domain, context, xml, limit, manualIds } = props;
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
-  const { error, loading, values, type, evaluatedEntries } = useGraphData({
-    model,
-    xml,
-    limit,
-    domain,
-    context,
-    uninformedString: t("uninformed"),
-    manualIds,
-  });
+  const { error, loading, values, type, evaluatedEntries, fetchData } =
+    useGraphData({
+      model,
+      xml,
+      limit,
+      domain,
+      context,
+      uninformedString: t("uninformed"),
+      manualIds,
+    });
 
-  if (error) {
-    return <Alert message={error} type="error" banner />;
-  }
+  useDeepCompareEffect(() => {
+    fetchData();
+  }, [xml, model, limit, context, domain]);
 
   if (loading) {
     return <Spin />;
@@ -44,6 +45,10 @@ export const GraphChart = (props: GraphChartProps) => {
 
   if (!values) {
     return <Alert message="No data to display" type="info" />;
+  }
+
+  if (error) {
+    return <Alert message={error} type="error" banner />;
   }
 
   const { data, isGroup, isStack } = values;

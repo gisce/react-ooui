@@ -6,7 +6,7 @@ import { DateRangePicker } from "./DateRangePicker";
 import { DateTimeRangePicker } from "./DateTimeRangePicker";
 import { PairFields } from "./PairFields";
 
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 
 import {
   Field,
@@ -24,7 +24,7 @@ export function SearchField(props: Props) {
   field.readOnly = false;
   field.required = false;
 
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   const widgetType = field.type;
 

@@ -1,16 +1,15 @@
 import React from "react";
 import { Modal } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
-import { tForLang } from "@/context/LocaleContext";
 
 const { error } = Modal;
 
-const showDialog = (lang: string) => {
+const showDialog = (t: (key: string) => string) => {
   error({
-    title: tForLang("formHasErrors", lang),
+    title: t("formHasErrors"),
     icon: <ExclamationCircleOutlined />,
     centered: true,
-    content: tForLang("fillRequiredFields", lang),
+    content: t("fillRequiredFields"),
   });
 };
 

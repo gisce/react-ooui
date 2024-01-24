@@ -29,8 +29,8 @@ import { FormContext, FormContextType } from "@/context/FormContext";
 import { One2manyTopBar } from "@/widgets/base/one2many/One2manyTopBar";
 import { readObjectValues, getNextPendingId } from "@/helpers/one2manyHelper";
 import { SearchModal } from "@/widgets/modals/SearchModal";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
-import { getColorMap, getTree, sortResults } from "@/helpers/treeHelper";
+import { useLocale } from "@gisce/react-formiga-components";
+import { sortResults } from "@/helpers/treeHelper";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
 
 type One2manyValue = {
@@ -86,7 +86,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const formContext = useContext(FormContext) as FormContextType;
   const { activeId, getFields, getValues, getContext, domain } =
     formContext || {};
-  const { lang, t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -296,7 +296,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const showFormChangesDialogIfNeeded = (callback: () => void) => {
     if (formHasChanges) {
       showUnsavedChangesDialog({
-        lang,
+        t,
         onOk: () => {
           reloadOriginalValuesForFormItem();
           callback();
@@ -311,7 +311,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const showRemoveConfirm = () => {
     if (isMany2many) {
       showUnlinkItemDialog({
-        lang,
+        t,
         onOk: () => {
           if (currentView === "form") {
             removeCurrentItem();
@@ -324,7 +324,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     }
 
     showRemoveItemDialog({
-      lang,
+      t,
       onOk: () => {
         if (currentView === "form") {
           removeCurrentItem();

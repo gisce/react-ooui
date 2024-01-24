@@ -11,7 +11,7 @@ import {
   AttachmentsButtonWrapper,
 } from "./AttachmentsButtonWrapper";
 import { Modal, Spin } from "antd";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 
 export type AttachmentsButtonProps = {
   attachments?: any;
@@ -35,7 +35,7 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
     Attachment[]
   >([]);
   const [downloading, setDownloading] = useState(false);
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   const preloadAttachments = useCallback(async () => {
     setPreloading(true);

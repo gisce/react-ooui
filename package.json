@@ -36,11 +36,11 @@
     "@ant-design/plots": "^1.0.9",
     "@gisce/fiber-diagram": "^1.1.0-rc.3",
     "@gisce/ooui": "2.0.1",
-    "@gisce/react-formiga-components": "1.1.0",
+    "@gisce/react-formiga-components": "1.2.0",
     "@gisce/react-formiga-table": "1.2.0",
     "@monaco-editor/react": "^4.4.5",
     "@tabler/icons-react": "^2.11.0",
-    "antd": "^5.5.2",
+    "antd": "5.13.1",
     "buffer": "^6.0.3",
     "file-type-buffer-browser": "git+ssh://git@github.com/mguellsegarra/file-type-buffer-browser.git",
     "interweave": "^13.0.0",
@@ -99,8 +99,8 @@
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "semantic-release": "21.0.7",
     "storybook": "^7.6.5",
-    "typescript": "^5.0.4",
-    "vite": "4.5.1",
+    "typescript": "5.3.3",
+    "vite": "4.5.2",
     "vite-bundle-visualizer": "^0.10.0",
     "vite-plugin-dts": "^3.6.0",
     "vite-tsconfig-paths": "3.5.0"
@@ -146,7 +146,7 @@
     ]
   },
   "overrides": {
-    "rc-dropdown": "3.2.0",
+    "antd": "5.13.1",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   }

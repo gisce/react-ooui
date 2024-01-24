@@ -1,26 +1,25 @@
-import React, {
+import {
   useState,
   forwardRef,
   useImperativeHandle,
   useRef,
+  ReactNode,
 } from "react";
 import { ConnectionProvider, ContentRootProvider, FormView } from "..";
 import Welcome from "./Welcome";
 import TabManagerProvider from "@/context/TabManagerContext";
 import ActionView from "./ActionView";
 import { parseContext } from "@gisce/ooui";
-import LocaleContextProvider, { tForLang } from "@/context/LocaleContext";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import { InitialViewData, ViewType } from "@/types";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
 import { nanoid } from "nanoid";
+import { useLocale } from "@gisce/react-formiga-components";
+import { useConfigContext } from "@/context/ConfigContext";
 
 type RootViewProps = {
-  children: React.ReactNode;
-  globalValues?: any;
-  rootContext?: any;
-  lang: string;
+  children: ReactNode;
 };
 
 export type ActionInfo = {
@@ -29,12 +28,14 @@ export type ActionInfo = {
 };
 
 function RootView(props: RootViewProps, ref: any) {
-  const { children, globalValues = {}, rootContext = {}, lang } = props;
+  const { children } = props;
   const [activeKey, setActiveKey] = useState<string>("welcome");
+  const { t } = useLocale();
+  const { globalValues, rootContext } = useConfigContext();
 
   const [tabs, setTabs] = useState<any>([
     {
-      title: tForLang("welcome", lang),
+      title: t("welcome"),
       key: "welcome",
       closable: true,
       content: <Welcome />,
@@ -473,36 +474,32 @@ function RootView(props: RootViewProps, ref: any) {
   }
 
   return (
-    <LocaleContextProvider lang={lang}>
-      <TabManagerProvider
-        openShortcut={openShortcut}
-        openAction={openAction}
-        openRelate={openRelate}
-        openDefaultActionForModel={openDefaultActionForModel}
-        tabs={tabs}
-        activeKey={activeKey}
-        onRemoveTab={async (key: string) => {
-          const canWeCloseFn = tabViewsCloseFunctions.current.get(
-            key as string,
-          );
-          const canWeClose = await canWeCloseFn?.();
+    <TabManagerProvider
+      openShortcut={openShortcut}
+      openAction={openAction}
+      openRelate={openRelate}
+      openDefaultActionForModel={openDefaultActionForModel}
+      tabs={tabs}
+      activeKey={activeKey}
+      onRemoveTab={async (key: string) => {
+        const canWeCloseFn = tabViewsCloseFunctions.current.get(key as string);
+        const canWeClose = await canWeCloseFn?.();
 
-          if (canWeClose || activeKey === "welcome") {
-            remove(key as string);
-          }
-        }}
-        onChangeTab={(key: string) => {
-          setActiveKey(key);
-        }}
+        if (canWeClose || activeKey === "welcome") {
+          remove(key as string);
+        }
+      }}
+      onChangeTab={(key: string) => {
+        setActiveKey(key);
+      }}
+    >
+      <ContentRootProvider
+        ref={contentRootProvider}
+        globalValues={globalValues}
       >
-        <ContentRootProvider
-          ref={contentRootProvider}
-          globalValues={globalValues}
-        >
-          {children}
-        </ContentRootProvider>
-      </TabManagerProvider>
-    </LocaleContextProvider>
+        {children}
+      </ContentRootProvider>
+    </TabManagerProvider>
   );
 }
 

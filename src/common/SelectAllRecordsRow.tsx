@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import React, { useContext, useState } from "react";
 import { Spin } from "antd";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 import Link from "antd/es/typography/Link";
 
 export const Container = styled.div`
@@ -24,7 +24,7 @@ export const SelectAllRecordsRow = ({
   onSelectAllRecords: () => Promise<void>;
 }) => {
   const [loading, setLoading] = useState(false);
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   const translations = {
     recordsSelected: t("recordsSelected"),

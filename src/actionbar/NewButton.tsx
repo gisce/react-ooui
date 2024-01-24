@@ -6,7 +6,7 @@ import {
   ActionViewContextType,
 } from "@/context/ActionViewContext";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 
 type Props = {
   disabled?: boolean;
@@ -18,12 +18,12 @@ function NewButton(props: Props) {
   const { formHasChanges, onNewClicked: onNewClickedProps } = useContext(
     ActionViewContext,
   ) as ActionViewContextType;
-  const { t, lang } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   const onNewClicked = () => {
     if (formHasChanges) {
       showUnsavedChangesDialog({
-        lang,
+        t,
         onOk: () => {
           onNewClickedProps();
         },

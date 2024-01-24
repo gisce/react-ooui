@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useRef } from "react";
-import { Space, Spin, message } from "antd";
+import { useContext } from "react";
+import { Space, Spin } from "antd";
 import {
   SaveOutlined,
   RightOutlined,
@@ -13,7 +13,6 @@ import {
   InfoCircleOutlined,
 } from "@ant-design/icons";
 import ChangeViewButton from "./ChangeViewButton";
-import DropdownButton from "./DropdownButton";
 import ActionButton from "./ActionButton";
 import {
   ActionViewContext,
@@ -26,6 +25,7 @@ import showErrorDialog from "@/ui/GenericErrorDialog";
 import ConnectionProvider from "@/ConnectionProvider";
 import refreshChangesDialog from "@/ui/RefreshItemDialog";
 import { showLogInfo } from "@/helpers/logInfoHelper";
+import { DropdownButton, useLocale } from "@gisce/react-formiga-components";
 
 import {
   TabManagerContext,
@@ -37,7 +37,6 @@ import {
   ContentRootContextType,
 } from "@/context/ContentRootContext";
 import AttachmentsButton from "./AttachmentsButton";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
 import { Attachment } from "./AttachmentsButtonWrapper";
 
 function FormActionBar({ toolbar }: { toolbar: any }) {
@@ -67,7 +66,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     setPreviousView,
     goToResourceId,
   } = useContext(ActionViewContext) as ActionViewContextType;
-  const { t, lang } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   const contentRootContext = useContext(
     ContentRootContext,
@@ -82,7 +81,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
   function tryRefresh(callback: any) {
     if (formHasChanges) {
       refreshChangesDialog({
-        lang,
+        t,
         onOk: () => {
           callback();
         },
@@ -96,7 +95,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
   function tryNavigate(callback: any) {
     if (formHasChanges) {
       showUnsavedChangesDialog({
-        lang,
+        t,
         onOk: () => {
           callback();
         },
@@ -130,7 +129,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
   function tryDelete() {
     showConfirmDialog({
       confirmMessage: t("confirmRemoveItem"),
-      lang,
+      t,
       onOk: () => {
         remove();
       },
@@ -328,9 +327,11 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       {separator()}
       <DropdownButton
         icon={<ThunderboltOutlined />}
+        placement="bottomRight"
         disabled={mustDisableButtons}
-        tooltip={t("actions")}
-        items={toolbar?.action}
+        onRetrieveData={async () => [
+          { label: t("actions"), items: toolbar?.action },
+        ]}
         onItemClick={async (action: any) => {
           if (!action) {
             return;
@@ -350,8 +351,10 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       <DropdownButton
         icon={<PrinterOutlined />}
         disabled={mustDisableButtons}
-        tooltip={t("reports")}
-        items={toolbar?.print}
+        placement="bottomRight"
+        onRetrieveData={async () => [
+          { label: t("reports"), items: toolbar?.print },
+        ]}
         onItemClick={async (report: any) => {
           if (!report) {
             return;
@@ -376,8 +379,10 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       <DropdownButton
         icon={<EnterOutlined />}
         disabled={mustDisableButtons}
-        tooltip={t("related")}
-        items={toolbar?.relate}
+        placement="bottomRight"
+        onRetrieveData={async () => [
+          { label: t("related"), items: toolbar?.relate },
+        ]}
         onItemClick={async (relate: any) => {
           if (!relate) {
             return;
