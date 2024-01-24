@@ -81,9 +81,11 @@ import TabSelector from "./views/TabSelector";
 import CurrentTabContent from "./views/CurrentTabContent";
 import ContentRootProvider from "./context/ContentRootContext";
 import FavouriteButton from "./ui/FavouriteButton";
-import { ConfigContext } from "./context/ConfigContext";
+import { ConfigContext, ConfigContextProvider } from "./context/ConfigContext";
 import Tab from "./views/tabs/Tab";
 import ActionView from "./views/ActionView";
+import { ErpAllFeatureKeys, ErpFeatureKeys } from "./models/erpFeature";
+import type { ErpFeaturesMap } from "./models/erpFeature";
 
 export {
   Button,
@@ -165,4 +167,8 @@ export {
   ConfigContext,
   Tab,
   ActionView,
+  ErpAllFeatureKeys,
+  ErpFeatureKeys,
+  ErpFeaturesMap,
+  ConfigContextProvider,
 };

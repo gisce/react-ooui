@@ -1,14 +1,8 @@
-import ConnectionProvider from "@/ConnectionProvider";
-import {
-  ExportModal as ExportModalFmg,
-  Locale,
-} from "@gisce/react-formiga-components";
-import React from "react";
+import { ExportModal as ExportModalFmg } from "@gisce/react-formiga-components";
 import { useExport } from "@/hooks/useExport";
 
 export type ExportModalProps = {
   visible: boolean;
-  locale: string;
   onClose: () => void;
   selectedRegistersToExport?: any[];
   totalRegisters: number;
@@ -22,7 +16,6 @@ export type ExportModalProps = {
 export const ExportModal = (props: ExportModalProps) => {
   const {
     visible,
-    locale,
     onClose,
     model,
     context,
@@ -47,13 +40,11 @@ export const ExportModal = (props: ExportModalProps) => {
     limit,
     selectedRegistersToExport,
     onClose,
-    locale,
   });
 
   return (
     <ExportModalFmg
       visible={visible}
-      locale={locale as Locale}
       onSucceed={onExport}
       onCancel={onClose}
       selectedRegistersToExport={

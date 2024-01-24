@@ -6,7 +6,7 @@ import { TranslationModal } from "../modals/TranslationModal";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
 import { TranslationOutlined } from "@ant-design/icons";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 import showInfo from "@/ui/InfoDialog";
 const { useToken } = theme;
 
@@ -72,7 +72,7 @@ const TranslatableText = ({
     elementHasLostFocus,
   } = formContext || {};
   const [translationModalVisible, setTranslationModalVisible] = useState(false);
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   if (!activeId) {
     return (

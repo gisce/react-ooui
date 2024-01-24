@@ -31,7 +31,7 @@ export const FiberGridInput = (props: FiberGridInputProps) => {
   try {
     JSON.parse(value);
   } catch (e) {
-    console.log(e);
+    console.error(e);
     return null;
   }
 

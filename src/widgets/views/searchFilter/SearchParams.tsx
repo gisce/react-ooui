@@ -4,7 +4,7 @@ import { Integer } from "@/widgets/base/Integer";
 import { Row, Space } from "antd";
 import { Integer as IntegerOoui } from "@gisce/ooui";
 
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 
 type SearchParamsProps = {
   onLimitChange?: (limit: number) => void;
@@ -12,7 +12,7 @@ type SearchParamsProps = {
 
 export function SearchParams(props: SearchParamsProps): React.ReactElement {
   const { onLimitChange } = props;
-  const { t } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   const limitOoui = new IntegerOoui({ name: "limit" });
   const offsetOoui = new IntegerOoui({ name: "offset" });

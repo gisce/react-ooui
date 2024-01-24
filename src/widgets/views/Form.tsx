@@ -13,7 +13,6 @@ import {
   Divider,
   Space,
   Row,
-  Alert,
   Spin,
   message,
 } from "antd";
@@ -54,7 +53,7 @@ import {
   ContentRootContext,
   ContentRootContextType,
 } from "@/context/ContentRootContext";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale } from "@gisce/react-formiga-components";
 import { convertToPlain2ManyValues } from "@/helpers/one2manyHelper";
 import { ErrorAlert } from "@/ui/ErrorAlert";
 
@@ -115,7 +114,7 @@ function Form(props: FormProps, ref: any) {
     forcedValues = {},
     parentWidth,
   } = props;
-  const { t, lang } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>();
@@ -462,7 +461,7 @@ function Form(props: FormProps, ref: any) {
     return new Promise(async (resolve) => {
       if (formHasChanges()) {
         showUnsavedChangesDialog({
-          lang,
+          t,
           onOk: () => {
             onCancel?.();
             resolve(true);
@@ -663,7 +662,7 @@ function Form(props: FormProps, ref: any) {
 
     if (await checkIfFormHasErrors()) {
       formSubmitting.current = false;
-      formErrorsDialog(lang);
+      formErrorsDialog(t);
       return { succeed: false, id: getCurrentId()! };
     }
 
@@ -1007,7 +1006,7 @@ function Form(props: FormProps, ref: any) {
 
     // We check for required fields
     if (await checkIfFormHasErrors()) {
-      formErrorsDialog(lang);
+      formErrorsDialog(t);
       return;
     }
 

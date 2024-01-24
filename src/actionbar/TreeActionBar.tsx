@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { Space, Spin } from "antd";
 import ChangeViewButton from "./ChangeViewButton";
 import {
@@ -16,11 +16,10 @@ import Icon, {
   InfoCircleOutlined,
   FilterOutlined,
 } from "@ant-design/icons";
-import { LocaleContext, LocaleContextType } from "@/context/LocaleContext";
+import { useLocale, DropdownButton } from "@gisce/react-formiga-components";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import ConnectionProvider from "@/ConnectionProvider";
 import showErrorDialog from "@/ui/ActionErrorDialog";
-import DropdownButton from "./DropdownButton";
 import {
   ContentRootContext,
   ContentRootContextType,
@@ -30,7 +29,8 @@ import { showLogInfo } from "@/helpers/logInfoHelper";
 import SearchBar from "./SearchBar";
 import { ExportModal } from "..";
 import { mergeParams } from "@/helpers/searchHelper";
-import { ErpFeatureKeys, useFeatureIsEnabled } from "@/context/ConfigContext";
+import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
 
 type Props = {
   parentContext?: any;
@@ -69,7 +69,7 @@ function TreeActionBar(props: Props) {
   const advancedExportEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_ADVANCED_EXPORT,
   );
-  const { t, lang } = useContext(LocaleContext) as LocaleContextType;
+  const { t } = useLocale();
   const contentRootContext = useContext(
     ContentRootContext,
   ) as ContentRootContextType;
@@ -83,7 +83,7 @@ function TreeActionBar(props: Props) {
   function tryDelete() {
     showConfirmDialog({
       confirmMessage: t("confirmRemove"),
-      lang,
+      t,
       onOk: () => {
         remove();
       },
@@ -255,11 +255,13 @@ function TreeActionBar(props: Props) {
       {separator()}
       <DropdownButton
         icon={<ThunderboltOutlined />}
+        placement="bottomRight"
         disabled={
           !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
         }
-        tooltip={t("actions")}
-        items={toolbar?.action}
+        onRetrieveData={async () => [
+          { label: t("actions"), items: toolbar?.action },
+        ]}
         onItemClick={(action: any) => {
           if (!action) {
             return;
@@ -270,11 +272,13 @@ function TreeActionBar(props: Props) {
       />
       <DropdownButton
         icon={<PrinterOutlined />}
+        placement="bottomRight"
         disabled={
           !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
         }
-        tooltip={t("reports")}
-        items={toolbar?.print}
+        onRetrieveData={async () => [
+          { label: t("reports"), items: toolbar?.print },
+        ]}
         onItemClick={(report: any) => {
           if (!report) {
             return;
@@ -293,6 +297,7 @@ function TreeActionBar(props: Props) {
         <>
           {separator()}
           <DropdownButton
+            placement="bottomRight"
             icon={
               <Icon
                 component={() => (
@@ -316,15 +321,19 @@ function TreeActionBar(props: Props) {
                 )}
               />
             }
-            tooltip={t("export")}
-            items={[
+            onRetrieveData={async () => [
               {
-                id: "print_screen",
-                name: t("printScreen"),
-              },
-              {
-                id: "export",
-                name: t("advancedExport"),
+                label: t("export"),
+                items: [
+                  {
+                    id: "print_screen",
+                    name: t("printScreen"),
+                  },
+                  {
+                    id: "export",
+                    name: t("advancedExport"),
+                  },
+                ],
               },
             ]}
             onItemClick={(itemClicked: any) => {
@@ -357,7 +366,6 @@ function TreeActionBar(props: Props) {
           />
           <ExportModal
             visible={exportModalVisible}
-            locale={lang}
             onClose={() => setExportModalVisible(false)}
             model={currentModel!}
             domain={mergeParams(
