@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   StarOutlined,
   StarFilled,
@@ -71,13 +77,45 @@ const FavouriteButton = (props: Props) => {
     openDefaultActionForModel,
   } = tabManagerContext || {};
 
-  useEffect(() => {
-    getShortcuts();
-  }, []);
+  const favouriteQuery = useMemo(() => {
+    if (!currentView) {
+      return;
+    }
+
+    const currentTab = tabs.find((t) => t.key === activeKey);
+    const { id: action_id, type: action_type } = currentTab?.action || {};
+
+    if (!action_id || !action_type) {
+      setIsFavourite(false);
+      return;
+    }
+
+    const view_id = currentView.view_id!;
+    let res_id: boolean | number = false;
+
+    if (currentView.type === "form") {
+      res_id = currentId ? (currentId as number) : false;
+    }
+
+    return {
+      action_id,
+      action_type,
+      view_id,
+      res_id,
+    };
+  }, [activeKey, currentId, currentView, tabs]);
+
+  const favouriteQueryString = useMemo(() => {
+    if (!favouriteQuery) {
+      return;
+    }
+    return JSON.stringify(favouriteQuery);
+  }, [favouriteQuery]);
 
   useEffect(() => {
     checkFavourite();
-  }, [tabs, activeKey, currentView, currentId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [favouriteQueryString]);
 
   async function getShortcuts() {
     try {
@@ -110,38 +148,19 @@ const FavouriteButton = (props: Props) => {
     setDropdownVisible(flag);
   }
 
-  async function checkFavourite() {
-    if (!currentView) {
+  const checkFavourite = useCallback(async () => {
+    if (!favouriteQuery) {
       return;
     }
 
-    const currentTab = tabs.find((t) => t.key === activeKey);
-    const { id: action_id, type: action_type } = currentTab?.action || {};
-
-    if (!action_id || !action_type) {
-      setIsFavourite(false);
-      return;
-    }
-
-    const view_id = currentView.view_id!;
-    let res_id: boolean | number = false;
-
-    if (currentView.type === "form") {
-      res_id = currentId ? (currentId as number) : false;
-    }
-    const result = await onCheckIsFavourite({
-      action_id,
-      action_type,
-      view_id,
-      res_id,
-    });
+    const result = await onCheckIsFavourite(favouriteQuery);
 
     if (result !== false) {
       setCurrentShortcutId(result as number);
     }
 
     setIsFavourite(result !== false);
-  }
+  }, [favouriteQuery, onCheckIsFavourite]);
 
   async function editFavourites() {
     setDropdownVisible(false);
