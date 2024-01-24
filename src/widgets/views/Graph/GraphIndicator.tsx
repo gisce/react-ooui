@@ -6,6 +6,7 @@ import Measure from "react-measure";
 import iconMapper from "@/helpers/iconMapper";
 import { Alert, Col, Row } from "antd";
 import { Operator, graphProcessor } from "@gisce/ooui";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 
 const { getValueForOperator } = graphProcessor;
 
@@ -50,8 +51,25 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
   const [icon, setIcon] = useState<string>();
   const [error, setError] = useState<string>();
 
+  const [searchAllIds] = useNetworkRequest(
+    ConnectionProvider.getHandler().searchAllIds,
+  );
+  const [readObjects] = useNetworkRequest(
+    ConnectionProvider.getHandler().readObjects,
+  );
+  const [searchCount] = useNetworkRequest(
+    ConnectionProvider.getHandler().searchCount,
+  );
+  const [evalDomain] = useNetworkRequest(
+    ConnectionProvider.getHandler().evalDomain,
+  );
+  const [parseCondition] = useNetworkRequest(
+    ConnectionProvider.getHandler().parseCondition,
+  );
+
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model, colorCondition]);
 
   async function fetchValue({
@@ -68,13 +86,13 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
     if (field && operator) {
       const resultIds =
         manualIds ||
-        (await ConnectionProvider.getHandler().searchAllIds({
+        (await searchAllIds({
           params: domain,
           model,
           context,
         }));
 
-      const results = await ConnectionProvider.getHandler().readObjects({
+      const results = await readObjects({
         model,
         ids: resultIds,
         fieldsToRetrieve: [field],
@@ -88,7 +106,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
     } else {
       return manualIds
         ? manualIds.length
-        : await ConnectionProvider.getHandler().searchCount({
+        : await searchCount({
             model,
             params: domain,
             context,
@@ -98,13 +116,13 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
 
   async function fetchTotalValue({ domain }: { domain: any }) {
     if (field && operator) {
-      const resultIds = await ConnectionProvider.getHandler().searchAllIds({
+      const resultIds = await searchAllIds({
         params: domain,
         model,
         context,
       });
 
-      const results = await ConnectionProvider.getHandler().readObjects({
+      const results = await readObjects({
         model,
         ids: resultIds,
         fieldsToRetrieve: [field],
@@ -116,7 +134,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
         operator,
       });
     } else {
-      return await ConnectionProvider.getHandler().searchCount({
+      return await searchCount({
         model,
         params: domain,
         context,
@@ -125,6 +143,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
   }
   async function fetchData() {
     setLoading(true);
+    setError(undefined);
     let totalRetrievedValue;
     let percent;
 
@@ -134,7 +153,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
       setValue(retrievedValue);
 
       if (totalDomain) {
-        const parsedDomain = await ConnectionProvider.getHandler().evalDomain({
+        const parsedDomain = await evalDomain({
           domain: totalDomain,
           values: {},
           context,
@@ -156,38 +175,32 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
       }
 
       if (colorCondition) {
-        const conditionEval =
-          await ConnectionProvider.getHandler().parseCondition({
-            condition: colorCondition,
-            values: { value: retrievedValue, percent },
-            context,
-          });
+        const conditionEval = await parseCondition({
+          condition: colorCondition,
+          values: { value: retrievedValue, percent },
+          context,
+        });
         setColor(conditionEval);
       }
 
       if (iconProps) {
         if (iconProps.indexOf(":") !== -1) {
-          const iconEval = await ConnectionProvider.getHandler().parseCondition(
-            {
-              condition: iconProps,
-              values: { value: retrievedValue, percent },
-              context,
-            },
-          );
+          const iconEval = await parseCondition({
+            condition: iconProps,
+            values: { value: retrievedValue, percent },
+            context,
+          });
           setIcon(iconEval);
         } else {
           setIcon(iconProps);
         }
       }
+      setError(undefined);
     } catch (err) {
       setError(JSON.stringify(err));
     }
 
     setLoading(false);
-  }
-
-  if (error) {
-    return <Alert className="mt-10" message={error} type="error" banner />;
   }
 
   if (loading) {
@@ -196,6 +209,10 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
         <LoadingOutlined style={{ height: "12px" }} />
       </div>
     );
+  }
+
+  if (error) {
+    return <Alert className="mt-10" message={error} type="error" banner />;
   }
 
   return (

@@ -1,4 +1,4 @@
-import { ViewTuple, ViewType } from "@/types";
+import { ViewTuple } from "@/types";
 
 export async function resolveViewInfoPromises(
   viewsToRetrieve: Array<{ viewTuple: ViewTuple; promise?: Promise<any> }>,
@@ -8,7 +8,6 @@ export async function resolveViewInfoPromises(
       try {
         return await item.promise;
       } catch (error) {
-        console.error(`Error for ${item.viewTuple}:`, error);
         return null;
       }
     }),

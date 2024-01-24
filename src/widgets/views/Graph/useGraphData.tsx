@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   parseGraph,
   GraphChart as GraphChartOoui,
@@ -6,8 +6,8 @@ import {
   graphFieldUtils,
   GraphType,
 } from "@gisce/ooui";
-import useDeepCompareEffect from "use-deep-compare-effect";
 import ConnectionProvider from "@/ConnectionProvider";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 
 const { processGraphData } = graphProcessor;
 const { getFieldsToRetrieve } = graphFieldUtils;
@@ -40,63 +40,97 @@ export const useGraphData = (opts: GraphDataOpts) => {
   const [processedValues, setProcessedValues] = useState<any>();
   const [evaluatedEntries, setEvaluatedEntries] = useState<any[]>();
   const [type, setType] = useState<GraphType>("line");
+  const [getFields] = useNetworkRequest(
+    ConnectionProvider.getHandler().getFields,
+  );
+  const [readObjects] = useNetworkRequest(
+    ConnectionProvider.getHandler().readObjects,
+  );
+  const [search] = useNetworkRequest(ConnectionProvider.getHandler().search);
 
-  useDeepCompareEffect(() => {
-    (async () => {
-      setLoading(true);
-      setError(undefined);
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(undefined);
 
-      // // First we parse the xml with ooui library
-      const ooui = parseGraph(xml) as GraphChartOoui;
-      setType(ooui.type || "line");
+    // // First we parse the xml with ooui library
+    const ooui = parseGraph(xml) as GraphChartOoui;
+    setType(ooui.type || "line");
 
-      // // Then we fetch the data
-      const fieldsToRetrieve = getFieldsToRetrieve({ ooui });
-      let values, fields;
+    // // Then we fetch the data
+    const fieldsToRetrieve = getFieldsToRetrieve({ ooui });
+    let values, fields;
 
-      try {
-        // Use connection provider or whatever service you need to use
-        ({ values, fields } = await retrieveData({
-          model,
-          domain,
-          context,
-          limit,
-          order: ooui.timerange ? ooui.x.name : null,
-          fields: fieldsToRetrieve,
-          manualIds,
-        }));
-      } catch (e) {
-        setError("Error fetching graph data values: " + JSON.stringify(e));
-        setLoading(false);
-        return;
-      }
-
-      try {
-        if (!values || !fields) {
-          setError("No values or fields returned");
-          setLoading(false);
-          return;
-        }
-
-        setEvaluatedEntries(values);
-        const _processedValues = processGraphData({
-          ooui,
-          values,
-          fields,
-          options: {
-            uninformedString,
-          },
-        });
-        setProcessedValues(_processedValues);
-      } catch (e) {
-        setError("Error processing graph data: " + e);
-        setLoading(false);
-        return;
-      }
-
+    try {
+      // Use connection provider or whatever service you need to use
+      ({ values, fields } = await retrieveData({
+        model,
+        domain,
+        context,
+        limit,
+        order: ooui.timerange ? ooui.x.name : null,
+        fields: fieldsToRetrieve,
+        manualIds,
+        methods: {
+          getFields,
+          readObjects,
+          search,
+        },
+      }));
+    } catch (e) {
+      setError("Error fetching graph data values: " + JSON.stringify(e));
       setLoading(false);
-    })();
-  }, [xml, model, limit, context, domain]);
+      return;
+    }
+
+    try {
+      if (!values || !fields) {
+        setError("No values or fields returned");
+        setLoading(false);
+        return {
+          loading,
+          error,
+          type,
+          values: processedValues,
+          evaluatedEntries,
+          fetchData,
+        };
+      }
+
+      setEvaluatedEntries(values);
+      const _processedValues = processGraphData({
+        ooui,
+        values,
+        fields,
+        options: {
+          uninformedString,
+        },
+      });
+      setError(undefined);
+      setProcessedValues(_processedValues);
+    } catch (e) {
+      setError("Error processing graph data: " + e);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(false);
+  }, [
+    context,
+    domain,
+    error,
+    evaluatedEntries,
+    getFields,
+    limit,
+    loading,
+    manualIds,
+    model,
+    processedValues,
+    readObjects,
+    search,
+    type,
+    uninformedString,
+    xml,
+  ]);
 
   return {
     loading,
@@ -104,6 +138,7 @@ export const useGraphData = (opts: GraphDataOpts) => {
     type,
     values: processedValues,
     evaluatedEntries,
+    fetchData,
   };
 };
 
@@ -111,12 +146,14 @@ async function getFieldsForModel({
   model,
   context,
   fields,
+  getFields,
 }: {
   model: string;
   context: any;
   fields: string[];
+  getFields: (payload: any) => Promise<any>;
 }) {
-  const viewData = await ConnectionProvider.getHandler().getFields({
+  const viewData = await getFields({
     model,
     context,
     fields,
@@ -132,6 +169,7 @@ async function retrieveData({
   order,
   limit,
   manualIds,
+  methods,
 }: {
   fields: string[];
   model: string;
@@ -140,11 +178,23 @@ async function retrieveData({
   order: string | null;
   limit?: number;
   manualIds?: number[];
+  methods: {
+    getFields: (payload: any) => Promise<any>;
+    readObjects: (payload: any) => Promise<any>;
+    search: (payload: any) => Promise<any>;
+  };
 }) {
-  const fieldsDefinition = await getFieldsForModel({ model, context, fields });
+  const { getFields, readObjects, search } = methods;
+
+  const fieldsDefinition = await getFieldsForModel({
+    model,
+    context,
+    fields,
+    getFields,
+  });
 
   if (manualIds) {
-    let values: any[] = (await ConnectionProvider.getHandler().readObjects({
+    let values: any[] = (await readObjects({
       model,
       ids: manualIds,
       fieldsToRetrieve: fields,
@@ -161,7 +211,7 @@ async function retrieveData({
     };
   }
 
-  const values: any[] = (await ConnectionProvider.getHandler().search({
+  const values: any[] = (await search({
     model,
     params: domain,
     fieldsToRetrieve: fields,
