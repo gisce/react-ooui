@@ -94,7 +94,7 @@ const TranslatableChar = ({
               onBlur={elementHasLostFocus}
             />
           </Col>
-          <Col flex="32px">
+          <Col flex="none">
             <ButtonWithTooltip
               tooltip={t("translate")}
               icon={<TranslationOutlined />}
