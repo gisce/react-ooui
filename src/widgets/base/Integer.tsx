@@ -49,6 +49,7 @@ export const Integer = (props: IntegerProps) => {
         onBlur={elementHasLostFocus}
         precision={0}
         style={requiredStyle}
+        wheel={false}
       />
     </Field>
   );
