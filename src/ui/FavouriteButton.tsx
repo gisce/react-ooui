@@ -61,6 +61,7 @@ const FavouriteButton = (props: Props) => {
   const { t } = useLocale();
 
   const { token } = useToken();
+  const favouriteButtonRef = useRef<FavouriteButtonRef>(null);
 
   const tabManagerContext = useContext(
     TabManagerContext,
@@ -170,7 +171,7 @@ const FavouriteButton = (props: Props) => {
     ];
   }, [onRetrieveShortcuts, t]);
 
-  async function toggleFavourite() {
+  const toggleFavourite = useCallback(async () => {
     if (isFavourite && currentShortcutId) {
       await onRemoveFavourite(currentShortcutId);
     } else {
@@ -202,15 +203,23 @@ const FavouriteButton = (props: Props) => {
 
     await getShortcuts();
     setIsFavourite(!isFavourite);
-  }
-
-  const favouriteButtonRef = useRef<FavouriteButtonRef>(null);
+  }, [
+    activeKey,
+    currentId,
+    currentShortcutId,
+    currentView,
+    getShortcuts,
+    isFavourite,
+    onAddFavourite,
+    onRemoveFavourite,
+    tabs,
+  ]);
 
   return (
     <FavouriteButtonUi
       ref={favouriteButtonRef}
       isFavourite={isFavourite}
-      toggleFavourite={toggleFavourite}
+      onToggleFavourite={toggleFavourite}
       onItemClick={handleMenuClick}
       placement={"bottomRight"}
       header={
