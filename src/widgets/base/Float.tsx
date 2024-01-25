@@ -28,10 +28,11 @@ export const Float = (props: WidgetProps) => {
         id={id}
         precision={decimalDigits}
         formatter={(value) => {
-          return `${value}`.replace(/[^0-9\.\-]+/g, "");
+          return `${value}`.replace(/[^0-9.-]+/g, "");
         }}
         decimalSeparator={"."}
         onBlur={elementHasLostFocus}
+        wheel={false}
       />
     </Field>
   );
