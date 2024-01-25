@@ -1,26 +1,24 @@
-import React, {
+import {
   useCallback,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
-import {
-  StarOutlined,
-  StarFilled,
-  DownOutlined,
-  TableOutlined,
-  FormOutlined,
-  EditOutlined,
-} from "@ant-design/icons";
-import { Button, Col, Row, Spin, Tooltip, theme, Menu, Dropdown } from "antd";
-import showErrorDialog from "@/ui/ActionErrorDialog";
+import { TableOutlined, FormOutlined, EditOutlined } from "@ant-design/icons";
+import { Tooltip, theme } from "antd";
 import {
   TabManagerContext,
   TabManagerContextType,
 } from "@/context/TabManagerContext";
-import { useLocale } from "@gisce/react-formiga-components";
-import { ViewType } from "@/types";
+import {
+  useLocale,
+  FavouriteButton as FavouriteButtonUi,
+  FavouriteButtonRef,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+} from "@gisce/react-formiga-components";
 const { useToken } = theme;
 
 export type ShortcutApi = {
@@ -46,6 +44,7 @@ type Props = {
   onCheckIsFavourite: (options: FavouriteOptions) => Promise<number | boolean>;
   onAddFavourite: (options: FavouriteOptions) => Promise<number>;
   onRemoveFavourite: (shortcut_id: number) => Promise<void>;
+  onDropdownClosed?: () => void;
 };
 
 const FavouriteButton = (props: Props) => {
@@ -54,12 +53,10 @@ const FavouriteButton = (props: Props) => {
     onCheckIsFavourite,
     onAddFavourite,
     onRemoveFavourite,
+    onDropdownClosed,
   } = props;
 
   const [isFavourite, setIsFavourite] = useState(false);
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [shortcuts, setShortcuts] = useState<ShortcutApi[]>([]);
-  const [loading, setLoading] = useState(true);
   const [currentShortcutId, setCurrentShortcutId] = useState<number>();
   const { t } = useLocale();
 
@@ -117,35 +114,12 @@ const FavouriteButton = (props: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [favouriteQueryString]);
 
-  async function getShortcuts() {
-    try {
-      setLoading(true);
-      const shortcuts = await onRetrieveShortcuts();
-      setShortcuts(shortcuts);
-    } catch (e) {
-      showErrorDialog(e);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function handleMenuClick(event: any) {
-    const { key } = event;
-    const shortcut = shortcuts.find((s) => s.id === Number(key));
+  function handleMenuClick(item: DropdownMenuItem) {
+    const shortcut = item as ShortcutApi;
     if (shortcut?.action_type === "ir.actions.wizard") {
       return;
     }
-    if (shortcut) {
-      openShortcut(shortcut);
-    }
-    setDropdownVisible(false);
-  }
-
-  function handleVisibleChange(flag: boolean) {
-    if (flag) {
-      getShortcuts();
-    }
-    setDropdownVisible(flag);
+    openShortcut(shortcut);
   }
 
   const checkFavourite = useCallback(async () => {
@@ -163,58 +137,38 @@ const FavouriteButton = (props: Props) => {
   }, [favouriteQuery, onCheckIsFavourite]);
 
   async function editFavourites() {
-    setDropdownVisible(false);
+    favouriteButtonRef?.current?.close();
     openDefaultActionForModel?.({ model: "ir.ui.view_sc" });
   }
 
-  const menu = (
-    <Menu onClick={handleMenuClick}>
-      <div style={{ width: 300, padding: 5, display: "flex" }}>
-        <div style={{ paddingLeft: 15, color: "#ccc" }}>
-          {t?.("favorites").toUpperCase()}
-        </div>
-        <div style={{ flexGrow: 1, paddingLeft: 10 }}>
-          <Tooltip title={t?.("edit_favorites")}>
-            <EditOutlined
-              style={{ color: token.colorPrimary, cursor: "pointer" }}
-              onClick={editFavourites}
-            />
-          </Tooltip>
-        </div>
-      </div>
-      <Menu.Divider />
-      {loading ? (
-        <Spin style={{ padding: "1rem" }} />
-      ) : shortcuts.length > 0 ? (
-        <>
-          {shortcuts.map((shortcut) => (
-            <Menu.Item key={shortcut.id}>
-              <FavouriteItem
-                title={shortcut.name}
-                type={shortcut.view_type as ViewType}
-              />
-            </Menu.Item>
-          ))}
-        </>
-      ) : (
-        <div style={{ width: 300, padding: 5, paddingLeft: 15 }}>
-          {t?.("no_favorites")}
-        </div>
-      )}
-    </Menu>
-  );
+  const getShortcuts = useCallback(async (): Promise<DropdownMenuGroup[]> => {
+    const shortcuts = await onRetrieveShortcuts();
 
-  function FavouriteItem({ title, type }: { title: string; type: ViewType }) {
-    const icon = type === "tree" ? <TableOutlined /> : <FormOutlined />;
-    return (
-      <Row wrap={false}>
-        <Col flex="none" style={{ paddingRight: 20 }}>
-          {icon}
-        </Col>
-        <Col flex="auto">{title}</Col>
-      </Row>
-    );
-  }
+    if (shortcuts.length === 0) {
+      return [
+        {
+          label: t?.("no_favorites"),
+          items: [],
+        },
+      ];
+    }
+
+    const items: DropdownMenuItem[] = shortcuts.map((shortcut) => {
+      return {
+        ...shortcut,
+        id: shortcut.id,
+        name: shortcut.name,
+        icon:
+          shortcut.view_type === "tree" ? <TableOutlined /> : <FormOutlined />,
+      } as DropdownMenuItem;
+    });
+
+    return [
+      {
+        items,
+      },
+    ];
+  }, [onRetrieveShortcuts, t]);
 
   async function toggleFavourite() {
     if (isFavourite && currentShortcutId) {
@@ -250,40 +204,37 @@ const FavouriteButton = (props: Props) => {
     setIsFavourite(!isFavourite);
   }
 
+  const favouriteButtonRef = useRef<FavouriteButtonRef>(null);
+
   return (
-    <>
-      <Button
-        type={isFavourite ? "primary" : "default"}
-        icon={
-          isFavourite ? (
-            <StarFilled style={{ color: "white" }} />
-          ) : (
-            <StarOutlined />
-          )
+    <FavouriteButtonUi
+      ref={favouriteButtonRef}
+      isFavourite={isFavourite}
+      toggleFavourite={toggleFavourite}
+      onItemClick={handleMenuClick}
+      placement={"bottomRight"}
+      header={
+        <div style={{ width: 300, padding: 5, display: "flex" }}>
+          <div style={{ paddingLeft: 15, color: "#ccc" }}>
+            {t?.("favorites").toUpperCase()}
+          </div>
+          <div style={{ flexGrow: 1, paddingLeft: 10 }}>
+            <Tooltip title={t?.("edit_favorites")}>
+              <EditOutlined
+                style={{ color: token.colorPrimary, cursor: "pointer" }}
+                onClick={editFavourites}
+              />
+            </Tooltip>
+          </div>
+        </div>
+      }
+      onOpenChange={(open: boolean) => {
+        if (!open) {
+          onDropdownClosed?.();
         }
-        style={{
-          width: 50,
-          borderTopRightRadius: 0,
-          borderBottomRightRadius: 0,
-        }}
-        onClick={toggleFavourite}
-      ></Button>
-      <Dropdown
-        overlay={menu}
-        onVisibleChange={handleVisibleChange}
-        open={dropdownVisible}
-      >
-        <Button
-          style={{
-            width: 25,
-            borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0,
-          }}
-          icon={<DownOutlined style={{ fontSize: "0.5em" }} />}
-          onClick={(e) => e.preventDefault()}
-        ></Button>
-      </Dropdown>
-    </>
+      }}
+      onRetrieveData={getShortcuts}
+    />
   );
 };
 
