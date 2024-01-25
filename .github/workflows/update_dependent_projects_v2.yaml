@@ -16,10 +16,6 @@ on:
 env:
   LIBRARY_NAME: "gisce/react-ooui"
 
-concurrency:
-  group: "release"
-  cancel-in-progress: false
-
 jobs:
   update-dependents:
     runs-on: ubuntu-latest
