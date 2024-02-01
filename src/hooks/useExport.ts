@@ -69,7 +69,7 @@ export const useExport = ({
       const fileType: any = await getMimeType(datas);
       openBase64InNewTab(datas, fileType.mime);
     },
-    [model, domain, limit, context, onClose],
+    [domain, selectedRegistersToExport, model, limit, context, onClose, t],
   );
 
   const onGetFields = useCallback(async () => {
@@ -108,7 +108,7 @@ export const useExport = ({
         parentKey: key,
       });
     },
-    [fields.current, model, context],
+    [context],
   );
 
   const onGetPredefinedExports = useCallback(async () => {
@@ -140,7 +140,35 @@ export const useExport = ({
       predefinedExports: predefinedExportsAdjusted,
       keysWithChilds,
     };
-  }, [fields.current]);
+  }, [context, model, onGetFieldChilds]);
+
+  const onRemovePredefinedExport = useCallback(
+    async (pExport: PredefinedExport) => {
+      await ConnectionProvider.getHandler().deleteObjects({
+        model: "ir.exports",
+        ids: [pExport.id!],
+        context,
+      });
+    },
+    [context],
+  );
+
+  const getModelFields = useCallback(
+    async (model: string) => {
+      if (exportModelFields.current.has(model)) {
+        return exportModelFields.current.get(model);
+      }
+
+      const fieldsForModel = ConnectionProvider.getHandler().getFields({
+        model,
+        context,
+        fields: [],
+      });
+
+      exportModelFields.current.set(model, fieldsForModel);
+    },
+    [exportModelFields, context],
+  );
 
   const onSavePredefinedExport = useCallback(
     async (pExport: PredefinedExport) => {
@@ -175,35 +203,7 @@ export const useExport = ({
 
       return { ...pExport, id: exportId };
     },
-    [],
-  );
-
-  const onRemovePredefinedExport = useCallback(
-    async (pExport: PredefinedExport) => {
-      await ConnectionProvider.getHandler().deleteObjects({
-        model: "ir.exports",
-        ids: [pExport.id!],
-        context,
-      });
-    },
-    [],
-  );
-
-  const getModelFields = useCallback(
-    async (model: string) => {
-      if (exportModelFields.current.has(model)) {
-        return exportModelFields.current.get(model);
-      }
-
-      const fieldsForModel = ConnectionProvider.getHandler().getFields({
-        model,
-        context,
-        fields: [],
-      });
-
-      exportModelFields.current.set(model, fieldsForModel);
-    },
-    [exportModelFields, context],
+    [context, getModelFields, model],
   );
 
   return {
