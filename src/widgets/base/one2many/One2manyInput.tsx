@@ -636,6 +636,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           context={{ ...getContext?.(), ...context }}
           colorsForResults={colorsForResults}
           readonly={readOnly}
+          scrollY={ooui?.height}
         />
       );
     }
