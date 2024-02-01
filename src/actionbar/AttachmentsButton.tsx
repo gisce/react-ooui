@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { getMimeType, openBase64InNewTab } from "@/helpers/filesHelper";
 import ConnectionProvider from "@/ConnectionProvider";
 import {
@@ -58,46 +58,52 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
       showErrorDialog(error as any);
     }
     setPreloading(false);
-  }, attachments);
+  }, [attachments, formRef]);
 
-  const openAttachmentLink = useCallback(async (attachment: any) => {
-    if (attachment.link) {
-      window.open(attachment.link);
-      return;
-    }
+  const openAttachmentLink = useCallback(
+    async (attachment: any) => {
+      if (attachment.link) {
+        window.open(attachment.link);
+        return;
+      }
 
-    setDownloading(true);
+      setDownloading(true);
 
-    let retrievedAttachment;
+      let retrievedAttachment;
 
-    try {
-      const results = await ConnectionProvider.getHandler().readObjects({
-        model: "ir.attachment",
-        ids: [attachment.id],
-        context: (formRef.current as any).getContext(),
-      });
-      retrievedAttachment = results[0];
-    } catch (error) {
-      showErrorDialog(error as any);
-    }
+      try {
+        const results = await ConnectionProvider.getHandler().readObjects({
+          model: "ir.attachment",
+          ids: [attachment.id],
+          context: (formRef.current as any).getContext(),
+        });
+        retrievedAttachment = results[0];
+      } catch (error) {
+        showErrorDialog(error as any);
+      }
 
-    setDownloading(false);
+      setDownloading(false);
 
-    if (!retrievedAttachment) {
-      return;
-    }
+      if (!retrievedAttachment) {
+        return;
+      }
 
-    if (retrievedAttachment.datas) {
-      const fileType: any = await getMimeType(retrievedAttachment.datas);
-      openBase64InNewTab(retrievedAttachment.datas, fileType.mime);
-    } else {
-      onViewAttachmentDetails(retrievedAttachment);
-    }
-  }, []);
+      if (retrievedAttachment.datas) {
+        const fileType: any = await getMimeType(retrievedAttachment.datas);
+        openBase64InNewTab(retrievedAttachment.datas, fileType.mime);
+      } else {
+        onViewAttachmentDetails(retrievedAttachment);
+      }
+    },
+    [formRef, onViewAttachmentDetails],
+  );
 
-  const openAttachmentDetail = useCallback(async (attachment: any) => {
-    onViewAttachmentDetails(attachment);
-  }, []);
+  const openAttachmentDetail = useCallback(
+    async (attachment: any) => {
+      onViewAttachmentDetails(attachment);
+    },
+    [onViewAttachmentDetails],
+  );
 
   useEffect(() => {
     preloadAttachments();
