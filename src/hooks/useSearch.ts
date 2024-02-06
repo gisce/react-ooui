@@ -76,7 +76,7 @@ export const useSearch = (opts: UseSearchOpts) => {
   const [resultsInternal, setResultsInternal] = useState<any>([]);
   const [colorsForResults, setColorsForResults] = useState<any>(undefined);
   const [statusForResults, setStatusForResults] = useState<any>(undefined);
-  const internalLimit = useRef(limit || DEFAULT_SEARCH_LIMIT);
+  const internalLimit = useRef(limit);
 
   const originalResults = useRef<any[]>([]);
 
