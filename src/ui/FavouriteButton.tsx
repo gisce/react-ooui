@@ -76,12 +76,11 @@ const FavouriteButton = (props: Props) => {
   } = tabManagerContext || {};
 
   const favouriteQuery = useMemo(() => {
-    if (!currentView) {
+    if (!currentView || !currentView.view_id || !(currentView as any).extra) {
       return;
     }
 
-    const currentTab = tabs.find((t) => t.key === activeKey);
-    const { id: action_id, type: action_type } = currentTab?.action || {};
+    const { action_id, action_type } = (currentView as any).extra || {};
 
     if (!action_id || !action_type) {
       setIsFavourite(false);
@@ -101,7 +100,7 @@ const FavouriteButton = (props: Props) => {
       view_id,
       res_id,
     };
-  }, [activeKey, currentId, currentView, tabs]);
+  }, [currentId, currentView]);
 
   const favouriteQueryString = useMemo(() => {
     if (!favouriteQuery) {
