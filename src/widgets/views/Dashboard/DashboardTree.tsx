@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Alert, Spin } from "antd";
 
 import { Tree } from "@/widgets/views/Tree";
@@ -7,8 +7,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 
 import { getColorMap, getTree, sortResults } from "@/helpers/treeHelper";
 import { mergeParams } from "@/helpers/searchHelper";
-
-const DEFAULT_SEARCH_LIMIT = 80;
+import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 
 type OnRowClickedData = {
   id: number;

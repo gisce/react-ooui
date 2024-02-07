@@ -17,6 +17,7 @@ import { transformPlainMany2Ones } from "@/helpers/formHelper";
 import { nanoid } from "nanoid";
 import { useLocale } from "@gisce/react-formiga-components";
 import { useConfigContext } from "@/context/ConfigContext";
+import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 
 type RootViewProps = {
   children: ReactNode;
@@ -270,7 +271,13 @@ function RootView(props: RootViewProps, ref: any) {
   }
 
   async function openShortcut(shortcut: ShortcutApi) {
-    const { action_id, action_type, res_id, view_id } = shortcut;
+    const {
+      action_id,
+      action_type,
+      res_id,
+      view_id,
+      overrideUnsettedLimit = false,
+    } = shortcut;
     const action = `${action_type},${action_id}`;
 
     const dataForAction = await ConnectionProvider.getHandler().getActionData({
@@ -353,7 +360,10 @@ function RootView(props: RootViewProps, ref: any) {
       action_type,
       res_id,
       treeExpandable,
-      limit,
+      limit:
+        overrideUnsettedLimit && (limit === 0 || limit === false)
+          ? DEFAULT_SEARCH_LIMIT
+          : limit,
     });
   }
 

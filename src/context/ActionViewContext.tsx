@@ -1,6 +1,6 @@
-import { DEFAULT_SEARCH_LIMIT } from "@/hooks/useSearch";
+import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { View } from "@/types";
-import React, { useEffect, useRef, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
 export type ActionViewContextType = {
   title: string;
@@ -56,8 +56,9 @@ export type ActionViewContextType = {
   setTitle?: (value: string) => void;
 };
 
-export const ActionViewContext =
-  React.createContext<ActionViewContextType | null>(null);
+export const ActionViewContext = createContext<ActionViewContextType | null>(
+  null,
+);
 
 type ActionViewProviderProps = ActionViewContextType & {
   children: React.ReactNode;
