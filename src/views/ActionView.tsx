@@ -128,7 +128,8 @@ function ActionView(props: Props, ref: any) {
 
   function setCurrentView(view?: View) {
     setCurrentViewInternal(view);
-    setCurrentViewTabContext?.(view);
+    const extra = { action_id, action_type };
+    setCurrentViewTabContext?.({ ...view, extra } as any);
   }
 
   useImperativeHandle(ref, () => ({
@@ -288,7 +289,8 @@ function ActionView(props: Props, ref: any) {
   useEffect(() => {
     if (activeKey === tabKey) {
       setCurrentIdTabContext?.(currentId);
-      setCurrentViewTabContext?.(currentView);
+      const extra = { action_id, action_type };
+      setCurrentViewTabContext?.({ ...currentView, extra } as any);
     }
   }, [tabs, activeKey]);
 
