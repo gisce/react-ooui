@@ -26,8 +26,9 @@ import {
   ContentRootContextType,
 } from "@/context/ContentRootContext";
 import showErrorDialog from "@/ui/ActionErrorDialog";
-import { DEFAULT_SEARCH_LIMIT, useSearch } from "@/hooks/useSearch";
+import { useSearch } from "@/hooks/useSearch";
 import { TableRef } from "@gisce/react-formiga-table";
+import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 
 type OnRowClickedData = {
   id: number;
