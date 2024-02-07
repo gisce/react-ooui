@@ -128,6 +128,13 @@ export const useExport = ({
           const childKey = getChildKey(field.key);
           const fieldDefinition = getFieldDefinition(field.key, fields.current);
           const optsForField = fieldDefinition[childKey];
+
+          if (!optsForField) {
+            return {
+              key: field.key,
+            };
+          }
+
           return {
             key: field.key,
             title: optsForField.string,
@@ -375,7 +382,14 @@ const retrieveKeyFieldsForPredefinedExports = async ({
 
   // We must load the fields info for each key if not loaded yet in fields and store them in an array to pass them to the formiga component
   for (const key of keysWithoutChildsInFields) {
-    keysWithChilds.push({ key, childs: await onGetFieldChilds(key) });
+    try {
+      const childs = await onGetFieldChilds(key);
+      keysWithChilds.push({ key, childs });
+    } catch (err) {
+      console.warn(
+        `Export field ${key} has raised an error - has been migrated? does the field exist?`,
+      );
+    }
   }
 
   return keysWithChilds;
