@@ -364,6 +364,7 @@ function Dashboard(props: DashboardProps, ref: any) {
             res_model,
             view_id: id,
             view_type: type,
+            overrideUnsettedLimit: true,
           };
         }
 
