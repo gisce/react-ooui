@@ -8,6 +8,7 @@ import {
 } from "@/helpers/treeHelper";
 import { useState, useCallback, useRef } from "react";
 import { ConnectionProvider, FormView, TreeView } from "..";
+import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 
 type UseSearchOpts = {
   model: string;
@@ -35,8 +36,6 @@ type UseSearchOpts = {
   setSearchValues?: (value: any) => void;
   clearSelection?: () => void;
 };
-
-export const DEFAULT_SEARCH_LIMIT = 80;
 
 export const useSearch = (opts: UseSearchOpts) => {
   const {
@@ -76,7 +75,7 @@ export const useSearch = (opts: UseSearchOpts) => {
   const [resultsInternal, setResultsInternal] = useState<any>([]);
   const [colorsForResults, setColorsForResults] = useState<any>(undefined);
   const [statusForResults, setStatusForResults] = useState<any>(undefined);
-  const internalLimit = useRef(limit || DEFAULT_SEARCH_LIMIT);
+  const internalLimit = useRef(limit);
 
   const originalResults = useRef<any[]>([]);
 
