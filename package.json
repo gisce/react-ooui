@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "engines": {
     "node": "20.5.0"
   },
