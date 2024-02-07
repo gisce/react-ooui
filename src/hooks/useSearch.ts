@@ -276,6 +276,7 @@ export const useSearch = (opts: UseSearchOpts) => {
       }
     },
     [
+      clearSelection,
       nameSearch,
       searchByNameSearch,
       searchNameGetDoneRef,
