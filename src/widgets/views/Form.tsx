@@ -549,6 +549,10 @@ function Form(props: FormProps, ref: any) {
         })
       )[0];
 
+      // If we are inside a modal, we don't want to fetch the attachments
+      if (insideButtonModal) {
+        return { values, defaultGetCalled };
+      }
       const results = await ConnectionProvider.getHandler().search({
         params: [
           ["res_model", "=", model],

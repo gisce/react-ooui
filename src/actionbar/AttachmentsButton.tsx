@@ -38,6 +38,9 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
   const { t } = useLocale();
 
   const preloadAttachments = useCallback(async () => {
+    if (!attachments || attachments.length === 0) {
+      return;
+    }
     setPreloading(true);
     try {
       const results = await ConnectionProvider.getHandler().readObjects({
