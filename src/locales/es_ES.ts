@@ -28,7 +28,7 @@ export default {
   fillRequiredField: "Por favor, rellena éste campo obligatorio",
   fillRequiredFields: "Por favor, rellena todos los campos obligatorios",
   generatingReport: "Generando informe...",
-  confirmation: "Confirmacióm",
+  confirmation: "Confirmación",
   ok: "De acuerdo",
   cancel: "Cancelar",
   formHasErrors: "El formulario tiene errores",
