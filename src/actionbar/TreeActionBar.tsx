@@ -164,7 +164,7 @@ function TreeActionBar(props: Props) {
       {treeExpandable ? null : (
         <>
           <SearchBar
-            disabled={duplicatingItem || removingItem || treeIsLoading}
+            disabled={duplicatingItem || removingItem}
             searchText={searchTreeNameSearch}
             onSearch={(searchString?: string) => {
               if (searchString && searchString.trim().length > 0) {
@@ -186,12 +186,12 @@ function TreeActionBar(props: Props) {
               onClick={() => {
                 setSearchVisible?.(!searchVisible);
               }}
-              disabled={duplicatingItem || removingItem || treeIsLoading}
+              disabled={duplicatingItem || removingItem}
               badgeNumber={searchParams?.length}
             />
           )}
           {separator()}
-          <NewButton disabled={treeIsLoading} />
+          <NewButton />
           <ActionButton
             icon={<CopyOutlined />}
             tooltip={t("duplicate")}
@@ -248,7 +248,6 @@ function TreeActionBar(props: Props) {
               setCurrentView?.(newView);
             }}
             previousView={previousView}
-            disabled={treeIsLoading}
           />
         </>
       )}
