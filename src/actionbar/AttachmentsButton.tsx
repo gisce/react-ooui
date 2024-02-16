@@ -9,7 +9,7 @@ import showErrorDialog from "@/ui/ActionErrorDialog";
 import {
   Attachment,
   AttachmentsButtonWrapper,
-} from "./AttachmentsButtonWrapper";
+} from "./NewAttachmentsButtonWrapper";
 import { Modal, Spin } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
 
@@ -121,7 +121,7 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
         loading={preloading}
         onAddNewAttachment={onAddNewAttachment}
         onListAllAttachments={onListAllAttachments}
-        onopenAttachmentLink={openAttachmentLink}
+        onOpenAttachmentLink={openAttachmentLink}
         onOpenAttachmentDetail={openAttachmentDetail}
       />
       <Modal
