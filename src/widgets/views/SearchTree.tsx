@@ -130,6 +130,7 @@ function SearchTree(props: Props, ref: any) {
     searchFilterLoading,
     searchError,
     page,
+    limit: limitUsedInSearch,
     offset,
     getResults,
     requestPageChange,
@@ -340,7 +341,7 @@ function SearchTree(props: Props, ref: any) {
           ref={tableRef}
           context={parentContext}
           total={totalItems}
-          limit={limit}
+          limit={limitUsedInSearch}
           page={page}
           treeView={treeView}
           results={getResults()}
@@ -373,6 +374,7 @@ function SearchTree(props: Props, ref: any) {
     formView,
     getResults,
     limit,
+    limitUsedInSearch,
     offset,
     onRowClickedHandler,
     onSearchTreeLimitChange,
