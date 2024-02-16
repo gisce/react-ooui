@@ -121,7 +121,7 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
         loading={preloading}
         onAddNewAttachment={onAddNewAttachment}
         onListAllAttachments={onListAllAttachments}
-        onopenAttachmentLink={openAttachmentLink}
+        onOpenAttachmentLink={openAttachmentLink}
         onOpenAttachmentDetail={openAttachmentDetail}
       />
       <Modal
