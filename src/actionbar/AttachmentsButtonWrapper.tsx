@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef } from "react";
 import {
   DownOutlined,
   FormOutlined,
@@ -7,8 +7,12 @@ import {
   FileAddOutlined,
   TableOutlined,
 } from "@ant-design/icons";
-import { Popover, Button, Row, Col, Tooltip, Spin } from "antd";
-import { useLocale } from "@gisce/react-formiga-components";
+import { Button, Row, Col, Tooltip } from "antd";
+import {
+  Dropdown,
+  DropdownRef,
+  useLocale,
+} from "@gisce/react-formiga-components";
 
 export type Attachment = {
   id: number;
@@ -24,97 +28,44 @@ export type AttachmentsButtonWrapperProps = {
   loading: boolean;
   onAddNewAttachment: () => void;
   onListAllAttachments: () => void;
-  onopenAttachmentLink: (attachment: Attachment) => void;
+  onOpenAttachmentLink: (attachment: Attachment) => void;
   onOpenAttachmentDetail: (attachment: Attachment) => void;
 };
 
 export const AttachmentsButtonWrapper = (
   props: AttachmentsButtonWrapperProps,
 ) => {
-  const { numberOfAttachments, disabled } = props;
+  const {
+    numberOfAttachments,
+    attachments = [],
+    disabled,
+    onAddNewAttachment,
+    onOpenAttachmentLink,
+    onOpenAttachmentDetail,
+    onListAllAttachments,
+  } = props;
   const { t } = useLocale();
-  const [popoverVisible, setPopoverVisible] = useState<boolean>(false);
+  const dropdownRef = useRef<DropdownRef>(null);
 
   const button = (
-    <Button disabled={disabled}>
+    <Button>
       <LinkOutlined />
       {`(${numberOfAttachments})`}
       <DownOutlined style={{ fontSize: 12 }} />
     </Button>
   );
 
-  if (disabled) {
-    return button;
-  }
-
   return (
-    <Popover
-      onVisibleChange={(visible: boolean) => setPopoverVisible(visible)}
-      visible={popoverVisible}
-      placement="bottom"
-      content={Content(props, setPopoverVisible)}
-      title={t("attachments")}
-      arrowContent={null}
-    >
-      {button}
-    </Popover>
-  );
-};
-
-const Content = (
-  props: AttachmentsButtonWrapperProps,
-  setPopoverVisible: (visible: boolean) => void,
-) => {
-  const { t } = useLocale();
-  const {
-    attachments = [],
-    loading,
-    onAddNewAttachment,
-    onopenAttachmentLink,
-    onOpenAttachmentDetail,
-    onListAllAttachments,
-  } = props;
-  if (loading) {
-    return <Spin style={{ padding: 20 }} />;
-  }
-
-  return (
-    <>
-      <a
-        style={{ display: "block", paddingBottom: 5 }}
-        href="#"
-        onClick={() => {
-          setPopoverVisible(false);
-          onListAllAttachments();
-        }}
-      >
-        <TableOutlined /> {t("listAllAttachments")}
-      </a>
-      <a
-        style={{ display: "block" }}
-        href="#"
-        onClick={() => {
-          setPopoverVisible(false);
-          onAddNewAttachment();
-        }}
-      >
-        <FileAddOutlined /> {t("addNewAttachment")}
-      </a>
-      {attachments.length > 0 && (
-        <>
-          <li className="ant-dropdown-menu-item-divider"></li>
-          {attachments.map((attachment: any) => {
+    <Dropdown
+      ref={dropdownRef}
+      onRetrieveData={async () => [
+        {
+          items: attachments.map((attachment) => {
             const Icon = attachment.link ? LinkOutlined : DownloadOutlined;
-            return (
-              <Row
-                style={{ paddingTop: 4, paddingBottom: 4 }}
-                wrap={false}
-                align="middle"
-                key={attachment.id}
-              >
-                <Col flex="auto">{attachment.name}</Col>
-                <Col flex="25px" style={{ textAlign: "center" }}>
-                  {(attachment.datas_fname || attachment.link) && (
+            const right = (
+              <Row wrap={false} align="middle" key={attachment.id} gutter={8}>
+                <Col style={{ textAlign: "center" }}>
+                  {((attachment as any).datas_fname || attachment.link) && (
                     <Tooltip
                       title={
                         attachment.link
@@ -125,19 +76,19 @@ const Content = (
                       <Icon
                         style={{ cursor: "pointer" }}
                         onClick={() => {
-                          setPopoverVisible(false);
-                          onopenAttachmentLink(attachment);
+                          dropdownRef.current?.close();
+                          onOpenAttachmentLink(attachment);
                         }}
                       />
                     </Tooltip>
                   )}
                 </Col>
-                <Col flex="25px" style={{ textAlign: "center" }}>
+                <Col style={{ textAlign: "center" }}>
                   <Tooltip title={t("openAttachment")}>
                     <FormOutlined
                       style={{ cursor: "pointer" }}
                       onClick={() => {
-                        setPopoverVisible(false);
+                        dropdownRef.current?.close();
                         onOpenAttachmentDetail(attachment);
                       }}
                     />
@@ -145,9 +96,44 @@ const Content = (
                 </Col>
               </Row>
             );
-          })}
-        </>
-      )}
-    </>
+
+            return {
+              id: attachment.id as number,
+              name: attachment.name,
+              disableClick: true,
+              right,
+            };
+          }),
+        },
+      ]}
+      placement="bottomRight"
+      disabled={disabled}
+      header={
+        <div style={{ padding: 5 }}>
+          <a
+            style={{ display: "block", paddingBottom: 5 }}
+            href="#"
+            onClick={() => {
+              dropdownRef.current?.close();
+              onListAllAttachments();
+            }}
+          >
+            <TableOutlined /> {t("listAllAttachments")}
+          </a>
+          <a
+            style={{ display: "block" }}
+            href="#"
+            onClick={() => {
+              dropdownRef.current?.close();
+              onAddNewAttachment();
+            }}
+          >
+            <FileAddOutlined /> {t("addNewAttachment")}
+          </a>
+        </div>
+      }
+    >
+      {button}
+    </Dropdown>
   );
 };
