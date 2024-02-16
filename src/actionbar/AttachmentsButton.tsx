@@ -9,7 +9,7 @@ import showErrorDialog from "@/ui/ActionErrorDialog";
 import {
   Attachment,
   AttachmentsButtonWrapper,
-} from "./NewAttachmentsButtonWrapper";
+} from "./AttachmentsButtonWrapper";
 import { Modal, Spin } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
 
