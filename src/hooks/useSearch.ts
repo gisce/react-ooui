@@ -416,7 +416,7 @@ export const useSearch = (opts: UseSearchOpts) => {
     searchError,
     page,
     offset,
-    limit,
+    limit: internalLimit.current,
     getResults,
     requestPageChange,
     changeSort,
