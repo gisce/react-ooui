@@ -54,7 +54,10 @@ import {
   ContentRootContextType,
 } from "@/context/ContentRootContext";
 import { useLocale } from "@gisce/react-formiga-components";
-import { convertToPlain2ManyValues } from "@/helpers/one2manyHelper";
+import {
+  convertFrom2ManyRawValues,
+  convertToPlain2ManyValues,
+} from "@/helpers/one2manyHelper";
 import { ErrorAlert } from "@/ui/ErrorAlert";
 
 export type FormProps = {
@@ -835,9 +838,20 @@ function Form(props: FormProps, ref: any) {
         ...getCurrentValues(fields),
         ...response.value,
       };
-      parseForm({ fields, arch: arch!, values: processedValues });
-      assignNewValuesToForm({
+
+      const valuesWith2ManyValuesConverted = convertFrom2ManyRawValues({
         values: processedValues,
+        fields,
+      });
+
+      parseForm({
+        fields,
+        arch: arch!,
+        values: valuesWith2ManyValuesConverted,
+      });
+
+      assignNewValuesToForm({
+        values: valuesWith2ManyValuesConverted,
         fields,
         reset: false,
       });

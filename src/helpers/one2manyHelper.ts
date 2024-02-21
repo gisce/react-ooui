@@ -185,6 +185,38 @@ const convertToPlain2ManyValues = (values: any, fields: any) => {
   });
   return result;
 };
+
+export const convertFrom2ManyRawValues = ({
+  values,
+  fields,
+}: {
+  values: any;
+  fields: any;
+}) => {
+  const formattedValues: any = {};
+
+  Object.keys(values).forEach((key) => {
+    if (
+      Object.prototype.hasOwnProperty.call(fields, key) &&
+      (fields[key].type === "one2many" || fields[key].type === "many2many") &&
+      values[key] &&
+      !values[key]?.items &&
+      Array.isArray(values[key])
+    ) {
+      const itemsId = values[key];
+      formattedValues[key] = {
+        items: itemsId.map((itemId: number) => ({
+          operation: "original",
+          id: itemId,
+        })),
+      };
+    } else {
+      formattedValues[key] = values[key];
+    }
+  });
+  return formattedValues;
+};
+
 export {
   readObjectValues,
   removeItems,
