@@ -7,13 +7,15 @@ import {
   updateTab,
 } from "@/redux/slices/tabSlice";
 import { RootState } from "@/redux/state";
+import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 export const useTabs = () => {
   const dispatch = useDispatch();
   const tabsState = useSelector((state: RootState) => state.tabs);
-  const currentTab = tabsState.tabs.find(
-    (tab: Tab) => tab.id === tabsState.activeTabKey,
+  const currentTab = useMemo(
+    () => tabsState.tabs.find((tab: Tab) => tab.id === tabsState.activeTabKey),
+    [tabsState.activeTabKey, tabsState.tabs],
   );
 
   return {

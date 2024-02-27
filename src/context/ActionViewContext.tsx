@@ -1,6 +1,12 @@
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { View } from "@/types";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useNavigation } from "./RootContext";
 
 export type ActionViewContextType = {
@@ -91,7 +97,6 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     limit: limitProps,
     tabKey,
   } = props;
-  const [currentView, setCurrentView] = useState<View>();
   const [currentId, setCurrentId] = useState<number>();
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
@@ -110,18 +115,37 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   );
   const [title, setTitle] = useState<string>(titleProps);
 
-  const { updateTab } = useNavigation();
+  const { updateTab, tabs } = useNavigation();
+  const tab = tabs?.find((tab) => tab.id === tabKey);
 
   useEffect(() => {
     if (results && results.length > 0 && !currentItemIndex) {
       setCurrentItemIndex?.(0);
       setCurrentId?.(results[0].id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results]);
 
   useEffect(() => {
     setLimit(limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT);
   }, [limitProps]);
+
+  const currentView = tab
+    ? availableViews?.find((view) => view.view_id === tab.view_id)
+    : undefined;
+
+  const setCurrentView = useCallback(
+    (view: View) => {
+      updateTab({
+        id: tabKey!,
+        tabData: {
+          view_id: view.view_id,
+          view_type: view.type,
+        },
+      });
+    },
+    [tabKey, updateTab],
+  );
 
   useEffect(() => {
     if (availableViews.length === 1) {
@@ -133,6 +157,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         )[0],
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [availableViews]);
 
   useEffect(() => {
@@ -146,6 +171,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         )[0],
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentView]);
 
   useEffect(() => {
@@ -155,6 +181,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         isClosable: !formHasChanges,
       },
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formHasChanges]);
 
   useEffect(() => {
@@ -164,16 +191,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         res_id: currentId,
       },
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentId]);
-
-  useEffect(() => {
-    updateTab({
-      id: tabKey!,
-      tabData: {
-        view_type: currentView?.type,
-      },
-    });
-  }, [currentView]);
 
   const callOnFormSave = async () => {
     return await (formRef.current as any)?.submitForm();
@@ -182,9 +201,9 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   return (
     <ActionViewContext.Provider
       value={{
-        title,
         currentView: currentView!,
         setCurrentView,
+        title,
         availableViews,
         formIsSaving,
         setFormIsSaving,

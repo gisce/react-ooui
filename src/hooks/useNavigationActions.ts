@@ -68,31 +68,30 @@ export const useNavigationActions = ({
             : initialView.id,
         };
 
+        const { title } = await ConnectionProvider.getHandler().getView({
+          model,
+          type: formattedInitialView.type,
+          id: formattedInitialView.id,
+          context: formattedContext,
+        });
+
         addTab({
-          data: {
-            id: key,
-            title,
-            action_id,
-            action_type,
-            view_id: formattedInitialView.id,
-            res_id,
-          },
-          content: createElement(ActionView, {
-            action_id,
-            action_type,
-            tabKey: key,
-            title,
-            views,
-            model,
-            context: formattedContext,
-            domain,
-            initialView: formattedInitialView,
-            res_id,
-            formDefaultValues: values,
-            formForcedValues: forced_values,
-            treeExpandable,
-            limit,
-          }),
+          id: key,
+          title,
+          action_id,
+          action_type,
+          view_id: formattedInitialView.id,
+          res_id,
+          tabKey: key,
+          views,
+          model,
+          context: formattedContext,
+          domain,
+          initialView: formattedInitialView,
+          formDefaultValues: values,
+          formForcedValues: forced_values,
+          treeExpandable,
+          limit,
         });
       }
     },

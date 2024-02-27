@@ -48,6 +48,8 @@ export const RootProvider = forwardRef<RootProviderRef, RootProviderProps>(
       retrieveAndOpenAction,
     }));
 
+    const addNewTab = () => {};
+
     const { openAction, openRelate, retrieveAndOpenAction } =
       useNavigationActions({
         openActionModal: () => {},
