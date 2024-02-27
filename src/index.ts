@@ -20,6 +20,7 @@ import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import SearchTree from "@/widgets/views/SearchTree";
 import { FormModal } from "@/widgets/modals/FormModal";
 import { ExportModal } from "@/widgets/modals/ExportModal";
+
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import Date from "@/widgets/base/Date";
 import DateTime from "@/widgets/base/DateTime";
@@ -51,6 +52,7 @@ import {
   DashboardGrid,
 } from "@/widgets/views/DashboardGrid";
 import { GraphIndicator } from "@/widgets/views/Graph/GraphIndicator";
+import * as tabSlice from "@/redux/slices/tabSlice";
 
 import type {
   TreeView,
@@ -77,8 +79,6 @@ import type {
 } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import RootView from "./views/RootView";
-import TabSelector from "./views/TabSelector";
-import CurrentTabContent from "./views/CurrentTabContent";
 import ContentRootProvider from "./context/ContentRootContext";
 import FavouriteButton from "./ui/FavouriteButton";
 import { ConfigContext, ConfigContextProvider } from "./context/ConfigContext";
@@ -86,6 +86,9 @@ import Tab from "./views/tabs/Tab";
 import ActionView from "./views/ActionView";
 import { ErpAllFeatureKeys, ErpFeatureKeys } from "./models/erpFeature";
 import type { ErpFeaturesMap } from "./models/erpFeature";
+import TabSelector from "./views/tabs/TabSelector";
+import { useTabs } from "./hooks/useTabs";
+import TabContent from "./views/tabs/TabContent";
 
 export {
   Button,
@@ -140,8 +143,6 @@ export {
   GetFieldsRequest,
   DefaultGetRequest,
   RootView,
-  TabSelector,
-  CurrentTabContent,
   Url,
   Email,
   Image,
@@ -171,4 +172,8 @@ export {
   ErpFeatureKeys,
   ErpFeaturesMap,
   ConfigContextProvider,
+  TabSelector,
+  TabContent,
+  tabSlice,
+  useTabs,
 };
