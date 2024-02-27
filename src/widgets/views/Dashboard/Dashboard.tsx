@@ -335,7 +335,6 @@ function Dashboard(props: DashboardProps, ref: any) {
               model={model}
               context={context}
               domain={domain}
-              setCanWeClose={() => {}}
               initialView={formattedInitialView}
               limit={limit}
             />

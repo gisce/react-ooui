@@ -10,10 +10,12 @@ import { ViewType } from "@/types";
 
 export const useNavigationActions = ({
   openActionModal,
+  addTab,
 }: {
   openActionModal: (payload: any) => void;
+  addTab: (payload: any) => void;
 }) => {
-  const { globalValues, rootContext, addTab } = useConfigContext();
+  const { globalValues, rootContext } = useConfigContext();
 
   const parseAndEvalContextDomain = useCallback(
     async ({ context, values, fields, domain }: any) => {
