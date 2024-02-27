@@ -4,7 +4,7 @@ import Tab from "./Tab";
 import { RootState } from "@/redux/state";
 
 function TabSelector() {
-  const { tabs, activeTab } = useSelector((state: RootState) => state.tabs);
+  const { tabs, activeTabKey } = useSelector((state: RootState) => state.tabs);
   const dispatch = useDispatch();
 
   return (
@@ -17,7 +17,7 @@ function TabSelector() {
           onClose={() => {
             dispatch(closeTab(tab.id));
           }}
-          isActive={tab.id === activeTab}
+          isActive={tab.id === activeTabKey}
           onSelected={() => {
             dispatch(changeActiveTab(tab.id));
           }}

@@ -2,12 +2,9 @@ import DashboardActionBar from "@/actionbar/DashboardActionBar";
 import DashboardActionProvider from "@/context/DashboardActionContext";
 import TitleHeader from "@/ui/TitleHeader";
 import Dashboard from "@/widgets/views/Dashboard/Dashboard";
-import React, { useContext, useRef } from "react";
-import {
-  TabManagerContext,
-  TabManagerContextType,
-} from "@/context/TabManagerContext";
+import { useRef } from "react";
 import { DashboardProps } from "@/types";
+import { useNavigation } from "@/context/RootContext";
 
 export type DashboardActionViewProps = {
   dashboardData: DashboardProps;
@@ -17,10 +14,8 @@ export type DashboardActionViewProps = {
 export const DashboardActionView = (props: DashboardActionViewProps) => {
   const { dashboardData, visible } = props;
   const dashboardRef = useRef();
-  const tabManagerContext = useContext(
-    TabManagerContext,
-  ) as TabManagerContextType;
-  const { openShortcut } = tabManagerContext || {};
+
+  const { openShortcut } = useNavigation();
 
   if (!dashboardData) {
     return null;

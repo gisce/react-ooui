@@ -53,6 +53,7 @@ import {
 } from "@/widgets/views/DashboardGrid";
 import { GraphIndicator } from "@/widgets/views/Graph/GraphIndicator";
 import * as tabSlice from "@/redux/slices/tabSlice";
+import { RootProvider } from "@/context/RootContext";
 
 import type {
   TreeView,
@@ -78,7 +79,6 @@ import type {
   NameSearchRequest,
 } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
-import RootView from "./views/RootView";
 import ContentRootProvider from "./context/ContentRootContext";
 import FavouriteButton from "./ui/FavouriteButton";
 import { ConfigContext, ConfigContextProvider } from "./context/ConfigContext";
@@ -142,7 +142,6 @@ export {
   GetViewRequest,
   GetFieldsRequest,
   DefaultGetRequest,
-  RootView,
   Url,
   Email,
   Image,
@@ -176,4 +175,5 @@ export {
   TabContent,
   tabSlice,
   useTabs,
+  RootProvider,
 };

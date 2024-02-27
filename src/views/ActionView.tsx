@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  forwardRef,
-  useContext,
-} from "react";
+import { useEffect, useState, useRef, forwardRef, useContext } from "react";
 
 import { Spin } from "antd";
 
@@ -34,6 +28,7 @@ import { FormActionView } from "./actionViews/FormActionView";
 import { TreeActionView } from "./actionViews/TreeActionView";
 import { DashboardActionView } from "./actionViews/DashboardActionView";
 import { resolveViewInfoPromises } from "@/helpers/viewHelper";
+import { useNavigation } from "@/context/RootContext";
 
 type Props = {
   domain: any;
@@ -103,11 +98,9 @@ function ActionView(props: Props, ref: any) {
   const {
     setCurrentView: setCurrentViewTabContext,
     setCurrentId: setCurrentIdTabContext,
-    tabs,
-    activeTabKey,
-    openAction,
-    onRemoveTab,
   } = tabManagerContext || {};
+
+  const { tabs, activeTabKey, openAction, onRemoveTab } = useNavigation();
 
   useHotkeys(
     "ctrl+g,command+g",

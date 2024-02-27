@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 const TabContent: React.FC = () => {
-  const { tabs, activeTab } = useSelector((state: RootState) => state.tabs);
+  const { tabs, activeTabKey } = useSelector((state: RootState) => state.tabs);
   const [tabComponents, setTabComponents] = useState<React.ReactElement[]>([]);
 
   useEffect(() => {
@@ -22,20 +22,20 @@ const TabContent: React.FC = () => {
         ...newTabs.map((tab) => (
           <div
             key={tab.id}
-            style={{ display: tab.id === activeTab ? "block" : "none" }}
+            style={{ display: tab.id === activeTabKey ? "block" : "none" }}
           >
             {tab.content}
           </div>
         )),
       ]);
     }
-  }, [tabs, activeTab, tabComponents.length]);
+  }, [tabs, activeTabKey, tabComponents.length]);
 
   return (
     <div>
       {tabComponents.map((tabComponent, i) =>
         React.cloneElement(tabComponent, {
-          style: { display: tabs[i]?.id === activeTab ? "block" : "none" },
+          style: { display: tabs[i]?.id === activeTabKey ? "block" : "none" },
         }),
       )}
     </div>

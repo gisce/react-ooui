@@ -1,7 +1,7 @@
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { View } from "@/types";
-import { createContext, useEffect, useState } from "react";
-import { useConfigContext } from "./ConfigContext";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigation } from "./RootContext";
 
 export type ActionViewContextType = {
   tabKey?: string;
@@ -69,15 +69,11 @@ type ActionViewProviderProps = ActionViewContextType & {
 const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const {
     children,
-    currentView,
     title: titleProps,
-    setCurrentView,
     availableViews,
     formRef,
     searchTreeRef,
     onNewClicked,
-    currentId,
-    setCurrentId,
     setResults,
     results,
     currentItemIndex,
@@ -95,7 +91,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     limit: limitProps,
     tabKey,
   } = props;
-
+  const [currentView, setCurrentView] = useState<View>();
+  const [currentId, setCurrentId] = useState<number>();
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
   const [removingItem, setRemovingItem] = useState<boolean>(false);
@@ -113,7 +110,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   );
   const [title, setTitle] = useState<string>(titleProps);
 
-  const { updateTab } = useConfigContext();
+  const { updateTab } = useNavigation();
 
   useEffect(() => {
     if (results && results.length > 0 && !currentItemIndex) {
@@ -132,7 +129,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     } else if (availableViews.length > 1) {
       setPreviousView(
         availableViews.filter(
-          (view) => view.view_id !== currentView.view_id,
+          (view) => view.view_id !== currentView?.view_id,
         )[0],
       );
     }
@@ -140,12 +137,12 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
 
   useEffect(() => {
     if (
-      previousView?.view_id === currentView.view_id &&
+      previousView?.view_id === currentView?.view_id &&
       availableViews.length > 1
     ) {
       setPreviousView(
         availableViews.filter(
-          (view) => view.view_id !== currentView.view_id,
+          (view) => view.view_id !== currentView?.view_id,
         )[0],
       );
     }
@@ -153,14 +150,30 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
 
   useEffect(() => {
     updateTab({
-      id: tabKey,
-      tab: {
-        data: {
-          canWeClose: !formHasChanges,
-        },
+      id: tabKey!,
+      tabData: {
+        isClosable: !formHasChanges,
       },
     });
   }, [formHasChanges]);
+
+  useEffect(() => {
+    updateTab({
+      id: tabKey!,
+      tabData: {
+        res_id: currentId,
+      },
+    });
+  }, [currentId]);
+
+  useEffect(() => {
+    updateTab({
+      id: tabKey!,
+      tabData: {
+        view_type: currentView?.type,
+      },
+    });
+  }, [currentView]);
 
   const callOnFormSave = async () => {
     return await (formRef.current as any)?.submitForm();
@@ -170,7 +183,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     <ActionViewContext.Provider
       value={{
         title,
-        currentView,
+        currentView: currentView!,
         setCurrentView,
         availableViews,
         formIsSaving,
@@ -228,3 +241,15 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
 };
 
 export default ActionViewProvider;
+
+export const useActionViewContext = (): ActionViewContextType => {
+  const context = useContext<ActionViewContextType | null>(ActionViewContext);
+
+  if (!context) {
+    throw new Error(
+      "ActionViewProvider context is undefined, please verify you are calling useActionViewContext() as child of a <ActionViewProvider> component.",
+    );
+  }
+
+  return context;
+};

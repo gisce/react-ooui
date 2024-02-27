@@ -62,12 +62,12 @@ function ChangeViewButton(props: Props) {
             id: view.view_id || idx,
             name: view.title || fallbackTitle,
             icon: getIconForView(view),
-            selected: currentView.view_id === view.view_id,
+            selected: currentView?.view_id === view.view_id,
           };
         }),
       },
     ];
-  }, [availableViews, currentView.view_id, t]);
+  }, [availableViews, currentView?.view_id, t]);
 
   function tryNavigate(callback: any) {
     if (formHasChanges) {

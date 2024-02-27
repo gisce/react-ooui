@@ -1,17 +1,6 @@
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TableOutlined, FormOutlined, EditOutlined } from "@ant-design/icons";
 import { Tooltip, theme } from "antd";
-import {
-  TabManagerContext,
-  TabManagerContextType,
-} from "@/context/TabManagerContext";
 import {
   useLocale,
   FavouriteButton as FavouriteButtonUi,
@@ -19,6 +8,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
 } from "@gisce/react-formiga-components";
+import { useNavigation } from "@/context/RootContext";
 const { useToken } = theme;
 
 export type ShortcutApi = {
@@ -64,35 +54,28 @@ const FavouriteButton = (props: Props) => {
   const { token } = useToken();
   const favouriteButtonRef = useRef<FavouriteButtonRef>(null);
 
-  const tabManagerContext = useContext(
-    TabManagerContext,
-  ) as TabManagerContextType;
-  const {
-    openShortcut,
-    tabs,
-    activeTabKey,
-    currentView,
-    currentId,
-    openDefaultActionForModel,
-  } = tabManagerContext || {};
+  const { openShortcut, openDefaultActionForModel, currentTab } =
+    useNavigation();
 
   const favouriteQuery = useMemo(() => {
-    if (!currentView || !currentView.view_id || !(currentView as any).extra) {
+    if (!currentTab || !currentTab.data.view_id) {
       return;
     }
 
-    const { action_id, action_type } = (currentView as any).extra || {};
+    const { action_id, action_type } = currentTab.data || {};
 
     if (!action_id || !action_type) {
       setIsFavourite(false);
       return;
     }
 
-    const view_id = currentView.view_id!;
+    const view_id = currentTab.data.view_id!;
     let res_id: boolean | number = false;
 
-    if (currentView.type === "form") {
-      res_id = currentId ? (currentId as number) : false;
+    if (currentTab.data.view_type === "form") {
+      res_id = currentTab.data.res_id
+        ? (currentTab.data.res_id as number)
+        : false;
     }
 
     return {
@@ -101,7 +84,7 @@ const FavouriteButton = (props: Props) => {
       view_id,
       res_id,
     };
-  }, [currentId, currentView]);
+  }, [currentTab]);
 
   const favouriteQueryString = useMemo(() => {
     if (!favouriteQuery) {
@@ -175,44 +158,34 @@ const FavouriteButton = (props: Props) => {
     if (isFavourite && currentShortcutId) {
       await onRemoveFavourite(currentShortcutId);
     } else {
-      if (!currentView) {
+      if (!currentTab || !currentTab.data.view_id) {
         return;
       }
 
-      const currentTab = tabs.find((t) => t.key === activeTabKey);
-      const { id: action_id, type: action_type } = currentTab?.action || {};
-      const view_id = currentView.view_id!;
-      let res_id: boolean | number = false;
+      const { action_id, view_id, action_type, res_id } = currentTab.data;
 
       if (!action_id || !action_type) {
         setIsFavourite(false);
         return;
       }
 
-      if (currentView.type === "form") {
-        res_id = currentId ? (currentId as number) : false;
-      }
-
       await onAddFavourite({
         action_id,
         action_type,
         view_id,
-        res_id,
+        res_id: res_id || false,
       });
     }
 
     await getShortcuts();
     setIsFavourite(!isFavourite);
   }, [
-    activeTabKey,
-    currentId,
     currentShortcutId,
-    currentView,
+    currentTab,
     getShortcuts,
     isFavourite,
     onAddFavourite,
     onRemoveFavourite,
-    tabs,
   ]);
 
   return (

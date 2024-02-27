@@ -1,13 +1,5 @@
-import { useCallback, useContext, useEffect, useState } from "react";
-import {
-  TabManagerContext,
-  TabManagerContextType,
-} from "@/context/TabManagerContext";
+import { useCallback, useState } from "react";
 import { FormView } from "@/types";
-import {
-  ContentRootContext,
-  ContentRootContextType,
-} from "@/context/ContentRootContext";
 import ConnectionProvider from "@/ConnectionProvider";
 import { processValues } from "@/helpers/formHelper";
 import { parseContextFields, parseDomainFields } from "@gisce/ooui";
@@ -17,6 +9,7 @@ import {
   Many2oneSuffixOoui,
 } from "./Many2oneSuffixOoui";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import { useNavigation } from "@/context/RootContext";
 
 type Props = {
   id: number;
@@ -29,15 +22,7 @@ export const Many2oneSuffix = (props: Props) => {
   const [formView, setFormView] = useState<FormView>();
   const [targetValues, setTargetValues] = useState<any>();
 
-  const tabManagerContext = useContext(
-    TabManagerContext,
-  ) as TabManagerContextType;
-  const { openRelate } = tabManagerContext || {};
-
-  const contentRootContext = useContext(
-    ContentRootContext,
-  ) as ContentRootContextType;
-  const { processAction } = contentRootContext || {};
+  const { openRelate, processAction } = useNavigation();
 
   const [getView, cancelGetViewRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().getView,

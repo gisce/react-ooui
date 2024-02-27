@@ -1,4 +1,4 @@
-import { FormView, GenerateReportOptions, ViewType } from "@/types";
+import { FormView, GenerateReportOptions } from "@/types";
 import React, {
   useContext,
   useRef,
@@ -18,6 +18,7 @@ import {
 import { FormModal } from "@/widgets/modals/FormModal";
 import { useLocale } from "@gisce/react-formiga-components";
 import { transformPlainMany2Ones, stringFormat } from "@/helpers/formHelper";
+import { getViewsAndInitialView } from "@/helpers/navigationActionsHelper";
 
 export type ContentRootContextType = {
   processAction: ({
@@ -398,64 +399,5 @@ const ContentRootProvider = (
     </>
   );
 };
-
-async function getViewsAndInitialView({
-  views,
-  view_mode,
-  model,
-  context,
-  view_id,
-}: {
-  views: any[];
-  view_mode: string;
-  model: string;
-  context: any;
-  view_id?: number;
-}) {
-  const retriedViewData = [];
-  let initialView;
-
-  if (views) {
-    for (const view of views) {
-      const viewData = await ConnectionProvider.getHandler().getView({
-        model,
-        type: view[1],
-        id: view[0],
-        context,
-      });
-      retriedViewData.push([viewData.view_id, view[1]]);
-    }
-  } else {
-    const viewTypes = view_mode.split(",");
-    for (const viewType of viewTypes) {
-      const viewData = await ConnectionProvider.getHandler().getView({
-        model,
-        type: viewType as ViewType,
-        context,
-      });
-      retriedViewData.push([viewData.view_id, viewType]);
-    }
-  }
-  if (views && views.length > 0) {
-    const [id, type] = views[0];
-    initialView = {
-      id,
-      type,
-    };
-  } else if (!view_id) {
-    const type = view_mode.split(",")[0];
-    const [retrievedViewId] = retriedViewData.find(
-      ([_, viewType]) => viewType === type,
-    )!;
-    initialView = { id: retrievedViewId, type };
-  } else {
-    initialView = {
-      id: view_id,
-      type: view_mode.split(",")[0],
-    };
-  }
-
-  return { views: retriedViewData, initialView };
-}
 
 export default forwardRef(ContentRootProvider);

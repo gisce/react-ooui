@@ -26,18 +26,9 @@ import ConnectionProvider from "@/ConnectionProvider";
 import refreshChangesDialog from "@/ui/RefreshItemDialog";
 import { showLogInfo } from "@/helpers/logInfoHelper";
 import { DropdownButton, useLocale } from "@gisce/react-formiga-components";
-
-import {
-  TabManagerContext,
-  TabManagerContextType,
-} from "@/context/TabManagerContext";
-
-import {
-  ContentRootContext,
-  ContentRootContextType,
-} from "@/context/ContentRootContext";
 import AttachmentsButton from "./AttachmentsButton";
 import { Attachment } from "./AttachmentsButtonWrapper";
+import { useNavigation } from "@/context/RootContext";
 
 function FormActionBar({ toolbar }: { toolbar: any }) {
   const {
@@ -68,15 +59,8 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
   } = useContext(ActionViewContext) as ActionViewContextType;
   const { t } = useLocale();
 
-  const contentRootContext = useContext(
-    ContentRootContext,
-  ) as ContentRootContextType;
-  const { processAction } = contentRootContext || {};
-
-  const tabManagerContext = useContext(
-    TabManagerContext,
-  ) as TabManagerContextType;
-  const { openRelate, openDefaultActionForModel } = tabManagerContext || {};
+  const { openRelate, openDefaultActionForModel, processAction } =
+    useNavigation();
 
   function tryRefresh(callback: any) {
     if (formHasChanges) {

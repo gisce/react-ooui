@@ -15,6 +15,7 @@ export interface TabData {
   view_id?: number;
   res_id?: number;
   isClosable?: boolean;
+  view_type?: string;
 }
 
 export interface TabState {
@@ -29,7 +30,7 @@ const initialState: TabState = {
 
 export interface UpdateTabPayload {
   id: string;
-  tab: Tab;
+  tabData: Partial<TabData>;
 }
 
 export const tabSlice = createSlice({
@@ -66,7 +67,11 @@ export const tabSlice = createSlice({
     updateTab: (state: TabState, action: PayloadAction<UpdateTabPayload>) => {
       const index = state.tabs.findIndex((tab) => tab.id === action.payload.id);
       if (index !== -1) {
-        state.tabs[index] = { ...state.tabs[index], ...action.payload.tab };
+        const updatedData = {
+          ...state.tabs[index].data,
+          ...action.payload.tabData,
+        };
+        state.tabs[index] = { ...state.tabs[index], data: updatedData };
       }
     },
   },

@@ -1,12 +1,15 @@
 import { createElement, useCallback } from "react";
 import { ActionView, ConnectionProvider, FormView } from "..";
-import { parseContext } from "@gisce/ooui";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import { nanoid } from "nanoid";
 import { useConfigContext } from "@/context/ConfigContext";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { ViewType } from "@/types";
+import {
+  finalizeViews,
+  parseAndEvalContextDomain,
+} from "@/helpers/navigationActionsHelper";
 
 export const useNavigationActions = ({
   openActionModal,
@@ -16,45 +19,6 @@ export const useNavigationActions = ({
   addTab: (payload: any) => void;
 }) => {
   const { globalValues, rootContext } = useConfigContext();
-
-  const parseAndEvalContextDomain = useCallback(
-    async ({ context, values, fields, domain }: any) => {
-      const parsedContext = parseContext({ context, values, fields });
-      const parsedDomain = domain
-        ? await ConnectionProvider.getHandler().evalDomain({
-            domain,
-            values,
-            fields,
-            context: { ...rootContext, ...parsedContext },
-          })
-        : [];
-
-      return { parsedContext, parsedDomain };
-    },
-    [rootContext],
-  );
-
-  const finalizeViews = useCallback(
-    async (views: any, model: string, parsedContext?: any) => {
-      const finalViews = [];
-      for (const viewArray of views) {
-        const [id, viewType] = viewArray;
-        if (!id && viewType !== "dashboard") {
-          const { view_id } = await ConnectionProvider.getHandler().getView({
-            model,
-            type: viewType,
-            id,
-            context: { ...rootContext, ...parsedContext },
-          });
-          finalViews.push([view_id, viewType]);
-        } else {
-          finalViews.push(viewArray);
-        }
-      }
-      return finalViews;
-    },
-    [rootContext],
-  );
 
   const openAction = useCallback(
     async ({
@@ -150,12 +114,14 @@ export const useNavigationActions = ({
         values: globalValues,
         fields: {},
         domain: dataForAction.domain,
+        rootContext,
       });
 
       const finalViews = await finalizeViews(
         dataForAction.views,
         dataForAction.res_model,
         parsedContext,
+        rootContext,
       );
 
       let initialView;
@@ -167,13 +133,14 @@ export const useNavigationActions = ({
 
       return {
         ...dataForAction,
+        model: dataForAction.res_model,
         domain: [...parsedDomain, ...domain],
         context: { ...rootContext, ...parsedContext },
         initialView: { id: initialView[0], type: initialView[1] },
-        finalViews,
+        views: finalViews,
       };
     },
-    [globalValues, parseAndEvalContextDomain, finalizeViews, rootContext],
+    [globalValues, rootContext],
   );
 
   const openRelate = useCallback(
@@ -203,7 +170,7 @@ export const useNavigationActions = ({
         limit: relateData.limit,
       });
     },
-    [parseAndEvalContextDomain, globalValues, openAction],
+    [globalValues, openAction],
   );
 
   const openShortcut = useCallback(
