@@ -66,15 +66,15 @@ function RootView(props: RootViewProps, ref: any) {
     tabViewsCloseFunctions.current.delete(key);
   }
 
-  function registerViewCloseFn({
-    tabKey,
-    canWeClose,
-  }: {
-    tabKey: string;
-    canWeClose: any;
-  }) {
-    tabViewsCloseFunctions.current.set(tabKey, canWeClose);
-  }
+  // function registerViewCloseFn({
+  //   tabKey,
+  //   canWeClose,
+  // }: {
+  //   tabKey: string;
+  //   canWeClose: any;
+  // }) {
+  //   tabViewsCloseFunctions.current.set(tabKey, canWeClose);
+  // }
 
   async function retrieveAndOpenAction({
     action,
@@ -469,7 +469,6 @@ function RootView(props: RootViewProps, ref: any) {
             model={model}
             context={{ ...rootContext, ...context }}
             domain={domain}
-            setCanWeClose={registerViewCloseFn}
             initialView={formattedInitialView}
             res_id={res_id}
             formDefaultValues={values}
@@ -492,12 +491,11 @@ function RootView(props: RootViewProps, ref: any) {
       tabs={tabs}
       activeTabKey={activeTabKey}
       onRemoveTab={async (key: string) => {
-        const canWeCloseFn = tabViewsCloseFunctions.current.get(key as string);
-        const canWeClose = await canWeCloseFn?.();
-
-        if (canWeClose || activeTabKey === "welcome") {
-          remove(key as string);
-        }
+        // const canWeCloseFn = tabViewsCloseFunctions.current.get(key as string);
+        // const canWeClose = await canWeCloseFn?.();
+        // if (canWeClose || activeTabKey === "welcome") {
+        //   remove(key as string);
+        // }
       }}
       onChangeTab={(key: string) => {
         setActiveKey(key);

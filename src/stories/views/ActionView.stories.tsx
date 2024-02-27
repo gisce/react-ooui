@@ -19,7 +19,6 @@ export const Default = (): React.ReactElement => {
           [97, "form"],
         ]}
         title="Test"
-        setCanWeClose={() => {}}
         tabKey={"0"}
         initialViewType={"tree"}
       />

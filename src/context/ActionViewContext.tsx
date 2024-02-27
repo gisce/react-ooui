@@ -1,8 +1,10 @@
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { View } from "@/types";
 import { createContext, useEffect, useState } from "react";
+import { useConfigContext } from "./ConfigContext";
 
 export type ActionViewContextType = {
+  tabKey?: string;
   title: string;
   availableViews: View[];
   currentView: View;
@@ -91,6 +93,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     setSearchTreeNameSearch,
     goToResourceId,
     limit: limitProps,
+    tabKey,
   } = props;
 
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
@@ -109,6 +112,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT,
   );
   const [title, setTitle] = useState<string>(titleProps);
+
+  const { updateTab } = useConfigContext();
 
   useEffect(() => {
     if (results && results.length > 0 && !currentItemIndex) {
@@ -145,6 +150,17 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
       );
     }
   }, [currentView]);
+
+  useEffect(() => {
+    updateTab({
+      id: tabKey,
+      tab: {
+        data: {
+          canWeClose: !formHasChanges,
+        },
+      },
+    });
+  }, [formHasChanges]);
 
   const callOnFormSave = async () => {
     return await (formRef.current as any)?.submitForm();

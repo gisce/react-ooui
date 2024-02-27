@@ -3,7 +3,6 @@ import React, {
   useState,
   useRef,
   forwardRef,
-  useImperativeHandle,
   useContext,
 } from "react";
 
@@ -43,7 +42,6 @@ type Props = {
   views: Array<[number, ViewType]>;
   title: string;
   tabKey: string;
-  setCanWeClose: (f: any) => void;
   initialView: InitialViewData;
   formDefaultValues?: any;
   formForcedValues?: any;
@@ -61,7 +59,6 @@ function ActionView(props: Props, ref: any) {
     context,
     views,
     title,
-    setCanWeClose,
     tabKey,
     initialView,
     formDefaultValues,
@@ -131,10 +128,6 @@ function ActionView(props: Props, ref: any) {
     const extra = { action_id, action_type };
     setCurrentViewTabContext?.({ ...view, extra } as any);
   }
-
-  useImperativeHandle(ref, () => ({
-    canWeClose,
-  }));
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -264,7 +257,7 @@ function ActionView(props: Props, ref: any) {
     setIsLoading(false);
   };
 
-  setCanWeClose({ tabKey, canWeClose });
+  // setCanWeClose({ tabKey, canWeClose });
 
   useEffect(() => {
     const treeView = availableViews.find((v) => v.type === "tree") as TreeView;
@@ -294,28 +287,28 @@ function ActionView(props: Props, ref: any) {
     }
   }, [tabs, activeTabKey]);
 
-  async function canWeClose() {
-    if (!currentView) {
-      return true;
-    } else if (currentView!.type === "form") {
-      return await (formRef.current as any).cancelUnsavedChanges();
-    } else {
-      return true;
-    }
-  }
+  // async function canWeClose() {
+  //   if (!currentView) {
+  //     return true;
+  //   } else if (currentView!.type === "form") {
+  //     return await (formRef.current as any).cancelUnsavedChanges();
+  //   } else {
+  //     return true;
+  //   }
+  // }
 
   async function handleGoToRecordShortcut() {
     if (activeTabKey !== tabKey) {
       return;
     }
 
-    if (currentView!.type === "form") {
-      const canWeClose = await (formRef.current as any).cancelUnsavedChanges();
+    // if (currentView!.type === "form") {
+    //   const canWeClose = await (formRef.current as any).cancelUnsavedChanges();
 
-      if (!canWeClose) {
-        return;
-      }
-    }
+    //   if (!canWeClose) {
+    //     return;
+    //   }
+    // }
 
     setGtResourceModalVisible(true);
   }
@@ -377,6 +370,7 @@ function ActionView(props: Props, ref: any) {
   }
 
   function content() {
+    // eslint-disable-next-line array-callback-return
     return availableViews.map((view) => {
       switch (view.type) {
         case "form": {
