@@ -30,7 +30,7 @@ export type ActionInfo = {
 
 function RootView(props: RootViewProps, ref: any) {
   const { children } = props;
-  const [activeKey, setActiveKey] = useState<string>("welcome");
+  const [activeTabKey, setActiveKey] = useState<string>("welcome");
   const { t } = useLocale();
   const { globalValues, rootContext } = useConfigContext();
 
@@ -51,7 +51,7 @@ function RootView(props: RootViewProps, ref: any) {
   }));
 
   function remove(key: string) {
-    if (key === activeKey) {
+    if (key === activeTabKey) {
       const currentIndex = tabs.findIndex((tab: any) => tab.key === key);
 
       if (tabs[currentIndex - 1]) {
@@ -490,12 +490,12 @@ function RootView(props: RootViewProps, ref: any) {
       openRelate={openRelate}
       openDefaultActionForModel={openDefaultActionForModel}
       tabs={tabs}
-      activeKey={activeKey}
+      activeTabKey={activeTabKey}
       onRemoveTab={async (key: string) => {
         const canWeCloseFn = tabViewsCloseFunctions.current.get(key as string);
         const canWeClose = await canWeCloseFn?.();
 
-        if (canWeClose || activeKey === "welcome") {
+        if (canWeClose || activeTabKey === "welcome") {
           remove(key as string);
         }
       }}

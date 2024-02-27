@@ -70,7 +70,7 @@ const FavouriteButton = (props: Props) => {
   const {
     openShortcut,
     tabs,
-    activeKey,
+    activeTabKey,
     currentView,
     currentId,
     openDefaultActionForModel,
@@ -179,7 +179,7 @@ const FavouriteButton = (props: Props) => {
         return;
       }
 
-      const currentTab = tabs.find((t) => t.key === activeKey);
+      const currentTab = tabs.find((t) => t.key === activeTabKey);
       const { id: action_id, type: action_type } = currentTab?.action || {};
       const view_id = currentView.view_id!;
       let res_id: boolean | number = false;
@@ -204,7 +204,7 @@ const FavouriteButton = (props: Props) => {
     await getShortcuts();
     setIsFavourite(!isFavourite);
   }, [
-    activeKey,
+    activeTabKey,
     currentId,
     currentShortcutId,
     currentView,

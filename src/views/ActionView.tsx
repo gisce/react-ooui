@@ -107,7 +107,7 @@ function ActionView(props: Props, ref: any) {
     setCurrentView: setCurrentViewTabContext,
     setCurrentId: setCurrentIdTabContext,
     tabs,
-    activeKey,
+    activeTabKey,
     openAction,
     onRemoveTab,
   } = tabManagerContext || {};
@@ -118,7 +118,7 @@ function ActionView(props: Props, ref: any) {
       event.preventDefault();
       handleGoToRecordShortcut();
     },
-    [activeKey, tabs, currentView, currentItemIndex, results],
+    [activeTabKey, tabs, currentView, currentItemIndex, results],
   );
 
   function setCurrentId(id?: number) {
@@ -287,12 +287,12 @@ function ActionView(props: Props, ref: any) {
   }, [model, views, res_id]);
 
   useEffect(() => {
-    if (activeKey === tabKey) {
+    if (activeTabKey === tabKey) {
       setCurrentIdTabContext?.(currentId);
       const extra = { action_id, action_type };
       setCurrentViewTabContext?.({ ...currentView, extra } as any);
     }
-  }, [tabs, activeKey]);
+  }, [tabs, activeTabKey]);
 
   async function canWeClose() {
     if (!currentView) {
@@ -305,7 +305,7 @@ function ActionView(props: Props, ref: any) {
   }
 
   async function handleGoToRecordShortcut() {
-    if (activeKey !== tabKey) {
+    if (activeTabKey !== tabKey) {
       return;
     }
 

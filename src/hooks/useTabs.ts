@@ -15,7 +15,7 @@ export const useTabs = () => {
 
   return {
     tabs: tabsState.tabs,
-    activeTab: tabsState.activeTab,
+    activeTabKey: tabsState.activeTabKey,
     addTab: (tabData: Omit<Tab, "id">) => {
       dispatch(addTab(tabData));
     },

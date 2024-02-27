@@ -1,6 +1,7 @@
 import { InitialViewData, View, ViewType } from "@/types";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import React, { useState } from "react";
+import { useTabs } from "..";
 
 export type TabManagerContextType = {
   openAction: ({
@@ -58,7 +59,7 @@ export type TabManagerContextType = {
     res_id?: number;
     domain?: any;
   }) => void;
-  activeKey: string;
+  activeTabKey: string;
   onChangeTab: (key: string) => void;
   onRemoveTab: (key: string) => void;
   openShortcut: (shortcut: ShortcutApi) => void;
@@ -83,14 +84,16 @@ const TabManagerProvider = (props: TabManagerProviderProps): any => {
     openRelate,
     openDefaultActionForModel,
     openShortcut,
-    activeKey,
     onChangeTab,
     onRemoveTab,
-    tabs,
+    // tabs,
   } = props;
 
   const [currentView, setCurrentView] = useState<View>();
   const [currentId, setCurrentId] = useState<number>();
+
+  const { tabs, activeTabKey, addTab, closeTab, changeActiveTab, updateTab } =
+    useTabs();
 
   return (
     <TabManagerContext.Provider
@@ -98,7 +101,7 @@ const TabManagerProvider = (props: TabManagerProviderProps): any => {
         openAction,
         openRelate,
         openDefaultActionForModel,
-        activeKey,
+        activeTabKey: activeTabKey!,
         openShortcut,
         onChangeTab,
         onRemoveTab,

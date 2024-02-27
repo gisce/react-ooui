@@ -19,12 +19,12 @@ export interface TabData {
 
 export interface TabState {
   tabs: Tab[];
-  activeTab: string | null;
+  activeTabKey: string | null;
 }
 
 const initialState: TabState = {
   tabs: [],
-  activeTab: null,
+  activeTabKey: null,
 };
 
 export interface UpdateTabPayload {
@@ -42,26 +42,26 @@ export const tabSlice = createSlice({
         ...action.payload,
       };
       state.tabs.push(newTab);
-      state.activeTab = newTab.id;
+      state.activeTabKey = newTab.id;
     },
     closeTab: (state: TabState, action: PayloadAction<string>) => {
-      if (state.activeTab === action.payload) {
+      if (state.activeTabKey === action.payload) {
         const currentIndex = state.tabs.findIndex(
           (tab: any) => tab.id === action.payload,
         );
 
         if (state.tabs[currentIndex - 1]) {
-          state.activeTab = state.tabs[currentIndex + 1].id;
+          state.activeTabKey = state.tabs[currentIndex + 1].id;
         }
         if (state.tabs[currentIndex + 1]) {
-          state.activeTab = null;
+          state.activeTabKey = null;
         }
       }
 
       state.tabs = state.tabs.filter((tab: any) => tab.id !== action.payload);
     },
     changeActiveTab: (state: TabState, action: PayloadAction<string>) => {
-      state.activeTab = action.payload;
+      state.activeTabKey = action.payload;
     },
     updateTab: (state: TabState, action: PayloadAction<UpdateTabPayload>) => {
       const index = state.tabs.findIndex((tab) => tab.id === action.payload.id);
