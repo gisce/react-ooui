@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import { useRef } from "react";
 import { Button, Col, Form, Input, Modal, Row, Space } from "antd";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";

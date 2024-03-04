@@ -9,20 +9,14 @@ import {
   InitialViewData,
   TreeView,
   View,
-  ViewType,
 } from "@/types/index";
-import ConnectionProvider from "@/ConnectionProvider";
 
 import ActionViewProvider from "@/context/ActionViewContext";
 import {
   TabManagerContext,
   TabManagerContextType,
 } from "@/context/TabManagerContext";
-import { useHotkeys } from "react-hotkeys-hook";
-import { GoToResourceModal } from "@/ui/GoToResourceModal";
-import showInfo from "@/ui/InfoDialog";
 import showErrorDialog from "@/ui/ActionErrorDialog";
-import { useLocale } from "@gisce/react-formiga-components";
 import { GraphActionView } from "@/views/actionViews/GraphActionView";
 import { FormActionView } from "./actionViews/FormActionView";
 import { TreeActionView } from "./actionViews/TreeActionView";
@@ -78,13 +72,7 @@ function ActionView(props: Props, ref: any) {
   const [results, setResults] = useState<any>([]);
   const [sorter, setSorter] = useState<any>();
   const [totalItems, setTotalItems] = useState<number>(0);
-  const [gtResourceModalVisible, setGtResourceModalVisible] =
-    useState<boolean>(false);
-  const [searchingForResourceId, setSearchingForResourceId] =
-    useState<boolean>(false);
   const [searchTreeNameSearch, setSearchTreeNameSearch] = useState<string>();
-
-  const { t } = useLocale();
 
   const formRef = useRef();
   const searchTreeRef = useRef();
@@ -97,16 +85,7 @@ function ActionView(props: Props, ref: any) {
     setCurrentId: setCurrentIdTabContext,
   } = tabManagerContext || {};
 
-  const { tabs, activeTabKey, openAction, onRemoveTab } = useNavigation();
-
-  useHotkeys(
-    "ctrl+g,command+g",
-    (event) => {
-      event.preventDefault();
-      handleGoToRecordShortcut();
-    },
-    [activeTabKey, tabs, currentView, currentItemIndex, results],
-  );
+  const { tabs, activeTabKey, onRemoveTab } = useNavigation();
 
   function setCurrentId(id?: number) {
     setCurrentIdInternal(id);
@@ -248,78 +227,6 @@ function ActionView(props: Props, ref: any) {
     }
   }, [tabs, activeTabKey]);
 
-  async function handleGoToRecordShortcut() {
-    if (activeTabKey !== tabKey) {
-      return;
-    }
-
-    // if (currentView!.type === "form") {
-    //   const canWeClose = await (formRef.current as any).cancelUnsavedChanges();
-
-    //   if (!canWeClose) {
-    //     return;
-    //   }
-    // }
-
-    setGtResourceModalVisible(true);
-  }
-
-  async function goToResourceId(ids: number[]) {
-    setSearchingForResourceId(true);
-
-    let mode: ViewType;
-    let domain: any[];
-    if (ids.length === 1) {
-      mode = "form";
-      domain = [];
-      const id = ids[0];
-      const itemIndex = results!.findIndex((item: any) => {
-        return item.id === id;
-      });
-      let resource;
-
-      if (itemIndex === -1) {
-        try {
-          resource = (
-            await ConnectionProvider.getHandler().readObjects({
-              model,
-              ids: [id],
-              context,
-            })
-          )?.[0];
-        } catch (err) {}
-
-        if (!resource) {
-          setSearchingForResourceId(false);
-          setGtResourceModalVisible(false);
-          showInfo(t("idNotFound"));
-          return;
-        }
-      } else {
-        resource = results[itemIndex];
-      }
-    } else {
-      mode = "tree";
-      domain = [["id", "in", ids]];
-    }
-
-    setSearchingForResourceId(false);
-    setGtResourceModalVisible(false);
-    const viewForm = availableViews.find((v) => v.type === mode)!;
-    openAction({
-      domain,
-      context,
-      model,
-      views: availableViews,
-      title,
-      target: "current",
-      initialView: { id: viewForm.view_id!, type: mode },
-      action_id,
-      action_type,
-      res_id: ids[0],
-    });
-  }
-
   function content() {
     // eslint-disable-next-line array-callback-return
     return availableViews.map((view) => {
@@ -453,19 +360,10 @@ function ActionView(props: Props, ref: any) {
       setSelectedRowItems={setSelectedRowItems}
       setSearchTreeNameSearch={setSearchTreeNameSearch}
       searchTreeNameSearch={searchTreeNameSearch}
-      goToResourceId={goToResourceId}
       limit={limit}
       tabKey={tabKey}
     >
       {content()}
-      <GoToResourceModal
-        visible={gtResourceModalVisible}
-        onIdSubmitted={goToResourceId}
-        isSearching={searchingForResourceId}
-        onCancel={() => {
-          setGtResourceModalVisible(false);
-        }}
-      />
     </ActionViewProvider>
   );
 }

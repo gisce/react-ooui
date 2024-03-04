@@ -165,7 +165,6 @@ function Form(props: FormProps, ref: any) {
     getPlainValues,
     getContext,
     fetchValues,
-    cancelUnsavedChanges,
     clearAndReload: () => {
       createdId.current = undefined;
       setFormOoui(undefined);
@@ -457,7 +456,7 @@ function Form(props: FormProps, ref: any) {
   };
 
   const cancelUnsavedChanges = async () => {
-    return new Promise(async (resolve) => {
+    return new Promise((resolve) => {
       if (formHasChanges()) {
         showUnsavedChangesDialog({
           t,

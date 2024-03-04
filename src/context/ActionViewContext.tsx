@@ -56,7 +56,6 @@ export type ActionViewContextType = {
   setSearchTreeNameSearch?: (searchString?: string) => void;
   previousView?: View;
   setPreviousView?: (view: View) => void;
-  goToResourceId?: (ids: number[]) => Promise<void>;
   searchValues?: any;
   setSearchValues?: (value: any) => void;
   limit?: number;
@@ -93,7 +92,6 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     selectedRowItems,
     searchTreeNameSearch,
     setSearchTreeNameSearch,
-    goToResourceId,
     limit: limitProps,
     tabKey,
   } = props;
@@ -250,7 +248,6 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         graphIsLoading,
         previousView,
         setPreviousView,
-        goToResourceId,
         searchValues,
         setSearchValues,
         limit,

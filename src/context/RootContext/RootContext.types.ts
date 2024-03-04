@@ -1,4 +1,4 @@
-import { Tab, TabData, UpdateTabPayload } from "@/redux/slices/tabSlice";
+import { Tab, UpdateTabPayload } from "@/redux/slices/tabSlice";
 import { InitialViewData, View, ViewType } from "@/types";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 
@@ -81,4 +81,5 @@ export type RootContextType = {
   setCurrentView?: (view?: View) => void;
   currentId?: number;
   setCurrentId?: (id?: number) => void;
+  goToResourceId?: (ids: number[]) => Promise<void>;
 };

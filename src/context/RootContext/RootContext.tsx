@@ -11,6 +11,8 @@ import { useReport } from "@/hooks/useReport";
 import { useAction } from "@/hooks/useAction";
 import { RootContextType } from "./RootContext.types";
 import { ViewType } from "@/types";
+import { GoToResourceModal } from "@/ui/GoToResourceModal";
+import { useGoToResource } from "@/hooks/useGoToResource";
 
 export const RootContext = createContext<RootContextType | undefined>(
   undefined,
@@ -48,8 +50,6 @@ export const RootProvider = forwardRef<RootProviderRef, RootProviderProps>(
       retrieveAndOpenAction,
     }));
 
-    const addNewTab = () => {};
-
     const { openAction, openRelate, retrieveAndOpenAction } =
       useNavigationActions({
         openActionModal: () => {},
@@ -64,12 +64,38 @@ export const RootProvider = forwardRef<RootProviderRef, RootProviderProps>(
       processAction,
     } = useAction({ generateReport, openAction });
 
+    const {
+      gtResourceModalVisible,
+      setGtResourceModalVisible,
+      searchingForResourceId,
+      goToResourceId,
+    } = useGoToResource({
+      currentTab,
+      openAction,
+    });
+
     return (
       <RootContext.Provider
-        value={{ updateTab, openRelate, processAction, currentTab } as any}
+        value={
+          {
+            updateTab,
+            openRelate,
+            processAction,
+            currentTab,
+            goToResourceId,
+          } as any
+        }
       >
         {children}
         <ReportGeneratingModal isGenerating={reportGenerating} />
+        <GoToResourceModal
+          visible={gtResourceModalVisible}
+          onIdSubmitted={goToResourceId}
+          isSearching={searchingForResourceId}
+          onCancel={() => {
+            setGtResourceModalVisible(false);
+          }}
+        />
         <FormModal
           buttonModal
           parentContext={actionModalOptions.context}

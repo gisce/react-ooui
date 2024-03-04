@@ -55,12 +55,15 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     setFormHasChanges,
     previousView,
     setPreviousView,
-    goToResourceId,
   } = useContext(ActionViewContext) as ActionViewContextType;
   const { t } = useLocale();
 
-  const { openRelate, openDefaultActionForModel, processAction } =
-    useNavigation();
+  const {
+    openRelate,
+    openDefaultActionForModel,
+    processAction,
+    goToResourceId,
+  } = useNavigation();
 
   function tryRefresh(callback: any) {
     if (formHasChanges) {
