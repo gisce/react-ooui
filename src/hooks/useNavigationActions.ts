@@ -5,18 +5,19 @@ import showErrorDialog from "@/ui/ActionErrorDialog";
 import { nanoid } from "nanoid";
 import { useConfigContext } from "@/context/ConfigContext";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
-import { ViewType } from "@/types";
+import { View, ViewType } from "@/types";
 import {
-  finalizeViews,
+  getAllViews,
   parseAndEvalContextDomain,
 } from "@/helpers/navigationActionsHelper";
+import { Tab } from "@/redux/slices/tabSlice";
 
 export const useNavigationActions = ({
   openActionModal,
   addTab,
 }: {
   openActionModal: (payload: any) => void;
-  addTab: (payload: any) => void;
+  addTab: (payload: Tab) => void;
 }) => {
   const { globalValues, rootContext } = useConfigContext();
 
@@ -37,7 +38,6 @@ export const useNavigationActions = ({
       treeExpandable = false,
       limit,
     }: any) => {
-      const key = nanoid();
       const formattedContext = { ...rootContext, ...context };
 
       if (target !== "current") {
@@ -61,6 +61,8 @@ export const useNavigationActions = ({
           },
         });
       } else {
+        const key = nanoid();
+
         const formattedInitialView = {
           ...initialView,
           id: Array.isArray(initialView.id)
@@ -68,30 +70,30 @@ export const useNavigationActions = ({
             : initialView.id,
         };
 
-        const { title } = await ConnectionProvider.getHandler().getView({
-          model,
-          type: formattedInitialView.type,
-          id: formattedInitialView.id,
-          context: formattedContext,
-        });
-
         addTab({
           id: key,
-          title,
-          action_id,
-          action_type,
-          view_id: formattedInitialView.id,
-          res_id,
-          tabKey: key,
-          views,
+          action: {
+            id: action_id,
+            type: action_type,
+          },
           model,
+          currentView: views.find(
+            (view: View) => view.view_id === formattedInitialView.id,
+          ),
+          availableViews: views,
           context: formattedContext,
           domain,
-          initialView: formattedInitialView,
-          formDefaultValues: values,
-          formForcedValues: forced_values,
-          treeExpandable,
-          limit,
+          viewOptions: {
+            form: {
+              defaultValues: values,
+              forcedValues: forced_values,
+              resourceId: res_id,
+            },
+            tree: {
+              expandable: treeExpandable,
+              limit,
+            },
+          },
         });
       }
     },
@@ -108,6 +110,8 @@ export const useNavigationActions = ({
         return;
       }
 
+      // action_id and action_type
+
       const { parsedContext, parsedDomain } = await parseAndEvalContextDomain({
         context: dataForAction.context,
         values: globalValues,
@@ -116,7 +120,7 @@ export const useNavigationActions = ({
         rootContext,
       });
 
-      const finalViews = await finalizeViews(
+      const finalViews = await getAllViews(
         dataForAction.views,
         dataForAction.res_model,
         parsedContext,
@@ -125,17 +129,20 @@ export const useNavigationActions = ({
 
       let initialView;
       if (initialViewType) {
-        initialView = finalViews.find(([_, type]) => type === initialViewType);
+        initialView = finalViews.find((view) => view.type === initialViewType);
       } else {
         initialView = finalViews[0];
       }
 
       return {
         ...dataForAction,
+        action_id: dataForAction.id,
+        action_type: dataForAction.type,
+        target: dataForAction.target,
         model: dataForAction.res_model,
         domain: [...parsedDomain, ...domain],
         context: { ...rootContext, ...parsedContext },
-        initialView: { id: initialView[0], type: initialView[1] },
+        initialView: { id: initialView.view_id, type: initialView.type },
         views: finalViews,
       };
     },

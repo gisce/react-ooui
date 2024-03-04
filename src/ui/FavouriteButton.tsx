@@ -58,29 +58,29 @@ const FavouriteButton = (props: Props) => {
     useNavigation();
 
   const favouriteQuery = useMemo(() => {
-    if (!currentTab || !currentTab.data.view_id) {
+    if (!currentTab || !currentTab.currentView.view_id) {
       return;
     }
 
-    const { action_id, action_type } = currentTab.data || {};
+    const { id, type } = currentTab.action || {};
 
-    if (!action_id || !action_type) {
+    if (!id || !type) {
       setIsFavourite(false);
       return;
     }
 
-    const view_id = currentTab.data.view_id!;
+    const view_id = currentTab.currentView.view_id;
     let res_id: boolean | number = false;
 
-    if (currentTab.data.view_type === "form") {
-      res_id = currentTab.data.res_id
-        ? (currentTab.data.res_id as number)
+    if (currentTab.currentView.type === "form") {
+      res_id = currentTab.viewOptions?.form?.resourceId
+        ? (currentTab.viewOptions?.form?.resourceId as number)
         : false;
     }
 
     return {
-      action_id,
-      action_type,
+      action_id: id,
+      action_type: type,
       view_id,
       res_id,
     };
@@ -158,11 +158,13 @@ const FavouriteButton = (props: Props) => {
     if (isFavourite && currentShortcutId) {
       await onRemoveFavourite(currentShortcutId);
     } else {
-      if (!currentTab || !currentTab.data.view_id) {
+      if (!currentTab || !currentTab.currentView.view_id) {
         return;
       }
 
-      const { action_id, view_id, action_type, res_id } = currentTab.data;
+      const { id: action_id, type: action_type } = currentTab.action;
+      const res_id = currentTab.viewOptions?.form?.resourceId;
+      const { view_id } = currentTab.currentView;
 
       if (!action_id || !action_type) {
         setIsFavourite(false);

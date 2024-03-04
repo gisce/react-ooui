@@ -55,6 +55,7 @@ export const RootProvider = forwardRef<RootProviderRef, RootProviderProps>(
         openActionModal: () => {},
         addTab,
       });
+
     const {
       actionModalOptions,
       actionModalVisible,

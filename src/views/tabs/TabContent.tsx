@@ -7,14 +7,12 @@ const TabContent: React.FC = () => {
   const [tabComponents, setTabComponents] = useState<React.ReactElement[]>([]);
 
   useEffect(() => {
-    // remove closed tab from tabComponents
     setTabComponents((prevTabComponents) =>
       prevTabComponents.filter((tabComponent) =>
         tabs.some((tab) => tab.id === tabComponent.key),
       ),
     );
 
-    // add new tab to tabComponents
     const newTabs = tabs.slice(tabComponents.length);
     if (newTabs.length > 0) {
       setTabComponents((prevTabComponents) => [
@@ -41,4 +39,5 @@ const TabContent: React.FC = () => {
     </div>
   );
 };
+
 export default React.memo(TabContent, () => true);

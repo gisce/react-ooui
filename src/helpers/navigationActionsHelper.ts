@@ -81,26 +81,29 @@ export const parseAndEvalContextDomain = async ({
   return { parsedContext, parsedDomain };
 };
 
-export const finalizeViews = async (
+export const getAllViews = async (
   views: any,
   model: string,
   parsedContext: any,
   rootContext: any,
 ) => {
-  const finalViews = [];
-  for (const viewArray of views) {
-    const [id, viewType] = viewArray;
-    if (!id && viewType !== "dashboard") {
-      const { view_id } = await ConnectionProvider.getHandler().getView({
+  const viewPromises = views.map(([id, type]: [number, ViewType]) =>
+    ConnectionProvider.getHandler()
+      .getView({
         model,
-        type: viewType,
+        type,
         id,
         context: { ...rootContext, ...parsedContext },
-      });
-      finalViews.push([view_id, viewType]);
-    } else {
-      finalViews.push(viewArray);
-    }
-  }
-  return finalViews;
+      })
+      .then((view) => ({ success: true, view }))
+      .catch((error) => ({ success: false, error })),
+  );
+
+  const availableViewsResults = await Promise.all(viewPromises);
+
+  const availableViews = availableViewsResults
+    .filter((result) => result.success)
+    .map((result) => result.view);
+
+  return availableViews;
 };

@@ -351,6 +351,16 @@ type ConnectionProviderType = {
     requestConfig?: any,
   ) => Promise<any>;
   exportData: (options: ExportDataOptions, requestConfig?: any) => Promise<any>;
+  getViewString: (
+    {
+      id,
+      context,
+    }: {
+      id: number;
+      context?: any;
+    },
+    requestConfig?: any,
+  ) => Promise<string | undefined>;
 };
 
 type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar";

@@ -1,21 +1,33 @@
+import { View } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { nanoid } from "nanoid";
-import { ReactNode } from "react";
+
+interface Action {
+  id: number;
+  type: string;
+}
 
 export interface Tab {
   id: string;
-  data: TabData;
-  content: ReactNode;
-}
-
-export interface TabData {
-  title: string;
-  action_id: number;
-  action_type: string;
-  view_id?: number;
-  res_id?: number;
+  isLoading?: boolean;
   isClosable?: boolean;
-  view_type?: string;
+  action: Action;
+  availableViews: View[];
+  currentView: View;
+  context?: any;
+  domain?: any[];
+  model: string;
+  viewOptions?: {
+    tree?: {
+      expandable?: boolean;
+      limit?: number;
+    };
+    form?: {
+      defaultValues?: any;
+      forcedValues?: any;
+      resourceId?: number;
+    };
+  };
 }
 
 export interface TabState {
@@ -30,7 +42,7 @@ const initialState: TabState = {
 
 export interface UpdateTabPayload {
   id: string;
-  tabData: Partial<TabData>;
+  tab: Partial<Tab>;
 }
 
 export const tabSlice = createSlice({
@@ -68,10 +80,10 @@ export const tabSlice = createSlice({
       const index = state.tabs.findIndex((tab) => tab.id === action.payload.id);
       if (index !== -1) {
         const updatedData = {
-          ...state.tabs[index].data,
-          ...action.payload.tabData,
+          ...state.tabs[index],
+          ...action.payload.tab,
         };
-        state.tabs[index] = { ...state.tabs[index], data: updatedData };
+        state.tabs[index] = updatedData;
       }
     },
   },
