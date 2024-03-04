@@ -1,7 +1,5 @@
 import { useEffect, useState, useRef, forwardRef, useContext } from "react";
 
-import { Spin } from "antd";
-
 import {
   DashboardView,
   FormView,
@@ -22,6 +20,7 @@ import { FormActionView } from "./actionViews/FormActionView";
 import { TreeActionView } from "./actionViews/TreeActionView";
 import { DashboardActionView } from "./actionViews/DashboardActionView";
 import { useNavigation } from "@/context/RootContext";
+import { determineFirstView } from "@/helpers/viewHelper";
 
 type Props = {
   domain: any;
@@ -36,7 +35,6 @@ type Props = {
   res_id?: number | boolean;
   action_id: number;
   action_type: string;
-  treeExpandable?: boolean;
   limit?: number;
 };
 
@@ -53,13 +51,11 @@ function ActionView(props: Props, ref: any) {
     res_id = false,
     action_id,
     action_type,
-    treeExpandable = false,
     limit,
     availableViews,
   } = props;
   const [currentView, setCurrentViewInternal] = useState<View>();
 
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const res_id_parsed: number | undefined = res_id
     ? (res_id as number)
     : undefined;
@@ -99,117 +95,22 @@ function ActionView(props: Props, ref: any) {
   }
 
   const fetchData = async () => {
-    setIsLoading(true);
+    const firstView = determineFirstView({
+      availableViews,
+      initialView,
+    });
 
-    // for (const view of viewsRetrieved) {
-    //   if (!view) {
-    //     continue;
-    //   }
-
-    //   const [, viewType] = view.viewTuple;
-
-    //   const viewInfo = view.info;
-
-    //   switch (viewType) {
-    //     case "dashboard": {
-    //       const formView = availableViews.find((view) => {
-    //         return view.type === "form";
-    //       });
-
-    //       let configAction;
-
-    //       if (formView) {
-    //         configAction = {
-    //           action_id,
-    //           action_type,
-    //           name: title,
-    //           res_id: context["active_id"],
-    //           res_model: model,
-    //           view_id: formView[0],
-    //           view_type: formView[1],
-    //         };
-    //       }
-
-    //       viewDataRetrieved.push({
-    //         type: "dashboard",
-    //         id: context["active_id"],
-    //         model,
-    //         context,
-    //         configAction,
-    //       });
-    //       break;
-    //     }
-    //     case "form": {
-    //       viewDataRetrieved.push({
-    //         ...(viewInfo as FormView),
-    //         type: viewType,
-    //       });
-    //       break;
-    //     }
-    //     case "tree": {
-    //       viewDataRetrieved.push({
-    //         ...(viewInfo as TreeView),
-    //         isExpandable: treeExpandable,
-    //         type: viewType,
-    //       });
-    //       break;
-    //     }
-    //     case "graph": {
-    //       viewDataRetrieved.push({
-    //         ...(viewInfo as GraphView),
-    //         type: viewType,
-    //       });
-    //       break;
-    //     }
-    //     default:
-    //       break;
-    //   }
-    // }
-    let currentViewToAssign;
-
-    if (!initialView && availableViews.find((v) => v.type === "tree")) {
-      const treeView: TreeView = availableViews.find(
-        (v) => v.type === "tree",
-      ) as TreeView;
-      currentViewToAssign = treeView;
-    } else if (!initialView) {
-      const formView: TreeView = availableViews.find(
-        (v) => v.type === "form",
-      ) as TreeView;
-      currentViewToAssign = formView;
-    } else {
-      const view = availableViews.find((v) => {
-        if (!initialView.id) {
-          return v.type === initialView.type;
-        } else {
-          return v.type === initialView.type && v.view_id === initialView.id;
-        }
-      });
-      currentViewToAssign = view;
-    }
-
-    if (!currentViewToAssign) {
+    if (!firstView) {
       showErrorDialog(
         `Error determining the first view to show for model ${model}.\nPlease, make sure the view ids on the fields_view_get responses are the same as the ones defined in the action`,
       );
       onRemoveTab?.(tabKey);
     }
 
-    setCurrentView(currentViewToAssign);
-    setIsLoading(false);
+    setCurrentView(firstView);
   };
 
   useEffect(() => {
-    const treeView = availableViews.find((v) => v.type === "tree") as TreeView;
-    const initialViewWithData: View = availableViews.find((v) => {
-      if (!initialView.id) {
-        return v.type === initialView.type;
-      } else {
-        return v.type === initialView.type && v.view_id === initialView.id;
-      }
-    }) as View;
-
-    setCurrentView(initialViewWithData || treeView);
     if (!res_id) {
       setCurrentId(undefined);
       setCurrentItemIndex(undefined);
@@ -326,10 +227,6 @@ function ActionView(props: Props, ref: any) {
       ) as FormView;
       setCurrentView(formView);
     }
-  }
-
-  if (isLoading) {
-    return <Spin />;
   }
 
   if (!currentView) {

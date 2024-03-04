@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { nanoid } from "nanoid";
 import deepmerge from "deepmerge";
 
-interface Action {
+export interface Action {
   id: number;
   type: string;
   title: string;

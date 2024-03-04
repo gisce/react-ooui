@@ -1,18 +1,15 @@
-import {
-  Tab as TabData,
-  changeActiveTab,
-  closeTab,
-} from "@/redux/slices/tabSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { Tab as TabData } from "@/redux/slices/tabSlice";
+import { useSelector } from "react-redux";
 import Tab from "./Tab";
 import { RootState } from "@/redux/state";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import { useLocale } from "@gisce/react-formiga-components";
+import { useTabs } from "@/hooks/useTabs";
 
 function TabSelector() {
   const { tabs, activeTabKey } = useSelector((state: RootState) => state.tabs);
-  const dispatch = useDispatch();
   const { t } = useLocale();
+  const { closeTab, changeActiveTab } = useTabs();
 
   return (
     <>
@@ -23,7 +20,7 @@ function TabSelector() {
           label={tab.action.title}
           onClose={() => {
             const close = () => {
-              dispatch(closeTab(tab.id));
+              closeTab(tab.id);
             };
             if (!tab.isClosable) {
               showUnsavedChangesDialog({
@@ -38,7 +35,7 @@ function TabSelector() {
           }}
           isActive={tab.id === activeTabKey}
           onSelected={() => {
-            dispatch(changeActiveTab(tab.id));
+            changeActiveTab(tab.id);
           }}
         />
       ))}

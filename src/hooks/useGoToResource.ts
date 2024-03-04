@@ -1,4 +1,3 @@
-import { useNavigation } from "@/context/RootContext";
 import { InitialViewData, ViewType } from "@/types";
 import { useCallback, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";

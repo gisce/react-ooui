@@ -1,5 +1,5 @@
-import { createElement, useCallback } from "react";
-import { ActionView, ConnectionProvider, FormView } from "..";
+import { useCallback } from "react";
+import { ConnectionProvider, FormView } from "..";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import { nanoid } from "nanoid";
@@ -112,8 +112,6 @@ export const useNavigationActions = ({
         return;
       }
 
-      // action_id and action_type
-
       const { parsedContext, parsedDomain } = await parseAndEvalContextDomain({
         context: dataForAction.context,
         values: globalValues,
@@ -122,12 +120,17 @@ export const useNavigationActions = ({
         rootContext,
       });
 
-      const finalViews = await getAllViews(
-        dataForAction.views,
-        dataForAction.res_model,
-        parsedContext,
-        rootContext,
-      );
+      const finalViews = await getAllViews({
+        action: {
+          id: dataForAction.id,
+          type: dataForAction.type,
+          title: dataForAction.name,
+        },
+        views: dataForAction.views,
+        model: dataForAction.res_model,
+        context: { ...rootContext, ...parsedContext },
+        treeIsExpandable: dataForAction.view_type === "tree", // This is the way that the backend has to set a tree in expandable mode
+      });
 
       let initialView;
       if (initialViewType) {

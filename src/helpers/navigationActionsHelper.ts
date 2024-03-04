@@ -1,6 +1,7 @@
-import { ViewType } from "@/types";
+import { View, ViewType } from "@/types";
 import { ConnectionProvider } from "..";
 import { parseContext } from "@gisce/ooui";
+import { Action } from "@/redux/slices/tabSlice";
 
 export async function getViewsAndInitialView({
   views,
@@ -81,23 +82,81 @@ export const parseAndEvalContextDomain = async ({
   return { parsedContext, parsedDomain };
 };
 
-export const getAllViews = async (
-  views: any,
-  model: string,
-  parsedContext: any,
-  rootContext: any,
-) => {
-  const viewPromises = views.map(([id, type]: [number, ViewType]) =>
-    ConnectionProvider.getHandler()
-      .getView({
+const adjustViewsInfo = ({
+  views,
+  model,
+  context,
+  treeIsExpandable,
+  action,
+}: {
+  views: View[];
+  model: string;
+  context: any;
+  treeIsExpandable: boolean;
+  action: Action;
+}) => {
+  const formView = views.find((view) => {
+    return view.type === "form";
+  });
+
+  return views.map((view) => {
+    if (view.type === "dashboard") {
+      return {
+        type: "dashboard",
+        id: context["active_id"],
         model,
-        type,
-        id,
-        context: { ...rootContext, ...parsedContext },
-      })
-      .then((view) => ({ success: true, view }))
-      .catch((error) => ({ success: false, error })),
-  );
+        context,
+        configAction: {
+          action_id: action.id,
+          action_type: action.type,
+          name: action.title,
+          res_id: context["active_id"],
+          res_model: model,
+          view_id: formView?.view_id,
+          view_type: formView?.type,
+        },
+      };
+    } else if (view.type === "tree") {
+      return {
+        ...view,
+        isExpandable: treeIsExpandable,
+      };
+    }
+    return view;
+  });
+};
+
+export const getAllViews = async ({
+  views,
+  model,
+  context,
+  treeIsExpandable,
+  action,
+}: {
+  views: any;
+  model: string;
+  context: any;
+  treeIsExpandable: boolean;
+  action: Action;
+}) => {
+  const viewPromises = views.map(([id, type]: [number, ViewType]) => {
+    if (type === "dashboard") {
+      return Promise.resolve({
+        success: true,
+        view: { type: "dashboard", view_id: undefined },
+      });
+    } else {
+      return ConnectionProvider.getHandler()
+        .getView({
+          model,
+          type,
+          id,
+          context,
+        })
+        .then((view) => ({ success: true, view }))
+        .catch((error) => ({ success: false, error }));
+    }
+  });
 
   const availableViewsResults = await Promise.all(viewPromises);
 
@@ -105,5 +164,11 @@ export const getAllViews = async (
     .filter((result) => result.success)
     .map((result) => result.view);
 
-  return availableViews;
+  return adjustViewsInfo({
+    views: availableViews,
+    model,
+    context,
+    treeIsExpandable,
+    action,
+  });
 };
