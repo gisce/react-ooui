@@ -220,8 +220,6 @@ function ActionView(props: Props, ref: any) {
     setIsLoading(false);
   };
 
-  // setCanWeClose({ tabKey, canWeClose });
-
   useEffect(() => {
     const treeView = availableViews.find((v) => v.type === "tree") as TreeView;
     const initialViewWithData: View = availableViews.find((v) => {
@@ -249,16 +247,6 @@ function ActionView(props: Props, ref: any) {
       setCurrentViewTabContext?.({ ...currentView, extra } as any);
     }
   }, [tabs, activeTabKey]);
-
-  // async function canWeClose() {
-  //   if (!currentView) {
-  //     return true;
-  //   } else if (currentView!.type === "form") {
-  //     return await (formRef.current as any).cancelUnsavedChanges();
-  //   } else {
-  //     return true;
-  //   }
-  // }
 
   async function handleGoToRecordShortcut() {
     if (activeTabKey !== tabKey) {

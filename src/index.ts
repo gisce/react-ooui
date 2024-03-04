@@ -79,7 +79,6 @@ import type {
   NameSearchRequest,
 } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
-import ContentRootProvider from "./context/ContentRootContext";
 import FavouriteButton from "./ui/FavouriteButton";
 import { ConfigContext, ConfigContextProvider } from "./context/ConfigContext";
 import Tab from "./views/tabs/Tab";
@@ -145,7 +144,6 @@ export {
   Url,
   Email,
   Image,
-  ContentRootProvider,
   showConfirmDialog,
   NameSearchRequest,
   ProgressBar,
