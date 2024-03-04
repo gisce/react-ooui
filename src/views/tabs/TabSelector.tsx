@@ -17,7 +17,7 @@ function TabSelector() {
         <Tab
           key={tab.id}
           tabKey={tab.id}
-          label={tab.currentView.title!}
+          label={tab.action.title}
           onClose={() => {
             dispatch(closeTab(tab.id));
           }}

@@ -20,10 +20,6 @@ import { useLocale, DropdownButton } from "@gisce/react-formiga-components";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import ConnectionProvider from "@/ConnectionProvider";
 import showErrorDialog from "@/ui/ActionErrorDialog";
-import {
-  ContentRootContext,
-  ContentRootContextType,
-} from "@/context/ContentRootContext";
 import ButtonWithBadge from "./ButtonWithBadge";
 import { showLogInfo } from "@/helpers/logInfoHelper";
 import SearchBar from "./SearchBar";
@@ -31,6 +27,7 @@ import { ExportModal } from "..";
 import { mergeParams } from "@/helpers/searchHelper";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
+import { useNavigation } from "@/context/RootContext";
 
 type Props = {
   parentContext?: any;
@@ -70,10 +67,7 @@ function TreeActionBar(props: Props) {
     ErpFeatureKeys.FEATURE_ADVANCED_EXPORT,
   );
   const { t } = useLocale();
-  const contentRootContext = useContext(
-    ContentRootContext,
-  ) as ContentRootContextType;
-  const { processAction } = contentRootContext || {};
+  const { processAction } = useNavigation();
   const [exportModalVisible, setExportModalVisible] = useState(false);
 
   const hasNameSearch: boolean =

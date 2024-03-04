@@ -26,8 +26,8 @@ export const useTabs = () => {
     },
     closeTab: (id: string) => dispatch(closeTab(id)),
     changeActiveTab: (id: string) => dispatch(changeActiveTab(id)),
-    updateTab: ({ id, tabData }: UpdateTabPayload) => {
-      dispatch(updateTab({ id, tabData }));
+    updateTab: ({ id, tab }: UpdateTabPayload) => {
+      dispatch(updateTab({ id, tab }));
     },
     currentTab,
   };

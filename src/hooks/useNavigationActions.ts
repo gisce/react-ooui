@@ -37,6 +37,7 @@ export const useNavigationActions = ({
       forced_values,
       treeExpandable = false,
       limit,
+      action_title,
     }: any) => {
       const formattedContext = { ...rootContext, ...context };
 
@@ -75,6 +76,7 @@ export const useNavigationActions = ({
           action: {
             id: action_id,
             type: action_type,
+            title: action_title,
           },
           model,
           currentView: views.find(
@@ -136,6 +138,7 @@ export const useNavigationActions = ({
 
       return {
         ...dataForAction,
+        action_title: dataForAction.name,
         action_id: dataForAction.id,
         action_type: dataForAction.type,
         target: dataForAction.target,

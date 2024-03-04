@@ -49,16 +49,14 @@ import {
   ActionViewContextType,
 } from "@/context/ActionViewContext";
 
-import {
-  ContentRootContext,
-  ContentRootContextType,
-} from "@/context/ContentRootContext";
 import { useLocale } from "@gisce/react-formiga-components";
 import {
   convertFrom2ManyRawValues,
   convertToPlain2ManyValues,
 } from "@/helpers/one2manyHelper";
 import { ErrorAlert } from "@/ui/ErrorAlert";
+import { useConfigContext } from "@/context/ConfigContext";
+import { useNavigation } from "@/context/RootContext";
 
 export type FormProps = {
   model: string;
@@ -157,10 +155,8 @@ function Form(props: FormProps, ref: any) {
     setTitle = undefined,
   } = (rootForm ? actionViewContext : {}) || {};
 
-  const contentRootContext = useContext(
-    ContentRootContext,
-  ) as ContentRootContextType;
-  const { processAction, globalValues } = contentRootContext || {};
+  const { globalValues } = useConfigContext();
+  const { processAction } = useNavigation();
 
   useImperativeHandle(ref, () => ({
     submitForm,

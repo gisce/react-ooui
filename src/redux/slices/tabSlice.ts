@@ -1,10 +1,12 @@
 import { View } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { nanoid } from "nanoid";
+import deepmerge from "deepmerge";
 
 interface Action {
   id: number;
   type: string;
+  title: string;
 }
 
 export interface Tab {
@@ -79,10 +81,10 @@ export const tabSlice = createSlice({
     updateTab: (state: TabState, action: PayloadAction<UpdateTabPayload>) => {
       const index = state.tabs.findIndex((tab) => tab.id === action.payload.id);
       if (index !== -1) {
-        const updatedData = {
-          ...state.tabs[index],
-          ...action.payload.tab,
-        };
+        const updatedData = deepmerge(
+          state.tabs[index] || {},
+          action.payload.tab || {},
+        );
         state.tabs[index] = updatedData;
       }
     },

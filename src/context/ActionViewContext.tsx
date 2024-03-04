@@ -115,8 +115,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   );
   const [title, setTitle] = useState<string>(titleProps);
 
-  const { updateTab, tabs } = useNavigation();
-  const tab = tabs?.find((tab) => tab.id === tabKey);
+  const { updateTab, currentTab } = useNavigation();
 
   useEffect(() => {
     if (results && results.length > 0 && !currentItemIndex) {
@@ -130,17 +129,18 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     setLimit(limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT);
   }, [limitProps]);
 
-  const currentView = tab
-    ? availableViews?.find((view) => view.view_id === tab.view_id)
+  const currentView = currentTab
+    ? availableViews?.find(
+        (view) => view.view_id === currentTab.currentView.view_id,
+      )
     : undefined;
 
   const setCurrentView = useCallback(
     (view: View) => {
       updateTab({
         id: tabKey!,
-        tabData: {
-          view_id: view.view_id,
-          view_type: view.type,
+        tab: {
+          currentView: view,
         },
       });
     },
@@ -177,7 +177,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   useEffect(() => {
     updateTab({
       id: tabKey!,
-      tabData: {
+      tab: {
         isClosable: !formHasChanges,
       },
     });
@@ -187,8 +187,12 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   useEffect(() => {
     updateTab({
       id: tabKey!,
-      tabData: {
-        res_id: currentId,
+      tab: {
+        viewOptions: {
+          form: {
+            resourceId: currentId,
+          },
+        },
       },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

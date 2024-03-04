@@ -21,14 +21,11 @@ import {
 } from "@/context/ActionViewContext";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import { mergeSearchFields } from "@/helpers/formHelper";
-import {
-  ContentRootContext,
-  ContentRootContextType,
-} from "@/context/ContentRootContext";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import { useSearch } from "@/hooks/useSearch";
 import { TableRef } from "@gisce/react-formiga-table";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
+import { useNavigation } from "@/context/RootContext";
 
 type OnRowClickedData = {
   id: number;
@@ -84,10 +81,7 @@ function SearchTree(props: Props, ref: any) {
 
   const { height } = useWindowDimensions();
 
-  const contentRootContext = useContext(
-    ContentRootContext,
-  ) as ContentRootContextType;
-  const { processAction } = contentRootContext || {};
+  const { processAction } = useNavigation();
 
   const actionViewContext = useContext(
     ActionViewContext,

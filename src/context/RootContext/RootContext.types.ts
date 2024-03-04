@@ -3,7 +3,7 @@ import { InitialViewData, View, ViewType } from "@/types";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 
 export type RootContextType = {
-  updateTab: ({ id, tabData }: UpdateTabPayload) => void;
+  updateTab: ({ id, tab }: UpdateTabPayload) => void;
   processAction: ({
     actionData,
     fields,
