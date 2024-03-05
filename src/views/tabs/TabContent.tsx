@@ -25,18 +25,17 @@ const TabContent = () => {
         action_type: tab.action.type,
         tabKey: tab.id,
         title: tab.action.title,
-        availableViews: tab.availableViews,
+        availableViews: tab.availableViews!,
         initialView: {
-          id: tab.currentView.view_id!,
-          type: tab.currentView.type,
+          id: tab.currentView!.view_id!,
+          type: tab.currentView!.type,
         },
-        model: tab.model,
+        model: tab.model!,
         context: tab.context,
         domain: tab.domain,
         res_id: tab.viewOptions?.form?.resourceId,
         formDefaultValues: tab.viewOptions?.form?.defaultValues,
         formForcedValues: tab.viewOptions?.form?.forcedValues,
-        treeExpandable: tab.viewOptions?.tree?.expandable,
         limit: tab.viewOptions?.tree?.limit,
       });
       return tabComponents.current[tab.id];

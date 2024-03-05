@@ -94,6 +94,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     setSearchTreeNameSearch,
     limit: limitProps,
     tabKey,
+    setCurrentView,
   } = props;
   const [currentId, setCurrentId] = useState<number>();
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
@@ -134,8 +135,9 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         )
       : undefined;
 
-  const setCurrentView = useCallback(
+  const setCurrentViewCallback = useCallback(
     (view: View) => {
+      setCurrentView(view);
       updateTab({
         id: tabKey!,
         tab: {
@@ -143,7 +145,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         },
       });
     },
-    [tabKey, updateTab],
+    [setCurrentView, tabKey, updateTab],
   );
 
   useEffect(() => {
@@ -205,7 +207,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     <ActionViewContext.Provider
       value={{
         currentView: currentView!,
-        setCurrentView,
+        setCurrentView: setCurrentViewCallback,
         title,
         availableViews,
         formIsSaving,

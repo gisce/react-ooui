@@ -4,6 +4,7 @@ import { ShortcutApi } from "@/ui/FavouriteButton";
 
 export type RootContextType = {
   updateTab: ({ id, tab }: UpdateTabPayload) => void;
+  closeTab: (id: string) => void;
   processAction: ({
     actionData,
     fields,

@@ -43,19 +43,24 @@ export interface RootProviderRef {
 export const RootProvider = forwardRef<RootProviderRef, RootProviderProps>(
   (props, ref) => {
     const { children } = props;
-    const { updateTab, addTab, currentTab } = useTabs();
+    const { updateTab, addTab, currentTab, closeTab } = useTabs();
     const { reportGenerating, generateReport } = useReport();
 
     useImperativeHandle(ref, () => ({
       retrieveAndOpenAction,
     }));
 
-    const { openAction, openRelate, openShortcut, retrieveAndOpenAction } =
-      useNavigationActions({
-        openActionModal: () => {},
-        addTab,
-        updateTab,
-      });
+    const {
+      openAction,
+      openRelate,
+      openShortcut,
+      retrieveAndOpenAction,
+      openDefaultActionForModel,
+    } = useNavigationActions({
+      openActionModal: () => {},
+      addTab,
+      updateTab,
+    });
 
     const {
       actionModalOptions,
@@ -85,6 +90,8 @@ export const RootProvider = forwardRef<RootProviderRef, RootProviderProps>(
             currentTab,
             goToResourceId,
             openShortcut,
+            openDefaultActionForModel,
+            closeTab,
           } as any
         }
       >

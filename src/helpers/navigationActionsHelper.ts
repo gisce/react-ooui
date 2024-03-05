@@ -94,7 +94,7 @@ const adjustViewsInfo = ({
   context: any;
   treeIsExpandable: boolean;
   action: Action;
-}) => {
+}): View[] => {
   const formView = views.find((view) => {
     return view.type === "form";
   });
@@ -111,9 +111,9 @@ const adjustViewsInfo = ({
           action_type: action.type,
           name: action.title,
           res_id: context["active_id"],
-          res_model: model,
-          view_id: formView?.view_id,
-          view_type: formView?.type,
+          res_model: model!,
+          view_id: formView?.view_id!,
+          view_type: formView?.type!,
         },
       };
     } else if (view.type === "tree") {
@@ -138,7 +138,7 @@ export const getAllViews = async ({
   context: any;
   treeIsExpandable: boolean;
   action: Action;
-}) => {
+}): Promise<View[]> => {
   const viewPromises = views.map(([id, type]: [number, ViewType]) => {
     if (type === "dashboard") {
       return Promise.resolve({

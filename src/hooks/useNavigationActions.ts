@@ -29,7 +29,6 @@ export const useNavigationActions = ({
       context,
       model,
       views,
-      title,
       target,
       initialView,
       action_id,
@@ -133,7 +132,14 @@ export const useNavigationActions = ({
   );
 
   const retrieveAndProcessActionData = useCallback(
-    async ({ action, initialViewType, domain = [] }: any) => {
+    async ({
+      action,
+      initialViewType,
+      domain = [],
+      values,
+      forced_values,
+      res_id,
+    }: any) => {
       const dataForAction = await ConnectionProvider.getHandler().getActionData(
         { action, context: rootContext },
       );
@@ -194,6 +200,9 @@ export const useNavigationActions = ({
         initialView: { id: initialView?.view_id, type: initialView?.type },
         views: finalViews,
         tabKey,
+        res_id,
+        values,
+        forced_values,
       };
     },
     [addTab, globalValues, rootContext],
@@ -226,11 +235,23 @@ export const useNavigationActions = ({
         type: relateData.views[0][1],
       };
 
+      const finalViews = await getAllViews({
+        action: {
+          id: action_id,
+          type: action_type,
+          title: relateData.string,
+        },
+        views: relateData.views,
+        model: relateData.res_model,
+        context: { ...rootContext, ...parsedContext },
+        treeIsExpandable: relateData.view_type === "tree", // This is the way that the backend has to set a tree in expandable mode
+      });
+
       openAction({
         domain: parsedDomain,
         context: parsedContext,
         model: relateData.res_model,
-        views: relateData.views,
+        views: finalViews,
         title: relateData.string,
         target: relateData.target,
         initialView,
@@ -240,7 +261,7 @@ export const useNavigationActions = ({
         tabKey,
       });
     },
-    [addTab, globalValues, openAction],
+    [addTab, globalValues, openAction, rootContext],
   );
 
   const openShortcut = useCallback(

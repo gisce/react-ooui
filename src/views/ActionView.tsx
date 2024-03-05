@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, forwardRef, useContext } from "react";
+import { useEffect, useState, useRef, forwardRef } from "react";
 
 import {
   DashboardView,
@@ -10,17 +10,14 @@ import {
 } from "@/types/index";
 
 import ActionViewProvider from "@/context/ActionViewContext";
-import {
-  TabManagerContext,
-  TabManagerContextType,
-} from "@/context/TabManagerContext";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import { GraphActionView } from "@/views/actionViews/GraphActionView";
 import { FormActionView } from "./actionViews/FormActionView";
 import { TreeActionView } from "./actionViews/TreeActionView";
 import { DashboardActionView } from "./actionViews/DashboardActionView";
-import { useNavigation } from "@/context/RootContext";
 import { determineFirstView } from "@/helpers/viewHelper";
+// import { useNavigationActions } from "@/hooks/useNavigationActions";
+import { useNavigation } from "@/context/RootContext";
 
 type Props = {
   domain: any;
@@ -54,15 +51,13 @@ function ActionView(props: Props, ref: any) {
     limit,
     availableViews,
   } = props;
-  const [currentView, setCurrentViewInternal] = useState<View>();
+  const [currentView, setCurrentView] = useState<View>();
 
   const res_id_parsed: number | undefined = res_id
     ? (res_id as number)
     : undefined;
 
-  const [currentId, setCurrentIdInternal] = useState<number | undefined>(
-    res_id_parsed,
-  );
+  const [currentId, setCurrentId] = useState<number | undefined>(res_id_parsed);
   const [selectedRowItems, setSelectedRowItems] = useState<any[]>([]);
   const [currentItemIndex, setCurrentItemIndex] = useState<number>();
   const [results, setResults] = useState<any>([]);
@@ -70,29 +65,10 @@ function ActionView(props: Props, ref: any) {
   const [totalItems, setTotalItems] = useState<number>(0);
   const [searchTreeNameSearch, setSearchTreeNameSearch] = useState<string>();
 
+  const { closeTab, activeTabKey } = useNavigation();
+
   const formRef = useRef();
   const searchTreeRef = useRef();
-
-  const tabManagerContext = useContext(
-    TabManagerContext,
-  ) as TabManagerContextType;
-  const {
-    setCurrentView: setCurrentViewTabContext,
-    setCurrentId: setCurrentIdTabContext,
-  } = tabManagerContext || {};
-
-  const { tabs, activeTabKey, onRemoveTab } = useNavigation();
-
-  function setCurrentId(id?: number) {
-    setCurrentIdInternal(id);
-    setCurrentIdTabContext?.(id);
-  }
-
-  function setCurrentView(view?: View) {
-    setCurrentViewInternal(view);
-    const extra = { action_id, action_type };
-    setCurrentViewTabContext?.({ ...view, extra } as any);
-  }
 
   const fetchData = async () => {
     const firstView = determineFirstView({
@@ -104,7 +80,7 @@ function ActionView(props: Props, ref: any) {
       showErrorDialog(
         `Error determining the first view to show for model ${model}.\nPlease, make sure the view ids on the fields_view_get responses are the same as the ones defined in the action`,
       );
-      onRemoveTab?.(tabKey);
+      closeTab(tabKey);
     }
 
     setCurrentView(firstView);
@@ -115,18 +91,18 @@ function ActionView(props: Props, ref: any) {
       setCurrentId(undefined);
       setCurrentItemIndex(undefined);
     } else {
-      setCurrentIdTabContext?.(res_id_parsed);
+      // setCurrentIdTabContext?.(res_id_parsed);
     }
     fetchData();
   }, [model, availableViews, res_id]);
 
-  useEffect(() => {
-    if (activeTabKey === tabKey) {
-      setCurrentIdTabContext?.(currentId);
-      const extra = { action_id, action_type };
-      setCurrentViewTabContext?.({ ...currentView, extra } as any);
-    }
-  }, [tabs, activeTabKey]);
+  // useEffect(() => {
+  //   if (activeTabKey === tabKey) {
+  //     setCurrentIdTabContext?.(currentId);
+  //     const extra = { action_id, action_type };
+  //     setCurrentViewTabContext?.({ ...currentView, extra } as any);
+  //   }
+  // }, [tabs, activeTabKey]);
 
   function content() {
     // eslint-disable-next-line array-callback-return
