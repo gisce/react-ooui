@@ -58,7 +58,7 @@ const FavouriteButton = (props: Props) => {
     useNavigation();
 
   const favouriteQuery = useMemo(() => {
-    if (!currentTab || !currentTab.currentView.view_id) {
+    if (!currentTab || !currentTab.currentView?.view_id) {
       return;
     }
 
@@ -158,7 +158,7 @@ const FavouriteButton = (props: Props) => {
     if (isFavourite && currentShortcutId) {
       await onRemoveFavourite(currentShortcutId);
     } else {
-      if (!currentTab || !currentTab.currentView.view_id) {
+      if (!currentTab || !currentTab.currentView?.view_id) {
         return;
       }
 

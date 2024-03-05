@@ -10,14 +10,16 @@ import {
   getAllViews,
   parseAndEvalContextDomain,
 } from "@/helpers/navigationActionsHelper";
-import { Tab } from "@/redux/slices/tabSlice";
+import { Tab, UpdateTabPayload } from "@/redux/slices/tabSlice";
 
 export const useNavigationActions = ({
   openActionModal,
   addTab,
+  updateTab,
 }: {
   openActionModal: (payload: any) => void;
   addTab: (payload: Tab) => void;
+  updateTab: ({ id, tab }: UpdateTabPayload) => void;
 }) => {
   const { globalValues, rootContext } = useConfigContext();
 
@@ -38,6 +40,7 @@ export const useNavigationActions = ({
       treeExpandable = false,
       limit,
       action_title,
+      tabKey,
     }: any) => {
       const formattedContext = { ...rootContext, ...context };
 
@@ -71,35 +74,62 @@ export const useNavigationActions = ({
             : initialView.id,
         };
 
-        addTab({
-          id: key,
-          action: {
-            id: action_id,
-            type: action_type,
-            title: action_title,
-          },
-          model,
-          currentView: views.find(
-            (view: View) => view.view_id === formattedInitialView.id,
-          ),
-          availableViews: views,
-          context: formattedContext,
-          domain,
-          viewOptions: {
-            form: {
-              defaultValues: values,
-              forcedValues: forced_values,
-              resourceId: res_id,
+        if (tabKey) {
+          updateTab({
+            id: tabKey,
+            tab: {
+              isLoading: false,
+              model,
+              currentView: views.find(
+                (view: View) => view.view_id === formattedInitialView.id,
+              ),
+              availableViews: views,
+              context: formattedContext,
+              domain,
+              viewOptions: {
+                form: {
+                  defaultValues: values,
+                  forcedValues: forced_values,
+                  resourceId: res_id,
+                },
+                tree: {
+                  expandable: treeExpandable,
+                  limit,
+                },
+              },
             },
-            tree: {
-              expandable: treeExpandable,
-              limit,
+          });
+        } else {
+          addTab({
+            id: key,
+            action: {
+              id: action_id,
+              type: action_type,
+              title: action_title,
             },
-          },
-        });
+            model,
+            currentView: views.find(
+              (view: View) => view.view_id === formattedInitialView.id,
+            ),
+            availableViews: views,
+            context: formattedContext,
+            domain,
+            viewOptions: {
+              form: {
+                defaultValues: values,
+                forcedValues: forced_values,
+                resourceId: res_id,
+              },
+              tree: {
+                expandable: treeExpandable,
+                limit,
+              },
+            },
+          });
+        }
       }
     },
-    [addTab, openActionModal, rootContext],
+    [addTab, openActionModal, rootContext, updateTab],
   );
 
   const retrieveAndProcessActionData = useCallback(
@@ -110,6 +140,19 @@ export const useNavigationActions = ({
       if (dataForAction.type === "ir.actions.wizard") {
         showErrorDialog("Action type not supported");
         return;
+      }
+      let tabKey;
+      if (dataForAction.target === "current") {
+        tabKey = nanoid();
+        addTab({
+          id: tabKey,
+          isLoading: true,
+          action: {
+            id: dataForAction.id,
+            type: dataForAction.type,
+            title: dataForAction.name,
+          },
+        });
       }
 
       const { parsedContext, parsedDomain } = await parseAndEvalContextDomain({
@@ -148,15 +191,29 @@ export const useNavigationActions = ({
         model: dataForAction.res_model,
         domain: [...parsedDomain, ...domain],
         context: { ...rootContext, ...parsedContext },
-        initialView: { id: initialView.view_id, type: initialView.type },
+        initialView: { id: initialView?.view_id, type: initialView?.type },
         views: finalViews,
+        tabKey,
       };
     },
-    [globalValues, rootContext],
+    [addTab, globalValues, rootContext],
   );
 
   const openRelate = useCallback(
     async ({ relateData, fields, values, action_id, action_type }: any) => {
+      let tabKey;
+      if (relateData.target === "current") {
+        tabKey = nanoid();
+        addTab({
+          id: tabKey,
+          action: {
+            id: action_id,
+            type: action_type,
+            title: relateData.string,
+          },
+          isLoading: true,
+        });
+      }
       const { parsedContext, parsedDomain } = await parseAndEvalContextDomain({
         context: relateData.context,
         values: { ...values, ...globalValues },
@@ -180,9 +237,10 @@ export const useNavigationActions = ({
         action_id,
         action_type,
         limit: relateData.limit,
+        tabKey,
       });
     },
-    [globalValues, openAction],
+    [addTab, globalValues, openAction],
   );
 
   const openShortcut = useCallback(
@@ -195,6 +253,18 @@ export const useNavigationActions = ({
           res_id: shortcut.res_id,
           domain: [],
         });
+
+      // ...dataForAction,
+      // action_title: dataForAction.name,
+      // action_id: dataForAction.id,
+      // action_type: dataForAction.type,
+      // target: dataForAction.target,
+      // model: dataForAction.res_model,
+      // domain: [...parsedDomain, ...domain],
+      // context: { ...rootContext, ...parsedContext },
+      // initialView: { id: initialView?.view_id, type: initialView?.type },
+      // views: finalViews,
+      // tabKey,
 
       openAction({
         domain,

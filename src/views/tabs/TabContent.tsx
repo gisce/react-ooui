@@ -3,6 +3,7 @@ import { RootState } from "@/redux/state";
 import { ReactNode, createElement, memo, useRef } from "react";
 import { useSelector } from "react-redux";
 import ActionView from "../ActionView";
+import { Spin } from "antd";
 
 const TabContent = () => {
   const { tabs, activeTabKey } = useSelector((state: RootState) => state.tabs);
@@ -15,7 +16,10 @@ const TabContent = () => {
 
   const getTabElement = (tab: Tab) => {
     const tabComponent = tabComponents.current[tab.id];
-    if (!tabComponent) {
+
+    if (tab.isLoading) {
+      return <Spin />;
+    } else if (!tabComponent && !tab.isLoading) {
       tabComponents.current[tab.id] = createElement(ActionView, {
         action_id: tab.action.id,
         action_type: tab.action.type,

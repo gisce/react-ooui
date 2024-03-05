@@ -22,7 +22,7 @@ function TabSelector() {
             const close = () => {
               closeTab(tab.id);
             };
-            if (!tab.isClosable) {
+            if (tab.isClosable === false) {
               showUnsavedChangesDialog({
                 t,
                 onOk: () => {

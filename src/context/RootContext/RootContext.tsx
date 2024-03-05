@@ -50,10 +50,11 @@ export const RootProvider = forwardRef<RootProviderRef, RootProviderProps>(
       retrieveAndOpenAction,
     }));
 
-    const { openAction, openRelate, retrieveAndOpenAction } =
+    const { openAction, openRelate, openShortcut, retrieveAndOpenAction } =
       useNavigationActions({
         openActionModal: () => {},
         addTab,
+        updateTab,
       });
 
     const {
@@ -83,6 +84,7 @@ export const RootProvider = forwardRef<RootProviderRef, RootProviderProps>(
             processAction,
             currentTab,
             goToResourceId,
+            openShortcut,
           } as any
         }
       >

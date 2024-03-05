@@ -127,11 +127,12 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     setLimit(limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT);
   }, [limitProps]);
 
-  const currentView = currentTab
-    ? availableViews?.find(
-        (view) => view.view_id === currentTab.currentView.view_id,
-      )
-    : undefined;
+  const currentView =
+    currentTab && currentTab.id === tabKey
+      ? availableViews?.find(
+          (view) => view.view_id === currentTab.currentView?.view_id,
+        )
+      : undefined;
 
   const setCurrentView = useCallback(
     (view: View) => {

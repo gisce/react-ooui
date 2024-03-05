@@ -14,11 +14,11 @@ export interface Tab {
   isLoading?: boolean;
   isClosable?: boolean;
   action: Action;
-  availableViews: View[];
-  currentView: View;
+  availableViews?: View[];
+  currentView?: View;
   context?: any;
   domain?: any[];
-  model: string;
+  model?: string;
   viewOptions?: {
     tree?: {
       expandable?: boolean;
