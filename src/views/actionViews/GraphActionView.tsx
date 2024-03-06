@@ -1,11 +1,8 @@
 import GraphActionBar from "@/actionbar/GraphActionBar";
 import TitleHeader from "@/ui/TitleHeader";
 import { Graph } from "@/widgets/views/Graph/Graph";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import {
-  ActionViewContext,
-  ActionViewContextType,
-} from "@/context/ActionViewContext";
+import { useEffect, useRef, useState } from "react";
+import { useActionViewContext } from "@/context/ActionViewContext";
 import { FormView, TreeView } from "@/types";
 import { mergeSearchFields } from "@/helpers/formHelper";
 import { useSearch } from "@/hooks/useSearch";
@@ -28,9 +25,7 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     props;
   const graphRef = useRef();
 
-  const actionViewContext = useContext(
-    ActionViewContext,
-  ) as ActionViewContextType;
+  const actionViewContext = useActionViewContext();
   const {
     setResults: setResultsActionView = undefined,
     setCurrentItemIndex = undefined,

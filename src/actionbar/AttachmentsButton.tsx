@@ -1,10 +1,7 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getMimeType, openBase64InNewTab } from "@/helpers/filesHelper";
 import ConnectionProvider from "@/ConnectionProvider";
-import {
-  ActionViewContext,
-  ActionViewContextType,
-} from "@/context/ActionViewContext";
+import { useActionViewContext } from "@/context/ActionViewContext";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import {
   Attachment,
@@ -29,7 +26,7 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
     onListAllAttachments,
     onViewAttachmentDetails,
   } = props;
-  const { formRef } = useContext(ActionViewContext) as ActionViewContextType;
+  const { formRef } = useActionViewContext();
   const [preloading, setPreloading] = useState(false);
   const [preloadedAttachments, setPreloadedAttachments] = useState<
     Attachment[]

@@ -1,10 +1,7 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Space, Spin } from "antd";
 import ChangeViewButton from "./ChangeViewButton";
-import {
-  ActionViewContext,
-  ActionViewContextType,
-} from "@/context/ActionViewContext";
+import { useActionViewContext } from "@/context/ActionViewContext";
 import NewButton from "./NewButton";
 import ActionButton from "./ActionButton";
 import Icon, {
@@ -60,7 +57,7 @@ function TreeActionBar(props: Props) {
     results,
     limit,
     totalItems,
-  } = useContext(ActionViewContext) as ActionViewContextType;
+  } = useActionViewContext();
 
   const { parentContext = {}, treeExpandable, toolbar } = props;
   const advancedExportEnabled = useFeatureIsEnabled(

@@ -2,7 +2,6 @@ import {
   useEffect,
   useState,
   useRef,
-  useContext,
   forwardRef,
   useImperativeHandle,
   useMemo,
@@ -15,10 +14,7 @@ import { Tree } from "@/widgets/views/Tree";
 import { FormView, TreeView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 
-import {
-  ActionViewContext,
-  ActionViewContextType,
-} from "@/context/ActionViewContext";
+import { useActionViewContext } from "@/context/ActionViewContext";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import { mergeSearchFields } from "@/helpers/formHelper";
 import showErrorDialog from "@/ui/ActionErrorDialog";
@@ -83,9 +79,7 @@ function SearchTree(props: Props, ref: any) {
 
   const { processAction } = useNavigation();
 
-  const actionViewContext = useContext(
-    ActionViewContext,
-  ) as ActionViewContextType;
+  const actionViewContext = useActionViewContext();
   const {
     setResults: setResultsActionView = undefined,
     setCurrentItemIndex = undefined,

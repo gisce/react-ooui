@@ -1,10 +1,6 @@
-import React, { useContext } from "react";
 import { FileAddOutlined } from "@ant-design/icons";
 import ActionButton from "./ActionButton";
-import {
-  ActionViewContext,
-  ActionViewContextType,
-} from "@/context/ActionViewContext";
+import { useActionViewContext } from "@/context/ActionViewContext";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import { useLocale } from "@gisce/react-formiga-components";
 
@@ -15,9 +11,8 @@ type Props = {
 function NewButton(props: Props) {
   const { disabled = false } = props;
 
-  const { formHasChanges, onNewClicked: onNewClickedProps } = useContext(
-    ActionViewContext,
-  ) as ActionViewContextType;
+  const { formHasChanges, onNewClicked: onNewClickedProps } =
+    useActionViewContext();
   const { t } = useLocale();
 
   const onNewClicked = () => {

@@ -1,7 +1,6 @@
 import {
   forwardRef,
   memo,
-  useContext,
   useEffect,
   useImperativeHandle,
   useMemo,
@@ -25,10 +24,7 @@ import {
   MinusSquareOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
-import {
-  ActionViewContext,
-  ActionViewContextType,
-} from "@/context/ActionViewContext";
+import { useActionViewContext } from "@/context/ActionViewContext";
 import { SelectAllRecordsRow } from "@/common/SelectAllRecordsRow";
 import { COLUMN_COMPONENTS } from "./treeComponents";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
@@ -96,9 +92,7 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
     const { t } = useLocale();
     const internalLimit = useRef(limit);
 
-    const actionViewContext = useContext(
-      ActionViewContext,
-    ) as ActionViewContextType;
+    const actionViewContext = useActionViewContext();
     const { title = undefined, setTitle = undefined } =
       (rootTree ? actionViewContext : {}) || {};
 

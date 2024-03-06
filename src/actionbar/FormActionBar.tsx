@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { Space, Spin } from "antd";
 import {
   SaveOutlined,
@@ -14,10 +13,7 @@ import {
 } from "@ant-design/icons";
 import ChangeViewButton from "./ChangeViewButton";
 import ActionButton from "./ActionButton";
-import {
-  ActionViewContext,
-  ActionViewContextType,
-} from "@/context/ActionViewContext";
+import { useActionViewContext } from "@/context/ActionViewContext";
 import NewButton from "./NewButton";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import showConfirmDialog from "@/ui/ConfirmDialog";
@@ -55,7 +51,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     setFormHasChanges,
     previousView,
     setPreviousView,
-  } = useContext(ActionViewContext) as ActionViewContextType;
+  } = useActionViewContext();
   const { t } = useLocale();
 
   const {

@@ -1,10 +1,4 @@
-import {
-  useState,
-  useEffect,
-  useContext,
-  forwardRef,
-  useImperativeHandle,
-} from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import {
   Graph as GraphOoui,
   parseGraph,
@@ -16,10 +10,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { GraphIndicator } from "./GraphIndicator";
 import { GraphChart } from "./GraphChart";
 import { GraphView } from "@/types";
-import {
-  ActionViewContext,
-  ActionViewContextType,
-} from "@/context/ActionViewContext";
+import { useActionViewContext } from "@/context/ActionViewContext";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 
 export type GraphProps = {
@@ -36,9 +27,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
   const [loading, setLoading] = useState(false);
   const [graphOoui, setGraphOoui] = useState<GraphOoui>();
   const [graphXml, setGraphXml] = useState<string>();
-  const actionViewContext = useContext(
-    ActionViewContext,
-  ) as ActionViewContextType;
+  const actionViewContext = useActionViewContext();
   const { setGraphIsLoading = undefined } = actionViewContext || {};
 
   const [getView] = useNetworkRequest(ConnectionProvider.getHandler().getView);

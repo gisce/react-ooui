@@ -1,9 +1,5 @@
-import React, { useContext } from "react";
 import { Row, Col, Typography, theme } from "antd";
-import {
-  ActionViewContext,
-  ActionViewContextType,
-} from "@/context/ActionViewContext";
+import { useActionViewContext } from "@/context/ActionViewContext";
 import { useLocale } from "@gisce/react-formiga-components";
 import { CopyOutlined } from "@ant-design/icons";
 
@@ -26,7 +22,7 @@ function TitleHeader(props: Props) {
     results,
     totalItems,
     selectedRowItems,
-  } = useContext(ActionViewContext) as ActionViewContextType;
+  } = useActionViewContext();
   const { t } = useLocale();
   const { token } = useToken();
 

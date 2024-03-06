@@ -1,10 +1,6 @@
-import React, { useContext } from "react";
 import { Space } from "antd";
 import ChangeViewButton from "./ChangeViewButton";
-import {
-  ActionViewContext,
-  ActionViewContextType,
-} from "@/context/ActionViewContext";
+import { useActionViewContext } from "@/context/ActionViewContext";
 import ActionButton from "./ActionButton";
 import { useLocale } from "@gisce/react-formiga-components";
 import ButtonWithBadge from "./ButtonWithBadge";
@@ -23,7 +19,7 @@ function GraphActionBar({ refreshGraph }: { refreshGraph: () => void }) {
     graphIsLoading,
     previousView,
     setPreviousView,
-  } = useContext(ActionViewContext) as ActionViewContextType;
+  } = useActionViewContext();
 
   return (
     <Space wrap={true}>

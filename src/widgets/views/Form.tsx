@@ -1,4 +1,4 @@
-import React, {
+import {
   useState,
   forwardRef,
   useImperativeHandle,
@@ -44,10 +44,7 @@ import {
   FormModalContextType,
 } from "@/context/FormModalContext";
 
-import {
-  ActionViewContext,
-  ActionViewContextType,
-} from "@/context/ActionViewContext";
+import { useActionViewContext } from "@/context/ActionViewContext";
 
 import { useLocale } from "@gisce/react-formiga-components";
 import {
@@ -142,9 +139,7 @@ function Form(props: FormProps, ref: any) {
   const { activeId: parentId, getPlainValues: getParentPlainValues } =
     formContext || {};
 
-  const actionViewContext = useContext(
-    ActionViewContext,
-  ) as ActionViewContextType;
+  const actionViewContext = useActionViewContext();
   const {
     setFormIsSaving = undefined,
     setFormHasChanges = undefined,

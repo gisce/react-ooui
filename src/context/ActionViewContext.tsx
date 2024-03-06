@@ -269,9 +269,10 @@ export const useActionViewContext = (): ActionViewContextType => {
   const context = useContext<ActionViewContextType | null>(ActionViewContext);
 
   if (!context) {
-    throw new Error(
+    console.error(
       "ActionViewProvider context is undefined, please verify you are calling useActionViewContext() as child of a <ActionViewProvider> component.",
     );
+    return {} as ActionViewContextType;
   }
 
   return context;
