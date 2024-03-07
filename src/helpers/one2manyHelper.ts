@@ -29,13 +29,15 @@ const readObjectValues = async (
     currentView = {},
   } = options;
 
+  const operationsToRead = ["original", "pendingLink"];
+
   const temporalItems: One2manyItem = items.filter(
-    (item) => item.operation !== "original",
+    (item) => !operationsToRead.includes(item.operation!),
   );
 
   // We get a number array of id's
   const idsToFetch = items
-    .filter((item) => item.operation === "original")
+    .filter((item) => operationsToRead.includes(item.operation!))
     .map((item) => item.id) as number[];
 
   const fieldsToRetrieve: { [key: string]: any } = {
@@ -206,7 +208,7 @@ export const convertFrom2ManyRawValues = ({
       const itemsId = values[key];
       formattedValues[key] = {
         items: itemsId.map((itemId: number) => ({
-          operation: "original",
+          operation: "pendingLink",
           id: itemId,
         })),
       };

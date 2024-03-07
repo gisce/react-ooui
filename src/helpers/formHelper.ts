@@ -64,10 +64,14 @@ export const getTouchedValues = ({
         differences[key] = target[key];
       }
     } else if (Array.isArray(target[key])) {
-      if (source[key] === undefined) {
-        differences[key] = target[key];
-      } else if (fields[key].type === "many2one") {
-        if (!Array.isArray(source[key])) {
+      if (fields[key].type === "many2one") {
+        if (
+          !isValidMany2OneValue(source[key]) &&
+          !isValidMany2OneValue(target[key])
+        ) {
+          // eslint-disable-next-line no-useless-return
+          return;
+        } else if (!Array.isArray(source[key])) {
           // This will mean the source many2one value is a numeric id
           const numericId = source[key];
           const [targetNumericId] = target[key];
@@ -88,6 +92,8 @@ export const getTouchedValues = ({
           differences[key] = target[key];
         }
       }
+    } else if (source[key] === undefined && target[key] !== undefined) {
+      differences[key] = target[key];
     } else if (source[key] !== target[key]) {
       if (target[key] === undefined) {
         differences[key] = null;
@@ -298,4 +304,20 @@ export const stringFormat = (text: string, values: any): string => {
   return text.replace(/\{([^}]+)\}/g, (match, key) =>
     values[key] !== undefined ? values[key] : match,
   );
+};
+
+const isValidMany2OneValue = (value: any) => {
+  if (!Array.isArray(value)) {
+    return false;
+  }
+
+  if (value.length !== 2) {
+    return false;
+  }
+
+  if (value[0] === undefined && value[1] === "") {
+    return false;
+  }
+
+  return true;
 };
