@@ -61,8 +61,8 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
   };
 
   const onValueStringChange = (momentDate: any) => {
-    if (momentDate === null) {
-      triggerChange(undefined);
+    if (momentDate === null || momentDate === undefined) {
+      triggerChange(momentDate);
       return;
     }
 
