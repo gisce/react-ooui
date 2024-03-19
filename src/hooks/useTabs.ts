@@ -29,6 +29,7 @@ export const useTabs = () => {
     updateTab: ({ id, tab }: UpdateTabPayload) => {
       dispatch(updateTab({ id, tab }));
     },
+    getTab: (id?: string) => tabsState.tabs.find((tab) => tab.id === id),
     currentTab,
   };
 };
