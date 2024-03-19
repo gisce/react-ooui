@@ -7,6 +7,7 @@ import {
   mergeStrings,
 } from "@gisce/react-formiga-components";
 import { strings } from "@/locales";
+import { ContextType, ValuesType } from "@/types/base";
 
 type ConfigContextProps = ConfigContextValues & {
   locale: Locale;
@@ -15,8 +16,8 @@ type ConfigContextProps = ConfigContextValues & {
 
 type ConfigContextValues = {
   erpFeatures: ErpFeaturesMap;
-  globalValues?: Record<string, any>;
-  rootContext?: Record<string, any>;
+  globalValues?: ValuesType;
+  rootContext?: ContextType;
   devMode?: boolean;
 };
 
