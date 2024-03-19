@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "2.4.5",
+  "version": "2.4.7",
   "engines": {
     "node": "20.5.0"
   },
@@ -36,7 +36,7 @@
     "@ant-design/plots": "^1.0.9",
     "@gisce/fiber-diagram": "2.0.1",
     "@gisce/ooui": "2.2.0",
-    "@gisce/react-formiga-components": "1.4.0",
+    "@gisce/react-formiga-components": "1.5.0",
     "@gisce/react-formiga-table": "1.2.0",
     "@monaco-editor/react": "^4.4.5",
     "@reduxjs/toolkit": "1.9.5",
