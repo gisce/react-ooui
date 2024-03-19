@@ -147,7 +147,6 @@ function Form(props: FormProps, ref: any) {
     setFormIsLoading = undefined,
     setAttachments = undefined,
     title = undefined,
-    setTitle = undefined,
   } = (rootForm ? actionViewContext : {}) || {};
 
   const { globalValues } = useConfigContext();
@@ -721,10 +720,6 @@ function Form(props: FormProps, ref: any) {
       ),
     });
     setFormOoui(ooui);
-
-    if (ooui.string && ooui.string !== title) {
-      setTitle?.(ooui.string);
-    }
 
     if (formModalContext && ooui.string)
       formModalContext.setTitle?.(ooui.string);
