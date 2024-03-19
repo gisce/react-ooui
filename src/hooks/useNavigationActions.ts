@@ -10,7 +10,8 @@ import {
   getAllViews,
   parseAndEvalContextDomain,
 } from "@/helpers/navigationActionsHelper";
-import { Tab, UpdateTabPayload } from "@/redux/slices/tabSlice";
+import { UpdateTabPayload } from "@/redux/slices/tabSlice";
+import { Tab } from "@/types/tab";
 
 export const useNavigationActions = ({
   openActionModal,
