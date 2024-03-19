@@ -1,4 +1,5 @@
 import dayjs from "@/helpers/dayjs";
+import { isNumber } from "@/helpers/typesHelper";
 
 const formatter = (graphType: "pie" | "default" | "barGrouped") => {
   return (object: any) => {
@@ -35,10 +36,6 @@ const axisFormatter = (value: any) => {
 const stringIsValidNumeric = (value: string) => {
   const regex = /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/;
   return regex.test(value);
-};
-
-const isNumber = (value: any) => {
-  return typeof value === "number" && !isNaN(value);
 };
 
 const DefaultGraphOptions = {
