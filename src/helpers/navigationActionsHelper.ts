@@ -1,7 +1,7 @@
 import { View, ViewType } from "@/types";
 import { ConnectionProvider } from "..";
 import { parseContext } from "@gisce/ooui";
-import { Action } from "@/redux/slices/tabSlice";
+import { Action } from "@/types/tab";
 
 export async function getViewsAndInitialView({
   views,
