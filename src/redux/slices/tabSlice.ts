@@ -1,37 +1,7 @@
-import { View } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { nanoid } from "nanoid";
 import deepmerge from "deepmerge";
-
-export interface Action {
-  id: number;
-  type: string;
-  title: string;
-}
-
-export interface Tab {
-  id: string;
-  isLoading?: boolean;
-  isClosable?: boolean;
-  action: Action;
-  availableViews?: View[];
-  currentView?: View;
-  context?: any;
-  domain?: any[];
-  model?: string;
-  viewOptions?: {
-    tree?: {
-      expandable?: boolean;
-      limit?: number;
-    };
-    form?: {
-      defaultValues?: any;
-      forcedValues?: any;
-      resourceId?: number;
-    };
-  };
-}
-
+import { Tab } from "@/types/tab";
 export interface TabState {
   tabs: Tab[];
   activeTabKey: string | null;
@@ -52,11 +22,11 @@ export const tabSlice = createSlice({
   initialState,
   reducers: {
     addTab: (state: TabState, action: PayloadAction<Omit<Tab, "id">>) => {
-      const newTab: Tab = {
+      const newTab = {
         id: nanoid(),
         ...action.payload,
       };
-      state.tabs.push(newTab);
+      state.tabs.push(newTab as Tab);
       state.activeTabKey = newTab.id;
     },
     closeTab: (state: TabState, action: PayloadAction<string>) => {
