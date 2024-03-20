@@ -325,20 +325,20 @@ function Dashboard(props: DashboardProps, ref: any) {
             initialView && Array.isArray(initialView.id)
               ? { ...initialView, id: initialView.id[0] }
               : initialView;
-          childContent = (
-            <ActionView
-              action_id={actionId}
-              action_type={actionType}
-              tabKey={key}
-              title={title}
-              views={views}
-              model={model}
-              context={context}
-              domain={domain}
-              initialView={formattedInitialView}
-              limit={limit}
-            />
-          );
+          // childContent = (
+          //   <ActionView
+          //     action_id={actionId}
+          //     action_type={actionType}
+          //     tabKey={key}
+          //     title={title}
+          //     views={views as any}
+          //     model={model}
+          //     context={context}
+          //     domain={domain}
+          //     initialView={formattedInitialView}
+          //     limit={limit}
+          //   />
+          // );
         }
 
         let action: ShortcutApi;

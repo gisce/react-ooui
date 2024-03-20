@@ -146,7 +146,6 @@ function Form(props: FormProps, ref: any) {
     setCurrentId = undefined,
     setFormIsLoading = undefined,
     setAttachments = undefined,
-    title = undefined,
   } = (rootForm ? actionViewContext : {}) || {};
 
   const { globalValues } = useConfigContext();
@@ -720,9 +719,6 @@ function Form(props: FormProps, ref: any) {
       ),
     });
     setFormOoui(ooui);
-
-    if (formModalContext && ooui.string)
-      formModalContext.setTitle?.(ooui.string);
   };
 
   const checkFieldsChanges = async ({

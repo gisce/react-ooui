@@ -19,7 +19,7 @@ export const useNavigationActions = ({
   updateTab,
 }: {
   openActionModal: (payload: any) => void;
-  addTab: (payload: Tab) => void;
+  addTab: (payload: Partial<Tab>) => void;
   updateTab: ({ id, tab }: UpdateTabPayload) => void;
 }) => {
   const { globalValues, rootContext } = useConfigContext();
@@ -37,7 +37,6 @@ export const useNavigationActions = ({
       res_id,
       values,
       forced_values,
-      treeExpandable = false,
       limit,
       action_title,
       tabKey,
@@ -93,7 +92,6 @@ export const useNavigationActions = ({
                   resourceId: res_id,
                 },
                 tree: {
-                  expandable: treeExpandable,
                   limit,
                 },
               },
@@ -121,7 +119,6 @@ export const useNavigationActions = ({
                 resourceId: res_id,
               },
               tree: {
-                expandable: treeExpandable,
                 limit,
               },
             },

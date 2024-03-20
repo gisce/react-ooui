@@ -30,13 +30,13 @@ export interface LoadedTab extends BaseTab {
   context: ContextType;
   domain: DomainType;
   model: string;
-  viewOptions: {
-    tree: {
+  viewOptions?: {
+    tree?: {
       limit: number;
     };
-    form: {
-      defaultValues: ValuesType;
-      forcedValues: ValuesType;
+    form?: {
+      defaultValues?: ValuesType;
+      forcedValues?: ValuesType;
       resourceId?: number;
     };
   };

@@ -1,4 +1,4 @@
-import { Tab as TabData } from "@/redux/slices/tabSlice";
+import { Tab as TabData } from "@/types/tab";
 import { useSelector } from "react-redux";
 import Tab from "./Tab";
 import { RootState } from "@/redux/state";

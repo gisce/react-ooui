@@ -8,18 +8,17 @@ const { useToken } = theme;
 const { Title, Text } = Typography;
 
 type Props = {
-  title?: string;
+  title: string;
   children?: any;
 };
 
 function TitleHeader(props: Props) {
-  const { title: titleProps, children } = props;
+  const { title, children } = props;
   const {
-    title,
     currentView,
     currentId,
     currentItemIndex,
-    results,
+    treeResults,
     totalItems,
     selectedRowItems,
   } = useActionViewContext();
@@ -50,8 +49,8 @@ function TitleHeader(props: Props) {
         <>
           {t("register")}{" "}
           {currentItemIndex === undefined ? 1 : currentItemIndex + 1} /{" "}
-          {results!.length} {t("of")} {totalItems} - {t("editingDocument")} (id:{" "}
-          <Text copyable>{currentId}</Text>)
+          {treeResults!.length} {t("of")} {totalItems} - {t("editingDocument")}{" "}
+          (id: <Text copyable>{currentId}</Text>)
         </>
       );
     } else if (currentView?.type === "tree" && selectedRowItems) {
@@ -97,7 +96,7 @@ function TitleHeader(props: Props) {
       >
         <Col flex={2}>
           <Title level={3} style={{ marginBottom: 0 }}>
-            {titleProps || title}
+            {title}
           </Title>
           {getSummary()}
         </Col>

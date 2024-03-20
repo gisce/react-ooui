@@ -1,9 +1,9 @@
-import { Tab } from "@/redux/slices/tabSlice";
 import { RootState } from "@/redux/state";
 import { ReactNode, createElement, memo, useRef } from "react";
 import { useSelector } from "react-redux";
 import ActionView from "../ActionView";
 import { Spin } from "antd";
+import { Tab } from "@/types/tab";
 
 const TabContent = () => {
   const { tabs, activeTabKey } = useSelector((state: RootState) => state.tabs);

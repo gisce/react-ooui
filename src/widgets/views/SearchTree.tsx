@@ -81,10 +81,10 @@ function SearchTree(props: Props, ref: any) {
 
   const actionViewContext = useActionViewContext();
   const {
-    setResults: setResultsActionView = undefined,
+    setTreeResults: setResultsActionView = undefined,
     setCurrentItemIndex = undefined,
     currentId = undefined,
-    results: resultsActionView = undefined,
+    treeResults: resultsActionView = undefined,
     selectedRowItems = undefined,
     setSelectedRowItems = undefined,
     searchParams = [],

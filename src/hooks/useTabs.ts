@@ -1,5 +1,4 @@
 import {
-  Tab,
   UpdateTabPayload,
   addTab,
   changeActiveTab,
@@ -7,6 +6,7 @@ import {
   updateTab,
 } from "@/redux/slices/tabSlice";
 import { RootState } from "@/redux/state";
+import { Tab } from "@/types/tab";
 import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -21,7 +21,7 @@ export const useTabs = () => {
   return {
     tabs: tabsState.tabs,
     activeTabKey: tabsState.activeTabKey,
-    addTab: (tabData: Omit<Tab, "id">) => {
+    addTab: (tabData: Partial<Tab>) => {
       dispatch(addTab(tabData));
     },
     closeTab: (id: string) => dispatch(closeTab(id)),

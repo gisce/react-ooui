@@ -1,10 +1,17 @@
-import { Tab, UpdateTabPayload } from "@/redux/slices/tabSlice";
+import { UpdateTabPayload } from "@/redux/slices/tabSlice";
 import { InitialViewData, View, ViewType } from "@/types";
+import {
+  ActionTarget,
+  Context,
+  Domain,
+  DomainType,
+  Model,
+  ValuesType,
+} from "@/types/base";
+import { Tab } from "@/types/tab";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 
 export type RootContextType = {
-  updateTab: ({ id, tab }: UpdateTabPayload) => void;
-  closeTab: (id: string) => void;
   processAction: ({
     actionData,
     fields,
@@ -17,33 +24,6 @@ export type RootContextType = {
     context?: any;
     onRefreshParentValues?: () => void;
   }) => Promise<any>;
-  openAction: ({
-    domain,
-    context,
-    model,
-    views,
-    title,
-    target,
-    initialView,
-    action_id,
-    action_type,
-    res_id,
-    values,
-    forced_values,
-  }: {
-    domain: any;
-    context: any;
-    model: string;
-    views: any[];
-    title: string;
-    target: string;
-    initialView: InitialViewData;
-    action_id: number;
-    action_type: string;
-    res_id?: number | boolean;
-    values?: any;
-    forced_values?: any;
-  }) => void;
   openRelate: ({
     relateData,
     fields,
@@ -72,15 +52,50 @@ export type RootContextType = {
     res_id?: number;
     domain?: any;
   }) => void;
-  activeTabKey: string;
-  onChangeTab: (key: string) => void;
-  onRemoveTab: (key: string) => void;
   openShortcut: (shortcut: ShortcutApi) => void;
-  tabs: any[];
   currentTab?: Tab;
-  currentView?: View;
-  setCurrentView?: (view?: View) => void;
-  currentId?: number;
-  setCurrentId?: (id?: number) => void;
+  updateTab: ({ id, tab }: UpdateTabPayload) => void;
+  closeTab: (id: string) => void;
+  getTab: (id?: string) => Tab | undefined;
   goToResourceId?: (ids: number[]) => Promise<void>;
+};
+
+export type RetrieveAndOpenActionArgs = {
+  action: string;
+  domain: DomainType;
+  values: ValuesType;
+  forced_values: ValuesType;
+  res_id?: number;
+  initialViewType?: ViewType;
+};
+
+export type OpenDefaultActionForModelArgs = Omit<
+  RetrieveAndOpenActionArgs,
+  "action"
+> &
+  Model;
+
+export type OpenActionArgs = Model &
+  Domain &
+  Context & {
+    values?: ValuesType;
+    forced_values?: ValuesType;
+    res_id?: number;
+    target?: ActionTarget;
+    action_id: number;
+    action_type: string;
+    action_title: string;
+    limit?: number;
+    tabKey?: string;
+    initialView: InitialViewData;
+    views: View[];
+  };
+
+export type RetrieveAndProcessActionDataArgs = {
+  action: string;
+  domain: DomainType;
+  values?: ValuesType;
+  forced_values?: ValuesType;
+  res_id?: number;
+  initialViewType?: ViewType;
 };

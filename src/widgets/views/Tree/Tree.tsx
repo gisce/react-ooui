@@ -24,7 +24,6 @@ import {
   MinusSquareOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
-import { useActionViewContext } from "@/context/ActionViewContext";
 import { SelectAllRecordsRow } from "@/common/SelectAllRecordsRow";
 import { COLUMN_COMPONENTS } from "./treeComponents";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
@@ -75,7 +74,6 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
       sorter,
       onFetchChildrenForRecord,
       childField,
-      rootTree = false,
       context,
       readonly,
       onSelectAllRecords,
@@ -91,10 +89,6 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
 
     const { t } = useLocale();
     const internalLimit = useRef(limit);
-
-    const actionViewContext = useActionViewContext();
-    const { title = undefined, setTitle = undefined } =
-      (rootTree ? actionViewContext : {}) || {};
 
     const columns = useMemo(() => {
       if (!treeOoui) {
@@ -119,11 +113,8 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
     useEffect(() => {
       const treeOoui = getTree(treeView);
       setTreeOoui(treeOoui);
-      if (treeOoui.string && title !== treeOoui.string) {
-        setTitle?.(treeOoui.string);
-      }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [treeView, title]);
+    }, [treeView]);
 
     useEffect(() => {
       if (!treeOoui) {

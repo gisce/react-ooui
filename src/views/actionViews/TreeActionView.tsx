@@ -1,56 +1,50 @@
 import TreeActionBar from "@/actionbar/TreeActionBar";
-import { FormView, TreeView, View } from "@/types";
+import { FormView, TreeView } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
 import SearchTree from "@/widgets/views/SearchTree";
 import { useActionViewContext } from "@/context/ActionViewContext";
+import { LoadedTab } from "@/types/tab";
 
 export type TreeActionViewProps = {
   formView?: FormView;
   treeView?: TreeView;
-  visible: boolean;
-  searchTreeRef: any;
-  model: string;
-  domain: any;
-  context: any;
-  results: any[];
-  setCurrentItemIndex: (value?: number) => void;
-  setCurrentId: (id?: number) => void;
-  setCurrentView: (view: View) => void;
-  availableViews: View[];
-  searchTreeNameSearch?: string;
-  limit?: number;
 };
 
 export const TreeActionView = (props: TreeActionViewProps) => {
+  const { formView, treeView } = props;
+
   const {
-    visible,
+    currentView,
     searchTreeRef,
-    model,
-    context,
-    formView,
-    treeView,
-    domain,
-    setCurrentItemIndex,
-    results,
-    setCurrentId,
-    setCurrentView,
-    availableViews,
+    tab,
     searchTreeNameSearch,
-  } = props;
+    setCurrentId,
+    setCurrentItemIndex,
+    treeResults,
+    setPreviousView,
+    setCurrentView,
+  } = useActionViewContext();
+  const { availableViews } = tab as LoadedTab;
 
-  const { currentView, setPreviousView } = useActionViewContext();
+  const visible =
+    currentView!.type === treeView?.type &&
+    currentView!.view_id === treeView.view_id;
 
-  if (!visible) {
+  if (!visible || !tab) {
     return null;
   }
 
+  const { model, domain, context } = tab;
+
   return (
     <>
-      <TitleHeader>
+      <TitleHeader title={treeView.title!}>
         <TreeActionBar
           toolbar={treeView?.toolbar}
           parentContext={context}
           treeExpandable={treeView?.isExpandable || false}
+          onGetDomain={() => searchTreeRef?.current?.getDomain()}
+          onRefreshResults={() => searchTreeRef?.current?.refreshResults()}
         />
       </TitleHeader>
       <SearchTree
@@ -63,13 +57,16 @@ export const TreeActionView = (props: TreeActionViewProps) => {
         treeView={treeView}
         domain={domain}
         onRowClicked={(event: any) => {
+          if (!availableViews || !currentView) {
+            return;
+          }
           const { id } = event;
           setCurrentId(id);
-          const itemIndex = results.findIndex((item: any) => {
+          const itemIndex = treeResults.findIndex((item: any) => {
             return item.id === id;
           });
           setPreviousView?.(currentView);
-          setCurrentItemIndex(itemIndex);
+          setCurrentItemIndex?.(itemIndex);
           const formView = availableViews.find(
             (v) => v.type === "form",
           ) as FormView;

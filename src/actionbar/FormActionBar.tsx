@@ -25,17 +25,17 @@ import { DropdownButton, useLocale } from "@gisce/react-formiga-components";
 import AttachmentsButton from "./AttachmentsButton";
 import { Attachment } from "./AttachmentsButtonWrapper";
 import { useNavigation } from "@/context/RootContext";
+import { LoadedTab } from "@/types/tab";
 
 function FormActionBar({ toolbar }: { toolbar: any }) {
   const {
-    availableViews,
     currentView,
     setCurrentView,
     onFormSave,
     formHasChanges,
     formIsSaving,
     currentId,
-    results,
+    treeResults,
     setCurrentItemIndex,
     currentItemIndex,
     setCurrentId,
@@ -44,14 +44,17 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     removingItem,
     duplicatingItem,
     setDuplicatingItem,
-    setResults,
+    setTreeResults,
     formIsLoading,
     attachments,
     formRef,
     setFormHasChanges,
     previousView,
     setPreviousView,
+    tab,
   } = useActionViewContext();
+  const { availableViews } = tab as LoadedTab;
+
   const { t } = useLocale();
 
   const {
@@ -90,22 +93,22 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
   }
 
   function onNextClick() {
-    if (results && results.length > currentItemIndex! + 1) {
+    if (treeResults && treeResults.length > currentItemIndex! + 1) {
       setCurrentItemIndex?.(currentItemIndex! + 1);
-      setCurrentId?.(results[currentItemIndex! + 1].id);
-    } else if (results && currentItemIndex! + 1 === results.length) {
+      setCurrentId?.(treeResults[currentItemIndex! + 1].id);
+    } else if (treeResults && currentItemIndex! + 1 === treeResults.length) {
       setCurrentItemIndex?.(0);
-      setCurrentId?.(results[0].id);
+      setCurrentId?.(treeResults[0].id);
     }
   }
 
   function onPreviousClick() {
-    if (results && currentItemIndex! > 0) {
+    if (treeResults && currentItemIndex! > 0) {
       setCurrentItemIndex?.(currentItemIndex! - 1);
-      setCurrentId?.(results[currentItemIndex! - 1].id);
-    } else if (results && currentItemIndex === 0) {
-      setCurrentItemIndex?.(results.length - 1);
-      setCurrentId?.(results[results.length - 1].id);
+      setCurrentId?.(treeResults[currentItemIndex! - 1].id);
+    } else if (treeResults && currentItemIndex === 0) {
+      setCurrentItemIndex?.(treeResults.length - 1);
+      setCurrentId?.(treeResults[treeResults.length - 1].id);
     }
   }
 
@@ -129,14 +132,17 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         context: (formRef.current as any).getContext(),
       });
 
-      const filteredResults = results?.filter((item: any) => {
+      const filteredResults = treeResults?.filter((item: any) => {
         return item.id !== currentId;
       });
-      setResults?.(filteredResults!);
+      setTreeResults?.(filteredResults!);
 
       let newIndex = 0;
 
-      if (currentItemIndex! > 0 && currentItemIndex! <= results!.length - 1) {
+      if (
+        currentItemIndex! > 0 &&
+        currentItemIndex! <= treeResults!.length - 1
+      ) {
         newIndex = currentItemIndex! - 1;
       }
 

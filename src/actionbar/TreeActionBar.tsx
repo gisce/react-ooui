@@ -25,16 +25,19 @@ import { mergeParams } from "@/helpers/searchHelper";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { useNavigation } from "@/context/RootContext";
+import { DomainType } from "@/types/base";
+import { LoadedTab } from "@/types/tab";
 
 type Props = {
   parentContext?: any;
-  treeExpandable: boolean;
   toolbar: any;
+  treeExpandable?: boolean;
+  onRefreshResults: () => void;
+  onGetDomain: () => DomainType;
 };
 
 function TreeActionBar(props: Props) {
   const {
-    availableViews,
     currentView,
     setCurrentView,
     selectedRowItems,
@@ -43,7 +46,6 @@ function TreeActionBar(props: Props) {
     duplicatingItem,
     setDuplicatingItem,
     currentModel,
-    searchTreeRef,
     setCurrentId,
     setCurrentItemIndex,
     searchParams,
@@ -54,12 +56,20 @@ function TreeActionBar(props: Props) {
     treeIsLoading,
     setPreviousView,
     previousView,
-    results,
     limit,
     totalItems,
+    treeResults,
+    tab,
   } = useActionViewContext();
+  const { availableViews } = tab as LoadedTab;
 
-  const { parentContext = {}, treeExpandable, toolbar } = props;
+  const {
+    parentContext = {},
+    treeExpandable = false,
+    toolbar,
+    onRefreshResults,
+    onGetDomain,
+  } = props;
   const advancedExportEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_ADVANCED_EXPORT,
   );
@@ -94,7 +104,7 @@ function TreeActionBar(props: Props) {
       setCurrentId?.(undefined);
       setCurrentItemIndex?.(undefined);
 
-      searchTreeRef?.current?.refreshResults();
+      onRefreshResults();
     } catch (e) {
       showErrorDialog(e);
     } finally {
@@ -115,7 +125,7 @@ function TreeActionBar(props: Props) {
       });
 
       if (newId) {
-        searchTreeRef?.current?.refreshResults();
+        onRefreshResults();
       }
     } catch (e) {
       showErrorDialog(e);
@@ -137,9 +147,7 @@ function TreeActionBar(props: Props) {
         active_id: selectedRowItems?.map((item) => item.id)[0],
         active_ids: selectedRowItems?.map((item) => item.id),
       },
-      onRefreshParentValues: () => {
-        searchTreeRef?.current?.refreshResults();
-      },
+      onRefreshParentValues: onRefreshResults,
     });
   }
 
@@ -224,11 +232,9 @@ function TreeActionBar(props: Props) {
         tooltip={t("refresh")}
         disabled={duplicatingItem || removingItem || treeIsLoading}
         loading={false}
-        onClick={() => {
-          searchTreeRef?.current?.refreshResults();
-        }}
+        onClick={onRefreshResults}
       />
-      {!treeExpandable && (
+      {!treeExpandable && currentView && availableViews && (
         <>
           {separator()}
           <ChangeViewButton
@@ -333,7 +339,7 @@ function TreeActionBar(props: Props) {
                   selectedRowItems?.map((item) => item.id) || [];
 
                 if (idsToExport.length === 0) {
-                  idsToExport = results?.map((item) => item.id) || [];
+                  idsToExport = treeResults?.map((item) => item.id) || [];
                 }
 
                 runAction({
@@ -359,14 +365,11 @@ function TreeActionBar(props: Props) {
             visible={exportModalVisible}
             onClose={() => setExportModalVisible(false)}
             model={currentModel!}
-            domain={mergeParams(
-              searchTreeRef?.current?.getDomain() || [],
-              searchParams || [],
-            )}
+            domain={mergeParams(onGetDomain() || [], searchParams || [])}
             limit={limit}
             totalRegisters={totalItems || 0}
             selectedRegistersToExport={selectedRowItems}
-            visibleRegisters={results?.length || 0}
+            visibleRegisters={treeResults?.length || 0}
             context={parentContext}
           />
         </>

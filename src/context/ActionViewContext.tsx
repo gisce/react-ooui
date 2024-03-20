@@ -1,19 +1,19 @@
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
-import { View } from "@/types";
+import { FormView, View } from "@/types";
 import {
   createContext,
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { useNavigation } from "./RootContext";
+import { Tab } from "@/types/tab";
 
 export type ActionViewContextType = {
   tabKey?: string;
-  title: string;
-  availableViews: View[];
-  currentView: View;
+  currentView?: View;
   setCurrentView: (view: View) => void;
   formIsSaving?: boolean;
   setFormIsSaving?: (value: boolean) => void;
@@ -24,78 +24,64 @@ export type ActionViewContextType = {
   searchTreeRef?: any;
   onNewClicked: () => void;
   currentId?: number;
-  setCurrentId?: (id?: number) => void;
+  setCurrentId: (id?: number) => void;
   currentItemIndex?: number;
   setCurrentItemIndex?: (value?: number) => void;
-  results?: any[];
-  setResults?: (value: any[]) => void;
+  treeResults: any[];
+  setTreeResults: (value: any[]) => void;
   currentModel?: string;
   removingItem?: boolean;
-  setRemovingItem?: (value: boolean) => void;
+  setRemovingItem: (value: boolean) => void;
   formIsLoading?: boolean;
-  setFormIsLoading?: (value: boolean) => void;
+  setFormIsLoading: (value: boolean) => void;
   treeIsLoading?: boolean;
-  setTreeIsLoading?: (value: boolean) => void;
+  setTreeIsLoading: (value: boolean) => void;
   graphIsLoading?: boolean;
-  setGraphIsLoading?: (value: boolean) => void;
+  setGraphIsLoading: (value: boolean) => void;
   attachments?: any;
-  setAttachments?: (value: any) => void;
+  setAttachments: (value: any) => void;
   selectedRowItems?: any[];
-  setSelectedRowItems?: (value: any[]) => void;
+  setSelectedRowItems: (value: any[]) => void;
   duplicatingItem?: boolean;
-  setDuplicatingItem?: (value: boolean) => void;
+  setDuplicatingItem: (value: boolean) => void;
   searchParams?: any[];
-  setSearchParams?: (value: any[]) => void;
+  setSearchParams: (value: any[]) => void;
   searchVisible?: boolean;
-  setSearchVisible?: (value: boolean) => void;
+  setSearchVisible: (value: boolean) => void;
   sorter: any;
   setSorter: (sorter: any) => void;
   totalItems: number;
   setTotalItems: (totalItems: number) => void;
   searchTreeNameSearch?: string;
-  setSearchTreeNameSearch?: (searchString?: string) => void;
+  setSearchTreeNameSearch: (searchString?: string) => void;
   previousView?: View;
-  setPreviousView?: (view: View) => void;
+  setPreviousView: (view: View) => void;
   searchValues?: any;
-  setSearchValues?: (value: any) => void;
+  setSearchValues: (value: any) => void;
   limit?: number;
-  setLimit?: (value: number) => void;
-  setTitle?: (value: string) => void;
+  setLimit: (value: number) => void;
+  tab: Tab;
 };
 
 export const ActionViewContext = createContext<ActionViewContextType | null>(
   null,
 );
-
-type ActionViewProviderProps = ActionViewContextType & {
+type ActionViewProviderProps = {
   children: React.ReactNode;
+  tab: Tab;
 };
 
 const ActionViewProvider = (props: ActionViewProviderProps): any => {
-  const {
-    children,
-    title: titleProps,
-    availableViews,
-    formRef,
-    searchTreeRef,
-    onNewClicked,
-    setResults,
-    results,
-    currentItemIndex,
-    setCurrentItemIndex,
-    currentModel,
-    sorter,
-    setSorter,
-    totalItems,
-    setTotalItems,
-    setSelectedRowItems,
-    selectedRowItems,
-    searchTreeNameSearch,
-    setSearchTreeNameSearch,
-    limit: limitProps,
-    tabKey,
-    setCurrentView,
-  } = props;
+  const { children, tab } = props;
+  const formRef = useRef();
+  const searchTreeRef = useRef();
+
+  const [currentItemIndex, setCurrentItemIndex] = useState<number>();
+  const [selectedRowItems, setSelectedRowItems] = useState<any[]>([]);
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const [sorter, setSorter] = useState<any>();
+  const [treeResults, setTreeResults] = useState<any>([]);
+  const [searchTreeNameSearch, setSearchTreeNameSearch] = useState<string>();
   const [currentId, setCurrentId] = useState<number>();
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
@@ -109,43 +95,48 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [graphIsLoading, setGraphIsLoading] = useState<boolean>(true);
   const [previousView, setPreviousView] = useState<View>();
   const [searchValues, setSearchValues] = useState<any>({});
-  const [limit, setLimit] = useState<number>(
-    limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT,
-  );
-  const [title, setTitle] = useState<string>(titleProps);
 
-  const { updateTab, currentTab } = useNavigation();
+  const { updateTab } = useNavigation();
+  const availableViews = tab.availableViews || [];
+  const [currentView, setCurrentView] = useState<View | undefined>(
+    tab?.availableViews?.find(
+      (view) => view.view_id === tab.currentView?.view_id,
+    ),
+  );
+
+  const [limit, setLimit] = useState<number>(
+    tab?.viewOptions?.tree?.limit !== undefined
+      ? tab?.viewOptions?.tree?.limit
+      : DEFAULT_SEARCH_LIMIT,
+  );
 
   useEffect(() => {
-    if (results && results.length > 0 && !currentItemIndex) {
+    if (treeResults && treeResults.length > 0 && !currentItemIndex) {
       setCurrentItemIndex?.(0);
-      setCurrentId?.(results[0].id);
+      setCurrentId?.(treeResults[0].id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [results]);
+  }, [treeResults]);
 
   useEffect(() => {
-    setLimit(limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT);
-  }, [limitProps]);
-
-  const currentView =
-    currentTab && currentTab.id === tabKey
-      ? availableViews?.find(
-          (view) => view.view_id === currentTab.currentView?.view_id,
-        )
-      : undefined;
+    setLimit(
+      tab?.viewOptions?.tree?.limit !== undefined
+        ? tab?.viewOptions?.tree?.limit
+        : DEFAULT_SEARCH_LIMIT,
+    );
+  }, [tab?.viewOptions?.tree?.limit]);
 
   const setCurrentViewCallback = useCallback(
     (view: View) => {
       setCurrentView(view);
       updateTab({
-        id: tabKey!,
+        id: tab.id,
         tab: {
           currentView: view,
         },
       });
     },
-    [setCurrentView, tabKey, updateTab],
+    [setCurrentView, tab.id, updateTab],
   );
 
   useEffect(() => {
@@ -177,7 +168,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
 
   useEffect(() => {
     updateTab({
-      id: tabKey!,
+      id: tab.id,
       tab: {
         isClosable: !formHasChanges,
       },
@@ -187,7 +178,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
 
   useEffect(() => {
     updateTab({
-      id: tabKey!,
+      id: tab.id,
       tab: {
         viewOptions: {
           form: {
@@ -203,13 +194,22 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     return await (formRef.current as any)?.submitForm();
   };
 
+  function onNewClicked() {
+    if (currentId === undefined && currentView!.type === "form") {
+      (formRef.current as any).clearAndReload();
+    } else {
+      setCurrentId(undefined);
+      const formView: FormView = availableViews.find(
+        (v) => v.type === "form",
+      ) as FormView;
+      setCurrentView(formView);
+    }
+  }
   return (
     <ActionViewContext.Provider
       value={{
-        currentView: currentView!,
+        currentView,
         setCurrentView: setCurrentViewCallback,
-        title,
-        availableViews,
         formIsSaving,
         setFormIsSaving,
         formHasChanges,
@@ -222,9 +222,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setCurrentId,
         currentItemIndex,
         setCurrentItemIndex,
-        results,
-        setResults,
-        currentModel,
+        treeResults,
+        setTreeResults,
         removingItem,
         setRemovingItem,
         formIsLoading,
@@ -255,7 +254,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setSearchValues,
         limit,
         setLimit,
-        setTitle,
+        tab,
       }}
     >
       {children}
@@ -269,10 +268,9 @@ export const useActionViewContext = (): ActionViewContextType => {
   const context = useContext<ActionViewContextType | null>(ActionViewContext);
 
   if (!context) {
-    console.error(
+    throw new Error(
       "ActionViewProvider context is undefined, please verify you are calling useActionViewContext() as child of a <ActionViewProvider> component.",
     );
-    return {} as ActionViewContextType;
   }
 
   return context;

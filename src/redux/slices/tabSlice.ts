@@ -21,7 +21,7 @@ export const tabSlice = createSlice({
   name: "tab",
   initialState,
   reducers: {
-    addTab: (state: TabState, action: PayloadAction<Omit<Tab, "id">>) => {
+    addTab: (state: TabState, action: PayloadAction<Partial<Tab>>) => {
       const newTab = {
         id: nanoid(),
         ...action.payload,

@@ -9,10 +9,13 @@ import { FormModal, useTabs } from "../..";
 import { ReportGeneratingModal } from "@/ui/ReportGeneratingModal";
 import { useReport } from "@/hooks/useReport";
 import { useAction } from "@/hooks/useAction";
-import { RootContextType } from "./RootContext.types";
-import { ViewType } from "@/types";
+import {
+  RetrieveAndOpenActionArgs,
+  RootContextType,
+} from "./RootContext.types";
 import { GoToResourceModal } from "@/ui/GoToResourceModal";
 import { useGoToResource } from "@/hooks/useGoToResource";
+import { LoadedTab } from "@/types/tab";
 
 export const RootContext = createContext<RootContextType | undefined>(
   undefined,
@@ -23,27 +26,13 @@ type RootProviderProps = {
 };
 
 export interface RootProviderRef {
-  retrieveAndOpenAction: ({
-    action,
-    values,
-    forced_values,
-    initialViewType,
-    res_id,
-    domain,
-  }: {
-    action: string;
-    values?: any;
-    forced_values?: any;
-    initialViewType?: ViewType;
-    res_id?: number;
-    domain?: any;
-  }) => Promise<void>;
+  retrieveAndOpenAction: (args: RetrieveAndOpenActionArgs) => Promise<void>;
 }
 
 export const RootProvider = forwardRef<RootProviderRef, RootProviderProps>(
   (props, ref) => {
     const { children } = props;
-    const { updateTab, addTab, currentTab, closeTab } = useTabs();
+    const { updateTab, addTab, currentTab, closeTab, getTab } = useTabs();
     const { reportGenerating, generateReport } = useReport();
 
     useImperativeHandle(ref, () => ({
@@ -76,24 +65,23 @@ export const RootProvider = forwardRef<RootProviderRef, RootProviderProps>(
       searchingForResourceId,
       goToResourceId,
     } = useGoToResource({
-      currentTab,
+      currentTab: currentTab as LoadedTab,
       openAction,
     });
 
     return (
       <RootContext.Provider
-        value={
-          {
-            updateTab,
-            openRelate,
-            processAction,
-            currentTab,
-            goToResourceId,
-            openShortcut,
-            openDefaultActionForModel,
-            closeTab,
-          } as any
-        }
+        value={{
+          processAction,
+          goToResourceId,
+          openRelate,
+          openShortcut,
+          openDefaultActionForModel,
+          currentTab,
+          closeTab,
+          getTab,
+          updateTab,
+        }}
       >
         {children}
         <ReportGeneratingModal isGenerating={reportGenerating} />

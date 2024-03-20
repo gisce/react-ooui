@@ -1,67 +1,72 @@
 import FormActionBar from "@/actionbar/FormActionBar";
+import { useActionViewContext } from "@/context/ActionViewContext";
+import { useNavigation } from "@/context/RootContext";
 import { FormView } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
 import Form from "@/widgets/views/Form";
-import React from "react";
 
 export type FormActionViewProps = {
   formView?: FormView;
-  visible: boolean;
-  formRef: any;
-  model: string;
-  currentId?: number;
-  domain: any;
-  context: any;
-  defaultValues?: any;
-  forcedValues?: any;
-  results: any[];
-  setResults: (value: any[]) => void;
-  setCurrentItemIndex: (value?: number) => void;
 };
 
 export const FormActionView = (props: FormActionViewProps) => {
   const {
-    visible,
-    formRef,
-    model,
-    currentId,
-    domain,
     formView,
-    context,
-    defaultValues,
-    forcedValues,
-    results,
-    setResults,
-    setCurrentItemIndex,
+    // context,
+    // defaultValues,
+    // forcedValues,
+    // results,
+    // setResults,
+    // setCurrentItemIndex,
   } = props;
 
-  if (!visible) {
+  const {
+    currentView,
+    formRef,
+    tab,
+    currentId,
+    treeResults,
+    setTreeResults,
+    setCurrentItemIndex,
+  } = useActionViewContext();
+
+  const visible =
+    currentView!.type === formView?.type &&
+    currentView!.view_id === formView.view_id;
+
+  if (!visible || !tab) {
     return null;
   }
 
+  const { model, domain } = tab;
+  const { defaultValues, forcedValues } = tab.viewOptions?.form || {};
+
   return (
     <>
-      <TitleHeader>
+      <TitleHeader title={formView.title!}>
         <FormActionBar toolbar={formView?.toolbar} />
       </TitleHeader>
       <Form
         rootForm={true}
         ref={formRef}
-        model={model}
+        model={model!}
         defaultValues={defaultValues}
         forcedValues={forcedValues}
         formView={formView}
-        actionDomain={domain}
+        actionDomain={tab.domain}
         id={currentId}
-        parentContext={context}
+        parentContext={domain}
         onSubmitSucceed={(id, values) => {
-          const itemIndex = results!.findIndex((item: any) => {
+          if (!treeResults) {
+            return;
+          }
+          const itemIndex = treeResults.findIndex((item: any) => {
             return item.id === id;
           });
           if (itemIndex === -1) {
-            results!.push(values);
-            setResults(results);
-            setCurrentItemIndex(results!.length - 1);
+            treeResults.push(values);
+            setTreeResults?.(treeResults);
+            setCurrentItemIndex?.(treeResults!.length - 1);
           }
         }}
       />

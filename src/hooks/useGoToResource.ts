@@ -5,13 +5,13 @@ import { ConnectionProvider } from "..";
 import showInfo from "@/ui/InfoDialog";
 import { useLocale } from "@gisce/react-formiga-components";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
-import { Tab } from "@/redux/slices/tabSlice";
+import { LoadedTab, Tab } from "@/types/tab";
 
 export const useGoToResource = ({
   currentTab,
   openAction,
 }: {
-  currentTab?: Tab;
+  currentTab: LoadedTab;
   openAction: ({
     domain,
     context,
