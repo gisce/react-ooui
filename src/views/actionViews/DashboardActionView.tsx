@@ -32,7 +32,7 @@ export const DashboardActionView = (props: DashboardActionViewProps) => {
         openShortcut(action!);
       }}
     >
-      <TitleHeader>
+      <TitleHeader title={dashboardData.title!}>
         <DashboardActionBar />
       </TitleHeader>
       <Dashboard
