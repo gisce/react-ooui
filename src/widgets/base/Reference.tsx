@@ -40,7 +40,7 @@ export const ReferenceInput: React.FC<ReferenceInputProps> = (
   props: ReferenceInputProps,
 ) => {
   const { value, onChange, ooui } = props;
-  const { required, selectionValues, readOnly } = ooui;
+  const { required, selectionValues, readOnly, domain } = ooui;
 
   const splittedValue = value?.split(",");
 
@@ -97,6 +97,7 @@ export const ReferenceInput: React.FC<ReferenceInputProps> = (
               relation: selectionValue,
               readonly: readOnly,
               required,
+              domain,
             })
           }
           value={many2oneValue}
