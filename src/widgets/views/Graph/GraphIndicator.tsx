@@ -293,7 +293,11 @@ function CommonIndicator({
     useGrouping: true,
   });
 
-  let finalValue = total ? `${localeValue}/${total}` : `${localeValue}`;
+  const totalValue = total?.toLocaleString("es-ES", {
+    useGrouping: true,
+  });
+
+  let finalValue = total ? `${localeValue}/${totalValue}` : `${localeValue}`;
 
   if (suffix) {
     finalValue += " " + suffix;
