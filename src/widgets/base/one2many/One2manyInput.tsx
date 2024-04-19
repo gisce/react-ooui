@@ -4,6 +4,8 @@ import React, {
   useContext,
   useEffect,
   useCallback,
+  memo,
+  useMemo,
 } from "react";
 import {
   One2many as One2manyOoui,
@@ -159,7 +161,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   };
 
   const fetchOriginalItemsFromApi = async (mode?: ViewType) => {
-    setIsLoading(true);
+    if (mode !== "form") setIsLoading(true);
     setFormHasChanges(false);
     setError(undefined);
 
@@ -186,12 +188,12 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         setColorsForResults(evaluatedColorsForTree);
       }
 
-      triggerChange(itemsWithValues);
+      if (mode !== "form") triggerChange(itemsWithValues);
       return itemsWithValues;
     } catch (err) {
       setError(err as any);
     } finally {
-      setIsLoading(false);
+      if (mode !== "form") setIsLoading(false);
     }
   };
 
@@ -552,6 +554,28 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     }
   }
 
+  const onRowClicked = useCallback((item: any) => {
+    if (views.get("form")?.fields !== undefined) onTreeRowClicked(item);
+  }, []);
+
+  const resultsToShow = useMemo(() => {
+    let resultsToShow = [];
+
+    if (itemsToShow.some((item) => item.treeValues)) {
+      resultsToShow = sorter
+        ? sortResults({
+            resultsToSort: itemsToShow.map((item) => item.treeValues),
+            sorter,
+            fields: {
+              ...views.get("tree").fields,
+              ...(views.get("form")?.fields || {}),
+            },
+          })
+        : itemsToShow.map((item) => item.treeValues);
+    }
+    return resultsToShow;
+  }, [itemsToShow, sorter, views]);
+
   const content = () => {
     if (currentView === "form") {
       if (itemsToShow.length === 0) {
@@ -600,21 +624,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       );
     }
 
-    let resultsToShow = [];
-
-    if (itemsToShow.some((item) => item.treeValues)) {
-      resultsToShow = sorter
-        ? sortResults({
-            resultsToSort: itemsToShow.map((item) => item.treeValues),
-            sorter,
-            fields: {
-              ...views.get("tree").fields,
-              ...(views.get("form")?.fields || {}),
-            },
-          })
-        : itemsToShow.map((item) => item.treeValues);
-    }
-
     if (currentView === "tree") {
       return (
         <Tree
@@ -623,11 +632,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           treeView={views.get("tree")}
           results={resultsToShow}
           loading={isLoading}
-          onRowClicked={
-            views.get("form")?.fields !== undefined
-              ? onTreeRowClicked
-              : undefined
-          }
+          onRowClicked={onRowClicked}
           showPagination={false}
           selectedRowKeys={selectedRowKeys}
           onRowSelectionChange={setSelectedRowKeys}
