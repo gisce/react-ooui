@@ -1,23 +1,21 @@
-import { Modal } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
-
-const { confirm } = Modal;
+import asyncConfirm from "./asyncConfirm";
 
 const showDialog = ({
-  onOk,
   t,
+  onOk,
 }: {
-  onOk: () => void;
+  onOk: () => Promise<void>;
   t: (key: string) => string;
 }) => {
-  confirm({
+  asyncConfirm({
     title: t("removeItems"),
     icon: <ExclamationCircleOutlined />,
     centered: true,
     content: t("confirmRemove"),
     okText: t("yesConfirmRemove"),
-    onOk,
     cancelText: t("cancel"),
+    onOk,
   });
 };
 

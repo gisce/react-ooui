@@ -15,8 +15,9 @@ import { useOne2manyForm } from "./useOne2manyForm";
 import { useOne2manyItems } from "./useOne2manyItems";
 import { One2manyForm } from "./One2manyForm";
 import { One2manyItem } from "./One2manyInput";
-import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
-import { useLocale } from "@gisce/react-formiga-components";
+import { useOne2manyRemove } from "./useOne2manyRemove";
+
+const SUPPORTED_VIEWS = ["form", "tree", "graph"];
 
 export const One2manyInput: React.FC<One2manyInputProps> = (
   props: One2manyInputProps,
@@ -37,6 +38,9 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
   const formContext = useContext(FormContext) as FormContextType;
   const { getContext } = formContext || {};
 
+  const showToggleButton = views.size > 1;
+  const showCreateButton = views.get("form")?.fields !== undefined;
+
   const context = useMemo(() => {
     return { ...getContext?.(), ...widgetContext };
   }, [getContext, widgetContext]);
@@ -52,8 +56,6 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     context,
   });
 
-  const { t } = useLocale();
-
   const title = useMemo(() => {
     const { title } = views.get(currentView) || {};
     return title || ooui.label;
@@ -61,16 +63,28 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
 
   const isMany2many = ooui.type === "many2many";
 
-  const {
-    formHasChanges,
-    setFormHasChanges,
-    getOriginalItemsWithRestoredItemId,
-  } = useOne2manyForm({
-    items,
-    formView: views.get("form"),
-    treeView: views.get("tree"),
-    relation,
-    context,
+  const triggerChange = useCallback(
+    (changedValues: One2manyItem[]) => {
+      onChange?.({
+        fields: views.get("form")?.fields || views.get("tree")?.fields,
+        items: changedValues,
+      });
+    },
+    [onChange, views],
+  );
+
+  const { formHasChanges, onFormChanges, showFormChangesDialogIfNeeded } =
+    useOne2manyForm({
+      items,
+      formView: views.get("form"),
+      treeView: views.get("tree"),
+      relation,
+      context,
+      triggerChange,
+    });
+
+  const { showRemoveConfirm } = useOne2manyRemove({
+    isMany2many,
   });
 
   const toggleViewMode = () => {
@@ -87,60 +101,13 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     }
   };
 
-  const showToggleButton = views.size > 1;
-  const showCreateButton = views.get("form")?.fields !== undefined;
-
-  const triggerChange = useCallback(
-    (changedValues: One2manyItem[]) => {
-      onChange?.({
-        fields: views.get("form")?.fields || views.get("tree")?.fields,
-        items: changedValues,
-      });
-    },
-    [onChange, views],
-  );
-
-  const onFormChanges = useCallback(
-    (newUpdatedItems: One2manyItem[]) => {
-      setFormHasChanges(true);
-      triggerChange(newUpdatedItems);
-    },
-    [setFormHasChanges, triggerChange],
-  );
-
   const onRowClicked = useCallback(
     (item: any) => {
-      // find the index of the item in the items array
       const index = items.findIndex((i) => i.id === item.id);
       setItemIndex(index);
       setCurrentView("form");
     },
     [items, setCurrentView, setItemIndex],
-  );
-
-  const reloadOriginalValuesForCurrentItem = useCallback(async () => {
-    const { id } = items[itemIndex];
-    if (!id) return;
-    const originalItems = await getOriginalItemsWithRestoredItemId({ id });
-    triggerChange(originalItems);
-  }, [getOriginalItemsWithRestoredItemId, itemIndex, items, triggerChange]);
-
-  const showFormChangesDialogIfNeeded = useCallback(
-    (callback: () => void) => {
-      if (formHasChanges) {
-        showUnsavedChangesDialog({
-          t,
-          onOk: () => {
-            reloadOriginalValuesForCurrentItem();
-            callback();
-            setFormHasChanges(false);
-          },
-        });
-      } else {
-        callback();
-      }
-    },
-    [formHasChanges, reloadOriginalValuesForCurrentItem, setFormHasChanges, t],
   );
 
   return (
@@ -153,7 +120,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
         formHasChanges={formHasChanges}
         totalItems={items.length}
         currentItemIndex={itemIndex}
-        onDelete={() => {}}
+        onDelete={showRemoveConfirm}
         onCreateItem={() => {}}
         onToggleViewMode={toggleViewMode}
         onPreviousItem={() => {}}
@@ -183,22 +150,10 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
           onChange={onFormChanges}
         />
       )}
-      {/* {currentView !== "tree" && ( */}
-      {/*   <> */}
-      {/*     <span style={{ fontWeight: "bold" }}> {currentView}</span> */}
-      {/*     <Button */}
-      {/*       onClick={() => { */}
-      {/*         setCurrentView("tree"); */}
-      {/*       }} */}
-      {/*     > */}
-      {/*       Change to tree */}
-      {/*     </Button> */}
-      {/*     <br /> */}
-      {/*     {items.map((item) => { */}
-      {/*       return JSON.stringify(item); */}
-      {/*     })} */}
-      {/*   </> */}
-      {/* )} */}
+      {/* TODO: Graph view */}
+      {!SUPPORTED_VIEWS.includes(currentView) && (
+        <span>Unsupported view {currentView}</span>
+      )}
     </>
   );
 };
