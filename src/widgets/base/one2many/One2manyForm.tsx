@@ -7,6 +7,7 @@ import {
 import { useContext } from "react";
 import { One2manyItem } from "./One2manyInput";
 import { filterDuplicateItems } from "@/helpers/one2manyHelper";
+import { useLocale } from "@gisce/react-formiga-components";
 
 export type One2manyFormProps = {
   formView: FormView;
@@ -26,6 +27,12 @@ export const One2manyForm = ({
   onChange,
 }: One2manyFormProps) => {
   const { itemIndex } = useContext(One2manyContext) as One2manyContextType;
+
+  const { t } = useLocale();
+
+  if (items.length === 0) {
+    return t("noCurrentEntries");
+  }
 
   return (
     <Form

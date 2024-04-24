@@ -15,7 +15,6 @@ export const useOne2manyRemove = ({
   setFormHasChanges,
   selectedRowKeys,
   setSelectedRowKeys,
-  refreshTable,
 }: {
   isMany2many: boolean;
   triggerChange: (items: One2manyItem[]) => void;
@@ -23,7 +22,6 @@ export const useOne2manyRemove = ({
   setFormHasChanges: (hasChanges: boolean) => void;
   selectedRowKeys: number[];
   setSelectedRowKeys: (selectedRowKeys: number[]) => void;
-  refreshTable?: () => void;
 }) => {
   const { t } = useLocale();
   const { currentView, itemIndex, setItemIndex } = useContext(
@@ -31,8 +29,9 @@ export const useOne2manyRemove = ({
   ) as One2manyContextType;
 
   const removeSelectedItems = useCallback(async () => {
-    const itemsToRemove = items.filter((item) => {
-      return item.id && selectedRowKeys.includes(item.id);
+    const itemsToRemove: One2manyItem[] = getItemsToRemove({
+      selectedRowKeys,
+      items,
     });
 
     setFormHasChanges(false);
@@ -67,7 +66,6 @@ export const useOne2manyRemove = ({
     setItemIndex(0);
   }, [
     items,
-    refreshTable,
     selectedRowKeys,
     setFormHasChanges,
     setItemIndex,
@@ -125,3 +123,31 @@ export const useOne2manyRemove = ({
 
   return { showRemoveConfirm };
 };
+
+interface IdCount {
+  [key: number]: number;
+}
+
+function getItemsToRemove({
+  selectedRowKeys,
+  items,
+}: {
+  selectedRowKeys: number[];
+  items: One2manyItem[];
+}) {
+  const itemsToRemove: One2manyItem[] = [];
+  // Count the number of times each id appears in selectedRowKeys
+  const idCount = selectedRowKeys.reduce<IdCount>((acc: IdCount, id) => {
+    acc[id] = (acc[id] || 0) + 1;
+    return acc;
+  }, {});
+
+  // Loop over items and push items to remove based on the count
+  items.forEach((item) => {
+    if (item.id && idCount[item.id] > 0) {
+      itemsToRemove.push(item);
+      idCount[item.id] -= 1; // Decrement the count each time an item is added to itemsToRemove
+    }
+  });
+  return itemsToRemove;
+}

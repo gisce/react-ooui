@@ -97,7 +97,6 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     setFormHasChanges,
     selectedRowKeys,
     setSelectedRowKeys,
-    refreshTable: gridRef.current?.refresh,
   });
 
   const toggleViewMode = () => {

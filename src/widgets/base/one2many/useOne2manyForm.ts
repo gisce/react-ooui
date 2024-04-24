@@ -31,7 +31,7 @@ export const useOne2manyForm = ({
   // Whenever we save the form, we must reset the formHasChanges state
   useEffect(() => {
     const currentItem = items[itemIndex];
-    if (currentItem.operation === "original") {
+    if (!currentItem || currentItem?.operation === "original") {
       setFormHasChanges(false);
     }
   }, [itemIndex, items]);
