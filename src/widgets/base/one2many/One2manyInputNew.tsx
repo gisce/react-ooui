@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useContext, useMemo, useRef } from "react";
 import { One2manyInputProps } from "./One2many.types";
 import {
   One2manyContext,
@@ -16,12 +16,14 @@ import { useOne2manyItems } from "./useOne2manyItems";
 import { One2manyForm } from "./One2manyForm";
 import { One2manyItem } from "./One2manyInput";
 import { useOne2manyRemove } from "./useOne2manyRemove";
+import { InfiniteTableRef } from "@gisce/react-formiga-table";
 
 const SUPPORTED_VIEWS = ["form", "tree", "graph"];
 
 export const One2manyInput: React.FC<One2manyInputProps> = (
   props: One2manyInputProps,
 ) => {
+  const gridRef = useRef<InfiniteTableRef>(null);
   const { value, onChange, ooui, views } = props;
   const { items: one2manyItems = [] } = value || {};
   const items = useOne2manyItems({ one2manyItems });
@@ -50,11 +52,12 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     fieldName,
   });
 
-  const { treeOoui, onTreeFetchRows } = useOne2manyTree({
-    treeView: views.get("tree"),
-    relation,
-    context,
-  });
+  const { treeOoui, onTreeFetchRows, selectedRowKeys, setSelectedRowKeys } =
+    useOne2manyTree({
+      treeView: views.get("tree"),
+      relation,
+      context,
+    });
 
   const title = useMemo(() => {
     const { title } = views.get(currentView) || {};
@@ -73,18 +76,28 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     [onChange, views],
   );
 
-  const { formHasChanges, onFormChanges, showFormChangesDialogIfNeeded } =
-    useOne2manyForm({
-      items,
-      formView: views.get("form"),
-      treeView: views.get("tree"),
-      relation,
-      context,
-      triggerChange,
-    });
+  const {
+    formHasChanges,
+    onFormChanges,
+    showFormChangesDialogIfNeeded,
+    setFormHasChanges,
+  } = useOne2manyForm({
+    items,
+    formView: views.get("form"),
+    treeView: views.get("tree"),
+    relation,
+    context,
+    triggerChange,
+  });
 
   const { showRemoveConfirm } = useOne2manyRemove({
     isMany2many,
+    items,
+    triggerChange,
+    setFormHasChanges,
+    selectedRowKeys,
+    setSelectedRowKeys,
+    refreshTable: gridRef.current?.refresh,
   });
 
   const toggleViewMode = () => {
@@ -110,6 +123,37 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     [items, setCurrentView, setItemIndex],
   );
 
+  const onPreviousItem = useCallback(() => {
+    if (itemIndex > 0) {
+      if (currentView === "form") {
+        showFormChangesDialogIfNeeded(() => {
+          setItemIndex(itemIndex - 1);
+        });
+      } else {
+        setItemIndex(itemIndex - 1);
+      }
+    }
+  }, [currentView, itemIndex, setItemIndex, showFormChangesDialogIfNeeded]);
+
+  const onNextItem = useCallback(() => {
+    const totalItems = items.length;
+    if (itemIndex < totalItems - 1) {
+      if (currentView === "form") {
+        showFormChangesDialogIfNeeded(() => {
+          setItemIndex(itemIndex + 1);
+        });
+      } else {
+        setItemIndex(itemIndex + 1);
+      }
+    }
+  }, [
+    currentView,
+    itemIndex,
+    items.length,
+    setItemIndex,
+    showFormChangesDialogIfNeeded,
+  ]);
+
   return (
     <>
       <One2manyTopBar
@@ -123,21 +167,23 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
         onDelete={showRemoveConfirm}
         onCreateItem={() => {}}
         onToggleViewMode={toggleViewMode}
-        onPreviousItem={() => {}}
-        onNextItem={() => {}}
+        onPreviousItem={onPreviousItem}
+        onNextItem={onNextItem}
         onSearchItem={() => {}}
-        selectedRowKeys={[]}
+        selectedRowKeys={selectedRowKeys}
         showCreateButton={showCreateButton}
         showToggleButton={showToggleButton}
       />
       {currentView === "tree" && (
         <One2manyTree
+          gridRef={gridRef}
           items={items}
           readOnly={readOnly || false}
           onFetchRecords={onTreeFetchRows}
           ooui={treeOoui}
           context={context}
           onRowClicked={onRowClicked}
+          onRowSelectionChange={setSelectedRowKeys}
         />
       )}
       {currentView === "form" && (

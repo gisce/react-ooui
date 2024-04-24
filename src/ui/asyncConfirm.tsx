@@ -11,7 +11,7 @@ export interface ConfirmConfig {
   centered?: boolean;
 }
 
-const asyncConfirm = (config: ConfirmConfig) => {
+export const asyncConfirm = (config: ConfirmConfig) => {
   const container = document.createElement("div");
   document.body.appendChild(container);
 
@@ -37,5 +37,3 @@ const asyncConfirm = (config: ConfirmConfig) => {
     },
   };
 };
-
-export default asyncConfirm;

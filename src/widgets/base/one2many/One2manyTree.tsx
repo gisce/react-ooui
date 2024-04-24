@@ -1,9 +1,11 @@
 import { InfiniteTable } from "@gisce/react-formiga-table";
 import { One2manyItem } from "./One2manyInput";
 import { Tree as TreeOoui } from "@gisce/ooui";
-import { useCallback, useMemo, useState } from "react";
+import { RefObject, useCallback, useMemo, useRef, useState } from "react";
 import { getTableColumns } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "@/widgets/views/Tree/treeComponents";
+import { InfiniteTableRef } from "@gisce/react-formiga-table/dist/components/InfiniteTable/InfiniteTable";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 export type One2manyTreeProps = {
   items: One2manyItem[];
@@ -16,6 +18,8 @@ export type One2manyTreeProps = {
     results: any[];
     colors: { [key: number]: string };
   }>;
+  onRowSelectionChange: (selectedIds: number[]) => void;
+  gridRef?: React.RefObject<InfiniteTableRef>;
 };
 
 const DEFAULT_HEIGHT = 400;
@@ -28,10 +32,30 @@ export const One2manyTree = ({
   ooui,
   context,
   onFetchRecords,
+  onRowSelectionChange,
+  gridRef,
 }: One2manyTreeProps) => {
+  const internalGridRef = useRef<InfiniteTableRef>();
+  const tableRef: RefObject<InfiniteTableRef> = gridRef! || internalGridRef!;
+
   const [colorsForResults, setColorsForResults] = useState<{
     [key: number]: string;
   }>({});
+
+  const prevItemsValue = useRef<One2manyItem[]>();
+  const itemsRef = useRef<One2manyItem[]>(items);
+
+  useDeepCompareEffect(() => {
+    itemsRef.current = items;
+    if (prevItemsValue.current === undefined) {
+      prevItemsValue.current = items;
+      return;
+    }
+
+    prevItemsValue.current = items;
+    tableRef?.current?.refresh();
+    tableRef?.current?.unselectAll();
+  }, [items]);
 
   const columns = useMemo(() => {
     return getTableColumns(
@@ -46,7 +70,7 @@ export const One2manyTree = ({
   const onRequestData = useCallback(
     async (startRow: number, endRow: number) => {
       // get all the items that don't have treevalues
-      const itemsToFetch = items.filter((item) => !item.treeValues);
+      const itemsToFetch = itemsRef.current?.filter((item) => !item.treeValues);
       const idsToFetch = itemsToFetch.map((item) => item.id) as number[];
       // now slice the records with startRow and endRow
       const idsToFetchSliced = idsToFetch.slice(startRow, endRow);
@@ -54,7 +78,7 @@ export const One2manyTree = ({
       setColorsForResults((prevColors) => ({ ...prevColors, ...colors }));
       return results;
     },
-    [items, onFetchRecords],
+    [onFetchRecords],
   );
 
   const onRowStyle = useCallback(
@@ -67,14 +91,23 @@ export const One2manyTree = ({
     [colorsForResults],
   );
 
+  const onRowSelectionChangeCallback = useCallback(
+    (selectedItems: any[]) => {
+      onRowSelectionChange(selectedItems.map((item) => item.id));
+    },
+    [onRowSelectionChange],
+  );
+
   return (
     <InfiniteTable
+      ref={tableRef}
       height={height || DEFAULT_HEIGHT}
       columns={columns}
       onRequestData={onRequestData}
       onRowDoubleClick={onRowClicked}
       readonly={readOnly}
       onRowStyle={onRowStyle}
+      onRowSelectionChange={onRowSelectionChangeCallback}
     />
   );
 };

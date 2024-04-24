@@ -1,7 +1,7 @@
 import ConnectionProvider from "@/ConnectionProvider";
 import { getColorMap, getTree } from "@/helpers/treeHelper";
 import { TreeView } from "@/types";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 export const useOne2manyTree = ({
   treeView,
@@ -12,6 +12,8 @@ export const useOne2manyTree = ({
   relation: string;
   context: any;
 }) => {
+  const [selectedRowKeys, setSelectedRowKeys] = useState<any>([]);
+
   const treeOoui = useMemo(() => {
     return getTree(treeView);
   }, [treeView]);
@@ -39,5 +41,7 @@ export const useOne2manyTree = ({
   return {
     onTreeFetchRows,
     treeOoui,
+    setSelectedRowKeys,
+    selectedRowKeys,
   };
 };

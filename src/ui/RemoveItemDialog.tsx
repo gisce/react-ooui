@@ -1,7 +1,7 @@
 import { ExclamationCircleOutlined } from "@ant-design/icons";
-import asyncConfirm from "./asyncConfirm";
+import { asyncConfirm } from "./asyncConfirm";
 
-const showDialog = ({
+export const showRemoveItemDialog = ({
   t,
   onOk,
 }: {
@@ -18,5 +18,3 @@ const showDialog = ({
     onOk,
   });
 };
-
-export default showDialog;
