@@ -1,16 +1,16 @@
-import { InfiniteTable } from "@gisce/react-formiga-table";
+import { InfiniteTable, InfiniteTableRef } from "@gisce/react-formiga-table";
 import { One2manyItem } from "./One2manyInput";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { RefObject, useCallback, useMemo, useRef, useState } from "react";
 import { getTableColumns } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "@/widgets/views/Tree/treeComponents";
-import { InfiniteTableRef } from "@gisce/react-formiga-table/dist/components/InfiniteTable/InfiniteTable";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { useOne2manyColumnStorage } from "./useOne2manyColumnStorage";
+import { useDeepCompareMemo } from "use-deep-compare";
 
 export type One2manyTreeProps = {
   items: One2manyItem[];
-  onRowClicked: (record: any) => void;
+  onRowDoubleClick: (record: any) => void;
   readOnly: boolean;
   height?: number;
   ooui: TreeOoui;
@@ -24,6 +24,7 @@ export type One2manyTreeProps = {
   relation: string;
   onChangeFirstVisibleRowIndex?: (index: number) => void;
   onGetFirstVisibleRowIndex?: () => number | undefined;
+  onGetSelectedRowKeys?: () => any[];
 };
 
 const DEFAULT_HEIGHT = 400;
@@ -31,7 +32,7 @@ const DEFAULT_HEIGHT = 400;
 export const One2manyTree = ({
   items,
   height,
-  onRowClicked,
+  onRowDoubleClick,
   readOnly,
   ooui,
   context,
@@ -41,13 +42,12 @@ export const One2manyTree = ({
   relation,
   onChangeFirstVisibleRowIndex,
   onGetFirstVisibleRowIndex,
+  onGetSelectedRowKeys,
 }: One2manyTreeProps) => {
   const internalGridRef = useRef<InfiniteTableRef>();
   const tableRef: RefObject<InfiniteTableRef> = gridRef! || internalGridRef!;
 
-  const [colorsForResults, setColorsForResults] = useState<{
-    [key: number]: string;
-  }>({});
+  const colorsForResults = useRef<{ [key: number]: string }>({});
 
   const prevItemsValue = useRef<One2manyItem[]>();
   const itemsRef = useRef<One2manyItem[]>(items);
@@ -64,7 +64,7 @@ export const One2manyTree = ({
     tableRef?.current?.unselectAll();
   }, [items]);
 
-  const columns = useMemo(() => {
+  const columns = useDeepCompareMemo(() => {
     return getTableColumns(
       ooui,
       {
@@ -82,21 +82,18 @@ export const One2manyTree = ({
       // now slice the records with startRow and endRow
       const idsToFetchSliced = idsToFetch.slice(startRow, endRow);
       const { results, colors } = await onFetchRecords(idsToFetchSliced);
-      setColorsForResults((prevColors) => ({ ...prevColors, ...colors }));
+      colorsForResults.current = { ...colorsForResults.current, ...colors };
       return results;
     },
     [onFetchRecords],
   );
 
-  const onRowStyle = useCallback(
-    (record: any) => {
-      if (colorsForResults![record.id]) {
-        return { color: colorsForResults![record.id] };
-      }
-      return undefined;
-    },
-    [colorsForResults],
-  );
+  const onRowStyle = useCallback((record: any) => {
+    if (colorsForResults.current[record.id]) {
+      return { color: colorsForResults.current[record.id] };
+    }
+    return undefined;
+  }, []);
 
   const onRowSelectionChangeCallback = useCallback(
     (selectedItems: any[]) => {
@@ -115,7 +112,7 @@ export const One2manyTree = ({
       height={height || DEFAULT_HEIGHT}
       columns={columns}
       onRequestData={onRequestData}
-      onRowDoubleClick={onRowClicked}
+      onRowDoubleClick={onRowDoubleClick}
       readonly={readOnly}
       onRowStyle={onRowStyle}
       onRowSelectionChange={onRowSelectionChangeCallback}
@@ -123,6 +120,7 @@ export const One2manyTree = ({
       onGetColumnsState={getColumnState}
       onChangeFirstVisibleRowIndex={onChangeFirstVisibleRowIndex}
       onGetFirstVisibleRowIndex={onGetFirstVisibleRowIndex}
+      onGetSelectedRowKeys={onGetSelectedRowKeys}
     />
   );
 };

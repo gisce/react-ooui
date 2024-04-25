@@ -17,6 +17,7 @@ import { One2manyForm } from "./One2manyForm";
 import { One2manyItem } from "./One2manyInput";
 import { useOne2manyRemove } from "./useOne2manyRemove";
 import { InfiniteTableRef } from "@gisce/react-formiga-table";
+import { useDeepCompareCallback } from "use-deep-compare";
 
 const SUPPORTED_VIEWS = ["form", "tree", "graph"];
 
@@ -59,6 +60,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     setSelectedRowKeys,
     onChangeFirstVisibleRowIndex,
     onGetFirstVisibileRowIndex,
+    onGetSelectedRowKeys,
   } = useOne2manyTree({
     treeView: views.get("tree"),
     relation,
@@ -119,13 +121,14 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     }
   };
 
-  const onRowClicked = useCallback(
+  const onRowDoubleClick = useDeepCompareCallback(
     (item: any) => {
       const index = items.findIndex((i) => i.id === item.id);
       setItemIndex(index);
       setCurrentView("form");
     },
-    [items, setCurrentView, setItemIndex],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [items],
   );
 
   const onPreviousItem = useCallback(() => {
@@ -187,11 +190,12 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
           onFetchRecords={onTreeFetchRows}
           ooui={treeOoui}
           context={context}
-          onRowClicked={onRowClicked}
+          onRowDoubleClick={onRowDoubleClick}
           onRowSelectionChange={setSelectedRowKeys}
           relation={relation}
           onChangeFirstVisibleRowIndex={onChangeFirstVisibleRowIndex}
           onGetFirstVisibleRowIndex={onGetFirstVisibileRowIndex}
+          onGetSelectedRowKeys={onGetSelectedRowKeys}
         />
       )}
       {currentView === "form" && (
