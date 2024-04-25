@@ -52,12 +52,18 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     fieldName,
   });
 
-  const { treeOoui, onTreeFetchRows, selectedRowKeys, setSelectedRowKeys } =
-    useOne2manyTree({
-      treeView: views.get("tree"),
-      relation,
-      context,
-    });
+  const {
+    treeOoui,
+    onTreeFetchRows,
+    selectedRowKeys,
+    setSelectedRowKeys,
+    onChangeFirstVisibleRowIndex,
+    onGetFirstVisibileRowIndex,
+  } = useOne2manyTree({
+    treeView: views.get("tree"),
+    relation,
+    context,
+  });
 
   const title = useMemo(() => {
     const { title } = views.get(currentView) || {};
@@ -184,6 +190,8 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
           onRowClicked={onRowClicked}
           onRowSelectionChange={setSelectedRowKeys}
           relation={relation}
+          onChangeFirstVisibleRowIndex={onChangeFirstVisibleRowIndex}
+          onGetFirstVisibleRowIndex={onGetFirstVisibileRowIndex}
         />
       )}
       {currentView === "form" && (

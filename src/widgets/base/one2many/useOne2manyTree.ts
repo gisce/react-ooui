@@ -1,7 +1,7 @@
 import ConnectionProvider from "@/ConnectionProvider";
 import { getColorMap, getTree } from "@/helpers/treeHelper";
 import { TreeView } from "@/types";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 export const useOne2manyTree = ({
   treeView,
@@ -13,6 +13,15 @@ export const useOne2manyTree = ({
   context: any;
 }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<any>([]);
+  const firstVisibleRowIndex = useRef(0);
+
+  const onChangeFirstVisibleRowIndex = useCallback((index: number) => {
+    firstVisibleRowIndex.current = index;
+  }, []);
+
+  const onGetFirstVisibileRowIndex = useCallback(() => {
+    return firstVisibleRowIndex.current;
+  }, []);
 
   const treeOoui = useMemo(() => {
     return getTree(treeView);
@@ -43,5 +52,7 @@ export const useOne2manyTree = ({
     treeOoui,
     setSelectedRowKeys,
     selectedRowKeys,
+    onChangeFirstVisibleRowIndex,
+    onGetFirstVisibileRowIndex,
   };
 };

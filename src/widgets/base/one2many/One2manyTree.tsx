@@ -22,6 +22,8 @@ export type One2manyTreeProps = {
   onRowSelectionChange: (selectedIds: number[]) => void;
   gridRef?: React.RefObject<InfiniteTableRef>;
   relation: string;
+  onChangeFirstVisibleRowIndex?: (index: number) => void;
+  onGetFirstVisibleRowIndex?: () => number | undefined;
 };
 
 const DEFAULT_HEIGHT = 400;
@@ -37,6 +39,8 @@ export const One2manyTree = ({
   onRowSelectionChange,
   gridRef,
   relation,
+  onChangeFirstVisibleRowIndex,
+  onGetFirstVisibleRowIndex,
 }: One2manyTreeProps) => {
   const internalGridRef = useRef<InfiniteTableRef>();
   const tableRef: RefObject<InfiniteTableRef> = gridRef! || internalGridRef!;
@@ -117,6 +121,8 @@ export const One2manyTree = ({
       onRowSelectionChange={onRowSelectionChangeCallback}
       onColumnChanged={updateColumnState}
       onGetColumnsState={getColumnState}
+      onChangeFirstVisibleRowIndex={onChangeFirstVisibleRowIndex}
+      onGetFirstVisibleRowIndex={onGetFirstVisibleRowIndex}
     />
   );
 };
