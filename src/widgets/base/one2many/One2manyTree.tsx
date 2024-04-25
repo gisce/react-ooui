@@ -6,6 +6,7 @@ import { getTableColumns } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "@/widgets/views/Tree/treeComponents";
 import { InfiniteTableRef } from "@gisce/react-formiga-table/dist/components/InfiniteTable/InfiniteTable";
 import useDeepCompareEffect from "use-deep-compare-effect";
+import { useOne2manyColumnStorage } from "./useOne2manyColumnStorage";
 
 export type One2manyTreeProps = {
   items: One2manyItem[];
@@ -20,6 +21,7 @@ export type One2manyTreeProps = {
   }>;
   onRowSelectionChange: (selectedIds: number[]) => void;
   gridRef?: React.RefObject<InfiniteTableRef>;
+  relation: string;
 };
 
 const DEFAULT_HEIGHT = 400;
@@ -34,6 +36,7 @@ export const One2manyTree = ({
   onFetchRecords,
   onRowSelectionChange,
   gridRef,
+  relation,
 }: One2manyTreeProps) => {
   const internalGridRef = useRef<InfiniteTableRef>();
   const tableRef: RefObject<InfiniteTableRef> = gridRef! || internalGridRef!;
@@ -98,6 +101,10 @@ export const One2manyTree = ({
     [onRowSelectionChange],
   );
 
+  const { getColumnState, updateColumnState } = useOne2manyColumnStorage({
+    model: relation,
+  });
+
   return (
     <InfiniteTable
       ref={tableRef}
@@ -108,6 +115,8 @@ export const One2manyTree = ({
       readonly={readOnly}
       onRowStyle={onRowStyle}
       onRowSelectionChange={onRowSelectionChangeCallback}
+      onColumnChanged={updateColumnState}
+      onGetColumnsState={getColumnState}
     />
   );
 };

@@ -183,6 +183,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
           context={context}
           onRowClicked={onRowClicked}
           onRowSelectionChange={setSelectedRowKeys}
+          relation={relation}
         />
       )}
       {currentView === "form" && (
