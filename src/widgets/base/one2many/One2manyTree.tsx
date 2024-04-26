@@ -78,14 +78,31 @@ export const One2manyTree = ({
 
   const onRequestData = useCallback(
     async (startRow: number, endRow: number) => {
-      // get all the items that don't have treevalues
-      const itemsToFetch = itemsRef.current?.filter((item) => !item.treeValues);
+      const itemsToFetch = itemsRef.current;
       const idsToFetch = itemsToFetch.map((item) => item.id) as number[];
       // now slice the records with startRow and endRow
       const idsToFetchSliced = idsToFetch.slice(startRow, endRow);
-      const { results, colors } = await onFetchRecords(idsToFetchSliced);
+
+      // in this idsToFetchSliced we have the ids of the records that theoretically we have to fetch
+      // however, it's possible that these items have operation different than original,
+      // and we have to skip these items to being fetched, and passed later on to the callback as they were originally
+      const realIdsToFetch = idsToFetchSliced.filter((id) => {
+        const item = itemsToFetch.find((item) => item.id === id);
+        return item && item.operation === "original";
+      });
+      const { results, colors } = await onFetchRecords(realIdsToFetch);
+
+      // now we have to map the results to the original ids
+      const resultsMapped = idsToFetchSliced.map((id) => {
+        const result = results.find((result) => result.id === id);
+        if (result) {
+          return result;
+        }
+        return itemsToFetch.find((item) => item.id === id)?.treeValues;
+      });
+
       colorsForResults.current = { ...colorsForResults.current, ...colors };
-      return results;
+      return resultsMapped;
     },
     [onFetchRecords],
   );

@@ -18,6 +18,8 @@ import { One2manyItem } from "./One2manyInput";
 import { useOne2manyRemove } from "./useOne2manyRemove";
 import { InfiniteTableRef } from "@gisce/react-formiga-table";
 import { useDeepCompareCallback } from "use-deep-compare";
+import { FormModal } from "@/index";
+import { useOne2manyFormModal } from "./useOne2manyFormModal";
 
 const SUPPORTED_VIEWS = ["form", "tree", "graph"];
 
@@ -39,7 +41,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     id: fieldName,
   } = ooui as One2manyOoui;
   const formContext = useContext(FormContext) as FormContextType;
-  const { getContext } = formContext || {};
+  const { activeId, getContext } = formContext || {};
 
   const showToggleButton = views.size > 1;
   const showCreateButton = views.get("form")?.fields !== undefined;
@@ -98,6 +100,22 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     triggerChange,
   });
 
+  const {
+    showFormModal,
+    modalItem,
+    continuousEntryMode,
+    onCancelFormModal,
+    onFormModalSubmitSucceed,
+    createItem,
+  } = useOne2manyFormModal({
+    activeId,
+    inv_field: ooui.inv_field,
+    showFormChangesDialogIfNeeded,
+    currentView,
+    triggerChange,
+    items,
+  });
+
   const { showRemoveConfirm } = useOne2manyRemove({
     isMany2many,
     items,
@@ -121,6 +139,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     }
   };
 
+  // TODO: this should be presented in the modal not in the form view
   const onRowDoubleClick = useDeepCompareCallback(
     (item: any) => {
       const index = items.findIndex((i) => i.id === item.id);
@@ -173,7 +192,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
         totalItems={items.length}
         currentItemIndex={itemIndex}
         onDelete={showRemoveConfirm}
-        onCreateItem={() => {}}
+        onCreateItem={createItem}
         onToggleViewMode={toggleViewMode}
         onPreviousItem={onPreviousItem}
         onNextItem={onNextItem}
@@ -208,6 +227,20 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
           onChange={onFormChanges}
         />
       )}
+      <FormModal
+        formView={views.get("form")}
+        model={relation}
+        id={modalItem?.id}
+        submitMode={"2many"}
+        values={modalItem?.values}
+        defaultValues={modalItem?.defaultValues}
+        visible={showFormModal}
+        onSubmitSucceed={onFormModalSubmitSucceed}
+        parentContext={context}
+        onCancel={onCancelFormModal}
+        readOnly={readOnly}
+        mustClearAfterSave={continuousEntryMode}
+      />
       {/* TODO: Graph view */}
       {!SUPPORTED_VIEWS.includes(currentView) && (
         <span>Unsupported view {currentView}</span>
