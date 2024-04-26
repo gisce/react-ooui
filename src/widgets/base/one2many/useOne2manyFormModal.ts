@@ -1,5 +1,6 @@
 import { getNextPendingId } from "@/helpers/one2manyHelper";
-import { One2manyItem } from "@/index";
+import { ConnectionProvider, One2manyItem } from "@/index";
+import { FormView, ViewType } from "@/types";
 import { useCallback, useState } from "react";
 import { useDeepCompareCallback } from "use-deep-compare";
 
@@ -10,6 +11,11 @@ export const useOne2manyFormModal = ({
   showFormChangesDialogIfNeeded,
   items,
   triggerChange,
+  setCurrentView,
+  setItemIndex,
+  relation,
+  formView,
+  context,
 }: {
   currentView: string;
   inv_field?: string;
@@ -17,6 +23,11 @@ export const useOne2manyFormModal = ({
   showFormChangesDialogIfNeeded: (callback: () => void) => void;
   items: One2manyItem[];
   triggerChange: (items: One2manyItem[]) => void;
+  setCurrentView: (view: ViewType) => void;
+  setItemIndex: (index: number) => void;
+  relation: string;
+  formView: FormView;
+  context: any;
 }) => {
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
   const [modalItem, setModalItem] = useState<One2manyItem>();
@@ -95,6 +106,31 @@ export const useOne2manyFormModal = ({
     [continuousEntryMode, items, triggerChange],
   );
 
+  const openItemInFormModal = useDeepCompareCallback(
+    async (item: One2manyItem) => {
+      const { id: itemId } = item;
+
+      let itemsToLoadFrom: One2manyItem[] | undefined = items;
+
+      // We should fetch the form data if needed in order to get the form values
+      const modalItem = items.find((item) => item.id === itemId);
+      if (modalItem?.values === undefined) {
+        itemsToLoadFrom = await ConnectionProvider.getHandler().readObjects({
+          model: relation,
+          ids: [item.id!],
+          fields: formView.fields,
+          context,
+        });
+      }
+
+      // We show the detail for the clicked item in a Form modal
+      setModalItem(itemsToLoadFrom!.find((item) => item.id === itemId));
+      setContinuousEntryMode(false);
+      setShowFormModal(true);
+    },
+    [context, formView.fields, items, relation, setCurrentView, setItemIndex],
+  );
+
   return {
     showFormModal,
     modalItem,
@@ -102,5 +138,6 @@ export const useOne2manyFormModal = ({
     createItem,
     onCancelFormModal,
     onFormModalSubmitSucceed,
+    openItemInFormModal,
   };
 };

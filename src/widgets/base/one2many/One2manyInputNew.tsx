@@ -108,6 +108,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     onCancelFormModal,
     onFormModalSubmitSucceed,
     createItem,
+    openItemInFormModal,
   } = useOne2manyFormModal({
     activeId,
     inv_field: ooui.inv_field,
@@ -115,6 +116,11 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     currentView,
     triggerChange,
     items,
+    setCurrentView,
+    setItemIndex,
+    context,
+    relation,
+    formView: views.get("form"),
   });
 
   const {
@@ -158,9 +164,8 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
   // TODO: this should be presented in the modal not in the form view
   const onRowDoubleClick = useDeepCompareCallback(
     (item: any) => {
-      const index = items.findIndex((i) => i.id === item.id);
-      setItemIndex(index);
-      setCurrentView("form");
+      if (!views.get("form")?.fields) return;
+      openItemInFormModal(item);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [items],
