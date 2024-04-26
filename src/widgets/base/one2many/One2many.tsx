@@ -5,7 +5,7 @@ import { Spin, Alert } from "antd";
 import { Views, ViewType } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import One2manyProvider from "@/context/One2manyContext";
-import { One2manyInput } from "@/widgets/base/one2many/One2manyInputNew";
+import { One2manyInput } from "@/widgets/base/one2many/One2manyInput";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { FormContext, FormContextType } from "@/context/FormContext";
 
