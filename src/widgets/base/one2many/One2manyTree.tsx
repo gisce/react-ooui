@@ -95,13 +95,6 @@ export const One2manyTree = ({
     return undefined;
   }, []);
 
-  const onRowSelectionChangeCallback = useCallback(
-    (selectedItems: any[]) => {
-      onRowSelectionChange(selectedItems.map((item) => item.id));
-    },
-    [onRowSelectionChange],
-  );
-
   const { getColumnState, updateColumnState } = useOne2manyColumnStorage({
     model: relation,
   });
@@ -115,7 +108,7 @@ export const One2manyTree = ({
       onRowDoubleClick={onRowDoubleClick}
       readonly={readOnly}
       onRowStyle={onRowStyle}
-      onRowSelectionChange={onRowSelectionChangeCallback}
+      onRowSelectionChange={onRowSelectionChange}
       onColumnChanged={updateColumnState}
       onGetColumnsState={getColumnState}
       onChangeFirstVisibleRowIndex={onChangeFirstVisibleRowIndex}
