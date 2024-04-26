@@ -1,7 +1,7 @@
 import { InfiniteTable, InfiniteTableRef } from "@gisce/react-formiga-table";
 import { One2manyItem } from "./One2manyInput";
 import { Tree as TreeOoui } from "@gisce/ooui";
-import { RefObject, useCallback, useMemo, useRef, useState } from "react";
+import { RefObject, useCallback, useRef } from "react";
 import { getTableColumns } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "@/widgets/views/Tree/treeComponents";
 import useDeepCompareEffect from "use-deep-compare-effect";
@@ -64,6 +64,8 @@ export const One2manyTree = ({
     tableRef?.current?.unselectAll();
   }, [items]);
 
+  const totalRows = useDeepCompareMemo(() => items.length, [items]);
+
   const columns = useDeepCompareMemo(() => {
     return getTableColumns(
       ooui,
@@ -114,6 +116,7 @@ export const One2manyTree = ({
       onChangeFirstVisibleRowIndex={onChangeFirstVisibleRowIndex}
       onGetFirstVisibleRowIndex={onGetFirstVisibleRowIndex}
       onGetSelectedRowKeys={onGetSelectedRowKeys}
+      totalRows={totalRows}
     />
   );
 };
