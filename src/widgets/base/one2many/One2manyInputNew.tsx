@@ -18,8 +18,9 @@ import { One2manyItem } from "./One2manyInput";
 import { useOne2manyRemove } from "./useOne2manyRemove";
 import { InfiniteTableRef } from "@gisce/react-formiga-table";
 import { useDeepCompareCallback } from "use-deep-compare";
-import { FormModal } from "@/index";
+import { FormModal, SearchModal } from "@/index";
 import { useOne2manyFormModal } from "./useOne2manyFormModal";
+import { useOne2manySearchModal } from "./useOne2manySearchModal";
 
 const SUPPORTED_VIEWS = ["form", "tree", "graph"];
 
@@ -116,6 +117,21 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     items,
   });
 
+  const {
+    showSearchModal,
+    onSelectSearchValues,
+    onCloseSearchModal,
+    searchItem,
+  } = useOne2manySearchModal({
+    showFormChangesDialogIfNeeded,
+    currentView,
+    triggerChange,
+    items,
+    views,
+    context,
+    relation,
+  });
+
   const { showRemoveConfirm } = useOne2manyRemove({
     isMany2many,
     items,
@@ -196,7 +212,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
         onToggleViewMode={toggleViewMode}
         onPreviousItem={onPreviousItem}
         onNextItem={onNextItem}
-        onSearchItem={() => {}}
+        onSearchItem={searchItem}
         selectedRowKeys={selectedRowKeys}
         showCreateButton={showCreateButton}
         showToggleButton={showToggleButton}
@@ -240,6 +256,14 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
         onCancel={onCancelFormModal}
         readOnly={readOnly}
         mustClearAfterSave={continuousEntryMode}
+      />
+      <SearchModal
+        domain={domain}
+        model={relation}
+        context={context}
+        visible={showSearchModal}
+        onSelectValues={onSelectSearchValues}
+        onCloseModal={onCloseSearchModal}
       />
       {/* TODO: Graph view */}
       {!SUPPORTED_VIEWS.includes(currentView) && (
