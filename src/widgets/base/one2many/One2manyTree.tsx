@@ -88,8 +88,16 @@ export const One2manyTree = ({
       // and we have to skip these items to being fetched, and passed later on to the callback as they were originally
       const realIdsToFetch = idsToFetchSliced.filter((id) => {
         const item = itemsToFetch.find((item) => item.id === id);
-        return item && item.operation === "original";
+        return (
+          item &&
+          (item.operation === "original" || item.operation === "pendingLink")
+        );
       });
+
+      if (realIdsToFetch.length === 0) {
+        return [];
+      }
+
       const { results, colors } = await onFetchRecords(realIdsToFetch);
 
       // now we have to map the results to the original ids
