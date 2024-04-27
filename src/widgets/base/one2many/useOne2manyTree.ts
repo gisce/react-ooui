@@ -16,6 +16,11 @@ export const useOne2manyTree = ({
   const [selectedRowKeys, setSelectedRowKeys] = useState<any>([]);
   const firstVisibleRowIndex = useRef(0);
   const selectedRowKeysRef = useRef(selectedRowKeys);
+  const allRowSelectedMode = useRef(false);
+
+  const onChangeAllRowSelectedMode = useCallback((value: boolean) => {
+    allRowSelectedMode.current = value;
+  }, []);
 
   const onChangeFirstVisibleRowIndex = useCallback((index: number) => {
     firstVisibleRowIndex.current = index;
@@ -65,5 +70,7 @@ export const useOne2manyTree = ({
     onChangeFirstVisibleRowIndex,
     onGetFirstVisibileRowIndex,
     onGetSelectedRowKeys,
+    onChangeAllRowSelectedMode,
+    allRowSelectedMode: allRowSelectedMode.current,
   };
 };

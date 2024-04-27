@@ -81,6 +81,8 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     onChangeFirstVisibleRowIndex,
     onGetFirstVisibileRowIndex,
     onGetSelectedRowKeys,
+    allRowSelectedMode,
+    onChangeAllRowSelectedMode,
   } = useOne2manyTree({
     treeView: views.get("tree"),
     relation,
@@ -253,6 +255,8 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
           onChangeFirstVisibleRowIndex={onChangeFirstVisibleRowIndex}
           onGetFirstVisibleRowIndex={onGetFirstVisibileRowIndex}
           onGetSelectedRowKeys={onGetSelectedRowKeys}
+          allRowSelectedMode={allRowSelectedMode}
+          onAllRowSelectedModeChange={onChangeAllRowSelectedMode}
         />
       )}
       {currentView === "form" && (

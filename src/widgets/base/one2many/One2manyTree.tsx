@@ -25,6 +25,8 @@ export type One2manyTreeProps = {
   onChangeFirstVisibleRowIndex?: (index: number) => void;
   onGetFirstVisibleRowIndex?: () => number | undefined;
   onGetSelectedRowKeys?: () => any[];
+  onAllRowSelectedModeChange?: (allRowSelectedMode: boolean) => void;
+  allRowSelectedMode?: boolean;
 };
 
 const DEFAULT_HEIGHT = 400;
@@ -43,6 +45,8 @@ export const One2manyTree = ({
   onChangeFirstVisibleRowIndex,
   onGetFirstVisibleRowIndex,
   onGetSelectedRowKeys,
+  onAllRowSelectedModeChange,
+  allRowSelectedMode,
 }: One2manyTreeProps) => {
   const internalGridRef = useRef<InfiniteTableRef>();
   const tableRef: RefObject<InfiniteTableRef> = gridRef! || internalGridRef!;
@@ -141,6 +145,8 @@ export const One2manyTree = ({
       onChangeFirstVisibleRowIndex={onChangeFirstVisibleRowIndex}
       onGetFirstVisibleRowIndex={onGetFirstVisibleRowIndex}
       onGetSelectedRowKeys={onGetSelectedRowKeys}
+      allRowSelectedMode={allRowSelectedMode}
+      onAllRowSelectedModeChange={onAllRowSelectedModeChange}
       totalRows={totalRows}
     />
   );
