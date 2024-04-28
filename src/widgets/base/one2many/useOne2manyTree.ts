@@ -35,6 +35,9 @@ export const useOne2manyTree = ({
   }, [selectedRowKeys]);
 
   const onGetSelectedRowKeys = useCallback(() => {
+    if (allRowSelectedMode) {
+      return [];
+    }
     return selectedRowKeysRef.current;
   }, []);
 
