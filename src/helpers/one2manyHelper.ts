@@ -219,10 +219,20 @@ export const convertFrom2ManyRawValues = ({
   return formattedValues;
 };
 
+function filterDuplicateItems(items: any) {
+  const ids = items.map((o: any) => o.id);
+  const filtered = items.filter((item: any, index: number) => {
+    const { id } = item;
+    return !ids.includes(id, index + 1);
+  });
+  return filtered;
+}
+
 export {
   readObjectValues,
   removeItems,
   linkItem,
   getNextPendingId,
   convertToPlain2ManyValues,
+  filterDuplicateItems,
 };
