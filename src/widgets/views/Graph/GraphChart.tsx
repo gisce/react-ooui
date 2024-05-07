@@ -99,8 +99,23 @@ function getGraphProps(props: GetGraphPropsType) {
   graphProps.data = data;
 
   if (type === "pie") {
+    // for each entry of data array, we need to calculate which percentage of the total it represents
+    // and add it to the data array as a new field
+    const total = data.reduce((acc, curr) => acc + curr.value, 0);
+    data.forEach((entry) => {
+      entry.percent = (entry.value / total) * 100;
+    });
+
     graphProps.colorField = "x";
     graphProps.angleField = "value";
+    graphProps.legend.itemValue = {
+      formatter: (_: unknown, item: any) => {
+        const matchedDataEntry = data.find((d) => d.x === item.id);
+        const value = matchedDataEntry?.percent || 0;
+        const percent = `${value.toFixed(0)}%`;
+        return `${percent}`;
+      },
+    };
   } else {
     graphProps.xField = "x";
     graphProps.yField = "value";
