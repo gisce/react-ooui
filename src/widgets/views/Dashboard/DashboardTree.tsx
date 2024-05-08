@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, memo } from "react";
 import { Alert, Spin } from "antd";
 
 import { Tree } from "@/widgets/views/Tree";
@@ -233,5 +233,4 @@ function DashboardTree(props: Props) {
 
   return isLoading ? <Spin style={{ padding: "2rem" }} /> : content();
 }
-
-export default DashboardTree;
+export default memo(DashboardTree);
