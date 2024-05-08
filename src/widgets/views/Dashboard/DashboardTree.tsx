@@ -233,5 +233,3 @@ function DashboardTree(props: Props) {
 
   return isLoading ? <Spin style={{ padding: "2rem" }} /> : content();
 }
-
-export default DashboardTree;
