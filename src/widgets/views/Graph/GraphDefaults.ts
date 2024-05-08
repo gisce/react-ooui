@@ -64,6 +64,7 @@ const DefaultGraphOptions = {
     },
   },
   pie: {
+    autoFit: true,
     appendPadding: 10,
     radius: 0.9,
     label: {
