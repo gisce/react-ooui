@@ -4,6 +4,8 @@ import { useGraphData } from "./useGraphData";
 import { Alert, Spin } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
 import useDeepCompareEffect from "use-deep-compare-effect";
+import { ResizeAwareComp } from "../DashboardGrid/ResizeAwareComp";
+import { useState } from "react";
 
 const types = {
   line: Line,
@@ -35,6 +37,18 @@ export const GraphChart = (props: GraphChartProps) => {
       manualIds,
     });
 
+  const [mount, setMount] = useState(true);
+  const [sizeKey, setSizeKey] = useState("");
+
+  const remountComponent = (width: number, height: number) => {
+    setMount(false); // Unmount the component
+
+    setTimeout(() => {
+      setSizeKey(`${width}-${height}`); // Update key to force remount
+      setMount(true); // Remount the component
+    }, 500); // A short delay ensures the component fully unmounts
+  };
+
   useDeepCompareEffect(() => {
     fetchData();
   }, [xml, model, limit, context, domain]);
@@ -60,7 +74,15 @@ export const GraphChart = (props: GraphChartProps) => {
   }
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+        padding: "1rem",
+        gap: "10px",
+      }}
+    >
       <p style={{ textAlign: "right" }}>
         {`${t("totalRegisters")} ${evaluatedEntries?.length?.toLocaleString(
           "es-ES",
@@ -69,14 +91,32 @@ export const GraphChart = (props: GraphChartProps) => {
           },
         )}`}
       </p>
-      <Chart
-        {...getGraphProps({
-          type,
-          data,
-          isGroup,
-          isStack,
-        })}
-      />
+      <ResizeAwareComp>
+        {({ width, height }) => {
+          if (`${width}-${height}` !== sizeKey) {
+            remountComponent(width, height);
+            return <Spin />;
+          }
+          if (!mount) {
+            return <Spin />;
+          }
+          return (
+            <div style={{ width, height, overflow: "hidden" }}>
+              <Chart
+                key={sizeKey}
+                {...getGraphProps({
+                  type,
+                  data,
+                  isGroup,
+                  isStack,
+                  width,
+                  height,
+                })}
+              />
+            </div>
+          );
+        }}
+      </ResizeAwareComp>
     </div>
   );
 };
@@ -86,10 +126,12 @@ type GetGraphPropsType = {
   isStack: boolean;
   isGroup: boolean;
   data: any[];
+  width?: number;
+  height?: number;
 };
 
 function getGraphProps(props: GetGraphPropsType) {
-  const { type, data, isGroup, isStack } = props;
+  const { type, data, isGroup, isStack, width, height } = props;
   let graphProps = { ...(GraphDefaults as any)[type] };
 
   if (!graphProps) {
@@ -97,6 +139,8 @@ function getGraphProps(props: GetGraphPropsType) {
   }
 
   graphProps.data = data;
+  graphProps.height = height || 400;
+  graphProps.width = width || 800;
 
   if (type === "pie") {
     // for each entry of data array, we need to calculate which percentage of the total it represents
@@ -128,6 +172,5 @@ function getGraphProps(props: GetGraphPropsType) {
       graphProps.groupField = "stacked";
     }
   }
-
   return graphProps;
 }
