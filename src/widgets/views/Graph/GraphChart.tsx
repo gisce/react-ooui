@@ -1,9 +1,11 @@
 import { Line, Column, Pie } from "@ant-design/plots";
 import GraphDefaults from "./GraphDefaults";
 import { useGraphData } from "./useGraphData";
-import { Alert, Spin } from "antd";
+import { Alert, Spin , Typography } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
 import useDeepCompareEffect from "use-deep-compare-effect";
+
+const { Text } = Typography;
 
 const types = {
   line: Line,
@@ -59,16 +61,39 @@ export const GraphChart = (props: GraphChartProps) => {
     return <>{`Unknown graph type: ${type}`}</>;
   }
 
+  const total =
+    type === "pie"
+      ? data.reduce(
+          (acc: number, obj: any) =>
+            obj.operator === "+" ? acc + obj.value : 0,
+          0,
+        )
+      : 0;
+
   return (
     <div style={{ padding: "1rem" }}>
-      <p style={{ textAlign: "right" }}>
-        {`${t("totalRegisters")} ${evaluatedEntries?.length?.toLocaleString(
-          "es-ES",
-          {
-            useGrouping: true,
-          },
-        )}`}
-      </p>
+      <div style={{ textAlign: "right" }}>
+        <Text type="secondary">
+          {`${t("totalRegisters")} ${evaluatedEntries?.length?.toLocaleString(
+            "es-ES",
+            {
+              useGrouping: true,
+            },
+          )}`}
+        </Text>
+      </div>
+      {total > 0 && (
+        <div style={{ textAlign: "right" }}>
+          <Text type="secondary">
+            {t("total")}:{" "}
+            {data
+              .reduce((acc: number, obj: any) => acc + obj.value, 0)
+              .toLocaleString("es-ES", {
+                useGrouping: true,
+              })}
+          </Text>
+        </div>
+      )}
       <Chart
         {...getGraphProps({
           type,

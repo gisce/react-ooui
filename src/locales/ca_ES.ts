@@ -85,6 +85,7 @@ export default {
   openAttachmentLink: "Obrir enllaç de l'adjunt",
   uninformed: "Sense informar",
   totalRegisters: "Registres totals:",
+  total: "Total",
   export: "Exportar",
   selectAtLeastOneField: "Selecciona almenys un camp per a l'exportació",
   printScreen: "Imprimir pantalla",
