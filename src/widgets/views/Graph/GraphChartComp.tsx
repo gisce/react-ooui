@@ -33,7 +33,6 @@ export const GraphChartComp = ({
   const [sizeKey, setSizeKey] = useState("");
   const { t } = useLocale();
 
-  console.log({ data });
   const remountComponent = (width: number, height: number) => {
     setMount(false); // Unmount the component
 
