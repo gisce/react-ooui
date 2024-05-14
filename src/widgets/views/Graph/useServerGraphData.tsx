@@ -12,6 +12,7 @@ export type GraphDataQueryOpts = {
 };
 
 export type GraphResponse = {
+  num_items: number;
   type: GraphType;
 };
 
@@ -27,6 +28,7 @@ export type GraphResponseIndicator = GraphResponse & {
   color?: string;
   icon?: string;
   percent?: number;
+  suffix?: string;
 };
 
 export const useServerGraphData = (opts: GraphDataQueryOpts) => {

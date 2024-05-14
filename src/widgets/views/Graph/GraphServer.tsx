@@ -1,29 +1,18 @@
-import {
-  useState,
-  useEffect,
-  useContext,
-  forwardRef,
-  useImperativeHandle,
-} from "react";
-import {
-  Graph as GraphOoui,
-  parseGraph,
-  GraphIndicator as GraphIndicatorOoui,
-  GraphIndicatorField,
-} from "@gisce/ooui";
+import { useEffect, useContext, forwardRef, useImperativeHandle } from "react";
 import { LoadingOutlined } from "@ant-design/icons";
-import ConnectionProvider from "@/ConnectionProvider";
-import { GraphIndicator } from "./GraphIndicator";
-import { GraphChart } from "./GraphChart";
-import { GraphView } from "@/types";
 import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
-import { useNetworkRequest } from "@/hooks/useNetworkRequest";
-import { GraphChartServer } from "./GraphChartServer";
 import { Alert } from "antd";
-import { GraphResponseIndicator } from "./useServerGraphData";
+import {
+  GraphResponseChart,
+  GraphResponseIndicator,
+  useServerGraphData,
+} from "./useServerGraphData";
+import { GraphIndicatorComp } from "./GraphIndicatorComp";
+import { isNumber } from "./GraphDefaults";
+import { GraphChartComp } from "./GraphChartComp";
 
 export type GraphProps = {
   view_id: number;
@@ -40,13 +29,18 @@ const GraphComp = (props: GraphProps, ref: any) => {
   ) as ActionViewContextType;
   const { setGraphIsLoading = undefined } = actionViewContext || {};
 
-  const { error, loading, graphData, fetchData, type } = useServerGraphData({
+  const { error, loading, graphData, fetchData } = useServerGraphData({
     view_id,
     model,
     domain,
     context,
     manualIds,
   });
+
+  useEffect(() => {
+    setGraphIsLoading?.(loading);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
 
   useImperativeHandle(ref, () => ({
     refresh: () => {
@@ -80,44 +74,46 @@ const GraphComp = (props: GraphProps, ref: any) => {
     return <Alert className="mt-10" message={error} type="error" banner />;
   }
 
-  switch (type) {
+  if (!graphData) {
+    return null;
+  }
+
+  switch (graphData.type) {
     case "indicatorField":
     case "indicator": {
-      const indicator = graphData as GraphResponseIndicator;
+      const { value, total, percent, icon, color, suffix } =
+        graphData as GraphResponseIndicator;
 
       return (
-        <GraphIndicator
-          showPercent={indicator.showPercent}
-          totalDomain={indicator.totalDomain!}
-          colorCondition={indicator.color}
-          model={model}
-          context={context}
-          domain={domain}
-          icon={indicator.icon!}
-          suffix={indicator.suffix!}
-          manualIds={manualIds}
-          {...indicatorFieldopts}
+        <GraphIndicatorComp
+          value={value}
+          totalValue={total}
+          percent={percent}
+          color={color}
+          icon={icon}
+          suffix={suffix}
+          showPercent={isNumber(percent)}
         />
       );
     }
     case "line":
     case "bar":
     case "pie": {
+      const chart = graphData as GraphResponseChart;
       return (
-        <GraphChartServer
-          type={graphOoui.type}
-          view_id={view_id}
-          model={model}
-          context={context}
-          domain={domain}
-          manualIds={manualIds}
+        <GraphChartComp
+          type={chart.type}
+          data={chart.data}
+          isGroup={chart.isGroup}
+          isStack={chart.isStack}
+          numItems={chart.num_items}
         />
       );
     }
     default: {
-      return <>{`Graph ${type} not implemented`}</>;
+      return <>{`Graph ${graphData.type} not implemented`}</>;
     }
   }
 };
 
-export const Graph = forwardRef(GraphComp);
+export const GraphServer = forwardRef(GraphComp);

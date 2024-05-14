@@ -37,7 +37,7 @@ const stringIsValidNumeric = (value: string) => {
   return regex.test(value);
 };
 
-const isNumber = (value: any) => {
+export const isNumber = (value: any) => {
   return typeof value === "number" && !isNaN(value);
 };
 

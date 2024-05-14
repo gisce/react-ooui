@@ -14,7 +14,7 @@ import { Graph } from "../Graph/Graph";
 import { DashboardGrid, DashboardGridItem } from "../DashboardGrid";
 import ConnectionProvider from "@/ConnectionProvider";
 import { DashboardProps, FormView } from "@/types";
-import { One2manyItem } from "@/index";
+import { ErpFeatureKeys, One2manyItem } from "@/index";
 import { readObjectValues } from "@/helpers/one2manyHelper";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Alert } from "antd";
@@ -26,6 +26,8 @@ import { ShortcutApi } from "@/ui/FavouriteButton";
 import DashboardTree from "./DashboardTree";
 import { DashboardForm } from "./DashboardForm";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import { GraphServer } from "../Graph/GraphServer";
+import { useFeatureIsEnabled } from "@/context/ConfigContext";
 
 const itemsField = "line_ids";
 
@@ -47,9 +49,13 @@ function Dashboard(props: DashboardProps, ref: any) {
     ConnectionProvider.getHandler().readObjects,
   );
   const [update] = useNetworkRequest(ConnectionProvider.getHandler().update);
+  const readForViewEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_READFORVIEW,
+  );
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model, id, context]);
 
   useImperativeHandle(ref, () => ({
@@ -267,8 +273,12 @@ function Dashboard(props: DashboardProps, ref: any) {
         let childContent = null;
 
         if (initialView?.type === "graph") {
+          const mustUseServerGraphs =
+            values.server_action === true && readForViewEnabled;
+          const GraphComponent = mustUseServerGraphs ? GraphServer : Graph;
+
           childContent = (
-            <Graph
+            <GraphComponent
               view_id={
                 views.filter(
                   (view: [number, string]) => view[1] === "graph",
