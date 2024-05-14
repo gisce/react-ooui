@@ -2,6 +2,7 @@ export enum ErpFeatureKeys {
   FEATURE_VIEW_JSON_ATTRS = "view_json_attrs",
   FEATURE_ADVANCED_EXPORT = "export_data2",
   FEATURE_OMNISEARCH = "omnisearch",
+  FEATURE_READFORVIEW = "read_for_view",
   // ... add more features here
 }
 
