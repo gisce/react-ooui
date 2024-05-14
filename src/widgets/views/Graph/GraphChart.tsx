@@ -1,11 +1,13 @@
 import { Line, Column, Pie } from "@ant-design/plots";
 import GraphDefaults from "./GraphDefaults";
 import { useGraphData } from "./useGraphData";
-import { Alert, Spin } from "antd";
+import { Alert, Spin, Typography } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { ResizeAwareComp } from "../DashboardGrid/ResizeAwareComp";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+
+const { Text } = Typography;
 
 const types = {
   line: Line,
@@ -53,6 +55,18 @@ export const GraphChart = (props: GraphChartProps) => {
     fetchData();
   }, [xml, model, limit, context, domain]);
 
+  const { data, isGroup, isStack } = values;
+
+  const total = useMemo(() => {
+    return type === "pie"
+      ? data.reduce(
+          (acc: number, obj: any) =>
+            obj.operator === "+" ? acc + obj.value : 0,
+          0,
+        )
+      : 0;
+  }, [data, type]);
+
   if (loading) {
     return <Spin />;
   }
@@ -64,8 +78,6 @@ export const GraphChart = (props: GraphChartProps) => {
   if (error) {
     return <Alert message={error} type="error" banner />;
   }
-
-  const { data, isGroup, isStack } = values;
 
   const Chart = (types as any)[type!];
 
@@ -83,14 +95,28 @@ export const GraphChart = (props: GraphChartProps) => {
         gap: "10px",
       }}
     >
-      <p style={{ textAlign: "right" }}>
-        {`${t("totalRegisters")} ${evaluatedEntries?.length?.toLocaleString(
-          "es-ES",
-          {
-            useGrouping: true,
-          },
-        )}`}
-      </p>
+      <div style={{ textAlign: "right" }}>
+        <Text type="secondary">
+          {`${t("totalRegisters")} ${evaluatedEntries?.length?.toLocaleString(
+            "es-ES",
+            {
+              useGrouping: true,
+            },
+          )}`}
+        </Text>
+      </div>
+      {total > 0 && (
+        <div style={{ textAlign: "right" }}>
+          <Text type="secondary">
+            {t("total")}:{" "}
+            {data
+              .reduce((acc: number, obj: any) => acc + obj.value, 0)
+              .toLocaleString("es-ES", {
+                useGrouping: true,
+              })}
+          </Text>
+        </div>
+      )}
       <ResizeAwareComp>
         {({ width, height }) => {
           if (`${width}-${height}` !== sizeKey) {

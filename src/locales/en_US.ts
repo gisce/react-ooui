@@ -82,6 +82,7 @@ export default {
   openAttachmentLink: "Open attachment link",
   uninformed: "Uninformed",
   totalRegisters: "Total registers:",
+  total: "Total",
   export: "Export",
   selectAtLeastOneField: "Select at least one field for the export",
   printScreen: "Print screen",
