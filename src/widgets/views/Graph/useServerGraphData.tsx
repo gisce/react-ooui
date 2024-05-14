@@ -60,7 +60,7 @@ export const useServerGraphData = (opts: GraphDataQueryOpts) => {
       });
       setGraphData(graphData);
     } catch (e) {
-      setError("Error reading graph data from server: " + e.message);
+      setError("Error reading graph data from server: " + e);
     }
     setLoading(false);
   }, [context, domain, manualIds, model, readForView, view_id]);
