@@ -67,15 +67,7 @@ const DefaultGraphOptions = {
     autoFit: true,
     appendPadding: 10,
     radius: 0.9,
-    label: {
-      type: "inner",
-      offset: "-30%",
-      content: ({ percent }: any) => `${(percent * 100).toFixed(0)}%`,
-      style: {
-        fontSize: 14,
-        textAlign: "center",
-      },
-    },
+    label: null,
     legend: {
       maxWidthRatio: 0.5,
       maxItemWidth: 1000,
