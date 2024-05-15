@@ -134,6 +134,7 @@ export const GraphChartComp = ({
                   isStack,
                   width,
                   height,
+                  pieItemValueFormatter,
                 })}
               />
             </div>
