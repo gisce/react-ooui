@@ -1,9 +1,8 @@
 import { Line, Column, Pie } from "@ant-design/plots";
 import GraphDefaults from "./GraphDefaults";
-import { Spin, Typography } from "antd";
+import { Typography } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
-import { ResizeAwareComp } from "../DashboardGrid/ResizeAwareComp";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { GraphType } from "@gisce/ooui";
 
 const { Text } = Typography;
@@ -29,18 +28,7 @@ export const GraphChartComp = ({
   isStack,
   numItems,
 }: GraphCompProps) => {
-  const [mount, setMount] = useState(true);
-  const [sizeKey, setSizeKey] = useState("");
   const { t } = useLocale();
-
-  const remountComponent = (width: number, height: number) => {
-    setMount(false); // Unmount the component
-
-    setTimeout(() => {
-      setSizeKey(`${width}-${height}`); // Update key to force remount
-      setMount(true); // Remount the component
-    }, 500); // A short delay ensures the component fully unmounts
-  };
 
   const pieTotal = useMemo(() => {
     if (type !== "pie") {
@@ -114,33 +102,17 @@ export const GraphChartComp = ({
           </Text>
         </div>
       )}
-      <ResizeAwareComp>
-        {({ width, height }) => {
-          if (`${width}-${height}` !== sizeKey) {
-            remountComponent(width, height);
-            return <Spin />;
-          }
-          if (!mount) {
-            return <Spin />;
-          }
-          return (
-            <div style={{ width, height, overflow: "hidden" }}>
-              <Chart
-                key={sizeKey}
-                {...getGraphProps({
-                  type,
-                  data,
-                  isGroup,
-                  isStack,
-                  width,
-                  height,
-                  pieItemValueFormatter,
-                })}
-              />
-            </div>
-          );
-        }}
-      </ResizeAwareComp>
+      <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
+        <Chart
+          {...getGraphProps({
+            type,
+            data,
+            isGroup,
+            isStack,
+            pieItemValueFormatter,
+          })}
+        />
+      </div>
     </div>
   );
 };
@@ -156,8 +128,7 @@ type GetGraphPropsType = {
 };
 
 function getGraphProps(props: GetGraphPropsType) {
-  const { type, data, isGroup, isStack, width, height, pieItemValueFormatter } =
-    props;
+  const { type, data, isGroup, isStack, pieItemValueFormatter } = props;
   let graphProps = { ...(GraphDefaults as any)[type] };
 
   if (!graphProps) {
@@ -165,8 +136,6 @@ function getGraphProps(props: GetGraphPropsType) {
   }
 
   graphProps.data = data;
-  graphProps.height = height || 400;
-  graphProps.width = width || 800;
 
   if (type === "pie") {
     graphProps.colorField = "x";
