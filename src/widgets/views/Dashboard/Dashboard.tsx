@@ -279,7 +279,7 @@ function Dashboard(props: DashboardProps, ref: any) {
 
           childContent = (
             <GraphComponent
-              key={item.id}
+              key={id}
               view_id={
                 views.filter(
                   (view: [number, string]) => view[1] === "graph",
@@ -293,12 +293,12 @@ function Dashboard(props: DashboardProps, ref: any) {
           );
         } else if (initialView?.type === "form") {
           childContent = (
-            <DashboardForm key={item.id} model={model} actionDomain={domain} />
+            <DashboardForm key={id} model={model} actionDomain={domain} />
           );
         } else if (initialView?.type === "tree") {
           childContent = (
             <DashboardTree
-              key={item.id}
+              key={id}
               model={model}
               domain={domain}
               view_id={
@@ -341,7 +341,7 @@ function Dashboard(props: DashboardProps, ref: any) {
               : initialView;
           childContent = (
             <ActionView
-              key={item.id}
+              key={id}
               action_id={actionId}
               action_type={actionType}
               tabKey={key}
@@ -385,7 +385,8 @@ function Dashboard(props: DashboardProps, ref: any) {
 
         return (
           <DashboardGridItem
-            key={`griditem-${item.id}`}
+            key={`griditem-${id}`}
+            id={id}
             title={title}
             parms={parmsParsed}
             action={action!}
