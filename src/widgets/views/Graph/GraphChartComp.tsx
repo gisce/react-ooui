@@ -56,6 +56,32 @@ export const GraphChartComp = ({
     return data.reduce((acc: number, obj: any) => acc + obj.value, 0);
   }, [data, type]);
 
+  const piePercents = useMemo(() => {
+    if (type !== "pie") {
+      return undefined;
+    }
+    const total = data.reduce((acc, curr) => acc + curr.value, 0);
+    const percents = data.map((entry) => ({
+      x: entry.x,
+      percent: (entry.value / total) * 100,
+    }));
+    return percents;
+  }, [data, type]);
+
+  const pieItemValueFormatter = useMemo(() => {
+    if (piePercents === undefined) {
+      return undefined;
+    }
+    return {
+      formatter: (_: unknown, item: any) => {
+        const matchedDataEntry = piePercents.find((d) => d.x === item.id);
+        const value = matchedDataEntry?.percent || 0;
+        const percent = `${value.toFixed(0)}%`;
+        return `${percent}`;
+      },
+    };
+  }, [piePercents]);
+
   const Chart = (types as any)[type!];
 
   if (!Chart) {
@@ -125,10 +151,12 @@ type GetGraphPropsType = {
   data: any[];
   width?: number;
   height?: number;
+  pieItemValueFormatter?: any;
 };
 
 function getGraphProps(props: GetGraphPropsType) {
-  const { type, data, isGroup, isStack, width, height } = props;
+  const { type, data, isGroup, isStack, width, height, pieItemValueFormatter } =
+    props;
   let graphProps = { ...(GraphDefaults as any)[type] };
 
   if (!graphProps) {
@@ -140,23 +168,9 @@ function getGraphProps(props: GetGraphPropsType) {
   graphProps.width = width || 800;
 
   if (type === "pie") {
-    // for each entry of data array, we need to calculate which percentage of the total it represents
-    // and add it to the data array as a new field
-    const total = data.reduce((acc, curr) => acc + curr.value, 0);
-    data.forEach((entry) => {
-      entry.percent = (entry.value / total) * 100;
-    });
-
     graphProps.colorField = "x";
     graphProps.angleField = "value";
-    graphProps.legend.itemValue = {
-      formatter: (_: unknown, item: any) => {
-        const matchedDataEntry = data.find((d) => d.x === item.id);
-        const value = matchedDataEntry?.percent || 0;
-        const percent = `${value.toFixed(0)}%`;
-        return `${percent}`;
-      },
-    };
+    graphProps.legend.itemValue = pieItemValueFormatter;
   } else {
     graphProps.xField = "x";
     graphProps.yField = "value";
