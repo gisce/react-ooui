@@ -11,7 +11,6 @@ import {
   GraphIndicator as GraphIndicatorOoui,
   GraphIndicatorField,
 } from "@gisce/ooui";
-import { LoadingOutlined } from "@ant-design/icons";
 import ConnectionProvider from "@/ConnectionProvider";
 import { GraphIndicator } from "./GraphIndicator";
 import { GraphChart } from "./GraphChart";
@@ -21,6 +20,7 @@ import {
   ActionViewContextType,
 } from "@/context/ActionViewContext";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import { CenteredSpinner } from "@/ui/CenteredSpinner";
 
 export type GraphProps = {
   view_id: number;
@@ -51,6 +51,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view_id]);
 
   async function fetchData() {
@@ -78,25 +79,8 @@ const GraphComp = (props: GraphProps, ref: any) => {
     }
   }
 
-  if (loading) {
-    return (
-      <div
-        style={{
-          width: "100%",
-          display: "flex",
-          height: "20%",
-          justifyContent: "center",
-          alignContent: "center",
-          padding: "1rem",
-        }}
-      >
-        <LoadingOutlined style={{ height: "12px" }} />
-      </div>
-    );
-  }
-
-  if (!graphOoui) {
-    return null;
+  if (loading || !graphOoui) {
+    return <CenteredSpinner />;
   }
 
   switch (graphOoui.type) {

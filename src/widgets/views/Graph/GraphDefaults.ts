@@ -37,7 +37,7 @@ const stringIsValidNumeric = (value: string) => {
   return regex.test(value);
 };
 
-const isNumber = (value: any) => {
+export const isNumber = (value: any) => {
   return typeof value === "number" && !isNaN(value);
 };
 
@@ -159,5 +159,32 @@ function getDateType(dateString: string): string | null {
 
   return null;
 }
+
+export const PieLabelOptions = {
+  inner: {
+    label: {
+      type: "inner",
+      offset: "-30%",
+      content: ({ percent }: { percent: number }) => {
+        if (percent < 0.07) {
+          return "";
+        }
+        return `${(percent * 100).toFixed(0)}%`;
+      },
+      style: {
+        fontSize: 12,
+        textAlign: "center",
+      },
+    },
+  },
+  spider: {
+    label: {
+      type: "spider",
+      labelHeight: 28,
+      content: ({ percent }: { percent: number }) =>
+        `${(percent * 100).toFixed(0)}%`,
+    },
+  },
+};
 
 export default DefaultGraphOptions;

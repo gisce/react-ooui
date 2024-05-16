@@ -87,6 +87,7 @@ export default {
   openAttachmentLink: "Abrir enlace del adjunto",
   uninformed: "Sin informar",
   totalRegisters: "Registros totales:",
+  total: "Total:",
   export: "Exportar",
   selectAtLeastOneField: "Selecciona al menos un campo para la exportación",
   printScreen: "Imprimir pantalla",
