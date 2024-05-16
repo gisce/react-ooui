@@ -1,15 +1,9 @@
-import { Line, Column, Pie } from "@ant-design/plots";
-import GraphDefaults from "./GraphDefaults";
 import { useGraphData } from "./useGraphData";
-import { Alert, Spin } from "antd";
+import { Alert } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
 import useDeepCompareEffect from "use-deep-compare-effect";
-
-const types = {
-  line: Line,
-  bar: Column,
-  pie: Pie,
-};
+import { GraphChartComp } from "./GraphChartComp";
+import { CenteredSpinner } from "@/ui/CenteredSpinner";
 
 export type GraphChartProps = {
   model: string;
@@ -39,80 +33,23 @@ export const GraphChart = (props: GraphChartProps) => {
     fetchData();
   }, [xml, model, limit, context, domain]);
 
-  if (loading) {
-    return <Spin />;
+  if (loading || !values) {
+    return <CenteredSpinner />;
   }
 
-  if (!values) {
-    return <Alert message="No data to display" type="info" />;
-  }
+  const { data, isGroup, isStack } = values;
 
   if (error) {
     return <Alert message={error} type="error" banner />;
   }
 
-  const { data, isGroup, isStack } = values;
-
-  const Chart = (types as any)[type!];
-
-  if (!Chart) {
-    return <>{`Unknown graph type: ${type}`}</>;
-  }
-
   return (
-    <div style={{ padding: "1rem" }}>
-      <p style={{ textAlign: "right" }}>
-        {`${t("totalRegisters")} ${evaluatedEntries?.length?.toLocaleString(
-          "es-ES",
-          {
-            useGrouping: true,
-          },
-        )}`}
-      </p>
-      <Chart
-        {...getGraphProps({
-          type,
-          data,
-          isGroup,
-          isStack,
-        })}
-      />
-    </div>
+    <GraphChartComp
+      type={type}
+      data={data}
+      isGroup={isGroup}
+      isStack={isStack}
+      numItems={evaluatedEntries!.length}
+    />
   );
 };
-
-type GetGraphPropsType = {
-  type: string;
-  isStack: boolean;
-  isGroup: boolean;
-  data: any[];
-};
-
-function getGraphProps(props: GetGraphPropsType) {
-  const { type, data, isGroup, isStack } = props;
-  let graphProps = { ...(GraphDefaults as any)[type] };
-
-  if (!graphProps) {
-    graphProps = { ...(GraphDefaults as any)["default"] };
-  }
-
-  graphProps.data = data;
-
-  if (type === "pie") {
-    graphProps.colorField = "x";
-    graphProps.angleField = "value";
-  } else {
-    graphProps.xField = "x";
-    graphProps.yField = "value";
-    graphProps.seriesField = "type";
-
-    graphProps.isGroup = isGroup;
-
-    if (isStack) {
-      graphProps.isStack = true;
-      graphProps.groupField = "stacked";
-    }
-  }
-
-  return graphProps;
-}
