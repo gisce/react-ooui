@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { LoadingOutlined } from "@ant-design/icons";
 import ConnectionProvider from "@/ConnectionProvider";
 import { Alert } from "antd";
 import { Operator, graphProcessor } from "@gisce/ooui";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { GraphIndicatorComp } from "./GraphIndicatorComp";
+import { CenteredSpinner } from "@/ui/CenteredSpinner";
 
 const { getValueForOperator } = graphProcessor;
 
@@ -197,11 +197,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
   }
 
   if (loading) {
-    return (
-      <div style={{ padding: "1rem" }}>
-        <LoadingOutlined style={{ height: "12px" }} />
-      </div>
-    );
+    return <CenteredSpinner />;
   }
 
   if (error) {

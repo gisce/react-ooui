@@ -1,5 +1,4 @@
 import { useEffect, useContext, forwardRef, useImperativeHandle } from "react";
-import { LoadingOutlined } from "@ant-design/icons";
 import {
   ActionViewContext,
   ActionViewContextType,
@@ -13,6 +12,7 @@ import {
 import { GraphIndicatorComp } from "./GraphIndicatorComp";
 import { isNumber } from "./GraphDefaults";
 import { GraphChartComp } from "./GraphChartComp";
+import { CenteredSpinner } from "@/ui/CenteredSpinner";
 
 export type GraphProps = {
   view_id: number;
@@ -53,29 +53,12 @@ const GraphComp = (props: GraphProps, ref: any) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view_id]);
 
-  if (loading) {
-    return (
-      <div
-        style={{
-          width: "100%",
-          display: "flex",
-          height: "20%",
-          justifyContent: "center",
-          alignContent: "center",
-          padding: "1rem",
-        }}
-      >
-        <LoadingOutlined style={{ height: "12px" }} />
-      </div>
-    );
+  if (loading || !graphData) {
+    return <CenteredSpinner />;
   }
 
   if (error) {
     return <Alert className="mt-10" message={error} type="error" banner />;
-  }
-
-  if (!graphData) {
-    return null;
   }
 
   switch (graphData.type) {

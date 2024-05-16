@@ -1,8 +1,9 @@
 import { useGraphData } from "./useGraphData";
-import { Alert, Spin } from "antd";
+import { Alert } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { GraphChartComp } from "./GraphChartComp";
+import { CenteredSpinner } from "@/ui/CenteredSpinner";
 
 export type GraphChartProps = {
   model: string;
@@ -33,7 +34,7 @@ export const GraphChart = (props: GraphChartProps) => {
   }, [xml, model, limit, context, domain]);
 
   if (loading || !values) {
-    return <Spin />;
+    return <CenteredSpinner />;
   }
 
   const { data, isGroup, isStack } = values;
