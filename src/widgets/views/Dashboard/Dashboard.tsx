@@ -145,20 +145,23 @@ function Dashboard(props: DashboardProps, ref: any) {
   }
 
   async function getItemsWithActions(items: One2manyItem[]) {
-    const itemsWithActions = [];
+    const fetchPromises: Array<Promise<any>> = [];
 
     for (const dashboardItem of items) {
       const { values } = dashboardItem;
       if (values.action_id && values.action_id.length > 0) {
         const actionId = parseInt(values.action_id[0], 10);
-        const actionData = await fetchAction({
+        const promise = fetchAction({
           actionId,
           rootContext: context,
+        }).then((actionData) => {
+          return { ...dashboardItem, actionData };
         });
-        itemsWithActions.push({ ...dashboardItem, actionData });
+        fetchPromises.push(promise);
       }
     }
 
+    const itemsWithActions = await Promise.all(fetchPromises);
     return itemsWithActions;
   }
 
