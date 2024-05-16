@@ -1,5 +1,5 @@
 import { Line, Column, Pie } from "@ant-design/plots";
-import GraphDefaults from "./GraphDefaults";
+import GraphDefaults, { PieLabelOptions } from "./GraphDefaults";
 import { Typography } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
 import { useMemo } from "react";
@@ -140,6 +140,9 @@ function getGraphProps(props: GetGraphPropsType) {
   if (type === "pie") {
     graphProps.colorField = "x";
     graphProps.angleField = "value";
+
+    graphProps = { ...graphProps, ...PieLabelOptions.inner };
+
     graphProps.legend.itemValue = pieItemValueFormatter;
   } else {
     graphProps.xField = "x";
