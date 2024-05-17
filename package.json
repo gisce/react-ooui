@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "2.6.0-rc.1",
+  "version": "2.6.0",
   "engines": {
     "node": "20.5.0"
   },
@@ -44,7 +44,6 @@
     "buffer": "^6.0.3",
     "file-type-buffer-browser": "git+ssh://git@github.com/mguellsegarra/file-type-buffer-browser.git",
     "interweave": "^13.0.0",
-    "lodash.debounce": "^4.0.8",
     "md5": "^2.3.0",
     "nanoid": "^5.0.4",
     "react": "18.2.0",

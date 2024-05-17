@@ -187,4 +187,25 @@ export const PieLabelOptions = {
   },
 };
 
+export const calculateAdjustedPiePercentages = (items: any[]) => {
+  const total = items.reduce((acc, item) => acc + item.value, 0);
+  const rawPercentages = items.map((item) => (item.value / total) * 100);
+  const roundedPercentages = rawPercentages.map((p) => Math.round(p));
+  const sumOfRounded = roundedPercentages.reduce((acc, num) => acc + num, 0);
+  const error = 100 - sumOfRounded;
+
+  for (let i = 0; i < Math.abs(error); i++) {
+    if (error > 0) {
+      roundedPercentages[i % roundedPercentages.length]++;
+    } else {
+      roundedPercentages[i % roundedPercentages.length]--;
+    }
+  }
+
+  return items.map((item, index) => ({
+    x: item.x,
+    percent: roundedPercentages[index],
+  }));
+};
+
 export default DefaultGraphOptions;
