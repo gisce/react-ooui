@@ -1,5 +1,8 @@
 import { Line, Column, Pie } from "@ant-design/plots";
-import GraphDefaults, { PieLabelOptions } from "./GraphDefaults";
+import GraphDefaults, {
+  PieLabelOptions,
+  calculateAdjustedPiePercentages,
+} from "./GraphDefaults";
 import { Typography } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
 import { useMemo } from "react";
@@ -48,12 +51,7 @@ export const GraphChartComp = ({
     if (type !== "pie") {
       return undefined;
     }
-    const total = data.reduce((acc, curr) => acc + curr.value, 0);
-    const percents = data.map((entry) => ({
-      x: entry.x,
-      percent: (entry.value / total) * 100,
-    }));
-    return percents;
+    return calculateAdjustedPiePercentages(data);
   }, [data, type]);
 
   const pieItemValueFormatter = useMemo(() => {
