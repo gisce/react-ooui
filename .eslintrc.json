@@ -15,8 +15,9 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
-  "plugins": ["react"],
+  "plugins": ["react", "react-compiler"],
   "rules": {
+    "react-compiler/react-compiler": "warn",
     "@typescript-eslint/semi": "off",
     "@typescript-eslint/member-delimiter-style": "off",
     "@typescript-eslint/consistent-type-definitions": ["off"],
