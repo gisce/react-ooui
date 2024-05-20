@@ -165,12 +165,6 @@ export const PieLabelOptions = {
     label: {
       type: "inner",
       offset: "-30%",
-      content: ({ percent }: { percent: number }) => {
-        if (percent < 0.07) {
-          return "";
-        }
-        return `${(percent * 100).toFixed(0)}%`;
-      },
       style: {
         fontSize: 12,
         textAlign: "center",
@@ -181,8 +175,6 @@ export const PieLabelOptions = {
     label: {
       type: "spider",
       labelHeight: 28,
-      content: ({ percent }: { percent: number }) =>
-        `${(percent * 100).toFixed(0)}%`,
     },
   },
 };
