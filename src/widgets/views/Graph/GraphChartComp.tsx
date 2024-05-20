@@ -5,7 +5,7 @@ import GraphDefaults, {
 } from "./GraphDefaults";
 import { Typography } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
-import { useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { GraphType } from "@gisce/ooui";
 
 const { Text } = Typography;
@@ -54,19 +54,40 @@ export const GraphChartComp = ({
     return calculateAdjustedPiePercentages(data);
   }, [data, type]);
 
+  const getPercentValueForX = useCallback(
+    (x: string) => {
+      if (!piePercents) {
+        return;
+      }
+      const matchedDataEntry = piePercents.find((d) => d.x === x);
+      const value = matchedDataEntry?.percent || 0;
+      const percent = `${value.toFixed(0)}%`;
+      return `${percent}`;
+    },
+    [piePercents],
+  );
+
   const pieItemValueFormatter = useMemo(() => {
     if (piePercents === undefined) {
       return undefined;
     }
     return {
       formatter: (_: unknown, item: any) => {
-        const matchedDataEntry = piePercents.find((d) => d.x === item.id);
-        const value = matchedDataEntry?.percent || 0;
-        const percent = `${value.toFixed(0)}%`;
-        return `${percent}`;
+        return getPercentValueForX(item.id);
       },
     };
   }, [piePercents]);
+
+  const pieLabelFormatter = useCallback(
+    ({ percent, x }: { percent: number; x: string }) => {
+      // Hide labels for percents lower than 0.07
+      if (percent < 0.07) {
+        return "";
+      }
+      return getPercentValueForX(x);
+    },
+    [piePercents],
+  );
 
   const Chart = (types as any)[type!];
 
@@ -108,6 +129,7 @@ export const GraphChartComp = ({
             isGroup,
             isStack,
             pieItemValueFormatter,
+            pieLabelFormatter,
           })}
         />
       </div>
@@ -123,10 +145,18 @@ type GetGraphPropsType = {
   width?: number;
   height?: number;
   pieItemValueFormatter?: any;
+  pieLabelFormatter?: any;
 };
 
 function getGraphProps(props: GetGraphPropsType) {
-  const { type, data, isGroup, isStack, pieItemValueFormatter } = props;
+  const {
+    type,
+    data,
+    isGroup,
+    isStack,
+    pieItemValueFormatter,
+    pieLabelFormatter,
+  } = props;
   let graphProps = { ...(GraphDefaults as any)[type] };
 
   if (!graphProps) {
@@ -142,6 +172,7 @@ function getGraphProps(props: GetGraphPropsType) {
     graphProps = { ...graphProps, ...PieLabelOptions.inner };
 
     graphProps.legend.itemValue = pieItemValueFormatter;
+    graphProps.label.content = pieLabelFormatter;
   } else {
     graphProps.xField = "x";
     graphProps.yField = "value";
