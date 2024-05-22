@@ -100,7 +100,7 @@ export const TagsInput = (props: TagsInputProps) => {
   const onChangeSelected = (ids: number[]) => {
     const newItems: One2manyItem[] = items.map((item) => {
       if (ids.includes(item.id as number)) {
-        if (item.operation == "pendingRemove") {
+        if (item.operation === "pendingRemove") {
           return {
             ...item,
             operation: "pendingLink",
@@ -115,7 +115,7 @@ export const TagsInput = (props: TagsInputProps) => {
     const currentIds = newItems.map((item) => item.id);
     ids
       .filter((id) => !currentIds.includes(id))
-      .map((id) => {
+      .forEach((id) => {
         newItems.push({ id, operation: "pendingLink" });
       });
     triggerChange(newItems);
@@ -157,6 +157,9 @@ export const TagsInput = (props: TagsInputProps) => {
           options={options}
           onChange={onChangeSelected}
           loading={isLoadingOptions}
+          filterOption={(value, element) =>
+            element.label.toLowerCase().includes(value.toString())
+          }
         ></Select>
       </div>
     </>
