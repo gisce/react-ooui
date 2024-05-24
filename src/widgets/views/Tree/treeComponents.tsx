@@ -212,8 +212,7 @@ export const TagsComponent = ({
       });
       setValues(
         optionsRead.map((i: any) => {
-          const { id, name } = i;
-          return { id, name };
+          return { id: i.id, name: i[field] };
         }),
       );
     } catch (error) {
