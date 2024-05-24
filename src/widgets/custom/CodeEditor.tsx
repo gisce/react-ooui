@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import Editor from "@monaco-editor/react";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { CodeEditor as CodeEditorOoui } from "@gisce/ooui";
@@ -12,7 +12,7 @@ type CodeEditorProps = WidgetProps & {
 
 export const CodeEditor = (props: CodeEditorProps) => {
   const { ooui } = props;
-  const { lang, height } = ooui;
+  const { lang, height, readOnly } = ooui;
   const formContext = useContext(FormContext) as FormContextType;
   const { elementHasLostFocus } = formContext || {};
 
@@ -23,6 +23,9 @@ export const CodeEditor = (props: CodeEditorProps) => {
   return (
     <Field {...props}>
       <Editor
+        options={{
+          readOnly,
+        }}
         defaultLanguage={lang || ""}
         height={height || 300}
         onMount={onMount}
