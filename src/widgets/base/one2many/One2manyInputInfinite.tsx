@@ -20,6 +20,7 @@ import { FormModal, SearchModal } from "@/index";
 import { useOne2manyFormModal } from "./useOne2manyFormModal";
 import { useOne2manySearchModal } from "./useOne2manySearchModal";
 import { One2manyTree } from "./One2manyTree";
+import "@gisce/react-formiga-table/style.css";
 
 const SUPPORTED_VIEWS = ["form", "tree", "graph"];
 
