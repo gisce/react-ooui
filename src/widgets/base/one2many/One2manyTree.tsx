@@ -2,7 +2,7 @@ import { InfiniteTable, InfiniteTableRef } from "@gisce/react-formiga-table";
 import { One2manyItem } from "./One2manyInput";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { RefObject, useCallback, useRef } from "react";
-import { getTableColumns } from "@/helpers/treeHelper";
+import { getTableColumns, getTableItems } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "@/widgets/views/Tree/treeComponents";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { useOne2manyColumnStorage } from "./useOne2manyColumnStorage";
@@ -104,9 +104,11 @@ export const One2manyTree = ({
 
       const { results, colors } = await onFetchRecords(realIdsToFetch);
 
+      const preparedResults = getTableItems(ooui, results);
+
       // now we have to map the results to the original ids
       const resultsMapped = idsToFetchSliced.map((id) => {
-        const result = results.find((result) => result.id === id);
+        const result = preparedResults.find((result) => result.id === id);
         if (result) {
           return result;
         }
@@ -116,7 +118,7 @@ export const One2manyTree = ({
       colorsForResults.current = { ...colorsForResults.current, ...colors };
       return resultsMapped;
     },
-    [onFetchRecords],
+    [onFetchRecords, ooui],
   );
 
   const onRowStyle = useCallback((record: any) => {
