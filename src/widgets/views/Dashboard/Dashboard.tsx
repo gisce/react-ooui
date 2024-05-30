@@ -14,7 +14,7 @@ import { Graph } from "../Graph/Graph";
 import { DashboardGrid, DashboardGridItem } from "../DashboardGrid";
 import ConnectionProvider from "@/ConnectionProvider";
 import { DashboardProps, FormView } from "@/types";
-import { One2manyItem } from "@/index";
+import { ErpFeatureKeys, One2manyItem } from "@/index";
 import { readObjectValues } from "@/helpers/one2manyHelper";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Alert } from "antd";
@@ -26,6 +26,8 @@ import { ShortcutApi } from "@/ui/FavouriteButton";
 import DashboardTree from "./DashboardTree";
 import { DashboardForm } from "./DashboardForm";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import { GraphServer } from "../Graph/GraphServer";
+import { useFeatureIsEnabled } from "@/context/ConfigContext";
 
 const itemsField = "line_ids";
 
@@ -47,9 +49,13 @@ function Dashboard(props: DashboardProps, ref: any) {
     ConnectionProvider.getHandler().readObjects,
   );
   const [update] = useNetworkRequest(ConnectionProvider.getHandler().update);
+  const readForViewEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_READFORVIEW,
+  );
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model, id, context]);
 
   useImperativeHandle(ref, () => ({
@@ -139,20 +145,23 @@ function Dashboard(props: DashboardProps, ref: any) {
   }
 
   async function getItemsWithActions(items: One2manyItem[]) {
-    const itemsWithActions = [];
+    const fetchPromises: Array<Promise<any>> = [];
 
     for (const dashboardItem of items) {
       const { values } = dashboardItem;
       if (values.action_id && values.action_id.length > 0) {
         const actionId = parseInt(values.action_id[0], 10);
-        const actionData = await fetchAction({
+        const promise = fetchAction({
           actionId,
           rootContext: context,
+        }).then((actionData) => {
+          return { ...dashboardItem, actionData };
         });
-        itemsWithActions.push({ ...dashboardItem, actionData });
+        fetchPromises.push(promise);
       }
     }
 
+    const itemsWithActions = await Promise.all(fetchPromises);
     return itemsWithActions;
   }
 
@@ -267,8 +276,13 @@ function Dashboard(props: DashboardProps, ref: any) {
         let childContent = null;
 
         if (initialView?.type === "graph") {
+          const mustUseServerGraphs =
+            values.server_action === true && readForViewEnabled;
+          const GraphComponent = mustUseServerGraphs ? GraphServer : Graph;
+
           childContent = (
-            <Graph
+            <GraphComponent
+              key={id}
               view_id={
                 views.filter(
                   (view: [number, string]) => view[1] === "graph",
@@ -281,10 +295,13 @@ function Dashboard(props: DashboardProps, ref: any) {
             />
           );
         } else if (initialView?.type === "form") {
-          childContent = <DashboardForm model={model} actionDomain={domain} />;
+          childContent = (
+            <DashboardForm key={id} model={model} actionDomain={domain} />
+          );
         } else if (initialView?.type === "tree") {
           childContent = (
             <DashboardTree
+              key={id}
               model={model}
               domain={domain}
               view_id={
@@ -327,6 +344,7 @@ function Dashboard(props: DashboardProps, ref: any) {
               : initialView;
           childContent = (
             <ActionView
+              key={id}
               action_id={actionId}
               action_type={actionType}
               tabKey={key}
@@ -370,7 +388,7 @@ function Dashboard(props: DashboardProps, ref: any) {
 
         return (
           <DashboardGridItem
-            key={id}
+            key={`griditem-${id}`}
             id={id}
             title={title}
             parms={parmsParsed}

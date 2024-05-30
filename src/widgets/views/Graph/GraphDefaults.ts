@@ -37,7 +37,7 @@ const stringIsValidNumeric = (value: string) => {
   return regex.test(value);
 };
 
-const isNumber = (value: any) => {
+export const isNumber = (value: any) => {
   return typeof value === "number" && !isNaN(value);
 };
 
@@ -64,17 +64,10 @@ const DefaultGraphOptions = {
     },
   },
   pie: {
+    autoFit: true,
     appendPadding: 10,
     radius: 0.9,
-    label: {
-      type: "inner",
-      offset: "-30%",
-      content: ({ percent }: any) => `${(percent * 100).toFixed(0)}%`,
-      style: {
-        fontSize: 14,
-        textAlign: "center",
-      },
-    },
+    label: null,
     legend: {
       maxWidthRatio: 0.5,
       maxItemWidth: 1000,
@@ -166,5 +159,45 @@ function getDateType(dateString: string): string | null {
 
   return null;
 }
+
+export const PieLabelOptions = {
+  inner: {
+    label: {
+      type: "inner",
+      offset: "-30%",
+      style: {
+        fontSize: 12,
+        textAlign: "center",
+      },
+    },
+  },
+  spider: {
+    label: {
+      type: "spider",
+      labelHeight: 28,
+    },
+  },
+};
+
+export const calculateAdjustedPiePercentages = (items: any[]) => {
+  const total = items.reduce((acc, item) => acc + item.value, 0);
+  const rawPercentages = items.map((item) => (item.value / total) * 100);
+  const roundedPercentages = rawPercentages.map((p) => Math.round(p));
+  const sumOfRounded = roundedPercentages.reduce((acc, num) => acc + num, 0);
+  const error = 100 - sumOfRounded;
+
+  for (let i = 0; i < Math.abs(error); i++) {
+    if (error > 0) {
+      roundedPercentages[i % roundedPercentages.length]++;
+    } else {
+      roundedPercentages[i % roundedPercentages.length]--;
+    }
+  }
+
+  return items.map((item, index) => ({
+    x: item.x,
+    percent: roundedPercentages[index],
+  }));
+};
 
 export default DefaultGraphOptions;

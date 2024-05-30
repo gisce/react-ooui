@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "2.5.6",
+  "version": "2.6.3",
   "engines": {
     "node": "20.5.0"
   },
@@ -72,6 +72,7 @@
     "@storybook/react": "^7.6.5",
     "@storybook/react-vite": "^7.6.5",
     "@types/lodash": "^4.14.170",
+    "@types/lodash.debounce": "^4.0.9",
     "@types/md5": "^2.3.2",
     "@types/react": "18.2.18",
     "@types/react-dom": "18.2.7",
@@ -93,6 +94,7 @@
     "eslint-plugin-n": "15.6.0",
     "eslint-plugin-promise": "6.1.1",
     "eslint-plugin-react": "7.33.1",
+    "eslint-plugin-react-compiler": "^0.0.0-experimental-c8b3f72-20240517",
     "eslint-plugin-react-hooks": "4.6.0",
     "husky": "8.0.3",
     "lint-staged": "13.2.3",
