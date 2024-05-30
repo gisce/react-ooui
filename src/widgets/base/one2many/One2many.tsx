@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { One2many as One2manyOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { Spin, Alert } from "antd";
@@ -6,6 +6,7 @@ import { Views, ViewType } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import One2manyProvider from "@/context/One2manyContext";
 import { One2manyInput } from "@/widgets/base/one2many/One2manyInput";
+import { One2manyInput as One2manyInputInfinite } from "@/widgets/base/one2many/One2manyInputInfinite";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { FormContext, FormContextType } from "@/context/FormContext";
 
@@ -85,6 +86,8 @@ export const One2many = (props: Props) => {
     if (value.items.length === 0) throw new Error();
   };
 
+  const Component = ooui.infinite ? One2manyInputInfinite : One2manyInput;
+
   return (
     <One2manyProvider initialView={initialView}>
       <Field
@@ -93,7 +96,7 @@ export const One2many = (props: Props) => {
         validator={validator}
         {...props}
       >
-        <One2manyInput ooui={ooui} views={views} />
+        <Component ooui={ooui} views={views} />
       </Field>
     </One2manyProvider>
   );
