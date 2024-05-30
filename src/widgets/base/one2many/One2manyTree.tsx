@@ -122,8 +122,8 @@ export const One2manyTree = ({
   );
 
   const onRowStyle = useCallback((record: any) => {
-    if (colorsForResults.current[record.id]) {
-      return { color: colorsForResults.current[record.id] };
+    if (colorsForResults.current[record.node?.data?.id]) {
+      return { color: colorsForResults.current[record.node?.data?.id] };
     }
     return undefined;
   }, []);
