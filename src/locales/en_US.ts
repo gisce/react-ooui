@@ -94,4 +94,6 @@ export default {
     "Hi ha {numberOfSelectedRows} registres seleccionats en aquesta pàgina.",
   selectAllRecords: "Seleccionar tots els {totalRecords} registres.",
   allRecordsSelected: "Hi ha {totalRecords} registres seleccionats.",
+  openInSameWindow: "Open in the current tab",
+  openInNewTab: "Open in a new tab",
 };

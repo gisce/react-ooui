@@ -320,7 +320,7 @@ function ActionView(props: Props, ref: any) {
     setGtResourceModalVisible(true);
   }
 
-  async function goToResourceId(ids: number[]) {
+  async function goToResourceId(ids: number[], openInSameTab?: boolean) {
     setSearchingForResourceId(true);
 
     let mode: ViewType;
@@ -361,19 +361,28 @@ function ActionView(props: Props, ref: any) {
 
     setSearchingForResourceId(false);
     setGtResourceModalVisible(false);
-    const viewForm = views.find((v) => v[1] === mode);
-    openAction({
-      domain,
-      context,
-      model,
-      views,
-      title,
-      target: "current",
-      initialView: { id: viewForm?.[0]!, type: mode },
-      action_id,
-      action_type,
-      res_id: ids[0],
-    });
+
+    if (openInSameTab && mode === "form") {
+      setCurrentId(ids[0]);
+      const formView: FormView = availableViews.find(
+        (v) => v.type === "form",
+      ) as FormView;
+      setCurrentView(formView);
+    } else {
+      const viewForm = views.find((v) => v[1] === mode);
+      openAction({
+        domain,
+        context,
+        model,
+        views,
+        title,
+        target: "current",
+        initialView: { id: viewForm?.[0]!, type: mode },
+        action_id,
+        action_type,
+        res_id: ids[0],
+      });
+    }
   }
 
   function content() {
