@@ -48,7 +48,7 @@ export type ActionViewContextType = {
   setSearchTreeNameSearch?: (searchString?: string) => void;
   previousView?: View;
   setPreviousView?: (view: View) => void;
-  goToResourceId?: (ids: number[]) => Promise<void>;
+  goToResourceId?: (ids: number[], openInSameTab?: boolean) => Promise<void>;
   searchValues?: any;
   setSearchValues?: (value: any) => void;
   limit?: number;
