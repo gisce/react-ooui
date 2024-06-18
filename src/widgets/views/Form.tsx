@@ -59,6 +59,7 @@ import {
   convertToPlain2ManyValues,
 } from "@/helpers/one2manyHelper";
 import { ErrorAlert } from "@/ui/ErrorAlert";
+import { mergeFieldsContext } from "@/helpers/fieldsHelper";
 
 export type FormProps = {
   model: string;
@@ -200,6 +201,7 @@ function Form(props: FormProps, ref: any) {
     }
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, model, valuesProps, formViewProps, visible]);
 
   useEffect(() => {
@@ -209,6 +211,7 @@ function Form(props: FormProps, ref: any) {
       });
       setDefaultGetCalled(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultGetCalled]);
 
   const onSubmitSucceed = (
@@ -461,6 +464,7 @@ function Form(props: FormProps, ref: any) {
   };
 
   const cancelUnsavedChanges = async () => {
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       if (formHasChanges()) {
         showUnsavedChangesDialog({
@@ -543,11 +547,18 @@ function Form(props: FormProps, ref: any) {
     let defaultGetCalled = false;
 
     if (getCurrentId()!) {
+      const ooui =
+        formOoui ||
+        getFormOoui({
+          arch: arch!,
+          fields,
+          values: {},
+        });
       values = (
         await ConnectionProvider.getHandler().readObjects({
           model,
           ids: [getCurrentId()!],
-          fields,
+          fields: mergeFieldsContext(fields, ooui?.contextForFields),
           context: parentContext,
         })
       )[0];
@@ -707,7 +718,7 @@ function Form(props: FormProps, ref: any) {
     return { succeed: submitSucceed, id: getCurrentId()! };
   };
 
-  const parseForm = ({
+  const getFormOoui = ({
     fields,
     arch,
     values,
@@ -730,6 +741,27 @@ function Form(props: FormProps, ref: any) {
         fields,
       ),
     });
+    return ooui;
+  };
+
+  const parseForm = ({
+    fields,
+    arch,
+    values,
+    operationInProgress = false,
+  }: {
+    arch: string;
+    fields: any;
+    values: any;
+    operationInProgress?: boolean;
+  }) => {
+    const ooui = getFormOoui({
+      arch,
+      fields,
+      values,
+      operationInProgress,
+    });
+
     setFormOoui(ooui);
 
     if (ooui.string && ooui.string !== title) {
@@ -776,6 +808,7 @@ function Form(props: FormProps, ref: any) {
         }) &&
         elementHasLostFocus !== true
       ) {
+        /* empty */
       } else {
         const values = processValues(antForm.getFieldsValue(true), fields);
         lastAssignedValues.current = values;

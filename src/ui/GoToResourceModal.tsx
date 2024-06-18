@@ -1,11 +1,11 @@
-import React, { useContext, useRef } from "react";
+import { useRef } from "react";
 import { Button, Col, Form, Input, Modal, Row, Space } from "antd";
-import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import { PlusOutlined, EnterOutlined, CloseOutlined } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
 
 type Props = {
   visible: boolean;
-  onIdSubmitted: (ids: number[]) => void;
+  onIdSubmitted: (ids: number[], openInSameTab?: boolean) => void;
   onCancel: () => void;
   isSearching: boolean;
 };
@@ -14,12 +14,13 @@ export const GoToResourceModal = (props: Props) => {
   const { visible, onIdSubmitted, onCancel, isSearching } = props;
 
   const { t } = useLocale();
-
-  const inputRef = useRef<null | HTMLElement>();
+  const inputRef = useRef<null | HTMLElement>(null);
+  const openInSameTab = useRef(false);
 
   function handleSubmit(values: any) {
     const ids = values.id.split(",").map((id: string) => parseInt(id.trim()));
-    onIdSubmitted(ids);
+    onIdSubmitted(ids, openInSameTab.current);
+    openInSameTab.current = false;
   }
 
   return (
@@ -27,6 +28,7 @@ export const GoToResourceModal = (props: Props) => {
       title={t("goToResourceId")}
       centered
       open={visible}
+      width={600}
       footer={null}
       destroyOnClose
       onCancel={onCancel}
@@ -58,14 +60,31 @@ export const GoToResourceModal = (props: Props) => {
                 {t("cancel")}
               </Button>
               <Button
+                tabIndex={1}
                 loading={isSearching}
                 style={{ marginLeft: 15 }}
-                icon={<CheckOutlined />}
+                icon={<PlusOutlined />}
+                htmlType="submit"
+                disabled={isSearching}
+                onClick={() => {
+                  openInSameTab.current = true;
+                }}
+              >
+                {t("openInSameWindow")}
+              </Button>
+              <Button
+                tabIndex={0}
+                loading={isSearching}
+                style={{ marginLeft: 15 }}
+                icon={<EnterOutlined />}
                 htmlType="submit"
                 type="primary"
                 disabled={isSearching}
+                onClick={() => {
+                  openInSameTab.current = false;
+                }}
               >
-                {t("ok")}
+                {t("openInNewTab")}
               </Button>
             </Space>
           </Col>

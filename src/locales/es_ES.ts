@@ -99,4 +99,6 @@ export default {
     "Hay {numberOfSelectedRows} registros seleccionados en ésta página.",
   selectAllRecords: "Seleccionar todos los {totalRecords} registros.",
   allRecordsSelected: "Hay {totalRecords} registros seleccionados.",
+  openInSameWindow: "Abrir en la pestaña actual",
+  openInNewTab: "Abrir en una nueva pestaña",
 };
