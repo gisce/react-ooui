@@ -47,6 +47,7 @@ import { Steps } from "@/widgets/custom/Steps";
 import { CodeEditor } from "@/widgets/custom/CodeEditor";
 import { CommentsTimelineField } from "@/widgets/custom/Comments";
 import { HTMLPreview } from "@/widgets/custom/HTMLPreview";
+import { Alert } from "@/widgets/custom/Alert";
 import {
   DashboardGridItem,
   DashboardGrid,
@@ -173,4 +174,5 @@ export {
   ErpFeaturesMap,
   ConfigContextProvider,
   HTMLPreview,
+  Alert,
 };
