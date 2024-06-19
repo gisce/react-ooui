@@ -35,6 +35,7 @@ import {
   CodeEditor,
   CommentsTimelineField,
   HTMLPreview,
+  Alert,
 } from "@/index";
 import { Image } from "./base/Image";
 import { FiberGrid } from "./custom/FiberGrid";
@@ -124,6 +125,8 @@ const getWidgetType = (type: string) => {
       return CommentsTimelineField;
     case "html_preview":
       return HTMLPreview;
+    case "alert":
+      return Alert;
     default:
       return undefined;
   }
