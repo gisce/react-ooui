@@ -9,7 +9,7 @@ export const Alert = (props: WidgetProps) => {
   const { ooui } = props;
   const { title, text, alertType, icon } = ooui as AlertOoui;
 
-  function getIcon(icon: string): React.JSX.Element | undefined {
+  function getIcon(icon: string | null): React.JSX.Element | undefined {
     if (icon) {
       const Icon: React.ElementType = iconMapper(icon) as any;
       return Icon && <Icon />;
