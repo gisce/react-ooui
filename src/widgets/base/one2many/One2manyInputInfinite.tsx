@@ -42,8 +42,13 @@ export type One2manyItem = {
   defaultValues?: any;
 };
 
-export const One2manyInput: React.FC<One2manyInputProps> = (
-  props: One2manyInputProps,
+export type One2manyInputInfiniteProps = One2manyInputProps & {
+  parentViewId?: number;
+  treeViewId?: number;
+};
+
+export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
+  props: One2manyInputInfiniteProps,
 ) => {
   const gridRef = useRef<InfiniteTableRef>(null);
   const { value, onChange, ooui, views } = props;
@@ -258,6 +263,11 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
           onGetSelectedRowKeys={onGetSelectedRowKeys}
           allRowSelectedMode={allRowSelectedMode}
           onAllRowSelectedModeChange={onChangeAllRowSelectedMode}
+          dataForHash={{
+            parentViewId: props.parentViewId,
+            treeViewId: props.treeViewId,
+            one2ManyFieldName: fieldName,
+          }}
         />
       )}
       {currentView === "form" && (

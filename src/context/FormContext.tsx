@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { FormView } from "..";
 
 export type FormContextType = {
   activeId?: number;
@@ -25,6 +26,7 @@ export type FormContextType = {
   fetchValues?: () => void;
   formHasChanges?: () => boolean;
   elementHasLostFocus?: () => void;
+  formView?: FormView;
 };
 
 export const FormContext = React.createContext<FormContextType | null>(null);
@@ -50,6 +52,7 @@ const FormProvider = (props: FormProviderProps): any => {
     formHasChanges,
     elementHasLostFocus,
     getFields,
+    formView,
   } = props;
 
   return (
@@ -69,6 +72,7 @@ const FormProvider = (props: FormProviderProps): any => {
         fetchValues,
         formHasChanges,
         elementHasLostFocus,
+        formView,
       }}
     >
       {children}
