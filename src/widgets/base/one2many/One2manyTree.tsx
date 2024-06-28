@@ -8,6 +8,12 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import { useOne2manyColumnStorage } from "./useOne2manyColumnStorage";
 import { useDeepCompareMemo } from "use-deep-compare";
 
+export type One2manyTreeDataForHash = {
+  parentViewId?: number;
+  treeViewId?: number;
+  one2ManyFieldName: string;
+};
+
 export type One2manyTreeProps = {
   items: One2manyItem[];
   onRowDoubleClick: (record: any) => void;
@@ -27,6 +33,7 @@ export type One2manyTreeProps = {
   onGetSelectedRowKeys?: () => any[];
   onAllRowSelectedModeChange?: (allRowSelectedMode: boolean) => void;
   allRowSelectedMode?: boolean;
+  dataForHash: One2manyTreeDataForHash;
 };
 
 const DEFAULT_HEIGHT = 400;
@@ -47,6 +54,7 @@ export const One2manyTree = ({
   onGetSelectedRowKeys,
   onAllRowSelectedModeChange,
   allRowSelectedMode,
+  dataForHash,
 }: One2manyTreeProps) => {
   const internalGridRef = useRef<InfiniteTableRef>();
   const tableRef: RefObject<InfiniteTableRef> = gridRef! || internalGridRef!;
@@ -129,6 +137,7 @@ export const One2manyTree = ({
   }, []);
 
   const { getColumnState, updateColumnState } = useOne2manyColumnStorage({
+    ...dataForHash,
     model: relation,
   });
 

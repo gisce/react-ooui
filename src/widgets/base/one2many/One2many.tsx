@@ -23,7 +23,8 @@ export const One2many = (props: Props) => {
   const [error, setError] = useState<string>();
   const [views, setViews] = useState<Views>(new Map<string, any>());
   const formContext = useContext(FormContext) as FormContextType;
-  const { getContext } = formContext || {};
+  const { getContext, formView } = formContext || {};
+  const { view_id: parentViewId } = formView || {};
 
   useDeepCompareEffect(() => {
     fetchData();
@@ -86,8 +87,6 @@ export const One2many = (props: Props) => {
     if (value.items.length === 0) throw new Error();
   };
 
-  const Component = ooui.infinite ? One2manyInputInfinite : One2manyInput;
-
   return (
     <One2manyProvider initialView={initialView}>
       <Field
@@ -96,7 +95,16 @@ export const One2many = (props: Props) => {
         validator={validator}
         {...props}
       >
-        <Component ooui={ooui} views={views} />
+        {ooui.infinite ? (
+          <One2manyInputInfinite
+            ooui={ooui}
+            views={views}
+            parentViewId={parentViewId}
+            treeViewId={views.get("tree")?.view_id}
+          />
+        ) : (
+          <One2manyInput ooui={ooui} views={views} />
+        )}
       </Field>
     </One2manyProvider>
   );
