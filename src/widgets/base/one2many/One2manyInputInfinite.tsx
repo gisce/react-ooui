@@ -21,6 +21,7 @@ import { useOne2manyFormModal } from "./useOne2manyFormModal";
 import { useOne2manySearchModal } from "./useOne2manySearchModal";
 import { One2manyTree } from "./One2manyTree";
 import "@gisce/react-formiga-table/style.css";
+import { Graph } from "@/widgets/views/Graph/Graph";
 
 const SUPPORTED_VIEWS = ["form", "tree", "graph"];
 
@@ -301,7 +302,15 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
         onSelectValues={onSelectSearchValues}
         onCloseModal={onCloseSearchModal}
       />
-      {/* TODO: Graph view */}
+      {currentView === "graph" && (
+        <Graph
+          view_id={views.get("graph").view_id}
+          model={relation}
+          domain={[[`${ooui.inv_field}`, "=", activeId]]}
+          context={context}
+          limit={0}
+        />
+      )}
       {!SUPPORTED_VIEWS.includes(currentView) && (
         <span>Unsupported view {currentView}</span>
       )}
