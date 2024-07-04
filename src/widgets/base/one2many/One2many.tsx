@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { One2many as One2manyOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { Spin, Alert } from "antd";
@@ -6,6 +6,7 @@ import { Views, ViewType } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import One2manyProvider from "@/context/One2manyContext";
 import { One2manyInput } from "@/widgets/base/one2many/One2manyInput";
+import { One2manyInput as One2manyInputInfinite } from "@/widgets/base/one2many/One2manyInputInfinite";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { FormContext, FormContextType } from "@/context/FormContext";
 
@@ -22,7 +23,8 @@ export const One2many = (props: Props) => {
   const [error, setError] = useState<string>();
   const [views, setViews] = useState<Views>(new Map<string, any>());
   const formContext = useContext(FormContext) as FormContextType;
-  const { getContext } = formContext || {};
+  const { getContext, formView } = formContext || {};
+  const { view_id: parentViewId } = formView || {};
 
   useDeepCompareEffect(() => {
     fetchData();
@@ -93,7 +95,16 @@ export const One2many = (props: Props) => {
         validator={validator}
         {...props}
       >
-        <One2manyInput ooui={ooui} views={views} />
+        {ooui.infinite ? (
+          <One2manyInputInfinite
+            ooui={ooui}
+            views={views}
+            parentViewId={parentViewId}
+            treeViewId={views.get("tree")?.view_id}
+          />
+        ) : (
+          <One2manyInput ooui={ooui} views={views} />
+        )}
       </Field>
     </One2manyProvider>
   );

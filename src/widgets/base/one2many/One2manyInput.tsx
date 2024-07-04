@@ -19,8 +19,8 @@ import { Views, ViewType } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import { FormModal } from "@/widgets/modals/FormModal";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
-import showRemoveItemDialog from "@/ui/RemoveItemDialog";
-import showUnlinkItemDialog from "@/ui/UnlinkItemDialog";
+import { showRemoveItemDialog } from "@/ui/RemoveItemDialog";
+import { showUnlinkItemDialog } from "@/ui/UnlinkItemDialog";
 import {
   One2manyContext,
   One2manyContextType,
@@ -312,7 +312,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     if (isMany2many) {
       showUnlinkItemDialog({
         t,
-        onOk: () => {
+        onOk: async () => {
           if (currentView === "form") {
             removeCurrentItem();
           } else {
@@ -325,7 +325,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
     showRemoveItemDialog({
       t,
-      onOk: () => {
+      onOk: async () => {
         if (currentView === "form") {
           removeCurrentItem();
         } else {
