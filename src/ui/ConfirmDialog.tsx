@@ -6,10 +6,14 @@ const { confirm } = Modal;
 const showDialog = ({
   onOk,
   confirmMessage,
+  okText,
+  cancelText,
   t,
 }: {
   onOk: () => void;
   confirmMessage: string;
+  okText?: string;
+  cancelText?: string;
   t: (key: string) => string;
 }) => {
   confirm({
@@ -17,8 +21,8 @@ const showDialog = ({
     icon: <ExclamationCircleOutlined />,
     centered: true,
     content: confirmMessage,
-    okText: t("ok"),
-    cancelText: t("cancel"),
+    okText: okText || t("ok"),
+    cancelText: cancelText || t("cancel"),
     onOk,
   });
 };
