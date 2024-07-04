@@ -186,7 +186,6 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
     }
   };
 
-  // TODO: this should be presented in the modal not in the form view
   const onRowDoubleClick = useDeepCompareCallback(
     (item: any) => {
       if (!views.get("form")?.fields) return;

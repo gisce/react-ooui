@@ -730,7 +730,7 @@ function Form(props: FormProps, ref: any) {
     operationInProgress?: boolean;
   }) => {
     const ooui = new FormOoui(fields);
-    // TODO: Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
+    // Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
     ooui.parse(arch, {
       readOnly: readOnly || operationInProgress,
       values: convertToPlain2ManyValues(

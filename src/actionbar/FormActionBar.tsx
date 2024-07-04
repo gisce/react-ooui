@@ -21,7 +21,7 @@ import {
 import NewButton from "./NewButton";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import showConfirmDialog from "@/ui/ConfirmDialog";
-import showErrorDialog from "@/ui/GenericErrorDialog";
+import { showErrorDialog } from "@/ui/GenericErrorDialog";
 import ConnectionProvider from "@/ConnectionProvider";
 import refreshChangesDialog from "@/ui/RefreshItemDialog";
 import { showLogInfo } from "@/helpers/logInfoHelper";
