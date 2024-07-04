@@ -1,10 +1,9 @@
-import React from "react";
 import { Modal } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 const { error } = Modal;
 
-const showDialog = (message: string) => {
+export const showErrorDialog = (message: string) => {
   error({
     title: "Error",
     icon: <ExclamationCircleOutlined />,
@@ -13,4 +12,9 @@ const showDialog = (message: string) => {
   });
 };
 
-export default showDialog;
+export const showErrorExceptionDialog = (error: any) => {
+  const messageContent = error.message
+    ? JSON.stringify(error.message)
+    : JSON.stringify(error);
+  showErrorDialog(messageContent);
+};

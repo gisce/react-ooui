@@ -7,6 +7,7 @@ import {
 import { useCallback, useContext } from "react";
 import { One2manyItem } from "./One2manyInput";
 import { showUnlinkItemDialog } from "@/ui/UnlinkItemDialog";
+import { showErrorExceptionDialog } from "@/ui/GenericErrorDialog";
 
 export const useOne2manyRemove = ({
   isMany2many,
@@ -58,9 +59,8 @@ export const useOne2manyRemove = ({
         });
       triggerChange(updatedItems);
       setSelectedRowKeys([]);
-      // refreshTable?.();
     } catch (err) {
-      // TODO: show an error
+      showErrorExceptionDialog(err);
     }
 
     setItemIndex(0);
@@ -93,8 +93,7 @@ export const useOne2manyRemove = ({
         triggerChange(items.filter((item) => item.id !== items[itemIndex].id!));
       }
     } catch (err) {
-      // TODO: show an error
-      // setError(err as any);
+      showErrorExceptionDialog(err);
     }
 
     setItemIndex(0);

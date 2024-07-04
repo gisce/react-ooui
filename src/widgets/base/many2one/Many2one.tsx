@@ -16,7 +16,7 @@ import { SearchModal } from "@/widgets/modals/SearchModal";
 import { FormModal } from "@/widgets/modals/FormModal";
 import ConnectionProvider from "@/ConnectionProvider";
 import { Many2oneSuffix } from "./Many2oneSuffix";
-import showErrorDialog from "@/ui/GenericErrorDialog";
+import { showErrorDialog } from "@/ui/GenericErrorDialog";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
 
