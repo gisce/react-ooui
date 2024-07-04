@@ -1125,6 +1125,7 @@ function Form(props: FormProps, ref: any) {
           fetchValues={fetchValues}
           formHasChanges={formHasChanges}
           elementHasLostFocus={elementHasLostFocus}
+          formView={formViewProps}
         >
           <AntForm
             form={antForm}
