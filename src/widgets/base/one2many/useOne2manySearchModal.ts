@@ -1,4 +1,5 @@
 import { ConnectionProvider, One2manyItem, Views } from "@/index";
+import { showErrorExceptionDialog } from "@/ui/GenericErrorDialog";
 import { useCallback, useState } from "react";
 import { useDeepCompareCallback } from "use-deep-compare";
 
@@ -37,9 +38,6 @@ export const useOne2manySearchModal = ({
 
   const onSearchModalSelectValue = useDeepCompareCallback(
     async (ids: number[]) => {
-      // setIsLoading(true);
-      // TODO: handle loading in the modal, not here.
-
       const updatedItems = items;
       const filteredIds = ids.filter((id) => {
         return !items.find((item) => item.id === id);
@@ -73,10 +71,7 @@ export const useOne2manySearchModal = ({
 
         triggerChange(updatedItems);
       } catch (e) {
-        // TODO: show error as a modal/toas
-        // setError(e as any);
-      } finally {
-        // setIsLoading(false);
+        showErrorExceptionDialog(e);
       }
     },
     [context, items, relation, triggerChange, views],
