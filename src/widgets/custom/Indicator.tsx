@@ -5,6 +5,11 @@ import { WidgetProps } from "@/types";
 import Field from "@/common/Field";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import iconMapper from "@/helpers/iconMapper";
+import { useFetchActionData } from "@/hooks/useFetchActionData";
+import { CenteredSpinner } from "@/ui/CenteredSpinner";
+import { ErrorAlert } from "@/ui/ErrorAlert";
+import { Graph } from "../views/Graph/Graph";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
@@ -15,9 +20,17 @@ type IndicatorProps = WidgetProps & {
 export const Indicator = (props: IndicatorProps) => {
   const { ooui } = props;
 
+  const hasActionId = ooui.actionId !== undefined;
+
   return (
     <Field ooui={ooui}>
-      <IndicatorInput ooui={ooui} />
+      {hasActionId ? (
+        <ErrorBoundary>
+          <GraphIndicatorInput ooui={ooui} />
+        </ErrorBoundary>
+      ) : (
+        <IndicatorInput ooui={ooui} />
+      )}
     </Field>
   );
 };
@@ -63,4 +76,33 @@ const IndicatorInput = (props: IndicatorInputProps) => {
   } else {
     return field;
   }
+};
+
+const GraphIndicatorInput = (props: IndicatorInputProps) => {
+  const { ooui } = props;
+  const { actionId } = ooui;
+
+  const { actionData, loading, error } = useFetchActionData(actionId);
+
+  if (loading) {
+    return <CenteredSpinner />;
+  }
+
+  if (error) {
+    return <ErrorAlert error={error} />;
+  }
+
+  const { res_model: model, limit, domain, context, view_ids } = actionData;
+
+  const [view_id] = view_ids;
+
+  return (
+    <Graph
+      view_id={view_id}
+      model={model}
+      context={context}
+      domain={domain}
+      limit={limit}
+    />
+  );
 };
