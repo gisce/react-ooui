@@ -7,8 +7,10 @@ const { useToken } = theme;
 const { Text } = Typography;
 
 export const DashboardGridItem = (props: DashboardGridItemProps) => {
-  const { title, children, action, openAction } = props;
+  const { title, children, action, openAction, parms } = props;
   const { token } = useToken();
+
+  const hasDragAndDrop = Object.keys(parms).length > 0;
 
   return (
     <div
@@ -37,7 +39,7 @@ export const DashboardGridItem = (props: DashboardGridItemProps) => {
           style={{
             fontWeight: "bold",
             padding: "0.5rem",
-            cursor: "grab",
+            cursor: hasDragAndDrop ? "grab" : undefined,
             overflow: "hidden",
           }}
         >
@@ -56,7 +58,9 @@ export const DashboardGridItem = (props: DashboardGridItemProps) => {
           </Col>
         )}
       </Row>
-      <ErrorBoundary>{children}</ErrorBoundary>
+      <div style={{ padding: hasDragAndDrop ? undefined : 10 }}>
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </div>
     </div>
   );
 };

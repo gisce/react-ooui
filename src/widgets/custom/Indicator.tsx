@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Tooltip, theme, Statistic, Card } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Field from "@/common/Field";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import iconMapper from "@/helpers/iconMapper";
-import { useFetchActionData } from "@/hooks/useFetchActionData";
+import { useFormIndicatorData } from "@/hooks/useFormIndicatorData";
 import { CenteredSpinner } from "@/ui/CenteredSpinner";
 import { ErrorAlert } from "@/ui/ErrorAlert";
 import { Graph } from "../views/Graph/Graph";
@@ -13,6 +13,11 @@ import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { GraphServer } from "../views/Graph/GraphServer";
+import { DashboardGridItem } from "../views/DashboardGrid";
+import {
+  TabManagerContext,
+  TabManagerContextType,
+} from "@/context/TabManagerContext";
 const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
@@ -85,10 +90,15 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
   const { ooui } = props;
   const { actionId } = ooui;
 
-  const { actionData, loading, error } = useFetchActionData(actionId);
+  const { actionData, treeShortcut, loading, error } =
+    useFormIndicatorData(actionId);
   const readForViewEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_READFORVIEW,
   );
+  const tabManagerContext = useContext(
+    TabManagerContext,
+  ) as TabManagerContextType;
+  const { openShortcut } = tabManagerContext || {};
 
   if (loading) {
     return <CenteredSpinner />;
@@ -98,17 +108,25 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
     return <ErrorAlert error={error} />;
   }
 
-  const { res_model: model, limit, domain, context, view_id } = actionData;
+  const { id, model, limit, domain, context, initialView } = actionData;
 
   const GraphComponent = readForViewEnabled ? GraphServer : Graph;
 
   return (
-    <GraphComponent
-      view_id={view_id[0]}
-      model={model}
-      context={context}
-      domain={domain}
-      limit={limit}
-    />
+    <DashboardGridItem
+      id={id}
+      parms={{}}
+      title={actionData.title}
+      action={treeShortcut}
+      openAction={openShortcut as any}
+    >
+      <GraphComponent
+        view_id={initialView.id}
+        model={model}
+        context={context}
+        domain={domain}
+        limit={limit}
+      />
+    </DashboardGridItem>
   );
 };
