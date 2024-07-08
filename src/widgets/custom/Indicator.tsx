@@ -10,6 +10,9 @@ import { CenteredSpinner } from "@/ui/CenteredSpinner";
 import { ErrorAlert } from "@/ui/ErrorAlert";
 import { Graph } from "../views/Graph/Graph";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
+import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
+import { GraphServer } from "../views/Graph/GraphServer";
 const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
@@ -83,6 +86,9 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
   const { actionId } = ooui;
 
   const { actionData, loading, error } = useFetchActionData(actionId);
+  const readForViewEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_READFORVIEW,
+  );
 
   if (loading) {
     return <CenteredSpinner />;
@@ -92,13 +98,13 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
     return <ErrorAlert error={error} />;
   }
 
-  const { res_model: model, limit, domain, context, view_ids } = actionData;
+  const { res_model: model, limit, domain, context, view_id } = actionData;
 
-  const [view_id] = view_ids;
+  const GraphComponent = readForViewEnabled ? GraphServer : Graph;
 
   return (
-    <Graph
-      view_id={view_id}
+    <GraphComponent
+      view_id={view_id[0]}
       model={model}
       context={context}
       domain={domain}
