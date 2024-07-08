@@ -8,7 +8,7 @@ export const ErrorAlert = ({
   className,
 }: {
   error: any;
-  className: string;
+  className?: string;
 }) => {
   let messageContent;
   let messageType = "error";

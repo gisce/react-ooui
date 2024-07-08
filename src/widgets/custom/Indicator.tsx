@@ -1,10 +1,23 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Tooltip, theme, Statistic, Card } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Field from "@/common/Field";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import iconMapper from "@/helpers/iconMapper";
+import { useFormIndicatorData } from "@/hooks/useFormIndicatorData";
+import { CenteredSpinner } from "@/ui/CenteredSpinner";
+import { ErrorAlert } from "@/ui/ErrorAlert";
+import { Graph } from "../views/Graph/Graph";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
+import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
+import { GraphServer } from "../views/Graph/GraphServer";
+import { DashboardGridItem } from "../views/DashboardGrid";
+import {
+  TabManagerContext,
+  TabManagerContextType,
+} from "@/context/TabManagerContext";
 const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
@@ -15,9 +28,17 @@ type IndicatorProps = WidgetProps & {
 export const Indicator = (props: IndicatorProps) => {
   const { ooui } = props;
 
+  const hasActionId = ooui.actionId !== undefined;
+
   return (
     <Field ooui={ooui}>
-      <IndicatorInput ooui={ooui} />
+      {hasActionId ? (
+        <ErrorBoundary>
+          <GraphIndicatorInput ooui={ooui} />
+        </ErrorBoundary>
+      ) : (
+        <IndicatorInput ooui={ooui} />
+      )}
     </Field>
   );
 };
@@ -63,4 +84,49 @@ const IndicatorInput = (props: IndicatorInputProps) => {
   } else {
     return field;
   }
+};
+
+const GraphIndicatorInput = (props: IndicatorInputProps) => {
+  const { ooui } = props;
+  const { actionId } = ooui;
+
+  const { actionData, treeShortcut, loading, error } =
+    useFormIndicatorData(actionId);
+  const readForViewEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_READFORVIEW,
+  );
+  const tabManagerContext = useContext(
+    TabManagerContext,
+  ) as TabManagerContextType;
+  const { openShortcut } = tabManagerContext || {};
+
+  if (loading) {
+    return <CenteredSpinner />;
+  }
+
+  if (error) {
+    return <ErrorAlert error={error} />;
+  }
+
+  const { id, model, limit, domain, context, initialView } = actionData;
+
+  const GraphComponent = readForViewEnabled ? GraphServer : Graph;
+
+  return (
+    <DashboardGridItem
+      id={id}
+      parms={{}}
+      title={actionData.title}
+      action={treeShortcut}
+      openAction={openShortcut as any}
+    >
+      <GraphComponent
+        view_id={initialView.id}
+        model={model}
+        context={context}
+        domain={domain}
+        limit={limit}
+      />
+    </DashboardGridItem>
+  );
 };

@@ -1,5 +1,3 @@
-import React from "react";
-
 import {
   Notebook,
   Group,
@@ -42,6 +40,7 @@ import { FiberGrid } from "./custom/FiberGrid";
 import { Timeline } from "./custom/Timeline";
 import { Indicator } from "./custom/Indicator";
 import { Tags } from "./custom/Tags";
+import { createElement } from "react";
 
 const getWidgetType = (type: string) => {
   switch (type) {
@@ -142,7 +141,7 @@ const createReactWidget = (props: any) => {
     return null;
   }
 
-  return React.createElement(widgetClass, props);
+  return createElement(widgetClass, props);
 };
 
 export { createReactWidget };
