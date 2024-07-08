@@ -48,6 +48,7 @@ export const AsyncConfirmModal: React.FC<ConfirmConfig> = ({
 
   return (
     <Modal
+      zIndex={9999}
       title={modalTitle}
       open={visible}
       centered={centered || false}
