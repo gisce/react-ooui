@@ -1,3 +1,4 @@
+import { getValuesForFields } from "@/helpers/one2manyHelper";
 import { ConnectionProvider, One2manyItem, Views } from "@/index";
 import { showErrorExceptionDialog } from "@/ui/GenericErrorDialog";
 import { useCallback, useState } from "react";
@@ -38,36 +39,37 @@ export const useOne2manySearchModal = ({
 
   const onSearchModalSelectValue = useDeepCompareCallback(
     async (ids: number[]) => {
-      const updatedItems = items;
+      const updatedItems = [...items];
       const filteredIds = ids.filter((id) => {
         return !items.find((item) => item.id === id);
       });
 
       try {
-        for (const id of filteredIds) {
-          const updatedFormObject = (
-            await ConnectionProvider.getHandler().readObjects({
-              model: relation,
-              ids: [id],
-              fields: views.get("form").fields,
-              context,
-            })
-          )[0];
-          const updatedTreeObject = (
-            await ConnectionProvider.getHandler().readObjects({
-              model: relation,
-              ids: [id],
-              fields: views.get("tree").fields,
-              context,
-            })
-          )[0];
-          updatedItems.push({
-            id,
-            operation: "pendingLink",
-            values: updatedFormObject,
-            treeValues: updatedTreeObject,
+        const updatedObjects =
+          await ConnectionProvider.getHandler().readObjects({
+            model: relation,
+            ids: filteredIds,
+            fields: {
+              ...views.get("form").fields,
+              ...views.get("tree").fields,
+            },
+            context,
           });
-        }
+
+        updatedObjects.forEach((item: any) => {
+          updatedItems.push({
+            id: item.id,
+            operation: "pendingLink",
+            values: getValuesForFields({
+              values: item,
+              fields: ["id", ...Object.keys(views.get("form").fields)],
+            }),
+            treeValues: getValuesForFields({
+              values: item,
+              fields: ["id", ...Object.keys(views.get("tree").fields)],
+            }),
+          });
+        });
 
         triggerChange(updatedItems);
       } catch (e) {
@@ -79,8 +81,8 @@ export const useOne2manySearchModal = ({
 
   const onSelectSearchValues = useCallback(
     async (ids: number[]) => {
+      await onSearchModalSelectValue(ids);
       setShowSearchModal(false);
-      onSearchModalSelectValue(ids);
     },
     [onSearchModalSelectValue],
   );

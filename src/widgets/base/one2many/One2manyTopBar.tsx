@@ -134,12 +134,15 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
           />
         )}
         {isMany2Many && showCreateButton && (
-          <ButtonWithTooltip
-            tooltip={"Search existing item"}
-            icon={<SearchOutlined />}
-            disabled={readOnly}
-            onClick={onSearchItem}
-          />
+          <>
+            {separator()}
+            <ButtonWithTooltip
+              tooltip={"Search existing item"}
+              icon={<SearchOutlined />}
+              disabled={readOnly}
+              onClick={onSearchItem}
+            />
+          </>
         )}
         {mode !== "graph" && separator()}
         {mode !== "graph" && deleteButton()}
