@@ -90,8 +90,9 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
   const { ooui } = props;
   const { actionId } = ooui;
 
-  const { actionData, treeShortcut, loading, error } =
-    useFormGraphData(actionId);
+  const { actionData, treeShortcut, loading, error } = useFormGraphData(
+    actionId!,
+  );
   const readForViewEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_READFORVIEW,
   );
