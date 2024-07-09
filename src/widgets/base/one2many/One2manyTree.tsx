@@ -105,8 +105,15 @@ export const One2manyTree = ({
           (item.operation === "original" || item.operation === "pendingLink")
         );
       });
+      const otherItems = itemsToFetch.filter((item) => {
+        return (
+          item &&
+          item.operation !== "original" &&
+          item.operation !== "pendingLink"
+        );
+      });
 
-      if (realIdsToFetch.length === 0) {
+      if (realIdsToFetch.length === 0 && otherItems.length === 0) {
         return [];
       }
 
