@@ -10,19 +10,11 @@ export const useFormGraphData = (actionId: number) => {
   const [actionData, setActionData] = useState<any>();
   const [treeShortcut, setTreeShortcut] = useState<ShortcutApi>();
   const formContext = useContext(FormContext) as FormContextType;
-  const { getContext, getValues } = formContext || {};
+  const { getContext, getValues, activeId } = formContext || {};
   const { globalValues, rootContext } = useConfigContext();
   const context = useMemo(() => {
     return { ...getContext?.(), ...rootContext };
   }, [getContext, rootContext]);
-
-  useEffect(() => {
-    if (!actionId) {
-      return;
-    }
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [actionId]);
 
   const fetchData = async () => {
     setError(undefined);
@@ -31,7 +23,12 @@ export const useFormGraphData = (actionId: number) => {
       const result = await fetchAction({
         actionId,
         rootContext: context,
-        globalValues: { ...globalValues, ...getValues() },
+        globalValues: {
+          ...globalValues,
+          ...getValues(),
+          active_id: activeId,
+          active_ids: [activeId],
+        },
       });
       const { views } = result as any;
 
@@ -66,5 +63,5 @@ export const useFormGraphData = (actionId: number) => {
     setLoading(false);
   };
 
-  return { actionData, treeShortcut, loading, error };
+  return { actionData, treeShortcut, loading, error, fetchData };
 };

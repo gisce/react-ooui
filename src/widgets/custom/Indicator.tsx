@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Tooltip, theme, Statistic, Card } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
@@ -90,9 +90,9 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
   const { ooui } = props;
   const { actionId } = ooui;
 
-  const { actionData, treeShortcut, loading, error } = useFormGraphData(
-    actionId!,
-  );
+  const { actionData, treeShortcut, loading, error, fetchData } =
+    useFormGraphData(actionId!);
+
   const readForViewEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_READFORVIEW,
   );
@@ -101,15 +101,19 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
   ) as TabManagerContextType;
   const { openShortcut } = tabManagerContext || {};
 
-  if (loading) {
-    return <CenteredSpinner />;
-  }
+  useEffect(() => {
+    if (!ooui) {
+      return;
+    }
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ooui]);
 
   if (error) {
     return <ErrorAlert error={error} />;
   }
 
-  const { id, model, limit, domain, context, initialView } = actionData;
+  const { id, model, limit, domain, context, initialView } = actionData || {};
 
   const GraphComponent = readForViewEnabled ? GraphServer : Graph;
 
@@ -117,17 +121,20 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
     <GraphCard
       id={id}
       parms={{}}
-      title={actionData.title}
+      title={actionData?.title || ""}
       action={treeShortcut}
       openAction={openShortcut as any}
     >
-      <GraphComponent
-        view_id={initialView.id}
-        model={model}
-        context={context}
-        domain={domain}
-        limit={limit}
-      />
+      {loading && <CenteredSpinner />}
+      {!loading && (
+        <GraphComponent
+          view_id={initialView.id}
+          model={model}
+          context={context}
+          domain={domain}
+          limit={limit}
+        />
+      )}
     </GraphCard>
   );
 };

@@ -14,7 +14,7 @@ export const GraphCard = (props: GraphCardProps) => {
 
   return (
     <div
-      className={"shadow-md"}
+      className={hasDragAndDrop ? "shadow-md" : undefined}
       style={{
         height: "100%",
         display: "flex",
