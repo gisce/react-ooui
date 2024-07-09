@@ -26,8 +26,6 @@ export const useFormGraphData = (actionId: number) => {
         globalValues: {
           ...globalValues,
           ...getValues(),
-          active_id: activeId,
-          active_ids: [activeId],
         },
       });
       const { views } = result as any;
@@ -54,6 +52,10 @@ export const useFormGraphData = (actionId: number) => {
           view_id: id,
           view_type: type,
           overrideUnsettedLimit: true,
+          values: {
+            active_id: activeId,
+            active_ids: [activeId],
+          },
         });
       }
       setActionData(result);

@@ -31,6 +31,7 @@ export type ShortcutApi = {
   view_id: number;
   view_type: string;
   overrideUnsettedLimit?: boolean;
+  values?: any;
 };
 
 export type FavouriteOptions = {
