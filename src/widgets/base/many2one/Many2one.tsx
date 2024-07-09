@@ -288,7 +288,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
         context={{ ...getContext?.(), ...context }}
         visible={showSearchModal}
         nameSearch={!id ? searchText : undefined}
-        onSelectValues={(ids: number[]) => {
+        onSelectValues={async (ids: number[]) => {
           setShowSearchModal(false);
           fetchNameAndUpdate(ids[0]);
           searchButtonTappedRef.current = false;
