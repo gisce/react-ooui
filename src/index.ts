@@ -48,10 +48,7 @@ import { CodeEditor } from "@/widgets/custom/CodeEditor";
 import { CommentsTimelineField } from "@/widgets/custom/Comments";
 import { HTMLPreview } from "@/widgets/custom/HTMLPreview";
 import { Alert } from "@/widgets/custom/Alert";
-import {
-  DashboardGridItem,
-  DashboardGrid,
-} from "@/widgets/views/DashboardGrid";
+import { DashboardGrid } from "@/widgets/views/DashboardGrid";
 import { GraphIndicator } from "@/widgets/views/Graph/GraphIndicator";
 
 import type {
@@ -88,6 +85,7 @@ import Tab from "./views/tabs/Tab";
 import ActionView from "./views/ActionView";
 import { ErpAllFeatureKeys, ErpFeatureKeys } from "./models/erpFeature";
 import type { ErpFeaturesMap } from "./models/erpFeature";
+import { GraphCard } from "./widgets/views/Graph";
 
 export {
   Button,
@@ -154,7 +152,7 @@ export {
   FavouriteButton,
   Dashboard,
   GraphIndicator,
-  DashboardGridItem,
+  GraphCard,
   DashboardGrid,
   Tags,
   Tag,

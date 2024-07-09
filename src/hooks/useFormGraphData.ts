@@ -4,7 +4,7 @@ import { FormContext, FormContextType } from "@/context/FormContext";
 import { fetchAction } from "@/widgets/views/Dashboard/dashboardHelper";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 
-export const useFormIndicatorData = (actionId: number) => {
+export const useFormGraphData = (actionId: number) => {
   const [error, setError] = useState<any>();
   const [loading, setLoading] = useState<boolean>(true);
   const [actionData, setActionData] = useState<any>();

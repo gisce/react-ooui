@@ -5,7 +5,7 @@ import { WidgetProps } from "@/types";
 import Field from "@/common/Field";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import iconMapper from "@/helpers/iconMapper";
-import { useFormIndicatorData } from "@/hooks/useFormIndicatorData";
+import { useFormGraphData } from "@/hooks/useFormGraphData";
 import { CenteredSpinner } from "@/ui/CenteredSpinner";
 import { ErrorAlert } from "@/ui/ErrorAlert";
 import { Graph } from "../views/Graph/Graph";
@@ -13,11 +13,11 @@ import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { GraphServer } from "../views/Graph/GraphServer";
-import { DashboardGridItem } from "../views/DashboardGrid";
 import {
   TabManagerContext,
   TabManagerContextType,
 } from "@/context/TabManagerContext";
+import { GraphCard } from "../views/Graph";
 const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
@@ -91,7 +91,7 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
   const { actionId } = ooui;
 
   const { actionData, treeShortcut, loading, error } =
-    useFormIndicatorData(actionId);
+    useFormGraphData(actionId);
   const readForViewEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_READFORVIEW,
   );
@@ -113,7 +113,7 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
   const GraphComponent = readForViewEnabled ? GraphServer : Graph;
 
   return (
-    <DashboardGridItem
+    <GraphCard
       id={id}
       parms={{}}
       title={actionData.title}
@@ -127,6 +127,6 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
         domain={domain}
         limit={limit}
       />
-    </DashboardGridItem>
+    </GraphCard>
   );
 };

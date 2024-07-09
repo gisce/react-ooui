@@ -1,5 +1,5 @@
 import React from "react";
-import { DashboardGridItem, DashboardGrid, GraphIndicator } from "../..";
+import { GraphCard, DashboardGrid, GraphIndicator } from "../..";
 
 import LocaleProvider from "../../context/LocaleContext";
 
@@ -11,10 +11,7 @@ export function Default(): React.ReactElement {
   return (
     <LocaleProvider lang="en_US">
       <DashboardGrid>
-        <DashboardGridItem
-          title="test"
-          parms={{ w: 3, h: 9, x: 0, y: 0, id: 10 }}
-        >
+        <GraphCard title="test" parms={{ w: 3, h: 9, x: 0, y: 0, id: 10 }}>
           <GraphIndicator
             model="res.partner"
             context={{}}
@@ -23,11 +20,8 @@ export function Default(): React.ReactElement {
             showPercent={true}
             // suffix={"€"}
           />
-        </DashboardGridItem>
-        <DashboardGridItem
-          title="test"
-          parms={{ w: 3, h: 9, x: 0, y: 0, id: 10 }}
-        >
+        </GraphCard>
+        <GraphCard title="test" parms={{ w: 3, h: 9, x: 0, y: 0, id: 10 }}>
           <GraphIndicator
             model="res.partner"
             context={{}}
@@ -36,7 +30,7 @@ export function Default(): React.ReactElement {
             showPercent={true}
             // suffix={"€"}
           />
-        </DashboardGridItem>
+        </GraphCard>
       </DashboardGrid>
     </LocaleProvider>
   );

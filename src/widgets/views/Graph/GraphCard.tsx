@@ -1,12 +1,12 @@
-import { DashboardGridItemProps } from "./DashboardGridItem.types";
 import { ExportOutlined } from "@ant-design/icons";
 import { Row, Col, Typography, theme } from "antd";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
+import { GraphCardProps } from "./GraphCard.types";
 const { useToken } = theme;
 
 const { Text } = Typography;
 
-export const DashboardGridItem = (props: DashboardGridItemProps) => {
+export const GraphCard = (props: GraphCardProps) => {
   const { title, children, action, openAction, parms } = props;
   const { token } = useToken();
 
