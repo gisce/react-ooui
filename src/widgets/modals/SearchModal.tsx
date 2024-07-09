@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useCallback, useState } from "react";
 import { Modal, Button, Divider, Row, Space } from "antd";
 import { FormModal } from "./FormModal";
 import SearchTree from "@/widgets/views/SearchTree";
@@ -6,15 +6,17 @@ import {
   FileAddOutlined,
   CloseOutlined,
   CheckOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import { useLocale } from "@gisce/react-formiga-components";
+import { showErrorDialog } from "@/ui/GenericErrorDialog";
 
 type SearchSelectionProps = {
   visible: boolean;
   model: string;
   nameSearch?: string;
-  onSelectValues: (values: number[]) => void;
+  onSelectValues: (values: number[]) => Promise<void>;
   onCloseModal: () => void;
   domain?: any;
   context?: any;
@@ -24,7 +26,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
   const {
     visible,
     onCloseModal: onCloseModalProps,
-    onSelectValues,
+    onSelectValues: onSelectValuesProps,
     model,
     nameSearch,
     domain,
@@ -35,6 +37,21 @@ export const SearchModal = (props: SearchSelectionProps) => {
   const { modalWidth, modalHeight } = useWindowDimensions();
   const { t } = useLocale();
   const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
+  const [operationInProgress, setOperationInProgress] =
+    useState<boolean>(false);
+
+  const onSelectValues = useCallback(
+    async (keys: any[]) => {
+      setOperationInProgress(true);
+      try {
+        await onSelectValuesProps(keys);
+      } catch (err) {
+        showErrorDialog(err);
+      }
+      setOperationInProgress(false);
+    },
+    [onSelectValuesProps],
+  );
 
   const onCloseModal = async () => {
     await new Promise((resolve) => setTimeout(resolve, 5));
@@ -52,7 +69,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
       return;
     }
 
-    onSelectValues(selectedRowKeys);
+    void onSelectValues(selectedRowKeys);
   }
 
   const content = () => {
@@ -71,6 +88,7 @@ export const SearchModal = (props: SearchSelectionProps) => {
         <Row justify="end">
           <Space>
             <Button
+              disabled={operationInProgress}
               icon={<FileAddOutlined />}
               onClick={() => {
                 setShowCreateModal(true);
@@ -79,7 +97,10 @@ export const SearchModal = (props: SearchSelectionProps) => {
               {t("new")}
             </Button>
             <Button
-              icon={<CheckOutlined />}
+              disabled={operationInProgress}
+              icon={
+                operationInProgress ? <LoadingOutlined /> : <CheckOutlined />
+              }
               onClick={() => {
                 submit();
               }}

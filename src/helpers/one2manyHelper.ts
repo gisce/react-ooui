@@ -228,6 +228,22 @@ function filterDuplicateItems(items: any) {
   return filtered;
 }
 
+function getValuesForFields({
+  values,
+  fields,
+}: {
+  values: any;
+  fields: string[];
+}) {
+  const result: any = {};
+  fields.forEach((field) => {
+    if (values[field]) {
+      result[field] = values[field];
+    }
+  });
+  return result;
+}
+
 export {
   readObjectValues,
   removeItems,
@@ -235,4 +251,5 @@ export {
   getNextPendingId,
   convertToPlain2ManyValues,
   filterDuplicateItems,
+  getValuesForFields,
 };

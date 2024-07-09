@@ -15,6 +15,12 @@ type IndicatorProps = WidgetProps & {
 export const Indicator = (props: IndicatorProps) => {
   const { ooui } = props;
 
+  // TODO: remove this once the indicators on forms are fine, tested, and live on main
+  const { actionId } = ooui;
+  if (actionId) {
+    return null;
+  }
+
   return (
     <Field ooui={ooui}>
       <IndicatorInput ooui={ooui} />
