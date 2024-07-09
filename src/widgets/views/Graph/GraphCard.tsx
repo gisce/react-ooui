@@ -58,9 +58,12 @@ export const GraphCard = (props: GraphCardProps) => {
           </Col>
         )}
       </Row>
-      <div style={{ padding: hasDragAndDrop ? undefined : 10 }}>
-        <ErrorBoundary>{children}</ErrorBoundary>
-      </div>
+      {!hasDragAndDrop && (
+        <div style={{ padding: 10 }}>
+          <ErrorBoundary>{children}</ErrorBoundary>
+        </div>
+      )}
+      {hasDragAndDrop && <ErrorBoundary>{children}</ErrorBoundary>}
     </div>
   );
 };
