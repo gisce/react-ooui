@@ -1,18 +1,20 @@
-import { DashboardGridItemProps } from "./DashboardGridItem.types";
 import { ExportOutlined } from "@ant-design/icons";
 import { Row, Col, Typography, theme } from "antd";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
+import { GraphCardProps } from "./GraphCard.types";
 const { useToken } = theme;
 
 const { Text } = Typography;
 
-export const DashboardGridItem = (props: DashboardGridItemProps) => {
-  const { title, children, action, openAction } = props;
+export const GraphCard = (props: GraphCardProps) => {
+  const { title, children, action, openAction, parms } = props;
   const { token } = useToken();
+
+  const hasDragAndDrop = Object.keys(parms).length > 0;
 
   return (
     <div
-      className={"shadow-md"}
+      className={hasDragAndDrop ? "shadow-md" : undefined}
       style={{
         height: "100%",
         display: "flex",
@@ -37,7 +39,7 @@ export const DashboardGridItem = (props: DashboardGridItemProps) => {
           style={{
             fontWeight: "bold",
             padding: "0.5rem",
-            cursor: "grab",
+            cursor: hasDragAndDrop ? "grab" : undefined,
             overflow: "hidden",
           }}
         >
@@ -56,7 +58,9 @@ export const DashboardGridItem = (props: DashboardGridItemProps) => {
           </Col>
         )}
       </Row>
-      <ErrorBoundary>{children}</ErrorBoundary>
+      <div style={{ padding: hasDragAndDrop ? undefined : 10 }}>
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </div>
     </div>
   );
 };

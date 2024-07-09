@@ -11,10 +11,10 @@ import { fetchAction } from "./dashboardHelper";
 import "react-resizable/css/styles.css";
 import "react-grid-layout/css/styles.css";
 import { Graph } from "../Graph/Graph";
-import { DashboardGrid, DashboardGridItem } from "../DashboardGrid";
+import { DashboardGrid } from "../DashboardGrid";
 import ConnectionProvider from "@/ConnectionProvider";
 import { DashboardProps, FormView } from "@/types";
-import { ErpFeatureKeys, One2manyItem } from "@/index";
+import { ErpFeatureKeys, GraphCard, One2manyItem } from "@/index";
 import { readObjectValues } from "@/helpers/one2manyHelper";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Alert } from "antd";
@@ -387,7 +387,7 @@ function Dashboard(props: DashboardProps, ref: any) {
         }
 
         return (
-          <DashboardGridItem
+          <GraphCard
             key={`griditem-${id}`}
             id={id}
             title={title}
@@ -396,7 +396,7 @@ function Dashboard(props: DashboardProps, ref: any) {
             openAction={openAction}
           >
             {childContent}
-          </DashboardGridItem>
+          </GraphCard>
         );
       })}
     </DashboardGrid>

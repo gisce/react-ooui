@@ -87,6 +87,7 @@ const Container = (props: Props): React.ReactElement => {
       : getTemplateColumns(columns, fieldInRows);
   const gridStyle = {
     display: "grid",
+    alignItems: "center",
     gridTemplateColumns: responsiveBehaviour ? "auto" : templateColumns,
     gap: "1rem",
     minHeight: 0,

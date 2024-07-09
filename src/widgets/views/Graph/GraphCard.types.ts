@@ -1,6 +1,6 @@
 import { ShortcutApi } from "@/ui/FavouriteButton";
 
-export type DashboardGridItemProps = {
+export type GraphCardProps = {
   title: string;
   id: string;
   children?: React.ReactNode;
