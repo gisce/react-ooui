@@ -38,7 +38,7 @@ export const useOne2manySearchModal = ({
 
   const onSearchModalSelectValue = useDeepCompareCallback(
     async (ids: number[]) => {
-      const updatedItems = items;
+      const updatedItems = [...items];
       const filteredIds = ids.filter((id) => {
         return !items.find((item) => item.id === id);
       });
@@ -79,8 +79,8 @@ export const useOne2manySearchModal = ({
 
   const onSelectSearchValues = useCallback(
     async (ids: number[]) => {
+      await onSearchModalSelectValue(ids);
       setShowSearchModal(false);
-      onSearchModalSelectValue(ids);
     },
     [onSearchModalSelectValue],
   );
