@@ -30,6 +30,7 @@ export const Char = (props: CharProps) => {
     <Input
       disabled={readOnly || (translatable && !isSearchField)}
       id={id}
+      showCount={ooui.size && ooui.showCount}
       style={requiredStyle}
       maxLength={(ooui as CharOoui).size}
       onBlur={elementHasLostFocus}
