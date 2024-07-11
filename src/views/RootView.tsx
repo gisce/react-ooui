@@ -277,6 +277,7 @@ function RootView(props: RootViewProps, ref: any) {
       res_id,
       view_id,
       overrideUnsettedLimit = false,
+      values = {},
     } = shortcut;
     const action = `${action_type},${action_id}`;
 
@@ -286,14 +287,14 @@ function RootView(props: RootViewProps, ref: any) {
     });
     const parsedContext = parseContext({
       context: dataForAction.context,
-      values: globalValues,
+      values: { ...globalValues, ...values },
       fields: {},
     });
 
     const parsedDomain = dataForAction.domain
       ? await ConnectionProvider.getHandler().evalDomain({
           domain: dataForAction.domain,
-          values: globalValues,
+          values: { ...globalValues, ...values },
           context: { ...rootContext, ...parsedContext },
         })
       : [];
