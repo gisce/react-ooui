@@ -84,8 +84,14 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   ) as One2manyContextType;
 
   const formContext = useContext(FormContext) as FormContextType;
-  const { activeId, getFields, getValues, getContext, domain } =
-    formContext || {};
+  const {
+    activeId,
+    getFields,
+    getValues,
+    getContext,
+    domain,
+    fetchValues: fetchParentFormValues,
+  } = formContext || {};
   const { t } = useLocale();
 
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
@@ -441,6 +447,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     _: any,
     values: any,
     x2manyPendingLink: boolean = false,
+    mustRefreshParent: boolean = false,
   ) => {
     let updatedItems: One2manyItem[];
 
@@ -704,6 +711,9 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         }}
         readOnly={readOnly}
         mustClearAfterSave={mustClearAfterSave}
+        onMustRefreshParent={() => {
+          fetchParentFormValues?.({ forceRefresh: true });
+        }}
       />
       <SearchModal
         domain={transformedDomain.current}

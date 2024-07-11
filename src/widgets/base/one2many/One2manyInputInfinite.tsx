@@ -66,7 +66,11 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
     id: fieldName,
   } = ooui as One2manyOoui;
   const formContext = useContext(FormContext) as FormContextType;
-  const { activeId, getContext } = formContext || {};
+  const {
+    activeId,
+    getContext,
+    fetchValues: fetchParentFormValues,
+  } = formContext || {};
 
   const showToggleButton = views.size > 1;
   const showCreateButton = views.get("form")?.fields !== undefined;
@@ -293,6 +297,9 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
         onCancel={onCancelFormModal}
         readOnly={readOnly}
         mustClearAfterSave={continuousEntryMode}
+        onMustRefreshParent={() => {
+          fetchParentFormValues?.({ forceRefresh: true });
+        }}
       />
       <SearchModal
         domain={domain}
