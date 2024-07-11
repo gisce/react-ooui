@@ -76,6 +76,7 @@ export type FormProps = {
     values?: any,
     formValues?: any,
     x2manyPendingLink?: boolean,
+    mustRefreshParent?: boolean,
   ) => void;
   onSubmitError?: (error: any) => void;
   onCancel?: () => void;
@@ -89,6 +90,7 @@ export type FormProps = {
   defaultValues?: any;
   forcedValues?: any;
   parentWidth?: number;
+  onMustRefreshParent?: () => void;
 };
 
 const WIDTH_BREAKPOINT = 800;
@@ -117,6 +119,7 @@ function Form(props: FormProps, ref: any) {
     defaultValues,
     forcedValues = {},
     parentWidth,
+    onMustRefreshParent,
   } = props;
   const { t } = useLocale();
 
@@ -1017,8 +1020,9 @@ function Form(props: FormProps, ref: any) {
           ...formOoui?.context,
           ...context,
         },
-        onRefreshParentValues: () => {
-          fetchValues({ forceRefresh: true });
+        onRefreshParentValues: async () => {
+          await fetchValues({ forceRefresh: true });
+          onMustRefreshParent?.();
         },
       })) || {};
 
