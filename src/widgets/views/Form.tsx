@@ -148,6 +148,8 @@ function Form(props: FormProps, ref: any) {
   const { activeId: parentId, getPlainValues: getParentPlainValues } =
     formContext || {};
 
+  const mustFetchParentValues = useRef<boolean>(false);
+
   const actionViewContext = useContext(
     ActionViewContext,
   ) as ActionViewContextType;
@@ -227,9 +229,15 @@ function Form(props: FormProps, ref: any) {
     setFormIsSaving?.(false);
     propsOnSubmitSucceed?.(id, values, formValues, x2manyPendingLink);
     setCurrentId?.(id);
+    if (mustFetchParentValues.current) {
+      onMustRefreshParent?.();
+    }
   };
 
   const onCancel = () => {
+    if (mustFetchParentValues.current) {
+      onMustRefreshParent?.();
+    }
     setFormIsSaving?.(false);
     propsOnCancel?.();
   };
@@ -1021,8 +1029,8 @@ function Form(props: FormProps, ref: any) {
           ...context,
         },
         onRefreshParentValues: async () => {
+          mustFetchParentValues.current = true;
           await fetchValues({ forceRefresh: true });
-          onMustRefreshParent?.();
         },
       })) || {};
 
