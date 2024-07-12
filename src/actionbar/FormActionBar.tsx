@@ -26,6 +26,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import refreshChangesDialog from "@/ui/RefreshItemDialog";
 import { showLogInfo } from "@/helpers/logInfoHelper";
 import { DropdownButton, useLocale } from "@gisce/react-formiga-components";
+import { useHotkeys } from "react-hotkeys-hook";
 
 import {
   TabManagerContext,
@@ -66,6 +67,17 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     setPreviousView,
     goToResourceId,
   } = useContext(ActionViewContext) as ActionViewContextType;
+
+  useHotkeys("pagedown", (event) => {
+    event.preventDefault();
+    tryNavigate(onNextClick);
+  });
+
+  useHotkeys("pageup", (event) => {
+    event.preventDefault();
+    tryNavigate(onPreviousClick);
+  });
+
   const { t } = useLocale();
 
   const contentRootContext = useContext(
