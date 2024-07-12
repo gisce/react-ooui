@@ -78,6 +78,11 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     tryNavigate(onPreviousClick);
   });
 
+  useHotkeys("ctrl+s,command+s", (event) => {
+    event.preventDefault();
+    onFormSave();
+  });
+
   const { t } = useLocale();
 
   const contentRootContext = useContext(
