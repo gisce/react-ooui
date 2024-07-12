@@ -47,13 +47,14 @@ export const useGraphData = (opts: GraphDataOpts) => {
     ConnectionProvider.getHandler().readObjects,
   );
   const [search] = useNetworkRequest(ConnectionProvider.getHandler().search);
+  const ooui = parseGraph(xml) as GraphChartOoui;
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(undefined);
 
     // // First we parse the xml with ooui library
-    const ooui = parseGraph(xml) as GraphChartOoui;
+
     setType(ooui.type || "line");
 
     // // Then we fetch the data
@@ -139,6 +140,7 @@ export const useGraphData = (opts: GraphDataOpts) => {
     values: processedValues,
     evaluatedEntries,
     fetchData,
+    ooui,
   };
 };
 

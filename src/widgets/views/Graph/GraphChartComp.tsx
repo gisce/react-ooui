@@ -6,7 +6,7 @@ import GraphDefaults, {
 import { Typography } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
 import { useCallback, useMemo, useRef } from "react";
-import { GraphType } from "@gisce/ooui";
+import { Graph } from "@gisce/ooui";
 
 const { Text } = Typography;
 
@@ -17,7 +17,7 @@ const types = {
 };
 
 export type GraphCompProps = {
-  type: GraphType;
+  ooui: Graph;
   data: any[];
   isGroup: boolean;
   isStack: boolean;
@@ -25,13 +25,14 @@ export type GraphCompProps = {
 };
 
 export const GraphChartComp = ({
-  type,
+  ooui,
   data,
   isGroup,
   isStack,
   numItems,
 }: GraphCompProps) => {
   const { t } = useLocale();
+  const { type } = ooui;
 
   const pieTotal = useMemo(() => {
     if (type !== "pie") {
@@ -124,7 +125,7 @@ export const GraphChartComp = ({
       <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
         <Chart
           {...getGraphProps({
-            type,
+            ooui,
             data,
             isGroup,
             isStack,
@@ -138,7 +139,7 @@ export const GraphChartComp = ({
 };
 
 type GetGraphPropsType = {
-  type: string;
+  ooui: Graph;
   isStack: boolean;
   isGroup: boolean;
   data: any[];
@@ -150,13 +151,14 @@ type GetGraphPropsType = {
 
 function getGraphProps(props: GetGraphPropsType) {
   const {
-    type,
+    ooui,
     data,
     isGroup,
     isStack,
     pieItemValueFormatter,
     pieLabelFormatter,
   } = props;
+  const { type } = ooui;
   let graphProps = { ...(GraphDefaults as any)[type] };
 
   if (!graphProps) {
@@ -184,6 +186,16 @@ function getGraphProps(props: GetGraphPropsType) {
       graphProps.isStack = true;
       graphProps.groupField = "stacked";
     }
+  }
+  if (type === "line" && ooui.y_range === "auto") {
+    const values = data.map((d) => d.value);
+    const minValue = Math.min(...values);
+    const maxValue = Math.max(...values);
+    const margin = (maxValue - minValue) * 0.1;
+    graphProps.yAxis = {
+      min: minValue - margin,
+      max: maxValue + margin,
+    };
   }
   return graphProps;
 }

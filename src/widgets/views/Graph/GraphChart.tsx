@@ -18,7 +18,7 @@ export const GraphChart = (props: GraphChartProps) => {
   const { model, domain, context, xml, limit, manualIds } = props;
   const { t } = useLocale();
 
-  const { error, loading, values, type, evaluatedEntries, fetchData } =
+  const { error, loading, values, type, evaluatedEntries, fetchData, ooui } =
     useGraphData({
       model,
       xml,
@@ -45,7 +45,7 @@ export const GraphChart = (props: GraphChartProps) => {
 
   return (
     <GraphChartComp
-      type={type}
+      ooui={ooui}
       data={data}
       isGroup={isGroup}
       isStack={isStack}
