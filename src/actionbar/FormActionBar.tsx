@@ -83,6 +83,15 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     onFormSave();
   });
 
+  // Shortcut ctl+l to change to previous view
+  useHotkeys("ctrl+l,command+l", (event) => {
+    event.preventDefault();
+    if (previousView) {
+      setPreviousView?.(currentView);
+      setCurrentView?.(previousView);
+    }
+  });
+
   const { t } = useLocale();
 
   const contentRootContext = useContext(

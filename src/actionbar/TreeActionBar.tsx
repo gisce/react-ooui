@@ -31,6 +31,7 @@ import { ExportModal } from "..";
 import { mergeParams } from "@/helpers/searchHelper";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
+import { useHotkeys } from "react-hotkeys-hook";
 
 type Props = {
   parentContext?: any;
@@ -76,6 +77,13 @@ function TreeActionBar(props: Props) {
   const { processAction } = contentRootContext || {};
   const [exportModalVisible, setExportModalVisible] = useState(false);
 
+  useHotkeys("ctrl+l,command+l", (event) => {
+    event.preventDefault();
+    if (previousView) {
+      setPreviousView?.(currentView);
+      setCurrentView?.(previousView);
+    }
+  });
   const hasNameSearch: boolean =
     searchTreeNameSearch !== undefined &&
     searchTreeNameSearch.trim().length > 0;
