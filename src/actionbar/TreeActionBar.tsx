@@ -84,6 +84,11 @@ function TreeActionBar(props: Props) {
       setCurrentView?.(previousView);
     }
   });
+  useHotkeys("ctrl+f,command+f", (event) => {
+    event.preventDefault();
+    setSearchVisible?.(!searchVisible);
+  });
+
   const hasNameSearch: boolean =
     searchTreeNameSearch !== undefined &&
     searchTreeNameSearch.trim().length > 0;
