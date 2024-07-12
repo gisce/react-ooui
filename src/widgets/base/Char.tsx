@@ -12,6 +12,7 @@ import showInfo from "@/ui/InfoDialog";
 const { useToken } = theme;
 
 type CharProps = WidgetProps & {
+  ooui: CharOoui;
   isSearchField?: boolean;
 };
 
@@ -32,7 +33,7 @@ export const Char = (props: CharProps) => {
       id={id}
       showCount={ooui.size && ooui.showCount}
       style={requiredStyle}
-      maxLength={(ooui as CharOoui).size}
+      maxLength={ooui.size}
       onBlur={elementHasLostFocus}
     />
   );
