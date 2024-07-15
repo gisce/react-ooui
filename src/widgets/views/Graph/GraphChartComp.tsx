@@ -197,5 +197,10 @@ function getGraphProps(props: GetGraphPropsType) {
       max: maxValue + margin,
     };
   }
+  if (type === "line" && ooui.y_range === "slider") {
+    graphProps.slider = {
+      y: { labelFormatter: "~s" },
+    };
+  }
   return graphProps;
 }
