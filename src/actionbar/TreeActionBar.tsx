@@ -77,17 +77,23 @@ function TreeActionBar(props: Props) {
   const { processAction } = contentRootContext || {};
   const [exportModalVisible, setExportModalVisible] = useState(false);
 
-  useHotkeys("ctrl+l,command+l", (event) => {
-    event.preventDefault();
-    if (previousView) {
-      setPreviousView?.(currentView);
-      setCurrentView?.(previousView);
-    }
-  });
-  useHotkeys("ctrl+f,command+f", (event) => {
-    event.preventDefault();
-    setSearchVisible?.(!searchVisible);
-  });
+  useHotkeys(
+    "ctrl+l,command+l",
+    (event) => {
+      if (previousView) {
+        setPreviousView?.(currentView);
+        setCurrentView?.(previousView);
+      }
+    },
+    { enableOnFormTags: true, preventDefault: true },
+  );
+  useHotkeys(
+    "ctrl+f,command+f",
+    (event) => {
+      setSearchVisible?.(!searchVisible);
+    },
+    { enableOnFormTags: true, preventDefault: true },
+  );
 
   const hasNameSearch: boolean =
     searchTreeNameSearch !== undefined &&

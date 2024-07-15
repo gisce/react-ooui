@@ -68,29 +68,41 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     goToResourceId,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
-  useHotkeys("pagedown", (event) => {
-    event.preventDefault();
-    tryNavigate(onNextClick);
-  });
+  useHotkeys(
+    "pagedown",
+    (event) => {
+      tryNavigate(onNextClick);
+    },
+    { enableOnFormTags: true, preventDefault: true },
+  );
 
-  useHotkeys("pageup", (event) => {
-    event.preventDefault();
-    tryNavigate(onPreviousClick);
-  });
+  useHotkeys(
+    "pageup",
+    (event) => {
+      tryNavigate(onPreviousClick);
+    },
+    { enableOnFormTags: true, preventDefault: true },
+  );
 
-  useHotkeys("ctrl+s,command+s", (event) => {
-    event.preventDefault();
-    onFormSave();
-  });
+  useHotkeys(
+    "ctrl+s,command+s",
+    (event) => {
+      onFormSave();
+    },
+    { enableOnFormTags: true, preventDefault: true },
+  );
 
   // Shortcut ctl+l to change to previous view
-  useHotkeys("ctrl+l,command+l", (event) => {
-    event.preventDefault();
-    if (previousView) {
-      setPreviousView?.(currentView);
-      setCurrentView?.(previousView);
-    }
-  });
+  useHotkeys(
+    "ctrl+l,command+l",
+    (event) => {
+      if (previousView) {
+        setPreviousView?.(currentView);
+        setCurrentView?.(previousView);
+      }
+    },
+    { enableOnFormTags: true, preventDefault: true },
+  );
 
   const { t } = useLocale();
 
