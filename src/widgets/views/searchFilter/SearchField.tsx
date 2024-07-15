@@ -1,15 +1,13 @@
-import React, { useContext } from "react";
-
 import { Char } from "@/widgets/base/Char";
 import { Selection } from "@/widgets/base/Selection";
 import { DateRangePicker } from "./DateRangePicker";
 import { DateTimeRangePicker } from "./DateTimeRangePicker";
 import { PairFields } from "./PairFields";
-
 import { useLocale } from "@gisce/react-formiga-components";
 
 import {
   Field,
+  Char as CharOoui,
   SearchFieldTypes,
   Selection as SelectionOoui,
 } from "@gisce/ooui";
@@ -57,7 +55,14 @@ export function SearchField(props: Props) {
       return <MultiSelection layout="vertical" ooui={field} showLabel />;
     }
     default: {
-      return <Char ooui={field} layout="vertical" showLabel isSearchField />;
+      return (
+        <Char
+          ooui={field as CharOoui}
+          layout="vertical"
+          showLabel
+          isSearchField
+        />
+      );
     }
   }
 }

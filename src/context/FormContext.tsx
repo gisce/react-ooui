@@ -23,7 +23,7 @@ export type FormContextType = {
   submitForm?: (options?: {
     callOnSubmitSucceed?: boolean;
   }) => Promise<{ succeed: boolean; id: number }>;
-  fetchValues?: () => void;
+  fetchValues?: (options?: any) => void;
   formHasChanges?: () => boolean;
   elementHasLostFocus?: () => void;
   formView?: FormView;
