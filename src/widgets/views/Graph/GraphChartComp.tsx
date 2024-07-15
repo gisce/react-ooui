@@ -159,6 +159,9 @@ function getGraphProps(props: GetGraphPropsType) {
     pieLabelFormatter,
   } = props;
   const { type } = ooui;
+  if (!type) {
+    return {};
+  }
   let graphProps = { ...(GraphDefaults as any)[type] };
 
   if (!graphProps) {
