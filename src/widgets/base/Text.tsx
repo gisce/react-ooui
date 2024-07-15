@@ -42,6 +42,8 @@ const Text = (props: Props) => {
             minHeight: height ? height + "px" : "100%",
             ...requiredStyle,
           }}
+          maxLength={ooui.size}
+          showCount={ooui.showCount}
           rows={4}
           onBlur={elementHasLostFocus}
         />
