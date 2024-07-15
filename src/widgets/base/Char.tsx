@@ -27,11 +27,13 @@ export const Char = (props: CharProps) => {
   const formContext = useContext(FormContext) as FormContextType;
   const { elementHasLostFocus } = formContext || {};
 
+  const showCount = ooui.size !== undefined && ooui.showCount;
+
   let input = (
     <Input
       disabled={readOnly || (translatable && !isSearchField)}
       id={id}
-      showCount={ooui.size && ooui.showCount}
+      showCount={showCount}
       style={requiredStyle}
       maxLength={ooui.size}
       onBlur={elementHasLostFocus}
