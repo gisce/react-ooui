@@ -12,6 +12,7 @@ import showInfo from "@/ui/InfoDialog";
 const { useToken } = theme;
 
 type CharProps = WidgetProps & {
+  ooui: CharOoui;
   isSearchField?: boolean;
 };
 
@@ -26,12 +27,15 @@ export const Char = (props: CharProps) => {
   const formContext = useContext(FormContext) as FormContextType;
   const { elementHasLostFocus } = formContext || {};
 
+  const showCount = ooui.size !== undefined && ooui.showCount;
+
   let input = (
     <Input
       disabled={readOnly || (translatable && !isSearchField)}
       id={id}
+      showCount={showCount}
       style={requiredStyle}
-      maxLength={(ooui as CharOoui).size}
+      maxLength={ooui.size}
       onBlur={elementHasLostFocus}
     />
   );
