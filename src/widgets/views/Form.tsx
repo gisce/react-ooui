@@ -76,6 +76,7 @@ export type FormProps = {
     values?: any,
     formValues?: any,
     x2manyPendingLink?: boolean,
+    mustRefreshParent?: boolean,
   ) => void;
   onSubmitError?: (error: any) => void;
   onCancel?: () => void;
@@ -89,6 +90,7 @@ export type FormProps = {
   defaultValues?: any;
   forcedValues?: any;
   parentWidth?: number;
+  onMustRefreshParent?: () => void;
 };
 
 const WIDTH_BREAKPOINT = 800;
@@ -117,6 +119,7 @@ function Form(props: FormProps, ref: any) {
     defaultValues,
     forcedValues = {},
     parentWidth,
+    onMustRefreshParent,
   } = props;
   const { t } = useLocale();
 
@@ -144,6 +147,8 @@ function Form(props: FormProps, ref: any) {
   const formContext = useContext(FormContext) as FormContextType;
   const { activeId: parentId, getPlainValues: getParentPlainValues } =
     formContext || {};
+
+  const mustFetchParentValues = useRef<boolean>(false);
 
   const actionViewContext = useContext(
     ActionViewContext,
@@ -224,9 +229,15 @@ function Form(props: FormProps, ref: any) {
     setFormIsSaving?.(false);
     propsOnSubmitSucceed?.(id, values, formValues, x2manyPendingLink);
     setCurrentId?.(id);
+    if (mustFetchParentValues.current) {
+      onMustRefreshParent?.();
+    }
   };
 
   const onCancel = () => {
+    if (mustFetchParentValues.current) {
+      onMustRefreshParent?.();
+    }
     setFormIsSaving?.(false);
     propsOnCancel?.();
   };
@@ -1017,8 +1028,9 @@ function Form(props: FormProps, ref: any) {
           ...formOoui?.context,
           ...context,
         },
-        onRefreshParentValues: () => {
-          fetchValues({ forceRefresh: true });
+        onRefreshParentValues: async () => {
+          mustFetchParentValues.current = true;
+          await fetchValues({ forceRefresh: true });
         },
       })) || {};
 
