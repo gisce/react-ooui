@@ -114,10 +114,10 @@ function ActionView(props: Props, ref: any) {
 
   useHotkeys(
     "ctrl+g,command+g",
-    (event) => {
-      event.preventDefault();
+    () => {
       handleGoToRecordShortcut();
     },
+    { enableOnFormTags: true, preventDefault: true },
     [activeKey, tabs, currentView, currentItemIndex, results],
   );
 

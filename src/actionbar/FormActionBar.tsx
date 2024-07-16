@@ -70,26 +70,29 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
 
   useHotkeys(
     "pagedown",
-    (event) => {
+    () => {
       tryNavigate(onNextClick);
     },
     { enableOnFormTags: true, preventDefault: true },
+    [tryNavigate, onNextClick],
   );
 
   useHotkeys(
     "pageup",
-    (event) => {
+    () => {
       tryNavigate(onPreviousClick);
     },
     { enableOnFormTags: true, preventDefault: true },
+    [tryNavigate, onNextClick],
   );
 
   useHotkeys(
     "ctrl+s,command+s",
-    (event) => {
-      onFormSave();
+    () => {
+      onFormSave?.();
     },
     { enableOnFormTags: true, preventDefault: true },
+    [onFormSave],
   );
 
   // Shortcut ctl+l to change to previous view
@@ -102,6 +105,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       }
     },
     { enableOnFormTags: true, preventDefault: true },
+    [previousView, currentView],
   );
 
   const { t } = useLocale();

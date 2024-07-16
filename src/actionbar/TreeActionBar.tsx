@@ -79,20 +79,23 @@ function TreeActionBar(props: Props) {
 
   useHotkeys(
     "ctrl+l,command+l",
-    (event) => {
+    () => {
       if (previousView) {
         setPreviousView?.(currentView);
         setCurrentView?.(previousView);
       }
     },
     { enableOnFormTags: true, preventDefault: true },
+    [previousView, currentView],
   );
+
   useHotkeys(
     "ctrl+f,command+f",
-    (event) => {
+    () => {
       setSearchVisible?.(!searchVisible);
     },
     { enableOnFormTags: true, preventDefault: true },
+    [searchVisible],
   );
 
   const hasNameSearch: boolean =
