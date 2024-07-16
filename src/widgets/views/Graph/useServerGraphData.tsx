@@ -1,8 +1,7 @@
 import { useCallback, useState } from "react";
 import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
-import { GraphType } from "@gisce/ooui";
-import { YAxisOpts } from "./GraphChartComp";
+import { GraphType, YAxisOpts } from "@gisce/ooui";
 
 export type GraphDataQueryOpts = {
   model: string;

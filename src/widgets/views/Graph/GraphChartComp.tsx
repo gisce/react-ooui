@@ -6,7 +6,7 @@ import GraphDefaults, {
 import { Typography } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
 import { useCallback, useMemo } from "react";
-import { GraphType } from "@gisce/ooui";
+import { GraphType, YAxisOpts } from "@gisce/ooui";
 
 const { Text } = Typography;
 
@@ -23,16 +23,6 @@ export type GraphCompProps = {
   isStack: boolean;
   numItems: number;
   yAxisOpts?: YAxisOpts;
-};
-
-export type YAxisOpts = {
-  mode?: "auto" | "default" | "full" | "slider";
-  valueOpts?: MinMaxValues;
-};
-
-export type MinMaxValues = {
-  min: number;
-  max: number;
 };
 
 export const GraphChartComp = ({
