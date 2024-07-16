@@ -26,6 +26,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import refreshChangesDialog from "@/ui/RefreshItemDialog";
 import { showLogInfo } from "@/helpers/logInfoHelper";
 import { DropdownButton, useLocale } from "@gisce/react-formiga-components";
+import { useHotkeys } from "react-hotkeys-hook";
 
 import {
   TabManagerContext,
@@ -66,6 +67,47 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     setPreviousView,
     goToResourceId,
   } = useContext(ActionViewContext) as ActionViewContextType;
+
+  useHotkeys(
+    "pagedown",
+    () => {
+      tryNavigate(onNextClick);
+    },
+    { enableOnFormTags: true, preventDefault: true },
+    [tryNavigate, onNextClick],
+  );
+
+  useHotkeys(
+    "pageup",
+    () => {
+      tryNavigate(onPreviousClick);
+    },
+    { enableOnFormTags: true, preventDefault: true },
+    [tryNavigate, onNextClick],
+  );
+
+  useHotkeys(
+    "ctrl+s,command+s",
+    () => {
+      onFormSave?.();
+    },
+    { enableOnFormTags: true, preventDefault: true },
+    [onFormSave],
+  );
+
+  // Shortcut ctl+l to change to previous view
+  useHotkeys(
+    "ctrl+l,command+l",
+    (event) => {
+      if (previousView) {
+        setPreviousView?.(currentView);
+        setCurrentView?.(previousView);
+      }
+    },
+    { enableOnFormTags: true, preventDefault: true },
+    [previousView, currentView],
+  );
+
   const { t } = useLocale();
 
   const contentRootContext = useContext(
