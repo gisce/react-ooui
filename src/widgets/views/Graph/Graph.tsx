@@ -6,6 +6,7 @@ import {
   useImperativeHandle,
 } from "react";
 import {
+  GraphChart as GraphChartOoui,
   Graph as GraphOoui,
   parseGraph,
   GraphIndicator as GraphIndicatorOoui,
@@ -35,7 +36,6 @@ const GraphComp = (props: GraphProps, ref: any) => {
   const { view_id, model, context, domain, limit, manualIds } = props;
   const [loading, setLoading] = useState(false);
   const [graphOoui, setGraphOoui] = useState<GraphOoui>();
-  const [graphXml, setGraphXml] = useState<string>();
   const actionViewContext = useContext(
     ActionViewContext,
   ) as ActionViewContextType;
@@ -66,7 +66,6 @@ const GraphComp = (props: GraphProps, ref: any) => {
         context,
       })) as GraphView;
 
-      setGraphXml(viewData.arch);
       const graph = parseGraph(viewData.arch);
       setGraphOoui(graph);
       setLoading(false);
@@ -118,7 +117,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
           model={model}
           context={context}
           domain={domain}
-          xml={graphXml!}
+          ooui={graphOoui as GraphChartOoui}
           limit={limit}
           manualIds={manualIds}
         />

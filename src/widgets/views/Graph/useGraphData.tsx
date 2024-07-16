@@ -1,6 +1,5 @@
 import { useCallback, useState } from "react";
 import {
-  parseGraph,
   GraphChart as GraphChartOoui,
   graphProcessor,
   graphFieldUtils,
@@ -12,34 +11,33 @@ import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 const { processGraphData } = graphProcessor;
 const { getFieldsToRetrieve } = graphFieldUtils;
 
-export type GraphDataQueryOpts = {
+export type GraphDataOpts = {
+  ooui: GraphChartOoui;
   model: string;
   domain?: any;
   context?: any;
   limit?: number;
   manualIds?: number[];
-};
-
-export type GraphDataOpts = GraphDataQueryOpts & {
-  xml: string;
   uninformedString: string;
 };
 
 export const useGraphData = (opts: GraphDataOpts) => {
   const {
     model,
+    ooui,
     domain = [],
     context = {},
-    xml,
     limit,
     uninformedString,
     manualIds,
   } = opts;
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>();
   const [processedValues, setProcessedValues] = useState<any>();
   const [evaluatedEntries, setEvaluatedEntries] = useState<any[]>();
   const [type, setType] = useState<GraphType>("line");
+
   const [getFields] = useNetworkRequest(
     ConnectionProvider.getHandler().getFields,
   );
@@ -47,13 +45,10 @@ export const useGraphData = (opts: GraphDataOpts) => {
     ConnectionProvider.getHandler().readObjects,
   );
   const [search] = useNetworkRequest(ConnectionProvider.getHandler().search);
-  const ooui = parseGraph(xml) as GraphChartOoui;
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(undefined);
-
-    // // First we parse the xml with ooui library
 
     setType(ooui.type || "line");
 
@@ -125,12 +120,12 @@ export const useGraphData = (opts: GraphDataOpts) => {
     loading,
     manualIds,
     model,
+    ooui,
     processedValues,
     readObjects,
     search,
     type,
     uninformedString,
-    xml,
   ]);
 
   return {
@@ -140,7 +135,6 @@ export const useGraphData = (opts: GraphDataOpts) => {
     values: processedValues,
     evaluatedEntries,
     fetchData,
-    ooui,
   };
 };
 

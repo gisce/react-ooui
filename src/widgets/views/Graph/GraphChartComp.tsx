@@ -5,8 +5,8 @@ import GraphDefaults, {
 } from "./GraphDefaults";
 import { Typography } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
-import { useCallback, useMemo, useRef } from "react";
-import { Graph } from "@gisce/ooui";
+import { useCallback, useMemo } from "react";
+import { GraphType } from "@gisce/ooui";
 
 const { Text } = Typography;
 
@@ -17,22 +17,32 @@ const types = {
 };
 
 export type GraphCompProps = {
-  ooui: Graph;
+  type: GraphType;
   data: any[];
   isGroup: boolean;
   isStack: boolean;
   numItems: number;
+  yAxisOpts?: YAxisOpts;
 };
 
+export type YAxisOpts = { mode?: "auto" | "default"; valueOpts?: MinMaxValues };
+
+export type MinMaxValues = {
+  min: number;
+  max: number;
+};
+
+const Y_AXIS_MARGIN_PERCENT = 0.1;
+
 export const GraphChartComp = ({
-  ooui,
+  type,
   data,
   isGroup,
   isStack,
   numItems,
+  yAxisOpts,
 }: GraphCompProps) => {
   const { t } = useLocale();
-  const { type } = ooui;
 
   const pieTotal = useMemo(() => {
     if (type !== "pie") {
@@ -77,7 +87,7 @@ export const GraphChartComp = ({
         return getPercentValueForX(item.id);
       },
     };
-  }, [piePercents]);
+  }, [getPercentValueForX, piePercents]);
 
   const pieLabelFormatter = useCallback(
     ({ percent, x }: { percent: number; x: string }) => {
@@ -87,7 +97,7 @@ export const GraphChartComp = ({
       }
       return getPercentValueForX(x);
     },
-    [piePercents],
+    [getPercentValueForX],
   );
 
   const Chart = (types as any)[type!];
@@ -125,12 +135,14 @@ export const GraphChartComp = ({
       <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
         <Chart
           {...getGraphProps({
-            ooui,
+            type,
             data,
             isGroup,
+            numItems,
             isStack,
             pieItemValueFormatter,
             pieLabelFormatter,
+            yAxisOpts,
           })}
         />
       </div>
@@ -138,11 +150,7 @@ export const GraphChartComp = ({
   );
 };
 
-type GetGraphPropsType = {
-  ooui: Graph;
-  isStack: boolean;
-  isGroup: boolean;
-  data: any[];
+type GetGraphPropsType = GraphCompProps & {
   width?: number;
   height?: number;
   pieItemValueFormatter?: any;
@@ -151,17 +159,14 @@ type GetGraphPropsType = {
 
 function getGraphProps(props: GetGraphPropsType) {
   const {
-    ooui,
+    type,
     data,
     isGroup,
     isStack,
     pieItemValueFormatter,
     pieLabelFormatter,
+    yAxisOpts = { mode: "default" },
   } = props;
-  const { type } = ooui;
-  if (!type) {
-    return {};
-  }
   let graphProps = { ...(GraphDefaults as any)[type] };
 
   if (!graphProps) {
@@ -190,15 +195,16 @@ function getGraphProps(props: GetGraphPropsType) {
       graphProps.groupField = "stacked";
     }
   }
-  if (type === "line" && ooui.y_range === "auto") {
-    const values = data.map((d) => d.value);
-    const minValue = Math.min(...values);
-    const maxValue = Math.max(...values);
-    const margin = (maxValue - minValue) * 0.1;
+
+  if (type === "line" && yAxisOpts.mode === "auto" && yAxisOpts.valueOpts) {
+    const minValue = yAxisOpts.valueOpts.min;
+    const maxValue = yAxisOpts.valueOpts.max;
+    const margin = (maxValue - minValue) * Y_AXIS_MARGIN_PERCENT;
     graphProps.yAxis = {
       min: minValue - margin,
       max: maxValue + margin,
     };
   }
+
   return graphProps;
 }
