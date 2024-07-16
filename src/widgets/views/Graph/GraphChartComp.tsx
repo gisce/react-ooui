@@ -25,7 +25,10 @@ export type GraphCompProps = {
   yAxisOpts?: YAxisOpts;
 };
 
-export type YAxisOpts = { mode?: "auto" | "default"; valueOpts?: MinMaxValues };
+export type YAxisOpts = {
+  mode?: "auto" | "full" | "slider";
+  valueOpts?: MinMaxValues;
+};
 
 export type MinMaxValues = {
   min: number;
@@ -165,7 +168,7 @@ function getGraphProps(props: GetGraphPropsType) {
     isStack,
     pieItemValueFormatter,
     pieLabelFormatter,
-    yAxisOpts = { mode: "default" },
+    yAxisOpts = { mode: "full" },
   } = props;
   let graphProps = { ...(GraphDefaults as any)[type] };
 
