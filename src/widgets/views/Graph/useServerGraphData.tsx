@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { GraphType } from "@gisce/ooui";
+import { YAxisOpts } from "./GraphChartComp";
 
 export type GraphDataQueryOpts = {
   model: string;
@@ -20,6 +21,7 @@ export type GraphResponseChart = GraphResponse & {
   data: any;
   isGroup: boolean;
   isStack: boolean;
+  yAxisOpts?: YAxisOpts;
 };
 
 export type GraphResponseIndicator = GraphResponse & {
