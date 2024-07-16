@@ -26,7 +26,7 @@ export type GraphCompProps = {
 };
 
 export type YAxisOpts = {
-  mode?: "auto" | "full" | "slider";
+  mode?: "auto" | "default" | "full" | "slider";
   valueOpts?: MinMaxValues;
 };
 
@@ -168,7 +168,7 @@ function getGraphProps(props: GetGraphPropsType) {
     isStack,
     pieItemValueFormatter,
     pieLabelFormatter,
-    yAxisOpts = { mode: "full" },
+    yAxisOpts = { mode: "default" },
   } = props;
   let graphProps = { ...(GraphDefaults as any)[type] };
 
