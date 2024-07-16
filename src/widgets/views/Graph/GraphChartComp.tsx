@@ -35,8 +35,6 @@ export type MinMaxValues = {
   max: number;
 };
 
-const Y_AXIS_MARGIN_PERCENT = 0.1;
-
 export const GraphChartComp = ({
   type,
   data,
@@ -200,12 +198,11 @@ function getGraphProps(props: GetGraphPropsType) {
   }
 
   if (type === "line" && yAxisOpts.mode === "auto" && yAxisOpts.valueOpts) {
-    const minValue = yAxisOpts.valueOpts.min;
-    const maxValue = yAxisOpts.valueOpts.max;
-    const margin = (maxValue - minValue) * Y_AXIS_MARGIN_PERCENT;
+    const min = yAxisOpts.valueOpts.min;
+    const max = yAxisOpts.valueOpts.max;
     graphProps.yAxis = {
-      min: minValue - margin,
-      max: maxValue + margin,
+      min,
+      max,
     };
   }
 
