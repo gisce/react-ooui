@@ -447,7 +447,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     _: any,
     values: any,
     x2manyPendingLink: boolean = false,
-    mustRefreshParent: boolean = false,
   ) => {
     let updatedItems: One2manyItem[];
 
