@@ -5,8 +5,8 @@ import GraphDefaults, {
 } from "./GraphDefaults";
 import { Typography } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
-import { useCallback, useMemo, useRef } from "react";
-import { GraphType } from "@gisce/ooui";
+import { useCallback, useMemo } from "react";
+import { GraphType, YAxisOpts } from "@gisce/ooui";
 
 const { Text } = Typography;
 
@@ -22,6 +22,7 @@ export type GraphCompProps = {
   isGroup: boolean;
   isStack: boolean;
   numItems: number;
+  yAxisOpts?: YAxisOpts;
 };
 
 export const GraphChartComp = ({
@@ -30,6 +31,7 @@ export const GraphChartComp = ({
   isGroup,
   isStack,
   numItems,
+  yAxisOpts,
 }: GraphCompProps) => {
   const { t } = useLocale();
 
@@ -76,7 +78,7 @@ export const GraphChartComp = ({
         return getPercentValueForX(item.id);
       },
     };
-  }, [piePercents]);
+  }, [getPercentValueForX, piePercents]);
 
   const pieLabelFormatter = useCallback(
     ({ percent, x }: { percent: number; x: string }) => {
@@ -86,7 +88,7 @@ export const GraphChartComp = ({
       }
       return getPercentValueForX(x);
     },
-    [piePercents],
+    [getPercentValueForX],
   );
 
   const Chart = (types as any)[type!];
@@ -127,9 +129,11 @@ export const GraphChartComp = ({
             type,
             data,
             isGroup,
+            numItems,
             isStack,
             pieItemValueFormatter,
             pieLabelFormatter,
+            yAxisOpts,
           })}
         />
       </div>
@@ -137,11 +141,7 @@ export const GraphChartComp = ({
   );
 };
 
-type GetGraphPropsType = {
-  type: string;
-  isStack: boolean;
-  isGroup: boolean;
-  data: any[];
+type GetGraphPropsType = GraphCompProps & {
   width?: number;
   height?: number;
   pieItemValueFormatter?: any;
@@ -156,6 +156,7 @@ function getGraphProps(props: GetGraphPropsType) {
     isStack,
     pieItemValueFormatter,
     pieLabelFormatter,
+    yAxisOpts = { mode: "default" },
   } = props;
   let graphProps = { ...(GraphDefaults as any)[type] };
 
@@ -185,5 +186,15 @@ function getGraphProps(props: GetGraphPropsType) {
       graphProps.groupField = "stacked";
     }
   }
+
+  if (type === "line" && yAxisOpts.mode === "auto" && yAxisOpts.valueOpts) {
+    const min = yAxisOpts.valueOpts.min;
+    const max = yAxisOpts.valueOpts.max;
+    graphProps.yAxis = {
+      min,
+      max,
+    };
+  }
+
   return graphProps;
 }

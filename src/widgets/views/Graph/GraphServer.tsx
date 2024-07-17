@@ -90,6 +90,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
           isGroup={chart.isGroup}
           isStack={chart.isStack}
           numItems={chart.num_items}
+          yAxisOpts={chart.yAxisOpts}
         />
       );
     }
