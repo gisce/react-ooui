@@ -22,6 +22,8 @@ import { useOne2manySearchModal } from "./useOne2manySearchModal";
 import { One2manyTree } from "./One2manyTree";
 import "@gisce/react-formiga-table/style.css";
 import { Graph } from "@/widgets/views/Graph/Graph";
+import { useTreeAggregates } from "./useTreeAggregates";
+import { useOne2manyTreeAggregates } from "./useOne2manyTreeAggregates";
 
 const SUPPORTED_VIEWS = ["form", "tree", "graph"];
 
@@ -98,6 +100,13 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
     treeView: views.get("tree"),
     relation,
     context,
+  });
+
+  const aggregates = useOne2manyTreeAggregates({
+    ooui: treeOoui,
+    model: relation,
+    items,
+    selectedRowKeys,
   });
 
   const title = useMemo(() => {
@@ -272,6 +281,7 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
             treeViewId: props.treeViewId,
             one2ManyFieldName: fieldName,
           }}
+          aggregates={aggregates}
         />
       )}
       {currentView === "form" && (

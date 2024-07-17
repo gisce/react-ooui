@@ -1,12 +1,14 @@
 import { InfiniteTable, InfiniteTableRef } from "@gisce/react-formiga-table";
 import { One2manyItem } from "./One2manyInput";
-import { Tree as TreeOoui } from "@gisce/ooui";
+import { One2many, Tree as TreeOoui } from "@gisce/ooui";
 import { RefObject, useCallback, useRef } from "react";
 import { getTableColumns, getTableItems } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "@/widgets/views/Tree/treeComponents";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { useOne2manyColumnStorage } from "./useOne2manyColumnStorage";
 import { useDeepCompareMemo } from "use-deep-compare";
+import { TreeAggregates } from "./useTreeAggregates";
+import { One2manyFooter } from "./One2manyFooter";
 
 export type One2manyTreeDataForHash = {
   parentViewId?: number;
@@ -34,6 +36,7 @@ export type One2manyTreeProps = {
   onAllRowSelectedModeChange?: (allRowSelectedMode: boolean) => void;
   allRowSelectedMode?: boolean;
   dataForHash: One2manyTreeDataForHash;
+  aggregates?: TreeAggregates;
 };
 
 const DEFAULT_HEIGHT = 400;
@@ -55,6 +58,7 @@ export const One2manyTree = ({
   onAllRowSelectedModeChange,
   allRowSelectedMode,
   dataForHash,
+  aggregates,
 }: One2manyTreeProps) => {
   const internalGridRef = useRef<InfiniteTableRef>();
   const tableRef: RefObject<InfiniteTableRef> = gridRef! || internalGridRef!;
@@ -166,6 +170,7 @@ export const One2manyTree = ({
       allRowSelectedMode={allRowSelectedMode}
       onAllRowSelectedModeChange={onAllRowSelectedModeChange}
       totalRows={totalRows}
+      footer={aggregates && <One2manyFooter aggregates={aggregates} />}
     />
   );
 };
