@@ -357,6 +357,11 @@ type ConnectionProviderType = {
     context: any;
     domain: any[];
   }) => Promise<any>;
+  readAggregates: (options: {
+    model: string;
+    domain: any[];
+    aggregateFields: Record<string, string[]>;
+  }) => Promise<Record<string, Record<string, number>>>;
 };
 
 type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar";
