@@ -63,6 +63,7 @@ jobs:
 
   call-reusable:
     needs: release
+    if: needs.release.outputs.release_type != 'none'
     uses: gisce/react-ooui/.github/workflows/reusable_workflow.yaml@alpha
     with:
       release_type: ${{ needs.release.outputs.release_type }}
