@@ -25,7 +25,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Install Dependencies
         run: npm ci
@@ -35,3 +35,40 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           NPM_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
         run: npx semantic-release
+
+      - name: Capture Release Type
+        id: get_release_type
+        run: |
+          if [ -f ".release-type" ]; then
+            release_type=$(cat .release-type)
+            echo "Release type: $release_type"
+            echo "::set-output name=release_type::$release_type"
+          else
+            echo "No release"
+            echo "::set-output name=release_type::none"
+          fi
+        shell: bash
+
+      - name: Capture Tag Name
+        id: get_tag_name
+        run: |
+          if [ -f ".release-tag" ]; then
+            tag_name=$(cat .release-tag)
+            echo "Tag name: $tag_name"
+            echo "::set-output name=tag_name::$tag_name"
+          else
+            echo "No tag"
+            echo "::set-output name=tag_name::none"
+          fi
+        shell: bash
+
+  call-reusable:
+    name: Call Reusable Workflow
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Reusable Workflow
+        uses: ./.github/workflows/reusable_workflow.yaml
+        with:
+          release_type: ${{ needs.release.outputs.release_type }}
+          tag_name: ${{ needs.release.outputs.tag_name }}
