@@ -151,7 +151,13 @@
           "failComment": false
         }
       ],
-      "@semantic-release/git"
+      "@semantic-release/git",
+      [
+        "@semantic-release/exec",
+        {
+          "prepareCmd": "echo ${nextRelease.type} > .release-type"
+        }
+      ]
     ]
   },
   "overrides": {
