@@ -71,7 +71,7 @@ jobs:
     name: Update dependent projects
     needs: release
     if: needs.release.outputs.release_type != 'none'
-    uses: gisce/react-ooui/.github/workflows/update_dependent_projects.yaml@alpha
+    uses: gisce/react-ooui/.github/workflows/update_dependent_projects.yaml@v2
     with:
       release_type: ${{ needs.release.outputs.release_type }}
       tag_name: ${{ needs.release.outputs.tag_name }}
