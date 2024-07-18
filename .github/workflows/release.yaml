@@ -16,6 +16,9 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    outputs:
+      release_type: ${{ steps.get_release_type.outputs.release_type }}
+      tag_name: ${{ steps.get_tag_name.outputs.tag_name }}
     steps:
       - name: Setup Node.js
         uses: actions/setup-node@v2
