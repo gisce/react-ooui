@@ -19,6 +19,7 @@ jobs:
     outputs:
       release_type: ${{ steps.get_release_type.outputs.release_type }}
       tag_name: ${{ steps.get_tag_name.outputs.tag_name }}
+      branch_name: ${{ steps.get_branch_name.outputs.branch_name }}
     steps:
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -61,10 +62,16 @@ jobs:
           fi
         shell: bash
 
+      - name: Capture Branch Name
+        id: get_branch_name
+        run: echo "branch_name=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+        shell: bash
+
   call-reusable:
     needs: release
     if: needs.release.outputs.release_type != 'none'
-    uses: gisce/react-ooui/.github/workflows/reusable_workflow.yaml@alpha
+    uses: gisce/react-ooui/.github/workflows/update_dependent_projects.yaml@alpha
     with:
       release_type: ${{ needs.release.outputs.release_type }}
       tag_name: ${{ needs.release.outputs.tag_name }}
+      branch_name: ${{ needs.release.outputs.branch_name }}
