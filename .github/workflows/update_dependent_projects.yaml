@@ -47,7 +47,7 @@ jobs:
             branch: ${{ inputs.branch_name }}
     steps:
       - name: Call Reusable Workflow for each project
-        uses: gisce/create-update-version-pr@v0.0.5
+        uses: gisce/create-update-version-pr@v0.0.7
         with:
           dependentProject: ${{ matrix.project }}
           tagName: ${{ inputs.tag_name }}
