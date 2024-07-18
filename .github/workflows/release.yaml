@@ -59,9 +59,7 @@ jobs:
         shell: bash
 
   call-reusable:
-    name: Call Reusable Workflow
     needs: release
-    runs-on: ubuntu-latest
     uses: gisce/react-ooui/.github/workflows/reusable_workflow.yaml@alpha
     with:
       release_type: ${{ needs.release.outputs.release_type }}
