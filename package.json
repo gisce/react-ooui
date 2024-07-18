@@ -155,7 +155,7 @@
       [
         "@semantic-release/exec",
         {
-          "prepareCmd": "echo ${nextRelease.type} > .release-type"
+          "prepareCmd": "echo ${nextRelease.type} > .release-type && echo ${nextRelease.gitTag} > .release-tag"
         }
       ]
     ]
