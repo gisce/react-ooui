@@ -41,11 +41,9 @@ jobs:
         run: |
           if [ -f ".release-type" ]; then
             release_type=$(cat .release-type)
-            echo "Release type: $release_type"
-            echo "::set-output name=release_type::$release_type"
+            echo "release_type=$release_type" >> $GITHUB_OUTPUT
           else
-            echo "No release"
-            echo "::set-output name=release_type::none"
+            echo "release_type=none" >> $GITHUB_OUTPUT
           fi
         shell: bash
 
@@ -54,11 +52,9 @@ jobs:
         run: |
           if [ -f ".release-tag" ]; then
             tag_name=$(cat .release-tag)
-            echo "Tag name: $tag_name"
-            echo "::set-output name=tag_name::$tag_name"
+            echo "tag_name=$tag_name" >> $GITHUB_OUTPUT
           else
-            echo "No tag"
-            echo "::set-output name=tag_name::none"
+            echo "tag_name=none" >> $GITHUB_OUTPUT
           fi
         shell: bash
 
@@ -66,9 +62,7 @@ jobs:
     name: Call Reusable Workflow
     needs: release
     runs-on: ubuntu-latest
-    steps:
-      - name: Call Reusable Workflow
-        uses: ./.github/workflows/reusable_workflow.yaml
-        with:
-          release_type: ${{ needs.release.outputs.release_type }}
-          tag_name: ${{ needs.release.outputs.tag_name }}
+    uses: gisce/react-ooui/.github/workflows/reusable_workflow.yaml@alpha
+    with:
+      release_type: ${{ needs.release.outputs.release_type }}
+      tag_name: ${{ needs.release.outputs.tag_name }}
