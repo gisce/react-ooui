@@ -23,6 +23,7 @@ export const BooleanComponent = ({
       <div
         style={{
           display: "flex",
+          height: "100%",
           justifyContent: "center",
           alignContent: "center",
         }}
