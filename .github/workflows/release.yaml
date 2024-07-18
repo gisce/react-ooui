@@ -75,3 +75,5 @@ jobs:
       release_type: ${{ needs.release.outputs.release_type }}
       tag_name: ${{ needs.release.outputs.tag_name }}
       branch_name: ${{ needs.release.outputs.branch_name }}
+    secrets:
+      GH_PAT: ${{ secrets.GH_PAT }}
