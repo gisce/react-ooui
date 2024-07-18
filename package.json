@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "2.15.1-rc.1",
+  "version": "2.15.2",
   "engines": {
     "node": "20.5.0"
   },
@@ -151,7 +151,13 @@
           "failComment": false
         }
       ],
-      "@semantic-release/git"
+      "@semantic-release/git",
+      [
+        "@semantic-release/exec",
+        {
+          "prepareCmd": "echo ${nextRelease.type} > .release-type && echo ${nextRelease.gitTag} > .release-tag"
+        }
+      ]
     ]
   },
   "overrides": {

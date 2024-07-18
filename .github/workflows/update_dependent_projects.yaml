@@ -1,0 +1,57 @@
+name: Update dependent projects
+
+env:
+  LIBRARY_NAME: "gisce/react-ooui"
+
+on:
+  workflow_call:
+    inputs:
+      release_type:
+        description: 'The type of release (patch, minor, major)'
+        required: true
+        type: string
+      tag_name:
+        description: 'The tag name of the release'
+        required: true
+        type: string
+      branch_name:
+        description: 'The name of the branch'
+        required: true
+        type: string
+    secrets:
+      GH_PAT:
+        required: true
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'The type of release (patch, minor, major)'
+        required: true
+        type: string
+      tag_name:
+        description: 'The tag name of the release'
+        required: true
+        type: string
+      branch_name:
+        description: 'The name of the branch'
+        required: true
+        type: string
+
+jobs:
+  update-dependents:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - project: "gisce/webclient"
+            # modify this in case that branches are not equivalent and exists between projects
+            branch: ${{ inputs.branch_name }}
+    steps:
+      - name: Call Reusable Workflow for each project
+        uses: gisce/create-update-version-pr@v0.0.9
+        with:
+          dependentProject: ${{ matrix.project }}
+          tagName: ${{ inputs.tag_name }}
+          dependentProjectBranch: ${{ matrix.branch }}
+          libraryName: ${{ env.LIBRARY_NAME }}
+          githubToken: ${{ secrets.GH_PAT }}
+          releaseType: ${{ inputs.release_type }}

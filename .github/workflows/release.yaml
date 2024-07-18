@@ -16,6 +16,10 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    outputs:
+      release_type: ${{ steps.get_release_type.outputs.release_type }}
+      tag_name: ${{ steps.get_tag_name.outputs.tag_name }}
+      branch_name: ${{ steps.get_branch_name.outputs.branch_name }}
     steps:
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -25,7 +29,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Install Dependencies
         run: npm ci
@@ -35,3 +39,42 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           NPM_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
         run: npx semantic-release
+
+      - name: Capture Release Type
+        id: get_release_type
+        run: |
+          if [ -f ".release-type" ]; then
+            release_type=$(cat .release-type)
+            echo "release_type=$release_type" >> $GITHUB_OUTPUT
+          else
+            echo "release_type=none" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
+      - name: Capture Tag Name
+        id: get_tag_name
+        run: |
+          if [ -f ".release-tag" ]; then
+            tag_name=$(cat .release-tag)
+            echo "tag_name=$tag_name" >> $GITHUB_OUTPUT
+          else
+            echo "tag_name=none" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
+      - name: Capture Branch Name
+        id: get_branch_name
+        run: echo "branch_name=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+        shell: bash
+
+  update-dependents:
+    name: Update dependent projects
+    needs: release
+    if: needs.release.outputs.release_type != 'none'
+    uses: gisce/react-ooui/.github/workflows/update_dependent_projects.yaml@v2
+    with:
+      release_type: ${{ needs.release.outputs.release_type }}
+      tag_name: ${{ needs.release.outputs.tag_name }}
+      branch_name: ${{ needs.release.outputs.branch_name }}
+    secrets:
+      GH_PAT: ${{ secrets.GH_PAT }}
