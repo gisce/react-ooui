@@ -362,6 +362,14 @@ type ConnectionProviderType = {
     domain: any[];
     aggregateFields: Record<string, string[]>;
   }) => Promise<Record<string, Record<string, number>>>;
+  saveUserViewPrefs: (
+    { key, preferences }: { key: string; preferences: any },
+    requestConfig?: any,
+  ) => Promise<any>;
+  readUserViewPrefs: (
+    { key }: { key: string },
+    requestConfig?: any,
+  ) => Promise<any>;
 };
 
 type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar";

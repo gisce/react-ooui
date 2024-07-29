@@ -5,11 +5,11 @@ import { RefObject, useCallback, useRef } from "react";
 import { getTableColumns, getTableItems } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "@/widgets/views/Tree/treeComponents";
 import useDeepCompareEffect from "use-deep-compare-effect";
-import { useOne2manyColumnStorage } from "./useOne2manyColumnStorage";
 import { useDeepCompareMemo } from "use-deep-compare";
 import { TreeAggregates } from "./useTreeAggregates";
 import { One2manyFooter } from "./One2manyFooter";
-import { Badge } from "antd";
+import { Badge, Spin } from "antd";
+import { useOne2manyColumnStorageFetch } from "./useOne2manyColumnStorageFetch";
 
 export type One2manyTreeDataForHash = {
   parentViewId?: number;
@@ -151,10 +151,20 @@ export const One2manyTree = ({
     return undefined;
   }, []);
 
-  const { getColumnState, updateColumnState } = useOne2manyColumnStorage({
-    ...dataForHash,
-    model: relation,
+  const { loading, getColumnState, updateColumnState } =
+    useOne2manyColumnStorageFetch({
+      ...dataForHash,
+      model: relation,
+    });
+
+  console.log({
+    loading,
+    state: getColumnState(),
   });
+
+  if (loading) {
+    return <Spin />;
+  }
 
   return (
     <InfiniteTable
