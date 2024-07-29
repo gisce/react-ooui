@@ -22,7 +22,6 @@ import { useOne2manySearchModal } from "./useOne2manySearchModal";
 import { One2manyTree } from "./One2manyTree";
 import "@gisce/react-formiga-table/style.css";
 import { Graph } from "@/widgets/views/Graph/Graph";
-import { useTreeAggregates } from "./useTreeAggregates";
 import { useOne2manyTreeAggregates } from "./useOne2manyTreeAggregates";
 
 const SUPPORTED_VIEWS = ["form", "tree", "graph"];
