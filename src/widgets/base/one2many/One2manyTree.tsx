@@ -154,11 +154,6 @@ export const One2manyTree = ({
       model: relation,
     });
 
-  console.log({
-    loading,
-    state: getColumnState(),
-  });
-
   if (loading) {
     return <Spin />;
   }
