@@ -1,5 +1,5 @@
 import ConnectionProvider from "@/ConnectionProvider";
-import { getColorMap, getTree } from "@/helpers/treeHelper";
+import { getColorMap, getStatusMap, getTree } from "@/helpers/treeHelper";
 import { TreeView } from "@/types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDeepCompareCallback } from "use-deep-compare";
@@ -47,6 +47,14 @@ export const useOne2manyTree = ({
 
   const onTreeFetchRows = useDeepCompareCallback(
     async (idsToFetch: number[]) => {
+      const attrs: any = {};
+      if (treeOoui.colors) {
+        attrs.colors = treeOoui.colors;
+      }
+      if (treeOoui.status) {
+        attrs.status = treeOoui.status;
+      }
+
       const fetchedData =
         await ConnectionProvider.getHandler().readEvalUiObjects({
           model: relation,
@@ -54,13 +62,13 @@ export const useOne2manyTree = ({
           arch: treeView.arch,
           fields: treeView.fields,
           context,
-          attrs: treeOoui.colors && {
-            colors: treeOoui.colors,
-          },
+          attrs,
         });
+
       const results = fetchedData[0];
       const colors = getColorMap(fetchedData[1]);
-      return { results, colors };
+      const status = getStatusMap(fetchedData[1]);
+      return { results, colors, status };
     },
     [context, relation, treeOoui.colors, treeView],
   );
