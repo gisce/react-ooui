@@ -9,9 +9,10 @@ import { useOne2manyColumnRemoteStorage } from "./useOne2manyColumnRemoteStorage
 export type DataForHashWithModel = One2manyTreeDataForHash & { model: string };
 
 export const useOne2manyColumnStorage = (dataForHash: DataForHashWithModel) => {
-  const remoteUserViewPrefsEnabled = useFeatureIsEnabled(
-    ErpFeatureKeys.FEATURE_USERVIEWPREFS,
-  );
+  // const remoteUserViewPrefsEnabled = useFeatureIsEnabled(
+  //   ErpFeatureKeys.FEATURE_USERVIEWPREFS,
+  // );
+  const remoteUserViewPrefsEnabled = false;
 
   const {
     getColumnState: getLocalColumnState,
