@@ -8,8 +8,8 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import { useDeepCompareMemo } from "use-deep-compare";
 import { TreeAggregates } from "./useTreeAggregates";
 import { One2manyFooter } from "./One2manyFooter";
-import { Badge, Spin } from "antd";
 import { useOne2manyColumnStorageFetch } from "./useOne2manyColumnStorageFetch";
+import { Spin, Badge } from "antd";
 
 export type One2manyTreeDataForHash = {
   parentViewId?: number;
@@ -66,7 +66,7 @@ export const One2manyTree = ({
   const tableRef: RefObject<InfiniteTableRef> = gridRef! || internalGridRef!;
 
   const colorsForResults = useRef<{ [key: number]: string }>({});
-  const statusForResults = useRef<{ [key: number]: string }>({});
+  const statusForResults = useRef<{ [key: number]: string }>();
 
   const prevItemsValue = useRef<One2manyItem[]>();
   const itemsRef = useRef<One2manyItem[]>(items);
@@ -138,7 +138,12 @@ export const One2manyTree = ({
       });
 
       colorsForResults.current = { ...colorsForResults.current, ...colors };
-      statusForResults.current = { ...statusForResults.current, ...status };
+      if (!statusForResults.current && status) {
+        statusForResults.current = {};
+      }
+      if (status) {
+        statusForResults.current = { ...statusForResults.current, ...status };
+      }
       return resultsMapped;
     },
     [onFetchRecords, ooui],
