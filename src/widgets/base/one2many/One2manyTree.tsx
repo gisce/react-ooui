@@ -9,7 +9,7 @@ import { useDeepCompareMemo } from "use-deep-compare";
 import { TreeAggregates } from "./useTreeAggregates";
 import { One2manyFooter } from "./One2manyFooter";
 import { useOne2manyColumnStorageFetch } from "./useOne2manyColumnStorageFetch";
-import { Spin } from "antd";
+import { Spin, Badge } from "antd";
 
 export type One2manyTreeDataForHash = {
   parentViewId?: number;
@@ -27,6 +27,7 @@ export type One2manyTreeProps = {
   onFetchRecords: (idsToFetch: number[]) => Promise<{
     results: any[];
     colors: { [key: number]: string };
+    status: { [key: number]: string };
   }>;
   onRowSelectionChange: (selectedIds: number[]) => void;
   gridRef?: React.RefObject<InfiniteTableRef>;
@@ -65,6 +66,7 @@ export const One2manyTree = ({
   const tableRef: RefObject<InfiniteTableRef> = gridRef! || internalGridRef!;
 
   const colorsForResults = useRef<{ [key: number]: string }>({});
+  const statusForResults = useRef<{ [key: number]: string }>();
 
   const prevItemsValue = useRef<One2manyItem[]>();
   const itemsRef = useRef<One2manyItem[]>(items);
@@ -122,7 +124,7 @@ export const One2manyTree = ({
         return [];
       }
 
-      const { results, colors } = await onFetchRecords(realIdsToFetch);
+      const { results, colors, status } = await onFetchRecords(realIdsToFetch);
 
       const preparedResults = getTableItems(ooui, results);
 
@@ -136,6 +138,12 @@ export const One2manyTree = ({
       });
 
       colorsForResults.current = { ...colorsForResults.current, ...colors };
+      if (!statusForResults.current && status) {
+        statusForResults.current = {};
+      }
+      if (status) {
+        statusForResults.current = { ...statusForResults.current, ...status };
+      }
       return resultsMapped;
     },
     [onFetchRecords, ooui],
@@ -177,6 +185,9 @@ export const One2manyTree = ({
       onAllRowSelectedModeChange={onAllRowSelectedModeChange}
       totalRows={totalRows}
       footer={aggregates && <One2manyFooter aggregates={aggregates} />}
+      hasStatusColumn={ooui.status !== null}
+      statusComponent={(status: any) => <Badge color={status} />}
+      onRowStatus={(record: any) => statusForResults.current?.[record.id]}
     />
   );
 };
