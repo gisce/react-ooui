@@ -18,19 +18,58 @@ type CharProps = WidgetProps & {
 
 export const Char = (props: CharProps) => {
   const { ooui, isSearchField = false } = props;
-  const { id, readOnly, isPassword, required, translatable } = ooui as CharOoui;
+  const { id, readOnly, required, translatable } = ooui as CharOoui;
   const { token } = useToken();
   const requiredStyle =
     required && !readOnly
       ? { backgroundColor: token.colorPrimaryBg }
       : undefined;
+
+  let input = (
+    <CharInput
+      ooui={ooui}
+      requiredStyle={requiredStyle}
+      isSearchField={isSearchField}
+    />
+  );
+
+  if (translatable && !readOnly && !isSearchField) {
+    input = <TranslatableChar field={id} requiredStyle={requiredStyle} />;
+  }
+
+  return (
+    <Field required={required} {...props}>
+      {input}
+    </Field>
+  );
+};
+
+const CharInput = ({
+  value,
+  ooui,
+  requiredStyle,
+  isSearchField,
+}: {
+  value?: any;
+  ooui: CharOoui;
+  requiredStyle: CSSProperties | undefined;
+  isSearchField: boolean;
+}) => {
+  const forceDisabled = Array.isArray(value);
   const formContext = useContext(FormContext) as FormContextType;
   const { elementHasLostFocus } = formContext || {};
-
+  const { id, readOnly, isPassword, translatable } = ooui;
   const showCount = ooui.size !== undefined && ooui.showCount;
+
+  if (ooui.selectionValues.size) {
+    value = ooui.selectionValues.get(value);
+  } else if (Array.isArray(value)) {
+    value = value[1];
+  }
 
   let input = (
     <Input
+      value={value}
       disabled={readOnly || (translatable && !isSearchField)}
       id={id}
       showCount={showCount}
@@ -43,6 +82,7 @@ export const Char = (props: CharProps) => {
   if (isPassword) {
     input = (
       <Input.Password
+        value={value}
         disabled={readOnly}
         id={id}
         onBlur={elementHasLostFocus}
@@ -50,15 +90,11 @@ export const Char = (props: CharProps) => {
     );
   }
 
-  if (translatable && !readOnly && !isSearchField) {
-    input = <TranslatableChar field={id} requiredStyle={requiredStyle} />;
+  if (forceDisabled) {
+    input = <Input value={value} id={id} disabled />;
   }
 
-  return (
-    <Field required={required} {...props}>
-      {input}
-    </Field>
-  );
+  return input;
 };
 
 const TranslatableChar = ({
