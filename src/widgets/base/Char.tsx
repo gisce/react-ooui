@@ -49,13 +49,16 @@ const CharInput = ({
   ooui,
   requiredStyle,
   isSearchField,
+  onChange,
 }: {
   value?: any;
   ooui: CharOoui;
   requiredStyle: CSSProperties | undefined;
   isSearchField: boolean;
+  onChange?: (value: string) => void;
 }) => {
-  const forceDisabled = Array.isArray(value);
+  const forceDisabled =
+    Array.isArray(value) || Boolean(ooui.selectionValues.size);
   const formContext = useContext(FormContext) as FormContextType;
   const { elementHasLostFocus } = formContext || {};
   const { id, readOnly, isPassword, translatable } = ooui;
@@ -76,6 +79,9 @@ const CharInput = ({
       style={requiredStyle}
       maxLength={ooui.size}
       onBlur={elementHasLostFocus}
+      onChange={(event: any) => {
+        onChange?.(event.target.value);
+      }}
     />
   );
 
@@ -86,6 +92,9 @@ const CharInput = ({
         disabled={readOnly}
         id={id}
         onBlur={elementHasLostFocus}
+        onChange={(event: any) => {
+          onChange?.(event.target.value);
+        }}
       />
     );
   }
