@@ -64,6 +64,7 @@ function TreeActionBar(props: Props) {
     results,
     limit,
     totalItems,
+    isActive,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   const { parentContext = {}, treeExpandable, toolbar } = props;
@@ -80,18 +81,24 @@ function TreeActionBar(props: Props) {
   useHotkeys(
     "ctrl+l,command+l",
     () => {
+      if (!isActive) {
+        return;
+      }
       if (previousView) {
         setPreviousView?.(currentView);
         setCurrentView?.(previousView);
       }
     },
     { enableOnFormTags: true, preventDefault: true },
-    [previousView, currentView],
+    [previousView, currentView, isActive],
   );
 
   useHotkeys(
     "ctrl+f,command+f",
     () => {
+      if (!isActive) {
+        return;
+      }
       setSearchVisible?.(!searchVisible);
     },
     { enableOnFormTags: true, preventDefault: true },
