@@ -54,6 +54,7 @@ export type ActionViewContextType = {
   limit?: number;
   setLimit?: (value: number) => void;
   setTitle?: (value: string) => void;
+  isActive: boolean;
 };
 
 export const ActionViewContext = createContext<ActionViewContextType | null>(
@@ -91,6 +92,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     setSearchTreeNameSearch,
     goToResourceId,
     limit: limitProps,
+    isActive,
   } = props;
 
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
@@ -204,6 +206,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         limit,
         setLimit,
         setTitle,
+        isActive,
       }}
     >
       {children}
