@@ -519,6 +519,7 @@ function ActionView(props: Props, ref: any) {
       searchTreeNameSearch={searchTreeNameSearch}
       goToResourceId={goToResourceId}
       limit={limit}
+      isActive={tabKey === activeKey}
     >
       {content()}
       <GoToResourceModal
