@@ -185,8 +185,7 @@ export const One2manyTree = ({
       onAllRowSelectedModeChange={onAllRowSelectedModeChange}
       totalRows={totalRows}
       footer={aggregates && <One2manyFooter aggregates={aggregates} />}
-      hasStatusColumn={false}
-      // hasStatusColumn={ooui.status !== null}
+      hasStatusColumn={ooui.status !== null}
       statusComponent={(status: any) => <Badge color={status} />}
       onRowStatus={(record: any) => statusForResults.current?.[record.id]}
     />
