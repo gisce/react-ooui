@@ -76,7 +76,7 @@ export const ButtonGroup = (props: ButtonGroupProps) => {
     return null;
   } else if (ooui.buttons.length > 1) {
     return (
-      <Field ooui={new FieldOoui({ ...{ ooui } })}>
+      <Field ooui={new FieldOoui({ ...{ defaultButton } })}>
         <Dropdown.Button
           disabled={!activated || readOnly}
           onClick={onClick}
