@@ -76,6 +76,8 @@ const getTableColumns = (
         if (aItem > bItem) return 1;
         return 0;
       },
+      isSortable:
+        type !== "one2many" && type !== "many2one" && column.isFunction,
     };
   });
   return tableColumns;

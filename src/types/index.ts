@@ -91,6 +91,7 @@ type SearchRequest = {
 
 type SearchAllIdsRequest = SearchCountRequest & {
   totalItems?: number;
+  order?: string | undefined;
 };
 
 type SearchCountRequest = {
