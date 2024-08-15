@@ -1,5 +1,8 @@
 name: Release
 
+env:
+  LIBRARY_NAME: "gisce/react-ooui"
+
 on:
   push:
     branches:
@@ -11,9 +14,6 @@ on:
 concurrency:
   group: "release"
   cancel-in-progress: false
-
-env:
-  LIBRARY_NAME: "gisce/react-ooui"
 
 jobs:
   release:
