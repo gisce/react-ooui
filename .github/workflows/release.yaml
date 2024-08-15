@@ -12,6 +12,9 @@ concurrency:
   group: "release"
   cancel-in-progress: false
 
+env:
+  LIBRARY_NAME: "gisce/react-ooui"
+
 jobs:
   release:
     name: Release
@@ -71,10 +74,20 @@ jobs:
     name: Update dependent projects
     needs: release
     if: needs.release.outputs.release_type != 'none'
-    uses: gisce/react-ooui/.github/workflows/update_dependent_projects.yaml@v2
-    with:
-      release_type: ${{ needs.release.outputs.release_type }}
-      tag_name: ${{ needs.release.outputs.tag_name }}
-      branch_name: ${{ needs.release.outputs.branch_name }}
-    secrets:
-      GH_PAT: ${{ secrets.GH_PAT }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - project: "gisce/webclient"
+            # modify this in case that branches are not equivalent and exist between projects
+            branch: ${{ needs.release.outputs.branch_name }}
+    steps:
+      - name: Call update version dependency flow for each project
+        uses: gisce/create-update-version-pr@v0.0.9
+        with:
+          dependentProject: ${{ matrix.project }}
+          tagName: ${{ needs.release.outputs.tag_name }}
+          dependentProjectBranch: ${{ matrix.branch }}
+          libraryName: ${{ env.LIBRARY_NAME }}
+          githubToken: ${{ secrets.GH_PAT }}
+          releaseType: ${{ needs.release.outputs.release_type }}
