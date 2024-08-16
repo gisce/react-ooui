@@ -99,4 +99,6 @@ export default {
   allRecordsSelected: "Hi ha {totalRecords} registres seleccionats.",
   openInSameWindow: "Obrir en la pestanya actual",
   openInNewTab: "Obrir en una nova pestanya",
+  confirmDuplicate:
+    "Estàs segur de volguer duplicar els registre/s seleccionats?",
 };
