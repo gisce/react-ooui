@@ -7,6 +7,7 @@ import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
+import { SearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
 
 export type TreeActionViewProps = {
   formView?: FormView;
@@ -59,7 +60,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
           treeExpandable={treeView?.isExpandable || false}
         />
       </TitleHeader>
-      <SearchTree
+      <SearchTreeInfinite
         ref={searchTreeRef}
         rootTree={true}
         model={model}
