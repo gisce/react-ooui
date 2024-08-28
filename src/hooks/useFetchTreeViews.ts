@@ -17,7 +17,7 @@ export const useFetchTreeViews = ({
   treeViewProps,
   context,
 }: UseFetchTreeViewsOpts) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [treeView, setTreeView] = useState<TreeView>();
   const [formView, setFormView] = useState<FormView>();
 
