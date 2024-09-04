@@ -4,10 +4,12 @@ import { Field as FieldOoui, Label as LabelOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Label from "@/widgets/base/Label";
 import { TimePicker } from "../../../common/TimePicker";
+import { useDatePickerLocale } from "@/helpers/useDatePickerLocale";
 
 export const DateTimeRangePicker = (props: WidgetProps) => {
   const { ooui, showLabel = false } = props;
   const { label, id } = ooui;
+  const datePickerLocale = useDatePickerLocale();
 
   const fields = [
     new FieldOoui({
@@ -42,6 +44,7 @@ export const DateTimeRangePicker = (props: WidgetProps) => {
               className="w-60"
               allowEmpty={[true, true]}
               format={"DD/MM/YYYY"}
+              locale={datePickerLocale}
             ></DatePicker.RangePicker>
           </Field>
         </Col>

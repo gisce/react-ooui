@@ -5,6 +5,7 @@ import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 import { Date as DateOoui } from "@gisce/ooui";
 import dayjs from "@/helpers/dayjs";
+import { useDatePickerLocale } from "@/helpers/useDatePickerLocale";
 const { useToken } = theme;
 
 type DatePickerProps = WidgetProps & {
@@ -48,6 +49,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
   const { value, onChange, ooui, showTime } = props;
   const { id, readOnly, required } = ooui as DateOoui;
   const { token } = useToken();
+  const datePickerLocale = useDatePickerLocale();
 
   const requiredStyle =
     required && !readOnly
@@ -91,6 +93,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
       showNow={false}
       showToday={false}
       changeOnBlur={true}
+      locale={datePickerLocale}
     />
   );
 };
