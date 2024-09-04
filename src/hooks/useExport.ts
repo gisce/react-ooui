@@ -235,7 +235,7 @@ const convertToExportFields = ({
   for (const key of Object.keys(fields)) {
     const valuesForField = fields[key];
 
-    if (valuesForField.relation && valuesForField.is_function === true) {
+    if (valuesForField.relation) {
       continue;
     }
 
