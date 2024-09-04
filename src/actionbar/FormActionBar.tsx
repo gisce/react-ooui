@@ -66,46 +66,59 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     previousView,
     setPreviousView,
     goToResourceId,
+    isActive,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   useHotkeys(
     "pagedown",
     () => {
+      if (!isActive) {
+        return;
+      }
       tryNavigate(onNextClick);
     },
     { enableOnFormTags: true, preventDefault: true },
-    [tryNavigate, onNextClick],
+    [tryNavigate, onNextClick, isActive],
   );
 
   useHotkeys(
     "pageup",
     () => {
+      if (!isActive) {
+        return;
+      }
       tryNavigate(onPreviousClick);
     },
     { enableOnFormTags: true, preventDefault: true },
-    [tryNavigate, onNextClick],
+    [tryNavigate, onNextClick, isActive],
   );
 
   useHotkeys(
     "ctrl+s,command+s",
     () => {
+      if (!isActive) {
+        return;
+      }
       onFormSave?.();
     },
     { enableOnFormTags: true, preventDefault: true },
-    [onFormSave],
+    [onFormSave, isActive],
   );
 
   // Shortcut ctl+l to change to previous view
   useHotkeys(
     "ctrl+l,command+l",
-    (event) => {
+    () => {
+      if (!isActive) {
+        return;
+      }
       if (previousView) {
         setPreviousView?.(currentView);
         setCurrentView?.(previousView);
       }
     },
     { enableOnFormTags: true, preventDefault: true },
-    [previousView, currentView],
+    [previousView, currentView, isActive],
   );
 
   const { t } = useLocale();
@@ -166,6 +179,16 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       setCurrentItemIndex?.(results.length - 1);
       setCurrentId?.(results[results.length - 1].id);
     }
+  }
+
+  function tryDuplicate() {
+    showConfirmDialog({
+      confirmMessage: t("confirmDuplicate"),
+      t,
+      onOk: () => {
+        duplicate();
+      },
+    });
   }
 
   function tryDelete() {
@@ -284,7 +307,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           formIsLoading
         }
         loading={duplicatingItem}
-        onClick={duplicate}
+        onClick={tryDuplicate}
       />
       <ActionButton
         icon={<DeleteOutlined />}
