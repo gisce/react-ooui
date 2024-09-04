@@ -181,6 +181,16 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     }
   }
 
+  function tryDuplicate() {
+    showConfirmDialog({
+      confirmMessage: t("confirmDuplicate"),
+      t,
+      onOk: () => {
+        duplicate();
+      },
+    });
+  }
+
   function tryDelete() {
     showConfirmDialog({
       confirmMessage: t("confirmRemoveItem"),
@@ -297,7 +307,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           formIsLoading
         }
         loading={duplicatingItem}
-        onClick={duplicate}
+        onClick={tryDuplicate}
       />
       <ActionButton
         icon={<DeleteOutlined />}

@@ -361,6 +361,7 @@ const ContentRootProvider = (
           {children}
           <Modal
             title={t("generatingReport")}
+            zIndex={9999}
             open={reportGenerating}
             footer={null}
             closable={false}
