@@ -86,6 +86,7 @@ import ActionView from "./views/ActionView";
 import { ErpAllFeatureKeys, ErpFeatureKeys } from "./models/erpFeature";
 import type { ErpFeaturesMap } from "./models/erpFeature";
 import { GraphCard } from "./widgets/views/Graph";
+import dayjs from "./helpers/dayjs";
 
 export {
   Button,
@@ -173,4 +174,5 @@ export {
   ConfigContextProvider,
   HTMLPreview,
   Alert,
+  dayjs,
 };
