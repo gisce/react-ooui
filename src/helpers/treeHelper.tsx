@@ -77,7 +77,7 @@ const getTableColumns = (
         return 0;
       },
       isSortable:
-        type !== "one2many" && type !== "many2one" && column.isFunction,
+        type !== "one2many" && type !== "many2one" && !column.isFunction,
     };
   });
   return tableColumns;
