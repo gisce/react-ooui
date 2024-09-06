@@ -236,13 +236,15 @@ const convertToExportFields = ({
     const valuesForField = fields[key];
 
     const relationField = isRelationField(valuesForField);
+    const isFunctionField = valuesForField.is_function === true;
+    const canBeExpanded = relationField && !isFunctionField;
 
     exportFields.push({
       key: compoundId({ key, parentKey }),
       title: valuesForField.string,
       tooltip: valuesForField.help,
       required: valuesForField.required,
-      isLeaf: !relationField,
+      isLeaf: !canBeExpanded,
     });
   }
   return exportFields;
@@ -403,7 +405,8 @@ const addIdToRelationFields = ({
     const fieldDefinition = getFieldDefinition(key, fields);
     const optsForField = fieldDefinition[childKey];
     const relationField = isRelationField(optsForField);
-    return relationField ? `${key}/id` : key;
+    const functionField = optsForField.is_function === true;
+    return relationField && !functionField ? `${key}/id` : key;
   });
 
 const splitAndSortKeys = (keys: string[]): string[] => {
