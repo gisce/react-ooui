@@ -1,6 +1,7 @@
 import ConnectionProvider from "@/ConnectionProvider";
 import { getColorMap, getStatusMap, getTree } from "@/helpers/treeHelper";
 import { TreeView } from "@/types";
+import { SortDirection } from "@gisce/react-formiga-table";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDeepCompareCallback } from "use-deep-compare";
 
@@ -46,7 +47,13 @@ export const useOne2manyTree = ({
   }, [treeView]);
 
   const onTreeFetchRows = useDeepCompareCallback(
-    async (idsToFetch: number[]) => {
+    async ({
+      idsToFetch,
+      sortFields,
+    }: {
+      idsToFetch: number[];
+      sortFields?: Record<string, SortDirection>;
+    }) => {
       const attrs: any = {};
       if (treeOoui.colors) {
         attrs.colors = treeOoui.colors;
@@ -55,10 +62,28 @@ export const useOne2manyTree = ({
         attrs.status = treeOoui.status;
       }
 
+      let finalIds = idsToFetch;
+
+      if (sortFields) {
+        const order: string = Object.keys(sortFields)
+          .map((field) => {
+            const direction = sortFields[field];
+            return `${field} ${direction}`;
+          })
+          .join(", ");
+
+        finalIds = await ConnectionProvider.getHandler().searchAllIds({
+          model: relation,
+          params: [["id", "in", idsToFetch]],
+          context,
+          order,
+        });
+      }
+
       const fetchedData =
         await ConnectionProvider.getHandler().readEvalUiObjects({
           model: relation,
-          ids: idsToFetch,
+          ids: finalIds,
           arch: treeView.arch,
           fields: treeView.fields,
           context,
