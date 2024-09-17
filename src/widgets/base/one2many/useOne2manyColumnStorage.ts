@@ -1,21 +1,53 @@
 import { ColumnState } from "@gisce/react-formiga-table";
 import { One2manyTreeDataForHash } from "./One2manyTree";
 import { useDeepCompareCallback } from "use-deep-compare";
+import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
+import { useOne2manyColumnLocalStorage } from "./useOne2manyColumnLocalStorage";
+import { useOne2manyColumnRemoteStorage } from "./useOne2manyColumnRemoteStorage";
 
 export type DataForHashWithModel = One2manyTreeDataForHash & { model: string };
 
 export const useOne2manyColumnStorage = (dataForHash: DataForHashWithModel) => {
-  const getColumnState = useDeepCompareCallback(():
-    | ColumnState[]
-    | undefined => {
-    // Get the column state values from the localstorage for the curent model
-    const columnState = localStorage.getItem(getKey(dataForHash));
-    return columnState ? JSON.parse(columnState) : undefined;
+  const remoteUserViewPrefsEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_USERVIEWPREFS,
+  );
+
+  const {
+    getColumnState: getLocalColumnState,
+    updateColumnState: updateLocalColumnState,
+  } = useOne2manyColumnLocalStorage(dataForHash);
+
+  const {
+    getColumnState: getRemoteColumnState,
+    updateColumnState: updateRemoteColumnState,
+  } = useOne2manyColumnRemoteStorage(dataForHash);
+
+  const getColumnState = useDeepCompareCallback(async (): Promise<
+    ColumnState[] | undefined
+  > => {
+    if (!remoteUserViewPrefsEnabled) {
+      return getLocalColumnState();
+    }
+    try {
+      return getRemoteColumnState();
+    } catch (err) {
+      console.error(err);
+      return getLocalColumnState();
+    }
   }, [dataForHash]);
 
   const updateColumnState = useDeepCompareCallback(
-    (state: ColumnState[]) => {
-      localStorage.setItem(getKey(dataForHash), JSON.stringify(state));
+    async (state: ColumnState[]) => {
+      if (!remoteUserViewPrefsEnabled) {
+        return updateLocalColumnState(state);
+      }
+      try {
+        return updateRemoteColumnState(state);
+      } catch (err) {
+        console.error(err);
+        return updateLocalColumnState(state);
+      }
     },
     [dataForHash],
   );
@@ -23,6 +55,6 @@ export const useOne2manyColumnStorage = (dataForHash: DataForHashWithModel) => {
   return { getColumnState, updateColumnState };
 };
 
-const getKey = (dataForHash: DataForHashWithModel) => {
+export const getKey = (dataForHash: DataForHashWithModel) => {
   return `columnState-${dataForHash.parentViewId}-${dataForHash.treeViewId}-${dataForHash.one2ManyFieldName}-${dataForHash.model}`;
 };
