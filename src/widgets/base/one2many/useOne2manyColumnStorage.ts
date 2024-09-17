@@ -39,14 +39,20 @@ export const useOne2manyColumnStorage = (dataForHash: DataForHashWithModel) => {
 
   const updateColumnState = useDeepCompareCallback(
     async (state: ColumnState[]) => {
+      // sort status for columns should not be stored
+      const columnStatesWithoutSort = state.map((columnState) => {
+        const { sort, ...columnStateWithoutSort } = columnState;
+        return columnStateWithoutSort;
+      });
+
       if (!remoteUserViewPrefsEnabled) {
-        return updateLocalColumnState(state);
+        return updateLocalColumnState(columnStatesWithoutSort);
       }
       try {
-        return updateRemoteColumnState(state);
+        return updateRemoteColumnState(columnStatesWithoutSort);
       } catch (err) {
         console.error(err);
-        return updateLocalColumnState(state);
+        return updateLocalColumnState(columnStatesWithoutSort);
       }
     },
     [dataForHash],
