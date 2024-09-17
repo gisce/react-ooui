@@ -35,7 +35,7 @@
   "dependencies": {
     "@ant-design/plots": "^1.0.9",
     "@gisce/fiber-diagram": "2.1.1",
-    "@gisce/ooui": "2.10.1-alpha.1",
+    "@gisce/ooui": "2.10.2-alpha.1",
     "@gisce/react-formiga-components": "1.8.0",
     "@gisce/react-formiga-table": "1.6.0-alpha.14",
     "@monaco-editor/react": "^4.4.5",
