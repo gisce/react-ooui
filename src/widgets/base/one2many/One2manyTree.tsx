@@ -1,15 +1,19 @@
-import { InfiniteTable, InfiniteTableRef } from "@gisce/react-formiga-table";
+import {
+  InfiniteTable,
+  InfiniteTableRef,
+  SortDirection,
+} from "@gisce/react-formiga-table";
 import { One2manyItem } from "./One2manyInput";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { RefObject, useCallback, useRef } from "react";
 import { getTableColumns, getTableItems } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "@/widgets/views/Tree/treeComponents";
 import useDeepCompareEffect from "use-deep-compare-effect";
-import { useOne2manyColumnStorage } from "./useOne2manyColumnStorage";
 import { useDeepCompareMemo } from "use-deep-compare";
 import { TreeAggregates } from "./useTreeAggregates";
 import { One2manyFooter } from "./One2manyFooter";
-import { Badge } from "antd";
+import { useOne2manyColumnStorageFetch } from "./useOne2manyColumnStorageFetch";
+import { Spin, Badge } from "antd";
 
 export type One2manyTreeDataForHash = {
   parentViewId?: number;
@@ -24,7 +28,13 @@ export type One2manyTreeProps = {
   height?: number;
   ooui: TreeOoui;
   context: any;
-  onFetchRecords: (idsToFetch: number[]) => Promise<{
+  onFetchRecords: ({
+    idsToFetch,
+    sortFields,
+  }: {
+    idsToFetch: number[];
+    sortFields?: Record<string, SortDirection>;
+  }) => Promise<{
     results: any[];
     colors: { [key: number]: string };
     status: { [key: number]: string };
@@ -96,7 +106,15 @@ export const One2manyTree = ({
   }, [context, ooui]);
 
   const onRequestData = useCallback(
-    async (startRow: number, endRow: number) => {
+    async ({
+      startRow,
+      endRow,
+      sortFields,
+    }: {
+      startRow: number;
+      endRow: number;
+      sortFields?: Record<string, SortDirection>;
+    }) => {
       const itemsToFetch = itemsRef.current;
       const idsToFetch = itemsToFetch.map((item) => item.id) as number[];
       // now slice the records with startRow and endRow
@@ -124,7 +142,10 @@ export const One2manyTree = ({
         return [];
       }
 
-      const { results, colors, status } = await onFetchRecords(realIdsToFetch);
+      const { results, colors, status } = await onFetchRecords({
+        idsToFetch: realIdsToFetch,
+        sortFields,
+      });
 
       const preparedResults = getTableItems(ooui, results);
 
@@ -135,6 +156,17 @@ export const One2manyTree = ({
           return result;
         }
         return itemsToFetch.find((item) => item.id === id)?.treeValues;
+      });
+
+      // Now we have to maintain the same order for resultsMapped that the one we have in preparedResults
+      resultsMapped.sort((a, b) => {
+        const indexA = preparedResults.findIndex(
+          (result) => result.id === a.id,
+        );
+        const indexB = preparedResults.findIndex(
+          (result) => result.id === b.id,
+        );
+        return indexA - indexB;
       });
 
       colorsForResults.current = { ...colorsForResults.current, ...colors };
@@ -156,10 +188,15 @@ export const One2manyTree = ({
     return undefined;
   }, []);
 
-  const { getColumnState, updateColumnState } = useOne2manyColumnStorage({
-    ...dataForHash,
-    model: relation,
-  });
+  const { loading, getColumnState, updateColumnState } =
+    useOne2manyColumnStorageFetch({
+      ...dataForHash,
+      model: relation,
+    });
+
+  if (loading) {
+    return <Spin />;
+  }
 
   return (
     <InfiniteTable

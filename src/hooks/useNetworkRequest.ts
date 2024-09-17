@@ -13,11 +13,25 @@ export const useNetworkRequest = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const cancelRequest = useCallback((requestId?: string) => {
+    if (requestId) {
+      abortControllersRef.current.delete(requestId);
+      if (process.env.NODE_ENV !== "development") {
+        abortControllersRef.current.get(requestId)?.abort();
+      }
+    } else {
+      if (process.env.NODE_ENV !== "development") {
+        abortControllersRef.current.forEach((controller) => controller.abort());
+      }
+      abortControllersRef.current.clear();
+    }
+  }, []);
+
   const fetchData = useCallback(
     async (payload: any, manualRequestId?: string) => {
       const requestId = manualRequestId || nanoid();
       if (abortControllersRef.current.has(requestId)) {
-        abortControllersRef.current.get(requestId)?.abort();
+        cancelRequest(requestId);
       }
 
       const abortController = new AbortController();
@@ -31,18 +45,8 @@ export const useNetworkRequest = (
         abortControllersRef.current.delete(requestId);
       }
     },
-    [fn],
+    [cancelRequest, fn],
   );
-
-  const cancelRequest = useCallback((requestId?: string) => {
-    if (requestId) {
-      abortControllersRef.current.get(requestId)?.abort();
-      abortControllersRef.current.delete(requestId);
-    } else {
-      abortControllersRef.current.forEach((controller) => controller.abort());
-      abortControllersRef.current.clear();
-    }
-  }, []);
 
   return [fetchData, cancelRequest];
 };
