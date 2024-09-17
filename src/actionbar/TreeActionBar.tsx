@@ -109,6 +109,16 @@ function TreeActionBar(props: Props) {
     searchTreeNameSearch !== undefined &&
     searchTreeNameSearch.trim().length > 0;
 
+  function tryDuplicate() {
+    showConfirmDialog({
+      confirmMessage: t("confirmDuplicate"),
+      t,
+      onOk: () => {
+        duplicate();
+      },
+    });
+  }
+
   function tryDelete() {
     showConfirmDialog({
       confirmMessage: t("confirmRemove"),
@@ -231,7 +241,7 @@ function TreeActionBar(props: Props) {
               treeIsLoading
             }
             loading={duplicatingItem}
-            onClick={duplicate}
+            onClick={tryDuplicate}
           />
           <ActionButton
             icon={<DeleteOutlined />}

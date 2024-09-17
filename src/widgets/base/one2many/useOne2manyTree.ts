@@ -1,10 +1,5 @@
 import ConnectionProvider from "@/ConnectionProvider";
-import {
-  getColorMap,
-  getOrderFromSortFields,
-  getStatusMap,
-  getTree,
-} from "@/helpers/treeHelper";
+import { getColorMap, getStatusMap, getTree } from "@/helpers/treeHelper";
 import { TreeView } from "@/types";
 import { SortDirection } from "@gisce/react-formiga-table";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -70,7 +65,12 @@ export const useOne2manyTree = ({
       let finalIds = idsToFetch;
 
       if (sortFields) {
-        const order = getOrderFromSortFields(sortFields);
+        const order: string = Object.keys(sortFields)
+          .map((field) => {
+            const direction = sortFields[field];
+            return `${field} ${direction}`;
+          })
+          .join(", ");
 
         finalIds = await ConnectionProvider.getHandler().searchAllIds({
           model: relation,
