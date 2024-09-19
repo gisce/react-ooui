@@ -11,7 +11,7 @@ import { COLUMN_COMPONENTS } from "@/widgets/views/Tree/treeComponents";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { useDeepCompareMemo } from "use-deep-compare";
 import { TreeAggregates } from "./useTreeAggregates";
-import { One2manyFooter } from "./One2manyFooter";
+import { AggregatesFooter } from "./AggregatesFooter";
 import { useTreeColumnStorageFetch } from "./useTreeColumnStorageFetch";
 import { Spin, Badge } from "antd";
 import {
@@ -216,7 +216,7 @@ export const One2manyTree = ({
       allRowSelectedMode={allRowSelectedMode}
       onAllRowSelectedModeChange={onAllRowSelectedModeChange}
       totalRows={totalRows}
-      footer={aggregates && <One2manyFooter aggregates={aggregates} />}
+      footer={aggregates && <AggregatesFooter aggregates={aggregates} />}
       hasStatusColumn={ooui.status !== null}
       statusComponent={(status: any) => <Badge color={status} />}
       onRowStatus={(record: any) => statusForResults.current?.[record.id]}

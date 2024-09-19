@@ -43,6 +43,7 @@
     "antd": "5.13.1",
     "buffer": "^6.0.3",
     "file-type-buffer-browser": "git+ssh://git@github.com/mguellsegarra/file-type-buffer-browser.git",
+    "framer-motion": "^11.5.5",
     "interweave": "^13.0.0",
     "md5": "^2.3.0",
     "nanoid": "^5.0.4",

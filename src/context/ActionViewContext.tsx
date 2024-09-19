@@ -1,6 +1,6 @@
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { View } from "@/types";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 export type ActionViewContextType = {
   title: string;
@@ -55,6 +55,8 @@ export type ActionViewContextType = {
   setLimit?: (value: number) => void;
   setTitle?: (value: string) => void;
   isActive: boolean;
+  treeFirstVisibleRow: number;
+  setTreeFirstVisibleRow: (totalItems: number) => void;
 };
 
 export const ActionViewContext = createContext<ActionViewContextType | null>(
@@ -107,6 +109,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [graphIsLoading, setGraphIsLoading] = useState<boolean>(true);
   const [previousView, setPreviousView] = useState<View>();
   const [searchValues, setSearchValues] = useState<any>({});
+  const [treeFirstVisibleRow, setTreeFirstVisibleRow] = useState<number>(0);
+
   const [limit, setLimit] = useState<number>(
     limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT,
   );
@@ -207,11 +211,30 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setLimit,
         setTitle,
         isActive,
+        setTreeFirstVisibleRow,
+        treeFirstVisibleRow,
       }}
     >
       {children}
     </ActionViewContext.Provider>
   );
+};
+
+export const useActionViewContext = (
+  isRoot: boolean,
+): ActionViewContextType => {
+  const actionViewContext = useContext(
+    ActionViewContext,
+  ) as ActionViewContextType;
+  if (!isRoot) {
+    return {} as ActionViewContextType;
+  }
+  if (!actionViewContext) {
+    throw new Error(
+      "useActionViewContext must be used within a ActionViewProvider",
+    );
+  }
+  return actionViewContext;
 };
 
 export default ActionViewProvider;

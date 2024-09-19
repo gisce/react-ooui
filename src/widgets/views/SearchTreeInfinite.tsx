@@ -1,4 +1,11 @@
-import { forwardRef, useCallback, useMemo, useRef } from "react";
+import {
+  RefObject,
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+} from "react";
 
 import { FormView, TreeView } from "@/types/index";
 
@@ -12,10 +19,22 @@ import {
 } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "./Tree/treeComponents";
 import { useDeepCompareMemo } from "use-deep-compare";
-import { InfiniteTable, SortDirection } from "@gisce/react-formiga-table";
+import {
+  InfiniteTable,
+  InfiniteTableRef,
+  SortDirection,
+} from "@gisce/react-formiga-table";
 import ConnectionProvider from "@/ConnectionProvider";
 import { useAvailableHeight } from "@/hooks/useAvailableHeight";
 import { showErrorDialog } from "@/ui/GenericErrorDialog";
+import { useActionViewContext } from "@/context/ActionViewContext";
+import { FloatingDrawer } from "@/ui/FloatingDrawer";
+import { mergeSearchFields } from "@/helpers/formHelper";
+import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
+import { useTreeColumnStorageFetch } from "../base/one2many/useTreeColumnStorageFetch";
+import { getKey } from "@/helpers/tree-columnStorageHelper";
+import { useTreeAggregates } from "../base/one2many/useTreeAggregates";
+import { AggregatesFooter } from "../base/one2many/AggregatesFooter";
 
 export const HEIGHT_OFFSET = 10;
 
@@ -55,6 +74,16 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   } = props;
   const colorsForResults = useRef<{ [key: number]: string }>({});
   const statusForResults = useRef<{ [key: number]: string }>();
+  const tableRef: RefObject<InfiniteTableRef> = useRef(null);
+
+  useImperativeHandle(ref, () => ({
+    refreshResults: () => {
+      tableRef?.current?.unselectAll();
+      tableRef?.current?.refresh();
+    },
+    getFields: () => treeView?.fields,
+    getDomain: () => domain,
+  }));
 
   const containerRef = useRef<HTMLDivElement>(null);
   const availableHeight = useAvailableHeight({
@@ -68,6 +97,16 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     treeViewProps,
     context: parentContext,
   });
+
+  const {
+    setTreeIsLoading,
+    searchVisible = false,
+    setSearchVisible,
+    setSelectedRowItems,
+    setTreeFirstVisibleRow,
+    treeFirstVisibleRow,
+    selectedRowItems,
+  } = useActionViewContext(rootTree);
 
   const treeOoui = useMemo(() => {
     if (!treeView) {
@@ -89,6 +128,17 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     );
   }, [treeOoui, parentContext]);
 
+  const {
+    loading: getColumnStateInProgress,
+    getColumnState,
+    updateColumnState,
+  } = useTreeColumnStorageFetch(
+    getKey({
+      treeViewId: treeView?.view_id,
+      model,
+    }),
+  );
+
   const fetchResults = useCallback(
     async ({
       startRow,
@@ -99,6 +149,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       endRow: number;
       sortFields?: Record<string, SortDirection>;
     }) => {
+      setTreeIsLoading?.(true);
       if (!treeOoui) {
         return [];
       }
@@ -131,6 +182,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         ...colorsForResults.current,
         ...attrsEvaluated.colors,
       };
+
       if (!statusForResults.current && treeOoui.status) {
         statusForResults.current = {};
       }
@@ -140,9 +192,18 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           ...attrsEvaluated.colors,
         };
       }
+      setTreeIsLoading?.(false);
       return preparedResults;
     },
-    [domain, model, parentContext, treeOoui, treeView],
+    [domain, model, parentContext, setTreeIsLoading, treeOoui, treeView],
+  );
+
+  const changeSelectedRowKeys = useCallback(
+    (newSelectedRowKeys: any[]) => {
+      setSelectedRowItems?.(newSelectedRowKeys.map((id: number) => ({ id })));
+      onChangeSelectedRowKeys?.(newSelectedRowKeys);
+    },
+    [onChangeSelectedRowKeys, setSelectedRowItems],
   );
 
   const onRequestData = useCallback(
@@ -169,6 +230,18 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     [fetchResults],
   );
 
+  const onRowStyle = useCallback((record: any) => {
+    if (colorsForResults.current[record.node?.data?.id]) {
+      return { color: colorsForResults.current[record.node?.data?.id] };
+    }
+    return undefined;
+  }, []);
+
+  const aggregates = useTreeAggregates({
+    ooui: treeOoui,
+    model,
+  });
+
   const content = useMemo(() => {
     if (!columns || !treeOoui) {
       return null;
@@ -177,28 +250,44 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     return (
       <InfiniteTable
         readonly={false}
-        // ref={tableRef}
+        ref={tableRef}
         height={availableHeight}
         columns={columns}
         onRequestData={onRequestData}
-        // onRowDoubleClick={onRowDoubleClick}
-        // onRowStyle={onRowStyle}
-        // onRowSelectionChange={onRowSelectionChange}
-        // onColumnChanged={updateColumnState}
-        // onGetColumnsState={getColumnState}
-        // onChangeFirstVisibleRowIndex={onChangeFirstVisibleRowIndex}
-        // onGetFirstVisibleRowIndex={onGetFirstVisibleRowIndex}
-        // onGetSelectedRowKeys={onGetSelectedRowKeys}
+        onRowDoubleClick={onRowClicked}
+        onRowStyle={onRowStyle}
+        onRowSelectionChange={changeSelectedRowKeys}
+        onColumnChanged={updateColumnState}
+        onGetColumnsState={getColumnState}
+        onChangeFirstVisibleRowIndex={setTreeFirstVisibleRow}
+        onGetFirstVisibleRowIndex={() => treeFirstVisibleRow}
+        onGetSelectedRowKeys={() =>
+          selectedRowItems?.map((item) => item.id) || []
+        }
         // allRowSelectedMode={allRowSelectedMode}
         // onAllRowSelectedModeChange={onAllRowSelectedModeChange}
-        totalRows={9999999}
-        // footer={aggregates && <One2manyFooter aggregates={aggregates} />}
+        totalRows={9999999} // TODO: review this, must be updated once we know all the records from above.
+        footer={aggregates && <AggregatesFooter aggregates={aggregates} />}
         hasStatusColumn={treeOoui.status !== null}
         statusComponent={(status: any) => <Badge color={status} />}
-        // onRowStatus={(record: any) => statusForResults.current?.[record.id]}
+        onRowStatus={(record: any) => statusForResults.current?.[record.id]}
       />
     );
-  }, [availableHeight, columns, onRequestData, treeOoui]);
+  }, [
+    aggregates,
+    availableHeight,
+    changeSelectedRowKeys,
+    columns,
+    getColumnState,
+    onRequestData,
+    onRowClicked,
+    onRowStyle,
+    selectedRowItems,
+    setTreeFirstVisibleRow,
+    treeFirstVisibleRow,
+    treeOoui,
+    updateColumnState,
+  ]);
 
   return (
     <div
@@ -209,7 +298,29 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         ...(visible ? {} : { display: "none" }),
       }}
     >
-      {loading ? <Spin /> : content}
+      {loading || getColumnStateInProgress ? <Spin /> : content}
+      <FloatingDrawer
+        isOpen={searchVisible}
+        onClose={() => setSearchVisible?.(false)}
+      >
+        <SearchFilter
+          fields={{ ...formView?.fields, ...treeView?.fields }}
+          searchFields={mergeSearchFields([
+            formView?.search_fields,
+            treeView?.search_fields,
+          ])}
+          onClear={() => {}}
+          limit={0}
+          offset={10}
+          isSearching={false}
+          onSubmit={() => {}}
+          onLimitChange={(limit: number) => {}}
+          setSearchFilterHeight={(height: number) => {}}
+          searchError={undefined}
+          searchVisible={searchVisible}
+          searchValues={{}}
+        />
+      </FloatingDrawer>
     </div>
   );
 }

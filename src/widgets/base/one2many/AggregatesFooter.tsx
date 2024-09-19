@@ -1,6 +1,6 @@
 import { TreeAggregates } from "./useTreeAggregates";
 
-export const One2manyFooter = ({
+export const AggregatesFooter = ({
   aggregates,
 }: {
   aggregates: TreeAggregates;

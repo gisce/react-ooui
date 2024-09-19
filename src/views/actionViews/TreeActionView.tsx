@@ -1,8 +1,7 @@
 import TreeActionBar from "@/actionbar/TreeActionBar";
 import { FormView, TreeView, View } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
-import SearchTree from "@/widgets/views/SearchTree";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import {
   ActionViewContext,
   ActionViewContextType,
