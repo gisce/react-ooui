@@ -1,10 +1,12 @@
 import {
+  Fragment,
   RefObject,
   forwardRef,
   useCallback,
   useImperativeHandle,
   useMemo,
   useRef,
+  useState,
 } from "react";
 
 import { FormView, TreeView } from "@/types/index";
@@ -35,6 +37,8 @@ import { useTreeColumnStorageFetch } from "../base/one2many/useTreeColumnStorage
 import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { useTreeAggregates } from "../base/one2many/useTreeAggregates";
 import { AggregatesFooter } from "../base/one2many/AggregatesFooter";
+import { set } from "lodash";
+import { SearchTreeHeader } from "./SearchTreeHeader";
 
 export const HEIGHT_OFFSET = 10;
 
@@ -75,6 +79,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const colorsForResults = useRef<{ [key: number]: string }>({});
   const statusForResults = useRef<{ [key: number]: string }>();
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
+
+  const [totalRows, setTotalRows] = useState<number>();
 
   useImperativeHandle(ref, () => ({
     refreshResults: () => {
@@ -162,19 +168,29 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         attrs.status = treeOoui.status;
       }
 
-      const { totalItems, results, attrsEvaluated } =
-        await ConnectionProvider.getHandler().searchForTree({
-          params: domain,
-          limit: endRow - startRow,
-          offset: startRow,
-          model,
-          fields: treeView!.field_parent
-            ? { ...treeView!.fields, [treeView!.field_parent]: {} }
-            : treeView!.fields,
-          context: parentContext,
-          attrs,
-          order: getOrderFromSortFields(sortFields),
+      const {
+        totalItems: totalItemsPromise,
+        results,
+        attrsEvaluated,
+      } = await ConnectionProvider.getHandler().searchForTree({
+        params: domain,
+        limit: endRow - startRow,
+        offset: startRow,
+        model,
+        fields: treeView!.field_parent
+          ? { ...treeView!.fields, [treeView!.field_parent]: {} }
+          : treeView!.fields,
+        context: parentContext,
+        attrs,
+        order: getOrderFromSortFields(sortFields),
+      });
+
+      // TODO: maybe we could improve this somehow
+      Promise.resolve().then(async () => {
+        totalItemsPromise.then((totalItems) => {
+          setTotalRows(totalItems);
         });
+      });
 
       const preparedResults = getTableItems(treeOoui, results);
 
@@ -248,30 +264,38 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     }
 
     return (
-      <InfiniteTable
-        readonly={false}
-        ref={tableRef}
-        height={availableHeight}
-        columns={columns}
-        onRequestData={onRequestData}
-        onRowDoubleClick={onRowClicked}
-        onRowStyle={onRowStyle}
-        onRowSelectionChange={changeSelectedRowKeys}
-        onColumnChanged={updateColumnState}
-        onGetColumnsState={getColumnState}
-        onChangeFirstVisibleRowIndex={setTreeFirstVisibleRow}
-        onGetFirstVisibleRowIndex={() => treeFirstVisibleRow}
-        onGetSelectedRowKeys={() =>
-          selectedRowItems?.map((item) => item.id) || []
-        }
-        // allRowSelectedMode={allRowSelectedMode}
-        // onAllRowSelectedModeChange={onAllRowSelectedModeChange}
-        totalRows={9999999} // TODO: review this, must be updated once we know all the records from above.
-        footer={aggregates && <AggregatesFooter aggregates={aggregates} />}
-        hasStatusColumn={treeOoui.status !== null}
-        statusComponent={(status: any) => <Badge color={status} />}
-        onRowStatus={(record: any) => statusForResults.current?.[record.id]}
-      />
+      <Fragment>
+        <SearchTreeHeader
+          selectedRowKeys={selectedRowItems?.map((item) => item.id) || []}
+          // allVisibleKeysSelected={selectedRowItems?.length === totalRows}
+          allVisibleKeysSelected={false}
+          totalRows={totalRows}
+        />
+        <InfiniteTable
+          readonly={false}
+          ref={tableRef}
+          height={availableHeight}
+          columns={columns}
+          onRequestData={onRequestData}
+          onRowDoubleClick={onRowClicked}
+          onRowStyle={onRowStyle}
+          onRowSelectionChange={changeSelectedRowKeys}
+          onColumnChanged={updateColumnState}
+          onGetColumnsState={getColumnState}
+          onChangeFirstVisibleRowIndex={setTreeFirstVisibleRow}
+          onGetFirstVisibleRowIndex={() => treeFirstVisibleRow}
+          onGetSelectedRowKeys={() =>
+            selectedRowItems?.map((item) => item.id) || []
+          }
+          // allRowSelectedMode={allRowSelectedMode}
+          // onAllRowSelectedModeChange={onAllRowSelectedModeChange}
+          totalRows={totalRows || 99999} // TODO: review this, must be updated once we know all the records from above.
+          footer={aggregates && <AggregatesFooter aggregates={aggregates} />}
+          hasStatusColumn={treeOoui.status !== null}
+          statusComponent={(status: any) => <Badge color={status} />}
+          onRowStatus={(record: any) => statusForResults.current?.[record.id]}
+        />
+      </Fragment>
     );
   }, [
     aggregates,
@@ -284,6 +308,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     onRowStyle,
     selectedRowItems,
     setTreeFirstVisibleRow,
+    totalRows,
     treeFirstVisibleRow,
     treeOoui,
     updateColumnState,

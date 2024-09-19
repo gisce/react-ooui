@@ -52,7 +52,10 @@ export const TreeActionView = (props: TreeActionViewProps) => {
 
   return (
     <>
-      <TitleHeader>
+      {
+        // TODO: change this to true in older components
+      }
+      <TitleHeader showSummary={false}>
         <TreeActionBar
           toolbar={treeView?.toolbar}
           parentContext={context}
