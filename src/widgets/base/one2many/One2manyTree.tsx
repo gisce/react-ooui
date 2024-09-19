@@ -12,14 +12,12 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import { useDeepCompareMemo } from "use-deep-compare";
 import { TreeAggregates } from "./useTreeAggregates";
 import { One2manyFooter } from "./One2manyFooter";
-import { useOne2manyColumnStorageFetch } from "./useOne2manyColumnStorageFetch";
+import { useTreeColumnStorageFetch } from "./useTreeColumnStorageFetch";
 import { Spin, Badge } from "antd";
-
-export type One2manyTreeDataForHash = {
-  parentViewId?: number;
-  treeViewId?: number;
-  one2ManyFieldName: string;
-};
+import {
+  One2manyTreeDataForHash,
+  getKey,
+} from "@/helpers/o2m-columnStorageHelper";
 
 export type One2manyTreeProps = {
   items: One2manyItem[];
@@ -189,10 +187,12 @@ export const One2manyTree = ({
   }, []);
 
   const { loading, getColumnState, updateColumnState } =
-    useOne2manyColumnStorageFetch({
-      ...dataForHash,
-      model: relation,
-    });
+    useTreeColumnStorageFetch(
+      getKey({
+        ...dataForHash,
+        model: relation,
+      }),
+    );
 
   if (loading) {
     return <Spin />;
