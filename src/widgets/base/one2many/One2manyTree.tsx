@@ -43,8 +43,7 @@ export type One2manyTreeProps = {
   onChangeFirstVisibleRowIndex?: (index: number) => void;
   onGetFirstVisibleRowIndex?: () => number | undefined;
   onGetSelectedRowKeys?: () => any[];
-  onAllRowSelectedModeChange?: (allRowSelectedMode: boolean) => void;
-  allRowSelectedMode?: boolean;
+  onSelectionCheckboxClicked?: () => void;
   dataForHash: One2manyTreeDataForHash;
   aggregates?: TreeAggregates;
 };
@@ -65,8 +64,7 @@ export const One2manyTree = ({
   onChangeFirstVisibleRowIndex,
   onGetFirstVisibleRowIndex,
   onGetSelectedRowKeys,
-  onAllRowSelectedModeChange,
-  allRowSelectedMode,
+  onSelectionCheckboxClicked,
   dataForHash,
   aggregates,
 }: One2manyTreeProps) => {
@@ -213,8 +211,7 @@ export const One2manyTree = ({
       onChangeFirstVisibleRowIndex={onChangeFirstVisibleRowIndex}
       onGetFirstVisibleRowIndex={onGetFirstVisibleRowIndex}
       onGetSelectedRowKeys={onGetSelectedRowKeys}
-      allRowSelectedMode={allRowSelectedMode}
-      onAllRowSelectedModeChange={onAllRowSelectedModeChange}
+      onSelectionCheckboxClicked={onSelectionCheckboxClicked}
       totalRows={totalRows}
       footer={aggregates && <AggregatesFooter aggregates={aggregates} />}
       hasStatusColumn={ooui.status !== null}

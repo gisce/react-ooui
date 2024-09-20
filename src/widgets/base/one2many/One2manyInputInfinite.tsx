@@ -93,12 +93,15 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
     onChangeFirstVisibleRowIndex,
     onGetFirstVisibileRowIndex,
     onGetSelectedRowKeys,
-    allRowSelectedMode,
-    onChangeAllRowSelectedMode,
+    onSelectionCheckboxClicked,
   } = useOne2manyTree({
     treeView: views.get("tree"),
     relation,
     context,
+    allRowsIds: items
+      .filter((item) => item.id !== undefined)
+      .map((item) => item.id!),
+    gridRef,
   });
 
   const aggregates = useOne2manyTreeAggregates({
@@ -273,8 +276,7 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
           onChangeFirstVisibleRowIndex={onChangeFirstVisibleRowIndex}
           onGetFirstVisibleRowIndex={onGetFirstVisibileRowIndex}
           onGetSelectedRowKeys={onGetSelectedRowKeys}
-          allRowSelectedMode={allRowSelectedMode}
-          onAllRowSelectedModeChange={onChangeAllRowSelectedMode}
+          onSelectionCheckboxClicked={onSelectionCheckboxClicked}
           dataForHash={{
             parentViewId: props.parentViewId,
             treeViewId: props.treeViewId,
