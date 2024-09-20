@@ -2,7 +2,7 @@ import { ColumnState } from "@gisce/react-formiga-table";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTreeColumnStorage } from "./useTreeColumnStorage";
 
-export const useTreeColumnStorageFetch = (key: string) => {
+export const useTreeColumnStorageFetch = (key?: string) => {
   const [loading, setLoading] = useState(true);
   const columnState = useRef<ColumnState[] | undefined>(undefined);
 
@@ -10,6 +10,9 @@ export const useTreeColumnStorageFetch = (key: string) => {
     useTreeColumnStorage(key);
 
   useEffect(() => {
+    if (!key) {
+      return;
+    }
     const fetchColumnState = async () => {
       setLoading(true);
       try {
@@ -22,8 +25,7 @@ export const useTreeColumnStorageFetch = (key: string) => {
     };
 
     fetchColumnState();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getColumnStateInternal, key]);
 
   const getColumnState = useCallback(() => {
     return columnState.current;

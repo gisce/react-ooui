@@ -4,7 +4,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { useEffect } from "react";
 
-export const useTreeColumnRemoteStorage = (key: string) => {
+export const useTreeColumnRemoteStorage = (key?: string) => {
   useEffect(() => {
     return () => {
       cancelReadRequest();
@@ -24,6 +24,9 @@ export const useTreeColumnRemoteStorage = (key: string) => {
   const getColumnState = useDeepCompareCallback(async (): Promise<
     ColumnState[] | undefined
   > => {
+    if (!key) {
+      throw new Error("Unknown column state key");
+    }
     const state = await read({
       key,
     });
@@ -35,6 +38,9 @@ export const useTreeColumnRemoteStorage = (key: string) => {
 
   const updateColumnState = useDeepCompareCallback(
     async (state: ColumnState[]) => {
+      if (!key) {
+        return;
+      }
       // state is an array of objects but we need to remove the properties of each object that are null
       // to avoid sending them to the backend
       const stateWithoutNulls = state.map((column) =>

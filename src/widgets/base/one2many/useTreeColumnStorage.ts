@@ -5,7 +5,7 @@ import { ErpFeatureKeys } from "@/models/erpFeature";
 import { useTreeColumnLocalStorage } from "./useTreeColumnLocalStorage";
 import { useTreeColumnRemoteStorage } from "./useTreeColumnRemoteStorage";
 
-export const useTreeColumnStorage = (key: string) => {
+export const useTreeColumnStorage = (key?: string) => {
   const remoteUserViewPrefsEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_USERVIEWPREFS,
   );

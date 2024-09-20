@@ -4,5 +4,8 @@ export type TreeDataForHash = {
 };
 
 export const getKey = (dataForHash: TreeDataForHash) => {
+  if (!dataForHash.treeViewId || !dataForHash.model) {
+    return undefined;
+  }
   return `columnState-${dataForHash.treeViewId}-${dataForHash.model}`;
 };

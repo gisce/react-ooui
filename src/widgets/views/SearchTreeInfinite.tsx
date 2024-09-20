@@ -37,7 +37,6 @@ import { useTreeColumnStorageFetch } from "../base/one2many/useTreeColumnStorage
 import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { useTreeAggregates } from "../base/one2many/useTreeAggregates";
 import { AggregatesFooter } from "../base/one2many/AggregatesFooter";
-import { set } from "lodash";
 import { SearchTreeHeader } from "./SearchTreeHeader";
 
 export const HEIGHT_OFFSET = 10;
@@ -134,16 +133,18 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     );
   }, [treeOoui, parentContext]);
 
+  const columnStateKey = useMemo(() => {
+    return getKey({
+      treeViewId: treeView?.view_id,
+      model,
+    });
+  }, [model, treeView?.view_id]);
+
   const {
     loading: getColumnStateInProgress,
     getColumnState,
     updateColumnState,
-  } = useTreeColumnStorageFetch(
-    getKey({
-      treeViewId: treeView?.view_id,
-      model,
-    }),
-  );
+  } = useTreeColumnStorageFetch(columnStateKey);
 
   const fetchResults = useCallback(
     async ({
@@ -289,7 +290,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           }
           // allRowSelectedMode={allRowSelectedMode}
           // onAllRowSelectedModeChange={onAllRowSelectedModeChange}
-          totalRows={totalRows || 99999} // TODO: review this, must be updated once we know all the records from above.
+          totalRows={totalRows || 99999}
           footer={aggregates && <AggregatesFooter aggregates={aggregates} />}
           hasStatusColumn={treeOoui.status !== null}
           statusComponent={(status: any) => <Badge color={status} />}
