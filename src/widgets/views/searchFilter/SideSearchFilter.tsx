@@ -95,7 +95,6 @@ export const SideSearchFilter = (props: Props) => {
       <Space
         direction="horizontal"
         align="center"
-        className="pt-5"
         style={{
           width: "100%",
           justifyContent: "center",

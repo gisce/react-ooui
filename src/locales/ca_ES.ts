@@ -103,6 +103,7 @@ export default {
     "Estàs segur de volguer duplicar els registre/s seleccionats?",
   confirmSelectAllRegisters:
     "Estàs segur de volguer seleccionar tots els {totalRecords} registres?",
+  filter: "Filtrar",
   applyFilters: "Aplicar filtres",
   clearFilters: "Netejar filtres",
 };

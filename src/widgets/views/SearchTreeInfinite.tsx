@@ -385,6 +385,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       >
         {loading || getColumnStateInProgress ? <Spin /> : content}
         <FloatingDrawer
+          title={t("filter")}
           isOpen={searchVisible}
           onClose={() => setSearchVisible?.(false)}
         >

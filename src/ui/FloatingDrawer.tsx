@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Typography, Button } from "antd";
+import { CloseOutlined } from "@ant-design/icons";
+
+const { Title } = Typography;
 
 interface FloatingDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  title?: string;
 }
 
 export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
   isOpen,
   onClose,
   children,
+  title,
 }) => {
   const [showDrawer, setShowDrawer] = useState(isOpen);
 
@@ -46,21 +52,26 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
         overflowY: "auto",
       }}
     >
-      <button
-        onClick={onClose}
+      <div
         style={{
-          position: "absolute",
-          top: "10px",
-          right: "10px",
-          background: "none",
-          border: "none",
-          fontSize: "18px",
-          cursor: "pointer",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "10px 16px",
+          borderBottom: "1px solid #f0f0f0",
         }}
       >
-        &times;
-      </button>
-      <div style={{ marginTop: "30px", padding: 10 }}>{children}</div>
+        <Title level={4} style={{ margin: 0 }}>
+          {title}
+        </Title>
+        <Button
+          type="text"
+          icon={<CloseOutlined />}
+          onClick={onClose}
+          aria-label="Close drawer"
+        />
+      </div>
+      <div style={{ padding: 16 }}>{children}</div>
     </motion.div>
   );
 };
