@@ -56,7 +56,7 @@ type SearchTreeInfiniteProps = {
   formView?: FormView;
   treeView?: TreeView;
   onRowClicked: (data: OnRowClickedData) => void;
-  nameSearch?: string;
+  // nameSearch?: string; // TODO: pending to implement when we have resolved https://github.com/gisce/webclient/issues/171
   treeScrollY?: number;
   domain?: any;
   visible?: boolean;
@@ -71,7 +71,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     formView: formViewProps,
     treeView: treeViewProps,
     onRowClicked,
-    nameSearch,
     domain = [],
     visible = true,
     rootTree = false,
