@@ -92,7 +92,6 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
     setSelectedRowKeys,
     onChangeFirstVisibleRowIndex,
     onGetFirstVisibileRowIndex,
-    onGetSelectedRowKeys,
     onSelectionCheckboxClicked,
   } = useOne2manyTree({
     treeView: views.get("tree"),
@@ -275,7 +274,7 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
           relation={relation}
           onChangeFirstVisibleRowIndex={onChangeFirstVisibleRowIndex}
           onGetFirstVisibleRowIndex={onGetFirstVisibileRowIndex}
-          onGetSelectedRowKeys={onGetSelectedRowKeys}
+          selectedRowKeys={selectedRowKeys}
           onSelectionCheckboxClicked={onSelectionCheckboxClicked}
           dataForHash={{
             parentViewId: props.parentViewId,

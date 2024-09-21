@@ -5,20 +5,29 @@ const { Text } = Typography;
 export type SearchTreeHeaderProps = {
   totalRows?: number;
   selectedRowKeys: number[];
-  allVisibleKeysSelected: boolean;
+  allRowSelectedMode: boolean;
 };
 
 export const SearchTreeHeader = ({
   totalRows,
   selectedRowKeys,
-  allVisibleKeysSelected,
+  allRowSelectedMode,
 }: SearchTreeHeaderProps) => {
   const { t } = useLocale();
 
   return (
-    <Row align="bottom" className="pb-4">
+    <Row
+      align="bottom"
+      className="pb-4"
+      style={{ height: 40, maxHeight: 40, overflow: "hidden" }}
+    >
       <Col span={12}>
-        <SearchTreeSelectionSummary selectedRowKeys={selectedRowKeys} />
+        {allRowSelectedMode ? (
+          <span>{`${selectedRowKeys.length} ${t("selectedRegisters")}`}</span>
+        ) : (
+          <SearchTreeSelectionSummary selectedRowKeys={selectedRowKeys} />
+        )}
+        {/* <SearchTreeSelectionSummary selectedRowKeys={selectedRowKeys} /> */}
         {/* <SelectAllRecordsRow
           numberOfVisibleSelectedRows={numberOfVisibleSelectedRows}
           numberOfRealSelectedRows={selectedRowKeys?.length || 0}
@@ -50,7 +59,7 @@ const SearchTreeSelectionSummary = ({
   } else if (selectedRowKeys.length > 1) {
     return (
       <>
-        {selectedRowKeys.length} {t("selectedRegisters")}
+        {selectedRowKeys.length} {t("selectedRegisters") + " "}
         <Text
           copyable={{
             text: selectedRowKeys.join(", "),

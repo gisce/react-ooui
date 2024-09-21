@@ -38,8 +38,11 @@ import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { useTreeAggregates } from "../base/one2many/useTreeAggregates";
 import { AggregatesFooter } from "../base/one2many/AggregatesFooter";
 import { SearchTreeHeader } from "./SearchTreeHeader";
+import { useLocale } from "@gisce/react-formiga-components";
+import showConfirmDialog from "@/ui/ConfirmDialog";
 
 export const HEIGHT_OFFSET = 10;
+export const MAX_ROWS_TO_SELECT = 200;
 
 type OnRowClickedData = {
   id: number;
@@ -81,9 +84,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const [totalRows, setTotalRows] = useState<number>();
 
+  const { t } = useLocale();
+
   useImperativeHandle(ref, () => ({
     refreshResults: () => {
-      tableRef?.current?.unselectAll();
       tableRef?.current?.refresh();
     },
     getFields: () => treeView?.fields,
@@ -259,44 +263,92 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     model,
   });
 
+  const onSelectionCheckboxClicked = useCallback(async () => {
+    let mustSelectAll = false;
+    if (selectedRowItems?.length === 0) {
+      mustSelectAll = true;
+    } else {
+      mustSelectAll = false;
+    }
+
+    const selectAllPromise = async () => {
+      const allRowsResults = await ConnectionProvider.getHandler().search({
+        params: domain,
+        limit: 0,
+        offset: 0,
+        model,
+        fields: treeView!.field_parent
+          ? { ...treeView!.fields, [treeView!.field_parent]: {} }
+          : treeView!.fields,
+        context: parentContext,
+        fieldsToRetrieve: ["id"],
+      });
+      setSelectedRowItems?.(allRowsResults);
+    };
+
+    if (mustSelectAll) {
+      if (totalRows && totalRows > MAX_ROWS_TO_SELECT) {
+        showConfirmDialog({
+          confirmMessage: t("confirmSelectAllRegisters").replace(
+            "{totalRecords}",
+            totalRows.toString(),
+          ),
+          t,
+          onOk: selectAllPromise,
+        });
+      } else {
+        selectAllPromise();
+      }
+    } else {
+      setSelectedRowItems?.([]);
+    }
+  }, [
+    domain,
+    model,
+    parentContext,
+    selectedRowItems?.length,
+    setSelectedRowItems,
+    t,
+    totalRows,
+    treeView,
+  ]);
+
+  const selectedRowKeys = useMemo(() => {
+    return selectedRowItems?.map((item) => item.id) || [];
+  }, [selectedRowItems]);
+
+  console.log({ selectedRowKeys });
+
   const content = useMemo(() => {
     if (!columns || !treeOoui) {
       return null;
     }
 
     return (
-      <Fragment>
-        <SearchTreeHeader
-          selectedRowKeys={selectedRowItems?.map((item) => item.id) || []}
-          // allVisibleKeysSelected={selectedRowItems?.length === totalRows}
-          allVisibleKeysSelected={false}
-          totalRows={totalRows}
-        />
-        <InfiniteTable
-          readonly={false}
-          ref={tableRef}
-          height={availableHeight}
-          columns={columns}
-          onRequestData={onRequestData}
-          onRowDoubleClick={onRowClicked}
-          onRowStyle={onRowStyle}
-          onRowSelectionChange={changeSelectedRowKeys}
-          onColumnChanged={updateColumnState}
-          onGetColumnsState={getColumnState}
-          onChangeFirstVisibleRowIndex={setTreeFirstVisibleRow}
-          onGetFirstVisibleRowIndex={() => treeFirstVisibleRow}
-          onGetSelectedRowKeys={() =>
-            selectedRowItems?.map((item) => item.id) || []
-          }
-          // allRowSelectedMode={allRowSelectedMode}
-          // onAllRowSelectedModeChange={onAllRowSelectedModeChange}
-          totalRows={totalRows || 99999}
-          footer={aggregates && <AggregatesFooter aggregates={aggregates} />}
-          hasStatusColumn={treeOoui.status !== null}
-          statusComponent={(status: any) => <Badge color={status} />}
-          onRowStatus={(record: any) => statusForResults.current?.[record.id]}
-        />
-      </Fragment>
+      <InfiniteTable
+        readonly={false}
+        ref={tableRef}
+        height={availableHeight}
+        columns={columns}
+        onRequestData={onRequestData}
+        onRowDoubleClick={onRowClicked}
+        onRowStyle={onRowStyle}
+        onRowSelectionChange={changeSelectedRowKeys}
+        onColumnChanged={updateColumnState}
+        onGetColumnsState={getColumnState}
+        onChangeFirstVisibleRowIndex={setTreeFirstVisibleRow}
+        onGetFirstVisibleRowIndex={() => treeFirstVisibleRow}
+        // onGetSelectedRowKeys={() =>
+        //   selectedRowItems?.map((item) => item.id) || []
+        // }
+        selectedRowKeys={selectedRowKeys}
+        onSelectionCheckboxClicked={onSelectionCheckboxClicked}
+        totalRows={totalRows || 99999}
+        footer={aggregates && <AggregatesFooter aggregates={aggregates} />}
+        hasStatusColumn={treeOoui.status !== null}
+        statusComponent={(status: any) => <Badge color={status} />}
+        onRowStatus={(record: any) => statusForResults.current?.[record.id]}
+      />
     );
   }, [
     aggregates,
@@ -307,7 +359,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     onRequestData,
     onRowClicked,
     onRowStyle,
-    selectedRowItems,
+    onSelectionCheckboxClicked,
+    selectedRowKeys,
     setTreeFirstVisibleRow,
     totalRows,
     treeFirstVisibleRow,
@@ -316,38 +369,45 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   ]);
 
   return (
-    <div
-      ref={containerRef}
-      style={{
-        overflow: "hidden",
-        height: `${availableHeight}px`,
-        ...(visible ? {} : { display: "none" }),
-      }}
-    >
-      {loading || getColumnStateInProgress ? <Spin /> : content}
-      <FloatingDrawer
-        isOpen={searchVisible}
-        onClose={() => setSearchVisible?.(false)}
+    <Fragment>
+      <SearchTreeHeader
+        selectedRowKeys={selectedRowKeys}
+        allRowSelectedMode={false}
+        totalRows={totalRows}
+      />
+      <div
+        ref={containerRef}
+        style={{
+          overflow: "hidden",
+          height: `${availableHeight}px`,
+          ...(visible ? {} : { display: "none" }),
+        }}
       >
-        <SearchFilter
-          fields={{ ...formView?.fields, ...treeView?.fields }}
-          searchFields={mergeSearchFields([
-            formView?.search_fields,
-            treeView?.search_fields,
-          ])}
-          onClear={() => {}}
-          limit={0}
-          offset={10}
-          isSearching={false}
-          onSubmit={() => {}}
-          onLimitChange={(limit: number) => {}}
-          setSearchFilterHeight={(height: number) => {}}
-          searchError={undefined}
-          searchVisible={searchVisible}
-          searchValues={{}}
-        />
-      </FloatingDrawer>
-    </div>
+        {loading || getColumnStateInProgress ? <Spin /> : content}
+        <FloatingDrawer
+          isOpen={searchVisible}
+          onClose={() => setSearchVisible?.(false)}
+        >
+          <SearchFilter
+            fields={{ ...formView?.fields, ...treeView?.fields }}
+            searchFields={mergeSearchFields([
+              formView?.search_fields,
+              treeView?.search_fields,
+            ])}
+            onClear={() => {}}
+            limit={0}
+            offset={10}
+            isSearching={false}
+            onSubmit={() => {}}
+            onLimitChange={(limit: number) => {}}
+            setSearchFilterHeight={(height: number) => {}}
+            searchError={undefined}
+            searchVisible={searchVisible}
+            searchValues={{}}
+          />
+        </FloatingDrawer>
+      </div>
+    </Fragment>
   );
 }
 

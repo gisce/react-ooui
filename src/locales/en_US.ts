@@ -97,4 +97,6 @@ export default {
   openInSameWindow: "Open in the current tab",
   openInNewTab: "Open in a new tab",
   confirmDuplicate: "Are you sure you want to duplicate the selected item/s?",
+  confirmSelectAllRegisters:
+    "Are you sure you want to select all {totalRecords} registers?",
 };

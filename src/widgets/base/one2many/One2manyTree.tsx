@@ -42,10 +42,10 @@ export type One2manyTreeProps = {
   relation: string;
   onChangeFirstVisibleRowIndex?: (index: number) => void;
   onGetFirstVisibleRowIndex?: () => number | undefined;
-  onGetSelectedRowKeys?: () => any[];
   onSelectionCheckboxClicked?: () => void;
   dataForHash: One2manyTreeDataForHash;
   aggregates?: TreeAggregates;
+  selectedRowKeys?: number[];
 };
 
 const DEFAULT_HEIGHT = 400;
@@ -63,10 +63,10 @@ export const One2manyTree = ({
   relation,
   onChangeFirstVisibleRowIndex,
   onGetFirstVisibleRowIndex,
-  onGetSelectedRowKeys,
   onSelectionCheckboxClicked,
   dataForHash,
   aggregates,
+  selectedRowKeys = [],
 }: One2manyTreeProps) => {
   const internalGridRef = useRef<InfiniteTableRef>();
   const tableRef: RefObject<InfiniteTableRef> = gridRef! || internalGridRef!;
@@ -210,7 +210,7 @@ export const One2manyTree = ({
       onGetColumnsState={getColumnState}
       onChangeFirstVisibleRowIndex={onChangeFirstVisibleRowIndex}
       onGetFirstVisibleRowIndex={onGetFirstVisibleRowIndex}
-      onGetSelectedRowKeys={onGetSelectedRowKeys}
+      selectedRowKeys={selectedRowKeys}
       onSelectionCheckboxClicked={onSelectionCheckboxClicked}
       totalRows={totalRows}
       footer={aggregates && <AggregatesFooter aggregates={aggregates} />}

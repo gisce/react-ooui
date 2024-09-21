@@ -101,4 +101,6 @@ export default {
   openInNewTab: "Obrir en una nova pestanya",
   confirmDuplicate:
     "Estàs segur de volguer duplicar els registre/s seleccionats?",
+  confirmSelectAllRegisters:
+    "Estàs segur de volguer seleccionar tots els {totalRecords} registres?",
 };

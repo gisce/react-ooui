@@ -103,4 +103,6 @@ export default {
   openInNewTab: "Abrir en una nueva pestaña",
   confirmDuplicate:
     "Estás seguro de querer duplicar el registro/s seleccionado/s?",
+  confirmSelectAllRegisters:
+    "Estás seguro de querer seleccionar todos los {totalRecords} registros?",
 };

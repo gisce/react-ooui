@@ -20,7 +20,6 @@ export const useOne2manyTree = ({
 }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<any>([]);
   const firstVisibleRowIndex = useRef(0);
-  const selectedRowKeysRef = useRef(selectedRowKeys);
 
   const onSelectionCheckboxClicked = useCallback(() => {
     let mustSelectAll = false;
@@ -45,14 +44,6 @@ export const useOne2manyTree = ({
 
   const onGetFirstVisibileRowIndex = useCallback(() => {
     return firstVisibleRowIndex.current;
-  }, []);
-
-  useEffect(() => {
-    selectedRowKeysRef.current = selectedRowKeys;
-  }, [selectedRowKeys]);
-
-  const onGetSelectedRowKeys = useCallback(() => {
-    return selectedRowKeysRef.current;
   }, []);
 
   const treeOoui = useMemo(() => {
@@ -118,7 +109,6 @@ export const useOne2manyTree = ({
     selectedRowKeys,
     onChangeFirstVisibleRowIndex,
     onGetFirstVisibileRowIndex,
-    onGetSelectedRowKeys,
     onSelectionCheckboxClicked,
   };
 };
