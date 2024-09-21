@@ -40,6 +40,7 @@ import { AggregatesFooter } from "../base/one2many/AggregatesFooter";
 import { SearchTreeHeader } from "./SearchTreeHeader";
 import { useLocale } from "@gisce/react-formiga-components";
 import showConfirmDialog from "@/ui/ConfirmDialog";
+import { SideSearchFilter } from "./searchFilter/SideSearchFilter";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -387,21 +388,16 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           isOpen={searchVisible}
           onClose={() => setSearchVisible?.(false)}
         >
-          <SearchFilter
+          <SideSearchFilter
             fields={{ ...formView?.fields, ...treeView?.fields }}
             searchFields={mergeSearchFields([
               formView?.search_fields,
               treeView?.search_fields,
             ])}
             onClear={() => {}}
-            limit={0}
-            offset={10}
             isSearching={false}
             onSubmit={() => {}}
-            onLimitChange={(limit: number) => {}}
-            setSearchFilterHeight={(height: number) => {}}
             searchError={undefined}
-            searchVisible={searchVisible}
             searchValues={{}}
           />
         </FloatingDrawer>

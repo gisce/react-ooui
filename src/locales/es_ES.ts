@@ -105,4 +105,6 @@ export default {
     "Estás seguro de querer duplicar el registro/s seleccionado/s?",
   confirmSelectAllRegisters:
     "Estás seguro de querer seleccionar todos los {totalRecords} registros?",
+  applyFilters: "Aplicar filtros",
+  clearFilters: "Aplicar filtros",
 };

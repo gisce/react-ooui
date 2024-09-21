@@ -99,4 +99,6 @@ export default {
   confirmDuplicate: "Are you sure you want to duplicate the selected item/s?",
   confirmSelectAllRegisters:
     "Are you sure you want to select all {totalRecords} registers?",
+  applyFilters: "Apply filters",
+  clearFilters: "Clear filters",
 };

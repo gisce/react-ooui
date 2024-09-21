@@ -60,7 +60,7 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
       >
         &times;
       </button>
-      {children}
+      <div style={{ marginTop: "30px", padding: 10 }}>{children}</div>
     </motion.div>
   );
 };
