@@ -105,5 +105,4 @@ export default {
     "Estàs segur de volguer seleccionar tots els {totalRecords} registres?",
   filter: "Filtrar",
   applyFilters: "Aplicar filtres",
-  clearFilters: "Netejar filtres",
 };

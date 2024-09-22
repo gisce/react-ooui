@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Typography, Button } from "antd";
+import { Typography, Button, Layout } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
+const { Header, Content, Footer } = Layout;
 
 interface FloatingDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
   title?: string;
+  footer?: React.ReactNode;
 }
 
 export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
@@ -17,6 +19,7 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
   onClose,
   children,
   title,
+  footer,
 }) => {
   const [showDrawer, setShowDrawer] = useState(isOpen);
 
@@ -45,33 +48,55 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
         top: 0,
         right: 0,
         bottom: 0,
-        width: "300px",
+        width: "500px",
         backgroundColor: "white",
         boxShadow: "-2px 0 5px rgba(0, 0, 0, 0.1)",
         zIndex: 1000,
-        overflowY: "auto",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <div
+      <Header
         style={{
+          background: "#fff",
+          padding: 10,
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          padding: "10px 16px",
           borderBottom: "1px solid #f0f0f0",
         }}
       >
-        <Title level={4} style={{ margin: 0 }}>
+        <Title level={3} style={{ margin: 0, paddingLeft: 10 }}>
           {title}
         </Title>
         <Button
           type="text"
           icon={<CloseOutlined />}
           onClick={onClose}
-          aria-label="Close drawer"
+          aria-label="Close"
         />
-      </div>
-      <div style={{ padding: 16 }}>{children}</div>
+      </Header>
+      <Content
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          paddingLeft: "10px",
+          paddingRight: "10px",
+        }}
+      >
+        {children}
+      </Content>
+      {footer && (
+        <Footer
+          style={{
+            padding: "10px 10px",
+            background: "#fff",
+            borderTop: "1px solid #f0f0f0",
+          }}
+        >
+          {footer}
+        </Footer>
+      )}
     </motion.div>
   );
 };

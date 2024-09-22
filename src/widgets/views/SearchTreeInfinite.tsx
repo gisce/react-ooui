@@ -81,6 +81,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const colorsForResults = useRef<{ [key: number]: string }>({});
   const statusForResults = useRef<{ [key: number]: string }>();
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
+  const [isSearching, setIsSearching] = useState(false);
 
   const [totalRows, setTotalRows] = useState<number>();
 
@@ -238,6 +239,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       sortFields?: Record<string, SortDirection>;
     }) => {
       try {
+        setIsSearching(true);
         return await fetchResults({
           startRow,
           endRow,
@@ -246,6 +248,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       } catch (error) {
         console.error(error);
         showErrorDialog(error);
+      } finally {
+        setIsSearching(false);
       }
     },
     [fetchResults],
@@ -338,9 +342,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         onGetColumnsState={getColumnState}
         onChangeFirstVisibleRowIndex={setTreeFirstVisibleRow}
         onGetFirstVisibleRowIndex={() => treeFirstVisibleRow}
-        // onGetSelectedRowKeys={() =>
-        //   selectedRowItems?.map((item) => item.id) || []
-        // }
         selectedRowKeys={selectedRowKeys}
         onSelectionCheckboxClicked={onSelectionCheckboxClicked}
         totalRows={totalRows || 99999}
@@ -383,25 +384,27 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           ...(visible ? {} : { display: "none" }),
         }}
       >
-        {loading || getColumnStateInProgress ? <Spin /> : content}
-        <FloatingDrawer
-          title={t("filter")}
-          isOpen={searchVisible}
-          onClose={() => setSearchVisible?.(false)}
-        >
-          <SideSearchFilter
-            fields={{ ...formView?.fields, ...treeView?.fields }}
-            searchFields={mergeSearchFields([
-              formView?.search_fields,
-              treeView?.search_fields,
-            ])}
-            onClear={() => {}}
-            isSearching={false}
-            onSubmit={() => {}}
-            searchError={undefined}
-            searchValues={{}}
-          />
-        </FloatingDrawer>
+        {loading || getColumnStateInProgress ? (
+          <Spin />
+        ) : (
+          <Fragment>
+            {content}
+            <SideSearchFilter
+              isOpen={searchVisible}
+              onClose={() => setSearchVisible?.(false)}
+              fields={{ ...formView?.fields, ...treeView?.fields }}
+              searchFields={mergeSearchFields([
+                formView?.search_fields,
+                treeView?.search_fields,
+              ])}
+              onClear={() => {}}
+              isSearching={isSearching}
+              onSubmit={() => {}}
+              searchError={undefined}
+              searchValues={{}}
+            />
+          </Fragment>
+        )}
       </div>
     </Fragment>
   );

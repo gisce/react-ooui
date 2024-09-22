@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { Form, Row, Alert, theme, Button, Col, Space } from "antd";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
@@ -14,32 +14,30 @@ import { SearchFields } from "@/types";
 
 import { getParamsForFields } from "@/helpers/searchHelper";
 import { useLocale } from "@gisce/react-formiga-components";
+import { FloatingDrawer } from "@/ui/FloatingDrawer";
 
-type Props = {
-  fields: any;
-  searchFields: SearchFields;
-  onClear: () => void;
+type SideSearchFilterBaseProps = {
   onSubmit: (values: any) => void;
   isSearching: boolean;
   searchError?: string;
   searchValues?: any;
 };
 
-export const SideSearchFilter = (props: Props) => {
-  const {
-    fields,
-    searchFields = { primary: [], secondary: [] },
-    onClear,
-    onSubmit,
-    isSearching,
-    searchError,
-    searchValues,
-  } = props;
+type SideSearchFilterContainerProps = SideSearchFilterBaseProps & {
+  onClear: () => void;
+  fields: any;
+  searchFields: SearchFields;
+  isOpen: boolean;
+  onClose: () => void;
+};
 
-  const [simpleSearchFields, setSimpleSearchFields] = useState<Container>();
-  const [advancedSearchFields, setAdvancedSearchFields] = useState<Container>();
-  const sfo = useRef<SearchFilterOoui>();
-  const { t } = useLocale();
+export type SideSearchFilterProps = SideSearchFilterBaseProps & {
+  searchFields?: Container;
+};
+
+export const SideSearchFilterComponent = (props: SideSearchFilterProps) => {
+  const { onSubmit, isSearching, searchError, searchValues, searchFields } =
+    props;
 
   const [form] = Form.useForm();
 
@@ -49,18 +47,18 @@ export const SideSearchFilter = (props: Props) => {
   }, [searchValues]);
 
   const getRowsAndCols = () => {
-    if (!advancedSearchFields) {
+    if (!searchFields) {
       return;
     }
 
-    // const fields = advancedFilter ? advancedSearchFields : simpleSearchFields;
-    const fields = advancedSearchFields; // TODO: This is going to be always the default since we have a full side panel for showing lots of search filters
-
-    const rows = fields?.rows;
+    const rows = searchFields?.rows;
 
     return rows?.map((row, i) => {
       return (
-        <div key={i} style={{ display: "block" }}>
+        <div
+          key={i}
+          style={{ display: "block", paddingTop: 5, paddingBottom: 5 }}
+        >
           {row.map((item, j) => {
             return <SearchField key={j} field={item as Field} />;
           })}
@@ -69,57 +67,159 @@ export const SideSearchFilter = (props: Props) => {
     });
   };
 
-  useDeepCompareEffect(() => {
-    sfo.current = new SearchFilterOoui(searchFields, fields);
-    sfo.current.parse();
-    setSimpleSearchFields(sfo.current._simpleSearchContainer);
-    setAdvancedSearchFields(sfo.current._advancedSearchContainer);
-  }, [fields, searchFields]);
-
   const rows = getRowsAndCols();
-
-  const onFinish = (values: any) => {
-    const { limit, offset } = values;
-    delete values.offset;
-    delete values.limit;
-    const newParams = getParamsForFields(
-      values,
-      sfo.current?._advancedSearchContainer,
-    );
-
-    onSubmit({ params: newParams, offset, limit, searchValues: values });
-  };
 
   return (
     <Fragment>
-      <Space
-        direction="horizontal"
-        align="center"
-        style={{
-          width: "100%",
-          justifyContent: "center",
-        }}
-      >
-        <Button
-          icon={<SearchOutlined />}
-          loading={isSearching}
-          type="primary"
-          htmlType="submit"
-          block
-        >
-          {t("applyFilters")}
-        </Button>
-        <Button icon={<ClearOutlined />} onClick={onClear} block>
-          {t("clearFilters")}
-        </Button>
-      </Space>
       {searchError && (
         <Alert className="mt-10" message={searchError} type="error" banner />
       )}
-      <Form className="p-3" form={form} onFinish={onFinish}>
+      <Form className="p-3" form={form} onFinish={onSubmit}>
         {rows}
       </Form>
-      <div className="pb-5" />
+      <div className="pb-2" />
     </Fragment>
+  );
+};
+
+export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
+  const {
+    onSubmit,
+    isOpen,
+    onClose,
+    searchFields,
+    fields,
+    isSearching,
+    onClear,
+    searchError,
+    searchValues,
+  } = props;
+  const sfo = useRef<SearchFilterOoui>();
+  const { t } = useLocale();
+  const [parsedSearchFields, setParsedSearchFields] = useState<Container>();
+
+  useDeepCompareEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+    sfo.current = new SearchFilterOoui(searchFields, fields);
+    sfo.current.parse();
+    setParsedSearchFields(sfo.current._advancedSearchContainer);
+  }, [fields, searchFields, isOpen]);
+
+  const onFinish = useCallback(
+    (values: any) => {
+      const newParams = getParamsForFields(
+        values,
+        sfo.current?._advancedSearchContainer,
+      );
+
+      onSubmit({ params: newParams, searchValues: values });
+    },
+    [onSubmit],
+  );
+
+  return (
+    <FloatingDrawer
+      title={t("filter")}
+      isOpen={isOpen}
+      onClose={onClose}
+      footer={
+        <SideSearchFooter
+          onClear={onClear}
+          onSubmit={onFinish}
+          isSearching={isSearching}
+          searchValues={searchValues}
+        />
+      }
+    >
+      <SideSearchFilterComponent
+        searchFields={parsedSearchFields}
+        isSearching={isSearching}
+        onSubmit={onFinish}
+        searchError={searchError}
+        searchValues={searchValues}
+      />
+    </FloatingDrawer>
+  );
+};
+
+export const SideSearchFooter = ({
+  onClear,
+  onSubmit,
+  searchValues,
+  isSearching,
+}: {
+  onClear: () => void;
+  onSubmit: (values: any) => void;
+  isSearching: boolean;
+  searchValues?: any;
+}) => {
+  const { t } = useLocale();
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+        gap: "8px", // Adds space between buttons
+      }}
+    >
+      <Button
+        icon={<SearchOutlined />}
+        loading={isSearching}
+        type="primary"
+        block
+        onClick={() => onSubmit(searchValues)}
+        style={{ flex: 1 }} // This makes the button take up all available space
+      >
+        {t("applyFilters")}
+      </Button>
+      <Button
+        icon={<ClearOutlined />}
+        onClick={onClear}
+        style={{ width: "80px" }} // Fixed width for the Clear button
+      >
+        {t("clear")}
+      </Button>
+    </div>
+  );
+};
+
+export const SideSearchFooterx = ({
+  onClear,
+  onSubmit,
+  searchValues,
+  isSearching,
+}: {
+  onClear: () => void;
+  onSubmit: (values: any) => void;
+  isSearching: boolean;
+  searchValues?: any;
+}) => {
+  const { t } = useLocale();
+
+  return (
+    <Space
+      direction="horizontal"
+      align="center"
+      style={{
+        width: "100%",
+        justifyContent: "center",
+      }}
+    >
+      <Button
+        icon={<SearchOutlined />}
+        loading={isSearching}
+        type="primary"
+        onClick={onSubmit}
+        block
+      >
+        {t("applyFilters")}
+      </Button>
+      <Button icon={<ClearOutlined />} onClick={onClear} block>
+        {t("clear")}
+      </Button>
+    </Space>
   );
 };
