@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Typography, Button, Layout } from "antd";
+import { Typography, Button, Layout, theme } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 
+const { useToken } = theme;
 const { Title } = Typography;
 const { Header, Content, Footer } = Layout;
 
@@ -23,6 +24,7 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
 }) => {
   const [showDrawer, setShowDrawer] = useState(isOpen);
   const drawerRef = useRef<HTMLDivElement>(null);
+  const { token } = useToken();
 
   const handleOverlayClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
@@ -108,7 +110,7 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
           >
             <Header
               style={{
-                background: "#fff",
+                background: token.colorPrimaryBg,
                 padding: 10,
                 display: "flex",
                 justifyContent: "space-between",
@@ -140,7 +142,7 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
               <Footer
                 style={{
                   padding: "10px 10px",
-                  background: "#fff",
+                  background: token.colorPrimaryBg,
                   borderTop: "1px solid #f0f0f0",
                 }}
               >
