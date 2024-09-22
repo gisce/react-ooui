@@ -7,16 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  Form,
-  Row,
-  Alert,
-  theme,
-  Button,
-  Col,
-  Space,
-  FormInstance,
-} from "antd";
+import { Form, Alert, Button, FormInstance } from "antd";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 
@@ -32,16 +23,17 @@ import { SearchFields } from "@/types";
 import { getParamsForFields } from "@/helpers/searchHelper";
 import { useLocale } from "@gisce/react-formiga-components";
 import { FloatingDrawer } from "@/ui/FloatingDrawer";
+import debounce from "lodash.debounce";
+import deepEqual from "deep-equal";
+import { set } from "lodash";
 
 type SideSearchFilterBaseProps = {
   onSubmit: (values: any) => void;
-  isSearching: boolean;
-  searchError?: string;
   searchValues?: any;
+  values?: any;
 };
 
 type SideSearchFilterContainerProps = SideSearchFilterBaseProps & {
-  onClear: () => void;
   fields: any;
   searchFields: SearchFields;
   isOpen: boolean;
@@ -50,48 +42,79 @@ type SideSearchFilterContainerProps = SideSearchFilterBaseProps & {
 
 export type SideSearchFilterProps = SideSearchFilterBaseProps & {
   searchFields?: Container;
+  onChange?: (values: any) => void;
 };
 
 // eslint-disable-next-line react/display-name
 export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
   (props, ref) => {
-    const { onSubmit, isSearching, searchError, searchValues, searchFields } =
-      props;
+    const { onSubmit, searchValues, searchFields, onChange } = props;
     const [form] = Form.useForm();
 
     useEffect(() => {
       form.setFieldsValue(searchValues);
-    }, [searchValues, form]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchValues]);
 
     useImperativeHandle(ref, () => ({
       submit: form.submit,
-      getFieldsValue: form.getFieldsValue,
+      resetFields: form.resetFields,
+      setFieldsValue: form.setFieldsValue,
     }));
 
     const getRowsAndCols = () => {
       if (!searchFields) return;
 
       const rows = searchFields?.rows;
-      return rows?.map((row, i) => (
-        <div
-          key={i}
-          style={{ display: "block", paddingTop: 5, paddingBottom: 5 }}
-        >
-          {row.map((item, j) => (
-            <SearchField key={j} field={item as Field} />
-          ))}
-        </div>
-      ));
+
+      const formValues = normalizeValues(form.getFieldsValue());
+
+      return rows?.map((row, i) => {
+        return row.map((item, j) => {
+          const hasValue = formValues[(item as Field).id] !== undefined;
+          return (
+            <div
+              key={i}
+              style={{
+                display: "block",
+                paddingTop: 5,
+                paddingBottom: 15,
+                backgroundColor: hasValue ? "#f0f0f0" : undefined,
+                fontWeight: hasValue ? "bold" : undefined,
+              }}
+            >
+              <div style={{ paddingLeft: 18, paddingRight: 18 }}>
+                <SearchField key={j} field={item as Field} />
+              </div>
+            </div>
+          );
+        });
+      });
     };
 
     const rows = getRowsAndCols();
 
+    const checkFieldsChanges = useCallback(() => {
+      const touchedValues = form.getFieldsValue();
+      onChange?.(touchedValues);
+    }, [form, onChange]);
+
+    const debouncedCheckFieldsChanges = debounce(checkFieldsChanges, 100);
+
+    const handleKeyPress = (event: React.KeyboardEvent) => {
+      if (event.key === "Enter") {
+        form.submit();
+      }
+    };
     return (
       <Fragment>
-        {searchError && (
-          <Alert className="mt-10" message={searchError} type="error" banner />
-        )}
-        <Form form={form} onFinish={onSubmit} className="pl-3 pr-3 pb-3">
+        <Form
+          form={form}
+          onFinish={onSubmit}
+          onFieldsChange={debouncedCheckFieldsChanges as any}
+          onKeyPress={handleKeyPress}
+          className="pt-3 pb-3"
+        >
           {rows}
         </Form>
         <div className="pb-2" />
@@ -101,21 +124,20 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
 );
 
 export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
-  const {
-    onSubmit,
-    isOpen,
-    onClose,
-    searchFields,
-    fields,
-    isSearching,
-    onClear,
-    searchError,
-    searchValues,
-  } = props;
+  const { onSubmit, isOpen, onClose, searchFields, fields, searchValues } =
+    props;
   const sfo = useRef<SearchFilterOoui>();
   const { t } = useLocale();
   const [parsedSearchFields, setParsedSearchFields] = useState<Container>();
   const formRef = useRef<FormInstance>(null);
+  const [searchParams, setSearchParams] = useState<any>();
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+    setSearchParams(undefined);
+  }, [isOpen]);
 
   useDeepCompareEffect(() => {
     if (!isOpen) return;
@@ -130,7 +152,7 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
         values,
         sfo.current?._advancedSearchContainer,
       );
-      onSubmit({ params: newParams, searchValues: values });
+      onSubmit({ params: newParams, values: normalizeValues(values) });
     },
     [onSubmit],
   );
@@ -139,31 +161,52 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
     formRef.current?.submit();
   }, []);
 
+  const handleOnChange = useCallback(
+    (values: any) => {
+      const convertedValues = normalizeValues(values);
+
+      if (deepEqual(convertedValues, searchValues)) {
+        setSearchParams([]);
+        return;
+      }
+      const newParams = getParamsForFields(
+        values,
+        sfo.current?._advancedSearchContainer,
+      );
+      setSearchParams(newParams);
+    },
+    [searchValues],
+  );
+
   const handleClear = useCallback(() => {
-    formRef.current?.setFieldsValue({});
-    onClear();
-  }, [onClear]);
+    formRef.current?.resetFields();
+    formRef?.current?.setFieldsValue({});
+    setSearchParams([]);
+  }, []);
+
+  const paramsToShow =
+    searchParams ||
+    getParamsForFields(searchValues, sfo.current?._advancedSearchContainer);
 
   return (
     <FloatingDrawer
-      title={t("filter")}
+      title={`${t("filter")} (${paramsToShow?.length || 0})`}
       isOpen={isOpen}
       onClose={onClose}
       footer={
         <SideSearchFooter
           onClear={handleClear}
           onSubmit={handleSubmit}
-          isSearching={isSearching}
+          searchParams={paramsToShow}
         />
       }
     >
       <SideSearchFilterComponent
         ref={formRef}
         searchFields={parsedSearchFields}
-        isSearching={isSearching}
         onSubmit={onFinish}
-        searchError={searchError}
         searchValues={searchValues}
+        onChange={handleOnChange}
       />
     </FloatingDrawer>
   );
@@ -172,11 +215,11 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
 export const SideSearchFooter = ({
   onClear,
   onSubmit,
-  isSearching,
+  searchParams,
 }: {
   onClear: () => void;
   onSubmit: () => void;
-  isSearching: boolean;
+  searchParams?: any[];
 }) => {
   const { t } = useLocale();
 
@@ -193,13 +236,12 @@ export const SideSearchFooter = ({
     >
       <Button
         icon={<SearchOutlined />}
-        loading={isSearching}
-        type="primary"
         size={"large"}
+        type={"primary"}
         onClick={onSubmit}
         style={{ flex: 1 }}
       >
-        {t("applyFilters")}
+        {`${t("applyFilters")} (${searchParams?.length || 0})`}
       </Button>
       <Button
         icon={<ClearOutlined />}
@@ -211,4 +253,15 @@ export const SideSearchFooter = ({
       </Button>
     </div>
   );
+};
+
+const normalizeValues = (values: any) => {
+  // values object should be converted: fields that are empty strings should be undefined
+  return Object.keys(values).reduce((acc: any, key) => {
+    const value = values[key];
+    if (value !== "" && value !== undefined) {
+      acc[key] = value;
+    }
+    return acc;
+  }, {});
 };

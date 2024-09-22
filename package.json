@@ -40,6 +40,7 @@
     "@gisce/react-formiga-table": "1.6.0",
     "@monaco-editor/react": "^4.4.5",
     "@tabler/icons-react": "^2.11.0",
+    "@types/deep-equal": "^1.0.4",
     "antd": "5.13.1",
     "buffer": "^6.0.3",
     "file-type-buffer-browser": "git+ssh://git@github.com/mguellsegarra/file-type-buffer-browser.git",

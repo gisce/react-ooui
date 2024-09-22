@@ -132,7 +132,6 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
               style={{
                 flex: 1,
                 overflowY: "auto",
-                padding: "8px",
               }}
             >
               {children}

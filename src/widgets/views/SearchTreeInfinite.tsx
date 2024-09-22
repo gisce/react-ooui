@@ -41,6 +41,10 @@ import { SearchTreeHeader } from "./SearchTreeHeader";
 import { useLocale } from "@gisce/react-formiga-components";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { SideSearchFilter } from "./searchFilter/SideSearchFilter";
+import { mergeParams } from "@/helpers/searchHelper";
+import useDeepCompareEffect from "use-deep-compare-effect";
+import { usePrevious } from "@/hooks/useEffectDebugger";
+import deepEqual from "deep-equal";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -81,7 +85,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const colorsForResults = useRef<{ [key: number]: string }>({});
   const statusForResults = useRef<{ [key: number]: string }>();
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
-  const [isSearching, setIsSearching] = useState(false);
 
   const [totalRows, setTotalRows] = useState<number>();
 
@@ -116,6 +119,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     setTreeFirstVisibleRow,
     treeFirstVisibleRow,
     selectedRowItems,
+    setSearchParams,
+    searchValues,
+    searchParams,
+    setSearchValues,
   } = useActionViewContext(rootTree);
 
   const treeOoui = useMemo(() => {
@@ -174,12 +181,14 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         attrs.status = treeOoui.status;
       }
 
+      const mergedParams = mergeParams(searchParams || [], domain);
+
       const {
         totalItems: totalItemsPromise,
         results,
         attrsEvaluated,
       } = await ConnectionProvider.getHandler().searchForTree({
-        params: domain,
+        params: mergedParams,
         limit: endRow - startRow,
         offset: startRow,
         model,
@@ -217,7 +226,15 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       setTreeIsLoading?.(false);
       return preparedResults;
     },
-    [domain, model, parentContext, setTreeIsLoading, treeOoui, treeView],
+    [
+      domain,
+      model,
+      parentContext,
+      searchParams,
+      setTreeIsLoading,
+      treeOoui,
+      treeView,
+    ],
   );
 
   const changeSelectedRowKeys = useCallback(
@@ -239,7 +256,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       sortFields?: Record<string, SortDirection>;
     }) => {
       try {
-        setIsSearching(true);
         return await fetchResults({
           startRow,
           endRow,
@@ -248,8 +264,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       } catch (error) {
         console.error(error);
         showErrorDialog(error);
-      } finally {
-        setIsSearching(false);
       }
     },
     [fetchResults],
@@ -367,6 +381,25 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     updateColumnState,
   ]);
 
+  const prevSearchParamsRef = useRef(searchParams);
+  const prevSearchVisibleRef = useRef(searchVisible);
+
+  useDeepCompareEffect(() => {
+    const searchParamsChanged = !deepEqual(
+      searchParams,
+      prevSearchParamsRef.current,
+    );
+    const searchVisibleChangedToFalse =
+      prevSearchVisibleRef.current && !searchVisible;
+
+    if (searchParamsChanged && searchVisibleChangedToFalse) {
+      tableRef.current?.refresh();
+    }
+
+    prevSearchParamsRef.current = searchParams;
+    prevSearchVisibleRef.current = searchVisible;
+  }, [searchParams, searchVisible]);
+
   return (
     <Fragment>
       <SearchTreeHeader
@@ -395,11 +428,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
                 formView?.search_fields,
                 treeView?.search_fields,
               ])}
-              onClear={() => {}}
-              isSearching={isSearching}
-              onSubmit={() => {}}
-              searchError={undefined}
-              searchValues={{}}
+              onSubmit={({ params, values }) => {
+                setSearchParams?.(params);
+                setSearchValues?.(values);
+                setSearchVisible?.(false);
+              }}
+              searchValues={searchValues}
             />
           </Fragment>
         )}

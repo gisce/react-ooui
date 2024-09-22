@@ -1,5 +1,5 @@
 import { useLocale } from "@gisce/react-formiga-components";
-import { Row, Col, Spin, Typography } from "antd";
+import { Row, Col, Spin, Typography, Alert } from "antd";
 const { Text } = Typography;
 
 export type SearchTreeHeaderProps = {
