@@ -30,7 +30,7 @@ export function PairFields(props: WidgetProps): React.ReactElement {
   };
 
   return (
-    <>
+    <div style={{ width: "100%" }}>
       {showLabel && (
         <Label
           ooui={
@@ -44,13 +44,18 @@ export function PairFields(props: WidgetProps): React.ReactElement {
           align={"left"}
         />
       )}
-      <Row align={"bottom"} className="mt-0" wrap={false}>
-        <Col>{getWidget("#from")}</Col>
+      <Row
+        align={"bottom"}
+        className="mt-0"
+        wrap={false}
+        style={{ width: "100%" }}
+      >
+        <Col flex="1">{getWidget("#from")}</Col>
         <Col className="pb-1">
-          <span className="pl-2 pr-2 h-full"> - </span>
+          <span className="px-2 h-full"> - </span>
         </Col>
-        <Col>{getWidget("#to")}</Col>
+        <Col flex="1">{getWidget("#to")}</Col>
       </Row>
-    </>
+    </div>
   );
 }

@@ -1,12 +1,14 @@
 import TreeActionBar from "@/actionbar/TreeActionBar";
 import { FormView, TreeView, View } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
-import SearchTree from "@/widgets/views/SearchTree";
-import React, { useContext } from "react";
+import { Fragment, useCallback, useContext, useMemo } from "react";
 import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
+import { SearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
+import SearchTree from "@/widgets/views/SearchTree";
+import { extractTreeXmlAttribute } from "@/helpers/treeHelper";
 
 export type TreeActionViewProps = {
   formView?: FormView;
@@ -42,46 +44,80 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     searchTreeNameSearch,
   } = props;
 
+  const isInfiniteTree = useMemo(() => {
+    if (!treeView?.arch) {
+      return false;
+    }
+    return extractTreeXmlAttribute(treeView?.arch, "infinite");
+  }, [treeView]);
+
   const { currentView, setPreviousView } = useContext(
     ActionViewContext,
   ) as ActionViewContextType;
+
+  const onRowClicked = useCallback(
+    (event: any) => {
+      const { id } = event;
+      setCurrentId(id);
+      const itemIndex = results.findIndex((item: any) => {
+        return item.id === id;
+      });
+      setPreviousView?.(currentView);
+      setCurrentItemIndex(itemIndex);
+      const formView = availableViews.find(
+        (v) => v.type === "form",
+      ) as FormView;
+      setCurrentView(formView);
+    },
+    [
+      availableViews,
+      currentView,
+      results,
+      setCurrentId,
+      setCurrentItemIndex,
+      setCurrentView,
+      setPreviousView,
+    ],
+  );
 
   if (!visible) {
     return null;
   }
 
   return (
-    <>
-      <TitleHeader>
+    <Fragment>
+      <TitleHeader showSummary={!isInfiniteTree}>
         <TreeActionBar
           toolbar={treeView?.toolbar}
           parentContext={context}
           treeExpandable={treeView?.isExpandable || false}
         />
       </TitleHeader>
-      <SearchTree
-        ref={searchTreeRef}
-        rootTree={true}
-        model={model}
-        parentContext={context}
-        nameSearch={searchTreeNameSearch}
-        formView={formView}
-        treeView={treeView}
-        domain={domain}
-        onRowClicked={(event: any) => {
-          const { id } = event;
-          setCurrentId(id);
-          const itemIndex = results.findIndex((item: any) => {
-            return item.id === id;
-          });
-          setPreviousView?.(currentView);
-          setCurrentItemIndex(itemIndex);
-          const formView = availableViews.find(
-            (v) => v.type === "form",
-          ) as FormView;
-          setCurrentView(formView);
-        }}
-      />
-    </>
+      {isInfiniteTree && (
+        <SearchTreeInfinite
+          ref={searchTreeRef}
+          rootTree={true}
+          model={model}
+          parentContext={context}
+          formView={formView}
+          treeView={treeView}
+          domain={domain}
+          onRowClicked={onRowClicked}
+        />
+      )}
+      {!isInfiniteTree && (
+        <SearchTree
+          ref={searchTreeRef}
+          rootTree={true}
+          model={model}
+          parentContext={context}
+          nameSearch={searchTreeNameSearch}
+          formView={formView}
+          treeView={treeView}
+          domain={domain}
+          onRowClicked={onRowClicked}
+        />
+      )}
+    </Fragment>
   );
 };

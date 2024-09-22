@@ -3,7 +3,6 @@ import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { useEffect, useState } from "react";
 import { useDeepCompareCallback, useDeepCompareMemo } from "use-deep-compare";
-import useDeepCompareEffect from "use-deep-compare-effect";
 
 const OPERATION_KEYS = ["sum", "count", "max", "min"];
 
@@ -23,7 +22,7 @@ export const useTreeAggregates = ({
   model,
   domain,
 }: {
-  ooui: TreeOoui;
+  ooui?: TreeOoui;
   domain?: any[];
   model: string;
 }) => {
@@ -34,6 +33,7 @@ export const useTreeAggregates = ({
   );
 
   const fieldsAndOpToRetrieve = useDeepCompareMemo(() => {
+    if (!ooui) return undefined;
     return ooui.columns
       .filter((it) => {
         return Object.keys(it).some((key) => {
@@ -60,10 +60,10 @@ export const useTreeAggregates = ({
         acc[key] = obj[key as any];
         return acc;
       }, {});
-  }, [ooui.columns]);
+  }, [ooui?.columns]);
 
   const fetchData = useDeepCompareCallback(async () => {
-    if (!domain) {
+    if (!domain || !ooui) {
       return;
     }
     try {
@@ -90,10 +90,13 @@ export const useTreeAggregates = ({
     } catch (err) {
       console.error(err);
     }
-  }, [domain, fieldsAndOpToRetrieve, model, ooui.columns, readAggregates]);
+  }, [domain, fieldsAndOpToRetrieve, model, ooui?.columns, readAggregates]);
 
-  useDeepCompareEffect(() => {
-    if (Object.keys(fieldsAndOpToRetrieve).length === 0) {
+  useEffect(() => {
+    if (
+      !fieldsAndOpToRetrieve ||
+      Object.keys(fieldsAndOpToRetrieve).length === 0
+    ) {
       return;
     }
     fetchData();

@@ -11,15 +11,13 @@ import { COLUMN_COMPONENTS } from "@/widgets/views/Tree/treeComponents";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { useDeepCompareMemo } from "use-deep-compare";
 import { TreeAggregates } from "./useTreeAggregates";
-import { One2manyFooter } from "./One2manyFooter";
-import { useOne2manyColumnStorageFetch } from "./useOne2manyColumnStorageFetch";
+import { AggregatesFooter } from "./AggregatesFooter";
+import { useTreeColumnStorageFetch } from "./useTreeColumnStorageFetch";
 import { Spin, Badge } from "antd";
-
-export type One2manyTreeDataForHash = {
-  parentViewId?: number;
-  treeViewId?: number;
-  one2ManyFieldName: string;
-};
+import {
+  One2manyTreeDataForHash,
+  getKey,
+} from "@/helpers/o2m-columnStorageHelper";
 
 export type One2manyTreeProps = {
   items: One2manyItem[];
@@ -44,11 +42,10 @@ export type One2manyTreeProps = {
   relation: string;
   onChangeFirstVisibleRowIndex?: (index: number) => void;
   onGetFirstVisibleRowIndex?: () => number | undefined;
-  onGetSelectedRowKeys?: () => any[];
-  onAllRowSelectedModeChange?: (allRowSelectedMode: boolean) => void;
-  allRowSelectedMode?: boolean;
+  onSelectionCheckboxClicked?: () => void;
   dataForHash: One2manyTreeDataForHash;
   aggregates?: TreeAggregates;
+  selectedRowKeys?: number[];
 };
 
 const DEFAULT_HEIGHT = 400;
@@ -66,11 +63,10 @@ export const One2manyTree = ({
   relation,
   onChangeFirstVisibleRowIndex,
   onGetFirstVisibleRowIndex,
-  onGetSelectedRowKeys,
-  onAllRowSelectedModeChange,
-  allRowSelectedMode,
+  onSelectionCheckboxClicked,
   dataForHash,
   aggregates,
+  selectedRowKeys = [],
 }: One2manyTreeProps) => {
   const internalGridRef = useRef<InfiniteTableRef>();
   const tableRef: RefObject<InfiniteTableRef> = gridRef! || internalGridRef!;
@@ -189,10 +185,12 @@ export const One2manyTree = ({
   }, []);
 
   const { loading, getColumnState, updateColumnState } =
-    useOne2manyColumnStorageFetch({
-      ...dataForHash,
-      model: relation,
-    });
+    useTreeColumnStorageFetch(
+      getKey({
+        ...dataForHash,
+        model: relation,
+      }),
+    );
 
   if (loading) {
     return <Spin />;
@@ -212,11 +210,10 @@ export const One2manyTree = ({
       onGetColumnsState={getColumnState}
       onChangeFirstVisibleRowIndex={onChangeFirstVisibleRowIndex}
       onGetFirstVisibleRowIndex={onGetFirstVisibleRowIndex}
-      onGetSelectedRowKeys={onGetSelectedRowKeys}
-      allRowSelectedMode={allRowSelectedMode}
-      onAllRowSelectedModeChange={onAllRowSelectedModeChange}
+      selectedRowKeys={selectedRowKeys}
+      onSelectionCheckboxClicked={onSelectionCheckboxClicked}
       totalRows={totalRows}
-      footer={aggregates && <One2manyFooter aggregates={aggregates} />}
+      footer={aggregates && <AggregatesFooter aggregates={aggregates} />}
       hasStatusColumn={ooui.status !== null}
       statusComponent={(status: any) => <Badge color={status} />}
       onRowStatus={(record: any) => statusForResults.current?.[record.id]}
