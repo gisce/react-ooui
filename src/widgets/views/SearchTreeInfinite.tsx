@@ -321,8 +321,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     return selectedRowItems?.map((item) => item.id) || [];
   }, [selectedRowItems]);
 
-  console.log({ selectedRowKeys });
-
   const content = useMemo(() => {
     if (!columns || !treeOoui) {
       return null;
