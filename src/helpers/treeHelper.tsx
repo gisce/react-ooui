@@ -231,6 +231,20 @@ const getOrderFromSortFields = (sortFields?: Record<string, SortDirection>) => {
     .join(", ");
 };
 
+function extractTreeXmlAttribute(
+  archString: string,
+  attributeName: string,
+): string | null {
+  const regex = new RegExp(`<tree[^>]*\\s+${attributeName}="([^"]+)"`, "i");
+  const match = archString.match(regex);
+
+  if (match && match[1]) {
+    return match[1];
+  }
+
+  return null;
+}
+
 export {
   getTableColumns,
   getTableItems,
@@ -242,4 +256,5 @@ export {
   sortResults,
   hasActualValues,
   getOrderFromSortFields,
+  extractTreeXmlAttribute,
 };

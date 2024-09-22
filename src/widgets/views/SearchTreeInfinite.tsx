@@ -3,6 +3,7 @@ import {
   RefObject,
   forwardRef,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
@@ -30,9 +31,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { useAvailableHeight } from "@/hooks/useAvailableHeight";
 import { showErrorDialog } from "@/ui/GenericErrorDialog";
 import { useActionViewContext } from "@/context/ActionViewContext";
-import { FloatingDrawer } from "@/ui/FloatingDrawer";
 import { mergeSearchFields } from "@/helpers/formHelper";
-import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import { useTreeColumnStorageFetch } from "../base/one2many/useTreeColumnStorageFetch";
 import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { useTreeAggregates } from "../base/one2many/useTreeAggregates";
@@ -43,7 +42,6 @@ import showConfirmDialog from "@/ui/ConfirmDialog";
 import { SideSearchFilter } from "./searchFilter/SideSearchFilter";
 import { mergeParams } from "@/helpers/searchHelper";
 import useDeepCompareEffect from "use-deep-compare-effect";
-import { usePrevious } from "@/hooks/useEffectDebugger";
 import deepEqual from "deep-equal";
 
 export const HEIGHT_OFFSET = 10;
@@ -61,7 +59,7 @@ type SearchTreeInfiniteProps = {
   formView?: FormView;
   treeView?: TreeView;
   onRowClicked: (data: OnRowClickedData) => void;
-  // nameSearch?: string; // TODO: pending to implement when we have resolved https://github.com/gisce/webclient/issues/171
+  nameSearch?: string; // TODO: pending to implement when we have resolved https://github.com/gisce/webclient/issues/171
   treeScrollY?: number;
   domain?: any;
   visible?: boolean;
@@ -81,6 +79,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     rootTree = false,
     parentContext = {},
     onChangeSelectedRowKeys,
+    nameSearch: nameSearchProps,
   } = props;
   const colorsForResults = useRef<{ [key: number]: string }>({});
   const statusForResults = useRef<{ [key: number]: string }>();
@@ -123,7 +122,18 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     searchValues,
     searchParams,
     setSearchValues,
+    searchTreeNameSearch,
+    setSearchTreeNameSearch,
   } = useActionViewContext(rootTree);
+
+  const nameSearch = nameSearchProps || searchTreeNameSearch;
+
+  useEffect(() => {
+    tableRef.current?.refresh();
+    setSearchParams?.([]);
+    setSearchValues?.({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nameSearch]);
 
   const treeOoui = useMemo(() => {
     if (!treeView) {
@@ -188,7 +198,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         results,
         attrsEvaluated,
       } = await ConnectionProvider.getHandler().searchForTree({
-        params: mergedParams,
+        params: nameSearch ? domain : mergedParams,
         limit: endRow - startRow,
         offset: startRow,
         model,
@@ -198,6 +208,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         context: parentContext,
         attrs,
         order: getOrderFromSortFields(sortFields),
+        name_search: nameSearch,
       });
 
       // TODO: maybe we could improve this somehow
@@ -229,6 +240,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     [
       domain,
       model,
+      nameSearch,
       parentContext,
       searchParams,
       setTreeIsLoading,
@@ -429,6 +441,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
                 treeView?.search_fields,
               ])}
               onSubmit={({ params, values }) => {
+                setSearchTreeNameSearch?.(undefined);
                 setSearchParams?.(params);
                 setSearchValues?.(values);
                 setSearchVisible?.(false);

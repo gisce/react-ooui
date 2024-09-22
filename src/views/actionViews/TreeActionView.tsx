@@ -1,13 +1,14 @@
 import TreeActionBar from "@/actionbar/TreeActionBar";
 import { FormView, TreeView, View } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
-import { Fragment, useCallback, useContext } from "react";
+import { Fragment, useCallback, useContext, useMemo } from "react";
 import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
 import { SearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
 import SearchTree from "@/widgets/views/SearchTree";
+import { extractTreeXmlAttribute } from "@/helpers/treeHelper";
 
 export type TreeActionViewProps = {
   formView?: FormView;
@@ -43,7 +44,12 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     searchTreeNameSearch,
   } = props;
 
-  const isInfiniteTree = true; // TODO: Change this into a way to know wether the tree is marked as infinite or not
+  const isInfiniteTree = useMemo(() => {
+    if (!treeView?.arch) {
+      return false;
+    }
+    return extractTreeXmlAttribute(treeView?.arch, "infinite");
+  }, [treeView]);
 
   const { currentView, setPreviousView } = useContext(
     ActionViewContext,

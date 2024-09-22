@@ -383,7 +383,7 @@ function SearchTree(props: Props, ref: any) {
     requestPageChange,
     rootTree,
     searchError,
-    earchFilterLoading,
+    searchFilterLoading,
     searchValues,
     searchVisible,
     selectAllRecords,
