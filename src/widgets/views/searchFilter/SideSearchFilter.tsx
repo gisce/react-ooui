@@ -91,7 +91,7 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
         {searchError && (
           <Alert className="mt-10" message={searchError} type="error" banner />
         )}
-        <Form form={form} onFinish={onSubmit} className="p-3">
+        <Form form={form} onFinish={onSubmit} className="pl-3 pr-3 pb-3">
           {rows}
         </Form>
         <div className="pb-2" />
@@ -119,7 +119,7 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
 
   useDeepCompareEffect(() => {
     if (!isOpen) return;
-    sfo.current = new SearchFilterOoui(searchFields, fields);
+    sfo.current = new SearchFilterOoui(searchFields, fields, 1);
     sfo.current.parse();
     setParsedSearchFields(sfo.current._advancedSearchContainer);
   }, [fields, searchFields, isOpen]);

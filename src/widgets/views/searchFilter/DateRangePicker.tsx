@@ -13,6 +13,7 @@ export const DateRangePicker = (props: WidgetProps) => {
         allowEmpty={[true, true]}
         format={"DD/MM/YYYY"}
         locale={datePickerLocale}
+        style={{ width: "100%" }}
       ></DatePicker.RangePicker>
     </Field>
   );

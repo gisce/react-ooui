@@ -48,15 +48,15 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
     if (isOpen) {
       setShowDrawer(true);
       document.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden"; // Prevent scrolling of the body
+      document.body.style.overflow = "hidden";
     } else {
       document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = ""; // Restore scrolling
+      document.body.style.overflow = "";
     }
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = ""; // Ensure scrolling is restored on unmount
+      document.body.style.overflow = "";
     };
   }, [isOpen, handleKeyDown]);
 
@@ -67,6 +67,15 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
   };
 
   if (!showDrawer) return null;
+
+  const headerFooterStyle: React.CSSProperties = {
+    height: "64px", // Fixed height for header and footer
+    display: "flex",
+    alignItems: "center", // Vertically center content
+    background: token.colorPrimaryBg,
+    padding: "0 16px",
+    borderBottom: "1px solid #f0f0f0",
+  };
 
   return (
     <AnimatePresence>
@@ -108,17 +117,8 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
               flexDirection: "column",
             }}
           >
-            <Header
-              style={{
-                background: token.colorPrimaryBg,
-                padding: 10,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                borderBottom: "1px solid #f0f0f0",
-              }}
-            >
-              <Title level={3} style={{ margin: 0, paddingLeft: 10 }}>
+            <Header style={headerFooterStyle}>
+              <Title level={3} style={{ margin: 0, flex: 1 }}>
                 {title}
               </Title>
               <Button
@@ -132,8 +132,7 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
               style={{
                 flex: 1,
                 overflowY: "auto",
-                paddingLeft: "10px",
-                paddingRight: "10px",
+                padding: "8px",
               }}
             >
               {children}
@@ -141,9 +140,10 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
             {footer && (
               <Footer
                 style={{
-                  padding: "10px 10px",
-                  background: token.colorPrimaryBg,
+                  ...headerFooterStyle,
                   borderTop: "1px solid #f0f0f0",
+                  borderBottom: "none",
+                  height: "72px",
                 }}
               >
                 {footer}
