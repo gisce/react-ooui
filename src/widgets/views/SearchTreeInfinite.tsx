@@ -59,7 +59,7 @@ type SearchTreeInfiniteProps = {
   formView?: FormView;
   treeView?: TreeView;
   onRowClicked: (data: OnRowClickedData) => void;
-  nameSearch?: string; // TODO: pending to implement when we have resolved https://github.com/gisce/webclient/issues/171
+  nameSearch?: string;
   treeScrollY?: number;
   domain?: any;
   visible?: boolean;
@@ -129,9 +129,11 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const nameSearch = nameSearchProps || searchTreeNameSearch;
 
   useEffect(() => {
-    tableRef.current?.refresh();
+    setSelectedRowItems?.([]);
     setSearchParams?.([]);
     setSearchValues?.({});
+    tableRef.current?.refresh();
+    tableRef.current?.unselectAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nameSearch]);
 
@@ -302,18 +304,15 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     }
 
     const selectAllPromise = async () => {
-      const allRowsResults = await ConnectionProvider.getHandler().search({
-        params: domain,
-        limit: 0,
-        offset: 0,
-        model,
-        fields: treeView!.field_parent
-          ? { ...treeView!.fields, [treeView!.field_parent]: {} }
-          : treeView!.fields,
-        context: parentContext,
-        fieldsToRetrieve: ["id"],
-      });
-      setSelectedRowItems?.(allRowsResults);
+      const allRowsResults = await ConnectionProvider.getHandler().searchAllIds(
+        {
+          params: domain,
+          model,
+          context: parentContext,
+          totalItems: totalRows,
+        },
+      );
+      setSelectedRowItems?.(allRowsResults.map((id: number) => ({ id })));
     };
 
     if (mustSelectAll) {
@@ -340,7 +339,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     setSelectedRowItems,
     t,
     totalRows,
-    treeView,
   ]);
 
   const selectedRowKeys = useMemo(() => {
@@ -441,6 +439,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
                 treeView?.search_fields,
               ])}
               onSubmit={({ params, values }) => {
+                setSelectedRowItems?.([]);
+                tableRef.current?.unselectAll();
                 setSearchTreeNameSearch?.(undefined);
                 setSearchParams?.(params);
                 setSearchValues?.(values);
