@@ -84,6 +84,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const colorsForResults = useRef<{ [key: number]: string }>({});
   const statusForResults = useRef<{ [key: number]: string }>();
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
+  const lastAssignedResults = useRef<any[]>([]);
 
   const [totalRows, setTotalRows] = useState<number>();
 
@@ -240,14 +241,15 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         };
       }
       setTreeIsLoading?.(false);
+      lastAssignedResults.current = [...preparedResults];
       return preparedResults;
     },
     [
       domain,
+      mergedParams,
       model,
       nameSearch,
       parentContext,
-      searchParams,
       setTreeIsLoading,
       treeOoui,
       treeView,
@@ -307,6 +309,11 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     }
 
     const selectAllPromise = async () => {
+      if (nameSearch) {
+        setSelectedRowItems?.(lastAssignedResults.current);
+        return;
+      }
+
       const allRowsResults = await ConnectionProvider.getHandler().searchAllIds(
         {
           params: nameSearch ? domain : mergedParams,
@@ -336,7 +343,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     }
   }, [
     domain,
+    mergedParams,
     model,
+    nameSearch,
     parentContext,
     selectedRowItems?.length,
     setSelectedRowItems,
