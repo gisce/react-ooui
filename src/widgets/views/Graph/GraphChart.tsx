@@ -13,6 +13,7 @@ export type GraphChartProps = {
   ooui: GraphChartOoui;
   limit?: number;
   manualIds?: number[];
+  fixedHeight?: boolean;
 };
 
 export const GraphChart = ({
@@ -22,6 +23,7 @@ export const GraphChart = ({
   context,
   limit,
   manualIds,
+  fixedHeight,
 }: GraphChartProps) => {
   const { t } = useLocale();
 
@@ -58,6 +60,7 @@ export const GraphChart = ({
       isStack={isStack}
       numItems={evaluatedEntries!.length}
       yAxisOpts={yAxisOpts}
+      fixedHeight={fixedHeight}
     />
   );
 };
