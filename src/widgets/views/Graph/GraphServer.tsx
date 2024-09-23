@@ -20,10 +20,11 @@ export type GraphProps = {
   domain: any;
   context: any;
   manualIds?: number[];
+  fixedHeight?: boolean;
 };
 
 const GraphComp = (props: GraphProps, ref: any) => {
-  const { view_id, model, context, domain, manualIds } = props;
+  const { view_id, model, context, domain, manualIds, fixedHeight } = props;
   const actionViewContext = useContext(
     ActionViewContext,
   ) as ActionViewContextType;
@@ -91,6 +92,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
           isStack={chart.isStack}
           numItems={chart.num_items}
           yAxisOpts={chart.yAxisOpts}
+          fixedHeight={fixedHeight}
         />
       );
     }
