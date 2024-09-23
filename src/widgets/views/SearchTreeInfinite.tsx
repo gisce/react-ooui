@@ -170,6 +170,11 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     updateColumnState,
   } = useTreeColumnStorageFetch(columnStateKey);
 
+  const mergedParams = useMemo(
+    () => mergeParams(searchParams || [], domain),
+    [domain, searchParams],
+  );
+
   const fetchResults = useCallback(
     async ({
       startRow,
@@ -192,8 +197,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       if (treeOoui.status) {
         attrs.status = treeOoui.status;
       }
-
-      const mergedParams = mergeParams(searchParams || [], domain);
 
       const {
         totalItems: totalItemsPromise,
@@ -306,7 +309,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     const selectAllPromise = async () => {
       const allRowsResults = await ConnectionProvider.getHandler().searchAllIds(
         {
-          params: domain,
+          params: nameSearch ? domain : mergedParams,
           model,
           context: parentContext,
           totalItems: totalRows,
