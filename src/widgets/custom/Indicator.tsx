@@ -133,6 +133,7 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
           context={context}
           domain={domain}
           limit={limit}
+          fixedHeight
         />
       )}
     </GraphCard>
