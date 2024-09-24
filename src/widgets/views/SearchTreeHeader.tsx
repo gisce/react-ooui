@@ -1,9 +1,9 @@
 import { useLocale } from "@gisce/react-formiga-components";
-import { Row, Col, Spin, Typography, Alert } from "antd";
+import { Row, Col, Spin, Typography } from "antd";
 const { Text } = Typography;
 
 export type SearchTreeHeaderProps = {
-  totalRows?: number;
+  totalRows?: number | null;
   selectedRowKeys: number[];
   allRowSelectedMode: boolean;
 };
@@ -27,17 +27,12 @@ export const SearchTreeHeader = ({
         ) : (
           <SearchTreeSelectionSummary selectedRowKeys={selectedRowKeys} />
         )}
-        {/* <SearchTreeSelectionSummary selectedRowKeys={selectedRowKeys} /> */}
-        {/* <SelectAllRecordsRow
-          numberOfVisibleSelectedRows={numberOfVisibleSelectedRows}
-          numberOfRealSelectedRows={selectedRowKeys?.length || 0}
-          numberOfTotalRows={totalRows.length}
-          totalRecords={total || 0}
-          onSelectAllRecords={onSelectAllRecords}
-        /> */}
       </Col>
-      <Col span={12} className="text-right">
-        {totalRows ? `${t("totalRegisters")}: ${totalRows}` : <Spin />}
+      <Col span={12} style={{ paddingRight: 10 }} className="text-right">
+        {totalRows === undefined && <Spin />}
+        {totalRows !== null &&
+          totalRows !== undefined &&
+          `${t("totalRegisters")}: ${totalRows}`}
       </Col>
     </Row>
   );

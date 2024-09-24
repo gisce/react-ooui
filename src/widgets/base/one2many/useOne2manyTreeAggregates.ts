@@ -1,6 +1,6 @@
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { One2manyItem } from "./One2manyInput";
-import { TreeAggregates, useTreeAggregates } from "./useTreeAggregates";
+import { useTreeAggregates } from "./useTreeAggregates";
 
 export const useOne2manyTreeAggregates = ({
   ooui,
@@ -12,7 +12,7 @@ export const useOne2manyTreeAggregates = ({
   items: One2manyItem[];
   selectedRowKeys: any[];
   model: string;
-}): TreeAggregates => {
+}) => {
   const realItems = items.filter((it) => it.id && it.id > 0);
   let domain;
   if (selectedRowKeys.length > 0) {
