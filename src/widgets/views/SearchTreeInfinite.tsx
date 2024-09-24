@@ -320,11 +320,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const [loadingAggregates, aggregates, hasAggregates] = useTreeAggregates({
     ooui: treeOoui,
     model,
+    showEmptyValues: true,
     domain:
       selectedRowKeys?.length > 0
         ? // eslint-disable-next-line @typescript-eslint/require-array-sort-compare
           [["id", "in", selectedRowKeys.sort()]]
-        : mergedParams,
+        : undefined,
   });
 
   const onSelectionCheckboxClicked = useCallback(async () => {
@@ -389,7 +390,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   }, [treeFirstVisibleRow]);
 
   const footerComp = useMemo(() => {
-    if (hasAggregates) {
+    if (!hasAggregates) {
       return null;
     }
     return (
