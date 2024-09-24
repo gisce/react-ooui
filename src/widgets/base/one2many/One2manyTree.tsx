@@ -213,7 +213,11 @@ export const One2manyTree = ({
       selectedRowKeys={selectedRowKeys}
       onSelectionCheckboxClicked={onSelectionCheckboxClicked}
       totalRows={totalRows}
-      footer={aggregates && <AggregatesFooter aggregates={aggregates} />}
+      footer={
+        aggregates && (
+          <AggregatesFooter aggregates={aggregates} isLoading={false} />
+        )
+      }
       hasStatusColumn={ooui.status !== null}
       statusComponent={(status: any) => <Badge color={status} />}
       onRowStatus={(record: any) => statusForResults.current?.[record.id]}
