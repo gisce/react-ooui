@@ -2,8 +2,11 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { useState } from "react";
-import { useDeepCompareCallback, useDeepCompareMemo } from "use-deep-compare";
-import useDeepCompareEffect from "use-deep-compare-effect";
+import {
+  useDeepCompareEffect,
+  useDeepCompareCallback,
+  useDeepCompareMemo,
+} from "use-deep-compare";
 
 const OPERATION_KEYS = ["sum", "count", "max", "min"];
 
@@ -13,7 +16,7 @@ export type TreeAggregates =
       Array<{
         operation: string;
         label: string;
-        amount: number;
+        amount: number | string;
       }>
     >
   | undefined;
@@ -22,10 +25,12 @@ export const useTreeAggregates = ({
   ooui,
   model,
   domain,
+  showEmptyValues,
 }: {
   ooui?: TreeOoui;
   domain?: any[];
   model: string;
+  showEmptyValues?: boolean;
 }): [boolean, TreeAggregates, boolean] => {
   const [aggregates, setAggregates] = useState<TreeAggregates>();
   const [loading, setLoading] = useState(false);
@@ -65,17 +70,44 @@ export const useTreeAggregates = ({
   }, [ooui?.columns]);
 
   const fetchData = useDeepCompareCallback(async () => {
-    if (!domain || !ooui) {
+    if (!ooui) {
       return;
     }
     try {
       setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      if (!domain && showEmptyValues && fieldsAndOpToRetrieve) {
+        const emptyAggregates: TreeAggregates = {};
+        Object.entries({ ...fieldsAndOpToRetrieve }).forEach(
+          ([field, operations]) => {
+            emptyAggregates[field] = operations.map((operation) => {
+              const fieldDefinition = ooui.columns.find(
+                (it) => it.id === field,
+              );
+              return {
+                operation,
+                label:
+                  (fieldDefinition?.[
+                    `_${operation}` as keyof typeof fieldDefinition
+                  ] as string) || "",
+                amount: "-",
+              };
+            });
+          },
+        );
+        setAggregates(emptyAggregates);
+        return;
+      } else if (!domain) {
+        setAggregates(undefined);
+        return;
+      }
+
       const retrievedData = await readAggregates({
         model,
         domain,
         aggregateFields: fieldsAndOpToRetrieve,
       });
+
       let result: TreeAggregates;
       Object.entries(retrievedData).forEach((key) => {
         const field: string = key[0];
@@ -114,7 +146,8 @@ export const useTreeAggregates = ({
   }, [fieldsAndOpToRetrieve, domain]);
 
   const hasAggregates =
-    !fieldsAndOpToRetrieve || Object.keys(fieldsAndOpToRetrieve).length === 0;
+    fieldsAndOpToRetrieve !== undefined &&
+    Object.keys(fieldsAndOpToRetrieve).length > 0;
 
   return [loading, aggregates, hasAggregates];
 };
