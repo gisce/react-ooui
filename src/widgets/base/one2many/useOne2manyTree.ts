@@ -2,7 +2,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { getColorMap, getStatusMap, getTree } from "@/helpers/treeHelper";
 import { TreeView } from "@/types";
 import { InfiniteTableRef, SortDirection } from "@gisce/react-formiga-table";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useDeepCompareCallback } from "use-deep-compare";
 
 export const useOne2manyTree = ({

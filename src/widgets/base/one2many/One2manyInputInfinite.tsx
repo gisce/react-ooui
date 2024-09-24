@@ -103,7 +103,7 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
     gridRef,
   });
 
-  const aggregates = useOne2manyTreeAggregates({
+  const [, aggregates] = useOne2manyTreeAggregates({
     ooui: treeOoui,
     model: relation,
     items,

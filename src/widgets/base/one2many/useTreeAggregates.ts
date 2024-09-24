@@ -1,8 +1,9 @@
 import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { Tree as TreeOoui } from "@gisce/ooui";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDeepCompareCallback, useDeepCompareMemo } from "use-deep-compare";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 const OPERATION_KEYS = ["sum", "count", "max", "min"];
 
@@ -25,8 +26,9 @@ export const useTreeAggregates = ({
   ooui?: TreeOoui;
   domain?: any[];
   model: string;
-}) => {
+}): [boolean, TreeAggregates, boolean] => {
   const [aggregates, setAggregates] = useState<TreeAggregates>();
+  const [loading, setLoading] = useState(false);
 
   const [readAggregates, cancelReadAggregates] = useNetworkRequest(
     ConnectionProvider.getHandler().readAggregates,
@@ -67,6 +69,8 @@ export const useTreeAggregates = ({
       return;
     }
     try {
+      setLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       const retrievedData = await readAggregates({
         model,
         domain,
@@ -88,11 +92,14 @@ export const useTreeAggregates = ({
       });
       setAggregates(result);
     } catch (err) {
+      setAggregates(undefined);
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   }, [domain, fieldsAndOpToRetrieve, model, ooui?.columns, readAggregates]);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (
       !fieldsAndOpToRetrieve ||
       Object.keys(fieldsAndOpToRetrieve).length === 0
@@ -106,5 +113,8 @@ export const useTreeAggregates = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fieldsAndOpToRetrieve, domain]);
 
-  return aggregates;
+  const hasAggregates =
+    !fieldsAndOpToRetrieve || Object.keys(fieldsAndOpToRetrieve).length === 0;
+
+  return [loading, aggregates, hasAggregates];
 };

@@ -1,12 +1,5 @@
-import { useRef, useEffect } from "react";
-
-const usePrevious = (value: any, initialValue: any) => {
-  const ref = useRef(initialValue);
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-};
+import { useEffect } from "react";
+import { usePrevious } from "./usePrevious";
 
 const useEffectDebugger = (
   effectHook: any,
@@ -37,6 +30,7 @@ const useEffectDebugger = (
     console.log("[use-effect-debugger] ", changedDeps);
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(effectHook, dependencies);
 };
 
