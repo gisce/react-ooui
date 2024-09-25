@@ -1,4 +1,3 @@
-import React from "react";
 import { Select, theme } from "antd";
 import styled from "styled-components";
 
@@ -54,6 +53,7 @@ export const SelectionInput = (props: SelectionInputProps) => {
       onChange={onChange}
       value={value}
       optionFilterProp="children"
+      allowClear
       filterOption={(input: string, option: any) =>
         option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
       }
