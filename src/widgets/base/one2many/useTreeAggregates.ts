@@ -1,9 +1,12 @@
 import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { Tree as TreeOoui } from "@gisce/ooui";
-import { useEffect, useState } from "react";
-import { useDeepCompareCallback, useDeepCompareMemo } from "use-deep-compare";
-import useDeepCompareEffect from "use-deep-compare-effect";
+import { useState } from "react";
+import {
+  useDeepCompareEffect,
+  useDeepCompareCallback,
+  useDeepCompareMemo,
+} from "use-deep-compare";
 
 const OPERATION_KEYS = ["sum", "count", "max", "min"];
 
@@ -13,7 +16,7 @@ export type TreeAggregates =
       Array<{
         operation: string;
         label: string;
-        amount: number;
+        amount: number | string;
       }>
     >
   | undefined;
@@ -22,18 +25,22 @@ export const useTreeAggregates = ({
   ooui,
   model,
   domain,
+  showEmptyValues,
 }: {
-  ooui: TreeOoui;
+  ooui?: TreeOoui;
   domain?: any[];
   model: string;
-}) => {
+  showEmptyValues?: boolean;
+}): [boolean, TreeAggregates, boolean] => {
   const [aggregates, setAggregates] = useState<TreeAggregates>();
+  const [loading, setLoading] = useState(false);
 
   const [readAggregates, cancelReadAggregates] = useNetworkRequest(
     ConnectionProvider.getHandler().readAggregates,
   );
 
   const fieldsAndOpToRetrieve = useDeepCompareMemo(() => {
+    if (!ooui) return undefined;
     return ooui.columns
       .filter((it) => {
         return Object.keys(it).some((key) => {
@@ -60,18 +67,47 @@ export const useTreeAggregates = ({
         acc[key] = obj[key as any];
         return acc;
       }, {});
-  }, [ooui.columns]);
+  }, [ooui?.columns]);
 
   const fetchData = useDeepCompareCallback(async () => {
-    if (!domain) {
+    if (!ooui) {
       return;
     }
     try {
+      setLoading(true);
+
+      if (!domain && showEmptyValues && fieldsAndOpToRetrieve) {
+        const emptyAggregates: TreeAggregates = {};
+        Object.entries({ ...fieldsAndOpToRetrieve }).forEach(
+          ([field, operations]) => {
+            emptyAggregates[field] = operations.map((operation) => {
+              const fieldDefinition = ooui.columns.find(
+                (it) => it.id === field,
+              );
+              return {
+                operation,
+                label:
+                  (fieldDefinition?.[
+                    `_${operation}` as keyof typeof fieldDefinition
+                  ] as string) || "",
+                amount: "-",
+              };
+            });
+          },
+        );
+        setAggregates(emptyAggregates);
+        return;
+      } else if (!domain) {
+        setAggregates(undefined);
+        return;
+      }
+
       const retrievedData = await readAggregates({
         model,
         domain,
         aggregateFields: fieldsAndOpToRetrieve,
       });
+
       let result: TreeAggregates;
       Object.entries(retrievedData).forEach((key) => {
         const field: string = key[0];
@@ -88,12 +124,18 @@ export const useTreeAggregates = ({
       });
       setAggregates(result);
     } catch (err) {
+      setAggregates(undefined);
       console.error(err);
+    } finally {
+      setLoading(false);
     }
-  }, [domain, fieldsAndOpToRetrieve, model, ooui.columns, readAggregates]);
+  }, [domain, fieldsAndOpToRetrieve, model, ooui?.columns, readAggregates]);
 
   useDeepCompareEffect(() => {
-    if (Object.keys(fieldsAndOpToRetrieve).length === 0) {
+    if (
+      !fieldsAndOpToRetrieve ||
+      Object.keys(fieldsAndOpToRetrieve).length === 0
+    ) {
       return;
     }
     fetchData();
@@ -103,5 +145,9 @@ export const useTreeAggregates = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fieldsAndOpToRetrieve, domain]);
 
-  return aggregates;
+  const hasAggregates =
+    fieldsAndOpToRetrieve !== undefined &&
+    Object.keys(fieldsAndOpToRetrieve).length > 0;
+
+  return [loading, aggregates, hasAggregates];
 };

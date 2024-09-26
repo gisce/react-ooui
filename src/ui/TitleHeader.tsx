@@ -14,10 +14,11 @@ const { Title, Text } = Typography;
 type Props = {
   title?: string;
   children?: any;
+  showSummary?: boolean;
 };
 
 function TitleHeader(props: Props) {
-  const { title: titleProps, children } = props;
+  const { title: titleProps, children, showSummary = true } = props;
   const {
     title,
     currentView,
@@ -103,7 +104,7 @@ function TitleHeader(props: Props) {
           <Title level={3} style={{ marginBottom: 0 }}>
             {titleProps || title}
           </Title>
-          {getSummary()}
+          {showSummary && getSummary()}
         </Col>
         <Col flex={3}>
           <Row justify="end">{children}</Row>

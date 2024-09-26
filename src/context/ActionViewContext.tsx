@@ -1,27 +1,45 @@
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { View } from "@/types";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
-export type ActionViewContextType = {
+type ActionViewProviderProps = {
   title: string;
-  availableViews: View[];
   currentView: View;
   setCurrentView: (view: View) => void;
+  availableViews: View[];
+  formRef: any;
+  searchTreeRef: any;
+  onNewClicked: () => void;
+  currentId?: number;
+  setCurrentId: (id?: number) => void;
+  setCurrentItemIndex: (value?: number) => void;
+  currentItemIndex?: number;
+  results?: any[];
+  setResults: (value: any[]) => void;
+  currentModel: string;
+  sorter: any;
+  setSorter: (sorter: any) => void;
+  totalItems: number;
+  setTotalItems: (totalItems: number) => void;
+  selectedRowItems?: any[];
+  setSelectedRowItems: (value: any[]) => void;
+  setSearchTreeNameSearch: (searchString?: string) => void;
+  searchTreeNameSearch?: string;
+  goToResourceId: (ids: number[], openInSameTab?: boolean) => Promise<void>;
+  limit?: number;
+  isActive: boolean;
+  children: React.ReactNode;
+};
+
+export type ActionViewContextType = Omit<
+  ActionViewProviderProps,
+  "children"
+> & {
   formIsSaving?: boolean;
   setFormIsSaving?: (value: boolean) => void;
   formHasChanges?: boolean;
   setFormHasChanges?: (value: boolean) => void;
   onFormSave?: () => Promise<{ succeed: boolean; id: number }>;
-  formRef?: any;
-  searchTreeRef?: any;
-  onNewClicked: () => void;
-  currentId?: number;
-  setCurrentId?: (id?: number) => void;
-  currentItemIndex?: number;
-  setCurrentItemIndex?: (value?: number) => void;
-  results?: any[];
-  setResults?: (value: any[]) => void;
-  currentModel?: string;
   removingItem?: boolean;
   setRemovingItem?: (value: boolean) => void;
   formIsLoading?: boolean;
@@ -32,38 +50,25 @@ export type ActionViewContextType = {
   setGraphIsLoading?: (value: boolean) => void;
   attachments?: any;
   setAttachments?: (value: any) => void;
-  selectedRowItems?: any[];
-  setSelectedRowItems?: (value: any[]) => void;
   duplicatingItem?: boolean;
   setDuplicatingItem?: (value: boolean) => void;
   searchParams?: any[];
   setSearchParams?: (value: any[]) => void;
   searchVisible?: boolean;
   setSearchVisible?: (value: boolean) => void;
-  sorter: any;
-  setSorter: (sorter: any) => void;
-  totalItems: number;
-  setTotalItems: (totalItems: number) => void;
-  searchTreeNameSearch?: string;
-  setSearchTreeNameSearch?: (searchString?: string) => void;
   previousView?: View;
   setPreviousView?: (view: View) => void;
-  goToResourceId?: (ids: number[], openInSameTab?: boolean) => Promise<void>;
   searchValues?: any;
   setSearchValues?: (value: any) => void;
-  limit?: number;
   setLimit?: (value: number) => void;
   setTitle?: (value: string) => void;
-  isActive: boolean;
+  treeFirstVisibleRow: number;
+  setTreeFirstVisibleRow: (totalItems: number) => void;
 };
 
 export const ActionViewContext = createContext<ActionViewContextType | null>(
   null,
 );
-
-type ActionViewProviderProps = ActionViewContextType & {
-  children: React.ReactNode;
-};
 
 const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const {
@@ -107,6 +112,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [graphIsLoading, setGraphIsLoading] = useState<boolean>(true);
   const [previousView, setPreviousView] = useState<View>();
   const [searchValues, setSearchValues] = useState<any>({});
+  const [treeFirstVisibleRow, setTreeFirstVisibleRow] = useState<number>(0);
+
   const [limit, setLimit] = useState<number>(
     limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT,
   );
@@ -207,11 +214,30 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setLimit,
         setTitle,
         isActive,
+        setTreeFirstVisibleRow,
+        treeFirstVisibleRow,
       }}
     >
       {children}
     </ActionViewContext.Provider>
   );
+};
+
+export const useActionViewContext = (
+  isRoot: boolean,
+): ActionViewContextType => {
+  const actionViewContext = useContext(
+    ActionViewContext,
+  ) as ActionViewContextType;
+  if (!isRoot) {
+    return {} as ActionViewContextType;
+  }
+  if (!actionViewContext) {
+    throw new Error(
+      "useActionViewContext must be used within a ActionViewProvider",
+    );
+  }
+  return actionViewContext;
 };
 
 export default ActionViewProvider;

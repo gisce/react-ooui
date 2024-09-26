@@ -221,7 +221,7 @@ export const TagsComponent = ({
     } finally {
       setLoading(false);
     }
-  }, [context, field, relation, value.items]);
+  }, [context, field, relation, value?.items]);
 
   useEffect(() => {
     if (value?.items && value?.items.length > 0) {
