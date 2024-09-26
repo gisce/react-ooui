@@ -30,10 +30,12 @@ export type GraphProps = {
   context: any;
   limit?: number;
   manualIds?: number[];
+  fixedHeight?: boolean;
 };
 
 const GraphComp = (props: GraphProps, ref: any) => {
-  const { view_id, model, context, domain, limit, manualIds } = props;
+  const { view_id, model, context, domain, limit, manualIds, fixedHeight } =
+    props;
   const [loading, setLoading] = useState(false);
   const [graphOoui, setGraphOoui] = useState<GraphOoui>();
   const actionViewContext = useContext(
@@ -120,6 +122,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
           ooui={graphOoui as GraphChartOoui}
           limit={limit}
           manualIds={manualIds}
+          fixedHeight={fixedHeight}
         />
       );
     }
