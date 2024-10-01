@@ -264,6 +264,7 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
       {currentView === "tree" && (
         <One2manyTree
           gridRef={gridRef}
+          height={ooui.height}
           items={items}
           readOnly={readOnly || false}
           onFetchRecords={onTreeFetchRows}
