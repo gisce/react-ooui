@@ -6,6 +6,7 @@ import {
   Reference,
 } from "@gisce/ooui";
 import { TreeView, Column } from "@/types";
+import { SortDirection } from "@gisce/react-formiga-table";
 
 const getTree = (treeView: TreeView): TreeOoui => {
   const xml = treeView.arch;
@@ -218,6 +219,32 @@ function hasActualValues(obj: Record<string, any>): boolean {
   return false;
 }
 
+const getOrderFromSortFields = (sortFields?: Record<string, SortDirection>) => {
+  if (!sortFields) {
+    return undefined;
+  }
+  return Object.keys(sortFields)
+    .map((field) => {
+      const direction = sortFields[field];
+      return `${field} ${direction}`;
+    })
+    .join(", ");
+};
+
+function extractTreeXmlAttribute(
+  archString: string,
+  attributeName: string,
+): string | null {
+  const regex = new RegExp(`<tree[^>]*\\s+${attributeName}="([^"]+)"`, "i");
+  const match = archString.match(regex);
+
+  if (match && match[1]) {
+    return match[1];
+  }
+
+  return null;
+}
+
 export {
   getTableColumns,
   getTableItems,
@@ -228,4 +255,6 @@ export {
   getStatusMap,
   sortResults,
   hasActualValues,
+  getOrderFromSortFields,
+  extractTreeXmlAttribute,
 };

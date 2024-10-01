@@ -1,16 +1,10 @@
 import { ColumnState } from "@gisce/react-formiga-table";
-import { One2manyTreeDataForHash } from "./One2manyTree";
 import { useDeepCompareCallback } from "use-deep-compare";
 import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
-import { getKey } from "./useOne2manyColumnStorage";
 import { useEffect } from "react";
 
-export type DataForHashWithModel = One2manyTreeDataForHash & { model: string };
-
-export const useOne2manyColumnRemoteStorage = (
-  dataForHash: DataForHashWithModel,
-) => {
+export const useTreeColumnRemoteStorage = (key?: string) => {
   useEffect(() => {
     return () => {
       cancelReadRequest();
@@ -30,17 +24,23 @@ export const useOne2manyColumnRemoteStorage = (
   const getColumnState = useDeepCompareCallback(async (): Promise<
     ColumnState[] | undefined
   > => {
+    if (!key) {
+      throw new Error("Unknown column state key");
+    }
     const state = await read({
-      key: getKey(dataForHash),
+      key,
     });
     if (state === false) {
       throw new Error("Empty column state");
     }
     return state;
-  }, [dataForHash]);
+  }, [key]);
 
   const updateColumnState = useDeepCompareCallback(
     async (state: ColumnState[]) => {
+      if (!key) {
+        return;
+      }
       // state is an array of objects but we need to remove the properties of each object that are null
       // to avoid sending them to the backend
       const stateWithoutNulls = state.map((column) =>
@@ -50,11 +50,11 @@ export const useOne2manyColumnRemoteStorage = (
       );
 
       return save({
-        key: getKey(dataForHash),
+        key,
         preferences: stateWithoutNulls,
       });
     },
-    [dataForHash],
+    [key],
   );
 
   return { getColumnState, updateColumnState };

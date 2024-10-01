@@ -1,27 +1,42 @@
 import ConnectionProvider from "@/ConnectionProvider";
 import { getColorMap, getStatusMap, getTree } from "@/helpers/treeHelper";
 import { TreeView } from "@/types";
-import { SortDirection } from "@gisce/react-formiga-table";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { InfiniteTableRef, SortDirection } from "@gisce/react-formiga-table";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useDeepCompareCallback } from "use-deep-compare";
 
 export const useOne2manyTree = ({
   treeView,
   relation,
   context,
+  allRowsIds,
+  gridRef,
 }: {
   treeView: TreeView;
   relation: string;
   context: any;
+  allRowsIds: number[];
+  gridRef: React.RefObject<InfiniteTableRef>;
 }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<any>([]);
   const firstVisibleRowIndex = useRef(0);
-  const selectedRowKeysRef = useRef(selectedRowKeys);
-  const allRowSelectedMode = useRef(false);
 
-  const onChangeAllRowSelectedMode = useCallback((value: boolean) => {
-    allRowSelectedMode.current = value;
-  }, []);
+  const onSelectionCheckboxClicked = useCallback(() => {
+    let mustSelectAll = false;
+    if (selectedRowKeys.length === 0) {
+      mustSelectAll = true;
+    } else {
+      mustSelectAll = false;
+    }
+
+    if (mustSelectAll) {
+      setSelectedRowKeys(allRowsIds);
+      gridRef.current?.setSelectedRows(allRowsIds);
+    } else {
+      setSelectedRowKeys([]);
+      gridRef.current?.setSelectedRows([]);
+    }
+  }, [allRowsIds, gridRef, selectedRowKeys.length]);
 
   const onChangeFirstVisibleRowIndex = useCallback((index: number) => {
     firstVisibleRowIndex.current = index;
@@ -29,17 +44,6 @@ export const useOne2manyTree = ({
 
   const onGetFirstVisibileRowIndex = useCallback(() => {
     return firstVisibleRowIndex.current;
-  }, []);
-
-  useEffect(() => {
-    selectedRowKeysRef.current = selectedRowKeys;
-  }, [selectedRowKeys]);
-
-  const onGetSelectedRowKeys = useCallback(() => {
-    if (allRowSelectedMode) {
-      return [];
-    }
-    return selectedRowKeysRef.current;
   }, []);
 
   const treeOoui = useMemo(() => {
@@ -105,8 +109,6 @@ export const useOne2manyTree = ({
     selectedRowKeys,
     onChangeFirstVisibleRowIndex,
     onGetFirstVisibileRowIndex,
-    onGetSelectedRowKeys,
-    onChangeAllRowSelectedMode,
-    allRowSelectedMode: allRowSelectedMode.current,
+    onSelectionCheckboxClicked,
   };
 };

@@ -1,20 +1,18 @@
 import { ColumnState } from "@gisce/react-formiga-table";
-import { One2manyTreeDataForHash } from "./One2manyTree";
-import { useOne2manyColumnStorage } from "./useOne2manyColumnStorage";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTreeColumnStorage } from "./useTreeColumnStorage";
 
-export type DataForHashWithModel = One2manyTreeDataForHash & { model: string };
-
-export const useOne2manyColumnStorageFetch = (
-  dataForHash: DataForHashWithModel,
-) => {
+export const useTreeColumnStorageFetch = (key?: string) => {
   const [loading, setLoading] = useState(true);
   const columnState = useRef<ColumnState[] | undefined>(undefined);
 
   const { getColumnState: getColumnStateInternal, updateColumnState } =
-    useOne2manyColumnStorage(dataForHash);
+    useTreeColumnStorage(key);
 
   useEffect(() => {
+    if (!key) {
+      return;
+    }
     const fetchColumnState = async () => {
       setLoading(true);
       try {
@@ -27,8 +25,7 @@ export const useOne2manyColumnStorageFetch = (
     };
 
     fetchColumnState();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getColumnStateInternal, key]);
 
   const getColumnState = useCallback(() => {
     return columnState.current;
