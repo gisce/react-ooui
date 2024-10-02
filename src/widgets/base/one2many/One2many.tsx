@@ -6,9 +6,14 @@ import { Views, ViewType } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import One2manyProvider from "@/context/One2manyContext";
 import { One2manyInput } from "@/widgets/base/one2many/One2manyInput";
-import { One2manyInput as One2manyInputInfinite } from "@/widgets/base/one2many/One2manyInputInfinite";
+import {
+  One2manyInput as One2manyInputInfinite,
+  One2manyInputInfiniteProps,
+} from "@/widgets/base/one2many/One2manyInputInfinite";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { FormContext, FormContextType } from "@/context/FormContext";
+
+const MIN_ITEMS_TO_USE_INFINITE = 30;
 
 type Props = {
   ooui: One2manyOoui;
@@ -95,17 +100,28 @@ export const One2many = (props: Props) => {
         validator={validator}
         {...props}
       >
-        {ooui.infinite ? (
-          <One2manyInputInfinite
-            ooui={ooui}
-            views={views}
-            parentViewId={parentViewId}
-            treeViewId={views.get("tree")?.view_id}
-          />
-        ) : (
-          <One2manyInput ooui={ooui} views={views} />
-        )}
+        <One2manyComponent
+          ooui={ooui}
+          views={views}
+          parentViewId={parentViewId}
+          treeViewId={views.get("tree")?.view_id}
+        />
       </Field>
     </One2manyProvider>
+  );
+};
+
+const One2manyComponent = (props: One2manyInputInfiniteProps) => {
+  const { ooui, value } = props;
+  const shouldUseInfiniteComponent =
+    ooui.infinite ||
+    (value &&
+      Array.isArray(value.items) &&
+      value.items.length >= MIN_ITEMS_TO_USE_INFINITE);
+
+  return shouldUseInfiniteComponent ? (
+    <One2manyInputInfinite {...props} />
+  ) : (
+    <One2manyInput {...props} />
   );
 };
