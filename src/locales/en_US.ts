@@ -101,4 +101,5 @@ export default {
     "Are you sure you want to select all {totalRecords} registers?",
   filter: "Filter",
   applyFilters: "Apply filters",
+  resetTableView: "Reset table view",
 };

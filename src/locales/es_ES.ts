@@ -107,4 +107,5 @@ export default {
     "Estás seguro de querer seleccionar todos los {totalRecords} registros?",
   filter: "Filtrar",
   applyFilters: "Aplicar filtros",
+  resetTableView: "Restablecer vista de tabla",
 };

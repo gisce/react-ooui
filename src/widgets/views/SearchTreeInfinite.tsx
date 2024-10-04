@@ -399,7 +399,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   }, [aggregates, loadingAggregates, hasAggregates]);
 
   const statusComp = useCallback((status: any) => {
-    return <Badge color={status} />;
+    return <Badge color={status} style={{ marginLeft: 7 }} />;
   }, []);
 
   const onRowStatus = useCallback(
@@ -433,6 +433,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         hasStatusColumn={treeOoui.status !== null}
         statusComponent={statusComp}
         onRowStatus={onRowStatus}
+        strings={{
+          resetTableViewLabel: t("resetTableView"),
+        }}
       />
     );
   }, [
@@ -450,6 +453,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     selectedRowKeys,
     setTreeFirstVisibleRow,
     statusComp,
+    t,
     totalRows,
     treeOoui,
     updateColumnState,
