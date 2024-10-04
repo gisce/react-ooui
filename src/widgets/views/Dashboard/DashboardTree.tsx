@@ -94,7 +94,7 @@ function DashboardTree(props: Props) {
     setTableRefreshing(false);
 
     setResults(resultsSorted);
-    const totalItemsResult = await totalItems;
+    const totalItemsResult = await totalItems();
     setTotalItems(totalItemsResult);
   };
 
