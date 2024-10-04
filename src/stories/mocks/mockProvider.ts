@@ -75,7 +75,7 @@ const init = () => {
       await new Promise((resolve) => setTimeout(resolve, timeout));
       const data = getMock(options.model);
       return {
-        totalItems: 1,
+        totalItems: () => Promise.resolve(1),
         results: [data.exampleValues],
       };
     },

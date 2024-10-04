@@ -32,7 +32,7 @@ export const SearchTreeHeader = ({
         {totalRows === undefined && <Spin />}
         {totalRows !== null &&
           totalRows !== undefined &&
-          `${t("totalRegisters")}: ${totalRows}`}
+          `${t("totalRegisters")} ${totalRows}`}
       </Col>
     </Row>
   );

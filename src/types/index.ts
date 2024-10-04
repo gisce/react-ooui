@@ -72,7 +72,7 @@ export type GraphView = {
 export type View = TreeView | FormView | DashboardView | GraphView;
 
 type SearchResponse = {
-  totalItems: Promise<number>;
+  totalItems: () => Promise<number>;
   results: any[];
   attrsEvaluated?: any;
 };
