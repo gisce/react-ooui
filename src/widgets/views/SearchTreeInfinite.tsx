@@ -137,7 +137,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   useEffect(() => {
     if (
       (nameSearch !== undefined && prevNameSearch.current === undefined) ||
-      (nameSearch === undefined && prevNameSearch.current !== undefined)
+      (nameSearch === undefined && prevNameSearch.current !== undefined) ||
+      (typeof nameSearch === "string" &&
+        typeof prevNameSearch.current === "string" &&
+        nameSearch !== prevNameSearch.current)
     ) {
       setSelectedRowItems?.([]);
       setSearchParams?.([]);
@@ -147,7 +150,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       tableRef.current?.refresh();
     }
     prevNameSearch.current = nameSearch;
-  }, [nameSearch, setSelectedRowItems, setSearchParams, setSearchValues]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nameSearch]);
 
   const treeOoui = useMemo(() => {
     if (!treeView) {
