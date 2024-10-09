@@ -1,4 +1,3 @@
-import React from "react";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
 
 import {

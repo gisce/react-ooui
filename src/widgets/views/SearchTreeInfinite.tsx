@@ -95,6 +95,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   useImperativeHandle(ref, () => ({
     refreshResults: () => {
+      currentSearchParamsString.current = undefined;
       tableRef?.current?.refresh();
     },
     getFields: () => treeView?.fields,
@@ -137,6 +138,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     setSearchParams?.([]);
     setSearchValues?.({});
     tableRef.current?.unselectAll();
+    currentSearchParamsString.current = undefined;
     tableRef.current?.refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nameSearch]);
@@ -201,12 +203,23 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         attrs.status = treeOoui.status;
       }
 
+      const params = nameSearch ? domain : mergedParams;
+      let mustUpdateTotal = false;
+
+      const paramsString = `${JSON.stringify(params)}-${nameSearch}`;
+
+      if (paramsString !== currentSearchParamsString.current) {
+        currentSearchParamsString.current = paramsString;
+        mustUpdateTotal = true;
+        setTotalRows(undefined);
+      }
+
       const {
-        totalItems: totalItemsPromise,
+        totalItems: totalItemsFnPromise,
         results,
         attrsEvaluated,
       } = await ConnectionProvider.getHandler().searchForTree({
-        params: nameSearch ? domain : mergedParams,
+        params,
         limit: endRow - startRow,
         offset: startRow,
         model,
@@ -225,12 +238,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         return [];
       }
 
-      // TODO: maybe we could improve this somehow
-      Promise.resolve().then(async () => {
-        totalItemsPromise.then((totalItems) => {
-          setTotalRows(totalItems);
+      mustUpdateTotal &&
+        Promise.resolve().then(async () => {
+          totalItemsFnPromise().then((totalItems) => {
+            setTotalRows(totalItems);
+          });
         });
-      });
 
       const preparedResults = getTableItems(treeOoui, results);
 
@@ -287,7 +300,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     }) => {
       try {
         setTreeIsLoading?.(true);
-        setTotalRows(undefined);
         const results = await fetchResults({
           startRow,
           endRow,
@@ -407,6 +419,13 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     [],
   );
 
+  const strings = useMemo(
+    () => ({
+      resetTableViewLabel: t("resetTableView"),
+    }),
+    [t],
+  );
+
   const content = useMemo(() => {
     if (!columns || !treeOoui) {
       return null;
@@ -433,9 +452,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         hasStatusColumn={treeOoui.status !== null}
         statusComponent={statusComp}
         onRowStatus={onRowStatus}
-        strings={{
-          resetTableViewLabel: t("resetTableView"),
-        }}
+        strings={strings}
       />
     );
   }, [
@@ -453,7 +470,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     selectedRowKeys,
     setTreeFirstVisibleRow,
     statusComp,
-    t,
+    strings,
     totalRows,
     treeOoui,
     updateColumnState,
@@ -461,6 +478,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const prevSearchParamsRef = useRef(searchParams);
   const prevSearchVisibleRef = useRef(searchVisible);
+  const currentSearchParamsString = useRef<string>();
 
   useDeepCompareEffect(() => {
     const searchParamsChanged = !deepEqual(
@@ -471,6 +489,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       prevSearchVisibleRef.current && !searchVisible;
 
     if (searchParamsChanged && searchVisibleChangedToFalse) {
+      currentSearchParamsString.current = undefined;
       tableRef.current?.refresh();
     }
 

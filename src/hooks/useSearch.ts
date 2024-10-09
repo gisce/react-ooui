@@ -233,7 +233,7 @@ export const useSearch = (opts: UseSearchOpts) => {
       }
       setTableRefreshing(false);
 
-      const totalItemsValue = await totalItems;
+      const totalItemsValue = await totalItems();
 
       setTotalItems(totalItemsValue);
       setActionViewTotalItems?.(totalItemsValue);
