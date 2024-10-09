@@ -132,16 +132,22 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   } = useActionViewContext(rootTree);
 
   const nameSearch = nameSearchProps || searchTreeNameSearch;
+  const prevNameSearch = useRef(nameSearch);
 
   useEffect(() => {
-    setSelectedRowItems?.([]);
-    setSearchParams?.([]);
-    setSearchValues?.({});
-    tableRef.current?.unselectAll();
-    currentSearchParamsString.current = undefined;
-    tableRef.current?.refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nameSearch]);
+    if (
+      (nameSearch !== undefined && prevNameSearch.current === undefined) ||
+      (nameSearch === undefined && prevNameSearch.current !== undefined)
+    ) {
+      setSelectedRowItems?.([]);
+      setSearchParams?.([]);
+      setSearchValues?.({});
+      tableRef.current?.unselectAll();
+      currentSearchParamsString.current = undefined;
+      tableRef.current?.refresh();
+    }
+    prevNameSearch.current = nameSearch;
+  }, [nameSearch, setSelectedRowItems, setSearchParams, setSearchValues]);
 
   const treeOoui = useMemo(() => {
     if (!treeView) {
