@@ -18,6 +18,7 @@ import {
   One2manyTreeDataForHash,
   getKey,
 } from "@/helpers/o2m-columnStorageHelper";
+import { useLocale } from "@gisce/react-formiga-components";
 
 export type One2manyTreeProps = {
   items: One2manyItem[];
@@ -76,6 +77,7 @@ export const One2manyTree = ({
 
   const prevItemsValue = useRef<One2manyItem[]>();
   const itemsRef = useRef<One2manyItem[]>(items);
+  const { t } = useLocale();
 
   useDeepCompareEffect(() => {
     itemsRef.current = items;
@@ -219,8 +221,13 @@ export const One2manyTree = ({
         )
       }
       hasStatusColumn={ooui.status !== null}
-      statusComponent={(status: any) => <Badge color={status} />}
+      statusComponent={(status: any) => (
+        <Badge color={status} style={{ marginLeft: 7 }} />
+      )}
       onRowStatus={(record: any) => statusForResults.current?.[record.id]}
+      strings={{
+        resetTableViewLabel: t("resetTableView"),
+      }}
     />
   );
 };
