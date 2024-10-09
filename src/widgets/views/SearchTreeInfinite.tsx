@@ -95,6 +95,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   useImperativeHandle(ref, () => ({
     refreshResults: () => {
+      currentSearchParamsString.current = undefined;
       tableRef?.current?.refresh();
     },
     getFields: () => treeView?.fields,
@@ -137,6 +138,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     setSearchParams?.([]);
     setSearchValues?.({});
     tableRef.current?.unselectAll();
+    currentSearchParamsString.current = undefined;
     tableRef.current?.refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nameSearch]);
@@ -487,6 +489,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       prevSearchVisibleRef.current && !searchVisible;
 
     if (searchParamsChanged && searchVisibleChangedToFalse) {
+      currentSearchParamsString.current = undefined;
       tableRef.current?.refresh();
     }
 
