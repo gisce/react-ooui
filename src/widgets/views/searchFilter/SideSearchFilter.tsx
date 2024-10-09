@@ -25,7 +25,6 @@ import { useLocale } from "@gisce/react-formiga-components";
 import { FloatingDrawer } from "@/ui/FloatingDrawer";
 import debounce from "lodash.debounce";
 import deepEqual from "deep-equal";
-import { set } from "lodash";
 
 type SideSearchFilterBaseProps = {
   onSubmit: (values: any) => void;
@@ -140,7 +139,6 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
   }, [isOpen]);
 
   useDeepCompareEffect(() => {
-    if (!isOpen) return;
     sfo.current = new SearchFilterOoui(searchFields, fields, 1);
     sfo.current.parse();
     setParsedSearchFields(sfo.current._advancedSearchContainer);
