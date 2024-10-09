@@ -1,6 +1,7 @@
 import { Fragment, useContext } from "react";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
+import { Comments as CommentsOoui } from "@gisce/ooui";
 import {
   Card,
   Space,
@@ -17,6 +18,10 @@ import md5 from "md5";
 
 const { Meta } = Card;
 const { Text } = Typography;
+
+type CommentsTimelineFieldProps = WidgetProps & {
+  ooui: CommentsOoui;
+};
 
 type GravatarProps = {
   email: string;
@@ -45,6 +50,7 @@ type CommentsTypeProps = {
 
 type CommentsTimelineProps = {
   value?: EventsType[];
+  ooui: CommentsOoui;
 };
 
 type EventActionType = {
@@ -120,7 +126,7 @@ export const Comments = (props: CommentsTypeProps) => {
 };
 
 export const CommentsTimeline = (props: CommentsTimelineProps) => {
-  const { value } = props;
+  const { value, ooui } = props;
   const items = (value || []).map((i) => {
     if (i.type === "action") {
       return {
@@ -135,13 +141,23 @@ export const CommentsTimeline = (props: CommentsTimelineProps) => {
       };
     }
   });
-  return <Timeline mode="alternate" items={items as TimelineItemProps[]} />;
+  return (
+    <Timeline
+      mode="alternate"
+      items={items as TimelineItemProps[]}
+      style={{
+        height: ooui.height ? ooui.height + "px" : "100%",
+        overflowX: "hidden",
+        overflowY: "auto",
+      }}
+    />
+  );
 };
 
-export const CommentsTimelineField = (props: WidgetProps) => {
+export const CommentsTimelineField = (props: CommentsTimelineFieldProps) => {
   return (
     <Field {...props}>
-      <CommentsTimeline />
+      <CommentsTimeline ooui={props.ooui} />
     </Field>
   );
 };
