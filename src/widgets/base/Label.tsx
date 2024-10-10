@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Tooltip, Typography, theme } from "antd";
 import { WidgetProps } from "@/types";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Label as LabelOoui } from "@gisce/ooui";
+import { FormContext, FormContextType } from "@/context/FormContext";
 import { Interweave } from "interweave";
 const { Text, Title } = Typography;
 const { useToken } = theme;
@@ -22,8 +23,12 @@ const Label = (props: Props) => {
   const { ooui, align, responsiveBehaviour } = props;
   const { label, tooltip, fieldForLabel, labelSize, labelType } =
     ooui as LabelOoui;
+  const formContext = useContext(FormContext) as FormContextType;
   const addColon = fieldForLabel !== null;
-  const labelText = addColon && label.length > 1 ? label + " :" : label;
+  let labelText = addColon && label.length > 1 ? label + " :" : label;
+  if (!ooui.fieldForLabel && ooui._id) {
+    labelText = formContext.getFieldValue(ooui._id);
+  }
   const responsiveAlign = responsiveBehaviour ? "left" : "right";
   const labelAlgin = align || (fieldForLabel ? responsiveAlign : "left");
   const { token } = useToken();
