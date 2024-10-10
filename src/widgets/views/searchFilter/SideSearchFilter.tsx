@@ -182,9 +182,10 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
     setSearchParams([]);
   }, []);
 
-  const paramsToShow =
-    searchParams ||
-    getParamsForFields(searchValues, sfo.current?._advancedSearchContainer);
+  const paramsToShow = isOpen
+    ? searchParams ||
+      getParamsForFields(searchValues, sfo.current?._advancedSearchContainer)
+    : [];
 
   return (
     <FloatingDrawer
@@ -199,13 +200,15 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
         />
       }
     >
-      <SideSearchFilterComponent
-        ref={formRef}
-        searchFields={parsedSearchFields}
-        onSubmit={onFinish}
-        searchValues={searchValues}
-        onChange={handleOnChange}
-      />
+      {isOpen && (
+        <SideSearchFilterComponent
+          ref={formRef}
+          searchFields={parsedSearchFields}
+          onSubmit={onFinish}
+          searchValues={searchValues}
+          onChange={handleOnChange}
+        />
+      )}
     </FloatingDrawer>
   );
 };
