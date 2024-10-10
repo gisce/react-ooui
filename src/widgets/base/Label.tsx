@@ -9,6 +9,7 @@ const { Text, Title } = Typography;
 const { useToken } = theme;
 
 type Props = WidgetProps & {
+  ooui: LabelOoui;
   align?: "left" | "center" | "right";
   responsiveBehaviour?: boolean;
 };
@@ -21,8 +22,7 @@ const alignClass = {
 
 const Label = (props: Props) => {
   const { ooui, align, responsiveBehaviour } = props;
-  const { label, tooltip, fieldForLabel, labelSize, labelType } =
-    ooui as LabelOoui;
+  const { label, tooltip, fieldForLabel, labelSize, labelType } = ooui;
   const formContext = useContext(FormContext) as FormContextType;
   const addColon = fieldForLabel !== null;
   let labelText = addColon && label.length > 1 ? label + " :" : label;
