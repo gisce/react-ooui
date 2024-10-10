@@ -137,7 +137,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   useEffect(() => {
     if (
       (nameSearch !== undefined && prevNameSearch.current === undefined) ||
-      (nameSearch === undefined && prevNameSearch.current !== undefined) ||
       (typeof nameSearch === "string" &&
         typeof prevNameSearch.current === "string" &&
         nameSearch !== prevNameSearch.current)

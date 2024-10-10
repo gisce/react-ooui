@@ -210,6 +210,7 @@ function TreeActionBar(props: Props) {
                 setSearchTreeNameSearch?.(searchString);
               } else {
                 setSearchTreeNameSearch?.(undefined);
+                searchTreeRef?.current?.refreshResults();
               }
             }}
           />
