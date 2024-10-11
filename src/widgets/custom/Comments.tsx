@@ -149,6 +149,8 @@ export const CommentsTimeline = (props: CommentsTimelineProps) => {
         height: ooui.height ? ooui.height + "px" : "100%",
         overflowX: "hidden",
         overflowY: "auto",
+        paddingTop: "10px",
+        paddingRight: "10px",
       }}
     />
   );
