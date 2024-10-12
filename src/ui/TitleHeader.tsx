@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { Row, Col, Typography, theme } from "antd";
 import {
   ActionViewContext,
@@ -8,17 +8,19 @@ import { useLocale } from "@gisce/react-formiga-components";
 import { CopyOutlined } from "@ant-design/icons";
 
 const { useToken } = theme;
-
 const { Title, Text } = Typography;
 
 type Props = {
   title?: string;
-  children?: any;
+  children?: React.ReactNode;
   showSummary?: boolean;
 };
 
-function TitleHeader(props: Props) {
-  const { title: titleProps, children, showSummary = true } = props;
+const TitleHeader: React.FC<Props> = ({
+  title: titleProps,
+  children,
+  showSummary = true,
+}) => {
   const {
     title,
     currentView,
@@ -27,16 +29,15 @@ function TitleHeader(props: Props) {
     results,
     totalItems,
     selectedRowItems,
+    isInfiniteTree,
   } = useContext(ActionViewContext) as ActionViewContextType;
   const { t } = useLocale();
   const { token } = useToken();
 
-  function getSummary() {
-    if (currentView?.type === "form") {
-      if (!currentId) {
-        return "";
-      }
+  const summary = useMemo(() => {
+    if (!showSummary) return null;
 
+    if (currentView?.type === "form" && currentId) {
       if (totalItems === 0) {
         return (
           <>
@@ -51,15 +52,18 @@ function TitleHeader(props: Props) {
         );
       }
 
+      const currentItemNumber = (currentItemIndex ?? 0) + 1;
+      const itemCount = isInfiniteTree ? totalItems : results?.length;
       return (
         <>
-          {t("register")}{" "}
-          {currentItemIndex === undefined ? 1 : currentItemIndex + 1} /{" "}
-          {results!.length} {t("of")} {totalItems} - {t("editingDocument")} (id:{" "}
-          <Text copyable>{currentId}</Text>)
+          {t("register")} {currentItemNumber} {isInfiniteTree ? t("of") : "/"}{" "}
+          {itemCount} {!isInfiniteTree && `${t("of")} ${totalItems}`} -{" "}
+          {t("editingDocument")} (id: <Text copyable>{currentId}</Text>)
         </>
       );
-    } else if (currentView?.type === "tree" && selectedRowItems) {
+    }
+
+    if (currentView?.type === "tree" && selectedRowItems?.length) {
       if (selectedRowItems.length === 1) {
         return (
           <>
@@ -67,29 +71,34 @@ function TitleHeader(props: Props) {
             <Text copyable>{selectedRowItems[0].id}</Text>)
           </>
         );
-      } else if (selectedRowItems.length > 1) {
-        return (
-          <>
-            {selectedRowItems.length} {t("selectedRegisters")}
-            <Text
-              copyable={{
-                text: selectedRowItems.map((reg) => reg.id).join(", "),
-              }}
-            ></Text>
-          </>
-        );
       }
+      return (
+        <>
+          {selectedRowItems.length} {t("selectedRegisters")}
+          <Text
+            copyable={{
+              text: selectedRowItems.map((reg) => reg.id).join(", "),
+            }}
+          />
+        </>
+      );
     }
+
     return null;
-  }
+  }, [
+    showSummary,
+    currentView?.type,
+    currentId,
+    selectedRowItems,
+    totalItems,
+    currentItemIndex,
+    isInfiniteTree,
+    results?.length,
+    t,
+  ]);
+
   return (
-    <div
-      style={{
-        position: "sticky",
-        top: 80,
-        zIndex: 3,
-      }}
-    >
+    <div style={{ position: "sticky", top: 80, zIndex: 3 }}>
       <Row
         className="shadow-md"
         style={{
@@ -104,7 +113,7 @@ function TitleHeader(props: Props) {
           <Title level={3} style={{ marginBottom: 0 }}>
             {titleProps || title}
           </Title>
-          {showSummary && getSummary()}
+          {summary}
         </Col>
         <Col flex={3}>
           <Row justify="end">{children}</Row>
@@ -113,6 +122,6 @@ function TitleHeader(props: Props) {
       <div className="pb-5" />
     </div>
   );
-}
+};
 
 export default TitleHeader;
