@@ -39,6 +39,7 @@ import {
 } from "@/context/ContentRootContext";
 import AttachmentsButton from "./AttachmentsButton";
 import { Attachment } from "./AttachmentsButtonWrapper";
+import { useNextPrevious } from "./useNextPrevious";
 
 function FormActionBar({ toolbar }: { toolbar: any }) {
   const {
@@ -68,6 +69,8 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     goToResourceId,
     isActive,
   } = useContext(ActionViewContext) as ActionViewContextType;
+
+  const { onNextClick, onPreviousClick } = useNextPrevious();
 
   useHotkeys(
     "pagedown",
@@ -159,26 +162,6 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     }
 
     callback();
-  }
-
-  function onNextClick() {
-    if (results && results.length > currentItemIndex! + 1) {
-      setCurrentItemIndex?.(currentItemIndex! + 1);
-      setCurrentId?.(results[currentItemIndex! + 1].id);
-    } else if (results && currentItemIndex! + 1 === results.length) {
-      setCurrentItemIndex?.(0);
-      setCurrentId?.(results[0].id);
-    }
-  }
-
-  function onPreviousClick() {
-    if (results && currentItemIndex! > 0) {
-      setCurrentItemIndex?.(currentItemIndex! - 1);
-      setCurrentId?.(results[currentItemIndex! - 1].id);
-    } else if (results && currentItemIndex === 0) {
-      setCurrentItemIndex?.(results.length - 1);
-      setCurrentId?.(results[results.length - 1].id);
-    }
   }
 
   function tryDuplicate() {

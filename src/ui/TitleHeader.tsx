@@ -27,6 +27,7 @@ function TitleHeader(props: Props) {
     results,
     totalItems,
     selectedRowItems,
+    isInfiniteTree,
   } = useContext(ActionViewContext) as ActionViewContextType;
   const { t } = useLocale();
   const { token } = useToken();
@@ -54,9 +55,14 @@ function TitleHeader(props: Props) {
       return (
         <>
           {t("register")}{" "}
-          {currentItemIndex === undefined ? 1 : currentItemIndex + 1} /{" "}
-          {results!.length} {t("of")} {totalItems} - {t("editingDocument")} (id:{" "}
-          <Text copyable>{currentId}</Text>)
+          {isInfiniteTree
+            ? `${currentItemIndex === undefined ? 1 : currentItemIndex + 1} ${t(
+                "of",
+              )} ${totalItems}`
+            : `${currentItemIndex === undefined ? 1 : currentItemIndex + 1} / ${
+                results!.length
+              } ${t("of")} ${totalItems}`}{" "}
+          - {t("editingDocument")} (id: <Text copyable>{currentId}</Text>)
         </>
       );
     } else if (currentView?.type === "tree" && selectedRowItems) {
