@@ -48,7 +48,8 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     if (!treeView?.arch) {
       return false;
     }
-    return extractTreeXmlAttribute(treeView?.arch, "infinite") !== undefined;
+    const tagValue = extractTreeXmlAttribute(treeView?.arch, "infinite");
+    return tagValue === "1";
   }, [treeView]);
 
   useEffect(() => {
