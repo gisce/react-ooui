@@ -1,7 +1,7 @@
 import TreeActionBar from "@/actionbar/TreeActionBar";
 import { FormView, TreeView, View } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
-import { Fragment, useCallback, useContext, useMemo } from "react";
+import { Fragment, useCallback, useContext, useEffect, useMemo } from "react";
 import {
   ActionViewContext,
   ActionViewContextType,
@@ -48,10 +48,15 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     if (!treeView?.arch) {
       return false;
     }
-    return extractTreeXmlAttribute(treeView?.arch, "infinite");
+    return extractTreeXmlAttribute(treeView?.arch, "infinite") !== undefined;
   }, [treeView]);
 
-  const { currentView, setPreviousView } = useContext(
+  useEffect(() => {
+    setIsInfiniteTree?.(isInfiniteTree);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isInfiniteTree]);
+
+  const { currentView, setPreviousView, setIsInfiniteTree } = useContext(
     ActionViewContext,
   ) as ActionViewContextType;
 

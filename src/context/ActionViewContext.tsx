@@ -64,11 +64,23 @@ export type ActionViewContextType = Omit<
   setTitle?: (value: string) => void;
   treeFirstVisibleRow: number;
   setTreeFirstVisibleRow: (totalItems: number) => void;
+  searchQuery?: SearchQueryParams;
+  setSearchQuery?: (value: SearchQueryParams) => void;
+  isInfiniteTree?: boolean;
+  setIsInfiniteTree?: (value: boolean) => void;
 };
 
 export const ActionViewContext = createContext<ActionViewContextType | null>(
   null,
 );
+
+export type SearchQueryParams = {
+  model: string;
+  params: any[];
+  name_search?: string;
+  context?: any;
+  order?: string;
+};
 
 const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const {
@@ -113,6 +125,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [previousView, setPreviousView] = useState<View>();
   const [searchValues, setSearchValues] = useState<any>({});
   const [treeFirstVisibleRow, setTreeFirstVisibleRow] = useState<number>(0);
+  const [searchQuery, setSearchQuery] = useState<SearchQueryParams>();
+  const [isInfiniteTree, setIsInfiniteTree] = useState<boolean>(false);
 
   const [limit, setLimit] = useState<number>(
     limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT,
@@ -216,6 +230,10 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         isActive,
         setTreeFirstVisibleRow,
         treeFirstVisibleRow,
+        searchQuery,
+        setSearchQuery,
+        isInfiniteTree,
+        setIsInfiniteTree,
       }}
     >
       {children}
