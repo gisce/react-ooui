@@ -140,37 +140,23 @@ export const TimelineInput = (props: TimelineInputProps) => {
       <AntTimeline style={{ padding: "1rem" }}>
         {itemsToShow.map((item, index) => {
           return (
-            <div key={index}>
-              <AntTimeline.Item key={index}>
-                <div
-                  style={{ display: "inline-block", cursor: "pointer" }}
-                  onClick={() => {
-                    setModalItem(
-                      itemsToShow.find(
-                        (searchItem) => item.id === searchItem.id,
-                      ),
-                    );
-                    setShowFormModal(true);
-                  }}
-                >
-                  <strong>{item.values?.[titleField]}</strong>
-                </div>
+            <AntTimeline.Item key={index}>
+              <div
+                style={{ display: "inline-block", cursor: "pointer" }}
+                onClick={() => {
+                  setModalItem(
+                    itemsToShow.find((searchItem) => item.id === searchItem.id),
+                  );
+                  setShowFormModal(true);
+                }}
+              >
+                <strong>{item.values?.[titleField]}</strong>
                 <br />
-                <div
-                  style={{ display: "inline-block", cursor: "pointer" }}
-                  onClick={() => {
-                    setModalItem(
-                      itemsToShow.find(
-                        (searchItem) => item.id === searchItem.id,
-                      ),
-                    );
-                    setShowFormModal(true);
-                  }}
-                >
-                  {item.values?.[summaryField]}
-                </div>
-              </AntTimeline.Item>
-            </div>
+                {item.values?.[summaryField] && (
+                  <span>{item.values[summaryField]}</span>
+                )}
+              </div>
+            </AntTimeline.Item>
           );
         })}
       </AntTimeline>
