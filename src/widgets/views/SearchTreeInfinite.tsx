@@ -316,6 +316,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       parentContext,
       setActionViewResults,
       setSearchQuery,
+      setTotalItemsActionView,
       treeOoui,
       treeView,
     ],
