@@ -129,6 +129,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     setSearchValues,
     searchTreeNameSearch,
     setSearchTreeNameSearch,
+    setResults: setActionViewResults,
+    results: actionViewResults,
+    setSearchQuery,
+    setTotalItems: setTotalItemsActionView,
   } = useActionViewContext(rootTree);
 
   const nameSearch = nameSearchProps || searchTreeNameSearch;
@@ -220,8 +224,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       if (paramsString !== currentSearchParamsString.current) {
         currentSearchParamsString.current = paramsString;
         mustUpdateTotal = true;
+
         setTotalRows(undefined);
+        setTotalItemsActionView(0);
       }
+
+      const order = getOrderFromSortFields(sortFields);
 
       const {
         totalItems: totalItemsFnPromise,
@@ -237,13 +245,33 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           : treeView!.fields,
         context: parentContext,
         attrs,
-        order: getOrderFromSortFields(sortFields),
+        order,
         name_search: nameSearch,
       });
+
+      const newResults = results.map((item) => ({ id: item.id }));
+
+      setSearchQuery?.({
+        model,
+        params,
+        name_search: nameSearch,
+        context: parentContext,
+        order,
+      });
+
+      if (mustUpdateTotal || prevSortOrder.current !== order) {
+        setActionViewResults?.(newResults);
+      } else {
+        const appendedResults = [...(actionViewResults || []), ...newResults];
+        setActionViewResults?.(appendedResults);
+      }
+
+      prevSortOrder.current = order;
 
       if (results.length === 0) {
         lastAssignedResults.current = [];
         setTotalRows(0);
+        setTotalItemsActionView(0);
         return [];
       }
 
@@ -251,6 +279,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         Promise.resolve().then(async () => {
           totalItemsFnPromise().then((totalItems) => {
             setTotalRows(totalItems);
+            setTotalItemsActionView(totalItems);
           });
         });
 
@@ -279,11 +308,14 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       return preparedResults;
     },
     [
+      actionViewResults,
       domain,
       mergedParams,
       model,
       nameSearch,
       parentContext,
+      setActionViewResults,
+      setSearchQuery,
       treeOoui,
       treeView,
     ],
@@ -318,13 +350,14 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       } catch (error) {
         console.error(error);
         setTotalRows(null);
+        setTotalItemsActionView(0);
         showErrorDialog(error);
         throw error;
       } finally {
         setTreeIsLoading?.(false);
       }
     },
-    [fetchResults, setTreeIsLoading, showErrorDialog],
+    [fetchResults, setTotalItemsActionView, setTreeIsLoading, showErrorDialog],
   );
 
   const onRowStyle = useCallback((record: any) => {
@@ -488,6 +521,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const prevSearchParamsRef = useRef(searchParams);
   const prevSearchVisibleRef = useRef(searchVisible);
   const currentSearchParamsString = useRef<string>();
+  const prevSortOrder = useRef<string>();
 
   useDeepCompareEffect(() => {
     const searchParamsChanged = !deepEqual(

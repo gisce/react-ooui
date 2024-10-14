@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useCallback } from "react";
 import { Space, Spin } from "antd";
 import {
   SaveOutlined,
@@ -14,33 +14,37 @@ import {
 } from "@ant-design/icons";
 import ChangeViewButton from "./ChangeViewButton";
 import ActionButton from "./ActionButton";
-import {
-  ActionViewContext,
-  ActionViewContextType,
-} from "@/context/ActionViewContext";
+import { useActionViewContext } from "@/context/ActionViewContext";
 import NewButton from "./NewButton";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { showErrorDialog } from "@/ui/GenericErrorDialog";
 import ConnectionProvider from "@/ConnectionProvider";
-import refreshChangesDialog from "@/ui/RefreshItemDialog";
 import { showLogInfo } from "@/helpers/logInfoHelper";
 import { DropdownButton, useLocale } from "@gisce/react-formiga-components";
 import { useHotkeys } from "react-hotkeys-hook";
-
 import {
   TabManagerContext,
   TabManagerContextType,
 } from "@/context/TabManagerContext";
-
 import {
   ContentRootContext,
   ContentRootContextType,
 } from "@/context/ContentRootContext";
 import AttachmentsButton from "./AttachmentsButton";
 import { Attachment } from "./AttachmentsButtonWrapper";
+import { useNextPrevious } from "./useNextPrevious";
 
 function FormActionBar({ toolbar }: { toolbar: any }) {
+  const contentRootContext = useContext(
+    ContentRootContext,
+  ) as ContentRootContextType;
+  const tabManagerContext = useContext(
+    TabManagerContext,
+  ) as TabManagerContextType;
+  const { t } = useLocale();
+  const { onNextClick, onPreviousClick } = useNextPrevious();
+
   const {
     availableViews,
     currentView,
@@ -67,166 +71,45 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     setPreviousView,
     goToResourceId,
     isActive,
-  } = useContext(ActionViewContext) as ActionViewContextType;
+  } = useActionViewContext(true);
 
-  useHotkeys(
-    "pagedown",
-    () => {
-      if (!isActive) {
-        return;
-      }
-      tryNavigate(onNextClick);
-    },
-    { enableOnFormTags: true, preventDefault: true },
-    [tryNavigate, onNextClick, isActive],
-  );
-
-  useHotkeys(
-    "pageup",
-    () => {
-      if (!isActive) {
-        return;
-      }
-      tryNavigate(onPreviousClick);
-    },
-    { enableOnFormTags: true, preventDefault: true },
-    [tryNavigate, onNextClick, isActive],
-  );
-
-  useHotkeys(
-    "ctrl+s,command+s",
-    () => {
-      if (!isActive) {
-        return;
-      }
-      onFormSave?.();
-    },
-    { enableOnFormTags: true, preventDefault: true },
-    [onFormSave, isActive],
-  );
-
-  // Shortcut ctl+l to change to previous view
-  useHotkeys(
-    "ctrl+l,command+l",
-    () => {
-      if (!isActive) {
-        return;
-      }
-      if (previousView) {
-        setPreviousView?.(currentView);
-        setCurrentView?.(previousView);
-      }
-    },
-    { enableOnFormTags: true, preventDefault: true },
-    [previousView, currentView, isActive],
-  );
-
-  const { t } = useLocale();
-
-  const contentRootContext = useContext(
-    ContentRootContext,
-  ) as ContentRootContextType;
   const { processAction } = contentRootContext || {};
-
-  const tabManagerContext = useContext(
-    TabManagerContext,
-  ) as TabManagerContextType;
   const { openRelate, openDefaultActionForModel } = tabManagerContext || {};
 
-  function tryRefresh(callback: any) {
-    if (formHasChanges) {
-      refreshChangesDialog({
-        t,
-        onOk: () => {
-          callback();
-        },
-      });
-      return;
-    }
+  const mustDisableButtons =
+    formIsSaving || removingItem || formIsLoading || duplicatingItem;
 
-    callback();
-  }
+  const tryAction = useCallback(
+    (action: () => void) => {
+      if (formHasChanges) {
+        showUnsavedChangesDialog({ t, onOk: action });
+      } else {
+        action();
+      }
+    },
+    [formHasChanges, t],
+  );
 
-  function tryNavigate(callback: any) {
-    if (formHasChanges) {
-      showUnsavedChangesDialog({
-        t,
-        onOk: () => {
-          callback();
-        },
-      });
-      return;
-    }
-
-    callback();
-  }
-
-  function onNextClick() {
-    if (results && results.length > currentItemIndex! + 1) {
-      setCurrentItemIndex?.(currentItemIndex! + 1);
-      setCurrentId?.(results[currentItemIndex! + 1].id);
-    } else if (results && currentItemIndex! + 1 === results.length) {
-      setCurrentItemIndex?.(0);
-      setCurrentId?.(results[0].id);
-    }
-  }
-
-  function onPreviousClick() {
-    if (results && currentItemIndex! > 0) {
-      setCurrentItemIndex?.(currentItemIndex! - 1);
-      setCurrentId?.(results[currentItemIndex! - 1].id);
-    } else if (results && currentItemIndex === 0) {
-      setCurrentItemIndex?.(results.length - 1);
-      setCurrentId?.(results[results.length - 1].id);
-    }
-  }
-
-  function tryDuplicate() {
-    showConfirmDialog({
-      confirmMessage: t("confirmDuplicate"),
-      t,
-      onOk: () => {
-        duplicate();
-      },
-    });
-  }
-
-  function tryDelete() {
-    showConfirmDialog({
-      confirmMessage: t("confirmRemoveItem"),
-      t,
-      onOk: () => {
-        remove();
-      },
-    });
-  }
-
-  async function remove() {
+  const handleRemove = useCallback(async () => {
     try {
       setRemovingItem?.(true);
-
       await ConnectionProvider.getHandler().deleteObjects({
         model: currentModel!,
         ids: [currentId!],
         context: (formRef.current as any).getContext(),
       });
 
-      const filteredResults = results?.filter((item: any) => {
-        return item.id !== currentId;
-      });
+      const filteredResults = results?.filter(
+        (item: any) => item.id !== currentId,
+      );
       setResults?.(filteredResults!);
 
-      let newIndex = 0;
-
-      if (currentItemIndex! > 0 && currentItemIndex! <= results!.length - 1) {
-        newIndex = currentItemIndex! - 1;
-      }
-
+      const newIndex = Math.max(0, (currentItemIndex || 0) - 1);
       if (!filteredResults?.[newIndex]) {
         setCurrentId?.(undefined);
         setCurrentItemIndex?.(undefined);
       } else {
-        setCurrentId?.(filteredResults?.[newIndex].id);
+        setCurrentId?.(filteredResults[newIndex].id);
         setCurrentItemIndex?.(newIndex);
       }
     } catch (e) {
@@ -234,18 +117,26 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     } finally {
       setRemovingItem?.(false);
     }
-  }
+  }, [
+    currentId,
+    currentItemIndex,
+    currentModel,
+    formRef,
+    results,
+    setCurrentId,
+    setCurrentItemIndex,
+    setRemovingItem,
+    setResults,
+  ]);
 
-  async function duplicate() {
+  const handleDuplicate = useCallback(async () => {
     try {
       setDuplicatingItem?.(true);
-
       const newId = await ConnectionProvider.getHandler().duplicate({
         id: currentId!,
         model: currentModel!,
         context: (formRef.current as any).getContext(),
       });
-
       if (newId) {
         await goToResourceId?.([newId]);
       }
@@ -254,29 +145,55 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     } finally {
       setDuplicatingItem?.(false);
     }
-  }
+  }, [currentId, currentModel, formRef, goToResourceId, setDuplicatingItem]);
 
-  const mustDisableButtons =
-    formIsSaving || removingItem || formIsLoading || duplicatingItem;
+  const runAction = useCallback(
+    (actionData: any) => {
+      processAction?.({
+        actionData,
+        values: (formRef.current as any).getValues(),
+        fields: (formRef.current as any).getFields(),
+        context: (formRef.current as any).getContext(),
+        onRefreshParentValues: () => (formRef.current as any).fetchValues(),
+      });
+    },
+    [formRef, processAction],
+  );
 
-  function runAction(actionData: any) {
-    processAction?.({
-      actionData,
-      values: (formRef.current as any).getValues(),
-      fields: (formRef.current as any).getFields(),
-      context: (formRef.current as any).getContext(),
-      onRefreshParentValues: () => {
-        (formRef.current as any).fetchValues();
-      },
-    });
-  }
+  useHotkeys(
+    "pagedown",
+    () => isActive && tryAction(onNextClick),
+    { enableOnFormTags: true, preventDefault: true },
+    [isActive, tryAction, onNextClick],
+  );
+  useHotkeys(
+    "pageup",
+    () => isActive && tryAction(onPreviousClick),
+    { enableOnFormTags: true, preventDefault: true },
+    [isActive, tryAction, onPreviousClick],
+  );
+  useHotkeys(
+    "ctrl+s,command+s",
+    () => isActive && onFormSave?.(),
+    { enableOnFormTags: true, preventDefault: true },
+    [isActive, onFormSave],
+  );
+  useHotkeys(
+    "ctrl+l,command+l",
+    () => {
+      if (isActive && previousView) {
+        setPreviousView?.(currentView);
+        setCurrentView?.(previousView);
+      }
+    },
+    { enableOnFormTags: true, preventDefault: true },
+    [isActive, previousView, currentView, setPreviousView, setCurrentView],
+  );
 
-  if (!currentView) {
-    return null;
-  }
+  if (!currentView) return null;
 
   return (
-    <Space wrap={true}>
+    <Space wrap>
       {formIsLoading && (
         <>
           <Spin />
@@ -284,11 +201,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           {separator()}
         </>
       )}
-      <NewButton
-        disabled={
-          formIsSaving || formIsLoading || removingItem || duplicatingItem
-        }
-      />
+      <NewButton disabled={mustDisableButtons} />
       <ActionButton
         icon={<SaveOutlined />}
         tooltip={t("save")}
@@ -300,60 +213,42 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         icon={<CopyOutlined />}
         tooltip={t("duplicate")}
         disabled={
-          formHasChanges ||
-          formIsSaving ||
-          currentId === undefined ||
-          duplicatingItem ||
-          formIsLoading
+          formHasChanges || mustDisableButtons || currentId === undefined
         }
         loading={duplicatingItem}
-        onClick={tryDuplicate}
+        onClick={() =>
+          showConfirmDialog({
+            confirmMessage: t("confirmDuplicate"),
+            t,
+            onOk: handleDuplicate,
+          })
+        }
       />
       <ActionButton
         icon={<DeleteOutlined />}
         tooltip={t("delete")}
-        disabled={
-          formIsSaving ||
-          currentId === undefined ||
-          removingItem ||
-          duplicatingItem ||
-          formIsLoading
-        }
+        disabled={mustDisableButtons || currentId === undefined}
         loading={removingItem}
-        onClick={tryDelete}
+        onClick={() =>
+          showConfirmDialog({
+            confirmMessage: t("confirmRemoveItem"),
+            t,
+            onOk: handleRemove,
+          })
+        }
       />
       {separator()}
       <ActionButton
         icon={<InfoCircleOutlined />}
         tooltip={t("showLogs")}
-        disabled={
-          formIsSaving ||
-          currentId === undefined ||
-          removingItem ||
-          duplicatingItem ||
-          formIsLoading
-        }
-        loading={false}
-        onClick={() => {
-          showLogInfo(currentModel!, currentId!, t);
-        }}
+        disabled={mustDisableButtons || currentId === undefined}
+        onClick={() => showLogInfo(currentModel!, currentId!, t)}
       />
       <ActionButton
         icon={<ReloadOutlined />}
         tooltip={t("refresh")}
-        disabled={
-          formIsSaving ||
-          currentId === undefined ||
-          removingItem ||
-          duplicatingItem ||
-          formIsLoading
-        }
-        loading={false}
-        onClick={() => {
-          tryRefresh(() => {
-            (formRef.current as any).fetchValues();
-          });
-        }}
+        disabled={mustDisableButtons || currentId === undefined}
+        onClick={() => tryAction(() => (formRef.current as any).fetchValues())}
       />
       {separator()}
       <ChangeViewButton
@@ -374,19 +269,13 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           icon={<LeftOutlined />}
           tooltip={t("previous")}
           disabled={mustDisableButtons}
-          loading={false}
-          onClick={() => {
-            tryNavigate(onPreviousClick);
-          }}
+          onClick={() => tryAction(onPreviousClick)}
         />
         <ActionButton
           icon={<RightOutlined />}
           tooltip={t("next")}
           disabled={mustDisableButtons}
-          loading={false}
-          onClick={() => {
-            tryNavigate(onNextClick);
-          }}
+          onClick={() => tryAction(onNextClick)}
         />
       </Space>
       {separator()}
@@ -398,19 +287,10 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           { label: t("actions"), items: toolbar?.action },
         ]}
         onItemClick={async (action: any) => {
-          if (!action) {
-            return;
+          if (action) {
+            const result = await saveDocument({ onFormSave });
+            if (result.succeed) runAction(action);
           }
-
-          const result = await saveDocument({
-            onFormSave,
-          });
-
-          if (!result.succeed) {
-            return;
-          }
-
-          runAction(action);
         }}
       />
       <DropdownButton
@@ -421,24 +301,18 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           { label: t("reports"), items: toolbar?.print },
         ]}
         onItemClick={async (report: any) => {
-          if (!report) {
-            return;
+          if (report) {
+            const result = await saveDocument({ onFormSave });
+            if (result.succeed) {
+              runAction({
+                ...report,
+                datas: {
+                  ...(report.datas || {}),
+                  ids: [result.currentId as number],
+                },
+              });
+            }
           }
-          const result = await saveDocument({
-            onFormSave,
-          });
-
-          if (!result.succeed) {
-            return;
-          }
-
-          runAction({
-            ...report,
-            datas: {
-              ...(report.datas || {}),
-              ids: [result.currentId as number],
-            },
-          });
         }}
       />
       <DropdownButton
@@ -449,113 +323,83 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           { label: t("related"), items: toolbar?.relate },
         ]}
         onItemClick={async (relate: any) => {
-          if (!relate) {
-            return;
+          if (relate) {
+            const result = await saveDocument({ onFormSave });
+            if (result.succeed) {
+              openRelate({
+                relateData: relate,
+                values: (formRef.current as any).getValues(),
+                fields: (formRef.current as any).getFields(),
+                action_id: relate.id,
+                action_type: relate.type,
+              });
+            }
           }
-
-          const result = await saveDocument({
-            onFormSave,
-          });
-
-          if (!result.succeed) {
-            return;
-          }
-
-          openRelate({
-            relateData: relate,
-            values: (formRef.current as any).getValues(),
-            fields: (formRef.current as any).getFields(),
-            action_id: relate.id,
-            action_type: relate.type,
-          });
         }}
       />
       <AttachmentsButton
         disabled={mustDisableButtons}
         attachments={attachments}
         onAddNewAttachment={async () => {
-          const result = await saveDocument({
-            onFormSave,
-          });
-
-          if (!result.succeed) {
-            return;
+          const result = await saveDocument({ onFormSave });
+          if (result.succeed) {
+            openDefaultActionForModel({
+              ...getAttachmentActionPayload(
+                currentModel as string,
+                result.currentId as number,
+              ),
+              initialViewType: "form",
+            });
           }
-
-          const res_id = result.currentId as number;
-          const res_model = currentModel as string;
-          openDefaultActionForModel({
-            ...getAttachmentActionPayload(res_model, res_id),
-            initialViewType: "form",
-          });
         }}
         onListAllAttachments={async () => {
-          const result = await saveDocument({
-            onFormSave,
-          });
-
-          if (!result.succeed) {
-            return;
+          const result = await saveDocument({ onFormSave });
+          if (result.succeed) {
+            openDefaultActionForModel({
+              ...getAttachmentActionPayload(
+                currentModel as string,
+                result.currentId as number,
+              ),
+              initialViewType: "tree",
+            });
           }
-
-          const res_id = result.currentId as number;
-          const res_model = currentModel as string;
-          openDefaultActionForModel({
-            ...getAttachmentActionPayload(res_model, res_id),
-            initialViewType: "tree",
-          });
         }}
         onViewAttachmentDetails={async (attachment: Attachment) => {
-          const result = await saveDocument({
-            onFormSave,
-          });
-
-          if (!result.succeed) {
-            return;
+          const result = await saveDocument({ onFormSave });
+          if (result.succeed) {
+            openDefaultActionForModel({
+              model: "ir.attachment",
+              res_id: attachment.id,
+              initialViewType: "form",
+            });
           }
-
-          openDefaultActionForModel({
-            model: "ir.attachment",
-            res_id: attachment.id,
-            initialViewType: "form",
-          });
         }}
       />
     </Space>
   );
 }
 
-function separator() {
-  return <div className="inline-block w-2" />;
-}
+const separator = () => <div className="inline-block w-2" />;
 
-async function saveDocument({
+const saveDocument = async ({
   onFormSave,
 }: {
   onFormSave?: () => Promise<{ succeed: boolean; id: number }>;
-}): Promise<{ succeed: boolean; currentId?: number }> {
+}): Promise<{ succeed: boolean; currentId?: number }> => {
   const result = await onFormSave?.();
-  if (result?.succeed) {
-    return { succeed: true, currentId: result.id };
-  } else {
-    return { succeed: false, currentId: undefined };
-  }
-}
+  return result?.succeed
+    ? { succeed: true, currentId: result.id }
+    : { succeed: false, currentId: undefined };
+};
 
-function getAttachmentActionPayload(res_model: string, res_id: number) {
-  return {
-    model: "ir.attachment",
-    domain: [
-      ["res_model", "=", `${res_model}`],
-      ["res_id", "=", `${res_id}`],
-    ],
-    values: {
-      selection_associated_object: `${res_model},${res_id}`,
-    },
-    forced_values: {
-      res_model,
-      res_id,
-    },
-  };
-}
+const getAttachmentActionPayload = (res_model: string, res_id: number) => ({
+  model: "ir.attachment",
+  domain: [
+    ["res_model", "=", res_model],
+    ["res_id", "=", `${res_id}`],
+  ],
+  values: { selection_associated_object: `${res_model},${res_id}` },
+  forced_values: { res_model, res_id },
+});
+
 export default FormActionBar;

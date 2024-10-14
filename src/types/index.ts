@@ -88,6 +88,7 @@ type SearchRequest = {
   attrs?: any;
   order?: number | string | null;
   name_search?: string;
+  skipRead?: boolean;
 };
 
 type SearchAllIdsRequest = SearchCountRequest & {
