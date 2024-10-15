@@ -93,15 +93,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const { t } = useLocale();
 
-  useImperativeHandle(ref, () => ({
-    refreshResults: () => {
-      currentSearchParamsString.current = undefined;
-      tableRef?.current?.refresh();
-    },
-    getFields: () => treeView?.fields,
-    getDomain: () => domain,
-  }));
-
   const containerRef = useRef<HTMLDivElement>(null);
   const availableHeight = useAvailableHeight({
     elementRef: containerRef,
@@ -145,12 +136,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         typeof prevNameSearch.current === "string" &&
         nameSearch !== prevNameSearch.current)
     ) {
-      setSelectedRowItems?.([]);
       setSearchParams?.([]);
       setSearchValues?.({});
       tableRef.current?.unselectAll();
-      currentSearchParamsString.current = undefined;
-      tableRef.current?.refresh();
+      refresh();
     }
     prevNameSearch.current = nameSearch;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -316,6 +305,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       parentContext,
       setActionViewResults,
       setSearchQuery,
+      setTotalItemsActionView,
       treeOoui,
       treeView,
     ],
@@ -532,13 +522,24 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       prevSearchVisibleRef.current && !searchVisible;
 
     if (searchParamsChanged && searchVisibleChangedToFalse) {
-      currentSearchParamsString.current = undefined;
-      tableRef.current?.refresh();
+      refresh();
     }
 
     prevSearchParamsRef.current = searchParams;
     prevSearchVisibleRef.current = searchVisible;
   }, [searchParams, searchVisible]);
+
+  const refresh = useCallback(() => {
+    setSelectedRowItems?.([]);
+    currentSearchParamsString.current = undefined;
+    tableRef?.current?.refresh();
+  }, [setSelectedRowItems]);
+
+  useImperativeHandle(ref, () => ({
+    refreshResults: refresh,
+    getFields: () => treeView?.fields,
+    getDomain: () => domain,
+  }));
 
   return (
     <Fragment>
