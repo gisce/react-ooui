@@ -4,8 +4,10 @@ export type TreeDataForHash = {
 };
 
 export const getKey = (dataForHash: TreeDataForHash) => {
-  if (!dataForHash.treeViewId || !dataForHash.model) {
+  if (!dataForHash.model) {
     return undefined;
   }
-  return `columnState-${dataForHash.treeViewId}-${dataForHash.model}`;
+
+  const treeViewIdPart = dataForHash.treeViewId ?? "tree";
+  return `columnState-${treeViewIdPart}-${dataForHash.model}`;
 };

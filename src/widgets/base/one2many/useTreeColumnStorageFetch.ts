@@ -11,6 +11,7 @@ export const useTreeColumnStorageFetch = (key?: string) => {
 
   useEffect(() => {
     if (!key) {
+      setLoading(false);
       return;
     }
     const fetchColumnState = async () => {
