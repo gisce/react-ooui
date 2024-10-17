@@ -29,6 +29,7 @@ import {
   Radio,
   Switch,
   Steps,
+  ArrowStepsField,
   Tag,
   CodeEditor,
   CommentsTimelineField,
@@ -118,6 +119,8 @@ const getWidgetType = (type: string) => {
       return Switch;
     case "steps":
       return Steps;
+    case "arrow_steps":
+      return ArrowStepsField;
     case "codeeditor":
       return CodeEditor;
     case "comments_timeline":

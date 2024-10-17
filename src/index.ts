@@ -44,6 +44,7 @@ import { Markdown } from "@/widgets/custom/Markdown";
 import { Radio } from "@/widgets/custom/Radio";
 import { Switch } from "@/widgets/custom/Switch";
 import { Steps } from "@/widgets/custom/Steps";
+import { ArrowStepsField } from "@/widgets/custom/ArrowSteps";
 import { CodeEditor } from "@/widgets/custom/CodeEditor";
 import { CommentsTimelineField } from "@/widgets/custom/Comments";
 import { HTMLPreview } from "@/widgets/custom/HTMLPreview";
@@ -162,6 +163,7 @@ export {
   Radio,
   Switch,
   Steps,
+  ArrowStepsField,
   CodeEditor,
   CommentsTimelineField,
   ExportModal,
