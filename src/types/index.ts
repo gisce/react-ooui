@@ -100,6 +100,7 @@ type SearchCountRequest = {
   params: any[];
   model: string;
   context?: any;
+  name_search?: string;
 };
 
 type CreateObjectRequest = {
