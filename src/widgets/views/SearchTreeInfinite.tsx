@@ -89,6 +89,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const lastAssignedResults = useRef<any[]>([]);
   const showErrorDialog = useShowErrorDialog();
 
+  const [totalRowsLoading, setTotalRowsLoading] = useState<boolean>(true);
   const [totalRows, setTotalRows] = useState<number | null>();
 
   const { t } = useLocale();
@@ -128,6 +129,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const nameSearch = nameSearchProps || searchTreeNameSearch;
   const prevNameSearch = useRef(nameSearch);
+
+  useEffect(() => {
+    updateTotalRowsIfNeeded();
+  }, []);
 
   useEffect(() => {
     if (
@@ -183,6 +188,50 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     [domain, searchParams],
   );
 
+  const mustUpdateTotal = useCallback(() => {
+    const params = nameSearch ? domain : mergedParams;
+
+    const paramsString = `${JSON.stringify(params)}-${nameSearch}`;
+
+    if (paramsString !== currentSearchParamsString.current) {
+      currentSearchParamsString.current = paramsString;
+      return true;
+    }
+    return false;
+  }, [domain, mergedParams, nameSearch]);
+
+  const updateTotalRowsIfNeeded = useCallback(async () => {
+    if (!mustUpdateTotal()) {
+      return;
+    }
+    setTotalRows(undefined);
+    setTotalItemsActionView(0);
+    setTotalRowsLoading(true);
+    try {
+      const totalItems = await ConnectionProvider.getHandler().searchCount({
+        params: nameSearch ? domain : mergedParams,
+        model,
+        context: parentContext,
+        name_search: nameSearch,
+      });
+      setTotalRows(totalItems);
+      setTotalItemsActionView(totalItems);
+    } catch (err) {
+      showErrorDialog(err);
+    } finally {
+      setTotalRowsLoading(false);
+    }
+  }, [
+    domain,
+    mergedParams,
+    model,
+    mustUpdateTotal,
+    nameSearch,
+    parentContext,
+    setTotalItemsActionView,
+    showErrorDialog,
+  ]);
+
   const fetchResults = useCallback(
     async ({
       startRow,
@@ -206,37 +255,22 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       }
 
       const params = nameSearch ? domain : mergedParams;
-      let mustUpdateTotal = false;
-
-      const paramsString = `${JSON.stringify(params)}-${nameSearch}`;
-
-      if (paramsString !== currentSearchParamsString.current) {
-        currentSearchParamsString.current = paramsString;
-        mustUpdateTotal = true;
-
-        setTotalRows(undefined);
-        setTotalItemsActionView(0);
-      }
-
       const order = getOrderFromSortFields(sortFields);
 
-      const {
-        totalItems: totalItemsFnPromise,
-        results,
-        attrsEvaluated,
-      } = await ConnectionProvider.getHandler().searchForTree({
-        params,
-        limit: endRow - startRow,
-        offset: startRow,
-        model,
-        fields: treeView!.field_parent
-          ? { ...treeView!.fields, [treeView!.field_parent]: {} }
-          : treeView!.fields,
-        context: parentContext,
-        attrs,
-        order,
-        name_search: nameSearch,
-      });
+      const { results, attrsEvaluated } =
+        await ConnectionProvider.getHandler().searchForTree({
+          params,
+          limit: endRow - startRow,
+          offset: startRow,
+          model,
+          fields: treeView!.field_parent
+            ? { ...treeView!.fields, [treeView!.field_parent]: {} }
+            : treeView!.fields,
+          context: parentContext,
+          attrs,
+          order,
+          name_search: nameSearch,
+        });
 
       const newResults = results.map((item) => ({ id: item.id }));
 
@@ -248,7 +282,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         order,
       });
 
-      if (mustUpdateTotal || prevSortOrder.current !== order) {
+      if (mustUpdateTotal() || prevSortOrder.current !== order) {
         setActionViewResults?.(newResults);
       } else {
         const appendedResults = [...(actionViewResults || []), ...newResults];
@@ -263,14 +297,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         setTotalItemsActionView(0);
         return [];
       }
-
-      mustUpdateTotal &&
-        Promise.resolve().then(async () => {
-          totalItemsFnPromise().then((totalItems) => {
-            setTotalRows(totalItems);
-            setTotalItemsActionView(totalItems);
-          });
-        });
 
       const preparedResults = getTableItems(treeOoui, results);
 
@@ -301,6 +327,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       domain,
       mergedParams,
       model,
+      mustUpdateTotal,
       nameSearch,
       parentContext,
       setActionViewResults,
@@ -529,11 +556,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     prevSearchVisibleRef.current = searchVisible;
   }, [searchParams, searchVisible]);
 
-  const refresh = useCallback(() => {
+  const refresh = useCallback(async () => {
     setSelectedRowItems?.([]);
     currentSearchParamsString.current = undefined;
+    await updateTotalRowsIfNeeded();
     tableRef?.current?.refresh();
-  }, [setSelectedRowItems]);
+  }, [setSelectedRowItems, updateTotalRowsIfNeeded]);
 
   useImperativeHandle(ref, () => ({
     refreshResults: refresh,
@@ -556,7 +584,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           ...(visible ? {} : { display: "none" }),
         }}
       >
-        {loading || getColumnStateInProgress ? (
+        {loading || getColumnStateInProgress || totalRowsLoading ? (
           <Spin />
         ) : (
           <Fragment>
