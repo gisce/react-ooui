@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Space, Spin } from "antd";
 import ChangeViewButton from "./ChangeViewButton";
 import {
@@ -65,6 +65,7 @@ function TreeActionBar(props: Props) {
     limit,
     totalItems,
     isActive,
+    isInfiniteTree,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   const { parentContext = {}, treeExpandable, toolbar } = props;
@@ -104,6 +105,13 @@ function TreeActionBar(props: Props) {
     { enableOnFormTags: true, preventDefault: true },
     [searchVisible],
   );
+
+  useEffect(() => {
+    if (isInfiniteTree && searchTreeNameSearch === undefined) {
+      searchTreeRef?.current?.refreshResults();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isInfiniteTree, searchTreeNameSearch]);
 
   const hasNameSearch: boolean =
     searchTreeNameSearch !== undefined &&
@@ -210,7 +218,9 @@ function TreeActionBar(props: Props) {
                 setSearchTreeNameSearch?.(searchString);
               } else {
                 setSearchTreeNameSearch?.(undefined);
-                searchTreeRef?.current?.refreshResults();
+                if (!isInfiniteTree) {
+                  searchTreeRef?.current?.refreshResults();
+                }
               }
             }}
           />
