@@ -18,8 +18,10 @@ export const CodeEditor = (props: CodeEditorProps) => {
   );
 };
 
-export const CodeEditorInput = (props: CodeEditorProps & { value?: any }) => {
-  const { ooui, value } = props;
+export const CodeEditorInput = (
+  props: CodeEditorProps & { value?: any; onChange?: (value: any) => void },
+) => {
+  const { ooui, value, onChange } = props;
   const { lang, height, readOnly } = ooui;
   const formContext = useContext(FormContext) as FormContextType;
   const { elementHasLostFocus } = formContext || {};
@@ -54,6 +56,7 @@ export const CodeEditorInput = (props: CodeEditorProps & { value?: any }) => {
       defaultLanguage={lang || ""}
       height={height || 300}
       onMount={onMount}
+      onChange={onChange}
     />
   );
 };
