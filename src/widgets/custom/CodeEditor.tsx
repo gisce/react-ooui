@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import Editor from "@monaco-editor/react";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { CodeEditor as CodeEditorOoui } from "@gisce/ooui";
@@ -11,25 +11,49 @@ export type CodeEditorProps = WidgetProps & {
 };
 
 export const CodeEditor = (props: CodeEditorProps) => {
-  const { ooui } = props;
+  return (
+    <Field {...props}>
+      <CodeEditorInput {...props} />
+    </Field>
+  );
+};
+
+export const CodeEditorInput = (props: CodeEditorProps & { value?: any }) => {
+  const { ooui, value } = props;
   const { lang, height, readOnly } = ooui;
   const formContext = useContext(FormContext) as FormContextType;
   const { elementHasLostFocus } = formContext || {};
 
-  const onMount = (editor: any) => {
-    editor.onDidBlurEditorWidget(elementHasLostFocus);
-  };
+  const onMount = useCallback(
+    (editor: any) => {
+      if (elementHasLostFocus) {
+        editor.onDidBlurEditorWidget(() => elementHasLostFocus());
+      }
+    },
+    [elementHasLostFocus],
+  );
+
+  const adjustedValue = useMemo(() => {
+    if (lang === "json" && typeof value === "object") {
+      try {
+        return JSON.stringify(value, null, "\t");
+      } catch (error) {
+        console.error("Error stringifying JSON:", error);
+        return "";
+      }
+    }
+    return value;
+  }, [lang, value]);
 
   return (
-    <Field {...props}>
-      <Editor
-        options={{
-          readOnly,
-        }}
-        defaultLanguage={lang || ""}
-        height={height || 300}
-        onMount={onMount}
-      />
-    </Field>
+    <Editor
+      value={adjustedValue}
+      options={{
+        readOnly,
+      }}
+      defaultLanguage={lang || ""}
+      height={height || 300}
+      onMount={onMount}
+    />
   );
 };
