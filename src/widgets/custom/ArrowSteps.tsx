@@ -1,12 +1,13 @@
 import React from "react";
-import { theme } from "antd";
+import { theme, Space } from "antd";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
+import iconMapper from "@/helpers/iconMapper";
 
 type ArrowStepsFieldProps = WidgetProps;
 
 type ArrowStepsProps = {
-  value?: Array<{ title: string; active: boolean }>;
+  value?: Array<{ title: string; active: boolean; icon?: string }>;
 };
 
 export const ArrowSteps = (props: ArrowStepsProps) => {
@@ -69,11 +70,18 @@ export const ArrowSteps = (props: ArrowStepsProps) => {
     borderBottom: "16px solid transparent",
   });
 
+  const getIcon = (icon: string): React.Element => {
+    const Icon: React.ElementType = iconMapper(icon) as any;
+    return Icon && <Icon />;
+  };
+
   return (
     <ul style={progressStyle}>
       {(props.value || []).map((item, index) => (
         <li key={index} style={stepStyle(item.active)}>
-          {item.title}
+          <Space>
+            {item.icon && getIcon(item.icon)} {item.title}
+          </Space>
           <div style={arrowBeforeStyle}></div>
           <div style={arrowAfterStyle(item.active)}></div>
         </li>
