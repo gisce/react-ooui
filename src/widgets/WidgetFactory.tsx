@@ -122,6 +122,7 @@ const getWidgetType = (type: string) => {
     case "arrow_steps":
       return ArrowStepsField;
     case "codeeditor":
+    case "json":
       return CodeEditor;
     case "comments_timeline":
       return CommentsTimelineField;
