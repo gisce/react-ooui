@@ -6,7 +6,7 @@ import { CodeEditor as CodeEditorOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 
-type CodeEditorProps = WidgetProps & {
+export type CodeEditorProps = WidgetProps & {
   ooui: CodeEditorOoui;
 };
 

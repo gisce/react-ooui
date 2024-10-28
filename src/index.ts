@@ -51,6 +51,7 @@ import { HTMLPreview } from "@/widgets/custom/HTMLPreview";
 import { Alert } from "@/widgets/custom/Alert";
 import { DashboardGrid } from "@/widgets/views/DashboardGrid";
 import { GraphIndicator } from "@/widgets/views/Graph/GraphIndicator";
+import { JSONField } from "@/widgets/base/JSON";
 
 import type {
   TreeView,
@@ -177,4 +178,5 @@ export {
   HTMLPreview,
   Alert,
   dayjs,
+  JSONField,
 };

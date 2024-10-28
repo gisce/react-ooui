@@ -35,6 +35,7 @@ import {
   CommentsTimelineField,
   HTMLPreview,
   Alert,
+  JSONField,
 } from "@/index";
 import { Image } from "./base/Image";
 import { FiberGrid } from "./custom/FiberGrid";
@@ -129,6 +130,8 @@ const getWidgetType = (type: string) => {
       return HTMLPreview;
     case "alert":
       return Alert;
+    case "json":
+      return JSONField;
     default:
       return undefined;
   }
