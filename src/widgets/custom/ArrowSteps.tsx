@@ -70,7 +70,7 @@ export const ArrowSteps = (props: ArrowStepsProps) => {
     borderBottom: "16px solid transparent",
   });
 
-  const getIcon = (icon: string): React.Element => {
+  const getIcon = (icon: string): React.ElementType => {
     const Icon: React.ElementType = iconMapper(icon) as any;
     return Icon && <Icon />;
   };
