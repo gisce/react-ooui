@@ -1,7 +1,7 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Modal, Button, Divider, Row, Space } from "antd";
 import { FormModal } from "./FormModal";
-import SearchTree from "@/widgets/views/SearchTree";
+import { SearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
 import {
   FileAddOutlined,
   CloseOutlined,
@@ -11,6 +11,9 @@ import {
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import { useLocale } from "@gisce/react-formiga-components";
 import { showErrorDialog } from "@/ui/GenericErrorDialog";
+import { useFetchTreeViews } from "@/hooks/useFetchTreeViews";
+import { extractTreeXmlAttribute } from "@/helpers/treeHelper";
+import SearchTree from "../views/SearchTree";
 
 type SearchSelectionProps = {
   visible: boolean;
@@ -18,104 +21,83 @@ type SearchSelectionProps = {
   nameSearch?: string;
   onSelectValues: (values: number[]) => Promise<void>;
   onCloseModal: () => void;
-  domain?: any;
-  context?: any;
+  domain?: unknown;
+  context?: Record<string, unknown>;
 };
 
-export const SearchModal = (props: SearchSelectionProps) => {
-  const {
-    visible,
-    onCloseModal: onCloseModalProps,
-    onSelectValues: onSelectValuesProps,
-    model,
-    nameSearch,
-    domain,
-    context = {},
-  } = props;
-  const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
+interface RowClickEvent {
+  id: number;
+}
+
+export const SearchModal = ({
+  visible,
+  onCloseModal: onCloseModalProps,
+  onSelectValues: onSelectValuesProps,
+  model,
+  nameSearch,
+  domain,
+  context = {},
+}: SearchSelectionProps) => {
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+  const [operationInProgress, setOperationInProgress] = useState(false);
 
   const { modalWidth, modalHeight } = useWindowDimensions();
   const { t } = useLocale();
-  const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
-  const [operationInProgress, setOperationInProgress] =
-    useState<boolean>(false);
 
-  const onSelectValues = useCallback(
-    async (keys: any[]) => {
+  const {
+    treeView,
+    formView,
+    loading: fetchingViewsInfo,
+  } = useFetchTreeViews({
+    model,
+    formViewProps: undefined,
+    treeViewProps: undefined,
+    context,
+    enabled: visible,
+  });
+
+  const shouldShowInfiniteTree = useMemo(() => {
+    if (!treeView?.arch) return false;
+    return extractTreeXmlAttribute(treeView.arch, "infinite") === "1";
+  }, [treeView?.arch]);
+
+  const handleSelectValues = useCallback(
+    async (keys: number[]) => {
       setOperationInProgress(true);
       try {
         await onSelectValuesProps(keys);
       } catch (err) {
         showErrorDialog(err);
+      } finally {
+        setOperationInProgress(false);
       }
-      setOperationInProgress(false);
     },
     [onSelectValuesProps],
   );
 
-  const onCloseModal = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 5));
+  const handleCloseModal = useCallback(() => {
     onCloseModalProps();
-  };
+  }, [onCloseModalProps]);
 
-  const onRowClicked = async (event: any) => {
-    const { id } = event;
-    onSelectValues([id]);
-  };
+  const handleRowClicked = useCallback(
+    ({ id }: RowClickEvent) => {
+      handleSelectValues([id]);
+    },
+    [handleSelectValues],
+  );
 
-  function submit() {
+  const handleSubmit = useCallback(() => {
     if (selectedRowKeys.length === 0) {
-      onCloseModal();
+      handleCloseModal();
       return;
     }
+    void handleSelectValues(selectedRowKeys);
+  }, [selectedRowKeys, handleCloseModal, handleSelectValues]);
 
-    void onSelectValues(selectedRowKeys);
-  }
-
-  const content = () => {
-    return (
-      <>
-        <SearchTree
-          model={model}
-          nameSearch={nameSearch}
-          onRowClicked={onRowClicked}
-          treeScrollY={modalHeight * 0.3}
-          domain={domain}
-          parentContext={context}
-          onChangeSelectedRowKeys={setSelectedRowKeys}
-        />
-        <Divider />
-        <Row justify="end">
-          <Space>
-            <Button
-              disabled={operationInProgress}
-              icon={<FileAddOutlined />}
-              onClick={() => {
-                setShowCreateModal(true);
-              }}
-            >
-              {t("new")}
-            </Button>
-            <Button
-              disabled={operationInProgress}
-              icon={
-                operationInProgress ? <LoadingOutlined /> : <CheckOutlined />
-              }
-              onClick={() => {
-                submit();
-              }}
-              type="primary"
-            >
-              {t("ok")}
-            </Button>
-            <Button icon={<CloseOutlined />} onClick={onCloseModal}>
-              {t("cancel")}
-            </Button>
-          </Space>
-        </Row>
-      </>
-    );
-  };
+  const SearchTreeComp = shouldShowInfiniteTree
+    ? SearchTreeInfinite
+    : SearchTree;
 
   return (
     <>
@@ -124,13 +106,50 @@ export const SearchModal = (props: SearchSelectionProps) => {
         centered
         width={modalWidth}
         open={visible && !showCreateModal}
-        closable={true}
-        onCancel={onCloseModal}
+        closable
+        onCancel={handleCloseModal}
         footer={null}
         destroyOnClose
         maskClosable={false}
       >
-        {content()}
+        {!fetchingViewsInfo && (
+          <SearchTreeComp
+            formView={formView}
+            treeView={treeView}
+            model={model}
+            nameSearch={nameSearch}
+            onRowClicked={handleRowClicked}
+            treeScrollY={modalHeight * 0.3}
+            domain={domain}
+            parentContext={context}
+            onChangeSelectedRowKeys={setSelectedRowKeys}
+          />
+        )}
+        <Divider />
+        <Row justify="end">
+          <Space>
+            <Button
+              disabled={operationInProgress}
+              icon={<FileAddOutlined />}
+              onClick={() => setShowCreateModal(true)}
+            >
+              {t("new")}
+            </Button>
+            <Button
+              disabled={operationInProgress}
+              icon={
+                operationInProgress ? <LoadingOutlined /> : <CheckOutlined />
+              }
+              onClick={handleSubmit}
+              type="primary"
+            >
+              {t("ok")}
+            </Button>
+            <Button icon={<CloseOutlined />} onClick={handleCloseModal}>
+              {t("cancel")}
+            </Button>
+          </Space>
+        </Row>
       </Modal>
       <FormModal
         model={model}
@@ -138,12 +157,12 @@ export const SearchModal = (props: SearchSelectionProps) => {
         parentContext={context}
         onSubmitSucceed={(id?: number) => {
           setShowCreateModal(false);
-          onCloseModal();
-          onSelectValues([id!]);
+          handleCloseModal();
+          if (id) handleSelectValues([id]);
         }}
         onCancel={() => {
           setShowCreateModal(false);
-          onCloseModal();
+          handleCloseModal();
         }}
       />
     </>
