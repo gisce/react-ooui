@@ -241,21 +241,33 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   );
 };
 
-export const useActionViewContext = (
-  isRoot: boolean,
-): ActionViewContextType => {
-  const actionViewContext = useContext(
-    ActionViewContext,
-  ) as ActionViewContextType;
-  if (!isRoot) {
-    return {} as ActionViewContextType;
+export const useActionViewContext = (rootTree: boolean) => {
+  const context = useContext(ActionViewContext);
+
+  // If not root tree or no context, return empty functions
+  if (!rootTree || !context) {
+    return {
+      setTreeIsLoading: () => {},
+      searchVisible: false,
+      setSearchVisible: () => {},
+      setSelectedRowItems: () => {},
+      setTreeFirstVisibleRow: () => {},
+      treeFirstVisibleRow: 0,
+      selectedRowItems: [],
+      setSearchParams: () => {},
+      searchValues: {},
+      searchParams: [],
+      setSearchValues: () => {},
+      searchTreeNameSearch: undefined,
+      setSearchTreeNameSearch: () => {},
+      setResults: () => {},
+      results: [],
+      setSearchQuery: () => {},
+      setTotalItems: () => {},
+    };
   }
-  if (!actionViewContext) {
-    throw new Error(
-      "useActionViewContext must be used within a ActionViewProvider",
-    );
-  }
-  return actionViewContext;
+
+  return context;
 };
 
 export default ActionViewProvider;

@@ -23,7 +23,7 @@ import {
   getTree,
 } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "./Tree/treeComponents";
-import { useDeepCompareMemo } from "use-deep-compare";
+import { useDeepCompareEffect, useDeepCompareMemo } from "use-deep-compare";
 import {
   InfiniteTable,
   InfiniteTableRef,
@@ -42,7 +42,6 @@ import { useLocale } from "@gisce/react-formiga-components";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { SideSearchFilter } from "./searchFilter/SideSearchFilter";
 import { mergeParams } from "@/helpers/searchHelper";
-import useDeepCompareEffect from "use-deep-compare-effect";
 import deepEqual from "deep-equal";
 import { useShowErrorDialog } from "@/ui/GenericErrorDialog";
 
