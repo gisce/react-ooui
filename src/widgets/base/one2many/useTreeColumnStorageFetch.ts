@@ -5,6 +5,7 @@ import { useTreeColumnStorage } from "./useTreeColumnStorage";
 export const useTreeColumnStorageFetch = (key?: string) => {
   const [loading, setLoading] = useState(true);
   const columnState = useRef<ColumnState[] | undefined>(undefined);
+  const fetchInProgress = useRef(false);
 
   const { getColumnState: getColumnStateInternal, updateColumnState } =
     useTreeColumnStorage(key);
@@ -15,6 +16,11 @@ export const useTreeColumnStorageFetch = (key?: string) => {
       return;
     }
     const fetchColumnState = async () => {
+      if (fetchInProgress.current) {
+        return;
+      }
+
+      fetchInProgress.current = true;
       setLoading(true);
       try {
         columnState.current = await getColumnStateInternal();
@@ -22,6 +28,7 @@ export const useTreeColumnStorageFetch = (key?: string) => {
         console.error(err);
       } finally {
         setLoading(false);
+        fetchInProgress.current = false;
       }
     };
 
