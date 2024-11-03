@@ -38,7 +38,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
   } = props;
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState<number>();
-  const [percent, setPercent] = useState<number>();
+  const [percent, setPercent] = useState<number>(0);
   const [totalValue, setTotalValue] = useState<number>();
   const [color, setColor] = useState<string>();
   const [icon, setIcon] = useState<string>();
