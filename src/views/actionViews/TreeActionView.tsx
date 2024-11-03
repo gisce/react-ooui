@@ -45,10 +45,10 @@ export const TreeActionView = (props: TreeActionViewProps) => {
   } = props;
 
   const isInfiniteTree = useMemo(() => {
-    if (!treeView?.arch) {
+    if (!treeView?.arch || treeView.isExpandable) {
       return false;
     }
-    const tagValue = extractTreeXmlAttribute(treeView?.arch, "infinite");
+    const tagValue = extractTreeXmlAttribute(treeView.arch, "infinite");
     return tagValue === "1";
   }, [treeView]);
 
