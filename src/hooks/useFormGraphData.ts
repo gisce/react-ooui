@@ -44,7 +44,7 @@ export const useFormGraphData = (actionId: number) => {
         } = result;
 
         setTreeShortcut({
-          domain: actionData?.domain,
+          domain: result.domain,
           action_id,
           action_type,
           name,
