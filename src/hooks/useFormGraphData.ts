@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { useConfigContext } from "@/context/ConfigContext";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { fetchAction } from "@/widgets/views/Dashboard/dashboardHelper";
@@ -44,6 +44,7 @@ export const useFormGraphData = (actionId: number) => {
         } = result;
 
         setTreeShortcut({
+          domain: actionData?.domain,
           action_id,
           action_type,
           name,
