@@ -10,7 +10,7 @@ export const useFormGraphData = (actionId: number) => {
   const [actionData, setActionData] = useState<any>();
   const [treeShortcut, setTreeShortcut] = useState<ShortcutApi>();
   const formContext = useContext(FormContext) as FormContextType;
-  const { getContext, getValues, activeId } = formContext || {};
+  const { getContext, getPlainValues, activeId } = formContext || {};
   const { globalValues, rootContext } = useConfigContext();
   const context = useMemo(() => {
     return { ...getContext?.(), ...rootContext };
@@ -25,7 +25,7 @@ export const useFormGraphData = (actionId: number) => {
         rootContext: context,
         globalValues: {
           ...globalValues,
-          ...getValues(),
+          ...getPlainValues(),
         },
       });
       const { views } = result as any;
