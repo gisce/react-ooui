@@ -76,8 +76,13 @@ export const useNextPrevious = () => {
         }
       } else if (shouldWrap) {
         const wrapIndex = isNext ? 0 : totalItems - 1;
-        const id = await fetchNextRecord(wrapIndex);
-        if (id) updateCurrentItem(wrapIndex, id);
+        const itemInResults = results[wrapIndex]?.id;
+        if (itemInResults) {
+          updateCurrentItem(wrapIndex, itemInResults);
+        } else {
+          const id = await fetchNextRecord(wrapIndex);
+          if (id) updateCurrentItem(wrapIndex, id);
+        }
       }
     },
     [results, currentItemIndex, totalItems, fetchNextRecord, updateCurrentItem],
