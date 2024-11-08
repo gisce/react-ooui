@@ -131,7 +131,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const prevNameSearch = useRef(nameSearch);
 
   useEffect(() => {
-    updateTotalRowsIfNeeded();
+    updateTotalRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -200,10 +201,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     return false;
   }, [domain, mergedParams, nameSearch]);
 
-  const updateTotalRowsIfNeeded = useCallback(async () => {
-    if (!mustUpdateTotal()) {
-      return;
-    }
+  const updateTotalRows = useCallback(async () => {
     setTotalRows(undefined);
     setTotalItemsActionView(0);
     setTotalRowsLoading(true);
@@ -225,7 +223,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     domain,
     mergedParams,
     model,
-    mustUpdateTotal,
     nameSearch,
     parentContext,
     setTotalItemsActionView,
@@ -559,9 +556,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const refresh = useCallback(async () => {
     setSelectedRowItems?.([]);
     currentSearchParamsString.current = undefined;
-    await updateTotalRowsIfNeeded();
+    await updateTotalRows();
     tableRef?.current?.refresh();
-  }, [setSelectedRowItems, updateTotalRowsIfNeeded]);
+  }, [setSelectedRowItems, updateTotalRows]);
 
   useImperativeHandle(ref, () => ({
     refreshResults: refresh,

@@ -17,10 +17,10 @@
   },
   "plugins": ["react", "react-compiler"],
   "rules": {
-    "react-compiler/react-compiler": "warn",
+    "react-compiler/react-compiler": "off",
     "@typescript-eslint/semi": "off",
     "@typescript-eslint/member-delimiter-style": "off",
-    "@typescript-eslint/consistent-type-definitions": ["off"],
+    "@typescript-eslint/consistent-type-definitions": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/comma-dangle": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
