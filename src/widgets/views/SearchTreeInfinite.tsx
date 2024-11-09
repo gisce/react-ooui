@@ -55,10 +55,10 @@ type OnRowClickedData = {
   treeView: TreeView;
 };
 
-type SearchTreeInfiniteProps = {
+export type SearchTreeInfiniteProps = {
   model: string;
-  formView?: FormView;
-  treeView?: TreeView;
+  formView: FormView;
+  treeView: TreeView;
   onRowClicked: (data: OnRowClickedData) => void;
   nameSearch?: string;
   treeScrollY?: number;
