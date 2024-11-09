@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { Space, Spin } from "antd";
 import ChangeViewButton from "./ChangeViewButton";
 import {
@@ -78,6 +78,7 @@ function TreeActionBar(props: Props) {
   ) as ContentRootContextType;
   const { processAction } = contentRootContext || {};
   const [exportModalVisible, setExportModalVisible] = useState(false);
+  const isFirstMount = useRef(true);
 
   useHotkeys(
     "ctrl+l,command+l",
@@ -108,6 +109,11 @@ function TreeActionBar(props: Props) {
 
   useEffect(() => {
     if (isInfiniteTree && searchTreeNameSearch === undefined) {
+      if (isFirstMount.current) {
+        isFirstMount.current = false;
+        return;
+      }
+
       searchTreeRef?.current?.refreshResults();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
