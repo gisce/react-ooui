@@ -102,4 +102,5 @@ export default {
   filter: "Filter",
   applyFilters: "Apply filters",
   resetTableView: "Reset table view",
+  not: "Not",
 };
