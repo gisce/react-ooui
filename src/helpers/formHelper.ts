@@ -251,7 +251,11 @@ export const transformPlainMany2Ones = ({
   return reformattedValues;
 };
 
-export const colorFromString = (text: string) => {
+export const colorFromBoolean = (value: boolean): string => {
+  return value ? "success" : "error";
+};
+
+export const colorFromString = (text: string): string => {
   let hash = 0;
   text = text.toString().padEnd(10, "0");
   for (let i = 0; i < text.length; i++) {

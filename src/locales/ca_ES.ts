@@ -106,4 +106,5 @@ export default {
   filter: "Filtrar",
   applyFilters: "Aplicar filtres",
   resetTableView: "Restablir vista de taula",
+  not: "No",
 };
