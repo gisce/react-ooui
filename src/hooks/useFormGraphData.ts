@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { useConfigContext } from "@/context/ConfigContext";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { fetchAction } from "@/widgets/views/Dashboard/dashboardHelper";
@@ -10,7 +10,7 @@ export const useFormGraphData = (actionId: number) => {
   const [actionData, setActionData] = useState<any>();
   const [treeShortcut, setTreeShortcut] = useState<ShortcutApi>();
   const formContext = useContext(FormContext) as FormContextType;
-  const { getContext, getValues, activeId } = formContext || {};
+  const { getContext, getPlainValues, activeId } = formContext || {};
   const { globalValues, rootContext } = useConfigContext();
   const context = useMemo(() => {
     return { ...getContext?.(), ...rootContext };
@@ -25,7 +25,7 @@ export const useFormGraphData = (actionId: number) => {
         rootContext: context,
         globalValues: {
           ...globalValues,
-          ...getValues(),
+          ...getPlainValues(),
         },
       });
       const { views } = result as any;
@@ -44,6 +44,7 @@ export const useFormGraphData = (actionId: number) => {
         } = result;
 
         setTreeShortcut({
+          domain: result.domain,
           action_id,
           action_type,
           name,
