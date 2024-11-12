@@ -42,7 +42,7 @@ export const StepsInput = (props: StepsInputProps) => {
       status = "error";
     }
   }
-  if (lastStep == value) {
+  if (lastStep && current + 1 == values.length) {
     status = "finish";
   }
 
