@@ -16,7 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           ref: ${{ matrix.target }}
 
       - name: Create sync PRs
@@ -36,10 +36,10 @@ jobs:
           echo "SYNC_BRANCH=$sync_branch" >> $GITHUB_ENV
           git checkout -b $sync_branch
 
-          # Try to merge, if conflicts occur resolve using v2 (ours)
-          if ! git merge origin/v2 --no-edit; then
+          # Try to merge, if conflicts occur resolve using v2 (theirs)
+          if ! git merge origin/v2 --no-edit --no-verify --no-commit; then
             git merge --abort
-            git merge origin/v2 -X ours --no-edit
+            git merge origin/v2 -X theirs --no-edit --no-verify --no-commit
             echo "CONFLICTS=true" >> $GITHUB_ENV
           fi
 
@@ -53,7 +53,7 @@ jobs:
           git add -A
 
           # Create commit
-          git commit -m "Sync changes from v2 to ${{ matrix.target }}"
+          git commit -m "chore: sync changes from v2 to ${{ matrix.target }}"
 
           # Push branch
           git push -f origin $sync_branch
