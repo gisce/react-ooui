@@ -43,9 +43,9 @@ jobs:
             echo "CONFLICTS=true" >> $GITHUB_ENV
           fi
 
-          # Check if there are any changes
-          if git diff --quiet HEAD origin/${{ matrix.target }}; then
-            echo "No changes to sync"
+          # Check if there are any changes to commit
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes to sync - working tree clean"
             exit 0
           fi
 
