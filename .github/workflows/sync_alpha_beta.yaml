@@ -21,9 +21,6 @@ jobs:
 
       - name: Create sync PRs
         run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-
           # Fetch branches
           git fetch origin v2
           git fetch origin ${{ matrix.target }}
