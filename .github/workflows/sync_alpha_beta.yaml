@@ -26,6 +26,8 @@ jobs:
 
           sync_branch="sync/v2-to-${{ matrix.target }}/$(date +%Y%m%d-%H%M%S)"
           git checkout -b $sync_branch
+
+          # Fetch v2 branch
           git fetch origin v2
 
           # Try to merge, if conflicts occur resolve using v2 (ours)
@@ -35,11 +37,14 @@ jobs:
             echo "CONFLICTS=true" >> $GITHUB_ENV
           fi
 
-          # Add and commit any changes
-          git add .
-          git commit -m "Sync changes from v2 to ${{ matrix.target }}" || true
+          # Force add all changes
+          git add -A
 
-          git push origin $sync_branch
+          # Create commit even if there are no changes
+          git commit -m "Sync changes from v2 to ${{ matrix.target }}" || echo "No changes to commit"
+
+          # Push with force to ensure branch is updated
+          git push -f origin $sync_branch
           echo "SYNC_BRANCH=$sync_branch" >> $GITHUB_ENV
 
       - name: Create Pull Request
