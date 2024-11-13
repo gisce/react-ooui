@@ -34,7 +34,6 @@ jobs:
           # Create sync branch from current position
           sync_branch="sync/v2-to-${{ matrix.target }}-$(date +%Y%m%d-%H%M%S)"
           echo "SYNC_BRANCH=$sync_branch" >> $GITHUB_ENV
-          git checkout -b $sync_branch
 
           # Try to merge, if conflicts occur resolve using v2 (theirs)
           if ! git merge origin/v2 --no-edit --no-verify --no-commit; then
@@ -48,16 +47,6 @@ jobs:
             echo "No changes to sync - working tree clean"
             exit 0
           fi
-
-          # # Force add all changes
-          # git add -A
-
-          # # Create commit
-          # git commit -m "chore: sync changes from v2 to ${{ matrix.target }}"
-
-          # # Push branch
-          # git push -f origin $sync_branch
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
