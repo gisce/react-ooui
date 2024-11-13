@@ -87,3 +87,21 @@ jobs:
           libraryName: ${{ env.LIBRARY_NAME }}
           githubToken: ${{ secrets.GH_PAT }}
           releaseType: ${{ needs.release.outputs.release_type }}
+
+  create-sync-prs:
+    name: Create sync PRs
+    needs: release
+    if: github.ref == 'refs/heads/v2'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: ['alpha', 'v2-develop']
+    steps:
+      - name: Call create sync pr
+        uses: gisce/create-sync-pr@v0.0.2
+        with:
+          repository: ${{ env.LIBRARY_NAME }}
+          targetBranch: ${{ matrix.target }}
+          baseBranch: v2
+          githubToken: ${{ secrets.GH_PAT }}
+          releaseType: none
