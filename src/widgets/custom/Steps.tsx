@@ -28,7 +28,7 @@ type StepsInputProps = StepsProps & {
 
 export const StepsInput = (props: StepsInputProps) => {
   const { ooui, value } = props;
-  const { selectionValues, errorField } = ooui as StepsOoui;
+  const { selectionValues, errorField, lastStep } = ooui as StepsOoui;
   const formContext = useContext(FormContext) as FormContextType;
 
   const values = Array.from(selectionValues.entries());
@@ -41,6 +41,9 @@ export const StepsInput = (props: StepsInputProps) => {
     if (error) {
       status = "error";
     }
+  }
+  if (lastStep && current + 1 == values.length) {
+    status = "finish";
   }
 
   return (
