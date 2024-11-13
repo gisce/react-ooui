@@ -37,13 +37,19 @@ jobs:
             echo "CONFLICTS=true" >> $GITHUB_ENV
           fi
 
+          # Check if there are any changes
+          if git diff --quiet HEAD origin/${{ matrix.target }}; then
+            echo "No changes to sync"
+            exit 0
+          fi
+
           # Force add all changes
           git add -A
 
-          # Create commit even if there are no changes
-          git commit -m "Sync changes from v2 to ${{ matrix.target }}" || echo "No changes to commit"
+          # Create commit
+          git commit -m "Sync changes from v2 to ${{ matrix.target }}"
 
-          # Push with force to ensure branch is updated
+          # Push branch
           git push -f origin $sync_branch
           echo "SYNC_BRANCH=$sync_branch" >> $GITHUB_ENV
 
@@ -60,4 +66,5 @@ jobs:
             This is an automated PR created by GitHub Actions.
           labels: automated-pr
           branch: ${{ env.SYNC_BRANCH }}
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
 
