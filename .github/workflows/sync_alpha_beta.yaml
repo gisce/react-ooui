@@ -69,5 +69,6 @@ jobs:
 
             This is an automated PR created by GitHub Actions.
           commit-message: "chore: sync changes from v2 to ${{ matrix.target }}"
+          base: ${{ matrix.target }}
           branch: ${{ env.SYNC_BRANCH }}
 
