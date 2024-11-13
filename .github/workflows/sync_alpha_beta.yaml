@@ -24,11 +24,17 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-          sync_branch="sync/v2-to-${{ matrix.target }}/$(date +%Y%m%d-%H%M%S)"
-          git checkout -b $sync_branch
-
-          # Fetch v2 branch
+          # Fetch branches
           git fetch origin v2
+          git fetch origin ${{ matrix.target }}
+
+          # First checkout the target branch
+          git checkout ${{ matrix.target }}
+
+          # Create sync branch from current position
+          sync_branch="sync/v2-to-${{ matrix.target }}/$(date +%Y%m%d-%H%M%S)"
+          echo "SYNC_BRANCH=$sync_branch" >> $GITHUB_ENV
+          git checkout -b $sync_branch
 
           # Try to merge, if conflicts occur resolve using v2 (ours)
           if ! git merge origin/v2 --no-edit; then
@@ -51,7 +57,6 @@ jobs:
 
           # Push branch
           git push -f origin $sync_branch
-          echo "SYNC_BRANCH=$sync_branch" >> $GITHUB_ENV
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
