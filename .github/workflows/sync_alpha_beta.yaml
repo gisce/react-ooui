@@ -1,0 +1,63 @@
+name: Sync Alpha and Beta branches
+
+on:
+  push:
+    branches:
+      - v2
+
+jobs:
+  sync-branches:
+    name: Create sync PRs
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: ['alpha', 'v2-develop']
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ matrix.target }}
+
+      - name: Create sync PRs
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+          # Fetch branches
+          git fetch origin v2
+          git fetch origin ${{ matrix.target }}
+
+          # First checkout the target branch
+          git checkout ${{ matrix.target }}
+
+          # Create sync branch from current position
+          sync_branch="sync/v2-to-${{ matrix.target }}-$(date +%Y%m%d-%H%M%S)"
+          echo "SYNC_BRANCH=$sync_branch" >> $GITHUB_ENV
+
+          # Try to merge, if conflicts occur resolve using v2 (theirs)
+          if ! git merge origin/v2 --no-edit --no-verify --no-commit; then
+            git merge --abort
+            git merge origin/v2 -X theirs --no-edit --no-verify --no-commit
+            echo "CONFLICTS=true" >> $GITHUB_ENV
+          fi
+
+          # Check if there are any changes to commit
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes to sync - working tree clean"
+            exit 0
+          fi
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GH_PAT }}
+          title: "chore: sync changes from v2 to ${{ matrix.target }}${{ env.CONFLICTS == 'true' && ' (conflicts resolved using v2)' || '' }}"
+          body: |
+            This PR syncs changes from the v2 branch to ${{ matrix.target }}.
+            ${{ env.CONFLICTS == 'true' && '⚠️ There were conflicts that were automatically resolved using changes from v2.' || '' }}
+
+            This is an automated PR created by GitHub Actions.
+          commit-message: "chore: sync changes from v2 to ${{ matrix.target }}"
+          base: ${{ matrix.target }}
+          branch: ${{ env.SYNC_BRANCH }}
+
