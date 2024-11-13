@@ -1,0 +1,43 @@
+name: Sync Alpha and Beta branches
+
+on:
+  push:
+    branches:
+      - v2
+
+jobs:
+  sync-branches:
+    name: Create sync PRs
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: ['alpha', 'beta']
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ matrix.target }}
+
+
+      - name: Create sync branch
+        run: |
+          sync_branch="sync/v2-to-${{ matrix.target }}/$(date +%Y%m%d-%H%M%S)"
+          git checkout -b $sync_branch
+          git fetch origin v2
+          git merge origin/v2 --no-edit || (git merge --abort && exit 1)
+          git push origin $sync_branch
+          echo "SYNC_BRANCH=$sync_branch" >> $GITHUB_ENV
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GH_PAT }}
+          base: ${{ matrix.target }}
+          title: "chore: sync changes from v2 to ${{ matrix.target }}"
+          commit-message: |
+            This PR syncs changes from the v2 branch to ${{ matrix.target }}.
+
+            This is an automated PR created by GitHub Actions.
+          labels: automated-pr
+          branch: ${{ env.SYNC_BRANCH }}
