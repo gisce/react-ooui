@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: ['alpha', 'beta']
+        target: ['alpha', 'v2-develop']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
