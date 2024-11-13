@@ -19,17 +19,26 @@ jobs:
           fetch-depth: 0
           ref: ${{ matrix.target }}
 
-      - name: Configure Git
+      - name: Create sync PRs
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-      - name: Create sync branch
-        run: |
           sync_branch="sync/v2-to-${{ matrix.target }}/$(date +%Y%m%d-%H%M%S)"
           git checkout -b $sync_branch
           git fetch origin v2
-          git merge origin/v2 --no-edit || (git merge --abort && exit 1)
+
+          # Try to merge, if conflicts occur resolve using v2 (ours)
+          if ! git merge origin/v2 --no-edit; then
+            git merge --abort
+            git merge origin/v2 -X ours --no-edit
+            echo "CONFLICTS=true" >> $GITHUB_ENV
+          fi
+
+          # Add and commit any changes
+          git add .
+          git commit -m "Sync changes from v2 to ${{ matrix.target }}" || true
+
           git push origin $sync_branch
           echo "SYNC_BRANCH=$sync_branch" >> $GITHUB_ENV
 
@@ -38,10 +47,12 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT }}
           base: ${{ matrix.target }}
-          title: "chore: sync changes from v2 to ${{ matrix.target }}"
-          commit-message: |
+          title: "chore: sync changes from v2 to ${{ matrix.target }}${{ env.CONFLICTS == 'true' && ' (conflicts resolved using v2)' || '' }}"
+          body: |
             This PR syncs changes from the v2 branch to ${{ matrix.target }}.
+            ${{ env.CONFLICTS == 'true' && '⚠️ There were conflicts that were automatically resolved using changes from v2.' || '' }}
 
             This is an automated PR created by GitHub Actions.
           labels: automated-pr
           branch: ${{ env.SYNC_BRANCH }}
+
