@@ -51,10 +51,10 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GH_PAT }}
-          title: "chore: sync changes from v2 to ${{ matrix.target }}${{ env.CONFLICTS == 'true' && ' (conflicts resolved using v2)' || '' }}"
+          title: "chore: sync changes from v2 to ${{ matrix.target }}${{ env.CONFLICTS == 'true' && ' (🚨 CAUTION: conflicts resolved using v2)' || '' }}"
           body: |
             This PR syncs changes from the v2 branch to ${{ matrix.target }}.
-            ${{ env.CONFLICTS == 'true' && '⚠️ There were conflicts that were automatically resolved using changes from v2.' || '' }}
+            ${{ env.CONFLICTS == 'true' && '🚨🚨🚨 **BE CAREFUL BEFORE MERGING**: There were conflicts that were automatically resolved using changes from v2.' || '' }}
 
             This is an automated PR created by GitHub Actions.
           commit-message: "chore: sync changes from v2 to ${{ matrix.target }}"
