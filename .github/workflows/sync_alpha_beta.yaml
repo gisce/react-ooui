@@ -32,7 +32,7 @@ jobs:
           git checkout ${{ matrix.target }}
 
           # Create sync branch from current position
-          sync_branch="sync/v2-to-${{ matrix.target }}/$(date +%Y%m%d-%H%M%S)"
+          sync_branch="sync/v2-to-${{ matrix.target }}-$(date +%Y%m%d-%H%M%S)"
           echo "SYNC_BRANCH=$sync_branch" >> $GITHUB_ENV
           git checkout -b $sync_branch
 
