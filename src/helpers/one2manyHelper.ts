@@ -1,7 +1,12 @@
 import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
 import ConnectionProvider from "@/ConnectionProvider";
-import { TreeView, View, ViewType } from "@/types";
-import { getColorMap, getTree } from "./treeHelper";
+import { TreeView, ViewType } from "@/types";
+import {
+  getColorMap,
+  getStatusMap,
+  getTableItems,
+  getTree,
+} from "./treeHelper";
 
 type ReadObjectValuesOptions = {
   items: One2manyItem[];
@@ -309,6 +314,58 @@ const mergeWithOtherItems = ({
   return resultsMapped;
 };
 
+const fetchSortedIds = async (
+  realItemsIds: number[],
+  relation: string,
+  context: any,
+  order: string,
+) => {
+  return await ConnectionProvider.getHandler().searchAllIds({
+    model: relation,
+    params: [["id", "in", realItemsIds]],
+    context,
+    order,
+  });
+};
+
+const buildAttributes = (treeOoui: any) => {
+  const attrs: any = {};
+  if (treeOoui.colors) attrs.colors = treeOoui.colors;
+  if (treeOoui.status) attrs.status = treeOoui.status;
+  return attrs;
+};
+
+const fetchAndPrepareData = async ({
+  relation,
+  ids,
+  treeView,
+  context,
+  attrs,
+  treeOoui,
+}: {
+  relation: string;
+  ids: number[];
+  treeView: TreeView;
+  context: any;
+  attrs: any;
+  treeOoui: any;
+}) => {
+  const fetchedData = await ConnectionProvider.getHandler().readEvalUiObjects({
+    model: relation,
+    ids,
+    arch: treeView.arch,
+    fields: treeView.fields,
+    context,
+    attrs,
+  });
+
+  return {
+    items: getTableItems(treeOoui, fetchedData[0]),
+    colors: getColorMap(fetchedData[1]),
+    status: getStatusMap(fetchedData[1]),
+  };
+};
+
 export {
   readObjectValues,
   removeItems,
@@ -319,4 +376,7 @@ export {
   getValuesForFields,
   getIdsToFetch,
   mergeWithOtherItems,
+  fetchSortedIds,
+  buildAttributes,
+  fetchAndPrepareData,
 };
