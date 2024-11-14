@@ -4,24 +4,34 @@ import Field from "@/common/Field";
 
 import { WidgetProps } from "@/types";
 import { LinkInput } from "./LinkInput";
-import { Char as CharOoui } from "@gisce/ooui";
+import { Email as EmailOoui } from "@gisce/ooui";
 
-export const Email = (props: WidgetProps) => {
+import { EmailTagsInput } from "@/widgets/custom/EmailTags";
+
+type EmailProps = WidgetProps & {
+  ooui: EmailOoui;
+};
+
+export const Email = (props: EmailProps) => {
   const { ooui } = props;
-  const { required } = ooui as CharOoui;
+  const { required } = ooui as EmailOoui;
 
   return (
     <Field required={required} {...props}>
-      <LinkInput
-        ooui={ooui as CharOoui}
-        linkPrefix={"mailto:"}
-        valueValidator={(value) => {
-          if (!value) {
-            return false;
-          }
-          return isEmail(value);
-        }}
-      />
+      {ooui.multi ? (
+        <EmailTagsInput readonly={ooui.readOnly} maxLength={ooui.size} />
+      ) : (
+        <LinkInput
+          ooui={ooui}
+          linkPrefix={"mailto:"}
+          valueValidator={(value) => {
+            if (!value) {
+              return false;
+            }
+            return isEmail(value);
+          }}
+        />
+      )}
     </Field>
   );
 };
