@@ -244,6 +244,71 @@ function getValuesForFields({
   return result;
 }
 
+const getIdsToFetch = ({
+  itemsToFetch,
+  range,
+}: {
+  itemsToFetch: One2manyItem[];
+  range?: {
+    startRow: number;
+    endRow: number;
+  };
+}) => {
+  const idsToFetch = itemsToFetch.map((item) => item.id) as number[];
+
+  // now slice the records with startRow and endRow if needed
+  const idsToFetchSliced = range
+    ? idsToFetch.slice(range.startRow, range.endRow)
+    : idsToFetch;
+
+  // in this idsToFetchSliced we have the ids of the records that theoretically we have to fetch
+  // however, it's possible that these items have operation different than original,
+  // and we have to skip these items to being fetched, and passed later on to the callback as they were originally
+  const realItemsIds = idsToFetchSliced.filter((id) => {
+    const item = itemsToFetch.find((item) => item.id === id);
+    return (
+      item &&
+      (item.operation === "original" || item.operation === "pendingLink")
+    );
+  });
+
+  const otherItems = itemsToFetch.filter((item) => {
+    return (
+      item && item.operation !== "original" && item.operation !== "pendingLink"
+    );
+  });
+
+  return { realItemsIds, otherItems };
+};
+
+const mergeWithOtherItems = ({
+  idsToFetch,
+  results,
+  otherItems,
+}: {
+  idsToFetch: number[];
+  results: One2manyItem[];
+  otherItems: One2manyItem[];
+}) => {
+  // now we have to map the results to the original ids
+  const resultsMapped = idsToFetch.map((id) => {
+    const result = results.find((result) => result.id === id);
+    if (result) {
+      return result;
+    }
+    return otherItems.find((item) => item.id === id)?.treeValues;
+  });
+
+  // Now we have to maintain the same order for resultsMapped that the one we have in preparedResults
+  resultsMapped.sort((a, b) => {
+    const indexA = results.findIndex((result) => result.id === a.id);
+    const indexB = results.findIndex((result) => result.id === b.id);
+    return indexA - indexB;
+  });
+
+  return resultsMapped;
+};
+
 export {
   readObjectValues,
   removeItems,
@@ -252,4 +317,6 @@ export {
   convertToPlain2ManyValues,
   filterDuplicateItems,
   getValuesForFields,
+  getIdsToFetch,
+  mergeWithOtherItems,
 };
