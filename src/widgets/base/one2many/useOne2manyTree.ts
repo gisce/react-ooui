@@ -76,29 +76,30 @@ export const useOne2manyTree = ({
       const order = getOrderFromSortFields(sortFields);
 
       if (order) {
-        const { realItemsIds, otherItems: otherItemsToFetch } = getIdsToFetch({
-          itemsToFetch,
-        });
+        const { realItemsIds, otherItems: otherItemsToSkipFetching } =
+          getIdsToFetch({
+            itemsToFetch,
+          });
 
-        otherItems = otherItemsToFetch;
+        otherItems = otherItemsToSkipFetching;
 
         if (realItemsIds.length === 0 && otherItems.length === 0) {
           return { results: [], colors: {}, status: {} };
         }
 
-        const fetchedIds = await ConnectionProvider.getHandler().searchAllIds({
+        finalIds = await ConnectionProvider.getHandler().searchAllIds({
           model: relation,
           params: [["id", "in", realItemsIds]],
           context,
           order,
         });
-        finalIds = fetchedIds.slice(startRow, endRow);
       } else {
-        const { realItemsIds, otherItems: otherItemsToFetch } = getIdsToFetch({
-          itemsToFetch,
-          range: { startRow, endRow },
-        });
-        otherItems = otherItemsToFetch;
+        const { realItemsIds, otherItems: otherItemsToSkipFetching } =
+          getIdsToFetch({
+            itemsToFetch,
+            range: { startRow, endRow },
+          });
+        otherItems = otherItemsToSkipFetching;
         if (realItemsIds.length === 0 && otherItems.length === 0) {
           return { results: [], colors: {}, status: {} };
         }
@@ -127,7 +128,12 @@ export const useOne2manyTree = ({
       const preparedResults = getTableItems(treeOoui, fetchedData[0]);
 
       const finalResults = mergeWithOtherItems({
-        idsToFetch: finalIds,
+        idsToFetch: order
+          ? [...finalIds, ...otherItems.map((item) => item.id!)].slice(
+              startRow,
+              endRow,
+            )
+          : finalIds,
         results: preparedResults,
         otherItems,
       });
