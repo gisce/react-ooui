@@ -60,25 +60,26 @@ export const useOne2manyTree = ({
 
   const onTreeFetchRows = useDeepCompareCallback(
     async ({
-      itemsToFetch,
+      allItems,
       startRow,
       endRow,
       sortFields,
     }: {
-      itemsToFetch: One2manyItem[];
+      allItems: One2manyItem[];
       startRow: number;
       endRow: number;
       sortFields?: Record<string, SortDirection>;
     }) => {
-      let finalIds;
+      let realIdsToFetch;
       let otherItems;
 
       const order = getOrderFromSortFields(sortFields);
+      const maxNumberOfItemsToReturn = endRow - startRow;
 
       if (order) {
         const { realItemsIds, otherItems: otherItemsToSkipFetching } =
           getIdsToFetch({
-            itemsToFetch,
+            allItems,
           });
 
         otherItems = otherItemsToSkipFetching;
@@ -87,16 +88,17 @@ export const useOne2manyTree = ({
           return { results: [], colors: {}, status: {} };
         }
 
-        finalIds = await ConnectionProvider.getHandler().searchAllIds({
+        realIdsToFetch = await ConnectionProvider.getHandler().searchAllIds({
           model: relation,
           params: [["id", "in", realItemsIds]],
           context,
           order,
         });
+        realIdsToFetch = realIdsToFetch.slice(startRow, endRow);
       } else {
         const { realItemsIds, otherItems: otherItemsToSkipFetching } =
           getIdsToFetch({
-            itemsToFetch,
+            allItems,
             range: { startRow, endRow },
           });
         otherItems = otherItemsToSkipFetching;
@@ -104,7 +106,7 @@ export const useOne2manyTree = ({
           return { results: [], colors: {}, status: {} };
         }
 
-        finalIds = realItemsIds;
+        realIdsToFetch = realItemsIds;
       }
 
       const attrs: any = {};
@@ -118,29 +120,31 @@ export const useOne2manyTree = ({
       const fetchedData =
         await ConnectionProvider.getHandler().readEvalUiObjects({
           model: relation,
-          ids: finalIds,
+          ids: realIdsToFetch,
           arch: treeView.arch,
           fields: treeView.fields,
           context,
           attrs,
         });
 
+      // we need to know if the preparedResults items are less than the range
+      const weCanAddOtherItems = realIdsToFetch.length < endRow - startRow;
       const preparedResults = getTableItems(treeOoui, fetchedData[0]);
 
-      const finalResults = mergeWithOtherItems({
-        idsToFetch: order
-          ? [...finalIds, ...otherItems.map((item) => item.id!)].slice(
-              startRow,
-              endRow,
-            )
-          : finalIds,
-        results: preparedResults,
+      let finalResultIds = realIdsToFetch;
+      if (weCanAddOtherItems && otherItems.length > 0) {
+        finalResultIds = [
+          ...realIdsToFetch,
+          ...otherItems.map((item) => item.id!),
+        ];
+      }
+
+      const results = mergeWithOtherItems({
+        finalResultIds,
+        fetchedItems: preparedResults,
         otherItems,
       });
 
-      const results = order
-        ? finalResults
-        : finalResults.slice(startRow, endRow);
       const colors = getColorMap(fetchedData[1]);
       const status = getStatusMap(fetchedData[1]);
       return { results, colors, status };

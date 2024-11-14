@@ -28,12 +28,12 @@ export type One2manyTreeProps = {
   ooui: TreeOoui;
   context: any;
   onFetchRecords: ({
-    itemsToFetch,
+    allItems,
     startRow,
     endRow,
     sortFields,
   }: {
-    itemsToFetch: One2manyItem[];
+    allItems: One2manyItem[];
     startRow: number;
     endRow: number;
     sortFields?: Record<string, SortDirection>;
@@ -118,7 +118,7 @@ export const One2manyTree = ({
       sortFields?: Record<string, SortDirection>;
     }) => {
       const { results, colors, status } = await onFetchRecords({
-        itemsToFetch: itemsRef.current,
+        allItems: itemsRef.current,
         startRow,
         endRow,
         sortFields,
