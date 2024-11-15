@@ -223,6 +223,9 @@ const getOrderFromSortFields = (sortFields?: Record<string, SortDirection>) => {
   if (!sortFields) {
     return undefined;
   }
+  if (Object.keys(sortFields).length === 0) {
+    return undefined;
+  }
   return Object.keys(sortFields)
     .map((field) => {
       const direction = sortFields[field];

@@ -26,7 +26,7 @@ export const useOne2manyFormModal = ({
   setCurrentView: (view: ViewType) => void;
   setItemIndex: (index: number) => void;
   relation: string;
-  formView: FormView;
+  formView?: FormView;
   context: any;
 }) => {
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
@@ -108,6 +108,7 @@ export const useOne2manyFormModal = ({
 
   const openItemInFormModal = useDeepCompareCallback(
     async (item: One2manyItem) => {
+      if (!formView) return;
       const { id: itemId } = item;
 
       let itemsToLoadFrom: One2manyItem[] | undefined = items;
@@ -128,7 +129,7 @@ export const useOne2manyFormModal = ({
       setContinuousEntryMode(false);
       setShowFormModal(true);
     },
-    [context, formView.fields, items, relation, setCurrentView, setItemIndex],
+    [context, formView, items, relation, setCurrentView, setItemIndex],
   );
 
   return {
