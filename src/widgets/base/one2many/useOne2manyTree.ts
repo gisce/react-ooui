@@ -1,9 +1,16 @@
-import ConnectionProvider from "@/ConnectionProvider";
-import { getColorMap, getStatusMap, getTree } from "@/helpers/treeHelper";
+import { getOrderFromSortFields, getTree } from "@/helpers/treeHelper";
 import { TreeView } from "@/types";
 import { InfiniteTableRef, SortDirection } from "@gisce/react-formiga-table";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useDeepCompareCallback } from "use-deep-compare";
+import { One2manyItem } from "./One2manyInput";
+import {
+  buildAttributes,
+  fetchAndPrepareData,
+  fetchSortedIds,
+  getIdsToFetch,
+  mergeWithOtherItems,
+} from "@/helpers/one2manyHelper";
 
 export const useOne2manyTree = ({
   treeView,
@@ -52,54 +59,63 @@ export const useOne2manyTree = ({
 
   const onTreeFetchRows = useDeepCompareCallback(
     async ({
-      idsToFetch,
+      allItems,
+      startRow,
+      endRow,
       sortFields,
     }: {
-      idsToFetch: number[];
+      allItems: One2manyItem[];
+      startRow: number;
+      endRow: number;
       sortFields?: Record<string, SortDirection>;
     }) => {
-      const attrs: any = {};
-      if (treeOoui.colors) {
-        attrs.colors = treeOoui.colors;
-      }
-      if (treeOoui.status) {
-        attrs.status = treeOoui.status;
-      }
+      const order = getOrderFromSortFields(sortFields);
+      const { realItemsIds, otherItems } = getIdsToFetch({
+        allItems,
+        ...(order ? {} : { range: { startRow, endRow } }),
+      });
 
-      let finalIds = idsToFetch;
-
-      if (sortFields) {
-        const order: string = Object.keys(sortFields)
-          .map((field) => {
-            const direction = sortFields[field];
-            return `${field} ${direction}`;
-          })
-          .join(", ");
-
-        finalIds = await ConnectionProvider.getHandler().searchAllIds({
-          model: relation,
-          params: [["id", "in", idsToFetch]],
-          context,
-          order,
-        });
+      if (realItemsIds.length === 0 && otherItems.length === 0) {
+        return { results: [], colors: {}, status: {} };
       }
 
-      const fetchedData =
-        await ConnectionProvider.getHandler().readEvalUiObjects({
-          model: relation,
-          ids: finalIds,
-          arch: treeView.arch,
-          fields: treeView.fields,
-          context,
-          attrs,
-        });
+      const realIdsToFetch = order
+        ? (await fetchSortedIds(realItemsIds, relation, context, order)).slice(
+            startRow,
+            endRow,
+          )
+        : realItemsIds;
 
-      const results = fetchedData[0];
-      const colors = getColorMap(fetchedData[1]);
-      const status = getStatusMap(fetchedData[1]);
+      const attrs = buildAttributes(treeOoui);
+
+      const {
+        items: preparedResults,
+        colors,
+        status,
+      } = await fetchAndPrepareData({
+        relation,
+        ids: realIdsToFetch,
+        treeView,
+        context,
+        attrs,
+        treeOoui,
+      });
+
+      const weCanAddOtherItems = realIdsToFetch.length < endRow - startRow;
+      const finalResultIds =
+        weCanAddOtherItems && otherItems.length > 0
+          ? [...realIdsToFetch, ...otherItems.map((item) => item.id!)]
+          : realIdsToFetch;
+
+      const results = mergeWithOtherItems({
+        finalResultIds,
+        fetchedItems: preparedResults,
+        otherItems,
+      });
+
       return { results, colors, status };
     },
-    [context, relation, treeOoui.colors, treeView],
+    [context, relation, treeOoui, treeView],
   );
 
   return {

@@ -28,10 +28,14 @@ export type One2manyTreeProps = {
   ooui: TreeOoui;
   context: any;
   onFetchRecords: ({
-    idsToFetch,
+    allItems,
+    startRow,
+    endRow,
     sortFields,
   }: {
-    idsToFetch: number[];
+    allItems: One2manyItem[];
+    startRow: number;
+    endRow: number;
     sortFields?: Record<string, SortDirection>;
   }) => Promise<{
     results: any[];
@@ -115,58 +119,11 @@ export const One2manyTree = ({
       endRow: number;
       sortFields?: Record<string, SortDirection>;
     }) => {
-      const itemsToFetch = itemsRef.current;
-      const idsToFetch = itemsToFetch.map((item) => item.id) as number[];
-      // now slice the records with startRow and endRow
-      const idsToFetchSliced = idsToFetch.slice(startRow, endRow);
-
-      // in this idsToFetchSliced we have the ids of the records that theoretically we have to fetch
-      // however, it's possible that these items have operation different than original,
-      // and we have to skip these items to being fetched, and passed later on to the callback as they were originally
-      const realIdsToFetch = idsToFetchSliced.filter((id) => {
-        const item = itemsToFetch.find((item) => item.id === id);
-        return (
-          item &&
-          (item.operation === "original" || item.operation === "pendingLink")
-        );
-      });
-      const otherItems = itemsToFetch.filter((item) => {
-        return (
-          item &&
-          item.operation !== "original" &&
-          item.operation !== "pendingLink"
-        );
-      });
-
-      if (realIdsToFetch.length === 0 && otherItems.length === 0) {
-        return [];
-      }
-
       const { results, colors, status } = await onFetchRecords({
-        idsToFetch: realIdsToFetch,
+        allItems: itemsRef.current,
+        startRow,
+        endRow,
         sortFields,
-      });
-
-      const preparedResults = getTableItems(ooui, results);
-
-      // now we have to map the results to the original ids
-      const resultsMapped = idsToFetchSliced.map((id) => {
-        const result = preparedResults.find((result) => result.id === id);
-        if (result) {
-          return result;
-        }
-        return itemsToFetch.find((item) => item.id === id)?.treeValues;
-      });
-
-      // Now we have to maintain the same order for resultsMapped that the one we have in preparedResults
-      resultsMapped.sort((a, b) => {
-        const indexA = preparedResults.findIndex(
-          (result) => result.id === a.id,
-        );
-        const indexB = preparedResults.findIndex(
-          (result) => result.id === b.id,
-        );
-        return indexA - indexB;
       });
 
       colorsForResults.current = { ...colorsForResults.current, ...colors };
@@ -176,9 +133,9 @@ export const One2manyTree = ({
       if (status) {
         statusForResults.current = { ...statusForResults.current, ...status };
       }
-      return resultsMapped;
+      return results;
     },
-    [onFetchRecords, ooui],
+    [onFetchRecords],
   );
 
   const onRowStyle = useCallback((record: any) => {

@@ -1,7 +1,12 @@
 import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
 import ConnectionProvider from "@/ConnectionProvider";
-import { TreeView, View, ViewType } from "@/types";
-import { getColorMap, getTree } from "./treeHelper";
+import { TreeView, ViewType } from "@/types";
+import {
+  getColorMap,
+  getStatusMap,
+  getTableItems,
+  getTree,
+} from "./treeHelper";
 
 type ReadObjectValuesOptions = {
   items: One2manyItem[];
@@ -244,6 +249,123 @@ function getValuesForFields({
   return result;
 }
 
+const getIdsToFetch = ({
+  allItems,
+  range,
+}: {
+  allItems: One2manyItem[];
+  range?: {
+    startRow: number;
+    endRow: number;
+  };
+}) => {
+  const idsToFetch = allItems.map((item) => item.id) as number[];
+
+  // now slice the records with startRow and endRow if needed
+  const idsToFetchSliced = range
+    ? idsToFetch.slice(range.startRow, range.endRow)
+    : idsToFetch;
+
+  // in this idsToFetchSliced we have the ids of the records that theoretically we have to fetch
+  // however, it's possible that these items have operation different than original,
+  // and we have to skip these items to being fetched, and passed later on to the callback as they were originally
+  const realItemsIds = idsToFetchSliced.filter((id) => {
+    const item = allItems.find((item) => item.id === id);
+    return (
+      item &&
+      (item.operation === "original" || item.operation === "pendingLink")
+    );
+  });
+
+  const otherItems = allItems.filter((item: One2manyItem) => {
+    return (
+      item && item.operation !== "original" && item.operation !== "pendingLink"
+    );
+  });
+
+  return { realItemsIds, otherItems };
+};
+
+const mergeWithOtherItems = ({
+  finalResultIds,
+  fetchedItems,
+  otherItems,
+}: {
+  finalResultIds: number[];
+  fetchedItems: One2manyItem[];
+  otherItems: One2manyItem[];
+}) => {
+  // now we have to map the results to the original ids
+  const resultsMapped = finalResultIds.map((id) => {
+    const result = fetchedItems.find((result) => result.id === id);
+    if (result) {
+      return result;
+    }
+    return otherItems.find((item) => item.id === id)?.treeValues;
+  });
+
+  // Now we have to maintain the same order for resultsMapped that the one we have in preparedResults
+  resultsMapped.sort((a, b) => {
+    const indexA = fetchedItems.findIndex((result) => result.id === a.id);
+    const indexB = fetchedItems.findIndex((result) => result.id === b.id);
+    return indexA - indexB;
+  });
+
+  return resultsMapped;
+};
+
+const fetchSortedIds = async (
+  realItemsIds: number[],
+  relation: string,
+  context: any,
+  order: string,
+) => {
+  return await ConnectionProvider.getHandler().searchAllIds({
+    model: relation,
+    params: [["id", "in", realItemsIds]],
+    context,
+    order,
+  });
+};
+
+const buildAttributes = (treeOoui: any) => {
+  const attrs: any = {};
+  if (treeOoui.colors) attrs.colors = treeOoui.colors;
+  if (treeOoui.status) attrs.status = treeOoui.status;
+  return attrs;
+};
+
+const fetchAndPrepareData = async ({
+  relation,
+  ids,
+  treeView,
+  context,
+  attrs,
+  treeOoui,
+}: {
+  relation: string;
+  ids: number[];
+  treeView: TreeView;
+  context: any;
+  attrs: any;
+  treeOoui: any;
+}) => {
+  const fetchedData = await ConnectionProvider.getHandler().readEvalUiObjects({
+    model: relation,
+    ids,
+    arch: treeView.arch,
+    fields: treeView.fields,
+    context,
+    attrs,
+  });
+
+  return {
+    items: getTableItems(treeOoui, fetchedData[0]),
+    colors: getColorMap(fetchedData[1]),
+    status: getStatusMap(fetchedData[1]),
+  };
+};
+
 export {
   readObjectValues,
   removeItems,
@@ -252,4 +374,9 @@ export {
   convertToPlain2ManyValues,
   filterDuplicateItems,
   getValuesForFields,
+  getIdsToFetch,
+  mergeWithOtherItems,
+  fetchSortedIds,
+  buildAttributes,
+  fetchAndPrepareData,
 };
