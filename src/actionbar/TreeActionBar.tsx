@@ -36,7 +36,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 type Props = {
   parentContext?: any;
   treeExpandable: boolean;
-  toolbar: any;
+  toolbar?: any;
 };
 
 function TreeActionBar(props: Props) {
@@ -316,7 +316,7 @@ function TreeActionBar(props: Props) {
           !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
         }
         onRetrieveData={async () => [
-          { label: t("actions"), items: toolbar?.action },
+          { label: t("actions"), items: toolbar?.action || [] },
         ]}
         onItemClick={(action: any) => {
           if (!action) {
@@ -332,9 +332,9 @@ function TreeActionBar(props: Props) {
         disabled={
           !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
         }
-        onRetrieveData={async () => [
-          { label: t("reports"), items: toolbar?.print },
-        ]}
+        onRetrieveData={async () => {
+          return [{ label: t("reports"), items: toolbar?.print || [] }];
+        }}
         onItemClick={(report: any) => {
           if (!report) {
             return;
