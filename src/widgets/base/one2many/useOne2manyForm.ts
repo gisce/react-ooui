@@ -21,7 +21,7 @@ export const useOne2manyForm = ({
   context: any[];
   relation: string;
   treeView: TreeView;
-  formView: FormView;
+  formView?: FormView;
   triggerChange: (items: One2manyItem[]) => void;
 }) => {
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
@@ -38,6 +38,7 @@ export const useOne2manyForm = ({
 
   const getOriginalItemsWithRestoredItemId = useCallback(
     async ({ id }: { id: number }) => {
+      if (!formView) return;
       const updatedFormObject = (
         await ConnectionProvider.getHandler().readObjects({
           model: relation,
@@ -70,7 +71,7 @@ export const useOne2manyForm = ({
 
       return updatedItems;
     },
-    [context, formView.fields, items, relation, treeView.fields],
+    [context, formView, items, relation, treeView.fields],
   );
 
   const onFormChanges = useCallback(
@@ -82,11 +83,20 @@ export const useOne2manyForm = ({
   );
 
   const reloadOriginalValuesForCurrentItem = useCallback(async () => {
+    if (!formView) return;
     const { id } = items[itemIndex];
     if (!id) return;
     const originalItems = await getOriginalItemsWithRestoredItemId({ id });
-    triggerChange(originalItems);
-  }, [getOriginalItemsWithRestoredItemId, itemIndex, items, triggerChange]);
+    if (originalItems) {
+      triggerChange(originalItems);
+    }
+  }, [
+    formView,
+    getOriginalItemsWithRestoredItemId,
+    itemIndex,
+    items,
+    triggerChange,
+  ]);
 
   const showFormChangesDialogIfNeeded = useCallback(
     (callback: () => void) => {

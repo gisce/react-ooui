@@ -5,7 +5,7 @@ import {
 } from "@gisce/react-formiga-table";
 import { One2manyItem } from "./One2manyInput";
 import { Tree as TreeOoui } from "@gisce/ooui";
-import { RefObject, useCallback, useRef } from "react";
+import { RefObject, useCallback, useMemo, useRef } from "react";
 import { getTableColumns, getTableItems } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "@/widgets/views/Tree/treeComponents";
 import useDeepCompareEffect from "use-deep-compare-effect";
@@ -22,7 +22,7 @@ import { useLocale } from "@gisce/react-formiga-components";
 
 export type One2manyTreeProps = {
   items: One2manyItem[];
-  onRowDoubleClick: (record: any) => void;
+  onRowDoubleClick?: (record: any) => void;
   readOnly: boolean;
   height?: number;
   ooui: TreeOoui;
@@ -51,6 +51,7 @@ export type One2manyTreeProps = {
   dataForHash: One2manyTreeDataForHash;
   aggregates?: TreeAggregates;
   selectedRowKeys?: number[];
+  showPointerCursorInRows?: boolean;
 };
 
 const DEFAULT_HEIGHT = 400;
@@ -72,6 +73,7 @@ export const One2manyTree = ({
   dataForHash,
   aggregates,
   selectedRowKeys = [],
+  showPointerCursorInRows = true,
 }: One2manyTreeProps) => {
   const internalGridRef = useRef<InfiniteTableRef>();
   const tableRef: RefObject<InfiniteTableRef> = gridRef! || internalGridRef!;
@@ -162,6 +164,7 @@ export const One2manyTree = ({
       columns={columns}
       onRequestData={onRequestData}
       onRowDoubleClick={onRowDoubleClick}
+      showPointerCursorInRows={showPointerCursorInRows}
       readonly={readOnly}
       onRowStyle={onRowStyle}
       onRowSelectionChange={onRowSelectionChange}
