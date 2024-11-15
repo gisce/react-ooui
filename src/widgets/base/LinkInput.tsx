@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Input, Button, Row, Col, theme } from "antd";
-import { Char as CharOoui } from "@gisce/ooui";
+import { Field as FieldOoui } from "@gisce/ooui";
 import { EditOutlined, CheckOutlined } from "@ant-design/icons";
 import { FormContext, FormContextType } from "@/context/FormContext";
 const { useToken } = theme;
 
 interface LinkInputProps {
-  ooui: CharOoui;
+  ooui: FieldOoui;
   value?: string;
   onChange?: (value: string) => void;
   valueValidator: (value?: string) => boolean;
@@ -15,7 +15,7 @@ interface LinkInputProps {
 
 export const LinkInput = (props: LinkInputProps) => {
   const { ooui, value, onChange, valueValidator, linkPrefix = "" } = props;
-  const { id, readOnly, required } = ooui as CharOoui;
+  const { id, readOnly, required } = ooui as FieldOoui;
   const { token } = useToken();
   const requiredStyle =
     required && !readOnly

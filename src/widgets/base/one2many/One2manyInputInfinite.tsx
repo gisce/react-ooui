@@ -241,6 +241,10 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
     showFormChangesDialogIfNeeded,
   ]);
 
+  const showPointerCursorInRows = useMemo(() => {
+    return views.get("form")?.fields !== undefined;
+  }, [views]);
+
   return (
     <>
       <One2manyTopBar
@@ -271,6 +275,7 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
           ooui={treeOoui}
           context={context}
           onRowDoubleClick={onRowDoubleClick}
+          showPointerCursorInRows={showPointerCursorInRows}
           onRowSelectionChange={setSelectedRowKeys}
           relation={relation}
           onChangeFirstVisibleRowIndex={onChangeFirstVisibleRowIndex}
