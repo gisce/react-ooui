@@ -12,6 +12,7 @@ import { CustomTag, TagInput } from "../../custom/Tag";
 import { DatePickerConfig } from "@/common/DatePicker";
 import ConnectionProvider from "@/ConnectionProvider";
 import { colorFromString } from "@/helpers/formHelper";
+import { EmailTagsRender } from "@/widgets/custom/EmailTags";
 
 export const BooleanComponent = ({
   value,
@@ -33,6 +34,14 @@ export const BooleanComponent = ({
     ),
     [value],
   );
+};
+
+export const EmailTagsComponent = ({
+  value,
+}: {
+  value: string;
+}): ReactElement => {
+  return useMemo(() => <EmailTagsRender emails={value} />, [value]);
 };
 
 export const Many2OneComponent = ({ value }: { value: any }): ReactElement => {
@@ -280,4 +289,5 @@ export const COLUMN_COMPONENTS = {
   datetime: DateTimeComponent,
   avatar: AvatarComponent,
   tags: TagsComponent,
+  email: EmailTagsComponent,
 };
