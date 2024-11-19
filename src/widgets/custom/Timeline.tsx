@@ -172,28 +172,37 @@ export const TimelineInput = (props: TimelineInputProps) => {
     return Icon && <Icon />;
   };
 
-  const timelineItems = itemsToShow.map((item) => ({
-    children: (
-      <TimelineItem
-        title={item.values?.[titleField]}
-        summary={item.values?.[summaryField]}
-        onClick={() => {
-          setModalItem(
-            itemsToShow.find((searchItem) => item.id === searchItem.id),
-          );
-          setShowFormModal(true);
-        }}
-      />
-    ),
-    dot: item.values?.[iconField] && getIcon(item.values?.[iconField]),
-    color:
-      item.values?.[colorField] &&
-      !isPresetStatusColor(item.values[colorField]) &&
-      !isPresetColor(item.values[colorField]) &&
-      !item.values?.[colorField].toString().startsWith("#")
-        ? colorFromString(item.values[colorField])
-        : item.values[colorField],
-  }));
+  const timelineItems = itemsToShow.map((item) => {
+    const timelineItem: any = {
+      children: (
+        <TimelineItem
+          title={item.values?.[titleField]}
+          summary={item.values?.[summaryField]}
+          onClick={() => {
+            setModalItem(
+              itemsToShow.find((searchItem) => item.id === searchItem.id),
+            );
+            setShowFormModal(true);
+          }}
+        />
+      ),
+    };
+
+    if (item.values?.[iconField]) {
+      timelineItem.dot = getIcon(item.values[iconField]);
+    }
+
+    if (item.values?.[colorField]) {
+      timelineItem.color =
+        !isPresetStatusColor(item.values[colorField]) &&
+        !isPresetColor(item.values[colorField]) &&
+        !item.values[colorField].toString().startsWith("#")
+          ? colorFromString(item.values[colorField])
+          : item.values[colorField];
+    }
+
+    return timelineItem;
+  });
 
   return (
     <>
