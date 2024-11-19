@@ -10,6 +10,27 @@ import { Spin, Alert, Timeline as AntTimeline } from "antd";
 import { readObjectValues } from "@/helpers/one2manyHelper";
 import { FormModal } from "../modals/FormModal";
 
+type TimelineItemProps = {
+  title: string;
+  summary?: string;
+  onClick?: () => void;
+};
+
+const TimelineItem = (props: TimelineItemProps) => (
+  <div
+    style={{ display: "inline-block", cursor: "pointer" }}
+    onClick={props.onClick}
+  >
+    <strong>{props.title}</strong>
+    {props.summary && (
+      <>
+        <br />
+        <span>{props.summary}</span>
+      </>
+    )}
+  </div>
+);
+
 type TimelineProps = {
   ooui: TimelineOoui;
 };
@@ -135,31 +156,24 @@ export const TimelineInput = (props: TimelineInputProps) => {
     return <Spin />;
   }
 
+  const timelineItems = itemsToShow.map((item) => ({
+    children: (
+      <TimelineItem
+        title={item.values?.[titleField]}
+        summary={item.values?.[summaryField]}
+        onClick={() => {
+          setModalItem(
+            itemsToShow.find((searchItem) => item.id === searchItem.id),
+          );
+          setShowFormModal(true);
+        }}
+      />
+    ),
+  }));
+
   return (
     <>
-      <AntTimeline style={{ padding: "1rem" }}>
-        {itemsToShow.map((item, index) => {
-          return (
-            <AntTimeline.Item key={index}>
-              <div
-                style={{ display: "inline-block", cursor: "pointer" }}
-                onClick={() => {
-                  setModalItem(
-                    itemsToShow.find((searchItem) => item.id === searchItem.id),
-                  );
-                  setShowFormModal(true);
-                }}
-              >
-                <strong>{item.values?.[titleField]}</strong>
-                <br />
-                {item.values?.[summaryField] && (
-                  <span>{item.values[summaryField]}</span>
-                )}
-              </div>
-            </AntTimeline.Item>
-          );
-        })}
-      </AntTimeline>
+      <AntTimeline style={{ padding: "1rem" }} items={timelineItems} />
       <FormModal
         formView={views.get("form")}
         model={relation}
