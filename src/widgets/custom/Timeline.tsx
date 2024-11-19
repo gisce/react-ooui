@@ -10,6 +10,8 @@ import { Spin, Alert, Timeline as AntTimeline } from "antd";
 import { readObjectValues } from "@/helpers/one2manyHelper";
 import { FormModal } from "../modals/FormModal";
 import iconMapper from "@/helpers/iconMapper";
+import { isPresetStatusColor, isPresetColor } from "antd/lib/_util/colors";
+import { colorFromString } from "@/helpers/formHelper";
 
 type TimelineItemProps = {
   title: string;
@@ -106,8 +108,15 @@ export const TimelineInput = (props: TimelineInputProps) => {
   const [error, setError] = useState<string>();
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
   const [modalItem, setModalItem] = useState<One2manyItem>();
-  const { relation, context, readOnly, summaryField, titleField, iconField } =
-    ooui;
+  const {
+    relation,
+    context,
+    readOnly,
+    summaryField,
+    titleField,
+    iconField,
+    colorField,
+  } = ooui;
   const itemsToShow = items.filter((item) => item.values);
 
   const formContext = useContext(FormContext) as FormContextType;
@@ -177,6 +186,13 @@ export const TimelineInput = (props: TimelineInputProps) => {
       />
     ),
     dot: item.values?.[iconField] && getIcon(item.values?.[iconField]),
+    color:
+      item.values?.[colorField] &&
+      !isPresetStatusColor(item.values[colorField]) &&
+      !isPresetColor(item.values[colorField]) &&
+      !item.values?.[colorField].toString().startsWith("#")
+        ? colorFromString(item.values[colorField])
+        : item.values[colorField],
   }));
 
   return (
