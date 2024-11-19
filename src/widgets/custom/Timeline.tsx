@@ -9,6 +9,30 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { Spin, Alert, Timeline as AntTimeline } from "antd";
 import { readObjectValues } from "@/helpers/one2manyHelper";
 import { FormModal } from "../modals/FormModal";
+import iconMapper from "@/helpers/iconMapper";
+import { isPresetStatusColor, isPresetColor } from "antd/lib/_util/colors";
+import { colorFromString } from "@/helpers/formHelper";
+
+type TimelineItemProps = {
+  title: string;
+  summary?: string;
+  onClick?: () => void;
+};
+
+const TimelineItem = (props: TimelineItemProps) => (
+  <div
+    style={{ display: "inline-block", cursor: "pointer" }}
+    onClick={props.onClick}
+  >
+    <strong>{props.title}</strong>
+    {props.summary && (
+      <>
+        <br />
+        <span>{props.summary}</span>
+      </>
+    )}
+  </div>
+);
 
 type TimelineProps = {
   ooui: TimelineOoui;
@@ -84,7 +108,15 @@ export const TimelineInput = (props: TimelineInputProps) => {
   const [error, setError] = useState<string>();
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
   const [modalItem, setModalItem] = useState<One2manyItem>();
-  const { relation, context, readOnly, summaryField, titleField } = ooui;
+  const {
+    relation,
+    context,
+    readOnly,
+    summaryField,
+    titleField,
+    iconField,
+    colorField,
+  } = ooui;
   const itemsToShow = items.filter((item) => item.values);
 
   const formContext = useContext(FormContext) as FormContextType;
@@ -135,31 +167,37 @@ export const TimelineInput = (props: TimelineInputProps) => {
     return <Spin />;
   }
 
+  const getIcon = (icon: string): React.ReactElement => {
+    const Icon: React.ElementType = iconMapper(icon) as any;
+    return Icon && <Icon />;
+  };
+
+  const timelineItems = itemsToShow.map((item) => ({
+    children: (
+      <TimelineItem
+        title={item.values?.[titleField]}
+        summary={item.values?.[summaryField]}
+        onClick={() => {
+          setModalItem(
+            itemsToShow.find((searchItem) => item.id === searchItem.id),
+          );
+          setShowFormModal(true);
+        }}
+      />
+    ),
+    dot: item.values?.[iconField] && getIcon(item.values?.[iconField]),
+    color:
+      item.values?.[colorField] &&
+      !isPresetStatusColor(item.values[colorField]) &&
+      !isPresetColor(item.values[colorField]) &&
+      !item.values?.[colorField].toString().startsWith("#")
+        ? colorFromString(item.values[colorField])
+        : item.values[colorField],
+  }));
+
   return (
     <>
-      <AntTimeline style={{ padding: "1rem" }}>
-        {itemsToShow.map((item, index) => {
-          return (
-            <AntTimeline.Item key={index}>
-              <div
-                style={{ display: "inline-block", cursor: "pointer" }}
-                onClick={() => {
-                  setModalItem(
-                    itemsToShow.find((searchItem) => item.id === searchItem.id),
-                  );
-                  setShowFormModal(true);
-                }}
-              >
-                <strong>{item.values?.[titleField]}</strong>
-                <br />
-                {item.values?.[summaryField] && (
-                  <span>{item.values[summaryField]}</span>
-                )}
-              </div>
-            </AntTimeline.Item>
-          );
-        })}
-      </AntTimeline>
+      <AntTimeline style={{ padding: "1rem" }} items={timelineItems} />
       <FormModal
         formView={views.get("form")}
         model={relation}
