@@ -1,3 +1,4 @@
+import { memo, useCallback, useMemo } from "react";
 import { Line, Column, Pie } from "@ant-design/plots";
 import GraphDefaults, {
   PieLabelOptions,
@@ -5,17 +6,21 @@ import GraphDefaults, {
 } from "./GraphDefaults";
 import { Typography } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
-import { useCallback, useMemo } from "react";
 import { GraphType, YAxisOpts } from "@gisce/ooui";
 
 const { Text } = Typography;
 
 const DEFAULT_HEIGHT = 400;
 
+// Memoize each chart type
+const MemoizedLine = memo(Line);
+const MemoizedColumn = memo(Column);
+const MemoizedPie = memo(Pie);
+
 const types = {
-  line: Line,
-  bar: Column,
-  pie: Pie,
+  line: MemoizedLine,
+  bar: MemoizedColumn,
+  pie: MemoizedPie,
 };
 
 export type GraphCompProps = {
@@ -97,6 +102,30 @@ export const GraphChartComp = ({
 
   const Chart = (types as any)[type!];
 
+  const graphProps = useMemo(() => {
+    return getGraphProps({
+      type,
+      data,
+      isGroup,
+      numItems,
+      isStack,
+      pieItemValueFormatter,
+      pieLabelFormatter,
+      yAxisOpts,
+      fixedHeight,
+    });
+  }, [
+    type,
+    data,
+    isGroup,
+    numItems,
+    isStack,
+    pieItemValueFormatter,
+    pieLabelFormatter,
+    yAxisOpts,
+    fixedHeight,
+  ]);
+
   if (!Chart) {
     return <>{`Unknown graph type: ${type}`}</>;
   }
@@ -129,19 +158,7 @@ export const GraphChartComp = ({
         </div>
       )}
       <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
-        <Chart
-          {...getGraphProps({
-            type,
-            data,
-            isGroup,
-            numItems,
-            isStack,
-            pieItemValueFormatter,
-            pieLabelFormatter,
-            yAxisOpts,
-            fixedHeight,
-          })}
-        />
+        <Chart {...graphProps} />
       </div>
     </div>
   );
