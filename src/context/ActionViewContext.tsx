@@ -241,11 +241,16 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   );
 };
 
-export const useActionViewContext = (rootTree: boolean) => {
+export const useIsUnderActionViewContext = () => {
+  const context = useContext(ActionViewContext);
+  return !!context;
+};
+
+export const useActionViewContext = () => {
   const context = useContext(ActionViewContext);
 
-  // If not root tree or no context, return empty functions and default values
-  if (!rootTree || !context) {
+  // If no context, return empty functions and default values
+  if (!context) {
     return {
       title: "",
       currentView: {} as View,

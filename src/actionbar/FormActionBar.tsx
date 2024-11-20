@@ -71,7 +71,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     setPreviousView,
     goToResourceId,
     isActive,
-  } = useActionViewContext(true);
+  } = useActionViewContext();
 
   const { processAction } = contentRootContext || {};
   const { openRelate, openDefaultActionForModel } = tabManagerContext || {};

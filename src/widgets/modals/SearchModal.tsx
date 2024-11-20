@@ -14,7 +14,6 @@ import { showErrorDialog } from "@/ui/GenericErrorDialog";
 import { useFetchTreeViews } from "@/hooks/useFetchTreeViews";
 import { extractTreeXmlAttribute } from "@/helpers/treeHelper";
 import SearchTree from "../views/SearchTree";
-import { SearchTreeModalInfinite } from "./SearchTreeModalInfinite";
 
 type SearchSelectionProps = {
   visible: boolean;
@@ -97,7 +96,7 @@ export const SearchModal = ({
   }, [selectedRowKeys, handleCloseModal, handleSelectValues]);
 
   const SearchTreeComp = shouldShowInfiniteTree
-    ? SearchTreeModalInfinite
+    ? SearchTreeInfinite
     : SearchTree;
 
   return (
@@ -124,6 +123,7 @@ export const SearchModal = ({
             domain={domain}
             parentContext={context}
             onChangeSelectedRowKeys={setSelectedRowKeys}
+            filterType={"top"}
           />
         )}
         <Divider />
