@@ -95,9 +95,28 @@ export const SearchModal = ({
     void handleSelectValues(selectedRowKeys);
   }, [selectedRowKeys, handleCloseModal, handleSelectValues]);
 
-  const SearchTreeComp = shouldShowInfiniteTree
-    ? SearchTreeInfinite
-    : SearchTree;
+  const SearchTreeComp = useMemo(
+    () => (shouldShowInfiniteTree ? SearchTreeInfinite : SearchTree),
+    [shouldShowInfiniteTree],
+  );
+
+  const handleShowCreateModal = useCallback(() => {
+    setShowCreateModal(true);
+  }, []);
+
+  const handleHideCreateModal = useCallback(() => {
+    setShowCreateModal(false);
+    handleCloseModal();
+  }, [handleCloseModal]);
+
+  const handleCreateModalSuccess = useCallback(
+    (id?: number) => {
+      setShowCreateModal(false);
+      handleCloseModal();
+      if (id) void handleSelectValues([id]);
+    },
+    [handleCloseModal, handleSelectValues],
+  );
 
   return (
     <>
@@ -132,7 +151,7 @@ export const SearchModal = ({
             <Button
               disabled={operationInProgress}
               icon={<FileAddOutlined />}
-              onClick={() => setShowCreateModal(true)}
+              onClick={handleShowCreateModal}
             >
               {t("new")}
             </Button>
@@ -156,15 +175,8 @@ export const SearchModal = ({
         model={model}
         visible={showCreateModal}
         parentContext={context}
-        onSubmitSucceed={(id?: number) => {
-          setShowCreateModal(false);
-          handleCloseModal();
-          if (id) handleSelectValues([id]);
-        }}
-        onCancel={() => {
-          setShowCreateModal(false);
-          handleCloseModal();
-        }}
+        onSubmitSucceed={handleCreateModalSuccess}
+        onCancel={handleHideCreateModal}
       />
     </>
   );
