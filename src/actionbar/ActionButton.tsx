@@ -1,8 +1,9 @@
 import React from "react";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
 import { LoadingOutlined } from "@ant-design/icons";
+import { ButtonProps } from "antd";
 
-type Props = {
+type Props = ButtonProps & {
   tooltip: string;
   onClick: any;
   icon: any;
@@ -21,6 +22,7 @@ function ActionButton(props: Props) {
     icon,
     label,
     type = "default",
+    ...restProps
   } = props;
   const finalIcon = loading ? <LoadingOutlined /> : icon;
 
@@ -30,11 +32,16 @@ function ActionButton(props: Props) {
       tooltip={tooltip}
       onClick={onClick}
       disabled={disabled}
+      {...restProps}
     >
       {finalIcon}
       {label}
     </ButtonWithTooltip>
   );
 }
+
+export const ActionDangerButton = (props: Props) => {
+  return <ActionButton {...props} type="primary" danger={true} />;
+};
 
 export default ActionButton;

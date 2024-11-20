@@ -13,7 +13,7 @@ import {
   InfoCircleOutlined,
 } from "@ant-design/icons";
 import ChangeViewButton from "./ChangeViewButton";
-import ActionButton from "./ActionButton";
+import ActionButton, { ActionDangerButton } from "./ActionButton";
 import { useActionViewContext } from "@/context/ActionViewContext";
 import NewButton from "./NewButton";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
@@ -224,7 +224,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           })
         }
       />
-      <ActionButton
+      <ActionDangerButton
         icon={<DeleteOutlined />}
         tooltip={t("delete")}
         disabled={mustDisableButtons || currentId === undefined}

@@ -40,6 +40,7 @@ function NewButton(props: Props) {
       tooltip={t("new")}
       onClick={onNewClicked}
       disabled={disabled}
+      type="primary"
     />
   );
 }
