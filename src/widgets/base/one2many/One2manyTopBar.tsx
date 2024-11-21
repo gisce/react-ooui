@@ -10,7 +10,7 @@ import {
   ApiOutlined,
 } from "@ant-design/icons";
 import { ViewType } from "@/types";
-import { theme } from "antd";
+import { theme, Badge } from "antd";
 const { useToken } = theme;
 
 type One2manyTopBarProps = {
@@ -74,16 +74,20 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
 
   function deleteButton() {
     return (
-      <ButtonWithTooltip
-        tooltip={isMany2Many ? "Unlink" : "Delete"}
-        icon={isMany2Many ? <ApiOutlined /> : <DeleteOutlined />}
-        onClick={onDelete}
-        disabled={
-          totalItems === 0 ||
-          readOnly ||
-          (mode !== "form" && selectedRowKeys.length === 0)
-        }
-      />
+      <Badge count={selectedRowKeys.length}>
+        <ButtonWithTooltip
+          tooltip={isMany2Many ? "Unlink" : "Delete"}
+          icon={isMany2Many ? <ApiOutlined /> : <DeleteOutlined />}
+          onClick={onDelete}
+          danger={!isMany2Many}
+          type={isMany2Many ? "default" : "primary"}
+          disabled={
+            totalItems === 0 ||
+            readOnly ||
+            (mode !== "form" && selectedRowKeys.length === 0)
+          }
+        />
+      </Badge>
     );
   }
 
