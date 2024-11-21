@@ -6,7 +6,7 @@ import {
   ActionViewContextType,
 } from "@/context/ActionViewContext";
 import NewButton from "./NewButton";
-import ActionButton from "./ActionButton";
+import ActionButton, { ActionDangerButton } from "./ActionButton";
 import Icon, {
   DeleteOutlined,
   PrinterOutlined,
@@ -260,7 +260,7 @@ function TreeActionBar(props: Props) {
             loading={duplicatingItem}
             onClick={tryDuplicate}
           />
-          <ActionButton
+          <ActionDangerButton
             icon={<DeleteOutlined />}
             tooltip={t("delete")}
             disabled={
