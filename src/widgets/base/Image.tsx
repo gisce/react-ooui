@@ -90,31 +90,33 @@ export const ImageInput = (props: ImageInputProps) => {
           onChange={onChangeFile}
         />
       </Row>
-      <Row gutter={8} wrap={false} justify="center" className="pt-5">
-        <Space>
-          <ButtonWithTooltip
-            tooltip={t("uploadNewImage")}
-            icon={<FolderOpenOutlined />}
-            disabled={readOnly}
-            onClick={() => {
-              const fileUploadField = inputFile.current as any;
-              fileUploadField.click();
-            }}
-          />
-          <ButtonWithTooltip
-            tooltip={t("download")}
-            disabled={!value}
-            onClick={downloadFile}
-            icon={<DownloadOutlined />}
-          />
-          <ButtonWithTooltip
-            tooltip={t("clear")}
-            disabled={readOnly || !value}
-            onClick={clearFile}
-            icon={<ClearOutlined />}
-          />
-        </Space>
-      </Row>
+      {ooui.showControls && (
+        <Row gutter={8} wrap={false} justify="center" className="pt-5">
+          <Space>
+            <ButtonWithTooltip
+              tooltip={t("uploadNewImage")}
+              icon={<FolderOpenOutlined />}
+              disabled={readOnly}
+              onClick={() => {
+                const fileUploadField = inputFile.current as any;
+                fileUploadField.click();
+              }}
+            />
+            <ButtonWithTooltip
+              tooltip={t("download")}
+              disabled={!value}
+              onClick={downloadFile}
+              icon={<DownloadOutlined />}
+            />
+            <ButtonWithTooltip
+              tooltip={t("clear")}
+              disabled={readOnly || !value}
+              onClick={clearFile}
+              icon={<ClearOutlined />}
+            />
+          </Space>
+        </Row>
+      )}
     </>
   );
 };
