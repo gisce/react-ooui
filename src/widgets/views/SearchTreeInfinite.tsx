@@ -23,7 +23,7 @@ import {
   getTree,
 } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "./Tree/treeComponents";
-import { useDeepCompareMemo } from "use-deep-compare";
+import { useDeepCompareEffect, useDeepCompareMemo } from "use-deep-compare";
 import {
   InfiniteTable,
   InfiniteTableRef,
@@ -31,7 +31,6 @@ import {
 } from "@gisce/react-formiga-table";
 import ConnectionProvider from "@/ConnectionProvider";
 import { useAvailableHeight } from "@/hooks/useAvailableHeight";
-import { useActionViewContext } from "@/context/ActionViewContext";
 import { mergeSearchFields } from "@/helpers/formHelper";
 import { useTreeColumnStorageFetch } from "../base/one2many/useTreeColumnStorageFetch";
 import { getKey } from "@/helpers/tree-columnStorageHelper";
@@ -42,9 +41,10 @@ import { useLocale } from "@gisce/react-formiga-components";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { SideSearchFilter } from "./searchFilter/SideSearchFilter";
 import { mergeParams } from "@/helpers/searchHelper";
-import useDeepCompareEffect from "use-deep-compare-effect";
 import deepEqual from "deep-equal";
 import { useShowErrorDialog } from "@/ui/GenericErrorDialog";
+import SearchFilter from "./searchFilter/SearchFilter";
+import { useSearchTreeState } from "@/hooks/useSearchTreeState";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -56,10 +56,10 @@ type OnRowClickedData = {
   treeView: TreeView;
 };
 
-type SearchTreeInfiniteProps = {
+export type SearchTreeInfiniteProps = {
   model: string;
-  formView?: FormView;
-  treeView?: TreeView;
+  formView: FormView;
+  treeView: TreeView;
   onRowClicked: (data: OnRowClickedData) => void;
   nameSearch?: string;
   treeScrollY?: number;
@@ -68,6 +68,7 @@ type SearchTreeInfiniteProps = {
   rootTree?: boolean;
   parentContext?: any;
   onChangeSelectedRowKeys?: (selectedRowKeys: any) => void;
+  filterType?: "side" | "top";
 };
 
 function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
@@ -82,6 +83,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     parentContext = {},
     onChangeSelectedRowKeys,
     nameSearch: nameSearchProps,
+    filterType = "side",
   } = props;
   const colorsForResults = useRef<{ [key: number]: string }>({});
   const statusForResults = useRef<{ [key: number]: string }>();
@@ -109,7 +111,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const {
     setTreeIsLoading,
-    searchVisible = false,
+    searchVisible,
     setSearchVisible,
     setSelectedRowItems,
     setTreeFirstVisibleRow,
@@ -125,7 +127,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     results: actionViewResults,
     setSearchQuery,
     setTotalItems: setTotalItemsActionView,
-  } = useActionViewContext(rootTree);
+  } = useSearchTreeState({ useLocalState: !rootTree });
 
   const nameSearch = nameSearchProps || searchTreeNameSearch;
   const prevNameSearch = useRef(nameSearch);
@@ -545,7 +547,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     const searchVisibleChangedToFalse =
       prevSearchVisibleRef.current && !searchVisible;
 
-    if (searchParamsChanged && searchVisibleChangedToFalse) {
+    if (
+      searchParamsChanged &&
+      (searchVisibleChangedToFalse || filterType === "top")
+    ) {
       refresh();
     }
 
@@ -566,45 +571,136 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     getDomain: () => domain,
   }));
 
+  const containerStyle = useMemo(
+    () => ({
+      overflow: "hidden",
+      height: `${availableHeight}px`,
+      ...(visible ? {} : { display: "none" }),
+    }),
+    [availableHeight, visible],
+  );
+
+  const searchFilterProps = useMemo(
+    () => ({
+      fields: { ...formView?.fields, ...treeView?.fields },
+      searchFields: mergeSearchFields([
+        formView?.search_fields,
+        treeView?.search_fields,
+      ]),
+      showLimitOptions: false,
+      limit: 0,
+      offset: 0,
+      isSearching: false,
+      searchValues,
+      searchVisible: true,
+    }),
+    [
+      formView?.fields,
+      formView?.search_fields,
+      treeView?.fields,
+      treeView?.search_fields,
+      searchValues,
+    ],
+  );
+
+  const onSearchFilterClear = useCallback(() => {
+    setSelectedRowItems?.([]);
+    tableRef.current?.unselectAll();
+    setSearchTreeNameSearch?.(undefined);
+    setSearchParams?.([]);
+    setSearchValues?.(undefined);
+  }, [
+    setSelectedRowItems,
+    setSearchTreeNameSearch,
+    setSearchParams,
+    setSearchValues,
+  ]);
+
+  const onSearchFilterSubmit = useCallback(
+    ({ params, searchValues }: any) => {
+      setSelectedRowItems?.([]);
+      tableRef.current?.unselectAll();
+      setSearchTreeNameSearch?.(undefined);
+      setSearchParams?.(params);
+      setSearchValues?.(searchValues);
+    },
+    [
+      setSelectedRowItems,
+      setSearchTreeNameSearch,
+      setSearchParams,
+      setSearchValues,
+    ],
+  );
+
+  const sideSearchFilterProps = useMemo(
+    () => ({
+      isOpen: searchVisible,
+      fields: { ...formView?.fields, ...treeView?.fields },
+      searchFields: mergeSearchFields([
+        formView?.search_fields,
+        treeView?.search_fields,
+      ]),
+      searchValues,
+    }),
+    [
+      searchVisible,
+      formView?.fields,
+      formView?.search_fields,
+      treeView?.fields,
+      treeView?.search_fields,
+      searchValues,
+    ],
+  );
+
+  const onSideSearchFilterClose = useCallback(
+    () => setSearchVisible?.(false),
+    [setSearchVisible],
+  );
+
+  const onSideSearchFilterSubmit = useCallback(
+    ({ params, values }: any) => {
+      setSelectedRowItems?.([]);
+      tableRef.current?.unselectAll();
+      setSearchTreeNameSearch?.(undefined);
+      setSearchParams?.(params);
+      setSearchValues?.(values);
+      setSearchVisible?.(false);
+    },
+    [
+      setSelectedRowItems,
+      setSearchTreeNameSearch,
+      setSearchParams,
+      setSearchValues,
+      setSearchVisible,
+    ],
+  );
+
   return (
     <Fragment>
+      {filterType === "top" && (
+        <SearchFilter
+          {...searchFilterProps}
+          onClear={onSearchFilterClear}
+          onSubmit={onSearchFilterSubmit}
+        />
+      )}
+      {filterType === "side" && (
+        <SideSearchFilter
+          {...sideSearchFilterProps}
+          onClose={onSideSearchFilterClose}
+          onSubmit={onSideSearchFilterSubmit}
+        />
+      )}
       <SearchTreeHeader
         selectedRowKeys={selectedRowKeys}
         allRowSelectedMode={false}
         totalRows={totalRows}
       />
-      <div
-        ref={containerRef}
-        style={{
-          overflow: "hidden",
-          height: `${availableHeight}px`,
-          ...(visible ? {} : { display: "none" }),
-        }}
-      >
+      <div ref={containerRef} style={containerStyle}>
         {loading || getColumnStateInProgress || totalRowsLoading ? (
           <Spin />
         ) : (
-          <Fragment>
-            {content}
-            <SideSearchFilter
-              isOpen={searchVisible}
-              onClose={() => setSearchVisible?.(false)}
-              fields={{ ...formView?.fields, ...treeView?.fields }}
-              searchFields={mergeSearchFields([
-                formView?.search_fields,
-                treeView?.search_fields,
-              ])}
-              onSubmit={({ params, values }) => {
-                setSelectedRowItems?.([]);
-                tableRef.current?.unselectAll();
-                setSearchTreeNameSearch?.(undefined);
-                setSearchParams?.(params);
-                setSearchValues?.(values);
-                setSearchVisible?.(false);
-              }}
-              searchValues={searchValues}
-            />
-          </Fragment>
+          content
         )}
       </div>
     </Fragment>
