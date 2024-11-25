@@ -13,6 +13,7 @@ import { DatePickerConfig } from "@/common/DatePicker";
 import ConnectionProvider from "@/ConnectionProvider";
 import { colorFromString } from "@/helpers/formHelper";
 import { EmailTagsRender } from "@/widgets/custom/EmailTags";
+import { ImageRender } from "@/widgets/base/Image";
 
 export const BooleanComponent = ({
   value,
@@ -113,15 +114,7 @@ export const NumberComponent = ({ value }: { value: number }): ReactElement => {
 };
 
 export const ImageComponent = ({ value }: { value: string }): ReactElement => {
-  return useMemo(
-    () => (
-      <img
-        src={`data:image/*;base64,${value}`}
-        style={{ maxWidth: "50px", padding: "5px" }}
-      />
-    ),
-    [value],
-  );
+  return useMemo(() => <ImageRender value={value} />, [value]);
 };
 
 export const TagComponent = ({

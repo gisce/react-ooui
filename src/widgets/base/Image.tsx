@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useRef, useMemo } from "react";
 import { Row, Space } from "antd";
 import Field from "@/common/Field";
 import { Image as ImageOoui } from "@gisce/ooui";
@@ -12,20 +12,33 @@ import {
 import { toBase64, getMimeType } from "@/helpers/filesHelper";
 import iconMapper from "@/helpers/iconMapper";
 import { useLocale } from "@gisce/react-formiga-components";
-import isBase64 from "validator/lib/isBase64";
 
 type Props = {
   ooui: ImageOoui;
+};
+
+export const ImageRender = ({ value }: { value?: string }) => {
+  if (value) {
+    const Icon: React.ElementType = iconMapper(value) as any;
+    if (Icon) {
+      return <Icon />;
+    } else {
+      return (
+        <img
+          src={`data:image/*;base64,${value}`}
+          style={{ maxWidth: "100px" }}
+        />
+      );
+    }
+  }
 };
 
 export const Image = (props: Props) => {
   const { ooui } = props;
   const { required, id } = ooui;
 
-  const Icon: React.ElementType = iconMapper(id) as any;
-
-  if (Icon) {
-    return <Icon />;
+  if (iconMapper(id)) {
+    return <ImageRender value={id} />;
   }
 
   return (
@@ -46,13 +59,6 @@ export const ImageInput = (props: ImageInputProps) => {
   const { readOnly } = ooui as ImageOoui;
   const inputFile = useRef(null);
   const { t } = useLocale();
-
-  if (value) {
-    const Icon: React.ElementType = iconMapper(value) as any;
-    if (Icon) {
-      return <Icon height={50} />;
-    }
-  }
 
   const triggerChange = (changedValue?: string) => {
     onChange?.(changedValue);
@@ -83,11 +89,11 @@ export const ImageInput = (props: ImageInputProps) => {
   return (
     <>
       <Row gutter={8} wrap={false} justify="center">
-        {value && isBase64(value) && (
-          <img
-            src={`data:image/*;base64,${value}`}
-            style={{ maxWidth: "100px" }}
-          />
+        {useMemo(
+          () => (
+            <ImageRender value={value} />
+          ),
+          [value, ooui],
         )}
         <input
           type="file"
