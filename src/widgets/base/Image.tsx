@@ -12,6 +12,7 @@ import {
 import { toBase64, getMimeType } from "@/helpers/filesHelper";
 import iconMapper from "@/helpers/iconMapper";
 import { useLocale } from "@gisce/react-formiga-components";
+import isBase64 from "validator/lib/isBase64";
 
 type Props = {
   ooui: ImageOoui;
@@ -46,6 +47,13 @@ export const ImageInput = (props: ImageInputProps) => {
   const inputFile = useRef(null);
   const { t } = useLocale();
 
+  if (value) {
+    const Icon: React.ElementType = iconMapper(value) as any;
+    if (Icon) {
+      return <Icon height={50} />;
+    }
+  }
+
   const triggerChange = (changedValue?: string) => {
     onChange?.(changedValue);
   };
@@ -75,7 +83,7 @@ export const ImageInput = (props: ImageInputProps) => {
   return (
     <>
       <Row gutter={8} wrap={false} justify="center">
-        {value && (
+        {value && isBase64(value) && (
           <img
             src={`data:image/*;base64,${value}`}
             style={{ maxWidth: "100px" }}
@@ -90,31 +98,33 @@ export const ImageInput = (props: ImageInputProps) => {
           onChange={onChangeFile}
         />
       </Row>
-      <Row gutter={8} wrap={false} justify="center" className="pt-5">
-        <Space>
-          <ButtonWithTooltip
-            tooltip={t("uploadNewImage")}
-            icon={<FolderOpenOutlined />}
-            disabled={readOnly}
-            onClick={() => {
-              const fileUploadField = inputFile.current as any;
-              fileUploadField.click();
-            }}
-          />
-          <ButtonWithTooltip
-            tooltip={t("download")}
-            disabled={!value}
-            onClick={downloadFile}
-            icon={<DownloadOutlined />}
-          />
-          <ButtonWithTooltip
-            tooltip={t("clear")}
-            disabled={readOnly || !value}
-            onClick={clearFile}
-            icon={<ClearOutlined />}
-          />
-        </Space>
-      </Row>
+      {ooui.showControls && (
+        <Row gutter={8} wrap={false} justify="center" className="pt-5">
+          <Space>
+            <ButtonWithTooltip
+              tooltip={t("uploadNewImage")}
+              icon={<FolderOpenOutlined />}
+              disabled={readOnly}
+              onClick={() => {
+                const fileUploadField = inputFile.current as any;
+                fileUploadField.click();
+              }}
+            />
+            <ButtonWithTooltip
+              tooltip={t("download")}
+              disabled={!value}
+              onClick={downloadFile}
+              icon={<DownloadOutlined />}
+            />
+            <ButtonWithTooltip
+              tooltip={t("clear")}
+              disabled={readOnly || !value}
+              onClick={clearFile}
+              icon={<ClearOutlined />}
+            />
+          </Space>
+        </Row>
+      )}
     </>
   );
 };
