@@ -42,7 +42,6 @@ export const GraphIndicatorComp = (props: GraphIndicatorCompProps) => {
       }}
     >
       {({ measureRef }) => {
-        console.log({ fixedHeight, height });
         const content = showPercent ? (
           <PercentageIndicator
             value={value!}
