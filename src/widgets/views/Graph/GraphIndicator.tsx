@@ -20,6 +20,7 @@ export type GraphInidicatorProps = {
   field?: string;
   operator?: Operator;
   manualIds?: number[];
+  fixedHeight?: number;
 };
 
 export const GraphIndicator = (props: GraphInidicatorProps) => {
@@ -35,6 +36,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
     field,
     operator,
     manualIds,
+    fixedHeight,
   } = props;
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState<number>();
@@ -213,6 +215,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
       icon={icon}
       suffix={suffix}
       showPercent={showPercent}
+      fixedHeight={fixedHeight}
     />
   );
 };
