@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Form, Row, Col, Alert, theme } from "antd";
 import useDeepCompareEffect from "use-deep-compare-effect";
 
@@ -108,6 +108,22 @@ function SearchFilter(props: Props) {
     onSubmit({ params: newParams, offset, limit, searchValues: values });
   };
 
+  const areSearchFieldsEqual = useCallback(() => {
+    if (!simpleSearchFields || !advancedSearchFields) return false;
+
+    const simpleTotal = simpleSearchFields.rows.reduce(
+      (sum, row) => sum + row.length,
+      0,
+    );
+
+    const advancedTotal = advancedSearchFields.rows.reduce(
+      (sum, row) => sum + row.length,
+      0,
+    );
+
+    return simpleTotal === advancedTotal;
+  }, [simpleSearchFields, advancedSearchFields]);
+
   return (
     <Measure
       bounds
@@ -130,6 +146,11 @@ function SearchFilter(props: Props) {
                 <SearchParams onLimitChange={onLimitChange} />
               )}
               <SearchBottomBar
+                hideAdvancedFilter={
+                  (areSearchFieldsEqual() ||
+                    advancedSearchFields?._rows.length === 0) &&
+                  !showLimitOptions
+                }
                 advancedFilter={advancedFilter}
                 onAdvancedFilterToggle={() => {
                   setAdvancedFilter(!advancedFilter);
