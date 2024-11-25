@@ -15,14 +15,23 @@ export type GraphIndicatorCompProps = {
   icon?: string;
   suffix?: string;
   showPercent?: boolean;
+  fixedHeight?: number;
 };
 
 export const GraphIndicatorComp = (props: GraphIndicatorCompProps) => {
   const [height, setHeight] = useState<number>(0);
   const [width, setWidth] = useState<number>(0);
 
-  const { value, totalValue, percent, color, icon, suffix, showPercent } =
-    props;
+  const {
+    value,
+    totalValue,
+    percent,
+    color,
+    icon,
+    suffix,
+    showPercent,
+    fixedHeight,
+  } = props;
 
   return (
     <Measure
@@ -33,34 +42,37 @@ export const GraphIndicatorComp = (props: GraphIndicatorCompProps) => {
       }}
     >
       {({ measureRef }) => {
-        if (showPercent) {
-          return (
-            <PercentageIndicator
-              value={value!}
-              total={totalValue!}
-              percent={percent!}
-              measureRef={measureRef}
-              height={height}
-              width={width}
-              color={color}
-              icon={icon}
-              suffix={suffix}
-            />
-          );
-        } else {
-          return (
-            <CommonIndicator
-              value={value!}
-              total={totalValue}
-              measureRef={measureRef}
-              height={height}
-              width={width}
-              color={color}
-              icon={icon}
-              suffix={suffix}
-            />
-          );
-        }
+        console.log({ fixedHeight, height });
+        const content = showPercent ? (
+          <PercentageIndicator
+            value={value!}
+            total={totalValue!}
+            percent={percent!}
+            measureRef={measureRef}
+            height={fixedHeight || height}
+            width={width}
+            color={color}
+            icon={icon}
+            suffix={suffix}
+          />
+        ) : (
+          <CommonIndicator
+            value={value!}
+            total={totalValue}
+            measureRef={measureRef}
+            height={fixedHeight || height}
+            width={width}
+            color={color}
+            icon={icon}
+            suffix={suffix}
+          />
+        );
+
+        return fixedHeight ? (
+          <div style={{ height: fixedHeight }}>{content}</div>
+        ) : (
+          content
+        );
       }}
     </Measure>
   );

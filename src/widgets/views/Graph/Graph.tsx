@@ -22,6 +22,7 @@ import {
 } from "@/context/ActionViewContext";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { CenteredSpinner } from "@/ui/CenteredSpinner";
+import { GRAPH_DEFAULT_HEIGHT } from "./GraphChartComp";
 
 export type GraphProps = {
   view_id: number;
@@ -107,6 +108,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
           icon={indicator.icon!}
           suffix={indicator.suffix!}
           manualIds={manualIds}
+          fixedHeight={fixedHeight}
           {...indicatorFieldopts}
         />
       );
@@ -122,7 +124,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
           ooui={graphOoui as GraphChartOoui}
           limit={limit}
           manualIds={manualIds}
-          fixedHeight={fixedHeight}
+          fixedHeight={fixedHeight || GRAPH_DEFAULT_HEIGHT}
         />
       );
     }

@@ -11,7 +11,7 @@ import {
 } from "./useServerGraphData";
 import { GraphIndicatorComp } from "./GraphIndicatorComp";
 import { isNumber } from "./GraphDefaults";
-import { GraphChartComp } from "./GraphChartComp";
+import { GRAPH_DEFAULT_HEIGHT, GraphChartComp } from "./GraphChartComp";
 import { CenteredSpinner } from "@/ui/CenteredSpinner";
 
 export type GraphProps = {
@@ -77,6 +77,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
           icon={icon}
           suffix={suffix}
           showPercent={isNumber(percent)}
+          fixedHeight={fixedHeight}
         />
       );
     }
@@ -92,7 +93,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
           isStack={chart.isStack}
           numItems={chart.num_items}
           yAxisOpts={chart.yAxisOpts}
-          fixedHeight={fixedHeight}
+          fixedHeight={fixedHeight || GRAPH_DEFAULT_HEIGHT}
         />
       );
     }
