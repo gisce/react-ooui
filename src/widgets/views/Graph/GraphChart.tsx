@@ -13,7 +13,7 @@ export type GraphChartProps = {
   ooui: GraphChartOoui;
   limit?: number;
   manualIds?: number[];
-  fixedHeight?: boolean;
+  fixedHeight?: number;
 };
 
 export const GraphChart = ({

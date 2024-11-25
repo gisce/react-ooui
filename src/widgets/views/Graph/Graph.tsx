@@ -30,7 +30,7 @@ export type GraphProps = {
   context: any;
   limit?: number;
   manualIds?: number[];
-  fixedHeight?: boolean;
+  fixedHeight?: number;
 };
 
 const GraphComp = (props: GraphProps, ref: any) => {

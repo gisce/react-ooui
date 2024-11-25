@@ -18,6 +18,7 @@ import {
   TabManagerContextType,
 } from "@/context/TabManagerContext";
 import { GraphCard } from "../views/Graph";
+import { GRAPH_DEFAULT_HEIGHT } from "../views/Graph/GraphChartComp";
 const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
@@ -88,7 +89,7 @@ const IndicatorInput = (props: IndicatorInputProps) => {
 
 const GraphIndicatorInput = (props: IndicatorInputProps) => {
   const { ooui } = props;
-  const { actionId } = ooui;
+  const { actionId, height } = ooui;
 
   const { actionData, treeShortcut, loading, error, fetchData } =
     useFormGraphData(actionId!);
@@ -133,7 +134,7 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
           context={context}
           domain={domain}
           limit={limit}
-          fixedHeight
+          fixedHeight={height || GRAPH_DEFAULT_HEIGHT}
         />
       )}
     </GraphCard>
