@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useRef } from "react";
 import { ConnectionProvider, FormView, TreeView } from "..";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { showErrorDialog } from "@/ui/GenericErrorDialog";
@@ -9,6 +9,7 @@ export type UseFetchTreeViewsOpts = {
   formViewProps?: FormView;
   treeViewProps?: TreeView;
   context?: any;
+  enabled?: boolean;
 };
 
 export const useFetchTreeViews = ({
@@ -16,23 +17,27 @@ export const useFetchTreeViews = ({
   formViewProps,
   treeViewProps,
   context,
+  enabled = true,
 }: UseFetchTreeViewsOpts) => {
   const [loading, setLoading] = useState(true);
   const [treeView, setTreeView] = useState<TreeView>();
   const [formView, setFormView] = useState<FormView>();
+  const isRequestInProgress = useRef(false);
 
   const [fetchGetViewRequest, cancelGetViewRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().getView,
   );
 
   useDeepCompareEffect(() => {
-    fetchViewData();
+    if (enabled) fetchViewData();
     return () => {
       cancelGetViewRequest();
     };
-  }, [context, formViewProps, model, treeViewProps]);
+  }, [context, formViewProps, model, treeViewProps, enabled]);
 
   const fetchViewData = useCallback(async () => {
+    if (isRequestInProgress.current) return;
+    isRequestInProgress.current = true;
     setLoading(true);
     try {
       const fetchPromises: Array<Promise<any>> = [];
@@ -60,6 +65,7 @@ export const useFetchTreeViews = ({
       showErrorDialog(error);
     } finally {
       setLoading(false);
+      isRequestInProgress.current = false;
     }
   }, [context, fetchGetViewRequest, formViewProps, model, treeViewProps]);
 
