@@ -79,6 +79,7 @@ function TreeActionBar(props: Props) {
   const { processAction } = contentRootContext || {};
   const [exportModalVisible, setExportModalVisible] = useState(false);
   const isFirstMount = useRef(true);
+  const isCustomSearchResults = currentModel === "custom.search.results";
 
   useHotkeys(
     "ctrl+l,command+l",
@@ -216,21 +217,23 @@ function TreeActionBar(props: Props) {
       )}
       {treeExpandable ? null : (
         <>
-          <SearchBar
-            disabled={duplicatingItem || removingItem || treeIsLoading}
-            searchText={searchTreeNameSearch}
-            onSearch={(searchString?: string) => {
-              if (searchString && searchString.trim().length > 0) {
-                setSearchTreeNameSearch?.(searchString);
-              } else {
-                setSearchTreeNameSearch?.(undefined);
-                if (!isInfiniteTree) {
-                  searchTreeRef?.current?.refreshResults();
+          {!isCustomSearchResults && (
+            <SearchBar
+              disabled={duplicatingItem || removingItem || treeIsLoading}
+              searchText={searchTreeNameSearch}
+              onSearch={(searchString?: string) => {
+                if (searchString && searchString.trim().length > 0) {
+                  setSearchTreeNameSearch?.(searchString);
+                } else {
+                  setSearchTreeNameSearch?.(undefined);
+                  if (!isInfiniteTree) {
+                    searchTreeRef?.current?.refreshResults();
+                  }
                 }
-              }
-            }}
-          />
-          {!treeExpandable && (
+              }}
+            />
+          )}
+          {!treeExpandable && !isCustomSearchResults && (
             <ButtonWithBadge
               icon={
                 <FilterOutlined
@@ -247,7 +250,7 @@ function TreeActionBar(props: Props) {
             />
           )}
           {separator()}
-          <NewButton disabled={treeIsLoading} />
+          <NewButton disabled={treeIsLoading || isCustomSearchResults} />
           <ActionButton
             icon={<CopyOutlined />}
             tooltip={t("duplicate")}
@@ -385,10 +388,14 @@ function TreeActionBar(props: Props) {
                     id: "print_screen",
                     name: t("printScreen"),
                   },
-                  {
-                    id: "export",
-                    name: t("advancedExport"),
-                  },
+                  ...(!isCustomSearchResults
+                    ? [
+                        {
+                          id: "export",
+                          name: t("advancedExport"),
+                        },
+                      ]
+                    : []),
                 ],
               },
             ]}
