@@ -15,27 +15,35 @@ type Props = {
   isSearching: boolean;
   onAdvancedFilterToggle: () => void;
   onClear: () => void;
+  hideAdvancedFilter: boolean;
 };
 
 export function SearchBottomBar(props: Props): ReactElement {
-  const { onAdvancedFilterToggle, advancedFilter, onClear, isSearching } =
-    props;
+  const {
+    onAdvancedFilterToggle,
+    advancedFilter,
+    onClear,
+    isSearching,
+    hideAdvancedFilter,
+  } = props;
 
   const { t } = useLocale();
 
   return (
     <Row>
-      <Col span={12} className="text-left pt-4 pb-2 pl-2">
-        <a className="text-xs" onClick={onAdvancedFilterToggle}>
-          {advancedFilter ? (
-            <UpOutlined className="pr-1" />
-          ) : (
-            <DownOutlined className="pr-1" />
-          )}
-          {advancedFilter ? t("simple_search") : t("advanced_search")}
-        </a>
-      </Col>
-      <Col span={12} className="text-right pb-2">
+      {!hideAdvancedFilter && (
+        <Col span={12} className="text-left pt-4 pb-2 pl-2">
+          <a className="text-xs" onClick={onAdvancedFilterToggle}>
+            {advancedFilter ? (
+              <UpOutlined className="pr-1" />
+            ) : (
+              <DownOutlined className="pr-1" />
+            )}
+            {advancedFilter ? t("simple_search") : t("advanced_search")}
+          </a>
+        </Col>
+      )}
+      <Col span={!hideAdvancedFilter ? 12 : 24} className="text-right pb-2">
         <Button className="mr-5" icon={<ClearOutlined />} onClick={onClear}>
           {t("clear")}
         </Button>

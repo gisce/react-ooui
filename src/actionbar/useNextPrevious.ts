@@ -13,7 +13,7 @@ export const useNextPrevious = () => {
     setCurrentItemIndex,
     results,
     searchQuery,
-  } = useActionViewContext(true);
+  } = useActionViewContext();
 
   const [fetchRequest, cancelRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().searchForTree,

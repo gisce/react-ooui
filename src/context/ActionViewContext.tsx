@@ -241,21 +241,79 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   );
 };
 
-export const useActionViewContext = (
-  isRoot: boolean,
-): ActionViewContextType => {
-  const actionViewContext = useContext(
-    ActionViewContext,
-  ) as ActionViewContextType;
-  if (!isRoot) {
-    return {} as ActionViewContextType;
+export const useIsUnderActionViewContext = () => {
+  const context = useContext(ActionViewContext);
+  return !!context;
+};
+
+export const useActionViewContext = () => {
+  const context = useContext(ActionViewContext);
+
+  // If no context, return empty functions and default values
+  if (!context) {
+    return {
+      title: "",
+      currentView: {} as View,
+      setCurrentView: () => {},
+      availableViews: [],
+      formRef: { current: null },
+      searchTreeRef: { current: null },
+      onNewClicked: () => {},
+      currentId: undefined,
+      setCurrentId: () => {},
+      setCurrentItemIndex: () => {},
+      currentItemIndex: undefined,
+      results: [],
+      setResults: () => {},
+      currentModel: "",
+      sorter: undefined,
+      setSorter: () => {},
+      totalItems: 0,
+      setTotalItems: () => {},
+      selectedRowItems: [],
+      setSelectedRowItems: () => {},
+      setSearchTreeNameSearch: () => {},
+      searchTreeNameSearch: undefined,
+      goToResourceId: async () => {},
+      limit: DEFAULT_SEARCH_LIMIT,
+      isActive: false,
+      formIsSaving: false,
+      setFormIsSaving: () => {},
+      formHasChanges: false,
+      setFormHasChanges: () => {},
+      onFormSave: async () => ({ succeed: false, id: 0 }),
+      removingItem: false,
+      setRemovingItem: () => {},
+      formIsLoading: false,
+      setFormIsLoading: () => {},
+      treeIsLoading: false,
+      setTreeIsLoading: () => {},
+      graphIsLoading: false,
+      setGraphIsLoading: () => {},
+      attachments: [],
+      setAttachments: () => {},
+      duplicatingItem: false,
+      setDuplicatingItem: () => {},
+      searchParams: [],
+      setSearchParams: () => {},
+      searchVisible: false,
+      setSearchVisible: () => {},
+      previousView: undefined,
+      setPreviousView: () => {},
+      searchValues: {},
+      setSearchValues: () => {},
+      setLimit: () => {},
+      setTitle: () => {},
+      treeFirstVisibleRow: 0,
+      setTreeFirstVisibleRow: () => {},
+      searchQuery: undefined,
+      setSearchQuery: () => {},
+      isInfiniteTree: false,
+      setIsInfiniteTree: () => {},
+    };
   }
-  if (!actionViewContext) {
-    throw new Error(
-      "useActionViewContext must be used within a ActionViewProvider",
-    );
-  }
-  return actionViewContext;
+
+  return context;
 };
 
 export default ActionViewProvider;
