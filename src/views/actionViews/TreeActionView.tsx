@@ -11,8 +11,8 @@ import SearchTree from "@/widgets/views/SearchTree";
 import { extractTreeXmlAttribute } from "@/helpers/treeHelper";
 
 export type TreeActionViewProps = {
-  formView?: FormView;
-  treeView?: TreeView;
+  formView: FormView;
+  treeView: TreeView;
   visible: boolean;
   searchTreeRef: any;
   model: string;
