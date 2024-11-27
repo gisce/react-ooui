@@ -10,7 +10,12 @@ import { GraphType, YAxisOpts } from "@gisce/ooui";
 
 const { Text } = Typography;
 
-const DEFAULT_HEIGHT = 400;
+export const GRAPH_DEFAULT_HEIGHT = 400;
+
+// Memoize each chart type
+const MemoizedLine = memo(Line);
+const MemoizedColumn = memo(Column);
+const MemoizedPie = memo(Pie);
 
 // Memoize each chart type
 const MemoizedLine = memo(Line);
@@ -30,7 +35,7 @@ export type GraphCompProps = {
   isStack: boolean;
   numItems: number;
   yAxisOpts?: YAxisOpts;
-  fixedHeight?: boolean;
+  fixedHeight?: number;
 };
 
 export const GraphChartComp = ({
@@ -40,7 +45,7 @@ export const GraphChartComp = ({
   isStack,
   numItems,
   yAxisOpts,
-  fixedHeight = false,
+  fixedHeight,
 }: GraphCompProps) => {
   const { t } = useLocale();
 
@@ -138,7 +143,7 @@ export const GraphChartComp = ({
         flex: 1,
         padding: "1rem",
         gap: "10px",
-        height: fixedHeight ? DEFAULT_HEIGHT : undefined,
+        height: fixedHeight,
       }}
     >
       <div style={{ textAlign: "right" }}>
@@ -169,7 +174,7 @@ type GetGraphPropsType = GraphCompProps & {
   height?: number;
   pieItemValueFormatter?: any;
   pieLabelFormatter?: any;
-  fixedHeight?: boolean;
+  fixedHeight?: number;
 };
 
 function getGraphProps(props: GetGraphPropsType) {
@@ -181,7 +186,7 @@ function getGraphProps(props: GetGraphPropsType) {
     pieItemValueFormatter,
     pieLabelFormatter,
     yAxisOpts = { mode: "default" },
-    fixedHeight = false,
+    fixedHeight,
   } = props;
   let graphProps = { ...(GraphDefaults as any)[type] };
 
@@ -190,7 +195,7 @@ function getGraphProps(props: GetGraphPropsType) {
   }
 
   graphProps.data = data;
-  graphProps.height = fixedHeight ? DEFAULT_HEIGHT : undefined;
+  graphProps.height = fixedHeight;
 
   if (type === "pie") {
     graphProps.colorField = "x";
