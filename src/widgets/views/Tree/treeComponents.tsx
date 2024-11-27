@@ -114,7 +114,10 @@ export const NumberComponent = ({ value }: { value: number }): ReactElement => {
 };
 
 export const ImageComponent = ({ value }: { value: string }): ReactElement => {
-  return useMemo(() => <ImageRender value={value} />, [value]);
+  return useMemo(
+    () => <ImageRender value={value} style={{ maxHeight: "30px" }} />,
+    [value],
+  );
 };
 
 export const TagComponent = ({

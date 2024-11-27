@@ -13,11 +13,17 @@ import { toBase64, getMimeType } from "@/helpers/filesHelper";
 import iconMapper from "@/helpers/iconMapper";
 import { useLocale } from "@gisce/react-formiga-components";
 
-type Props = {
+type ImageProps = {
   ooui: ImageOoui;
 };
 
-export const ImageRender = ({ value }: { value?: string }) => {
+type ImageRenderProps = {
+  value?: string;
+  style?: any;
+};
+
+export const ImageRender = (props: ImageRenderProps) => {
+  const { value, style = {} } = props;
   if (value) {
     const Icon: React.ElementType = iconMapper(value) as any;
     if (Icon) {
@@ -26,14 +32,14 @@ export const ImageRender = ({ value }: { value?: string }) => {
       return (
         <img
           src={`data:image/*;base64,${value}`}
-          style={{ maxWidth: "100px" }}
+          style={{ ...{ maxWidth: "100px" }, ...style }}
         />
       );
     }
   }
 };
 
-export const Image = (props: Props) => {
+export const Image = (props: ImageProps) => {
   const { ooui } = props;
   const { required, id } = ooui;
 
