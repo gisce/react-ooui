@@ -17,11 +17,6 @@ const MemoizedLine = memo(Line);
 const MemoizedColumn = memo(Column);
 const MemoizedPie = memo(Pie);
 
-// Memoize each chart type
-const MemoizedLine = memo(Line);
-const MemoizedColumn = memo(Column);
-const MemoizedPie = memo(Pie);
-
 const types = {
   line: MemoizedLine,
   bar: MemoizedColumn,
