@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useRef, useMemo } from "react";
 import { Row, Space } from "antd";
 import Field from "@/common/Field";
 import { Image as ImageOoui } from "@gisce/ooui";
@@ -14,18 +14,38 @@ import iconMapper from "@/helpers/iconMapper";
 import { useLocale } from "@gisce/react-formiga-components";
 import isBase64 from "validator/lib/isBase64";
 
-type Props = {
+type ImageProps = {
   ooui: ImageOoui;
 };
 
-export const Image = (props: Props) => {
+type ImageRenderProps = {
+  value?: string;
+  style?: any;
+};
+
+export const ImageRender = (props: ImageRenderProps) => {
+  const { value, style = {} } = props;
+  if (value) {
+    const Icon: React.ElementType = iconMapper(value) as any;
+    if (Icon) {
+      return <Icon />;
+    } else {
+      return (
+        <img
+          src={`data:image/*;base64,${value}`}
+          style={{ ...{ maxWidth: "100px" }, ...style }}
+        />
+      );
+    }
+  }
+};
+
+export const Image = (props: ImageProps) => {
   const { ooui } = props;
   const { required, id } = ooui;
 
-  const Icon: React.ElementType = iconMapper(id) as any;
-
-  if (Icon) {
-    return <Icon />;
+  if (iconMapper(id)) {
+    return <ImageRender value={id} />;
   }
 
   return (
@@ -83,11 +103,11 @@ export const ImageInput = (props: ImageInputProps) => {
   return (
     <>
       <Row gutter={8} wrap={false} justify="center">
-        {value && isBase64(value) && (
-          <img
-            src={`data:image/*;base64,${value}`}
-            style={{ maxWidth: "100px" }}
-          />
+        {useMemo(
+          () => (
+            <ImageRender value={value} />
+          ),
+          [value, ooui],
         )}
         <input
           type="file"
