@@ -1,10 +1,11 @@
-import React, {
+import {
   useState,
   forwardRef,
   useImperativeHandle,
   useEffect,
   useRef,
   useContext,
+  useCallback,
 } from "react";
 import { Form as FormOoui, parseContext } from "@gisce/ooui";
 import {
@@ -60,6 +61,7 @@ import {
 } from "@/helpers/one2manyHelper";
 import { ErrorAlert } from "@/ui/ErrorAlert";
 import { mergeFieldsContext } from "@/helpers/fieldsHelper";
+import { useAutorefreshableFields } from "@/hooks/useAutorefreshableFields";
 
 export type FormProps = {
   model: string;
@@ -161,6 +163,7 @@ function Form(props: FormProps, ref: any) {
     setAttachments = undefined,
     title = undefined,
     setTitle = undefined,
+    isActive = undefined,
   } = (rootForm ? actionViewContext : {}) || {};
 
   const contentRootContext = useContext(
@@ -247,9 +250,9 @@ function Form(props: FormProps, ref: any) {
     propsOnSubmitError?.(error);
   };
 
-  function getCurrentId() {
+  const getCurrentId = useCallback(() => {
     return id || createdId.current;
-  }
+  }, [id]);
 
   function getFields() {
     return fields;
@@ -330,7 +333,7 @@ function Form(props: FormProps, ref: any) {
     return { active_id: getCurrentId()!, active_ids: [getCurrentId()!] };
   }
 
-  function getAdditionalValues() {
+  const getAdditionalValues = useCallback(() => {
     return {
       id: getCurrentId()!,
       active_id: getCurrentId()!,
@@ -338,7 +341,7 @@ function Form(props: FormProps, ref: any) {
       parent_id: parentId,
       ...globalValues,
     };
-  }
+  }, [getCurrentId, parentId, globalValues]);
 
   const getDefaultValues = async (fields: any) => {
     const formContext = getCurrentId() ? formOoui?.context : {};
@@ -514,38 +517,38 @@ function Form(props: FormProps, ref: any) {
     })) as FormView;
   };
 
-  const assignNewValuesToForm = ({
-    values: newValues,
-    fields,
-    reset,
-    isDefaultGet = false,
-  }: {
-    values: any;
-    fields: any;
-    reset: boolean;
-    isDefaultGet?: boolean;
-  }) => {
-    const currentValues = reset ? {} : antForm.getFieldsValue(true);
-    const mergedValues = { ...currentValues, ...newValues };
-    const valuesProcessed = processValues(mergedValues, fields);
-    const fieldsToUpdate = Object.keys(fields).map((fieldName) => {
-      const fieldValue =
-        valuesProcessed[fieldName] !== undefined
-          ? valuesProcessed[fieldName]
-          : undefined;
-      return {
+  const assignNewValuesToForm = useCallback(
+    ({
+      values: newValues,
+      fields,
+      reset,
+      isDefaultGet = false,
+    }: {
+      values: any;
+      fields: any;
+      reset: boolean;
+      isDefaultGet?: boolean;
+    }) => {
+      const currentValues = reset ? {} : antForm.getFieldsValue(true);
+      const mergedValues = { ...currentValues, ...newValues };
+      const valuesProcessed = processValues(mergedValues, fields);
+      const fieldsToUpdate = Object.keys(fields).map((fieldName) => ({
         name: fieldName,
         touched: false,
-        value: fieldValue,
-      };
-    });
+        value:
+          valuesProcessed[fieldName] !== undefined
+            ? valuesProcessed[fieldName]
+            : undefined,
+      }));
 
-    if (!isDefaultGet) {
-      lastAssignedValues.current = valuesProcessed;
-    }
+      if (!isDefaultGet) {
+        lastAssignedValues.current = valuesProcessed;
+      }
 
-    antForm.setFields(fieldsToUpdate);
-  };
+      antForm.setFields(fieldsToUpdate);
+    },
+    [antForm],
+  );
 
   const fetchValuesFromApi = async ({
     fields,
@@ -729,59 +732,66 @@ function Form(props: FormProps, ref: any) {
     return { succeed: submitSucceed, id: getCurrentId()! };
   };
 
-  const getFormOoui = ({
-    fields,
-    arch,
-    values,
-    operationInProgress = false,
-  }: {
-    arch: string;
-    fields: any;
-    values: any;
-    operationInProgress?: boolean;
-  }) => {
-    const ooui = new FormOoui(fields);
-    // Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
-    ooui.parse(arch, {
-      readOnly: readOnly || operationInProgress,
-      values: convertToPlain2ManyValues(
-        {
-          ...values,
-          ...getAdditionalValues(),
-        },
-        fields,
-      ),
-    });
-    return ooui;
-  };
-
-  const parseForm = ({
-    fields,
-    arch,
-    values,
-    operationInProgress = false,
-  }: {
-    arch: string;
-    fields: any;
-    values: any;
-    operationInProgress?: boolean;
-  }) => {
-    const ooui = getFormOoui({
-      arch,
+  const getFormOoui = useCallback(
+    ({
       fields,
+      arch,
       values,
-      operationInProgress,
-    });
+      operationInProgress = false,
+    }: {
+      arch: string;
+      fields: any;
+      values: any;
+      operationInProgress?: boolean;
+    }) => {
+      const ooui = new FormOoui(fields);
+      // Here we must inject `values` to the ooui parser in order to evaluate arch+values and get the new form container
+      ooui.parse(arch, {
+        readOnly: readOnly || operationInProgress,
+        values: convertToPlain2ManyValues(
+          {
+            ...values,
+            ...getAdditionalValues(),
+          },
+          fields,
+        ),
+      });
+      return ooui;
+    },
+    [getAdditionalValues, readOnly],
+  );
 
-    setFormOoui(ooui);
+  const parseForm = useCallback(
+    ({
+      fields,
+      arch,
+      values,
+      operationInProgress = false,
+    }: {
+      arch: string;
+      fields: any;
+      values: any;
+      operationInProgress?: boolean;
+    }) => {
+      const ooui = getFormOoui({
+        arch,
+        fields,
+        values,
+        operationInProgress,
+      });
 
-    if (ooui.string && ooui.string !== title) {
-      setTitle?.(ooui.string);
-    }
+      setFormOoui(ooui);
 
-    if (formModalContext && ooui.string)
-      formModalContext.setTitle?.(ooui.string);
-  };
+      if (ooui.string && ooui.string !== title) {
+        setTitle?.(ooui.string);
+      }
+
+      if (formModalContext && ooui.string) {
+        formModalContext.setTitle?.(ooui.string);
+      }
+    },
+    [formModalContext, getFormOoui, setTitle, title],
+  );
 
   const checkFieldsChanges = async ({
     elementHasLostFocus = false,
@@ -1051,6 +1061,54 @@ function Form(props: FormProps, ref: any) {
       operationInProgress: value,
     });
   }
+
+  const onAutorefreshableFieldsChange = useCallback(
+    (newValues: any) => {
+      if (!arch) {
+        return;
+      }
+
+      let values = newValues;
+
+      if (actionDomain) {
+        values = { ...getValuesForDomain(actionDomain), ...values };
+      }
+
+      originalFormValues.current = processValues(values, fields);
+
+      assignNewValuesToForm({
+        values,
+        fields,
+        reset: true,
+      });
+      parseForm({ fields, arch, values });
+      assignNewValuesToForm({
+        values: newValues,
+        fields,
+        reset: false,
+      });
+    },
+    [actionDomain, arch, assignNewValuesToForm, fields, parseForm],
+  );
+
+  const { pause, resume } = useAutorefreshableFields({
+    model,
+    id,
+    context: parentContext,
+    autorefreshableFields: formOoui?.autorefreshableFields,
+    fieldDefs: fields,
+    onAutorefreshableFieldsChange,
+  });
+
+  useEffect(() => {
+    if (isActive === false) {
+      pause();
+    }
+    if (isActive === true) {
+      resume();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive]);
 
   async function executeButtonAction({
     type,
