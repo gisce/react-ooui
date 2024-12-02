@@ -35,6 +35,7 @@ import {
   CommentsTimelineField,
   HTMLPreview,
   Alert,
+  Spinner,
 } from "@/index";
 import { Image } from "./base/Image";
 import { FiberGrid } from "./custom/FiberGrid";
@@ -130,6 +131,8 @@ const getWidgetType = (type: string) => {
       return HTMLPreview;
     case "alert":
       return Alert;
+    case "spinner":
+      return Spinner;
     default:
       return undefined;
   }
