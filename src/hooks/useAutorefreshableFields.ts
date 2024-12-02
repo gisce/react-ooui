@@ -3,7 +3,7 @@ import { useNetworkRequest } from "./useNetworkRequest";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useRef, useState, useCallback } from "react";
 
-const AUTOREFRESH_INTERVAL_SECONDS = 5 * 1000;
+const AUTOREFRESH_INTERVAL_SECONDS = 3 * 1000;
 
 export type UseAutorefreshableFieldsOpts = {
   model: string;
