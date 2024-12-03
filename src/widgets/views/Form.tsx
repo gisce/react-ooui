@@ -6,6 +6,7 @@ import {
   useRef,
   useContext,
   useCallback,
+  useMemo,
 } from "react";
 import { Form as FormOoui, parseContext } from "@gisce/ooui";
 import {
@@ -253,6 +254,18 @@ function Form(props: FormProps, ref: any) {
   const getCurrentId = useCallback(() => {
     return id || createdId.current;
   }, [id]);
+  const [refId, setRefId] = useState(() => createdId.current);
+
+  useEffect(() => {
+    if (createdId.current !== refId) {
+      setRefId(createdId.current);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [createdId.current]);
+
+  const currentId = useMemo(() => {
+    return id || refId;
+  }, [id, refId]);
 
   function getFields() {
     return fields;
@@ -1087,7 +1100,7 @@ function Form(props: FormProps, ref: any) {
 
   const { pause, resume } = useAutorefreshableFields({
     model,
-    id,
+    id: currentId,
     context: parentContext,
     autorefreshableFields: formOoui?.autorefreshableFields,
     fieldDefs: fields,
