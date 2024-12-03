@@ -68,7 +68,6 @@ export const useAutorefreshableFields = (
     }
 
     return () => {
-      // setIsActive(false);
       cancelRequest();
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
