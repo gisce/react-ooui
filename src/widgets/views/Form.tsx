@@ -1068,27 +1068,21 @@ function Form(props: FormProps, ref: any) {
         return;
       }
 
-      let values = newValues;
+      const values = { ...getCurrentValues(fields), ...newValues };
 
-      if (actionDomain) {
-        values = { ...getValuesForDomain(actionDomain), ...values };
-      }
+      originalFormValues.current = {
+        ...originalFormValues.current,
+        ...newValues,
+      };
 
-      originalFormValues.current = processValues(values, fields);
-
-      assignNewValuesToForm({
-        values,
-        fields,
-        reset: true,
-      });
       parseForm({ fields, arch, values });
       assignNewValuesToForm({
-        values: newValues,
+        values,
         fields,
         reset: false,
       });
     },
-    [actionDomain, arch, assignNewValuesToForm, fields, parseForm],
+    [arch, assignNewValuesToForm, fields, getCurrentValues, parseForm],
   );
 
   const { pause, resume } = useAutorefreshableFields({
