@@ -62,7 +62,7 @@ import {
 } from "@/helpers/one2manyHelper";
 import { ErrorAlert } from "@/ui/ErrorAlert";
 import { mergeFieldsContext } from "@/helpers/fieldsHelper";
-import { useAutorefreshableFields } from "@/hooks/useAutorefreshableFields";
+import { useAutorefreshableFormFields } from "@/hooks/useAutorefreshableFormFields";
 
 export type FormProps = {
   model: string;
@@ -1098,24 +1098,15 @@ function Form(props: FormProps, ref: any) {
     [arch, assignNewValuesToForm, fields, getCurrentValues, parseForm],
   );
 
-  const { pause, resume } = useAutorefreshableFields({
+  useAutorefreshableFormFields({
     model,
     id: currentId,
     context: parentContext,
     autorefreshableFields: formOoui?.autorefreshableFields,
     fieldDefs: fields,
     onAutorefreshableFieldsChange,
+    isActive,
   });
-
-  useEffect(() => {
-    if (isActive === false) {
-      pause();
-    }
-    if (isActive === true) {
-      resume();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isActive]);
 
   async function executeButtonAction({
     type,
