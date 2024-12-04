@@ -26,6 +26,7 @@ export type SearchTreeState = {
   setSearchQuery: (value: SearchQueryParams) => void;
   totalItems: number;
   setTotalItems: (value: number) => void;
+  isActive?: boolean;
 };
 
 export function useSearchTreeState({
@@ -76,6 +77,7 @@ export function useSearchTreeState({
         setSearchQuery: actionViewContext.setSearchQuery ?? (() => {}),
         totalItems: actionViewContext.totalItems ?? 0,
         setTotalItems: actionViewContext.setTotalItems ?? (() => {}),
+        isActive: actionViewContext.isActive,
       }
     : {
         treeIsLoading: localTreeIsLoading,
@@ -98,5 +100,6 @@ export function useSearchTreeState({
         setSearchQuery: setLocalSearchQuery,
         totalItems: localTotalItems,
         setTotalItems: setLocalTotalItems,
+        isActive: undefined,
       };
 }

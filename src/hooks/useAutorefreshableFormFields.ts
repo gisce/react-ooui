@@ -1,21 +1,23 @@
 import { ConnectionProvider } from "..";
 import { useNetworkRequest } from "./useNetworkRequest";
 import { useDeepCompareEffect } from "use-deep-compare";
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
+import { useBrowserVisibility } from "./useBrowserVisibility";
 
 const AUTOREFRESH_INTERVAL_SECONDS = 3 * 1000;
 
-export type UseAutorefreshableFieldsOpts = {
+export type UseAutorefreshableFormFieldsOpts = {
   model: string;
   id?: number;
   context: any;
   autorefreshableFields?: string[];
   fieldDefs: any;
   onAutorefreshableFieldsChange: (newValues: any) => void;
+  isActive?: boolean;
 };
 
-export const useAutorefreshableFields = (
-  opts: UseAutorefreshableFieldsOpts,
+export const useAutorefreshableFormFields = (
+  opts: UseAutorefreshableFormFieldsOpts,
 ) => {
   const {
     model,
@@ -24,17 +26,36 @@ export const useAutorefreshableFields = (
     autorefreshableFields,
     fieldDefs,
     onAutorefreshableFieldsChange,
+    isActive,
   } = opts;
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const [isActive, setIsActive] = useState(true);
+  const [internalIsActive, setInternalIsActive] = useState(true);
 
   const [fetchRequest, cancelRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().readObjects,
   );
 
+  const tabOrWindowIsVisible = useBrowserVisibility();
+
+  useEffect(() => {
+    if (isActive === false) {
+      pause();
+    }
+    if (
+      (isActive === undefined || isActive === true) &&
+      !tabOrWindowIsVisible
+    ) {
+      pause();
+    }
+    if ((isActive === undefined || isActive === true) && tabOrWindowIsVisible) {
+      resume();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive, tabOrWindowIsVisible]);
+
   const refresh = useCallback(async () => {
-    if (!id || !autorefreshableFields?.length || !isActive) return;
+    if (!id || !autorefreshableFields?.length || !internalIsActive) return;
 
     try {
       const [result] = await fetchRequest({
@@ -51,7 +72,7 @@ export const useAutorefreshableFields = (
   }, [
     id,
     autorefreshableFields,
-    isActive,
+    internalIsActive,
     fetchRequest,
     model,
     fieldDefs,
@@ -60,7 +81,7 @@ export const useAutorefreshableFields = (
   ]);
 
   useDeepCompareEffect(() => {
-    const shouldStart = id && autorefreshableFields?.length && isActive;
+    const shouldStart = id && autorefreshableFields?.length && internalIsActive;
 
     if (shouldStart) {
       refresh();
@@ -81,11 +102,11 @@ export const useAutorefreshableFields = (
     model,
     id,
     context,
-    isActive,
+    internalIsActive,
   ]);
 
   const pause = useCallback(() => {
-    setIsActive(false);
+    setInternalIsActive(false);
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -94,7 +115,7 @@ export const useAutorefreshableFields = (
   }, [cancelRequest]);
 
   const resume = useCallback(() => {
-    setIsActive(true);
+    setInternalIsActive(true);
   }, []);
 
   return { pause, resume };
