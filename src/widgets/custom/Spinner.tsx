@@ -6,14 +6,19 @@ import Container from "@/widgets/containers/Container";
 
 type SpinnerProps = WidgetProps & {
   ooui: SpinnerOoui;
+  responsiveBehaviour?: boolean;
+  tip?: string;
 };
 
 export const Spinner = (props: SpinnerProps) => {
-  const { ooui } = props;
+  const { ooui, responsiveBehaviour = false, tip } = props;
 
   return (
-    <Spin tip={ooui.label} size="large" spinning={ooui.loading}>
-      <Container container={ooui.container} responsiveBehaviour={false} />
+    <Spin tip={tip ?? ooui.label} size="large" spinning={ooui.loading}>
+      <Container
+        container={ooui.container}
+        responsiveBehaviour={responsiveBehaviour}
+      />
     </Spin>
   );
 };
