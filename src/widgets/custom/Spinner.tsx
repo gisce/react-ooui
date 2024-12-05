@@ -1,10 +1,9 @@
-import React from "react";
 import { WidgetProps } from "@/types";
 import { Spinner as SpinnerOoui } from "@gisce/ooui";
 import { Spin } from "antd";
 import Container from "@/widgets/containers/Container";
 
-type SpinnerProps = WidgetProps & {
+type SpinnerProps = Omit<WidgetProps, "ooui"> & {
   ooui: SpinnerOoui;
   responsiveBehaviour?: boolean;
   tip?: string;
