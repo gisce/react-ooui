@@ -1,8 +1,7 @@
 import React from "react";
 import { Group as GroupOoui } from "@gisce/ooui";
-import Container from "./Container";
-import { FieldSet } from "@gisce/react-formiga-components";
-import { Space } from "antd";
+import { Spinner } from "@/widgets/custom/Spinner";
+import { FieldSet , useLocale } from "@gisce/react-formiga-components";
 import iconMapper from "@/helpers/iconMapper";
 
 type Props = {
@@ -14,19 +13,21 @@ type Props = {
 function Group(props: Props): React.ReactElement {
   const { ooui, showLabel = true, responsiveBehaviour } = props;
   const icon: React.ElementType | undefined = iconMapper(ooui.icon || "");
-
+  const { t } = useLocale();
   return (
     <>
       {(ooui.label || icon) && showLabel ? (
         <FieldSet label={ooui.label} icon={icon}>
-          <Container
-            container={ooui!.container}
+          <Spinner
+            tip={t("loading")}
+            ooui={ooui}
             responsiveBehaviour={responsiveBehaviour}
           />
         </FieldSet>
       ) : (
-        <Container
-          container={ooui!.container}
+        <Spinner
+          tip={t("loading")}
+          ooui={ooui}
           responsiveBehaviour={responsiveBehaviour}
         />
       )}

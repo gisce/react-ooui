@@ -109,4 +109,5 @@ export default {
   applyFilters: "Aplicar filtros",
   resetTableView: "Restablecer vista de tabla",
   not: "No",
+  loading: "Cargando...",
 };
