@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Alert as AntdAlert, Space } from "antd";
 import { WidgetProps } from "@/types";
-import { Alert as AlertOoui } from "@gisce/ooui";
+import { Alert as AlertOoui, Button as ButtonOoui } from "@gisce/ooui";
 import { Interweave } from "interweave";
 import iconMapper from "@/helpers/iconMapper";
 import { Button } from "@/widgets/base/Button";
+import { FormContext, FormContextType } from "@/context/FormContext";
 
 type AlertOouiProps = WidgetProps & {
   ooui: AlertOoui;
@@ -12,7 +13,21 @@ type AlertOouiProps = WidgetProps & {
 
 export const Alert = (props: AlertOouiProps) => {
   const { ooui } = props;
-  const { title, text, alertType, icon } = ooui;
+  const formContext = useContext(FormContext) as FormContextType;
+  let { title, text, alertType, icon } = ooui;
+  if (ooui.fieldType && ooui.id) {
+    const values = formContext.getFieldValue(ooui.id);
+    if (typeof values === "object") {
+      ({
+        title = ooui.title,
+        text = ooui.text,
+        alertType = ooui.alertType,
+        icon = ooui.icon,
+      } = values);
+    } else {
+      console.log(`field value for ${ooui.id} is not an object`);
+    }
+  }
 
   function getIcon(icon: string | null): React.JSX.Element | undefined {
     if (icon) {
@@ -22,8 +37,8 @@ export const Alert = (props: AlertOouiProps) => {
     return undefined;
   }
 
-  const buttons = ooui.buttons.map((button) => {
-    return <Button ooui={button} />;
+  const buttons = ooui.buttons.map((button: ButtonOoui) => {
+    return <Button key={button.id} ooui={button} />;
   });
 
   return (
