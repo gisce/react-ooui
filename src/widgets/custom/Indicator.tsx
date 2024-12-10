@@ -113,7 +113,7 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ooui]);
+  }, [ooui, activeId]);
 
   if (error) {
     return <ErrorAlert error={error} />;
