@@ -1,19 +1,23 @@
-import React from "react";
 import { WidgetProps } from "@/types";
 import { Spinner as SpinnerOoui } from "@gisce/ooui";
 import { Spin } from "antd";
 import Container from "@/widgets/containers/Container";
 
-type SpinnerProps = WidgetProps & {
+type SpinnerProps = Omit<WidgetProps, "ooui"> & {
   ooui: SpinnerOoui;
+  responsiveBehaviour?: boolean;
+  tip?: string;
 };
 
 export const Spinner = (props: SpinnerProps) => {
-  const { ooui } = props;
+  const { ooui, responsiveBehaviour = false, tip } = props;
 
   return (
-    <Spin tip={ooui.label} size="large" spinning={ooui.loading}>
-      <Container container={ooui.container} responsiveBehaviour={false} />
+    <Spin tip={tip ?? ooui.label} size="large" spinning={ooui.loading}>
+      <Container
+        container={ooui.container}
+        responsiveBehaviour={responsiveBehaviour}
+      />
     </Spin>
   );
 };
