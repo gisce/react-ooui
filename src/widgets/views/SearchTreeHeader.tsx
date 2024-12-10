@@ -5,13 +5,13 @@ const { Text } = Typography;
 export type SearchTreeHeaderProps = {
   totalRows?: number | null;
   selectedRowKeys: number[];
-  hideSelectionSummary?: boolean;
+  allRowSelectedMode: boolean;
 };
 
 export const SearchTreeHeader = ({
   totalRows,
   selectedRowKeys,
-  hideSelectionSummary = false,
+  allRowSelectedMode,
 }: SearchTreeHeaderProps) => {
   const { t } = useLocale();
 
@@ -22,7 +22,9 @@ export const SearchTreeHeader = ({
       style={{ height: 40, maxHeight: 40, overflow: "hidden" }}
     >
       <Col span={12}>
-        {!hideSelectionSummary && (
+        {allRowSelectedMode ? (
+          <span>{`${selectedRowKeys.length} ${t("selectedRegisters")}`}</span>
+        ) : (
           <SearchTreeSelectionSummary selectedRowKeys={selectedRowKeys} />
         )}
       </Col>

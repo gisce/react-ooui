@@ -50,7 +50,6 @@ import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFiel
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
-const MAX_ROWS_ALLOWED_IN_CUSTOM_SEARCH = 500;
 
 type OnRowClickedData = {
   id: number;
@@ -98,8 +97,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const [totalRows, setTotalRows] = useState<number | null>();
 
   const { t } = useLocale();
-
-  const isCustomSearchResults = model === "custom.search.results";
 
   const containerRef = useRef<HTMLDivElement>(null);
   const availableHeight = useAvailableHeight({
@@ -221,11 +218,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   }, [domain, mergedParams, nameSearch]);
 
   const updateTotalRows = useCallback(async () => {
-    if (isCustomSearchResults) {
-      setTotalRowsLoading(false);
-      return;
-    }
-
     setTotalRows(undefined);
     setTotalItemsActionView(0);
     setTotalRowsLoading(true);
@@ -245,7 +237,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     }
   }, [
     domain,
-    isCustomSearchResults,
     mergedParams,
     model,
     nameSearch,
@@ -303,9 +294,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         context: parentContext,
         order,
       });
-
-      setTotalRows(results.length);
-      setTotalItemsActionView(results.length);
 
       if (mustUpdateTotal() || prevSortOrder.current !== order) {
         setActionViewResults?.(newResults);
@@ -522,7 +510,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         height={availableHeight}
         columns={columns}
         onRequestData={onRequestData}
-        onRowDoubleClick={isCustomSearchResults ? undefined : onRowClicked}
+        onRowDoubleClick={onRowClicked}
         onRowStyle={onRowStyle}
         onRowSelectionChange={changeSelectedRowKeys}
         onColumnChanged={updateColumnState}
@@ -537,10 +525,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         statusComponent={statusComp}
         onRowStatus={onRowStatus}
         strings={strings}
-        cacheBlockSize={
-          isCustomSearchResults ? MAX_ROWS_ALLOWED_IN_CUSTOM_SEARCH : undefined
-        }
-        enableRowSelection={!isCustomSearchResults}
       />
     );
   }, [
@@ -550,7 +534,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     firstVisibleRowIndex,
     footerComp,
     getColumnState,
-    isCustomSearchResults,
     onRequestData,
     onRowClicked,
     onRowStatus,
@@ -723,8 +706,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         />
       )}
       <SearchTreeHeader
-        hideSelectionSummary={isCustomSearchResults}
         selectedRowKeys={selectedRowKeys}
+        allRowSelectedMode={false}
         totalRows={totalRows}
       />
       <div ref={containerRef} style={containerStyle}>
