@@ -10,7 +10,7 @@ import { TranslationOutlined } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
 import showInfo from "@/ui/InfoDialog";
 import styled from "styled-components";
-const { useToken } = theme;
+import { AddonElement } from "@/common/AddonElement";
 
 const { defaultAlgorithm, defaultSeed } = theme;
 
@@ -20,12 +20,6 @@ type CharProps = WidgetProps & {
   ooui: CharOoui;
   isSearchField?: boolean;
 };
-
-const AddonElement = memo(({ content }: { content: string }) => {
-  const { token } = useToken();
-  return <div style={{ color: token.colorTextDisabled }}>{content}</div>;
-});
-AddonElement.displayName = "AddonElement";
 
 interface BaseInputProps {
   component: React.ComponentType<any>;

@@ -6,17 +6,11 @@ import { WidgetProps } from "@/types";
 
 import { FormContext, FormContextType } from "@/context/FormContext";
 import styled from "styled-components";
-const { useToken } = theme;
+import { AddonElement } from "@/common/AddonElement";
 
 const { defaultAlgorithm, defaultSeed } = theme;
 
 const mapToken = defaultAlgorithm(defaultSeed);
-
-const AddonElement = memo(({ content }: { content: string }) => {
-  const { token } = useToken();
-  return <div style={{ color: token.colorTextDisabled }}>{content}</div>;
-});
-AddonElement.displayName = "AddonElement";
 
 export const Float = memo((props: WidgetProps) => {
   const { ooui } = props;

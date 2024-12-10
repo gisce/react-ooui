@@ -4,6 +4,7 @@ import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import styled from "styled-components";
+import { AddonElement } from "@/common/AddonElement";
 const { useToken } = theme;
 
 const { defaultAlgorithm, defaultSeed } = theme;
@@ -13,12 +14,6 @@ const mapToken = defaultAlgorithm(defaultSeed);
 type IntegerProps = WidgetProps & {
   onChange?: (newValue: number) => void;
 };
-
-const AddonElement = memo(({ content }: { content: string }) => {
-  const { token } = useToken();
-  return <div style={{ color: token.colorTextDisabled }}>{content}</div>;
-});
-AddonElement.displayName = "AddonElement";
 
 export const Integer = memo((props: IntegerProps) => {
   const { ooui, onChange } = props;
