@@ -105,6 +105,4 @@ export default {
   not: "Not",
   loading: "Loading...",
   pendingToCalculate: "Pending to calculate",
-  pendingToCalculateDescription:
-    "The document has not id yet, save the document to calculate the indicator",
 };

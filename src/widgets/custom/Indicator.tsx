@@ -158,8 +158,6 @@ const GrahCardPendingToCalculate = ({ id }: { id: string }) => {
       parms={{}}
       title={t("pendingToCalculate")}
       openAction={() => {}}
-    >
-      <p>{t("pendingToCalculateDescription")}</p>
-    </GraphCard>
+    />
   );
 };

@@ -109,6 +109,4 @@ export default {
   not: "No",
   loading: "Carregant...",
   pendingToCalculate: "Pendent de calcular",
-  pendingToCalculateDescription:
-    "El document no té id encara, desa el document per calcular l'indicador",
 };
