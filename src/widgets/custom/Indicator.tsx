@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { Tooltip, theme, Statistic, Card } from "antd";
+import { Tooltip, theme, Statistic, Card, Empty } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Field from "@/common/Field";
@@ -20,6 +20,7 @@ import {
 import { GraphCard } from "../views/Graph";
 import { useFormContext } from "@/context/FormContext";
 import { useLocale } from "@gisce/react-formiga-components";
+import styled from "styled-components";
 const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
@@ -108,24 +109,17 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
     if (!ooui) {
       return;
     }
-    if (!activeId) {
-      return;
-    }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ooui, activeId]);
 
-  if (error) {
+  if (error && error.message !== "active_id_not_found") {
     return <ErrorAlert error={error} />;
   }
 
   const { id, model, limit, domain, context, initialView } = actionData || {};
 
   const GraphComponent = readForViewEnabled ? GraphServer : Graph;
-
-  if (!activeId) {
-    return <GrahCardPendingToCalculate id={id} />;
-  }
 
   return (
     <GraphCard
@@ -137,27 +131,31 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
     >
       {loading && <CenteredSpinner />}
       {!loading && (
-        <GraphComponent
-          view_id={initialView.id}
-          model={model}
-          context={context}
-          domain={domain}
-          limit={limit}
-          fixedHeight={height}
-        />
+        <>
+          {!activeId ? (
+            <StyledEmpty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              imageStyle={{ height: 15 }}
+            />
+          ) : (
+            <GraphComponent
+              view_id={initialView.id}
+              model={model}
+              context={context}
+              domain={domain}
+              limit={limit}
+              fixedHeight={height}
+            />
+          )}
+        </>
       )}
     </GraphCard>
   );
 };
 
-const GrahCardPendingToCalculate = ({ id }: { id: string }) => {
-  const { t } = useLocale();
-  return (
-    <GraphCard
-      id={id}
-      parms={{}}
-      title={t("pendingToCalculate")}
-      openAction={() => {}}
-    />
-  );
-};
+const StyledEmpty = styled(Empty)`
+  &.ant-empty.ant-empty-normal {
+    margin: 0;
+    margin-top: 5px;
+  }
+`;
