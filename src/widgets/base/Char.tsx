@@ -1,5 +1,5 @@
-import React, { CSSProperties, useContext, useState } from "react";
-import { Checkbox as AntCheckbox, Col, Input, Row, theme } from "antd";
+import { useContext, useState } from "react";
+import { Col, Input, Row, theme } from "antd";
 import Field from "@/common/Field";
 import { Char as CharOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
@@ -24,24 +24,11 @@ type CharProps = WidgetProps & {
 export const Char = (props: CharProps) => {
   const { ooui, isSearchField = false } = props;
   const { id, readOnly, required, translatable } = ooui as CharOoui;
-  const { token } = useToken();
-  const requiredStyle =
-    required && !readOnly
-      ? { backgroundColor: token.colorPrimaryBg }
-      : undefined;
 
-  let input = (
-    <CharInput
-      ooui={ooui}
-      requiredStyle={requiredStyle}
-      isSearchField={isSearchField}
-    />
-  );
+  let input = <CharInput ooui={ooui} isSearchField={isSearchField} />;
 
   if (translatable && !readOnly && !isSearchField) {
-    input = (
-      <TranslatableChar ooui={ooui} field={id} requiredStyle={requiredStyle} />
-    );
+    input = <TranslatableCharComp ooui={ooui} field={id} />;
   }
 
   return (
@@ -54,13 +41,11 @@ export const Char = (props: CharProps) => {
 const CharInput = ({
   value,
   ooui,
-  requiredStyle,
   isSearchField,
   onChange,
 }: {
   value?: any;
   ooui: CharOoui;
-  requiredStyle: CSSProperties | undefined;
   isSearchField: boolean;
   onChange?: (value: string) => void;
 }) => {
@@ -71,6 +56,7 @@ const CharInput = ({
   const { id, readOnly, isPassword, translatable, required } = ooui;
   const showCount = ooui.size !== undefined && ooui.showCount;
   const { token } = useToken();
+  const isRequired = required && !readOnly;
 
   if (ooui.selectionValues.size) {
     value = ooui.selectionValues.get(value);
@@ -78,7 +64,7 @@ const CharInput = ({
     value = value[1];
   }
 
-  const Component = required ? RequiredChar : Input;
+  const Component = isRequired ? RequiredChar : Input;
 
   let input = (
     <Component
@@ -105,7 +91,7 @@ const CharInput = ({
   );
 
   if (isPassword) {
-    const PasswordComponent = isPassword ? RequiredPassword : Input.Password;
+    const PasswordComponent = isRequired ? RequiredPassword : Input.Password;
     input = (
       <PasswordComponent
         addonBefore={
@@ -131,7 +117,7 @@ const CharInput = ({
 
   if (forceDisabled) {
     input = (
-      <Input
+      <Component
         value={value}
         id={id}
         disabled
@@ -152,17 +138,15 @@ const CharInput = ({
   return input;
 };
 
-const TranslatableChar = ({
+const TranslatableCharComp = ({
   ooui,
   value,
   field,
-  requiredStyle,
   onChange,
 }: {
   ooui: CharOoui;
   value?: string;
   field: string;
-  requiredStyle: CSSProperties | undefined;
   onChange?: (value: string) => void;
 }) => {
   const formContext = useContext(FormContext) as FormContextType;
@@ -175,55 +159,58 @@ const TranslatableChar = ({
   } = formContext || {};
   const [translationModalVisible, setTranslationModalVisible] = useState(false);
   const { t } = useLocale();
+  const { token } = useToken();
+  const { required, readOnly } = ooui;
+  const isRequired = required && !readOnly;
 
   if (!activeId) {
+    const Component = isRequired ? RequiredChar : Input;
     return (
-      <>
-        <Row gutter={8} wrap={false}>
-          <Col flex="auto">
-            <Input
-              addonBefore={
-                ooui.prefix ? (
-                  <div style={{ color: token.colorTextDisabled }}>
-                    {ooui.prefix}
-                  </div>
-                ) : null
+      <Row gutter={8} wrap={false}>
+        <Col flex="auto">
+          <Component
+            addonBefore={
+              ooui.prefix ? (
+                <div style={{ color: token.colorTextDisabled }}>
+                  {ooui.prefix}
+                </div>
+              ) : null
+            }
+            addonAfter={
+              ooui.suffix ? (
+                <div style={{ color: token.colorTextDisabled }}>
+                  {ooui.suffix}
+                </div>
+              ) : null
+            }
+            value={value}
+            id={field}
+            onChange={(event: any) => {
+              onChange?.(event.target.value);
+            }}
+            onBlur={elementHasLostFocus}
+          />
+        </Col>
+        <Col flex="none">
+          <ButtonWithTooltip
+            tooltip={t("translate")}
+            icon={<TranslationOutlined />}
+            onClick={async () => {
+              if (formHasChanges?.()) {
+                showInfo(t("saveBeforeTranslate"));
+              } else {
+                showInfo(t("enterTextBeforeTranslate"));
               }
-              addonAfter={
-                ooui.suffix ? (
-                  <div style={{ color: token.colorTextDisabled }}>
-                    {ooui.suffix}
-                  </div>
-                ) : null
-              }
-              value={value}
-              id={field}
-              style={requiredStyle}
-              onChange={(event: any) => {
-                onChange?.(event.target.value);
-              }}
-              onBlur={elementHasLostFocus}
-            />
-          </Col>
-          <Col flex="none">
-            <ButtonWithTooltip
-              tooltip={t("translate")}
-              icon={<TranslationOutlined />}
-              onClick={async () => {
-                if (formHasChanges?.()) {
-                  showInfo(t("saveBeforeTranslate"));
-                } else {
-                  showInfo(t("enterTextBeforeTranslate"));
-                }
-              }}
-            >
-              {t("translate")}
-            </ButtonWithTooltip>
-          </Col>
-        </Row>
-      </>
+            }}
+          >
+            {t("translate")}
+          </ButtonWithTooltip>
+        </Col>
+      </Row>
     );
   }
+
+  const Component = isRequired ? RequiredTranslatableChar : TranslatableChar;
 
   return (
     <>
@@ -239,7 +226,7 @@ const TranslatableChar = ({
           }
         }}
       >
-        <Input
+        <Component
           value={value}
           disabled={true}
           id={field}
@@ -247,7 +234,6 @@ const TranslatableChar = ({
             onChange?.(event.target.value);
           }}
           onBlur={elementHasLostFocus}
-          style={{ cursor: "pointer", pointerEvents: "none", ...requiredStyle }}
         />
       </div>
       <TranslationModal
@@ -266,6 +252,21 @@ const TranslatableChar = ({
     </>
   );
 };
+
+const TranslatableChar = styled(Input)`
+  .ant-input {
+    cursor: pointer;
+    pointer-events: none;
+  }
+`;
+
+const RequiredTranslatableChar = styled(Input)`
+  .ant-input {
+    background-color: ${mapToken.colorPrimaryBg};
+    cursor: pointer;
+    pointer-events: none;
+  }
+`;
 
 const RequiredChar = styled(Input)`
   .ant-input {
