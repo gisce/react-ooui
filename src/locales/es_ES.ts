@@ -110,4 +110,7 @@ export default {
   resetTableView: "Restablecer vista de tabla",
   not: "No",
   loading: "Cargando...",
+  pendingToCalculate: "Pendiente de calcular",
+  pendingToCalculateDescription:
+    "El documento no tiene id aún, guarda el documento para calcular el indicador",
 };
