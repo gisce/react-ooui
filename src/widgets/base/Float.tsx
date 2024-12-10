@@ -22,8 +22,9 @@ export const Float = memo((props: WidgetProps) => {
   const { ooui } = props;
   const { id, decimalDigits, readOnly, required } = ooui as FloatOoui;
 
-  const { elementHasLostFocus } = useContext(FormContext) as FormContextType;
+  const formContext = useContext(FormContext) as FormContextType;
 
+  const { elementHasLostFocus } = formContext || {};
   const isRequired = useMemo(() => required && !readOnly, [required, readOnly]);
 
   const Component: React.ComponentType<InputNumberProps> = useMemo(
