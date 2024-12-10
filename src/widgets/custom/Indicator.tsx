@@ -18,6 +18,8 @@ import {
   TabManagerContextType,
 } from "@/context/TabManagerContext";
 import { GraphCard } from "../views/Graph";
+import { useFormContext } from "@/context/FormContext";
+import { useLocale } from "@gisce/react-formiga-components";
 const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
@@ -90,6 +92,7 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
   const { ooui } = props;
   const { actionId, height } = ooui;
 
+  const { activeId } = useFormContext();
   const { actionData, treeShortcut, loading, error, fetchData } =
     useFormGraphData(actionId!);
 
@@ -105,9 +108,12 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
     if (!ooui) {
       return;
     }
+    if (!activeId) {
+      return;
+    }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ooui]);
+  }, [ooui, activeId]);
 
   if (error) {
     return <ErrorAlert error={error} />;
@@ -116,6 +122,10 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
   const { id, model, limit, domain, context, initialView } = actionData || {};
 
   const GraphComponent = readForViewEnabled ? GraphServer : Graph;
+
+  if (!activeId) {
+    return <GrahCardPendingToCalculate id={id} />;
+  }
 
   return (
     <GraphCard
@@ -137,5 +147,17 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
         />
       )}
     </GraphCard>
+  );
+};
+
+const GrahCardPendingToCalculate = ({ id }: { id: string }) => {
+  const { t } = useLocale();
+  return (
+    <GraphCard
+      id={id}
+      parms={{}}
+      title={t("pendingToCalculate")}
+      openAction={() => {}}
+    />
   );
 };
