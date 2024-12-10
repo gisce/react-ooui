@@ -63,6 +63,7 @@ const CharInput = ({
   const { elementHasLostFocus } = formContext || {};
   const { id, readOnly, isPassword, translatable } = ooui;
   const showCount = ooui.size !== undefined && ooui.showCount;
+  const { token } = useToken();
 
   if (ooui.selectionValues.size) {
     value = ooui.selectionValues.get(value);
@@ -72,6 +73,16 @@ const CharInput = ({
 
   let input = (
     <Input
+      addonBefore={
+        ooui.prefix ? (
+          <div style={{ color: token.colorTextDisabled }}>{ooui.prefix}</div>
+        ) : null
+      }
+      addonAfter={
+        ooui.suffix ? (
+          <div style={{ color: token.colorTextDisabled }}>{ooui.suffix}</div>
+        ) : null
+      }
       value={value}
       disabled={readOnly || (translatable && !isSearchField)}
       id={id}

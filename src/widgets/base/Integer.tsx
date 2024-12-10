@@ -23,6 +23,16 @@ export const Integer = (props: IntegerProps) => {
   return (
     <Field required={required} type={"number"} {...props}>
       <InputNumber
+        addonBefore={
+          ooui.prefix ? (
+            <div style={{ color: token.colorTextDisabled }}>{ooui.prefix}</div>
+          ) : null
+        }
+        addonAfter={
+          ooui.suffix ? (
+            <div style={{ color: token.colorTextDisabled }}>{ooui.suffix}</div>
+          ) : null
+        }
         id={id}
         className={"w-full "}
         disabled={readOnly}
