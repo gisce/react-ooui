@@ -1,5 +1,5 @@
 import React, { CSSProperties, useContext, useState } from "react";
-import { Col, Input, Row, theme } from "antd";
+import { Checkbox as AntCheckbox, Col, Input, Row, theme } from "antd";
 import Field from "@/common/Field";
 import { Char as CharOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
@@ -9,7 +9,12 @@ import ButtonWithTooltip from "@/common/ButtonWithTooltip";
 import { TranslationOutlined } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
 import showInfo from "@/ui/InfoDialog";
+import styled from "styled-components";
 const { useToken } = theme;
+
+const { defaultAlgorithm, defaultSeed } = theme;
+
+const mapToken = defaultAlgorithm(defaultSeed);
 
 type CharProps = WidgetProps & {
   ooui: CharOoui;
@@ -34,7 +39,9 @@ export const Char = (props: CharProps) => {
   );
 
   if (translatable && !readOnly && !isSearchField) {
-    input = <TranslatableChar field={id} requiredStyle={requiredStyle} />;
+    input = (
+      <TranslatableChar ooui={ooui} field={id} requiredStyle={requiredStyle} />
+    );
   }
 
   return (
@@ -61,7 +68,7 @@ const CharInput = ({
     Array.isArray(value) || Boolean(ooui.selectionValues.size);
   const formContext = useContext(FormContext) as FormContextType;
   const { elementHasLostFocus } = formContext || {};
-  const { id, readOnly, isPassword, translatable } = ooui;
+  const { id, readOnly, isPassword, translatable, required } = ooui;
   const showCount = ooui.size !== undefined && ooui.showCount;
   const { token } = useToken();
 
@@ -71,8 +78,10 @@ const CharInput = ({
     value = value[1];
   }
 
+  const Component = required ? RequiredChar : Input;
+
   let input = (
-    <Input
+    <Component
       addonBefore={
         ooui.prefix ? (
           <div style={{ color: token.colorTextDisabled }}>{ooui.prefix}</div>
@@ -87,7 +96,6 @@ const CharInput = ({
       disabled={readOnly || (translatable && !isSearchField)}
       id={id}
       showCount={showCount}
-      style={requiredStyle}
       maxLength={ooui.size}
       onBlur={elementHasLostFocus}
       onChange={(event: any) => {
@@ -97,8 +105,19 @@ const CharInput = ({
   );
 
   if (isPassword) {
+    const PasswordComponent = isPassword ? RequiredPassword : Input.Password;
     input = (
-      <Input.Password
+      <PasswordComponent
+        addonBefore={
+          ooui.prefix ? (
+            <div style={{ color: token.colorTextDisabled }}>{ooui.prefix}</div>
+          ) : null
+        }
+        addonAfter={
+          ooui.suffix ? (
+            <div style={{ color: token.colorTextDisabled }}>{ooui.suffix}</div>
+          ) : null
+        }
         value={value}
         disabled={readOnly}
         id={id}
@@ -111,18 +130,36 @@ const CharInput = ({
   }
 
   if (forceDisabled) {
-    input = <Input value={value} id={id} disabled />;
+    input = (
+      <Input
+        value={value}
+        id={id}
+        disabled
+        addonBefore={
+          ooui.prefix ? (
+            <div style={{ color: token.colorTextDisabled }}>{ooui.prefix}</div>
+          ) : null
+        }
+        addonAfter={
+          ooui.suffix ? (
+            <div style={{ color: token.colorTextDisabled }}>{ooui.suffix}</div>
+          ) : null
+        }
+      />
+    );
   }
 
   return input;
 };
 
 const TranslatableChar = ({
+  ooui,
   value,
   field,
   requiredStyle,
   onChange,
 }: {
+  ooui: CharOoui;
   value?: string;
   field: string;
   requiredStyle: CSSProperties | undefined;
@@ -145,6 +182,20 @@ const TranslatableChar = ({
         <Row gutter={8} wrap={false}>
           <Col flex="auto">
             <Input
+              addonBefore={
+                ooui.prefix ? (
+                  <div style={{ color: token.colorTextDisabled }}>
+                    {ooui.prefix}
+                  </div>
+                ) : null
+              }
+              addonAfter={
+                ooui.suffix ? (
+                  <div style={{ color: token.colorTextDisabled }}>
+                    {ooui.suffix}
+                  </div>
+                ) : null
+              }
               value={value}
               id={field}
               style={requiredStyle}
@@ -215,3 +266,15 @@ const TranslatableChar = ({
     </>
   );
 };
+
+const RequiredChar = styled(Input)`
+  .ant-input {
+    background-color: ${mapToken.colorPrimaryBg};
+  }
+`;
+
+const RequiredPassword = styled(Input.Password)`
+  .ant-input {
+    background-color: ${mapToken.colorPrimaryBg};
+  }
+`;
