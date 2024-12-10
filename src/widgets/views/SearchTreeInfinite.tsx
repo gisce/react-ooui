@@ -22,7 +22,10 @@ import {
   getTableItems,
   getTree,
 } from "@/helpers/treeHelper";
-import { COLUMN_COMPONENTS } from "./Tree/treeComponents";
+import {
+  COLUMN_COMPONENTS,
+  COLUMN_COMPONENTS_INFINITE,
+} from "./Tree/treeComponents";
 import { useDeepCompareEffect, useDeepCompareMemo } from "use-deep-compare";
 import {
   InfiniteTable,
@@ -167,7 +170,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     return getTableColumns(
       treeOoui,
       {
-        ...COLUMN_COMPONENTS,
+        ...COLUMN_COMPONENTS_INFINITE,
       },
       parentContext,
     );

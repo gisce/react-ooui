@@ -1,5 +1,5 @@
 import { ReactElement, useCallback, useEffect, useMemo, useState } from "react";
-import { Checkbox, Spin } from "antd";
+import { Checkbox, Spin, Tooltip } from "antd";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../../base/ProgressBar";
 import { One2manyValue } from "../../base/one2many/One2manyInput";
@@ -58,6 +58,38 @@ export const TextComponent = ({ value }: { value: any }): ReactElement => {
     ),
     [value],
   );
+};
+
+const TEXT_TRUNCATE_LENGTH = 40;
+
+export const TextComponentInfinte = ({
+  value,
+}: {
+  value: any;
+}): ReactElement => {
+  return useMemo(() => {
+    const text = value?.toString() || "";
+
+    if (text.length <= TEXT_TRUNCATE_LENGTH) {
+      return <Interweave content={text.replace(/(?:\r\n|\r|\n)/g, "<br>")} />;
+    }
+
+    const truncatedText = text.slice(0, TEXT_TRUNCATE_LENGTH) + "...";
+
+    return (
+      <Tooltip
+        title={text}
+        mouseEnterDelay={0.0}
+        overlayStyle={{ maxWidth: "500px" }}
+      >
+        <div>
+          <Interweave
+            content={truncatedText.replace(/(?:\r\n|\r|\n)/g, "<br>")}
+          />
+        </div>
+      </Tooltip>
+    );
+  }, [value]);
 };
 
 export const DateComponent = ({ value }: { value: any }): ReactElement => {
@@ -286,4 +318,9 @@ export const COLUMN_COMPONENTS = {
   avatar: AvatarComponent,
   tags: TagsComponent,
   email: EmailTagsComponent,
+};
+
+export const COLUMN_COMPONENTS_INFINITE = {
+  ...COLUMN_COMPONENTS,
+  text: TextComponentInfinte,
 };
