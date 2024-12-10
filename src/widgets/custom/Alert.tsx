@@ -14,7 +14,7 @@ type AlertOouiProps = WidgetProps & {
 export const Alert = (props: AlertOouiProps) => {
   const { ooui } = props;
   const formContext = useContext(FormContext) as FormContextType;
-  let { title, text, alertType, icon } = ooui;
+  let { title, text, alertType, icon, buttons } = ooui;
   if (ooui.fieldType && ooui.id) {
     const values = formContext.getFieldValue(ooui.id);
     if (typeof values === "object") {
@@ -23,7 +23,17 @@ export const Alert = (props: AlertOouiProps) => {
         text = ooui.text,
         alertType = ooui.alertType,
         icon = ooui.icon,
+        buttons = [],
       } = values);
+      if (buttons) {
+        buttons = buttons.map(
+          (button: any) =>
+            new ButtonOoui({ ...button, ...{ readonly: ooui.readOnly } }),
+        );
+      }
+      if (ooui.buttons) {
+        buttons = [...ooui.buttons, ...buttons];
+      }
     } else {
       console.log(`field value for ${ooui.id} is not an object`);
     }
@@ -37,7 +47,7 @@ export const Alert = (props: AlertOouiProps) => {
     return undefined;
   }
 
-  const buttons = ooui.buttons.map((button: ButtonOoui) => {
+  const buttonsComponents = buttons.map((button: ButtonOoui) => {
     return <Button key={button.id} ooui={button} />;
   });
 
@@ -47,7 +57,11 @@ export const Alert = (props: AlertOouiProps) => {
       description={<Interweave content={text} />}
       type={alertType}
       showIcon
-      action={buttons ? <Space direction="vertical">{buttons}</Space> : null}
+      action={
+        buttonsComponents ? (
+          <Space direction="vertical">{buttonsComponents}</Space>
+        ) : null
+      }
       icon={getIcon(icon)}
     />
   );
