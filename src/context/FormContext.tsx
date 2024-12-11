@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { FormView } from "..";
 
 export type FormContextType = {
@@ -78,6 +78,30 @@ const FormProvider = (props: FormProviderProps): any => {
       {children}
     </FormContext.Provider>
   );
+};
+
+export const useFormContext = () => {
+  const context = useContext(FormContext) as FormContextType;
+  if (!context) {
+    return {
+      activeId: undefined,
+      activeModel: "",
+      setFieldValue: () => {},
+      getFieldValue: () => "",
+      executeButtonAction: async () => {},
+      getContext: async () => ({}),
+      getValues: async () => ({}),
+      getPlainValues: () => ({}),
+      getFields: async () => ({}),
+      domain: [],
+      submitForm: async () => ({ succeed: false, id: 0 }),
+      fetchValues: () => {},
+      formHasChanges: () => false,
+      elementHasLostFocus: () => {},
+      formView: undefined,
+    } as FormContextType;
+  }
+  return context;
 };
 
 export default FormProvider;
