@@ -12,7 +12,7 @@ export const useFormGraphData = (actionId: number) => {
   const formContext = useContext(FormContext) as FormContextType;
   const { getContext, getPlainValues, activeId } = formContext || {};
   const { globalValues, rootContext } = useConfigContext();
-  const context = useMemo(() => {
+  const context: any = useMemo(() => {
     return { ...getContext?.(), ...rootContext };
   }, [getContext, rootContext]);
 
@@ -28,6 +28,12 @@ export const useFormGraphData = (actionId: number) => {
           ...getPlainValues(),
         },
       });
+
+      if (!context.active_id) {
+        setActionData(result);
+        throw new Error("active_id_not_found");
+      }
+
       const { views } = result as any;
 
       const treeView = views.find((view: any[]) => {
