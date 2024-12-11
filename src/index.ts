@@ -52,6 +52,7 @@ import { Alert } from "@/widgets/custom/Alert";
 import { DashboardGrid } from "@/widgets/views/DashboardGrid";
 import { GraphIndicator } from "@/widgets/views/Graph/GraphIndicator";
 import { Spinner } from "@/widgets/custom/Spinner";
+import { Carousel } from "@/widgets/custom/Carousel";
 
 import type {
   TreeView,
@@ -179,4 +180,5 @@ export {
   Alert,
   dayjs,
   Spinner,
+  Carousel,
 };
