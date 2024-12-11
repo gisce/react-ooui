@@ -36,6 +36,7 @@ import {
   HTMLPreview,
   Alert,
   Spinner,
+  Carousel,
 } from "@/index";
 import { Image } from "./base/Image";
 import { FiberGrid } from "./custom/FiberGrid";
@@ -133,6 +134,8 @@ const getWidgetType = (type: string) => {
       return Alert;
     case "spinner":
       return Spinner;
+    case "carousel":
+      return Carousel;
     default:
       return undefined;
   }
