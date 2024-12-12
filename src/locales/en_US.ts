@@ -103,4 +103,6 @@ export default {
   applyFilters: "Apply filters",
   resetTableView: "Reset table view",
   not: "Not",
+  loading: "Loading...",
+  pendingToCalculate: "Pending to calculate",
 };
