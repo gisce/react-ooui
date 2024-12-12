@@ -25,13 +25,7 @@ export async function fetchAction({
     fields: {},
   });
 
-  const parsedDomain = dataForAction.domain
-    ? await ConnectionProvider.getHandler().evalDomain({
-        domain: dataForAction.domain,
-        values: globalValues,
-        context: { ...rootContext, ...parsedContext },
-      })
-    : [];
+  const finalContext = { ...rootContext, ...parsedContext };
 
   const {
     res_model: model,
@@ -41,6 +35,18 @@ export async function fetchAction({
     view_type,
   } = dataForAction;
   const treeExpandable = view_type === "tree";
+
+  if (!finalContext.active_id) {
+    return { title };
+  }
+
+  const parsedDomain = dataForAction.domain
+    ? await ConnectionProvider.getHandler().evalDomain({
+        domain: dataForAction.domain,
+        values: globalValues,
+        context: finalContext,
+      })
+    : [];
 
   const finalViews = [];
 

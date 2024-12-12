@@ -108,4 +108,5 @@ export default {
   resetTableView: "Restablir vista de taula",
   not: "No",
   loading: "Carregant...",
+  pendingToCalculate: "Pendent de calcular",
 };
