@@ -276,7 +276,7 @@ export const useActionViewContext = () => {
       searchTreeNameSearch: undefined,
       goToResourceId: async () => {},
       limit: DEFAULT_SEARCH_LIMIT,
-      isActive: false,
+      isActive: undefined,
       formIsSaving: false,
       setFormIsSaving: () => {},
       formHasChanges: false,
