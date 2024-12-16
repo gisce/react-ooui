@@ -1,7 +1,7 @@
 import { ShortcutApi } from "@/ui/FavouriteButton";
 
 export type GraphCardProps = {
-  title: string;
+  title: any;
   id: string;
   children?: React.ReactNode;
   parms: any;

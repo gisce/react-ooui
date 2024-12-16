@@ -16,8 +16,8 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { DashboardProps, FormView } from "@/types";
 import { ErpFeatureKeys, GraphCard, One2manyItem } from "@/index";
 import { readObjectValues } from "@/helpers/one2manyHelper";
-import { LoadingOutlined } from "@ant-design/icons";
-import { Alert } from "antd";
+import { LoadingOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import { Alert, Tooltip } from "antd";
 import {
   DashboardActionContext,
   DashboardActionContextType,
@@ -256,6 +256,7 @@ function Dashboard(props: DashboardProps, ref: any) {
           actionType,
           key,
           title,
+          description,
           views,
           model,
           context,
@@ -386,11 +387,21 @@ function Dashboard(props: DashboardProps, ref: any) {
           };
         }
 
+        const titleWithTooltip = description ? (
+          <>
+            <Tooltip title={description}>
+              <InfoCircleOutlined className="pr-1 text-xs" />
+            </Tooltip>
+            <span>{title}</span>
+          </>
+        ) : (
+          <span>{title}</span>
+        );
         return (
           <GraphCard
             key={`griditem-${id}`}
             id={id}
-            title={title}
+            title={titleWithTooltip}
             parms={parmsParsed}
             action={action!}
             openAction={openAction}
