@@ -1,7 +1,7 @@
 import React from "react";
 import { Group as GroupOoui } from "@gisce/ooui";
 import { Spinner } from "@/widgets/custom/Spinner";
-import { FieldSet , useLocale } from "@gisce/react-formiga-components";
+import { FieldSet, useLocale } from "@gisce/react-formiga-components";
 import iconMapper from "@/helpers/iconMapper";
 
 type Props = {
@@ -15,7 +15,13 @@ function Group(props: Props): React.ReactElement {
   const icon: React.ElementType | undefined = iconMapper(ooui.icon || "");
   const { t } = useLocale();
   return (
-    <>
+    <div
+      style={{
+        height: ooui.height ? ooui.height + "px" : "100%",
+        overflowX: "hidden",
+        overflowY: "auto",
+      }}
+    >
       {(ooui.label || icon) && showLabel ? (
         <FieldSet label={ooui.label} icon={icon}>
           <Spinner
@@ -31,7 +37,7 @@ function Group(props: Props): React.ReactElement {
           responsiveBehaviour={responsiveBehaviour}
         />
       )}
-    </>
+    </div>
   );
 }
 
