@@ -3,7 +3,7 @@ import { Tooltip, theme, Statistic, Card, Empty } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Field from "@/common/Field";
-import { QuestionCircleOutlined } from "@ant-design/icons";
+import { InfoCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import iconMapper from "@/helpers/iconMapper";
 import { useFormGraphData } from "@/hooks/useFormGraphData";
 import { CenteredSpinner } from "@/ui/CenteredSpinner";
@@ -117,15 +117,27 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
     return <ErrorAlert error={error} />;
   }
 
-  const { id, model, limit, domain, context, initialView } = actionData || {};
+  const { id, model, limit, domain, context, initialView, description } =
+    actionData || {};
 
   const GraphComponent = readForViewEnabled ? GraphServer : Graph;
+
+  const titleWithTooltip = description ? (
+    <>
+      <Tooltip title={description}>
+        <InfoCircleOutlined className="pr-1 text-xs" />
+      </Tooltip>
+      <span>{actionData?.title || ""}</span>
+    </>
+  ) : (
+    <span>{actionData?.title || ""}</span>
+  );
 
   return (
     <GraphCard
       id={id}
       parms={{}}
-      title={actionData?.title || ""}
+      title={titleWithTooltip}
       action={treeShortcut}
       openAction={openShortcut as any}
     >
