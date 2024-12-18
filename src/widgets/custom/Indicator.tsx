@@ -3,7 +3,7 @@ import { Tooltip, theme, Statistic, Card, Empty } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Field from "@/common/Field";
-import { InfoCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import iconMapper from "@/helpers/iconMapper";
 import { useFormGraphData } from "@/hooks/useFormGraphData";
 import { CenteredSpinner } from "@/ui/CenteredSpinner";
@@ -19,7 +19,6 @@ import {
 } from "@/context/TabManagerContext";
 import { GraphCard } from "../views/Graph";
 import { useFormContext } from "@/context/FormContext";
-import { useLocale } from "@gisce/react-formiga-components";
 import styled from "styled-components";
 const { useToken } = theme;
 
@@ -122,24 +121,14 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
 
   const GraphComponent = readForViewEnabled ? GraphServer : Graph;
 
-  const titleWithTooltip = description ? (
-    <>
-      <Tooltip title={description}>
-        <InfoCircleOutlined className="pr-1 text-xs" />
-      </Tooltip>
-      <span>{actionData?.title || ""}</span>
-    </>
-  ) : (
-    <span>{actionData?.title || ""}</span>
-  );
-
   return (
     <GraphCard
       id={id}
       parms={{}}
-      title={titleWithTooltip}
+      title={actionData?.title || ""}
       action={treeShortcut}
       openAction={openShortcut as any}
+      tooltip={description}
     >
       {loading && <CenteredSpinner />}
       {!loading && (

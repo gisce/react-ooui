@@ -1,4 +1,4 @@
-import React, {
+import {
   forwardRef,
   useContext,
   useEffect,
@@ -16,8 +16,8 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { DashboardProps, FormView } from "@/types";
 import { ErpFeatureKeys, GraphCard, One2manyItem } from "@/index";
 import { readObjectValues } from "@/helpers/one2manyHelper";
-import { LoadingOutlined, InfoCircleOutlined } from "@ant-design/icons";
-import { Alert, Tooltip } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
+import { Alert } from "antd";
 import {
   DashboardActionContext,
   DashboardActionContextType,
@@ -387,24 +387,15 @@ function Dashboard(props: DashboardProps, ref: any) {
           };
         }
 
-        const titleWithTooltip = description ? (
-          <>
-            <Tooltip title={description}>
-              <InfoCircleOutlined className="pr-1 text-xs" />
-            </Tooltip>
-            <span>{title}</span>
-          </>
-        ) : (
-          <span>{title}</span>
-        );
         return (
           <GraphCard
             key={`griditem-${id}`}
             id={id}
-            title={titleWithTooltip}
+            title={title}
             parms={parmsParsed}
             action={action!}
             openAction={openAction}
+            tooltip={description}
           >
             {childContent}
           </GraphCard>
