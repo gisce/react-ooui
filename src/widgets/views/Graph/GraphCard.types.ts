@@ -7,4 +7,5 @@ export type GraphCardProps = {
   parms: any;
   action?: ShortcutApi;
   openAction?: (shortcutApi?: ShortcutApi) => void;
+  tooltip?: string;
 };
