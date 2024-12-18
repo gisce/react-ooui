@@ -33,6 +33,7 @@ export async function fetchAction({
     name: title,
     limit,
     view_type,
+    description,
   } = dataForAction;
   const treeExpandable = view_type === "tree";
 
@@ -71,6 +72,7 @@ export async function fetchAction({
 
   return {
     title,
+    description,
     actionId,
     actionType,
     key: nanoid(),
