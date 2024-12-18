@@ -1,4 +1,4 @@
-import React, {
+import {
   forwardRef,
   useContext,
   useEffect,
@@ -256,6 +256,7 @@ function Dashboard(props: DashboardProps, ref: any) {
           actionType,
           key,
           title,
+          description,
           views,
           model,
           context,
@@ -394,6 +395,7 @@ function Dashboard(props: DashboardProps, ref: any) {
             parms={parmsParsed}
             action={action!}
             openAction={openAction}
+            tooltip={description}
           >
             {childContent}
           </GraphCard>
