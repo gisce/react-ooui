@@ -1,5 +1,5 @@
-import { ExportOutlined } from "@ant-design/icons";
-import { Row, Col, Typography, theme } from "antd";
+import { ExportOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import { Row, Col, Typography, theme, Tooltip } from "antd";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import { GraphCardProps } from "./GraphCard.types";
 const { useToken } = theme;
@@ -7,7 +7,7 @@ const { useToken } = theme;
 const { Text } = Typography;
 
 export const GraphCard = (props: GraphCardProps) => {
-  const { title, children, action, openAction, parms } = props;
+  const { title, children, action, openAction, parms, tooltip } = props;
   const { token } = useToken();
 
   const hasDragAndDrop = Object.keys(parms).length > 0;
@@ -43,7 +43,16 @@ export const GraphCard = (props: GraphCardProps) => {
             overflow: "hidden",
           }}
         >
-          <Text ellipsis={true}>{title}</Text>
+          {tooltip ? (
+            <>
+              <Tooltip title={tooltip}>
+                <InfoCircleOutlined className="pr-1 text-xs" />
+              </Tooltip>
+              <Text ellipsis={true}>{title}</Text>
+            </>
+          ) : (
+            <Text ellipsis={true}>{title}</Text>
+          )}
         </Col>
         {action && (
           <Col flex="25px" style={{ padding: "0.5rem" }}>

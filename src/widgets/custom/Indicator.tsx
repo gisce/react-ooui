@@ -19,7 +19,6 @@ import {
 } from "@/context/TabManagerContext";
 import { GraphCard } from "../views/Graph";
 import { useFormContext } from "@/context/FormContext";
-import { useLocale } from "@gisce/react-formiga-components";
 import styled from "styled-components";
 const { useToken } = theme;
 
@@ -117,7 +116,8 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
     return <ErrorAlert error={error} />;
   }
 
-  const { id, model, limit, domain, context, initialView } = actionData || {};
+  const { id, model, limit, domain, context, initialView, description } =
+    actionData || {};
 
   const GraphComponent = readForViewEnabled ? GraphServer : Graph;
 
@@ -128,6 +128,7 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
       title={actionData?.title || ""}
       action={treeShortcut}
       openAction={openShortcut as any}
+      tooltip={description}
     >
       {loading && <CenteredSpinner />}
       {!loading && (
