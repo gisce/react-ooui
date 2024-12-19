@@ -19,7 +19,6 @@ import {
 } from "@/context/TabManagerContext";
 import { GraphCard } from "../views/Graph";
 import { useFormContext } from "@/context/FormContext";
-import { useLocale } from "@gisce/react-formiga-components";
 import styled from "styled-components";
 const { useToken } = theme;
 
@@ -140,6 +139,7 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
       title={titleWithTooltip}
       action={treeShortcut}
       openAction={openShortcut as any}
+      tooltip={description}
     >
       {loading && <CenteredSpinner />}
       {!loading && (
