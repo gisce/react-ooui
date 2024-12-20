@@ -106,10 +106,6 @@ const CharInput = memo(
       () => required && !readOnly,
       [required, readOnly],
     );
-    if (ooui._id === "name") {
-      console.log({ value });
-    }
-    console.log({ isRequired });
 
     const forceDisabled = useMemo(
       () => Array.isArray(value) || Boolean(ooui.selectionValues.size),
