@@ -29,6 +29,7 @@ const getOouiComponents = () => {
 };
 ```
 
+
 You have an example app inside this repo. In order to run it you should follow these steps:
 
 - `cd example`
