@@ -11,7 +11,13 @@ import ButtonWithBadge from "./ButtonWithBadge";
 import { ReloadOutlined, FilterOutlined } from "@ant-design/icons";
 import { View } from "@/types";
 
-function GraphActionBar({ refreshGraph }: { refreshGraph: () => void }) {
+function GraphActionBar({
+  refreshGraph,
+  mustShowSearchFilter,
+}: {
+  refreshGraph: () => void;
+  mustShowSearchFilter: boolean;
+}) {
   const { t } = useLocale();
   const {
     availableViews,
@@ -27,20 +33,22 @@ function GraphActionBar({ refreshGraph }: { refreshGraph: () => void }) {
 
   return (
     <Space wrap={true}>
-      <ButtonWithBadge
-        icon={
-          <FilterOutlined
-            style={{ color: searchVisible ? "white" : undefined }}
-          />
-        }
-        tooltip={t("advanced_search")}
-        type={searchVisible ? "primary" : "default"}
-        onClick={() => {
-          setSearchVisible?.(!searchVisible);
-        }}
-        disabled={graphIsLoading}
-        badgeNumber={searchParams?.length}
-      />
+      {mustShowSearchFilter && (
+        <ButtonWithBadge
+          icon={
+            <FilterOutlined
+              style={{ color: searchVisible ? "white" : undefined }}
+            />
+          }
+          tooltip={t("advanced_search")}
+          type={searchVisible ? "primary" : "default"}
+          onClick={() => {
+            setSearchVisible?.(!searchVisible);
+          }}
+          disabled={graphIsLoading}
+          badgeNumber={searchParams?.length}
+        />
+      )}
       <ActionButton
         icon={<ReloadOutlined />}
         tooltip={t("refresh")}

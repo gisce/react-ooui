@@ -1,7 +1,7 @@
 import GraphActionBar from "@/actionbar/GraphActionBar";
 import TitleHeader from "@/ui/TitleHeader";
 import { Graph } from "@/widgets/views/Graph/Graph";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState, useMemo } from "react";
 import {
   ActionViewContext,
   ActionViewContextType,
@@ -90,6 +90,14 @@ export const GraphActionView = (props: GraphActionViewProps) => {
       setLimit,
     });
 
+  const searchFields = useMemo(
+    () => mergeSearchFields([formView?.search_fields, treeView?.search_fields]),
+    [formView?.search_fields, treeView?.search_fields],
+  );
+
+  const mustShowSearchFilter =
+    searchFields.primary.length > 0 || searchFields.secondary.length > 0;
+
   if (!visible) {
     return null;
   }
@@ -105,33 +113,36 @@ export const GraphActionView = (props: GraphActionViewProps) => {
           refreshGraph={() => {
             (graphRef.current as any).refresh();
           }}
+          mustShowSearchFilter={mustShowSearchFilter}
         />
       </TitleHeader>
-      <SearchFilter
-        fields={{ ...treeView.fields, ...formView.fields }}
-        searchFields={mergeSearchFields([
-          formView.search_fields,
-          treeView.search_fields,
-        ])}
-        limit={limit!}
-        onClear={clear}
-        offset={offset}
-        isSearching={searchFilterLoading}
-        onSubmit={(opts: {
-          params: any;
-          limit: number;
-          offset: number;
-          searchValues: any;
-        }) => {
-          setApplyLimit(false);
-          setSearchParams?.(opts.params);
-          setSearchVisible?.(false);
-        }}
-        searchError={searchError}
-        searchVisible={searchVisible}
-        searchValues={searchValues}
-        showLimitOptions={false}
-      />
+      {mustShowSearchFilter && (
+        <SearchFilter
+          fields={{ ...treeView?.fields, ...formView?.fields }}
+          searchFields={mergeSearchFields([
+            formView?.search_fields,
+            treeView?.search_fields,
+          ])}
+          limit={limit!}
+          onClear={clear}
+          offset={offset}
+          isSearching={searchFilterLoading}
+          onSubmit={(opts: {
+            params: any;
+            limit: number;
+            offset: number;
+            searchValues: any;
+          }) => {
+            setApplyLimit(false);
+            setSearchParams?.(opts.params);
+            setSearchVisible?.(false);
+          }}
+          searchError={searchError}
+          searchVisible={searchVisible}
+          searchValues={searchValues}
+          showLimitOptions={false}
+        />
+      )}
       {tableRefreshing ? (
         <Spin />
       ) : (
@@ -143,7 +154,9 @@ export const GraphActionView = (props: GraphActionViewProps) => {
           domain={mergeParams(searchParams || [], domain)}
           limit={applyLimit ? limit : undefined}
           manualIds={
-            applyLimit ? resultsActionView?.map((r) => r.id) : undefined
+            applyLimit && resultsActionView && resultsActionView.length > 0
+              ? resultsActionView.map((r) => r.id)
+              : undefined
           }
         />
       )}
