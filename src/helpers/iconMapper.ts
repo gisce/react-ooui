@@ -109,6 +109,7 @@ export default (
     key = `STOCK_${rootIcon.toUpperCase()}`;
   }
 
+  // eslint-disable-next-line no-prototype-builtins
   if (iconMapping.hasOwnProperty(key)) {
     return getIconForKey(iconMapping[key], props);
   }
@@ -132,13 +133,14 @@ function getIconForKey(
   key: string,
   props?: { className?: any; style: CSSProperties },
 ) {
-  let IconCamelCase = key.charAt(0).toUpperCase() + key.slice(1); // Capitalize first letter
+  let IconCamelCase = key.charAt(0).toUpperCase() + key.slice(1);
   if (IconCamelCase.indexOf("-") !== -1) {
     IconCamelCase = toCamelCase(IconCamelCase);
   }
 
   const antKey: AntKey = `${IconCamelCase}Outlined` as any;
   if (AntIcons[antKey]) {
+    // eslint-disable-next-line react/display-name
     return () =>
       React.createElement(AntIcons[antKey] as any, {
         ...props,
@@ -150,12 +152,22 @@ function getIconForKey(
     const TablerIcon = () =>
       React.createElement(TablerIcons[tablerKey] as any, {
         fill: "transparent",
+        // eslint-disable-next-line react/prop-types
         size: props?.style?.fontSize || 17,
       });
     const CustomIcon = () =>
-      React.createElement(Icon, {
-        component: TablerIcon,
-        ...props,
+      // eslint-disable-next-line react/no-children-prop
+      React.createElement("span", {
+        style: {
+          display: "inline-flex",
+          alignItems: "center",
+          lineHeight: "1",
+          verticalAlign: "middle",
+        },
+        children: React.createElement(Icon, {
+          component: TablerIcon,
+          ...props,
+        }),
       });
     return CustomIcon;
   }
