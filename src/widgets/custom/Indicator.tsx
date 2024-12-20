@@ -139,14 +139,16 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
               imageStyle={{ height: 15 }}
             />
           ) : (
-            <GraphComponent
-              view_id={initialView.id}
-              model={model}
-              context={context}
-              domain={domain}
-              limit={limit}
-              fixedHeight={height}
-            />
+            initialView?.id && (
+              <GraphComponent
+                view_id={initialView.id}
+                model={model}
+                context={context}
+                domain={domain}
+                limit={limit}
+                fixedHeight={height}
+              />
+            )
           )}
         </>
       )}
