@@ -1,5 +1,5 @@
 import { ReactElement, useCallback, useEffect, useMemo, useState } from "react";
-import { Checkbox, Spin } from "antd";
+import { Checkbox, Spin , ColorPicker } from "antd";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../../base/ProgressBar";
 import { One2manyValue } from "../../base/one2many/One2manyInput";
@@ -117,6 +117,23 @@ export const ImageComponent = ({ value }: { value: string }): ReactElement => {
   return useMemo(
     () => <ImageRender value={value} style={{ maxHeight: "30px" }} />,
     [value],
+  );
+};
+
+export const ColorPickerComponent = ({
+  value,
+  key,
+  ooui,
+  context,
+}: {
+  value: any;
+  key: string;
+  ooui: any;
+  context: any;
+}): ReactElement => {
+  return useMemo(
+    () => <ColorPicker value={value} disabled showText />,
+    [ooui, value],
   );
 };
 
@@ -286,4 +303,5 @@ export const COLUMN_COMPONENTS = {
   avatar: AvatarComponent,
   tags: TagsComponent,
   email: EmailTagsComponent,
+  colorPicker: ColorPickerComponent,
 };
