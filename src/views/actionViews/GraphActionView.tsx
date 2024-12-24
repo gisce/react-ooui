@@ -6,7 +6,7 @@ import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
-import { FormView, TreeView } from "@/types";
+import { FormView, GraphView, TreeView } from "@/types";
 import { mergeSearchFields } from "@/helpers/formHelper";
 import { useSearch } from "@/hooks/useSearch";
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
@@ -21,11 +21,20 @@ export type GraphActionViewProps = {
   domain: any;
   formView: FormView;
   treeView: TreeView;
+  graphView: GraphView;
 };
 
 export const GraphActionView = (props: GraphActionViewProps) => {
-  const { viewData, visible, model, context, domain, formView, treeView } =
-    props;
+  const {
+    viewData,
+    visible,
+    model,
+    context,
+    domain,
+    formView,
+    treeView,
+    graphView,
+  } = props;
   const graphRef = useRef();
 
   const actionViewContext = useContext(
@@ -91,12 +100,18 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     });
 
   const searchFields = useMemo(
-    () => mergeSearchFields([formView?.search_fields, treeView?.search_fields]),
-    [formView?.search_fields, treeView?.search_fields],
+    () =>
+      mergeSearchFields([
+        formView?.search_fields,
+        treeView?.search_fields,
+        graphView?.search_fields,
+      ]),
+    [
+      formView?.search_fields,
+      treeView?.search_fields,
+      graphView?.search_fields,
+    ],
   );
-
-  const mustShowSearchFilter =
-    searchFields.primary.length > 0 || searchFields.secondary.length > 0;
 
   if (!visible) {
     return null;
@@ -113,36 +128,35 @@ export const GraphActionView = (props: GraphActionViewProps) => {
           refreshGraph={() => {
             (graphRef.current as any).refresh();
           }}
-          mustShowSearchFilter={mustShowSearchFilter}
         />
       </TitleHeader>
-      {mustShowSearchFilter && (
-        <SearchFilter
-          fields={{ ...treeView?.fields, ...formView?.fields }}
-          searchFields={mergeSearchFields([
-            formView?.search_fields,
-            treeView?.search_fields,
-          ])}
-          limit={limit!}
-          onClear={clear}
-          offset={offset}
-          isSearching={searchFilterLoading}
-          onSubmit={(opts: {
-            params: any;
-            limit: number;
-            offset: number;
-            searchValues: any;
-          }) => {
-            setApplyLimit(false);
-            setSearchParams?.(opts.params);
-            setSearchVisible?.(false);
-          }}
-          searchError={searchError}
-          searchVisible={searchVisible}
-          searchValues={searchValues}
-          showLimitOptions={false}
-        />
-      )}
+
+      <SearchFilter
+        fields={{
+          ...treeView?.fields,
+          ...formView?.fields,
+          ...graphView?.fields,
+        }}
+        searchFields={searchFields}
+        limit={limit!}
+        onClear={clear}
+        offset={offset}
+        isSearching={searchFilterLoading}
+        onSubmit={(opts: {
+          params: any;
+          limit: number;
+          offset: number;
+          searchValues: any;
+        }) => {
+          setApplyLimit(false);
+          setSearchParams?.(opts.params);
+          setSearchVisible?.(false);
+        }}
+        searchError={searchError}
+        searchVisible={searchVisible}
+        searchValues={searchValues}
+        showLimitOptions={false}
+      />
       {tableRefreshing ? (
         <Spin />
       ) : (

@@ -454,6 +454,11 @@ function ActionView(props: Props, ref: any) {
               formView={
                 availableViews.find((v) => v.type === "form") as FormView
               }
+              graphView={
+                availableViews.find(
+                  (v) => v.view_id === view.view_id,
+                ) as GraphView
+              }
             />
           );
         }

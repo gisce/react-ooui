@@ -67,6 +67,8 @@ export type GraphView = {
   view_id: number;
   name: string;
   title?: string;
+  fields: any;
+  search_fields?: SearchFields;
 };
 
 export type View = TreeView | FormView | DashboardView | GraphView;
