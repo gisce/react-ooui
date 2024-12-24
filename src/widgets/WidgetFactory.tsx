@@ -37,6 +37,7 @@ import {
   Alert,
   Spinner,
   Carousel,
+  ColorPicker,
 } from "@/index";
 import { Image } from "./base/Image";
 import { FiberGrid } from "./custom/FiberGrid";
@@ -136,6 +137,8 @@ const getWidgetType = (type: string) => {
       return Spinner;
     case "carousel":
       return Carousel;
+    case "colorPicker":
+      return ColorPicker;
     default:
       return undefined;
   }
