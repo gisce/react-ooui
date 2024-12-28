@@ -650,6 +650,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
       const domain = [[`${ooui.inv_field}`, "=", activeId]];
       return (
         <Graph
+          viewData={views.get("graph")}
           view_id={views.get("graph").view_id}
           model={ooui.relation}
           domain={domain}

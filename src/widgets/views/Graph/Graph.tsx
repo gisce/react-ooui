@@ -32,11 +32,20 @@ export type GraphProps = {
   limit?: number;
   manualIds?: number[];
   fixedHeight?: number;
+  viewData?: GraphView;
 };
 
 const GraphComp = (props: GraphProps, ref: any) => {
-  const { view_id, model, context, domain, limit, manualIds, fixedHeight } =
-    props;
+  const {
+    view_id,
+    model,
+    context,
+    domain,
+    limit,
+    manualIds,
+    fixedHeight,
+    viewData,
+  } = props;
   const [loading, setLoading] = useState(false);
   const [graphOoui, setGraphOoui] = useState<GraphOoui>();
   const actionViewContext = useContext(
@@ -55,21 +64,23 @@ const GraphComp = (props: GraphProps, ref: any) => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view_id]);
+  }, [viewData, view_id]);
 
   async function fetchData() {
     setLoading(true);
     setGraphIsLoading?.(true);
 
     try {
-      const viewData = (await getView({
-        model,
-        id: view_id,
-        type: "graph",
-        context,
-      })) as GraphView;
+      const viewDataRetrieved =
+        viewData ||
+        ((await getView({
+          model,
+          id: view_id,
+          type: "graph",
+          context,
+        })) as GraphView);
 
-      const graph = parseGraph(viewData.arch);
+      const graph = parseGraph(viewDataRetrieved.arch);
       setGraphOoui(graph);
       setLoading(false);
       setGraphIsLoading?.(false);

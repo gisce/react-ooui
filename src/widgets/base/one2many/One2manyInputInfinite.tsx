@@ -327,6 +327,7 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
       />
       {currentView === "graph" && (
         <Graph
+          viewData={views.get("graph")}
           view_id={views.get("graph").view_id}
           model={relation}
           domain={[[`${ooui.inv_field}`, "=", activeId]]}
