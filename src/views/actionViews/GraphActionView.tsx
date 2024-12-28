@@ -14,7 +14,7 @@ import { Spin } from "antd";
 import { mergeParams } from "@/helpers/searchHelper";
 
 export type GraphActionViewProps = {
-  viewData: any;
+  viewData: GraphView;
   visible: boolean;
   model: string;
   context: any;
@@ -163,6 +163,7 @@ export const GraphActionView = (props: GraphActionViewProps) => {
         <Graph
           ref={graphRef}
           view_id={viewData.view_id}
+          viewData={viewData}
           model={model}
           context={context}
           domain={mergeParams(searchParams || [], domain)}
