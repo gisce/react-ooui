@@ -17,14 +17,20 @@ import { Badge, Spin } from "antd";
 import {
   getColorMap,
   getOrderFromSortFields,
+  getSortedFieldsFromState,
   getStatusMap,
   getTableColumns,
   getTableItems,
   getTree,
 } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "./Tree/treeComponents";
-import { useDeepCompareEffect, useDeepCompareMemo } from "use-deep-compare";
 import {
+  useDeepCompareCallback,
+  useDeepCompareEffect,
+  useDeepCompareMemo,
+} from "use-deep-compare";
+import {
+  ColumnState,
   InfiniteTable,
   InfiniteTableRef,
   SortDirection,
@@ -91,6 +97,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const statusForResults = useRef<{ [key: number]: string }>();
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
   const lastAssignedResults = useRef<any[]>([]);
+  const hasRestoredSortStateForFirstTime = useRef<boolean>(false);
   const showErrorDialog = useShowErrorDialog();
 
   const [totalRowsLoading, setTotalRowsLoading] = useState<boolean>(true);
@@ -130,6 +137,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     setSearchQuery,
     setTotalItems: setTotalItemsActionView,
     isActive,
+    sortState: actionViewSortState,
+    setSortState: setActionViewSortState,
   } = useSearchTreeState({ useLocalState: !rootTree });
 
   const nameSearch = nameSearchProps || searchTreeNameSearch;
@@ -188,11 +197,14 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   }, [treeOoui, parentContext]);
 
   const columnStateKey = useMemo(() => {
+    if (loading) {
+      return undefined;
+    }
     return getKey({
       treeViewId: treeView?.view_id,
       model,
     });
-  }, [model, treeView?.view_id]);
+  }, [model, treeView?.view_id, loading]);
 
   const {
     loading: getColumnStateInProgress,
@@ -245,15 +257,15 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     showErrorDialog,
   ]);
 
-  const fetchResults = useCallback(
+  const fetchResults = useDeepCompareCallback(
     async ({
       startRow,
       endRow,
-      sortFields,
+      state,
     }: {
       startRow: number;
       endRow: number;
-      sortFields?: Record<string, SortDirection>;
+      state?: ColumnState[];
     }) => {
       if (!treeOoui) {
         return [];
@@ -267,8 +279,33 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         attrs.status = treeOoui.status;
       }
 
+      let order;
+      if (!hasRestoredSortStateForFirstTime.current && actionViewSortState) {
+        hasRestoredSortStateForFirstTime.current = true;
+        const sortFields = getSortedFieldsFromState({
+          state: actionViewSortState,
+        });
+        order = getOrderFromSortFields(sortFields);
+      } else {
+        const stateWithSortData = state
+          ?.filter((column) => column.sort || column.sortIndex)
+          .map((column) => ({
+            sort: column.sort || undefined,
+            sortIndex: column.sortIndex || undefined,
+            colId: column.colId,
+          }));
+        const finalStateWithSortData =
+          stateWithSortData && stateWithSortData?.length > 0
+            ? stateWithSortData
+            : undefined;
+        const sortFields = getSortedFieldsFromState({
+          state: finalStateWithSortData,
+        });
+        setActionViewSortState?.(finalStateWithSortData);
+        order = getOrderFromSortFields(sortFields);
+      }
+
       const params = nameSearch ? domain : mergedParams;
-      const order = getOrderFromSortFields(sortFields);
 
       const { results, attrsEvaluated } =
         await ConnectionProvider.getHandler().searchForTree({
@@ -337,6 +374,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     },
     [
       actionViewResults,
+      actionViewSortState,
       domain,
       mergedParams,
       model,
@@ -344,6 +382,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       nameSearch,
       parentContext,
       setActionViewResults,
+      setActionViewSortState,
       setSearchQuery,
       setTotalItemsActionView,
       treeOoui,
@@ -363,18 +402,18 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     async ({
       startRow,
       endRow,
-      sortFields,
+      state,
     }: {
       startRow: number;
       endRow: number;
-      sortFields?: Record<string, SortDirection>;
+      state?: ColumnState[];
     }) => {
       try {
         setTreeIsLoading?.(true);
         const results = await fetchResults({
           startRow,
           endRow,
-          sortFields,
+          state,
         });
         return results;
       } catch (error) {
@@ -525,9 +564,11 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         statusComponent={statusComp}
         onRowStatus={onRowStatus}
         strings={strings}
+        initialSortState={actionViewSortState}
       />
     );
   }, [
+    actionViewSortState,
     availableHeight,
     changeSelectedRowKeys,
     columns,
