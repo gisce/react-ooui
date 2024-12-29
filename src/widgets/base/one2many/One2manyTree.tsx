@@ -6,12 +6,10 @@ import {
 } from "@gisce/react-formiga-table";
 import { One2manyItem } from "./One2manyInput";
 import { Tree as TreeOoui } from "@gisce/ooui";
-import { RefObject, useCallback, useMemo, useRef } from "react";
+import { RefObject, useCallback, useRef } from "react";
 import {
-  getOrderFromSortFields,
   getSortedFieldsFromState,
   getTableColumns,
-  getTableItems,
 } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "@/widgets/views/Tree/treeComponents";
 import useDeepCompareEffect from "use-deep-compare-effect";

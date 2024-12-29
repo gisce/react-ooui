@@ -33,7 +33,6 @@ import {
   ColumnState,
   InfiniteTable,
   InfiniteTableRef,
-  SortDirection,
 } from "@gisce/react-formiga-table";
 import ConnectionProvider from "@/ConnectionProvider";
 import { useAvailableHeight } from "@/hooks/useAvailableHeight";
