@@ -1,4 +1,5 @@
 import {
+  ColumnState,
   InfiniteTable,
   InfiniteTableRef,
   SortDirection,
@@ -6,7 +7,12 @@ import {
 import { One2manyItem } from "./One2manyInput";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { RefObject, useCallback, useMemo, useRef } from "react";
-import { getTableColumns, getTableItems } from "@/helpers/treeHelper";
+import {
+  getOrderFromSortFields,
+  getSortedFieldsFromState,
+  getTableColumns,
+  getTableItems,
+} from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "@/widgets/views/Tree/treeComponents";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { useDeepCompareMemo } from "use-deep-compare";
@@ -113,12 +119,15 @@ export const One2manyTree = ({
     async ({
       startRow,
       endRow,
-      sortFields,
+      state,
     }: {
       startRow: number;
       endRow: number;
-      sortFields?: Record<string, SortDirection>;
+      state?: ColumnState[];
     }) => {
+      const sortFields = getSortedFieldsFromState({
+        state,
+      });
       const { results, colors, status } = await onFetchRecords({
         allItems: itemsRef.current,
         startRow,
