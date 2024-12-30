@@ -5,6 +5,7 @@ import {
   forwardRef,
   useImperativeHandle,
   useContext,
+  useCallback,
 } from "react";
 
 import { Spin } from "antd";
@@ -35,6 +36,7 @@ import { FormActionView } from "./actionViews/FormActionView";
 import { TreeActionView } from "./actionViews/TreeActionView";
 import { DashboardActionView } from "./actionViews/DashboardActionView";
 import { resolveViewInfoPromises } from "@/helpers/viewHelper";
+import { useDeepCompareEffect } from "use-deep-compare";
 
 type Props = {
   domain: any;
@@ -126,17 +128,20 @@ function ActionView(props: Props, ref: any) {
     setCurrentIdTabContext?.(id);
   }
 
-  function setCurrentView(view?: View) {
-    setCurrentViewInternal(view);
-    const extra = { action_id, action_type };
-    setCurrentViewTabContext?.({ ...view, extra } as any);
-  }
+  const setCurrentView = useCallback(
+    (view?: View) => {
+      setCurrentViewInternal(view);
+      const extra = { action_id, action_type };
+      setCurrentViewTabContext?.({ ...view, extra } as any);
+    },
+    [action_id, action_type, setCurrentViewTabContext],
+  );
 
   useImperativeHandle(ref, () => ({
     canWeClose,
   }));
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
 
     const viewDataRetrieved: View[] = [];
@@ -262,11 +267,23 @@ function ActionView(props: Props, ref: any) {
     setCurrentView(currentViewToAssign);
     setAvailableViews(viewDataRetrieved);
     setIsLoading(false);
-  };
+  }, [
+    initialView,
+    setCurrentView,
+    views,
+    model,
+    context,
+    action_id,
+    action_type,
+    title,
+    treeExpandable,
+    onRemoveTab,
+    tabKey,
+  ]);
 
   setCanWeClose({ tabKey, canWeClose });
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     const treeView = availableViews.find((v) => v.type === "tree") as TreeView;
     const initialViewWithData: View = availableViews.find((v) => {
       if (!initialView.id) {
@@ -286,7 +303,7 @@ function ActionView(props: Props, ref: any) {
     fetchData();
   }, [model, views, res_id]);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (activeKey === tabKey) {
       setCurrentIdTabContext?.(currentId);
       const extra = { action_id, action_type };
@@ -453,6 +470,11 @@ function ActionView(props: Props, ref: any) {
               }
               formView={
                 availableViews.find((v) => v.type === "form") as FormView
+              }
+              graphView={
+                availableViews.find(
+                  (v) => v.view_id === view.view_id,
+                ) as GraphView
               }
             />
           );

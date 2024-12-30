@@ -1,12 +1,12 @@
 import GraphActionBar from "@/actionbar/GraphActionBar";
 import TitleHeader from "@/ui/TitleHeader";
 import { Graph } from "@/widgets/views/Graph/Graph";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState, useMemo } from "react";
 import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
-import { FormView, TreeView } from "@/types";
+import { FormView, GraphView, TreeView } from "@/types";
 import { mergeSearchFields } from "@/helpers/formHelper";
 import { useSearch } from "@/hooks/useSearch";
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
@@ -14,18 +14,27 @@ import { Spin } from "antd";
 import { mergeParams } from "@/helpers/searchHelper";
 
 export type GraphActionViewProps = {
-  viewData: any;
+  viewData: GraphView;
   visible: boolean;
   model: string;
   context: any;
   domain: any;
   formView: FormView;
   treeView: TreeView;
+  graphView: GraphView;
 };
 
 export const GraphActionView = (props: GraphActionViewProps) => {
-  const { viewData, visible, model, context, domain, formView, treeView } =
-    props;
+  const {
+    viewData,
+    visible,
+    model,
+    context,
+    domain,
+    formView,
+    treeView,
+    graphView,
+  } = props;
   const graphRef = useRef();
 
   const actionViewContext = useContext(
@@ -90,6 +99,20 @@ export const GraphActionView = (props: GraphActionViewProps) => {
       setLimit,
     });
 
+  const searchFields = useMemo(
+    () =>
+      mergeSearchFields([
+        formView?.search_fields,
+        treeView?.search_fields,
+        graphView?.search_fields,
+      ]),
+    [
+      formView?.search_fields,
+      treeView?.search_fields,
+      graphView?.search_fields,
+    ],
+  );
+
   if (!visible) {
     return null;
   }
@@ -107,12 +130,14 @@ export const GraphActionView = (props: GraphActionViewProps) => {
           }}
         />
       </TitleHeader>
+
       <SearchFilter
-        fields={{ ...treeView.fields, ...formView.fields }}
-        searchFields={mergeSearchFields([
-          formView.search_fields,
-          treeView.search_fields,
-        ])}
+        fields={{
+          ...treeView?.fields,
+          ...formView?.fields,
+          ...graphView?.fields,
+        }}
+        searchFields={searchFields}
         limit={limit!}
         onClear={clear}
         offset={offset}
@@ -138,12 +163,15 @@ export const GraphActionView = (props: GraphActionViewProps) => {
         <Graph
           ref={graphRef}
           view_id={viewData.view_id}
+          viewData={viewData}
           model={model}
           context={context}
           domain={mergeParams(searchParams || [], domain)}
           limit={applyLimit ? limit : undefined}
           manualIds={
-            applyLimit ? resultsActionView?.map((r) => r.id) : undefined
+            applyLimit && resultsActionView && resultsActionView.length > 0
+              ? resultsActionView.map((r) => r.id)
+              : undefined
           }
         />
       )}
