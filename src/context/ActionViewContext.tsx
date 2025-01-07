@@ -1,5 +1,6 @@
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { View } from "@/types";
+import { ColumnState } from "@gisce/react-formiga-table";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type ActionViewProviderProps = {
@@ -68,6 +69,8 @@ export type ActionViewContextType = Omit<
   setSearchQuery?: (value: SearchQueryParams) => void;
   isInfiniteTree?: boolean;
   setIsInfiniteTree?: (value: boolean) => void;
+  sortState?: ColumnState[];
+  setSortState?: (value: ColumnState[] | undefined) => void;
 };
 
 export const ActionViewContext = createContext<ActionViewContextType | null>(
@@ -127,6 +130,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [treeFirstVisibleRow, setTreeFirstVisibleRow] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<SearchQueryParams>();
   const [isInfiniteTree, setIsInfiniteTree] = useState<boolean>(false);
+  const [sortState, setSortState] = useState<ColumnState[]>();
 
   const [limit, setLimit] = useState<number>(
     limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT,
@@ -234,6 +238,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setSearchQuery,
         isInfiniteTree,
         setIsInfiniteTree,
+        sortState,
+        setSortState,
       }}
     >
       {children}
@@ -310,6 +316,8 @@ export const useActionViewContext = () => {
       setSearchQuery: () => {},
       isInfiniteTree: false,
       setIsInfiniteTree: () => {},
+      sortState: undefined,
+      setSortState: () => {},
     };
   }
 
