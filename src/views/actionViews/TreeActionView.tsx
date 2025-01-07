@@ -1,7 +1,14 @@
 import TreeActionBar from "@/actionbar/TreeActionBar";
 import { FormView, TreeView, View } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
-import { Fragment, useCallback, useContext, useEffect, useMemo } from "react";
+import {
+  Fragment,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import {
   ActionViewContext,
   ActionViewContextType,
@@ -43,6 +50,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     availableViews,
     searchTreeNameSearch,
   } = props;
+  const previousVisibleRef = useRef(visible);
 
   const isInfiniteTree = useMemo(() => {
     if (!treeView?.arch || treeView.isExpandable) {
@@ -57,9 +65,12 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isInfiniteTree]);
 
-  const { currentView, setPreviousView, setIsInfiniteTree } = useContext(
-    ActionViewContext,
-  ) as ActionViewContextType;
+  const {
+    currentView,
+    setPreviousView,
+    setIsInfiniteTree,
+    setSelectedRowItems,
+  } = useContext(ActionViewContext) as ActionViewContextType;
 
   const onRowClicked = useCallback(
     (event: any) => {
@@ -85,6 +96,14 @@ export const TreeActionView = (props: TreeActionViewProps) => {
       setPreviousView,
     ],
   );
+
+  useEffect(() => {
+    if (previousVisibleRef.current && !visible && isInfiniteTree) {
+      setSelectedRowItems?.([]);
+    }
+    previousVisibleRef.current = visible;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, isInfiniteTree]);
 
   if (!visible) {
     return null;

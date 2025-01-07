@@ -4,6 +4,7 @@ import {
   SearchQueryParams,
   useIsUnderActionViewContext,
 } from "@/context/ActionViewContext";
+import { ColumnState } from "@gisce/react-formiga-table";
 
 export type SearchTreeState = {
   treeIsLoading: boolean;
@@ -27,6 +28,8 @@ export type SearchTreeState = {
   totalItems: number;
   setTotalItems: (value: number) => void;
   isActive?: boolean;
+  sortState?: ColumnState[];
+  setSortState: (value: ColumnState[] | undefined) => void;
 };
 
 export function useSearchTreeState({
@@ -50,6 +53,9 @@ export function useSearchTreeState({
   const [localResults, setLocalResults] = useState<any[]>([]);
   const [localSearchQuery, setLocalSearchQuery] = useState<SearchQueryParams>();
   const [localTotalItems, setLocalTotalItems] = useState(0);
+  const [localSortState, setLocalSortState] = useState<
+    ColumnState[] | undefined
+  >();
 
   // Return either context values or local state values based on isUnderActionViewContext
   return isUnderActionViewContext
@@ -78,6 +84,8 @@ export function useSearchTreeState({
         totalItems: actionViewContext.totalItems ?? 0,
         setTotalItems: actionViewContext.setTotalItems ?? (() => {}),
         isActive: actionViewContext.isActive,
+        sortState: actionViewContext.sortState,
+        setSortState: actionViewContext.setSortState ?? (() => {}),
       }
     : {
         treeIsLoading: localTreeIsLoading,
@@ -101,5 +109,7 @@ export function useSearchTreeState({
         totalItems: localTotalItems,
         setTotalItems: setLocalTotalItems,
         isActive: undefined,
+        sortState: localSortState,
+        setSortState: setLocalSortState,
       };
 }
