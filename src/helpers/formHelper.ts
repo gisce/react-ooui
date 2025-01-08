@@ -1,5 +1,6 @@
 import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
 import { Form as FormOoui } from "@gisce/ooui";
+import { generate } from "@ant-design/colors";
 
 const filteredValues = (values: any, fields: any) => {
   if (!fields) {
@@ -267,6 +268,17 @@ export const colorFromString = (text: string): string => {
     hexColour += ("00" + value.toString(16)).slice(-2);
   }
   return hexColour;
+};
+
+export const getTextAndBackgroundColors = (
+  color: string,
+  intensity: number = 7,
+) => {
+  const colors = generate(color);
+  return {
+    text: colors[intensity],
+    background: `${color}40`,
+  };
 };
 
 export const colorTextFromBackground = (color: string) => {
