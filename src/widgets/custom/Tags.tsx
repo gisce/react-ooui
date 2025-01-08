@@ -6,7 +6,11 @@ import { One2manyItem, One2manyValue } from "../base/one2many/One2manyInput";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { Alert, Select } from "antd";
-import { colorFromString, transformPlainMany2Ones } from "@/helpers/formHelper";
+import {
+  colorFromString,
+  transformPlainMany2Ones,
+  getTextAndBackgroundColors,
+} from "@/helpers/formHelper";
 import ConnectionProvider from "@/ConnectionProvider";
 import { CustomTag } from "@/widgets/custom/Tag";
 
@@ -128,13 +132,14 @@ export const TagsInput = (props: TagsInputProps) => {
       event.stopPropagation();
     };
     const color = colorFromString(label);
+    const colors = getTextAndBackgroundColors(color);
     return (
       <CustomTag
         color={color}
         onMouseDown={onPreventMouseDown}
         closable={closable}
         onClose={onClose}
-        closeIcon={<span style={{ color }}>X</span>}
+        closeIcon={<span style={{ color: colors.text }}>X</span>}
       >
         {label}
       </CustomTag>
