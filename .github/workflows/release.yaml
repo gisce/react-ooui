@@ -33,7 +33,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
         with:
-          fetch-depth: 1
+          fetch-depth: 0
+
+      - name: Sync with Remote Branch
+        run: |
+          git fetch origin
+          git reset --hard origin/${{ github.ref_name }}
 
       - name: Install Dependencies
         run: npm ci
