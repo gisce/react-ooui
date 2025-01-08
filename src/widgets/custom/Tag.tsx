@@ -3,7 +3,11 @@ import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 import { Tag as AntdTag, TagProps } from "antd";
 import { isPresetStatusColor, isPresetColor } from "antd/lib/_util/colors";
-import { colorFromString, colorFromBoolean } from "@/helpers/formHelper";
+import {
+  colorFromString,
+  colorFromBoolean,
+  getTextAndBackgroundColors,
+} from "@/helpers/formHelper";
 import { useLocale } from "@gisce/react-formiga-components";
 
 function capitalizeFirstLetter(text: string): string {
@@ -51,13 +55,14 @@ export const CustomTag = (props: TagProps) => {
   let { color } = props;
   let style = {};
   if (!isPresetStatusColor(props.color) && !isPresetColor(props.color)) {
+    const colors = getTextAndBackgroundColors(color as string);
     style = {
-      color,
-      borderColor: color,
+      color: colors.text,
+      borderColor: colors.text,
       borderStyle: "solid",
       borderWidth: "1px",
     };
-    color = `${color}20`;
+    color = colors.background;
   }
   return (
     <AntdTag {...props} style={style} color={color}>
