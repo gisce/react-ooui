@@ -33,6 +33,7 @@
     "analyze": "vite-bundle-visualizer"
   },
   "dependencies": {
+    "@ant-design/colors": "^7.2.0",
     "@ant-design/plots": "^1.0.9",
     "@gisce/fiber-diagram": "2.1.1",
     "@gisce/ooui": "2.27.0",
