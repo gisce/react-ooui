@@ -8,6 +8,9 @@ import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import weekday from "dayjs/plugin/weekday";
 import localeData from "dayjs/plugin/localeData";
+import "dayjs/locale/es";
+import "dayjs/locale/en";
+import "dayjs/locale/ca";
 
 dayjs.extend(advancedFormat);
 dayjs.extend(customParseFormat);

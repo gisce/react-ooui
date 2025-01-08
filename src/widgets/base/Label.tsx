@@ -1,11 +1,11 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Tooltip, Typography, theme } from "antd";
 import { WidgetProps } from "@/types";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Label as LabelOoui } from "@gisce/ooui";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { Interweave } from "interweave";
-import dayjs from "dayjs";
+import dayjs from "@/helpers/dayjs";
 const { Text, Title } = Typography;
 const { useToken } = theme;
 
