@@ -7,14 +7,14 @@ import { Notebook as NotebookOoui, Group as GroupOoui } from "@gisce/ooui";
 import { Group } from "@/index";
 const { TabPane } = Tabs;
 
-const StyledTabs = styled(Tabs)<{ borderRadius?: string }>`
+const StyledTabs = styled(Tabs)<{ $borderRadius?: string }>`
   .ant-tabs-content-holder {
     border-left: 1px solid rgba(228, 228, 231, var(--tw-border-opacity));
     border-right: 1px solid rgba(228, 228, 231, var(--tw-border-opacity));
     border-bottom: 1px solid rgba(228, 228, 231, var(--tw-border-opacity));
     padding: 15px;
-    border-bottom-left-radius: ${(props) => props.borderRadius || "5px"};
-    border-bottom-right-radius: ${(props) => props.borderRadius || "5px"};
+    border-bottom-left-radius: ${(props) => props.$borderRadius || "5px"};
+    border-bottom-right-radius: ${(props) => props.$borderRadius || "5px"};
     margin-top: -1px;
   }
 
@@ -50,7 +50,7 @@ function Notebook(props: Props): React.ReactElement {
     <StyledTabs
       defaultActiveKey="1"
       tabPosition={ooui.tabPosition}
-      borderRadius={`${token.borderRadius}px`}
+      $borderRadius={`${token.borderRadius}px`}
     >
       {tabs
         .filter((page: any) => !page.invisible)
