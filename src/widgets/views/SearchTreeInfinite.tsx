@@ -389,8 +389,16 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     ],
   );
 
+  const changeSelectedRowItems = useCallback(
+    (newSelectedRowItems: any[]) => {
+      setSelectedRowItems?.(newSelectedRowItems);
+      onChangeSelectedRowKeys?.(newSelectedRowItems.map((item) => item.id));
+    },
+    [onChangeSelectedRowKeys, setSelectedRowItems],
+  );
+
   const changeSelectedRowKeys = useCallback(
-    (newSelectedRowKeys: any[]) => {
+    (newSelectedRowKeys: number[]) => {
       setSelectedRowItems?.(newSelectedRowKeys.map((id: number) => ({ id })));
       onChangeSelectedRowKeys?.(newSelectedRowKeys);
     },
@@ -460,7 +468,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
     const selectAllPromise = async () => {
       if (nameSearch) {
-        setSelectedRowItems?.(lastAssignedResults.current);
+        changeSelectedRowItems(lastAssignedResults.current);
         return;
       }
 
@@ -476,7 +484,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           totalItems: totalRows,
         },
       );
-      setSelectedRowItems?.(allRowsResults.map((id: number) => ({ id })));
+      changeSelectedRowItems(allRowsResults.map((id: number) => ({ id })));
     };
 
     if (mustSelectAll) {
@@ -493,9 +501,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         selectAllPromise();
       }
     } else {
-      setSelectedRowItems?.([]);
+      setSelectedRowItems([]);
     }
   }, [
+    changeSelectedRowItems,
     domain,
     mergedParams,
     model,
@@ -613,11 +622,11 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   }, [searchParams, searchVisible]);
 
   const refresh = useCallback(async () => {
-    setSelectedRowItems?.([]);
+    changeSelectedRowItems([]);
     currentSearchParamsString.current = undefined;
     await updateTotalRows();
     tableRef?.current?.refresh();
-  }, [setSelectedRowItems, updateTotalRows]);
+  }, [changeSelectedRowItems, updateTotalRows]);
 
   useImperativeHandle(ref, () => ({
     refreshResults: refresh,
@@ -658,13 +667,13 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   );
 
   const onSearchFilterClear = useCallback(() => {
-    setSelectedRowItems?.([]);
+    changeSelectedRowItems([]);
     tableRef.current?.unselectAll();
     setSearchTreeNameSearch?.(undefined);
     setSearchParams?.([]);
     setSearchValues?.(undefined);
   }, [
-    setSelectedRowItems,
+    changeSelectedRowItems,
     setSearchTreeNameSearch,
     setSearchParams,
     setSearchValues,
@@ -672,14 +681,14 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const onSearchFilterSubmit = useCallback(
     ({ params, searchValues }: any) => {
-      setSelectedRowItems?.([]);
+      changeSelectedRowItems([]);
       tableRef.current?.unselectAll();
       setSearchTreeNameSearch?.(undefined);
       setSearchParams?.(params);
       setSearchValues?.(searchValues);
     },
     [
-      setSelectedRowItems,
+      changeSelectedRowItems,
       setSearchTreeNameSearch,
       setSearchParams,
       setSearchValues,
@@ -713,7 +722,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const onSideSearchFilterSubmit = useCallback(
     ({ params, values }: any) => {
-      setSelectedRowItems?.([]);
+      changeSelectedRowItems([]);
       tableRef.current?.unselectAll();
       setSearchTreeNameSearch?.(undefined);
       setSearchParams?.(params);
@@ -721,7 +730,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       setSearchVisible?.(false);
     },
     [
-      setSelectedRowItems,
+      changeSelectedRowItems,
       setSearchTreeNameSearch,
       setSearchParams,
       setSearchValues,
