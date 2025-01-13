@@ -67,7 +67,6 @@ export function ShareUrlButton({
           type="text"
           style={{
             marginRight: 8,
-            minWidth: 300,
           }}
           icon={
             isCopied ? (
