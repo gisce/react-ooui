@@ -28,14 +28,20 @@ export type InitialViewData = {
   type: ViewType;
 };
 
-export type BaseView = {
+export type BaseViewExtra = {
+  extra?: {
+    action_id: number;
+    action_type: string;
+  };
+};
+
+export type BaseView = BaseViewExtra & {
   type: ViewType;
   view_id: number;
   title?: string;
 };
 
 type TreeView = BaseView & {
-  view_id: number;
   arch: string;
   fields: any;
   search_fields?: SearchFields;
@@ -49,7 +55,7 @@ type FormView = TreeView & {
   toolbar?: any;
 };
 
-export type DashboardView = {
+export type DashboardView = BaseViewExtra & {
   view_id?: number;
   type: ViewType;
   model: string;
@@ -61,7 +67,7 @@ export type DashboardView = {
 
 export type DashboardProps = Omit<DashboardView, "type">;
 
-export type GraphView = {
+export type GraphView = BaseViewExtra & {
   arch: string;
   type: ViewType;
   view_id: number;

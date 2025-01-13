@@ -1,5 +1,5 @@
 import { useContext, useCallback } from "react";
-import { Space, Spin } from "antd";
+import { Space, Spin, message } from "antd";
 import {
   SaveOutlined,
   RightOutlined,
@@ -11,6 +11,7 @@ import {
   ReloadOutlined,
   CopyOutlined,
   InfoCircleOutlined,
+  ShareAltOutlined,
 } from "@ant-design/icons";
 import ChangeViewButton from "./ChangeViewButton";
 import ActionButton, { ActionDangerButton } from "./ActionButton";
@@ -34,6 +35,8 @@ import {
 import AttachmentsButton from "./AttachmentsButton";
 import { Attachment } from "./AttachmentsButtonWrapper";
 import { useNextPrevious } from "./useNextPrevious";
+import { createShareOpenUrl } from "@/helpers/shareUrlHelper";
+import { ShareUrlButton } from "./ShareUrlButton";
 
 function FormActionBar({ toolbar }: { toolbar: any }) {
   const contentRootContext = useContext(
@@ -197,8 +200,8 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       {formIsLoading && (
         <>
           <Spin />
-          {separator()}
-          {separator()}
+          <ActionBarSeparator />
+          <ActionBarSeparator />
         </>
       )}
       <NewButton disabled={mustDisableButtons} />
@@ -237,7 +240,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           })
         }
       />
-      {separator()}
+      <ActionBarSeparator />
       <ActionButton
         icon={<InfoCircleOutlined />}
         tooltip={t("showLogs")}
@@ -250,7 +253,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         disabled={mustDisableButtons || currentId === undefined}
         onClick={() => tryAction(() => (formRef.current as any).fetchValues())}
       />
-      {separator()}
+      <ActionBarSeparator />
       <ChangeViewButton
         currentView={currentView}
         previousView={previousView}
@@ -263,7 +266,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         disabled={mustDisableButtons}
         formHasChanges={formHasChanges}
       />
-      {separator()}
+      <ActionBarSeparator />
       <Space>
         <ActionButton
           icon={<LeftOutlined />}
@@ -278,7 +281,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           onClick={() => tryAction(onNextClick)}
         />
       </Space>
-      {separator()}
+      <ActionBarSeparator />
       <DropdownButton
         icon={<ThunderboltOutlined />}
         placement="bottomRight"
@@ -375,11 +378,17 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           }
         }}
       />
+      <ActionBarSeparator />
+      <ShareUrlButton
+        action_id={currentView.extra?.action_id}
+        view_type={currentView.type}
+        res_id={currentId}
+      />
     </Space>
   );
 }
 
-const separator = () => <div className="inline-block w-2" />;
+export const ActionBarSeparator = () => <div className="inline-block w-2" />;
 
 const saveDocument = async ({
   onFormSave,
