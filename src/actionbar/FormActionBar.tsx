@@ -1,5 +1,5 @@
 import { useContext, useCallback } from "react";
-import { Space, Spin, message } from "antd";
+import { Space, Spin } from "antd";
 import {
   SaveOutlined,
   RightOutlined,
@@ -11,7 +11,6 @@ import {
   ReloadOutlined,
   CopyOutlined,
   InfoCircleOutlined,
-  ShareAltOutlined,
 } from "@ant-design/icons";
 import ChangeViewButton from "./ChangeViewButton";
 import ActionButton, { ActionDangerButton } from "./ActionButton";
@@ -35,7 +34,6 @@ import {
 import AttachmentsButton from "./AttachmentsButton";
 import { Attachment } from "./AttachmentsButtonWrapper";
 import { useNextPrevious } from "./useNextPrevious";
-import { createShareOpenUrl } from "@/helpers/shareUrlHelper";
 import { ShareUrlButton } from "./ShareUrlButton";
 
 function FormActionBar({ toolbar }: { toolbar: any }) {
