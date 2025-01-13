@@ -63,21 +63,22 @@ export function ShareUrlButton({
             minWidth: 300,
           }}
         />
-        <Button
-          type="text"
-          style={{
-            marginRight: 8,
-          }}
-          icon={
-            isCopied ? (
-              <CheckOutlined style={{ color: "#52c41a" }} />
-            ) : (
-              <CopyOutlined />
-            )
-          }
-          onClick={copyToClipboard}
-          disabled={!isSecureContext}
-        />
+        {isSecureContext && (
+          <Button
+            type="text"
+            style={{
+              marginRight: 8,
+            }}
+            icon={
+              isCopied ? (
+                <CheckOutlined style={{ color: "#52c41a" }} />
+              ) : (
+                <CopyOutlined />
+              )
+            }
+            onClick={copyToClipboard}
+          />
+        )}
         <Button
           type="text"
           icon={<LinkOutlined />}
