@@ -131,10 +131,9 @@ function ActionView(props: Props, ref: any) {
   const setCurrentView = useCallback(
     (view?: View) => {
       setCurrentViewInternal(view);
-      const extra = { action_id, action_type };
-      setCurrentViewTabContext?.({ ...view, extra } as any);
+      setCurrentViewTabContext?.(view);
     },
-    [action_id, action_type, setCurrentViewTabContext],
+    [setCurrentViewTabContext],
   );
 
   useImperativeHandle(ref, () => ({
@@ -205,6 +204,7 @@ function ActionView(props: Props, ref: any) {
             model,
             context,
             configAction,
+            extra: { action_id, action_type },
           });
           break;
         }
@@ -212,6 +212,7 @@ function ActionView(props: Props, ref: any) {
           viewDataRetrieved.push({
             ...(viewInfo as FormView),
             type: viewType,
+            extra: { action_id, action_type },
           });
           break;
         }
@@ -220,6 +221,7 @@ function ActionView(props: Props, ref: any) {
             ...(viewInfo as TreeView),
             isExpandable: treeExpandable,
             type: viewType,
+            extra: { action_id, action_type },
           });
           break;
         }
@@ -227,6 +229,7 @@ function ActionView(props: Props, ref: any) {
           viewDataRetrieved.push({
             ...(viewInfo as GraphView),
             type: viewType,
+            extra: { action_id, action_type },
           });
           break;
         }

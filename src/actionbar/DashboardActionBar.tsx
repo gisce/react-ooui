@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import {
   DashboardActionContext,
   DashboardActionContextType,
@@ -11,11 +11,20 @@ import {
   BorderOuterOutlined,
 } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
+import {
+  ActionViewContext,
+  ActionViewContextType,
+} from "@/context/ActionViewContext";
+import { ShareUrlButton } from "./ShareUrlButton";
+import { ActionBarSeparator } from "./FormActionBar";
 
 function DashboardActionBar() {
   const { isLoading, dashboardRef, moveItemsEnabled, setMoveItemsEnabled } =
     useContext(DashboardActionContext) as DashboardActionContextType;
   const { t } = useLocale();
+  const { currentView } = useContext(
+    ActionViewContext,
+  ) as ActionViewContextType;
 
   return (
     <Space wrap={true}>
@@ -33,7 +42,7 @@ function DashboardActionBar() {
           setMoveItemsEnabled(!moveItemsEnabled);
         }}
       />
-      {separator()}
+      <ActionBarSeparator />
       <ActionButton
         icon={<SettingOutlined />}
         tooltip={t("configDashboard")}
@@ -52,12 +61,13 @@ function DashboardActionBar() {
           dashboardRef?.current.refresh();
         }}
       />
+      <ActionBarSeparator />
+      <ShareUrlButton
+        action_id={currentView.extra?.action_id}
+        view_type={currentView.type}
+      />
     </Space>
   );
-}
-
-function separator() {
-  return <div className="inline-block w-2" />;
 }
 
 export default DashboardActionBar;
