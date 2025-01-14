@@ -22,9 +22,6 @@ function DashboardActionBar() {
   const { isLoading, dashboardRef, moveItemsEnabled, setMoveItemsEnabled } =
     useContext(DashboardActionContext) as DashboardActionContextType;
   const { t } = useLocale();
-  const { currentView } = useContext(
-    ActionViewContext,
-  ) as ActionViewContextType;
 
   return (
     <Space wrap={true}>
@@ -62,10 +59,7 @@ function DashboardActionBar() {
         }}
       />
       <ActionBarSeparator />
-      <ShareUrlButton
-        action_id={currentView.extra?.action_id}
-        view_type={currentView.type}
-      />
+      <ShareUrlButton />
     </Space>
   );
 }

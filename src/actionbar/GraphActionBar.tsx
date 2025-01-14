@@ -69,11 +69,7 @@ function GraphActionBar({
         previousView={previousView}
       />
       <ActionBarSeparator />
-      <ShareUrlButton
-        action_id={currentView.extra?.action_id}
-        view_type={currentView.type}
-        domain={domain}
-      />
+      <ShareUrlButton domain={domain} />
     </Space>
   );
 }

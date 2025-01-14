@@ -3,71 +3,77 @@ import { Button, Input, message, Space, Popover, theme } from "antd";
 import { CopyOutlined, CheckOutlined } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
 import { createShareOpenUrl } from "@/helpers/shareUrlHelper";
-import { ViewType } from "@/types";
 import ActionButton from "./ActionButton";
 import { IconExternalLink, IconShare2 } from "@tabler/icons-react";
+import { useTabs } from "@/context/TabManagerContext";
+import { useActionViewContext } from "@/context/ActionViewContext";
 
 export type ShareUrlButtonProps = {
-  action_id?: number;
-  view_type: ViewType;
   res_id?: number;
   domain?: any[];
 };
 
-export function ShareUrlButton({
-  action_id,
-  view_type,
-  res_id,
-  domain,
-}: ShareUrlButtonProps) {
+export function ShareUrlButton({ res_id, domain }: ShareUrlButtonProps) {
+  const { currentView } = useActionViewContext();
+  const initialView = {
+    id: currentView.view_id,
+    type: currentView.type,
+  };
   const { token } = theme.useToken();
   const { t } = useLocale();
   const [isCopied, setIsCopied] = useState(false);
+  const { currentTab } = useTabs();
 
-  const shareUrl = action_id
-    ? createShareOpenUrl({
-        action_id,
-        view_type,
-        res_id,
-        domain,
-      })
-    : "";
+  const copyToClipboard = useCallback(
+    (url: string) => {
+      try {
+        // Create a temporary textarea element
+        const tempInput = document.createElement("textarea");
+        tempInput.value = url;
+        document.body.appendChild(tempInput);
+
+        // Select the text in the textarea
+        tempInput.select();
+        tempInput.setSelectionRange(0, 99999); // For mobile devices
+
+        // Copy the text using execCommand
+
+        const successful = document.execCommand("copy");
+
+        // Clean up the temporary element
+        document.body.removeChild(tempInput);
+
+        // Handle success or failure
+        if (successful) {
+          setIsCopied(true);
+          message.success(t("urlCopiedToClipboard"));
+          setTimeout(() => setIsCopied(false), 2000);
+        } else {
+          throw new Error("Copy command was unsuccessful.");
+        }
+      } catch (err) {
+        console.error("Error copying to clipboard:", err);
+        message.error(t("errorCopyingToClipboard"));
+      }
+    },
+    [setIsCopied, t],
+  );
+
+  if (!currentTab?.action) return null;
+  const { action_id } = currentTab?.action || {};
+  const finalActionData = {
+    ...currentTab.action,
+    ...(initialView && { initialView }),
+    ...(domain && { domain }),
+    ...(res_id && { res_id }),
+  };
+  const shareUrl = createShareOpenUrl(finalActionData);
+  const { type } = initialView || {};
 
   let moreDataNeededForCopying = !action_id;
-  if (view_type === "form") {
+  if (type === "form") {
     moreDataNeededForCopying = !action_id || !res_id;
   }
-
-  const copyToClipboard = useCallback(() => {
-    try {
-      // Create a temporary textarea element
-      const tempInput = document.createElement("textarea");
-      tempInput.value = shareUrl;
-      document.body.appendChild(tempInput);
-
-      // Select the text in the textarea
-      tempInput.select();
-      tempInput.setSelectionRange(0, 99999); // For mobile devices
-
-      // Copy the text using execCommand
-      const successful = document.execCommand("copy");
-
-      // Clean up the temporary element
-      document.body.removeChild(tempInput);
-
-      // Handle success or failure
-      if (successful) {
-        setIsCopied(true);
-        message.success(t("urlCopiedToClipboard"));
-        setTimeout(() => setIsCopied(false), 2000);
-      } else {
-        throw new Error("Copy command was unsuccessful.");
-      }
-    } catch (err) {
-      console.error("Error copying to clipboard:", err);
-      message.error(t("errorCopyingToClipboard"));
-    }
-  }, [shareUrl, setIsCopied, t]);
 
   const popoverContent = (
     <div style={{ padding: 2 }}>
@@ -95,7 +101,7 @@ export function ShareUrlButton({
               <CopyOutlined style={{ color: token.colorTextSecondary }} />
             )
           }
-          onClick={copyToClipboard}
+          onClick={() => copyToClipboard(shareUrl)}
         />
         <Button
           title={t("openInNewTab")}
