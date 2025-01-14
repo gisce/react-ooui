@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, useRef } from "react";
+import { useContext, useEffect, useState, useRef, useMemo } from "react";
 import { Space, Spin } from "antd";
 import ChangeViewButton from "./ChangeViewButton";
 import {
@@ -206,6 +206,13 @@ function TreeActionBar(props: Props) {
       },
     });
   }
+
+  const finalDomain = useMemo(() => {
+    return mergeParams(
+      searchTreeRef?.current?.getDomain() || [],
+      searchParams || [],
+    );
+  }, [searchParams, searchTreeRef]);
 
   return (
     <Space wrap={true}>
@@ -426,10 +433,7 @@ function TreeActionBar(props: Props) {
             visible={exportModalVisible}
             onClose={() => setExportModalVisible(false)}
             model={currentModel!}
-            domain={mergeParams(
-              searchTreeRef?.current?.getDomain() || [],
-              searchParams || [],
-            )}
+            domain={finalDomain}
             limit={limit}
             totalRegisters={totalItems || 0}
             selectedRegistersToExport={selectedRowItems}
@@ -442,6 +446,7 @@ function TreeActionBar(props: Props) {
       <ShareUrlButton
         action_id={currentView.extra?.action_id}
         view_type={currentView.type}
+        domain={finalDomain}
       />
     </Space>
   );

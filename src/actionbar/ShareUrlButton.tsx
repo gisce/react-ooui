@@ -11,12 +11,14 @@ export type ShareUrlButtonProps = {
   action_id?: number;
   view_type: ViewType;
   res_id?: number;
+  domain?: any[];
 };
 
 export function ShareUrlButton({
   action_id,
   view_type,
   res_id,
+  domain,
 }: ShareUrlButtonProps) {
   const { token } = theme.useToken();
   const { t } = useLocale();
@@ -27,6 +29,7 @@ export function ShareUrlButton({
         action_id,
         view_type,
         res_id,
+        domain,
       })
     : "";
 
@@ -106,12 +109,15 @@ export function ShareUrlButton({
   );
 
   return (
-    <Popover content={popoverContent} trigger="click" placement="bottom">
-      <ActionButton
-        icon={<IconShare2 size={16} color={token.colorTextSecondary} />}
-        disabled={moreDataNeededForCopying}
-        tooltip={t("share")}
-      />
-    </Popover>
+    <div style={{ maxHeight: 28 }}>
+      <Popover content={popoverContent} trigger="click" placement="bottom">
+        <ActionButton
+          style={{ height: 28 }}
+          icon={<IconShare2 size={16} color={token.colorTextSecondary} />}
+          disabled={moreDataNeededForCopying}
+          tooltip={t("share")}
+        />
+      </Popover>
+    </div>
   );
 }
