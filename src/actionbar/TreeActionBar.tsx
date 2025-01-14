@@ -442,11 +442,7 @@ function TreeActionBar(props: Props) {
         </>
       )}
       <ActionBarSeparator />
-      <ShareUrlButton
-        action_id={currentView.extra?.action_id}
-        view_type={currentView.type}
-        domain={finalDomain}
-      />
+      <ShareUrlButton domain={finalDomain} />
     </Space>
   );
 }

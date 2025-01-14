@@ -1,5 +1,6 @@
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import { Field as FieldOoui } from "@gisce/ooui";
+import { ReactNode } from "react";
 
 type Strings = {
   [key: string]: string;
@@ -24,7 +25,7 @@ type SearchFields = {
 };
 
 export type InitialViewData = {
-  id: number;
+  id?: number;
   type: ViewType;
 };
 
@@ -387,6 +388,31 @@ type ConnectionProviderType = {
 type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar";
 type ViewTuple = [number | undefined, ViewType];
 
+type ActionInfo = {
+  domain: any;
+  context: any;
+  model: string;
+  views: any[];
+  title: string;
+  target: string;
+  initialView: InitialViewData;
+  action_id: number;
+  action_type: string;
+  res_id?: number | boolean;
+  values?: any;
+  forced_values?: any;
+  treeExpandable?: boolean;
+  limit?: number;
+};
+
+type Tab = {
+  title: string;
+  key: string;
+  closable: boolean;
+  content: ReactNode;
+  action: ActionInfo | null;
+};
+
 export type {
   Strings,
   SearchFields,
@@ -422,4 +448,6 @@ export type {
   ParseConditionRequest,
   TreeButOpenOptions,
   ViewTuple,
+  ActionInfo,
+  Tab,
 };

@@ -1,6 +1,6 @@
-import { InitialViewData, View, ViewType } from "@/types";
+import { InitialViewData, Tab, View, ViewType } from "@/types";
 import { ShortcutApi } from "@/ui/FavouriteButton";
-import React, { useState } from "react";
+import React, { useState, useContext, useMemo } from "react";
 
 export type TabManagerContextType = {
   openAction: ({
@@ -62,11 +62,12 @@ export type TabManagerContextType = {
   onChangeTab: (key: string) => void;
   onRemoveTab: (key: string) => void;
   openShortcut: (shortcut: ShortcutApi) => void;
-  tabs: any[];
+  tabs: Tab[];
   currentView?: View;
   setCurrentView?: (view?: View) => void;
   currentId?: number;
   setCurrentId?: (id?: number) => void;
+  currentTab?: Tab;
 };
 
 export const TabManagerContext =
@@ -91,6 +92,9 @@ const TabManagerProvider = (props: TabManagerProviderProps): any => {
 
   const [currentView, setCurrentView] = useState<View>();
   const [currentId, setCurrentId] = useState<number>();
+  const currentTab = useMemo(() => {
+    return tabs.find((t) => t.key === activeKey);
+  }, [tabs, activeKey]);
 
   return (
     <TabManagerContext.Provider
@@ -107,11 +111,17 @@ const TabManagerProvider = (props: TabManagerProviderProps): any => {
         currentView,
         setCurrentId,
         setCurrentView,
+        currentTab,
       }}
     >
       {children}
     </TabManagerContext.Provider>
   );
 };
+
+export function useTabs(): TabManagerContextType {
+  const context = useContext(TabManagerContext);
+  return context || ({} as TabManagerContextType);
+}
 
 export default TabManagerProvider;

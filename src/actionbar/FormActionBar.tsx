@@ -377,11 +377,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         }}
       />
       <ActionBarSeparator />
-      <ShareUrlButton
-        action_id={currentView.extra?.action_id}
-        view_type={currentView.type}
-        res_id={currentId}
-      />
+      <ShareUrlButton res_id={currentId} />
     </Space>
   );
 }

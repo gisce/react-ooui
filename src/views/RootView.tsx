@@ -12,7 +12,7 @@ import ActionView from "./ActionView";
 import { parseContext } from "@gisce/ooui";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import showErrorDialog from "@/ui/ActionErrorDialog";
-import { InitialViewData, ViewType } from "@/types";
+import { ActionInfo, Tab, ViewType } from "@/types";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
 import { nanoid } from "nanoid";
 import { useLocale } from "@gisce/react-formiga-components";
@@ -23,23 +23,19 @@ type RootViewProps = {
   children: ReactNode;
 };
 
-export type ActionInfo = {
-  id: number;
-  type: string;
-};
-
 function RootView(props: RootViewProps, ref: any) {
   const { children } = props;
   const [activeKey, setActiveKey] = useState<string>("welcome");
   const { t } = useLocale();
   const { globalValues, rootContext } = useConfigContext();
 
-  const [tabs, setTabs] = useState<any>([
+  const [tabs, setTabs] = useState<Tab[]>([
     {
       title: t("welcome"),
       key: "welcome",
       closable: true,
       content: <Welcome />,
+      action: null,
     },
   ]);
   const tabViewsCloseFunctions = useRef(new Map<string, any>());
@@ -47,6 +43,7 @@ function RootView(props: RootViewProps, ref: any) {
 
   useImperativeHandle(ref, () => ({
     retrieveAndOpenAction,
+    openAction,
     openShortcut,
   }));
 
@@ -198,7 +195,7 @@ function RootView(props: RootViewProps, ref: any) {
     title: string;
     content: any;
     key: string;
-    action?: ActionInfo;
+    action: ActionInfo;
   }) {
     let newTabs = [...tabs];
 
@@ -408,37 +405,24 @@ function RootView(props: RootViewProps, ref: any) {
     });
   }
 
-  async function openAction({
-    domain,
-    context,
-    model,
-    views,
-    title,
-    target,
-    initialView,
-    action_id,
-    action_type,
-    res_id,
-    values,
-    forced_values,
-    treeExpandable = false,
-    limit,
-  }: {
-    domain: any;
-    context: any;
-    model: string;
-    views: any[];
-    title: string;
-    target: string;
-    initialView: InitialViewData;
-    action_id: number;
-    action_type: string;
-    res_id?: number | boolean;
-    values?: any;
-    forced_values?: any;
-    treeExpandable?: boolean;
-    limit?: number;
-  }) {
+  async function openAction(parms: ActionInfo) {
+    const {
+      domain,
+      context,
+      model,
+      views,
+      title,
+      target,
+      initialView,
+      action_id,
+      action_type,
+      res_id,
+      values,
+      forced_values,
+      treeExpandable = false,
+      limit,
+    } = parms;
+
     const key = nanoid();
 
     if (target !== "current") {
@@ -469,10 +453,6 @@ function RootView(props: RootViewProps, ref: any) {
 
       addNewTab({
         title,
-        action: {
-          id: action_id,
-          type: action_type,
-        },
         content: (
           <ActionView
             action_id={action_id}
@@ -481,7 +461,7 @@ function RootView(props: RootViewProps, ref: any) {
             title={title}
             views={views}
             model={model}
-            context={{ ...rootContext, ...context }}
+            context={{ ...context, ...rootContext }}
             domain={domain}
             setCanWeClose={registerViewCloseFn}
             initialView={formattedInitialView}
@@ -493,6 +473,7 @@ function RootView(props: RootViewProps, ref: any) {
           />
         ),
         key,
+        action: parms,
       });
     }
   }

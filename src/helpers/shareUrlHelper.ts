@@ -1,23 +1,29 @@
-import { ViewType } from "@/types";
+import { ActionInfo } from "@/types";
 
-export const createShareOpenUrl = ({
-  action_id,
-  view_type,
-  res_id,
-  domain,
-}: {
-  action_id: number;
-  view_type?: ViewType;
-  res_id?: number;
-  domain?: any[];
-}) => {
+export const createShareOpenUrl = (action: ActionInfo) => {
   const url = new URL(window.location.href);
   url.pathname += url.pathname.endsWith("/") ? "open" : "/open";
-  url.searchParams.set("action_id", action_id.toString());
-  view_type && url.searchParams.set("view_type", view_type);
-  res_id && url.searchParams.set("res_id", res_id?.toString());
-  domain &&
-    domain.length > 0 &&
-    url.searchParams.set("domain", JSON.stringify(domain));
+
+  // Parameters to exclude from the URL
+  const ignoredParams = ["target"];
+
+  // Add all non-null properties from action to URL
+  Object.entries(action).forEach(([key, value]) => {
+    if (
+      !ignoredParams.includes(key) &&
+      value &&
+      (!Array.isArray(value) || value.length > 0)
+    ) {
+      url.searchParams.set(key, convertToString(value));
+    }
+  });
+
   return url.toString();
+};
+
+const convertToString = (value: any): string => {
+  if (typeof value === "object") {
+    return JSON.stringify(value);
+  }
+  return value.toString();
 };
