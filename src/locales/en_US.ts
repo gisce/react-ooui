@@ -107,4 +107,5 @@ export default {
   pendingToCalculate: "Pending to calculate",
   share: "Compartir URL",
   urlCopiedToClipboard: "URL copied to clipboard",
+  copyToClipboard: "Copy to clipboard",
 };
