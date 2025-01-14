@@ -92,7 +92,7 @@ export function ShareUrlButton({
     <Popover content={popoverContent} trigger="click" placement="bottom">
       <ActionButton
         icon={<ShareAltOutlined />}
-        disabled={!isSecureContext || moreDataNeededForCopying}
+        disabled={moreDataNeededForCopying}
         tooltip={t("share")}
       />
     </Popover>
