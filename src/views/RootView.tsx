@@ -110,13 +110,21 @@ function RootView(props: RootViewProps, ref: any) {
       fields: {},
     });
 
-    const parsedDomain = dataForAction.domain
-      ? await ConnectionProvider.getHandler().evalDomain({
-          domain: dataForAction.domain,
-          values: globalValues,
-          context: { ...rootContext, ...parsedContext },
-        })
-      : [];
+    const parsedDomain = await (async () => {
+      try {
+        if (dataForAction.domain) {
+          return await ConnectionProvider.getHandler().evalDomain({
+            domain: dataForAction.domain,
+            values: globalValues,
+            context: { ...rootContext, ...parsedContext },
+          });
+        }
+        return [];
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    })();
 
     const {
       res_model: model,
