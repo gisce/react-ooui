@@ -425,7 +425,7 @@ function RootView(props: RootViewProps, ref: any) {
 
     const key = nanoid();
 
-    if (target !== "current") {
+    if (target !== "current" && target !== undefined) {
       const formView = (await ConnectionProvider.getHandler().getView({
         model,
         type: "form",
