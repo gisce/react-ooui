@@ -207,12 +207,11 @@ function TreeActionBar(props: Props) {
     });
   }
 
-  const finalDomain = useMemo(() => {
-    return mergeParams(
-      searchTreeRef?.current?.getDomain() || [],
-      searchParams || [],
-    );
-  }, [searchParams, searchTreeRef]);
+  const finalDomain = (() => {
+    const domain = searchTreeRef?.current?.getDomain();
+    const finalValues = mergeParams(domain || [], searchParams || []);
+    return finalValues;
+  })();
 
   return (
     <Space wrap={true}>
