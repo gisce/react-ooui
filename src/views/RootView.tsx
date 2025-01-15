@@ -502,6 +502,7 @@ function RootView(props: RootViewProps, ref: any) {
       forced_values,
       treeExpandable = false,
       limit,
+      searchParams,
     } = parms;
 
     const key = nanoid();
@@ -551,6 +552,7 @@ function RootView(props: RootViewProps, ref: any) {
             formForcedValues={forced_values}
             treeExpandable={treeExpandable}
             limit={limit}
+            initialSearchParams={searchParams}
           />
         ),
         key,

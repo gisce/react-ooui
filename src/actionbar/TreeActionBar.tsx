@@ -442,7 +442,7 @@ function TreeActionBar(props: Props) {
         </>
       )}
       <ActionBarSeparator />
-      <ShareUrlButton domain={finalDomain} />
+      <ShareUrlButton searchParams={searchParams} />
     </Space>
   );
 }

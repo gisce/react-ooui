@@ -404,6 +404,7 @@ type ActionInfo = {
   treeExpandable?: boolean;
   limit?: number;
   actionRawData?: ActionRawData;
+  searchParams?: any[];
 };
 
 type Tab = {

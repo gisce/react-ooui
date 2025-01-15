@@ -7,13 +7,14 @@ import ActionButton from "./ActionButton";
 import { IconExternalLink, IconShare2 } from "@tabler/icons-react";
 import { useTabs } from "@/context/TabManagerContext";
 import { useActionViewContext } from "@/context/ActionViewContext";
+import { ActionInfo } from "@/types";
 
 export type ShareUrlButtonProps = {
   res_id?: number;
-  domain?: any[];
+  searchParams?: any[];
 };
 
-export function ShareUrlButton({ res_id, domain }: ShareUrlButtonProps) {
+export function ShareUrlButton({ res_id, searchParams }: ShareUrlButtonProps) {
   const { currentView } = useActionViewContext();
   const initialView = {
     id: currentView.view_id,
@@ -61,10 +62,10 @@ export function ShareUrlButton({ res_id, domain }: ShareUrlButtonProps) {
 
   if (!currentTab?.action) return null;
   const { action_id } = currentTab?.action || {};
-  const finalActionData = {
+  const finalActionData: ActionInfo = {
     ...currentTab.action,
     ...(initialView && { initialView }),
-    ...(domain && { domain }),
+    ...(searchParams && { searchParams }),
     ...(res_id && { res_id }),
   };
   const shareUrl = createShareOpenUrl(finalActionData);

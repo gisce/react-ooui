@@ -1,5 +1,4 @@
 import {
-  useEffect,
   useState,
   useRef,
   forwardRef,
@@ -54,6 +53,7 @@ type Props = {
   action_type: string;
   treeExpandable?: boolean;
   limit?: number;
+  initialSearchParams?: any[];
 };
 
 function ActionView(props: Props, ref: any) {
@@ -73,6 +73,7 @@ function ActionView(props: Props, ref: any) {
     action_type,
     treeExpandable = false,
     limit,
+    initialSearchParams = [],
   } = props;
   const [currentView, setCurrentViewInternal] = useState<View>();
 
@@ -545,6 +546,7 @@ function ActionView(props: Props, ref: any) {
       goToResourceId={goToResourceId}
       limit={limit}
       isActive={tabKey === activeKey}
+      initialSearchParams={initialSearchParams}
     >
       {content()}
       <GoToResourceModal
