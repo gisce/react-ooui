@@ -13,13 +13,7 @@ import { View } from "@/types";
 import { ShareUrlButton } from "./ShareUrlButton";
 import { ActionBarSeparator } from "./FormActionBar";
 
-function GraphActionBar({
-  refreshGraph,
-  domain,
-}: {
-  refreshGraph: () => void;
-  domain?: any[];
-}) {
+function GraphActionBar({ refreshGraph }: { refreshGraph: () => void }) {
   const { t } = useLocale();
   const {
     availableViews,
@@ -69,7 +63,7 @@ function GraphActionBar({
         previousView={previousView}
       />
       <ActionBarSeparator />
-      <ShareUrlButton domain={domain} />
+      <ShareUrlButton searchParams={searchParams} />
     </Space>
   );
 }
