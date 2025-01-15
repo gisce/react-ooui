@@ -1,35 +1,9 @@
-import { InitialViewData, Tab, View, ViewType } from "@/types";
+import { ActionInfo, InitialViewData, Tab, View, ViewType } from "@/types";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import React, { useState, useContext, useMemo } from "react";
 
 export type TabManagerContextType = {
-  openAction: ({
-    domain,
-    context,
-    model,
-    views,
-    title,
-    target,
-    initialView,
-    action_id,
-    action_type,
-    res_id,
-    values,
-    forced_values,
-  }: {
-    domain: any;
-    context: any;
-    model: string;
-    views: any[];
-    title: string;
-    target: string;
-    initialView: InitialViewData;
-    action_id: number;
-    action_type: string;
-    res_id?: number | boolean;
-    values?: any;
-    forced_values?: any;
-  }) => void;
+  openAction: (action: ActionInfo) => void;
   openRelate: ({
     relateData,
     fields,
