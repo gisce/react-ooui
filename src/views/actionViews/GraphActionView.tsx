@@ -125,7 +125,6 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     <>
       <TitleHeader title={viewData.title || viewData.name}>
         <GraphActionBar
-          domain={mergeParams(searchParams || [], domain)}
           refreshGraph={() => {
             (graphRef.current as any).refresh();
           }}
