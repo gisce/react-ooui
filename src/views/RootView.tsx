@@ -43,7 +43,7 @@ function RootView(props: RootViewProps, ref: any) {
 
   useImperativeHandle(ref, () => ({
     retrieveAndOpenAction,
-    openAction,
+    handleOpenUrl,
     openShortcut,
   }));
 
@@ -71,6 +71,62 @@ function RootView(props: RootViewProps, ref: any) {
     canWeClose: any;
   }) {
     tabViewsCloseFunctions.current.set(tabKey, canWeClose);
+  }
+
+  async function handleOpenUrl(action: ActionInfo) {
+    const { actionRawData } = action;
+
+    let parsedContext;
+    if (
+      actionRawData?.context &&
+      typeof actionRawData.context === "object" &&
+      actionRawData.context !== null
+    ) {
+      parsedContext = actionRawData;
+    } else {
+      parsedContext =
+        actionRawData &&
+        parseContext({
+          context: actionRawData.context,
+          fields: actionRawData.fields || {},
+          values: { ...globalValues, ...(actionRawData.values || {}) },
+        });
+    }
+
+    const parsedDomain = await (async () => {
+      try {
+        if (
+          actionRawData?.domain &&
+          Array.isArray(actionRawData.domain) &&
+          actionRawData.domain.length > 0
+        ) {
+          return actionRawData.domain;
+        } else if (actionRawData && !Array.isArray(actionRawData.domain)) {
+          return await ConnectionProvider.getHandler().evalDomain({
+            domain: actionRawData.domain,
+            values: actionRawData.fields
+              ? transformPlainMany2Ones({
+                  fields: actionRawData.fields,
+                  values: { ...(actionRawData.values || {}), ...globalValues },
+                })
+              : {},
+            context: { ...rootContext, ...parsedContext },
+            fields: actionRawData.fields,
+          });
+        }
+        return [];
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    })();
+
+    openAction({
+      ...action,
+      context: { ...rootContext, ...parsedContext },
+      domain: parsedDomain,
+      actionRawData,
+    });
   }
 
   async function retrieveAndOpenAction({
@@ -101,17 +157,19 @@ function RootView(props: RootViewProps, ref: any) {
     const [action_type, action_id_string] = action.split(",");
     const action_id = parseInt(action_id_string);
 
+    const rawContext = dataForAction.context;
     const parsedContext = parseContext({
-      context: dataForAction.context,
+      context: rawContext,
       values: globalValues,
-      fields: {},
     });
+
+    const rawDomain = dataForAction.domain;
 
     const parsedDomain = await (async () => {
       try {
-        if (dataForAction.domain) {
+        if (rawDomain) {
           return await ConnectionProvider.getHandler().evalDomain({
-            domain: dataForAction.domain,
+            domain: rawDomain,
             values: globalValues,
             context: { ...rootContext, ...parsedContext },
           });
@@ -183,6 +241,10 @@ function RootView(props: RootViewProps, ref: any) {
       res_id,
       treeExpandable,
       limit,
+      actionRawData: {
+        context: rawContext,
+        domain: rawDomain,
+      },
     });
   }
 
@@ -242,12 +304,14 @@ function RootView(props: RootViewProps, ref: any) {
 
     const [id, type] = views[0];
     const initialView = { id, type };
+    const rawContext = context;
 
     const parsedContext = parseContext({
-      context,
+      context: rawContext,
       values: { ...values, ...globalValues },
-      fields,
     });
+
+    const rawDomain = domain;
 
     const parsedDomain = domain
       ? await ConnectionProvider.getHandler().evalDomain({
@@ -272,6 +336,12 @@ function RootView(props: RootViewProps, ref: any) {
       action_id,
       action_type,
       limit,
+      actionRawData: {
+        context: rawContext,
+        domain: rawDomain,
+        fields,
+        values,
+      },
     });
   }
 
@@ -291,13 +361,19 @@ function RootView(props: RootViewProps, ref: any) {
       action,
       context: rootContext,
     });
+
+    const rawContext = dataForAction.context;
+
     const parsedContext = parseContext({
-      context: dataForAction.context,
+      context: rawContext,
       values: { ...globalValues, ...values },
       fields: {},
     });
 
     let parsedDomain = [];
+
+    const rawDomain =
+      domain && domain.length > 0 ? domain : dataForAction.domain;
 
     if (domain?.length > 0) {
       parsedDomain = domain;
@@ -375,6 +451,11 @@ function RootView(props: RootViewProps, ref: any) {
         overrideUnsettedLimit && (limit === 0 || limit === false)
           ? DEFAULT_SEARCH_LIMIT
           : limit,
+      actionRawData: {
+        context: rawContext,
+        domain: rawDomain,
+        values,
+      },
     });
   }
 

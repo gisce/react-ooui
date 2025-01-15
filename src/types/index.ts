@@ -403,6 +403,7 @@ type ActionInfo = {
   forced_values?: any;
   treeExpandable?: boolean;
   limit?: number;
+  actionRawData?: ActionRawData;
 };
 
 type Tab = {
@@ -411,6 +412,13 @@ type Tab = {
   closable: boolean;
   content: ReactNode;
   action: ActionInfo | null;
+};
+
+type ActionRawData = {
+  domain?: any;
+  context?: any;
+  values?: any;
+  fields?: any;
 };
 
 export type {
@@ -450,4 +458,5 @@ export type {
   ViewTuple,
   ActionInfo,
   Tab,
+  ActionRawData,
 };
