@@ -38,8 +38,8 @@ export const ArrowSteps = (props: ArrowStepsProps) => {
   const stepStyle = (isActive: boolean): React.CSSProperties => ({
     position: "relative",
     padding: "10px 30px 10px 40px",
-    backgroundColor: isActive ? colorPrimaryBg : colorFillSecondary,
-    color: isActive ? colorPrimaryText : colorText,
+    backgroundColor: isActive ? colorPrimaryText : colorFillSecondary,
+    color: isActive ? colorPrimaryBg : colorText,
     borderTop: `1px solid ${colorBgContainer}`,
     borderBottom: `1px solid ${colorBgContainer}`,
     width: "32%",
@@ -65,7 +65,9 @@ export const ArrowSteps = (props: ArrowStepsProps) => {
     top: 0,
     left: "100%",
     zIndex: 20,
-    borderLeft: `16px solid ${isActive ? colorPrimaryBg : colorFillSecondary}`,
+    borderLeft: `16px solid ${
+      isActive ? colorPrimaryText : colorFillSecondary
+    }`,
     borderTop: "16px solid transparent",
     borderBottom: "16px solid transparent",
   });
