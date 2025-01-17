@@ -43,8 +43,9 @@ function RootView(props: RootViewProps, ref: any) {
 
   useImperativeHandle(ref, () => ({
     retrieveAndOpenAction,
-    handleOpenUrl,
     openShortcut,
+    handleOpenActionUrl,
+    handleOpenActionResourceUrl,
   }));
 
   function remove(key: string) {
@@ -73,7 +74,7 @@ function RootView(props: RootViewProps, ref: any) {
     tabViewsCloseFunctions.current.set(tabKey, canWeClose);
   }
 
-  async function handleOpenUrl(action: ActionInfo) {
+  async function handleOpenActionUrl(action: ActionInfo) {
     const { actionRawData } = action;
 
     let parsedContext;
@@ -126,6 +127,36 @@ function RootView(props: RootViewProps, ref: any) {
       context: { ...rootContext, ...parsedContext },
       domain: parsedDomain,
       actionRawData,
+    });
+  }
+
+  async function handleOpenActionResourceUrl({
+    model,
+    view_id,
+    res_id,
+  }: {
+    model: string;
+    res_id: number;
+    view_id?: number;
+  }) {
+    const view = await ConnectionProvider.getHandler().getView({
+      model,
+      id: view_id || undefined,
+      type: "form",
+      context: rootContext,
+    });
+
+    return await openAction({
+      action_id: -1,
+      action_type: "ir.actions.act_window",
+      model,
+      views: [[view.view_id, "form"]],
+      context: rootContext,
+      domain: [],
+      title: view.title || model,
+      target: "current",
+      initialView: { id: view.view_id, type: "form" },
+      res_id,
     });
   }
 
