@@ -1,10 +1,11 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Tooltip, Typography, theme } from "antd";
 import { WidgetProps } from "@/types";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Label as LabelOoui } from "@gisce/ooui";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { Interweave } from "interweave";
+import dayjs from "@/helpers/dayjs";
 const { Text, Title } = Typography;
 const { useToken } = theme;
 
@@ -28,6 +29,13 @@ const Label = (props: Props) => {
   let labelText = addColon && label.length > 1 ? label + " :" : label;
   if (!ooui.fieldForLabel && ooui._id) {
     labelText = formContext.getFieldValue(ooui._id);
+    if (
+      ooui.fieldType === "date" ||
+      ooui.fieldType === "time" ||
+      ooui.fieldType === "datetime"
+    ) {
+      labelText = labelText ? dayjs(labelText).fromNow() : "";
+    }
   }
   const responsiveAlign = responsiveBehaviour ? "left" : "right";
   const labelAlgin = align || (fieldForLabel ? responsiveAlign : "left");
