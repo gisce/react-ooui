@@ -15,6 +15,7 @@ import { useLocale } from "@gisce/react-formiga-components";
 
 import dayjs from "@/helpers/dayjs";
 import md5 from "md5";
+import iconMapper from "@/helpers/iconMapper";
 
 const { Meta } = Card;
 const { Text } = Typography;
@@ -60,6 +61,7 @@ type EventActionType = {
 
 export type EventsType = {
   type: "action" | "comment";
+  icon?: string;
   event: EventActionType | CommentDataType;
 };
 
@@ -125,12 +127,18 @@ export const Comments = (props: CommentsTypeProps) => {
   );
 };
 
+const getIcon = (icon: string): React.ReactElement => {
+  const Icon: React.ElementType = iconMapper(icon) as any;
+  return Icon && <Icon />;
+};
+
 export const CommentsTimeline = (props: CommentsTimelineProps) => {
   const { value, ooui } = props;
   const items = (value || []).map((i) => {
     if (i.type === "action") {
       return {
         children: `${i.event.date} - ${(i.event as EventActionType).action}`,
+        dot: i.icon ? getIcon(i.icon) : undefined,
       };
     } else if (i.type === "comment") {
       return {
@@ -138,6 +146,7 @@ export const CommentsTimeline = (props: CommentsTimelineProps) => {
         position: (i.event as CommentDataType).isSender ? "left" : "right",
         label: i.event.date,
         children: <Comment data={i.event as CommentDataType} />,
+        dot: i.icon ? getIcon(i.icon) : undefined,
       };
     }
   });
