@@ -1,4 +1,4 @@
-import { ActionInfo, InitialViewData, Tab, View, ViewType } from "@/types";
+import { ActionInfo, Tab, View, ViewType } from "@/types";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import React, { useState, useContext, useMemo } from "react";
 
