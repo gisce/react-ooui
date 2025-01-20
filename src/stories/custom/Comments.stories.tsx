@@ -1,11 +1,11 @@
 // @ts-ignore
 import React from "react";
-import LocaleProvider from "../../context/LocaleContext";
 import {
   Comments,
   CommentsTimeline,
   EventsType,
 } from "../../widgets/custom/Comments";
+import { Comments as CommentsOOui } from "@gisce/ooui";
 
 export default {
   title: "Components/Widgets/Custom/Comments",
@@ -88,11 +88,7 @@ export const Default = (): React.ReactElement => {
       isAuthor: false,
     },
   ];
-  return (
-    <LocaleProvider lang="es_ES">
-      <Comments data={data} />
-    </LocaleProvider>
-  );
+  return <Comments data={data} />;
 };
 
 export const Timeline = () => {
@@ -154,6 +150,7 @@ export const Timeline = () => {
     },
     {
       type: "comment",
+      icon: "mail",
       event: {
         id: 4,
         text:
@@ -183,15 +180,17 @@ export const Timeline = () => {
     },
     {
       type: "action",
+      icon: "close",
       event: {
         action: "Close",
         date: "2023-04-01 13:35:00",
       },
     },
   ] as EventsType[];
-  return (
-    <LocaleProvider lang="es_ES">
-      <CommentsTimeline value={data} />
-    </LocaleProvider>
-  );
+  const ooui = new CommentsOOui({
+    props: {
+      name: "comments",
+    },
+  });
+  return <CommentsTimeline value={data} ooui={ooui} />;
 };
