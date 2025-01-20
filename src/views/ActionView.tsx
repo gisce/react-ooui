@@ -36,6 +36,7 @@ import { TreeActionView } from "./actionViews/TreeActionView";
 import { DashboardActionView } from "./actionViews/DashboardActionView";
 import { resolveViewInfoPromises } from "@/helpers/viewHelper";
 import { useDeepCompareEffect } from "use-deep-compare";
+import { useAutoUpdateUrlAndTitle } from "@/hooks/useAutoUpdateUrlAndTitle";
 
 type Props = {
   domain: any;
@@ -406,98 +407,7 @@ function ActionView(props: Props, ref: any) {
     }
   }
 
-  function content() {
-    return availableViews.map((view) => {
-      switch (view.type) {
-        case "form": {
-          return (
-            <FormActionView
-              key={`${view.type}-${view.view_id}`}
-              formRef={formRef}
-              currentId={currentId}
-              visible={
-                currentView!.type === view.type &&
-                currentView!.view_id === view.view_id
-              }
-              formView={view as FormView}
-              model={model}
-              context={context}
-              domain={domain}
-              defaultValues={formDefaultValues}
-              forcedValues={formForcedValues}
-              results={results}
-              setResults={setResults}
-              setCurrentItemIndex={setCurrentItemIndex}
-            />
-          );
-        }
-        case "tree": {
-          return (
-            <TreeActionView
-              key={`${view.type}-${view.view_id}`}
-              visible={
-                currentView!.type === view.type &&
-                currentView!.view_id === view.view_id
-              }
-              limit={limit}
-              model={model}
-              context={context}
-              domain={domain}
-              formView={
-                availableViews.find((v) => v.type === "form") as FormView
-              }
-              treeView={view as TreeView}
-              searchTreeRef={searchTreeRef}
-              searchTreeNameSearch={searchTreeNameSearch}
-              availableViews={availableViews}
-              results={results}
-              setCurrentItemIndex={setCurrentItemIndex}
-              setCurrentId={setCurrentId}
-              setCurrentView={setCurrentView}
-            />
-          );
-        }
-        case "graph": {
-          return (
-            <GraphActionView
-              key={`${view.type}-${view.view_id}`}
-              visible={
-                currentView!.type === view.type &&
-                currentView!.view_id === view.view_id
-              }
-              viewData={view as GraphView}
-              model={model}
-              context={context}
-              domain={domain}
-              treeView={
-                availableViews.find((v) => v.type === "tree") as TreeView
-              }
-              formView={
-                availableViews.find((v) => v.type === "form") as FormView
-              }
-              graphView={
-                availableViews.find(
-                  (v) => v.view_id === view.view_id,
-                ) as GraphView
-              }
-            />
-          );
-        }
-        case "dashboard": {
-          return (
-            <DashboardActionView
-              key={`${view.type}-${view.view_id}`}
-              dashboardData={view as DashboardView}
-              visible={
-                currentView!.type === view.type &&
-                currentView!.view_id === view.view_id
-              }
-            />
-          );
-        }
-      }
-    });
-  }
+  function content() {}
 
   function onNewClicked() {
     if (currentId === undefined && currentView!.type === "form") {
@@ -548,7 +458,25 @@ function ActionView(props: Props, ref: any) {
       isActive={tabKey === activeKey}
       initialSearchParams={initialSearchParams}
     >
-      {content()}
+      <ActionViewContent
+        availableViews={availableViews}
+        formRef={formRef}
+        currentId={currentId}
+        currentView={currentView}
+        model={model}
+        context={context}
+        domain={domain}
+        formDefaultValues={formDefaultValues}
+        results={results}
+        setResults={setResults}
+        setCurrentItemIndex={setCurrentItemIndex}
+        formForcedValues={formForcedValues}
+        limit={limit}
+        searchTreeRef={searchTreeRef}
+        searchTreeNameSearch={searchTreeNameSearch}
+        setCurrentView={setCurrentView}
+        setCurrentId={setCurrentId}
+      />
       <GoToResourceModal
         visible={gtResourceModalVisible}
         onIdSubmitted={goToResourceId}
@@ -560,5 +488,130 @@ function ActionView(props: Props, ref: any) {
     </ActionViewProvider>
   );
 }
+
+const ActionViewContent = ({
+  availableViews,
+  formRef,
+  currentId,
+  currentView,
+  model,
+  context,
+  domain,
+  formDefaultValues,
+  results,
+  setResults,
+  setCurrentItemIndex,
+  formForcedValues,
+  limit,
+  searchTreeRef,
+  searchTreeNameSearch,
+  setCurrentView,
+  setCurrentId,
+}: {
+  availableViews: View[];
+  formRef: React.RefObject<any>;
+  currentId: number | undefined;
+  currentView: View;
+  model: string;
+  context: any;
+  domain: any;
+  formDefaultValues: any;
+  results: any;
+  setResults: any;
+  setCurrentItemIndex: any;
+  setCurrentId: any;
+  setCurrentView: any;
+  limit?: number;
+  searchTreeRef: React.RefObject<any>;
+  searchTreeNameSearch?: string;
+  formForcedValues: any;
+}) => {
+  useAutoUpdateUrlAndTitle();
+
+  return availableViews.map((view) => {
+    switch (view.type) {
+      case "form": {
+        return (
+          <FormActionView
+            key={`${view.type}-${view.view_id}`}
+            formRef={formRef}
+            currentId={currentId}
+            visible={
+              currentView!.type === view.type &&
+              currentView!.view_id === view.view_id
+            }
+            formView={view as FormView}
+            model={model}
+            context={context}
+            domain={domain}
+            defaultValues={formDefaultValues}
+            forcedValues={formForcedValues}
+            results={results}
+            setResults={setResults}
+            setCurrentItemIndex={setCurrentItemIndex}
+          />
+        );
+      }
+      case "tree": {
+        return (
+          <TreeActionView
+            key={`${view.type}-${view.view_id}`}
+            visible={
+              currentView!.type === view.type &&
+              currentView!.view_id === view.view_id
+            }
+            limit={limit}
+            model={model}
+            context={context}
+            domain={domain}
+            formView={availableViews.find((v) => v.type === "form") as FormView}
+            treeView={view as TreeView}
+            searchTreeRef={searchTreeRef}
+            searchTreeNameSearch={searchTreeNameSearch}
+            availableViews={availableViews}
+            results={results}
+            setCurrentItemIndex={setCurrentItemIndex}
+            setCurrentId={setCurrentId}
+            setCurrentView={setCurrentView}
+          />
+        );
+      }
+      case "graph": {
+        return (
+          <GraphActionView
+            key={`${view.type}-${view.view_id}`}
+            visible={
+              currentView!.type === view.type &&
+              currentView!.view_id === view.view_id
+            }
+            viewData={view as GraphView}
+            model={model}
+            context={context}
+            domain={domain}
+            treeView={availableViews.find((v) => v.type === "tree") as TreeView}
+            formView={availableViews.find((v) => v.type === "form") as FormView}
+            graphView={
+              availableViews.find(
+                (v) => v.view_id === view.view_id,
+              ) as GraphView
+            }
+          />
+        );
+      }
+      case "dashboard": {
+        return (
+          <DashboardActionView
+            key={`${view.type}-${view.view_id}`}
+            dashboardData={view as DashboardView}
+            visible={
+              currentView!.type === view.type &&
+              currentView!.view_id === view.view_id
+            }
+          />
+        );
+      }
+    }
+  });
+};
 
 export default forwardRef(ActionView);
