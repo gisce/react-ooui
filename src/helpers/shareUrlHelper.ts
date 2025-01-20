@@ -1,12 +1,10 @@
 import { ActionInfo, ActionRawData } from "@/types";
 
-const OPEN_ACTION_PATH = "openAction";
+const OPEN_ACTION_PATH = "action";
 
 export const createShareOpenUrl = (action: ActionInfo) => {
-  const url = new URL(window.location.href);
-  url.pathname += url.pathname.endsWith("/")
-    ? OPEN_ACTION_PATH
-    : `/${OPEN_ACTION_PATH}`;
+  const url = new URL(window.location.origin);
+  url.pathname = OPEN_ACTION_PATH;
 
   // Parameters to exclude from the URL
   const ignoredParams = ["target", "context", "domain"];
