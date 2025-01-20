@@ -108,7 +108,7 @@ jobs:
         target: ['alpha', 'v2-develop']
     steps:
       - name: Call create sync pr
-        uses: gisce/create-sync-pr@v0.0.25
+        uses: gisce/create-sync-pr@v0.0.26
         with:
           repository: ${{ env.LIBRARY_NAME }}
           targetBranch: ${{ matrix.target }}
