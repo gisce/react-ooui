@@ -1,9 +1,4 @@
-import {
-  FormView,
-  GenerateReportOptions,
-  ViewType,
-  ActionRawData,
-} from "@/types";
+import { FormView, GenerateReportOptions, ViewType } from "@/types";
 import React, {
   useContext,
   useRef,
@@ -79,6 +74,7 @@ const ContentRootProvider = (
 
   useImperativeHandle(ref, () => ({
     openActionModal,
+    processAction,
   }));
 
   // Action modal state
@@ -177,7 +173,9 @@ const ContentRootProvider = (
     onRefreshParentValues?: any;
   }) {
     const { type } = actionData;
-    onRefreshParentValues.current.push(onRefreshParentValuesFn);
+    if (onRefreshParentValuesFn) {
+      onRefreshParentValues.current.push(onRefreshParentValuesFn);
+    }
 
     if (type === "ir.actions.report.xml") {
       return await generateReport({
@@ -222,7 +220,7 @@ const ContentRootProvider = (
       )[0];
     }
 
-    const rawContext = actionData.context;
+    const rawContext = actionData?.context;
     const responseContext =
       typeof actionData?.context === "string"
         ? parseContext({
@@ -230,7 +228,7 @@ const ContentRootProvider = (
             fields,
             values: { ...values, ...globalValues },
           })
-        : actionData.context;
+        : actionData?.context || {};
 
     const mergedContext = {
       ...context,
@@ -296,6 +294,7 @@ const ContentRootProvider = (
           fields,
           values,
         },
+        res_id: actionData.res_id,
       });
 
       return { closeParent: true };

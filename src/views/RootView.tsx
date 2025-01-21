@@ -46,6 +46,7 @@ function RootView(props: RootViewProps, ref: any) {
     openShortcut,
     handleOpenActionUrl,
     handleOpenActionResourceUrl,
+    processAction: (contentRootProvider.current as any).processAction,
   }));
 
   function remove(key: string) {
