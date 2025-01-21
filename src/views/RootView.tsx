@@ -48,6 +48,7 @@ function RootView(props: RootViewProps, ref: any) {
   useImperativeHandle(ref, () => ({
     retrieveAndOpenAction,
     openShortcut,
+    processAction: (contentRootProvider.current as any).processAction,
   }));
 
   function remove(key: string) {
