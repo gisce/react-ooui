@@ -72,6 +72,7 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
     getContext,
     fetchValues: fetchParentFormValues,
   } = formContext || {};
+  const formRef = useRef<any>();
 
   const showToggleButton = views.size > 1;
   const showCreateButton = views.get("form")?.fields !== undefined;
@@ -265,6 +266,8 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
         showCreateButton={showCreateButton}
         showToggleButton={showToggleButton}
         toolbar={views.get(currentView)?.toolbar}
+        context={{ ...getContext?.(), ...context }}
+        formRef={formRef}
       />
       {currentView === "tree" && (
         <One2manyTree
@@ -293,6 +296,7 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
       )}
       {currentView === "form" && (
         <One2manyForm
+          ref={formRef}
           items={items}
           formView={views.get("form")}
           context={context}

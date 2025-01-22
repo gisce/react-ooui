@@ -82,6 +82,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
     useFormToolbarButtons({
       toolbar,
       mustDisableButtons,
+      formRef,
     });
 
   const tryAction = useCallback(

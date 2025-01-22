@@ -107,6 +107,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const [sorter, setSorter] = useState<any>();
   const originalSortItemIds = useRef<number[]>();
   const [colorsForResults, setColorsForResults] = useState<any>(undefined);
+  const formRef = useRef<any>();
 
   const {
     readOnly,
@@ -573,6 +574,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
 
       return (
         <Form
+          ref={formRef}
           formView={views.get("form")}
           values={itemsToShow[itemIndex]?.values}
           parentContext={{ ...getContext?.(), ...context }}
@@ -694,6 +696,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         showCreateButton={views.get("form")?.fields !== undefined}
         showToggleButton={views.size > 1}
         toolbar={views.get(currentView)?.toolbar}
+        context={{ ...getContext?.(), ...context }}
+        formRef={formRef}
       />
       {content()}
       <FormModal

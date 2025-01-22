@@ -1,6 +1,5 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, RefObject } from "react";
 import { useLocale } from "@gisce/react-formiga-components";
-import { useActionViewContext } from "@/context/ActionViewContext";
 import {
   ContentRootContext,
   ContentRootContextType,
@@ -13,6 +12,7 @@ import {
 interface UseFormToolbarButtonsProps {
   toolbar: any;
   mustDisableButtons?: boolean;
+  formRef: RefObject<any>;
 }
 
 interface SaveDocumentResult {
@@ -23,6 +23,7 @@ interface SaveDocumentResult {
 export const useFormToolbarButtons = ({
   toolbar,
   mustDisableButtons = false,
+  formRef,
 }: UseFormToolbarButtonsProps) => {
   const { t } = useLocale();
   const contentRootContext = useContext(
@@ -32,18 +33,21 @@ export const useFormToolbarButtons = ({
     TabManagerContext,
   ) as TabManagerContextType;
 
-  const { formRef, onFormSave } = useActionViewContext();
   const { processAction } = contentRootContext || {};
   const { openRelate } = tabManagerContext || {};
+
+  const onFormSave = useCallback(async () => {
+    return await formRef.current?.submitForm();
+  }, [formRef]);
 
   const runAction = useCallback(
     (actionData: any) => {
       processAction?.({
         actionData,
-        values: (formRef.current as any).getValues(),
-        fields: (formRef.current as any).getFields(),
-        context: (formRef.current as any).getContext(),
-        onRefreshParentValues: () => (formRef.current as any).fetchValues(),
+        values: formRef.current?.getValues(),
+        fields: formRef.current?.getFields(),
+        context: formRef.current?.getContext(),
+        onRefreshParentValues: () => formRef.current?.fetchValues(),
       });
     },
     [formRef, processAction],
@@ -97,8 +101,8 @@ export const useFormToolbarButtons = ({
         if (result.succeed) {
           openRelate({
             relateData: relate,
-            values: (formRef.current as any).getValues(),
-            fields: (formRef.current as any).getFields(),
+            values: formRef.current?.getValues(),
+            fields: formRef.current?.getFields(),
             action_id: relate.id,
             action_type: relate.type,
           });

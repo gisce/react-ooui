@@ -1,6 +1,6 @@
-import { memo } from "react";
+import { memo, RefObject } from "react";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
-import { useLocale } from "@gisce/react-formiga-components";
+import { useLocale, DropdownButton } from "@gisce/react-formiga-components";
 import {
   FileAddOutlined,
   DeleteOutlined,
@@ -9,9 +9,14 @@ import {
   AlignLeftOutlined,
   SearchOutlined,
   ApiOutlined,
+  ThunderboltOutlined,
+  PrinterOutlined,
+  EnterOutlined,
 } from "@ant-design/icons";
 import { ViewType } from "@/types";
 import { theme, Badge } from "antd";
+import { useFormToolbarButtons } from "@/hooks/useFormToolbarButtons";
+import { useTreeToolbarButtons } from "@/hooks/useTreeToolbarButtons";
 const { useToken } = theme;
 
 type One2manyTopBarProps = {
@@ -32,6 +37,8 @@ type One2manyTopBarProps = {
   showToggleButton: boolean;
   showCreateButton: boolean;
   toolbar?: any;
+  context?: any;
+  formRef: RefObject<any>;
 };
 
 function One2manyTopBarComponent(props: One2manyTopBarProps) {
@@ -51,10 +58,29 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
     selectedRowKeys,
     showCreateButton,
     showToggleButton,
+    toolbar,
+    context,
+    formRef,
   } = props;
 
   const { token } = useToken();
   const { t } = useLocale();
+
+  const { actionButtonProps, printButtonProps, relateButtonProps } =
+    useFormToolbarButtons({
+      toolbar,
+      mustDisableButtons: readOnly,
+      formRef,
+    });
+
+  const {
+    actionButtonProps: treeActionButtonProps,
+    printButtonProps: treePrintButtonProps,
+  } = useTreeToolbarButtons({
+    toolbar,
+    disabled: readOnly,
+    parentContext: context,
+  });
 
   return (
     <div className="flex mb-2">
@@ -105,6 +131,29 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
             icon={<AlignLeftOutlined />}
             onClick={onToggleViewMode}
           />
+        )}
+        {toolbar && (
+          <>
+            <Separator />
+            <DropdownButton
+              icon={<ThunderboltOutlined />}
+              {...(mode === "form" ? actionButtonProps : treeActionButtonProps)}
+            />
+            <Separator />
+            <DropdownButton
+              icon={<PrinterOutlined />}
+              {...(mode === "form" ? printButtonProps : treePrintButtonProps)}
+            />
+            {mode === "form" && (
+              <>
+                <Separator />
+                <DropdownButton
+                  icon={<EnterOutlined />}
+                  {...relateButtonProps}
+                />
+              </>
+            )}
+          </>
         )}
       </div>
     </div>
