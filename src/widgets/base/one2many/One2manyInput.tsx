@@ -693,6 +693,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         selectedRowKeys={selectedRowKeys}
         showCreateButton={views.get("form")?.fields !== undefined}
         showToggleButton={views.size > 1}
+        toolbar={views.get(currentView)?.toolbar}
       />
       {content()}
       <FormModal

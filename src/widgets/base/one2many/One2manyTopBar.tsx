@@ -1,5 +1,6 @@
+import { memo } from "react";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
-
+import { useLocale } from "@gisce/react-formiga-components";
 import {
   FileAddOutlined,
   DeleteOutlined,
@@ -30,9 +31,10 @@ type One2manyTopBarProps = {
   selectedRowKeys: string[];
   showToggleButton: boolean;
   showCreateButton: boolean;
+  toolbar?: any;
 };
 
-export const One2manyTopBar = (props: One2manyTopBarProps) => {
+function One2manyTopBarComponent(props: One2manyTopBarProps) {
   const {
     title: titleString,
     readOnly,
@@ -50,33 +52,159 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
     showCreateButton,
     showToggleButton,
   } = props;
+
   const { token } = useToken();
+  const { t } = useLocale();
 
-  function separator() {
-    return <div className="inline-block w-3" />;
-  }
-
-  function title() {
-    return (
-      <div
-        className="flex flex-grow h-8 text-white"
-        style={{
-          borderRadius: token.borderRadius,
-          backgroundColor: token.colorPrimaryActive,
-        }}
-      >
-        <div className="flex flex-col items-center justify-center h-full">
-          <span className="pl-2 font-bold">{titleString}</span>
-        </div>
+  return (
+    <div className="flex mb-2">
+      <Title title={titleString} token={token} />
+      <div className="flex-none h-8 pl-2">
+        {mode !== "graph" && showCreateButton && (
+          <ButtonWithTooltip
+            tooltip={t("createNewItem")}
+            icon={<FileAddOutlined />}
+            disabled={readOnly}
+            onClick={onCreateItem}
+          />
+        )}
+        {isMany2Many && showCreateButton && (
+          <>
+            <Separator />
+            <ButtonWithTooltip
+              tooltip={t("searchExistingItem")}
+              icon={<SearchOutlined />}
+              disabled={readOnly}
+              onClick={onSearchItem}
+            />
+          </>
+        )}
+        {mode !== "graph" && <Separator />}
+        {mode !== "graph" && (
+          <DeleteButton
+            isMany2Many={isMany2Many}
+            totalItems={totalItems}
+            readOnly={readOnly}
+            mode={mode}
+            selectedRowKeys={selectedRowKeys}
+            onDelete={onDelete}
+          />
+        )}
+        {mode === "form" && (
+          <ItemBrowser
+            currentItemIndex={currentItemIndex}
+            totalItems={totalItems}
+            onPreviousItem={onPreviousItem}
+            onNextItem={onNextItem}
+          />
+        )}
+        <Separator />
+        {showToggleButton && (
+          <ButtonWithTooltip
+            tooltip={t("toggleViewMode")}
+            icon={<AlignLeftOutlined />}
+            onClick={onToggleViewMode}
+          />
+        )}
       </div>
-    );
-  }
+    </div>
+  );
+}
 
-  function deleteButton() {
+const Title = memo(({ title, token }: { title: string; token: any }) => (
+  <div
+    className="flex flex-grow h-8 text-white"
+    style={{
+      borderRadius: token.borderRadius,
+      backgroundColor: token.colorPrimaryActive,
+    }}
+  >
+    <div className="flex flex-col items-center justify-center h-full">
+      <span className="pl-2 font-bold">{title}</span>
+    </div>
+  </div>
+));
+Title.displayName = "Title";
+
+const Separator = memo(() => <div className="inline-block w-3" />);
+Separator.displayName = "Separator";
+
+const ItemIndex = memo(
+  ({
+    currentItemIndex,
+    totalItems,
+  }: {
+    currentItemIndex: number;
+    totalItems: number;
+  }) => {
+    const itemToShow =
+      totalItems === 0 ? "_" : (currentItemIndex + 1).toString();
+    return (
+      <span className="pl-1 pr-1">
+        ({itemToShow}/{totalItems})
+      </span>
+    );
+  },
+);
+ItemIndex.displayName = "ItemIndex";
+
+const ItemBrowser = memo(
+  ({
+    currentItemIndex,
+    totalItems,
+    onPreviousItem,
+    onNextItem,
+  }: {
+    currentItemIndex: number;
+    totalItems: number;
+    onPreviousItem: () => void;
+    onNextItem: () => void;
+  }) => {
+    const { t } = useLocale();
+    return (
+      <>
+        <Separator />
+        <ButtonWithTooltip
+          tooltip={t("previousItem")}
+          icon={<LeftOutlined />}
+          onClick={onPreviousItem}
+        />
+        <ItemIndex
+          currentItemIndex={currentItemIndex}
+          totalItems={totalItems}
+        />
+        <ButtonWithTooltip
+          tooltip={t("nextItem")}
+          icon={<RightOutlined />}
+          onClick={onNextItem}
+        />
+      </>
+    );
+  },
+);
+ItemBrowser.displayName = "ItemBrowser";
+
+const DeleteButton = memo(
+  ({
+    isMany2Many,
+    totalItems,
+    readOnly,
+    mode,
+    selectedRowKeys,
+    onDelete,
+  }: {
+    isMany2Many: boolean;
+    totalItems: number;
+    readOnly: boolean;
+    mode: ViewType;
+    selectedRowKeys: string[];
+    onDelete: () => void;
+  }) => {
+    const { t } = useLocale();
     return (
       <Badge count={selectedRowKeys.length}>
         <ButtonWithTooltip
-          tooltip={isMany2Many ? "Unlink" : "Delete"}
+          tooltip={isMany2Many ? t("unlink") : t("delete")}
           icon={isMany2Many ? <ApiOutlined /> : <DeleteOutlined />}
           onClick={onDelete}
           danger={!isMany2Many}
@@ -89,76 +217,8 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
         />
       </Badge>
     );
-  }
+  },
+);
+DeleteButton.displayName = "DeleteButton";
 
-  function index() {
-    let itemToShow = "_";
-    if (totalItems === 0) {
-      itemToShow = "_";
-    } else {
-      itemToShow = (currentItemIndex + 1).toString();
-    }
-    return (
-      <span className="pl-1 pr-1">
-        ({itemToShow}/{totalItems})
-      </span>
-    );
-  }
-
-  function itemBrowser() {
-    return (
-      <>
-        {separator()}
-        <ButtonWithTooltip
-          tooltip={"Previous item"}
-          icon={<LeftOutlined />}
-          onClick={onPreviousItem}
-        />
-        {index()}
-        <ButtonWithTooltip
-          tooltip={"Next item"}
-          icon={<RightOutlined />}
-          onClick={onNextItem}
-        />
-      </>
-    );
-  }
-
-  return (
-    <div className="flex mb-2">
-      {title()}
-      <div className="flex-none h-8 pl-2">
-        {mode !== "graph" && showCreateButton && (
-          <ButtonWithTooltip
-            tooltip={"Create new item"}
-            icon={<FileAddOutlined />}
-            disabled={readOnly}
-            onClick={onCreateItem}
-          />
-        )}
-        {isMany2Many && showCreateButton && (
-          <>
-            {separator()}
-            <ButtonWithTooltip
-              tooltip={"Search existing item"}
-              icon={<SearchOutlined />}
-              disabled={readOnly}
-              onClick={onSearchItem}
-            />
-          </>
-        )}
-        {mode !== "graph" && separator()}
-        {mode !== "graph" && deleteButton()}
-        {mode === "form" && itemBrowser()}
-        {separator()}
-        {showToggleButton && (
-          <ButtonWithTooltip
-            tooltip={"Toggle view mode"}
-            icon={<AlignLeftOutlined />}
-            onClick={onToggleViewMode}
-          />
-        )}
-      </div>
-    </div>
-  );
-};
+export const One2manyTopBar = memo(One2manyTopBarComponent);

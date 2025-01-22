@@ -111,4 +111,10 @@ export default {
   not: "No",
   loading: "Cargando...",
   pendingToCalculate: "Pendiente de calcular",
+  createNewItem: "Crear nuevo elemento",
+  searchExistingItem: "Buscar elemento existente",
+  toggleViewMode: "Cambiar modo de vista",
+  previousItem: "Elemento anterior",
+  nextItem: "Elemento siguiente",
+  unlink: "Desvincular",
 };

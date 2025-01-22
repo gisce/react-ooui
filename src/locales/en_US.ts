@@ -105,4 +105,10 @@ export default {
   not: "Not",
   loading: "Loading...",
   pendingToCalculate: "Pending to calculate",
+  createNewItem: "Create new item",
+  searchExistingItem: "Search existing item",
+  toggleViewMode: "Toggle view mode",
+  previousItem: "Previous item",
+  nextItem: "Next item",
+  unlink: "Unlink",
 };

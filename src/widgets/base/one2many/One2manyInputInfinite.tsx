@@ -264,6 +264,7 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
         selectedRowKeys={selectedRowKeys}
         showCreateButton={showCreateButton}
         showToggleButton={showToggleButton}
+        toolbar={views.get(currentView)?.toolbar}
       />
       {currentView === "tree" && (
         <One2manyTree
