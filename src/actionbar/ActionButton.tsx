@@ -1,11 +1,10 @@
-import React from "react";
 import ButtonWithTooltip from "@/common/ButtonWithTooltip";
 import { LoadingOutlined } from "@ant-design/icons";
 import { ButtonProps } from "antd";
 
 type Props = ButtonProps & {
   tooltip: string;
-  onClick: any;
+  onClick?: any;
   icon: any;
   disabled?: boolean;
   label?: string;

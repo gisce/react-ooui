@@ -32,6 +32,7 @@ import { mergeParams } from "@/helpers/searchHelper";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { useHotkeys } from "react-hotkeys-hook";
+import { ActionBarSeparator } from "./FormActionBar";
 
 type Props = {
   parentContext?: any;
@@ -205,13 +206,19 @@ function TreeActionBar(props: Props) {
     });
   }
 
+  const finalDomain = (() => {
+    const domain = searchTreeRef?.current?.getDomain();
+    const finalValues = mergeParams(domain || [], searchParams || []);
+    return finalValues;
+  })();
+
   return (
     <Space wrap={true}>
       {treeIsLoading && (
         <>
           <Spin />
-          {separator()}
-          {separator()}
+          <ActionBarSeparator />
+          <ActionBarSeparator />
         </>
       )}
       {treeExpandable ? null : (
@@ -246,7 +253,7 @@ function TreeActionBar(props: Props) {
               badgeNumber={searchParams?.length}
             />
           )}
-          {separator()}
+          <ActionBarSeparator />
           <NewButton disabled={treeIsLoading} />
           <ActionButton
             icon={<CopyOutlined />}
@@ -270,7 +277,7 @@ function TreeActionBar(props: Props) {
             loading={removingItem}
             onClick={tryDelete}
           />
-          {separator()}
+          <ActionBarSeparator />
         </>
       )}
       <ActionButton
@@ -295,7 +302,7 @@ function TreeActionBar(props: Props) {
       />
       {!treeExpandable && (
         <>
-          {separator()}
+          <ActionBarSeparator />
           <ChangeViewButton
             currentView={currentView}
             availableViews={availableViews}
@@ -308,7 +315,7 @@ function TreeActionBar(props: Props) {
           />
         </>
       )}
-      {separator()}
+      <ActionBarSeparator />
       <DropdownButton
         icon={<ThunderboltOutlined />}
         placement="bottomRight"
@@ -351,7 +358,7 @@ function TreeActionBar(props: Props) {
       />
       {advancedExportEnabled && (
         <>
-          {separator()}
+          <ActionBarSeparator />
           <DropdownButton
             placement="bottomRight"
             icon={
@@ -424,10 +431,7 @@ function TreeActionBar(props: Props) {
             visible={exportModalVisible}
             onClose={() => setExportModalVisible(false)}
             model={currentModel!}
-            domain={mergeParams(
-              searchTreeRef?.current?.getDomain() || [],
-              searchParams || [],
-            )}
+            domain={finalDomain}
             limit={limit}
             totalRegisters={totalItems || 0}
             selectedRegistersToExport={selectedRowItems}
@@ -438,10 +442,6 @@ function TreeActionBar(props: Props) {
       )}
     </Space>
   );
-}
-
-function separator() {
-  return <div className="inline-block w-2" />;
 }
 
 export default TreeActionBar;

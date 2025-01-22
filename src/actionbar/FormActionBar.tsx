@@ -197,8 +197,8 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       {formIsLoading && (
         <>
           <Spin />
-          {separator()}
-          {separator()}
+          <ActionBarSeparator />
+          <ActionBarSeparator />
         </>
       )}
       <NewButton disabled={mustDisableButtons} />
@@ -237,7 +237,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           })
         }
       />
-      {separator()}
+      <ActionBarSeparator />
       <ActionButton
         icon={<InfoCircleOutlined />}
         tooltip={t("showLogs")}
@@ -250,7 +250,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         disabled={mustDisableButtons || currentId === undefined}
         onClick={() => tryAction(() => (formRef.current as any).fetchValues())}
       />
-      {separator()}
+      <ActionBarSeparator />
       <ChangeViewButton
         currentView={currentView}
         previousView={previousView}
@@ -263,7 +263,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         disabled={mustDisableButtons}
         formHasChanges={formHasChanges}
       />
-      {separator()}
+      <ActionBarSeparator />
       <Space>
         <ActionButton
           icon={<LeftOutlined />}
@@ -278,7 +278,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           onClick={() => tryAction(onNextClick)}
         />
       </Space>
-      {separator()}
+      <ActionBarSeparator />
       <DropdownButton
         icon={<ThunderboltOutlined />}
         placement="bottomRight"
@@ -379,7 +379,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
   );
 }
 
-const separator = () => <div className="inline-block w-2" />;
+export const ActionBarSeparator = () => <div className="inline-block w-2" />;
 
 const saveDocument = async ({
   onFormSave,
