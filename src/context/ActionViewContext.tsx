@@ -1,5 +1,6 @@
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { View } from "@/types";
+import { convertParamsToValues } from "@/widgets/views/searchFilter/SideSearchFilter";
 import { ColumnState } from "@gisce/react-formiga-table";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -30,6 +31,7 @@ type ActionViewProviderProps = {
   limit?: number;
   isActive: boolean;
   children: React.ReactNode;
+  initialSearchParams?: any[];
 };
 
 export type ActionViewContextType = Omit<
@@ -113,6 +115,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     goToResourceId,
     limit: limitProps,
     isActive,
+    initialSearchParams,
   } = props;
 
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
@@ -122,11 +125,15 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [treeIsLoading, setTreeIsLoading] = useState<boolean>(true);
   const [attachments, setAttachments] = useState<any>([]);
   const [duplicatingItem, setDuplicatingItem] = useState<boolean>(false);
-  const [searchParams, setSearchParams] = useState<any[]>([]);
+  const [searchParams, setSearchParams] = useState<any[]>(
+    initialSearchParams || [],
+  );
   const [searchVisible, setSearchVisible] = useState<boolean>(false);
   const [graphIsLoading, setGraphIsLoading] = useState<boolean>(true);
   const [previousView, setPreviousView] = useState<View>();
-  const [searchValues, setSearchValues] = useState<any>({});
+  const [searchValues, setSearchValues] = useState<any>(
+    convertParamsToValues(initialSearchParams || []),
+  );
   const [treeFirstVisibleRow, setTreeFirstVisibleRow] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<SearchQueryParams>();
   const [isInfiniteTree, setIsInfiniteTree] = useState<boolean>(false);

@@ -15,6 +15,7 @@ type ConfigContextProps = ConfigContextValues & {
 
 type ConfigContextValues = {
   erpFeatures: ErpFeaturesMap;
+  title: string;
   globalValues?: Record<string, any>;
   rootContext?: Record<string, any>;
   devMode?: boolean;
@@ -22,6 +23,7 @@ type ConfigContextValues = {
 
 const defaultConfigContext: ConfigContextValues = {
   erpFeatures: {},
+  title: "Webclient",
   globalValues: {},
   rootContext: {},
   devMode: false,
@@ -55,6 +57,7 @@ export const ConfigContextProvider = memo(
     globalValues,
     rootContext,
     devMode,
+    title,
     children,
   }: ConfigContextProps & { children?: React.ReactNode }) => {
     const providerValue = useMemo(
@@ -63,8 +66,9 @@ export const ConfigContextProvider = memo(
         globalValues,
         rootContext,
         devMode,
+        title,
       }),
-      [erpFeatures, globalValues, rootContext, devMode],
+      [erpFeatures, globalValues, rootContext, devMode, title],
     );
 
     return (

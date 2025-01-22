@@ -5,7 +5,7 @@ import { ButtonProps } from "antd";
 
 type Props = ButtonProps & {
   tooltip: string;
-  onClick: any;
+  onClick?: any;
   icon: any;
   disabled?: boolean;
   label?: string;

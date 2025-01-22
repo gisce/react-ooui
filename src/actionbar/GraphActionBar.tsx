@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Space } from "antd";
 import ChangeViewButton from "./ChangeViewButton";
 import {
@@ -10,6 +10,8 @@ import { useLocale } from "@gisce/react-formiga-components";
 import ButtonWithBadge from "./ButtonWithBadge";
 import { ReloadOutlined, FilterOutlined } from "@ant-design/icons";
 import { View } from "@/types";
+import { ShareUrlButton } from "./ShareUrlButton";
+import { ActionBarSeparator } from "./FormActionBar";
 
 function GraphActionBar({ refreshGraph }: { refreshGraph: () => void }) {
   const { t } = useLocale();
@@ -60,6 +62,8 @@ function GraphActionBar({ refreshGraph }: { refreshGraph: () => void }) {
         disabled={false}
         previousView={previousView}
       />
+      <ActionBarSeparator />
+      <ShareUrlButton searchParams={searchParams} />
     </Space>
   );
 }
