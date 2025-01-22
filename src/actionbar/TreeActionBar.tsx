@@ -20,10 +20,6 @@ import { useLocale, DropdownButton } from "@gisce/react-formiga-components";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import ConnectionProvider from "@/ConnectionProvider";
 import showErrorDialog from "@/ui/ActionErrorDialog";
-import {
-  ContentRootContext,
-  ContentRootContextType,
-} from "@/context/ContentRootContext";
 import ButtonWithBadge from "./ButtonWithBadge";
 import { showLogInfo } from "@/helpers/logInfoHelper";
 import SearchBar from "./SearchBar";
@@ -33,6 +29,10 @@ import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { useHotkeys } from "react-hotkeys-hook";
 import { ActionBarSeparator } from "./FormActionBar";
+import {
+  useTreeToolbarButtons,
+  useRunTreeAction,
+} from "@/hooks/useTreeToolbarButtons";
 
 type Props = {
   parentContext?: any;
@@ -74,12 +74,16 @@ function TreeActionBar(props: Props) {
     ErpFeatureKeys.FEATURE_ADVANCED_EXPORT,
   );
   const { t } = useLocale();
-  const contentRootContext = useContext(
-    ContentRootContext,
-  ) as ContentRootContextType;
-  const { processAction } = contentRootContext || {};
   const [exportModalVisible, setExportModalVisible] = useState(false);
   const isFirstMount = useRef(true);
+
+  const { actionButtonProps, printButtonProps } = useTreeToolbarButtons({
+    toolbar,
+    disabled: treeIsLoading,
+    parentContext,
+  });
+
+  const runAction = useRunTreeAction();
 
   useHotkeys(
     "ctrl+l,command+l",
@@ -185,25 +189,6 @@ function TreeActionBar(props: Props) {
     } finally {
       setDuplicatingItem?.(false);
     }
-  }
-
-  function runAction(actionData: any) {
-    processAction?.({
-      actionData,
-      values: {
-        active_id: selectedRowItems?.map((item) => item.id)[0],
-        active_ids: selectedRowItems?.map((item) => item.id),
-      },
-      fields: {},
-      context: {
-        ...parentContext,
-        active_id: selectedRowItems?.map((item) => item.id)[0],
-        active_ids: selectedRowItems?.map((item) => item.id),
-      },
-      onRefreshParentValues: () => {
-        searchTreeRef?.current?.refreshResults();
-      },
-    });
   }
 
   const finalDomain = (() => {
@@ -316,46 +301,8 @@ function TreeActionBar(props: Props) {
         </>
       )}
       <ActionBarSeparator />
-      <DropdownButton
-        icon={<ThunderboltOutlined />}
-        placement="bottomRight"
-        disabled={
-          !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
-        }
-        onRetrieveData={async () => [
-          { label: t("actions"), items: toolbar?.action || [] },
-        ]}
-        onItemClick={(action: any) => {
-          if (!action) {
-            return;
-          }
-
-          runAction(action);
-        }}
-      />
-      <DropdownButton
-        icon={<PrinterOutlined />}
-        placement="bottomRight"
-        disabled={
-          !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
-        }
-        onRetrieveData={async () => {
-          return [{ label: t("reports"), items: toolbar?.print || [] }];
-        }}
-        onItemClick={(report: any) => {
-          if (!report) {
-            return;
-          }
-
-          runAction({
-            ...report,
-            datas: {
-              ...(report.datas || {}),
-              ids: selectedRowItems!.map((item) => item.id),
-            },
-          });
-        }}
-      />
+      <DropdownButton icon={<ThunderboltOutlined />} {...actionButtonProps} />
+      <DropdownButton icon={<PrinterOutlined />} {...printButtonProps} />
       {advancedExportEnabled && (
         <>
           <ActionBarSeparator />
@@ -408,16 +355,19 @@ function TreeActionBar(props: Props) {
                   idsToExport = results?.map((item) => item.id) || [];
                 }
 
-                runAction({
-                  id: -1,
-                  model: currentModel,
-                  report_name: "printscreen.list",
-                  type: "ir.actions.report.xml",
-                  datas: {
+                runAction(
+                  {
+                    id: -1,
                     model: currentModel,
-                    ids: idsToExport,
+                    report_name: "printscreen.list",
+                    type: "ir.actions.report.xml",
+                    datas: {
+                      model: currentModel,
+                      ids: idsToExport,
+                    },
                   },
-                });
+                  parentContext,
+                );
                 return;
               }
 

@@ -27,18 +27,15 @@ import {
   TabManagerContext,
   TabManagerContextType,
 } from "@/context/TabManagerContext";
-import {
-  ContentRootContext,
-  ContentRootContextType,
-} from "@/context/ContentRootContext";
 import AttachmentsButton from "./AttachmentsButton";
 import { Attachment } from "./AttachmentsButtonWrapper";
 import { useNextPrevious } from "./useNextPrevious";
+import {
+  saveDocument,
+  useFormToolbarButtons,
+} from "@/hooks/useFormToolbarButtons";
 
 function FormActionBar({ toolbar }: { toolbar: any }) {
-  const contentRootContext = useContext(
-    ContentRootContext,
-  ) as ContentRootContextType;
   const tabManagerContext = useContext(
     TabManagerContext,
   ) as TabManagerContextType;
@@ -73,11 +70,16 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     isActive,
   } = useActionViewContext();
 
-  const { processAction } = contentRootContext || {};
-  const { openRelate, openDefaultActionForModel } = tabManagerContext || {};
+  const { openDefaultActionForModel } = tabManagerContext || {};
 
   const mustDisableButtons =
     formIsSaving || removingItem || formIsLoading || duplicatingItem;
+
+  const { actionButtonProps, printButtonProps, relateButtonProps } =
+    useFormToolbarButtons({
+      toolbar,
+      mustDisableButtons,
+    });
 
   const tryAction = useCallback(
     (action: () => void) => {
@@ -146,19 +148,6 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       setDuplicatingItem?.(false);
     }
   }, [currentId, currentModel, formRef, goToResourceId, setDuplicatingItem]);
-
-  const runAction = useCallback(
-    (actionData: any) => {
-      processAction?.({
-        actionData,
-        values: (formRef.current as any).getValues(),
-        fields: (formRef.current as any).getFields(),
-        context: (formRef.current as any).getContext(),
-        onRefreshParentValues: () => (formRef.current as any).fetchValues(),
-      });
-    },
-    [formRef, processAction],
-  );
 
   useHotkeys(
     "pagedown",
@@ -279,64 +268,9 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         />
       </Space>
       <ActionBarSeparator />
-      <DropdownButton
-        icon={<ThunderboltOutlined />}
-        placement="bottomRight"
-        disabled={mustDisableButtons}
-        onRetrieveData={async () => [
-          { label: t("actions"), items: toolbar?.action },
-        ]}
-        onItemClick={async (action: any) => {
-          if (action) {
-            const result = await saveDocument({ onFormSave });
-            if (result.succeed) runAction(action);
-          }
-        }}
-      />
-      <DropdownButton
-        icon={<PrinterOutlined />}
-        disabled={mustDisableButtons}
-        placement="bottomRight"
-        onRetrieveData={async () => [
-          { label: t("reports"), items: toolbar?.print },
-        ]}
-        onItemClick={async (report: any) => {
-          if (report) {
-            const result = await saveDocument({ onFormSave });
-            if (result.succeed) {
-              runAction({
-                ...report,
-                datas: {
-                  ...(report.datas || {}),
-                  ids: [result.currentId as number],
-                },
-              });
-            }
-          }
-        }}
-      />
-      <DropdownButton
-        icon={<EnterOutlined />}
-        disabled={mustDisableButtons}
-        placement="bottomRight"
-        onRetrieveData={async () => [
-          { label: t("related"), items: toolbar?.relate },
-        ]}
-        onItemClick={async (relate: any) => {
-          if (relate) {
-            const result = await saveDocument({ onFormSave });
-            if (result.succeed) {
-              openRelate({
-                relateData: relate,
-                values: (formRef.current as any).getValues(),
-                fields: (formRef.current as any).getFields(),
-                action_id: relate.id,
-                action_type: relate.type,
-              });
-            }
-          }
-        }}
-      />
+      <DropdownButton icon={<ThunderboltOutlined />} {...actionButtonProps} />
+      <DropdownButton icon={<PrinterOutlined />} {...printButtonProps} />
+      <DropdownButton icon={<EnterOutlined />} {...relateButtonProps} />
       <AttachmentsButton
         disabled={mustDisableButtons}
         attachments={attachments}
@@ -380,17 +314,6 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
 }
 
 export const ActionBarSeparator = () => <div className="inline-block w-2" />;
-
-const saveDocument = async ({
-  onFormSave,
-}: {
-  onFormSave?: () => Promise<{ succeed: boolean; id: number }>;
-}): Promise<{ succeed: boolean; currentId?: number }> => {
-  const result = await onFormSave?.();
-  return result?.succeed
-    ? { succeed: true, currentId: result.id }
-    : { succeed: false, currentId: undefined };
-};
 
 const getAttachmentActionPayload = (res_model: string, res_id: number) => ({
   model: "ir.attachment",
