@@ -105,4 +105,7 @@ export default {
   not: "Not",
   loading: "Loading...",
   pendingToCalculate: "Pending to calculate",
+  share: "Compartir URL",
+  urlCopiedToClipboard: "URL copied to clipboard",
+  copyToClipboard: "Copy to clipboard",
 };
