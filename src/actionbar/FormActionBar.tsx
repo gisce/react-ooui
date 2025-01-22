@@ -1,4 +1,4 @@
-import { useContext, useCallback } from "react";
+import { useContext, useCallback, memo, useMemo } from "react";
 import { Space, Spin } from "antd";
 import {
   SaveOutlined,
@@ -34,8 +34,9 @@ import {
   saveDocument,
   useFormToolbarButtons,
 } from "@/hooks/useFormToolbarButtons";
+import { ActionBarSeparator } from "./ActionBarSeparator";
 
-function FormActionBar({ toolbar }: { toolbar: any }) {
+function FormActionBarComponent({ toolbar }: { toolbar: any }) {
   const tabManagerContext = useContext(
     TabManagerContext,
   ) as TabManagerContextType;
@@ -72,8 +73,10 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
 
   const { openDefaultActionForModel } = tabManagerContext || {};
 
-  const mustDisableButtons =
-    formIsSaving || removingItem || formIsLoading || duplicatingItem;
+  const mustDisableButtons = useMemo(
+    () => formIsSaving || removingItem || formIsLoading || duplicatingItem,
+    [formIsSaving, removingItem, formIsLoading, duplicatingItem],
+  );
 
   const { actionButtonProps, printButtonProps, relateButtonProps } =
     useFormToolbarButtons({
@@ -148,6 +151,59 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       setDuplicatingItem?.(false);
     }
   }, [currentId, currentModel, formRef, goToResourceId, setDuplicatingItem]);
+
+  const handleChangeView = useCallback(
+    (view: any) => {
+      setPreviousView?.(currentView);
+      setFormHasChanges?.(false);
+      setCurrentView?.(view);
+    },
+    [currentView, setPreviousView, setFormHasChanges, setCurrentView],
+  );
+
+  const handleRefresh = useCallback(() => {
+    tryAction(() => (formRef.current as any).fetchValues());
+  }, [tryAction, formRef]);
+
+  const handleAddNewAttachment = useCallback(async () => {
+    const result = await saveDocument({ onFormSave });
+    if (result.succeed) {
+      openDefaultActionForModel?.({
+        ...getAttachmentActionPayload(
+          currentModel as string,
+          result.currentId as number,
+        ),
+        initialViewType: "form",
+      });
+    }
+  }, [currentModel, onFormSave, openDefaultActionForModel]);
+
+  const handleListAllAttachments = useCallback(async () => {
+    const result = await saveDocument({ onFormSave });
+    if (result.succeed) {
+      openDefaultActionForModel?.({
+        ...getAttachmentActionPayload(
+          currentModel as string,
+          result.currentId as number,
+        ),
+        initialViewType: "tree",
+      });
+    }
+  }, [currentModel, onFormSave, openDefaultActionForModel]);
+
+  const handleViewAttachmentDetails = useCallback(
+    async (attachment: Attachment) => {
+      const result = await saveDocument({ onFormSave });
+      if (result.succeed) {
+        openDefaultActionForModel?.({
+          model: "ir.attachment",
+          res_id: attachment.id,
+          initialViewType: "form",
+        });
+      }
+    },
+    [onFormSave, openDefaultActionForModel],
+  );
 
   useHotkeys(
     "pagedown",
@@ -237,36 +293,24 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         icon={<ReloadOutlined />}
         tooltip={t("refresh")}
         disabled={mustDisableButtons || currentId === undefined}
-        onClick={() => tryAction(() => (formRef.current as any).fetchValues())}
+        onClick={handleRefresh}
       />
       <ActionBarSeparator />
       <ChangeViewButton
         currentView={currentView}
         previousView={previousView}
         availableViews={availableViews}
-        onChangeView={(view: any) => {
-          setPreviousView?.(currentView);
-          setFormHasChanges?.(false);
-          setCurrentView?.(view);
-        }}
+        onChangeView={handleChangeView}
         disabled={mustDisableButtons}
         formHasChanges={formHasChanges}
       />
       <ActionBarSeparator />
-      <Space>
-        <ActionButton
-          icon={<LeftOutlined />}
-          tooltip={t("previous")}
-          disabled={mustDisableButtons}
-          onClick={() => tryAction(onPreviousClick)}
-        />
-        <ActionButton
-          icon={<RightOutlined />}
-          tooltip={t("next")}
-          disabled={mustDisableButtons}
-          onClick={() => tryAction(onNextClick)}
-        />
-      </Space>
+      <NavigationButtons
+        disabled={mustDisableButtons || false}
+        onPreviousClick={onPreviousClick}
+        onNextClick={onNextClick}
+        tryAction={tryAction}
+      />
       <ActionBarSeparator />
       <DropdownButton icon={<ThunderboltOutlined />} {...actionButtonProps} />
       <DropdownButton icon={<PrinterOutlined />} {...printButtonProps} />
@@ -274,46 +318,48 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       <AttachmentsButton
         disabled={mustDisableButtons}
         attachments={attachments}
-        onAddNewAttachment={async () => {
-          const result = await saveDocument({ onFormSave });
-          if (result.succeed) {
-            openDefaultActionForModel({
-              ...getAttachmentActionPayload(
-                currentModel as string,
-                result.currentId as number,
-              ),
-              initialViewType: "form",
-            });
-          }
-        }}
-        onListAllAttachments={async () => {
-          const result = await saveDocument({ onFormSave });
-          if (result.succeed) {
-            openDefaultActionForModel({
-              ...getAttachmentActionPayload(
-                currentModel as string,
-                result.currentId as number,
-              ),
-              initialViewType: "tree",
-            });
-          }
-        }}
-        onViewAttachmentDetails={async (attachment: Attachment) => {
-          const result = await saveDocument({ onFormSave });
-          if (result.succeed) {
-            openDefaultActionForModel({
-              model: "ir.attachment",
-              res_id: attachment.id,
-              initialViewType: "form",
-            });
-          }
-        }}
+        onAddNewAttachment={handleAddNewAttachment}
+        onListAllAttachments={handleListAllAttachments}
+        onViewAttachmentDetails={handleViewAttachmentDetails}
       />
     </Space>
   );
 }
 
-export const ActionBarSeparator = () => <div className="inline-block w-2" />;
+const FormActionBar = memo(FormActionBarComponent);
+
+const NavigationButtons = memo(
+  ({
+    disabled,
+    onPreviousClick,
+    onNextClick,
+    tryAction,
+  }: {
+    disabled: boolean;
+    onPreviousClick: () => void;
+    onNextClick: () => void;
+    tryAction: (action: () => void) => void;
+  }) => {
+    const { t } = useLocale();
+    return (
+      <Space>
+        <ActionButton
+          icon={<LeftOutlined />}
+          tooltip={t("previous")}
+          disabled={disabled}
+          onClick={() => tryAction(onPreviousClick)}
+        />
+        <ActionButton
+          icon={<RightOutlined />}
+          tooltip={t("next")}
+          disabled={disabled}
+          onClick={() => tryAction(onNextClick)}
+        />
+      </Space>
+    );
+  },
+);
+NavigationButtons.displayName = "NavigationButtons";
 
 const getAttachmentActionPayload = (res_model: string, res_id: number) => ({
   model: "ir.attachment",

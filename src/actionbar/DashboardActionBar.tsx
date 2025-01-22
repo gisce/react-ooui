@@ -11,7 +11,7 @@ import {
   BorderOuterOutlined,
 } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
-import { ActionBarSeparator } from "./FormActionBar";
+import { ActionBarSeparator } from "./ActionBarSeparator";
 
 function DashboardActionBar() {
   const { isLoading, dashboardRef, moveItemsEnabled, setMoveItemsEnabled } =
