@@ -11,7 +11,7 @@ import ButtonWithBadge from "./ButtonWithBadge";
 import { ReloadOutlined, FilterOutlined } from "@ant-design/icons";
 import { View } from "@/types";
 import { ShareUrlButton } from "./ShareUrlButton";
-import { ActionBarSeparator } from "./FormActionBar";
+import { ActionBarSeparator } from "./ActionBarSeparator";
 
 function GraphActionBar({ refreshGraph }: { refreshGraph: () => void }) {
   const { t } = useLocale();
