@@ -39,6 +39,7 @@ type One2manyTopBarProps = {
   toolbar?: any;
   context?: any;
   formRef: RefObject<any>;
+  onRefreshParentValues?: () => void;
 };
 
 function One2manyTopBarComponent(props: One2manyTopBarProps) {
@@ -61,6 +62,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
     toolbar,
     context,
     formRef,
+    onRefreshParentValues,
   } = props;
 
   const { token } = useToken();
@@ -71,6 +73,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
       toolbar,
       mustDisableButtons: readOnly,
       formRef,
+      onRefreshParentValues,
     });
 
   const {
@@ -80,6 +83,8 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
     toolbar,
     disabled: readOnly,
     parentContext: context,
+    selectedRowItems: selectedRowKeys.map((key) => ({ id: key })),
+    onRefreshParentValues,
   });
 
   return (

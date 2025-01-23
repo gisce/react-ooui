@@ -88,13 +88,22 @@ function TreeActionBarComponent({
   const [exportModalVisible, setExportModalVisible] = useState(false);
   const isFirstMount = useRef(true);
 
+  const handleRefresh = useCallback(() => {
+    searchTreeRef?.current?.refreshResults();
+  }, [searchTreeRef]);
+
   const { actionButtonProps, printButtonProps } = useTreeToolbarButtons({
     toolbar,
     disabled: treeIsLoading,
     parentContext,
+    selectedRowItems,
+    onRefreshParentValues: handleRefresh,
   });
 
-  const runAction = useRunTreeAction();
+  const runAction = useRunTreeAction({
+    selectedRowItems,
+    onRefreshParentValues: handleRefresh,
+  });
 
   const hasNameSearch = useMemo(
     () =>
@@ -166,10 +175,6 @@ function TreeActionBarComponent({
     },
     [currentView, setPreviousView, setCurrentView],
   );
-
-  const handleRefresh = useCallback(() => {
-    searchTreeRef?.current?.refreshResults();
-  }, [searchTreeRef]);
 
   const handleSearch = useCallback(
     (searchString?: string) => {

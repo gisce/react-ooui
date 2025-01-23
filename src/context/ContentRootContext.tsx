@@ -172,7 +172,9 @@ const ContentRootProvider = (
     onRefreshParentValues?: any;
   }) {
     const { type } = actionData;
-    onRefreshParentValues.current.push(onRefreshParentValuesFn);
+    if (onRefreshParentValuesFn) {
+      onRefreshParentValues.current.push(onRefreshParentValuesFn);
+    }
 
     if (type === "ir.actions.report.xml") {
       return await generateReport({

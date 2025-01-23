@@ -78,13 +78,6 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
     [formIsSaving, removingItem, formIsLoading, duplicatingItem],
   );
 
-  const { actionButtonProps, printButtonProps, relateButtonProps } =
-    useFormToolbarButtons({
-      toolbar,
-      mustDisableButtons,
-      formRef,
-    });
-
   const tryAction = useCallback(
     (action: () => void) => {
       if (formHasChanges) {
@@ -95,6 +88,18 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
     },
     [formHasChanges, t],
   );
+
+  const handleRefresh = useCallback(() => {
+    tryAction(() => (formRef.current as any).fetchValues());
+  }, [tryAction, formRef]);
+
+  const { actionButtonProps, printButtonProps, relateButtonProps } =
+    useFormToolbarButtons({
+      toolbar,
+      mustDisableButtons,
+      formRef,
+      onRefreshParentValues: handleRefresh,
+    });
 
   const handleRemove = useCallback(async () => {
     try {
@@ -161,10 +166,6 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
     },
     [currentView, setPreviousView, setFormHasChanges, setCurrentView],
   );
-
-  const handleRefresh = useCallback(() => {
-    tryAction(() => (formRef.current as any).fetchValues());
-  }, [tryAction, formRef]);
 
   const handleAddNewAttachment = useCallback(async () => {
     const result = await saveDocument({ onFormSave });

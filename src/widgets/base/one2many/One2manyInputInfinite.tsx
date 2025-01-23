@@ -268,6 +268,9 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
         toolbar={views.get(currentView)?.toolbar}
         context={{ ...getContext?.(), ...context }}
         formRef={formRef}
+        onRefreshParentValues={() => {
+          fetchParentFormValues?.({ forceRefresh: true });
+        }}
       />
       {currentView === "tree" && (
         <One2manyTree

@@ -13,6 +13,7 @@ interface UseFormToolbarButtonsProps {
   toolbar: any;
   mustDisableButtons?: boolean;
   formRef: RefObject<any>;
+  onRefreshParentValues?: () => void;
 }
 
 interface SaveDocumentResult {
@@ -24,6 +25,7 @@ export const useFormToolbarButtons = ({
   toolbar,
   mustDisableButtons = false,
   formRef,
+  onRefreshParentValues,
 }: UseFormToolbarButtonsProps) => {
   const { t } = useLocale();
   const contentRootContext = useContext(
@@ -47,10 +49,10 @@ export const useFormToolbarButtons = ({
         values: formRef.current?.getValues(),
         fields: formRef.current?.getFields(),
         context: formRef.current?.getContext(),
-        onRefreshParentValues: () => formRef.current?.fetchValues(),
+        onRefreshParentValues,
       });
     },
-    [formRef, processAction],
+    [formRef, processAction, onRefreshParentValues],
   );
 
   const actionButtonProps = {

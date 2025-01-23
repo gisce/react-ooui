@@ -1,6 +1,5 @@
 import { useCallback, useContext } from "react";
 import { useLocale } from "@gisce/react-formiga-components";
-import { useActionViewContext } from "@/context/ActionViewContext";
 import {
   ContentRootContext,
   ContentRootContextType,
@@ -10,14 +9,21 @@ interface UseTreeToolbarButtonsProps {
   toolbar: any;
   disabled?: boolean;
   parentContext?: any;
+  selectedRowItems?: any[];
+  onRefreshParentValues?: () => void;
 }
 
-export const useRunTreeAction = () => {
+export const useRunTreeAction = ({
+  selectedRowItems,
+  onRefreshParentValues,
+}: {
+  selectedRowItems?: any[];
+  onRefreshParentValues?: () => void;
+}) => {
   const contentRootContext = useContext(
     ContentRootContext,
   ) as ContentRootContextType;
   const { processAction } = contentRootContext || {};
-  const { selectedRowItems, searchTreeRef } = useActionViewContext();
 
   return useCallback(
     (actionData: any, context: any = {}) => {
@@ -33,12 +39,10 @@ export const useRunTreeAction = () => {
           active_id: selectedRowItems?.map((item) => item.id)[0],
           active_ids: selectedRowItems?.map((item) => item.id),
         },
-        onRefreshParentValues: () => {
-          searchTreeRef?.current?.refreshResults();
-        },
+        onRefreshParentValues,
       });
     },
-    [processAction, selectedRowItems, searchTreeRef],
+    [processAction, selectedRowItems, onRefreshParentValues],
   );
 };
 
@@ -46,10 +50,14 @@ export const useTreeToolbarButtons = ({
   toolbar,
   disabled = false,
   parentContext = {},
+  selectedRowItems = [],
+  onRefreshParentValues,
 }: UseTreeToolbarButtonsProps) => {
   const { t } = useLocale();
-  const { selectedRowItems } = useActionViewContext();
-  const runAction = useRunTreeAction();
+  const runAction = useRunTreeAction({
+    selectedRowItems,
+    onRefreshParentValues,
+  });
 
   const actionButtonProps = {
     placement: "bottomRight" as const,
