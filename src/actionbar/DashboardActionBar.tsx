@@ -12,6 +12,7 @@ import {
 } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
 import { ActionBarSeparator } from "./ActionBarSeparator";
+import { ShareUrlButton } from "./ShareUrlButton";
 
 function DashboardActionBar() {
   const { isLoading, dashboardRef, moveItemsEnabled, setMoveItemsEnabled } =
@@ -53,6 +54,8 @@ function DashboardActionBar() {
           dashboardRef?.current.refresh();
         }}
       />
+      <ActionBarSeparator />
+      <ShareUrlButton />
     </Space>
   );
 }

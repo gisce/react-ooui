@@ -117,4 +117,7 @@ export default {
   previousItem: "Elemento anterior",
   nextItem: "Elemento siguiente",
   unlink: "Desvincular",
+  share: "Compartir URL",
+  urlCopiedToClipboard: "URL copiada al portapapeles",
+  copyToClipboard: "Copiar al portapapeles",
 };
