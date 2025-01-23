@@ -326,7 +326,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
         onViewAttachmentDetails={handleViewAttachmentDetails}
       />
       <ActionBarSeparator />
-      <ShareUrlButton />
+      <ShareUrlButton res_id={currentId} />
     </Space>
   );
 }
