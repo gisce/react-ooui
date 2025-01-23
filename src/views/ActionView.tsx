@@ -266,6 +266,18 @@ function ActionView(props: Props, ref: any) {
       showErrorDialog(
         `Error determining the first view to show for model ${model}.\nPlease, make sure the view ids on the fields_view_get responses are the same as the ones defined in the action`,
       );
+      console.error(
+        "Error determining the first view to show for model",
+        JSON.stringify({
+          model,
+          views,
+          initialView,
+          availableViews: viewDataRetrieved,
+          currentViewToAssign,
+          action_id,
+          action_type,
+        }),
+      );
       onRemoveTab?.(tabKey);
     }
 
