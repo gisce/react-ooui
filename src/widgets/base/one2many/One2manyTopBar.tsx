@@ -88,7 +88,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
   });
 
   return (
-    <div className="flex mb-2">
+    <div className="flex mb-2 pt-3">
       <Title title={titleString} token={token} />
       <div className="flex-none h-8 pl-2">
         {mode !== "graph" && showCreateButton && (

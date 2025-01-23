@@ -266,3 +266,20 @@ const normalizeValues = (values: any) => {
     return acc;
   }, {});
 };
+
+export const convertParamsToValues = (params: any[]) => {
+  if (!params || !Array.isArray(params)) return undefined;
+  return normalizeValues(
+    params.reduce((acc: any, param) => {
+      // Handle array format [field, operator, value]
+      if (Array.isArray(param)) {
+        const [field, , value] = param;
+        acc[field] = value;
+      } else {
+        // Keep existing object format support
+        acc[param.id] = param.value;
+      }
+      return acc;
+    }, {}),
+  );
+};

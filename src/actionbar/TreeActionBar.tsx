@@ -41,6 +41,7 @@ import {
   useRunTreeAction,
 } from "@/hooks/useTreeToolbarButtons";
 import { ActionBarSeparator } from "./ActionBarSeparator";
+import { ShareUrlButton } from "./ShareUrlButton";
 
 type Props = {
   parentContext?: any;
@@ -390,6 +391,8 @@ function TreeActionBarComponent({
           />
         </>
       )}
+      <ActionBarSeparator />
+      <ShareUrlButton searchParams={searchParams} />
     </Space>
   );
 }

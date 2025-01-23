@@ -35,6 +35,7 @@ import {
   useFormToolbarButtons,
 } from "@/hooks/useFormToolbarButtons";
 import { ActionBarSeparator } from "./ActionBarSeparator";
+import { ShareUrlButton } from "./ShareUrlButton";
 
 function FormActionBarComponent({ toolbar }: { toolbar: any }) {
   const tabManagerContext = useContext(
@@ -324,6 +325,8 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
         onListAllAttachments={handleListAllAttachments}
         onViewAttachmentDetails={handleViewAttachmentDetails}
       />
+      <ActionBarSeparator />
+      <ShareUrlButton />
     </Space>
   );
 }
