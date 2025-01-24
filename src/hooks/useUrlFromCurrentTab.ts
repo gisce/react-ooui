@@ -29,6 +29,24 @@ export function useUrlFromCurrentTab({
   };
 
   const { action_id } = currentTab.action;
+
+  let finalValues = currentTab.action.values || {};
+  const formValues = formRef.current?.getPlainValues() || {};
+
+  // For tree view with active_ids, action values have priority over form values
+  if (initialView.type === "tree" && finalValues.active_ids) {
+    finalValues = {
+      ...formValues,
+      ...finalValues,
+    };
+  } else {
+    // For all other cases, form values (if any) have priority over action values
+    finalValues = {
+      ...finalValues,
+      ...formValues,
+    };
+  }
+
   const finalActionData: ActionInfo = {
     ...currentTab.action,
     ...(initialView && { initialView }),
@@ -36,10 +54,7 @@ export function useUrlFromCurrentTab({
     ...(currentId && { res_id: currentId }),
     actionRawData: {
       ...currentTab.action.actionRawData,
-      values: {
-        ...currentTab.action.values,
-        ...(formRef.current?.getPlainValues() || {}),
-      },
+      values: finalValues,
     },
   };
 
