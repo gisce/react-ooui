@@ -13,7 +13,8 @@ export function useUrlFromCurrentTab({
 }: {
   currentTab?: Tab;
 }): UseUrlFromCurrentTabResult {
-  const { currentView, searchParams, currentId } = useActionViewContext();
+  const { currentView, searchParams, currentId, formRef } =
+    useActionViewContext();
   const { currentTab: currentTabContext } = useTabs();
 
   const currentTab = currentTabProps || currentTabContext;
@@ -33,6 +34,13 @@ export function useUrlFromCurrentTab({
     ...(initialView && { initialView }),
     ...(searchParams && { searchParams }),
     ...(currentId && { res_id: currentId }),
+    actionRawData: {
+      ...currentTab.action.actionRawData,
+      values: {
+        ...currentTab.action.values,
+        ...(formRef.current?.getPlainValues() || {}),
+      },
+    },
   };
 
   const shareUrl = createShareOpenUrl(finalActionData);
