@@ -46,7 +46,7 @@ export const useFormToolbarButtons = ({
     (actionData: any) => {
       processAction?.({
         actionData,
-        values: formRef.current?.getValues(),
+        values: formRef.current?.getPlainValues(),
         fields: formRef.current?.getFields(),
         context: formRef.current?.getContext(),
         onRefreshParentValues,
@@ -103,7 +103,7 @@ export const useFormToolbarButtons = ({
         if (result.succeed) {
           openRelate({
             relateData: relate,
-            values: formRef.current?.getValues(),
+            values: formRef.current?.getPlainValues(),
             fields: formRef.current?.getFields(),
             action_id: relate.id,
             action_type: relate.type,

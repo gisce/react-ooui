@@ -78,6 +78,11 @@ function RootView(props: RootViewProps, ref: any) {
   async function handleOpenActionUrl(action: ActionInfo) {
     const { actionRawData } = action;
 
+    const fields = await ConnectionProvider.getHandler().getFields({
+      model: action.model,
+      context: rootContext,
+    });
+
     let parsedContext;
     if (
       actionRawData?.context &&
@@ -90,7 +95,7 @@ function RootView(props: RootViewProps, ref: any) {
         actionRawData &&
         parseContext({
           context: actionRawData.context,
-          fields: actionRawData.fields || {},
+          fields,
           values: { ...globalValues, ...(actionRawData.values || {}) },
         });
     } else {
@@ -112,14 +117,9 @@ function RootView(props: RootViewProps, ref: any) {
         ) {
           return await ConnectionProvider.getHandler().evalDomain({
             domain: actionRawData.domain,
-            values: actionRawData.fields
-              ? transformPlainMany2Ones({
-                  fields: actionRawData.fields,
-                  values: { ...(actionRawData.values || {}), ...globalValues },
-                })
-              : {},
+            values: { ...(actionRawData.values || {}), ...globalValues },
             context: { ...rootContext, ...parsedContext },
-            fields: actionRawData.fields,
+            fields,
           });
         }
         return [];
@@ -133,7 +133,10 @@ function RootView(props: RootViewProps, ref: any) {
       ...action,
       context: { ...rootContext, ...parsedContext },
       domain: parsedDomain,
-      actionRawData,
+      actionRawData: {
+        ...actionRawData,
+        fields,
+      },
     });
   }
 
