@@ -18,6 +18,7 @@ import { nanoid } from "nanoid";
 import { useLocale } from "@gisce/react-formiga-components";
 import { useConfigContext } from "@/context/ConfigContext";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
+import { filterAllowedValues } from "@/helpers/shareUrlHelper";
 
 type RootViewProps = {
   children: ReactNode;
@@ -75,7 +76,28 @@ function RootView(props: RootViewProps, ref: any) {
   }
 
   async function handleOpenActionUrl(action: ActionInfo) {
-    const { actionRawData } = action;
+    const { actionRawData, res_id, initialView } = action;
+
+    const fields = await ConnectionProvider.getHandler().getFields({
+      model: action.model,
+      context: rootContext,
+    });
+
+    let values: Record<string, any> = filterAllowedValues(
+      actionRawData?.values,
+    );
+
+    const finalIdToRead: number | undefined =
+      res_id || values.active_id || values.id;
+
+    if (finalIdToRead) {
+      const readObjects = await ConnectionProvider.getHandler().readObjects({
+        model: action.model,
+        context: rootContext,
+        ids: [finalIdToRead],
+      });
+      values = { ...values, ...readObjects[0] };
+    }
 
     let parsedContext;
     if (
@@ -89,8 +111,8 @@ function RootView(props: RootViewProps, ref: any) {
         actionRawData &&
         parseContext({
           context: actionRawData.context,
-          fields: actionRawData.fields || {},
-          values: { ...globalValues, ...(actionRawData.values || {}) },
+          fields,
+          values: { ...globalValues, ...(values || {}) },
         });
     } else {
       parsedContext = {};
@@ -111,14 +133,9 @@ function RootView(props: RootViewProps, ref: any) {
         ) {
           return await ConnectionProvider.getHandler().evalDomain({
             domain: actionRawData.domain,
-            values: actionRawData.fields
-              ? transformPlainMany2Ones({
-                  fields: actionRawData.fields,
-                  values: { ...(actionRawData.values || {}), ...globalValues },
-                })
-              : {},
+            values: { ...(values || {}), ...globalValues },
             context: { ...rootContext, ...parsedContext },
-            fields: actionRawData.fields,
+            fields,
           });
         }
         return [];
@@ -132,7 +149,11 @@ function RootView(props: RootViewProps, ref: any) {
       ...action,
       context: { ...rootContext, ...parsedContext },
       domain: parsedDomain,
-      actionRawData,
+      actionRawData: {
+        ...actionRawData,
+        values,
+        fields,
+      },
     });
   }
 
