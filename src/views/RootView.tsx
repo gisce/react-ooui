@@ -84,7 +84,7 @@ function RootView(props: RootViewProps, ref: any) {
       actionRawData.context !== null
     ) {
       parsedContext = actionRawData;
-    } else {
+    } else if (actionRawData && actionRawData.context) {
       parsedContext =
         actionRawData &&
         parseContext({
@@ -92,6 +92,8 @@ function RootView(props: RootViewProps, ref: any) {
           fields: actionRawData.fields || {},
           values: { ...globalValues, ...(actionRawData.values || {}) },
         });
+    } else {
+      parsedContext = {};
     }
 
     const parsedDomain = await (async () => {
@@ -102,7 +104,11 @@ function RootView(props: RootViewProps, ref: any) {
           actionRawData.domain.length > 0
         ) {
           return actionRawData.domain;
-        } else if (actionRawData && !Array.isArray(actionRawData.domain)) {
+        } else if (
+          actionRawData &&
+          actionRawData.domain &&
+          !Array.isArray(actionRawData.domain)
+        ) {
           return await ConnectionProvider.getHandler().evalDomain({
             domain: actionRawData.domain,
             values: actionRawData.fields
