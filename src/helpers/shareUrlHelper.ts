@@ -1,13 +1,12 @@
 import { ActionInfo, ActionRawData } from "@/types";
 
 const OPEN_ACTION_PATH = "action";
+// Parameters to exclude from the URL
+const IGNORED_PARAMS = ["target", "context", "domain", "fields"];
 
 export const createShareOpenUrl = (action: ActionInfo) => {
   const url = new URL(window.location.origin);
   url.pathname = OPEN_ACTION_PATH;
-
-  // Parameters to exclude from the URL
-  const ignoredParams = ["target", "context", "domain"];
 
   const finalAction = {
     ...action,
@@ -18,7 +17,7 @@ export const createShareOpenUrl = (action: ActionInfo) => {
   // Add all non-null properties from action to URL
   Object.entries(finalAction).forEach(([key, value]) => {
     if (
-      !ignoredParams.includes(key) &&
+      !IGNORED_PARAMS.includes(key) &&
       value &&
       (!Array.isArray(value) || value.length > 0)
     ) {
@@ -37,7 +36,7 @@ const convertToString = (value: any): string => {
 };
 
 const filterActionRawData = (actionRawData: ActionRawData) => {
-  const { context, domain, values, fields } = actionRawData;
+  const { context, domain, values } = actionRawData;
 
   const filteredData: Partial<ActionRawData> = {};
 
@@ -67,7 +66,7 @@ const filterActionRawData = (actionRawData: ActionRawData) => {
     }
   }
 
-  // Include values and fields only if they are non-empty objects
+  // Include values only if they are non-empty objects
   if (
     (filteredData.domain || filteredData.context) &&
     values &&
@@ -77,15 +76,6 @@ const filterActionRawData = (actionRawData: ActionRawData) => {
     const { arch, ...restValues } = values; // ignore arch if exists
     filteredData.values = restValues;
   }
-  if (
-    (filteredData.domain || filteredData.context) &&
-    fields &&
-    typeof fields === "object" &&
-    Object.keys(fields).length > 0
-  ) {
-    filteredData.fields = fields;
-  }
-
   // Return undefined if no properties were added to filteredData
   return Object.keys(filteredData).length > 0 ? filteredData : undefined;
 };

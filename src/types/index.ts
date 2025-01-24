@@ -220,7 +220,7 @@ type GetViewRequest = {
 
 type GetFieldsRequest = {
   model: string;
-  fields: string[];
+  fields?: string[];
   context?: any;
 };
 
