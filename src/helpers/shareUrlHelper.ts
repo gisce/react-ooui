@@ -2,6 +2,7 @@ import { ActionInfo, ActionRawData } from "@/types";
 
 const OPEN_ACTION_PATH = "action";
 // Parameters to exclude from the URL
+const ALLOWED_VALUES_KEYS = ["active_id", "active_ids", "id"];
 const IGNORED_PARAMS = ["target", "context", "domain", "fields"];
 
 export const createShareOpenUrl = (action: ActionInfo) => {
@@ -73,9 +74,21 @@ const filterActionRawData = (actionRawData: ActionRawData) => {
     typeof values === "object" &&
     Object.keys(values).length > 0
   ) {
-    const { arch, ...restValues } = values; // ignore arch if exists
-    filteredData.values = restValues;
+    // Only include allowed keys from values
+    const filteredValues = filterAllowedValues(values);
+    filteredData.values =
+      Object.keys(filteredValues).length > 0 ? filteredValues : undefined;
   }
+
   // Return undefined if no properties were added to filteredData
   return Object.keys(filteredData).length > 0 ? filteredData : undefined;
+};
+
+export const filterAllowedValues = (values: any) => {
+  if (!values || typeof values !== "object") {
+    return {};
+  }
+  return Object.fromEntries(
+    Object.entries(values).filter(([key]) => ALLOWED_VALUES_KEYS.includes(key)),
+  );
 };
