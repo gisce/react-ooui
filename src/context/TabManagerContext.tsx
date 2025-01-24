@@ -1,6 +1,7 @@
 import { ActionInfo, Tab, View, ViewType } from "@/types";
 import { ShortcutApi } from "@/ui/FavouriteButton";
-import React, { useState, useContext, useMemo } from "react";
+import React, { useState, useContext, useMemo, useEffect } from "react";
+import { useConfigContext } from "./ConfigContext";
 
 export type TabManagerContextType = {
   openAction: (action: ActionInfo) => void;
@@ -69,6 +70,17 @@ const TabManagerProvider = (props: TabManagerProviderProps): any => {
   const currentTab = useMemo(() => {
     return tabs.find((t) => t.key === activeKey);
   }, [tabs, activeKey]);
+  const { title } = useConfigContext();
+
+  const noTabs = useMemo(() => {
+    return !(tabs?.length > 0);
+  }, [tabs]);
+
+  useEffect(() => {
+    if (noTabs) {
+      document.title = title;
+    }
+  }, [noTabs, title]);
 
   return (
     <TabManagerContext.Provider
