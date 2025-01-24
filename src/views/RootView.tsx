@@ -83,9 +83,10 @@ function RootView(props: RootViewProps, ref: any) {
       context: rootContext,
     });
 
-    let values: Record<string, any> = filterAllowedValues(
-      actionRawData?.values,
-    );
+    let values: Record<string, any> = {
+      ...(filterAllowedValues(actionRawData?.values) || {}),
+      ...globalValues,
+    };
 
     const finalIdToRead: number | undefined =
       res_id || values.active_id || values.id;
@@ -112,7 +113,7 @@ function RootView(props: RootViewProps, ref: any) {
         parseContext({
           context: actionRawData.context,
           fields,
-          values: { ...globalValues, ...(values || {}) },
+          values,
         });
     } else {
       parsedContext = {};
@@ -133,7 +134,7 @@ function RootView(props: RootViewProps, ref: any) {
         ) {
           return await ConnectionProvider.getHandler().evalDomain({
             domain: actionRawData.domain,
-            values: { ...(values || {}), ...globalValues },
+            values,
             context: { ...rootContext, ...parsedContext },
             fields,
           });

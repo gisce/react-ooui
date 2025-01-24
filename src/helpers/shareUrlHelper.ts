@@ -2,7 +2,7 @@ import { ActionInfo, ActionRawData } from "@/types";
 
 const OPEN_ACTION_PATH = "action";
 // Parameters to exclude from the URL
-const ALLOWED_VALUES_KEYS = ["active_id", "active_ids", "id"];
+const ALLOWED_VALUES_KEYS = ["active_id", "active_ids", "id", "parent_id"];
 const IGNORED_PARAMS = ["target", "context", "domain", "fields"];
 
 export const createShareOpenUrl = (action: ActionInfo) => {
