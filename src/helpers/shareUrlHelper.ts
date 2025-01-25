@@ -3,7 +3,18 @@ import { ActionInfo, ActionRawData } from "@/types";
 const OPEN_ACTION_PATH = "action";
 // Parameters to exclude from the URL
 const ALLOWED_VALUES_KEYS = ["active_id", "active_ids", "id", "parent_id"];
-const IGNORED_PARAMS = ["target", "context", "domain", "fields"];
+const ALLOWED_PARAMETERS = [
+  "model",
+  "views",
+  "title",
+  "initialView",
+  "action_id",
+  "action_type",
+  "res_id",
+  "limit",
+  "actionRawData",
+  "searchParams",
+];
 
 export const createShareOpenUrl = (action: ActionInfo) => {
   const url = new URL(window.location.origin);
@@ -15,13 +26,10 @@ export const createShareOpenUrl = (action: ActionInfo) => {
       action?.actionRawData && filterActionRawData(action.actionRawData),
   };
 
-  // Add all non-null properties from action to URL
-  Object.entries(finalAction).forEach(([key, value]) => {
-    if (
-      !IGNORED_PARAMS.includes(key) &&
-      value &&
-      (!Array.isArray(value) || value.length > 0)
-    ) {
+  // Filter allowed parameters and add them to URL
+  const allowedParams = filterAllowedParameters(finalAction);
+  Object.entries(allowedParams).forEach(([key, value]) => {
+    if (value && (!Array.isArray(value) || value.length > 0)) {
       url.searchParams.set(key, convertToString(value));
     }
   });
@@ -82,6 +90,17 @@ const filterActionRawData = (actionRawData: ActionRawData) => {
 
   // Return undefined if no properties were added to filteredData
   return Object.keys(filteredData).length > 0 ? filteredData : undefined;
+};
+
+export const filterAllowedParameters = (parameters: any) => {
+  if (!parameters || typeof parameters !== "object") {
+    return {};
+  }
+  return Object.fromEntries(
+    Object.entries(parameters).filter(([key]) =>
+      ALLOWED_PARAMETERS.includes(key),
+    ),
+  );
 };
 
 export const filterAllowedValues = (values: any) => {
