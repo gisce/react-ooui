@@ -7,7 +7,7 @@ const ALLOWED_PARAMETERS = [
   "model",
   "views",
   "title",
-  "initialView",
+  "initialViewId",
   "action_id",
   "action_type",
   "res_id",
@@ -33,6 +33,9 @@ export const createShareOpenUrl = (action: ActionInfo) => {
       url.searchParams.set(key, convertToString(value));
     }
   });
+
+  action.initialView?.id &&
+    url.searchParams.set("initialViewId", action.initialView?.id.toString());
 
   return url.toString();
 };
