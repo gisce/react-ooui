@@ -6,7 +6,6 @@ const ALLOWED_VALUES_KEYS = ["active_id", "active_ids", "id", "parent_id"];
 const ALLOWED_PARAMETERS = [
   "model",
   "views",
-  "title",
   "initialView",
   "action_id",
   "action_type",

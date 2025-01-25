@@ -383,6 +383,10 @@ type ConnectionProviderType = {
     { key }: { key: string },
     requestConfig?: any,
   ) => Promise<any>;
+  getViewString: (
+    options: GetViewStringRequest,
+    requestConfig?: any,
+  ) => Promise<any>;
 };
 
 type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar";
@@ -420,6 +424,11 @@ type ActionRawData = {
   context?: any;
   values?: any;
   fields?: any;
+};
+
+type GetViewStringRequest = {
+  id: number;
+  context?: any;
 };
 
 export type {

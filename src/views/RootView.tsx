@@ -146,8 +146,17 @@ function RootView(props: RootViewProps, ref: any) {
       }
     })();
 
+    const title =
+      (initialView?.id &&
+        (await ConnectionProvider.getHandler().getViewString({
+          id: initialView.id,
+          context: { ...rootContext, ...parsedContext },
+        }))) ||
+      action.model;
+
     openAction({
       ...action,
+      title,
       context: { ...rootContext, ...parsedContext },
       domain: parsedDomain,
       actionRawData: {
