@@ -20,7 +20,7 @@ import {
 import { SearchField } from "./SearchField";
 import { SearchFields } from "@/types";
 
-import { getParamsForFields } from "@/helpers/searchHelper";
+import { getParamsForFields, normalizeValues } from "@/helpers/searchHelper";
 import { useLocale } from "@gisce/react-formiga-components";
 import { FloatingDrawer } from "@/ui/FloatingDrawer";
 import debounce from "lodash.debounce";
@@ -253,33 +253,5 @@ export const SideSearchFooter = ({
         {t("clear")}
       </Button>
     </div>
-  );
-};
-
-const normalizeValues = (values: any) => {
-  // values object should be converted: fields that are empty strings should be undefined
-  return Object.keys(values).reduce((acc: any, key) => {
-    const value = values[key];
-    if (value !== "" && value !== undefined) {
-      acc[key] = value;
-    }
-    return acc;
-  }, {});
-};
-
-export const convertParamsToValues = (params: any[]) => {
-  if (!params || !Array.isArray(params)) return undefined;
-  return normalizeValues(
-    params.reduce((acc: any, param) => {
-      // Handle array format [field, operator, value]
-      if (Array.isArray(param)) {
-        const [field, , value] = param;
-        acc[field] = value;
-      } else {
-        // Keep existing object format support
-        acc[param.id] = param.value;
-      }
-      return acc;
-    }, {}),
   );
 };

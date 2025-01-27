@@ -152,7 +152,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     (actionData: any) => {
       processAction?.({
         actionData,
-        values: (formRef.current as any).getPlainValues(),
+        values: (formRef.current as any).getValues(),
         fields: (formRef.current as any).getFields(),
         context: (formRef.current as any).getContext(),
         onRefreshParentValues: () => (formRef.current as any).fetchValues(),
@@ -163,15 +163,25 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
 
   useHotkeys(
     "pagedown",
-    () => isActive && tryAction(onNextClick),
+    async () => {
+      if (!isActive) return;
+      const canWeClose = await (formRef.current as any).cancelUnsavedChanges();
+      if (!canWeClose) return;
+      onNextClick();
+    },
     { enableOnFormTags: true, preventDefault: true },
-    [isActive, tryAction, onNextClick],
+    [isActive, onNextClick, formRef],
   );
   useHotkeys(
     "pageup",
-    () => isActive && tryAction(onPreviousClick),
+    async () => {
+      if (!isActive) return;
+      const canWeClose = await (formRef.current as any).cancelUnsavedChanges();
+      if (!canWeClose) return;
+      onPreviousClick();
+    },
     { enableOnFormTags: true, preventDefault: true },
-    [isActive, tryAction, onPreviousClick],
+    [isActive, onPreviousClick, formRef],
   );
   useHotkeys(
     "ctrl+s,command+s",
@@ -181,14 +191,22 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
   );
   useHotkeys(
     "ctrl+l,command+l",
-    () => {
-      if (isActive && previousView) {
-        setPreviousView?.(currentView);
-        setCurrentView?.(previousView);
-      }
+    async () => {
+      if (!isActive || !previousView) return;
+      const canWeClose = await (formRef.current as any).cancelUnsavedChanges();
+      if (!canWeClose) return;
+      setPreviousView?.(currentView);
+      setCurrentView?.(previousView);
     },
     { enableOnFormTags: true, preventDefault: true },
-    [isActive, previousView, currentView, setPreviousView, setCurrentView],
+    [
+      isActive,
+      previousView,
+      currentView,
+      setPreviousView,
+      setCurrentView,
+      formRef,
+    ],
   );
 
   if (!currentView) return null;
@@ -329,7 +347,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
             if (result.succeed) {
               openRelate({
                 relateData: relate,
-                values: (formRef.current as any).getPlainValues(),
+                values: (formRef.current as any).getValues(),
                 fields: (formRef.current as any).getFields(),
                 action_id: relate.id,
                 action_type: relate.type,

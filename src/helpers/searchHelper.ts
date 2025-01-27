@@ -1,3 +1,5 @@
+import dayjs from "@/helpers/dayjs";
+
 const convertBooleanParamIfNeeded = (value: any) => {
   if ((typeof value === "string" && value === "true") || value === "false") {
     return value === "true";
@@ -193,4 +195,71 @@ export const mergeParams = (searchParams: any[], domainParams: any[]) => {
   });
 
   return finalParams;
+};
+
+export const normalizeValues = (values: any) => {
+  // values object should be converted: fields that are empty strings should be undefined
+  return Object.keys(values).reduce((acc: any, key) => {
+    const value = values[key];
+    if (value !== "" && value !== undefined) {
+      acc[key] = value;
+    }
+    return acc;
+  }, {});
+};
+
+export const convertParamsToValues = (params: any[], fields?: any) => {
+  if (!params || !Array.isArray(params) || !fields) return {};
+
+  const values = params.reduce((acc: any, param) => {
+    // Handle array format [field, operator, value]
+    if (Array.isArray(param)) {
+      const [field, operator, value] = param;
+      const baseField = field.split("#")[0];
+      const type = fields?.[baseField]?.type;
+
+      if (type === "date") {
+        // Initialize array if not exists
+        if (!acc[baseField]) {
+          acc[baseField] = [null, null];
+        }
+        // Set the appropriate value in the array based on operator
+        if (operator === ">=") {
+          acc[baseField][0] = dayjs(value);
+        } else if (operator === "<=") {
+          acc[baseField][1] = dayjs(value);
+        }
+      } else if (type === "datetime") {
+        // For datetime, we need to split into date and time components
+        const dateObj = dayjs(value);
+        const baseKey = field.split("#")[0];
+
+        // Initialize arrays if they don't exist
+        if (!acc[baseKey + "#date"]) {
+          acc[baseKey + "#date"] = [null, null];
+        }
+        if (!acc[baseKey + "#time"]) {
+          acc[baseKey + "#time"] = [null, null];
+        }
+
+        // Set the appropriate values based on operator
+        if (operator === ">=") {
+          acc[baseKey + "#date"][0] = dateObj;
+          acc[baseKey + "#time"][0] = dateObj;
+        } else if (operator === "<=") {
+          acc[baseKey + "#date"][1] = dateObj;
+          acc[baseKey + "#time"][1] = dateObj;
+        }
+      } else {
+        // For other types, just set the value
+        acc[field] = value;
+      }
+    } else {
+      // Keep existing object format support
+      acc[param.id] = param.value;
+    }
+    return acc;
+  }, {});
+
+  return normalizeValues(values);
 };
