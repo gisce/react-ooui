@@ -152,7 +152,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     (actionData: any) => {
       processAction?.({
         actionData,
-        values: (formRef.current as any).getPlainValues(),
+        values: (formRef.current as any).getValues(),
         fields: (formRef.current as any).getFields(),
         context: (formRef.current as any).getContext(),
         onRefreshParentValues: () => (formRef.current as any).fetchValues(),
@@ -329,7 +329,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
             if (result.succeed) {
               openRelate({
                 relateData: relate,
-                values: (formRef.current as any).getPlainValues(),
+                values: (formRef.current as any).getValues(),
                 fields: (formRef.current as any).getFields(),
                 action_id: relate.id,
                 action_type: relate.type,
