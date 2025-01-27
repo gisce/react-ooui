@@ -1,6 +1,6 @@
+import { convertParamsToValues } from "@/helpers/searchHelper";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
-import { View } from "@/types";
-import { convertParamsToValues } from "@/widgets/views/searchFilter/SideSearchFilter";
+import { TreeView, View } from "@/types";
 import { ColumnState } from "@gisce/react-formiga-table";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -132,7 +132,10 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [graphIsLoading, setGraphIsLoading] = useState<boolean>(true);
   const [previousView, setPreviousView] = useState<View>();
   const [searchValues, setSearchValues] = useState<any>(
-    convertParamsToValues(initialSearchParams || []),
+    convertParamsToValues(
+      initialSearchParams || [],
+      (currentView as TreeView).fields,
+    ),
   );
   const [treeFirstVisibleRow, setTreeFirstVisibleRow] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<SearchQueryParams>();

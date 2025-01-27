@@ -79,6 +79,7 @@ const ContentRootProvider = (
 
   useImperativeHandle(ref, () => ({
     openActionModal,
+    processAction,
   }));
 
   // Action modal state
@@ -177,7 +178,9 @@ const ContentRootProvider = (
     onRefreshParentValues?: any;
   }) {
     const { type } = actionData;
-    onRefreshParentValues.current.push(onRefreshParentValuesFn);
+    if (onRefreshParentValuesFn) {
+      onRefreshParentValues.current.push(onRefreshParentValuesFn);
+    }
 
     if (type === "ir.actions.report.xml") {
       return await generateReport({
@@ -230,7 +233,7 @@ const ContentRootProvider = (
             fields,
             values: { ...values, ...globalValues },
           })
-        : actionData.context;
+        : actionData?.context || {};
 
     const mergedContext = {
       ...context,
@@ -290,6 +293,7 @@ const ContentRootProvider = (
         initialView,
         action_id: actionData.id,
         action_type: actionData.type,
+        res_id: actionData.res_id,
         actionRawData: {
           context: rawContext,
           domain: rawDomain,
