@@ -45,6 +45,7 @@ function RootView(props: RootViewProps, ref: any) {
   useImperativeHandle(ref, () => ({
     retrieveAndOpenAction,
     openShortcut,
+    processAction: (contentRootProvider.current as any).processAction,
     handleOpenActionUrl,
     handleOpenActionResourceUrl,
   }));
@@ -76,7 +77,7 @@ function RootView(props: RootViewProps, ref: any) {
   }
 
   async function handleOpenActionUrl(action: ActionInfo) {
-    const { actionRawData, res_id, initialView } = action;
+    const { actionRawData, res_id } = action;
 
     const fields = await ConnectionProvider.getHandler().getFields({
       model: action.model,
