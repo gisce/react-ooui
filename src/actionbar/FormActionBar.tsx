@@ -159,11 +159,15 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
     }
   }, [currentId, currentModel, formRef, goToResourceId, setDuplicatingItem]);
 
-  const handleChangeView = useCallback(
-    (view: any) => {
-      setPreviousView?.(currentView);
-      setFormHasChanges?.(false);
-      setCurrentView?.(view);
+  const runAction = useCallback(
+    (actionData: any) => {
+      processAction?.({
+        actionData,
+        values: (formRef.current as any).getValues(),
+        fields: (formRef.current as any).getFields(),
+        context: (formRef.current as any).getContext(),
+        onRefreshParentValues: () => (formRef.current as any).fetchValues(),
+      });
     },
     [currentView, setPreviousView, setFormHasChanges, setCurrentView],
   );
@@ -333,9 +337,64 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
         tryAction={tryAction}
       />
       <ActionBarSeparator />
-      <DropdownButton icon={<ThunderboltOutlined />} {...actionButtonProps} />
-      <DropdownButton icon={<PrinterOutlined />} {...printButtonProps} />
-      <DropdownButton icon={<EnterOutlined />} {...relateButtonProps} />
+      <DropdownButton
+        icon={<ThunderboltOutlined />}
+        placement="bottomRight"
+        disabled={mustDisableButtons}
+        onRetrieveData={async () => [
+          { label: t("actions"), items: toolbar?.action },
+        ]}
+        onItemClick={async (action: any) => {
+          if (action) {
+            const result = await saveDocument({ onFormSave });
+            if (result.succeed) runAction(action);
+          }
+        }}
+      />
+      <DropdownButton
+        icon={<PrinterOutlined />}
+        disabled={mustDisableButtons}
+        placement="bottomRight"
+        onRetrieveData={async () => [
+          { label: t("reports"), items: toolbar?.print },
+        ]}
+        onItemClick={async (report: any) => {
+          if (report) {
+            const result = await saveDocument({ onFormSave });
+            if (result.succeed) {
+              runAction({
+                ...report,
+                datas: {
+                  ...(report.datas || {}),
+                  ids: [result.currentId as number],
+                },
+              });
+            }
+          }
+        }}
+      />
+      <DropdownButton
+        icon={<EnterOutlined />}
+        disabled={mustDisableButtons}
+        placement="bottomRight"
+        onRetrieveData={async () => [
+          { label: t("related"), items: toolbar?.relate },
+        ]}
+        onItemClick={async (relate: any) => {
+          if (relate) {
+            const result = await saveDocument({ onFormSave });
+            if (result.succeed) {
+              openRelate({
+                relateData: relate,
+                values: (formRef.current as any).getValues(),
+                fields: (formRef.current as any).getFields(),
+                action_id: relate.id,
+                action_type: relate.type,
+              });
+            }
+          }
+        }}
+      />
       <AttachmentsButton
         disabled={mustDisableButtons}
         attachments={attachments}
