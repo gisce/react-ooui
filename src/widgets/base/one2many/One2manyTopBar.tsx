@@ -125,7 +125,7 @@ export const One2manyTopBar = (props: One2manyTopBarProps) => {
   }
 
   return (
-    <div className="flex mb-2">
+    <div className="flex mb-2 pt-3">
       {title()}
       <div className="flex-none h-8 pl-2">
         {mode !== "graph" && showCreateButton && (

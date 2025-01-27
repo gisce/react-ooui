@@ -1,4 +1,9 @@
-import { FormView, GenerateReportOptions, ViewType } from "@/types";
+import {
+  FormView,
+  GenerateReportOptions,
+  ViewType,
+  ActionRawData,
+} from "@/types";
 import React, {
   useContext,
   useRef,
@@ -220,6 +225,7 @@ const ContentRootProvider = (
       )[0];
     }
 
+    const rawContext = actionData.context;
     const responseContext =
       typeof actionData?.context === "string"
         ? parseContext({
@@ -236,6 +242,7 @@ const ContentRootProvider = (
 
     let parsedDomain = [];
 
+    const rawDomain = actionData.domain;
     if (actionData.domain) {
       parsedDomain = await ConnectionProvider.getHandler().evalDomain({
         domain: actionData.domain,
@@ -287,6 +294,12 @@ const ContentRootProvider = (
         action_id: actionData.id,
         action_type: actionData.type,
         res_id: actionData.res_id,
+        actionRawData: {
+          context: rawContext,
+          domain: rawDomain,
+          fields,
+          values,
+        },
       });
 
       return { closeParent: true };

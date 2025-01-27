@@ -109,4 +109,7 @@ export default {
   not: "No",
   loading: "Carregant...",
   pendingToCalculate: "Pendent de calcular",
+  share: "Compartir URL",
+  copyToClipboard: "Copiar al porta-retalls",
+  urlCopiedToClipboard: "URL copiada al porta-retalls",
 };

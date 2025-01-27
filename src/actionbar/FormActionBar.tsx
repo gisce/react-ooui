@@ -34,6 +34,7 @@ import {
 import AttachmentsButton from "./AttachmentsButton";
 import { Attachment } from "./AttachmentsButtonWrapper";
 import { useNextPrevious } from "./useNextPrevious";
+import { ShareUrlButton } from "./ShareUrlButton";
 
 function FormActionBar({ toolbar }: { toolbar: any }) {
   const contentRootContext = useContext(
@@ -162,15 +163,25 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
 
   useHotkeys(
     "pagedown",
-    () => isActive && tryAction(onNextClick),
+    async () => {
+      if (!isActive) return;
+      const canWeClose = await (formRef.current as any).cancelUnsavedChanges();
+      if (!canWeClose) return;
+      onNextClick();
+    },
     { enableOnFormTags: true, preventDefault: true },
-    [isActive, tryAction, onNextClick],
+    [isActive, onNextClick, formRef],
   );
   useHotkeys(
     "pageup",
-    () => isActive && tryAction(onPreviousClick),
+    async () => {
+      if (!isActive) return;
+      const canWeClose = await (formRef.current as any).cancelUnsavedChanges();
+      if (!canWeClose) return;
+      onPreviousClick();
+    },
     { enableOnFormTags: true, preventDefault: true },
-    [isActive, tryAction, onPreviousClick],
+    [isActive, onPreviousClick, formRef],
   );
   useHotkeys(
     "ctrl+s,command+s",
@@ -180,14 +191,22 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
   );
   useHotkeys(
     "ctrl+l,command+l",
-    () => {
-      if (isActive && previousView) {
-        setPreviousView?.(currentView);
-        setCurrentView?.(previousView);
-      }
+    async () => {
+      if (!isActive || !previousView) return;
+      const canWeClose = await (formRef.current as any).cancelUnsavedChanges();
+      if (!canWeClose) return;
+      setPreviousView?.(currentView);
+      setCurrentView?.(previousView);
     },
     { enableOnFormTags: true, preventDefault: true },
-    [isActive, previousView, currentView, setPreviousView, setCurrentView],
+    [
+      isActive,
+      previousView,
+      currentView,
+      setPreviousView,
+      setCurrentView,
+      formRef,
+    ],
   );
 
   if (!currentView) return null;
@@ -197,8 +216,8 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
       {formIsLoading && (
         <>
           <Spin />
-          {separator()}
-          {separator()}
+          <ActionBarSeparator />
+          <ActionBarSeparator />
         </>
       )}
       <NewButton disabled={mustDisableButtons} />
@@ -237,7 +256,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           })
         }
       />
-      {separator()}
+      <ActionBarSeparator />
       <ActionButton
         icon={<InfoCircleOutlined />}
         tooltip={t("showLogs")}
@@ -250,7 +269,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         disabled={mustDisableButtons || currentId === undefined}
         onClick={() => tryAction(() => (formRef.current as any).fetchValues())}
       />
-      {separator()}
+      <ActionBarSeparator />
       <ChangeViewButton
         currentView={currentView}
         previousView={previousView}
@@ -263,7 +282,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         disabled={mustDisableButtons}
         formHasChanges={formHasChanges}
       />
-      {separator()}
+      <ActionBarSeparator />
       <Space>
         <ActionButton
           icon={<LeftOutlined />}
@@ -278,7 +297,7 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           onClick={() => tryAction(onNextClick)}
         />
       </Space>
-      {separator()}
+      <ActionBarSeparator />
       <DropdownButton
         icon={<ThunderboltOutlined />}
         placement="bottomRight"
@@ -375,11 +394,13 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
           }
         }}
       />
+      <ActionBarSeparator />
+      <ShareUrlButton res_id={currentId} />
     </Space>
   );
 }
 
-const separator = () => <div className="inline-block w-2" />;
+export const ActionBarSeparator = () => <div className="inline-block w-2" />;
 
 const saveDocument = async ({
   onFormSave,

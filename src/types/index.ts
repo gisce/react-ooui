@@ -1,5 +1,6 @@
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import { Field as FieldOoui } from "@gisce/ooui";
+import { ReactNode } from "react";
 
 type Strings = {
   [key: string]: string;
@@ -24,18 +25,24 @@ type SearchFields = {
 };
 
 export type InitialViewData = {
-  id: number;
+  id?: number;
   type: ViewType;
 };
 
-export type BaseView = {
+export type BaseViewExtra = {
+  extra?: {
+    action_id: number;
+    action_type: string;
+  };
+};
+
+export type BaseView = BaseViewExtra & {
   type: ViewType;
   view_id: number;
   title?: string;
 };
 
 type TreeView = BaseView & {
-  view_id: number;
   arch: string;
   fields: any;
   search_fields?: SearchFields;
@@ -49,7 +56,7 @@ type FormView = TreeView & {
   toolbar?: any;
 };
 
-export type DashboardView = {
+export type DashboardView = BaseViewExtra & {
   view_id?: number;
   type: ViewType;
   model: string;
@@ -61,7 +68,7 @@ export type DashboardView = {
 
 export type DashboardProps = Omit<DashboardView, "type">;
 
-export type GraphView = {
+export type GraphView = BaseViewExtra & {
   arch: string;
   type: ViewType;
   view_id: number;
@@ -213,7 +220,7 @@ type GetViewRequest = {
 
 type GetFieldsRequest = {
   model: string;
-  fields: string[];
+  fields?: string[];
   context?: any;
 };
 
@@ -381,6 +388,40 @@ type ConnectionProviderType = {
 type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar";
 type ViewTuple = [number | undefined, ViewType];
 
+type ActionInfo = {
+  domain: any;
+  context: any;
+  model: string;
+  views: any[];
+  title: string;
+  target: string;
+  initialView: InitialViewData;
+  action_id: number;
+  action_type: string;
+  res_id?: number | boolean;
+  values?: any;
+  forced_values?: any;
+  treeExpandable?: boolean;
+  limit?: number;
+  actionRawData?: ActionRawData;
+  searchParams?: any[];
+};
+
+type Tab = {
+  title: string;
+  key: string;
+  closable: boolean;
+  content: ReactNode;
+  action: ActionInfo | null;
+};
+
+type ActionRawData = {
+  domain?: any;
+  context?: any;
+  values?: any;
+  fields?: any;
+};
+
 export type {
   Strings,
   SearchFields,
@@ -416,4 +457,7 @@ export type {
   ParseConditionRequest,
   TreeButOpenOptions,
   ViewTuple,
+  ActionInfo,
+  Tab,
+  ActionRawData,
 };

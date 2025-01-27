@@ -378,10 +378,13 @@ function Form(props: FormProps, ref: any) {
     );
   };
 
-  const getCurrentValues = (fields: any) => {
-    const currentValues = antForm.getFieldsValue(true);
-    return processValues(currentValues, fields);
-  };
+  const getCurrentValues = useCallback(
+    (fields: any) => {
+      const currentValues = antForm.getFieldsValue(true);
+      return processValues(currentValues, fields);
+    },
+    [antForm],
+  );
 
   const setFieldValue = (field: string, value?: string) => {
     assignNewValuesToForm({

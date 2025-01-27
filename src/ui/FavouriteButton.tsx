@@ -182,7 +182,7 @@ const FavouriteButton = (props: Props) => {
       }
 
       const currentTab = tabs.find((t) => t.key === activeKey);
-      const { id: action_id, type: action_type } = currentTab?.action || {};
+      const { action_id, action_type } = currentTab?.action || {};
       const view_id = currentView.view_id!;
       let res_id: boolean | number = false;
 

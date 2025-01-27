@@ -12,20 +12,16 @@ import ActionView from "./ActionView";
 import { parseContext } from "@gisce/ooui";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import showErrorDialog from "@/ui/ActionErrorDialog";
-import { InitialViewData, ViewType } from "@/types";
+import { ActionInfo, Tab, ViewType } from "@/types";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
 import { nanoid } from "nanoid";
 import { useLocale } from "@gisce/react-formiga-components";
 import { useConfigContext } from "@/context/ConfigContext";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
+import { filterAllowedValues } from "@/helpers/shareUrlHelper";
 
 type RootViewProps = {
   children: ReactNode;
-};
-
-export type ActionInfo = {
-  id: number;
-  type: string;
 };
 
 function RootView(props: RootViewProps, ref: any) {
@@ -34,12 +30,13 @@ function RootView(props: RootViewProps, ref: any) {
   const { t } = useLocale();
   const { globalValues, rootContext } = useConfigContext();
 
-  const [tabs, setTabs] = useState<any>([
+  const [tabs, setTabs] = useState<Tab[]>([
     {
       title: t("welcome"),
       key: "welcome",
       closable: true,
       content: <Welcome />,
+      action: null,
     },
   ]);
   const tabViewsCloseFunctions = useRef(new Map<string, any>());
@@ -49,6 +46,8 @@ function RootView(props: RootViewProps, ref: any) {
     retrieveAndOpenAction,
     openShortcut,
     processAction: (contentRootProvider.current as any).processAction,
+    handleOpenActionUrl,
+    handleOpenActionResourceUrl,
   }));
 
   function remove(key: string) {
@@ -75,6 +74,118 @@ function RootView(props: RootViewProps, ref: any) {
     canWeClose: any;
   }) {
     tabViewsCloseFunctions.current.set(tabKey, canWeClose);
+  }
+
+  async function handleOpenActionUrl(action: ActionInfo) {
+    const { actionRawData, res_id, initialView } = action;
+
+    const fields = await ConnectionProvider.getHandler().getFields({
+      model: action.model,
+      context: rootContext,
+    });
+
+    let values: Record<string, any> = filterAllowedValues(
+      actionRawData?.values,
+    );
+
+    const finalIdToRead: number | undefined =
+      res_id || values.active_id || values.id;
+
+    if (finalIdToRead) {
+      const readObjects = await ConnectionProvider.getHandler().readObjects({
+        model: action.model,
+        context: rootContext,
+        ids: [finalIdToRead],
+      });
+      values = { ...values, ...readObjects[0] };
+    }
+
+    let parsedContext;
+    if (
+      actionRawData?.context &&
+      typeof actionRawData.context === "object" &&
+      actionRawData.context !== null
+    ) {
+      parsedContext = actionRawData;
+    } else if (actionRawData && actionRawData.context) {
+      parsedContext =
+        actionRawData &&
+        parseContext({
+          context: actionRawData.context,
+          fields,
+          values: { ...globalValues, ...(values || {}) },
+        });
+    } else {
+      parsedContext = {};
+    }
+
+    const parsedDomain = await (async () => {
+      try {
+        if (
+          actionRawData?.domain &&
+          Array.isArray(actionRawData.domain) &&
+          actionRawData.domain.length > 0
+        ) {
+          return actionRawData.domain;
+        } else if (
+          actionRawData &&
+          actionRawData.domain &&
+          !Array.isArray(actionRawData.domain)
+        ) {
+          return await ConnectionProvider.getHandler().evalDomain({
+            domain: actionRawData.domain,
+            values: { ...(values || {}), ...globalValues },
+            context: { ...rootContext, ...parsedContext },
+            fields,
+          });
+        }
+        return [];
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    })();
+
+    openAction({
+      ...action,
+      context: { ...rootContext, ...parsedContext },
+      domain: parsedDomain,
+      actionRawData: {
+        ...actionRawData,
+        values,
+        fields,
+      },
+    });
+  }
+
+  async function handleOpenActionResourceUrl({
+    model,
+    view_id,
+    res_id,
+  }: {
+    model: string;
+    res_id: number;
+    view_id?: number;
+  }) {
+    const view = await ConnectionProvider.getHandler().getView({
+      model,
+      id: view_id || undefined,
+      type: "form",
+      context: rootContext,
+    });
+
+    return await openAction({
+      action_id: -1,
+      action_type: "ir.actions.act_window",
+      model,
+      views: [[view.view_id, "form"]],
+      context: rootContext,
+      domain: [],
+      title: view.title || model,
+      target: "current",
+      initialView: { id: view.view_id, type: "form" },
+      res_id,
+    });
   }
 
   async function retrieveAndOpenAction({
@@ -105,19 +216,29 @@ function RootView(props: RootViewProps, ref: any) {
     const [action_type, action_id_string] = action.split(",");
     const action_id = parseInt(action_id_string);
 
+    const rawContext = dataForAction.context;
     const parsedContext = parseContext({
-      context: dataForAction.context,
+      context: rawContext,
       values: globalValues,
-      fields: {},
     });
 
-    const parsedDomain = dataForAction.domain
-      ? await ConnectionProvider.getHandler().evalDomain({
-          domain: dataForAction.domain,
-          values: globalValues,
-          context: { ...rootContext, ...parsedContext },
-        })
-      : [];
+    const rawDomain = dataForAction.domain;
+
+    const parsedDomain = await (async () => {
+      try {
+        if (rawDomain) {
+          return await ConnectionProvider.getHandler().evalDomain({
+            domain: rawDomain,
+            values: globalValues,
+            context: { ...rootContext, ...parsedContext },
+          });
+        }
+        return [];
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    })();
 
     const {
       res_model: model,
@@ -179,6 +300,10 @@ function RootView(props: RootViewProps, ref: any) {
       res_id,
       treeExpandable,
       limit,
+      actionRawData: {
+        context: rawContext,
+        domain: rawDomain,
+      },
     });
   }
 
@@ -191,7 +316,7 @@ function RootView(props: RootViewProps, ref: any) {
     title: string;
     content: any;
     key: string;
-    action?: ActionInfo;
+    action: ActionInfo;
   }) {
     let newTabs = [...tabs];
 
@@ -238,12 +363,14 @@ function RootView(props: RootViewProps, ref: any) {
 
     const [id, type] = views[0];
     const initialView = { id, type };
+    const rawContext = context;
 
     const parsedContext = parseContext({
-      context,
+      context: rawContext,
       values: { ...values, ...globalValues },
-      fields,
     });
+
+    const rawDomain = domain;
 
     const parsedDomain = domain
       ? await ConnectionProvider.getHandler().evalDomain({
@@ -268,6 +395,12 @@ function RootView(props: RootViewProps, ref: any) {
       action_id,
       action_type,
       limit,
+      actionRawData: {
+        context: rawContext,
+        domain: rawDomain,
+        fields,
+        values,
+      },
     });
   }
 
@@ -287,13 +420,19 @@ function RootView(props: RootViewProps, ref: any) {
       action,
       context: rootContext,
     });
+
+    const rawContext = dataForAction.context;
+
     const parsedContext = parseContext({
-      context: dataForAction.context,
+      context: rawContext,
       values: { ...globalValues, ...values },
       fields: {},
     });
 
     let parsedDomain = [];
+
+    const rawDomain =
+      domain && domain.length > 0 ? domain : dataForAction.domain;
 
     if (domain?.length > 0) {
       parsedDomain = domain;
@@ -371,6 +510,11 @@ function RootView(props: RootViewProps, ref: any) {
         overrideUnsettedLimit && (limit === 0 || limit === false)
           ? DEFAULT_SEARCH_LIMIT
           : limit,
+      actionRawData: {
+        context: rawContext,
+        domain: rawDomain,
+        values,
+      },
     });
   }
 
@@ -401,40 +545,28 @@ function RootView(props: RootViewProps, ref: any) {
     });
   }
 
-  async function openAction({
-    domain,
-    context,
-    model,
-    views,
-    title,
-    target,
-    initialView,
-    action_id,
-    action_type,
-    res_id,
-    values,
-    forced_values,
-    treeExpandable = false,
-    limit,
-  }: {
-    domain: any;
-    context: any;
-    model: string;
-    views: any[];
-    title: string;
-    target: string;
-    initialView: InitialViewData;
-    action_id: number;
-    action_type: string;
-    res_id?: number | boolean;
-    values?: any;
-    forced_values?: any;
-    treeExpandable?: boolean;
-    limit?: number;
-  }) {
+  async function openAction(parms: ActionInfo) {
+    const {
+      domain,
+      context,
+      model,
+      views,
+      title,
+      target,
+      initialView,
+      action_id,
+      action_type,
+      res_id,
+      values,
+      forced_values,
+      treeExpandable = false,
+      limit,
+      searchParams,
+    } = parms;
+
     const key = nanoid();
 
-    if (target !== "current") {
+    if (target !== "current" && target !== undefined) {
       const formView = (await ConnectionProvider.getHandler().getView({
         model,
         type: "form",
@@ -462,10 +594,6 @@ function RootView(props: RootViewProps, ref: any) {
 
       addNewTab({
         title,
-        action: {
-          id: action_id,
-          type: action_type,
-        },
         content: (
           <ActionView
             action_id={action_id}
@@ -474,7 +602,7 @@ function RootView(props: RootViewProps, ref: any) {
             title={title}
             views={views}
             model={model}
-            context={{ ...rootContext, ...context }}
+            context={{ ...context, ...rootContext }}
             domain={domain}
             setCanWeClose={registerViewCloseFn}
             initialView={formattedInitialView}
@@ -483,9 +611,11 @@ function RootView(props: RootViewProps, ref: any) {
             formForcedValues={forced_values}
             treeExpandable={treeExpandable}
             limit={limit}
+            initialSearchParams={searchParams}
           />
         ),
         key,
+        action: parms,
       });
     }
   }
