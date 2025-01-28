@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { One2many as One2manyOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { Spin, Alert } from "antd";
-import { Views, ViewType } from "@/types";
+import { FormView, TreeView, Views, ViewType } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import One2manyProvider from "@/context/One2manyContext";
 import { One2manyInput } from "@/widgets/base/one2many/One2manyInput";
@@ -36,9 +36,21 @@ export const One2many = (props: Props) => {
   }, [ooui]);
 
   const getViewData = async (type: ViewType) => {
+    const getViewPromise = ConnectionProvider.getHandler().getView({
+      model: relation,
+      type,
+      context: { ...getContext?.(), ...context },
+    });
+
     if (oouiViews && oouiViews[type]) {
-      return oouiViews[type];
+      const view = oouiViews[type];
+      if (!view.toolbar && (type === "form" || type === "tree")) {
+        const viewWithToolbar: TreeView | FormView = await getViewPromise;
+        return { ...view, toolbar: viewWithToolbar.toolbar };
+      }
+      return view;
     }
+
     return await ConnectionProvider.getHandler().getView({
       model: relation,
       type,
