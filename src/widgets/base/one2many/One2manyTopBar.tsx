@@ -137,7 +137,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
             onClick={onToggleViewMode}
           />
         )}
-        {toolbar && (
+        {/* {toolbar && (
           <>
             <Separator />
             <DropdownButton
@@ -159,7 +159,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
               </>
             )}
           </>
-        )}
+        )} */}
       </div>
     </div>
   );

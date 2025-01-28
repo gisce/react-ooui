@@ -210,25 +210,15 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
 
   useHotkeys(
     "pagedown",
-    async () => {
-      if (!isActive) return;
-      const canWeClose = await (formRef.current as any).cancelUnsavedChanges();
-      if (!canWeClose) return;
-      onNextClick();
-    },
+    () => isActive && tryAction(onNextClick),
     { enableOnFormTags: true, preventDefault: true },
-    [isActive, onNextClick, formRef],
+    [isActive, tryAction, onNextClick],
   );
   useHotkeys(
     "pageup",
-    async () => {
-      if (!isActive) return;
-      const canWeClose = await (formRef.current as any).cancelUnsavedChanges();
-      if (!canWeClose) return;
-      onPreviousClick();
-    },
+    () => isActive && tryAction(onPreviousClick),
     { enableOnFormTags: true, preventDefault: true },
-    [isActive, onPreviousClick, formRef],
+    [isActive, tryAction, onPreviousClick],
   );
   useHotkeys(
     "ctrl+s,command+s",
@@ -238,22 +228,14 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
   );
   useHotkeys(
     "ctrl+l,command+l",
-    async () => {
-      if (!isActive || !previousView) return;
-      const canWeClose = await (formRef.current as any).cancelUnsavedChanges();
-      if (!canWeClose) return;
-      setPreviousView?.(currentView);
-      setCurrentView?.(previousView);
+    () => {
+      if (isActive && previousView) {
+        setPreviousView?.(currentView);
+        setCurrentView?.(previousView);
+      }
     },
     { enableOnFormTags: true, preventDefault: true },
-    [
-      isActive,
-      previousView,
-      currentView,
-      setPreviousView,
-      setCurrentView,
-      formRef,
-    ],
+    [isActive, previousView, currentView, setPreviousView, setCurrentView],
   );
 
   if (!currentView) return null;
