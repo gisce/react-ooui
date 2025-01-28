@@ -79,6 +79,7 @@ const TabManagerProvider = (props: TabManagerProviderProps): any => {
   useEffect(() => {
     if (noTabs) {
       document.title = title;
+      window.history.replaceState({}, "", "/");
     }
   }, [noTabs, title]);
 

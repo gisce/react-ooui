@@ -4,7 +4,7 @@ import {
   One2manyContext,
   One2manyContextType,
 } from "@/context/One2manyContext";
-import { useContext } from "react";
+import { useContext, forwardRef } from "react";
 import { One2manyItem } from "./One2manyInput";
 import { filterDuplicateItems } from "@/helpers/one2manyHelper";
 import { useLocale } from "@gisce/react-formiga-components";
@@ -18,51 +18,58 @@ export type One2manyFormProps = {
   onChange: (items: One2manyItem[]) => void;
 };
 
-export const One2manyForm = ({
-  formView,
-  items,
-  context,
-  relation,
-  readOnly,
-  onChange,
-}: One2manyFormProps) => {
-  const { itemIndex } = useContext(One2manyContext) as One2manyContextType;
+export const One2manyForm = forwardRef(
+  (
+    {
+      formView,
+      items,
+      context,
+      relation,
+      readOnly,
+      onChange,
+    }: One2manyFormProps,
+    ref,
+  ) => {
+    const { itemIndex } = useContext(One2manyContext) as One2manyContextType;
+    const { t } = useLocale();
 
-  const { t } = useLocale();
+    if (items.length === 0) {
+      return t("noCurrentEntries");
+    }
 
-  if (items.length === 0) {
-    return t("noCurrentEntries");
-  }
+    return (
+      <Form
+        ref={ref}
+        formView={formView}
+        values={items[itemIndex]?.values}
+        parentContext={context}
+        model={relation}
+        id={items[itemIndex]?.id}
+        submitMode={"values"}
+        onFieldsChange={(values: any) => {
+          const currentItemId = items[itemIndex]?.id;
 
-  return (
-    <Form
-      formView={formView}
-      values={items[itemIndex]?.values}
-      parentContext={context}
-      model={relation}
-      id={items[itemIndex]?.id}
-      submitMode={"values"}
-      onFieldsChange={(values: any) => {
-        const currentItemId = items[itemIndex]?.id;
+          const updatedItems = items.map((item) => {
+            if (item.id === currentItemId) {
+              return {
+                ...item,
+                operation:
+                  item.operation === "original"
+                    ? "pendingUpdate"
+                    : item.operation,
+                values: { ...values, id: currentItemId },
+                treeValues: { ...values, id: currentItemId },
+              };
+            }
+            return item;
+          });
 
-        const updatedItems = items.map((item) => {
-          if (item.id === currentItemId) {
-            return {
-              ...item,
-              operation:
-                item.operation === "original"
-                  ? "pendingUpdate"
-                  : item.operation,
-              values: { ...values, id: currentItemId },
-              treeValues: { ...values, id: currentItemId },
-            };
-          }
-          return item;
-        });
+          onChange(filterDuplicateItems(updatedItems));
+        }}
+        readOnly={readOnly}
+      />
+    );
+  },
+);
 
-        onChange(filterDuplicateItems(updatedItems));
-      }}
-      readOnly={readOnly}
-    />
-  );
-};
+One2manyForm.displayName = "One2manyForm";
