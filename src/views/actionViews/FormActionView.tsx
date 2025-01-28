@@ -2,7 +2,6 @@ import FormActionBar from "@/actionbar/FormActionBar";
 import { FormView } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
 import Form from "@/widgets/views/Form";
-import React from "react";
 
 export type FormActionViewProps = {
   formView?: FormView;
