@@ -1,4 +1,4 @@
-import { useContext, useCallback } from "react";
+import { useContext, useCallback, memo, useMemo } from "react";
 import { Space, Spin } from "antd";
 import {
   SaveOutlined,
@@ -27,19 +27,17 @@ import {
   TabManagerContext,
   TabManagerContextType,
 } from "@/context/TabManagerContext";
-import {
-  ContentRootContext,
-  ContentRootContextType,
-} from "@/context/ContentRootContext";
 import AttachmentsButton from "./AttachmentsButton";
 import { Attachment } from "./AttachmentsButtonWrapper";
 import { useNextPrevious } from "./useNextPrevious";
+import {
+  saveDocument,
+  useFormToolbarButtons,
+} from "@/hooks/useFormToolbarButtons";
+import { ActionBarSeparator } from "./ActionBarSeparator";
 import { ShareUrlButton } from "./ShareUrlButton";
 
-function FormActionBar({ toolbar }: { toolbar: any }) {
-  const contentRootContext = useContext(
-    ContentRootContext,
-  ) as ContentRootContextType;
+function FormActionBarComponent({ toolbar }: { toolbar: any }) {
   const tabManagerContext = useContext(
     TabManagerContext,
   ) as TabManagerContextType;
@@ -74,11 +72,12 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     isActive,
   } = useActionViewContext();
 
-  const { processAction } = contentRootContext || {};
-  const { openRelate, openDefaultActionForModel } = tabManagerContext || {};
+  const { openDefaultActionForModel } = tabManagerContext || {};
 
-  const mustDisableButtons =
-    formIsSaving || removingItem || formIsLoading || duplicatingItem;
+  const mustDisableButtons = useMemo(
+    () => formIsSaving || removingItem || formIsLoading || duplicatingItem,
+    [formIsSaving, removingItem, formIsLoading, duplicatingItem],
+  );
 
   const tryAction = useCallback(
     (action: () => void) => {
@@ -90,6 +89,18 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     },
     [formHasChanges, t],
   );
+
+  const handleRefresh = useCallback(() => {
+    tryAction(() => (formRef.current as any).fetchValues());
+  }, [tryAction, formRef]);
+
+  const { actionButtonProps, printButtonProps, relateButtonProps } =
+    useFormToolbarButtons({
+      toolbar,
+      mustDisableButtons,
+      formRef,
+      onRefreshParentValues: handleRefresh,
+    });
 
   const handleRemove = useCallback(async () => {
     try {
@@ -148,40 +159,66 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
     }
   }, [currentId, currentModel, formRef, goToResourceId, setDuplicatingItem]);
 
-  const runAction = useCallback(
-    (actionData: any) => {
-      processAction?.({
-        actionData,
-        values: (formRef.current as any).getValues(),
-        fields: (formRef.current as any).getFields(),
-        context: (formRef.current as any).getContext(),
-        onRefreshParentValues: () => (formRef.current as any).fetchValues(),
-      });
+  const handleChangeView = useCallback(
+    (view: any) => {
+      setPreviousView?.(currentView);
+      setFormHasChanges?.(false);
+      setCurrentView?.(view);
     },
-    [formRef, processAction],
+    [currentView, setPreviousView, setFormHasChanges, setCurrentView],
+  );
+
+  const handleAddNewAttachment = useCallback(async () => {
+    const result = await saveDocument({ onFormSave });
+    if (result.succeed) {
+      openDefaultActionForModel?.({
+        ...getAttachmentActionPayload(
+          currentModel as string,
+          result.currentId as number,
+        ),
+        initialViewType: "form",
+      });
+    }
+  }, [currentModel, onFormSave, openDefaultActionForModel]);
+
+  const handleListAllAttachments = useCallback(async () => {
+    const result = await saveDocument({ onFormSave });
+    if (result.succeed) {
+      openDefaultActionForModel?.({
+        ...getAttachmentActionPayload(
+          currentModel as string,
+          result.currentId as number,
+        ),
+        initialViewType: "tree",
+      });
+    }
+  }, [currentModel, onFormSave, openDefaultActionForModel]);
+
+  const handleViewAttachmentDetails = useCallback(
+    async (attachment: Attachment) => {
+      const result = await saveDocument({ onFormSave });
+      if (result.succeed) {
+        openDefaultActionForModel?.({
+          model: "ir.attachment",
+          res_id: attachment.id,
+          initialViewType: "form",
+        });
+      }
+    },
+    [onFormSave, openDefaultActionForModel],
   );
 
   useHotkeys(
     "pagedown",
-    async () => {
-      if (!isActive) return;
-      const canWeClose = await (formRef.current as any).cancelUnsavedChanges();
-      if (!canWeClose) return;
-      onNextClick();
-    },
+    () => isActive && tryAction(onNextClick),
     { enableOnFormTags: true, preventDefault: true },
-    [isActive, onNextClick, formRef],
+    [isActive, tryAction, onNextClick],
   );
   useHotkeys(
     "pageup",
-    async () => {
-      if (!isActive) return;
-      const canWeClose = await (formRef.current as any).cancelUnsavedChanges();
-      if (!canWeClose) return;
-      onPreviousClick();
-    },
+    () => isActive && tryAction(onPreviousClick),
     { enableOnFormTags: true, preventDefault: true },
-    [isActive, onPreviousClick, formRef],
+    [isActive, tryAction, onPreviousClick],
   );
   useHotkeys(
     "ctrl+s,command+s",
@@ -191,22 +228,14 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
   );
   useHotkeys(
     "ctrl+l,command+l",
-    async () => {
-      if (!isActive || !previousView) return;
-      const canWeClose = await (formRef.current as any).cancelUnsavedChanges();
-      if (!canWeClose) return;
-      setPreviousView?.(currentView);
-      setCurrentView?.(previousView);
+    () => {
+      if (isActive && previousView) {
+        setPreviousView?.(currentView);
+        setCurrentView?.(previousView);
+      }
     },
     { enableOnFormTags: true, preventDefault: true },
-    [
-      isActive,
-      previousView,
-      currentView,
-      setPreviousView,
-      setCurrentView,
-      formRef,
-    ],
+    [isActive, previousView, currentView, setPreviousView, setCurrentView],
   );
 
   if (!currentView) return null;
@@ -267,132 +296,34 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
         icon={<ReloadOutlined />}
         tooltip={t("refresh")}
         disabled={mustDisableButtons || currentId === undefined}
-        onClick={() => tryAction(() => (formRef.current as any).fetchValues())}
+        onClick={handleRefresh}
       />
       <ActionBarSeparator />
       <ChangeViewButton
         currentView={currentView}
         previousView={previousView}
         availableViews={availableViews}
-        onChangeView={(view: any) => {
-          setPreviousView?.(currentView);
-          setFormHasChanges?.(false);
-          setCurrentView?.(view);
-        }}
+        onChangeView={handleChangeView}
         disabled={mustDisableButtons}
         formHasChanges={formHasChanges}
       />
       <ActionBarSeparator />
-      <Space>
-        <ActionButton
-          icon={<LeftOutlined />}
-          tooltip={t("previous")}
-          disabled={mustDisableButtons}
-          onClick={() => tryAction(onPreviousClick)}
-        />
-        <ActionButton
-          icon={<RightOutlined />}
-          tooltip={t("next")}
-          disabled={mustDisableButtons}
-          onClick={() => tryAction(onNextClick)}
-        />
-      </Space>
+      <NavigationButtons
+        disabled={mustDisableButtons || false}
+        onPreviousClick={onPreviousClick}
+        onNextClick={onNextClick}
+        tryAction={tryAction}
+      />
       <ActionBarSeparator />
-      <DropdownButton
-        icon={<ThunderboltOutlined />}
-        placement="bottomRight"
-        disabled={mustDisableButtons}
-        onRetrieveData={async () => [
-          { label: t("actions"), items: toolbar?.action },
-        ]}
-        onItemClick={async (action: any) => {
-          if (action) {
-            const result = await saveDocument({ onFormSave });
-            if (result.succeed) runAction(action);
-          }
-        }}
-      />
-      <DropdownButton
-        icon={<PrinterOutlined />}
-        disabled={mustDisableButtons}
-        placement="bottomRight"
-        onRetrieveData={async () => [
-          { label: t("reports"), items: toolbar?.print },
-        ]}
-        onItemClick={async (report: any) => {
-          if (report) {
-            const result = await saveDocument({ onFormSave });
-            if (result.succeed) {
-              runAction({
-                ...report,
-                datas: {
-                  ...(report.datas || {}),
-                  ids: [result.currentId as number],
-                },
-              });
-            }
-          }
-        }}
-      />
-      <DropdownButton
-        icon={<EnterOutlined />}
-        disabled={mustDisableButtons}
-        placement="bottomRight"
-        onRetrieveData={async () => [
-          { label: t("related"), items: toolbar?.relate },
-        ]}
-        onItemClick={async (relate: any) => {
-          if (relate) {
-            const result = await saveDocument({ onFormSave });
-            if (result.succeed) {
-              openRelate({
-                relateData: relate,
-                values: (formRef.current as any).getValues(),
-                fields: (formRef.current as any).getFields(),
-                action_id: relate.id,
-                action_type: relate.type,
-              });
-            }
-          }
-        }}
-      />
+      <DropdownButton icon={<ThunderboltOutlined />} {...actionButtonProps} />
+      <DropdownButton icon={<PrinterOutlined />} {...printButtonProps} />
+      <DropdownButton icon={<EnterOutlined />} {...relateButtonProps} />
       <AttachmentsButton
         disabled={mustDisableButtons}
         attachments={attachments}
-        onAddNewAttachment={async () => {
-          const result = await saveDocument({ onFormSave });
-          if (result.succeed) {
-            openDefaultActionForModel({
-              ...getAttachmentActionPayload(
-                currentModel as string,
-                result.currentId as number,
-              ),
-              initialViewType: "form",
-            });
-          }
-        }}
-        onListAllAttachments={async () => {
-          const result = await saveDocument({ onFormSave });
-          if (result.succeed) {
-            openDefaultActionForModel({
-              ...getAttachmentActionPayload(
-                currentModel as string,
-                result.currentId as number,
-              ),
-              initialViewType: "tree",
-            });
-          }
-        }}
-        onViewAttachmentDetails={async (attachment: Attachment) => {
-          const result = await saveDocument({ onFormSave });
-          if (result.succeed) {
-            openDefaultActionForModel({
-              model: "ir.attachment",
-              res_id: attachment.id,
-              initialViewType: "form",
-            });
-          }
-        }}
+        onAddNewAttachment={handleAddNewAttachment}
+        onListAllAttachments={handleListAllAttachments}
+        onViewAttachmentDetails={handleViewAttachmentDetails}
       />
       <ActionBarSeparator />
       <ShareUrlButton res_id={currentId} />
@@ -400,18 +331,40 @@ function FormActionBar({ toolbar }: { toolbar: any }) {
   );
 }
 
-export const ActionBarSeparator = () => <div className="inline-block w-2" />;
+const FormActionBar = memo(FormActionBarComponent);
 
-const saveDocument = async ({
-  onFormSave,
-}: {
-  onFormSave?: () => Promise<{ succeed: boolean; id: number }>;
-}): Promise<{ succeed: boolean; currentId?: number }> => {
-  const result = await onFormSave?.();
-  return result?.succeed
-    ? { succeed: true, currentId: result.id }
-    : { succeed: false, currentId: undefined };
-};
+const NavigationButtons = memo(
+  ({
+    disabled,
+    onPreviousClick,
+    onNextClick,
+    tryAction,
+  }: {
+    disabled: boolean;
+    onPreviousClick: () => void;
+    onNextClick: () => void;
+    tryAction: (action: () => void) => void;
+  }) => {
+    const { t } = useLocale();
+    return (
+      <Space>
+        <ActionButton
+          icon={<LeftOutlined />}
+          tooltip={t("previous")}
+          disabled={disabled}
+          onClick={() => tryAction(onPreviousClick)}
+        />
+        <ActionButton
+          icon={<RightOutlined />}
+          tooltip={t("next")}
+          disabled={disabled}
+          onClick={() => tryAction(onNextClick)}
+        />
+      </Space>
+    );
+  },
+);
+NavigationButtons.displayName = "NavigationButtons";
 
 const getAttachmentActionPayload = (res_model: string, res_id: number) => ({
   model: "ir.attachment",
