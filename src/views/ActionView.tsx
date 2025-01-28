@@ -419,8 +419,6 @@ function ActionView(props: Props, ref: any) {
     }
   }
 
-  function content() {}
-
   function onNewClicked() {
     if (currentId === undefined && currentView!.type === "form") {
       (formRef.current as any).clearAndReload();

@@ -11,12 +11,8 @@ import {
   BorderOuterOutlined,
 } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
-import {
-  ActionViewContext,
-  ActionViewContextType,
-} from "@/context/ActionViewContext";
+import { ActionBarSeparator } from "./ActionBarSeparator";
 import { ShareUrlButton } from "./ShareUrlButton";
-import { ActionBarSeparator } from "./FormActionBar";
 
 function DashboardActionBar() {
   const { isLoading, dashboardRef, moveItemsEnabled, setMoveItemsEnabled } =
