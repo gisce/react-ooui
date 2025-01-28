@@ -13,8 +13,7 @@ export function useUrlFromCurrentTab({
 }: {
   currentTab?: Tab;
 }): UseUrlFromCurrentTabResult {
-  const { currentView, searchParams, currentId, formRef } =
-    useActionViewContext();
+  const { currentView, searchParams, currentId } = useActionViewContext();
   const { currentTab: currentTabContext } = useTabs();
 
   const currentTab = currentTabProps || currentTabContext;
@@ -29,33 +28,11 @@ export function useUrlFromCurrentTab({
   };
 
   const { action_id } = currentTab.action;
-
-  let finalValues = currentTab.action.values || {};
-  const formValues = formRef.current?.getPlainValues() || {};
-
-  // For tree view with active_ids, action values have priority over form values
-  if (initialView.type === "tree" && finalValues.active_ids) {
-    finalValues = {
-      ...formValues,
-      ...finalValues,
-    };
-  } else {
-    // For all other cases, form values (if any) have priority over action values
-    finalValues = {
-      ...finalValues,
-      ...formValues,
-    };
-  }
-
   const finalActionData: ActionInfo = {
     ...currentTab.action,
     ...(initialView && { initialView }),
     ...(searchParams && { searchParams }),
     ...(currentId && { res_id: currentId }),
-    actionRawData: {
-      ...currentTab.action.actionRawData,
-      values: finalValues,
-    },
   };
 
   const shareUrl = createShareOpenUrl(finalActionData);

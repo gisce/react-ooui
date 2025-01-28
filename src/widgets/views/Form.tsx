@@ -287,8 +287,8 @@ function Form(props: FormProps, ref: any) {
   }
 
   function getPlainValues() {
-    const values: any = getValues() || {};
-    const fields: any = getFields() || {};
+    const values: any = getValues();
+    const fields: any = getFields();
     const reformattedValues: { [key: string]: any } = {};
 
     Object.keys(values).forEach((key) => {

@@ -91,10 +91,6 @@ import { ErpAllFeatureKeys, ErpFeatureKeys } from "./models/erpFeature";
 import type { ErpFeaturesMap } from "./models/erpFeature";
 import { GraphCard } from "./widgets/views/Graph";
 import dayjs from "./helpers/dayjs";
-import {
-  filterAllowedParameters,
-  filterAllowedValues,
-} from "./helpers/shareUrlHelper";
 
 export {
   Button,
@@ -187,6 +183,4 @@ export {
   Spinner,
   Carousel,
   ColorPicker,
-  filterAllowedParameters,
-  filterAllowedValues,
 };
