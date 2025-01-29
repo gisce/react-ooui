@@ -44,10 +44,11 @@ export const One2many = (props: Props) => {
 
     if (oouiViews && oouiViews[type]) {
       const view = oouiViews[type];
-      if (!view.toolbar && (type === "form" || type === "tree")) {
-        const viewWithToolbar: TreeView | FormView = await getViewPromise;
-        return { ...view, toolbar: viewWithToolbar.toolbar };
-      }
+      // TODO: Replace with the new API call to retrieve only the toolbar
+      // if (!view.toolbar && (type === "form" || type === "tree")) {
+      //   const viewWithToolbar: TreeView | FormView = await getViewPromise;
+      //   return { ...view, toolbar: viewWithToolbar.toolbar };
+      // }
       return view;
     }
 
