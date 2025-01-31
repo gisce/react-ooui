@@ -27,6 +27,7 @@ const Label = (props: Props) => {
   const formContext = useContext(FormContext) as FormContextType;
   const addColon = fieldForLabel !== null;
   let labelText = addColon && label.length > 1 ? label + " :" : label;
+  let labelTitle = "";
   if (!ooui.fieldForLabel && ooui._id) {
     labelText = formContext.getFieldValue(ooui._id);
     if (
@@ -34,7 +35,22 @@ const Label = (props: Props) => {
       ooui.fieldType === "time" ||
       ooui.fieldType === "datetime"
     ) {
-      labelText = labelText ? dayjs(labelText).fromNow() : "";
+      const formats = {
+        date: "DD/MM/YYYY",
+        time: "HH:mm",
+        datetime: "DD/MM/YYYY HH:mm",
+      };
+      labelTitle = labelText
+        ? dayjs(labelText).format(
+            formats[ooui.fieldType as keyof typeof formats],
+          )
+        : "";
+      if (ooui.humanDate) {
+        labelText = labelText ? dayjs(labelText).fromNow() : "";
+      } else {
+        labelText = labelTitle;
+        labelTitle = "";
+      }
     }
   }
   const responsiveAlign = responsiveBehaviour ? "left" : "right";
@@ -57,7 +73,7 @@ const Label = (props: Props) => {
           />
         </Tooltip>
       )}
-      <span className="pr-2">
+      <span className="pr-2" title={labelTitle}>
         <TextType level={labelSize} type={labelType as any}>
           <Interweave content={labelText} />
         </TextType>
