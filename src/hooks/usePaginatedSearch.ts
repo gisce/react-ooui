@@ -67,7 +67,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     searchTreeNameSearch,
     setSearchTreeNameSearch,
     setResults: setActionViewResults,
-    results: actionViewResults,
     setSearchQuery,
     setTotalItems: setTotalItemsActionView,
     isActive,
@@ -160,13 +159,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     context,
     showErrorDialog,
   ]);
-
-  const refresh = useCallback(async () => {
-    setSelectedRowItems([]);
-    currentSearchParamsString.current = undefined;
-    await updateTotalRows();
-    tableRef?.current?.refresh();
-  }, [setSelectedRowItems, tableRef, updateTotalRows]);
 
   // Event handlers
   const changeSelectedRowKeys = useCallback(
@@ -436,6 +428,12 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     treeView,
     updateTotalRows,
   ]);
+
+  const refresh = useCallback(async () => {
+    setSelectedRowItems([]);
+    currentSearchParamsString.current = undefined;
+    fetchResults();
+  }, [fetchResults, setSelectedRowItems]);
 
   const onRequestPageChange = useCallback(
     (page: number, pageSize?: number) => {
