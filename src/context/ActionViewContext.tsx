@@ -164,6 +164,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
       setCurrentItemIndex?.(0);
       setCurrentId?.(results[0].id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results]);
 
   useEffect(() => {

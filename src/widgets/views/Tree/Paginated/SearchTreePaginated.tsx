@@ -269,7 +269,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         height={availableHeight}
         columns={columns}
         dataSource={results}
-        // initialSelectionRowKeys={selectedRowKeys}
         onRowDoubleClick={onRowClicked}
         onRowSelectionChange={onRowHasBeenSelected}
         onColumnChanged={updateColumnState}

@@ -75,12 +75,12 @@ const getTableColumns = (
       title: column.label,
       render,
       comparator: (valueA: any, valueB: any, nodeA: any, nodeB: any) => {
-        let aItem = nodeA?.data?.[key] ?? "";
-        let bItem = nodeB?.data?.[key] ?? "";
+        let aItem = nodeA?.data?.[key] || "";
+        let bItem = nodeB?.data?.[key] || "";
 
         if (type === "many2one") {
-          aItem = nodeA?.data?.[key]?.value ?? "";
-          bItem = nodeB?.data?.[key]?.value ?? "";
+          aItem = nodeA?.data?.[key]?.value || "";
+          bItem = nodeB?.data?.[key]?.value || "";
         }
 
         if (aItem < bItem) return -1;

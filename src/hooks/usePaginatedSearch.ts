@@ -259,13 +259,21 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (!treeOoui || !treeView) {
       return;
     }
     fetchResults();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [treeView, treeOoui, pageSize, currentPage]);
+  }, [
+    treeView,
+    treeOoui,
+    pageSize,
+    currentPage,
+    mergedParams,
+    nameSearch,
+    domain,
+  ]);
 
   useEffect(() => {
     if (
@@ -381,7 +389,9 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       lastAssignedResults.current = [];
       setTotalRows(0);
       setTotalItemsActionView(0);
-      return [];
+      setResults([]);
+      setTreeIsLoading(false);
+      return;
     }
 
     const preparedResults = getTableItems(treeOoui, results);
