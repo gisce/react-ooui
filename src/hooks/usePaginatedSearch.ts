@@ -83,6 +83,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   // Local state
   const [totalRowsLoading, setTotalRowsLoading] = useState<boolean>(true);
   const [totalRows, setTotalRows] = useState<number | null>();
+  const [results, setResults] = useState<any[]>([]);
 
   // Refs
   const nameSearch = nameSearchProps || searchTreeNameSearch;
@@ -266,6 +267,14 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   }, []);
 
   useEffect(() => {
+    if (!treeOoui || !treeView) {
+      return;
+    }
+    fetchResults();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [treeView, treeOoui, pageSize, currentPage]);
+
+  useEffect(() => {
     if (
       (nameSearch !== undefined && prevNameSearch.current === undefined) ||
       (typeof nameSearch === "string" &&
@@ -405,7 +414,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
     setTreeIsLoading(false);
     lastAssignedResults.current = [...preparedResults];
-    return preparedResults;
+    setResults([...preparedResults]);
   }, [
     actionViewResults,
     actionViewSortState,
@@ -426,8 +435,23 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     treeView,
   ]);
 
+  const onPageSizeChange = useCallback(
+    (pageSize: number) => {
+      setPageSize(pageSize);
+    },
+    [setPageSize],
+  );
+
+  const onRequestPageChange = useCallback(
+    (page: number) => {
+      setCurrentPage(page);
+    },
+    [setCurrentPage],
+  );
+
   return {
     fetchResults,
+    results,
     nameSearch,
     isActive,
     searchVisible,
@@ -448,5 +472,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     onSearchFilterSubmit,
     onSideSearchFilterClose,
     onSideSearchFilterSubmit,
+    onPageSizeChange,
+    onRequestPageChange,
   };
 };

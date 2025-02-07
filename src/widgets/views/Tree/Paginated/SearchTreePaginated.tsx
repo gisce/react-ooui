@@ -146,6 +146,9 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     totalRowsLoading,
     totalRows,
     onRowStyle,
+    results,
+    onPageSizeChange,
+    onRequestPageChange,
   } = usePaginatedSearch({
     treeOoui,
     treeView,
@@ -277,7 +280,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         loading={false}
         height={availableHeight}
         columns={columns}
-        dataSource={[]}
+        dataSource={results}
         initialSelectionRowKeys={selectedRowKeys}
         onRowDoubleClick={onRowClicked}
         onRowSelectionChange={onChangeSelectedRowKeys}
@@ -297,6 +300,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     treeOoui,
     strings,
     availableHeight,
+    results,
     selectedRowKeys,
     onRowClicked,
     onChangeSelectedRowKeys,
@@ -332,8 +336,8 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         initialPage={1}
         initialPageSize={DEFAULT_PAGE_SIZE}
         currentPageSelectedCount={selectedRowKeys.length}
-        onPageSizeChange={() => {}}
-        onRequestPageChange={() => {}}
+        onPageSizeChange={onPageSizeChange}
+        onRequestPageChange={onRequestPageChange}
         totalSelectedCount={selectedRowKeys.length}
       />
       <div ref={containerRef} style={containerStyle}>
