@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 import { Tag as AntdTag, TagProps } from "antd";
@@ -8,6 +8,9 @@ import {
   colorFromBoolean,
   getTextAndBackgroundColors,
 } from "@/helpers/formHelper";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import ConnectionProvider from "@/ConnectionProvider";
+import { FormContext, FormContextType } from "@/context/FormContext";
 import { useLocale } from "@gisce/react-formiga-components";
 
 function capitalizeFirstLetter(text: string): string {
@@ -25,7 +28,13 @@ export const Tag = (props: WidgetProps) => {
 
 export const TagInput = (props: any) => {
   const { t } = useLocale();
+  const [readObjects, cancelReadObjectsRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().readObjects,
+  );
+  const { getFieldValue } = (useContext(FormContext) as FormContextType) || {};
   const { ooui, value } = props;
+  const [color, setColor] = useState<string>("default");
+
   let formattedValue = value;
   let colorMethod: any = colorFromString;
   let colorValue = value;
@@ -41,13 +50,42 @@ export const TagInput = (props: any) => {
     colorMethod = colorFromBoolean;
   }
 
+  const updateColor = useCallback(async () => {
+    if (ooui.colorField) {
+      if (ooui.fieldType === "many2one" && ooui.raw_props?.relation) {
+        const response = await readObjects({
+          model: ooui.raw_props.relation,
+          ids: [value[0]],
+          fieldsToRetrieve: [ooui.colorField],
+        });
+        const retrievedColor = response[0]?.[ooui.colorField];
+
+        if (retrievedColor) {
+          const sanitizedColor = retrievedColor.includes("#")
+            ? retrievedColor
+            : `#${retrievedColor}`;
+          setColor(sanitizedColor);
+        }
+      } else {
+        setColor(getFieldValue(ooui.colorField));
+      }
+    } else {
+      setColor(
+        ooui.colors === "auto"
+          ? colorMethod(colorValue)
+          : ooui.colors[colorValue] || colorMethod(colorValue),
+      );
+    }
+  }, [ooui?.colorField]);
+
+  useEffect(() => {
+    updateColor().catch((err) => console.error(err));
+  }, [ooui?.colorField]);
+
   if (!formattedValue) {
     return null;
   }
-  const color =
-    ooui.colors === "auto"
-      ? colorMethod(colorValue)
-      : ooui.colors[colorValue] || colorMethod(colorValue);
+
   return <CustomTag color={color}>{formattedValue}</CustomTag>;
 };
 
