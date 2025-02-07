@@ -1,6 +1,6 @@
 import { mergeParams } from "@/helpers/searchHelper";
 import { useSearchTreeState } from "@/hooks/useSearchTreeState";
-import { PaginatedTableRef , ColumnState } from "@gisce/react-formiga-table";
+import { PaginatedTableRef } from "@gisce/react-formiga-table";
 import {
   CSSProperties,
   useCallback,
@@ -12,7 +12,7 @@ import {
 import { useNetworkRequest } from "./useNetworkRequest";
 import { ConnectionProvider, TreeView } from "..";
 import { useShowErrorDialog } from "@/ui/GenericErrorDialog";
-import { useDeepCompareEffect, useDeepCompareCallback } from "use-deep-compare";
+import { useDeepCompareEffect } from "use-deep-compare";
 import deepEqual from "deep-equal";
 import {
   getColorMap,
@@ -147,12 +147,13 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       setTotalRowsLoading(false);
     }
   }, [
+    setTotalItemsActionView,
+    fetchTotalRows,
+    nameSearch,
     domain,
     mergedParams,
     model,
-    nameSearch,
     context,
-    setTotalItemsActionView,
     showErrorDialog,
   ]);
 
@@ -171,7 +172,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     currentSearchParamsString.current = undefined;
     await updateTotalRows();
     tableRef?.current?.refresh();
-  }, [changeSelectedRowItems, updateTotalRows]);
+  }, [changeSelectedRowItems, tableRef, updateTotalRows]);
 
   // Event handlers
   const onChangeSelectedRowKeys = useCallback(
@@ -207,6 +208,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     setSearchValues?.(undefined);
   }, [
     changeSelectedRowItems,
+    tableRef,
     setSearchTreeNameSearch,
     setSearchParams,
     setSearchValues,
@@ -222,6 +224,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     },
     [
       changeSelectedRowItems,
+      tableRef,
       setSearchTreeNameSearch,
       setSearchParams,
       setSearchValues,
@@ -244,6 +247,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     },
     [
       changeSelectedRowItems,
+      tableRef,
       setSearchTreeNameSearch,
       setSearchParams,
       setSearchValues,
@@ -258,6 +262,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       cancelFetchTotalRows();
       cancelSearchForTree();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -273,6 +278,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       refresh();
     }
     prevNameSearch.current = nameSearch;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nameSearch]);
 
   useDeepCompareEffect(() => {
@@ -298,6 +304,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     if (!treeOoui) {
       return [];
     }
+    setTreeIsLoading(true);
 
     const attrs: any = {};
     if (treeOoui.colors) {
@@ -396,16 +403,34 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       };
     }
 
+    setTreeIsLoading(false);
     lastAssignedResults.current = [...preparedResults];
     return preparedResults;
-  }, []);
+  }, [
+    actionViewResults,
+    actionViewSortState,
+    context,
+    currentPage,
+    domain,
+    mergedParams,
+    model,
+    mustUpdateTotal,
+    nameSearch,
+    pageSize,
+    searchForTree,
+    setActionViewResults,
+    setSearchQuery,
+    setTotalItemsActionView,
+    setTreeIsLoading,
+    treeOoui,
+    treeView,
+  ]);
 
   return {
     fetchResults,
     nameSearch,
     isActive,
     searchVisible,
-    searchParams,
     searchValues,
     searchTreeNameSearch,
     mergedParams,

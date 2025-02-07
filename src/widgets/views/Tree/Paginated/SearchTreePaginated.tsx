@@ -208,7 +208,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
       <PaginatedTable
         ref={tableRef}
         strings={strings}
-        loading={loading}
+        loading={false} // TODO: Remove this
         height={availableHeight}
         columns={columns}
         dataSource={[]}
@@ -226,7 +226,23 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         onRowStyle={onRowStyle}
       />
     );
-  }, []);
+  }, [
+    columns,
+    treeOoui,
+    strings,
+    availableHeight,
+    selectedRowKeys,
+    onRowClicked,
+    onChangeSelectedRowKeys,
+    updateColumnState,
+    getColumnState,
+    setTreeFirstVisibleRow,
+    onGetFirstVisibleRowIndex,
+    footerComp,
+    statusComp,
+    onRowStatus,
+    onRowStyle,
+  ]);
 
   const containerStyle = useMemo(
     () => ({
