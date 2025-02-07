@@ -30,6 +30,10 @@ export type SearchTreeState = {
   isActive?: boolean;
   sortState?: ColumnState[];
   setSortState: (value: ColumnState[] | undefined) => void;
+  pageSize: number | undefined;
+  setPageSize: (value: number | undefined) => void;
+  currentPage: number;
+  setCurrentPage: (value: number) => void;
 };
 
 export function useSearchTreeState({
@@ -56,6 +60,10 @@ export function useSearchTreeState({
   const [localSortState, setLocalSortState] = useState<
     ColumnState[] | undefined
   >();
+  const [localPageSize, setLocalPageSize] = useState<number | undefined>(
+    undefined,
+  );
+  const [localCurrentPage, setLocalCurrentPage] = useState<number>(1);
 
   // Return either context values or local state values based on isUnderActionViewContext
   return isUnderActionViewContext
@@ -86,6 +94,10 @@ export function useSearchTreeState({
         isActive: actionViewContext.isActive,
         sortState: actionViewContext.sortState,
         setSortState: actionViewContext.setSortState ?? (() => {}),
+        pageSize: actionViewContext.pageSize,
+        setPageSize: (value?: number) => actionViewContext.setPageSize?.(value),
+        currentPage: actionViewContext.currentPage ?? 1,
+        setCurrentPage: actionViewContext.setCurrentPage ?? (() => {}),
       }
     : {
         treeIsLoading: localTreeIsLoading,
@@ -111,5 +123,9 @@ export function useSearchTreeState({
         isActive: undefined,
         sortState: localSortState,
         setSortState: setLocalSortState,
+        pageSize: localPageSize,
+        setPageSize: setLocalPageSize,
+        currentPage: localCurrentPage,
+        setCurrentPage: setLocalCurrentPage,
       };
 }

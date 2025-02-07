@@ -73,6 +73,10 @@ export type ActionViewContextType = Omit<
   setIsInfiniteTree?: (value: boolean) => void;
   sortState?: ColumnState[];
   setSortState?: (value: ColumnState[] | undefined) => void;
+  pageSize?: number | undefined;
+  setPageSize?: (value: number | undefined) => void;
+  currentPage?: number;
+  setCurrentPage?: (value: number) => void;
 };
 
 export const ActionViewContext = createContext<ActionViewContextType | null>(
@@ -146,6 +150,9 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT,
   );
   const [title, setTitle] = useState<string>(titleProps);
+
+  const [pageSize, setPageSize] = useState<number | undefined>(undefined);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   useEffect(() => {
     if (results && results.length > 0 && !currentItemIndex) {
@@ -250,6 +257,10 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setIsInfiniteTree,
         sortState,
         setSortState,
+        pageSize,
+        setPageSize,
+        currentPage,
+        setCurrentPage,
       }}
     >
       {children}
@@ -328,6 +339,10 @@ export const useActionViewContext = () => {
       setIsInfiniteTree: () => {},
       sortState: undefined,
       setSortState: () => {},
+      pageSize: undefined,
+      setPageSize: (value?: number) => {},
+      currentPage: 1,
+      setCurrentPage: () => {},
     };
   }
 
