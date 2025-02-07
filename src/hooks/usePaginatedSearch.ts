@@ -1,7 +1,14 @@
 import { mergeParams } from "@/helpers/searchHelper";
 import { useSearchTreeState } from "@/hooks/useSearchTreeState";
 import { PaginatedTableRef } from "@gisce/react-formiga-table";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useNetworkRequest } from "./useNetworkRequest";
 import { ConnectionProvider } from "..";
 import { useShowErrorDialog } from "@/ui/GenericErrorDialog";
@@ -31,6 +38,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     onChangeSelectedRowKeys: onChangeSelectedRowKeysProps,
   } = props;
 
+  // State from useSearchTreeState
   const {
     setTreeIsLoading,
     searchVisible,
@@ -54,6 +62,11 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     setSortState: setActionViewSortState,
   } = useSearchTreeState({ useLocalState: !rootTree });
 
+  // Local state
+  const [totalRowsLoading, setTotalRowsLoading] = useState<boolean>(true);
+  const [totalRows, setTotalRows] = useState<number | null>();
+
+  // Refs
   const nameSearch = nameSearchProps || searchTreeNameSearch;
   const prevNameSearch = useRef(nameSearch);
   const prevSearchParamsRef = useRef(searchParams);
@@ -65,41 +78,35 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   const lastAssignedResults = useRef<any[]>([]);
   const hasRestoredSortStateForFirstTime = useRef<boolean>(false);
 
+  // Hooks
   const showErrorDialog = useShowErrorDialog();
-
-  const [totalRowsLoading, setTotalRowsLoading] = useState<boolean>(true);
-  const [totalRows, setTotalRows] = useState<number | null>();
-
   const [fetchTotalRows, cancelFetchTotalRows] = useNetworkRequest(
     ConnectionProvider.getHandler().searchCount,
   );
 
-  useEffect(() => {
-    updateTotalRows();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (
-      (nameSearch !== undefined && prevNameSearch.current === undefined) ||
-      (typeof nameSearch === "string" &&
-        typeof prevNameSearch.current === "string" &&
-        nameSearch !== prevNameSearch.current)
-    ) {
-      setSearchParams?.([]);
-      setSearchValues?.({});
-      tableRef.current?.unselectAll();
-      refresh();
-    }
-    prevNameSearch.current = nameSearch;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nameSearch]);
-
+  // Memoized values
   const mergedParams = useMemo(
     () => mergeParams(searchParams || [], domain),
     [domain, searchParams],
   );
 
+  const selectedRowKeys = useMemo(() => {
+    return selectedRowItems?.map((item) => item.id) || [];
+  }, [selectedRowItems]);
+
+  // Helper functions
+  const mustUpdateTotal = useCallback(() => {
+    const params = nameSearch ? domain : mergedParams;
+    const paramsString = `${JSON.stringify(params)}-${nameSearch}`;
+
+    if (paramsString !== currentSearchParamsString.current) {
+      currentSearchParamsString.current = paramsString;
+      return true;
+    }
+    return false;
+  }, [domain, mergedParams, nameSearch]);
+
+  // Core functionality
   const updateTotalRows = useCallback(async () => {
     setTotalRows(undefined);
     setTotalItemsActionView(0);
@@ -128,39 +135,12 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     showErrorDialog,
   ]);
 
-  useDeepCompareEffect(() => {
-    const searchParamsChanged = !deepEqual(
-      searchParams,
-      prevSearchParamsRef.current,
-    );
-    const searchVisibleChangedToFalse =
-      prevSearchVisibleRef.current && !searchVisible;
-
-    if (
-      searchParamsChanged &&
-      (searchVisibleChangedToFalse || filterType === "top")
-    ) {
-      refresh();
-    }
-
-    prevSearchParamsRef.current = searchParams;
-    prevSearchVisibleRef.current = searchVisible;
-  }, [searchParams, searchVisible]);
-
   const changeSelectedRowItems = useCallback(
     (newSelectedRowItems: any[]) => {
       setSelectedRowItems?.(newSelectedRowItems);
       onChangeSelectedRowKeysProps?.(
         newSelectedRowItems.map((item) => item.id),
       );
-    },
-    [onChangeSelectedRowKeysProps, setSelectedRowItems],
-  );
-
-  const onChangeSelectedRowKeys = useCallback(
-    (newSelectedRowKeys: number[]) => {
-      setSelectedRowItems?.(newSelectedRowKeys.map((id: number) => ({ id })));
-      onChangeSelectedRowKeysProps?.(newSelectedRowKeys);
     },
     [onChangeSelectedRowKeysProps, setSelectedRowItems],
   );
@@ -174,31 +154,24 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
   const fetchResults = () => {};
 
-  const selectedRowKeys = useMemo(() => {
-    return selectedRowItems?.map((item) => item.id) || [];
-  }, [selectedRowItems]);
-
-  const mustUpdateTotal = useCallback(() => {
-    const params = nameSearch ? domain : mergedParams;
-
-    const paramsString = `${JSON.stringify(params)}-${nameSearch}`;
-
-    if (paramsString !== currentSearchParamsString.current) {
-      currentSearchParamsString.current = paramsString;
-      return true;
-    }
-    return false;
-  }, [domain, mergedParams, nameSearch]);
+  // Event handlers
+  const onChangeSelectedRowKeys = useCallback(
+    (newSelectedRowKeys: number[]) => {
+      setSelectedRowItems?.(newSelectedRowKeys.map((id: number) => ({ id })));
+      onChangeSelectedRowKeysProps?.(newSelectedRowKeys);
+    },
+    [onChangeSelectedRowKeysProps, setSelectedRowItems],
+  );
 
   const onGetFirstVisibleRowIndex = useCallback(() => {
     return treeFirstVisibleRow;
   }, [treeFirstVisibleRow]);
 
-  const onRowStyle = useCallback((record: any) => {
-    if (colorsForResults.current[record.node?.data?.id]) {
-      return { color: colorsForResults.current[record.node?.data?.id] };
+  const onRowStyle = useCallback((item: Record<string, any>): CSSProperties => {
+    if (colorsForResults.current[item.node?.data?.id]) {
+      return { color: colorsForResults.current[item.node?.data?.id] };
     }
-    return undefined;
+    return {};
   }, []);
 
   const onRowStatus = useCallback(
@@ -206,6 +179,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     [],
   );
 
+  // Search filter handlers
   const onSearchFilterClear = useCallback(() => {
     changeSelectedRowItems([]);
     tableRef.current?.unselectAll();
@@ -257,6 +231,45 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       setSearchVisible,
     ],
   );
+
+  // Effects
+  useEffect(() => {
+    updateTotalRows();
+  }, []);
+
+  useEffect(() => {
+    if (
+      (nameSearch !== undefined && prevNameSearch.current === undefined) ||
+      (typeof nameSearch === "string" &&
+        typeof prevNameSearch.current === "string" &&
+        nameSearch !== prevNameSearch.current)
+    ) {
+      setSearchParams?.([]);
+      setSearchValues?.({});
+      tableRef.current?.unselectAll();
+      refresh();
+    }
+    prevNameSearch.current = nameSearch;
+  }, [nameSearch]);
+
+  useDeepCompareEffect(() => {
+    const searchParamsChanged = !deepEqual(
+      searchParams,
+      prevSearchParamsRef.current,
+    );
+    const searchVisibleChangedToFalse =
+      prevSearchVisibleRef.current && !searchVisible;
+
+    if (
+      searchParamsChanged &&
+      (searchVisibleChangedToFalse || filterType === "top")
+    ) {
+      refresh();
+    }
+
+    prevSearchParamsRef.current = searchParams;
+    prevSearchVisibleRef.current = searchVisible;
+  }, [searchParams, searchVisible]);
 
   return {
     fetchResults,
