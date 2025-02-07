@@ -20,6 +20,7 @@ import {
 import { GraphCard } from "../views/Graph";
 import { useFormContext } from "@/context/FormContext";
 import styled from "styled-components";
+import dayjs from "@/helpers/dayjs";
 const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
@@ -72,6 +73,19 @@ const IndicatorInput = (props: IndicatorInputProps) => {
     formattedValue = ooui.selectionValues.get(value);
   } else if (Array.isArray(value)) {
     formattedValue = value[1];
+  } else if (
+    ooui.fieldType === "date" ||
+    ooui.fieldType === "time" ||
+    ooui.fieldType === "datetime"
+  ) {
+    const formats = {
+      date: "DD/MM/YYYY",
+      time: "HH:mm",
+      datetime: "DD/MM/YYYY HH:mm",
+    };
+    formattedValue = value
+      ? dayjs(value).format(formats[ooui.fieldType as keyof typeof formats])
+      : " ";
   }
   const field = (
     <Statistic
