@@ -7,33 +7,35 @@ import {
   useMemo,
   useRef,
 } from "react";
+
 import { FormView, TreeView } from "@/types/index";
-import { useFetchTreeViews } from "@/hooks/useFetchTreeViews";
+import { Tree as TreeOoui } from "@gisce/ooui";
+import { PaginatedTableRef, PaginatedTable } from "@gisce/react-formiga-table";
+
 import { Badge, Spin } from "antd";
-import { getTableColumns, getTree } from "@/helpers/treeHelper";
-import { COLUMN_COMPONENTS } from "../treeComponents";
-import { useDeepCompareMemo } from "use-deep-compare";
-import { InfiniteTableRef, PaginatedTable } from "@gisce/react-formiga-table";
-import { useAvailableHeight } from "@/hooks/useAvailableHeight";
-import { mergeSearchFields } from "@/helpers/formHelper";
-import { useTreeColumnStorageFetch } from "../../../base/one2many/useTreeColumnStorageFetch";
-import { getKey } from "@/helpers/tree-columnStorageHelper";
-import { useTreeAggregates } from "../../../base/one2many/useTreeAggregates";
-import { AggregatesFooter } from "../../../base/one2many/AggregatesFooter";
 import { useLocale, PaginationHeader } from "@gisce/react-formiga-components";
 import { SideSearchFilter } from "../../searchFilter/SideSearchFilter";
 import SearchFilter from "../../searchFilter/SearchFilter";
-import { Tree as TreeOoui } from "@gisce/ooui";
+import { AggregatesFooter } from "../../../base/one2many/AggregatesFooter";
+
+import { useFetchTreeViews } from "@/hooks/useFetchTreeViews";
+import { useDeepCompareMemo } from "use-deep-compare";
+import { useAvailableHeight } from "@/hooks/useAvailableHeight";
+import { useTreeColumnStorageFetch } from "../../../base/one2many/useTreeColumnStorageFetch";
+import { useTreeAggregates } from "../../../base/one2many/useTreeAggregates";
 import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
 import {
   DEFAULT_PAGE_SIZE,
   usePaginatedSearch,
 } from "@/hooks/usePaginatedSearch";
 
-// Constants
+import { getTableColumns, getTree } from "@/helpers/treeHelper";
+import { mergeSearchFields } from "@/helpers/formHelper";
+import { getKey } from "@/helpers/tree-columnStorageHelper";
+import { COLUMN_COMPONENTS } from "../treeComponents";
+
 export const HEIGHT_OFFSET = 10;
 
-// Types
 type OnRowClickedData = {
   id: number;
   model: string;
@@ -56,7 +58,6 @@ export type SearchTreePaginatedProps = {
 };
 
 function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
-  // Props destructuring
   const {
     model,
     formView: formViewProps,
@@ -72,17 +73,17 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   } = props;
 
   // Refs
-  const tableRef: RefObject<InfiniteTableRef> = useRef(null);
+  const tableRef: RefObject<PaginatedTableRef> = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Hooks
+  // Basic hooks
   const { t } = useLocale();
   const availableHeight = useAvailableHeight({
     elementRef: containerRef,
     offset: HEIGHT_OFFSET,
   });
 
-  // Data fetching
+  // Data fetching and state management
   const { treeView, formView, loading } = useFetchTreeViews({
     model,
     formViewProps,
@@ -90,36 +91,20 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     context: parentContext,
   });
 
-  // Tree setup
   const treeOoui: TreeOoui | undefined = useMemo(() => {
-    if (!treeView) {
-      return;
-    }
+    if (!treeView) return;
     return getTree(treeView);
   }, [treeView]);
 
-  // Column setup
+  // Column management
   const columns = useDeepCompareMemo(() => {
-    if (!treeOoui) {
-      return;
-    }
-    return getTableColumns(
-      treeOoui,
-      {
-        ...COLUMN_COMPONENTS,
-      },
-      parentContext,
-    );
+    if (!treeOoui) return;
+    return getTableColumns(treeOoui, { ...COLUMN_COMPONENTS }, parentContext);
   }, [treeOoui, parentContext]);
 
   const columnStateKey = useMemo(() => {
-    if (loading) {
-      return undefined;
-    }
-    return getKey({
-      treeViewId: treeView?.view_id,
-      model,
-    });
+    if (loading) return undefined;
+    return getKey({ treeViewId: treeView?.view_id, model });
   }, [model, treeView?.view_id, loading]);
 
   const {
@@ -138,7 +123,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     onRowStatus,
     onGetFirstVisibleRowIndex,
     setTreeFirstVisibleRow,
-    onChangeSelectedRowKeys,
+    onRowHasBeenSelected,
     onSearchFilterClear,
     onSearchFilterSubmit,
     onSideSearchFilterClose,
@@ -150,6 +135,9 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     onRequestPageChange,
     treeIsLoading,
     selectAllRecords,
+    onHeaderCheckboxClick,
+    headerCheckboxState,
+    isRowSelected,
   } = usePaginatedSearch({
     treeOoui,
     treeView,
@@ -158,11 +146,10 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     nameSearchProps,
     tableRef,
     domain,
-    onChangeSelectedRowKeys: onChangeSelectedRowKeysProps,
     filterType,
   });
 
-  // Aggregates
+  // Aggregates handling
   const [loadingAggregates, aggregates, hasAggregates] = useTreeAggregates({
     ooui: treeOoui,
     model,
@@ -174,7 +161,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         : undefined,
   });
 
-  // Autorefresh setup
+  // Auto-refresh setup
   useAutorefreshableTreeFields({
     model,
     tableRef,
@@ -186,26 +173,25 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     isActive,
   });
 
-  // Imperative handle for external control
+  // External control
   useImperativeHandle(ref, () => ({
     refreshResults: refresh,
     getFields: () => treeView?.fields,
     getDomain: () => domain,
   }));
 
-  // UI Components
+  // UI Components and Styles
   const footerComp = useMemo(() => {
-    if (!hasAggregates) {
-      return null;
-    }
+    if (!hasAggregates) return null;
     return (
       <AggregatesFooter aggregates={aggregates} isLoading={loadingAggregates} />
     );
   }, [aggregates, loadingAggregates, hasAggregates]);
 
-  const statusComp = useCallback((status: any) => {
-    return <Badge color={status} style={{ marginLeft: 7 }} />;
-  }, []);
+  const statusComp = useCallback(
+    (status: any) => <Badge color={status} style={{ marginLeft: 7 }} />,
+    [],
+  );
 
   const strings = useMemo(
     () => ({
@@ -214,7 +200,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     [t],
   );
 
-  // Style
   const containerStyle = useMemo(
     () => ({
       overflow: "hidden",
@@ -224,7 +209,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     [availableHeight, visible],
   );
 
-  // Search filter props
+  // Search filter configuration
   const searchFilterProps = useMemo(
     () => ({
       fields: { ...formView?.fields, ...treeView?.fields },
@@ -268,11 +253,9 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     ],
   );
 
-  // Table content
+  // Main table content
   const content = useMemo(() => {
-    if (!columns || !treeOoui) {
-      return null;
-    }
+    if (!columns || !treeOoui) return null;
 
     return (
       <PaginatedTable
@@ -282,9 +265,9 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         height={availableHeight}
         columns={columns}
         dataSource={results}
-        initialSelectionRowKeys={selectedRowKeys}
+        // initialSelectionRowKeys={selectedRowKeys}
         onRowDoubleClick={onRowClicked}
-        onRowSelectionChange={onChangeSelectedRowKeys}
+        onRowSelectionChange={onRowHasBeenSelected}
         onColumnChanged={updateColumnState}
         onGetColumnsState={getColumnState}
         onChangeFirstVisibleRowIndex={setTreeFirstVisibleRow}
@@ -294,6 +277,9 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         statusComponent={statusComp}
         onRowStatus={onRowStatus}
         onRowStyle={onRowStyle}
+        headerCheckboxState={headerCheckboxState}
+        onHeaderCheckboxClick={onHeaderCheckboxClick}
+        isRowSelected={isRowSelected}
       />
     );
   }, [
@@ -303,9 +289,8 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     treeIsLoading,
     availableHeight,
     results,
-    selectedRowKeys,
     onRowClicked,
-    onChangeSelectedRowKeys,
+    onRowHasBeenSelected,
     updateColumnState,
     getColumnState,
     setTreeFirstVisibleRow,
@@ -314,6 +299,9 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     statusComp,
     onRowStatus,
     onRowStyle,
+    headerCheckboxState,
+    onHeaderCheckboxClick,
+    isRowSelected,
   ]);
 
   // Render

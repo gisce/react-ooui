@@ -5,6 +5,7 @@ import {
   useIsUnderActionViewContext,
 } from "@/context/ActionViewContext";
 import { ColumnState } from "@gisce/react-formiga-table";
+import { DEFAULT_PAGE_SIZE } from "@/hooks/usePaginatedSearch";
 
 export type SearchTreeState = {
   treeIsLoading: boolean;
@@ -12,7 +13,7 @@ export type SearchTreeState = {
   searchVisible: boolean;
   setSearchVisible: (value: boolean) => void;
   selectedRowItems: any[];
-  setSelectedRowItems: (value: any[]) => void;
+  setSelectedRowItems: (value: any[] | ((prevValue: any[]) => any[])) => void;
   treeFirstVisibleRow: number;
   setTreeFirstVisibleRow: (value: number) => void;
   searchParams: any[];
@@ -30,8 +31,8 @@ export type SearchTreeState = {
   isActive?: boolean;
   sortState?: ColumnState[];
   setSortState: (value: ColumnState[] | undefined) => void;
-  pageSize: number | undefined;
-  setPageSize: (value: number | undefined) => void;
+  pageSize: number;
+  setPageSize: (value: number) => void;
   currentPage: number;
   setCurrentPage: (value: number) => void;
 };
@@ -60,9 +61,7 @@ export function useSearchTreeState({
   const [localSortState, setLocalSortState] = useState<
     ColumnState[] | undefined
   >();
-  const [localPageSize, setLocalPageSize] = useState<number | undefined>(
-    undefined,
-  );
+  const [localPageSize, setLocalPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const [localCurrentPage, setLocalCurrentPage] = useState<number>(1);
 
   // Return either context values or local state values based on isUnderActionViewContext
@@ -94,8 +93,8 @@ export function useSearchTreeState({
         isActive: actionViewContext.isActive,
         sortState: actionViewContext.sortState,
         setSortState: actionViewContext.setSortState ?? (() => {}),
-        pageSize: actionViewContext.pageSize,
-        setPageSize: (value?: number) => actionViewContext.setPageSize?.(value),
+        pageSize: actionViewContext.pageSize ?? DEFAULT_PAGE_SIZE,
+        setPageSize: actionViewContext.setPageSize ?? (() => {}),
         currentPage: actionViewContext.currentPage ?? 1,
         setCurrentPage: actionViewContext.setCurrentPage ?? (() => {}),
       }

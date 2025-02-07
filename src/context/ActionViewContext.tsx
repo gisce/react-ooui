@@ -1,4 +1,5 @@
 import { convertParamsToValues } from "@/helpers/searchHelper";
+import { DEFAULT_PAGE_SIZE } from "@/hooks/usePaginatedSearch";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { TreeView, View } from "@/types";
 import { ColumnState } from "@gisce/react-formiga-table";
@@ -24,7 +25,7 @@ type ActionViewProviderProps = {
   totalItems: number;
   setTotalItems: (totalItems: number) => void;
   selectedRowItems?: any[];
-  setSelectedRowItems: (value: any[]) => void;
+  setSelectedRowItems: (value: any[] | ((prevValue: any[]) => any[])) => void;
   setSearchTreeNameSearch: (searchString?: string) => void;
   searchTreeNameSearch?: string;
   goToResourceId: (ids: number[], openInSameTab?: boolean) => Promise<void>;
@@ -73,8 +74,8 @@ export type ActionViewContextType = Omit<
   setIsInfiniteTree?: (value: boolean) => void;
   sortState?: ColumnState[];
   setSortState?: (value: ColumnState[] | undefined) => void;
-  pageSize?: number | undefined;
-  setPageSize?: (value: number | undefined) => void;
+  pageSize: number;
+  setPageSize?: (value: number) => void;
   currentPage?: number;
   setCurrentPage?: (value: number) => void;
 };
@@ -151,7 +152,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   );
   const [title, setTitle] = useState<string>(titleProps);
 
-  const [pageSize, setPageSize] = useState<number | undefined>(undefined);
+  const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   useEffect(() => {
@@ -339,8 +340,8 @@ export const useActionViewContext = () => {
       setIsInfiniteTree: () => {},
       sortState: undefined,
       setSortState: () => {},
-      pageSize: undefined,
-      setPageSize: (value?: number) => {},
+      pageSize: DEFAULT_PAGE_SIZE,
+      setPageSize: () => {},
       currentPage: 1,
       setCurrentPage: () => {},
     };

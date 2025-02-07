@@ -1,6 +1,6 @@
 import { mergeParams } from "@/helpers/searchHelper";
 import { useSearchTreeState } from "@/hooks/useSearchTreeState";
-import { PaginatedTableRef } from "@gisce/react-formiga-table";
+import { PaginatedTableRef, CheckboxState } from "@gisce/react-formiga-table";
 import {
   CSSProperties,
   useCallback,
@@ -23,6 +23,8 @@ import {
 } from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
 
+export const DEFAULT_PAGE_SIZE = 80;
+
 export type PaginatedSearchProps = {
   treeOoui?: TreeOoui;
   treeView?: TreeView;
@@ -33,10 +35,7 @@ export type PaginatedSearchProps = {
   domain?: any;
   context?: any;
   filterType?: "side" | "top";
-  onChangeSelectedRowKeys?: (selectedRowKeys: any) => void;
 };
-
-export const DEFAULT_PAGE_SIZE = 80;
 
 export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   const {
@@ -49,7 +48,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     domain = [],
     context,
     filterType = "side",
-    onChangeSelectedRowKeys: onChangeSelectedRowKeysProps,
   } = props;
 
   // State from useSearchTreeState
@@ -163,30 +161,19 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     showErrorDialog,
   ]);
 
-  const changeSelectedRowItems = useCallback(
-    (newSelectedRowItems: any[]) => {
-      setSelectedRowItems?.(newSelectedRowItems);
-      onChangeSelectedRowKeysProps?.(
-        newSelectedRowItems.map((item) => item.id),
-      );
-    },
-    [onChangeSelectedRowKeysProps, setSelectedRowItems],
-  );
-
   const refresh = useCallback(async () => {
-    changeSelectedRowItems([]);
+    setSelectedRowItems([]);
     currentSearchParamsString.current = undefined;
     await updateTotalRows();
     tableRef?.current?.refresh();
-  }, [changeSelectedRowItems, tableRef, updateTotalRows]);
+  }, [setSelectedRowItems, tableRef, updateTotalRows]);
 
   // Event handlers
-  const onChangeSelectedRowKeys = useCallback(
+  const changeSelectedRowKeys = useCallback(
     (newSelectedRowKeys: number[]) => {
       setSelectedRowItems?.(newSelectedRowKeys.map((id: number) => ({ id })));
-      onChangeSelectedRowKeysProps?.(newSelectedRowKeys);
     },
-    [onChangeSelectedRowKeysProps, setSelectedRowItems],
+    [setSelectedRowItems],
   );
 
   const onGetFirstVisibleRowIndex = useCallback(() => {
@@ -207,13 +194,13 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
   // Search filter handlers
   const onSearchFilterClear = useCallback(() => {
-    changeSelectedRowItems([]);
+    setSelectedRowItems([]);
     tableRef.current?.unselectAll();
     setSearchTreeNameSearch?.(undefined);
     setSearchParams?.([]);
     setSearchValues?.(undefined);
   }, [
-    changeSelectedRowItems,
+    setSelectedRowItems,
     tableRef,
     setSearchTreeNameSearch,
     setSearchParams,
@@ -222,14 +209,14 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
   const onSearchFilterSubmit = useCallback(
     ({ params, searchValues }: any) => {
-      changeSelectedRowItems([]);
+      setSelectedRowItems([]);
       tableRef.current?.unselectAll();
       setSearchTreeNameSearch?.(undefined);
       setSearchParams?.(params);
       setSearchValues?.(searchValues);
     },
     [
-      changeSelectedRowItems,
+      setSelectedRowItems,
       tableRef,
       setSearchTreeNameSearch,
       setSearchParams,
@@ -244,7 +231,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
   const onSideSearchFilterSubmit = useCallback(
     ({ params, values }: any) => {
-      changeSelectedRowItems([]);
+      setSelectedRowItems([]);
       tableRef.current?.unselectAll();
       setSearchTreeNameSearch?.(undefined);
       setSearchParams?.(params);
@@ -252,7 +239,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       setSearchVisible?.(false);
     },
     [
-      changeSelectedRowItems,
+      setSelectedRowItems,
       tableRef,
       setSearchTreeNameSearch,
       setSearchParams,
@@ -359,8 +346,8 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
     const { results, attrsEvaluated } = await searchForTree({
       params,
-      limit: pageSize ?? DEFAULT_PAGE_SIZE,
-      offset: ((currentPage ?? 1) - 1) * (pageSize ?? DEFAULT_PAGE_SIZE),
+      limit: pageSize,
+      offset: ((currentPage || 1) - 1) * pageSize,
       model,
       fields: treeView!.field_parent
         ? { ...treeView!.fields, [treeView!.field_parent]: {} }
@@ -443,10 +430,11 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
   const onRequestPageChange = useCallback(
     (page: number, pageSize?: number) => {
+      setSelectedRowItems([]);
       setCurrentPage(page);
       pageSize && setPageSize(pageSize);
     },
-    [setCurrentPage, setPageSize],
+    [setCurrentPage, setPageSize, setSelectedRowItems],
   );
 
   const getAllIds = useCallback(async () => {
@@ -461,8 +449,50 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   const selectAllRecords = useCallback(async () => {
     const allIds = await getAllIds();
     setSelectedRowItems?.(allIds.map((id: number) => ({ id })));
-    onChangeSelectedRowKeys?.(allIds);
-  }, [getAllIds, onChangeSelectedRowKeys, setSelectedRowItems]);
+    // onChangeSelectedRowKeys?.(allIds);
+  }, [getAllIds, setSelectedRowItems]);
+
+  const headerCheckboxState: CheckboxState = useMemo(() => {
+    if (selectedRowKeys.length === 0) return "unchecked";
+    if (selectedRowKeys.length === pageSize && pageSize > 0) return "checked";
+    if (selectedRowKeys.length === totalRows) return "checked";
+    return "indeterminate";
+  }, [selectedRowKeys, pageSize, totalRows]);
+
+  const onHeaderCheckboxClick = useCallback(() => {
+    if (headerCheckboxState === "unchecked") {
+      // Moving to checked state
+      tableRef.current?.selectAll();
+      setSelectedRowItems(results.map((item) => ({ id: item.id })));
+    } else {
+      // Moving to unchecked state
+      setSelectedRowItems([]);
+      tableRef.current?.unselectAll();
+    }
+  }, [tableRef, setSelectedRowItems, results, headerCheckboxState]);
+
+  const onRowHasBeenSelected = useCallback(
+    ({ id, selected }: { id: number; selected: boolean }) => {
+      setSelectedRowItems((prevItems) => {
+        if (selected) {
+          const item = results.find((result) => result.id === id);
+          if (item && !prevItems.some((existing) => existing.id === id)) {
+            return [...prevItems, item];
+          }
+          return prevItems;
+        }
+        return prevItems.filter((existing) => existing.id !== id);
+      });
+    },
+    [results, setSelectedRowItems],
+  );
+
+  const isRowSelected = useCallback(
+    (id: number) => {
+      return selectedRowItems.some((item) => item.id === id);
+    },
+    [selectedRowItems],
+  );
 
   return {
     fetchResults,
@@ -482,7 +512,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     onRowStyle,
     onRowStatus,
     setTreeFirstVisibleRow,
-    onChangeSelectedRowKeys,
+    onRowHasBeenSelected,
     onSearchFilterClear,
     onSearchFilterSubmit,
     onSideSearchFilterClose,
@@ -490,5 +520,8 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     onRequestPageChange,
     treeIsLoading,
     selectAllRecords,
+    onHeaderCheckboxClick,
+    headerCheckboxState,
+    isRowSelected,
   };
 };
