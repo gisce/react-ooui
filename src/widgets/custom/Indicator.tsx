@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { Tooltip, theme, Statistic, Card, Empty } from "antd";
+import { Tooltip, theme, Statistic, Card, Empty, Space } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Field from "@/common/Field";
@@ -13,6 +13,7 @@ import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { GraphServer } from "../views/Graph/GraphServer";
+import { Many2oneSuffix } from "@/widgets/base/many2one/Many2oneSuffix";
 import {
   TabManagerContext,
   TabManagerContextType,
@@ -87,12 +88,21 @@ const IndicatorInput = (props: IndicatorInputProps) => {
       ? dayjs(value).format(formats[ooui.fieldType as keyof typeof formats])
       : " ";
   }
+  if (ooui.fieldType === "many2one" && value && ooui.raw_props?.relation) {
+    formattedValue = (
+      <Space>
+        {formattedValue}
+        <Many2oneSuffix id={value[0]} model={ooui.raw_props.relation} />
+      </Space>
+    );
+  }
   const field = (
     <Statistic
       title={title}
       prefix={Icon && <Icon />}
       suffix={ooui.suffix}
       value={formattedValue}
+      formatter={(value) => value}
     />
   );
   if (ooui.card) {
