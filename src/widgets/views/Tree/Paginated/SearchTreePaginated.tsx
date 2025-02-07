@@ -7,9 +7,7 @@ import {
   useMemo,
   useRef,
 } from "react";
-
 import { FormView, TreeView } from "@/types/index";
-
 import { useFetchTreeViews } from "@/hooks/useFetchTreeViews";
 import { Badge, Spin } from "antd";
 import { getTableColumns, getTree } from "@/helpers/treeHelper";
@@ -32,8 +30,10 @@ import {
   usePaginatedSearch,
 } from "@/hooks/usePaginatedSearch";
 
+// Constants
 export const HEIGHT_OFFSET = 10;
 
+// Types
 type OnRowClickedData = {
   id: number;
   model: string;
@@ -56,6 +56,7 @@ export type SearchTreePaginatedProps = {
 };
 
 function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
+  // Props destructuring
   const {
     model,
     formView: formViewProps,
@@ -69,16 +70,19 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     nameSearch: nameSearchProps,
     filterType = "side",
   } = props;
+
+  // Refs
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
-
-  const { t } = useLocale();
-
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Hooks
+  const { t } = useLocale();
   const availableHeight = useAvailableHeight({
     elementRef: containerRef,
     offset: HEIGHT_OFFSET,
   });
 
+  // Data fetching
   const { treeView, formView, loading } = useFetchTreeViews({
     model,
     formViewProps,
@@ -86,6 +90,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     context: parentContext,
   });
 
+  // Tree setup
   const treeOoui: TreeOoui | undefined = useMemo(() => {
     if (!treeView) {
       return;
@@ -93,52 +98,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     return getTree(treeView);
   }, [treeView]);
 
-  const {
-    isActive,
-    searchVisible,
-    searchValues,
-    selectedRowKeys,
-    refresh,
-    onRowStatus,
-    onGetFirstVisibleRowIndex,
-    setTreeFirstVisibleRow,
-    onChangeSelectedRowKeys,
-    onSearchFilterClear,
-    onSearchFilterSubmit,
-    onSideSearchFilterClose,
-    onSideSearchFilterSubmit,
-    totalRowsLoading,
-    totalRows,
-    onRowStyle,
-  } = usePaginatedSearch({
-    treeOoui,
-    treeView,
-    model,
-    rootTree,
-    nameSearchProps,
-    tableRef,
-    domain,
-    onChangeSelectedRowKeys: onChangeSelectedRowKeysProps,
-    filterType,
-  });
-
-  useImperativeHandle(ref, () => ({
-    refreshResults: refresh,
-    getFields: () => treeView?.fields,
-    getDomain: () => domain,
-  }));
-
-  useAutorefreshableTreeFields({
-    model,
-    tableRef,
-    autorefreshableFields: treeOoui?.autorefreshableFields,
-    fieldDefs: treeView?.field_parent
-      ? { ...treeView?.fields, [treeView?.field_parent]: {} }
-      : treeView?.fields,
-    context: parentContext,
-    isActive,
-  });
-
+  // Column setup
   const columns = useDeepCompareMemo(() => {
     if (!treeOoui) {
       return;
@@ -168,6 +128,37 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     updateColumnState,
   } = useTreeColumnStorageFetch(columnStateKey);
 
+  // Pagination and search state
+  const {
+    isActive,
+    searchVisible,
+    searchValues,
+    selectedRowKeys,
+    refresh,
+    onRowStatus,
+    onGetFirstVisibleRowIndex,
+    setTreeFirstVisibleRow,
+    onChangeSelectedRowKeys,
+    onSearchFilterClear,
+    onSearchFilterSubmit,
+    onSideSearchFilterClose,
+    onSideSearchFilterSubmit,
+    totalRowsLoading,
+    totalRows,
+    onRowStyle,
+  } = usePaginatedSearch({
+    treeOoui,
+    treeView,
+    model,
+    rootTree,
+    nameSearchProps,
+    tableRef,
+    domain,
+    onChangeSelectedRowKeys: onChangeSelectedRowKeysProps,
+    filterType,
+  });
+
+  // Aggregates
   const [loadingAggregates, aggregates, hasAggregates] = useTreeAggregates({
     ooui: treeOoui,
     model,
@@ -179,6 +170,26 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         : undefined,
   });
 
+  // Autorefresh setup
+  useAutorefreshableTreeFields({
+    model,
+    tableRef,
+    autorefreshableFields: treeOoui?.autorefreshableFields,
+    fieldDefs: treeView?.field_parent
+      ? { ...treeView?.fields, [treeView?.field_parent]: {} }
+      : treeView?.fields,
+    context: parentContext,
+    isActive,
+  });
+
+  // Imperative handle for external control
+  useImperativeHandle(ref, () => ({
+    refreshResults: refresh,
+    getFields: () => treeView?.fields,
+    getDomain: () => domain,
+  }));
+
+  // UI Components
   const footerComp = useMemo(() => {
     if (!hasAggregates) {
       return null;
@@ -199,51 +210,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     [t],
   );
 
-  const content = useMemo(() => {
-    if (!columns || !treeOoui) {
-      return null;
-    }
-
-    return (
-      <PaginatedTable
-        ref={tableRef}
-        strings={strings}
-        loading={false} // TODO: Remove this
-        height={availableHeight}
-        columns={columns}
-        dataSource={[]}
-        initialSelectionRowKeys={selectedRowKeys}
-        onRowDoubleClick={onRowClicked}
-        onRowSelectionChange={onChangeSelectedRowKeys}
-        onColumnChanged={updateColumnState}
-        onGetColumnsState={getColumnState}
-        onChangeFirstVisibleRowIndex={setTreeFirstVisibleRow}
-        onGetFirstVisibleRowIndex={onGetFirstVisibleRowIndex}
-        footer={footerComp}
-        hasStatusColumn={treeOoui?.status !== null}
-        statusComponent={statusComp}
-        onRowStatus={onRowStatus}
-        onRowStyle={onRowStyle}
-      />
-    );
-  }, [
-    columns,
-    treeOoui,
-    strings,
-    availableHeight,
-    selectedRowKeys,
-    onRowClicked,
-    onChangeSelectedRowKeys,
-    updateColumnState,
-    getColumnState,
-    setTreeFirstVisibleRow,
-    onGetFirstVisibleRowIndex,
-    footerComp,
-    statusComp,
-    onRowStatus,
-    onRowStyle,
-  ]);
-
+  // Style
   const containerStyle = useMemo(
     () => ({
       overflow: "hidden",
@@ -253,6 +220,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     [availableHeight, visible],
   );
 
+  // Search filter props
   const searchFilterProps = useMemo(
     () => ({
       fields: { ...formView?.fields, ...treeView?.fields },
@@ -296,6 +264,53 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     ],
   );
 
+  // Table content
+  const content = useMemo(() => {
+    if (!columns || !treeOoui) {
+      return null;
+    }
+
+    return (
+      <PaginatedTable
+        ref={tableRef}
+        strings={strings}
+        loading={false}
+        height={availableHeight}
+        columns={columns}
+        dataSource={[]}
+        initialSelectionRowKeys={selectedRowKeys}
+        onRowDoubleClick={onRowClicked}
+        onRowSelectionChange={onChangeSelectedRowKeys}
+        onColumnChanged={updateColumnState}
+        onGetColumnsState={getColumnState}
+        onChangeFirstVisibleRowIndex={setTreeFirstVisibleRow}
+        onGetFirstVisibleRowIndex={onGetFirstVisibleRowIndex}
+        footer={footerComp}
+        hasStatusColumn={treeOoui?.status !== null}
+        statusComponent={statusComp}
+        onRowStatus={onRowStatus}
+        onRowStyle={onRowStyle}
+      />
+    );
+  }, [
+    columns,
+    treeOoui,
+    strings,
+    availableHeight,
+    selectedRowKeys,
+    onRowClicked,
+    onChangeSelectedRowKeys,
+    updateColumnState,
+    getColumnState,
+    setTreeFirstVisibleRow,
+    onGetFirstVisibleRowIndex,
+    footerComp,
+    statusComp,
+    onRowStatus,
+    onRowStyle,
+  ]);
+
+  // Render
   return (
     <Fragment>
       {filterType === "top" && (
