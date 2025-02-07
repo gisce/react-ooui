@@ -376,11 +376,10 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       order,
     });
 
-    if (mustUpdateTotal() || prevSortOrder.current !== order) {
-      setActionViewResults?.(newResults);
-    } else {
-      const appendedResults = [...(actionViewResults || []), ...newResults];
-      setActionViewResults?.(appendedResults);
+    setActionViewResults?.(newResults);
+
+    if (mustUpdateTotal()) {
+      updateTotalRows();
     }
 
     prevSortOrder.current = order;
@@ -419,7 +418,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     lastAssignedResults.current = [...preparedResults];
     setResults([...preparedResults]);
   }, [
-    actionViewResults,
     actionViewSortState,
     context,
     currentPage,
@@ -436,6 +434,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     setTreeIsLoading,
     treeOoui,
     treeView,
+    updateTotalRows,
   ]);
 
   const onRequestPageChange = useCallback(
