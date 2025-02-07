@@ -54,6 +54,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
   // State from useSearchTreeState
   const {
+    treeIsLoading,
     setTreeIsLoading,
     searchVisible,
     setSearchVisible,
@@ -104,6 +105,10 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   );
   const [searchForTree, cancelSearchForTree] = useNetworkRequest(
     ConnectionProvider.getHandler().searchForTree,
+  );
+
+  const [fetchAllIds, cancelFetchAllIds] = useNetworkRequest(
+    ConnectionProvider.getHandler().searchAllIds,
   );
 
   // Memoized values
@@ -262,6 +267,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     return () => {
       cancelFetchTotalRows();
       cancelSearchForTree();
+      cancelFetchAllIds();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -435,19 +441,28 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     treeView,
   ]);
 
-  const onPageSizeChange = useCallback(
-    (pageSize: number) => {
-      setPageSize(pageSize);
+  const onRequestPageChange = useCallback(
+    (page: number, pageSize?: number) => {
+      setCurrentPage(page);
+      pageSize && setPageSize(pageSize);
     },
-    [setPageSize],
+    [setCurrentPage, setPageSize],
   );
 
-  const onRequestPageChange = useCallback(
-    (page: number) => {
-      setCurrentPage(page);
-    },
-    [setCurrentPage],
-  );
+  const getAllIds = useCallback(async () => {
+    return await fetchAllIds({
+      params: mergeParams(searchParams, domain),
+      model,
+      context,
+      totalItems: totalRows,
+    });
+  }, [fetchAllIds, searchParams, domain, model, context, totalRows]);
+
+  const selectAllRecords = useCallback(async () => {
+    const allIds = await getAllIds();
+    setSelectedRowItems?.(allIds.map((id: number) => ({ id })));
+    onChangeSelectedRowKeys?.(allIds);
+  }, [getAllIds, onChangeSelectedRowKeys, setSelectedRowItems]);
 
   return {
     fetchResults,
@@ -472,7 +487,8 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     onSearchFilterSubmit,
     onSideSearchFilterClose,
     onSideSearchFilterSubmit,
-    onPageSizeChange,
     onRequestPageChange,
+    treeIsLoading,
+    selectAllRecords,
   };
 };

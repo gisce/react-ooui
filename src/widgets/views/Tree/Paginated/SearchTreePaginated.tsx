@@ -147,8 +147,9 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     totalRows,
     onRowStyle,
     results,
-    onPageSizeChange,
     onRequestPageChange,
+    treeIsLoading,
+    selectAllRecords,
   } = usePaginatedSearch({
     treeOoui,
     treeView,
@@ -277,7 +278,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
       <PaginatedTable
         ref={tableRef}
         strings={strings}
-        loading={false}
+        loading={treeIsLoading}
         height={availableHeight}
         columns={columns}
         dataSource={results}
@@ -299,6 +300,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     columns,
     treeOoui,
     strings,
+    treeIsLoading,
     availableHeight,
     results,
     selectedRowKeys,
@@ -333,12 +335,13 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
       )}
       <PaginationHeader
         total={totalRows || 0}
+        totalRowsLoading={totalRowsLoading}
         initialPage={1}
         initialPageSize={DEFAULT_PAGE_SIZE}
         currentPageSelectedCount={selectedRowKeys.length}
-        onPageSizeChange={onPageSizeChange}
         onRequestPageChange={onRequestPageChange}
         totalSelectedCount={selectedRowKeys.length}
+        onSelectAllGlobalRecords={selectAllRecords}
       />
       <div ref={containerRef} style={containerStyle}>
         {loading || getColumnStateInProgress || totalRowsLoading ? (
