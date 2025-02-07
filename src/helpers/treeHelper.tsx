@@ -64,6 +64,24 @@ const getTableColumns = (
       dataIndex: key,
       title: column.label,
       render,
+      comparator: (
+        valueA: any,
+        valueB: any,
+        nodeA: any,
+        nodeB: any,
+        isDescending: boolean,
+      ) => {
+        let aItem = nodeA?.data?.[key] || "";
+        let bItem = nodeB?.data?.[key] || "";
+
+        if (type === "many2one") {
+          aItem = nodeA?.data?.[key]?.value || "";
+          bItem = nodeB?.data?.[key]?.value || "";
+        }
+
+        if (aItem === bItem) return 0;
+        return isDescending ? (aItem < bItem ? 1 : -1) : aItem < bItem ? -1 : 1;
+      },
       sorter: (a: any, b: any) => {
         let aItem = a[key] || "";
         let bItem = b[key] || "";

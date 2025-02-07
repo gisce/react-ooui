@@ -2,6 +2,10 @@ import { convertParamsToValues } from "@/helpers/searchHelper";
 import { DEFAULT_PAGE_SIZE } from "@/hooks/usePaginatedSearch";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { TreeView, View } from "@/types";
+import {
+  DEFAULT_TREE_TYPE,
+  TreeType,
+} from "@/views/actionViews/TreeActionView";
 import { ColumnState } from "@gisce/react-formiga-table";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -70,8 +74,8 @@ export type ActionViewContextType = Omit<
   setTreeFirstVisibleRow: (totalItems: number) => void;
   searchQuery?: SearchQueryParams;
   setSearchQuery?: (value: SearchQueryParams) => void;
-  isInfiniteTree?: boolean;
-  setIsInfiniteTree?: (value: boolean) => void;
+  treeType?: TreeType;
+  setTreeType?: (value: TreeType) => void;
   sortState?: ColumnState[];
   setSortState?: (value: ColumnState[] | undefined) => void;
   pageSize: number;
@@ -144,7 +148,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   );
   const [treeFirstVisibleRow, setTreeFirstVisibleRow] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<SearchQueryParams>();
-  const [isInfiniteTree, setIsInfiniteTree] = useState<boolean>(false);
+  const [treeType, setTreeType] = useState<TreeType>(DEFAULT_TREE_TYPE);
   const [sortState, setSortState] = useState<ColumnState[]>();
 
   const [limit, setLimit] = useState<number>(
@@ -254,8 +258,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         treeFirstVisibleRow,
         searchQuery,
         setSearchQuery,
-        isInfiniteTree,
-        setIsInfiniteTree,
+        treeType,
+        setTreeType,
         sortState,
         setSortState,
         pageSize,
@@ -336,8 +340,8 @@ export const useActionViewContext = () => {
       setTreeFirstVisibleRow: () => {},
       searchQuery: undefined,
       setSearchQuery: () => {},
-      isInfiniteTree: false,
-      setIsInfiniteTree: () => {},
+      treeType: DEFAULT_TREE_TYPE,
+      setTreeType: () => {},
       sortState: undefined,
       setSortState: () => {},
       pageSize: DEFAULT_PAGE_SIZE,

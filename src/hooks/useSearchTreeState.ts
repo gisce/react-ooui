@@ -6,6 +6,10 @@ import {
 } from "@/context/ActionViewContext";
 import { ColumnState } from "@gisce/react-formiga-table";
 import { DEFAULT_PAGE_SIZE } from "@/hooks/usePaginatedSearch";
+import {
+  DEFAULT_TREE_TYPE,
+  TreeType,
+} from "@/views/actionViews/TreeActionView";
 
 export type SearchTreeState = {
   treeIsLoading: boolean;
@@ -35,6 +39,8 @@ export type SearchTreeState = {
   setPageSize: (value: number) => void;
   currentPage: number;
   setCurrentPage: (value: number) => void;
+  treeType: TreeType;
+  setTreeType: (value: TreeType) => void;
 };
 
 export function useSearchTreeState({
@@ -63,6 +69,8 @@ export function useSearchTreeState({
   >();
   const [localPageSize, setLocalPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const [localCurrentPage, setLocalCurrentPage] = useState<number>(1);
+  const [localTreeType, setLocalTreeType] =
+    useState<TreeType>(DEFAULT_TREE_TYPE);
 
   // Return either context values or local state values based on isUnderActionViewContext
   return isUnderActionViewContext
@@ -97,6 +105,8 @@ export function useSearchTreeState({
         setPageSize: actionViewContext.setPageSize ?? (() => {}),
         currentPage: actionViewContext.currentPage ?? 1,
         setCurrentPage: actionViewContext.setCurrentPage ?? (() => {}),
+        treeType: actionViewContext.treeType ?? DEFAULT_TREE_TYPE,
+        setTreeType: actionViewContext.setTreeType ?? (() => {}),
       }
     : {
         treeIsLoading: localTreeIsLoading,
@@ -126,5 +136,7 @@ export function useSearchTreeState({
         setPageSize: setLocalPageSize,
         currentPage: localCurrentPage,
         setCurrentPage: setLocalCurrentPage,
+        treeType: localTreeType,
+        setTreeType: setLocalTreeType,
       };
 }

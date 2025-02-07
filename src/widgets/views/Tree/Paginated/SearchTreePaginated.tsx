@@ -53,7 +53,6 @@ export type SearchTreePaginatedProps = {
   visible?: boolean;
   rootTree?: boolean;
   parentContext?: any;
-  onChangeSelectedRowKeys?: (selectedRowKeys: any) => void;
   filterType?: "side" | "top";
 };
 
@@ -67,7 +66,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     visible = true,
     rootTree = false,
     parentContext = {},
-    onChangeSelectedRowKeys: onChangeSelectedRowKeysProps,
     nameSearch: nameSearchProps,
     filterType = "side",
   } = props;
@@ -78,6 +76,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
 
   // Basic hooks
   const { t } = useLocale();
+
   const availableHeight = useAvailableHeight({
     elementRef: containerRef,
     offset: HEIGHT_OFFSET,

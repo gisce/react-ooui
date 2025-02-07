@@ -79,7 +79,7 @@ function TreeActionBarComponent({
     limit,
     totalItems,
     isActive,
-    isInfiniteTree,
+    treeType,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   const advancedExportEnabled = useFeatureIsEnabled(
@@ -183,12 +183,12 @@ function TreeActionBarComponent({
         setSearchTreeNameSearch?.(searchString);
       } else {
         setSearchTreeNameSearch?.(undefined);
-        if (!isInfiniteTree) {
+        if (treeType !== "infinite") {
           searchTreeRef?.current?.refreshResults();
         }
       }
     },
-    [isInfiniteTree, searchTreeRef, setSearchTreeNameSearch],
+    [treeType, searchTreeRef, setSearchTreeNameSearch],
   );
 
   const handleExportAction = useCallback(
@@ -220,14 +220,14 @@ function TreeActionBarComponent({
   );
 
   useEffect(() => {
-    if (isInfiniteTree && searchTreeNameSearch === undefined) {
+    if (treeType === "infinite" && searchTreeNameSearch === undefined) {
       if (isFirstMount.current) {
         isFirstMount.current = false;
         return;
       }
       searchTreeRef?.current?.refreshResults();
     }
-  }, [isInfiniteTree, searchTreeNameSearch, searchTreeRef]);
+  }, [treeType, searchTreeNameSearch, searchTreeRef]);
 
   useHotkeys(
     "ctrl+l,command+l",
