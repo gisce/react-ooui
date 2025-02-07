@@ -31,6 +31,7 @@ const getTableColumns = (
   tree: TreeOoui,
   components: any,
   context: any,
+  treeType: "infinite" | "paginated" | "legacy",
 ): Column[] => {
   const tableColumns = tree.columns.map((column) => {
     const type = column.type;
@@ -59,28 +60,32 @@ const getTableColumns = (
       };
     }
 
+    let isSortable = true;
+
+    if (treeType === "legacy" || treeType === "paginated") {
+      isSortable = type !== "one2many";
+    } else {
+      isSortable =
+        type !== "one2many" && type !== "many2one" && !column.isFunction;
+    }
+
     return {
       key,
       dataIndex: key,
       title: column.label,
       render,
-      comparator: (
-        valueA: any,
-        valueB: any,
-        nodeA: any,
-        nodeB: any,
-        isDescending: boolean,
-      ) => {
-        let aItem = nodeA?.data?.[key] || "";
-        let bItem = nodeB?.data?.[key] || "";
+      comparator: (valueA: any, valueB: any, nodeA: any, nodeB: any) => {
+        let aItem = nodeA?.data?.[key] ?? "";
+        let bItem = nodeB?.data?.[key] ?? "";
 
         if (type === "many2one") {
-          aItem = nodeA?.data?.[key]?.value || "";
-          bItem = nodeB?.data?.[key]?.value || "";
+          aItem = nodeA?.data?.[key]?.value ?? "";
+          bItem = nodeB?.data?.[key]?.value ?? "";
         }
 
-        if (aItem === bItem) return 0;
-        return isDescending ? (aItem < bItem ? 1 : -1) : aItem < bItem ? -1 : 1;
+        if (aItem < bItem) return -1;
+        if (aItem > bItem) return 1;
+        return 0;
       },
       sorter: (a: any, b: any) => {
         let aItem = a[key] || "";
@@ -95,8 +100,7 @@ const getTableColumns = (
         if (aItem > bItem) return 1;
         return 0;
       },
-      isSortable:
-        type !== "one2many" && type !== "many2one" && !column.isFunction,
+      isSortable,
     };
   });
   return tableColumns;

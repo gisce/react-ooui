@@ -98,7 +98,12 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   // Column management
   const columns = useDeepCompareMemo(() => {
     if (!treeOoui) return;
-    return getTableColumns(treeOoui, { ...COLUMN_COMPONENTS }, parentContext);
+    return getTableColumns(
+      treeOoui,
+      { ...COLUMN_COMPONENTS },
+      parentContext,
+      "paginated",
+    );
   }, [treeOoui, parentContext]);
 
   const columnStateKey = useMemo(() => {

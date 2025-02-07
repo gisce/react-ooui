@@ -110,6 +110,7 @@ export const One2manyTree = ({
         ...COLUMN_COMPONENTS,
       },
       context,
+      "infinite",
     );
   }, [context, ooui]);
 

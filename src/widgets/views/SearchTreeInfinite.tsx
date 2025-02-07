@@ -192,6 +192,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         ...COLUMN_COMPONENTS,
       },
       parentContext,
+      "infinite",
     );
   }, [treeOoui, parentContext]);
 
