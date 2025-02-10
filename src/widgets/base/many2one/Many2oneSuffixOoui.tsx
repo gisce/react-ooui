@@ -3,6 +3,7 @@ import {
   PrinterOutlined,
   ThunderboltOutlined,
   EnterOutlined,
+  ExportOutlined,
 } from "@ant-design/icons";
 import {
   useLocale,
@@ -28,7 +29,7 @@ export type ActionRelatePrint = {
 
 export type Many2OneSuffixOnItemClickOpts = {
   item: DropdownMenuItem;
-  type: "action" | "print" | "relate";
+  type: "action" | "print" | "relate" | "open";
 };
 
 type Many2oneSuffixProps = {
@@ -70,6 +71,11 @@ export const Many2oneSuffixOoui = ({
         sticky: true,
         items: [
           {
+            id: "open",
+            name: t("open"),
+            icon: <ExportOutlined />,
+          },
+          {
             id: "action",
             name: t("action"),
             disabled: !actionItems || actionItems.length === 0,
@@ -104,6 +110,8 @@ export const Many2oneSuffixOoui = ({
             setActionModalVisible(true);
           } else if (item.id === "print") {
             setPrintModalVisible(true);
+          } else if (item.id === "open") {
+            onItemClick?.({ item, type: "open" });
           } else {
             onItemClick?.({ item, type: "relate" });
           }
