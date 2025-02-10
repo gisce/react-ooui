@@ -14,6 +14,7 @@ import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { GraphServer } from "../views/Graph/GraphServer";
 import { Many2oneSuffix } from "@/widgets/base/many2one/Many2oneSuffix";
+import { useLocale } from "@gisce/react-formiga-components";
 import {
   TabManagerContext,
   TabManagerContextType,
@@ -55,6 +56,7 @@ type IndicatorInputProps = {
 const IndicatorInput = (props: IndicatorInputProps) => {
   const { token } = useToken();
   const { ooui, value } = props;
+  const { locale } = useLocale();
   const title = (
     <>
       <span>{ooui.label} </span>
@@ -95,6 +97,17 @@ const IndicatorInput = (props: IndicatorInputProps) => {
         <Many2oneSuffix id={value[0]} model={ooui.raw_props.relation} />
       </Space>
     );
+  }
+  if (value && (ooui.fieldType === "float" || ooui.fieldType === "integer")) {
+    try {
+      formattedValue = new Intl.NumberFormat(
+        locale.replaceAll("_", "-"),
+        {},
+      ).format(value);
+    } catch (e) {
+      console.log("Error formatting number with locale", locale);
+      console.error(e);
+    }
   }
   const field = (
     <Statistic
