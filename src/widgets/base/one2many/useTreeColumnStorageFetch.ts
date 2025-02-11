@@ -7,8 +7,10 @@ export const useTreeColumnStorageFetch = (key?: string) => {
   const columnState = useRef<ColumnState[] | undefined>(undefined);
   const fetchInProgress = useRef(false);
 
-  const { getColumnState: getColumnStateInternal, updateColumnState } =
-    useTreeColumnStorage(key);
+  const {
+    getColumnState: getColumnStateInternal,
+    updateColumnState: updateColumnStateInternal,
+  } = useTreeColumnStorage(key);
 
   useEffect(() => {
     if (!key) {
@@ -38,6 +40,19 @@ export const useTreeColumnStorageFetch = (key?: string) => {
   const getColumnState = useCallback(() => {
     return columnState.current;
   }, []);
+
+  const updateColumnState = useCallback(
+    (state: ColumnState[]) => {
+      const columnStatesWithoutSort = state.map((columnState) => {
+        const { sort, ...columnStateWithoutSort } = columnState;
+        return columnStateWithoutSort;
+      });
+      columnState.current = columnStatesWithoutSort;
+
+      updateColumnStateInternal(state);
+    },
+    [updateColumnStateInternal],
+  );
 
   return { getColumnState, loading, updateColumnState };
 };
