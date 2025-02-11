@@ -290,6 +290,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     treeOoui,
     strings,
     treeIsLoading,
+    getColumnStateInProgress,
     availableHeight,
     results,
     onRowClicked,
