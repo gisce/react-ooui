@@ -265,7 +265,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
       <PaginatedTable
         ref={tableRef}
         strings={strings}
-        loading={treeIsLoading}
+        loading={treeIsLoading || getColumnStateInProgress}
         height={availableHeight}
         columns={columns}
         dataSource={results}
@@ -335,11 +335,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         onSelectAllGlobalRecords={selectAllRecords}
       />
       <div ref={containerRef} style={containerStyle}>
-        {loading || getColumnStateInProgress || totalRowsLoading ? (
-          <Spin />
-        ) : (
-          content
-        )}
+        {loading ? <Spin /> : content}
       </div>
     </Fragment>
   );

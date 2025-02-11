@@ -161,13 +161,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   ]);
 
   // Event handlers
-  const changeSelectedRowKeys = useCallback(
-    (newSelectedRowKeys: number[]) => {
-      setSelectedRowItems?.(newSelectedRowKeys.map((id: number) => ({ id })));
-    },
-    [setSelectedRowItems],
-  );
-
   const onGetFirstVisibleRowIndex = useCallback(() => {
     return treeFirstVisibleRow;
   }, [treeFirstVisibleRow]);
