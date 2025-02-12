@@ -404,19 +404,26 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   ]);
 
   const refresh = useCallback(async () => {
+    setTreeFirstVisibleRow(0);
     fetchColumnState();
     setSelectedRowItems([]);
     currentSearchParamsString.current = undefined;
     fetchResults();
-  }, [fetchColumnState, fetchResults, setSelectedRowItems]);
+  }, [
+    fetchColumnState,
+    fetchResults,
+    setSelectedRowItems,
+    setTreeFirstVisibleRow,
+  ]);
 
   const onRequestPageChange = useCallback(
     (page: number, pageSize?: number) => {
+      setTreeFirstVisibleRow(0);
       setSelectedRowItems([]);
       setCurrentPage(page);
       pageSize && setPageSize(pageSize);
     },
-    [setCurrentPage, setPageSize, setSelectedRowItems],
+    [setCurrentPage, setPageSize, setSelectedRowItems, setTreeFirstVisibleRow],
   );
 
   const getAllIds = useCallback(async () => {
