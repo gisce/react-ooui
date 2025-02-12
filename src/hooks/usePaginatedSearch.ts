@@ -14,18 +14,15 @@ import { ConnectionProvider, TreeView } from "..";
 import { useShowErrorDialog } from "@/ui/GenericErrorDialog";
 import { useDeepCompareEffect } from "use-deep-compare";
 import deepEqual from "deep-equal";
-import {
-  getColorMap,
-  getOrderFromSortFields,
-  getSortedFieldsFromState,
-  getStatusMap,
-  getTableItems,
-} from "@/helpers/treeHelper";
+import { getColorMap, getStatusMap, getTableItems } from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
+import { getKey } from "@/helpers/tree-columnStorageHelper";
+import { useTreeColumnStorageFetch } from "@/widgets/base/one2many/useTreeColumnStorageFetch";
 
 export const DEFAULT_PAGE_SIZE = 80;
 
 export type PaginatedSearchProps = {
+  treeViewFetching: boolean;
   treeOoui?: TreeOoui;
   treeView?: TreeView;
   model: string;
@@ -39,6 +36,7 @@ export type PaginatedSearchProps = {
 
 export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   const {
+    treeViewFetching,
     treeOoui,
     treeView,
     model,
@@ -70,8 +68,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     setSearchQuery,
     setTotalItems: setTotalItemsActionView,
     isActive,
-    sortState: actionViewSortState,
-    setSortState: setActionViewSortState,
     currentPage,
     setCurrentPage,
     pageSize,
@@ -89,11 +85,23 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   const prevSearchParamsRef = useRef(searchParams);
   const prevSearchVisibleRef = useRef(searchVisible);
   const currentSearchParamsString = useRef<string>();
-  const prevSortOrder = useRef<string>();
   const colorsForResults = useRef<{ [key: number]: string }>({});
   const statusForResults = useRef<{ [key: number]: string }>();
   const lastAssignedResults = useRef<any[]>([]);
-  const hasRestoredSortStateForFirstTime = useRef<boolean>(false);
+
+  const columnStateKey = useMemo(() => {
+    return getKey({ treeViewId: treeView?.view_id, model });
+  }, [treeView?.view_id, model]);
+
+  const {
+    fetchColumnState,
+    loading: getColumnStateInProgress,
+    getColumnState,
+    updateColumnState,
+  } = useTreeColumnStorageFetch({
+    key: columnStateKey,
+    treeViewFetching,
+  });
 
   // Hooks
   const showErrorDialog = useShowErrorDialog();
@@ -235,6 +243,9 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
   // Effects
   useEffect(() => {
+    if (treeViewFetching) {
+      return;
+    }
     updateTotalRows();
     return () => {
       cancelFetchTotalRows();
@@ -242,10 +253,10 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       cancelFetchAllIds();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [treeViewFetching]);
 
   useDeepCompareEffect(() => {
-    if (!treeOoui || !treeView) {
+    if (!treeOoui || !treeView || treeViewFetching) {
       return;
     }
     fetchResults();
@@ -296,7 +307,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   }, [searchParams, searchVisible]);
 
   const fetchResults = useCallback(async () => {
-    if (!treeOoui) {
+    if (!treeOoui || treeViewFetching) {
       return [];
     }
     setTreeIsLoading(true);
@@ -307,32 +318,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     }
     if (treeOoui.status) {
       attrs.status = treeOoui.status;
-    }
-
-    let order;
-    if (!hasRestoredSortStateForFirstTime.current && actionViewSortState) {
-      hasRestoredSortStateForFirstTime.current = true;
-      const sortFields = getSortedFieldsFromState({
-        state: actionViewSortState,
-      });
-      order = getOrderFromSortFields(sortFields);
-    } else {
-      // const stateWithSortData = state
-      //   ?.filter((column) => column.sort || column.sortIndex)
-      //   .map((column) => ({
-      //     sort: column.sort || undefined,
-      //     sortIndex: column.sortIndex || undefined,
-      //     colId: column.colId,
-      //   }));
-      // const finalStateWithSortData =
-      //   stateWithSortData && stateWithSortData?.length > 0
-      //     ? stateWithSortData
-      //     : undefined;
-      // const sortFields = getSortedFieldsFromState({
-      //   state: finalStateWithSortData,
-      // });
-      // setActionViewSortState?.(finalStateWithSortData);
-      // order = getOrderFromSortFields(sortFields);
     }
 
     const params = nameSearch ? domain : mergedParams;
@@ -347,7 +332,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
         : treeView!.fields,
       context,
       attrs,
-      order,
       name_search: nameSearch,
     });
 
@@ -358,7 +342,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       params,
       name_search: nameSearch,
       context,
-      order,
     });
 
     setActionViewResults?.(newResults);
@@ -366,8 +349,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     if (mustUpdateTotal()) {
       updateTotalRows();
     }
-
-    prevSortOrder.current = order;
 
     if (results.length === 0) {
       lastAssignedResults.current = [];
@@ -403,7 +384,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     lastAssignedResults.current = [...preparedResults];
     setResults([...preparedResults]);
   }, [
-    actionViewSortState,
     context,
     currentPage,
     domain,
@@ -419,14 +399,16 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     setTreeIsLoading,
     treeOoui,
     treeView,
+    treeViewFetching,
     updateTotalRows,
   ]);
 
   const refresh = useCallback(async () => {
+    fetchColumnState();
     setSelectedRowItems([]);
     currentSearchParamsString.current = undefined;
     fetchResults();
-  }, [fetchResults, setSelectedRowItems]);
+  }, [fetchColumnState, fetchResults, setSelectedRowItems]);
 
   const onRequestPageChange = useCallback(
     (page: number, pageSize?: number) => {
@@ -487,13 +469,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     [results, setSelectedRowItems],
   );
 
-  const isRowSelected = useCallback(
-    (id: number) => {
-      return selectedRowItems.some((item) => item.id === id);
-    },
-    [selectedRowItems],
-  );
-
   return {
     fetchResults,
     results,
@@ -522,6 +497,8 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     selectAllRecords,
     onHeaderCheckboxClick,
     headerCheckboxState,
-    isRowSelected,
+    getColumnStateInProgress,
+    getColumnState,
+    updateColumnState,
   };
 };

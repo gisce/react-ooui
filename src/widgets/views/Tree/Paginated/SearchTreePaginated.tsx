@@ -6,6 +6,7 @@ import {
   useImperativeHandle,
   useMemo,
   useRef,
+  useEffect,
 } from "react";
 
 import { FormView, TreeView } from "@/types/index";
@@ -21,7 +22,6 @@ import { AggregatesFooter } from "../../../base/one2many/AggregatesFooter";
 import { useFetchTreeViews } from "@/hooks/useFetchTreeViews";
 import { useDeepCompareMemo } from "use-deep-compare";
 import { useAvailableHeight } from "@/hooks/useAvailableHeight";
-import { useTreeColumnStorageFetch } from "../../../base/one2many/useTreeColumnStorageFetch";
 import { useTreeAggregates } from "../../../base/one2many/useTreeAggregates";
 import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
 import {
@@ -31,7 +31,6 @@ import {
 
 import { getTableColumns, getTree } from "@/helpers/treeHelper";
 import { mergeSearchFields } from "@/helpers/formHelper";
-import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { COLUMN_COMPONENTS } from "../treeComponents";
 
 export const HEIGHT_OFFSET = 10;
@@ -73,6 +72,17 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   // Refs
   const tableRef: RefObject<PaginatedTableRef> = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const onRowClickedRef = useRef(onRowClicked);
+
+  // Update ref when onRowClicked changes
+  useEffect(() => {
+    onRowClickedRef.current = onRowClicked;
+  }, [onRowClicked]);
+
+  // Callback that uses the ref
+  const handleRowDoubleClick = useCallback((data: OnRowClickedData) => {
+    onRowClickedRef.current?.(data);
+  }, []);
 
   // Basic hooks
   const { t } = useLocale();
@@ -106,17 +116,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     );
   }, [treeOoui, parentContext]);
 
-  const columnStateKey = useMemo(() => {
-    if (loading) return undefined;
-    return getKey({ treeViewId: treeView?.view_id, model });
-  }, [model, treeView?.view_id, loading]);
-
-  const {
-    loading: getColumnStateInProgress,
-    getColumnState,
-    updateColumnState,
-  } = useTreeColumnStorageFetch(columnStateKey);
-
   // Pagination and search state
   const {
     isActive,
@@ -141,8 +140,11 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     selectAllRecords,
     onHeaderCheckboxClick,
     headerCheckboxState,
-    isRowSelected,
+    getColumnStateInProgress,
+    getColumnState,
+    updateColumnState,
   } = usePaginatedSearch({
+    treeViewFetching: loading,
     treeOoui,
     treeView,
     model,
@@ -269,7 +271,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         height={availableHeight}
         columns={columns}
         dataSource={results}
-        onRowDoubleClick={onRowClicked}
+        onRowDoubleClick={handleRowDoubleClick}
         onRowSelectionChange={onRowHasBeenSelected}
         onColumnChanged={updateColumnState}
         onGetColumnsState={getColumnState}
@@ -282,7 +284,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         onRowStyle={onRowStyle}
         headerCheckboxState={headerCheckboxState}
         onHeaderCheckboxClick={onHeaderCheckboxClick}
-        isRowSelected={isRowSelected}
+        onForceReload={refresh}
       />
     );
   }, [
@@ -293,7 +295,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     getColumnStateInProgress,
     availableHeight,
     results,
-    onRowClicked,
+    handleRowDoubleClick,
     onRowHasBeenSelected,
     updateColumnState,
     getColumnState,
@@ -305,7 +307,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     onRowStyle,
     headerCheckboxState,
     onHeaderCheckboxClick,
-    isRowSelected,
+    refresh,
   ]);
 
   // Render
