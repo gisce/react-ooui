@@ -143,6 +143,8 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     getColumnStateInProgress,
     getColumnState,
     updateColumnState,
+    currentPage,
+    pageSize,
   } = usePaginatedSearch({
     treeViewFetching: loading,
     treeOoui,
@@ -330,8 +332,8 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
       <PaginationHeader
         total={totalRows || 0}
         totalRowsLoading={totalRowsLoading}
-        initialPage={1}
-        initialPageSize={DEFAULT_PAGE_SIZE}
+        initialPage={currentPage || 1}
+        initialPageSize={pageSize || DEFAULT_PAGE_SIZE}
         currentPageSelectedCount={selectedRowKeys.length}
         onRequestPageChange={onRequestPageChange}
         totalSelectedCount={selectedRowKeys.length}
