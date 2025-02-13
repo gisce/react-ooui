@@ -9,7 +9,7 @@ type TreeColumnStorageFetchProps = {
 
 export const useTreeColumnStorageFetch = ({
   key,
-  treeViewFetching,
+  treeViewFetching = false,
 }: TreeColumnStorageFetchProps) => {
   const [loading, setLoading] = useState(true);
   const columnState = useRef<ColumnState[] | undefined>(undefined);

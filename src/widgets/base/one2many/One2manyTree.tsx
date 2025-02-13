@@ -154,12 +154,12 @@ export const One2manyTree = ({
   }, []);
 
   const { loading, getColumnState, updateColumnState } =
-    useTreeColumnStorageFetch(
-      getKey({
+    useTreeColumnStorageFetch({
+      key: getKey({
         ...dataForHash,
         model: relation,
       }),
-    );
+    });
 
   if (loading) {
     return <Spin />;

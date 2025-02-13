@@ -210,7 +210,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     loading: getColumnStateInProgress,
     getColumnState,
     updateColumnState,
-  } = useTreeColumnStorageFetch(columnStateKey);
+  } = useTreeColumnStorageFetch({ key: columnStateKey });
 
   const mergedParams = useMemo(
     () => mergeParams(searchParams || [], domain),
