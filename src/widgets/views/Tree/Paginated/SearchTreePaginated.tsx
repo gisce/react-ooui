@@ -145,6 +145,10 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     updateColumnState,
     currentPage,
     pageSize,
+    sortState: actionViewSortState,
+    setSortState: setActionViewSortState,
+    setTreeFirstVisibleColumn,
+    onGetFirstVisibleColumn,
   } = usePaginatedSearch({
     treeViewFetching: loading,
     treeOoui,
@@ -279,6 +283,8 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         onGetColumnsState={getColumnState}
         onChangeFirstVisibleRowIndex={setTreeFirstVisibleRow}
         onGetFirstVisibleRowIndex={onGetFirstVisibleRowIndex}
+        onGetFirstVisibleColumn={onGetFirstVisibleColumn}
+        onChangeFirstVisibleColumn={setTreeFirstVisibleColumn}
         footer={footerComp}
         hasStatusColumn={treeOoui?.status !== null}
         statusComponent={statusComp}
@@ -287,6 +293,8 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         headerCheckboxState={headerCheckboxState}
         onHeaderCheckboxClick={onHeaderCheckboxClick}
         onForceReload={refresh}
+        initialSortState={actionViewSortState}
+        onSortChange={setActionViewSortState}
       />
     );
   }, [
@@ -303,6 +311,8 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     getColumnState,
     setTreeFirstVisibleRow,
     onGetFirstVisibleRowIndex,
+    setTreeFirstVisibleColumn,
+    onGetFirstVisibleColumn,
     footerComp,
     statusComp,
     onRowStatus,
@@ -310,6 +320,8 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     headerCheckboxState,
     onHeaderCheckboxClick,
     refresh,
+    actionViewSortState,
+    setActionViewSortState,
   ]);
 
   // Render

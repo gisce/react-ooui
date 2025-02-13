@@ -71,7 +71,9 @@ export type ActionViewContextType = Omit<
   setLimit?: (value: number) => void;
   setTitle?: (value: string) => void;
   treeFirstVisibleRow: number;
-  setTreeFirstVisibleRow: (totalItems: number) => void;
+  setTreeFirstVisibleRow: (value: number) => void;
+  treeFirstVisibleColumn: string | undefined;
+  setTreeFirstVisibleColumn: (value: string | undefined) => void;
   searchQuery?: SearchQueryParams;
   setSearchQuery?: (value: SearchQueryParams) => void;
   treeType?: TreeType;
@@ -147,6 +149,9 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     ),
   );
   const [treeFirstVisibleRow, setTreeFirstVisibleRow] = useState<number>(0);
+  const [treeFirstVisibleColumn, setTreeFirstVisibleColumn] = useState<
+    string | undefined
+  >(undefined);
   const [searchQuery, setSearchQuery] = useState<SearchQueryParams>();
   const [treeType, setTreeType] = useState<TreeType>(DEFAULT_TREE_TYPE);
   const [sortState, setSortState] = useState<ColumnState[]>();
@@ -257,6 +262,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         isActive,
         setTreeFirstVisibleRow,
         treeFirstVisibleRow,
+        treeFirstVisibleColumn,
+        setTreeFirstVisibleColumn,
         searchQuery,
         setSearchQuery,
         treeType,
@@ -339,6 +346,8 @@ export const useActionViewContext = () => {
       setTitle: () => {},
       treeFirstVisibleRow: 0,
       setTreeFirstVisibleRow: () => {},
+      treeFirstVisibleColumn: undefined,
+      setTreeFirstVisibleColumn: () => {},
       searchQuery: undefined,
       setSearchQuery: () => {},
       treeType: DEFAULT_TREE_TYPE,

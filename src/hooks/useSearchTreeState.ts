@@ -20,6 +20,8 @@ export type SearchTreeState = {
   setSelectedRowItems: (value: any[] | ((prevValue: any[]) => any[])) => void;
   treeFirstVisibleRow: number;
   setTreeFirstVisibleRow: (value: number) => void;
+  treeFirstVisibleColumn: string | undefined;
+  setTreeFirstVisibleColumn: (value: string | undefined) => void;
   searchParams: any[];
   setSearchParams: (value: any[]) => void;
   searchValues: any;
@@ -57,6 +59,8 @@ export function useSearchTreeState({
   const [localSearchVisible, setLocalSearchVisible] = useState(false);
   const [localSelectedRowItems, setLocalSelectedRowItems] = useState<any[]>([]);
   const [localTreeFirstVisibleRow, setLocalTreeFirstVisibleRow] = useState(0);
+  const [localTreeFirstVisibleColumn, setLocalTreeFirstVisibleColumn] =
+    useState<string | undefined>(undefined);
   const [localSearchParams, setLocalSearchParams] = useState<any[]>([]);
   const [localSearchValues, setLocalSearchValues] = useState<any>({});
   const [localSearchTreeNameSearch, setLocalSearchTreeNameSearch] =
@@ -85,6 +89,9 @@ export function useSearchTreeState({
         treeFirstVisibleRow: actionViewContext.treeFirstVisibleRow ?? 0,
         setTreeFirstVisibleRow:
           actionViewContext.setTreeFirstVisibleRow ?? (() => {}),
+        treeFirstVisibleColumn: actionViewContext.treeFirstVisibleColumn,
+        setTreeFirstVisibleColumn:
+          actionViewContext.setTreeFirstVisibleColumn ?? (() => {}),
         searchParams: actionViewContext.searchParams || [],
         setSearchParams: actionViewContext.setSearchParams ?? (() => {}),
         searchValues: actionViewContext.searchValues || {},
@@ -117,6 +124,8 @@ export function useSearchTreeState({
         setSelectedRowItems: setLocalSelectedRowItems,
         treeFirstVisibleRow: localTreeFirstVisibleRow,
         setTreeFirstVisibleRow: setLocalTreeFirstVisibleRow,
+        treeFirstVisibleColumn: localTreeFirstVisibleColumn,
+        setTreeFirstVisibleColumn: setLocalTreeFirstVisibleColumn,
         searchParams: localSearchParams,
         setSearchParams: setLocalSearchParams,
         searchValues: localSearchValues,
