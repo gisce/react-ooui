@@ -18,7 +18,6 @@ import {
   getColorMap,
   getStatusMap,
   getTableItems,
-  getTree,
   getSortedFieldsFromState,
   getOrderFromSortFields,
 } from "@/helpers/treeHelper";
@@ -79,17 +78,16 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     isActive,
     currentPage,
     setCurrentPage,
-    pageSize,
-    setPageSize,
     sortState: actionViewSortState,
     setSortState: setActionViewSortState,
+    limit,
+    setLimit,
   } = useSearchTreeState({ useLocalState: !rootTree });
 
   // Local state
   const [totalRowsLoading, setTotalRowsLoading] = useState<boolean>(true);
   const [totalRows, setTotalRows] = useState<number | null>();
   const [results, setResults] = useState<any[]>([]);
-  const hasRestoredSortStateForFirstTime = useRef<boolean>(false);
 
   // Refs
   const nameSearch = nameSearchProps || searchTreeNameSearch;
@@ -280,7 +278,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   }, [
     treeView,
     treeOoui,
-    pageSize,
+    limit,
     currentPage,
     mergedParams,
     nameSearch,
@@ -349,8 +347,8 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
     const { results, attrsEvaluated } = await searchForTree({
       params,
-      limit: pageSize,
-      offset: ((currentPage || 1) - 1) * pageSize,
+      limit,
+      offset: ((currentPage || 1) - 1) * limit,
       model,
       fields: treeView!.field_parent
         ? { ...treeView!.fields, [treeView!.field_parent]: {} }
@@ -410,24 +408,24 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     lastAssignedResults.current = [...preparedResults];
     setResults([...preparedResults]);
   }, [
-    context,
-    currentPage,
+    treeOoui,
+    treeViewFetching,
+    setTreeIsLoading,
+    actionViewSortState,
+    nameSearch,
     domain,
     mergedParams,
-    model,
-    mustUpdateTotal,
-    nameSearch,
-    pageSize,
     searchForTree,
-    setActionViewResults,
-    setSearchQuery,
-    setTotalItemsActionView,
-    setTreeIsLoading,
-    treeOoui,
+    limit,
+    currentPage,
+    model,
     treeView,
-    treeViewFetching,
+    context,
+    setSearchQuery,
+    setActionViewResults,
+    mustUpdateTotal,
     updateTotalRows,
-    actionViewSortState,
+    setTotalItemsActionView,
   ]);
 
   const refresh = useCallback(async () => {
@@ -448,9 +446,9 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       setTreeFirstVisibleRow(0);
       setSelectedRowItems([]);
       setCurrentPage(page);
-      pageSize && setPageSize(pageSize);
+      pageSize && setLimit(pageSize);
     },
-    [setCurrentPage, setPageSize, setSelectedRowItems, setTreeFirstVisibleRow],
+    [setCurrentPage, setLimit, setSelectedRowItems, setTreeFirstVisibleRow],
   );
 
   const getAllIds = useCallback(async () => {
@@ -470,10 +468,10 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
   const headerCheckboxState: CheckboxState = useMemo(() => {
     if (selectedRowKeys.length === 0) return "unchecked";
-    if (selectedRowKeys.length === pageSize && pageSize > 0) return "checked";
+    if (selectedRowKeys.length === limit && limit > 0) return "checked";
     if (selectedRowKeys.length === totalRows) return "checked";
     return "indeterminate";
-  }, [selectedRowKeys, pageSize, totalRows]);
+  }, [selectedRowKeys, limit, totalRows]);
 
   const onHeaderCheckboxClick = useCallback(() => {
     if (headerCheckboxState === "unchecked") {
@@ -530,7 +528,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     getColumnState,
     updateColumnState,
     currentPage,
-    pageSize,
+    limit,
     sortState: actionViewSortState,
     setSortState: setActionViewSortState,
     treeFirstVisibleColumn,

@@ -144,7 +144,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     getColumnState,
     updateColumnState,
     currentPage,
-    pageSize,
+    limit,
     sortState: actionViewSortState,
     setSortState: setActionViewSortState,
     setTreeFirstVisibleColumn,
@@ -345,7 +345,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         total={totalRows || 0}
         totalRowsLoading={totalRowsLoading}
         initialPage={currentPage || 1}
-        initialPageSize={pageSize || DEFAULT_PAGE_SIZE}
+        initialPageSize={limit || DEFAULT_PAGE_SIZE}
         currentPageSelectedCount={selectedRowKeys.length}
         onRequestPageChange={onRequestPageChange}
         totalSelectedCount={selectedRowKeys.length}

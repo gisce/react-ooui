@@ -6,6 +6,7 @@ import {
 } from "@/context/ActionViewContext";
 import { ColumnState } from "@gisce/react-formiga-table";
 import { DEFAULT_PAGE_SIZE } from "@/hooks/usePaginatedSearch";
+import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import {
   DEFAULT_TREE_TYPE,
   TreeType,
@@ -35,14 +36,14 @@ export type SearchTreeState = {
   totalItems: number;
   setTotalItems: (value: number) => void;
   isActive?: boolean;
-  sortState?: ColumnState[];
-  setSortState: (value: ColumnState[] | undefined) => void;
-  pageSize: number;
-  setPageSize: (value: number) => void;
+  order?: ColumnState[];
+  setOrder: (value: ColumnState[] | undefined) => void;
   currentPage: number;
   setCurrentPage: (value: number) => void;
   treeType: TreeType;
   setTreeType: (value: TreeType) => void;
+  limit: number;
+  setLimit: (value: number) => void;
 };
 
 export function useSearchTreeState({
@@ -68,13 +69,11 @@ export function useSearchTreeState({
   const [localResults, setLocalResults] = useState<any[]>([]);
   const [localSearchQuery, setLocalSearchQuery] = useState<SearchQueryParams>();
   const [localTotalItems, setLocalTotalItems] = useState(0);
-  const [localSortState, setLocalSortState] = useState<
-    ColumnState[] | undefined
-  >();
-  const [localPageSize, setLocalPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
+  const [localOrder, setLocalOrder] = useState<ColumnState[] | undefined>();
   const [localCurrentPage, setLocalCurrentPage] = useState<number>(1);
   const [localTreeType, setLocalTreeType] =
     useState<TreeType>(DEFAULT_TREE_TYPE);
+  const [localLimit, setLocalLimit] = useState<number>(DEFAULT_SEARCH_LIMIT);
 
   // Return either context values or local state values based on isUnderActionViewContext
   return isUnderActionViewContext
@@ -106,14 +105,14 @@ export function useSearchTreeState({
         totalItems: actionViewContext.totalItems ?? 0,
         setTotalItems: actionViewContext.setTotalItems ?? (() => {}),
         isActive: actionViewContext.isActive,
-        sortState: actionViewContext.sortState,
-        setSortState: actionViewContext.setSortState ?? (() => {}),
-        pageSize: actionViewContext.pageSize ?? DEFAULT_PAGE_SIZE,
-        setPageSize: actionViewContext.setPageSize ?? (() => {}),
+        order: actionViewContext.order,
+        setOrder: actionViewContext.setOrder ?? (() => {}),
         currentPage: actionViewContext.currentPage ?? 1,
         setCurrentPage: actionViewContext.setCurrentPage ?? (() => {}),
         treeType: actionViewContext.treeType ?? DEFAULT_TREE_TYPE,
         setTreeType: actionViewContext.setTreeType ?? (() => {}),
+        limit: actionViewContext.limit ?? DEFAULT_SEARCH_LIMIT,
+        setLimit: actionViewContext.setLimit ?? (() => {}),
       }
     : {
         treeIsLoading: localTreeIsLoading,
@@ -139,13 +138,13 @@ export function useSearchTreeState({
         totalItems: localTotalItems,
         setTotalItems: setLocalTotalItems,
         isActive: undefined,
-        sortState: localSortState,
-        setSortState: setLocalSortState,
-        pageSize: localPageSize,
-        setPageSize: setLocalPageSize,
+        order: localOrder,
+        setOrder: setLocalOrder,
         currentPage: localCurrentPage,
         setCurrentPage: setLocalCurrentPage,
         treeType: localTreeType,
         setTreeType: setLocalTreeType,
+        limit: localLimit,
+        setLimit: setLocalLimit,
       };
 }

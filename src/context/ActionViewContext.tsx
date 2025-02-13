@@ -80,8 +80,6 @@ export type ActionViewContextType = Omit<
   setTreeType?: (value: TreeType) => void;
   sortState?: ColumnState[];
   setSortState?: (value: ColumnState[] | undefined) => void;
-  pageSize: number;
-  setPageSize?: (value: number) => void;
   currentPage?: number;
   setCurrentPage?: (value: number) => void;
 };
@@ -161,7 +159,6 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   );
   const [title, setTitle] = useState<string>(titleProps);
 
-  const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   useEffect(() => {
@@ -270,8 +267,6 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setTreeType,
         sortState,
         setSortState,
-        pageSize,
-        setPageSize,
         currentPage,
         setCurrentPage,
       }}
@@ -354,8 +349,6 @@ export const useActionViewContext = () => {
       setTreeType: () => {},
       sortState: undefined,
       setSortState: () => {},
-      pageSize: DEFAULT_PAGE_SIZE,
-      setPageSize: () => {},
       currentPage: 1,
       setCurrentPage: () => {},
     };
