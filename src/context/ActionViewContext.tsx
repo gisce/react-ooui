@@ -37,6 +37,8 @@ type ActionViewProviderProps = {
   isActive: boolean;
   children: React.ReactNode;
   initialSearchParams?: any[];
+  initialCurrentPage?: number;
+  initialOrder?: any[];
 };
 
 export type ActionViewContextType = Omit<
@@ -125,6 +127,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     limit: limitProps,
     isActive,
     initialSearchParams,
+    initialCurrentPage,
+    initialOrder,
   } = props;
 
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
@@ -152,14 +156,16 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   >(undefined);
   const [searchQuery, setSearchQuery] = useState<SearchQueryParams>();
   const [treeType, setTreeType] = useState<TreeType>(DEFAULT_TREE_TYPE);
-  const [order, setOrder] = useState<ColumnState[]>();
+  const [order, setOrder] = useState<ColumnState[]>(initialOrder);
 
   const [limit, setLimit] = useState<number>(
     limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT,
   );
   const [title, setTitle] = useState<string>(titleProps);
 
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(
+    initialCurrentPage || 1,
+  );
 
   useEffect(() => {
     if (results && results.length > 0 && !currentItemIndex) {
