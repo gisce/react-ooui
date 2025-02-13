@@ -78,8 +78,8 @@ export type ActionViewContextType = Omit<
   setSearchQuery?: (value: SearchQueryParams) => void;
   treeType?: TreeType;
   setTreeType?: (value: TreeType) => void;
-  sortState?: ColumnState[];
-  setSortState?: (value: ColumnState[] | undefined) => void;
+  order?: ColumnState[];
+  setOrder?: (value: ColumnState[] | undefined) => void;
   currentPage?: number;
   setCurrentPage?: (value: number) => void;
 };
@@ -152,7 +152,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   >(undefined);
   const [searchQuery, setSearchQuery] = useState<SearchQueryParams>();
   const [treeType, setTreeType] = useState<TreeType>(DEFAULT_TREE_TYPE);
-  const [sortState, setSortState] = useState<ColumnState[]>();
+  const [order, setOrder] = useState<ColumnState[]>();
 
   const [limit, setLimit] = useState<number>(
     limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT,
@@ -265,8 +265,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setSearchQuery,
         treeType,
         setTreeType,
-        sortState,
-        setSortState,
+        order,
+        setOrder,
         currentPage,
         setCurrentPage,
       }}
@@ -347,8 +347,8 @@ export const useActionViewContext = () => {
       setSearchQuery: () => {},
       treeType: DEFAULT_TREE_TYPE,
       setTreeType: () => {},
-      sortState: undefined,
-      setSortState: () => {},
+      order: undefined,
+      setOrder: () => {},
       currentPage: 1,
       setCurrentPage: () => {},
     };

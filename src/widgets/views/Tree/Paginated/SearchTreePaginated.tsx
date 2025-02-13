@@ -145,8 +145,8 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     updateColumnState,
     currentPage,
     limit,
-    sortState: actionViewSortState,
-    setSortState: setActionViewSortState,
+    order: actionViewSortState,
+    setOrder: setActionViewSortState,
     setTreeFirstVisibleColumn,
     onGetFirstVisibleColumn,
   } = usePaginatedSearch({

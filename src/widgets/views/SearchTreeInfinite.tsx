@@ -136,8 +136,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     setSearchQuery,
     setTotalItems: setTotalItemsActionView,
     isActive,
-    sortState: actionViewSortState,
-    setSortState: setActionViewSortState,
+    order: actionViewSortState,
+    setOrder: setActionViewSortState,
   } = useSearchTreeState({ useLocalState: !rootTree });
 
   const nameSearch = nameSearchProps || searchTreeNameSearch;

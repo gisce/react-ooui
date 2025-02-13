@@ -13,7 +13,7 @@ export function useUrlFromCurrentTab({
 }: {
   currentTab?: Tab;
 }): UseUrlFromCurrentTabResult {
-  const { currentView, searchParams, currentId, limit, currentPage } =
+  const { currentView, searchParams, currentId, limit, currentPage, order } =
     useActionViewContext();
   const { currentTab: currentTabContext } = useTabs();
 
@@ -36,6 +36,7 @@ export function useUrlFromCurrentTab({
     ...(currentId && { res_id: currentId }),
     ...(limit && { limit }),
     ...(currentPage && currentPage > 1 && { currentPage }),
+    ...(order && { order }),
   };
 
   const shareUrl = createShareOpenUrl(finalActionData);

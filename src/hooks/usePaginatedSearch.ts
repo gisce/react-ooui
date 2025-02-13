@@ -78,8 +78,8 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     isActive,
     currentPage,
     setCurrentPage,
-    sortState: actionViewSortState,
-    setSortState: setActionViewSortState,
+    order: actionViewOrder,
+    setOrder: setActionViewOrder,
     limit,
     setLimit,
   } = useSearchTreeState({ useLocalState: !rootTree });
@@ -283,7 +283,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     mergedParams,
     nameSearch,
     domain,
-    actionViewSortState,
+    actionViewOrder,
   ]);
 
   useEffect(() => {
@@ -336,9 +336,9 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     }
 
     let order;
-    if (actionViewSortState?.length) {
+    if (actionViewOrder?.length) {
       const sortFields = getSortedFieldsFromState({
-        state: actionViewSortState,
+        state: actionViewOrder,
       });
       order = getOrderFromSortFields(sortFields);
     }
@@ -411,7 +411,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     treeOoui,
     treeViewFetching,
     setTreeIsLoading,
-    actionViewSortState,
+    actionViewOrder,
     nameSearch,
     domain,
     mergedParams,
@@ -529,9 +529,8 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     updateColumnState,
     currentPage,
     limit,
-    sortState: actionViewSortState,
-    setSortState: setActionViewSortState,
-    treeFirstVisibleColumn,
+    order: actionViewOrder,
+    setOrder: setActionViewOrder,
     setTreeFirstVisibleColumn,
     onGetFirstVisibleColumn,
   };
