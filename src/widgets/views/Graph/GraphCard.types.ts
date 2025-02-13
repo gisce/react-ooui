@@ -8,4 +8,5 @@ export type GraphCardProps = {
   action?: ShortcutApi;
   openAction?: (shortcutApi?: ShortcutApi) => void;
   tooltip?: string;
+  card?: boolean;
 };

@@ -177,6 +177,7 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
       action={treeShortcut}
       openAction={openShortcut as any}
       tooltip={description}
+      card={ooui.card}
     >
       {loading && <CenteredSpinner />}
       {!loading && (
