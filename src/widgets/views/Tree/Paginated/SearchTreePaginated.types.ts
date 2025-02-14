@@ -61,6 +61,6 @@ export type PaginatedTableContentProps = {
   onHeaderCheckboxClick: () => void;
   refresh: () => void;
   actionViewSortState: any;
-  setActionViewSortState: (state: any) => void;
+  onSortChange: (state: any) => void;
   tableRef: RefObject<PaginatedTableRef>;
 };
