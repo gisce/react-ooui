@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Typography, Button, Layout, theme } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
+import FocusTrap from "focus-trap-react";
 
 const { useToken } = theme;
 const { Title } = Typography;
@@ -97,58 +98,68 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
             }}
             onClick={handleOverlayClick}
           />
-          <motion.div
-            ref={drawerRef}
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            onAnimationComplete={handleAnimationComplete}
-            style={{
-              position: "fixed",
-              top: 0,
-              right: 0,
-              bottom: 0,
-              width: "500px",
-              backgroundColor: "white",
-              boxShadow: "-2px 0 5px rgba(0, 0, 0, 0.1)",
-              zIndex: 1000,
-              display: "flex",
-              flexDirection: "column",
+          <FocusTrap
+            active={isOpen}
+            focusTrapOptions={{
+              initialFocus: "#floating-drawer-overlay input",
+              allowOutsideClick: true,
+              returnFocusOnDeactivate: true,
             }}
           >
-            <Header style={headerFooterStyle}>
-              <Title level={3} style={{ margin: 0, flex: 1 }}>
-                {title}
-              </Title>
-              <Button
-                type="text"
-                icon={<CloseOutlined />}
-                onClick={onClose}
-                aria-label="Close"
-              />
-            </Header>
-            <Content
+            <motion.div
+              ref={drawerRef}
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              onAnimationComplete={handleAnimationComplete}
+              id="floating-drawer-overlay"
               style={{
-                flex: 1,
-                overflowY: "auto",
+                position: "fixed",
+                top: 0,
+                right: 0,
+                bottom: 0,
+                width: "500px",
+                backgroundColor: "white",
+                boxShadow: "-2px 0 5px rgba(0, 0, 0, 0.1)",
+                zIndex: 1000,
+                display: "flex",
+                flexDirection: "column",
               }}
             >
-              {children}
-            </Content>
-            {footer && (
-              <Footer
+              <Header style={headerFooterStyle}>
+                <Title level={3} style={{ margin: 0, flex: 1 }}>
+                  {title}
+                </Title>
+                <Button
+                  type="text"
+                  icon={<CloseOutlined />}
+                  onClick={onClose}
+                  aria-label="Close"
+                />
+              </Header>
+              <Content
                 style={{
-                  ...headerFooterStyle,
-                  borderTop: "1px solid #f0f0f0",
-                  borderBottom: "none",
-                  height: "72px",
+                  flex: 1,
+                  overflowY: "auto",
                 }}
               >
-                {footer}
-              </Footer>
-            )}
-          </motion.div>
+                {children}
+              </Content>
+              {footer && (
+                <Footer
+                  style={{
+                    ...headerFooterStyle,
+                    borderTop: "1px solid #f0f0f0",
+                    borderBottom: "none",
+                    height: "72px",
+                  }}
+                >
+                  {footer}
+                </Footer>
+              )}
+            </motion.div>
+          </FocusTrap>
         </>
       )}
     </AnimatePresence>

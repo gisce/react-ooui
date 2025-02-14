@@ -32,7 +32,7 @@ export const Many2oneSuffix = (props: Props) => {
   const tabManagerContext = useContext(
     TabManagerContext,
   ) as TabManagerContextType;
-  const { openRelate } = tabManagerContext || {};
+  const { openRelate, openAction } = tabManagerContext || {};
 
   const contentRootContext = useContext(
     ContentRootContext,
@@ -104,6 +104,20 @@ export const Many2oneSuffix = (props: Props) => {
     };
 
     switch (type) {
+      case "open":
+        openAction({
+          domain: [["id", "=", id]],
+          context,
+          model,
+          res_id: id,
+          title: formView?.title || "",
+          views: [[formView?.view_id, "form"]],
+          target: "current",
+          initialView: { type: "form" },
+          action_id: -1,
+          action_type: "ir.actions.act_window",
+        });
+        break;
       case "action":
         processAction?.({
           actionData: item,
