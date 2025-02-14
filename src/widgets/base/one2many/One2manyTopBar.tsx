@@ -12,17 +12,24 @@ import {
   ThunderboltOutlined,
   PrinterOutlined,
   EnterOutlined,
+  InfoCircleOutlined,
+  CopyOutlined,
 } from "@ant-design/icons";
 import { ViewType } from "@/types";
 import { theme, Badge } from "antd";
 import { useFormToolbarButtons } from "@/hooks/useFormToolbarButtons";
 import { useTreeToolbarButtons } from "@/hooks/useTreeToolbarButtons";
+import { showLogInfo } from "@/helpers/logInfoHelper";
+import { showConfirmDialog } from "@/index";
+import { useDuplicateItem } from "@/hooks/useDuplicateItem";
 const { useToken } = theme;
 
 type One2manyTopBarProps = {
   title: string;
   mode: ViewType;
+  model: string;
   isMany2Many: boolean;
+  currentId: number | undefined;
   readOnly: boolean;
   formHasChanges: boolean;
   onToggleViewMode: () => void;
@@ -47,6 +54,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
     title: titleString,
     readOnly,
     onCreateItem,
+    model,
     onToggleViewMode,
     mode,
     onDelete,
@@ -63,10 +71,20 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
     context,
     formRef,
     onRefreshParentValues,
+    currentId,
   } = props;
 
   const { token } = useToken();
   const { t } = useLocale();
+
+  const { duplicatingItem, handleDuplicate } = useDuplicateItem({
+    currentId,
+    currentModel: model,
+    formRef,
+    onItemDuplicated: () => {
+      onRefreshParentValues?.();
+    },
+  });
 
   const { actionButtonProps, printButtonProps, relateButtonProps } =
     useFormToolbarButtons({
@@ -121,6 +139,56 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
             onDelete={onDelete}
           />
         )}
+        {(mode === "tree" || mode === "form") && (
+          <>
+            <Separator />
+            <ButtonWithTooltip
+              icon={<InfoCircleOutlined />}
+              tooltip={t("showLogs")}
+              disabled={
+                !(
+                  (mode === "form" &&
+                    currentId !== undefined &&
+                    currentId > 0) ||
+                  (mode === "tree" &&
+                    selectedRowKeys.length >= 1 &&
+                    selectedRowKeys?.[0] !== undefined &&
+                    parseInt(selectedRowKeys[0]) > 0)
+                )
+              }
+              onClick={() =>
+                showLogInfo(
+                  model,
+                  mode === "form" ? currentId! : parseInt(selectedRowKeys![0]),
+                  t,
+                )
+              }
+            />
+          </>
+        )}
+        {mode === "form" && (
+          <>
+            <Separator />
+            <ButtonWithTooltip
+              icon={<CopyOutlined />}
+              tooltip={t("duplicate")}
+              disabled={
+                readOnly ||
+                duplicatingItem ||
+                currentId === undefined ||
+                currentId < 0
+              }
+              loading={duplicatingItem}
+              onClick={() =>
+                showConfirmDialog({
+                  confirmMessage: t("confirmDuplicate"),
+                  t,
+                  onOk: handleDuplicate,
+                })
+              }
+            />
+          </>
+        )}
         {mode === "form" && (
           <ItemBrowser
             currentItemIndex={currentItemIndex}
@@ -129,13 +197,15 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
             onNextItem={onNextItem}
           />
         )}
-        <Separator />
         {showToggleButton && (
-          <ButtonWithTooltip
-            tooltip={t("toggleViewMode")}
-            icon={<AlignLeftOutlined />}
-            onClick={onToggleViewMode}
-          />
+          <>
+            <Separator />
+            <ButtonWithTooltip
+              tooltip={t("toggleViewMode")}
+              icon={<AlignLeftOutlined />}
+              onClick={onToggleViewMode}
+            />
+          </>
         )}
         {toolbar && (
           <>

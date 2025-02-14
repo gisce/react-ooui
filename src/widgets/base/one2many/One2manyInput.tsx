@@ -572,6 +572,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         return <Spin />;
       }
 
+      console.log({ currentId: itemsToShow[itemIndex].id! });
       return (
         <Form
           ref={formRef}
@@ -680,6 +681,8 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     <>
       <One2manyTopBar
         mode={currentView}
+        model={relation}
+        currentId={itemsToShow[itemIndex]?.id}
         title={getTitle()}
         readOnly={readOnly || false}
         isMany2Many={isMany2many}
