@@ -187,7 +187,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     [availableHeight, visible],
   );
 
-  console.log({ currentPage });
   // Render
   return (
     <Fragment>
