@@ -1,5 +1,4 @@
 import { convertParamsToValues } from "@/helpers/searchHelper";
-import { DEFAULT_PAGE_SIZE } from "@/hooks/usePaginatedSearch";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { TreeView, View } from "@/types";
 import {
@@ -156,7 +155,9 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   >(undefined);
   const [searchQuery, setSearchQuery] = useState<SearchQueryParams>();
   const [treeType, setTreeType] = useState<TreeType>(DEFAULT_TREE_TYPE);
-  const [order, setOrder] = useState<ColumnState[]>(initialOrder);
+  const [order, setOrder] = useState<ColumnState[] | undefined>(
+    initialOrder as ColumnState[] | undefined,
+  );
 
   const [limit, setLimit] = useState<number>(
     limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT,
