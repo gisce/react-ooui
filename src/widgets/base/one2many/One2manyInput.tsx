@@ -572,7 +572,6 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         return <Spin />;
       }
 
-      console.log({ currentId: itemsToShow[itemIndex].id! });
       return (
         <Form
           ref={formRef}
