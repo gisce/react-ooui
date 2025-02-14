@@ -443,11 +443,18 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   const onRequestPageChange = useCallback(
     (page: number, pageSize?: number) => {
       setTreeFirstVisibleRow(0);
+      setTreeFirstVisibleColumn(undefined);
       setSelectedRowItems([]);
       setCurrentPage(page);
       pageSize && setLimit(pageSize);
     },
-    [setCurrentPage, setLimit, setSelectedRowItems, setTreeFirstVisibleRow],
+    [
+      setCurrentPage,
+      setLimit,
+      setSelectedRowItems,
+      setTreeFirstVisibleColumn,
+      setTreeFirstVisibleRow,
+    ],
   );
 
   const getAllIds = useCallback(async () => {
@@ -462,7 +469,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   const selectAllRecords = useCallback(async () => {
     const allIds = await getAllIds();
     setSelectedRowItems?.(allIds.map((id: number) => ({ id })));
-    // onChangeSelectedRowKeys?.(allIds);
   }, [getAllIds, setSelectedRowItems]);
 
   const headerCheckboxState: CheckboxState = useMemo(() => {
@@ -483,6 +489,21 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       tableRef.current?.unselectAll();
     }
   }, [tableRef, setSelectedRowItems, results, headerCheckboxState]);
+
+  const onSortChange = useCallback(
+    (state: any) => {
+      setActionViewOrder(state);
+      setTreeFirstVisibleRow(0);
+      setTreeFirstVisibleColumn(undefined);
+      setCurrentPage(1);
+    },
+    [
+      setActionViewOrder,
+      setCurrentPage,
+      setTreeFirstVisibleColumn,
+      setTreeFirstVisibleRow,
+    ],
+  );
 
   const onRowHasBeenSelected = useCallback(
     ({ id, selected }: { id: number; selected: boolean }) => {
@@ -532,5 +553,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     setOrder: setActionViewOrder,
     setTreeFirstVisibleColumn,
     onGetFirstVisibleColumn,
+    onSortChange,
   };
 };

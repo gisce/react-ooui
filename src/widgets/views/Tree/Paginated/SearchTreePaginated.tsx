@@ -118,9 +118,9 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     currentPage,
     limit,
     order: actionViewSortState,
-    setOrder: setActionViewSortState,
     setTreeFirstVisibleColumn,
     onGetFirstVisibleColumn,
+    onSortChange,
   } = usePaginatedSearch({
     treeViewFetching: loading,
     treeOoui,
@@ -187,6 +187,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     [availableHeight, visible],
   );
 
+  console.log({ currentPage });
   // Render
   return (
     <Fragment>
@@ -204,8 +205,8 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
       <PaginationHeader
         total={totalRows || 0}
         totalRowsLoading={totalRowsLoading}
-        initialPage={currentPage || 1}
-        initialPageSize={limit || DEFAULT_PAGE_SIZE}
+        page={currentPage || 1}
+        pageSize={limit || DEFAULT_PAGE_SIZE}
         currentPageSelectedCount={selectedRowKeys.length}
         onRequestPageChange={onRequestPageChange}
         totalSelectedCount={selectedRowKeys.length}
@@ -238,7 +239,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             onHeaderCheckboxClick={onHeaderCheckboxClick}
             refresh={refresh}
             actionViewSortState={actionViewSortState}
-            setActionViewSortState={setActionViewSortState}
+            onSortChange={onSortChange}
             tableRef={tableRef}
           />
         )}

@@ -26,7 +26,7 @@ export const PaginatedTableComponent = memo(
     onHeaderCheckboxClick,
     refresh,
     actionViewSortState,
-    setActionViewSortState,
+    onSortChange,
     tableRef,
   }: PaginatedTableContentProps) => {
     if (!columns || !treeOoui) return null;
@@ -56,7 +56,7 @@ export const PaginatedTableComponent = memo(
         onHeaderCheckboxClick={onHeaderCheckboxClick}
         onForceReload={refresh}
         initialSortState={actionViewSortState}
-        onSortChange={setActionViewSortState}
+        onSortChange={onSortChange}
       />
     );
   },
