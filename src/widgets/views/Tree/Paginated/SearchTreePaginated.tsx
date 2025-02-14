@@ -9,51 +9,32 @@ import {
   useEffect,
 } from "react";
 
-import { FormView, TreeView } from "@/types/index";
 import { Tree as TreeOoui } from "@gisce/ooui";
-import { PaginatedTableRef, PaginatedTable } from "@gisce/react-formiga-table";
+import { PaginatedTableRef } from "@gisce/react-formiga-table";
 
 import { Badge, Spin } from "antd";
-import { useLocale, PaginationHeader } from "@gisce/react-formiga-components";
-import { SideSearchFilter } from "../../searchFilter/SideSearchFilter";
-import SearchFilter from "../../searchFilter/SearchFilter";
+import { PaginationHeader } from "@gisce/react-formiga-components";
 import { AggregatesFooter } from "../../../base/one2many/AggregatesFooter";
 
 import { useFetchTreeViews } from "@/hooks/useFetchTreeViews";
-import { useDeepCompareMemo } from "use-deep-compare";
 import { useAvailableHeight } from "@/hooks/useAvailableHeight";
 import { useTreeAggregates } from "../../../base/one2many/useTreeAggregates";
 import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
 import {
   DEFAULT_PAGE_SIZE,
   usePaginatedSearch,
-} from "@/hooks/usePaginatedSearch";
+} from "@/widgets/views/Tree/Paginated/hooks/usePaginatedSearch";
 
-import { getTableColumns, getTree } from "@/helpers/treeHelper";
-import { mergeSearchFields } from "@/helpers/formHelper";
-import { COLUMN_COMPONENTS } from "../treeComponents";
+import { getTree } from "@/helpers/treeHelper";
+import {
+  SearchTreePaginatedProps,
+  OnRowClickedData,
+} from "./SearchTreePaginated.types";
+import { useTableConfiguration } from "../../../../hooks/useTableConfiguration";
+import { PaginatedSearchControls } from "./components/PaginatedSearchControls";
+import { PaginatedTableComponent } from "./components/PaginatedTableComponent";
 
 export const HEIGHT_OFFSET = 10;
-
-type OnRowClickedData = {
-  id: number;
-  model: string;
-  formView: FormView;
-  treeView: TreeView;
-};
-
-export type SearchTreePaginatedProps = {
-  model: string;
-  formView: FormView;
-  treeView: TreeView;
-  onRowClicked: (data: OnRowClickedData) => void;
-  nameSearch?: string;
-  domain?: any;
-  visible?: boolean;
-  rootTree?: boolean;
-  parentContext?: any;
-  filterType?: "side" | "top";
-};
 
 function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   const {
@@ -84,15 +65,12 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     onRowClickedRef.current?.(data);
   }, []);
 
-  // Basic hooks
-  const { t } = useLocale();
-
   const availableHeight = useAvailableHeight({
     elementRef: containerRef,
     offset: HEIGHT_OFFSET,
   });
 
-  // Data fetching and state management
+  // Views data fetching
   const { treeView, formView, loading } = useFetchTreeViews({
     model,
     formViewProps,
@@ -105,16 +83,10 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     return getTree(treeView);
   }, [treeView]);
 
-  // Column management
-  const columns = useDeepCompareMemo(() => {
-    if (!treeOoui) return;
-    return getTableColumns(
-      treeOoui,
-      { ...COLUMN_COMPONENTS },
-      parentContext,
-      "paginated",
-    );
-  }, [treeOoui, parentContext]);
+  const { columns, strings } = useTableConfiguration(treeOoui, parentContext);
+
+  // Ensure columns is never undefined
+  const safeColumns = useMemo(() => columns || [], [columns]);
 
   // Pagination and search state
   const {
@@ -159,6 +131,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     tableRef,
     domain,
     filterType,
+    context: parentContext,
   });
 
   // Aggregates handling
@@ -205,13 +178,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     [],
   );
 
-  const strings = useMemo(
-    () => ({
-      resetTableViewLabel: t("resetTableView"),
-    }),
-    [t],
-  );
-
   const containerStyle = useMemo(
     () => ({
       overflow: "hidden",
@@ -221,126 +187,20 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     [availableHeight, visible],
   );
 
-  // Search filter configuration
-  const searchFilterProps = useMemo(
-    () => ({
-      fields: { ...formView?.fields, ...treeView?.fields },
-      searchFields: mergeSearchFields([
-        formView?.search_fields,
-        treeView?.search_fields,
-      ]),
-      showLimitOptions: false,
-      limit: 0,
-      offset: 0,
-      isSearching: false,
-      searchValues,
-      searchVisible: true,
-    }),
-    [
-      formView?.fields,
-      formView?.search_fields,
-      treeView?.fields,
-      treeView?.search_fields,
-      searchValues,
-    ],
-  );
-
-  const sideSearchFilterProps = useMemo(
-    () => ({
-      isOpen: searchVisible,
-      fields: { ...formView?.fields, ...treeView?.fields },
-      searchFields: mergeSearchFields([
-        formView?.search_fields,
-        treeView?.search_fields,
-      ]),
-      searchValues,
-    }),
-    [
-      searchVisible,
-      formView?.fields,
-      formView?.search_fields,
-      treeView?.fields,
-      treeView?.search_fields,
-      searchValues,
-    ],
-  );
-
-  // Main table content
-  const content = useMemo(() => {
-    if (!columns || !treeOoui) return null;
-
-    return (
-      <PaginatedTable
-        ref={tableRef}
-        strings={strings}
-        loading={treeIsLoading || getColumnStateInProgress}
-        height={availableHeight}
-        columns={columns}
-        dataSource={results}
-        onRowDoubleClick={handleRowDoubleClick}
-        onRowSelectionChange={onRowHasBeenSelected}
-        onColumnChanged={updateColumnState}
-        onGetColumnsState={getColumnState}
-        onChangeFirstVisibleRowIndex={setTreeFirstVisibleRow}
-        onGetFirstVisibleRowIndex={onGetFirstVisibleRowIndex}
-        onGetFirstVisibleColumn={onGetFirstVisibleColumn}
-        onChangeFirstVisibleColumn={setTreeFirstVisibleColumn}
-        footer={footerComp}
-        hasStatusColumn={treeOoui?.status !== null}
-        statusComponent={statusComp}
-        onRowStatus={onRowStatus}
-        onRowStyle={onRowStyle}
-        headerCheckboxState={headerCheckboxState}
-        onHeaderCheckboxClick={onHeaderCheckboxClick}
-        onForceReload={refresh}
-        initialSortState={actionViewSortState}
-        onSortChange={setActionViewSortState}
-      />
-    );
-  }, [
-    columns,
-    treeOoui,
-    strings,
-    treeIsLoading,
-    getColumnStateInProgress,
-    availableHeight,
-    results,
-    handleRowDoubleClick,
-    onRowHasBeenSelected,
-    updateColumnState,
-    getColumnState,
-    setTreeFirstVisibleRow,
-    onGetFirstVisibleRowIndex,
-    setTreeFirstVisibleColumn,
-    onGetFirstVisibleColumn,
-    footerComp,
-    statusComp,
-    onRowStatus,
-    onRowStyle,
-    headerCheckboxState,
-    onHeaderCheckboxClick,
-    refresh,
-    actionViewSortState,
-    setActionViewSortState,
-  ]);
-
   // Render
   return (
     <Fragment>
-      {filterType === "top" && (
-        <SearchFilter
-          {...searchFilterProps}
-          onClear={onSearchFilterClear}
-          onSubmit={onSearchFilterSubmit}
-        />
-      )}
-      {filterType === "side" && (
-        <SideSearchFilter
-          {...sideSearchFilterProps}
-          onClose={onSideSearchFilterClose}
-          onSubmit={onSideSearchFilterSubmit}
-        />
-      )}
+      <PaginatedSearchControls
+        filterType={filterType}
+        formView={formView}
+        treeView={treeView}
+        searchVisible={searchVisible}
+        searchValues={searchValues}
+        onSearchFilterClear={onSearchFilterClear}
+        onSearchFilterSubmit={onSearchFilterSubmit}
+        onSideSearchFilterClose={onSideSearchFilterClose}
+        onSideSearchFilterSubmit={onSideSearchFilterSubmit}
+      />
       <PaginationHeader
         total={totalRows || 0}
         totalRowsLoading={totalRowsLoading}
@@ -352,7 +212,36 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         onSelectAllGlobalRecords={selectAllRecords}
       />
       <div ref={containerRef} style={containerStyle}>
-        {loading ? <Spin /> : content}
+        {loading ? (
+          <Spin />
+        ) : (
+          <PaginatedTableComponent
+            columns={safeColumns}
+            treeOoui={treeOoui!}
+            strings={strings}
+            isLoading={treeIsLoading || getColumnStateInProgress}
+            availableHeight={availableHeight}
+            results={results}
+            handleRowDoubleClick={handleRowDoubleClick}
+            onRowHasBeenSelected={onRowHasBeenSelected}
+            updateColumnState={updateColumnState}
+            getColumnState={getColumnState}
+            setTreeFirstVisibleRow={setTreeFirstVisibleRow}
+            onGetFirstVisibleRowIndex={onGetFirstVisibleRowIndex}
+            onGetFirstVisibleColumn={onGetFirstVisibleColumn}
+            setTreeFirstVisibleColumn={setTreeFirstVisibleColumn}
+            footerComp={footerComp}
+            statusComp={statusComp}
+            onRowStatus={onRowStatus}
+            onRowStyle={onRowStyle}
+            headerCheckboxState={headerCheckboxState}
+            onHeaderCheckboxClick={onHeaderCheckboxClick}
+            refresh={refresh}
+            actionViewSortState={actionViewSortState}
+            setActionViewSortState={setActionViewSortState}
+            tableRef={tableRef}
+          />
+        )}
       </div>
     </Fragment>
   );

@@ -9,8 +9,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { useNetworkRequest } from "./useNetworkRequest";
-import { ConnectionProvider, TreeView } from "..";
+import { useNetworkRequest } from "../../../../../hooks/useNetworkRequest";
+import { ConnectionProvider, TreeView } from "../../../../..";
 import { useShowErrorDialog } from "@/ui/GenericErrorDialog";
 import { useDeepCompareEffect } from "use-deep-compare";
 import deepEqual from "deep-equal";

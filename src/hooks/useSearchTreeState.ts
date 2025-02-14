@@ -5,7 +5,7 @@ import {
   useIsUnderActionViewContext,
 } from "@/context/ActionViewContext";
 import { ColumnState } from "@gisce/react-formiga-table";
-import { DEFAULT_PAGE_SIZE } from "@/hooks/usePaginatedSearch";
+import { DEFAULT_PAGE_SIZE } from "@/widgets/views/Tree/Paginated/hooks/usePaginatedSearch";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import {
   DEFAULT_TREE_TYPE,
