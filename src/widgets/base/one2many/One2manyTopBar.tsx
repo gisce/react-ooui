@@ -137,19 +137,31 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
             onClick={onToggleViewMode}
           />
         )}
-        {/* {toolbar && (
+        {toolbar && (
           <>
-            <Separator />
-            <DropdownButton
-              icon={<ThunderboltOutlined />}
-              {...(mode === "form" ? actionButtonProps : treeActionButtonProps)}
-            />
-            <Separator />
-            <DropdownButton
-              icon={<PrinterOutlined />}
-              {...(mode === "form" ? printButtonProps : treePrintButtonProps)}
-            />
-            {mode === "form" && (
+            {toolbar.action?.length > 0 && (
+              <>
+                <Separator />
+                <DropdownButton
+                  icon={<ThunderboltOutlined />}
+                  {...(mode === "form"
+                    ? actionButtonProps
+                    : treeActionButtonProps)}
+                />
+              </>
+            )}
+            {toolbar.print?.length > 0 && (
+              <>
+                <Separator />
+                <DropdownButton
+                  icon={<PrinterOutlined />}
+                  {...(mode === "form"
+                    ? printButtonProps
+                    : treePrintButtonProps)}
+                />
+              </>
+            )}
+            {mode === "form" && toolbar.relate?.length > 0 && (
               <>
                 <Separator />
                 <DropdownButton
@@ -159,7 +171,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
               </>
             )}
           </>
-        )} */}
+        )}
       </div>
     </div>
   );
