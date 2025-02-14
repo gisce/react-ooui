@@ -260,7 +260,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     if (treeViewFetching) {
       return;
     }
-    updateTotalRows();
     return () => {
       cancelFetchTotalRows();
       cancelSearchForTree();
