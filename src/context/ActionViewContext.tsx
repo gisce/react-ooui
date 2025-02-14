@@ -156,7 +156,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [searchQuery, setSearchQuery] = useState<SearchQueryParams>();
   const [treeType, setTreeType] = useState<TreeType>(DEFAULT_TREE_TYPE);
   const [order, setOrder] = useState<ColumnState[] | undefined>(
-    initialOrder as ColumnState[] | undefined,
+    initialOrder as ColumnState[] | [],
   );
 
   const [limit, setLimit] = useState<number>(
