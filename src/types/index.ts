@@ -413,6 +413,8 @@ type ActionInfo = {
   limit?: number;
   actionRawData?: ActionRawData;
   searchParams?: any[];
+  currentPage?: number;
+  order?: any[];
 };
 
 type Tab = {

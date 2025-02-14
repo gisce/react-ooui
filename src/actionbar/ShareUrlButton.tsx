@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Button, Input, message, Space, Popover, theme } from "antd";
 import { CopyOutlined, CheckOutlined } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
@@ -15,6 +15,7 @@ export type ShareUrlButtonProps = {
 };
 
 export function ShareUrlButton({ res_id, searchParams }: ShareUrlButtonProps) {
+  const buttonRef = useRef(null);
   const { currentView } = useActionViewContext();
   const initialView = {
     id: currentView.view_id,
@@ -118,12 +119,14 @@ export function ShareUrlButton({ res_id, searchParams }: ShareUrlButtonProps) {
   return (
     <div style={{ maxHeight: 28 }}>
       <Popover content={popoverContent} trigger="click" placement="bottom">
-        <ActionButton
-          style={{ height: 28 }}
-          icon={<IconShare2 size={16} color={token.colorTextSecondary} />}
-          disabled={moreDataNeededForCopying}
-          tooltip={t("share")}
-        />
+        <div ref={buttonRef}>
+          <ActionButton
+            style={{ height: 28 }}
+            icon={<IconShare2 size={16} color={token.colorTextSecondary} />}
+            disabled={moreDataNeededForCopying}
+            tooltip={t("share")}
+          />
+        </div>
       </Popover>
     </div>
   );

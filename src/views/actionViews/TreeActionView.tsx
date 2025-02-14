@@ -16,6 +16,7 @@ import {
 import { SearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
 import SearchTree from "@/widgets/views/SearchTree";
 import { extractTreeXmlAttribute } from "@/helpers/treeHelper";
+import { SearchTreePaginated } from "@/widgets/views/Tree/Paginated/SearchTreePaginated";
 
 export type TreeActionViewProps = {
   formView: FormView;
@@ -33,6 +34,9 @@ export type TreeActionViewProps = {
   searchTreeNameSearch?: string;
   limit?: number;
 };
+
+export type TreeType = "infinite" | "paginated" | "legacy";
+export const DEFAULT_TREE_TYPE: TreeType = "legacy";
 
 export const TreeActionView = (props: TreeActionViewProps) => {
   const {
@@ -52,25 +56,24 @@ export const TreeActionView = (props: TreeActionViewProps) => {
   } = props;
   const previousVisibleRef = useRef(visible);
 
-  const isInfiniteTree = useMemo(() => {
+  const treeType: TreeType = useMemo(() => {
     if (!treeView?.arch || treeView.isExpandable) {
-      return false;
+      return "legacy";
     }
     const tagValue = extractTreeXmlAttribute(treeView.arch, "infinite");
-    return tagValue === "1";
+    if (!tagValue) {
+      return "legacy";
+    }
+    return tagValue === "1" ? "infinite" : "paginated";
   }, [treeView]);
 
-  useEffect(() => {
-    setIsInfiniteTree?.(isInfiniteTree);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isInfiniteTree]);
+  const { currentView, setPreviousView, setTreeType, setSelectedRowItems } =
+    useContext(ActionViewContext) as ActionViewContextType;
 
-  const {
-    currentView,
-    setPreviousView,
-    setIsInfiniteTree,
-    setSelectedRowItems,
-  } = useContext(ActionViewContext) as ActionViewContextType;
+  useEffect(() => {
+    setTreeType?.(treeType);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [treeType]);
 
   const onRowClicked = useCallback(
     (event: any) => {
@@ -98,12 +101,12 @@ export const TreeActionView = (props: TreeActionViewProps) => {
   );
 
   useEffect(() => {
-    if (previousVisibleRef.current && !visible && isInfiniteTree) {
+    if (previousVisibleRef.current && !visible && treeType === "infinite") {
       setSelectedRowItems?.([]);
     }
     previousVisibleRef.current = visible;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, isInfiniteTree]);
+  }, [visible, treeType]);
 
   if (!visible) {
     return null;
@@ -111,14 +114,14 @@ export const TreeActionView = (props: TreeActionViewProps) => {
 
   return (
     <Fragment>
-      <TitleHeader showSummary={!isInfiniteTree}>
+      <TitleHeader showSummary={treeType !== "infinite"}>
         <TreeActionBar
           toolbar={treeView?.toolbar}
           parentContext={context}
           treeExpandable={treeView?.isExpandable || false}
         />
       </TitleHeader>
-      {isInfiniteTree && (
+      {treeType === "infinite" && (
         <SearchTreeInfinite
           ref={searchTreeRef}
           rootTree={true}
@@ -130,7 +133,20 @@ export const TreeActionView = (props: TreeActionViewProps) => {
           onRowClicked={onRowClicked}
         />
       )}
-      {!isInfiniteTree && (
+      {treeType === "paginated" && (
+        <SearchTreePaginated
+          ref={searchTreeRef}
+          rootTree={true}
+          model={model}
+          parentContext={context}
+          nameSearch={searchTreeNameSearch}
+          formView={formView}
+          treeView={treeView}
+          domain={domain}
+          onRowClicked={onRowClicked}
+        />
+      )}
+      {treeType === "legacy" && (
         <SearchTree
           ref={searchTreeRef}
           rootTree={true}

@@ -29,7 +29,7 @@ const TitleHeader: React.FC<Props> = ({
     results,
     totalItems,
     selectedRowItems,
-    isInfiniteTree,
+    treeType,
   } = useContext(ActionViewContext) as ActionViewContextType;
   const { t } = useLocale();
   const { token } = useToken();
@@ -53,11 +53,12 @@ const TitleHeader: React.FC<Props> = ({
       }
 
       const currentItemNumber = (currentItemIndex ?? 0) + 1;
-      const itemCount = isInfiniteTree ? totalItems : results?.length;
+      const itemCount = treeType === "infinite" ? totalItems : results?.length;
       return (
         <>
-          {t("register")} {currentItemNumber} {isInfiniteTree ? t("of") : "/"}{" "}
-          {itemCount} {!isInfiniteTree && `${t("of")} ${totalItems}`} -{" "}
+          {t("register")} {currentItemNumber}{" "}
+          {treeType === "infinite" ? t("of") : "/"} {itemCount}{" "}
+          {treeType !== "infinite" && `${t("of")} ${totalItems}`} -{" "}
           {t("editingDocument")} (id: <Text copyable>{currentId}</Text>)
         </>
       );
@@ -92,7 +93,7 @@ const TitleHeader: React.FC<Props> = ({
     selectedRowItems,
     totalItems,
     currentItemIndex,
-    isInfiniteTree,
+    treeType,
     results?.length,
     t,
   ]);

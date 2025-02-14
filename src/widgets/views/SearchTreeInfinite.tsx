@@ -136,8 +136,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     setSearchQuery,
     setTotalItems: setTotalItemsActionView,
     isActive,
-    sortState: actionViewSortState,
-    setSortState: setActionViewSortState,
+    order: actionViewSortState,
+    setOrder: setActionViewSortState,
   } = useSearchTreeState({ useLocalState: !rootTree });
 
   const nameSearch = nameSearchProps || searchTreeNameSearch;
@@ -192,6 +192,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         ...COLUMN_COMPONENTS,
       },
       parentContext,
+      "infinite",
     );
   }, [treeOoui, parentContext]);
 
@@ -209,7 +210,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     loading: getColumnStateInProgress,
     getColumnState,
     updateColumnState,
-  } = useTreeColumnStorageFetch(columnStateKey);
+  } = useTreeColumnStorageFetch({ key: columnStateKey });
 
   const mergedParams = useMemo(
     () => mergeParams(searchParams || [], domain),

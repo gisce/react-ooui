@@ -31,6 +31,7 @@ const getTableColumns = (
   tree: TreeOoui,
   components: any,
   context: any,
+  treeType: "infinite" | "paginated" | "legacy",
 ): Column[] => {
   const tableColumns = tree.columns.map((column) => {
     const type = column.type;
@@ -59,6 +60,15 @@ const getTableColumns = (
       };
     }
 
+    let isSortable = true;
+
+    if (treeType === "legacy") {
+      isSortable = type !== "one2many";
+    } else {
+      isSortable =
+        type !== "one2many" && type !== "many2one" && !column.isFunction;
+    }
+
     return {
       key,
       dataIndex: key,
@@ -77,8 +87,7 @@ const getTableColumns = (
         if (aItem > bItem) return 1;
         return 0;
       },
-      isSortable:
-        type !== "one2many" && type !== "many2one" && !column.isFunction,
+      isSortable,
     };
   });
   return tableColumns;

@@ -113,6 +113,7 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
           ...COLUMN_COMPONENTS,
         },
         context,
+        "legacy",
       );
     }, [context, treeOoui]);
 
