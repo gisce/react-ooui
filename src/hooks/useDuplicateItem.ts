@@ -17,7 +17,7 @@ export const useDuplicateItem = ({
 }: UseDuplicateItemProps) => {
   const [duplicatingItem, setDuplicatingItem] = useState(false);
 
-  const handleDuplicate = useCallback(async () => {
+  const duplicate = useCallback(async () => {
     try {
       if (!currentId) {
         return;
@@ -40,6 +40,6 @@ export const useDuplicateItem = ({
 
   return {
     duplicatingItem,
-    handleDuplicate,
+    duplicate,
   };
 };

@@ -77,7 +77,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
   const { token } = useToken();
   const { t } = useLocale();
 
-  const { duplicatingItem, handleDuplicate } = useDuplicateItem({
+  const { duplicatingItem, duplicate } = useDuplicateItem({
     currentId,
     currentModel: model,
     formRef,
@@ -183,7 +183,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
                 showConfirmDialog({
                   confirmMessage: t("confirmDuplicate"),
                   t,
-                  onOk: handleDuplicate,
+                  onOk: duplicate(),
                 })
               }
             />
