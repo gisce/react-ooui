@@ -183,7 +183,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
                 showConfirmDialog({
                   confirmMessage: t("confirmDuplicate"),
                   t,
-                  onOk: duplicate(),
+                  onOk: async () => duplicate(),
                 })
               }
             />
