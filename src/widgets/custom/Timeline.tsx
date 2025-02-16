@@ -9,7 +9,8 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { Spin, Alert, Timeline as AntTimeline } from "antd";
 import { readObjectValues } from "@/helpers/one2manyHelper";
 import { FormModal } from "../modals/FormModal";
-import iconMapper from "@/helpers/iconMapper";
+import { iconMapper } from "@gisce/react-formiga-components";
+
 import { isPresetStatusColor, isPresetColor } from "antd/lib/_util/colors";
 import { colorFromString } from "@/helpers/formHelper";
 
