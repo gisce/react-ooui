@@ -9,15 +9,7 @@ import {
   useMemo,
 } from "react";
 import { Form as FormOoui, parseContext } from "@gisce/ooui";
-import {
-  Form as AntForm,
-  Button,
-  Divider,
-  Space,
-  Row,
-  Spin,
-  message,
-} from "antd";
+import { Form as AntForm, Button, Divider, Space, Row, Spin } from "antd";
 import Measure from "react-measure";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import debounce from "lodash/debounce";
@@ -33,7 +25,6 @@ import {
 } from "@/helpers/formHelper";
 import ConnectionProvider from "@/ConnectionProvider";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
-import formErrorsDialog from "@/ui/FormErrorsDialog";
 import showErrorDialog from "@/ui/ActionErrorDialog";
 import showWarningDialog from "@/ui/WarningDialog";
 import FormProvider, {
@@ -55,7 +46,11 @@ import {
   ContentRootContext,
   ContentRootContextType,
 } from "@/context/ContentRootContext";
-import { useLocale } from "@gisce/react-formiga-components";
+import {
+  NotificationType,
+  useLocale,
+  useNotification,
+} from "@gisce/react-formiga-components";
 import {
   convertFrom2ManyRawValues,
   convertToPlain2ManyValues,
@@ -63,6 +58,8 @@ import {
 import { ErrorAlert } from "@/ui/ErrorAlert";
 import { mergeFieldsContext } from "@/helpers/fieldsHelper";
 import { useAutorefreshableFormFields } from "@/hooks/useAutorefreshableFormFields";
+import { parseError } from "@/helpers/errorHelper";
+import { useDeepCompareEffect } from "use-deep-compare";
 
 export type FormProps = {
   model: string;
@@ -171,6 +168,8 @@ function Form(props: FormProps, ref: any) {
     ContentRootContext,
   ) as ContentRootContextType;
   const { processAction, globalValues } = contentRootContext || {};
+  const { open: openNotification, destroy: destroyNotification } =
+    useNotification();
 
   useImperativeHandle(ref, () => ({
     submitForm,
@@ -222,6 +221,24 @@ function Form(props: FormProps, ref: any) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultGetCalled]);
+
+  useEffect(() => {
+    return () => {
+      destroyNotification();
+    };
+  }, [destroyNotification]);
+
+  useDeepCompareEffect(() => {
+    if (error) {
+      const parsedError = parseError(error);
+      openNotification({
+        type: parsedError.type as NotificationType,
+        title: parsedError.title,
+        message: parsedError.message,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error]);
 
   const onSubmitSucceed = (
     id?: number,
@@ -407,7 +424,6 @@ function Form(props: FormProps, ref: any) {
       await antForm.validateFields();
       return false;
     } catch (verror) {
-      message.error(t("fillRequiredFields"));
       return true;
     }
   }
@@ -710,7 +726,11 @@ function Form(props: FormProps, ref: any) {
 
     if (await checkIfFormHasErrors()) {
       formSubmitting.current = false;
-      formErrorsDialog(t);
+      openNotification({
+        type: "error",
+        title: t("formHasErrors"),
+        message: t("fillRequiredFields"),
+      });
       return { succeed: false, id: getCurrentId()! };
     }
 
@@ -731,13 +751,17 @@ function Form(props: FormProps, ref: any) {
 
       await fetchValues({ forceRefresh: true });
       submitSucceed = true;
-      message.success(t("savedRegisters"));
+
+      openNotification({
+        type: "success",
+        title: t("savedRegisters"),
+        duration: 3,
+      });
     } catch (err) {
       formSubmitting.current = false;
       setIsSubmitting(false);
       setFormIsSaving?.(false);
       onSubmitError?.(err);
-      message.error(t("errorWhileSavingForm"));
       setError(err?.message ? err.message : err);
     } finally {
       formSubmitting.current = false;
@@ -1128,7 +1152,11 @@ function Form(props: FormProps, ref: any) {
 
     // We check for required fields
     if (await checkIfFormHasErrors()) {
-      formErrorsDialog(t);
+      openNotification({
+        type: "error",
+        title: t("formHasErrors"),
+        message: t("fillRequiredFields"),
+      });
       return;
     }
 
@@ -1262,7 +1290,6 @@ function Form(props: FormProps, ref: any) {
     >
       {({ measureRef }) => (
         <div className="pb-2" ref={measureRef}>
-          {error && <ErrorAlert className="mt-5 mb-10" error={error} />}
           {content()}
           {showFooter && footer()}
         </div>
