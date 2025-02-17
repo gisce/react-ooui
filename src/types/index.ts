@@ -98,6 +98,7 @@ type SearchRequest = {
   order?: number | string | null;
   name_search?: string;
   skipRead?: boolean;
+  skipFunctionFields?: boolean;
 };
 
 type SearchAllIdsRequest = SearchCountRequest & {
@@ -383,6 +384,24 @@ type ConnectionProviderType = {
     { key }: { key: string },
     requestConfig?: any,
   ) => Promise<any>;
+  processSearchResults: (
+    {
+      searchIds,
+      fieldsToRetrieve,
+      context,
+      attrs,
+      fields,
+      model,
+    }: {
+      searchIds: number[];
+      fieldsToRetrieve: string[];
+      context: any;
+      attrs?: any;
+      fields?: any;
+      model: string;
+    },
+    requestConfig?: any,
+  ) => Promise<{ results: any; attrsEvaluated?: any }>;
 };
 
 type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar";

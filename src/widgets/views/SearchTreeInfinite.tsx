@@ -52,6 +52,7 @@ import SearchFilter from "./searchFilter/SearchFilter";
 import { useSearchTreeState } from "@/hooks/useSearchTreeState";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
+import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -142,6 +143,17 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const nameSearch = nameSearchProps || searchTreeNameSearch;
   const prevNameSearch = useRef(nameSearch);
+
+  const [lastFetchedResults, setLastFetchedResults] = useState<any[]>([]);
+
+  const { refresh: refreshFunctionFields } = useTreeFunctionFieldsRead({
+    model,
+    fields: treeView?.fields,
+    tableRef,
+    context: parentContext,
+    isActive,
+    results: lastFetchedResults,
+  });
 
   useEffect(() => {
     updateTotalRows();
@@ -319,7 +331,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           attrs,
           order,
           name_search: nameSearch,
+          skipFunctionFields: true,
         });
+
+      setLastFetchedResults(results);
 
       const newResults = results.map((item) => ({ id: item.id }));
 
@@ -626,7 +641,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     currentSearchParamsString.current = undefined;
     await updateTotalRows();
     tableRef?.current?.refresh();
-  }, [changeSelectedRowItems, updateTotalRows]);
+    refreshFunctionFields();
+  }, [changeSelectedRowItems, updateTotalRows, refreshFunctionFields]);
 
   useImperativeHandle(ref, () => ({
     refreshResults: refresh,
