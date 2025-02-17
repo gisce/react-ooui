@@ -7,6 +7,7 @@ import {
 } from "@gisce/ooui";
 import { TreeView, Column } from "@/types";
 import { SortDirection, ColumnState } from "@gisce/react-formiga-table";
+import { Char } from "@/widgets/base/Char";
 
 const getTree = (treeView: TreeView): TreeOoui => {
   const xml = treeView.arch;
@@ -23,7 +24,7 @@ function canRenderValue(value: any): boolean {
     typeof value === "boolean" ||
     value === null ||
     value === undefined ||
-    (Array.isArray(value) && value.length === 0)
+    (Array.isArray(value) && (value.length === 0 || value.length === 2))
   );
 }
 
@@ -107,6 +108,8 @@ const getTableItems = (treeOoui: TreeOoui, results: any[]): any[] => {
             };
         } else if (widget instanceof Boolean) {
           parsedItem[key] = item[key];
+        } else if (widget instanceof Char && Array.isArray(item[key])) {
+          parsedItem[key] = item[key].length === 2 ? item[key][1] : "";
         } else if (widget) {
           parsedItem[key] = item[key] === false ? "" : item[key];
         } else {
