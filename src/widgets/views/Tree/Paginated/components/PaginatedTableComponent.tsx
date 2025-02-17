@@ -40,7 +40,12 @@ export const PaginatedTableComponent = memo(
             return <SkeletonPill />;
           }
 
-          return column.render(value, column.key, column.ooui, column.context);
+          return column.render(
+            value,
+            column.key,
+            column?.ooui,
+            column?.context,
+          );
         },
       }));
     }, [columns, isFieldLoading]);
