@@ -11,7 +11,7 @@ const containerStyle: CSSProperties = {
 };
 
 const skeletonStyle: CSSProperties = {
-  height: "20px",
+  height: "16px",
   width: "100%",
   backgroundColor: "#f0f0f0",
   borderRadius: "12px",
