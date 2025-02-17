@@ -9,6 +9,7 @@ type UseTreeFunctionFieldsReadProps = {
   context?: any;
   isActive?: boolean;
   results?: any[];
+  onResultsUpdated?: (updatedResults: any[]) => void;
 };
 
 export const useTreeFunctionFieldsRead = ({
@@ -18,6 +19,7 @@ export const useTreeFunctionFieldsRead = ({
   context = {},
   isActive = true,
   results,
+  onResultsUpdated,
 }: UseTreeFunctionFieldsReadProps) => {
   const hasFunctionFields = useRef<boolean>(false);
   const previousResultIds = useRef<Set<number>>(new Set());
@@ -82,6 +84,23 @@ export const useTreeFunctionFieldsRead = ({
         // Update the table data with function field values
         if (functionResults?.length) {
           tableRef.current?.updateRows(functionResults);
+
+          // Create updated results by merging function field values
+          const updatedResults = results.map((row) => {
+            const functionResult = functionResults.find(
+              (r: any) => r.id === row.id,
+            );
+            if (functionResult) {
+              return {
+                ...row,
+                ...functionResult,
+              };
+            }
+            return row;
+          });
+
+          // Notify parent about updated results
+          onResultsUpdated?.(updatedResults);
         }
 
         // Update previous IDs with current IDs
@@ -90,7 +109,7 @@ export const useTreeFunctionFieldsRead = ({
         console.error("Error updating function fields:", error);
       }
     },
-    [context, fields, isActive, model, results, tableRef],
+    [context, fields, isActive, model, results, tableRef, onResultsUpdated],
   );
 
   // Update function fields whenever results change

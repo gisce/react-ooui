@@ -24,6 +24,7 @@ import {
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { useTreeColumnStorageFetch } from "@/widgets/base/one2many/useTreeColumnStorageFetch";
+import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
 
 export const DEFAULT_PAGE_SIZE = 80;
 
@@ -111,6 +112,21 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   } = useTreeColumnStorageFetch({
     key: columnStateKey,
     treeViewFetching,
+  });
+
+  const onResultsUpdated = useCallback((updatedResults: any[]) => {
+    lastAssignedResults.current = updatedResults;
+    setResults(updatedResults);
+  }, []);
+
+  const { refresh: refreshFunctionFields } = useTreeFunctionFieldsRead({
+    model,
+    fields: treeView?.fields,
+    tableRef,
+    context,
+    isActive,
+    results,
+    onResultsUpdated,
   });
 
   // Hooks
@@ -356,6 +372,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       attrs,
       order,
       name_search: nameSearch,
+      skipFunctionFields: true,
     });
 
     const newResults = results.map((item: any) => ({ id: item.id }));
@@ -432,12 +449,14 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     fetchColumnState();
     setSelectedRowItems([]);
     currentSearchParamsString.current = undefined;
-    fetchResults();
+    await fetchResults();
+    refreshFunctionFields();
   }, [
     fetchColumnState,
     fetchResults,
     setSelectedRowItems,
     setTreeFirstVisibleRow,
+    refreshFunctionFields,
   ]);
 
   const onRequestPageChange = useCallback(
