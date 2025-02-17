@@ -119,15 +119,16 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     setResults(updatedResults);
   }, []);
 
-  const { refresh: refreshFunctionFields } = useTreeFunctionFieldsRead({
-    model,
-    fields: treeView?.fields,
-    tableRef,
-    context,
-    isActive,
-    results,
-    onResultsUpdated,
-  });
+  const { isFieldLoading, refresh: refreshFunctionFields } =
+    useTreeFunctionFieldsRead({
+      model,
+      fields: treeView?.fields,
+      tableRef,
+      context,
+      isActive,
+      results,
+      onResultsUpdated,
+    });
 
   // Hooks
   const showErrorDialog = useShowErrorDialog();
@@ -573,5 +574,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     setTreeFirstVisibleColumn,
     onGetFirstVisibleColumn,
     onSortChange,
+    isFieldLoading,
   };
 };

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import ConnectionProvider from "@/ConnectionProvider";
 import { InfiniteTableRef } from "@gisce/react-formiga-table";
+import { useNetworkRequest } from "./useNetworkRequest";
 
 type UseTreeFunctionFieldsReadProps = {
   model: string;
@@ -24,6 +25,29 @@ export const useTreeFunctionFieldsRead = ({
   const hasFunctionFields = useRef<boolean>(false);
   const previousResultIds = useRef<Set<number>>(new Set());
   const functionFields = useRef<string[]>();
+  const currentLoadingIds = useRef<Set<number>>(new Set());
+
+  const [fetchFunctionFields, cancelFunctionFieldsRequest] = useNetworkRequest(
+    async (payload: { searchIds: number[]; fieldsToRetrieve: string[] }) => {
+      return ConnectionProvider.getHandler().processSearchResults({
+        searchIds: payload.searchIds,
+        model,
+        fieldsToRetrieve: payload.fieldsToRetrieve,
+        context,
+        fields,
+      });
+    },
+  );
+
+  // Cancel any pending requests on unmount or when isActive changes to false
+  useEffect(() => {
+    if (!isActive) {
+      cancelFunctionFieldsRequest();
+    }
+    return () => {
+      cancelFunctionFieldsRequest();
+    };
+  }, [isActive, cancelFunctionFieldsRequest]);
 
   // Check if there are any function fields on fields change
   useEffect(() => {
@@ -56,14 +80,15 @@ export const useTreeFunctionFieldsRead = ({
         ? results
         : results.filter((r) => !previousResultIds.current.has(r.id));
 
-      // Filter records that need function field fetches
-      const recordsNeedingUpdate = recordsToProcess.filter((record) => {
-        // Check if any function field is undefined or null in the record
-        return functionFields.current!.some(
-          (fieldName) =>
-            record[fieldName] === undefined || record[fieldName] === null,
-        );
-      });
+      // When forcing refresh, treat all records as needing update
+      const recordsNeedingUpdate = forceRefresh
+        ? recordsToProcess
+        : recordsToProcess.filter((record) => {
+            return functionFields.current!.some(
+              (fieldName) =>
+                record[fieldName] === undefined || record[fieldName] === null,
+            );
+          });
 
       if (recordsNeedingUpdate.length === 0) {
         // If no records need updates, just update the previous IDs and return
@@ -72,14 +97,14 @@ export const useTreeFunctionFieldsRead = ({
       }
 
       try {
-        const { results: functionResults } =
-          await ConnectionProvider.getHandler().processSearchResults({
-            searchIds: recordsNeedingUpdate.map((r) => r.id),
-            model,
-            fieldsToRetrieve: functionFields.current!,
-            context,
-            fields,
-          });
+        // Set loading state for records being updated
+        const loadingIds = new Set(recordsNeedingUpdate.map((r) => r.id));
+        currentLoadingIds.current = loadingIds;
+
+        const { results: functionResults } = await fetchFunctionFields({
+          searchIds: recordsNeedingUpdate.map((r) => r.id),
+          fieldsToRetrieve: functionFields.current!,
+        });
 
         // Update the table data with function field values
         if (functionResults?.length) {
@@ -106,10 +131,15 @@ export const useTreeFunctionFieldsRead = ({
         // Update previous IDs with current IDs
         previousResultIds.current = currentIds;
       } catch (error) {
-        console.error("Error updating function fields:", error);
+        if (error.name !== "AbortError") {
+          console.error("Error updating function fields:", error);
+        }
+      } finally {
+        // Clear loading state
+        currentLoadingIds.current = new Set();
       }
     },
-    [context, fields, isActive, model, results, tableRef, onResultsUpdated],
+    [isActive, results, tableRef, onResultsUpdated, fetchFunctionFields],
   );
 
   // Update function fields whenever results change
@@ -117,10 +147,22 @@ export const useTreeFunctionFieldsRead = ({
     updateFunctionFields();
   }, [updateFunctionFields, results]);
 
+  const isFieldLoading = useCallback((record: any, fieldName: string) => {
+    // First check if the field is a function field
+    if (!functionFields.current?.includes(fieldName)) {
+      return false;
+    }
+
+    // Then check if this record is currently being loaded
+    // Use the ref for immediate access to loading state
+    return currentLoadingIds.current.has(record?.id);
+  }, []);
+
   return {
     refresh: () => {
       previousResultIds.current.clear();
       updateFunctionFields(true);
     },
+    isFieldLoading,
   };
 };
