@@ -78,12 +78,12 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
   const { t } = useLocale();
 
   const { duplicatingItem, duplicate } = useDuplicateItem({
-    currentId,
+    currentId: mode === "form" ? currentId : parseInt(selectedRowKeys[0]),
     currentModel: model,
-    formRef,
     onItemDuplicated: () => {
       onRefreshParentValues?.();
     },
+    context: mode === "tree" ? context : formRef?.current?.getContext(),
   });
 
   const { actionButtonProps, printButtonProps, relateButtonProps } =
@@ -151,7 +151,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
                     currentId !== undefined &&
                     currentId > 0) ||
                   (mode === "tree" &&
-                    selectedRowKeys.length >= 1 &&
+                    selectedRowKeys.length === 1 &&
                     selectedRowKeys?.[0] !== undefined &&
                     parseInt(selectedRowKeys[0]) > 0)
                 )
@@ -166,7 +166,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
             />
           </>
         )}
-        {mode === "form" && (
+        {(mode === "form" || mode === "tree") && (
           <>
             <Separator />
             <ButtonWithTooltip
@@ -175,8 +175,8 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
               disabled={
                 readOnly ||
                 duplicatingItem ||
-                currentId === undefined ||
-                currentId < 0
+                (mode === "tree" && selectedRowKeys.length !== 1) ||
+                (mode === "form" && (currentId === undefined || currentId < 0))
               }
               loading={duplicatingItem}
               onClick={() =>

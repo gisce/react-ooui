@@ -5,15 +5,15 @@ import { showErrorDialog } from "@/ui/GenericErrorDialog";
 type UseDuplicateItemProps = {
   currentId?: number;
   currentModel: string;
-  formRef: RefObject<any>;
   onItemDuplicated?: (id: number) => void;
+  context?: any;
 };
 
 export const useDuplicateItem = ({
   currentId,
   currentModel,
-  formRef,
   onItemDuplicated,
+  context,
 }: UseDuplicateItemProps) => {
   const [duplicatingItem, setDuplicatingItem] = useState(false);
 
@@ -26,7 +26,7 @@ export const useDuplicateItem = ({
       const newId = await ConnectionProvider.getHandler().duplicate({
         id: currentId,
         model: currentModel,
-        context: (formRef.current as any).getContext(),
+        context,
       });
       if (newId) {
         await onItemDuplicated?.(newId);
@@ -36,7 +36,7 @@ export const useDuplicateItem = ({
     } finally {
       setDuplicatingItem(false);
     }
-  }, [currentId, currentModel, formRef, onItemDuplicated]);
+  }, [currentId, currentModel, onItemDuplicated, context]);
 
   return {
     duplicatingItem,
