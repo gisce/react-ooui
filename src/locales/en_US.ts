@@ -96,7 +96,7 @@ export default {
   allRecordsSelected: "Hi ha {totalRecords} registres seleccionats.",
   openInSameWindow: "Open in the current tab",
   openInNewTab: "Open in a new tab",
-  confirmDuplicate: "Are you sure you want to duplicate the selected item/s?",
+  confirmDuplicate: "Are you sure you want to duplicate the selected item?",
   confirmSelectAllRegisters:
     "Are you sure you want to select all {totalRecords} registers?",
   filter: "Filter",
