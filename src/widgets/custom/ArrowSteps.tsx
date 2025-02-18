@@ -6,8 +6,14 @@ import iconMapper from "@/helpers/iconMapper";
 
 type ArrowStepsFieldProps = WidgetProps;
 
+export type ArrowStepsValue = Array<{
+  title: string;
+  active: boolean;
+  icon?: string;
+}>;
+
 type ArrowStepsProps = {
-  value?: Array<{ title: string; active: boolean; icon?: string }>;
+  value?: ArrowStepsValue;
 };
 
 export const ArrowSteps = (props: ArrowStepsProps) => {
