@@ -12,6 +12,8 @@ import {
 } from "@/widgets/base/one2many/One2manyInputInfinite";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { FormContext, FormContextType } from "@/context/FormContext";
+import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
 
 const MIN_ITEMS_TO_USE_INFINITE = 30;
 
@@ -35,14 +37,25 @@ export const One2many = (props: Props) => {
     fetchData();
   }, [ooui]);
 
+  const getToolbarEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_GET_TOOLBAR,
+  );
+
   const getViewData = async (type: ViewType) => {
     if (oouiViews && oouiViews[type]) {
       const view = oouiViews[type];
-      // TODO: Replace with the new API call to retrieve only the toolbar
-      // if (!view.toolbar && (type === "form" || type === "tree")) {
-      //   const viewWithToolbar: TreeView | FormView = await getViewPromise;
-      //   return { ...view, toolbar: viewWithToolbar.toolbar };
-      // }
+      if (
+        getToolbarEnabled &&
+        !view.toolbar &&
+        (type === "form" || type === "tree")
+      ) {
+        const toolbar = await ConnectionProvider.getHandler().getToolbar({
+          model: relation,
+          type,
+          context: { ...getContext?.(), ...context },
+        });
+        return { ...view, toolbar };
+      }
       return view;
     }
 
