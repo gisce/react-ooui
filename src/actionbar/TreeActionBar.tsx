@@ -327,7 +327,7 @@ function TreeActionBarComponent({
         icon={<InfoCircleOutlined />}
         tooltip={t("showLogs")}
         disabled={
-          !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
+          !(selectedRowItems && selectedRowItems?.length === 1) || treeIsLoading
         }
         onClick={() => showLogInfo(currentModel!, selectedRowItems![0].id, t)}
       />
