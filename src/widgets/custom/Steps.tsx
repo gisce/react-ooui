@@ -3,6 +3,7 @@ import { Steps as AntdSteps } from "antd";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import Field from "@/common/Field";
 import { Steps as StepsOoui } from "@gisce/ooui";
+import { ArrowStepsValue } from "@/widgets/custom/ArrowSteps";
 
 type StepsProps = {
   ooui: StepsOoui;
@@ -23,7 +24,7 @@ export const Steps = (props: StepsProps) => {
 };
 
 type StepsInputProps = StepsProps & {
-  value?: any;
+  value?: Map<string, string> | ArrowStepsValue;
 };
 
 export const StepsInput = (props: StepsInputProps) => {
@@ -31,8 +32,15 @@ export const StepsInput = (props: StepsInputProps) => {
   const { selectionValues, errorField, lastStep } = ooui as StepsOoui;
   const formContext = useContext(FormContext) as FormContextType;
 
-  const values = Array.from(selectionValues.entries());
-  const current = values.map((val) => val[0]).indexOf(value);
+  let values: Array<[string, string]> = [];
+  let current: number | undefined;
+  if (ooui.fieldType === "json" && value) {
+    values = (value as ArrowStepsValue).map((val) => [val.title, val.title]);
+    current = (value as ArrowStepsValue).findIndex((val) => val.active);
+  } else {
+    values = Array.from(selectionValues.entries());
+    current = values.map((val) => val[0]).indexOf(value);
+  }
   let status: StatusType = "process";
   let error = "";
 
