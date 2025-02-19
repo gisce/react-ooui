@@ -34,7 +34,7 @@ export const StepsInput = (props: StepsInputProps) => {
 
   let values: Array<[string, string]> = [];
   let current: number | undefined;
-  if (ooui.fieldType === "json") {
+  if (ooui.fieldType === "json" && value) {
     values = (value as ArrowStepsValue).map((val) => [val.title, val.title]);
     current = (value as ArrowStepsValue).findIndex((val) => val.active);
   } else {
