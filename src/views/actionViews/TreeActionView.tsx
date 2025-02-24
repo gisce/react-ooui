@@ -64,7 +64,13 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     if (!tagValue) {
       return "legacy";
     }
-    return tagValue === "1" ? "infinite" : "paginated";
+    if (tagValue === "1") {
+      return "infinite";
+    }
+    if (tagValue === "0") {
+      return "paginated";
+    }
+    return "legacy";
   }, [treeView]);
 
   const { currentView, setPreviousView, setTreeType, setSelectedRowItems } =
