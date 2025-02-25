@@ -161,10 +161,10 @@ export const useTreeFunctionFieldsRead = ({
     requestFunctionFields();
   }, [recordIdsToCheck, requestFunctionFields]);
 
-  const addRecordsToCheckFunctionFields = useCallback((records: any[]) => {
-    records.forEach((record) => {
+  const addRecordsToCheckFunctionFields = useCallback((ids: number[]) => {
+    ids.forEach((id) => {
       setRecordIdsToCheck((prev) => {
-        prev.add(record.id);
+        prev.add(id);
         return prev;
       });
     });
@@ -184,7 +184,7 @@ export const useTreeFunctionFieldsRead = ({
     const recordsToUpdate = loadedRecords.current
       .filter((record) => {
         const currentRecord = currentTableRecords.find(
-          (tableRecord) => tableRecord.id === record.id,
+          (tableRecord: any) => tableRecord.id === record.id,
         );
 
         if (!currentRecord) {
