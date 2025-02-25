@@ -45,7 +45,7 @@ export const LinkInput = (props: LinkInputProps) => {
   return (
     <Row gutter={8} wrap={false} align="middle">
       {!readOnly ? (
-        <Col flex="none">
+        <Col flex="none" style={{ paddingRight: 0 }}>
           {editMode ? (
             <Button
               icon={<CheckOutlined />}
@@ -65,13 +65,13 @@ export const LinkInput = (props: LinkInputProps) => {
                 setEditMode(true);
                 setShowInput(true);
               }}
-              style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+              style={{ border: "none" }}
               tabIndex={-1}
             />
           )}
         </Col>
       ) : null}
-      <Col flex="auto">
+      <Col flex="auto" style={{ paddingLeft: 0 }}>
         {showInput ? (
           <Input
             style={{
@@ -93,7 +93,7 @@ export const LinkInput = (props: LinkInputProps) => {
         ) : (
           <a
             href={`${linkPrefix}${value}`}
-            style={{ color: token.colorPrimary, paddingRight: 15 }}
+            style={{ color: token.colorPrimary, paddingLeft: 8 }}
             target="_blank"
             rel="noreferrer"
           >

@@ -7,7 +7,15 @@ const { useToken } = theme;
 const { Text } = Typography;
 
 export const GraphCard = (props: GraphCardProps) => {
-  const { title, children, action, openAction, parms, tooltip } = props;
+  const {
+    title,
+    children,
+    action,
+    openAction,
+    parms,
+    tooltip,
+    card = false,
+  } = props;
   const { token } = useToken();
 
   const hasDragAndDrop = Object.keys(parms).length > 0;
@@ -28,8 +36,8 @@ export const GraphCard = (props: GraphCardProps) => {
       <Row
         align="middle"
         style={{
-          borderBottom: "1px solid #ddd",
-          backgroundColor: token.colorPrimaryBg,
+          borderBottom: card ? "none" : "1px solid #ddd",
+          backgroundColor: card ? token.colorBgBase : token.colorPrimaryBg,
         }}
         wrap={false}
       >
@@ -51,7 +59,17 @@ export const GraphCard = (props: GraphCardProps) => {
               <Text ellipsis={true}>{title}</Text>
             </>
           ) : (
-            <Text ellipsis={true}>{title}</Text>
+            <Text
+              ellipsis={true}
+              style={{
+                color: card
+                  ? token.colorTextDescription
+                  : token.colorTextHeading,
+                fontWeight: card ? "normal" : "bold",
+              }}
+            >
+              {title}
+            </Text>
           )}
         </Col>
         {action && (

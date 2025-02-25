@@ -121,6 +121,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     setTreeFirstVisibleColumn,
     onGetFirstVisibleColumn,
     onSortChange,
+    isFieldLoading,
   } = usePaginatedSearch({
     treeViewFetching: loading,
     treeOoui,
@@ -156,6 +157,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
       : treeView?.fields,
     context: parentContext,
     isActive,
+    treeOoui,
   });
 
   // External control
@@ -240,6 +242,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             actionViewSortState={actionViewSortState}
             onSortChange={onSortChange}
             tableRef={tableRef}
+            isFieldLoading={isFieldLoading}
           />
         )}
       </div>

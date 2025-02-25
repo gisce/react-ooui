@@ -24,6 +24,7 @@ import {
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { useTreeColumnStorageFetch } from "@/widgets/base/one2many/useTreeColumnStorageFetch";
+import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
 
 export const DEFAULT_PAGE_SIZE = 80;
 
@@ -111,6 +112,33 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   } = useTreeColumnStorageFetch({
     key: columnStateKey,
     treeViewFetching,
+  });
+
+  const onFunctionFieldsUpdated = useCallback((updatedResults: any[]) => {
+    lastAssignedResults.current = lastAssignedResults.current.map((result) => {
+      const updatedResult = updatedResults.find((r) => r.id === result.id);
+      return { ...result, ...updatedResult };
+    });
+    setResults((prevResults) => {
+      return prevResults.map((result) => {
+        const updatedResult = updatedResults.find((r) => r.id === result.id);
+        return { ...result, ...updatedResult };
+      });
+    });
+  }, []);
+
+  const {
+    isFieldLoading,
+    refresh: refreshFunctionFields,
+    addRecordsToCheckFunctionFields,
+  } = useTreeFunctionFieldsRead({
+    model,
+    fields: treeView?.fields,
+    tableRef,
+    context,
+    isActive,
+    onResultsUpdated: onFunctionFieldsUpdated,
+    treeOoui,
   });
 
   // Hooks
@@ -356,6 +384,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       attrs,
       order,
       name_search: nameSearch,
+      skipFunctionFields: true,
     });
 
     const newResults = results.map((item: any) => ({ id: item.id }));
@@ -405,6 +434,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
     setTreeIsLoading(false);
     lastAssignedResults.current = [...preparedResults];
+    addRecordsToCheckFunctionFields(preparedResults);
     setResults([...preparedResults]);
   }, [
     treeOoui,
@@ -423,6 +453,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     setSearchQuery,
     setActionViewResults,
     mustUpdateTotal,
+    addRecordsToCheckFunctionFields,
     updateTotalRows,
     setTotalItemsActionView,
   ]);
@@ -432,12 +463,14 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     fetchColumnState();
     setSelectedRowItems([]);
     currentSearchParamsString.current = undefined;
-    fetchResults();
+    refreshFunctionFields();
+    await fetchResults();
   }, [
     fetchColumnState,
     fetchResults,
     setSelectedRowItems,
     setTreeFirstVisibleRow,
+    refreshFunctionFields,
   ]);
 
   const onRequestPageChange = useCallback(
@@ -554,5 +587,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     setTreeFirstVisibleColumn,
     onGetFirstVisibleColumn,
     onSortChange,
+    isFieldLoading,
   };
 };

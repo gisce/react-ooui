@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Form, Alert, Button, FormInstance } from "antd";
+import { Form, Button, FormInstance } from "antd";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 
@@ -83,7 +83,7 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
               }}
             >
               <div style={{ paddingLeft: 18, paddingRight: 18 }}>
-                <SearchField key={j} field={item as Field} />
+                <SearchField key={`sf-${i}-${j}`} field={item as Field} />
               </div>
             </div>
           );
@@ -136,6 +136,15 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
       return;
     }
     setSearchParams(undefined);
+    // Focus the first input after the drawer animation completes
+    setTimeout(() => {
+      const firstInput = document.querySelector(
+        "#floating-drawer-overlay input",
+      );
+      if (firstInput instanceof HTMLElement) {
+        firstInput.focus();
+      }
+    }, 300);
   }, [isOpen]);
 
   useDeepCompareEffect(() => {
