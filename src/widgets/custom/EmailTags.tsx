@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useContext,
-} from "react";
+import React, { useState, useRef, useCallback, useContext } from "react";
 import { Input, Tag, theme } from "antd";
 import type { InputRef } from "antd";
 
@@ -14,6 +8,7 @@ import { WidgetProps } from "@/types";
 
 import validator from "validator";
 import { FormContext, FormContextType } from "@/context/FormContext";
+import { useDeepCompareEffect } from "use-deep-compare";
 
 type EmailTagsProps = WidgetProps & {
   ooui: EmailOOui;
@@ -87,6 +82,20 @@ export const EmailTagsInput: React.FC<EmailTagsInputProps> = ({
   const formContext = useContext(FormContext) as FormContextType;
   const { elementHasLostFocus } = formContext || {};
 
+  useDeepCompareEffect(() => {
+    if (value) {
+      const newEmails = value
+        .split(";")
+        .map((email) => email.trim())
+        .filter(Boolean);
+      // Only update state, don't trigger handleChange
+      setEmails(newEmails);
+    } else {
+      // Clear emails when value is empty/null/undefined
+      setEmails([]);
+    }
+  }, [value]);
+
   const handleChange = useCallback(
     (newEmails: string[]) => {
       if (onChange) {
@@ -95,10 +104,6 @@ export const EmailTagsInput: React.FC<EmailTagsInputProps> = ({
     },
     [onChange],
   );
-
-  useEffect(() => {
-    handleChange(emails);
-  }, [handleChange, emails]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
