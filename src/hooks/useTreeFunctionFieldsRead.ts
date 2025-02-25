@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef } from "react";
 import ConnectionProvider from "@/ConnectionProvider";
 import { InfiniteTableRef } from "@gisce/react-formiga-table";
 import { useNetworkRequest } from "./useNetworkRequest";
+import { Tree as TreeOui } from "@gisce/ooui";
+import { getTableItems } from "@/helpers/treeHelper";
 
 type UseTreeFunctionFieldsReadProps = {
   model: string;
@@ -11,6 +13,7 @@ type UseTreeFunctionFieldsReadProps = {
   isActive?: boolean;
   results?: any[];
   onResultsUpdated?: (updatedResults: any[]) => void;
+  treeOui?: TreeOui;
 };
 
 export const useTreeFunctionFieldsRead = ({
@@ -21,6 +24,7 @@ export const useTreeFunctionFieldsRead = ({
   isActive = true,
   results,
   onResultsUpdated,
+  treeOui,
 }: UseTreeFunctionFieldsReadProps) => {
   const hasFunctionFields = useRef<boolean>(false);
   const previousResultIds = useRef<Set<number>>(new Set());
@@ -107,8 +111,9 @@ export const useTreeFunctionFieldsRead = ({
         });
 
         // Update the table data with function field values
-        if (functionResults?.length) {
-          tableRef.current?.updateRows(functionResults);
+        if (functionResults?.length && treeOui) {
+          const preparedResults = getTableItems(treeOui, functionResults);
+          tableRef.current?.updateRows(preparedResults);
 
           // Create updated results by merging function field values
           const updatedResults = results.map((row) => {
@@ -139,7 +144,14 @@ export const useTreeFunctionFieldsRead = ({
         currentLoadingIds.current = new Set();
       }
     },
-    [isActive, results, tableRef, onResultsUpdated, fetchFunctionFields],
+    [
+      results,
+      isActive,
+      fetchFunctionFields,
+      treeOui,
+      tableRef,
+      onResultsUpdated,
+    ],
   );
 
   // Update function fields whenever results change

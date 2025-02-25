@@ -4,6 +4,8 @@ import { useDeepCompareEffect } from "use-deep-compare";
 import { useRef, useState, useCallback, useEffect } from "react";
 import { InfiniteTableRef } from "@gisce/react-formiga-table";
 import { useBrowserVisibility } from "./useBrowserVisibility";
+import { Tree as TreeOoui } from "@gisce/ooui";
+import { getTableItems } from "@/helpers/treeHelper";
 
 const AUTOREFRESH_INTERVAL_SECONDS = 3 * 1000;
 
@@ -14,6 +16,7 @@ export type UseAutorefreshableTreeFieldsOpts = {
   autorefreshableFields?: string[];
   fieldDefs: any;
   isActive?: boolean;
+  treeOoui?: TreeOoui;
 };
 
 export const useAutorefreshableTreeFields = (
@@ -26,6 +29,7 @@ export const useAutorefreshableTreeFields = (
     autorefreshableFields,
     fieldDefs,
     isActive,
+    treeOoui,
   } = opts;
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -60,6 +64,10 @@ export const useAutorefreshableTreeFields = (
 
     if (!ids) return;
 
+    if (!treeOoui) {
+      return;
+    }
+
     try {
       const results = await fetchRequest({
         model,
@@ -68,7 +76,8 @@ export const useAutorefreshableTreeFields = (
         fieldsToRetrieve: autorefreshableFields,
         context,
       });
-      tableRef.current?.updateRows(results);
+      const preparedResults = getTableItems(treeOoui, results);
+      tableRef.current?.updateRows(preparedResults);
     } catch (err) {
       console.error(err);
     }
@@ -80,6 +89,7 @@ export const useAutorefreshableTreeFields = (
     model,
     fieldDefs,
     context,
+    treeOoui,
   ]);
 
   useDeepCompareEffect(() => {
