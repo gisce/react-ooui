@@ -42,7 +42,7 @@ import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { useTreeAggregates } from "../base/one2many/useTreeAggregates";
 import { AggregatesFooter } from "../base/one2many/AggregatesFooter";
 import { SearchTreeHeader } from "./SearchTreeHeader";
-import { useLocale } from "@gisce/react-formiga-components";
+import { useLocale, SkeletonPill } from "@gisce/react-formiga-components";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { SideSearchFilter } from "./searchFilter/SideSearchFilter";
 import { mergeParams } from "@/helpers/searchHelper";
@@ -53,7 +53,6 @@ import { useSearchTreeState } from "@/hooks/useSearchTreeState";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
 import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
-import { SkeletonPill } from "./Tree/components/SkeletonPill";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;

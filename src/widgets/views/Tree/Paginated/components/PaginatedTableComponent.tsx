@@ -1,7 +1,7 @@
-import { memo, useCallback, useMemo } from "react";
+import { memo, useMemo } from "react";
 import { PaginatedTable } from "@gisce/react-formiga-table";
 import { PaginatedTableContentProps } from "../SearchTreePaginated.types";
-import { SkeletonPill } from "../../components/SkeletonPill";
+import { SkeletonPill } from "@gisce/react-formiga-components";
 
 export const PaginatedTableComponent = memo(
   ({
