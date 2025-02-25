@@ -114,21 +114,32 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     treeViewFetching,
   });
 
-  const onResultsUpdated = useCallback((updatedResults: any[]) => {
-    lastAssignedResults.current = updatedResults;
-    setResults(updatedResults);
+  const onFunctionFieldsUpdated = useCallback((updatedResults: any[]) => {
+    lastAssignedResults.current = lastAssignedResults.current.map((result) => {
+      const updatedResult = updatedResults.find((r) => r.id === result.id);
+      return { ...result, ...updatedResult };
+    });
+    setResults((prevResults) => {
+      return prevResults.map((result) => {
+        const updatedResult = updatedResults.find((r) => r.id === result.id);
+        return { ...result, ...updatedResult };
+      });
+    });
   }, []);
 
-  const { isFieldLoading, refresh: refreshFunctionFields } =
-    useTreeFunctionFieldsRead({
-      model,
-      fields: treeView?.fields,
-      tableRef,
-      context,
-      isActive,
-      results,
-      onResultsUpdated,
-    });
+  const {
+    isFieldLoading,
+    refresh: refreshFunctionFields,
+    addRecordsToCheckFunctionFields,
+  } = useTreeFunctionFieldsRead({
+    model,
+    fields: treeView?.fields,
+    tableRef,
+    context,
+    isActive,
+    onResultsUpdated: onFunctionFieldsUpdated,
+    treeOoui,
+  });
 
   // Hooks
   const showErrorDialog = useShowErrorDialog();
@@ -423,6 +434,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
     setTreeIsLoading(false);
     lastAssignedResults.current = [...preparedResults];
+    addRecordsToCheckFunctionFields(preparedResults);
     setResults([...preparedResults]);
   }, [
     treeOoui,
@@ -441,6 +453,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     setSearchQuery,
     setActionViewResults,
     mustUpdateTotal,
+    addRecordsToCheckFunctionFields,
     updateTotalRows,
     setTotalItemsActionView,
   ]);
@@ -450,8 +463,8 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     fetchColumnState();
     setSelectedRowItems([]);
     currentSearchParamsString.current = undefined;
-    await fetchResults();
     refreshFunctionFields();
+    await fetchResults();
   }, [
     fetchColumnState,
     fetchResults,

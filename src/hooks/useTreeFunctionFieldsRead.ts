@@ -1,9 +1,13 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ConnectionProvider from "@/ConnectionProvider";
 import { InfiniteTableRef } from "@gisce/react-formiga-table";
 import { useNetworkRequest } from "./useNetworkRequest";
-import { Tree as TreeOui } from "@gisce/ooui";
+import { useBrowserVisibility } from "./useBrowserVisibility";
+import { useDeepCompareEffect } from "use-deep-compare";
+import { Tree as TreeOoui } from "@gisce/ooui";
 import { getTableItems } from "@/helpers/treeHelper";
+
+const AUTOREFRESH_INTERVAL_SECONDS = 0.5 * 1000;
 
 type UseTreeFunctionFieldsReadProps = {
   model: string;
@@ -11,9 +15,8 @@ type UseTreeFunctionFieldsReadProps = {
   tableRef: React.RefObject<InfiniteTableRef>;
   context?: any;
   isActive?: boolean;
-  results?: any[];
   onResultsUpdated?: (updatedResults: any[]) => void;
-  treeOui?: TreeOui;
+  treeOoui?: TreeOoui;
 };
 
 export const useTreeFunctionFieldsRead = ({
@@ -22,14 +25,19 @@ export const useTreeFunctionFieldsRead = ({
   tableRef,
   context = {},
   isActive = true,
-  results,
   onResultsUpdated,
-  treeOui,
+  treeOoui,
 }: UseTreeFunctionFieldsReadProps) => {
-  const hasFunctionFields = useRef<boolean>(false);
-  const previousResultIds = useRef<Set<number>>(new Set());
+  const [hasFunctionFields, setHasFunctionFields] = useState(false);
   const functionFields = useRef<string[]>();
-  const currentLoadingIds = useRef<Set<number>>(new Set());
+
+  const [recordIdsToCheck, setRecordIdsToCheck] = useState<Set<number>>(
+    new Set(),
+  );
+  const loadingIds = useRef<Set<number>>(new Set());
+  const loadedRecords = useRef<any[]>([]);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [internalIsActive, setInternalIsActive] = useState(true);
 
   const [fetchFunctionFields, cancelFunctionFieldsRequest] = useNetworkRequest(
     async (payload: { searchIds: number[]; fieldsToRetrieve: string[] }) => {
@@ -42,6 +50,24 @@ export const useTreeFunctionFieldsRead = ({
       });
     },
   );
+
+  const tabOrWindowIsVisible = useBrowserVisibility();
+
+  useEffect(() => {
+    if (isActive === false) {
+      pause();
+    }
+    if (
+      (isActive === undefined || isActive === true) &&
+      !tabOrWindowIsVisible
+    ) {
+      pause();
+    }
+    if ((isActive === undefined || isActive === true) && tabOrWindowIsVisible) {
+      resume();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive, tabOrWindowIsVisible]);
 
   // Cancel any pending requests on unmount or when isActive changes to false
   useEffect(() => {
@@ -56,7 +82,7 @@ export const useTreeFunctionFieldsRead = ({
   // Check if there are any function fields on fields change
   useEffect(() => {
     if (!fields) {
-      hasFunctionFields.current = false;
+      setHasFunctionFields(false);
       return;
     }
 
@@ -64,100 +90,128 @@ export const useTreeFunctionFieldsRead = ({
       .filter(([_, field]: [string, any]) => field.is_function === true)
       .map(([fieldName]) => fieldName);
 
-    hasFunctionFields.current = functionFieldNames.length > 0;
+    setHasFunctionFields(functionFieldNames.length > 0);
     functionFields.current = functionFieldNames;
   }, [fields]);
 
-  const updateFunctionFields = useCallback(
-    async (forceRefresh?: boolean) => {
-      if (!hasFunctionFields.current) {
-        return;
+  const requestFunctionFields = useCallback(async () => {
+    if (!hasFunctionFields) {
+      return;
+    }
+
+    if (
+      recordIdsToCheck.size === 0 ||
+      !isActive ||
+      !functionFields.current?.length
+    ) {
+      return;
+    }
+
+    if (!treeOoui) {
+      return;
+    }
+
+    // We need to check which id's aren't loading or loaded
+    const recordsToProcess = Array.from(recordIdsToCheck).filter(
+      (id) =>
+        !loadingIds.current.has(id) &&
+        !loadedRecords.current.find((record) => record.id === id),
+    );
+
+    try {
+      // Set loading state for records being updated and add them to the loading ids
+      recordsToProcess.forEach((id) => loadingIds.current.add(id));
+
+      const { results: functionResults } = await fetchFunctionFields({
+        searchIds: recordsToProcess,
+        fieldsToRetrieve: functionFields.current!,
+      });
+      const tableItems = getTableItems(treeOoui, functionResults);
+
+      // Add the loaded ids to the loaded ids set, ensuring no duplicates by ID
+      const uniqueRecords = [...loadedRecords.current];
+      tableItems.forEach((item: any) => {
+        const existingIndex = uniqueRecords.findIndex(
+          (record) => record.id === item.id,
+        );
+        if (existingIndex >= 0) {
+          uniqueRecords[existingIndex] = item; // Update existing record
+        } else {
+          uniqueRecords.push(item); // Add new record
+        }
+      });
+      loadedRecords.current = uniqueRecords;
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        console.error("Error updating function fields:", error);
       }
+    }
+  }, [
+    hasFunctionFields,
+    recordIdsToCheck,
+    isActive,
+    treeOoui,
+    fetchFunctionFields,
+  ]);
 
-      if (!results?.length || !isActive || !functionFields.current?.length) {
-        return;
-      }
+  useDeepCompareEffect(() => {
+    if (recordIdsToCheck.size === 0) {
+      return;
+    }
+    requestFunctionFields();
+  }, [recordIdsToCheck, requestFunctionFields]);
 
-      // Get new records by comparing with previous IDs
-      const currentIds = new Set(results.map((r) => r.id));
-      const recordsToProcess = forceRefresh
-        ? results
-        : results.filter((r) => !previousResultIds.current.has(r.id));
+  const addRecordsToCheckFunctionFields = useCallback((records: any[]) => {
+    records.forEach((record) => {
+      setRecordIdsToCheck((prev) => {
+        prev.add(record.id);
+        return prev;
+      });
+    });
+  }, []);
 
-      // When forcing refresh, treat all records as needing update
-      const recordsNeedingUpdate = forceRefresh
-        ? recordsToProcess
-        : recordsToProcess.filter((record) => {
-            return functionFields.current!.some(
-              (fieldName) =>
-                record[fieldName] === undefined || record[fieldName] === null,
-            );
-          });
+  const tryUpdateRows = useCallback(() => {
+    const currentTableRecords = tableRef?.current?.getVisibleRows() || [];
+    if (currentTableRecords.length === 0) {
+      return;
+    }
 
-      if (recordsNeedingUpdate.length === 0) {
-        // If no records need updates, just update the previous IDs and return
-        previousResultIds.current = currentIds;
-        return;
-      }
+    if (loadedRecords.current.length === 0) {
+      return;
+    }
 
-      try {
-        // Set loading state for records being updated
-        const loadingIds = new Set(recordsNeedingUpdate.map((r) => r.id));
-        currentLoadingIds.current = loadingIds;
+    // Get the updated records, filtering out any undefined entries
+    const recordsToUpdate = loadedRecords.current
+      .filter((record) => {
+        const currentRecord = currentTableRecords.find(
+          (tableRecord) => tableRecord.id === record.id,
+        );
 
-        const { results: functionResults } = await fetchFunctionFields({
-          searchIds: recordsNeedingUpdate.map((r) => r.id),
-          fieldsToRetrieve: functionFields.current!,
-        });
-
-        // Update the table data with function field values
-        if (functionResults?.length && treeOui) {
-          const preparedResults = getTableItems(treeOui, functionResults);
-          tableRef.current?.updateRows(preparedResults);
-
-          // Create updated results by merging function field values
-          const updatedResults = results.map((row) => {
-            const functionResult = functionResults.find(
-              (r: any) => r.id === row.id,
-            );
-            if (functionResult) {
-              return {
-                ...row,
-                ...functionResult,
-              };
-            }
-            return row;
-          });
-
-          // Notify parent about updated results
-          onResultsUpdated?.(updatedResults);
+        if (!currentRecord) {
+          return false;
         }
 
-        // Update previous IDs with current IDs
-        previousResultIds.current = currentIds;
-      } catch (error) {
-        if (error.name !== "AbortError") {
-          console.error("Error updating function fields:", error);
-        }
-      } finally {
-        // Clear loading state
-        currentLoadingIds.current = new Set();
-      }
-    },
-    [
-      results,
-      isActive,
-      fetchFunctionFields,
-      treeOui,
-      tableRef,
-      onResultsUpdated,
-    ],
-  );
+        // Check if any function field values have changed
+        const hasChanges = functionFields.current?.some(
+          (fieldName) => record[fieldName] !== currentRecord[fieldName],
+        );
 
-  // Update function fields whenever results change
-  useEffect(() => {
-    updateFunctionFields();
-  }, [updateFunctionFields, results]);
+        // Only return the record if there are changes
+        return hasChanges;
+      })
+      .filter(Boolean);
+
+    if (recordsToUpdate.length > 0) {
+      // remove each record to update from loading id's.
+      recordsToUpdate.forEach((record) => loadingIds.current.delete(record.id));
+
+      // Notify parent about updated results
+      onResultsUpdated?.(recordsToUpdate);
+
+      // update the rows
+      tableRef?.current?.updateRows(recordsToUpdate);
+    }
+  }, [tableRef, onResultsUpdated]);
 
   const isFieldLoading = useCallback((record: any, fieldName: string) => {
     // First check if the field is a function field
@@ -165,16 +219,50 @@ export const useTreeFunctionFieldsRead = ({
       return false;
     }
 
-    // Then check if this record is currently being loaded
-    // Use the ref for immediate access to loading state
-    return currentLoadingIds.current.has(record?.id);
+    // Then check if this record is not loaded yet
+    return !loadedRecords.current.find((r) => r.id === record?.id);
+  }, []);
+
+  useDeepCompareEffect(() => {
+    const shouldStart = hasFunctionFields && internalIsActive;
+
+    if (shouldStart) {
+      tryUpdateRows();
+      intervalRef.current = setInterval(
+        tryUpdateRows,
+        AUTOREFRESH_INTERVAL_SECONDS,
+      );
+    }
+
+    return () => {
+      cancelFunctionFieldsRequest();
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [hasFunctionFields, internalIsActive]);
+
+  const pause = useCallback(() => {
+    setInternalIsActive(false);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    cancelFunctionFieldsRequest();
+  }, [cancelFunctionFieldsRequest]);
+
+  const resume = useCallback(() => {
+    setInternalIsActive(true);
   }, []);
 
   return {
     refresh: () => {
-      previousResultIds.current.clear();
-      updateFunctionFields(true);
+      setRecordIdsToCheck(new Set());
+      loadedRecords.current = [];
+      loadingIds.current.clear();
     },
+    addRecordsToCheckFunctionFields,
     isFieldLoading,
   };
 };

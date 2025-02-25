@@ -157,6 +157,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
       : treeView?.fields,
     context: parentContext,
     isActive,
+    treeOoui,
   });
 
   // External control

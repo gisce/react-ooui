@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { PaginatedTable } from "@gisce/react-formiga-table";
 import { PaginatedTableContentProps } from "../SearchTreePaginated.types";
 import { SkeletonPill } from "../../components/SkeletonPill";
@@ -39,7 +39,6 @@ export const PaginatedTableComponent = memo(
           if (isFieldLoading?.(record, column.key)) {
             return <SkeletonPill />;
           }
-
           return column.render(
             value,
             column.key,

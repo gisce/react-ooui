@@ -53,6 +53,7 @@ import { useSearchTreeState } from "@/hooks/useSearchTreeState";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
 import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
+import { SkeletonPill } from "./Tree/components/SkeletonPill";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -144,17 +145,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const nameSearch = nameSearchProps || searchTreeNameSearch;
   const prevNameSearch = useRef(nameSearch);
 
-  const [lastFetchedResults, setLastFetchedResults] = useState<any[]>([]);
-
-  const { refresh: refreshFunctionFields } = useTreeFunctionFieldsRead({
-    model,
-    fields: treeView?.fields,
-    tableRef,
-    context: parentContext,
-    isActive,
-    results: lastFetchedResults,
-  });
-
   useEffect(() => {
     updateTotalRows();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -192,6 +182,20 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       : treeView?.fields,
     context: parentContext,
     isActive,
+    treeOoui,
+  });
+
+  const {
+    isFieldLoading,
+    refresh: refreshFunctionFields,
+    addRecordsToCheckFunctionFields,
+  } = useTreeFunctionFieldsRead({
+    model,
+    fields: treeView?.fields,
+    tableRef,
+    context: parentContext,
+    isActive,
+    treeOoui,
   });
 
   const columns = useDeepCompareMemo(() => {
@@ -207,6 +211,21 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       "infinite",
     );
   }, [treeOoui, parentContext]);
+
+  const columnsWithLoading = useMemo(() => {
+    if (!columns) {
+      return;
+    }
+    return columns.map((column: any) => ({
+      ...column,
+      render: (value: any, record: any) => {
+        if (isFieldLoading?.(record, column.key)) {
+          return <SkeletonPill />;
+        }
+        return column.render(value, column.key, column?.ooui, column?.context);
+      },
+    }));
+  }, [columns, isFieldLoading]);
 
   const columnStateKey = useMemo(() => {
     if (loading) {
@@ -335,8 +354,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           skipFunctionFields: true,
         });
 
-      setLastFetchedResults(results);
-
       const newResults = results.map((item) => ({ id: item.id }));
 
       setSearchQuery?.({
@@ -385,6 +402,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       }
 
       lastAssignedResults.current = [...preparedResults];
+      addRecordsToCheckFunctionFields(preparedResults);
       return preparedResults;
     },
     [
@@ -402,6 +420,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       setTotalItemsActionView,
       treeOoui,
       treeView,
+      addRecordsToCheckFunctionFields,
     ],
   );
 
@@ -571,7 +590,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         readonly={false}
         ref={tableRef}
         height={availableHeight}
-        columns={columns}
+        columns={columnsWithLoading}
         onRequestData={onRequestData}
         onRowDoubleClick={onRowClicked}
         onRowStyle={onRowStyle}
@@ -596,6 +615,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     availableHeight,
     changeSelectedRowKeys,
     columns,
+    columnsWithLoading,
     firstVisibleRowIndex,
     footerComp,
     getColumnState,
