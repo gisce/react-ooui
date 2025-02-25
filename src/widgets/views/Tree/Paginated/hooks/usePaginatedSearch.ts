@@ -396,6 +396,9 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
         order,
         name_search: nameSearch,
         skipFunctionFields: true,
+        onIdsRetrieved: (ids: number[]) => {
+          addRecordsToCheckFunctionFields(ids);
+        },
       });
 
       const newResults = results.map((item: any) => ({ id: item.id }));
@@ -445,7 +448,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
       setTreeIsLoading(false);
       lastAssignedResults.current = [...preparedResults];
-      addRecordsToCheckFunctionFields(preparedResults);
       setResults([...preparedResults]);
     } catch (error) {
       console.error(error);

@@ -99,6 +99,7 @@ type SearchRequest = {
   name_search?: string;
   skipRead?: boolean;
   skipFunctionFields?: boolean;
+  onIdsRetrieved?: (ids: number[]) => void;
 };
 
 type SearchAllIdsRequest = SearchCountRequest & {

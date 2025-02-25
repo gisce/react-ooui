@@ -60,9 +60,11 @@ export const useAutorefreshableTreeFields = (
   const refresh = useCallback(async () => {
     if (!autorefreshableFields?.length || !internalIsActive) return;
 
-    const ids = tableRef.current?.getVisibleRowIds();
+    const ids = tableRef.current
+      ?.getVisibleRowIds()
+      .filter((id: any) => id !== undefined && id !== null);
 
-    if (!ids) return;
+    if (!ids || ids.length === 0) return;
 
     if (!treeOoui) {
       return;

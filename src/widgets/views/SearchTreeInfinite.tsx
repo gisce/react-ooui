@@ -351,6 +351,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           order,
           name_search: nameSearch,
           skipFunctionFields: true,
+          onIdsRetrieved: (ids: number[]) => {
+            addRecordsToCheckFunctionFields(ids);
+          },
         });
 
       const newResults = results.map((item) => ({ id: item.id }));
@@ -401,7 +404,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       }
 
       lastAssignedResults.current = [...preparedResults];
-      addRecordsToCheckFunctionFields(preparedResults);
       return preparedResults;
     },
     [
