@@ -99,6 +99,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   const colorsForResults = useRef<{ [key: number]: string }>({});
   const statusForResults = useRef<{ [key: number]: string }>();
   const lastAssignedResults = useRef<any[]>([]);
+  const fetchInProgress = useRef<boolean>(false);
 
   const columnStateKey = useMemo(() => {
     return getKey({ treeViewId: treeView?.view_id, model });
@@ -352,90 +353,106 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     if (!treeOoui || treeViewFetching) {
       return [];
     }
-    setTreeIsLoading(true);
 
-    const attrs: any = {};
-    if (treeOoui.colors) {
-      attrs.colors = treeOoui.colors;
-    }
-    if (treeOoui.status) {
-      attrs.status = treeOoui.status;
+    // Check if a fetch is already in progress to avoid simultaneous calls
+    if (fetchInProgress.current) {
+      return [];
     }
 
-    let order;
-    if (actionViewOrder?.length) {
-      const sortFields = getSortedFieldsFromState({
-        state: actionViewOrder,
+    // Set the semaphore to true
+    fetchInProgress.current = true;
+
+    try {
+      setTreeIsLoading(true);
+
+      const attrs: any = {};
+      if (treeOoui.colors) {
+        attrs.colors = treeOoui.colors;
+      }
+      if (treeOoui.status) {
+        attrs.status = treeOoui.status;
+      }
+
+      let order;
+      if (actionViewOrder?.length) {
+        const sortFields = getSortedFieldsFromState({
+          state: actionViewOrder,
+        });
+        order = getOrderFromSortFields(sortFields);
+      }
+
+      const params = nameSearch ? domain : mergedParams;
+
+      const { results, attrsEvaluated } = await searchForTree({
+        params,
+        limit,
+        offset: ((currentPage || 1) - 1) * limit,
+        model,
+        fields: treeView!.field_parent
+          ? { ...treeView!.fields, [treeView!.field_parent]: {} }
+          : treeView!.fields,
+        context,
+        attrs,
+        order,
+        name_search: nameSearch,
+        skipFunctionFields: true,
       });
-      order = getOrderFromSortFields(sortFields);
-    }
 
-    const params = nameSearch ? domain : mergedParams;
+      const newResults = results.map((item: any) => ({ id: item.id }));
 
-    const { results, attrsEvaluated } = await searchForTree({
-      params,
-      limit,
-      offset: ((currentPage || 1) - 1) * limit,
-      model,
-      fields: treeView!.field_parent
-        ? { ...treeView!.fields, [treeView!.field_parent]: {} }
-        : treeView!.fields,
-      context,
-      attrs,
-      order,
-      name_search: nameSearch,
-      skipFunctionFields: true,
-    });
+      setSearchQuery?.({
+        model,
+        params,
+        name_search: nameSearch,
+        context,
+      });
 
-    const newResults = results.map((item: any) => ({ id: item.id }));
+      setActionViewResults?.(newResults);
 
-    setSearchQuery?.({
-      model,
-      params,
-      name_search: nameSearch,
-      context,
-    });
+      if (mustUpdateTotal()) {
+        updateTotalRows();
+      }
 
-    setActionViewResults?.(newResults);
+      if (results.length === 0) {
+        lastAssignedResults.current = [];
+        setTotalRows(0);
+        setTotalItemsActionView(0);
+        setResults([]);
+        setTreeIsLoading(false);
+        return;
+      }
 
-    if (mustUpdateTotal()) {
-      updateTotalRows();
-    }
+      const preparedResults = getTableItems(treeOoui, results);
 
-    if (results.length === 0) {
-      lastAssignedResults.current = [];
-      setTotalRows(0);
-      setTotalItemsActionView(0);
-      setResults([]);
-      setTreeIsLoading(false);
-      return;
-    }
+      const colors = getColorMap(attrsEvaluated);
 
-    const preparedResults = getTableItems(treeOoui, results);
-
-    const colors = getColorMap(attrsEvaluated);
-
-    colorsForResults.current = {
-      ...colorsForResults.current,
-      ...colors,
-    };
-
-    if (!statusForResults.current && treeOoui.status) {
-      statusForResults.current = {};
-    }
-
-    if (treeOoui.status) {
-      const status = getStatusMap(attrsEvaluated);
-      statusForResults.current = {
-        ...statusForResults.current,
-        ...status,
+      colorsForResults.current = {
+        ...colorsForResults.current,
+        ...colors,
       };
-    }
 
-    setTreeIsLoading(false);
-    lastAssignedResults.current = [...preparedResults];
-    addRecordsToCheckFunctionFields(preparedResults);
-    setResults([...preparedResults]);
+      if (!statusForResults.current && treeOoui.status) {
+        statusForResults.current = {};
+      }
+
+      if (treeOoui.status) {
+        const status = getStatusMap(attrsEvaluated);
+        statusForResults.current = {
+          ...statusForResults.current,
+          ...status,
+        };
+      }
+
+      setTreeIsLoading(false);
+      lastAssignedResults.current = [...preparedResults];
+      addRecordsToCheckFunctionFields(preparedResults);
+      setResults([...preparedResults]);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    } finally {
+      fetchInProgress.current = false;
+    }
   }, [
     treeOoui,
     treeViewFetching,
