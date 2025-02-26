@@ -265,7 +265,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const updateTotalRows = useCallback(async () => {
     if (nameSearch) {
-      setTotalRowsLoading(false);
       return;
     }
     setTotalRows(undefined);
