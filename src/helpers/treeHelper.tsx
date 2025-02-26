@@ -33,10 +33,8 @@ const getTableColumns = (
   tree: TreeOoui,
   components: any,
   context: any,
+  many2oneSortEnabled: boolean = false,
 ): Column[] => {
-  const many2oneSortEnabled = useFeatureIsEnabled(
-    ErpFeatureKeys.FEATURE_MANY2ONE_SORT,
-  );
   const tableColumns = tree.columns.map((column) => {
     const type = column.type;
     const key = column.id;
