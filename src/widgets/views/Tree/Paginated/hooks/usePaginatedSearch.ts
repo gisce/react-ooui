@@ -514,11 +514,18 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   ]);
 
   const refresh = useCallback(async () => {
+    setTotalRowsLoading(true);
     setTreeFirstVisibleRow(0);
     fetchColumnState();
     setSelectedRowItems([]);
     currentSearchParamsString.current = undefined;
-    refreshFunctionFields();
+
+    // Only refresh function fields if we're not doing a name search
+    // This prevents clearing the function field state when we need it
+    if (!nameSearch) {
+      refreshFunctionFields();
+    }
+
     await fetchResults();
   }, [
     fetchColumnState,
@@ -526,6 +533,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     setSelectedRowItems,
     setTreeFirstVisibleRow,
     refreshFunctionFields,
+    nameSearch,
   ]);
 
   const onRequestPageChange = useCallback(
