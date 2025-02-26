@@ -53,16 +53,6 @@ export const useTreeFunctionFieldsRead = ({
 
   const tabOrWindowIsVisible = useBrowserVisibility();
 
-  console.log({
-    isActive,
-    tabOrWindowIsVisible,
-    hasFunctionFields,
-    functionFields: functionFields.current,
-    loadedRecords: loadedRecords.current,
-    loadingIds: loadingIds.current,
-    recordIdsToCheck,
-  });
-
   useEffect(() => {
     if (isActive === false) {
       pause();
