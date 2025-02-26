@@ -25,8 +25,9 @@ import { Tree as TreeOoui } from "@gisce/ooui";
 import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { useTreeColumnStorageFetch } from "@/widgets/base/one2many/useTreeColumnStorageFetch";
 import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
+import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 
-export const DEFAULT_PAGE_SIZE = 80;
+export const DEFAULT_PAGE_SIZE = DEFAULT_SEARCH_LIMIT;
 
 export type PaginatedSearchProps = {
   treeViewFetching: boolean;
@@ -89,6 +90,8 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   const [totalRowsLoading, setTotalRowsLoading] = useState<boolean>(true);
   const [totalRows, setTotalRows] = useState<number | null>();
   const [results, setResults] = useState<any[]>([]);
+  const [nameSearchFetchCompleted, setNameSearchFetchCompleted] =
+    useState<boolean>(false);
 
   // Refs
   const nameSearch = nameSearchProps || searchTreeNameSearch;
@@ -315,17 +318,41 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   ]);
 
   useEffect(() => {
+    // Skip if nameSearch hasn't actually changed
+    if (nameSearch === prevNameSearch.current) {
+      return;
+    }
+
+    // Only trigger a refresh when nameSearch actually changes
     if (
       (nameSearch !== undefined && prevNameSearch.current === undefined) ||
       (typeof nameSearch === "string" &&
         typeof prevNameSearch.current === "string" &&
         nameSearch !== prevNameSearch.current)
     ) {
+      // Reset search params and values
       setSearchParams?.([]);
       setSearchValues?.({});
       tableRef.current?.unselectAll();
-      refresh();
+
+      // Update the ref before processing to prevent duplicate refreshes
+      prevNameSearch.current = nameSearch;
+
+      // Use a small timeout to ensure state updates are processed
+      // before triggering the refresh, but keep it short to avoid blocking input
+      setTimeout(() => {
+        refresh();
+      }, 50);
+      return;
     }
+
+    // If nameSearch was cleared (changed from a value to undefined)
+    if (nameSearch === undefined && prevNameSearch.current !== undefined) {
+      // Set loading state first thing
+      setTotalRowsLoading(true);
+    }
+
+    // Update the ref after processing
     prevNameSearch.current = nameSearch;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nameSearch]);
@@ -412,7 +439,16 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
       setActionViewResults?.(newResults);
 
-      if (mustUpdateTotal()) {
+      if (nameSearch) {
+        setTotalRows(results.length);
+        setTotalItemsActionView(results.length);
+        setNameSearchFetchCompleted(true);
+        setTotalRowsLoading(false);
+      } else {
+        setNameSearchFetchCompleted(false);
+      }
+
+      if (!nameSearch && mustUpdateTotal()) {
         updateTotalRows();
       }
 
@@ -607,5 +643,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     onGetFirstVisibleColumn,
     onSortChange,
     isFieldLoading,
+    setSearchVisible,
+    nameSearchFetchCompleted,
   };
 };

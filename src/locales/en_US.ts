@@ -114,4 +114,7 @@ export default {
   share: "Compartir URL",
   urlCopiedToClipboard: "URL copied to clipboard",
   copyToClipboard: "Copy to clipboard",
+  nameSearchLimitNote:
+    "Only the first 80 records are shown. If you need to see more records, please use the filter search.",
+  filterSearchLink: "filter search",
 };
