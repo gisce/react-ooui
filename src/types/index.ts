@@ -220,13 +220,6 @@ type GetViewRequest = {
   context?: any;
 };
 
-type GetToolbarRequest = {
-  model: string;
-  id?: number;
-  type: ViewType;
-  context?: any;
-};
-
 type GetFieldsRequest = {
   model: string;
   fields?: string[];
@@ -392,7 +385,6 @@ type ConnectionProviderType = {
     { key }: { key: string },
     requestConfig?: any,
   ) => Promise<any>;
-  getToolbar: (options: GetViewRequest, requestConfig?: any) => Promise<any>;
   processSearchResults: (
     {
       searchIds,
@@ -411,6 +403,7 @@ type ConnectionProviderType = {
     },
     requestConfig?: any,
   ) => Promise<{ results: any; attrsEvaluated?: any }>;
+  getToolbar: (options: GetViewRequest, requestConfig?: any) => Promise<any>;
 };
 
 type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar";
