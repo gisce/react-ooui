@@ -169,7 +169,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   useImperativeHandle(ref, () => ({
     refreshResults: refresh,
     getFields: () => treeView?.fields,
-    getDomain: () => domain,
   }));
 
   // UI Components and Styles
