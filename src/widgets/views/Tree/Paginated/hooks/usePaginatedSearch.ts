@@ -653,5 +653,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     isFieldLoading,
     setSearchVisible,
     nameSearchFetchCompleted,
+    nameSearch,
   };
 };

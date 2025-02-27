@@ -126,6 +126,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     isFieldLoading,
     setSearchVisible,
     nameSearchFetchCompleted,
+    nameSearch,
   } = usePaginatedSearch({
     treeViewFetching: loading,
     treeOoui,
@@ -193,6 +194,14 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     [availableHeight, visible],
   );
 
+  const shouldShowSimpleSummary =
+    nameSearch !== undefined && nameSearchFetchCompleted;
+  const shouldShowNameSearchWarning =
+    shouldShowSimpleSummary &&
+    totalRows !== undefined &&
+    totalRows !== null &&
+    totalRows > DEFAULT_SEARCH_LIMIT;
+
   // Render
   return (
     <Fragment>
@@ -218,14 +227,9 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         onRequestPageChange={onRequestPageChange}
         totalSelectedCount={selectedRowKeys.length}
         onSelectAllGlobalRecords={selectAllRecords}
-        simpleSummary={
-          nameSearchProps !== undefined && nameSearchFetchCompleted
-        }
+        simpleSummary={shouldShowSimpleSummary}
         customMiddleComponent={
-          nameSearchProps &&
-          nameSearchFetchCompleted &&
-          totalRows &&
-          totalRows > DEFAULT_SEARCH_LIMIT && (
+          shouldShowNameSearchWarning && (
             <NameSearchWarning
               onFilterSearchClick={() => setSearchVisible(true)}
             />
