@@ -36,7 +36,7 @@ export function useUrlFromCurrentTab({
     ...(currentId && { res_id: currentId }),
     ...(limit && { limit }),
     ...(currentPage && currentPage > 1 && { currentPage }),
-    ...(order && { order }),
+    order,
   };
 
   const shareUrl = createShareOpenUrl(finalActionData);
