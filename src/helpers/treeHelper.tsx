@@ -7,6 +7,8 @@ import {
 } from "@gisce/ooui";
 import { TreeView, Column } from "@/types";
 import { SortDirection, ColumnState } from "@gisce/react-formiga-table";
+import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
 
 const getTree = (treeView: TreeView): TreeOoui => {
   const xml = treeView.arch;
@@ -31,6 +33,7 @@ const getTableColumns = (
   tree: TreeOoui,
   components: any,
   context: any,
+  many2oneSortEnabled: boolean = false,
 ): Column[] => {
   const tableColumns = tree.columns.map((column) => {
     const type = column.type;
@@ -78,7 +81,9 @@ const getTableColumns = (
         return 0;
       },
       isSortable:
-        type !== "one2many" && type !== "many2one" && !column.isFunction,
+        type !== "one2many" &&
+        !column.isFunction &&
+        (type !== "many2one" || many2oneSortEnabled),
     };
   });
   return tableColumns;
