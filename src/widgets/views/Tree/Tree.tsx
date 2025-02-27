@@ -32,6 +32,8 @@ import {
 import { SelectAllRecordsRow } from "@/common/SelectAllRecordsRow";
 import { COLUMN_COMPONENTS } from "./treeComponents";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
+import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
 
 type Props = {
   total?: number;
@@ -102,6 +104,10 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
     const { title = undefined, setTitle = undefined } =
       (rootTree ? actionViewContext : {}) || {};
 
+    const many2oneSortEnabled = useFeatureIsEnabled(
+      ErpFeatureKeys.FEATURE_MANY2ONE_SORT,
+    );
+
     const columns = useMemo(() => {
       if (!treeOoui) {
         return undefined;
@@ -113,8 +119,9 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
           ...COLUMN_COMPONENTS,
         },
         context,
+        many2oneSortEnabled,
       );
-    }, [context, treeOoui]);
+    }, [treeOoui, context, many2oneSortEnabled]);
 
     useImperativeHandle(ref, () => ({
       unselectAll: () => {
