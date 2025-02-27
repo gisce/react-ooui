@@ -113,6 +113,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     <Fragment>
       <TitleHeader showSummary={!isInfiniteTree}>
         <TreeActionBar
+          domain={domain}
           toolbar={treeView?.toolbar}
           parentContext={context}
           treeExpandable={treeView?.isExpandable || false}

@@ -638,7 +638,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   useImperativeHandle(ref, () => ({
     refreshResults: refresh,
     getFields: () => treeView?.fields,
-    getDomain: () => domain,
   }));
 
   const containerStyle = useMemo(
