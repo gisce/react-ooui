@@ -199,7 +199,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     shouldShowSimpleSummary &&
     totalRows !== undefined &&
     totalRows !== null &&
-    totalRows > DEFAULT_SEARCH_LIMIT;
+    totalRows === DEFAULT_SEARCH_LIMIT;
 
   // Render
   return (
