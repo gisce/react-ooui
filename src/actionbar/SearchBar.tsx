@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Button, Col, Form, Input, Row, Tooltip } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
 import { CloseCircleFilled } from "@ant-design/icons";
@@ -15,32 +15,57 @@ function SearchBar(props: Props) {
   const [form] = Form.useForm();
   const [mustShowClearSuffix, setMustShowClearSuffix] =
     useState<boolean>(false);
+  const isProcessingRef = useRef(false);
+  const internalValueRef = useRef<string | undefined>(searchText);
 
   function handleSubmit(values: any) {
-    onSearch(values.search);
+    const searchValue = values.search;
+    internalValueRef.current = searchValue;
+    onSearch(searchValue);
   }
 
+  // Handle external searchText changes
   useEffect(() => {
-    form.setFieldsValue({ search: searchText });
-  }, [searchText]);
+    if (!isProcessingRef.current && searchText !== internalValueRef.current) {
+      internalValueRef.current = searchText;
+      form.setFieldsValue({ search: searchText });
+      setMustShowClearSuffix(searchText ? searchText.length > 0 : false);
+    }
+  }, [searchText, form]);
 
   function clear() {
+    isProcessingRef.current = true;
+    internalValueRef.current = undefined;
     setMustShowClearSuffix(false);
     form.setFieldsValue({ search: undefined });
     onSearch(undefined);
+
+    // Reset the processing flag after a short delay
+    setTimeout(() => {
+      isProcessingRef.current = false;
+    }, 200);
   }
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    internalValueRef.current = value;
+    setMustShowClearSuffix(value.length > 0);
+  };
+
   return (
-    <Form form={form} onFinish={handleSubmit} autoComplete="off">
+    <Form
+      form={form}
+      onFinish={handleSubmit}
+      autoComplete="off"
+      initialValues={{ search: searchText }}
+    >
       <Row align="middle" justify="end">
         <Col>
-          <Form.Item name={"search"} noStyle>
+          <Form.Item name="search" noStyle>
             <Input
               autoFocus
               disabled={disabled}
-              onChange={(e) => {
-                setMustShowClearSuffix(e.target.value.length > 0);
-              }}
+              onChange={handleInputChange}
               style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
               suffix={
                 (mustShowClearSuffix ||

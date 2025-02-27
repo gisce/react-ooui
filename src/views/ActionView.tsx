@@ -55,6 +55,8 @@ type Props = {
   treeExpandable?: boolean;
   limit?: number;
   initialSearchParams?: any[];
+  currentPage?: number;
+  order?: any[];
 };
 
 function ActionView(props: Props, ref: any) {
@@ -75,6 +77,8 @@ function ActionView(props: Props, ref: any) {
     treeExpandable = false,
     limit,
     initialSearchParams = [],
+    currentPage,
+    order,
   } = props;
   const [currentView, setCurrentViewInternal] = useState<View>();
 
@@ -467,6 +471,8 @@ function ActionView(props: Props, ref: any) {
       limit={limit}
       isActive={tabKey === activeKey}
       initialSearchParams={initialSearchParams}
+      initialCurrentPage={currentPage}
+      initialOrder={order}
     >
       <ActionViewContent
         availableViews={availableViews}

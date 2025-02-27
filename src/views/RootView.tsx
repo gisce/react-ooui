@@ -24,6 +24,8 @@ type RootViewProps = {
   children: ReactNode;
 };
 
+const MAX_SEARCH_LIMIT = 100;
+
 function RootView(props: RootViewProps, ref: any) {
   const { children } = props;
   const [activeKey, setActiveKey] = useState<string>("welcome");
@@ -77,7 +79,7 @@ function RootView(props: RootViewProps, ref: any) {
   }
 
   async function handleOpenActionUrl(action: ActionInfo) {
-    const { actionRawData, res_id, initialView } = action;
+    const { actionRawData, res_id, limit } = action;
 
     const fields = await ConnectionProvider.getHandler().getFields({
       model: action.model,
@@ -148,6 +150,7 @@ function RootView(props: RootViewProps, ref: any) {
 
     openAction({
       ...action,
+      limit: limit && limit > MAX_SEARCH_LIMIT ? MAX_SEARCH_LIMIT : limit,
       context: { ...rootContext, ...parsedContext },
       domain: parsedDomain,
       actionRawData: {
@@ -562,6 +565,8 @@ function RootView(props: RootViewProps, ref: any) {
       treeExpandable = false,
       limit,
       searchParams,
+      currentPage,
+      order,
     } = parms;
 
     const key = nanoid();
@@ -612,6 +617,8 @@ function RootView(props: RootViewProps, ref: any) {
             treeExpandable={treeExpandable}
             limit={limit}
             initialSearchParams={searchParams}
+            currentPage={currentPage}
+            order={order}
           />
         ),
         key,

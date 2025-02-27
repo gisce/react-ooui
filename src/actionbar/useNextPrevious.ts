@@ -6,7 +6,7 @@ import { useShowErrorDialog } from "@/ui/GenericErrorDialog";
 
 export const useNextPrevious = () => {
   const {
-    isInfiniteTree,
+    treeType,
     totalItems,
     currentItemIndex,
     setCurrentId,
@@ -109,20 +109,20 @@ export const useNextPrevious = () => {
   );
 
   const onNextClick = useCallback(() => {
-    if (isInfiniteTree) {
+    if (treeType === "infinite") {
       handleInfiniteNavigation("next");
     } else {
       handleFiniteNavigation("next");
     }
-  }, [isInfiniteTree, handleInfiniteNavigation, handleFiniteNavigation]);
+  }, [treeType, handleInfiniteNavigation, handleFiniteNavigation]);
 
   const onPreviousClick = useCallback(() => {
-    if (isInfiniteTree) {
+    if (treeType === "infinite") {
       handleInfiniteNavigation("previous");
     } else {
       handleFiniteNavigation("previous");
     }
-  }, [isInfiniteTree, handleInfiniteNavigation, handleFiniteNavigation]);
+  }, [treeType, handleInfiniteNavigation, handleFiniteNavigation]);
 
   return {
     onNextClick,
