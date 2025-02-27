@@ -33,7 +33,7 @@ const getTableColumns = (
   tree: TreeOoui,
   components: any,
   context: any,
-  treeType: "infinite" | "paginated" | "legacy",
+  many2oneSortEnabled: boolean = false,
 ): Column[] => {
   const many2oneSortEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_MANY2ONE_SORT,
@@ -94,7 +94,10 @@ const getTableColumns = (
         if (aItem > bItem) return 1;
         return 0;
       },
-      isSortable,
+      isSortable:
+        type !== "one2many" &&
+        !column.isFunction &&
+        (type !== "many2one" || many2oneSortEnabled),
     };
   });
   return tableColumns;

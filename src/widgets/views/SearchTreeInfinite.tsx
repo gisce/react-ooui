@@ -51,10 +51,8 @@ import SearchFilter from "./searchFilter/SearchFilter";
 import { useSearchTreeState } from "@/hooks/useSearchTreeState";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
-import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
-import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
-import { NameSearchWarning } from "./Tree/NameSearchWarning";
-import { SearchTreeHeader } from "./SearchTreeHeader";
+import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -148,6 +146,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const nameSearch = nameSearchProps || searchTreeNameSearch;
   const prevNameSearch = useRef(nameSearch);
 
+  const many2oneSortEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_MANY2ONE_SORT,
+  );
+
   useEffect(() => {
     updateTotalRows();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -211,9 +213,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         ...COLUMN_COMPONENTS,
       },
       parentContext,
-      "infinite",
+      many2oneSortEnabled,
     );
-  }, [treeOoui, parentContext]);
+  }, [treeOoui, parentContext, many2oneSortEnabled]);
 
   const columnsWithLoading = useMemo(() => {
     if (!columns) {
