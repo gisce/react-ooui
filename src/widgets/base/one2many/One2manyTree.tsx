@@ -23,6 +23,8 @@ import {
   getKey,
 } from "@/helpers/o2m-columnStorageHelper";
 import { useLocale } from "@gisce/react-formiga-components";
+import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
 
 export type One2manyTreeProps = {
   items: One2manyItem[];
@@ -89,6 +91,10 @@ export const One2manyTree = ({
   const itemsRef = useRef<One2manyItem[]>(items);
   const { t } = useLocale();
 
+  const many2oneSortEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_MANY2ONE_SORT,
+  );
+
   useDeepCompareEffect(() => {
     itemsRef.current = items;
     if (prevItemsValue.current === undefined) {
@@ -110,9 +116,9 @@ export const One2manyTree = ({
         ...COLUMN_COMPONENTS,
       },
       context,
-      "infinite",
+      many2oneSortEnabled,
     );
-  }, [context, ooui]);
+  }, [context, ooui, many2oneSortEnabled]);
 
   const onRequestData = useCallback(
     async ({
