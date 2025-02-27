@@ -169,7 +169,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   useImperativeHandle(ref, () => ({
     refreshResults: refresh,
     getFields: () => treeView?.fields,
-    getDomain: () => domain,
   }));
 
   // UI Components and Styles
@@ -200,7 +199,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     shouldShowSimpleSummary &&
     totalRows !== undefined &&
     totalRows !== null &&
-    totalRows > DEFAULT_SEARCH_LIMIT;
+    totalRows === DEFAULT_SEARCH_LIMIT;
 
   // Render
   return (

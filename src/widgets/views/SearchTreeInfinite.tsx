@@ -824,7 +824,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           nameSearch &&
           nameSearchFetchCompleted &&
           totalRows &&
-          totalRows > DEFAULT_SEARCH_LIMIT && (
+          totalRows === DEFAULT_SEARCH_LIMIT && (
             <NameSearchWarning
               onFilterSearchClick={() => setSearchVisible?.(true)}
             />
