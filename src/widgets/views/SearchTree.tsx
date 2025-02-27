@@ -173,7 +173,6 @@ function SearchTree(props: Props, ref: any) {
       fetchResults();
     },
     getFields: () => treeView?.fields,
-    getDomain: () => domain,
   }));
 
   useEffect(() => {
