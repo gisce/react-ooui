@@ -251,6 +251,8 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
       <One2manyTopBar
         mode={currentView}
         title={title}
+        currentId={items[itemIndex]?.id}
+        model={relation}
         readOnly={readOnly || false}
         isMany2Many={isMany2many}
         formHasChanges={formHasChanges}

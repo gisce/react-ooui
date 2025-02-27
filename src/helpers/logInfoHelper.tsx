@@ -1,5 +1,4 @@
 import ConnectionProvider from "@/ConnectionProvider";
-import React from "react";
 import showInfo from "@/ui/InfoDialog";
 
 async function showLogInfo(

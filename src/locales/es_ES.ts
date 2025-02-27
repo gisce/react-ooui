@@ -101,8 +101,7 @@ export default {
   allRecordsSelected: "Hay {totalRecords} registros seleccionados.",
   openInSameWindow: "Abrir en la pestaña actual",
   openInNewTab: "Abrir en una nueva pestaña",
-  confirmDuplicate:
-    "Estás seguro de querer duplicar el registro/s seleccionado/s?",
+  confirmDuplicate: "Estás seguro de querer duplicar el registro seleccionado?",
   confirmSelectAllRegisters:
     "Estás seguro de querer seleccionar todos los {totalRecords} registros?",
   filter: "Filtrar",
