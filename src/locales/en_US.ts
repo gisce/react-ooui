@@ -91,12 +91,12 @@ export default {
   errorWhileSavingForm: "Error while saving form",
   author: "Author",
   recordsSelected:
-    "Hi ha {numberOfSelectedRows} registres seleccionats en aquesta pàgina.",
-  selectAllRecords: "Seleccionar tots els {totalRecords} registres.",
-  allRecordsSelected: "Hi ha {totalRecords} registres seleccionats.",
+    "There are {numberOfSelectedRows} records selected on this page.",
+  selectAllRecords: "Select all {totalRecords} records.",
+  allRecordsSelected: "There are {totalRecords} records selected.",
   openInSameWindow: "Open in the current tab",
   openInNewTab: "Open in a new tab",
-  confirmDuplicate: "Are you sure you want to duplicate the selected item/s?",
+  confirmDuplicate: "Are you sure you want to duplicate the selected item?",
   confirmSelectAllRegisters:
     "Are you sure you want to select all {totalRecords} registers?",
   filter: "Filter",
@@ -114,4 +114,7 @@ export default {
   share: "Compartir URL",
   urlCopiedToClipboard: "URL copied to clipboard",
   copyToClipboard: "Copy to clipboard",
+  nameSearchLimitNote:
+    "Only the first 80 records are shown. If you need to see more records, please use the filter search.",
+  filterSearchLink: "filter search",
 };

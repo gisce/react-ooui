@@ -4,6 +4,8 @@ export enum ErpFeatureKeys {
   FEATURE_OMNISEARCH = "omnisearch",
   FEATURE_READFORVIEW = "read_for_view",
   FEATURE_USERVIEWPREFS = "user_view_prefs",
+  FEATURE_GET_TOOLBAR = "get_toolbar",
+  FEATURE_MANY2ONE_SORT = "many2one_sort",
   // ... add more features here
 }
 

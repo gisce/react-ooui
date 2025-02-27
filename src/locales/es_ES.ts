@@ -101,8 +101,7 @@ export default {
   allRecordsSelected: "Hay {totalRecords} registros seleccionados.",
   openInSameWindow: "Abrir en la pestaña actual",
   openInNewTab: "Abrir en una nueva pestaña",
-  confirmDuplicate:
-    "Estás seguro de querer duplicar el registro/s seleccionado/s?",
+  confirmDuplicate: "Estás seguro de querer duplicar el registro seleccionado?",
   confirmSelectAllRegisters:
     "Estás seguro de querer seleccionar todos los {totalRecords} registros?",
   filter: "Filtrar",
@@ -120,4 +119,7 @@ export default {
   share: "Compartir URL",
   urlCopiedToClipboard: "URL copiada al portapapeles",
   copyToClipboard: "Copiar al portapapeles",
+  nameSearchLimitNote:
+    "Se muestran solo los primeros 80 registros. Si desea ver más registros, utilice la búsqueda por filtros.",
+  filterSearchLink: "búsqueda por filtros",
 };

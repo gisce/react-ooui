@@ -1,5 +1,5 @@
 import { ReactElement, useCallback, useEffect, useMemo, useState } from "react";
-import { Checkbox, Spin , ColorPicker } from "antd";
+import { Checkbox, Spin, ColorPicker } from "antd";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../../base/ProgressBar";
 import { One2manyValue } from "../../base/one2many/One2manyInput";
@@ -14,6 +14,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { colorFromString } from "@/helpers/formHelper";
 import { EmailTagsRender } from "@/widgets/custom/EmailTags";
 import { ImageRender } from "@/widgets/base/Image";
+import { Char as CharOOui } from "@gisce/ooui";
 
 export const BooleanComponent = ({
   value,
@@ -70,6 +71,25 @@ export const DateComponent = ({ value }: { value: any }): ReactElement => {
     ).format(DatePickerConfig.date.dateDisplayFormat);
     return <>{formattedValue}</>;
   }, [value]);
+};
+
+export const CharComponent = ({
+  value,
+  ooui,
+}: {
+  value: any;
+  ooui: CharOOui;
+}): ReactElement => {
+  return useMemo(() => {
+    if (!value) {
+      return <></>;
+    }
+    if (ooui.fieldType === "many2one") {
+      return <>{value[1]}</>;
+    } else {
+      return <>{value}</>;
+    }
+  }, [value, ooui.fieldType]);
 };
 
 export const DateTimeComponent = ({ value }: { value: any }): ReactElement => {
@@ -304,4 +324,5 @@ export const COLUMN_COMPONENTS = {
   tags: TagsComponent,
   email: EmailTagsComponent,
   colorPicker: ColorPickerComponent,
+  char: CharComponent,
 };

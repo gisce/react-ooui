@@ -98,6 +98,8 @@ type SearchRequest = {
   order?: number | string | null;
   name_search?: string;
   skipRead?: boolean;
+  skipFunctionFields?: boolean;
+  onIdsRetrieved?: (ids: number[]) => void;
 };
 
 type SearchAllIdsRequest = SearchCountRequest & {
@@ -383,6 +385,25 @@ type ConnectionProviderType = {
     { key }: { key: string },
     requestConfig?: any,
   ) => Promise<any>;
+  processSearchResults: (
+    {
+      searchIds,
+      fieldsToRetrieve,
+      context,
+      attrs,
+      fields,
+      model,
+    }: {
+      searchIds: number[];
+      fieldsToRetrieve: string[];
+      context: any;
+      attrs?: any;
+      fields?: any;
+      model: string;
+    },
+    requestConfig?: any,
+  ) => Promise<{ results: any; attrsEvaluated?: any }>;
+  getToolbar: (options: GetViewRequest, requestConfig?: any) => Promise<any>;
 };
 
 type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar";
@@ -405,6 +426,8 @@ type ActionInfo = {
   limit?: number;
   actionRawData?: ActionRawData;
   searchParams?: any[];
+  currentPage?: number;
+  order?: any[];
 };
 
 type Tab = {

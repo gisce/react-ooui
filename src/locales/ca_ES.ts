@@ -99,8 +99,7 @@ export default {
   allRecordsSelected: "Hi ha {totalRecords} registres seleccionats.",
   openInSameWindow: "Obrir en la pestanya actual",
   openInNewTab: "Obrir en una nova pestanya",
-  confirmDuplicate:
-    "Estàs segur de volguer duplicar els registre/s seleccionats?",
+  confirmDuplicate: "Estàs segur de volguer duplicar els registre seleccionat?",
   confirmSelectAllRegisters:
     "Estàs segur de volguer seleccionar tots els {totalRecords} registres?",
   filter: "Filtrar",
@@ -118,4 +117,7 @@ export default {
   share: "Compartir URL",
   copyToClipboard: "Copiar al porta-retalls",
   urlCopiedToClipboard: "URL copiada al porta-retalls",
+  nameSearchLimitNote:
+    "Només es mostren els primers 80 registres. Si necessiteu veure més registres, utilitzeu la cerca per filtres.",
+  filterSearchLink: "cerca per filtres",
 };

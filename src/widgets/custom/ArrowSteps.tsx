@@ -6,8 +6,14 @@ import { iconMapper } from "@gisce/react-formiga-components";
 
 type ArrowStepsFieldProps = WidgetProps;
 
+export type ArrowStepsValue = Array<{
+  title: string;
+  active: boolean;
+  icon?: string;
+}>;
+
 type ArrowStepsProps = {
-  value?: Array<{ title: string; active: boolean; icon?: string }>;
+  value?: ArrowStepsValue;
 };
 
 export const ArrowSteps = (props: ArrowStepsProps) => {

@@ -47,12 +47,14 @@ type Props = {
   parentContext?: any;
   treeExpandable: boolean;
   toolbar?: any;
+  domain: any;
 };
 
 function TreeActionBarComponent({
   parentContext = {},
   treeExpandable,
   toolbar,
+  domain,
 }: Props) {
   const {
     availableViews,
@@ -79,7 +81,7 @@ function TreeActionBarComponent({
     limit,
     totalItems,
     isActive,
-    isInfiniteTree,
+    treeType,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   const advancedExportEnabled = useFeatureIsEnabled(
@@ -114,9 +116,8 @@ function TreeActionBarComponent({
   );
 
   const finalDomain = useMemo(() => {
-    const domain = searchTreeRef?.current?.getDomain();
     return mergeParams(domain || [], searchParams || []);
-  }, [searchTreeRef, searchParams]);
+  }, [domain, searchParams]);
 
   const handleDuplicate = useCallback(async () => {
     try {
@@ -179,16 +180,26 @@ function TreeActionBarComponent({
 
   const handleSearch = useCallback(
     (searchString?: string) => {
+      if (searchString === searchTreeNameSearch) {
+        return;
+      }
+
       if (searchString && searchString.trim().length > 0) {
         setSearchTreeNameSearch?.(searchString);
-      } else {
+        return;
+      }
+
+      if (searchTreeNameSearch !== undefined) {
         setSearchTreeNameSearch?.(undefined);
-        if (!isInfiniteTree) {
-          searchTreeRef?.current?.refreshResults();
+
+        if (treeType !== "infinite") {
+          setTimeout(() => {
+            searchTreeRef?.current?.refreshResults();
+          }, 50);
         }
       }
     },
-    [isInfiniteTree, searchTreeRef, setSearchTreeNameSearch],
+    [treeType, searchTreeRef, setSearchTreeNameSearch, searchTreeNameSearch],
   );
 
   const handleExportAction = useCallback(
@@ -220,14 +231,17 @@ function TreeActionBarComponent({
   );
 
   useEffect(() => {
-    if (isInfiniteTree && searchTreeNameSearch === undefined) {
+    if (treeType === "infinite" && searchTreeNameSearch === undefined) {
       if (isFirstMount.current) {
         isFirstMount.current = false;
         return;
       }
-      searchTreeRef?.current?.refreshResults();
+
+      setTimeout(() => {
+        searchTreeRef?.current?.refreshResults();
+      }, 0);
     }
-  }, [isInfiniteTree, searchTreeNameSearch, searchTreeRef]);
+  }, [treeType, searchTreeNameSearch, searchTreeRef]);
 
   useHotkeys(
     "ctrl+l,command+l",
@@ -327,7 +341,7 @@ function TreeActionBarComponent({
         icon={<InfoCircleOutlined />}
         tooltip={t("showLogs")}
         disabled={
-          !(selectedRowItems && selectedRowItems?.length > 0) || treeIsLoading
+          !(selectedRowItems && selectedRowItems?.length === 1) || treeIsLoading
         }
         onClick={() => showLogInfo(currentModel!, selectedRowItems![0].id, t)}
       />
