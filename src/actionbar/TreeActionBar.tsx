@@ -47,12 +47,14 @@ type Props = {
   parentContext?: any;
   treeExpandable: boolean;
   toolbar?: any;
+  domain: any;
 };
 
 function TreeActionBarComponent({
   parentContext = {},
   treeExpandable,
   toolbar,
+  domain,
 }: Props) {
   const {
     availableViews,
@@ -114,9 +116,8 @@ function TreeActionBarComponent({
   );
 
   const finalDomain = useMemo(() => {
-    const domain = searchTreeRef?.current?.getDomain();
     return mergeParams(domain || [], searchParams || []);
-  }, [searchTreeRef, searchParams]);
+  }, [domain, searchParams]);
 
   const handleDuplicate = useCallback(async () => {
     try {
