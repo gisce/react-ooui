@@ -7,8 +7,6 @@ import {
 } from "@gisce/ooui";
 import { TreeView, Column } from "@/types";
 import { SortDirection, ColumnState } from "@gisce/react-formiga-table";
-import { useFeatureIsEnabled } from "@/context/ConfigContext";
-import { ErpFeatureKeys } from "@/models/erpFeature";
 
 const getTree = (treeView: TreeView): TreeOoui => {
   const xml = treeView.arch;

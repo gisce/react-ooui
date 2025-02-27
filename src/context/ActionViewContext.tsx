@@ -1,6 +1,10 @@
 import { convertParamsToValues } from "@/helpers/searchHelper";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { TreeView, View } from "@/types";
+import {
+  DEFAULT_TREE_TYPE,
+  TreeType,
+} from "@/views/actionViews/TreeActionView";
 import { ColumnState } from "@gisce/react-formiga-table";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -24,7 +28,7 @@ type ActionViewProviderProps = {
   totalItems: number;
   setTotalItems: (totalItems: number) => void;
   selectedRowItems?: any[];
-  setSelectedRowItems: (value: any[]) => void;
+  setSelectedRowItems: (value: any[] | ((prevValue: any[]) => any[])) => void;
   setSearchTreeNameSearch: (searchString?: string) => void;
   searchTreeNameSearch?: string;
   goToResourceId: (ids: number[], openInSameTab?: boolean) => Promise<void>;
@@ -32,6 +36,8 @@ type ActionViewProviderProps = {
   isActive: boolean;
   children: React.ReactNode;
   initialSearchParams?: any[];
+  initialCurrentPage?: number;
+  initialOrder?: any[];
 };
 
 export type ActionViewContextType = Omit<
@@ -66,13 +72,17 @@ export type ActionViewContextType = Omit<
   setLimit?: (value: number) => void;
   setTitle?: (value: string) => void;
   treeFirstVisibleRow: number;
-  setTreeFirstVisibleRow: (totalItems: number) => void;
+  setTreeFirstVisibleRow: (value: number) => void;
+  treeFirstVisibleColumn: string | undefined;
+  setTreeFirstVisibleColumn: (value: string | undefined) => void;
   searchQuery?: SearchQueryParams;
   setSearchQuery?: (value: SearchQueryParams) => void;
-  isInfiniteTree?: boolean;
-  setIsInfiniteTree?: (value: boolean) => void;
-  sortState?: ColumnState[];
-  setSortState?: (value: ColumnState[] | undefined) => void;
+  treeType?: TreeType;
+  setTreeType?: (value: TreeType) => void;
+  order?: ColumnState[];
+  setOrder?: (value: ColumnState[] | undefined) => void;
+  currentPage?: number;
+  setCurrentPage?: (value: number) => void;
 };
 
 export const ActionViewContext = createContext<ActionViewContextType | null>(
@@ -116,6 +126,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     limit: limitProps,
     isActive,
     initialSearchParams,
+    initialCurrentPage,
+    initialOrder,
   } = props;
 
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
@@ -138,20 +150,30 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     ),
   );
   const [treeFirstVisibleRow, setTreeFirstVisibleRow] = useState<number>(0);
+  const [treeFirstVisibleColumn, setTreeFirstVisibleColumn] = useState<
+    string | undefined
+  >(undefined);
   const [searchQuery, setSearchQuery] = useState<SearchQueryParams>();
-  const [isInfiniteTree, setIsInfiniteTree] = useState<boolean>(false);
-  const [sortState, setSortState] = useState<ColumnState[]>();
+  const [treeType, setTreeType] = useState<TreeType>(DEFAULT_TREE_TYPE);
+  const [order, setOrder] = useState<ColumnState[] | undefined>(
+    initialOrder as ColumnState[] | [],
+  );
 
   const [limit, setLimit] = useState<number>(
     limitProps !== undefined ? limitProps : DEFAULT_SEARCH_LIMIT,
   );
   const [title, setTitle] = useState<string>(titleProps);
 
+  const [currentPage, setCurrentPage] = useState<number>(
+    initialCurrentPage || 1,
+  );
+
   useEffect(() => {
     if (results && results.length > 0 && !currentItemIndex) {
       setCurrentItemIndex?.(0);
       setCurrentId?.(results[0].id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results]);
 
   useEffect(() => {
@@ -244,12 +266,16 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         isActive,
         setTreeFirstVisibleRow,
         treeFirstVisibleRow,
+        treeFirstVisibleColumn,
+        setTreeFirstVisibleColumn,
         searchQuery,
         setSearchQuery,
-        isInfiniteTree,
-        setIsInfiniteTree,
-        sortState,
-        setSortState,
+        treeType,
+        setTreeType,
+        order,
+        setOrder,
+        currentPage,
+        setCurrentPage,
       }}
     >
       {children}
@@ -322,12 +348,16 @@ export const useActionViewContext = () => {
       setTitle: () => {},
       treeFirstVisibleRow: 0,
       setTreeFirstVisibleRow: () => {},
+      treeFirstVisibleColumn: undefined,
+      setTreeFirstVisibleColumn: () => {},
       searchQuery: undefined,
       setSearchQuery: () => {},
-      isInfiniteTree: false,
-      setIsInfiniteTree: () => {},
-      sortState: undefined,
-      setSortState: () => {},
+      treeType: DEFAULT_TREE_TYPE,
+      setTreeType: () => {},
+      order: undefined,
+      setOrder: () => {},
+      currentPage: 1,
+      setCurrentPage: () => {},
     };
   }
 

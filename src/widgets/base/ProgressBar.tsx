@@ -20,14 +20,23 @@ export const ProgressBarInput = ({ value }: { value?: number }) => {
   })}%`;
 
   return (
-    <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
+    <StyledProgressContainer>
       <StyledProgress percent={value} />
-      <div style={{ flexGrow: 1, paddingLeft: 10 }}>{textValue}</div>
-    </div>
+      <StyledText>{textValue}</StyledText>
+    </StyledProgressContainer>
   );
 };
 
+const StyledProgressContainer = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+`;
+
 const StyledProgress = styled(Progress)`
+  flex: 1;
+  min-width: 0;
   .ant-progress-outer {
     margin-right: 0px;
     padding-right: 0px;
@@ -35,4 +44,9 @@ const StyledProgress = styled(Progress)`
   .ant-progress-text {
     display: none;
   }
+`;
+
+const StyledText = styled.div`
+  padding-left: 10px;
+  white-space: nowrap;
 `;

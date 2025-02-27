@@ -119,4 +119,7 @@ export default {
   share: "Compartir URL",
   urlCopiedToClipboard: "URL copiada al portapapeles",
   copyToClipboard: "Copiar al portapapeles",
+  nameSearchLimitNote:
+    "Se muestran solo los primeros 80 registros. Si desea ver más registros, utilice la búsqueda por filtros.",
+  filterSearchLink: "búsqueda por filtros",
 };

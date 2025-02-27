@@ -1,19 +1,24 @@
 import { useLocale } from "@gisce/react-formiga-components";
 import { Row, Col, Spin, Typography } from "antd";
+import { ReactNode } from "react";
 const { Text } = Typography;
 
 export type SearchTreeHeaderProps = {
   totalRows?: number | null;
   selectedRowKeys: number[];
-  allRowSelectedMode: boolean;
+  customMiddleComponent?: ReactNode;
 };
 
 export const SearchTreeHeader = ({
   totalRows,
   selectedRowKeys,
-  allRowSelectedMode,
+  customMiddleComponent,
 }: SearchTreeHeaderProps) => {
   const { t } = useLocale();
+
+  // Calculate column spans based on whether middle component exists
+  const sideColSpan = customMiddleComponent ? 6 : 12;
+  const middleColSpan = 12;
 
   return (
     <Row
@@ -21,14 +26,19 @@ export const SearchTreeHeader = ({
       className="pb-4"
       style={{ height: 40, maxHeight: 40, overflow: "hidden" }}
     >
-      <Col span={12}>
-        {allRowSelectedMode ? (
-          <span>{`${selectedRowKeys.length} ${t("selectedRegisters")}`}</span>
-        ) : (
-          <SearchTreeSelectionSummary selectedRowKeys={selectedRowKeys} />
-        )}
+      <Col span={sideColSpan}>
+        <SearchTreeSelectionSummary selectedRowKeys={selectedRowKeys} />
       </Col>
-      <Col span={12} style={{ paddingRight: 10 }} className="text-right">
+      {customMiddleComponent && (
+        <Col span={middleColSpan} className="text-center">
+          {customMiddleComponent}
+        </Col>
+      )}
+      <Col
+        span={sideColSpan}
+        style={{ paddingRight: 10 }}
+        className="text-right"
+      >
         {totalRows === undefined && <Spin />}
         {totalRows !== null &&
           totalRows !== undefined &&
