@@ -13,7 +13,7 @@ import { Tree as TreeOoui } from "@gisce/ooui";
 import { PaginatedTableRef } from "@gisce/react-formiga-table";
 
 import { Badge, Spin } from "antd";
-import { PaginationHeader, useLocale } from "@gisce/react-formiga-components";
+import { PaginationHeader } from "@gisce/react-formiga-components";
 import { AggregatesFooter } from "../../../base/one2many/AggregatesFooter";
 
 import { useFetchTreeViews } from "@/hooks/useFetchTreeViews";
@@ -51,9 +51,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     nameSearch: nameSearchProps,
     filterType = "side",
   } = props;
-
-  // Get translation function
-  const { t } = useLocale();
 
   // Refs
   const tableRef: RefObject<PaginatedTableRef> = useRef(null);
@@ -221,7 +218,9 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         onRequestPageChange={onRequestPageChange}
         totalSelectedCount={selectedRowKeys.length}
         onSelectAllGlobalRecords={selectAllRecords}
-        simpleSummary={nameSearchProps && nameSearchFetchCompleted}
+        simpleSummary={
+          nameSearchProps !== undefined && nameSearchFetchCompleted
+        }
         customMiddleComponent={
           nameSearchProps &&
           nameSearchFetchCompleted &&
