@@ -78,7 +78,6 @@ export const ConfigContextProvider = memo(
       [erpFeatures, globalValues, rootContext, devMode, title, treeMaxLimit],
     );
 
-    console.log("treeMaxLimit", treeMaxLimit);
     return (
       <ConfigContext.Provider value={providerValue}>
         <FormigaConfigProvider
