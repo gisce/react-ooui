@@ -318,7 +318,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
       let order;
       if (!hasRestoredSortStateForFirstTime.current && actionViewSortState) {
-        hasRestoredSortStateForFirstTime.current = true;
         const sortFields = getSortedFieldsFromState({
           state: actionViewSortState,
         });
@@ -341,6 +340,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         setActionViewSortState?.(finalStateWithSortData);
         order = getOrderFromSortFields(sortFields);
       }
+
+      hasRestoredSortStateForFirstTime.current = true;
 
       const params = nameSearch ? domain : mergedParams;
 
