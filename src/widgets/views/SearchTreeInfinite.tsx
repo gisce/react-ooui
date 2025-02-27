@@ -41,7 +41,6 @@ import { useTreeColumnStorageFetch } from "../base/one2many/useTreeColumnStorage
 import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { useTreeAggregates } from "../base/one2many/useTreeAggregates";
 import { AggregatesFooter } from "../base/one2many/AggregatesFooter";
-import { SearchTreeHeader } from "./SearchTreeHeader";
 import { useLocale, SkeletonPill } from "@gisce/react-formiga-components";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { SideSearchFilter } from "./searchFilter/SideSearchFilter";
@@ -53,6 +52,9 @@ import { useSearchTreeState } from "@/hooks/useSearchTreeState";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
 import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
+import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
+import { NameSearchWarning } from "./Tree/NameSearchWarning";
+import { SearchTreeHeader } from "./SearchTreeHeader";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -102,6 +104,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const [totalRowsLoading, setTotalRowsLoading] = useState<boolean>(true);
   const [totalRows, setTotalRows] = useState<number | null>();
+  const [nameSearchFetchCompleted, setNameSearchFetchCompleted] =
+    useState<boolean>(false);
 
   const { t } = useLocale();
 
@@ -260,6 +264,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   }, [domain, mergedParams, nameSearch]);
 
   const updateTotalRows = useCallback(async () => {
+    if (nameSearch) {
+      return;
+    }
     setTotalRows(undefined);
     setTotalItemsActionView(0);
     setTotalRowsLoading(true);
@@ -375,6 +382,16 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
       prevSortOrder.current = order;
 
+      // Handle name search completion state
+      if (nameSearch) {
+        setTotalRows(results.length);
+        setTotalItemsActionView(results.length);
+        setNameSearchFetchCompleted(true);
+        setTotalRowsLoading(false);
+      } else {
+        setNameSearchFetchCompleted(false);
+      }
+
       if (results.length === 0) {
         lastAssignedResults.current = [];
         setTotalRows(0);
@@ -422,6 +439,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       treeOoui,
       treeView,
       addRecordsToCheckFunctionFields,
+      setNameSearchFetchCompleted,
+      setTotalRowsLoading,
     ],
   );
 
@@ -661,10 +680,16 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const refresh = useCallback(async () => {
     changeSelectedRowItems([]);
     currentSearchParamsString.current = undefined;
+    setNameSearchFetchCompleted(false);
     await updateTotalRows();
     tableRef?.current?.refresh();
     refreshFunctionFields();
-  }, [changeSelectedRowItems, updateTotalRows, refreshFunctionFields]);
+  }, [
+    changeSelectedRowItems,
+    updateTotalRows,
+    refreshFunctionFields,
+    setNameSearchFetchCompleted,
+  ]);
 
   useImperativeHandle(ref, () => ({
     refreshResults: refresh,
@@ -794,8 +819,17 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       )}
       <SearchTreeHeader
         selectedRowKeys={selectedRowKeys}
-        allRowSelectedMode={false}
         totalRows={totalRows}
+        customMiddleComponent={
+          nameSearch &&
+          nameSearchFetchCompleted &&
+          totalRows &&
+          totalRows > DEFAULT_SEARCH_LIMIT && (
+            <NameSearchWarning
+              onFilterSearchClick={() => setSearchVisible?.(true)}
+            />
+          )
+        }
       />
       <div ref={containerRef} style={containerStyle}>
         {loading || getColumnStateInProgress || totalRowsLoading ? (

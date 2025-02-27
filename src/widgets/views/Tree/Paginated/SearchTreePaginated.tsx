@@ -13,7 +13,7 @@ import { Tree as TreeOoui } from "@gisce/ooui";
 import { PaginatedTableRef } from "@gisce/react-formiga-table";
 
 import { Badge, Spin } from "antd";
-import { PaginationHeader } from "@gisce/react-formiga-components";
+import { PaginationHeader, useLocale } from "@gisce/react-formiga-components";
 import { AggregatesFooter } from "../../../base/one2many/AggregatesFooter";
 
 import { useFetchTreeViews } from "@/hooks/useFetchTreeViews";
@@ -33,6 +33,8 @@ import {
 import { useTableConfiguration } from "../../../../hooks/useTableConfiguration";
 import { PaginatedSearchControls } from "./components/PaginatedSearchControls";
 import { PaginatedTableComponent } from "./components/PaginatedTableComponent";
+import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
+import { NameSearchWarning } from "../NameSearchWarning";
 
 export const HEIGHT_OFFSET = 10;
 
@@ -49,6 +51,9 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     nameSearch: nameSearchProps,
     filterType = "side",
   } = props;
+
+  // Get translation function
+  const { t } = useLocale();
 
   // Refs
   const tableRef: RefObject<PaginatedTableRef> = useRef(null);
@@ -122,6 +127,8 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     onGetFirstVisibleColumn,
     onSortChange,
     isFieldLoading,
+    setSearchVisible,
+    nameSearchFetchCompleted,
   } = usePaginatedSearch({
     treeViewFetching: loading,
     treeOoui,
@@ -206,12 +213,25 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
       <PaginationHeader
         total={totalRows || 0}
         totalRowsLoading={totalRowsLoading}
-        page={currentPage || 1}
-        pageSize={limit || DEFAULT_PAGE_SIZE}
+        page={nameSearchProps ? 1 : currentPage || 1}
+        pageSize={
+          nameSearchProps ? DEFAULT_SEARCH_LIMIT : limit || DEFAULT_PAGE_SIZE
+        }
         currentPageSelectedCount={selectedRowKeys.length}
         onRequestPageChange={onRequestPageChange}
         totalSelectedCount={selectedRowKeys.length}
         onSelectAllGlobalRecords={selectAllRecords}
+        simpleSummary={nameSearchProps && nameSearchFetchCompleted}
+        customMiddleComponent={
+          nameSearchProps &&
+          nameSearchFetchCompleted &&
+          totalRows &&
+          totalRows > DEFAULT_SEARCH_LIMIT && (
+            <NameSearchWarning
+              onFilterSearchClick={() => setSearchVisible(true)}
+            />
+          )
+        }
       />
       <div ref={containerRef} style={containerStyle}>
         {loading ? (

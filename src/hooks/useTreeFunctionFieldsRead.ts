@@ -161,14 +161,26 @@ export const useTreeFunctionFieldsRead = ({
     requestFunctionFields();
   }, [recordIdsToCheck, requestFunctionFields]);
 
-  const addRecordsToCheckFunctionFields = useCallback((ids: number[]) => {
-    ids.forEach((id) => {
+  const addRecordsToCheckFunctionFields = useCallback(
+    (ids: number[]) => {
+      if (!ids || ids.length === 0) return;
+
+      // Create a new Set to ensure React detects the state change
       setRecordIdsToCheck((prev) => {
-        prev.add(id);
-        return prev;
+        const newSet = new Set(prev);
+        ids.forEach((id) => newSet.add(id));
+        return newSet;
       });
-    });
-  }, []);
+
+      // Immediately request function fields for these IDs
+      if (hasFunctionFields && isActive && treeOoui) {
+        setTimeout(() => {
+          requestFunctionFields();
+        }, 100);
+      }
+    },
+    [hasFunctionFields, isActive, treeOoui, requestFunctionFields],
+  );
 
   const tryUpdateRows = useCallback(() => {
     const currentTableRecords = tableRef?.current?.getVisibleRows() || [];
@@ -184,7 +196,7 @@ export const useTreeFunctionFieldsRead = ({
     const recordsToUpdate = loadedRecords.current
       .filter((record) => {
         const currentRecord = currentTableRecords.find(
-          (tableRecord: any) => tableRecord.id === record.id,
+          (tableRecord: any) => tableRecord?.id === record?.id,
         );
 
         if (!currentRecord) {

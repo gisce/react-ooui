@@ -179,16 +179,26 @@ function TreeActionBarComponent({
 
   const handleSearch = useCallback(
     (searchString?: string) => {
+      if (searchString === searchTreeNameSearch) {
+        return;
+      }
+
       if (searchString && searchString.trim().length > 0) {
         setSearchTreeNameSearch?.(searchString);
-      } else {
+        return;
+      }
+
+      if (searchTreeNameSearch !== undefined) {
         setSearchTreeNameSearch?.(undefined);
+
         if (treeType !== "infinite") {
-          searchTreeRef?.current?.refreshResults();
+          setTimeout(() => {
+            searchTreeRef?.current?.refreshResults();
+          }, 50);
         }
       }
     },
-    [treeType, searchTreeRef, setSearchTreeNameSearch],
+    [treeType, searchTreeRef, setSearchTreeNameSearch, searchTreeNameSearch],
   );
 
   const handleExportAction = useCallback(
@@ -225,7 +235,10 @@ function TreeActionBarComponent({
         isFirstMount.current = false;
         return;
       }
-      searchTreeRef?.current?.refreshResults();
+
+      setTimeout(() => {
+        searchTreeRef?.current?.refreshResults();
+      }, 0);
     }
   }, [treeType, searchTreeNameSearch, searchTreeRef]);
 
