@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Tooltip, theme, Statistic, Card, Empty, Space } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
@@ -23,6 +23,8 @@ import { GraphCard } from "../views/Graph";
 import { useFormContext } from "@/context/FormContext";
 import styled from "styled-components";
 import dayjs from "@/helpers/dayjs";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import ConnectionProvider from "@/ConnectionProvider";
 const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
@@ -57,6 +59,33 @@ const IndicatorInput = (props: IndicatorInputProps) => {
   const { token } = useToken();
   const { ooui, value } = props;
   const { locale } = useLocale();
+  const [icon, setIcon] = useState<string>(ooui.icon);
+  const [color, setColor] = useState<string>(ooui.color);
+  const [parseCondition] = useNetworkRequest(
+    ConnectionProvider.getHandler().parseCondition,
+  );
+
+  useEffect(() => {
+    async function evaluateCondition(condition: string, setter: Function) {
+      if (condition && condition.includes(":")) {
+        try {
+          const iconEval = await parseCondition({
+            condition,
+            values: { value },
+            context: {},
+          });
+          setter(iconEval);
+        } catch (err) {
+          console.error("Error evaluando icono:", err);
+        }
+      } else {
+        setter(condition);
+      }
+    }
+    evaluateCondition(ooui.icon, setIcon);
+    evaluateCondition(ooui.color, setColor);
+  }, [ooui.icon, ooui.color, value]);
+
   const title = (
     <>
       <span>{ooui.label} </span>
@@ -70,7 +99,7 @@ const IndicatorInput = (props: IndicatorInputProps) => {
       )}
     </>
   );
-  const Icon: React.ElementType = iconMapper(ooui.icon) as any;
+  const Icon: React.ElementType = iconMapper(icon) as any;
   let formattedValue = value;
   if (ooui.selectionValues.size) {
     formattedValue = ooui.selectionValues.get(value);
@@ -116,6 +145,7 @@ const IndicatorInput = (props: IndicatorInputProps) => {
       suffix={ooui.suffix}
       value={formattedValue}
       formatter={(value) => value}
+      valueStyle={{ color }}
     />
   );
   if (ooui.card) {
