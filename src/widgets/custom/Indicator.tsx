@@ -61,7 +61,7 @@ const IndicatorInput = (props: IndicatorInputProps) => {
   const { locale } = useLocale();
   const [icon, setIcon] = useState<string>(ooui.icon);
   const [color, setColor] = useState<string>(ooui.color);
-  const [parseCondition] = useNetworkRequest(
+  const [parseCondition, cancelRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().parseCondition,
   );
 
@@ -84,6 +84,8 @@ const IndicatorInput = (props: IndicatorInputProps) => {
     }
     evaluateCondition(ooui.icon, setIcon);
     evaluateCondition(ooui.color, setColor);
+    return () => cancelRequest();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ooui.icon, ooui.color, value]);
 
   const title = (
