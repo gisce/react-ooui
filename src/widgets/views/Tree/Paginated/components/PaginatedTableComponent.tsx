@@ -1,6 +1,7 @@
 import { memo, useMemo } from "react";
 import { PaginatedTable } from "@gisce/react-formiga-table";
 import { PaginatedTableContentProps } from "../SearchTreePaginated.types";
+import { SkeletonPill } from "@gisce/react-formiga-components";
 
 export const PaginatedTableComponent = memo(
   ({
@@ -28,12 +29,16 @@ export const PaginatedTableComponent = memo(
     actionViewSortState,
     onSortChange,
     tableRef,
+    isFieldLoading,
   }: PaginatedTableContentProps) => {
     // Wrap column components to inject loading state
     const columnsWithLoading = useMemo(() => {
       return columns.map((column) => ({
         ...column,
-        render: (value: any) => {
+        render: (value: any, record: any) => {
+          if (isFieldLoading?.(record, column.key)) {
+            return <SkeletonPill />;
+          }
           return column.render(
             value,
             column.key,
@@ -42,7 +47,7 @@ export const PaginatedTableComponent = memo(
           );
         },
       }));
-    }, [columns]);
+    }, [columns, isFieldLoading]);
 
     if (!columns || !treeOoui) return null;
 
