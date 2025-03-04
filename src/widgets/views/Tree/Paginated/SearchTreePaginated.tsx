@@ -123,7 +123,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     setTreeFirstVisibleColumn,
     onGetFirstVisibleColumn,
     onSortChange,
-    isFieldLoading,
     setSearchVisible,
     nameSearchFetchCompleted,
     nameSearch,
@@ -264,7 +263,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             actionViewSortState={actionViewSortState}
             onSortChange={onSortChange}
             tableRef={tableRef}
-            isFieldLoading={isFieldLoading}
           />
         )}
       </div>
