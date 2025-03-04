@@ -57,6 +57,7 @@ import { NameSearchWarning } from "./Tree/NameSearchWarning";
 import { SearchTreeHeader } from "./SearchTreeHeader";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
+import { useTreeAttributesState } from "@/hooks/useTreeAttributesState";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -97,9 +98,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     nameSearch: nameSearchProps,
     filterType = "side",
   } = props;
-  const colorsForResults = useRef<{ [key: number]: string }>({});
-  const statusForResults = useRef<{ [key: number]: string }>();
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
+  const { colorsForResults, statusForResults, updateAttributes } =
+    useTreeAttributesState();
   const lastAssignedResults = useRef<any[]>([]);
   const hasRestoredSortStateForFirstTime = useRef<boolean>(false);
   const showErrorDialog = useShowErrorDialog();
@@ -407,26 +408,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       }
 
       const preparedResults = getTableItems(treeOoui, results);
-
-      const colors = getColorMap(attrsEvaluated);
-
-      colorsForResults.current = {
-        ...colorsForResults.current,
-        ...colors,
-      };
-
-      if (!statusForResults.current && treeOoui.status) {
-        statusForResults.current = {};
-      }
-
-      if (treeOoui.status) {
-        const status = getStatusMap(attrsEvaluated);
-        statusForResults.current = {
-          ...statusForResults.current,
-          ...status,
-        };
-      }
-
+      updateAttributes(attrsEvaluated, treeOoui);
       lastAssignedResults.current = [...preparedResults];
       return preparedResults;
     },
@@ -448,6 +430,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       addRecordsToCheckFunctionFields,
       setNameSearchFetchCompleted,
       setTotalRowsLoading,
+      updateAttributes,
     ],
   );
 

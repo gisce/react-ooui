@@ -26,6 +26,7 @@ import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { useTreeColumnStorageFetch } from "@/widgets/base/one2many/useTreeColumnStorageFetch";
 import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
+import { useTreeAttributesState } from "@/hooks/useTreeAttributesState";
 
 export const DEFAULT_PAGE_SIZE = DEFAULT_SEARCH_LIMIT;
 
@@ -99,8 +100,8 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   const prevSearchParamsRef = useRef(searchParams);
   const prevSearchVisibleRef = useRef(searchVisible);
   const currentSearchParamsString = useRef<string>();
-  const colorsForResults = useRef<{ [key: number]: string }>({});
-  const statusForResults = useRef<{ [key: number]: string }>();
+  const { colorsForResults, statusForResults, updateAttributes } =
+    useTreeAttributesState();
   const lastAssignedResults = useRef<any[]>([]);
   const fetchInProgress = useRef<boolean>(false);
 
@@ -462,25 +463,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       }
 
       const preparedResults = getTableItems(treeOoui, results);
-
-      const colors = getColorMap(attrsEvaluated);
-
-      colorsForResults.current = {
-        ...colorsForResults.current,
-        ...colors,
-      };
-
-      if (!statusForResults.current && treeOoui.status) {
-        statusForResults.current = {};
-      }
-
-      if (treeOoui.status) {
-        const status = getStatusMap(attrsEvaluated);
-        statusForResults.current = {
-          ...statusForResults.current,
-          ...status,
-        };
-      }
+      updateAttributes(attrsEvaluated, treeOoui);
 
       setTreeIsLoading(false);
       lastAssignedResults.current = [...preparedResults];
@@ -511,6 +494,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     addRecordsToCheckFunctionFields,
     updateTotalRows,
     setTotalItemsActionView,
+    updateAttributes,
   ]);
 
   const refresh = useCallback(async () => {
