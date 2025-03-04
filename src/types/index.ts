@@ -42,13 +42,19 @@ export type BaseView = BaseViewExtra & {
   title?: string;
 };
 
-type TreeView = BaseView & {
+export type FieldsInConditions = {
+  colors?: string[];
+  status?: string[];
+};
+
+export type TreeView = BaseView & {
   arch: string;
   fields: any;
   search_fields?: SearchFields;
   isExpandable?: boolean;
   field_parent?: string;
   toolbar?: any;
+  fields_in_conditions?: FieldsInConditions;
 };
 
 type FormView = TreeView & {

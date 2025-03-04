@@ -15,8 +15,6 @@ import { useShowErrorDialog } from "@/ui/GenericErrorDialog";
 import { useDeepCompareEffect } from "use-deep-compare";
 import deepEqual from "deep-equal";
 import {
-  getColorMap,
-  getStatusMap,
   getTableItems,
   getSortedFieldsFromState,
   getOrderFromSortFields,
@@ -138,12 +136,13 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     addRecordsToCheckFunctionFields,
   } = useTreeFunctionFieldsRead({
     model,
-    fields: treeView?.fields,
+    treeView,
     tableRef,
     context,
     isActive,
     onResultsUpdated: onFunctionFieldsUpdated,
     treeOoui,
+    updateAttributes,
   });
 
   // Hooks

@@ -6,30 +6,36 @@ import { useBrowserVisibility } from "./useBrowserVisibility";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { getTableItems } from "@/helpers/treeHelper";
+import { TreeView } from "@/types/index";
 
 const AUTOREFRESH_INTERVAL_SECONDS = 0.5 * 1000;
 
 type UseTreeFunctionFieldsReadProps = {
   model: string;
-  fields: any;
+  treeView?: TreeView;
   tableRef: React.RefObject<InfiniteTableRef>;
   context?: any;
   isActive?: boolean;
   onResultsUpdated?: (updatedResults: any[]) => void;
   treeOoui?: TreeOoui;
+  updateAttributes?: (attrsEvaluated: any, treeOoui: TreeOoui) => void;
 };
 
 export const useTreeFunctionFieldsRead = ({
   model,
-  fields,
+  treeView,
   tableRef,
   context = {},
   isActive = true,
   onResultsUpdated,
   treeOoui,
+  updateAttributes,
 }: UseTreeFunctionFieldsReadProps) => {
   const [hasFunctionFields, setHasFunctionFields] = useState(false);
   const functionFields = useRef<string[]>();
+  const fields = treeView?.fields;
+
+  console.log(treeView?.fields_in_conditions);
 
   const [recordIdsToCheck, setRecordIdsToCheck] = useState<Set<number>>(
     new Set(),
@@ -127,6 +133,8 @@ export const useTreeFunctionFieldsRead = ({
         fieldsToRetrieve: functionFields.current!,
       });
       const tableItems = getTableItems(treeOoui, functionResults);
+
+      // HERE
 
       // Add the loaded ids to the loaded ids set, ensuring no duplicates by ID
       const uniqueRecords = [...loadedRecords.current];

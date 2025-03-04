@@ -15,10 +15,8 @@ import { FormView, TreeView } from "@/types/index";
 import { useFetchTreeViews } from "@/hooks/useFetchTreeViews";
 import { Badge, Spin } from "antd";
 import {
-  getColorMap,
   getOrderFromSortFields,
   getSortedFieldsFromState,
-  getStatusMap,
   getTableColumns,
   getTableItems,
   getTree,
@@ -201,11 +199,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     addRecordsToCheckFunctionFields,
   } = useTreeFunctionFieldsRead({
     model,
-    fields: treeView?.fields,
+    treeView,
     tableRef,
     context: parentContext,
     isActive,
     treeOoui,
+    updateAttributes,
   });
 
   const columns = useDeepCompareMemo(() => {
