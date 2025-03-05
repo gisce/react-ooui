@@ -39,7 +39,7 @@ import { useTreeColumnStorageFetch } from "../base/one2many/useTreeColumnStorage
 import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { useTreeAggregates } from "../base/one2many/useTreeAggregates";
 import { AggregatesFooter } from "../base/one2many/AggregatesFooter";
-import { useLocale, SkeletonPill } from "@gisce/react-formiga-components";
+import { useLocale } from "@gisce/react-formiga-components";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { SideSearchFilter } from "./searchFilter/SideSearchFilter";
 import { mergeParams } from "@/helpers/searchHelper";
@@ -59,6 +59,7 @@ import {
   getAttributesConditionsFromOoui,
   useTreeAttributesState,
 } from "@/hooks/useTreeAttributesState";
+import { CellRenderer } from "./Tree/CellRenderer";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -237,12 +238,14 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     }
     return columns.map((column: any) => ({
       ...column,
-      render: (value: any, record: any) => {
-        if (isFieldLoading?.(record, column.key)) {
-          return <SkeletonPill />;
-        }
-        return column.render(value, column.key, column?.ooui, column?.context);
-      },
+      render: (value: any, record: any) => (
+        <CellRenderer
+          value={value}
+          record={record}
+          column={column}
+          isFieldLoading={isFieldLoading}
+        />
+      ),
     }));
   }, [columns, isFieldLoading]);
 
