@@ -132,8 +132,12 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     });
   }, []);
 
-  const { colorsForResults, statusForResults, updateAttributes } =
-    useTreeAttributesState();
+  const {
+    colorsForResults,
+    statusForResults,
+    updateAttributes,
+    clearAttributes,
+  } = useTreeAttributesState();
 
   const {
     isFieldLoading,
@@ -499,6 +503,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   ]);
 
   const refresh = useCallback(async () => {
+    clearAttributes();
     setTotalRowsLoading(true);
     setTreeFirstVisibleRow(0);
     fetchColumnState();
@@ -513,12 +518,13 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
     await fetchResults();
   }, [
-    fetchColumnState,
-    fetchResults,
-    setSelectedRowItems,
+    clearAttributes,
     setTreeFirstVisibleRow,
-    refreshFunctionFields,
+    fetchColumnState,
+    setSelectedRowItems,
     nameSearch,
+    fetchResults,
+    refreshFunctionFields,
   ]);
 
   const onRequestPageChange = useCallback(

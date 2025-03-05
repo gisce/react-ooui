@@ -1,10 +1,15 @@
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 import { getColorMap, getStatusMap } from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
 
 export function useTreeAttributesState() {
   const colorsForResults = useRef<{ [key: number]: string }>({});
   const statusForResults = useRef<{ [key: number]: string }>();
+
+  const clearAttributes = useCallback(() => {
+    colorsForResults.current = {};
+    statusForResults.current = {};
+  }, []);
 
   const updateAttributes = (attrsEvaluated: any, treeOoui: TreeOoui) => {
     const colors = getColorMap(attrsEvaluated);
@@ -30,6 +35,7 @@ export function useTreeAttributesState() {
     colorsForResults,
     statusForResults,
     updateAttributes,
+    clearAttributes,
   };
 }
 

@@ -242,6 +242,7 @@ export const useTreeFunctionFieldsRead = ({
         });
 
         updateAttributes(attrsEvaluated, treeOoui);
+        tableRef?.current?.refreshRowStyles();
       } catch (error) {
         if (error.name !== "AbortError") {
           console.error("Error parsing conditions:", error);
@@ -253,9 +254,10 @@ export const useTreeFunctionFieldsRead = ({
       onHasFunctionFieldsToParseConditions,
       treeOoui,
       updateAttributes,
+      results,
       parseConditions,
       context,
-      results,
+      tableRef,
     ],
   );
 

@@ -194,8 +194,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     treeOoui,
   });
 
-  const { colorsForResults, statusForResults, updateAttributes } =
-    useTreeAttributesState();
+  const {
+    colorsForResults,
+    statusForResults,
+    updateAttributes,
+    clearAttributes,
+  } = useTreeAttributesState();
 
   const {
     isFieldLoading,
@@ -488,6 +492,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       return { color: colorsForResults.current[record.node?.data?.id] };
     }
     return undefined;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const selectedRowKeys = useMemo(() => {
@@ -582,6 +587,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const onRowStatus = useCallback(
     (record: any) => statusForResults.current?.[record.id],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
@@ -671,6 +677,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const refresh = useCallback(async () => {
     changeSelectedRowItems([]);
+    clearAttributes();
     currentSearchParamsString.current = undefined;
     setNameSearchFetchCompleted(false);
     await updateTotalRows();
@@ -681,6 +688,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     updateTotalRows,
     refreshFunctionFields,
     setNameSearchFetchCompleted,
+    clearAttributes,
   ]);
 
   useImperativeHandle(ref, () => ({
