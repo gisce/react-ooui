@@ -190,7 +190,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     clearAttributes,
   } = useTreeAttributesState();
 
-  useAutorefreshableTreeFields({
+  const { clear: clearAutorefreshableFields } = useAutorefreshableTreeFields({
     model,
     tableRef,
     autorefreshableFields: treeOoui?.autorefreshableFields,
@@ -199,6 +199,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     isActive,
     treeOoui,
     updateAttributes,
+    results: actionViewResults,
   });
 
   const {
@@ -680,6 +681,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const refresh = useCallback(async () => {
     changeSelectedRowItems([]);
     clearAttributes();
+    clearAutorefreshableFields();
     currentSearchParamsString.current = undefined;
     setNameSearchFetchCompleted(false);
     await updateTotalRows();
@@ -687,10 +689,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     refreshFunctionFields();
   }, [
     changeSelectedRowItems,
+    clearAttributes,
+    clearAutorefreshableFields,
     updateTotalRows,
     refreshFunctionFields,
-    setNameSearchFetchCompleted,
-    clearAttributes,
   ]);
 
   useImperativeHandle(ref, () => ({

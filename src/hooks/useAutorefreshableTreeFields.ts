@@ -19,6 +19,7 @@ export type UseAutorefreshableTreeFieldsOpts = {
   isActive?: boolean;
   treeOoui?: TreeOoui;
   updateAttributes?: (attrsEvaluated: any, treeOoui: TreeOoui) => void;
+  results?: any[];
 };
 
 export const useAutorefreshableTreeFields = (
@@ -33,6 +34,7 @@ export const useAutorefreshableTreeFields = (
     treeOoui,
     updateAttributes,
     treeView,
+    results,
   } = opts;
 
   const fieldDefs = useMemo(() => {
@@ -53,6 +55,26 @@ export const useAutorefreshableTreeFields = (
   );
 
   const tabOrWindowIsVisible = useBrowserVisibility();
+
+  const previousValuesRef = useRef<
+    Record<number | string, Record<string, any>>
+  >({});
+
+  const hasFieldsChanged = useCallback(
+    (
+      newItem: Record<string, any>,
+      previousItem: Record<string, any> | undefined,
+    ) => {
+      if (!previousItem) return true;
+
+      return autorefreshableFields?.some(
+        (field) =>
+          JSON.stringify(newItem[field]) !==
+          JSON.stringify(previousItem[field]),
+      );
+    },
+    [autorefreshableFields],
+  );
 
   useEffect(() => {
     if (isActive === false) {
@@ -96,33 +118,53 @@ export const useAutorefreshableTreeFields = (
     }
 
     try {
-      const results = await fetchRequest({
+      const resultsWithUpdatedFields = await fetchRequest({
         model,
         ids,
         fields: fieldDefs,
         fieldsToRetrieve: autorefreshableFields,
         context,
       });
-      const preparedResults = getTableItems(treeOoui, results);
+      const preparedResults = getTableItems(treeOoui, resultsWithUpdatedFields);
+
+      // Get only the changed records
+      const changedResults = preparedResults.filter((newItem) => {
+        const previousItem = previousValuesRef.current[newItem.id];
+        return hasFieldsChanged(newItem, previousItem);
+      });
 
       // Parse conditions and update attributes if needed
       if (
         updateAttributes &&
         treeOoui &&
-        onHasAutorefreshableFieldsToParseConditions()
+        onHasAutorefreshableFieldsToParseConditions() &&
+        changedResults.length > 0
       ) {
         const conditions = getAttributesConditionsFromOoui({
           treeOoui,
         });
 
+        // Merge the updated function fields with the original results
+        const mergedResults = changedResults.map((result: any) => {
+          const matchingResult = results?.find(
+            (value) => value.id === result.id,
+          );
+          return { ...matchingResult, ...result };
+        });
+
         try {
           const attrsEvaluated = await parseConditions({
             conditions,
-            values: preparedResults,
+            values: mergedResults,
             context,
           });
 
           updateAttributes(attrsEvaluated, treeOoui);
+
+          // Update previous values only for changed records
+          changedResults.forEach((result) => {
+            previousValuesRef.current[result.id] = result;
+          });
         } catch (error) {
           if (error.name !== "AbortError") {
             console.error("Error parsing conditions:", error);
@@ -145,7 +187,9 @@ export const useAutorefreshableTreeFields = (
     context,
     updateAttributes,
     onHasAutorefreshableFieldsToParseConditions,
+    hasFieldsChanged,
     parseConditions,
+    results,
   ]);
 
   useDeepCompareEffect(() => {
@@ -187,5 +231,17 @@ export const useAutorefreshableTreeFields = (
     setInternalIsActive(true);
   }, []);
 
-  return { pause, resume };
+  // Add cleanup of old records that haven't been seen in a while
+  useEffect(() => {
+    return () => {
+      // Clear the previous values when the hook is unmounted
+      previousValuesRef.current = {};
+    };
+  }, []);
+
+  const clear = useCallback(() => {
+    previousValuesRef.current = {};
+  }, []);
+
+  return { pause, resume, clear };
 };

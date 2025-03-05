@@ -158,7 +158,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   });
 
   // Setup auto-refresh fields
-  useAutorefreshableTreeFields({
+  const { clear: clearAutorefreshableFields } = useAutorefreshableTreeFields({
     model,
     tableRef,
     autorefreshableFields: treeOoui?.autorefreshableFields,
@@ -167,6 +167,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     isActive,
     treeOoui,
     updateAttributes,
+    results: actionViewResults,
   });
 
   // Hooks
@@ -519,6 +520,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
   const refresh = useCallback(async () => {
     clearAttributes();
+    clearAutorefreshableFields();
     setTotalRowsLoading(true);
     setTreeFirstVisibleRow(0);
     fetchColumnState();
@@ -534,6 +536,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     await fetchResults();
   }, [
     clearAttributes,
+    clearAutorefreshableFields,
     setTreeFirstVisibleRow,
     fetchColumnState,
     setSelectedRowItems,
