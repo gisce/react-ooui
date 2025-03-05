@@ -1,11 +1,12 @@
-import { ConnectionProvider } from "..";
+import { ConnectionProvider, TreeView } from "..";
 import { useNetworkRequest } from "./useNetworkRequest";
 import { useDeepCompareEffect } from "use-deep-compare";
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useRef, useState, useCallback, useEffect, useMemo } from "react";
 import { InfiniteTableRef } from "@gisce/react-formiga-table";
 import { useBrowserVisibility } from "./useBrowserVisibility";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { getTableItems } from "@/helpers/treeHelper";
+import { getAttributesConditionsFromOoui } from "./useTreeAttributesState";
 
 const AUTOREFRESH_INTERVAL_SECONDS = 3 * 1000;
 
@@ -14,9 +15,10 @@ export type UseAutorefreshableTreeFieldsOpts = {
   model: string;
   context: any;
   autorefreshableFields?: string[];
-  fieldDefs: any;
+  treeView?: TreeView;
   isActive?: boolean;
   treeOoui?: TreeOoui;
+  updateAttributes?: (attrsEvaluated: any, treeOoui: TreeOoui) => void;
 };
 
 export const useAutorefreshableTreeFields = (
@@ -27,16 +29,27 @@ export const useAutorefreshableTreeFields = (
     model,
     context,
     autorefreshableFields,
-    fieldDefs,
     isActive,
     treeOoui,
+    updateAttributes,
+    treeView,
   } = opts;
+
+  const fieldDefs = useMemo(() => {
+    return treeView?.field_parent
+      ? { ...treeView?.fields, [treeView?.field_parent]: {} }
+      : treeView?.fields;
+  }, [treeView]);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [internalIsActive, setInternalIsActive] = useState(true);
 
   const [fetchRequest, cancelRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().readObjects,
+  );
+
+  const [parseConditions, cancelParseConditions] = useNetworkRequest(
+    ConnectionProvider.getHandler().parseConditions,
   );
 
   const tabOrWindowIsVisible = useBrowserVisibility();
@@ -56,6 +69,18 @@ export const useAutorefreshableTreeFields = (
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, tabOrWindowIsVisible]);
+
+  const onHasAutorefreshableFieldsToParseConditions = useCallback(() => {
+    if (!treeView) {
+      return false;
+    }
+    const colorsFields = treeView.fields_in_conditions?.colors || [];
+    const statusFields = treeView.fields_in_conditions?.status || [];
+    return (
+      colorsFields.some((field) => autorefreshableFields?.includes(field)) ||
+      statusFields.some((field) => autorefreshableFields?.includes(field))
+    );
+  }, [treeView, autorefreshableFields]);
 
   const refresh = useCallback(async () => {
     if (!autorefreshableFields?.length || !internalIsActive) return;
@@ -79,6 +104,32 @@ export const useAutorefreshableTreeFields = (
         context,
       });
       const preparedResults = getTableItems(treeOoui, results);
+
+      // Parse conditions and update attributes if needed
+      if (
+        updateAttributes &&
+        treeOoui &&
+        onHasAutorefreshableFieldsToParseConditions()
+      ) {
+        const conditions = getAttributesConditionsFromOoui({
+          treeOoui,
+        });
+
+        try {
+          const attrsEvaluated = await parseConditions({
+            conditions,
+            values: preparedResults,
+            context,
+          });
+
+          updateAttributes(attrsEvaluated, treeOoui);
+        } catch (error) {
+          if (error.name !== "AbortError") {
+            console.error("Error parsing conditions:", error);
+          }
+        }
+      }
+
       tableRef.current?.updateRows(preparedResults);
     } catch (err) {
       console.error(err);
@@ -87,11 +138,14 @@ export const useAutorefreshableTreeFields = (
     autorefreshableFields,
     internalIsActive,
     tableRef,
+    treeOoui,
     fetchRequest,
     model,
     fieldDefs,
     context,
-    treeOoui,
+    updateAttributes,
+    onHasAutorefreshableFieldsToParseConditions,
+    parseConditions,
   ]);
 
   useDeepCompareEffect(() => {
@@ -104,6 +158,7 @@ export const useAutorefreshableTreeFields = (
 
     return () => {
       cancelRequest();
+      cancelParseConditions();
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -125,7 +180,8 @@ export const useAutorefreshableTreeFields = (
       intervalRef.current = null;
     }
     cancelRequest();
-  }, [cancelRequest]);
+    cancelParseConditions();
+  }, [cancelRequest, cancelParseConditions]);
 
   const resume = useCallback(() => {
     setInternalIsActive(true);

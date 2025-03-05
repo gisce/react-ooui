@@ -183,24 +183,23 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     return getTree(treeView);
   }, [treeView]);
 
-  useAutorefreshableTreeFields({
-    model,
-    tableRef,
-    autorefreshableFields: treeOoui?.autorefreshableFields,
-    fieldDefs: treeView?.field_parent
-      ? { ...treeView?.fields, [treeView?.field_parent]: {} }
-      : treeView?.fields,
-    context: parentContext,
-    isActive,
-    treeOoui,
-  });
-
   const {
     colorsForResults,
     statusForResults,
     updateAttributes,
     clearAttributes,
   } = useTreeAttributesState();
+
+  useAutorefreshableTreeFields({
+    model,
+    tableRef,
+    autorefreshableFields: treeOoui?.autorefreshableFields,
+    treeView,
+    context: parentContext,
+    isActive,
+    treeOoui,
+    updateAttributes,
+  });
 
   const {
     isFieldLoading,

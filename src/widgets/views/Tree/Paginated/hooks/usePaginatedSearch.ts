@@ -28,6 +28,7 @@ import {
   getAttributesConditionsFromOoui,
   useTreeAttributesState,
 } from "@/hooks/useTreeAttributesState";
+import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
 
 export const DEFAULT_PAGE_SIZE = DEFAULT_SEARCH_LIMIT;
 
@@ -156,6 +157,18 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     results: actionViewResults,
   });
 
+  // Setup auto-refresh fields
+  useAutorefreshableTreeFields({
+    model,
+    tableRef,
+    autorefreshableFields: treeOoui?.autorefreshableFields,
+    treeView,
+    context,
+    isActive,
+    treeOoui,
+    updateAttributes,
+  });
+
   // Hooks
   const showErrorDialog = useShowErrorDialog();
   const [fetchTotalRows, cancelFetchTotalRows] = useNetworkRequest(
@@ -235,10 +248,12 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       return { color: colorsForResults.current[item.node?.data?.id] };
     }
     return {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onRowStatus = useCallback(
     (record: any) => statusForResults.current?.[record.id],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
