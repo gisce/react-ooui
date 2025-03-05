@@ -35,6 +35,7 @@ import { PaginatedSearchControls } from "./components/PaginatedSearchControls";
 import { PaginatedTableComponent } from "./components/PaginatedTableComponent";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { NameSearchWarning } from "../NameSearchWarning";
+import { useCallbackRef } from "@/hooks/useCallbackRef";
 
 export const HEIGHT_OFFSET = 10;
 
@@ -55,17 +56,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   // Refs
   const tableRef: RefObject<PaginatedTableRef> = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const onRowClickedRef = useRef(onRowClicked);
-
-  // Update ref when onRowClicked changes
-  useEffect(() => {
-    onRowClickedRef.current = onRowClicked;
-  }, [onRowClicked]);
-
-  // Callback that uses the ref
-  const handleRowDoubleClick = useCallback((data: OnRowClickedData) => {
-    onRowClickedRef.current?.(data);
-  }, []);
+  const handleRowDoubleClick = useCallbackRef(onRowClicked);
 
   const availableHeight = useAvailableHeight({
     elementRef: containerRef,
@@ -139,6 +130,8 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     filterType,
     context: parentContext,
   });
+
+  const refreshCallbackRef = useCallbackRef(refresh);
 
   // Aggregates handling
   const [loadingAggregates, aggregates, hasAggregates] = useTreeAggregates({
@@ -260,7 +253,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             onRowStyle={onRowStyle}
             headerCheckboxState={headerCheckboxState}
             onHeaderCheckboxClick={onHeaderCheckboxClick}
-            refresh={refresh}
+            refresh={refreshCallbackRef}
             actionViewSortState={actionViewSortState}
             onSortChange={onSortChange}
             tableRef={tableRef}
