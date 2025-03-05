@@ -10,7 +10,7 @@ type UseTreeAttributesStateReturn = {
   >;
   updateAttributes: (attrsEvaluated: any, treeOoui: TreeOoui) => void;
   hasFunctionFieldsToParseConditions: boolean;
-  getAttributesFromOoui: (treeOoui?: TreeOoui) => any;
+  getAttributesConditionsFromOoui: (treeOoui?: TreeOoui) => any;
 };
 
 export function useTreeAttributesState({
@@ -35,7 +35,7 @@ export function useTreeAttributesState({
     );
   }, [functionFields, treeView]);
 
-  const getAttributesFromOoui = useCallback(
+  const getAttributesConditionsFromOoui = useCallback(
     (treeOoui?: TreeOoui) => {
       if (!hasFunctionFieldsToParseConditions) {
         const attrs: any = {};
@@ -77,6 +77,6 @@ export function useTreeAttributesState({
     statusForResults,
     updateAttributes,
     hasFunctionFieldsToParseConditions,
-    getAttributesFromOoui,
+    getAttributesConditionsFromOoui,
   };
 }

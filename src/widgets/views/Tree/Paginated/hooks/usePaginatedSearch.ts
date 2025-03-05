@@ -147,7 +147,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     colorsForResults,
     statusForResults,
     updateAttributes,
-    getAttributesFromOoui,
+    getAttributesConditionsFromOoui,
   } = useTreeAttributesState({
     treeView,
     functionFields,
@@ -419,7 +419,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
           ? { ...treeView!.fields, [treeView!.field_parent]: {} }
           : treeView!.fields,
         context,
-        attrs: getAttributesFromOoui(treeOoui),
+        attrs: getAttributesConditionsFromOoui(treeOoui),
         order,
         name_search: nameSearch,
         skipFunctionFields: true,

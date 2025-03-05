@@ -209,7 +209,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     colorsForResults,
     statusForResults,
     updateAttributes,
-    getAttributesFromOoui,
+    getAttributesConditionsFromOoui,
   } = useTreeAttributesState({
     treeView,
     functionFields,
@@ -351,7 +351,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
       const params = nameSearch ? domain : mergedParams;
 
-      const attrs = getAttributesFromOoui(treeOoui);
+      const attrs = getAttributesConditionsFromOoui(treeOoui);
 
       const { results, attrsEvaluated } =
         await ConnectionProvider.getHandler().searchForTree({
