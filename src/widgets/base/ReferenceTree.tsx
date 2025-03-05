@@ -1,8 +1,9 @@
 import ConnectionProvider from "@/ConnectionProvider";
 import { Space } from "antd";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Many2oneSuffix } from "./many2one/Many2oneSuffix";
 import { LoadingOutlined } from "@ant-design/icons";
+import { useDeepCompareEffect } from "use-deep-compare";
 
 export type ReferenceTreeProps = {
   value: string;
@@ -24,7 +25,7 @@ export const ReferenceTree = (
     if (!value) {
       return;
     }
-    if (value && name) {
+    if (value && name && loading) {
       return;
     }
     setLoading(true);
@@ -36,9 +37,9 @@ export const ReferenceTree = (
     });
     setName(nameResponse[0][1]);
     setLoading(false);
-  }, [value, name]);
+  }, [value, name, loading, intId, model, context]);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     fetchName();
   }, [value]);
 
