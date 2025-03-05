@@ -98,8 +98,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   const prevSearchParamsRef = useRef(searchParams);
   const prevSearchVisibleRef = useRef(searchVisible);
   const currentSearchParamsString = useRef<string>();
-  const { colorsForResults, statusForResults, updateAttributes } =
-    useTreeAttributesState();
   const lastAssignedResults = useRef<any[]>([]);
   const fetchInProgress = useRef<boolean>(false);
 
@@ -134,6 +132,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     isFieldLoading,
     refresh: refreshFunctionFields,
     addRecordsToCheckFunctionFields,
+    functionFields,
   } = useTreeFunctionFieldsRead({
     model,
     treeView,
@@ -142,7 +141,16 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     isActive,
     onResultsUpdated: onFunctionFieldsUpdated,
     treeOoui,
+  });
+
+  const {
+    colorsForResults,
+    statusForResults,
     updateAttributes,
+    getAttributesFromOoui,
+  } = useTreeAttributesState({
+    treeView,
+    functionFields,
   });
 
   // Hooks
@@ -392,14 +400,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     try {
       setTreeIsLoading(true);
 
-      const attrs: any = {};
-      if (treeOoui.colors) {
-        attrs.colors = treeOoui.colors;
-      }
-      if (treeOoui.status) {
-        attrs.status = treeOoui.status;
-      }
-
       let order;
       if (actionViewOrder?.length) {
         const sortFields = getSortedFieldsFromState({
@@ -419,7 +419,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
           ? { ...treeView!.fields, [treeView!.field_parent]: {} }
           : treeView!.fields,
         context,
-        attrs,
+        attrs: getAttributesFromOoui(treeOoui),
         order,
         name_search: nameSearch,
         skipFunctionFields: true,

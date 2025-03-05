@@ -97,8 +97,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     filterType = "side",
   } = props;
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
-  const { colorsForResults, statusForResults, updateAttributes } =
-    useTreeAttributesState();
   const lastAssignedResults = useRef<any[]>([]);
   const hasRestoredSortStateForFirstTime = useRef<boolean>(false);
   const showErrorDialog = useShowErrorDialog();
@@ -197,6 +195,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     isFieldLoading,
     refresh: refreshFunctionFields,
     addRecordsToCheckFunctionFields,
+    functionFields,
   } = useTreeFunctionFieldsRead({
     model,
     treeView,
@@ -204,7 +203,16 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     context: parentContext,
     isActive,
     treeOoui,
+  });
+
+  const {
+    colorsForResults,
+    statusForResults,
     updateAttributes,
+    getAttributesFromOoui,
+  } = useTreeAttributesState({
+    treeView,
+    functionFields,
   });
 
   const columns = useDeepCompareMemo(() => {
@@ -314,14 +322,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         return [];
       }
 
-      const attrs: any = {};
-      if (treeOoui.colors) {
-        attrs.colors = treeOoui.colors;
-      }
-      if (treeOoui.status) {
-        attrs.status = treeOoui.status;
-      }
-
       let order;
       if (!hasRestoredSortStateForFirstTime.current && actionViewSortState) {
         const sortFields = getSortedFieldsFromState({
@@ -350,6 +350,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       hasRestoredSortStateForFirstTime.current = true;
 
       const params = nameSearch ? domain : mergedParams;
+
+      const attrs = getAttributesFromOoui(treeOoui);
 
       const { results, attrsEvaluated } =
         await ConnectionProvider.getHandler().searchForTree({

@@ -18,7 +18,6 @@ type UseTreeFunctionFieldsReadProps = {
   isActive?: boolean;
   onResultsUpdated?: (updatedResults: any[]) => void;
   treeOoui?: TreeOoui;
-  updateAttributes?: (attrsEvaluated: any, treeOoui: TreeOoui) => void;
 };
 
 export const useTreeFunctionFieldsRead = ({
@@ -29,13 +28,10 @@ export const useTreeFunctionFieldsRead = ({
   isActive = true,
   onResultsUpdated,
   treeOoui,
-  updateAttributes,
 }: UseTreeFunctionFieldsReadProps) => {
   const [hasFunctionFields, setHasFunctionFields] = useState(false);
-  const functionFields = useRef<string[]>();
+  const [functionFields, setFunctionFields] = useState<string[]>([]);
   const fields = treeView?.fields;
-
-  console.log(treeView?.fields_in_conditions);
 
   const [recordIdsToCheck, setRecordIdsToCheck] = useState<Set<number>>(
     new Set(),
@@ -89,6 +85,7 @@ export const useTreeFunctionFieldsRead = ({
   useEffect(() => {
     if (!fields) {
       setHasFunctionFields(false);
+      setFunctionFields([]);
       return;
     }
 
@@ -97,7 +94,7 @@ export const useTreeFunctionFieldsRead = ({
       .map(([fieldName]) => fieldName);
 
     setHasFunctionFields(functionFieldNames.length > 0);
-    functionFields.current = functionFieldNames;
+    setFunctionFields(functionFieldNames);
   }, [fields]);
 
   const requestFunctionFields = useCallback(async () => {
@@ -105,11 +102,7 @@ export const useTreeFunctionFieldsRead = ({
       return;
     }
 
-    if (
-      recordIdsToCheck.size === 0 ||
-      !isActive ||
-      !functionFields.current?.length
-    ) {
+    if (recordIdsToCheck.size === 0 || !isActive || !functionFields.length) {
       return;
     }
 
@@ -130,11 +123,9 @@ export const useTreeFunctionFieldsRead = ({
 
       const { results: functionResults } = await fetchFunctionFields({
         searchIds: recordsToProcess,
-        fieldsToRetrieve: functionFields.current!,
+        fieldsToRetrieve: functionFields,
       });
       const tableItems = getTableItems(treeOoui, functionResults);
-
-      // HERE
 
       // Add the loaded ids to the loaded ids set, ensuring no duplicates by ID
       const uniqueRecords = [...loadedRecords.current];
@@ -158,6 +149,7 @@ export const useTreeFunctionFieldsRead = ({
     hasFunctionFields,
     recordIdsToCheck,
     isActive,
+    functionFields,
     treeOoui,
     fetchFunctionFields,
   ]);
@@ -212,7 +204,7 @@ export const useTreeFunctionFieldsRead = ({
         }
 
         // Check if any function field values have changed
-        const hasChanges = functionFields.current?.some(
+        const hasChanges = functionFields.some(
           (fieldName) => record[fieldName] !== currentRecord[fieldName],
         );
 
@@ -233,15 +225,18 @@ export const useTreeFunctionFieldsRead = ({
     }
   }, [tableRef, onResultsUpdated]);
 
-  const isFieldLoading = useCallback((record: any, fieldName: string) => {
-    // First check if the field is a function field
-    if (!functionFields.current?.includes(fieldName)) {
-      return false;
-    }
+  const isFieldLoading = useCallback(
+    (record: any, fieldName: string) => {
+      // First check if the field is a function field
+      if (!functionFields.includes(fieldName)) {
+        return false;
+      }
 
-    // Then check if this record is not loaded yet
-    return !loadedRecords.current.find((r) => r.id === record?.id);
-  }, []);
+      // Then check if this record is not loaded yet
+      return !loadedRecords.current.find((r) => r.id === record?.id);
+    },
+    [functionFields],
+  );
 
   useDeepCompareEffect(() => {
     const shouldStart = hasFunctionFields && internalIsActive;
@@ -284,5 +279,6 @@ export const useTreeFunctionFieldsRead = ({
     },
     addRecordsToCheckFunctionFields,
     isFieldLoading,
+    functionFields,
   };
 };

@@ -1,6 +1,7 @@
-import { useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { getColorMap, getStatusMap } from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
+import { TreeView } from "..";
 
 type UseTreeAttributesStateReturn = {
   colorsForResults: React.MutableRefObject<{ [key: number]: string }>;
@@ -8,11 +9,48 @@ type UseTreeAttributesStateReturn = {
     { [key: number]: string } | undefined
   >;
   updateAttributes: (attrsEvaluated: any, treeOoui: TreeOoui) => void;
+  hasFunctionFieldsToParseConditions: boolean;
+  getAttributesFromOoui: (treeOoui?: TreeOoui) => any;
 };
 
-export function useTreeAttributesState(): UseTreeAttributesStateReturn {
+export function useTreeAttributesState({
+  treeView,
+  functionFields,
+}: {
+  treeView?: TreeView;
+  functionFields: string[];
+}): UseTreeAttributesStateReturn {
   const colorsForResults = useRef<{ [key: number]: string }>({});
   const statusForResults = useRef<{ [key: number]: string }>();
+
+  const hasFunctionFieldsToParseConditions = useMemo(() => {
+    if (!treeView) {
+      return false;
+    }
+    const colorsFields = treeView.fields_in_conditions?.colors || [];
+    const statusFields = treeView.fields_in_conditions?.status || [];
+    return (
+      colorsFields.some((field) => functionFields.includes(field)) ||
+      statusFields.some((field) => functionFields.includes(field))
+    );
+  }, [functionFields, treeView]);
+
+  const getAttributesFromOoui = useCallback(
+    (treeOoui?: TreeOoui) => {
+      if (!hasFunctionFieldsToParseConditions) {
+        const attrs: any = {};
+        if (treeOoui?.colors) {
+          attrs.colors = treeOoui.colors;
+        }
+        if (treeOoui?.status) {
+          attrs.status = treeOoui.status;
+        }
+        return attrs;
+      }
+      return undefined;
+    },
+    [hasFunctionFieldsToParseConditions],
+  );
 
   const updateAttributes = (attrsEvaluated: any, treeOoui: TreeOoui) => {
     const colors = getColorMap(attrsEvaluated);
@@ -38,5 +76,7 @@ export function useTreeAttributesState(): UseTreeAttributesStateReturn {
     colorsForResults,
     statusForResults,
     updateAttributes,
+    hasFunctionFieldsToParseConditions,
+    getAttributesFromOoui,
   };
 }

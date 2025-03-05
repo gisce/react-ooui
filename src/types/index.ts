@@ -188,6 +188,13 @@ type ReadEvalUiObjectsRequest = {
   attrs?: any;
 };
 
+type ParseConditionsRequest = {
+  status?: string;
+  color?: string;
+  values: any;
+  context?: any;
+};
+
 type ParseConditionRequest = {
   condition: string;
   values: any;
@@ -321,6 +328,10 @@ type ConnectionProviderType = {
   ) => Promise<any>;
   readEvalUiObjects: (
     options: ReadEvalUiObjectsRequest,
+    requestConfig?: any,
+  ) => Promise<any>;
+  parseConditions: (
+    options: ParseConditionsRequest,
     requestConfig?: any,
   ) => Promise<any>;
   parseCondition: (
