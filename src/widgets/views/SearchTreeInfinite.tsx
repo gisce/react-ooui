@@ -15,10 +15,8 @@ import { FormView, TreeView } from "@/types/index";
 import { useFetchTreeViews } from "@/hooks/useFetchTreeViews";
 import { Badge, Spin } from "antd";
 import {
-  getColorMap,
   getOrderFromSortFields,
   getSortedFieldsFromState,
-  getStatusMap,
   getTableColumns,
   getTableItems,
   getTree,
@@ -51,11 +49,17 @@ import SearchFilter from "./searchFilter/SearchFilter";
 import { useSearchTreeState } from "@/hooks/useSearchTreeState";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
+import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { NameSearchWarning } from "./Tree/NameSearchWarning";
 import { SearchTreeHeader } from "./SearchTreeHeader";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
+import {
+  getAttributesConditionsFromOoui,
+  useTreeAttributesState,
+} from "@/hooks/useTreeAttributesState";
+import { CellRenderer } from "./Tree/CellRenderer";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -96,8 +100,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     nameSearch: nameSearchProps,
     filterType = "side",
   } = props;
-  const colorsForResults = useRef<{ [key: number]: string }>({});
-  const statusForResults = useRef<{ [key: number]: string }>();
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
   const lastAssignedResults = useRef<any[]>([]);
   const hasRestoredSortStateForFirstTime = useRef<boolean>(false);
@@ -181,16 +183,39 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     return getTree(treeView);
   }, [treeView]);
 
-  useAutorefreshableTreeFields({
+  const {
+    colorsForResults,
+    statusForResults,
+    updateAttributes,
+    clearAttributes,
+  } = useTreeAttributesState();
+
+  const { clear: clearAutorefreshableFields } = useAutorefreshableTreeFields({
     model,
     tableRef,
     autorefreshableFields: treeOoui?.autorefreshableFields,
-    fieldDefs: treeView?.field_parent
-      ? { ...treeView?.fields, [treeView?.field_parent]: {} }
-      : treeView?.fields,
+    treeView,
     context: parentContext,
     isActive,
     treeOoui,
+    updateAttributes,
+    results: actionViewResults,
+  });
+
+  const {
+    isFieldLoading,
+    refresh: refreshFunctionFields,
+    addRecordsToCheckFunctionFields,
+    onHasFunctionFieldsToParseConditions,
+  } = useTreeFunctionFieldsRead({
+    model,
+    treeView,
+    tableRef,
+    context: parentContext,
+    isActive,
+    treeOoui,
+    updateAttributes,
+    results: actionViewResults,
   });
 
   const columns = useDeepCompareMemo(() => {
@@ -213,11 +238,16 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     }
     return columns.map((column: any) => ({
       ...column,
-      render: (value: any) => {
-        return column.render(value, column.key, column?.ooui, column?.context);
-      },
+      render: (value: any, record: any) => (
+        <CellRenderer
+          value={value}
+          record={record}
+          column={column}
+          isFieldLoading={isFieldLoading}
+        />
+      ),
     }));
-  }, [columns]);
+  }, [columns, isFieldLoading]);
 
   const columnStateKey = useMemo(() => {
     if (loading) {
@@ -297,14 +327,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         return [];
       }
 
-      const attrs: any = {};
-      if (treeOoui.colors) {
-        attrs.colors = treeOoui.colors;
-      }
-      if (treeOoui.status) {
-        attrs.status = treeOoui.status;
-      }
-
       let order;
       if (!hasRestoredSortStateForFirstTime.current && actionViewSortState) {
         const sortFields = getSortedFieldsFromState({
@@ -334,6 +356,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
       const params = nameSearch ? domain : mergedParams;
 
+      const attrs = getAttributesConditionsFromOoui({
+        treeOoui,
+        hasFunctionFieldsToParseConditions:
+          onHasFunctionFieldsToParseConditions(),
+      });
+
       const { results, attrsEvaluated } =
         await ConnectionProvider.getHandler().searchForTree({
           params,
@@ -347,9 +375,11 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           attrs,
           order,
           name_search: nameSearch,
+          skipFunctionFields: true,
+          onIdsRetrieved: (ids: number[]) => {
+            addRecordsToCheckFunctionFields(ids);
+          },
         });
-
-      const newResults = results.map((item) => ({ id: item.id }));
 
       setSearchQuery?.({
         model,
@@ -360,9 +390,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       });
 
       if (mustUpdateTotal() || prevSortOrder.current !== order) {
-        setActionViewResults?.(newResults);
+        setActionViewResults?.(results);
       } else {
-        const appendedResults = [...(actionViewResults || []), ...newResults];
+        const appendedResults = [...(actionViewResults || []), ...results];
         setActionViewResults?.(appendedResults);
       }
 
@@ -386,26 +416,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       }
 
       const preparedResults = getTableItems(treeOoui, results);
-
-      const colors = getColorMap(attrsEvaluated);
-
-      colorsForResults.current = {
-        ...colorsForResults.current,
-        ...colors,
-      };
-
-      if (!statusForResults.current && treeOoui.status) {
-        statusForResults.current = {};
-      }
-
-      if (treeOoui.status) {
-        const status = getStatusMap(attrsEvaluated);
-        statusForResults.current = {
-          ...statusForResults.current,
-          ...status,
-        };
-      }
-
+      updateAttributes(attrsEvaluated, treeOoui);
       lastAssignedResults.current = [...preparedResults];
       return preparedResults;
     },
@@ -424,8 +435,11 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       setTotalItemsActionView,
       treeOoui,
       treeView,
+      addRecordsToCheckFunctionFields,
+      onHasFunctionFieldsToParseConditions,
       setNameSearchFetchCompleted,
       setTotalRowsLoading,
+      updateAttributes,
     ],
   );
 
@@ -481,6 +495,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       return { color: colorsForResults.current[record.node?.data?.id] };
     }
     return undefined;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const selectedRowKeys = useMemo(() => {
@@ -575,6 +590,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const onRowStatus = useCallback(
     (record: any) => statusForResults.current?.[record.id],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
@@ -664,11 +680,20 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const refresh = useCallback(async () => {
     changeSelectedRowItems([]);
+    clearAttributes();
+    clearAutorefreshableFields();
     currentSearchParamsString.current = undefined;
     setNameSearchFetchCompleted(false);
     await updateTotalRows();
     tableRef?.current?.refresh();
-  }, [changeSelectedRowItems, updateTotalRows, setNameSearchFetchCompleted]);
+    refreshFunctionFields();
+  }, [
+    changeSelectedRowItems,
+    clearAttributes,
+    clearAutorefreshableFields,
+    updateTotalRows,
+    refreshFunctionFields,
+  ]);
 
   useImperativeHandle(ref, () => ({
     refreshResults: refresh,

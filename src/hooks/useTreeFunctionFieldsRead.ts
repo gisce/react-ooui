@@ -6,30 +6,37 @@ import { useBrowserVisibility } from "./useBrowserVisibility";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { getTableItems } from "@/helpers/treeHelper";
+import { TreeView } from "@/types/index";
+import { getAttributesConditionsFromOoui } from "./useTreeAttributesState";
 
 const AUTOREFRESH_INTERVAL_SECONDS = 0.5 * 1000;
 
 type UseTreeFunctionFieldsReadProps = {
   model: string;
-  fields: any;
+  treeView?: TreeView;
   tableRef: React.RefObject<InfiniteTableRef>;
   context?: any;
   isActive?: boolean;
   onResultsUpdated?: (updatedResults: any[]) => void;
   treeOoui?: TreeOoui;
+  updateAttributes?: (attrsEvaluated: any, treeOoui: TreeOoui) => void;
+  results?: any[];
 };
 
 export const useTreeFunctionFieldsRead = ({
   model,
-  fields,
+  treeView,
   tableRef,
   context = {},
   isActive = true,
   onResultsUpdated,
   treeOoui,
+  updateAttributes,
+  results = [],
 }: UseTreeFunctionFieldsReadProps) => {
   const [hasFunctionFields, setHasFunctionFields] = useState(false);
-  const functionFields = useRef<string[]>();
+  const functionFields = useRef<string[]>([]);
+  const fields = treeView?.fields;
 
   const [recordIdsToCheck, setRecordIdsToCheck] = useState<Set<number>>(
     new Set(),
@@ -49,6 +56,10 @@ export const useTreeFunctionFieldsRead = ({
         fields,
       });
     },
+  );
+
+  const [parseConditions, cancelParseConditions] = useNetworkRequest(
+    ConnectionProvider.getHandler().parseConditions,
   );
 
   const tabOrWindowIsVisible = useBrowserVisibility();
@@ -83,6 +94,7 @@ export const useTreeFunctionFieldsRead = ({
   useEffect(() => {
     if (!fields) {
       setHasFunctionFields(false);
+      functionFields.current = [];
       return;
     }
 
@@ -94,6 +106,18 @@ export const useTreeFunctionFieldsRead = ({
     functionFields.current = functionFieldNames;
   }, [fields]);
 
+  const onHasFunctionFieldsToParseConditions = useCallback(() => {
+    if (!treeView) {
+      return false;
+    }
+    const colorsFields = treeView.fields_in_conditions?.colors || [];
+    const statusFields = treeView.fields_in_conditions?.status || [];
+    return (
+      colorsFields.some((field) => functionFields.current.includes(field)) ||
+      statusFields.some((field) => functionFields.current.includes(field))
+    );
+  }, [treeView]);
+
   const requestFunctionFields = useCallback(async () => {
     if (!hasFunctionFields) {
       return;
@@ -102,7 +126,7 @@ export const useTreeFunctionFieldsRead = ({
     if (
       recordIdsToCheck.size === 0 ||
       !isActive ||
-      !functionFields.current?.length
+      !functionFields.current.length
     ) {
       return;
     }
@@ -118,13 +142,17 @@ export const useTreeFunctionFieldsRead = ({
         !loadedRecords.current.find((record) => record.id === id),
     );
 
+    if (recordsToProcess.length === 0) {
+      return;
+    }
+
     try {
       // Set loading state for records being updated and add them to the loading ids
       recordsToProcess.forEach((id) => loadingIds.current.add(id));
 
       const { results: functionResults } = await fetchFunctionFields({
         searchIds: recordsToProcess,
-        fieldsToRetrieve: functionFields.current!,
+        fieldsToRetrieve: functionFields.current,
       });
       const tableItems = getTableItems(treeOoui, functionResults);
 
@@ -182,6 +210,68 @@ export const useTreeFunctionFieldsRead = ({
     [hasFunctionFields, isActive, treeOoui, requestFunctionFields],
   );
 
+  const processUpdatedResults = useCallback(
+    async (updatedResults: any[]) => {
+      // First notify parent about updated results
+      onResultsUpdated?.(updatedResults);
+
+      // Only proceed with conditions parsing if we have actual updated results
+      // and they contain function field updates
+      if (
+        updatedResults.length === 0 ||
+        !functionFields.current.some((field) =>
+          updatedResults.some((result) => result[field] !== undefined),
+        )
+      ) {
+        return;
+      }
+
+      // Then check if we need to parse conditions
+      if (
+        !onHasFunctionFieldsToParseConditions() ||
+        !treeOoui ||
+        !updateAttributes
+      ) {
+        return;
+      }
+
+      // Merge the updated function fields with the original results
+      const mergedResults = updatedResults.map((result: any) => {
+        const matchingResult = results?.find((value) => value.id === result.id);
+        return { ...matchingResult, ...result };
+      });
+
+      const conditions = getAttributesConditionsFromOoui({
+        treeOoui,
+      });
+
+      try {
+        const attrsEvaluated = await parseConditions({
+          conditions,
+          values: mergedResults,
+          context,
+        });
+
+        updateAttributes(attrsEvaluated, treeOoui);
+        tableRef?.current?.refreshRowStyles();
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          console.error("Error parsing conditions:", error);
+        }
+      }
+    },
+    [
+      onResultsUpdated,
+      onHasFunctionFieldsToParseConditions,
+      treeOoui,
+      updateAttributes,
+      results,
+      parseConditions,
+      context,
+      tableRef,
+    ],
+  );
+
   const tryUpdateRows = useCallback(() => {
     const currentTableRecords = tableRef?.current?.getVisibleRows() || [];
     if (currentTableRecords.length === 0) {
@@ -204,7 +294,7 @@ export const useTreeFunctionFieldsRead = ({
         }
 
         // Check if any function field values have changed
-        const hasChanges = functionFields.current?.some(
+        const hasChanges = functionFields.current.some(
           (fieldName) => record[fieldName] !== currentRecord[fieldName],
         );
 
@@ -217,17 +307,17 @@ export const useTreeFunctionFieldsRead = ({
       // remove each record to update from loading id's.
       recordsToUpdate.forEach((record) => loadingIds.current.delete(record.id));
 
-      // Notify parent about updated results
-      onResultsUpdated?.(recordsToUpdate);
+      // Process the updated results (includes both parent notification and condition parsing)
+      processUpdatedResults(recordsToUpdate);
 
       // update the rows
       tableRef?.current?.updateRows(recordsToUpdate);
     }
-  }, [tableRef, onResultsUpdated]);
+  }, [tableRef, processUpdatedResults]);
 
   const isFieldLoading = useCallback((record: any, fieldName: string) => {
     // First check if the field is a function field
-    if (!functionFields.current?.includes(fieldName)) {
+    if (!functionFields.current.includes(fieldName)) {
       return false;
     }
 
@@ -248,12 +338,13 @@ export const useTreeFunctionFieldsRead = ({
 
     return () => {
       cancelFunctionFieldsRequest();
+      cancelParseConditions();
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
     };
-  }, [hasFunctionFields, internalIsActive]);
+  }, [hasFunctionFields, internalIsActive, tryUpdateRows, results]);
 
   const pause = useCallback(() => {
     setInternalIsActive(false);
@@ -276,5 +367,9 @@ export const useTreeFunctionFieldsRead = ({
     },
     addRecordsToCheckFunctionFields,
     isFieldLoading,
+    hasFunctionFields,
+    pause,
+    resume,
+    onHasFunctionFieldsToParseConditions,
   };
 };
