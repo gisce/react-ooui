@@ -465,7 +465,6 @@ type ActionRawData = {
 export type {
   Strings,
   SearchFields,
-  TreeView,
   FormView,
   Column,
   WidgetProps,
