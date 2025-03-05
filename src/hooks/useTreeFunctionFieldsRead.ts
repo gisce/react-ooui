@@ -215,6 +215,17 @@ export const useTreeFunctionFieldsRead = ({
       // First notify parent about updated results
       onResultsUpdated?.(updatedResults);
 
+      // Only proceed with conditions parsing if we have actual updated results
+      // and they contain function field updates
+      if (
+        updatedResults.length === 0 ||
+        !functionFields.current.some((field) =>
+          updatedResults.some((result) => result[field] !== undefined),
+        )
+      ) {
+        return;
+      }
+
       // Then check if we need to parse conditions
       if (
         !onHasFunctionFieldsToParseConditions() ||
