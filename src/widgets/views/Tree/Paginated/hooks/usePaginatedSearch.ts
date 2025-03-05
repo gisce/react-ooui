@@ -24,7 +24,10 @@ import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { useTreeColumnStorageFetch } from "@/widgets/base/one2many/useTreeColumnStorageFetch";
 import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
-import { useTreeAttributesState } from "@/hooks/useTreeAttributesState";
+import {
+  getAttributesConditionsFromOoui,
+  useTreeAttributesState,
+} from "@/hooks/useTreeAttributesState";
 
 export const DEFAULT_PAGE_SIZE = DEFAULT_SEARCH_LIMIT;
 
@@ -74,6 +77,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     searchTreeNameSearch,
     setSearchTreeNameSearch,
     setResults: setActionViewResults,
+    results: actionViewResults,
     setSearchQuery,
     setTotalItems: setTotalItemsActionView,
     isActive,
@@ -128,11 +132,14 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     });
   }, []);
 
+  const { colorsForResults, statusForResults, updateAttributes } =
+    useTreeAttributesState();
+
   const {
     isFieldLoading,
     refresh: refreshFunctionFields,
     addRecordsToCheckFunctionFields,
-    functionFields,
+    onHasFunctionFieldsToParseConditions,
   } = useTreeFunctionFieldsRead({
     model,
     treeView,
@@ -141,16 +148,8 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     isActive,
     onResultsUpdated: onFunctionFieldsUpdated,
     treeOoui,
-  });
-
-  const {
-    colorsForResults,
-    statusForResults,
     updateAttributes,
-    getAttributesConditionsFromOoui,
-  } = useTreeAttributesState({
-    treeView,
-    functionFields,
+    results: actionViewResults,
   });
 
   // Hooks
@@ -419,7 +418,11 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
           ? { ...treeView!.fields, [treeView!.field_parent]: {} }
           : treeView!.fields,
         context,
-        attrs: getAttributesConditionsFromOoui(treeOoui),
+        attrs: getAttributesConditionsFromOoui({
+          treeOoui,
+          hasFunctionFieldsToParseConditions:
+            onHasFunctionFieldsToParseConditions(),
+        }),
         order,
         name_search: nameSearch,
         skipFunctionFields: true,
@@ -428,8 +431,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
         },
       });
 
-      const newResults = results.map((item: any) => ({ id: item.id }));
-
       setSearchQuery?.({
         model,
         params,
@@ -437,7 +438,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
         context,
       });
 
-      setActionViewResults?.(newResults);
+      setActionViewResults?.(results);
 
       if (nameSearch) {
         setTotalRows(results.length);
@@ -487,13 +488,14 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     model,
     treeView,
     context,
+    onHasFunctionFieldsToParseConditions,
     setSearchQuery,
     setActionViewResults,
     mustUpdateTotal,
-    addRecordsToCheckFunctionFields,
-    updateTotalRows,
-    setTotalItemsActionView,
     updateAttributes,
+    addRecordsToCheckFunctionFields,
+    setTotalItemsActionView,
+    updateTotalRows,
   ]);
 
   const refresh = useCallback(async () => {

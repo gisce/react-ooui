@@ -55,7 +55,10 @@ import { NameSearchWarning } from "./Tree/NameSearchWarning";
 import { SearchTreeHeader } from "./SearchTreeHeader";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
-import { useTreeAttributesState } from "@/hooks/useTreeAttributesState";
+import {
+  getAttributesConditionsFromOoui,
+  useTreeAttributesState,
+} from "@/hooks/useTreeAttributesState";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -191,11 +194,14 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     treeOoui,
   });
 
+  const { colorsForResults, statusForResults, updateAttributes } =
+    useTreeAttributesState();
+
   const {
     isFieldLoading,
     refresh: refreshFunctionFields,
     addRecordsToCheckFunctionFields,
-    functionFields,
+    onHasFunctionFieldsToParseConditions,
   } = useTreeFunctionFieldsRead({
     model,
     treeView,
@@ -203,16 +209,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     context: parentContext,
     isActive,
     treeOoui,
-  });
-
-  const {
-    colorsForResults,
-    statusForResults,
     updateAttributes,
-    getAttributesConditionsFromOoui,
-  } = useTreeAttributesState({
-    treeView,
-    functionFields,
+    results: actionViewResults,
   });
 
   const columns = useDeepCompareMemo(() => {
@@ -351,7 +349,11 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
       const params = nameSearch ? domain : mergedParams;
 
-      const attrs = getAttributesConditionsFromOoui(treeOoui);
+      const attrs = getAttributesConditionsFromOoui({
+        treeOoui,
+        hasFunctionFieldsToParseConditions:
+          onHasFunctionFieldsToParseConditions(),
+      });
 
       const { results, attrsEvaluated } =
         await ConnectionProvider.getHandler().searchForTree({
@@ -372,8 +374,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           },
         });
 
-      const newResults = results.map((item) => ({ id: item.id }));
-
       setSearchQuery?.({
         model,
         params,
@@ -383,9 +383,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       });
 
       if (mustUpdateTotal() || prevSortOrder.current !== order) {
-        setActionViewResults?.(newResults);
+        setActionViewResults?.(results);
       } else {
-        const appendedResults = [...(actionViewResults || []), ...newResults];
+        const appendedResults = [...(actionViewResults || []), ...results];
         setActionViewResults?.(appendedResults);
       }
 
@@ -429,6 +429,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       treeOoui,
       treeView,
       addRecordsToCheckFunctionFields,
+      onHasFunctionFieldsToParseConditions,
       setNameSearchFetchCompleted,
       setTotalRowsLoading,
       updateAttributes,
