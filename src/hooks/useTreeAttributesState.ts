@@ -56,5 +56,5 @@ export const getAttributesConditionsFromOoui = ({
     }
     return attrs;
   }
-  return undefined;
+  return {};
 };
