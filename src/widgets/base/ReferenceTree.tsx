@@ -35,7 +35,10 @@ export const ReferenceTree = (
       model,
       context,
     });
-    setName(nameResponse[0][1]);
+    const m2o = nameResponse[0];
+    if (m2o && m2o[1]) {
+      setName(m2o[1]);
+    }
     setLoading(false);
   }, [value, name, loading, intId, model, context]);
 
