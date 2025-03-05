@@ -80,15 +80,25 @@ export const useTreeFunctionFieldsRead = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, tabOrWindowIsVisible]);
 
+  useEffect(() => {
+    return () => {
+      cancelFunctionFieldsRequest();
+      cancelParseConditions();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Cancel any pending requests on unmount or when isActive changes to false
   useEffect(() => {
     if (!isActive) {
       cancelFunctionFieldsRequest();
+      cancelParseConditions();
     }
     return () => {
       cancelFunctionFieldsRequest();
+      cancelParseConditions();
     };
-  }, [isActive, cancelFunctionFieldsRequest]);
+  }, [isActive, cancelFunctionFieldsRequest, cancelParseConditions]);
 
   // Check if there are any function fields on fields change
   useEffect(() => {
@@ -337,8 +347,6 @@ export const useTreeFunctionFieldsRead = ({
     }
 
     return () => {
-      cancelFunctionFieldsRequest();
-      cancelParseConditions();
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -353,7 +361,8 @@ export const useTreeFunctionFieldsRead = ({
       intervalRef.current = null;
     }
     cancelFunctionFieldsRequest();
-  }, [cancelFunctionFieldsRequest]);
+    cancelParseConditions();
+  }, [cancelFunctionFieldsRequest, cancelParseConditions]);
 
   const resume = useCallback(() => {
     setInternalIsActive(true);

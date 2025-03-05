@@ -192,6 +192,14 @@ export const useAutorefreshableTreeFields = (
     results,
   ]);
 
+  useEffect(() => {
+    return () => {
+      cancelRequest();
+      cancelParseConditions();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useDeepCompareEffect(() => {
     const shouldStart = autorefreshableFields?.length && internalIsActive;
 
@@ -201,8 +209,6 @@ export const useAutorefreshableTreeFields = (
     }
 
     return () => {
-      cancelRequest();
-      cancelParseConditions();
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
