@@ -284,6 +284,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const updateTotalRows = useCallback(async () => {
     if (nameSearch) {
+      setTotalRowsLoading(false);
       return;
     }
     setTotalRows(undefined);
@@ -804,6 +805,13 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     ],
   );
 
+  const shouldShowNameSearchWarning =
+    nameSearch &&
+    nameSearchFetchCompleted &&
+    totalRows !== undefined &&
+    totalRows !== null &&
+    totalRows === DEFAULT_SEARCH_LIMIT;
+
   return (
     <Fragment>
       {filterType === "top" && (
@@ -824,10 +832,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         selectedRowKeys={selectedRowKeys}
         totalRows={totalRows}
         customMiddleComponent={
-          nameSearch &&
-          nameSearchFetchCompleted &&
-          totalRows &&
-          totalRows === DEFAULT_SEARCH_LIMIT && (
+          shouldShowNameSearchWarning && (
             <NameSearchWarning
               onFilterSearchClick={() => setSearchVisible?.(true)}
             />
