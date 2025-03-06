@@ -431,6 +431,16 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
       const params = nameSearch ? domain : mergedParams;
 
+      const SHOULD_MAKE_DEFERRED_FUNCTION_READ =
+        treeView?.fields_in_conditions !== undefined;
+
+      const attrs = getAttributesConditionsFromOoui({
+        treeOoui,
+        hasFunctionFieldsToParseConditions:
+          SHOULD_MAKE_DEFERRED_FUNCTION_READ &&
+          onHasFunctionFieldsToParseConditions(),
+      });
+
       const { results, attrsEvaluated } = await searchForTree({
         params,
         limit,
@@ -440,14 +450,10 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
           ? { ...treeView!.fields, [treeView!.field_parent]: {} }
           : treeView!.fields,
         context,
-        attrs: getAttributesConditionsFromOoui({
-          treeOoui,
-          hasFunctionFieldsToParseConditions:
-            onHasFunctionFieldsToParseConditions(),
-        }),
+        attrs,
         order,
         name_search: nameSearch,
-        skipFunctionFields: true,
+        skipFunctionFields: SHOULD_MAKE_DEFERRED_FUNCTION_READ,
         onIdsRetrieved: (ids: number[]) => {
           addRecordsToCheckFunctionFields(ids);
         },

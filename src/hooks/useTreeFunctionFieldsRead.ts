@@ -37,6 +37,8 @@ export const useTreeFunctionFieldsRead = ({
   const [hasFunctionFields, setHasFunctionFields] = useState(false);
   const functionFields = useRef<string[]>([]);
   const fields = treeView?.fields;
+  const SHOULD_MAKE_DEFERRED_FUNCTION_READ =
+    treeView?.fields_in_conditions !== undefined;
 
   const [recordIdsToCheck, setRecordIdsToCheck] = useState<Set<number>>(
     new Set(),
@@ -365,8 +367,11 @@ export const useTreeFunctionFieldsRead = ({
   }, [cancelFunctionFieldsRequest, cancelParseConditions]);
 
   const resume = useCallback(() => {
+    if (!SHOULD_MAKE_DEFERRED_FUNCTION_READ) {
+      return;
+    }
     setInternalIsActive(true);
-  }, []);
+  }, [SHOULD_MAKE_DEFERRED_FUNCTION_READ]);
 
   return {
     refresh: () => {
