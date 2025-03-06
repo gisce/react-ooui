@@ -41,7 +41,7 @@ import { useTreeColumnStorageFetch } from "../base/one2many/useTreeColumnStorage
 import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { useTreeAggregates } from "../base/one2many/useTreeAggregates";
 import { AggregatesFooter } from "../base/one2many/AggregatesFooter";
-import { useLocale, SkeletonPill } from "@gisce/react-formiga-components";
+import { useLocale } from "@gisce/react-formiga-components";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { SideSearchFilter } from "./searchFilter/SideSearchFilter";
 import { mergeParams } from "@/helpers/searchHelper";
@@ -51,7 +51,6 @@ import SearchFilter from "./searchFilter/SearchFilter";
 import { useSearchTreeState } from "@/hooks/useSearchTreeState";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
-import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { NameSearchWarning } from "./Tree/NameSearchWarning";
 import { SearchTreeHeader } from "./SearchTreeHeader";
@@ -194,19 +193,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     treeOoui,
   });
 
-  const {
-    isFieldLoading,
-    refresh: refreshFunctionFields,
-    addRecordsToCheckFunctionFields,
-  } = useTreeFunctionFieldsRead({
-    model,
-    fields: treeView?.fields,
-    tableRef,
-    context: parentContext,
-    isActive,
-    treeOoui,
-  });
-
   const columns = useDeepCompareMemo(() => {
     if (!treeOoui) {
       return;
@@ -227,14 +213,11 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     }
     return columns.map((column: any) => ({
       ...column,
-      render: (value: any, record: any) => {
-        if (isFieldLoading?.(record, column.key)) {
-          return <SkeletonPill />;
-        }
+      render: (value: any) => {
         return column.render(value, column.key, column?.ooui, column?.context);
       },
     }));
-  }, [columns, isFieldLoading]);
+  }, [columns]);
 
   const columnStateKey = useMemo(() => {
     if (loading) {
@@ -271,6 +254,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const updateTotalRows = useCallback(async () => {
     if (nameSearch) {
+      setTotalRowsLoading(false);
       return;
     }
     setTotalRows(undefined);
@@ -364,10 +348,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           attrs,
           order,
           name_search: nameSearch,
-          skipFunctionFields: true,
-          onIdsRetrieved: (ids: number[]) => {
-            addRecordsToCheckFunctionFields(ids);
-          },
         });
 
       const newResults = results.map((item) => ({ id: item.id }));
@@ -445,7 +425,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       setTotalItemsActionView,
       treeOoui,
       treeView,
-      addRecordsToCheckFunctionFields,
       setNameSearchFetchCompleted,
       setTotalRowsLoading,
     ],
@@ -690,13 +669,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     setNameSearchFetchCompleted(false);
     await updateTotalRows();
     tableRef?.current?.refresh();
-    refreshFunctionFields();
-  }, [
-    changeSelectedRowItems,
-    updateTotalRows,
-    refreshFunctionFields,
-    setNameSearchFetchCompleted,
-  ]);
+  }, [changeSelectedRowItems, updateTotalRows, setNameSearchFetchCompleted]);
 
   useImperativeHandle(ref, () => ({
     refreshResults: refresh,
@@ -807,6 +780,13 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     ],
   );
 
+  const shouldShowNameSearchWarning =
+    nameSearch &&
+    nameSearchFetchCompleted &&
+    totalRows !== undefined &&
+    totalRows !== null &&
+    totalRows === DEFAULT_SEARCH_LIMIT;
+
   return (
     <Fragment>
       {filterType === "top" && (
@@ -827,10 +807,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         selectedRowKeys={selectedRowKeys}
         totalRows={totalRows}
         customMiddleComponent={
-          nameSearch &&
-          nameSearchFetchCompleted &&
-          totalRows &&
-          totalRows === DEFAULT_SEARCH_LIMIT && (
+          shouldShowNameSearchWarning && (
             <NameSearchWarning
               onFilterSearchClick={() => setSearchVisible?.(true)}
             />
