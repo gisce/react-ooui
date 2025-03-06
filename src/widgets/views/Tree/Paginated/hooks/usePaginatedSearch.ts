@@ -138,7 +138,9 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     statusForResults,
     updateAttributes,
     clearAttributes,
-  } = useTreeAttributesState();
+  } = useTreeAttributesState({
+    tableRef,
+  });
 
   const {
     isFieldLoading,
