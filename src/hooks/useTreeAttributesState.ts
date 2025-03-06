@@ -1,8 +1,13 @@
 import { useCallback, useRef } from "react";
 import { getColorMap, getStatusMap } from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
+import { InfiniteTableRef } from "@gisce/react-formiga-table";
 
-export function useTreeAttributesState() {
+export function useTreeAttributesState({
+  tableRef,
+}: {
+  tableRef?: React.RefObject<InfiniteTableRef>;
+} = {}) {
   const colorsForResults = useRef<{ [key: number]: string }>({});
   const statusForResults = useRef<{ [key: number]: string }>();
 
@@ -24,6 +29,14 @@ export function useTreeAttributesState() {
 
     if (treeOoui.status) {
       const status = getStatusMap(attrsEvaluated);
+      if (tableRef?.current) {
+        tableRef.current.updateRows(
+          Object.keys(status).map((id) => ({
+            id: parseInt(id),
+            $status: status[id],
+          })),
+        );
+      }
       statusForResults.current = {
         ...statusForResults.current,
         ...status,

@@ -188,7 +188,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     statusForResults,
     updateAttributes,
     clearAttributes,
-  } = useTreeAttributesState();
+  } = useTreeAttributesState({
+    tableRef,
+  });
 
   const { clear: clearAutorefreshableFields } = useAutorefreshableTreeFields({
     model,
