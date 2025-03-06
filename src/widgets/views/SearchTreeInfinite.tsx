@@ -358,9 +358,13 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
       const params = nameSearch ? domain : mergedParams;
 
+      const SHOULD_MAKE_DEFERRED_FUNCTION_READ =
+        treeView?.fields_in_conditions !== undefined;
+
       const attrs = getAttributesConditionsFromOoui({
         treeOoui,
         hasFunctionFieldsToParseConditions:
+          SHOULD_MAKE_DEFERRED_FUNCTION_READ &&
           onHasFunctionFieldsToParseConditions(),
       });
 
@@ -377,7 +381,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           attrs,
           order,
           name_search: nameSearch,
-          skipFunctionFields: true,
+          skipFunctionFields: SHOULD_MAKE_DEFERRED_FUNCTION_READ,
           onIdsRetrieved: (ids: number[]) => {
             addRecordsToCheckFunctionFields(ids);
           },

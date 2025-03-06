@@ -43,6 +43,9 @@ export const useAutorefreshableTreeFields = (
       : treeView?.fields;
   }, [treeView]);
 
+  const PARSE_CONDITIONS_AVAILABLE =
+    treeView?.fields_in_conditions !== undefined;
+
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [internalIsActive, setInternalIsActive] = useState(true);
 
@@ -135,6 +138,7 @@ export const useAutorefreshableTreeFields = (
 
       // Parse conditions and update attributes if needed
       if (
+        PARSE_CONDITIONS_AVAILABLE &&
         updateAttributes &&
         treeOoui &&
         onHasAutorefreshableFieldsToParseConditions() &&
@@ -185,11 +189,12 @@ export const useAutorefreshableTreeFields = (
     model,
     fieldDefs,
     context,
+    PARSE_CONDITIONS_AVAILABLE,
     updateAttributes,
     onHasAutorefreshableFieldsToParseConditions,
     hasFieldsChanged,
-    parseConditions,
     results,
+    parseConditions,
   ]);
 
   useEffect(() => {
