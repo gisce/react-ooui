@@ -132,14 +132,14 @@ export const TagsInput = (props: TagsInputProps) => {
       event.stopPropagation();
     };
     const color = colorFromString(label);
-    const colors = getTextAndBackgroundColors(color);
+    const colors = color && getTextAndBackgroundColors(color);
     return (
       <CustomTag
         color={color}
         onMouseDown={onPreventMouseDown}
         closable={closable}
         onClose={onClose}
-        closeIcon={<span style={{ color: colors.text }}>X</span>}
+        closeIcon={<span style={{ color: colors && colors.text }}>X</span>}
       >
         {label}
       </CustomTag>

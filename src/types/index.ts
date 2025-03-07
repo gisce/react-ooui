@@ -42,13 +42,19 @@ export type BaseView = BaseViewExtra & {
   title?: string;
 };
 
-type TreeView = BaseView & {
+export type FieldsInConditions = {
+  colors?: string[];
+  status?: string[];
+};
+
+export type TreeView = BaseView & {
   arch: string;
   fields: any;
   search_fields?: SearchFields;
   isExpandable?: boolean;
   field_parent?: string;
   toolbar?: any;
+  fields_in_conditions?: FieldsInConditions;
 };
 
 type FormView = TreeView & {
@@ -180,6 +186,13 @@ type ReadEvalUiObjectsRequest = {
   ids: number[];
   context?: any;
   attrs?: any;
+};
+
+type ParseConditionsRequest = {
+  status?: string;
+  color?: string;
+  values: any;
+  context?: any;
 };
 
 type ParseConditionRequest = {
@@ -317,6 +330,10 @@ type ConnectionProviderType = {
     options: ReadEvalUiObjectsRequest,
     requestConfig?: any,
   ) => Promise<any>;
+  parseConditions: (
+    options: ParseConditionsRequest,
+    requestConfig?: any,
+  ) => Promise<any>;
   parseCondition: (
     options: ParseConditionRequest,
     requestConfig?: any,
@@ -448,7 +465,6 @@ type ActionRawData = {
 export type {
   Strings,
   SearchFields,
-  TreeView,
   FormView,
   Column,
   WidgetProps,
