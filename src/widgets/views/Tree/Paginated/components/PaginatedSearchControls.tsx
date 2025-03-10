@@ -3,6 +3,7 @@ import SearchFilter from "../../../searchFilter/SearchFilter";
 import { SideSearchFilter } from "../../../searchFilter/SideSearchFilter";
 import { mergeSearchFields } from "@/helpers/formHelper";
 import { PaginatedSearchControlsProps } from "../SearchTreePaginated.types";
+import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 
 export const PaginatedSearchControls: FC<PaginatedSearchControlsProps> = ({
   filterType,
@@ -23,7 +24,7 @@ export const PaginatedSearchControls: FC<PaginatedSearchControlsProps> = ({
         treeView?.search_fields,
       ]),
       showLimitOptions: false,
-      limit: 0,
+      limit: DEFAULT_SEARCH_LIMIT,
       offset: 0,
       isSearching: false,
       searchValues,
