@@ -86,9 +86,11 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     setCurrentPage,
     order: actionViewOrder,
     setOrder: setActionViewOrder,
-    limit,
+    limit: limitActionView,
     setLimit,
   } = useSearchTreeState({ useLocalState: !rootTree });
+
+  const limit = limitActionView || DEFAULT_SEARCH_LIMIT;
 
   // Local state
   const [totalRowsLoading, setTotalRowsLoading] = useState<boolean>(true);
