@@ -256,7 +256,10 @@ export const colorFromBoolean = (value: boolean): string => {
   return value ? "success" : "error";
 };
 
-export const colorFromString = (text: string): string => {
+export const colorFromString = (text?: string): string | undefined => {
+  if (!text) {
+    return undefined;
+  }
   let hash = 0;
   text = text.toString().padEnd(10, "0");
   for (let i = 0; i < text.length; i++) {

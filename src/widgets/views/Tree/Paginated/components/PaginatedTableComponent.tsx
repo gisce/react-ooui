@@ -1,6 +1,7 @@
 import { memo, useMemo } from "react";
 import { PaginatedTable } from "@gisce/react-formiga-table";
 import { PaginatedTableContentProps } from "../SearchTreePaginated.types";
+import { CellRenderer } from "../../CellRenderer";
 
 export const PaginatedTableComponent = memo(
   ({
@@ -28,21 +29,22 @@ export const PaginatedTableComponent = memo(
     actionViewSortState,
     onSortChange,
     tableRef,
+    isFieldLoading,
   }: PaginatedTableContentProps) => {
     // Wrap column components to inject loading state
     const columnsWithLoading = useMemo(() => {
       return columns.map((column) => ({
         ...column,
-        render: (value: any) => {
-          return column.render(
-            value,
-            column.key,
-            column?.ooui,
-            column?.context,
-          );
-        },
+        render: (value: any, record: any) => (
+          <CellRenderer
+            value={value}
+            record={record}
+            column={column}
+            isFieldLoading={isFieldLoading}
+          />
+        ),
       }));
-    }, [columns]);
+    }, [columns, isFieldLoading]);
 
     if (!columns || !treeOoui) return null;
 
