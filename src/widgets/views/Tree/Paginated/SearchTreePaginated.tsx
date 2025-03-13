@@ -31,6 +31,7 @@ import { PaginatedTableComponent } from "./components/PaginatedTableComponent";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { NameSearchWarning } from "../NameSearchWarning";
 import { useCallbackRef } from "@/hooks/useCallbackRef";
+import { useConfigContext } from "@/context/ConfigContext";
 
 export const HEIGHT_OFFSET = 10;
 
@@ -52,6 +53,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   const tableRef: RefObject<PaginatedTableRef> = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const handleRowDoubleClick = useCallbackRef(onRowClicked);
+  const { treeMaxLimit } = useConfigContext();
 
   const availableHeight = useAvailableHeight({
     elementRef: containerRef,
@@ -196,6 +198,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         pageSize={
           nameSearchProps ? DEFAULT_SEARCH_LIMIT : limit || DEFAULT_PAGE_SIZE
         }
+        maxPageSize={treeMaxLimit}
         currentPageSelectedCount={selectedRowKeys.length}
         onRequestPageChange={onRequestPageChange}
         totalSelectedCount={selectedRowKeys.length}
