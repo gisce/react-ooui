@@ -23,7 +23,7 @@ type ConfigContextValues = {
   treeMaxLimit: number;
 };
 
-const MAX_SEARCH_LIMIT = 100;
+const DEFAULT_MAX_SEARCH_LIMIT = 100;
 
 const defaultConfigContext: ConfigContextValues = {
   erpFeatures: {},
@@ -31,7 +31,7 @@ const defaultConfigContext: ConfigContextValues = {
   globalValues: {},
   rootContext: {},
   devMode: false,
-  treeMaxLimit: MAX_SEARCH_LIMIT,
+  treeMaxLimit: DEFAULT_MAX_SEARCH_LIMIT,
 };
 
 export const ConfigContext =
@@ -63,7 +63,7 @@ export const ConfigContextProvider = memo(
     rootContext,
     devMode,
     title,
-    treeMaxLimit = MAX_SEARCH_LIMIT,
+    treeMaxLimit = DEFAULT_MAX_SEARCH_LIMIT,
     children,
   }: ConfigContextProps & { children?: React.ReactNode }) => {
     const providerValue = useMemo(
