@@ -54,10 +54,28 @@ export const useOne2manyFormModal = ({
     }
   }, [activeId, currentView, inv_field, showFormChangesDialogIfNeeded]);
 
-  const onCancelFormModal = useCallback(() => {
-    setShowFormModal(false);
-    setContinuousEntryMode(false);
-  }, []);
+  const onCancelFormModal = useCallback(
+    (params?: { id?: number; values?: any }) => {
+      setContinuousEntryMode(false);
+
+      if (params?.id && params?.values) {
+        const updatedItems: One2manyItem[] = items.map((item: One2manyItem) => {
+          if (item.id === params.id) {
+            return {
+              ...item,
+              values: { ...item.values, ...params.values },
+              treeValues: { ...item.treeValues, ...params.values },
+            };
+          }
+          return item;
+        });
+        triggerChange(updatedItems);
+      }
+
+      setShowFormModal(false);
+    },
+    [items, triggerChange],
+  );
 
   const onFormModalSubmitSucceed = useDeepCompareCallback(
     (
