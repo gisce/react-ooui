@@ -201,7 +201,9 @@ const TranslatableCharComp = memo(
 
     const handleModalSubmit = useCallback(() => {
       setTranslationModalVisible(false);
-      fetchValues?.();
+      fetchValues?.({
+        forceRefresh: true,
+      });
     }, [fetchValues]);
 
     const Component = isRequired ? RequiredTranslatableChar : TranslatableChar;
