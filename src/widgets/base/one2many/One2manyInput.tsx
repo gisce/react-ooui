@@ -715,8 +715,25 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         visible={showFormModal}
         onSubmitSucceed={onFormModalSubmitSucceed}
         parentContext={{ ...getContext?.(), ...context }}
-        onCancel={() => {
+        onCancel={(params?: { id?: number; values?: any }) => {
           setContinuousEntryMode(false);
+
+          if (params?.id && params?.values) {
+            const updatedItems: One2manyItem[] = items.map(
+              (item: One2manyItem) => {
+                if (item.id === params.id) {
+                  return {
+                    ...item,
+                    values: { ...item.values, ...params.values },
+                    treeValues: { ...item.treeValues, ...params.values },
+                  };
+                }
+                return item;
+              },
+            );
+            triggerChange(updatedItems);
+          }
+
           setShowFormModal(false);
         }}
         readOnly={readOnly}
