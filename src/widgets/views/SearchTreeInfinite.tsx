@@ -101,6 +101,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     onChangeSelectedRowKeys,
     nameSearch: nameSearchProps,
     filterType = "side",
+    onChangeTreeType,
   } = props;
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
   const lastAssignedResults = useRef<any[]>([]);
@@ -638,6 +639,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         onRowStatus={onRowStatus}
         strings={strings}
         initialSortState={actionViewSortState}
+        onChangeTableType={onChangeTreeType}
       />
     );
   }, [
@@ -661,6 +663,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     totalRows,
     treeOoui,
     updateColumnState,
+    onChangeTreeType,
   ]);
 
   const prevSearchParamsRef = useRef(searchParams);

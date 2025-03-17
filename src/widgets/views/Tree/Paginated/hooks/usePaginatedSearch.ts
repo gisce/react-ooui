@@ -29,6 +29,7 @@ import {
   useTreeAttributesState,
 } from "@/hooks/useTreeAttributesState";
 import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
+import { TreeType } from "@/views/actionViews/TreeActionView";
 
 export const DEFAULT_PAGE_SIZE = DEFAULT_SEARCH_LIMIT;
 

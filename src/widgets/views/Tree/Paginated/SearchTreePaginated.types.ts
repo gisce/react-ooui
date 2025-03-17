@@ -66,4 +66,5 @@ export type PaginatedTableContentProps = {
   onSortChange: (state: any) => void;
   tableRef: RefObject<PaginatedTableRef>;
   isFieldLoading?: (record: any, fieldName: string) => boolean;
+  onChangeTreeType?: (type: TreeType) => void;
 };

@@ -245,6 +245,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             onSortChange={onSortChange}
             tableRef={tableRef}
             isFieldLoading={isFieldLoading}
+            onChangeTreeType={onChangeTreeType}
           />
         )}
       </div>
