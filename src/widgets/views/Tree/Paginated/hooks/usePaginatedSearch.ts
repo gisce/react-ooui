@@ -30,7 +30,7 @@ import {
 } from "@/hooks/useTreeAttributesState";
 import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
 import { TreeType } from "@/views/actionViews/TreeActionView";
-
+import { useConfigContext } from "@/context/ConfigContext";
 export const DEFAULT_PAGE_SIZE = DEFAULT_SEARCH_LIMIT;
 
 export type PaginatedSearchProps = {
@@ -93,7 +93,8 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     setLimit,
   } = useSearchTreeState({ useLocalState: !rootTree });
 
-  const limit = limitActionView || DEFAULT_SEARCH_LIMIT;
+  const { treeMaxLimit } = useConfigContext();
+  const limit = Math.min(limitActionView, treeMaxLimit);
 
   // Local state
   const [totalRowsLoading, setTotalRowsLoading] = useState<boolean>(true);

@@ -13,12 +13,15 @@ import {
 import {
   ActionViewContext,
   ActionViewContextType,
+  useActionViewContext,
 } from "@/context/ActionViewContext";
 import { SearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
 import SearchTree from "@/widgets/views/SearchTree";
 import { extractTreeXmlAttribute } from "@/helpers/treeHelper";
 import { SearchTreePaginated } from "@/widgets/views/Tree/Paginated/SearchTreePaginated";
 import { useDeepCompareEffect } from "use-deep-compare";
+import { useConfigContext } from "@/context/ConfigContext";
+import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 
 export type TreeActionViewProps = {
   formView: FormView;
@@ -55,12 +58,26 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     setCurrentView,
     availableViews,
     searchTreeNameSearch,
+    limit,
   } = props;
   const previousVisibleRef = useRef(visible);
 
   const [treeType, setTreeType] = useState<TreeType>(DEFAULT_TREE_TYPE);
+  const { treeMaxLimit } = useConfigContext();
+
+  const { setLimit } = useActionViewContext();
 
   useDeepCompareEffect(() => {
+    if (limit === 0) {
+      setTreeType("infinite");
+      return;
+    }
+
+    if (limit && limit > treeMaxLimit) {
+      setTreeType("infinite");
+      return;
+    }
+
     if (!treeView?.arch) {
       setTreeType("legacy");
       return;
@@ -137,6 +154,12 @@ export const TreeActionView = (props: TreeActionViewProps) => {
 
   const handleTreeTypeChange = useCallback((newType: TreeType) => {
     setTreeType(newType);
+    if (newType === "paginated") {
+      setLimit?.(limit ?? DEFAULT_SEARCH_LIMIT);
+    }
+    if (newType === "infinite") {
+      setLimit?.(0);
+    }
   }, []);
 
   if (!visible) {
