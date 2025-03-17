@@ -60,6 +60,7 @@ import {
   useTreeAttributesState,
 } from "@/hooks/useTreeAttributesState";
 import { CellRenderer } from "./Tree/CellRenderer";
+import { TreeType } from "@/views/actionViews/TreeActionView";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -84,6 +85,7 @@ export type SearchTreeInfiniteProps = {
   parentContext?: any;
   onChangeSelectedRowKeys?: (selectedRowKeys: any) => void;
   filterType?: "side" | "top";
+  onChangeTreeType?: (type: TreeType) => void;
 };
 
 function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {

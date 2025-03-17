@@ -47,6 +47,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     parentContext = {},
     nameSearch: nameSearchProps,
     filterType = "side",
+    onChangeTreeType,
   } = props;
 
   // Refs
@@ -125,6 +126,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     domain,
     filterType,
     context: parentContext,
+    onChangeTreeType,
   });
 
   const refreshCallbackRef = useCallbackRef(refresh);
@@ -204,6 +206,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         totalSelectedCount={selectedRowKeys.length}
         onSelectAllGlobalRecords={selectAllRecords}
         simpleSummary={shouldShowSimpleSummary}
+        showAllOptionInPageSizeOptions={onChangeTreeType !== undefined}
         customMiddleComponent={
           shouldShowNameSearchWarning && (
             <NameSearchWarning

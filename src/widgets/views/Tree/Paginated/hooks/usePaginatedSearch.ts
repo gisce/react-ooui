@@ -43,6 +43,7 @@ export type PaginatedSearchProps = {
   domain?: any;
   context?: any;
   filterType?: "side" | "top";
+  onChangeTreeType?: (type: TreeType) => void;
 };
 
 export const usePaginatedSearch = (props: PaginatedSearchProps) => {
@@ -57,6 +58,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     domain = [],
     context,
     filterType = "side",
+    onChangeTreeType,
   } = props;
 
   // State from useSearchTreeState
@@ -557,6 +559,10 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
   const onRequestPageChange = useCallback(
     (page: number, pageSize?: number) => {
+      if (pageSize === -1) {
+        onChangeTreeType?.("infinite");
+        return;
+      }
       setTreeFirstVisibleRow(0);
       setTreeFirstVisibleColumn(undefined);
       setSelectedRowItems([]);
@@ -564,6 +570,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       pageSize && setLimit(pageSize);
     },
     [
+      onChangeTreeType,
       setCurrentPage,
       setLimit,
       setSelectedRowItems,

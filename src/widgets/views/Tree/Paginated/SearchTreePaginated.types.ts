@@ -1,4 +1,5 @@
 import { FormView, TreeView } from "@/types/index";
+import { TreeType } from "@/views/actionViews/TreeActionView";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { PaginatedTableRef } from "@gisce/react-formiga-table";
 import { CheckboxState } from "@gisce/react-formiga-table/dist/components/PaginatedTable/PaginatedHeaderCheckbox";
@@ -22,6 +23,7 @@ export type SearchTreePaginatedProps = {
   rootTree?: boolean;
   parentContext?: Record<string, unknown>;
   filterType?: "side" | "top";
+  onChangeTreeType?: (type: TreeType) => void;
 };
 
 export type PaginatedSearchControlsProps = {
