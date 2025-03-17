@@ -155,7 +155,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
   const handleTreeTypeChange = useCallback((newType: TreeType) => {
     setTreeType(newType);
     if (newType === "paginated") {
-      setLimit?.(limit ?? DEFAULT_SEARCH_LIMIT);
+      setLimit?.(limit || DEFAULT_SEARCH_LIMIT);
     }
     if (newType === "infinite") {
       setLimit?.(0);

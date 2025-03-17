@@ -34,7 +34,7 @@ export function useUrlFromCurrentTab({
     ...(initialView && { initialView }),
     ...(searchParams && { searchParams }),
     ...(currentId && { res_id: currentId }),
-    ...(limit && { limit }),
+    ...(limit !== undefined && { limit }),
     ...(currentPage && currentPage > 1 && { currentPage }),
     order,
   };
