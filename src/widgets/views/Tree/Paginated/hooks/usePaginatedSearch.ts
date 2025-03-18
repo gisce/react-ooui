@@ -368,12 +368,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
       // Update the ref before processing to prevent duplicate refreshes
       prevNameSearch.current = nameSearch;
-
-      // Use a small timeout to ensure state updates are processed
-      // before triggering the refresh, but keep it short to avoid blocking input
-      setTimeout(() => {
-        refresh();
-      }, 50);
       return;
     }
 
