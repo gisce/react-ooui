@@ -346,7 +346,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     treeOoui,
     limit,
     currentPage,
-    mergedParams,
     nameSearch,
     domain,
     actionViewOrder,
