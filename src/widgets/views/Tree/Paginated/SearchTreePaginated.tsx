@@ -179,6 +179,27 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     totalRows !== null &&
     totalRows === DEFAULT_SEARCH_LIMIT;
 
+  const totalRowsAdjusted = useMemo(() => {
+    // This is for the custom searches trees, that return -1 as totalRows and then
+    // All the results are in the same page.
+    if (typeof totalRows !== "number" || isNaN(totalRows) || totalRows < 0) {
+      return results?.length || 0;
+    }
+    return totalRows || 0;
+  }, [totalRows, results]);
+
+  const pageSizeAdjusted = useMemo(() => {
+    // This is for the custom searches trees, that return -1 as totalRows and then
+    // All the results are in the same page.
+    if (
+      results?.length > 0 &&
+      (typeof totalRows !== "number" || isNaN(totalRows) || totalRows < 0)
+    ) {
+      return results?.length;
+    }
+    return nameSearchProps ? DEFAULT_SEARCH_LIMIT : limit || DEFAULT_PAGE_SIZE;
+  }, [results?.length, totalRows, nameSearchProps, limit]);
+
   // Render
   return (
     <Fragment>
@@ -194,12 +215,10 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         onSideSearchFilterSubmit={onSideSearchFilterSubmit}
       />
       <PaginationHeader
-        total={totalRows || 0}
+        total={totalRowsAdjusted}
         totalRowsLoading={totalRowsLoading}
         page={nameSearchProps ? 1 : currentPage || 1}
-        pageSize={
-          nameSearchProps ? DEFAULT_SEARCH_LIMIT : limit || DEFAULT_PAGE_SIZE
-        }
+        pageSize={pageSizeAdjusted}
         maxPageSize={treeMaxLimit}
         currentPageSelectedCount={selectedRowKeys.length}
         onRequestPageChange={onRequestPageChange}
