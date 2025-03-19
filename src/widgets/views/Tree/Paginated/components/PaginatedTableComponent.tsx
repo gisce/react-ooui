@@ -30,6 +30,7 @@ export const PaginatedTableComponent = memo(
     onSortChange,
     tableRef,
     isFieldLoading,
+    onChangeTreeType,
   }: PaginatedTableContentProps) => {
     // Wrap column components to inject loading state
     const columnsWithLoading = useMemo(() => {
@@ -74,6 +75,7 @@ export const PaginatedTableComponent = memo(
         onForceReload={refresh}
         initialSortState={actionViewSortState}
         onSortChange={onSortChange}
+        onChangeTableType={onChangeTreeType}
       />
     );
   },
