@@ -153,6 +153,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const nameSearch = nameSearchProps || searchTreeNameSearch;
   const prevNameSearch = useRef(nameSearch);
+  const isNameSearchMode = useRef(false);
 
   const many2oneSortEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_MANY2ONE_SORT,
@@ -168,8 +169,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       (nameSearch !== undefined && prevNameSearch.current === undefined) ||
       (typeof nameSearch === "string" &&
         typeof prevNameSearch.current === "string" &&
-        nameSearch !== prevNameSearch.current)
+        nameSearch !== prevNameSearch.current) ||
+      (nameSearch === undefined && prevNameSearch.current !== undefined)
     ) {
+      isNameSearchMode.current = Boolean(nameSearch);
       setSearchParams?.([]);
       setSearchValues?.({});
       tableRef.current?.unselectAll();
@@ -616,6 +619,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       return null;
     }
 
+    const cacheBlockSize = isNameSearchMode.current
+      ? DEFAULT_SEARCH_LIMIT
+      : undefined;
+
     return (
       <InfiniteTable
         readonly={false}
@@ -639,6 +646,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         onRowStatus={onRowStatus}
         strings={strings}
         initialSortState={actionViewSortState}
+        cacheBlockSize={cacheBlockSize}
         onChangeTableType={onChangeTreeType}
       />
     );
