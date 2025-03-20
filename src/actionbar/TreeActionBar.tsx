@@ -84,7 +84,6 @@ function TreeActionBarComponent({
     treeType,
     setSearchParams,
     setSearchValues,
-    tableRef,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   const advancedExportEnabled = useFeatureIsEnabled(
@@ -190,7 +189,6 @@ function TreeActionBarComponent({
       if (searchString && searchString.trim().length > 0) {
         setSearchParams?.([]);
         setSearchValues?.({});
-        tableRef?.current?.unselectAll();
       }
 
       setSearchTreeNameSearch?.(searchString);
@@ -206,7 +204,6 @@ function TreeActionBarComponent({
       treeType,
       setSearchParams,
       setSearchValues,
-      tableRef,
       searchTreeRef,
     ],
   );
