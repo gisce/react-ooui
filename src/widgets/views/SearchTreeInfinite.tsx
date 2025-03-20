@@ -613,6 +613,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       return null;
     }
 
+    const cacheBlockSize =
+      nameSearch && nameSearchFetchCompleted ? DEFAULT_SEARCH_LIMIT : undefined;
+
     return (
       <InfiniteTable
         readonly={false}
@@ -636,6 +639,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         onRowStatus={onRowStatus}
         strings={strings}
         initialSortState={actionViewSortState}
+        cacheBlockSize={cacheBlockSize}
       />
     );
   }, [
