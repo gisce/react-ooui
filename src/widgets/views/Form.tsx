@@ -248,20 +248,6 @@ function Form(props: FormProps, ref: any) {
   }, [id]);
   const [refId, setRefId] = useState(() => createdId.current);
 
-  const onCancel = useCallback(() => {
-    if (mustFetchParentValues.current) {
-      onMustRefreshParent?.();
-    }
-    setFormIsSaving?.(false);
-    propsOnCancel?.({ id: getCurrentId(), values: getValues() });
-  }, [
-    getCurrentId,
-    getValues,
-    onMustRefreshParent,
-    propsOnCancel,
-    setFormIsSaving,
-  ]);
-
   useEffect(() => {
     if (createdId.current !== refId) {
       setRefId(createdId.current);
@@ -275,21 +261,6 @@ function Form(props: FormProps, ref: any) {
 
   function getFields() {
     return fields;
-  }
-
-  function getValues() {
-    const values = {
-      ...getCurrentValues(fields),
-      ...getAdditionalValues(),
-    };
-
-    for (const key in values) {
-      if (values[key] === undefined) {
-        delete values[key];
-      }
-    }
-
-    return values;
   }
 
   function getPlainValues() {
@@ -391,6 +362,35 @@ function Form(props: FormProps, ref: any) {
     },
     [antForm],
   );
+
+  const getValues = useCallback(() => {
+    const values = {
+      ...getCurrentValues(fields),
+      ...getAdditionalValues(),
+    };
+
+    for (const key in values) {
+      if (values[key] === undefined) {
+        delete values[key];
+      }
+    }
+
+    return values;
+  }, [getCurrentValues, getAdditionalValues, fields]);
+
+  const onCancel = useCallback(() => {
+    if (mustFetchParentValues.current) {
+      onMustRefreshParent?.();
+    }
+    setFormIsSaving?.(false);
+    propsOnCancel?.({ id: getCurrentId(), values: getValues() });
+  }, [
+    getCurrentId,
+    getValues,
+    onMustRefreshParent,
+    propsOnCancel,
+    setFormIsSaving,
+  ]);
 
   const setFieldValue = (field: string, value?: string) => {
     assignNewValuesToForm({
@@ -1192,7 +1192,7 @@ function Form(props: FormProps, ref: any) {
           getPlainValues={getPlainValues}
           getFields={getFields}
           domain={actionDomain}
-          activeId={id}
+          activeId={currentId}
           activeModel={model}
           setFieldValue={setFieldValue}
           getFieldValue={getFieldValue}
