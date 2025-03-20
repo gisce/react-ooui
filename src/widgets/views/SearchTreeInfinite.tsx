@@ -176,7 +176,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       setSearchParams?.([]);
       setSearchValues?.({});
       tableRef.current?.unselectAll();
-      refresh();
     }
     prevNameSearch.current = nameSearch;
     // eslint-disable-next-line react-hooks/exhaustive-deps
