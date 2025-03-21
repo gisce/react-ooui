@@ -10,7 +10,12 @@ function TabSelector() {
   const tabManagerContext = useContext(
     TabManagerContext,
   ) as TabManagerContextType;
-  const { activeKey, tabs, onRemoveTab, onChangeTab } = tabManagerContext || {};
+  const {
+    activeKey,
+    tabs = [],
+    onRemoveTab,
+    onChangeTab,
+  } = tabManagerContext || {};
 
   return (
     <>
