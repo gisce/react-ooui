@@ -60,6 +60,7 @@ import {
   useTreeAttributesState,
 } from "@/hooks/useTreeAttributesState";
 import { CellRenderer } from "./Tree/CellRenderer";
+import { TreeType } from "@/views/actionViews/TreeActionView";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -84,6 +85,7 @@ export type SearchTreeInfiniteProps = {
   parentContext?: any;
   onChangeSelectedRowKeys?: (selectedRowKeys: any) => void;
   filterType?: "side" | "top";
+  onChangeTreeType?: (type: TreeType) => void;
 };
 
 function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
@@ -99,6 +101,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     onChangeSelectedRowKeys,
     nameSearch: nameSearchProps,
     filterType = "side",
+    onChangeTreeType,
   } = props;
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
   const lastAssignedResults = useRef<any[]>([]);
@@ -643,6 +646,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         strings={strings}
         initialSortState={actionViewSortState}
         cacheBlockSize={cacheBlockSize}
+        onChangeTableType={onChangeTreeType}
       />
     );
   }, [
@@ -666,6 +670,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     totalRows,
     treeOoui,
     updateColumnState,
+    onChangeTreeType,
   ]);
 
   const prevSearchParamsRef = useRef(searchParams);
