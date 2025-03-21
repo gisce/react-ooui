@@ -68,7 +68,7 @@ export function ShareUrlButton({ res_id, searchParams }: ShareUrlButtonProps) {
     ...(initialView && { initialView }),
     ...(searchParams && { searchParams }),
     ...(res_id && { res_id }),
-    ...(limit && { limit }),
+    ...(limit !== undefined && { limit }),
     ...(currentPage && currentPage > 1 && { currentPage }),
     order,
   };

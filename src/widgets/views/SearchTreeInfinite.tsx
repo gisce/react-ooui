@@ -60,6 +60,7 @@ import {
   useTreeAttributesState,
 } from "@/hooks/useTreeAttributesState";
 import { CellRenderer } from "./Tree/CellRenderer";
+import { TreeType } from "@/views/actionViews/TreeActionView";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -84,6 +85,7 @@ export type SearchTreeInfiniteProps = {
   parentContext?: any;
   onChangeSelectedRowKeys?: (selectedRowKeys: any) => void;
   filterType?: "side" | "top";
+  onChangeTreeType?: (type: TreeType) => void;
 };
 
 function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
@@ -99,6 +101,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     onChangeSelectedRowKeys,
     nameSearch: nameSearchProps,
     filterType = "side",
+    onChangeTreeType,
   } = props;
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
   const lastAssignedResults = useRef<any[]>([]);
@@ -150,6 +153,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const nameSearch = nameSearchProps || searchTreeNameSearch;
   const prevNameSearch = useRef(nameSearch);
+  const isNameSearchMode = useRef(false);
 
   const many2oneSortEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_MANY2ONE_SORT,
@@ -165,12 +169,13 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       (nameSearch !== undefined && prevNameSearch.current === undefined) ||
       (typeof nameSearch === "string" &&
         typeof prevNameSearch.current === "string" &&
-        nameSearch !== prevNameSearch.current)
+        nameSearch !== prevNameSearch.current) ||
+      (nameSearch === undefined && prevNameSearch.current !== undefined)
     ) {
+      isNameSearchMode.current = Boolean(nameSearch);
       setSearchParams?.([]);
       setSearchValues?.({});
       tableRef.current?.unselectAll();
-      refresh();
     }
     prevNameSearch.current = nameSearch;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -613,6 +618,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       return null;
     }
 
+    const cacheBlockSize = isNameSearchMode.current
+      ? DEFAULT_SEARCH_LIMIT
+      : undefined;
+
     return (
       <InfiniteTable
         readonly={false}
@@ -636,6 +645,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         onRowStatus={onRowStatus}
         strings={strings}
         initialSortState={actionViewSortState}
+        cacheBlockSize={cacheBlockSize}
+        onChangeTableType={onChangeTreeType}
       />
     );
   }, [
@@ -659,6 +670,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     totalRows,
     treeOoui,
     updateColumnState,
+    onChangeTreeType,
   ]);
 
   const prevSearchParamsRef = useRef(searchParams);

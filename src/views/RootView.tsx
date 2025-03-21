@@ -148,7 +148,7 @@ function RootView(props: RootViewProps, ref: any) {
 
     openAction({
       ...action,
-      limit: limit && limit > treeMaxLimit ? treeMaxLimit : limit,
+      limit,
       context: { ...rootContext, ...parsedContext },
       domain: parsedDomain,
       actionRawData: {

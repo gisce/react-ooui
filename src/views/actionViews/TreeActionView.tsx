@@ -8,15 +8,20 @@ import {
   useEffect,
   useMemo,
   useRef,
+  useState,
 } from "react";
 import {
   ActionViewContext,
   ActionViewContextType,
+  useActionViewContext,
 } from "@/context/ActionViewContext";
 import { SearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
 import SearchTree from "@/widgets/views/SearchTree";
 import { extractTreeXmlAttribute } from "@/helpers/treeHelper";
 import { SearchTreePaginated } from "@/widgets/views/Tree/Paginated/SearchTreePaginated";
+import { useDeepCompareEffect } from "use-deep-compare";
+import { useConfigContext } from "@/context/ConfigContext";
+import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 
 export type TreeActionViewProps = {
   formView: FormView;
@@ -53,31 +58,64 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     setCurrentView,
     availableViews,
     searchTreeNameSearch,
+    limit,
   } = props;
   const previousVisibleRef = useRef(visible);
 
-  const treeType: TreeType = useMemo(() => {
-    if (!treeView?.arch || treeView.isExpandable) {
-      return "legacy";
+  const [treeType, setTreeType] = useState<TreeType>(DEFAULT_TREE_TYPE);
+  const { treeMaxLimit } = useConfigContext();
+
+  const { setLimit } = useActionViewContext();
+
+  useDeepCompareEffect(() => {
+    if (limit === 0) {
+      setTreeType("infinite");
+      return;
     }
+
+    if (limit && limit > treeMaxLimit) {
+      setTreeType("infinite");
+      return;
+    }
+
+    if (!treeView?.arch) {
+      setTreeType("legacy");
+      return;
+    }
+
+    if (treeView.isExpandable) {
+      setTreeType("legacy");
+      return;
+    }
+
     const tagValue = extractTreeXmlAttribute(treeView.arch, "infinite");
     if (!tagValue) {
-      return "legacy";
+      setTreeType("legacy");
+      return;
     }
+
     if (tagValue === "1") {
-      return "infinite";
+      setTreeType("infinite");
+      return;
     }
+
     if (tagValue === "0") {
-      return "paginated";
+      setTreeType("paginated");
+      return;
     }
-    return "legacy";
+
+    setTreeType("legacy");
   }, [treeView]);
 
-  const { currentView, setPreviousView, setTreeType, setSelectedRowItems } =
-    useContext(ActionViewContext) as ActionViewContextType;
+  const {
+    currentView,
+    setPreviousView,
+    setTreeType: setContextTreeType,
+    setSelectedRowItems,
+  } = useContext(ActionViewContext) as ActionViewContextType;
 
   useEffect(() => {
-    setTreeType?.(treeType);
+    setContextTreeType?.(treeType);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [treeType]);
 
@@ -114,6 +152,16 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, treeType]);
 
+  const handleTreeTypeChange = useCallback((newType: TreeType) => {
+    setTreeType(newType);
+    if (newType === "paginated") {
+      setLimit?.(limit || DEFAULT_SEARCH_LIMIT);
+    }
+    if (newType === "infinite") {
+      setLimit?.(0);
+    }
+  }, []);
+
   if (!visible) {
     return null;
   }
@@ -138,6 +186,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
           treeView={treeView}
           domain={domain}
           onRowClicked={onRowClicked}
+          onChangeTreeType={handleTreeTypeChange}
         />
       )}
       {treeType === "paginated" && (
@@ -151,6 +200,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
           treeView={treeView}
           domain={domain}
           onRowClicked={onRowClicked}
+          onChangeTreeType={handleTreeTypeChange}
         />
       )}
       {treeType === "legacy" && (

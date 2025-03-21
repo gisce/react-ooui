@@ -29,7 +29,8 @@ import {
   useTreeAttributesState,
 } from "@/hooks/useTreeAttributesState";
 import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
-
+import { TreeType } from "@/views/actionViews/TreeActionView";
+import { useConfigContext } from "@/context/ConfigContext";
 export const DEFAULT_PAGE_SIZE = DEFAULT_SEARCH_LIMIT;
 
 export type PaginatedSearchProps = {
@@ -43,6 +44,7 @@ export type PaginatedSearchProps = {
   domain?: any;
   context?: any;
   filterType?: "side" | "top";
+  onChangeTreeType?: (type: TreeType) => void;
 };
 
 export const usePaginatedSearch = (props: PaginatedSearchProps) => {
@@ -57,6 +59,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     domain = [],
     context,
     filterType = "side",
+    onChangeTreeType,
   } = props;
 
   // State from useSearchTreeState
@@ -90,7 +93,8 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     setLimit,
   } = useSearchTreeState({ useLocalState: !rootTree });
 
-  const limit = limitActionView || DEFAULT_SEARCH_LIMIT;
+  const { treeMaxLimit } = useConfigContext();
+  const limit = Math.min(limitActionView, treeMaxLimit);
 
   // Local state
   const [totalRowsLoading, setTotalRowsLoading] = useState<boolean>(true);
@@ -342,7 +346,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     treeOoui,
     limit,
     currentPage,
-    mergedParams,
     nameSearch,
     domain,
     actionViewOrder,
@@ -551,6 +554,10 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
   const onRequestPageChange = useCallback(
     (page: number, pageSize?: number) => {
+      if (pageSize === -1) {
+        onChangeTreeType?.("infinite");
+        return;
+      }
       setTreeFirstVisibleRow(0);
       setTreeFirstVisibleColumn(undefined);
       setSelectedRowItems([]);
@@ -558,6 +565,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       pageSize && setLimit(pageSize);
     },
     [
+      onChangeTreeType,
       setCurrentPage,
       setLimit,
       setSelectedRowItems,
