@@ -58,6 +58,19 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
 
   const mode = showTime ? "time" : "date";
 
+  const getDateFormatRegex = (format: string) => {
+    // Replace date format tokens with regex patterns
+    return new RegExp(
+      "^" +
+        format
+          .replace(/DD/g, "\\d{2}")
+          .replace(/MM/g, "\\d{2}")
+          .replace(/YYYY/g, "\\d{4}")
+          .replace(/\//g, "\\/") +
+        "$",
+    );
+  };
+
   const triggerChange = (changedValue: undefined | string) => {
     onChange?.(changedValue);
   };
@@ -72,6 +85,10 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
   };
 
   const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    // Only apply special behaviors when tabbing (relatedTarget will exist)
+    // If clicking outside, relatedTarget will be null
+    if (!e.relatedTarget) return;
+
     if (!e.target.value) {
       if (value) {
         // If we had a value and cleared it, keep it cleared
@@ -81,12 +98,34 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
         const today = dayjs().format(DatePickerConfig[mode].dateInternalFormat);
         triggerChange(today);
       }
+    } else if (showTime) {
+      // Check if the input exactly matches the date format
+      const dateRegex = getDateFormatRegex(
+        DatePickerConfig.date.dateDisplayFormat,
+      );
+      if (dateRegex.test(e.target.value)) {
+        const inputDate = dayjs(
+          e.target.value,
+          DatePickerConfig.date.dateDisplayFormat,
+        );
+        if (inputDate.isValid()) {
+          const now = dayjs();
+          const newValue = inputDate
+            .hour(now.hour())
+            .minute(now.minute())
+            .second(now.second());
+          triggerChange(
+            newValue.format(DatePickerConfig[mode].dateInternalFormat),
+          );
+        }
+      }
     }
   };
 
   const dateValue = value
     ? dayjs(value, DatePickerConfig[mode].dateInternalFormat)
     : undefined;
+  const defaultValue = dayjs().hour(0).minute(0).second(0);
 
   return (
     <AntDatePicker
@@ -100,6 +139,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
       id={id}
       picker={"date"}
       showTime={showTime}
+      defaultValue={defaultValue}
       format={DatePickerConfig[mode].dateDisplayFormat}
       value={dateValue}
       onChange={onValueStringChange}
