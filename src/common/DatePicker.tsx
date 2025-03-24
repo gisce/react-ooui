@@ -64,11 +64,24 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
 
   const onValueStringChange = (momentDate: any) => {
     if (momentDate === null || momentDate === undefined) {
-      triggerChange(momentDate);
+      triggerChange(undefined);
       return;
     }
 
     triggerChange(momentDate.format(DatePickerConfig[mode].dateInternalFormat));
+  };
+
+  const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (!e.target.value) {
+      if (value) {
+        // If we had a value and cleared it, keep it cleared
+        triggerChange(undefined);
+      } else {
+        // If we never had a value, set to today
+        const today = dayjs().format(DatePickerConfig[mode].dateInternalFormat);
+        triggerChange(today);
+      }
+    }
   };
 
   const dateValue = value
@@ -90,6 +103,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = (
       format={DatePickerConfig[mode].dateDisplayFormat}
       value={dateValue}
       onChange={onValueStringChange}
+      onBlur={onBlur}
       showNow={false}
       showToday={false}
       changeOnBlur={true}
