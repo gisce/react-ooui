@@ -1,6 +1,7 @@
 import { TimePicker as AntTimePicker } from "antd";
 import { useRef } from "react";
 import { Dayjs } from "dayjs";
+import dayjs from "@/helpers/dayjs";
 
 interface TimePickerProps {
   value?: Dayjs | null;
@@ -17,6 +18,9 @@ export const TimePicker = ({
 }: TimePickerProps) => {
   const picker = useRef<any>();
   const pickerSelectedTimes = useRef(0);
+  // Set defaultOpenValue with zeros for minutes and seconds
+  const defaultOpenValue = dayjs().hour(0).minute(0).second(0);
+
   return (
     <AntTimePicker
       {...rest}
@@ -24,6 +28,7 @@ export const TimePicker = ({
       value={value}
       onChange={onChange}
       showNow={false}
+      defaultOpenValue={defaultOpenValue}
       changeOnBlur={true}
       onSelect={(newValue) => {
         onChange?.(newValue);
