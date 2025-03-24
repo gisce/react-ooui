@@ -58,6 +58,22 @@ export const TimePicker = ({
     [onChange],
   );
 
+  const handleBlur = useCallback(
+    (e: React.FocusEvent<HTMLInputElement>) => {
+      if (!e.relatedTarget) return;
+
+      if (!e.target.value) {
+        if (value) {
+          onChange?.(null);
+        } else {
+          const today = dayjs();
+          onChange?.(today, today.format("HH:mm:ss"));
+        }
+      }
+    },
+    [value, onChange],
+  );
+
   return (
     <AntTimePicker
       {...rest}
@@ -68,6 +84,7 @@ export const TimePicker = ({
       defaultOpenValue={defaultOpenValue}
       changeOnBlur={true}
       onSelect={handleSelect}
+      onBlur={handleBlur}
     />
   );
 };
