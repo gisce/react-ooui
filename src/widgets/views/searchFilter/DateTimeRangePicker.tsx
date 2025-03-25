@@ -5,6 +5,8 @@ import { WidgetProps } from "@/types";
 import Label from "@/widgets/base/Label";
 import { TimePicker } from "../../../common/TimePicker";
 import { useDatePickerLocale } from "@/helpers/useDatePickerLocale";
+import dayjs from "@/helpers/dayjs";
+import { useMemo } from "react";
 
 export const DateTimeRangePicker = (props: WidgetProps) => {
   const { ooui, showLabel = false } = props;
@@ -65,6 +67,11 @@ const TimeRangePicker = ({
   value?: any;
   onChange?: (newValue: any) => void;
 }) => {
+  const defaultOpenValue = useMemo(
+    () => dayjs().hour(0).minute(0).second(0),
+    [],
+  );
+
   return (
     <div style={{ marginTop: 5 }}>
       <TimePicker
@@ -72,6 +79,7 @@ const TimeRangePicker = ({
         format={"HH:mm"}
         style={{ width: 115, marginRight: 10 }}
         value={value?.[0]}
+        defaultOpenValue={defaultOpenValue}
         onChange={(newValue) => {
           onChange?.([newValue, value?.[1]]);
         }}
@@ -81,6 +89,7 @@ const TimeRangePicker = ({
         style={{ width: 115 }}
         format={"HH:mm"}
         value={value?.[1]}
+        defaultOpenValue={defaultOpenValue}
         onChange={(newValue) => {
           onChange?.([value?.[0], newValue]);
         }}

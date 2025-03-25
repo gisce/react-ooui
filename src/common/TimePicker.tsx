@@ -2,7 +2,7 @@ import {
   TimePicker as AntTimePicker,
   TimePickerProps as AntTimePickerProps,
 } from "antd";
-import { useRef, useCallback, useMemo } from "react";
+import { useRef, useCallback, useMemo, useState } from "react";
 import { Dayjs } from "dayjs";
 import dayjs from "@/helpers/dayjs";
 
@@ -18,25 +18,21 @@ export interface TimePickerProps
   onChange: (newValue: Dayjs | null, timeString?: string) => void;
   /** Number of selections before the picker automatically closes */
   numberOfSelectsToHide?: number;
+  /** The default open value for the picker */
+  defaultOpenValue?: Dayjs;
 }
 
 export const TimePicker = ({
   value,
   onChange,
   numberOfSelectsToHide = 2,
+  defaultOpenValue,
   ...rest
 }: TimePickerProps) => {
-  // Use proper typing for the ref
   const pickerRef = useRef<{ blur: () => void } | null>(null);
   const selectionCountRef = useRef(0);
+  const [isTabPressed, setIsTabPressed] = useState(false);
 
-  // Memoize the default open value
-  const defaultOpenValue = useMemo(
-    () => dayjs().hour(0).minute(0).second(0),
-    [], // Empty dependency array as this value never needs to change
-  );
-
-  // Memoize the onSelect callback
   const handleSelect = useCallback(
     (newValue: Dayjs) => {
       onChange?.(newValue);
@@ -50,7 +46,6 @@ export const TimePicker = ({
     [onChange, numberOfSelectsToHide],
   );
 
-  // Memoize the onChange callback
   const handleChange = useCallback(
     (newValue: Dayjs | null, timeString?: string) => {
       onChange(newValue, timeString);
@@ -58,20 +53,28 @@ export const TimePicker = ({
     [onChange],
   );
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Tab") {
+        setIsTabPressed(true);
+      }
+    },
+    [],
+  );
+
   const handleBlur = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
-      if (!e.relatedTarget) return;
-
-      if (!e.target.value) {
+      if (!e.target.value || e.target.value === "") {
         if (value) {
           onChange?.(null);
-        } else {
+        } else if (isTabPressed) {
           const today = dayjs();
           onChange?.(today, today.format("HH:mm:ss"));
         }
+        setIsTabPressed(false);
       }
     },
-    [value, onChange],
+    [value, onChange, isTabPressed],
   );
 
   return (
@@ -85,6 +88,7 @@ export const TimePicker = ({
       changeOnBlur={true}
       onSelect={handleSelect}
       onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
     />
   );
 };

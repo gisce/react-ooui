@@ -1,5 +1,5 @@
 import { DatePicker as AntDatePicker, theme } from "antd";
-import React, { useCallback, useMemo, memo } from "react";
+import React, { useCallback, useMemo, memo, useState } from "react";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 import { Date as DateOoui } from "@gisce/ooui";
@@ -86,8 +86,6 @@ const DatePickerInput: React.FC<DatePickerInputProps> = memo(
       DatePickerConfig.date.dateDisplayFormat,
     );
 
-    const defaultValue = useMemo(() => dayjs().hour(0).minute(0).second(0), []);
-
     const dateValue = useMemo(
       () =>
         value
@@ -109,19 +107,29 @@ const DatePickerInput: React.FC<DatePickerInputProps> = memo(
       [onChange, mode],
     );
 
+    const [isTabPressed, setIsTabPressed] = useState(false);
+
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Tab") {
+          setIsTabPressed(true);
+        }
+      },
+      [],
+    );
+
     const handleBlur = useCallback(
       (e: React.FocusEvent<HTMLInputElement>) => {
-        if (!e.relatedTarget) return;
-
         if (!e.target.value) {
           if (value) {
             onChange?.(undefined);
-          } else {
+          } else if (isTabPressed) {
             const today = dayjs().format(
               DatePickerConfig[mode].dateInternalFormat,
             );
             onChange?.(today);
           }
+          setIsTabPressed(false);
         } else if (showTime && dateRegex.test(e.target.value)) {
           const inputDate = dayjs(
             e.target.value,
@@ -139,7 +147,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = memo(
           }
         }
       },
-      [value, onChange, mode, showTime, dateRegex],
+      [value, onChange, mode, showTime, dateRegex, isTabPressed],
     );
 
     const pickerConfig = useMemo(
@@ -158,10 +166,10 @@ const DatePickerInput: React.FC<DatePickerInputProps> = memo(
         disabled={readOnly}
         picker="date"
         showTime={showTime}
-        defaultValue={defaultValue}
         value={dateValue}
         onChange={handleChange}
         onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
         showNow={false}
         showToday={false}
         changeOnBlur={true}
