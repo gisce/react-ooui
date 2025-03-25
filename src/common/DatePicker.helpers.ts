@@ -50,7 +50,7 @@ export const createDateTimePatterns = (): DateTimePatterns => ({
 });
 
 type UpdateDateTimeParams = {
-  currentValue: string;
+  currentValue: string | undefined;
   now: Dayjs;
   mode: DateMode;
   showTime: boolean;
@@ -60,6 +60,12 @@ type UpdateDateTimeParams = {
 export const updateDateTime = (params: UpdateDateTimeParams) => {
   const { currentValue, now, mode, showTime, onChange } = params;
   const patterns = createDateTimePatterns();
+
+  // Handle undefined or empty value
+  if (!currentValue || currentValue.trim() === "") {
+    onChange(now.format(DatePickerConfig[mode].dateInternalFormat));
+    return;
+  }
 
   // Handle day only
   if (patterns.day.test(currentValue)) {
