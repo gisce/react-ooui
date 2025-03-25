@@ -33,20 +33,13 @@ export const useDatePickerHandlers = ({
           return;
         }
 
-        e.preventDefault();
-
-        const result = updateDateTime({
+        updateDateTime({
           currentValue,
           now: dayjs(),
           mode,
           showTime,
           onChange: (value) => onChange?.(value),
         });
-
-        if (result) {
-          input.value = result.newValue;
-          input.setSelectionRange(result.cursorPos, result.cursorPos + 2);
-        }
       }
     },
     [onChange, mode, showTime],

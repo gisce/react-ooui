@@ -32,8 +32,6 @@ export const useTimePickerHandlers = ({
           return;
         }
 
-        e.preventDefault();
-
         const result = updateTimeValue(
           currentValue,
           dayjs(),
@@ -46,7 +44,6 @@ export const useTimePickerHandlers = ({
           }
 
           input.value = result.newValue;
-          input.setSelectionRange(result.cursorPos, result.cursorPos + 2);
 
           // Create a dayjs object from the new time value
           const newTime = dayjs(`2000-01-01 ${result.newValue}`);

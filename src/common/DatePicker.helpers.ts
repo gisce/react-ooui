@@ -57,9 +57,7 @@ type UpdateDateTimeParams = {
   onChange: (value: string) => void;
 };
 
-export const updateDateTime = (
-  params: UpdateDateTimeParams,
-): { newValue: string; cursorPos: number } | null => {
+export const updateDateTime = (params: UpdateDateTimeParams) => {
   const { currentValue, now, mode, showTime, onChange } = params;
   const patterns = createDateTimePatterns();
 
@@ -67,10 +65,6 @@ export const updateDateTime = (
   if (patterns.day.test(currentValue)) {
     const newDate = now.date(parseInt(currentValue));
     onChange(newDate.format(DatePickerConfig[mode].dateInternalFormat));
-    return {
-      newValue: newDate.format(DatePickerConfig[mode].dateDisplayFormat),
-      cursorPos: 3,
-    };
   }
 
   // Handle day and month
@@ -78,10 +72,6 @@ export const updateDateTime = (
     const [day, month] = currentValue.split("/").map((n) => parseInt(n));
     const newDate = now.date(day).month(month - 1);
     onChange(newDate.format(DatePickerConfig[mode].dateInternalFormat));
-    return {
-      newValue: newDate.format(DatePickerConfig[mode].dateDisplayFormat),
-      cursorPos: 6,
-    };
   }
 
   // Handle full date
@@ -94,14 +84,9 @@ export const updateDateTime = (
 
     if (!showTime) {
       onChange(newDate.format(DatePickerConfig.date.dateInternalFormat));
-      return null; // Let tab proceed normally
     }
 
     onChange(newDate.format(DatePickerConfig.time.dateInternalFormat));
-    return {
-      newValue: newDate.format(DatePickerConfig.time.dateDisplayFormat),
-      cursorPos: 11,
-    };
   }
 
   // Handle time components
@@ -117,24 +102,14 @@ export const updateDateTime = (
       const [hours] = timePart.split(":").map((n) => parseInt(n));
       newDate = newDate.hour(hours);
       onChange(newDate.format(DatePickerConfig.time.dateInternalFormat));
-      return {
-        newValue: newDate.format(DatePickerConfig.time.dateDisplayFormat),
-        cursorPos: 14,
-      };
     }
 
     if (patterns.withMinutes.test(currentValue)) {
       const [hours, minutes] = timePart.split(":").map((n) => parseInt(n));
       newDate = newDate.hour(hours).minute(minutes);
       onChange(newDate.format(DatePickerConfig.time.dateInternalFormat));
-      return {
-        newValue: newDate.format(DatePickerConfig.time.dateDisplayFormat),
-        cursorPos: 17,
-      };
     }
   }
-
-  return null; // Let tab proceed normally
 };
 
 export const shouldHandleTab = (
