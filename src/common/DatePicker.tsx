@@ -1,28 +1,37 @@
 import { DatePicker as AntDatePicker, theme } from "antd";
-
-import React from "react";
+import React, { useCallback, useMemo, memo } from "react";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 import { Date as DateOoui } from "@gisce/ooui";
+import { Dayjs } from "dayjs";
 import dayjs from "@/helpers/dayjs";
 import { useDatePickerLocale } from "@/helpers/useDatePickerLocale";
+import { DateMode, DatePickerConfig } from "./DatePicker.helpers";
+import { useDatePickerHandlers } from "./useDatePickerHandlers";
+
 const { useToken } = theme;
 
 type DatePickerProps = WidgetProps & {
   showTime?: boolean;
 };
 
-export const DatePickerConfig = {
-  date: {
-    placeholder: "__/__/____",
-    dateDisplayFormat: "DD/MM/YYYY",
-    dateInternalFormat: "YYYY-MM-DD",
-  },
-  time: {
-    placeholder: "__/__/____ __:__:__",
-    dateDisplayFormat: "DD/MM/YYYY HH:mm:ss",
-    dateInternalFormat: "YYYY-MM-DD HH:mm:ss",
-  },
+type DatePickerInputProps = {
+  ooui: DateOoui;
+  value?: string;
+  onChange?: (value: string | undefined) => void;
+  showTime?: boolean;
+};
+
+const useRequiredStyle = (required: boolean, readOnly: boolean) => {
+  const { token } = useToken();
+
+  return useMemo(
+    () =>
+      required && !readOnly
+        ? { backgroundColor: token.colorPrimaryBg }
+        : undefined,
+    [required, readOnly, token.colorPrimaryBg],
+  );
 };
 
 const DatePicker = (props: DatePickerProps) => {
@@ -36,66 +45,71 @@ const DatePicker = (props: DatePickerProps) => {
   );
 };
 
-interface DatePickerInputProps {
-  ooui: DateOoui;
-  value?: undefined | string;
-  onChange?: (value: undefined | string) => void;
-  showTime?: boolean;
-}
+const DatePickerInput: React.FC<DatePickerInputProps> = memo(
+  (props: DatePickerInputProps) => {
+    const { value, onChange, ooui, showTime } = props;
+    const { id, readOnly, required } = ooui;
+    const datePickerLocale = useDatePickerLocale();
+    const requiredStyle = useRequiredStyle(required, !!readOnly);
+    const mode: DateMode = showTime ? "time" : "date";
 
-const DatePickerInput: React.FC<DatePickerInputProps> = (
-  props: DatePickerInputProps,
-) => {
-  const { value, onChange, ooui, showTime } = props;
-  const { id, readOnly, required } = ooui as DateOoui;
-  const { token } = useToken();
-  const datePickerLocale = useDatePickerLocale();
+    const dateValue = useMemo(
+      () =>
+        value
+          ? dayjs(value, DatePickerConfig[mode].dateInternalFormat)
+          : undefined,
+      [value, mode],
+    );
 
-  const requiredStyle =
-    required && !readOnly
-      ? { backgroundColor: token.colorPrimaryBg }
-      : undefined;
+    const handleChange = useCallback(
+      (momentDate: Dayjs | null) => {
+        if (!momentDate) {
+          onChange?.(undefined);
+          return;
+        }
+        onChange?.(
+          momentDate.format(DatePickerConfig[mode].dateInternalFormat),
+        );
+      },
+      [onChange, mode],
+    );
 
-  const mode = showTime ? "time" : "date";
+    const { handleKeyDown, handleBlur } = useDatePickerHandlers({
+      mode,
+      showTime,
+      onChange,
+      value,
+    });
 
-  const triggerChange = (changedValue: undefined | string) => {
-    onChange?.(changedValue);
-  };
+    const pickerConfig = useMemo(
+      () => ({
+        style: { width: "100%", ...requiredStyle },
+        placeholder: DatePickerConfig[mode].placeholder,
+        format: DatePickerConfig[mode].dateDisplayFormat,
+      }),
+      [mode, requiredStyle],
+    );
 
-  const onValueStringChange = (momentDate: any) => {
-    if (momentDate === null || momentDate === undefined) {
-      triggerChange(momentDate);
-      return;
-    }
+    return (
+      <AntDatePicker
+        {...pickerConfig}
+        id={id}
+        disabled={readOnly}
+        picker="date"
+        showTime={showTime}
+        value={dateValue}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        showNow={false}
+        showToday={false}
+        changeOnBlur={true}
+        locale={datePickerLocale}
+      />
+    );
+  },
+);
 
-    triggerChange(momentDate.format(DatePickerConfig[mode].dateInternalFormat));
-  };
+DatePickerInput.displayName = "DatePickerInput";
 
-  const dateValue = value
-    ? dayjs(value, DatePickerConfig[mode].dateInternalFormat)
-    : undefined;
-
-  return (
-    <AntDatePicker
-      style={{ width: "100%", ...requiredStyle }}
-      placeholder={
-        showTime
-          ? DatePickerConfig.time.placeholder
-          : DatePickerConfig.date.placeholder
-      }
-      disabled={readOnly}
-      id={id}
-      picker={"date"}
-      showTime={showTime}
-      format={DatePickerConfig[mode].dateDisplayFormat}
-      value={dateValue}
-      onChange={onValueStringChange}
-      showNow={false}
-      showToday={false}
-      changeOnBlur={true}
-      locale={datePickerLocale}
-    />
-  );
-};
-
-export default DatePicker;
+export default memo(DatePicker);

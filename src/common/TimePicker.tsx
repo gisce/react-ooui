@@ -1,38 +1,77 @@
-import { TimePicker as AntTimePicker } from "antd";
-import { useRef } from "react";
+import {
+  TimePicker as AntTimePicker,
+  TimePickerProps as AntTimePickerProps,
+} from "antd";
+import { useRef, useCallback } from "react";
 import { Dayjs } from "dayjs";
+import { TimePickerConfig } from "./TimePicker.helpers";
+import { useTimePickerHandlers } from "./useTimePickerHandlers";
 
-interface TimePickerProps {
+/**
+ * Extended TimePicker props interface that includes custom functionality
+ * on top of Ant Design's TimePicker
+ */
+export interface TimePickerProps
+  extends Omit<AntTimePickerProps, "onChange" | "value"> {
+  /** The currently selected time value */
   value?: Dayjs | null;
-  onChange: (newValue: Dayjs | null, timestring?: string) => void;
+  /** Callback fired when the time value changes */
+  onChange: (newValue: Dayjs | null, timeString?: string) => void;
+  /** Number of selections before the picker automatically closes */
   numberOfSelectsToHide?: number;
-  [key: string]: any; // Accept any additional props
+  /** The default open value for the picker */
+  defaultOpenValue?: Dayjs;
 }
 
 export const TimePicker = ({
   value,
   onChange,
   numberOfSelectsToHide = 2,
+  defaultOpenValue,
   ...rest
 }: TimePickerProps) => {
-  const picker = useRef<any>();
-  const pickerSelectedTimes = useRef(0);
+  const pickerRef = useRef<{ blur: () => void } | null>(null);
+  const selectionCountRef = useRef(0);
+
+  const handleSelect = useCallback(
+    (newValue: Dayjs) => {
+      onChange?.(newValue);
+      selectionCountRef.current += 1;
+
+      if (selectionCountRef.current === numberOfSelectsToHide) {
+        pickerRef.current?.blur();
+        selectionCountRef.current = 0;
+      }
+    },
+    [onChange, numberOfSelectsToHide],
+  );
+
+  const handleChange = useCallback(
+    (newValue: Dayjs | null, timeString?: string) => {
+      onChange?.(newValue, timeString);
+    },
+    [onChange],
+  );
+
+  const { handleKeyDown, handleBlur } = useTimePickerHandlers({
+    value,
+    onChange,
+    autocompleteWithZeros: defaultOpenValue !== undefined,
+  });
+
   return (
     <AntTimePicker
       {...rest}
-      ref={picker}
+      ref={pickerRef}
       value={value}
-      onChange={onChange}
+      onChange={handleChange}
       showNow={false}
+      defaultOpenValue={defaultOpenValue}
       changeOnBlur={true}
-      onSelect={(newValue) => {
-        onChange?.(newValue);
-        pickerSelectedTimes.current += 1;
-        if (pickerSelectedTimes.current === numberOfSelectsToHide) {
-          picker.current?.blur();
-          pickerSelectedTimes.current = 0;
-        }
-      }}
+      onSelect={handleSelect}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      format={TimePickerConfig.displayFormat}
     />
   );
 };

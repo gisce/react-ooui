@@ -22,6 +22,8 @@ type TimeInputProps = {
 };
 
 export const TimeInput = (props: TimeInputProps) => {
+  const { readOnly } = props.ooui;
+
   const onChange = (time: Dayjs | null, timestring?: string) => {
     if (props.onChange) {
       props.onChange(timestring);
@@ -33,6 +35,7 @@ export const TimeInput = (props: TimeInputProps) => {
       onChange={onChange}
       numberOfSelectsToHide={3} // Since it has hours, minutes, and seconds
       value={props.value ? dayjs(props.value, "HH:mm:ss") : undefined}
+      disabled={readOnly}
     />
   );
 };
