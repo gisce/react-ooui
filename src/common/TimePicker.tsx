@@ -2,9 +2,10 @@ import {
   TimePicker as AntTimePicker,
   TimePickerProps as AntTimePickerProps,
 } from "antd";
-import { useRef, useCallback, useMemo, useState } from "react";
+import { useRef, useCallback } from "react";
 import { Dayjs } from "dayjs";
-import dayjs from "@/helpers/dayjs";
+import { TimePickerConfig } from "./TimePicker.helpers";
+import { useTimePickerHandlers } from "./useTimePickerHandlers";
 
 /**
  * Extended TimePicker props interface that includes custom functionality
@@ -31,7 +32,6 @@ export const TimePicker = ({
 }: TimePickerProps) => {
   const pickerRef = useRef<{ blur: () => void } | null>(null);
   const selectionCountRef = useRef(0);
-  const [isTabPressed, setIsTabPressed] = useState(false);
 
   const handleSelect = useCallback(
     (newValue: Dayjs) => {
@@ -48,34 +48,16 @@ export const TimePicker = ({
 
   const handleChange = useCallback(
     (newValue: Dayjs | null, timeString?: string) => {
-      onChange(newValue, timeString);
+      onChange?.(newValue, timeString);
     },
     [onChange],
   );
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Tab") {
-        setIsTabPressed(true);
-      }
-    },
-    [],
-  );
-
-  const handleBlur = useCallback(
-    (e: React.FocusEvent<HTMLInputElement>) => {
-      if (!e.target.value || e.target.value === "") {
-        if (value) {
-          onChange?.(null);
-        } else if (isTabPressed) {
-          const today = dayjs();
-          onChange?.(today, today.format("HH:mm:ss"));
-        }
-        setIsTabPressed(false);
-      }
-    },
-    [value, onChange, isTabPressed],
-  );
+  const { handleKeyDown, handleBlur } = useTimePickerHandlers({
+    value,
+    onChange,
+    autocompleteWithZeros: defaultOpenValue !== undefined,
+  });
 
   return (
     <AntTimePicker
@@ -89,6 +71,7 @@ export const TimePicker = ({
       onSelect={handleSelect}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
+      format={TimePickerConfig.displayFormat}
     />
   );
 };
