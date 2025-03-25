@@ -112,10 +112,12 @@ export const updateDateTime = (params: UpdateDateTimeParams) => {
   }
 };
 
-export const shouldHandleTab = (
+export const shouldHandleEnter = (
   currentValue: string,
   showTime: boolean,
 ): boolean => {
+  if (!currentValue) return true;
+
   const patterns = createDateTimePatterns();
   return (
     patterns.day.test(currentValue) ||

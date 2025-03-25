@@ -2,9 +2,8 @@ import { useCallback } from "react";
 import dayjs from "@/helpers/dayjs";
 import {
   DateMode,
-  shouldHandleTab,
+  shouldHandleEnter,
   updateDateTime,
-  DatePickerConfig,
 } from "./DatePicker.helpers";
 
 type UseDatePickerHandlersParams = {
@@ -22,16 +21,15 @@ export const useDatePickerHandlers = ({
 }: UseDatePickerHandlersParams) => {
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Tab") {
+      if (e.key === "Enter") {
         const input = e.target as HTMLInputElement;
         const currentValue = input.value;
 
-        // Mark the event as tab pressed for blur handler
-        (e.target as any)._tabPressed = true;
-
-        if (!shouldHandleTab(currentValue, showTime)) {
+        if (!shouldHandleEnter(currentValue, showTime)) {
           return;
         }
+
+        e.preventDefault();
 
         updateDateTime({
           currentValue,
@@ -49,23 +47,15 @@ export const useDatePickerHandlers = ({
     (e: React.FocusEvent<HTMLInputElement>) => {
       const hadValueBefore = value !== undefined;
       const isEmpty = !e.target.value;
-      const wasTabPressed = (e.target as any)._tabPressed;
 
       if (isEmpty) {
         if (hadValueBefore) {
           // If we had a value and manually cleared it, keep it empty
           onChange?.(undefined);
-        } else if (wasTabPressed) {
-          // If we pressed tab and had no value before, set current date/time
-          const now = dayjs();
-          onChange?.(now.format(DatePickerConfig[mode].dateInternalFormat));
         }
       }
-
-      // Clean up the flag
-      (e.target as any)._tabPressed = false;
     },
-    [onChange, value, mode],
+    [onChange, value],
   );
 
   return {
