@@ -24,56 +24,49 @@ export const timePatterns = {
   hoursMinutesSeconds: createTimeRegex("HH:mm:ss"),
 } as const;
 
-export const shouldHandleTimeTab = (currentValue: string): boolean => {
+export const shouldHandleEnter = (
+  currentValue: string | undefined,
+): boolean => {
+  if (!currentValue || currentValue.trim() === "") {
+    return true;
+  }
   return (
     timePatterns.hours.test(currentValue) ||
     timePatterns.hoursMinutes.test(currentValue)
   );
 };
 
-type UpdateTimeResult = {
-  newValue: string;
-  cursorPos: number;
-  shouldMoveFocus: boolean;
-};
-
 export const updateTimeValue = (
-  currentValue: string,
+  currentValue: string | undefined,
   now: Dayjs,
   useZeros = false,
-): UpdateTimeResult | null => {
+) => {
+  // Handle undefined or empty value
+  if (!currentValue || currentValue.trim() === "") {
+    const hours = now.format("HH");
+    const minutes = now.format("mm");
+    const seconds = now.format("ss");
+    return `${hours}:${minutes}:${seconds}`;
+  }
+
   // Handle hours only (12)
   if (timePatterns.hours.test(currentValue)) {
-    const hours = parseInt(currentValue);
     const minutes = useZeros ? "00" : now.format("mm");
     const seconds = useZeros ? "00" : now.format("ss");
     const newValue = `${currentValue}:${minutes}:${seconds}`;
-    return {
-      newValue,
-      cursorPos: 3,
-      shouldMoveFocus: false,
-    }; // Position at minutes
+    return newValue;
   }
 
   // Handle hours:minutes (12:34)
   if (timePatterns.hoursMinutes.test(currentValue)) {
-    const [hours, minutes] = currentValue.split(":").map((n) => parseInt(n));
     const seconds = useZeros ? "00" : now.format("ss");
     const newValue = `${currentValue}:${seconds}`;
-    return {
-      newValue,
-      cursorPos: 6,
-      shouldMoveFocus: false,
-    }; // Position at seconds
+    return newValue;
   }
 
-  // If we have hours:minutes:seconds, move focus to next element
+  // If we have hours:minutes:seconds, return as is
   if (timePatterns.hoursMinutesSeconds.test(currentValue)) {
-    return {
-      newValue: currentValue,
-      cursorPos: currentValue.length,
-      shouldMoveFocus: true,
-    };
+    return currentValue;
   }
 
   return null;
