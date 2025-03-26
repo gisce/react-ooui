@@ -38,6 +38,19 @@ export const useDatePickerHandlers = ({
           showTime,
           onChange: (value) => onChange?.(value),
         });
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        const input = e.currentTarget;
+        input.blur();
+        const focusableElements =
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+        const elements = Array.from(
+          document.querySelectorAll(focusableElements),
+        ) as HTMLElement[];
+        const index = elements.indexOf(input);
+        if (index > -1 && index < elements.length - 1) {
+          elements[index + 1].focus();
+        }
       }
     },
     [onChange, mode, showTime],
