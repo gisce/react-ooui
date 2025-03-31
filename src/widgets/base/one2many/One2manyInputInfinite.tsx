@@ -272,6 +272,7 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
         formRef={formRef}
         onRefreshParentValues={() => {
           fetchParentFormValues?.({ forceRefresh: true });
+          gridRef.current?.refresh();
         }}
       />
       {currentView === "tree" && (
@@ -325,6 +326,7 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
         mustClearAfterSave={continuousEntryMode}
         onMustRefreshParent={() => {
           fetchParentFormValues?.({ forceRefresh: true });
+          gridRef.current?.refresh();
         }}
       />
       <SearchModal
