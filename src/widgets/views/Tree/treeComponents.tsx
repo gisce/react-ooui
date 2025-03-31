@@ -9,12 +9,12 @@ import { ReferenceTree } from "../../base/ReferenceTree";
 import dayjs from "@/helpers/dayjs";
 import Avatar from "../../custom/Avatar";
 import { CustomTag, TagInput } from "../../custom/Tag";
-import { DatePickerConfig } from "@/common/DatePicker";
 import ConnectionProvider from "@/ConnectionProvider";
 import { colorFromString } from "@/helpers/formHelper";
 import { EmailTagsRender } from "@/widgets/custom/EmailTags";
 import { ImageRender } from "@/widgets/base/Image";
 import { Char as CharOOui } from "@gisce/ooui";
+import { DatePickerConfig } from "@/common/DatePicker.helpers";
 
 export const BooleanComponent = ({
   value,
