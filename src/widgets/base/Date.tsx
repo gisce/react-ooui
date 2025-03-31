@@ -1,6 +1,5 @@
 import DatePicker from "@/common/DatePicker";
 
-import React from "react";
 import { WidgetProps } from "@/types";
 
 const Date = (props: WidgetProps) => {
