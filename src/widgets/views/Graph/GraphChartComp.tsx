@@ -72,8 +72,8 @@ export const GraphChartComp = ({
       }
       const matchedDataEntry = piePercents.find((d) => d.x === x);
       const value = matchedDataEntry?.percent || 0;
-      const percent = `${value.toFixed(0)}%`;
-      return `${percent}`;
+      const percent = `${value}`;
+      return `${percent}%`;
     },
     [piePercents],
   );
