@@ -484,26 +484,26 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       try {
         setTreeIsLoading?.(true);
 
-        // Run both requests in parallel when it's the first request
-        const [results] = await Promise.all([
-          fetchResults({
-            startRow,
-            endRow,
-            state,
-          }),
-          // Only fetch total on first request
-          startRow === 0 && !nameSearch ? updateTotalRows() : Promise.resolve(),
-        ]);
+        // Fire updateTotalRows independently on first request
+        if (startRow === 0 && !nameSearch) {
+          updateTotalRows(); // Don't await, let it run in parallel
+        }
 
+        const results = await fetchResults({
+          startRow,
+          endRow,
+          state,
+        });
+
+        setTreeIsLoading?.(false);
         return results;
       } catch (error) {
         console.error(error);
         setTotalRows(null);
         setTotalItemsActionView(0);
+        setTreeIsLoading?.(false);
         showErrorDialog(error);
         throw error;
-      } finally {
-        setTreeIsLoading?.(false);
       }
     },
     [
