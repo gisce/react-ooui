@@ -440,6 +440,10 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
           onHasFunctionFieldsToParseConditions(),
       });
 
+      if (!nameSearch && mustUpdateTotal()) {
+        updateTotalRows();
+      }
+
       const { results, attrsEvaluated } = await searchForTree({
         params,
         limit,
@@ -474,10 +478,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
         setTotalRowsLoading(false);
       } else {
         setNameSearchFetchCompleted(false);
-      }
-
-      if (!nameSearch && mustUpdateTotal()) {
-        updateTotalRows();
       }
 
       if (results.length === 0) {
