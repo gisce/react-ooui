@@ -163,7 +163,7 @@ export const TagsInput = (props: TagsInputProps) => {
           onChange={onChangeSelected}
           loading={isLoadingOptions}
           filterOption={(value, element) =>
-            element.label.toLowerCase().includes(value.toString())
+            element.label.toLowerCase().includes(value.toString().toLowerCase())
           }
         ></Select>
       </div>
