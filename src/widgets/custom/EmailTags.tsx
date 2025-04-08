@@ -45,7 +45,11 @@ export const EmailTagsRender: React.FC<EmailTagsRenderProps> = ({
         <Tag
           key={index}
           closable={!!handleClose}
-          color={validator.isEmail(email) ? undefined : "error"}
+          color={
+            validator.isEmail(email, { allow_display_name: true })
+              ? undefined
+              : "error"
+          }
           onClose={() => handleClose && handleClose(email)}
         >
           {email}
