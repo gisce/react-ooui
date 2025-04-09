@@ -37,7 +37,10 @@ export const EmailTagsRender: React.FC<EmailTagsRenderProps> = ({
   }
   const emailArray =
     typeof emails === "string"
-      ? emails.split(";").map((email) => email.trim())
+      ? emails
+          .replace(/,/g, ";")
+          .split(";")
+          .map((email) => email.trim())
       : emails;
   return (
     <>
@@ -76,6 +79,7 @@ export const EmailTagsInput: React.FC<EmailTagsInputProps> = ({
   const [emails, setEmails] = useState<string[]>(
     value
       ? value
+          .replace(/,/g, ";")
           .split(";")
           .map((email) => email.trim())
           .filter((email) => email)
@@ -89,6 +93,7 @@ export const EmailTagsInput: React.FC<EmailTagsInputProps> = ({
   useDeepCompareEffect(() => {
     if (value) {
       const newEmails = value
+        .replace(/,/g, ";")
         .split(";")
         .map((email) => email.trim())
         .filter(Boolean);
@@ -111,28 +116,50 @@ export const EmailTagsInput: React.FC<EmailTagsInputProps> = ({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    const parts = value.split(/[ ,;]+/);
+
+    // Check if input ends with a space after a complete display name email
+    const endsWithSpaceAfterEmail = />\s+$/.test(value);
+
+    // Use different splitting strategy based on input format
+    let parts;
+    if (endsWithSpaceAfterEmail) {
+      // If we have a display name email followed by space, split by that last space
+      const trimmed = value.trimEnd();
+      parts = [trimmed, ""];
+    } else {
+      const hasDisplayNameFormat = /["<>]/.test(value);
+      parts = hasDisplayNameFormat
+        ? value.split(/[,;]+/)
+        : value.split(/[ ,;]+/);
+    }
+
+    // Don't process empty parts (like when ending with a comma)
     const validEmails = parts
       .slice(0, -1)
       .map((email) => email.trim())
       .filter((email) => email && !emails.includes(email));
 
-    const concatenatedEmails = [...emails, ...validEmails].join(";");
-    if (
-      !maxLength ||
-      concatenatedEmails.length + parts[parts.length - 1].length <= maxLength
-    ) {
-      if (validEmails.length > 0) {
+    // Only update state if we have valid emails to add
+    if (validEmails.length > 0) {
+      const concatenatedEmails = [...emails, ...validEmails].join(";");
+      if (
+        !maxLength ||
+        concatenatedEmails.length + parts[parts.length - 1].length <= maxLength
+      ) {
         setEmails([...emails, ...validEmails]);
         handleChange([...emails, ...validEmails]);
+        setInputValue(parts[parts.length - 1]);
       }
-      setInputValue(parts[parts.length - 1]);
+    } else {
+      // If no valid emails, just update the input value without clearing it
+      setInputValue(value);
     }
   };
 
   const handleInputConfirm = () => {
     if (inputValue) {
       const newEmails = inputValue
+        .replace(/,/g, ";")
         .split(";")
         .map((email) => email.trim())
         .filter((email) => email && !emails.includes(email));
