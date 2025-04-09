@@ -1,5 +1,5 @@
 import { ReactElement, useCallback, useEffect, useMemo, useState } from "react";
-import { Checkbox, Spin, ColorPicker, Tooltip } from "antd";
+import { Checkbox, Spin, ColorPicker, Tooltip, Popover } from "antd";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../../base/ProgressBar";
 import { One2manyValue } from "../../base/one2many/One2manyInput";
@@ -71,12 +71,18 @@ export const TextComponent = ({ value }: { value: any }): ReactElement => {
       return (
         <Tooltip
           title={contentWithNewlines}
+          color={"white"}
           placement="top"
           mouseEnterDelay={0.5}
           overlayStyle={{
             maxWidth: "500px",
             maxHeight: "300px",
             overflow: "auto",
+            boxShadow:
+              "0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px 0 rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05)",
+          }}
+          overlayInnerStyle={{
+            color: "rgba(0, 0, 0, 0.88)",
           }}
         >
           <div
