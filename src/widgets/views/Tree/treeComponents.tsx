@@ -1,5 +1,5 @@
 import { ReactElement, useCallback, useEffect, useMemo, useState } from "react";
-import { Checkbox, Spin, ColorPicker } from "antd";
+import { Checkbox, Spin, ColorPicker, Tooltip } from "antd";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../../base/ProgressBar";
 import { One2manyValue } from "../../base/one2many/One2manyInput";
@@ -15,6 +15,7 @@ import { EmailTagsRender } from "@/widgets/custom/EmailTags";
 import { ImageRender } from "@/widgets/base/Image";
 import { Char as CharOOui } from "@gisce/ooui";
 import { DatePickerConfig } from "@/common/DatePicker.helpers";
+import { useActionViewContext } from "@/context/ActionViewContext";
 
 export const BooleanComponent = ({
   value,
@@ -51,14 +52,50 @@ export const Many2OneComponent = ({ value }: { value: any }): ReactElement => {
 };
 
 export const TextComponent = ({ value }: { value: any }): ReactElement => {
-  return useMemo(
-    () => (
+  const { treeType } = useActionViewContext();
+  const mustHaveAHover = treeType === "infinite";
+
+  return useMemo(() => {
+    const contentWithNewlines = (
       <Interweave
         content={value?.toString().replace(/(?:\r\n|\r|\n)/g, "<br>")}
       />
-    ),
-    [value],
-  );
+    );
+    const contentSingleLine = (
+      <Interweave
+        content={value?.toString().replace(/(?:\r\n|\r|\n|<br\s*\/?>)/g, " ")}
+      />
+    );
+
+    if (mustHaveAHover) {
+      return (
+        <Tooltip
+          title={contentWithNewlines}
+          placement="top"
+          mouseEnterDelay={0.5}
+          overlayStyle={{
+            maxWidth: "500px",
+            maxHeight: "300px",
+            overflow: "auto",
+          }}
+        >
+          <div
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: "100%",
+              maxHeight: "100%",
+            }}
+          >
+            {contentSingleLine}
+          </div>
+        </Tooltip>
+      );
+    }
+
+    return contentWithNewlines;
+  }, [value, mustHaveAHover]);
 };
 
 export const DateComponent = ({ value }: { value: any }): ReactElement => {
