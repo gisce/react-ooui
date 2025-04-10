@@ -17,16 +17,10 @@ import { Badge, Spin } from "antd";
 import {
   getOrderFromSortFields,
   getSortedFieldsFromState,
-  getTableColumns,
   getTableItems,
   getTree,
 } from "@/helpers/treeHelper";
-import { COLUMN_COMPONENTS } from "./Tree/treeComponents";
-import {
-  useDeepCompareCallback,
-  useDeepCompareEffect,
-  useDeepCompareMemo,
-} from "use-deep-compare";
+import { useDeepCompareCallback, useDeepCompareEffect } from "use-deep-compare";
 import {
   ColumnState,
   InfiniteTable,
@@ -53,14 +47,13 @@ import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { NameSearchWarning } from "./Tree/NameSearchWarning";
 import { SearchTreeHeader } from "./SearchTreeHeader";
-import { useFeatureIsEnabled } from "@/context/ConfigContext";
-import { ErpFeatureKeys } from "@/models/erpFeature";
 import {
   getAttributesConditionsFromOoui,
   useTreeAttributesState,
 } from "@/hooks/useTreeAttributesState";
 import { CellRenderer } from "./Tree/CellRenderer";
 import { TreeType } from "@/views/actionViews/TreeActionView";
+import { useTableConfiguration } from "@/hooks/useTableConfiguration";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -154,10 +147,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const prevNameSearch = useRef(nameSearch);
   const isNameSearchMode = useRef(false);
 
-  const many2oneSortEnabled = useFeatureIsEnabled(
-    ErpFeatureKeys.FEATURE_MANY2ONE_SORT,
-  );
-
   const currentSearchParamsString = useRef<string>();
   const prevSortOrder = useRef<string>();
   const isUpdatingTotalRows = useRef<boolean>(false);
@@ -167,12 +156,17 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       (nameSearch !== undefined && prevNameSearch.current === undefined) ||
       (typeof nameSearch === "string" &&
         typeof prevNameSearch.current === "string" &&
-        nameSearch !== prevNameSearch.current) ||
-      (nameSearch === undefined && prevNameSearch.current !== undefined)
+        nameSearch !== prevNameSearch.current)
     ) {
       isNameSearchMode.current = Boolean(nameSearch);
       setSearchParams?.([]);
       setSearchValues?.({});
+      tableRef.current?.unselectAll();
+    } else if (
+      nameSearch === undefined &&
+      prevNameSearch.current !== undefined
+    ) {
+      isNameSearchMode.current = false;
       tableRef.current?.unselectAll();
     }
     prevNameSearch.current = nameSearch;
