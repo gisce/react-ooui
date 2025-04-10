@@ -16,6 +16,7 @@ import { ImageRender } from "@/widgets/base/Image";
 import { Char as CharOOui } from "@gisce/ooui";
 import { DatePickerConfig } from "@/common/DatePicker.helpers";
 import { useActionViewContext } from "@/context/ActionViewContext";
+import { useOne2manyContext } from "@/context/One2manyContext";
 
 export const BooleanComponent = ({
   value,
@@ -53,7 +54,8 @@ export const Many2OneComponent = ({ value }: { value: any }): ReactElement => {
 
 export const TextComponent = ({ value }: { value: any }): ReactElement => {
   const { treeType } = useActionViewContext();
-  const mustHaveAHover = treeType === "infinite";
+  const { treeType: one2manyTreeType } = useOne2manyContext() || {};
+  const mustHaveAHover = (one2manyTreeType || treeType) === "infinite";
 
   return useMemo(() => {
     const contentWithNewlines = (
