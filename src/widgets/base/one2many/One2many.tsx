@@ -2,9 +2,8 @@ import { useContext, useState } from "react";
 import { One2many as One2manyOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { Spin, Alert } from "antd";
-import { FormView, TreeView, Views, ViewType } from "@/types";
+import { Views, ViewType } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
-import One2manyProvider from "@/context/One2manyContext";
 import { One2manyInput } from "@/widgets/base/one2many/One2manyInput";
 import {
   One2manyInput as One2manyInputInfinite,
@@ -14,6 +13,12 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
+import { DEFAULT_TREE_TYPE } from "@/views/actionViews/TreeActionView";
+import One2manyProvider, {
+  One2manyContext,
+  One2manyContextType,
+  useOne2manyContext,
+} from "@/context/One2manyContext";
 
 const MIN_ITEMS_TO_USE_INFINITE = 30;
 
@@ -139,13 +144,29 @@ export const One2many = (props: Props) => {
 
 const One2manyComponent = (props: One2manyInputInfiniteProps) => {
   const { ooui, value } = props;
-  const shouldUseInfiniteComponent =
-    ooui.infinite ||
-    (value &&
-      Array.isArray(value.items) &&
-      value.items.length >= MIN_ITEMS_TO_USE_INFINITE);
 
-  return shouldUseInfiniteComponent ? (
+  const { treeType, setTreeType } = useOne2manyContext();
+
+  useDeepCompareEffect(() => {
+    if (ooui.infinite) {
+      setTreeType("infinite");
+      return;
+    }
+
+    if (
+      value &&
+      Array.isArray(value.items) &&
+      value.items.length >= MIN_ITEMS_TO_USE_INFINITE
+    ) {
+      setTreeType("infinite");
+      return;
+    }
+
+    setTreeType(DEFAULT_TREE_TYPE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ooui.infinite, value]);
+
+  return treeType === "infinite" ? (
     <One2manyInputInfinite {...props} />
   ) : (
     <One2manyInput {...props} />
