@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useMemo, useRef } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { One2manyInputProps } from "./One2many.types";
 import {
   One2manyContext,
@@ -14,45 +20,29 @@ import { useOne2manyForm } from "./useOne2manyForm";
 import { useOne2manyItems } from "./useOne2manyItems";
 import { One2manyForm } from "./One2manyForm";
 import { useOne2manyRemove } from "./useOne2manyRemove";
-import { InfiniteTableRef } from "@gisce/react-formiga-table";
+import { PaginatedTableRef } from "@gisce/react-formiga-table";
 import { useDeepCompareCallback } from "use-deep-compare";
-import { FormModal, SearchModal } from "@/index";
+import { FormModal, One2manyItem, SearchModal } from "@/index";
 import { useOne2manyFormModal } from "./useOne2manyFormModal";
 import { useOne2manySearchModal } from "./useOne2manySearchModal";
-import { One2manyTree } from "./One2manyTree";
 import "@gisce/react-formiga-table/style.css";
 import { Graph } from "@/widgets/views/Graph/Graph";
 import { useOne2manyTreeAggregates } from "./useOne2manyTreeAggregates";
+import { PaginatedTableComponent } from "@/widgets/views/Tree/Paginated/components/PaginatedTableComponent";
+import { useTableConfiguration } from "@/hooks/useTableConfiguration";
+import { Badge } from "antd";
+import { SUPPORTED_VIEWS } from "./One2manyInputInfinite";
+import { AggregatesFooter } from "./AggregatesFooter";
 
-export const SUPPORTED_VIEWS = ["form", "tree", "graph"];
-
-export type One2manyValue = {
-  fields?: any;
-  items: One2manyItem[];
-};
-
-export type One2manyItem = {
-  operation?:
-    | "original"
-    | "pendingRemove"
-    | "pendingUpdate"
-    | "pendingCreate"
-    | "pendingLink";
-  id?: number;
-  values?: any;
-  treeValues?: any;
-  defaultValues?: any;
-};
-
-export type One2manyInputInfiniteProps = One2manyInputProps & {
+export type One2manyInputPaginatedProps = One2manyInputProps & {
   parentViewId?: number;
   treeViewId?: number;
 };
 
-export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
-  props: One2manyInputInfiniteProps,
+export const One2manyInput: React.FC<One2manyInputPaginatedProps> = (
+  props: One2manyInputPaginatedProps,
 ) => {
-  const gridRef = useRef<InfiniteTableRef>(null);
+  const gridRef = useRef<PaginatedTableRef>(null);
   const { value, onChange, ooui, views } = props;
   const { items: one2manyItems = [] } = value || {};
   const items = useOne2manyItems({ one2manyItems });
@@ -73,6 +63,7 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
     fetchValues: fetchParentFormValues,
   } = formContext || {};
   const formRef = useRef<any>();
+  const [sorter, setSorter] = useState<any>();
 
   const showToggleButton = views.size > 1;
   const showCreateButton = views.get("form")?.fields !== undefined;
@@ -110,6 +101,16 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
     items,
     selectedRowKeys,
   });
+
+  const { columns, strings } = useTableConfiguration(treeOoui, {
+    ...getContext?.(),
+    ...context,
+  });
+
+  const statusComp = useCallback(
+    (status: any) => <Badge color={status} style={{ marginLeft: 7 }} />,
+    [],
+  );
 
   const title = useMemo(() => {
     const { title } = views.get(currentView) || {};
@@ -276,28 +277,51 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
         }}
       />
       {currentView === "tree" && (
-        <One2manyTree
-          gridRef={gridRef}
-          height={ooui.height}
-          items={items}
-          readOnly={readOnly || false}
-          onFetchRecords={onTreeFetchRows}
-          ooui={treeOoui}
-          context={context}
-          onRowDoubleClick={onRowDoubleClick}
-          showPointerCursorInRows={showPointerCursorInRows}
-          onRowSelectionChange={setSelectedRowKeys}
-          relation={relation}
-          onChangeFirstVisibleRowIndex={onChangeFirstVisibleRowIndex}
-          onGetFirstVisibleRowIndex={onGetFirstVisibileRowIndex}
-          selectedRowKeys={selectedRowKeys}
-          onSelectionCheckboxClicked={onSelectionCheckboxClicked}
-          dataForHash={{
-            parentViewId: props.parentViewId,
-            treeViewId: props.treeViewId,
-            one2ManyFieldName: fieldName,
+        <PaginatedTableComponent
+          columns={columns || []}
+          treeOoui={treeOoui}
+          strings={strings}
+          isLoading={false}
+          availableHeight={ooui.height || 400}
+          results={items.map((item) => item.treeValues)}
+          handleRowDoubleClick={onRowDoubleClick}
+          onRowHasBeenSelected={(changedRow: {
+            id: number;
+            selected: boolean;
+          }) => {
+            setSelectedRowKeys((prev: number[]) =>
+              changedRow.selected
+                ? [...prev, changedRow.id]
+                : prev.filter((id: number) => id !== changedRow.id),
+            );
           }}
-          aggregates={aggregates}
+          updateColumnState={() => {}}
+          getColumnState={() => {}}
+          setTreeFirstVisibleRow={onChangeFirstVisibleRowIndex}
+          onGetFirstVisibleRowIndex={onGetFirstVisibileRowIndex}
+          onGetFirstVisibleColumn={() => undefined}
+          setTreeFirstVisibleColumn={() => {}}
+          statusComp={statusComp}
+          onRowStatus={() => null}
+          onRowStyle={() => ({})}
+          headerCheckboxState={
+            selectedRowKeys.length > 0 ? "checked" : "unchecked"
+          }
+          onHeaderCheckboxClick={() => {}}
+          refresh={() => {
+            fetchParentFormValues?.({ forceRefresh: true });
+            gridRef.current?.refresh();
+          }}
+          actionViewSortState={sorter}
+          footerComp={
+            aggregates && (
+              <AggregatesFooter aggregates={aggregates} isLoading={false} />
+            )
+          }
+          onSortChange={setSorter}
+          tableRef={gridRef}
+          isFieldLoading={() => false}
+          onChangeTreeType={undefined}
         />
       )}
       {currentView === "form" && (
