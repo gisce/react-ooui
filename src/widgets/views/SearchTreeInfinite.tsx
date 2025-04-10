@@ -223,19 +223,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     results: actionViewResults,
   });
 
-  const columns = useDeepCompareMemo(() => {
-    if (!treeOoui) {
-      return;
-    }
-    return getTableColumns(
-      treeOoui,
-      {
-        ...COLUMN_COMPONENTS,
-      },
-      parentContext,
-      many2oneSortEnabled,
-    );
-  }, [treeOoui, parentContext, many2oneSortEnabled]);
+  const { columns, strings } = useTableConfiguration(treeOoui, parentContext);
 
   const columnsWithLoading = useMemo(() => {
     if (!columns) {
@@ -618,13 +606,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     (record: any) => statusForResults.current?.[record.id],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
-  );
-
-  const strings = useMemo(
-    () => ({
-      resetTableViewLabel: t("resetTableView"),
-    }),
-    [t],
   );
 
   const content = useMemo(() => {
