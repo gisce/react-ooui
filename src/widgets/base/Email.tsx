@@ -1,4 +1,3 @@
-import React from "react";
 import isEmail from "validator/lib/isEmail";
 import Field from "@/common/Field";
 
@@ -28,7 +27,7 @@ export const Email = (props: EmailProps) => {
             if (!value) {
               return false;
             }
-            return isEmail(value);
+            return isEmail(value, { allow_display_name: true });
           }}
         />
       )}
