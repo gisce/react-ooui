@@ -1,5 +1,9 @@
 import { ViewType } from "@/types";
-import React, { useState } from "react";
+import {
+  DEFAULT_TREE_TYPE,
+  TreeType,
+} from "@/views/actionViews/TreeActionView";
+import React, { useContext, useState } from "react";
 
 export type One2manyContextType = {
   currentView: ViewType;
@@ -8,6 +12,8 @@ export type One2manyContextType = {
   setItemIndex: (value: number) => void;
   manualTriggerChange: boolean;
   setManualTriggerChange: (value: boolean) => void;
+  treeType: TreeType;
+  setTreeType: (type: TreeType) => void;
 };
 
 export const One2manyContext = React.createContext<One2manyContextType | null>(
@@ -25,6 +31,7 @@ const One2manyProvider = ({
   const [itemIndex, setItemIndex] = useState<number>(0);
   const [manualTriggerChange, setManualTriggerChange] =
     useState<boolean>(false);
+  const [treeType, setTreeType] = useState<TreeType>(DEFAULT_TREE_TYPE);
 
   return (
     <One2manyContext.Provider
@@ -35,11 +42,17 @@ const One2manyProvider = ({
         setItemIndex,
         manualTriggerChange,
         setManualTriggerChange,
+        treeType,
+        setTreeType,
       }}
     >
       {children}
     </One2manyContext.Provider>
   );
+};
+
+export const useOne2manyContext = () => {
+  return useContext(One2manyContext) as One2manyContextType;
 };
 
 export default One2manyProvider;
