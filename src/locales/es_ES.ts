@@ -122,4 +122,6 @@ export default {
   nameSearchLimitNote:
     "Se muestran solo los primeros 80 registros. Si desea ver más registros, utilice la búsqueda por filtros.",
   filterSearchLink: "búsqueda por filtros",
+  changeToInfinite: "Cambiar a listado infinito",
+  changeToPaginated: "Cambiar a listado paginado",
 };

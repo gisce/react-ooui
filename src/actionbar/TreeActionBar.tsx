@@ -186,13 +186,17 @@ function TreeActionBarComponent({
         return;
       }
 
-      if (searchString && searchString.trim().length > 0) {
+      if (
+        searchString &&
+        searchString.trim().length > 0 &&
+        !searchTreeNameSearch
+      ) {
         setSearchParams?.([]);
         setSearchValues?.({});
       }
 
       setSearchTreeNameSearch?.(searchString);
-      if (searchTreeNameSearch !== undefined && treeType !== "infinite") {
+      if (searchTreeNameSearch !== undefined) {
         setTimeout(() => {
           searchTreeRef?.current?.refreshResults();
         }, 50);
@@ -201,7 +205,6 @@ function TreeActionBarComponent({
     [
       searchTreeNameSearch,
       setSearchTreeNameSearch,
-      treeType,
       setSearchParams,
       setSearchValues,
       searchTreeRef,
