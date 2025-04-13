@@ -124,4 +124,5 @@ export default {
   filterSearchLink: "búsqueda por filtros",
   changeToInfinite: "Cambiar a listado infinito",
   changeToPaginated: "Cambiar a listado paginado",
+  enterFieldToFilter: "Introduce el campo para filtrar...",
 };
