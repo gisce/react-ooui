@@ -24,13 +24,11 @@ type RootViewProps = {
   children: ReactNode;
 };
 
-const MAX_SEARCH_LIMIT = 100;
-
 function RootView(props: RootViewProps, ref: any) {
   const { children } = props;
   const [activeKey, setActiveKey] = useState<string>("welcome");
   const { t } = useLocale();
-  const { globalValues, rootContext } = useConfigContext();
+  const { globalValues, rootContext, treeMaxLimit } = useConfigContext();
 
   const [tabs, setTabs] = useState<Tab[]>([
     {
@@ -150,7 +148,7 @@ function RootView(props: RootViewProps, ref: any) {
 
     openAction({
       ...action,
-      limit: limit && limit > MAX_SEARCH_LIMIT ? MAX_SEARCH_LIMIT : limit,
+      limit,
       context: { ...rootContext, ...parsedContext },
       domain: parsedDomain,
       actionRawData: {

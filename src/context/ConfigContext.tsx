@@ -8,9 +8,10 @@ import {
 } from "@gisce/react-formiga-components";
 import { strings } from "@/locales";
 
-type ConfigContextProps = ConfigContextValues & {
+type ConfigContextProps = Omit<ConfigContextValues, "treeMaxLimit"> & {
   locale: Locale;
   localizedStrings?: Strings;
+  treeMaxLimit?: number;
 };
 
 type ConfigContextValues = {
@@ -19,7 +20,10 @@ type ConfigContextValues = {
   globalValues?: Record<string, any>;
   rootContext?: Record<string, any>;
   devMode?: boolean;
+  treeMaxLimit: number;
 };
+
+const DEFAULT_MAX_SEARCH_LIMIT = 100;
 
 const defaultConfigContext: ConfigContextValues = {
   erpFeatures: {},
@@ -27,6 +31,7 @@ const defaultConfigContext: ConfigContextValues = {
   globalValues: {},
   rootContext: {},
   devMode: false,
+  treeMaxLimit: DEFAULT_MAX_SEARCH_LIMIT,
 };
 
 export const ConfigContext =
@@ -58,6 +63,7 @@ export const ConfigContextProvider = memo(
     rootContext,
     devMode,
     title,
+    treeMaxLimit = DEFAULT_MAX_SEARCH_LIMIT,
     children,
   }: ConfigContextProps & { children?: React.ReactNode }) => {
     const providerValue = useMemo(
@@ -67,8 +73,9 @@ export const ConfigContextProvider = memo(
         rootContext,
         devMode,
         title,
+        treeMaxLimit,
       }),
-      [erpFeatures, globalValues, rootContext, devMode, title],
+      [erpFeatures, globalValues, rootContext, devMode, title, treeMaxLimit],
     );
 
     return (

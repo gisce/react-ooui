@@ -16,7 +16,7 @@ export type ShareUrlButtonProps = {
 
 export function ShareUrlButton({ res_id, searchParams }: ShareUrlButtonProps) {
   const buttonRef = useRef(null);
-  const { currentView } = useActionViewContext();
+  const { currentView, limit, currentPage, order } = useActionViewContext();
   const initialView = {
     id: currentView.view_id,
     type: currentView.type,
@@ -68,6 +68,9 @@ export function ShareUrlButton({ res_id, searchParams }: ShareUrlButtonProps) {
     ...(initialView && { initialView }),
     ...(searchParams && { searchParams }),
     ...(res_id && { res_id }),
+    ...(limit !== undefined && { limit }),
+    ...(currentPage && currentPage > 1 && { currentPage }),
+    order,
   };
   const shareUrl = createShareOpenUrl(finalActionData);
   const { type } = initialView || {};

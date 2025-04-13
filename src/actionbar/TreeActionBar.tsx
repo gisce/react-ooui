@@ -82,6 +82,8 @@ function TreeActionBarComponent({
     totalItems,
     isActive,
     treeType,
+    setSearchParams,
+    setSearchValues,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   const advancedExportEnabled = useFeatureIsEnabled(
@@ -184,22 +186,29 @@ function TreeActionBarComponent({
         return;
       }
 
-      if (searchString && searchString.trim().length > 0) {
-        setSearchTreeNameSearch?.(searchString);
-        return;
+      if (
+        searchString &&
+        searchString.trim().length > 0 &&
+        !searchTreeNameSearch
+      ) {
+        setSearchParams?.([]);
+        setSearchValues?.({});
       }
 
+      setSearchTreeNameSearch?.(searchString);
       if (searchTreeNameSearch !== undefined) {
-        setSearchTreeNameSearch?.(undefined);
-
-        if (treeType !== "infinite") {
-          setTimeout(() => {
-            searchTreeRef?.current?.refreshResults();
-          }, 50);
-        }
+        setTimeout(() => {
+          searchTreeRef?.current?.refreshResults();
+        }, 50);
       }
     },
-    [treeType, searchTreeRef, setSearchTreeNameSearch, searchTreeNameSearch],
+    [
+      searchTreeNameSearch,
+      setSearchTreeNameSearch,
+      setSearchParams,
+      setSearchValues,
+      searchTreeRef,
+    ],
   );
 
   const handleExportAction = useCallback(

@@ -19,7 +19,7 @@ export const createShareOpenUrl = (action: ActionInfo) => {
   Object.entries(finalAction).forEach(([key, value]) => {
     if (
       !IGNORED_PARAMS.includes(key) &&
-      value &&
+      value !== undefined &&
       (!Array.isArray(value) || value.length > 0)
     ) {
       url.searchParams.set(key, convertToString(value));

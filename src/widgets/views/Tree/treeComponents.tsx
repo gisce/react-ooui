@@ -1,5 +1,5 @@
 import { ReactElement, useCallback, useEffect, useMemo, useState } from "react";
-import { Checkbox, Spin, ColorPicker } from "antd";
+import { Checkbox, Spin, ColorPicker, Tooltip, Popover } from "antd";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../../base/ProgressBar";
 import { One2manyValue } from "../../base/one2many/One2manyInput";
@@ -9,12 +9,14 @@ import { ReferenceTree } from "../../base/ReferenceTree";
 import dayjs from "@/helpers/dayjs";
 import Avatar from "../../custom/Avatar";
 import { CustomTag, TagInput } from "../../custom/Tag";
-import { DatePickerConfig } from "@/common/DatePicker";
 import ConnectionProvider from "@/ConnectionProvider";
 import { colorFromString } from "@/helpers/formHelper";
 import { EmailTagsRender } from "@/widgets/custom/EmailTags";
 import { ImageRender } from "@/widgets/base/Image";
 import { Char as CharOOui } from "@gisce/ooui";
+import { DatePickerConfig } from "@/common/DatePicker.helpers";
+import { useActionViewContext } from "@/context/ActionViewContext";
+import { useOne2manyContext } from "@/context/One2manyContext";
 
 export const BooleanComponent = ({
   value,
@@ -51,14 +53,57 @@ export const Many2OneComponent = ({ value }: { value: any }): ReactElement => {
 };
 
 export const TextComponent = ({ value }: { value: any }): ReactElement => {
-  return useMemo(
-    () => (
+  const { treeType } = useActionViewContext();
+  const { treeType: one2manyTreeType } = useOne2manyContext() || {};
+  const mustHaveAHover = (one2manyTreeType || treeType) === "infinite";
+
+  return useMemo(() => {
+    const contentWithNewlines = (
       <Interweave
         content={value?.toString().replace(/(?:\r\n|\r|\n)/g, "<br>")}
       />
-    ),
-    [value],
-  );
+    );
+    const contentSingleLine = (
+      <Interweave
+        content={value?.toString().replace(/(?:\r\n|\r|\n|<br\s*\/?>)/g, " ")}
+      />
+    );
+
+    if (mustHaveAHover) {
+      return (
+        <Tooltip
+          title={contentWithNewlines}
+          color={"white"}
+          placement="top"
+          mouseEnterDelay={0.5}
+          overlayStyle={{
+            maxWidth: "500px",
+            maxHeight: "300px",
+            overflow: "auto",
+            boxShadow:
+              "0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px 0 rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05)",
+          }}
+          overlayInnerStyle={{
+            color: "rgba(0, 0, 0, 0.88)",
+          }}
+        >
+          <div
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: "100%",
+              maxHeight: "100%",
+            }}
+          >
+            {contentSingleLine}
+          </div>
+        </Tooltip>
+      );
+    }
+
+    return contentWithNewlines;
+  }, [value, mustHaveAHover]);
 };
 
 export const DateComponent = ({ value }: { value: any }): ReactElement => {

@@ -15,20 +15,12 @@ import { FormView, TreeView } from "@/types/index";
 import { useFetchTreeViews } from "@/hooks/useFetchTreeViews";
 import { Badge, Spin } from "antd";
 import {
-  getColorMap,
   getOrderFromSortFields,
   getSortedFieldsFromState,
-  getStatusMap,
-  getTableColumns,
   getTableItems,
   getTree,
 } from "@/helpers/treeHelper";
-import { COLUMN_COMPONENTS } from "./Tree/treeComponents";
-import {
-  useDeepCompareCallback,
-  useDeepCompareEffect,
-  useDeepCompareMemo,
-} from "use-deep-compare";
+import { useDeepCompareCallback, useDeepCompareEffect } from "use-deep-compare";
 import {
   ColumnState,
   InfiniteTable,
@@ -41,7 +33,7 @@ import { useTreeColumnStorageFetch } from "../base/one2many/useTreeColumnStorage
 import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { useTreeAggregates } from "../base/one2many/useTreeAggregates";
 import { AggregatesFooter } from "../base/one2many/AggregatesFooter";
-import { useLocale, SkeletonPill } from "@gisce/react-formiga-components";
+import { useLocale } from "@gisce/react-formiga-components";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { SideSearchFilter } from "./searchFilter/SideSearchFilter";
 import { mergeParams } from "@/helpers/searchHelper";
@@ -55,8 +47,13 @@ import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { NameSearchWarning } from "./Tree/NameSearchWarning";
 import { SearchTreeHeader } from "./SearchTreeHeader";
-import { useFeatureIsEnabled } from "@/context/ConfigContext";
-import { ErpFeatureKeys } from "@/models/erpFeature";
+import {
+  getAttributesConditionsFromOoui,
+  useTreeAttributesState,
+} from "@/hooks/useTreeAttributesState";
+import { CellRenderer } from "./Tree/CellRenderer";
+import { TreeType } from "@/views/actionViews/TreeActionView";
+import { useTableConfiguration } from "@/hooks/useTableConfiguration";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -81,6 +78,7 @@ export type SearchTreeInfiniteProps = {
   parentContext?: any;
   onChangeSelectedRowKeys?: (selectedRowKeys: any) => void;
   filterType?: "side" | "top";
+  onChangeTreeType?: (type: TreeType) => void;
 };
 
 function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
@@ -96,15 +94,13 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     onChangeSelectedRowKeys,
     nameSearch: nameSearchProps,
     filterType = "side",
+    onChangeTreeType,
   } = props;
-  const colorsForResults = useRef<{ [key: number]: string }>({});
-  const statusForResults = useRef<{ [key: number]: string }>();
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
   const lastAssignedResults = useRef<any[]>([]);
   const hasRestoredSortStateForFirstTime = useRef<boolean>(false);
   const showErrorDialog = useShowErrorDialog();
 
-  const [totalRowsLoading, setTotalRowsLoading] = useState<boolean>(true);
   const [totalRows, setTotalRows] = useState<number | null>();
   const [nameSearchFetchCompleted, setNameSearchFetchCompleted] =
     useState<boolean>(false);
@@ -149,15 +145,11 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const nameSearch = nameSearchProps || searchTreeNameSearch;
   const prevNameSearch = useRef(nameSearch);
+  const isNameSearchMode = useRef(false);
 
-  const many2oneSortEnabled = useFeatureIsEnabled(
-    ErpFeatureKeys.FEATURE_MANY2ONE_SORT,
-  );
-
-  useEffect(() => {
-    updateTotalRows();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const currentSearchParamsString = useRef<string>();
+  const prevSortOrder = useRef<string>();
+  const isUpdatingTotalRows = useRef<boolean>(false);
 
   useEffect(() => {
     if (
@@ -166,10 +158,16 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         typeof prevNameSearch.current === "string" &&
         nameSearch !== prevNameSearch.current)
     ) {
+      isNameSearchMode.current = Boolean(nameSearch);
       setSearchParams?.([]);
       setSearchValues?.({});
       tableRef.current?.unselectAll();
-      refresh();
+    } else if (
+      nameSearch === undefined &&
+      prevNameSearch.current !== undefined
+    ) {
+      isNameSearchMode.current = false;
+      tableRef.current?.unselectAll();
     }
     prevNameSearch.current = nameSearch;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -182,44 +180,44 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     return getTree(treeView);
   }, [treeView]);
 
-  useAutorefreshableTreeFields({
+  const {
+    colorsForResults,
+    statusForResults,
+    updateAttributes,
+    clearAttributes,
+  } = useTreeAttributesState({
+    tableRef,
+  });
+
+  const { clear: clearAutorefreshableFields } = useAutorefreshableTreeFields({
     model,
     tableRef,
     autorefreshableFields: treeOoui?.autorefreshableFields,
-    fieldDefs: treeView?.field_parent
-      ? { ...treeView?.fields, [treeView?.field_parent]: {} }
-      : treeView?.fields,
+    treeView,
     context: parentContext,
     isActive,
     treeOoui,
+    updateAttributes,
+    results: actionViewResults,
   });
 
   const {
     isFieldLoading,
     refresh: refreshFunctionFields,
     addRecordsToCheckFunctionFields,
+    onHasFunctionFieldsToParseConditions,
   } = useTreeFunctionFieldsRead({
     model,
-    fields: treeView?.fields,
+    treeView,
     tableRef,
     context: parentContext,
     isActive,
     treeOoui,
+    updateAttributes,
+    results: actionViewResults,
   });
 
-  const columns = useDeepCompareMemo(() => {
-    if (!treeOoui) {
-      return;
-    }
-    return getTableColumns(
-      treeOoui,
-      {
-        ...COLUMN_COMPONENTS,
-      },
-      parentContext,
-      many2oneSortEnabled,
-    );
-  }, [treeOoui, parentContext, many2oneSortEnabled]);
+  const { columns, strings } = useTableConfiguration(treeOoui, parentContext);
 
   const columnsWithLoading = useMemo(() => {
     if (!columns) {
@@ -227,12 +225,14 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     }
     return columns.map((column: any) => ({
       ...column,
-      render: (value: any, record: any) => {
-        if (isFieldLoading?.(record, column.key)) {
-          return <SkeletonPill />;
-        }
-        return column.render(value, column.key, column?.ooui, column?.context);
-      },
+      render: (value: any, record: any) => (
+        <CellRenderer
+          value={value}
+          record={record}
+          column={column}
+          isFieldLoading={isFieldLoading}
+        />
+      ),
     }));
   }, [columns, isFieldLoading]);
 
@@ -273,9 +273,14 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     if (nameSearch) {
       return;
     }
+
+    if (isUpdatingTotalRows.current) {
+      return;
+    }
+
+    isUpdatingTotalRows.current = true;
     setTotalRows(undefined);
     setTotalItemsActionView(0);
-    setTotalRowsLoading(true);
     try {
       const totalItems = await ConnectionProvider.getHandler().searchCount({
         params: nameSearch ? domain : mergedParams,
@@ -288,7 +293,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     } catch (err) {
       showErrorDialog(err);
     } finally {
-      setTotalRowsLoading(false);
+      isUpdatingTotalRows.current = false;
     }
   }, [
     domain,
@@ -312,14 +317,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     }) => {
       if (!treeOoui) {
         return [];
-      }
-
-      const attrs: any = {};
-      if (treeOoui.colors) {
-        attrs.colors = treeOoui.colors;
-      }
-      if (treeOoui.status) {
-        attrs.status = treeOoui.status;
       }
 
       let order;
@@ -351,6 +348,16 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
       const params = nameSearch ? domain : mergedParams;
 
+      const SHOULD_MAKE_DEFERRED_FUNCTION_READ =
+        treeView?.fields_in_conditions !== undefined;
+
+      const attrs = getAttributesConditionsFromOoui({
+        treeOoui,
+        hasFunctionFieldsToParseConditions:
+          SHOULD_MAKE_DEFERRED_FUNCTION_READ &&
+          onHasFunctionFieldsToParseConditions(),
+      });
+
       const { results, attrsEvaluated } =
         await ConnectionProvider.getHandler().searchForTree({
           params,
@@ -364,13 +371,11 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           attrs,
           order,
           name_search: nameSearch,
-          skipFunctionFields: true,
+          skipFunctionFields: SHOULD_MAKE_DEFERRED_FUNCTION_READ,
           onIdsRetrieved: (ids: number[]) => {
             addRecordsToCheckFunctionFields(ids);
           },
         });
-
-      const newResults = results.map((item) => ({ id: item.id }));
 
       setSearchQuery?.({
         model,
@@ -381,9 +386,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       });
 
       if (mustUpdateTotal() || prevSortOrder.current !== order) {
-        setActionViewResults?.(newResults);
+        setActionViewResults?.(results);
       } else {
-        const appendedResults = [...(actionViewResults || []), ...newResults];
+        const appendedResults = [...(actionViewResults || []), ...results];
         setActionViewResults?.(appendedResults);
       }
 
@@ -394,7 +399,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         setTotalRows(results.length);
         setTotalItemsActionView(results.length);
         setNameSearchFetchCompleted(true);
-        setTotalRowsLoading(false);
       } else {
         setNameSearchFetchCompleted(false);
       }
@@ -407,26 +411,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       }
 
       const preparedResults = getTableItems(treeOoui, results);
-
-      const colors = getColorMap(attrsEvaluated);
-
-      colorsForResults.current = {
-        ...colorsForResults.current,
-        ...colors,
-      };
-
-      if (!statusForResults.current && treeOoui.status) {
-        statusForResults.current = {};
-      }
-
-      if (treeOoui.status) {
-        const status = getStatusMap(attrsEvaluated);
-        statusForResults.current = {
-          ...statusForResults.current,
-          ...status,
-        };
-      }
-
+      updateAttributes(attrsEvaluated, treeOoui);
       lastAssignedResults.current = [...preparedResults];
       return preparedResults;
     },
@@ -446,8 +431,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       treeOoui,
       treeView,
       addRecordsToCheckFunctionFields,
+      onHasFunctionFieldsToParseConditions,
       setNameSearchFetchCompleted,
-      setTotalRowsLoading,
+      updateAttributes,
     ],
   );
 
@@ -479,23 +465,37 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     }) => {
       try {
         setTreeIsLoading?.(true);
+
+        // Fire updateTotalRows independently on first request
+        if (startRow === 0 && !nameSearch) {
+          updateTotalRows(); // Don't await, let it run in parallel
+        }
+
         const results = await fetchResults({
           startRow,
           endRow,
           state,
         });
+
+        setTreeIsLoading?.(false);
         return results;
       } catch (error) {
         console.error(error);
         setTotalRows(null);
         setTotalItemsActionView(0);
+        setTreeIsLoading?.(false);
         showErrorDialog(error);
         throw error;
-      } finally {
-        setTreeIsLoading?.(false);
       }
     },
-    [fetchResults, setTotalItemsActionView, setTreeIsLoading, showErrorDialog],
+    [
+      fetchResults,
+      setTotalItemsActionView,
+      setTreeIsLoading,
+      showErrorDialog,
+      updateTotalRows,
+      nameSearch,
+    ],
   );
 
   const onRowStyle = useCallback((record: any) => {
@@ -503,6 +503,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       return { color: colorsForResults.current[record.node?.data?.id] };
     }
     return undefined;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const selectedRowKeys = useMemo(() => {
@@ -597,20 +598,18 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const onRowStatus = useCallback(
     (record: any) => statusForResults.current?.[record.id],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
-  );
-
-  const strings = useMemo(
-    () => ({
-      resetTableViewLabel: t("resetTableView"),
-    }),
-    [t],
   );
 
   const content = useMemo(() => {
     if (!columns || !treeOoui) {
       return null;
     }
+
+    const cacheBlockSize = isNameSearchMode.current
+      ? DEFAULT_SEARCH_LIMIT
+      : undefined;
 
     return (
       <InfiniteTable
@@ -635,35 +634,36 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         onRowStatus={onRowStatus}
         strings={strings}
         initialSortState={actionViewSortState}
+        cacheBlockSize={cacheBlockSize}
+        onChangeTableType={onChangeTreeType}
       />
     );
   }, [
-    actionViewSortState,
-    availableHeight,
-    changeSelectedRowKeys,
     columns,
+    treeOoui,
+    availableHeight,
     columnsWithLoading,
-    firstVisibleRowIndex,
-    footerComp,
-    getColumnState,
     onRequestData,
     onRowClicked,
-    onRowStatus,
     onRowStyle,
-    onSelectionCheckboxClicked,
-    selectedRowKeys,
-    setTreeFirstVisibleRow,
-    statusComp,
-    strings,
-    totalRows,
-    treeOoui,
+    changeSelectedRowKeys,
     updateColumnState,
+    getColumnState,
+    setTreeFirstVisibleRow,
+    firstVisibleRowIndex,
+    selectedRowKeys,
+    onSelectionCheckboxClicked,
+    totalRows,
+    footerComp,
+    statusComp,
+    onRowStatus,
+    strings,
+    actionViewSortState,
+    onChangeTreeType,
   ]);
 
   const prevSearchParamsRef = useRef(searchParams);
   const prevSearchVisibleRef = useRef(searchVisible);
-  const currentSearchParamsString = useRef<string>();
-  const prevSortOrder = useRef<string>();
 
   useDeepCompareEffect(() => {
     const searchParamsChanged = !deepEqual(
@@ -686,16 +686,17 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const refresh = useCallback(async () => {
     changeSelectedRowItems([]);
+    clearAttributes();
+    clearAutorefreshableFields();
     currentSearchParamsString.current = undefined;
     setNameSearchFetchCompleted(false);
-    await updateTotalRows();
     tableRef?.current?.refresh();
     refreshFunctionFields();
   }, [
     changeSelectedRowItems,
-    updateTotalRows,
+    clearAttributes,
+    clearAutorefreshableFields,
     refreshFunctionFields,
-    setNameSearchFetchCompleted,
   ]);
 
   useImperativeHandle(ref, () => ({
@@ -807,6 +808,13 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     ],
   );
 
+  const shouldShowNameSearchWarning =
+    nameSearch &&
+    nameSearchFetchCompleted &&
+    totalRows !== undefined &&
+    totalRows !== null &&
+    totalRows === DEFAULT_SEARCH_LIMIT;
+
   return (
     <Fragment>
       {filterType === "top" && (
@@ -827,10 +835,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         selectedRowKeys={selectedRowKeys}
         totalRows={totalRows}
         customMiddleComponent={
-          nameSearch &&
-          nameSearchFetchCompleted &&
-          totalRows &&
-          totalRows === DEFAULT_SEARCH_LIMIT && (
+          shouldShowNameSearchWarning && (
             <NameSearchWarning
               onFilterSearchClick={() => setSearchVisible?.(true)}
             />
@@ -838,11 +843,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         }
       />
       <div ref={containerRef} style={containerStyle}>
-        {loading || getColumnStateInProgress || totalRowsLoading ? (
-          <Spin />
-        ) : (
-          content
-        )}
+        {loading || getColumnStateInProgress ? <Spin /> : content}
       </div>
     </Fragment>
   );

@@ -79,7 +79,7 @@ export type FormProps = {
     mustRefreshParent?: boolean,
   ) => void;
   onSubmitError?: (error: any) => void;
-  onCancel?: () => void;
+  onCancel?: (params?: { id?: number; values?: any }) => void;
   onFieldsChange?: (values: any) => void;
   postSaveAction?: (event: any) => Promise<void>;
   insideButtonModal?: boolean;
@@ -255,14 +255,6 @@ function Form(props: FormProps, ref: any) {
     }
   };
 
-  const onCancel = () => {
-    if (mustFetchParentValues.current) {
-      onMustRefreshParent?.();
-    }
-    setFormIsSaving?.(false);
-    propsOnCancel?.();
-  };
-
   const onSubmitError = (error: any) => {
     setFormIsSaving?.(false);
     propsOnSubmitError?.(error);
@@ -271,36 +263,11 @@ function Form(props: FormProps, ref: any) {
   const getCurrentId = useCallback(() => {
     return id || createdId.current;
   }, [id]);
-  const [refId, setRefId] = useState(() => createdId.current);
 
-  useEffect(() => {
-    if (createdId.current !== refId) {
-      setRefId(createdId.current);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [createdId.current]);
-
-  const currentId = useMemo(() => {
-    return id || refId;
-  }, [id, refId]);
+  const currentId = id || createdId.current;
 
   function getFields() {
     return fields;
-  }
-
-  function getValues() {
-    const values = {
-      ...getCurrentValues(fields),
-      ...getAdditionalValues(),
-    };
-
-    for (const key in values) {
-      if (values[key] === undefined) {
-        delete values[key];
-      }
-    }
-
-    return values;
   }
 
   function getPlainValues() {
@@ -402,6 +369,35 @@ function Form(props: FormProps, ref: any) {
     },
     [antForm],
   );
+
+  const getValues = useCallback(() => {
+    const values = {
+      ...getCurrentValues(fields),
+      ...getAdditionalValues(),
+    };
+
+    for (const key in values) {
+      if (values[key] === undefined) {
+        delete values[key];
+      }
+    }
+
+    return values;
+  }, [getCurrentValues, getAdditionalValues, fields]);
+
+  const onCancel = useCallback(() => {
+    if (mustFetchParentValues.current) {
+      onMustRefreshParent?.();
+    }
+    setFormIsSaving?.(false);
+    propsOnCancel?.({ id: getCurrentId(), values: getValues() });
+  }, [
+    getCurrentId,
+    getValues,
+    onMustRefreshParent,
+    propsOnCancel,
+    setFormIsSaving,
+  ]);
 
   const setFieldValue = (field: string, value?: string) => {
     assignNewValuesToForm({
@@ -1214,7 +1210,7 @@ function Form(props: FormProps, ref: any) {
           getPlainValues={getPlainValues}
           getFields={getFields}
           domain={actionDomain}
-          activeId={id}
+          activeId={currentId}
           activeModel={model}
           setFieldValue={setFieldValue}
           getFieldValue={getFieldValue}

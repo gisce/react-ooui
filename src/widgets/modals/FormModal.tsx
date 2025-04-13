@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Button, Col, Modal, Row, Tooltip } from "antd";
+import { useEffect, useState } from "react";
+import { Button, Col, Modal, Row } from "antd";
 import Form, { FormProps } from "@/widgets/views/Form";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import FormModalProvider from "@/context/FormModalContext";
@@ -107,7 +107,7 @@ export const FormModal = (props: FormModalProps) => {
         open={visible}
         footer={null}
         destroyOnClose
-        onCancel={onCancel}
+        onCancel={(e) => onCancel?.()}
         maskClosable={false}
       >
         <Form

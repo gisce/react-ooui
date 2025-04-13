@@ -181,22 +181,37 @@ export const PieLabelOptions = {
 
 export const calculateAdjustedPiePercentages = (items: any[]) => {
   const total = items.reduce((acc, item) => acc + item.value, 0);
+  // Calculate raw percentages with higher precision
   const rawPercentages = items.map((item) => (item.value / total) * 100);
-  const roundedPercentages = rawPercentages.map((p) => Math.round(p));
-  const sumOfRounded = roundedPercentages.reduce((acc, num) => acc + num, 0);
-  const error = 100 - sumOfRounded;
 
-  for (let i = 0; i < Math.abs(error); i++) {
-    if (error > 0) {
-      roundedPercentages[i % roundedPercentages.length]++;
-    } else {
-      roundedPercentages[i % roundedPercentages.length]--;
-    }
+  // Round to 2 decimal places
+  const roundedPercentages = rawPercentages.map(
+    (p) => Math.round(p * 100) / 100,
+  );
+
+  // Check if adjustment is needed
+  const sum = roundedPercentages.reduce((a, b) => a + b, 0);
+
+  // If sum is already 100 (allowing for tiny floating point differences), return as is
+  if (Math.abs(sum - 100) < 0.001) {
+    return items.map((item, index) => ({
+      x: item.x,
+      percent: roundedPercentages[index],
+    }));
   }
+
+  // If adjustment is needed, distribute the difference
+  const diff = 100 - sum;
+  const adjustment = diff / roundedPercentages.length;
+
+  // Apply the adjustment evenly and round to 2 decimals
+  const adjustedPercentages = roundedPercentages.map(
+    (p) => Math.round((p + adjustment) * 100) / 100,
+  );
 
   return items.map((item, index) => ({
     x: item.x,
-    percent: roundedPercentages[index],
+    percent: adjustedPercentages[index],
   }));
 };
 

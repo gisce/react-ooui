@@ -127,6 +127,12 @@ export const useExport = ({
         fields: pExport.fields.map((field: PredefinedExportField) => {
           const childKey = getChildKey(field.key);
           const fieldDefinition = getFieldDefinition(field.key, fields.current);
+          if (!fieldDefinition) {
+            return {
+              key: field.key,
+            };
+          }
+
           const optsForField = fieldDefinition[childKey];
 
           if (!optsForField) {
@@ -288,7 +294,7 @@ const getFieldDefinition = (key: string, fields: any) => {
   if (key.indexOf("/") === -1) {
     return fields["/"];
   } else {
-    return fields[getParentKey(key)];
+    return fields?.[getParentKey(key)];
   }
 };
 
