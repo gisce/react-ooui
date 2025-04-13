@@ -2,7 +2,7 @@ import { useCallback, useState, useRef } from "react";
 import { ConnectionProvider, FormView, TreeView } from "..";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { showErrorDialog } from "@/ui/GenericErrorDialog";
-import useDeepCompareEffect from "use-deep-compare-effect";
+import { useDeepCompareEffect } from "use-deep-compare";
 
 export type UseFetchTreeViewsOpts = {
   model: string;

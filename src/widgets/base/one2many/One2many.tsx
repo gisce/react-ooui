@@ -9,7 +9,7 @@ import {
   One2manyInput as One2manyInputInfinite,
   One2manyInputInfiniteProps,
 } from "@/widgets/base/one2many/One2manyInputInfinite";
-import useDeepCompareEffect from "use-deep-compare-effect";
+import { useDeepCompareEffect } from "use-deep-compare";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";

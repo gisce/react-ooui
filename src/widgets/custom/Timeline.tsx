@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { Timeline as TimelineOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { One2manyItem, One2manyValue } from "../base/one2many/One2manyInput";
-import useDeepCompareEffect from "use-deep-compare-effect";
+import { useDeepCompareEffect } from "use-deep-compare";
 import { Views, ViewType } from "@/types";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import ConnectionProvider from "@/ConnectionProvider";
