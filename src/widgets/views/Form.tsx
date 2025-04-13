@@ -6,7 +6,6 @@ import {
   useRef,
   useContext,
   useCallback,
-  useMemo,
 } from "react";
 import { Form as FormOoui, parseContext } from "@gisce/ooui";
 import { Form as AntForm, Button, Divider, Space, Row, Spin } from "antd";
@@ -25,7 +24,6 @@ import {
 } from "@/helpers/formHelper";
 import ConnectionProvider from "@/ConnectionProvider";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
-import showErrorDialog from "@/ui/ActionErrorDialog";
 import showWarningDialog from "@/ui/WarningDialog";
 import FormProvider, {
   FormContext,
@@ -46,20 +44,15 @@ import {
   ContentRootContext,
   ContentRootContextType,
 } from "@/context/ContentRootContext";
-import {
-  NotificationType,
-  useLocale,
-  useNotification,
-} from "@gisce/react-formiga-components";
+import { useLocale } from "@gisce/react-formiga-components";
 import {
   convertFrom2ManyRawValues,
   convertToPlain2ManyValues,
 } from "@/helpers/one2manyHelper";
-import { ErrorAlert } from "@/ui/ErrorAlert";
 import { mergeFieldsContext } from "@/helpers/fieldsHelper";
 import { useAutorefreshableFormFields } from "@/hooks/useAutorefreshableFormFields";
-import { parseError } from "@/helpers/errorHelper";
 import { useDeepCompareEffect } from "use-deep-compare";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 
 export type FormProps = {
   model: string;
@@ -168,8 +161,13 @@ function Form(props: FormProps, ref: any) {
     ContentRootContext,
   ) as ContentRootContextType;
   const { processAction, globalValues } = contentRootContext || {};
-  const { open: openNotification, destroy: destroyNotification } =
-    useNotification();
+
+  const { showErrorNotification, destroyErrorNotification } =
+    useErrorNotification({
+      onButtonAction: (actionData: any) => {
+        runAction({ actionData });
+      },
+    });
 
   useImperativeHandle(ref, () => ({
     submitForm,
@@ -224,18 +222,13 @@ function Form(props: FormProps, ref: any) {
 
   useEffect(() => {
     return () => {
-      destroyNotification();
+      destroyErrorNotification();
     };
-  }, [destroyNotification]);
+  }, [destroyErrorNotification]);
 
   useDeepCompareEffect(() => {
     if (error) {
-      const parsedError = parseError(error);
-      openNotification({
-        type: parsedError.type as NotificationType,
-        title: parsedError.title,
-        message: parsedError.message,
-      });
+      showErrorNotification(error);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error]);
@@ -445,9 +438,8 @@ function Form(props: FormProps, ref: any) {
         arch,
       });
     } catch (err) {
-      setError(err?.message ? err.message + err.stack : err);
+      setError(err);
       setFormIsLoading?.(false);
-      // setLoading(false);
     }
   };
 
@@ -722,7 +714,7 @@ function Form(props: FormProps, ref: any) {
 
     if (await checkIfFormHasErrors()) {
       formSubmitting.current = false;
-      openNotification({
+      showErrorNotification({
         type: "error",
         title: t("formHasErrors"),
         message: t("fillRequiredFields"),
@@ -748,7 +740,7 @@ function Form(props: FormProps, ref: any) {
       await fetchValues({ forceRefresh: true });
       submitSucceed = true;
 
-      openNotification({
+      showErrorNotification({
         type: "success",
         title: t("savedRegisters"),
         duration: 3,
@@ -758,7 +750,7 @@ function Form(props: FormProps, ref: any) {
       setIsSubmitting(false);
       setFormIsSaving?.(false);
       onSubmitError?.(err);
-      setError(err?.message ? err.message : err);
+      setError(err);
     } finally {
       formSubmitting.current = false;
       setFormIsSaving?.(false);
@@ -887,7 +879,7 @@ function Form(props: FormProps, ref: any) {
         await processFieldOnChange(changedField);
       }
     } catch (err) {
-      showErrorDialog(err);
+      showErrorNotification(err);
     }
   };
 
@@ -1059,10 +1051,10 @@ function Form(props: FormProps, ref: any) {
 
   async function runAction({
     actionData,
-    context,
+    context = {},
   }: {
     actionData: any;
-    context: any;
+    context?: any;
   }) {
     const { closeParent } =
       (await processAction?.({
@@ -1148,7 +1140,7 @@ function Form(props: FormProps, ref: any) {
 
     // We check for required fields
     if (await checkIfFormHasErrors()) {
-      openNotification({
+      showErrorNotification({
         type: "error",
         title: t("formHasErrors"),
         message: t("fillRequiredFields"),
@@ -1186,7 +1178,7 @@ function Form(props: FormProps, ref: any) {
       mustBlockButtons && updateOperationInProgress(false);
     } catch (err) {
       mustBlockButtons && updateOperationInProgress(false);
-      showErrorDialog(err);
+      showErrorNotification(err);
     }
   }
 

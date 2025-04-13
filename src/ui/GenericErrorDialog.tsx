@@ -1,6 +1,7 @@
 import { App, Modal } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { useCallback } from "react";
+import { Interweave } from "interweave";
 
 const { error } = Modal;
 
@@ -9,7 +10,7 @@ export const showErrorDialog = (message: string) => {
     title: "Error",
     icon: <ExclamationCircleOutlined />,
     centered: true,
-    content: message,
+    content: <Interweave content={message.replace(/\n/g, "<br />")} />,
   });
 };
 
@@ -31,7 +32,9 @@ export const useShowErrorDialog = () => {
         title: "Error",
         icon: <ExclamationCircleOutlined />,
         centered: true,
-        content: messageContent,
+        content: (
+          <Interweave content={messageContent.replace(/\n/g, "<br />")} />
+        ),
       });
     },
     [modal],
