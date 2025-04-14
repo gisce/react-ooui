@@ -30,7 +30,6 @@ import type {
 } from "@/widgets/base/one2many/One2manyInput";
 import { Reference } from "@/widgets/base/Reference";
 import { Binary } from "@/widgets/base/Binary";
-import iconMapper from "@/helpers/iconMapper";
 import ActionBar from "@/actionbar/FormActionBar";
 import { Url } from "@/widgets/base/Url";
 import { Email } from "@/widgets/base/Email";
@@ -136,7 +135,6 @@ export {
   Time,
   Reference,
   Binary,
-  iconMapper,
   CreateReportRequest,
   GetReportRequest,
   ExecuteOnChangeRequest,
