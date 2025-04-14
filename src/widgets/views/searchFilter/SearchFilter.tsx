@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Form, Row, Col, Alert, theme } from "antd";
-import useDeepCompareEffect from "use-deep-compare-effect";
+import { useDeepCompareEffect } from "use-deep-compare";
 
 import {
   SearchFilter as SearchFilterOoui,

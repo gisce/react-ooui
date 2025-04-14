@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import { Form, Button, FormInstance, Input } from "antd";
-import useDeepCompareEffect from "use-deep-compare-effect";
+import { useDeepCompareEffect } from "use-deep-compare";
 import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 
 import {
