@@ -1,11 +1,11 @@
+import React from "react";
 import { Modal } from "antd";
 import { ExclamationCircleOutlined, WarningOutlined } from "@ant-design/icons";
 import { parseError } from "@/helpers/errorHelper";
-import { Interweave } from "interweave";
 
 const { error, warning } = Modal;
 
-const showDialog = (err: any) => {
+const showDialog = (err: string) => {
   const { message, type, title } = parseError(err);
 
   const iconComponent =
@@ -17,7 +17,7 @@ const showDialog = (err: any) => {
     title,
     icon: iconComponent,
     centered: true,
-    content: <Interweave content={message.replace(/\n/g, "<br />")} />,
+    content: message,
   });
 };
 

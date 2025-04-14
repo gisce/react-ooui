@@ -3,8 +3,7 @@ import { Alert as AntdAlert, Space } from "antd";
 import { WidgetProps } from "@/types";
 import { Alert as AlertOoui, Button as ButtonOoui } from "@gisce/ooui";
 import { Interweave } from "interweave";
-import { iconMapper } from "@gisce/react-formiga-components";
-
+import iconMapper from "@/helpers/iconMapper";
 import { Button } from "@/widgets/base/Button";
 import { FormContext, FormContextType } from "@/context/FormContext";
 

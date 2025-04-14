@@ -4,7 +4,7 @@ import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Field from "@/common/Field";
 import { QuestionCircleOutlined } from "@ant-design/icons";
-
+import iconMapper from "@/helpers/iconMapper";
 import { useFormGraphData } from "@/hooks/useFormGraphData";
 import { CenteredSpinner } from "@/ui/CenteredSpinner";
 import { ErrorAlert } from "@/ui/ErrorAlert";
@@ -14,7 +14,7 @@ import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { GraphServer } from "../views/Graph/GraphServer";
 import { Many2oneSuffix } from "@/widgets/base/many2one/Many2oneSuffix";
-import { useLocale, iconMapper } from "@gisce/react-formiga-components";
+import { useLocale } from "@gisce/react-formiga-components";
 import {
   TabManagerContext,
   TabManagerContextType,

@@ -1,11 +1,8 @@
 import React from "react";
 import { Group as GroupOoui } from "@gisce/ooui";
 import { Spinner } from "@/widgets/custom/Spinner";
-import {
-  FieldSet,
-  useLocale,
-  iconMapper,
-} from "@gisce/react-formiga-components";
+import { FieldSet, useLocale } from "@gisce/react-formiga-components";
+import iconMapper from "@/helpers/iconMapper";
 
 type Props = {
   ooui: GroupOoui;

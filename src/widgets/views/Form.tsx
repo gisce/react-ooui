@@ -6,9 +6,18 @@ import {
   useRef,
   useContext,
   useCallback,
+  useMemo,
 } from "react";
 import { Form as FormOoui, parseContext } from "@gisce/ooui";
-import { Form as AntForm, Button, Divider, Space, Row, Spin } from "antd";
+import {
+  Form as AntForm,
+  Button,
+  Divider,
+  Space,
+  Row,
+  Spin,
+  message,
+} from "antd";
 import Measure from "react-measure";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import debounce from "lodash/debounce";
@@ -24,6 +33,8 @@ import {
 } from "@/helpers/formHelper";
 import ConnectionProvider from "@/ConnectionProvider";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
+import formErrorsDialog from "@/ui/FormErrorsDialog";
+import showErrorDialog from "@/ui/ActionErrorDialog";
 import showWarningDialog from "@/ui/WarningDialog";
 import FormProvider, {
   FormContext,
@@ -49,10 +60,9 @@ import {
   convertFrom2ManyRawValues,
   convertToPlain2ManyValues,
 } from "@/helpers/one2manyHelper";
+import { ErrorAlert } from "@/ui/ErrorAlert";
 import { mergeFieldsContext } from "@/helpers/fieldsHelper";
 import { useAutorefreshableFormFields } from "@/hooks/useAutorefreshableFormFields";
-import { useDeepCompareEffect } from "use-deep-compare";
-import { useErrorNotification } from "@/hooks/useErrorNotification";
 
 export type FormProps = {
   model: string;
@@ -162,13 +172,6 @@ function Form(props: FormProps, ref: any) {
   ) as ContentRootContextType;
   const { processAction, globalValues } = contentRootContext || {};
 
-  const { showErrorNotification, destroyErrorNotification } =
-    useErrorNotification({
-      onButtonAction: (actionData: any) => {
-        runAction({ actionData });
-      },
-    });
-
   useImperativeHandle(ref, () => ({
     submitForm,
     getFields,
@@ -219,19 +222,6 @@ function Form(props: FormProps, ref: any) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultGetCalled]);
-
-  useEffect(() => {
-    return () => {
-      destroyErrorNotification();
-    };
-  }, [destroyErrorNotification]);
-
-  useDeepCompareEffect(() => {
-    if (error) {
-      showErrorNotification(error);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [error]);
 
   const onSubmitSucceed = (
     id?: number,
@@ -413,6 +403,7 @@ function Form(props: FormProps, ref: any) {
       await antForm.validateFields();
       return false;
     } catch (verror) {
+      message.error(t("fillRequiredFields"));
       return true;
     }
   }
@@ -438,8 +429,9 @@ function Form(props: FormProps, ref: any) {
         arch,
       });
     } catch (err) {
-      setError(err);
+      setError(err?.message ? err.message + err.stack : err);
       setFormIsLoading?.(false);
+      // setLoading(false);
     }
   };
 
@@ -714,11 +706,7 @@ function Form(props: FormProps, ref: any) {
 
     if (await checkIfFormHasErrors()) {
       formSubmitting.current = false;
-      showErrorNotification({
-        type: "error",
-        title: t("formHasErrors"),
-        message: t("fillRequiredFields"),
-      });
+      formErrorsDialog(t);
       return { succeed: false, id: getCurrentId()! };
     }
 
@@ -739,18 +727,14 @@ function Form(props: FormProps, ref: any) {
 
       await fetchValues({ forceRefresh: true });
       submitSucceed = true;
-
-      showErrorNotification({
-        type: "success",
-        title: t("savedRegisters"),
-        duration: 3,
-      });
+      message.success(t("savedRegisters"));
     } catch (err) {
       formSubmitting.current = false;
       setIsSubmitting(false);
       setFormIsSaving?.(false);
       onSubmitError?.(err);
-      setError(err);
+      message.error(t("errorWhileSavingForm"));
+      setError(err?.message ? err.message : err);
     } finally {
       formSubmitting.current = false;
       setFormIsSaving?.(false);
@@ -879,7 +863,7 @@ function Form(props: FormProps, ref: any) {
         await processFieldOnChange(changedField);
       }
     } catch (err) {
-      showErrorNotification(err);
+      showErrorDialog(err);
     }
   };
 
@@ -1051,10 +1035,10 @@ function Form(props: FormProps, ref: any) {
 
   async function runAction({
     actionData,
-    context = {},
+    context,
   }: {
     actionData: any;
-    context?: any;
+    context: any;
   }) {
     const { closeParent } =
       (await processAction?.({
@@ -1140,11 +1124,7 @@ function Form(props: FormProps, ref: any) {
 
     // We check for required fields
     if (await checkIfFormHasErrors()) {
-      showErrorNotification({
-        type: "error",
-        title: t("formHasErrors"),
-        message: t("fillRequiredFields"),
-      });
+      formErrorsDialog(t);
       return;
     }
 
@@ -1178,7 +1158,7 @@ function Form(props: FormProps, ref: any) {
       mustBlockButtons && updateOperationInProgress(false);
     } catch (err) {
       mustBlockButtons && updateOperationInProgress(false);
-      showErrorNotification(err);
+      showErrorDialog(err);
     }
   }
 
@@ -1278,6 +1258,7 @@ function Form(props: FormProps, ref: any) {
     >
       {({ measureRef }) => (
         <div className="pb-2" ref={measureRef}>
+          {error && <ErrorAlert className="mt-5 mb-10" error={error} />}
           {content()}
           {showFooter && footer()}
         </div>

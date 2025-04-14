@@ -12,7 +12,8 @@ import {
   getTableColumns,
 } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "@/widgets/views/Tree/treeComponents";
-import { useDeepCompareEffect , useDeepCompareMemo } from "use-deep-compare";
+import useDeepCompareEffect from "use-deep-compare-effect";
+import { useDeepCompareMemo } from "use-deep-compare";
 import { TreeAggregates } from "./useTreeAggregates";
 import { AggregatesFooter } from "./AggregatesFooter";
 import { useTreeColumnStorageFetch } from "./useTreeColumnStorageFetch";

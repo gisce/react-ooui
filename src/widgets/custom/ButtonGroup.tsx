@@ -10,7 +10,8 @@ import {
 } from "@gisce/ooui";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { FormContext, FormContextType } from "@/context/FormContext";
-import { useLocale, iconMapper } from "@gisce/react-formiga-components";
+import iconMapper from "@/helpers/iconMapper";
+import { useLocale } from "@gisce/react-formiga-components";
 
 type ButtonGroupProps = {
   ooui: ButtonGroupOoui;

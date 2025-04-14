@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useContext } from "react";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 import { Comments as CommentsOoui } from "@gisce/ooui";
@@ -11,10 +11,11 @@ import {
   Timeline,
   TimelineItemProps,
 } from "antd";
-import { useLocale, iconMapper } from "@gisce/react-formiga-components";
+import { useLocale } from "@gisce/react-formiga-components";
 
 import dayjs from "@/helpers/dayjs";
 import md5 from "md5";
+import iconMapper from "@/helpers/iconMapper";
 
 const { Meta } = Card;
 const { Text } = Typography;

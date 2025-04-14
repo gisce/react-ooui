@@ -2,15 +2,14 @@ import React, { useContext, useState } from "react";
 import { Timeline as TimelineOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { One2manyItem, One2manyValue } from "../base/one2many/One2manyInput";
-import { useDeepCompareEffect } from "use-deep-compare";
+import useDeepCompareEffect from "use-deep-compare-effect";
 import { Views, ViewType } from "@/types";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import ConnectionProvider from "@/ConnectionProvider";
 import { Spin, Alert, Timeline as AntTimeline } from "antd";
 import { readObjectValues } from "@/helpers/one2manyHelper";
 import { FormModal } from "../modals/FormModal";
-import { iconMapper } from "@gisce/react-formiga-components";
-
+import iconMapper from "@/helpers/iconMapper";
 import { isPresetStatusColor, isPresetColor } from "antd/lib/_util/colors";
 import { colorFromString } from "@/helpers/formHelper";
 

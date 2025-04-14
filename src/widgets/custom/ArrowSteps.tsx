@@ -2,7 +2,7 @@ import React from "react";
 import { theme, Space } from "antd";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
-import { iconMapper } from "@gisce/react-formiga-components";
+import iconMapper from "@/helpers/iconMapper";
 
 type ArrowStepsFieldProps = WidgetProps;
 

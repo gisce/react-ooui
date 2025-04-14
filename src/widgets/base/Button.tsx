@@ -5,7 +5,8 @@ import { Button as ButtonOoui } from "@gisce/ooui";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useLocale, Icon } from "@gisce/react-formiga-components";
+import iconMapper from "@/helpers/iconMapper";
+import { useLocale } from "@gisce/react-formiga-components";
 
 type Props = {
   ooui: ButtonOoui;
@@ -51,7 +52,11 @@ export const Button = (props: Props) => {
 
   function getButtonIcon() {
     if (isRunning) return <LoadingOutlined />;
-    return <Icon icon={icon} />;
+    if (icon) {
+      const Icon: React.ElementType = iconMapper(icon) as any;
+      return Icon && <Icon />;
+    }
+    return undefined;
   }
 
   return (
