@@ -42,11 +42,12 @@ type SideSearchFilterContainerProps = SideSearchFilterBaseProps & {
 export type SideSearchFilterProps = SideSearchFilterBaseProps & {
   searchFields?: Container;
   onChange?: (values: any) => void;
+  onClear?: (field?: string, formValues?: any) => void;
 };
 
 export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
   (props, ref) => {
-    const { onSubmit, searchValues, searchFields, onChange } = props;
+    const { onSubmit, searchValues, searchFields, onChange, onClear } = props;
     const [form] = Form.useForm();
     const [internalValues, setInternalValues] = useState<any>({});
     const [searchText, setSearchText] = useState("");
@@ -126,7 +127,30 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
               }}
             >
               <div style={{ paddingLeft: 18, paddingRight: 18 }}>
-                <SearchField key={`sf-${i}`} field={field} />
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-end",
+                    gap: "8px",
+                  }}
+                >
+                  <div style={{ flex: 1 }}>
+                    <SearchField key={`sf-${i}`} field={field} />
+                  </div>
+                  {hasValue && (
+                    <Button
+                      icon={<ClearOutlined />}
+                      tabIndex={-1}
+                      type="default"
+                      style={{
+                        height: 28,
+                      }}
+                      onClick={() => {
+                        onClear?.(field.id, form.getFieldsValue());
+                      }}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           );
@@ -252,11 +276,33 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
     [searchValues],
   );
 
-  const handleClear = useCallback(() => {
-    formRef.current?.resetFields();
-    formRef?.current?.setFieldsValue({});
-    setSearchParams([]);
-  }, []);
+  const handleClear = useCallback(
+    (field?: string, formValues: any = {}) => {
+      if (field) {
+        const filteredValues = { ...formValues };
+
+        Object.entries(formValues).forEach(([key]) => {
+          if (key.replace(/#.*$/, "") === field.replace(/#.*$/, "")) {
+            filteredValues[key] = undefined;
+          }
+        });
+
+        formRef.current?.setFieldsValue(filteredValues);
+        setSearchParams(
+          searchParams?.filter(
+            (entry: [string]) =>
+              entry[0].replace(/#.*$/, "") !== field.replace(/#.*$/, ""),
+          ),
+        );
+        return;
+      }
+
+      formRef.current?.resetFields();
+      formRef.current?.setFieldsValue({});
+      setSearchParams([]);
+    },
+    [searchParams],
+  );
 
   const paramsToShow = isOpen
     ? searchParams ||
@@ -283,6 +329,7 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
           onSubmit={onFinish}
           searchValues={searchValues}
           onChange={handleOnChange}
+          onClear={handleClear}
         />
       )}
     </FloatingDrawer>
@@ -323,7 +370,9 @@ export const SideSearchFooter = ({
       <Button
         icon={<ClearOutlined />}
         size={"large"}
-        onClick={onClear}
+        onClick={() => {
+          onClear();
+        }}
         style={{ width: "100px" }}
       >
         {t("clear")}
