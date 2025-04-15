@@ -162,12 +162,11 @@ function Form(props: FormProps, ref: any) {
   ) as ContentRootContextType;
   const { processAction, globalValues } = contentRootContext || {};
 
-  const { showErrorNotification, destroyErrorNotification } =
-    useErrorNotification({
-      onButtonAction: (actionData: any) => {
-        runAction({ actionData });
-      },
-    });
+  const { showErrorNotification } = useErrorNotification({
+    onButtonAction: (actionData: any) => {
+      runAction({ actionData });
+    },
+  });
 
   useImperativeHandle(ref, () => ({
     submitForm,
@@ -219,12 +218,6 @@ function Form(props: FormProps, ref: any) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultGetCalled]);
-
-  useEffect(() => {
-    return () => {
-      destroyErrorNotification();
-    };
-  }, [destroyErrorNotification]);
 
   useDeepCompareEffect(() => {
     if (error) {
@@ -717,7 +710,7 @@ function Form(props: FormProps, ref: any) {
       showErrorNotification({
         type: "error",
         title: t("formHasErrors"),
-        message: t("fillRequiredFields"),
+        body: t("fillRequiredFields"),
       });
       return { succeed: false, id: getCurrentId()! };
     }
@@ -1143,7 +1136,7 @@ function Form(props: FormProps, ref: any) {
       showErrorNotification({
         type: "error",
         title: t("formHasErrors"),
-        message: t("fillRequiredFields"),
+        body: t("fillRequiredFields"),
       });
       return;
     }

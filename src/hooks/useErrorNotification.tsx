@@ -6,6 +6,13 @@ import {
 } from "@gisce/react-formiga-components";
 import { Interweave } from "interweave";
 
+// Type for the parameter of showErrorNotification
+export type ShowErrorNotificationArg =
+  | { type: NotificationType; title: string; body?: string }
+  | { message?: string; exception?: string }
+  | string
+  | Record<string, any>;
+
 export const useErrorNotification = ({
   onButtonAction,
 }: {
@@ -13,15 +20,22 @@ export const useErrorNotification = ({
 }) => {
   const { open, destroy } = useNotification();
 
-  const showErrorNotification = (error: any) => {
-    // First we check if error has the structure of a NotificationProps
-    if (error.type && error.body && error.title) {
+  const showErrorNotification = (error: ShowErrorNotificationArg) => {
+    // Type guard for Notification-like error
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "type" in error &&
+      "title" in error
+    ) {
       const errorData = {
         title: error.title,
-        message: (
+        message: error.body ? (
           <Interweave
             content={(error.body as string).replace(/\n/g, "<br />")}
           />
+        ) : (
+          ""
         ),
         type: (
           ["success", "error", "info", "warning"] as NotificationType[]
@@ -37,11 +51,16 @@ export const useErrorNotification = ({
       return;
     }
 
+    // Type guard for error with message/exception
     if (
-      (error.message && typeof error.message === "string") ||
-      (error.exception && typeof error.exception === "string")
+      typeof error === "object" &&
+      error !== null &&
+      (typeof (error as any).message === "string" ||
+        typeof (error as any).exception === "string")
     ) {
-      const parsedError = parseError(error.message || error.exception);
+      const parsedError = parseError(
+        (error as any).message || (error as any).exception,
+      );
       const errorData: NotificationProps = {
         type: "error",
         message: (
@@ -53,6 +72,7 @@ export const useErrorNotification = ({
       return;
     }
 
+    // String error
     if (typeof error === "string") {
       const errorData: NotificationProps = {
         type: "error",
@@ -63,6 +83,7 @@ export const useErrorNotification = ({
       return;
     }
 
+    // Fallback
     const errorData: NotificationProps = {
       type: "error",
       message: <Interweave content={JSON.stringify(error)} />,
