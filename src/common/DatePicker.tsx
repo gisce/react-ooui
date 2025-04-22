@@ -18,7 +18,7 @@ type DatePickerProps = WidgetProps & {
 type DatePickerInputProps = {
   ooui: DateOoui;
   value?: string;
-  onChange?: (value: string | undefined) => void;
+  onChange?: (value: string | null | undefined) => void;
   showTime?: boolean;
 };
 
@@ -64,7 +64,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = memo(
     const handleChange = useCallback(
       (momentDate: Dayjs | null) => {
         if (!momentDate) {
-          onChange?.(undefined);
+          onChange?.(null);
           return;
         }
         onChange?.(
