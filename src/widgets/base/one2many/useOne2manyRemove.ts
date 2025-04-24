@@ -7,7 +7,7 @@ import {
 import { useCallback, useContext } from "react";
 import { One2manyItem } from "./One2manyInput";
 import { showUnlinkItemDialog } from "@/ui/UnlinkItemDialog";
-import { showErrorExceptionDialog } from "@/ui/GenericErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 
 export const useOne2manyRemove = ({
   isMany2many,
@@ -28,6 +28,7 @@ export const useOne2manyRemove = ({
   const { currentView, itemIndex, setItemIndex } = useContext(
     One2manyContext,
   ) as One2manyContextType;
+  const { showErrorNotification } = useErrorNotification();
 
   const removeSelectedItems = useCallback(async () => {
     const itemsToRemove: One2manyItem[] = getItemsToRemove({
@@ -60,7 +61,7 @@ export const useOne2manyRemove = ({
       triggerChange(updatedItems);
       setSelectedRowKeys([]);
     } catch (err) {
-      showErrorExceptionDialog(err);
+      showErrorNotification(err);
     }
 
     setItemIndex(0);
@@ -71,6 +72,7 @@ export const useOne2manyRemove = ({
     setItemIndex,
     setSelectedRowKeys,
     triggerChange,
+    showErrorNotification,
   ]);
 
   const removeCurrentItem = useCallback(async () => {
@@ -93,11 +95,18 @@ export const useOne2manyRemove = ({
         triggerChange(items.filter((item) => item.id !== items[itemIndex].id!));
       }
     } catch (err) {
-      showErrorExceptionDialog(err);
+      showErrorNotification(err);
     }
 
     setItemIndex(0);
-  }, [items, itemIndex, setFormHasChanges, setItemIndex, triggerChange]);
+  }, [
+    items,
+    itemIndex,
+    setFormHasChanges,
+    setItemIndex,
+    triggerChange,
+    showErrorNotification,
+  ]);
 
   const onOk = useCallback(async () => {
     return currentView === "form"

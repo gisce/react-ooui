@@ -38,7 +38,7 @@ import showConfirmDialog from "@/ui/ConfirmDialog";
 import { SideSearchFilter } from "./searchFilter/SideSearchFilter";
 import { mergeParams } from "@/helpers/searchHelper";
 import deepEqual from "deep-equal";
-import { useShowErrorDialog } from "@/ui/GenericErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 import SearchFilter from "./searchFilter/SearchFilter";
 import { useSearchTreeState } from "@/hooks/useSearchTreeState";
 import { Tree as TreeOoui } from "@gisce/ooui";
@@ -99,7 +99,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
   const lastAssignedResults = useRef<any[]>([]);
   const hasRestoredSortStateForFirstTime = useRef<boolean>(false);
-  const showErrorDialog = useShowErrorDialog();
+  const { showErrorNotification } = useErrorNotification();
 
   const [totalRows, setTotalRows] = useState<number | null>();
   const [nameSearchFetchCompleted, setNameSearchFetchCompleted] =
@@ -291,7 +291,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       setTotalRows(totalItems);
       setTotalItemsActionView(totalItems);
     } catch (err) {
-      showErrorDialog(err);
+      showErrorNotification(err);
     } finally {
       isUpdatingTotalRows.current = false;
     }
@@ -302,7 +302,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     nameSearch,
     parentContext,
     setTotalItemsActionView,
-    showErrorDialog,
+    showErrorNotification,
   ]);
 
   const fetchResults = useDeepCompareCallback(
@@ -484,7 +484,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         setTotalRows(null);
         setTotalItemsActionView(0);
         setTreeIsLoading?.(false);
-        showErrorDialog(error);
+        showErrorNotification(error);
         throw error;
       }
     },
@@ -492,7 +492,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       fetchResults,
       setTotalItemsActionView,
       setTreeIsLoading,
-      showErrorDialog,
+      showErrorNotification,
       updateTotalRows,
       nameSearch,
     ],

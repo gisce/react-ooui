@@ -1,6 +1,6 @@
-import { useCallback, useState, RefObject } from "react";
+import { useCallback, useState } from "react";
 import { ConnectionProvider } from "..";
-import { showErrorDialog } from "@/ui/GenericErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 
 type UseDuplicateItemProps = {
   currentId?: number;
@@ -16,6 +16,7 @@ export const useDuplicateItem = ({
   context,
 }: UseDuplicateItemProps) => {
   const [duplicatingItem, setDuplicatingItem] = useState(false);
+  const { showErrorNotification } = useErrorNotification();
 
   const duplicate = useCallback(async () => {
     try {
@@ -29,14 +30,20 @@ export const useDuplicateItem = ({
         context,
       });
       if (newId) {
-        await onItemDuplicated?.(newId);
+        onItemDuplicated?.(newId);
       }
     } catch (e) {
-      showErrorDialog(JSON.stringify(e));
+      showErrorNotification(e);
     } finally {
       setDuplicatingItem(false);
     }
-  }, [currentId, currentModel, onItemDuplicated, context]);
+  }, [
+    currentId,
+    currentModel,
+    context,
+    onItemDuplicated,
+    showErrorNotification,
+  ]);
 
   return {
     duplicatingItem,
