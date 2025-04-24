@@ -24,7 +24,7 @@ export const useErrorNotification = ({
   onButtonAction,
 }: {
   onButtonAction?: (payload: any) => void;
-}) => {
+} = {}) => {
   const { open, destroy } = useNotification();
 
   const showErrorNotification = (error: ShowErrorNotificationArg) => {
