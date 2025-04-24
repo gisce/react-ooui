@@ -1,5 +1,6 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext } from "react";
 import { FormView } from "..";
+import { FieldMessageType, FieldMessages } from "../hooks/useFieldMessages";
 
 export type FormContextType = {
   activeId?: number;
@@ -27,6 +28,16 @@ export type FormContextType = {
   formHasChanges?: () => boolean;
   elementHasLostFocus?: () => void;
   formView?: FormView;
+  fieldMessages: FieldMessages;
+  setFieldMessage: (
+    field: string,
+    message: string,
+    type: FieldMessageType,
+  ) => void;
+  getFieldMessage: (field: string) => string | undefined;
+  getFieldMessageType: (field: string) => FieldMessageType | undefined;
+  clearFieldMessage: (field: string) => void;
+  clearAllFieldMessages: () => void;
 };
 
 export const FormContext = React.createContext<FormContextType | null>(null);
@@ -53,6 +64,12 @@ const FormProvider = (props: FormProviderProps): any => {
     elementHasLostFocus,
     getFields,
     formView,
+    fieldMessages,
+    setFieldMessage,
+    getFieldMessage,
+    getFieldMessageType,
+    clearFieldMessage,
+    clearAllFieldMessages,
   } = props;
 
   return (
@@ -73,6 +90,12 @@ const FormProvider = (props: FormProviderProps): any => {
         formHasChanges,
         elementHasLostFocus,
         formView,
+        fieldMessages,
+        setFieldMessage,
+        getFieldMessage,
+        getFieldMessageType,
+        clearFieldMessage,
+        clearAllFieldMessages,
       }}
     >
       {children}
@@ -99,6 +122,12 @@ export const useFormContext = () => {
       formHasChanges: () => false,
       elementHasLostFocus: () => {},
       formView: undefined,
+      fieldMessages: {},
+      setFieldMessage: () => {},
+      getFieldMessage: () => undefined,
+      getFieldMessageType: () => undefined,
+      clearFieldMessage: () => {},
+      clearAllFieldMessages: () => {},
     } as FormContextType;
   }
   return context;

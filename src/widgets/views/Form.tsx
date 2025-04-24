@@ -52,6 +52,11 @@ import { mergeFieldsContext } from "@/helpers/fieldsHelper";
 import { useAutorefreshableFormFields } from "@/hooks/useAutorefreshableFormFields";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
+import {
+  useFieldMessages,
+  FieldMessage,
+  FieldMessageType,
+} from "../../hooks/useFieldMessages";
 
 export type FormProps = {
   model: string;
@@ -87,6 +92,12 @@ export type FormProps = {
 
 const WIDTH_BREAKPOINT = 800;
 
+type FormError = {
+  fields?: FieldMessage[];
+  message?: string;
+  type?: FieldMessageType;
+};
+
 function Form(props: FormProps, ref: any) {
   const {
     model,
@@ -116,7 +127,7 @@ function Form(props: FormProps, ref: any) {
   const { t } = useLocale();
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<any>();
   const [formOoui, setFormOoui] = useState<FormOoui>();
   const [antForm] = AntForm.useForm();
   const [arch, setArch] = useState<string>();
@@ -166,6 +177,16 @@ function Form(props: FormProps, ref: any) {
       runAction({ actionData });
     },
   });
+
+  const {
+    fieldMessages,
+    setFieldMessage,
+    getFieldMessage,
+    getFieldMessageType,
+    clearFieldMessage,
+    clearAllFieldMessages,
+    setFieldMessagesArray,
+  } = useFieldMessages();
 
   useImperativeHandle(ref, () => ({
     submitForm,
@@ -220,6 +241,15 @@ function Form(props: FormProps, ref: any) {
 
   useDeepCompareEffect(() => {
     if (error) {
+      const formError = error as FormError;
+      if (formError.fields && Array.isArray(formError.fields)) {
+        setFieldMessagesArray(
+          formError.fields?.map((field) => ({
+            ...field,
+            type: formError.type || "error",
+          })) || [],
+        );
+      }
       showErrorNotification(error);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -613,6 +643,7 @@ function Form(props: FormProps, ref: any) {
 
   const submitApi = async (options?: { callOnSubmitSucceed?: boolean }) => {
     const { callOnSubmitSucceed = true } = options || {};
+    clearAllFieldMessages();
 
     if (getCurrentId()) {
       const touchedValues = getTouchedValues({
@@ -659,6 +690,7 @@ function Form(props: FormProps, ref: any) {
 
   const submitValues = async (options?: { callOnSubmitSucceed?: boolean }) => {
     const { callOnSubmitSucceed = true } = options || {};
+    clearAllFieldMessages();
 
     if (!insideButtonModal && callOnSubmitSucceed) {
       onSubmitSucceed?.(getCurrentId(), getValues(), getFormValues());
@@ -856,6 +888,10 @@ function Form(props: FormProps, ref: any) {
 
         onFieldsChange?.(values);
         setFormHasChanges?.(true);
+
+        Object.keys(values).forEach((key) => {
+          clearFieldMessage(key);
+        });
 
         evaluateChanges(changedFields);
       }
@@ -1210,6 +1246,12 @@ function Form(props: FormProps, ref: any) {
           formHasChanges={formHasChanges}
           elementHasLostFocus={elementHasLostFocus}
           formView={formViewProps}
+          fieldMessages={fieldMessages}
+          setFieldMessage={setFieldMessage}
+          getFieldMessage={getFieldMessage}
+          getFieldMessageType={getFieldMessageType}
+          clearFieldMessage={clearFieldMessage}
+          clearAllFieldMessages={clearAllFieldMessages}
         >
           <AntForm
             form={antForm}
