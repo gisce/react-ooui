@@ -6,7 +6,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import showErrorDialog from "@/ui/ActionErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { openBase64InNewTab, getMimeType } from "@/helpers/filesHelper";
 import { parseContext } from "@gisce/ooui";
 import ConnectionProvider from "@/ConnectionProvider";
@@ -71,6 +71,7 @@ const ContentRootProvider = (
   const { openAction } = tabManagerContext || {};
   const onRefreshParentValues = useRef<any>([]);
   const { t } = useLocale();
+  const { showErrorNotification } = useErrorNotification();
 
   useImperativeHandle(ref, () => ({
     openActionModal,
@@ -98,7 +99,11 @@ const ContentRootProvider = (
     } = reportData;
 
     if (type !== "ir.actions.report.xml") {
-      showErrorDialog(`${type} action not supported`);
+      showErrorNotification({
+        type: "error",
+        title: "Error",
+        body: `${type} action not supported`,
+      });
       return;
     }
 
@@ -133,7 +138,7 @@ const ContentRootProvider = (
     } catch (err) {
       waitingForReport.current = false;
       clearInterval(reportInProgressInterval.current);
-      showErrorDialog(err);
+      showErrorNotification(err);
       setReportGenerating(false);
     }
   }
@@ -155,7 +160,7 @@ const ContentRootProvider = (
       waitingForReport.current = false;
       clearInterval(reportInProgressInterval.current);
       setReportGenerating(false);
-      showErrorDialog(error.exception || error);
+      showErrorNotification(error.exception || error);
     }
   }
 
@@ -192,7 +197,11 @@ const ContentRootProvider = (
         "_blank",
       );
     } else {
-      showErrorDialog(`${type} action not supported`);
+      showErrorNotification({
+        type: "error",
+        title: "Error",
+        body: `${type} action not supported`,
+      });
       return {};
     }
   }

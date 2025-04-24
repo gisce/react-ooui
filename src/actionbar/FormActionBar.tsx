@@ -18,7 +18,7 @@ import { useActionViewContext } from "@/context/ActionViewContext";
 import NewButton from "./NewButton";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import showConfirmDialog from "@/ui/ConfirmDialog";
-import { showErrorDialog } from "@/ui/GenericErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 import ConnectionProvider from "@/ConnectionProvider";
 import { showLogInfo } from "@/helpers/logInfoHelper";
 import { DropdownButton, useLocale } from "@gisce/react-formiga-components";
@@ -43,6 +43,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
   ) as TabManagerContextType;
   const { t } = useLocale();
   const { onNextClick, onPreviousClick } = useNextPrevious();
+  const { showErrorNotification } = useErrorNotification();
 
   const {
     availableViews,
@@ -125,7 +126,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
         setCurrentItemIndex?.(newIndex);
       }
     } catch (e) {
-      showErrorDialog(JSON.stringify(e));
+      showErrorNotification(e);
     } finally {
       setRemovingItem?.(false);
     }
@@ -139,6 +140,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
     setCurrentItemIndex,
     setRemovingItem,
     setResults,
+    showErrorNotification,
   ]);
 
   const handleDuplicate = useCallback(async () => {
@@ -153,11 +155,18 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
         await goToResourceId?.([newId]);
       }
     } catch (e) {
-      showErrorDialog(JSON.stringify(e));
+      showErrorNotification(e);
     } finally {
       setDuplicatingItem?.(false);
     }
-  }, [currentId, currentModel, formRef, goToResourceId, setDuplicatingItem]);
+  }, [
+    currentId,
+    currentModel,
+    formRef,
+    goToResourceId,
+    setDuplicatingItem,
+    showErrorNotification,
+  ]);
 
   const handleChangeView = useCallback(
     (view: any) => {

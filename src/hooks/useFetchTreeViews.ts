@@ -1,7 +1,7 @@
 import { useCallback, useState, useRef } from "react";
 import { ConnectionProvider, FormView, TreeView } from "..";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
-import { showErrorDialog } from "@/ui/GenericErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useDeepCompareEffect } from "use-deep-compare";
 
 export type UseFetchTreeViewsOpts = {
@@ -27,6 +27,8 @@ export const useFetchTreeViews = ({
   const [fetchGetViewRequest, cancelGetViewRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().getView,
   );
+
+  const { showErrorNotification } = useErrorNotification();
 
   useDeepCompareEffect(() => {
     if (enabled) fetchViewData();
@@ -62,12 +64,19 @@ export const useFetchTreeViews = ({
       setTreeView(treeViewProps || (results[treeViewIndex] as TreeView));
     } catch (error) {
       console.error("Error fetching view data:", error);
-      showErrorDialog(error);
+      showErrorNotification(error);
     } finally {
       setLoading(false);
       isRequestInProgress.current = false;
     }
-  }, [context, fetchGetViewRequest, formViewProps, model, treeViewProps]);
+  }, [
+    context,
+    fetchGetViewRequest,
+    formViewProps,
+    model,
+    showErrorNotification,
+    treeViewProps,
+  ]);
 
   return { loading, treeView, formView };
 };

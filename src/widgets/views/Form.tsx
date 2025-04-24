@@ -24,7 +24,6 @@ import {
 } from "@/helpers/formHelper";
 import ConnectionProvider from "@/ConnectionProvider";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
-import showWarningDialog from "@/ui/WarningDialog";
 import FormProvider, {
   FormContext,
   FormContextType,
@@ -940,8 +939,13 @@ function Form(props: FormProps, ref: any) {
     ) {
       const { title, message } = response.warning;
       warningIsShown.current = true;
-      showWarningDialog(title, message, () => {
-        warningIsShown.current = false;
+      showErrorNotification({
+        type: "warning",
+        title,
+        message,
+        onOk: () => {
+          warningIsShown.current = false;
+        },
       });
     }
 

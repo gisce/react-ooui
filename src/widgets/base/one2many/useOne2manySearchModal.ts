@@ -1,6 +1,6 @@
 import { getValuesForFields } from "@/helpers/one2manyHelper";
 import { ConnectionProvider, One2manyItem, Views } from "@/index";
-import { showErrorExceptionDialog } from "@/ui/GenericErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useCallback, useState } from "react";
 import { useDeepCompareCallback } from "use-deep-compare";
 
@@ -22,6 +22,7 @@ export const useOne2manySearchModal = ({
   relation: string;
 }) => {
   const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
+  const { showErrorNotification } = useErrorNotification();
 
   const searchItem = async () => {
     if (currentView === "form") {
@@ -73,10 +74,10 @@ export const useOne2manySearchModal = ({
 
         triggerChange(updatedItems);
       } catch (e) {
-        showErrorExceptionDialog(e);
+        showErrorNotification(e);
       }
     },
-    [context, items, relation, triggerChange, views],
+    [context, items, relation, triggerChange, views, showErrorNotification],
   );
 
   const onSelectSearchValues = useCallback(
