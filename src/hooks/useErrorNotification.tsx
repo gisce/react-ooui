@@ -15,8 +15,9 @@ export type ShowErrorNotificationArg =
       title: string;
       body?: string;
       buttons?: NotificationButton[];
+      onOk?: () => void;
     }
-  | { message?: string; exception?: string }
+  | { message?: string; exception?: string; onOk?: () => void }
   | string
   | Record<string, any>;
 
@@ -79,6 +80,7 @@ export const useErrorNotification = ({
           content,
           centered: true,
           footer: buttonsComponent,
+          onOk: error.onOk,
         });
         return;
       }
@@ -113,6 +115,7 @@ export const useErrorNotification = ({
           <Interweave content={parsedError.message.replace(/\n/g, "<br />")} />
         ),
         centered: true,
+        onOk: (error as any).onOk,
       });
       return;
     }
@@ -123,6 +126,7 @@ export const useErrorNotification = ({
         title: "Error",
         content: <Interweave content={error} />,
         centered: true,
+        onOk: (error as any).onOk,
       });
       return;
     }
@@ -132,6 +136,7 @@ export const useErrorNotification = ({
       title: "Error",
       content: <Interweave content={JSON.stringify(error)} />,
       centered: true,
+      onOk: (error as any).onOk,
     });
   };
 
