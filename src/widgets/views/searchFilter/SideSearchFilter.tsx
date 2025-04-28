@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Form, Button, FormInstance, Input } from "antd";
+import { Form, Button, FormInstance, Input, Space } from "antd";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 
@@ -65,7 +65,13 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
       setFieldsValue: form.setFieldsValue,
     }));
 
-    const getFieldsInputs = ({ searchText }: { searchText?: string }) => {
+    const getFieldsInputs = ({
+      searchText,
+      onlyInputsWithValue = false,
+    }: {
+      searchText?: string;
+      onlyInputsWithValue?: boolean;
+    }) => {
       if (!searchFields) return;
 
       const rows = searchFields?.rows;
@@ -94,17 +100,23 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
       }, {});
 
       return fields
+        .filter((field) => {
+          if (onlyInputsWithValue) {
+            return formValuesKeyExist[field.id] === true;
+          }
+          return true;
+        })
         .sort((a, b) => {
           const fieldA = a as Field;
           const fieldB = b as Field;
 
-          const fieldAHasValue = internalValuesKeyExist[fieldA.id] === true;
-          const fieldBHasValue = internalValuesKeyExist[fieldB.id] === true;
+          // const fieldAHasValue = internalValuesKeyExist[fieldA.id] === true;
+          // const fieldBHasValue = internalValuesKeyExist[fieldB.id] === true;
 
-          // First sort by whether they have values (fields with values come first)
-          if (fieldAHasValue !== fieldBHasValue) {
-            return fieldAHasValue ? -1 : 1;
-          }
+          // // First sort by whether they have values (fields with values come first)
+          // if (fieldAHasValue !== fieldBHasValue) {
+          //   return fieldAHasValue ? -1 : 1;
+          // }
           // Then sort alphabetically within each group
           return normalizeString(fieldA.label).localeCompare(
             normalizeString(fieldB.label),
@@ -113,7 +125,10 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
         .map((item, i) => {
           const field = item as Field;
           const hasValue = formValuesKeyExist[field.id] === true;
-          const hasToHide = searchText && !matchSearch(searchText, field);
+
+          const hasToHide = onlyInputsWithValue
+            ? false
+            : (searchText && !matchSearch(searchText, field)) || hasValue;
 
           return (
             <div
@@ -172,41 +187,54 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
 
     return (
       <Fragment>
-        <div
-          style={{
-            marginTop: 12,
-            padding: "0 12px 12px 12px",
-            borderBottom: "1px solid #f0f0f0",
-          }}
+        <Form
+          form={form}
+          onFinish={onSubmit}
+          onFieldsChange={debouncedCheckFieldsChanges as any}
+          onKeyPress={handleKeyPress}
+          className="pt-3 pb-3"
+          style={{ height: "100%", display: "flex", flexDirection: "column" }}
         >
-          <Input
-            placeholder={t("enterFieldToFilter")}
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            allowClear
-            prefix={<SearchOutlined />}
-          />
-        </div>
-        <div
-          style={{
-            height: "calc(100vh - 200px)",
-            overflowY: "auto",
-            marginTop: 8,
-          }}
-        >
-          <Form
-            form={form}
-            onFinish={onSubmit}
-            onFieldsChange={debouncedCheckFieldsChanges as any}
-            onKeyPress={handleKeyPress}
-            className="pt-3 pb-3"
+          <div
+            style={{
+              borderBottom: "1px solid #f0f0f0",
+              flexShrink: 0,
+            }}
+          >
+            <div style={{ padding: "0 12px 12px 12px" }}>
+              <Input
+                placeholder={t("enterFieldToFilter")}
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                allowClear
+                prefix={<SearchOutlined />}
+                name={undefined}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                  }
+                }}
+              />
+            </div>
+            <Space direction="vertical" style={{ width: "100%" }}>
+              {getFieldsInputs({
+                onlyInputsWithValue: true,
+              })}
+            </Space>
+          </div>
+          <div
+            style={{
+              flex: 1,
+              overflowY: "auto",
+              marginTop: 8,
+              paddingBottom: 16,
+            }}
           >
             {getFieldsInputs({
               searchText,
             })}
-          </Form>
-          <div className="pb-2" />
-        </div>
+          </div>
+        </Form>
       </Fragment>
     );
   },
