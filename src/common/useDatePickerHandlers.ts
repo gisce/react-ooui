@@ -10,7 +10,7 @@ import {
 type UseDatePickerHandlersParams = {
   mode: DateMode;
   showTime?: boolean;
-  onChange?: (value: string | undefined) => void;
+  onChange?: (value: string | null | undefined) => void;
 };
 
 export const useDatePickerHandlers = ({
@@ -70,7 +70,7 @@ export const useDatePickerHandlers = ({
 
         const input = e.currentTarget;
         if (input.value === "") {
-          onChange?.(undefined);
+          onChange?.(null);
         } else {
           const dayJsDate = dayjs(
             input.value,
