@@ -23,7 +23,6 @@ import { SearchFields } from "@/types";
 import { getParamsForFields, normalizeValues } from "@/helpers/searchHelper";
 import { useLocale } from "@gisce/react-formiga-components";
 import { FloatingDrawer } from "@/ui/FloatingDrawer";
-import debounce from "lodash.debounce";
 import deepEqual from "deep-equal";
 
 type SideSearchFilterBaseProps = {
@@ -49,13 +48,14 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
   (props, ref) => {
     const { onSubmit, searchValues, searchFields, onChange, onClear } = props;
     const [form] = Form.useForm();
-    const [internalValues, setInternalValues] = useState<any>({});
+    const [confirmedValues, setConfirmedValues] = useState<any>({});
     const [searchText, setSearchText] = useState("");
     const { t } = useLocale();
 
     useEffect(() => {
       form.setFieldsValue(searchValues);
-      setInternalValues(normalizeValues(searchValues || {}));
+      const normalized = normalizeValues(searchValues || {});
+      setConfirmedValues(normalized);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchValues]);
 
@@ -78,23 +78,12 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
 
       const fields = rows?.flatMap((row) => row) as Field[];
 
-      const internalValuesKeyExist = Object.keys(internalValues).reduce<
+      const confirmedValuesKeyExist = Object.keys(confirmedValues).reduce<
         Record<string, boolean>
       >((acc, key) => {
         const keyWithoutHash = key.replace(/#.*$/, "");
         if (acc[keyWithoutHash] === undefined) {
-          acc[keyWithoutHash] = internalValues[key] !== undefined;
-        }
-        return acc;
-      }, {});
-
-      const formValues = normalizeValues(form.getFieldsValue());
-      const formValuesKeyExist = Object.keys(formValues).reduce<
-        Record<string, boolean>
-      >((acc, key) => {
-        const keyWithoutHash = key.replace(/#.*$/, "");
-        if (acc[keyWithoutHash] === undefined) {
-          acc[keyWithoutHash] = formValues[key] !== undefined;
+          acc[keyWithoutHash] = confirmedValues[key] !== undefined;
         }
         return acc;
       }, {});
@@ -102,7 +91,7 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
       return fields
         .filter((field) => {
           if (onlyInputsWithValue) {
-            return formValuesKeyExist[field.id] === true;
+            return confirmedValuesKeyExist[field.id] === true;
           }
           return true;
         })
@@ -110,21 +99,13 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
           const fieldA = a as Field;
           const fieldB = b as Field;
 
-          // const fieldAHasValue = internalValuesKeyExist[fieldA.id] === true;
-          // const fieldBHasValue = internalValuesKeyExist[fieldB.id] === true;
-
-          // // First sort by whether they have values (fields with values come first)
-          // if (fieldAHasValue !== fieldBHasValue) {
-          //   return fieldAHasValue ? -1 : 1;
-          // }
-          // Then sort alphabetically within each group
           return normalizeString(fieldA.label).localeCompare(
             normalizeString(fieldB.label),
           );
         })
         .map((item, i) => {
           const field = item as Field;
-          const hasValue = formValuesKeyExist[field.id] === true;
+          const hasValue = confirmedValuesKeyExist[field.id] === true;
 
           const hasToHide = onlyInputsWithValue
             ? false
@@ -162,6 +143,7 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
                       }}
                       onClick={() => {
                         onClear?.(field.id, form.getFieldsValue());
+                        handleFormBlur();
                       }}
                     />
                   )}
@@ -172,25 +154,28 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
         });
     };
 
-    const checkFieldsChanges = useCallback(() => {
+    const handleFormBlur = useCallback(() => {
       const touchedValues = form.getFieldsValue();
+      const normalizedTouchedValues = normalizeValues(touchedValues);
+      setConfirmedValues(normalizedTouchedValues);
       onChange?.(touchedValues);
     }, [form, onChange]);
 
-    const debouncedCheckFieldsChanges = debounce(checkFieldsChanges, 100);
-
-    const handleKeyPress = (event: React.KeyboardEvent) => {
-      if (event.key === "Enter") {
-        form.submit();
-      }
-    };
+    const handleKeyPress = useCallback(
+      (event: React.KeyboardEvent) => {
+        if (event.key === "Enter") {
+          form.submit();
+        }
+      },
+      [form],
+    );
 
     return (
       <Fragment>
         <Form
           form={form}
           onFinish={onSubmit}
-          onFieldsChange={debouncedCheckFieldsChanges as any}
+          onBlurCapture={handleFormBlur}
           onKeyPress={handleKeyPress}
           className="pt-3 pb-3"
           style={{ height: "100%", display: "flex", flexDirection: "column" }}
@@ -216,7 +201,7 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
                 }}
               />
             </div>
-            <Space direction="vertical" style={{ width: "100%" }}>
+            <Space direction="vertical" style={{ rowGap: 0, width: "100%" }}>
               {getFieldsInputs({
                 onlyInputsWithValue: true,
               })}
@@ -316,12 +301,11 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
         });
 
         formRef.current?.setFieldsValue(filteredValues);
-        setSearchParams(
-          searchParams?.filter(
-            (entry: [string]) =>
-              entry[0].replace(/#.*$/, "") !== field.replace(/#.*$/, ""),
-          ),
+        const newSearchParams = searchParams?.filter(
+          (entry: [string]) =>
+            entry[0].replace(/#.*$/, "") !== field.replace(/#.*$/, ""),
         );
+        setSearchParams(newSearchParams);
         return;
       }
 
