@@ -177,8 +177,12 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
           onFinish={onSubmit}
           onBlurCapture={handleFormBlur}
           onKeyPress={handleKeyPress}
-          className="pt-3 pb-3"
-          style={{ height: "100%", display: "flex", flexDirection: "column" }}
+          className="pb-3"
+          style={{
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+          }}
         >
           <div
             style={{
@@ -186,7 +190,12 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
               flexShrink: 0,
             }}
           >
-            <div style={{ padding: "0 12px 12px 12px" }}>
+            <Space direction="vertical" style={{ rowGap: 0, width: "100%" }}>
+              {getFieldsInputs({
+                onlyInputsWithValue: true,
+              })}
+            </Space>
+            <div style={{ padding: "12px 12px 12px 12px" }}>
               <Input
                 placeholder={t("enterFieldToFilter")}
                 value={searchText}
@@ -201,11 +210,6 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
                 }}
               />
             </div>
-            <Space direction="vertical" style={{ rowGap: 0, width: "100%" }}>
-              {getFieldsInputs({
-                onlyInputsWithValue: true,
-              })}
-            </Space>
           </div>
           <div
             style={{
