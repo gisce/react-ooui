@@ -205,6 +205,7 @@ function Form(props: FormProps, ref: any) {
 
   useEffect(() => {
     setError(undefined);
+    clearAllFieldMessages();
 
     if (!model && !formViewProps) {
       return;
@@ -440,6 +441,7 @@ function Form(props: FormProps, ref: any) {
   }
   const fetchData = async () => {
     setError(undefined);
+    clearAllFieldMessages();
     setFormIsLoading?.(true);
 
     let view;
@@ -479,6 +481,7 @@ function Form(props: FormProps, ref: any) {
 
     setFormIsLoading?.(true);
     setError(undefined);
+    clearAllFieldMessages();
 
     if (options?.fields) {
       _fields = options.fields;
@@ -643,7 +646,6 @@ function Form(props: FormProps, ref: any) {
 
   const submitApi = async (options?: { callOnSubmitSucceed?: boolean }) => {
     const { callOnSubmitSucceed = true } = options || {};
-    clearAllFieldMessages();
 
     if (getCurrentId()) {
       const touchedValues = getTouchedValues({
@@ -690,7 +692,6 @@ function Form(props: FormProps, ref: any) {
 
   const submitValues = async (options?: { callOnSubmitSucceed?: boolean }) => {
     const { callOnSubmitSucceed = true } = options || {};
-    clearAllFieldMessages();
 
     if (!insideButtonModal && callOnSubmitSucceed) {
       onSubmitSucceed?.(getCurrentId(), getValues(), getFormValues());
@@ -703,6 +704,7 @@ function Form(props: FormProps, ref: any) {
     formSubmitting.current = true;
 
     setError(undefined);
+    clearAllFieldMessages();
 
     if (
       x2manyPendingLink.current &&
@@ -975,10 +977,18 @@ function Form(props: FormProps, ref: any) {
     ) {
       const { title, message } = response.warning;
       warningIsShown.current = true;
+      setFieldMessagesArray([
+        {
+          field: fieldName,
+          message,
+          type: "warning",
+        },
+      ]);
+
       showErrorNotification({
         type: "warning",
         title,
-        message,
+        body: message,
         onOk: () => {
           warningIsShown.current = false;
         },
