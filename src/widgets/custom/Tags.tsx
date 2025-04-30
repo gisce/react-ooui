@@ -71,7 +71,7 @@ export const TagsInput = (props: TagsInputProps) => {
             domain: ooui.domain,
             values: transformPlainMany2Ones({
               fields: formContext?.getFields(),
-              values: formContext.getPlainValues(),
+              values: formContext.getAllHierarchyValues(),
             }),
             fields: formContext?.getFields(),
             context: formContext.getContext(),
