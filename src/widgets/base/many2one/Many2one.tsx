@@ -16,9 +16,9 @@ import { SearchModal } from "@/widgets/modals/SearchModal";
 import { FormModal } from "@/widgets/modals/FormModal";
 import ConnectionProvider from "@/ConnectionProvider";
 import { Many2oneSuffix } from "./Many2oneSuffix";
-import { showErrorDialog } from "@/ui/GenericErrorDialog";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 
 const { defaultAlgorithm, defaultSeed } = theme;
 
@@ -84,6 +84,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     formContext || {};
   const transformedDomain = useRef<any[]>([]);
   const [searchDomain, setSearchDomain] = useState<any>([]);
+  const { showErrorNotification } = useErrorNotification();
 
   const id = (value && value[0]) || undefined;
   const text = (value && value[1]) || "";
@@ -92,6 +93,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     if (!Array.isArray(value) && value) {
       fetchNameAndUpdate(value as any);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   useEffect(() => {
@@ -102,6 +104,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     } else if (!id && !text) {
       setInputText(inputTextRef.current || "");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   const triggerChange = (changedValue: any[]) => {
@@ -146,7 +149,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           }
         }
       } catch (err) {
-        showErrorDialog(err);
+        showErrorNotification(err);
       } finally {
         setSearching(false);
       }
@@ -190,7 +193,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
 
       triggerChange([id, value[0][1]]);
     } catch (err) {
-      showErrorDialog(err);
+      showErrorNotification(err);
     } finally {
       setSearching(false);
     }

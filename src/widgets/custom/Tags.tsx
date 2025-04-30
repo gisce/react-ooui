@@ -3,7 +3,7 @@ import { Tags as TagsOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 import { One2manyItem, One2manyValue } from "../base/one2many/One2manyInput";
-import useDeepCompareEffect from "use-deep-compare-effect";
+import { useDeepCompareEffect } from "use-deep-compare";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { Alert, Select } from "antd";
 import {

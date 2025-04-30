@@ -27,7 +27,6 @@ import Icon, {
 import { useLocale, DropdownButton } from "@gisce/react-formiga-components";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import ConnectionProvider from "@/ConnectionProvider";
-import showErrorDialog from "@/ui/ActionErrorDialog";
 import ButtonWithBadge from "./ButtonWithBadge";
 import { showLogInfo } from "@/helpers/logInfoHelper";
 import SearchBar from "./SearchBar";
@@ -42,6 +41,7 @@ import {
 } from "@/hooks/useTreeToolbarButtons";
 import { ActionBarSeparator } from "./ActionBarSeparator";
 import { ShareUrlButton } from "./ShareUrlButton";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 
 type Props = {
   parentContext?: any;
@@ -92,6 +92,7 @@ function TreeActionBarComponent({
   const { t } = useLocale();
   const [exportModalVisible, setExportModalVisible] = useState(false);
   const isFirstMount = useRef(true);
+  const { showErrorNotification } = useErrorNotification();
 
   const handleRefresh = useCallback(() => {
     searchTreeRef?.current?.refreshResults();
@@ -134,7 +135,7 @@ function TreeActionBarComponent({
         searchTreeRef?.current?.refreshResults();
       }
     } catch (e) {
-      showErrorDialog(e);
+      showErrorNotification(e);
     } finally {
       setDuplicatingItem?.(false);
     }
@@ -144,6 +145,7 @@ function TreeActionBarComponent({
     searchTreeRef,
     selectedRowItems,
     setDuplicatingItem,
+    showErrorNotification,
   ]);
 
   const handleRemove = useCallback(async () => {
@@ -158,7 +160,7 @@ function TreeActionBarComponent({
       setCurrentItemIndex?.(undefined);
       searchTreeRef?.current?.refreshResults();
     } catch (e) {
-      showErrorDialog(e);
+      showErrorNotification(e);
     } finally {
       setRemovingItem?.(false);
     }
@@ -170,6 +172,7 @@ function TreeActionBarComponent({
     setCurrentId,
     setCurrentItemIndex,
     setRemovingItem,
+    showErrorNotification,
   ]);
 
   const handleChangeView = useCallback(

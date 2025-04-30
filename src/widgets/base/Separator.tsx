@@ -1,7 +1,7 @@
 import React from "react";
 import { Divider, Space } from "antd";
 import { Separator as SeparatorOoui } from "@gisce/ooui";
-import iconMapper from "@/helpers/iconMapper";
+import { iconMapper } from "@gisce/react-formiga-components";
 
 type Props = {
   ooui: SeparatorOoui;

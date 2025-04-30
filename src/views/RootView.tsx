@@ -11,7 +11,7 @@ import TabManagerProvider from "@/context/TabManagerContext";
 import ActionView from "./ActionView";
 import { parseContext } from "@gisce/ooui";
 import { ShortcutApi } from "@/ui/FavouriteButton";
-import showErrorDialog from "@/ui/ActionErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { ActionInfo, Tab, ViewType } from "@/types";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
 import { nanoid } from "nanoid";
@@ -29,6 +29,7 @@ function RootView(props: RootViewProps, ref: any) {
   const [activeKey, setActiveKey] = useState<string>("welcome");
   const { t } = useLocale();
   const { globalValues, rootContext, treeMaxLimit } = useConfigContext();
+  const { showErrorNotification } = useErrorNotification();
 
   const [tabs, setTabs] = useState<Tab[]>([
     {
@@ -210,7 +211,11 @@ function RootView(props: RootViewProps, ref: any) {
     });
 
     if (dataForAction.type === "ir.actions.wizard") {
-      showErrorDialog("Action type not supported");
+      showErrorNotification({
+        type: "error",
+        title: "Error",
+        body: "Action type not supported",
+      });
       return;
     }
 
