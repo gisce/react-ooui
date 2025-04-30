@@ -48,6 +48,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
     } else {
       setValuesForLangs({});
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   async function fetchData() {
