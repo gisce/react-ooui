@@ -5,7 +5,7 @@ import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
-import showErrorDialog from "@/ui/ActionErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 import {
   Attachment,
   AttachmentsButtonWrapper,
@@ -36,6 +36,7 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
   >([]);
   const [downloading, setDownloading] = useState(false);
   const { t } = useLocale();
+  const { showErrorNotification } = useErrorNotification();
 
   const preloadAttachments = useCallback(async () => {
     if (!attachments || attachments.length === 0) {
@@ -58,10 +59,10 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
         })),
       );
     } catch (error) {
-      showErrorDialog(error as any);
+      showErrorNotification(error);
     }
     setPreloading(false);
-  }, [attachments, formRef]);
+  }, [attachments, formRef, showErrorNotification]);
 
   const openAttachmentLink = useCallback(
     async (attachment: any) => {
@@ -82,7 +83,7 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
         });
         retrievedAttachment = results[0];
       } catch (error) {
-        showErrorDialog(error as any);
+        showErrorNotification(error);
       }
 
       setDownloading(false);
@@ -98,7 +99,7 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
         onViewAttachmentDetails(retrievedAttachment);
       }
     },
-    [formRef, onViewAttachmentDetails],
+    [formRef, onViewAttachmentDetails, showErrorNotification],
   );
 
   const openAttachmentDetail = useCallback(

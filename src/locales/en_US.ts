@@ -119,4 +119,5 @@ export default {
   filterSearchLink: "filter search",
   changeToInfinite: "Change to infinite list",
   changeToPaginated: "Change to paginated list",
+  enterFieldToFilter: "Enter the field to filter...",
 };

@@ -28,7 +28,7 @@ import {
 import { useHotkeys } from "react-hotkeys-hook";
 import { GoToResourceModal } from "@/ui/GoToResourceModal";
 import showInfo from "@/ui/InfoDialog";
-import showErrorDialog from "@/ui/ActionErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useLocale } from "@gisce/react-formiga-components";
 import { GraphActionView } from "@/views/actionViews/GraphActionView";
 import { FormActionView } from "./actionViews/FormActionView";
@@ -104,6 +104,7 @@ function ActionView(props: Props, ref: any) {
   const [searchTreeNameSearch, setSearchTreeNameSearch] = useState<string>();
 
   const { t } = useLocale();
+  const { showErrorNotification } = useErrorNotification();
 
   const formRef = useRef();
   const searchTreeRef = useRef();
@@ -267,9 +268,11 @@ function ActionView(props: Props, ref: any) {
     }
 
     if (!currentViewToAssign) {
-      showErrorDialog(
-        `Error determining the first view to show for model ${model}.\nPlease, make sure the view ids on the fields_view_get responses are the same as the ones defined in the action`,
-      );
+      showErrorNotification({
+        type: "error",
+        title: "Error determining the first view to show for model",
+        message: `Error determining the first view to show for model ${model}.\nPlease, make sure the view ids on the fields_view_get responses are the same as the ones defined in the action`,
+      });
       console.error(
         "Error determining the first view to show for model",
         JSON.stringify({
@@ -300,6 +303,7 @@ function ActionView(props: Props, ref: any) {
     treeExpandable,
     onRemoveTab,
     tabKey,
+    showErrorNotification,
   ]);
 
   setCanWeClose({ tabKey, canWeClose });
@@ -544,6 +548,7 @@ const ActionViewContent = ({
 }) => {
   useAutoUpdateUrlAndTitle();
 
+  // eslint-disable-next-line array-callback-return
   return availableViews.map((view) => {
     switch (view.type) {
       case "form": {

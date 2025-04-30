@@ -1,7 +1,8 @@
 import { useState } from "react";
 import Measure from "react-measure";
 import Title from "antd/lib/typography/Title";
-import iconMapper from "@/helpers/iconMapper";
+import { iconMapper } from "@gisce/react-formiga-components";
+
 import { Col, Row } from "antd";
 
 const fontGrowFactor = 0.7;

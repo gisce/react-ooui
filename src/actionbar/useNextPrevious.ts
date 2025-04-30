@@ -2,7 +2,7 @@ import { useCallback, useEffect } from "react";
 import ConnectionProvider from "@/ConnectionProvider";
 import { useActionViewContext } from "@/context/ActionViewContext";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
-import { useShowErrorDialog } from "@/ui/GenericErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 
 export const useNextPrevious = () => {
   const {
@@ -25,7 +25,7 @@ export const useNextPrevious = () => {
     };
   }, [cancelRequest]);
 
-  const showErrorDialog = useShowErrorDialog();
+  const { showErrorNotification } = useErrorNotification();
 
   const fetchNextRecord = useCallback(
     async (offset: number) => {
@@ -43,10 +43,10 @@ export const useNextPrevious = () => {
         });
         return nextRecords[0]?.id;
       } catch (err) {
-        showErrorDialog(err);
+        showErrorNotification(err);
       }
     },
-    [fetchRequest, searchQuery, showErrorDialog],
+    [fetchRequest, searchQuery, showErrorNotification],
   );
 
   const updateCurrentItem = useCallback(
