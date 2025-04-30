@@ -45,6 +45,24 @@ export default function Field({
   const customFieldMessage = getFieldMessage(id);
   const customFieldMessageType = getFieldMessageType(id);
 
+  const fieldValue = form.getFieldValue(id);
+
+  // Check for validation errors whenever the field value changes
+  useEffect(() => {
+    const checkFieldError = async () => {
+      try {
+        await form.validateFields([id]);
+        setHasValidationError(false);
+      } catch (errorInfo: any) {
+        const errorFields = errorInfo.errorFields || [];
+        setHasValidationError(
+          errorFields.some((field: any) => field.name[0] === id),
+        );
+      }
+    };
+    checkFieldError();
+  }, [form, id, fieldValue]);
+
   const helpMessage =
     customFieldMessage || (ooui.tooltipInline ? ooui.tooltip : null);
   const hasError =
