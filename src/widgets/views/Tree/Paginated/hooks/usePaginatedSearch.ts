@@ -11,7 +11,7 @@ import {
 } from "react";
 import { useNetworkRequest } from "../../../../../hooks/useNetworkRequest";
 import { ConnectionProvider, TreeView } from "../../../../..";
-import { useShowErrorDialog } from "@/ui/GenericErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useDeepCompareEffect } from "use-deep-compare";
 import deepEqual from "deep-equal";
 import {
@@ -179,7 +179,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   });
 
   // Hooks
-  const showErrorDialog = useShowErrorDialog();
+  const { showErrorNotification } = useErrorNotification();
   const [fetchTotalRows, cancelFetchTotalRows] = useNetworkRequest(
     ConnectionProvider.getHandler().searchCount,
   );
@@ -228,7 +228,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       setTotalRows(totalItems);
       setTotalItemsActionView(totalItems);
     } catch (err) {
-      showErrorDialog(err);
+      showErrorNotification(err);
     } finally {
       setTotalRowsLoading(false);
     }
@@ -240,7 +240,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     mergedParams,
     model,
     context,
-    showErrorDialog,
+    showErrorNotification,
   ]);
 
   // Event handlers
