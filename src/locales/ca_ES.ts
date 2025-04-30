@@ -122,4 +122,5 @@ export default {
   filterSearchLink: "cerca per filtres",
   changeToInfinite: "Canviar a llistat infinit",
   changeToPaginated: "Canviar a llistat paginat",
+  enterFieldToFilter: "Introdueix el camp per filtrar...",
 };

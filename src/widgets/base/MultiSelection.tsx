@@ -1,4 +1,3 @@
-import React from "react";
 import { Select, theme } from "antd";
 import styled from "styled-components";
 
@@ -76,7 +75,6 @@ export const MultiSelectionInput = (props: SelectionInputProps) => {
       onChange={handleChange}
       value={value?.map((key) => selectionValues.get(key))}
       mode="multiple"
-      showArrow={true}
     >
       {options}
     </CustomSelect>
