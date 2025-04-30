@@ -19,6 +19,7 @@ export type FormContextType = {
   getContext: () => Promise<any>;
   getValues: () => Promise<any>;
   getPlainValues: () => { [key: string]: any };
+  getAllHierarchyValues: () => { [key: string]: any };
   getFields: () => Promise<any>;
   domain: any[];
   submitForm?: (options?: {
@@ -57,6 +58,7 @@ const FormProvider = (props: FormProviderProps): any => {
     getContext,
     getValues,
     getPlainValues,
+    getAllHierarchyValues,
     domain,
     submitForm,
     fetchValues,
@@ -78,6 +80,7 @@ const FormProvider = (props: FormProviderProps): any => {
         domain,
         getValues,
         getPlainValues,
+        getAllHierarchyValues,
         getFields,
         activeId,
         activeModel,
@@ -115,6 +118,7 @@ export const useFormContext = () => {
       getContext: async () => ({}),
       getValues: async () => ({}),
       getPlainValues: () => ({}),
+      getAllHierarchyValues: () => ({}),
       getFields: async () => ({}),
       domain: [],
       submitForm: async () => ({ succeed: false, id: 0 }),
