@@ -23,7 +23,8 @@ export const useNextPrevious = () => {
     return () => {
       cancelRequest();
     };
-  }, [cancelRequest]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { showErrorNotification } = useErrorNotification();
 
