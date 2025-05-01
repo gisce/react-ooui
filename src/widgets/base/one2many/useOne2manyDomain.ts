@@ -17,6 +17,7 @@ export const useOne2ManyDomain = ({
     getValues,
     getContext,
     domain: formDomain,
+    getAllHierarchyValues,
   } = (useContext(FormContext) as FormContextType) || {};
 
   useEffect(() => {
@@ -31,7 +32,7 @@ export const useOne2ManyDomain = ({
           domain: widgetDomain,
           values: transformPlainMany2Ones({
             fields: getFields(),
-            values: getValues(),
+            values: getAllHierarchyValues(),
           }),
           fields: getFields(),
           context: getContext(),

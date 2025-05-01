@@ -91,6 +91,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     getContext,
     domain,
     fetchValues: fetchParentFormValues,
+    getAllHierarchyValues,
   } = formContext || {};
   const { t } = useLocale();
 
@@ -209,7 +210,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
           domain: widgetDomain,
           values: transformPlainMany2Ones({
             fields: getFields(),
-            values: getValues(),
+            values: getAllHierarchyValues(),
           }),
           fields: getFields(),
           context: getContext(),
