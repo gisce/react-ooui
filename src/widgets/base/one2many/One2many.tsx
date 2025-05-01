@@ -15,8 +15,6 @@ import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { DEFAULT_TREE_TYPE } from "@/views/actionViews/TreeActionView";
 import One2manyProvider, {
-  One2manyContext,
-  One2manyContextType,
   useOne2manyContext,
 } from "@/context/One2manyContext";
 

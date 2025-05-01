@@ -46,6 +46,8 @@ export default function Field({
   const customFieldMessage = getFieldMessage(id);
   const customFieldMessageType = getFieldMessageType(id);
 
+  const fieldValue = form.getFieldValue(id);
+
   // Check for validation errors whenever the field value changes
   useEffect(() => {
     const checkFieldError = async () => {
@@ -60,7 +62,7 @@ export default function Field({
       }
     };
     checkFieldError();
-  }, [form, id, form.getFieldValue(id)]);
+  }, [form, id, fieldValue]);
 
   const helpMessage =
     customFieldMessage || (ooui.tooltipInline ? ooui.tooltip : null);
