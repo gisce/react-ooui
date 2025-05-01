@@ -316,7 +316,24 @@ function Form(props: FormProps, ref: any) {
       }
     });
 
-    return reformattedValues;
+    return {
+      ...getAdditionalValues(),
+      ...reformattedValues,
+    };
+  }
+
+  function getAllHierarchyValues() {
+    const currentValues = getPlainValues();
+    const parentValues = getParentPlainValues?.();
+
+    if (!parentValues) {
+      return currentValues;
+    }
+
+    return {
+      ...currentValues,
+      parent: parentValues, // Keep parent values separately in case you need them
+    };
   }
 
   function getFormValues() {
@@ -1243,6 +1260,7 @@ function Form(props: FormProps, ref: any) {
         <FormProvider
           getValues={getValues}
           getPlainValues={getPlainValues}
+          getAllHierarchyValues={getAllHierarchyValues}
           getFields={getFields}
           domain={actionDomain}
           activeId={currentId}
