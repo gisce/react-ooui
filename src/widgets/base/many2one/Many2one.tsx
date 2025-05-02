@@ -80,8 +80,13 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const [inputText, setInputText] = useState<string>("");
   const inputTextRef = useRef<string>();
   const formContext = useContext(FormContext) as FormContextType;
-  const { domain, getValues, getFields, getContext, elementHasLostFocus } =
-    formContext || {};
+  const {
+    domain,
+    getFields,
+    getContext,
+    elementHasLostFocus,
+    getAllHierarchyValues,
+  } = formContext || {};
   const transformedDomain = useRef<any[]>([]);
   const [searchDomain, setSearchDomain] = useState<any>([]);
   const { showErrorNotification } = useErrorNotification();
@@ -206,7 +211,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           domain: widgetDomain,
           values: transformPlainMany2Ones({
             fields: getFields(),
-            values: getValues(),
+            values: getAllHierarchyValues(),
           }),
           fields: getFields(),
           context: getContext(),

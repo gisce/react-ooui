@@ -28,7 +28,6 @@ export default function Field({
 }) {
   const { id, label, tooltip } = ooui;
   const { t } = useLocale();
-  const [hasValidationError, setHasValidationError] = useState(false);
   const form = Form.useFormInstance();
 
   const rules = required
@@ -46,28 +45,10 @@ export default function Field({
   const customFieldMessage = getFieldMessage(id);
   const customFieldMessageType = getFieldMessageType(id);
 
-  const fieldValue = form.getFieldValue(id);
-
-  // Check for validation errors whenever the field value changes
-  useEffect(() => {
-    const checkFieldError = async () => {
-      try {
-        await form.validateFields([id]);
-        setHasValidationError(false);
-      } catch (errorInfo: any) {
-        const errorFields = errorInfo.errorFields || [];
-        setHasValidationError(
-          errorFields.some((field: any) => field.name[0] === id),
-        );
-      }
-    };
-    checkFieldError();
-  }, [form, id, fieldValue]);
-
   const helpMessage =
     customFieldMessage || (ooui.tooltipInline ? ooui.tooltip : null);
   const hasError =
-    hasValidationError ||
+    form.getFieldError(id)?.length > 0 ||
     (!!customFieldMessage && customFieldMessageType === "error");
   const hasWarning =
     !!customFieldMessage && customFieldMessageType === "warning";
