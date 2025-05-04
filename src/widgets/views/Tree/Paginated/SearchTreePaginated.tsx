@@ -96,6 +96,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     totalRowsLoading,
     totalRows,
     onRowStyle,
+    onRowIsExpandable,
     results,
     onRequestPageChange,
     treeIsLoading,
@@ -200,40 +201,46 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     return nameSearchProps ? DEFAULT_SEARCH_LIMIT : limit || DEFAULT_PAGE_SIZE;
   }, [results?.length, totalRows, nameSearchProps, limit]);
 
+  const isExpandable = treeView?.isExpandable;
+
   // Render
   return (
     <Fragment>
-      <PaginatedSearchControls
-        filterType={filterType}
-        formView={formView}
-        treeView={treeView}
-        searchVisible={searchVisible}
-        searchValues={searchValues}
-        onSearchFilterClear={onSearchFilterClear}
-        onSearchFilterSubmit={onSearchFilterSubmit}
-        onSideSearchFilterClose={onSideSearchFilterClose}
-        onSideSearchFilterSubmit={onSideSearchFilterSubmit}
-      />
-      <PaginationHeader
-        total={totalRowsAdjusted}
-        totalRowsLoading={totalRowsLoading}
-        page={nameSearchProps ? 1 : currentPage || 1}
-        pageSize={pageSizeAdjusted}
-        maxPageSize={treeMaxLimit}
-        currentPageSelectedCount={selectedRowKeys.length}
-        onRequestPageChange={onRequestPageChange}
-        totalSelectedCount={selectedRowKeys.length}
-        onSelectAllGlobalRecords={selectAllRecords}
-        simpleSummary={shouldShowSimpleSummary}
-        showAllOptionInPageSizeOptions={onChangeTreeType !== undefined}
-        customMiddleComponent={
-          shouldShowNameSearchWarning && (
-            <NameSearchWarning
-              onFilterSearchClick={() => setSearchVisible(true)}
-            />
-          )
-        }
-      />
+      {!isExpandable && (
+        <PaginatedSearchControls
+          filterType={filterType}
+          formView={formView}
+          treeView={treeView}
+          searchVisible={searchVisible}
+          searchValues={searchValues}
+          onSearchFilterClear={onSearchFilterClear}
+          onSearchFilterSubmit={onSearchFilterSubmit}
+          onSideSearchFilterClose={onSideSearchFilterClose}
+          onSideSearchFilterSubmit={onSideSearchFilterSubmit}
+        />
+      )}
+      {!isExpandable && (
+        <PaginationHeader
+          total={totalRowsAdjusted}
+          totalRowsLoading={totalRowsLoading}
+          page={nameSearchProps ? 1 : currentPage || 1}
+          pageSize={pageSizeAdjusted}
+          maxPageSize={treeMaxLimit}
+          currentPageSelectedCount={selectedRowKeys.length}
+          onRequestPageChange={onRequestPageChange}
+          totalSelectedCount={selectedRowKeys.length}
+          onSelectAllGlobalRecords={selectAllRecords}
+          simpleSummary={shouldShowSimpleSummary}
+          showAllOptionInPageSizeOptions={onChangeTreeType !== undefined}
+          customMiddleComponent={
+            shouldShowNameSearchWarning && (
+              <NameSearchWarning
+                onFilterSearchClick={() => setSearchVisible(true)}
+              />
+            )
+          }
+        />
+      )}
       <div ref={containerRef} style={containerStyle}>
         {loading ? (
           <Spin />
@@ -256,6 +263,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             footerComp={footerComp}
             statusComp={statusComp}
             onRowStatus={onRowStatus}
+            onRowIsExpandable={onRowIsExpandable}
             onRowStyle={onRowStyle}
             headerCheckboxState={headerCheckboxState}
             onHeaderCheckboxClick={onHeaderCheckboxClick}
@@ -264,7 +272,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             onSortChange={onSortChange}
             tableRef={tableRef}
             isFieldLoading={isFieldLoading}
-            onChangeTreeType={onChangeTreeType}
+            onChangeTreeType={!isExpandable ? onChangeTreeType : undefined}
           />
         )}
       </div>

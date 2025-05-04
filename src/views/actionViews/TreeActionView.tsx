@@ -69,7 +69,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
 
   useDeepCompareEffect(() => {
     if (treeView.isExpandable) {
-      setTreeType("legacy");
+      setTreeType("paginated");
       return;
     }
 
