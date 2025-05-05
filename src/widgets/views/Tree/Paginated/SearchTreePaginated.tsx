@@ -96,7 +96,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     totalRowsLoading,
     totalRows,
     onRowStyle,
-    onRowIsExpandable,
     results,
     onRequestPageChange,
     treeIsLoading,
@@ -116,6 +115,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     setSearchVisible,
     nameSearchFetchCompleted,
     nameSearch,
+    fetchChildrenForRecord,
   } = usePaginatedSearch({
     treeViewFetching: loading,
     treeOoui,
@@ -263,7 +263,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             footerComp={footerComp}
             statusComp={statusComp}
             onRowStatus={onRowStatus}
-            onRowIsExpandable={onRowIsExpandable}
             onRowStyle={onRowStyle}
             headerCheckboxState={headerCheckboxState}
             onHeaderCheckboxClick={onHeaderCheckboxClick}
@@ -273,6 +272,10 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             tableRef={tableRef}
             isFieldLoading={isFieldLoading}
             onChangeTreeType={!isExpandable ? onChangeTreeType : undefined}
+            onFetchChildrenForRecord={
+              treeView?.isExpandable ? fetchChildrenForRecord : undefined
+            }
+            childField={treeView?.field_parent}
           />
         )}
       </div>

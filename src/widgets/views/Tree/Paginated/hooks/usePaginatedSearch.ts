@@ -638,6 +638,26 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     [results, setSelectedRowItems],
   );
 
+  const fetchChildrenForRecord = useCallback(
+    async (record: any) => {
+      const child_id = record[treeView?.field_parent || "child_id"];
+
+      const children = await ConnectionProvider.getHandler().readObjects({
+        model,
+        ids: child_id,
+        fields: treeView!.field_parent
+          ? { ...treeView!.fields, [treeView!.field_parent]: {} }
+          : treeView!.fields,
+        context,
+      });
+
+      setResults([...results, ...children]);
+
+      return getTableItems(treeOoui!, children);
+    },
+    [treeView, model, context, results, setResults, treeOoui],
+  );
+
   return {
     isActive,
     searchVisible,
@@ -675,5 +695,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     setSearchVisible,
     nameSearchFetchCompleted,
     nameSearch,
+    fetchChildrenForRecord,
   };
 };
