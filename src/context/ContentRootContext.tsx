@@ -229,7 +229,7 @@ const ContentRootProvider = (
       )[0];
     }
 
-    const rawContext = actionData?.context;
+    const rawContext = actionData.context;
     const responseContext =
       typeof actionData?.context === "string"
         ? parseContext({
@@ -297,13 +297,13 @@ const ContentRootProvider = (
         initialView,
         action_id: actionData.id,
         action_type: actionData.type,
+        res_id: actionData.res_id,
         actionRawData: {
           context: rawContext,
           domain: rawDomain,
           fields,
           values,
         },
-        res_id: actionData.res_id,
       });
 
       return { closeParent: true };

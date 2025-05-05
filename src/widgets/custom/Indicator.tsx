@@ -3,7 +3,7 @@ import { Tooltip, theme, Statistic, Card, Empty, Space } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Field from "@/common/Field";
-import { InfoCircleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 
 import { useFormGraphData } from "@/hooks/useFormGraphData";
 import { CenteredSpinner } from "@/ui/CenteredSpinner";
@@ -61,7 +61,7 @@ const IndicatorInput = (props: IndicatorInputProps) => {
   const { locale } = useLocale();
   const [icon, setIcon] = useState<string>(ooui.icon);
   const [color, setColor] = useState<string>(ooui.color);
-  const [parseCondition] = useNetworkRequest(
+  const [parseCondition, cancelRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().parseCondition,
   );
 
@@ -84,6 +84,8 @@ const IndicatorInput = (props: IndicatorInputProps) => {
     }
     evaluateCondition(ooui.icon, setIcon);
     evaluateCondition(ooui.color, setColor);
+    return () => cancelRequest();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ooui.icon, ooui.color, value]);
 
   const title = (
@@ -188,22 +190,11 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
 
   const GraphComponent = readForViewEnabled ? GraphServer : Graph;
 
-  const titleWithTooltip = description ? (
-    <>
-      <Tooltip title={description}>
-        <InfoCircleOutlined className="pr-1 text-xs" />
-      </Tooltip>
-      <span>{actionData?.title || ""}</span>
-    </>
-  ) : (
-    <span>{actionData?.title || ""}</span>
-  );
-
   return (
     <GraphCard
       id={id}
       parms={{}}
-      title={titleWithTooltip}
+      title={actionData?.title || ""}
       action={treeShortcut}
       openAction={openShortcut as any}
       tooltip={description}
