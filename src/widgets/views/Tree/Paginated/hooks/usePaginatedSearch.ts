@@ -112,9 +112,16 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   const lastAssignedResults = useRef<any[]>([]);
   const fetchInProgress = useRef<boolean>(false);
 
+  const SHOULD_MAKE_DEFERRED_FUNCTION_READ =
+    treeView?.fields_in_conditions !== undefined;
+
   const columnStateKey = useMemo(() => {
     return getKey({ treeViewId: treeView?.view_id, model });
   }, [treeView?.view_id, model]);
+
+  const [parseConditions, cancelParseConditions] = useNetworkRequest(
+    ConnectionProvider.getHandler().parseConditions,
+  );
 
   const {
     fetchColumnState,
@@ -335,6 +342,13 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [treeViewFetching]);
 
+  useEffect(() => {
+    return () => {
+      cancelParseConditions();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useDeepCompareEffect(() => {
     if (!treeOoui || !treeView || treeViewFetching) {
       return;
@@ -430,9 +444,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
       const params = nameSearch ? domain : mergedParams;
 
-      const SHOULD_MAKE_DEFERRED_FUNCTION_READ =
-        treeView?.fields_in_conditions !== undefined;
-
       const attrs = getAttributesConditionsFromOoui({
         treeOoui,
         hasFunctionFieldsToParseConditions:
@@ -509,20 +520,21 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     nameSearch,
     domain,
     mergedParams,
+    SHOULD_MAKE_DEFERRED_FUNCTION_READ,
+    onHasFunctionFieldsToParseConditions,
+    mustUpdateTotal,
     searchForTree,
     limit,
     currentPage,
     model,
     treeView,
     context,
-    onHasFunctionFieldsToParseConditions,
     setSearchQuery,
     setActionViewResults,
-    mustUpdateTotal,
     updateAttributes,
+    updateTotalRows,
     addRecordsToCheckFunctionFields,
     setTotalItemsActionView,
-    updateTotalRows,
   ]);
 
   const refresh = useCallback(async () => {
@@ -642,20 +654,68 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     async (record: any) => {
       const child_id = record[treeView?.field_parent || "child_id"];
 
+      let mergedFields: Record<string, any> = treeView!.field_parent
+        ? { ...treeView!.fields, [treeView!.field_parent]: {} }
+        : treeView!.fields;
+
+      if (SHOULD_MAKE_DEFERRED_FUNCTION_READ) {
+        // We need here the fields that are not function fields
+        mergedFields = Object.entries(mergedFields).reduce(
+          (acc: Record<string, any>, [fieldName, fieldValue]) => {
+            if (!fieldValue?.is_function) {
+              acc[fieldName] = fieldValue;
+            }
+            return acc;
+          },
+          {},
+        );
+      }
+
       const children = await ConnectionProvider.getHandler().readObjects({
         model,
         ids: child_id,
-        fields: treeView!.field_parent
-          ? { ...treeView!.fields, [treeView!.field_parent]: {} }
-          : treeView!.fields,
+        fields: mergedFields,
         context,
       });
 
-      setResults([...results, ...children]);
+      const preparedResults = getTableItems(treeOoui!, children);
+      const mergedResults = [...results, ...preparedResults];
 
-      return getTableItems(treeOoui!, children);
+      const conditions = getAttributesConditionsFromOoui({
+        treeOoui,
+      });
+
+      try {
+        const attrsEvaluated = await parseConditions({
+          conditions,
+          values: mergedResults,
+          context,
+        });
+
+        updateAttributes(attrsEvaluated, treeOoui!);
+        tableRef?.current?.refreshRowStyles();
+      } catch (error) {
+        console.error(error);
+      }
+
+      lastAssignedResults.current = [...mergedResults];
+      setResults([...mergedResults]);
+      addRecordsToCheckFunctionFields(children.map((child: any) => child.id));
+
+      return preparedResults;
     },
-    [treeView, model, context, results, setResults, treeOoui],
+    [
+      treeView,
+      SHOULD_MAKE_DEFERRED_FUNCTION_READ,
+      model,
+      context,
+      treeOoui,
+      results,
+      addRecordsToCheckFunctionFields,
+      parseConditions,
+      updateAttributes,
+      tableRef,
+    ],
   );
 
   return {
