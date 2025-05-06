@@ -75,7 +75,7 @@ export const Integer = memo((props: IntegerProps) => {
         onBlur={elementHasLostFocus}
         precision={0}
         style={requiredStyle}
-        wheel={false}
+        changeOnWheel={false}
       />
     </Field>
   );
