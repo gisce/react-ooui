@@ -38,6 +38,7 @@ import { useConfigContext } from "@/context/ConfigContext";
 import { useExpandableTreeDoubleClick } from "@/hooks/useExpandableTreeDoubleClick";
 
 export const HEIGHT_OFFSET = 10;
+export const EXPANDABLE_HEIGHT_OFFSET = -30;
 
 function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   const {
@@ -60,17 +61,17 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   const onRowClickedRef = useCallbackRef(onRowClicked);
   const { treeMaxLimit } = useConfigContext();
 
-  const availableHeight = useAvailableHeight({
-    elementRef: containerRef,
-    offset: HEIGHT_OFFSET,
-  });
-
   // Views data fetching
   const { treeView, formView, loading } = useFetchTreeViews({
     model,
     formViewProps,
     treeViewProps,
     context: parentContext,
+  });
+
+  const availableHeight = useAvailableHeight({
+    elementRef: containerRef,
+    offset: treeView?.isExpandable ? EXPANDABLE_HEIGHT_OFFSET : HEIGHT_OFFSET,
   });
 
   const treeOoui: TreeOoui | undefined = useMemo(() => {
