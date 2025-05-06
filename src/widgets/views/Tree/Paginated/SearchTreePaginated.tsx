@@ -24,7 +24,10 @@ import {
 } from "@/widgets/views/Tree/Paginated/hooks/usePaginatedSearch";
 
 import { getTree } from "@/helpers/treeHelper";
-import { SearchTreePaginatedProps } from "./SearchTreePaginated.types";
+import {
+  OnRowClickedData,
+  SearchTreePaginatedProps,
+} from "./SearchTreePaginated.types";
 import { useTableConfiguration } from "../../../../hooks/useTableConfiguration";
 import { PaginatedSearchControls } from "./components/PaginatedSearchControls";
 import { PaginatedTableComponent } from "./components/PaginatedTableComponent";
@@ -32,6 +35,7 @@ import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { NameSearchWarning } from "../NameSearchWarning";
 import { useCallbackRef } from "@/hooks/useCallbackRef";
 import { useConfigContext } from "@/context/ConfigContext";
+import { useExpandableTreeDoubleClick } from "@/hooks/useExpandableTreeDoubleClick";
 
 export const HEIGHT_OFFSET = 10;
 
@@ -53,7 +57,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   // Refs
   const tableRef: RefObject<PaginatedTableRef> = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const handleRowDoubleClick = useCallbackRef(onRowClicked);
+  const onRowClickedRef = useCallbackRef(onRowClicked);
   const { treeMaxLimit } = useConfigContext();
 
   const availableHeight = useAvailableHeight({
@@ -128,6 +132,20 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     filterType,
     context: parentContext,
     onChangeTreeType,
+  });
+
+  const { handleExpandableRowDoubleClick } = useExpandableTreeDoubleClick({
+    treeView,
+    currentModel: model,
+    parentContext,
+  });
+
+  const handleRowDoubleClick = useCallbackRef((data: OnRowClickedData) => {
+    if (treeView?.isExpandable) {
+      handleExpandableRowDoubleClick(data);
+    } else {
+      onRowClickedRef(data);
+    }
   });
 
   const refreshCallbackRef = useCallbackRef(refresh);
