@@ -421,6 +421,10 @@ type ConnectionProviderType = {
     requestConfig?: any,
   ) => Promise<{ results: any; attrsEvaluated?: any }>;
   getToolbar: (options: GetViewRequest, requestConfig?: any) => Promise<any>;
+  logAction: (
+    options: { action_type: string; action_id: number; context: any },
+    requestConfig?: any,
+  ) => Promise<any>;
 };
 
 type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar";
