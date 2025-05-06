@@ -40,9 +40,8 @@
     "@gisce/react-formiga-components": "1.15.0-alpha.1",
     "@gisce/react-formiga-table": "1.14.0-alpha.5",
     "@monaco-editor/react": "^4.4.5",
-    "@tabler/icons-react": "^2.11.0",
     "@types/deep-equal": "^1.0.4",
-    "antd": "5.13.1",
+    "antd": "5.24.9",
     "buffer": "^6.0.3",
     "file-type-buffer-browser": "git+ssh://git@github.com/mguellsegarra/file-type-buffer-browser.git",
     "focus-trap-react": "^11.0.3",
@@ -164,7 +163,7 @@
     ]
   },
   "overrides": {
-    "antd": "5.13.1",
+    "antd": "5.24.9",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   }

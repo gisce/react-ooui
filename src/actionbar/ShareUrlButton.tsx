@@ -1,13 +1,15 @@
 import { useState, useCallback, useRef } from "react";
 import { Button, Input, message, Space, Popover, theme } from "antd";
 import { CopyOutlined, CheckOutlined } from "@ant-design/icons";
-import { useLocale } from "@gisce/react-formiga-components";
+import { useLocale, getTablerIcon } from "@gisce/react-formiga-components";
 import { createShareOpenUrl } from "@/helpers/shareUrlHelper";
 import ActionButton from "./ActionButton";
-import { IconExternalLink, IconShare2 } from "@tabler/icons-react";
 import { useTabs } from "@/context/TabManagerContext";
 import { useActionViewContext } from "@/context/ActionViewContext";
 import { ActionInfo } from "@/types";
+
+const IconExternalLink = getTablerIcon("IconExternalLink");
+const IconShare2 = getTablerIcon("IconShare2");
 
 export type ShareUrlButtonProps = {
   res_id?: number;
