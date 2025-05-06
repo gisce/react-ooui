@@ -8,8 +8,8 @@ import { useTabs } from "@/context/TabManagerContext";
 import { useActionViewContext } from "@/context/ActionViewContext";
 import { ActionInfo } from "@/types";
 
-const IconExternalLink = getTablerIcon("IconExternalLink");
-const IconShare2 = getTablerIcon("IconShare2");
+const IconExternalLink = getTablerIcon("IconExternalLink") as React.FC<any>;
+const IconShare2 = getTablerIcon("IconShare2") as React.FC<any>;
 
 export type ShareUrlButtonProps = {
   res_id?: number;
@@ -113,8 +113,8 @@ export function ShareUrlButton({ res_id, searchParams }: ShareUrlButtonProps) {
         <Button
           title={t("openInNewTab")}
           style={{ height: 28 }}
-          type="text"
           icon={<IconExternalLink size={18} color={token.colorTextSecondary} />}
+          type="text"
           onClick={() => window.open(shareUrl, "_blank", "noopener,noreferrer")}
         />
       </Space.Compact>
