@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -12,6 +13,7 @@ import "dayjs/locale/es";
 import "dayjs/locale/en";
 import "dayjs/locale/ca";
 
+dayjs.extend(utc);
 dayjs.extend(advancedFormat);
 dayjs.extend(customParseFormat);
 dayjs.extend(isoWeek);
