@@ -67,4 +67,6 @@ export type PaginatedTableContentProps = {
   tableRef: RefObject<PaginatedTableRef>;
   isFieldLoading?: (record: any, fieldName: string) => boolean;
   onChangeTreeType?: (type: TreeType) => void;
+  onFetchChildrenForRecord?: (item: any) => Promise<any[]>;
+  childField?: string;
 };
