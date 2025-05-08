@@ -2,6 +2,11 @@ import { memo, useMemo } from "react";
 import { PaginatedTable } from "@gisce/react-formiga-table";
 import { PaginatedTableContentProps } from "../SearchTreePaginated.types";
 import { CellRenderer } from "../../CellRenderer";
+import {
+  PlusSquareOutlined,
+  MinusSquareOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 
 export const PaginatedTableComponent = memo(
   ({
@@ -31,6 +36,8 @@ export const PaginatedTableComponent = memo(
     tableRef,
     isFieldLoading,
     onChangeTreeType,
+    onFetchChildrenForRecord,
+    childField,
   }: PaginatedTableContentProps) => {
     // Wrap column components to inject loading state
     const columnsWithLoading = useMemo(() => {
@@ -76,6 +83,17 @@ export const PaginatedTableComponent = memo(
         initialSortState={actionViewSortState}
         onSortChange={onSortChange}
         onChangeTableType={onChangeTreeType}
+        expandableOpts={
+          onFetchChildrenForRecord
+            ? {
+                expandIcon: PlusSquareOutlined,
+                collapseIcon: MinusSquareOutlined,
+                loadingIcon: LoadingOutlined,
+                onFetchChildrenForRecord,
+                childField: childField!,
+              }
+            : undefined
+        }
       />
     );
   },

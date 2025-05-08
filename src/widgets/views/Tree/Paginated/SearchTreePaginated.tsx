@@ -24,7 +24,10 @@ import {
 } from "@/widgets/views/Tree/Paginated/hooks/usePaginatedSearch";
 
 import { getTree } from "@/helpers/treeHelper";
-import { SearchTreePaginatedProps } from "./SearchTreePaginated.types";
+import {
+  OnRowClickedData,
+  SearchTreePaginatedProps,
+} from "./SearchTreePaginated.types";
 import { useTableConfiguration } from "../../../../hooks/useTableConfiguration";
 import { PaginatedSearchControls } from "./components/PaginatedSearchControls";
 import { PaginatedTableComponent } from "./components/PaginatedTableComponent";
@@ -32,8 +35,10 @@ import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { NameSearchWarning } from "../NameSearchWarning";
 import { useCallbackRef } from "@/hooks/useCallbackRef";
 import { useConfigContext } from "@/context/ConfigContext";
+import { useExpandableTreeDoubleClick } from "@/hooks/useExpandableTreeDoubleClick";
 
 export const HEIGHT_OFFSET = 10;
+export const EXPANDABLE_HEIGHT_OFFSET = -30;
 
 function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   const {
@@ -53,13 +58,8 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   // Refs
   const tableRef: RefObject<PaginatedTableRef> = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const handleRowDoubleClick = useCallbackRef(onRowClicked);
+  const onRowClickedRef = useCallbackRef(onRowClicked);
   const { treeMaxLimit } = useConfigContext();
-
-  const availableHeight = useAvailableHeight({
-    elementRef: containerRef,
-    offset: HEIGHT_OFFSET,
-  });
 
   // Views data fetching
   const { treeView, formView, loading } = useFetchTreeViews({
@@ -67,6 +67,11 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     formViewProps,
     treeViewProps,
     context: parentContext,
+  });
+
+  const availableHeight = useAvailableHeight({
+    elementRef: containerRef,
+    offset: treeView?.isExpandable ? EXPANDABLE_HEIGHT_OFFSET : HEIGHT_OFFSET,
   });
 
   const treeOoui: TreeOoui | undefined = useMemo(() => {
@@ -115,6 +120,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     setSearchVisible,
     nameSearchFetchCompleted,
     nameSearch,
+    fetchChildrenForRecord,
   } = usePaginatedSearch({
     treeViewFetching: loading,
     treeOoui,
@@ -127,6 +133,20 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     filterType,
     context: parentContext,
     onChangeTreeType,
+  });
+
+  const { handleExpandableRowDoubleClick } = useExpandableTreeDoubleClick({
+    treeView,
+    currentModel: model,
+    parentContext,
+  });
+
+  const handleRowDoubleClick = useCallbackRef((data: OnRowClickedData) => {
+    if (treeView?.isExpandable) {
+      handleExpandableRowDoubleClick(data);
+    } else {
+      onRowClickedRef(data);
+    }
   });
 
   const refreshCallbackRef = useCallbackRef(refresh);
@@ -200,40 +220,46 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     return nameSearchProps ? DEFAULT_SEARCH_LIMIT : limit || DEFAULT_PAGE_SIZE;
   }, [results?.length, totalRows, nameSearchProps, limit]);
 
+  const isExpandable = treeView?.isExpandable;
+
   // Render
   return (
     <Fragment>
-      <PaginatedSearchControls
-        filterType={filterType}
-        formView={formView}
-        treeView={treeView}
-        searchVisible={searchVisible}
-        searchValues={searchValues}
-        onSearchFilterClear={onSearchFilterClear}
-        onSearchFilterSubmit={onSearchFilterSubmit}
-        onSideSearchFilterClose={onSideSearchFilterClose}
-        onSideSearchFilterSubmit={onSideSearchFilterSubmit}
-      />
-      <PaginationHeader
-        total={totalRowsAdjusted}
-        totalRowsLoading={totalRowsLoading}
-        page={nameSearchProps ? 1 : currentPage || 1}
-        pageSize={pageSizeAdjusted}
-        maxPageSize={treeMaxLimit}
-        currentPageSelectedCount={selectedRowKeys.length}
-        onRequestPageChange={onRequestPageChange}
-        totalSelectedCount={selectedRowKeys.length}
-        onSelectAllGlobalRecords={selectAllRecords}
-        simpleSummary={shouldShowSimpleSummary}
-        showAllOptionInPageSizeOptions={onChangeTreeType !== undefined}
-        customMiddleComponent={
-          shouldShowNameSearchWarning && (
-            <NameSearchWarning
-              onFilterSearchClick={() => setSearchVisible(true)}
-            />
-          )
-        }
-      />
+      {!isExpandable && (
+        <PaginatedSearchControls
+          filterType={filterType}
+          formView={formView}
+          treeView={treeView}
+          searchVisible={searchVisible}
+          searchValues={searchValues}
+          onSearchFilterClear={onSearchFilterClear}
+          onSearchFilterSubmit={onSearchFilterSubmit}
+          onSideSearchFilterClose={onSideSearchFilterClose}
+          onSideSearchFilterSubmit={onSideSearchFilterSubmit}
+        />
+      )}
+      {!isExpandable && (
+        <PaginationHeader
+          total={totalRowsAdjusted}
+          totalRowsLoading={totalRowsLoading}
+          page={nameSearchProps ? 1 : currentPage || 1}
+          pageSize={pageSizeAdjusted}
+          maxPageSize={treeMaxLimit}
+          currentPageSelectedCount={selectedRowKeys.length}
+          onRequestPageChange={onRequestPageChange}
+          totalSelectedCount={selectedRowKeys.length}
+          onSelectAllGlobalRecords={selectAllRecords}
+          simpleSummary={shouldShowSimpleSummary}
+          showAllOptionInPageSizeOptions={onChangeTreeType !== undefined}
+          customMiddleComponent={
+            shouldShowNameSearchWarning && (
+              <NameSearchWarning
+                onFilterSearchClick={() => setSearchVisible(true)}
+              />
+            )
+          }
+        />
+      )}
       <div ref={containerRef} style={containerStyle}>
         {loading ? (
           <Spin />
@@ -264,7 +290,11 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             onSortChange={onSortChange}
             tableRef={tableRef}
             isFieldLoading={isFieldLoading}
-            onChangeTreeType={onChangeTreeType}
+            onChangeTreeType={!isExpandable ? onChangeTreeType : undefined}
+            onFetchChildrenForRecord={
+              treeView?.isExpandable ? fetchChildrenForRecord : undefined
+            }
+            childField={treeView?.field_parent}
           />
         )}
       </div>
