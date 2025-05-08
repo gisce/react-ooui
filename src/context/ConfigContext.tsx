@@ -51,7 +51,12 @@ export const useConfigContext = () => {
 
 export const useFeatureIsEnabled = (featureKey: ErpFeatureKeys): boolean => {
   const { erpFeatures } = useConfigContext();
-  return !!erpFeatures[featureKey];
+  return !!erpFeatures[featureKey]?.isEnabled || false;
+};
+
+export const useFeatureData = (featureKey: ErpFeatureKeys): any => {
+  const { erpFeatures } = useConfigContext();
+  return erpFeatures[featureKey];
 };
 
 export const ConfigContextProvider = memo(
