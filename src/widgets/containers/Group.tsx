@@ -17,12 +17,15 @@ function Group(props: Props): React.ReactElement {
   const { ooui, showLabel = true, responsiveBehaviour } = props;
   const icon: React.ElementType | undefined = iconMapper(ooui.icon || "");
   const { t } = useLocale();
+  const backgroundColor = ooui.backgroundColor;
+
   return (
     <div
       style={{
         height: ooui.height ? ooui.height + "px" : "100%",
         overflowX: "hidden",
         overflowY: "auto",
+        backgroundColor,
       }}
     >
       {(ooui.label || icon) && showLabel ? (
