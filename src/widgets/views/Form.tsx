@@ -6,18 +6,9 @@ import {
   useRef,
   useContext,
   useCallback,
-  useMemo,
 } from "react";
 import { Form as FormOoui, parseContext } from "@gisce/ooui";
-import {
-  Form as AntForm,
-  Button,
-  Divider,
-  Space,
-  Row,
-  Spin,
-  message,
-} from "antd";
+import { Form as AntForm, Button, Divider, Space, Row, Spin } from "antd";
 import Measure from "react-measure";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import debounce from "lodash/debounce";
@@ -33,9 +24,6 @@ import {
 } from "@/helpers/formHelper";
 import ConnectionProvider from "@/ConnectionProvider";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
-import formErrorsDialog from "@/ui/FormErrorsDialog";
-import showErrorDialog from "@/ui/ActionErrorDialog";
-import showWarningDialog from "@/ui/WarningDialog";
 import FormProvider, {
   FormContext,
   FormContextType,
@@ -60,9 +48,15 @@ import {
   convertFrom2ManyRawValues,
   convertToPlain2ManyValues,
 } from "@/helpers/one2manyHelper";
-import { ErrorAlert } from "@/ui/ErrorAlert";
 import { mergeFieldsContext } from "@/helpers/fieldsHelper";
 import { useAutorefreshableFormFields } from "@/hooks/useAutorefreshableFormFields";
+import { useDeepCompareEffect } from "use-deep-compare";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
+import {
+  useFieldMessages,
+  FieldMessage,
+  FieldMessageType,
+} from "../../hooks/useFieldMessages";
 
 export type FormProps = {
   model: string;
@@ -98,6 +92,12 @@ export type FormProps = {
 
 const WIDTH_BREAKPOINT = 800;
 
+type FormError = {
+  fields?: FieldMessage[];
+  message?: string;
+  type?: FieldMessageType;
+};
+
 function Form(props: FormProps, ref: any) {
   const {
     model,
@@ -127,7 +127,7 @@ function Form(props: FormProps, ref: any) {
   const { t } = useLocale();
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<any>();
   const [formOoui, setFormOoui] = useState<FormOoui>();
   const [antForm] = AntForm.useForm();
   const [arch, setArch] = useState<string>();
@@ -172,6 +172,22 @@ function Form(props: FormProps, ref: any) {
   ) as ContentRootContextType;
   const { processAction, globalValues } = contentRootContext || {};
 
+  const { showErrorNotification } = useErrorNotification({
+    onButtonAction: (actionData: any) => {
+      runAction({ actionData });
+    },
+  });
+
+  const {
+    fieldMessages,
+    setFieldMessage,
+    getFieldMessage,
+    getFieldMessageType,
+    clearFieldMessage,
+    clearAllFieldMessages,
+    setFieldMessagesArray,
+  } = useFieldMessages();
+
   useImperativeHandle(ref, () => ({
     submitForm,
     getFields,
@@ -189,6 +205,7 @@ function Form(props: FormProps, ref: any) {
 
   useEffect(() => {
     setError(undefined);
+    clearAllFieldMessages();
 
     if (!model && !formViewProps) {
       return;
@@ -222,6 +239,22 @@ function Form(props: FormProps, ref: any) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultGetCalled]);
+
+  useDeepCompareEffect(() => {
+    if (error) {
+      const formError = error as FormError;
+      if (formError.fields && Array.isArray(formError.fields)) {
+        setFieldMessagesArray(
+          formError.fields?.map((field) => ({
+            ...field,
+            type: formError.type || "error",
+          })) || [],
+        );
+      }
+      showErrorNotification(error);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error]);
 
   const onSubmitSucceed = (
     id?: number,
@@ -283,7 +316,24 @@ function Form(props: FormProps, ref: any) {
       }
     });
 
-    return reformattedValues;
+    return {
+      ...getAdditionalValues(),
+      ...reformattedValues,
+    };
+  }
+
+  function getAllHierarchyValues() {
+    const currentValues = getPlainValues();
+    const parentValues = getParentPlainValues?.();
+
+    if (!parentValues) {
+      return currentValues;
+    }
+
+    return {
+      ...currentValues,
+      parent: parentValues, // Keep parent values separately in case you need them
+    };
   }
 
   function getFormValues() {
@@ -403,12 +453,12 @@ function Form(props: FormProps, ref: any) {
       await antForm.validateFields();
       return false;
     } catch (verror) {
-      message.error(t("fillRequiredFields"));
       return true;
     }
   }
   const fetchData = async () => {
     setError(undefined);
+    clearAllFieldMessages();
     setFormIsLoading?.(true);
 
     let view;
@@ -429,9 +479,8 @@ function Form(props: FormProps, ref: any) {
         arch,
       });
     } catch (err) {
-      setError(err?.message ? err.message + err.stack : err);
+      setError(err);
       setFormIsLoading?.(false);
-      // setLoading(false);
     }
   };
 
@@ -449,6 +498,7 @@ function Form(props: FormProps, ref: any) {
 
     setFormIsLoading?.(true);
     setError(undefined);
+    clearAllFieldMessages();
 
     if (options?.fields) {
       _fields = options.fields;
@@ -671,6 +721,7 @@ function Form(props: FormProps, ref: any) {
     formSubmitting.current = true;
 
     setError(undefined);
+    clearAllFieldMessages();
 
     if (
       x2manyPendingLink.current &&
@@ -706,7 +757,11 @@ function Form(props: FormProps, ref: any) {
 
     if (await checkIfFormHasErrors()) {
       formSubmitting.current = false;
-      formErrorsDialog(t);
+      showErrorNotification({
+        type: "error",
+        title: t("formHasErrors"),
+        body: t("fillRequiredFields"),
+      });
       return { succeed: false, id: getCurrentId()! };
     }
 
@@ -727,14 +782,18 @@ function Form(props: FormProps, ref: any) {
 
       await fetchValues({ forceRefresh: true });
       submitSucceed = true;
-      message.success(t("savedRegisters"));
+
+      showErrorNotification({
+        type: "success",
+        title: t("savedRegisters"),
+        duration: 3,
+      });
     } catch (err) {
       formSubmitting.current = false;
       setIsSubmitting(false);
       setFormIsSaving?.(false);
       onSubmitError?.(err);
-      message.error(t("errorWhileSavingForm"));
-      setError(err?.message ? err.message : err);
+      setError(err);
     } finally {
       formSubmitting.current = false;
       setFormIsSaving?.(false);
@@ -849,6 +908,10 @@ function Form(props: FormProps, ref: any) {
         onFieldsChange?.(values);
         setFormHasChanges?.(true);
 
+        Object.keys(values).forEach((key) => {
+          clearFieldMessage(key);
+        });
+
         evaluateChanges(changedFields);
       }
     }
@@ -863,7 +926,7 @@ function Form(props: FormProps, ref: any) {
         await processFieldOnChange(changedField);
       }
     } catch (err) {
-      showErrorDialog(err);
+      showErrorNotification(err);
     }
   };
 
@@ -931,8 +994,21 @@ function Form(props: FormProps, ref: any) {
     ) {
       const { title, message } = response.warning;
       warningIsShown.current = true;
-      showWarningDialog(title, message, () => {
-        warningIsShown.current = false;
+      setFieldMessagesArray([
+        {
+          field: fieldName,
+          message,
+          type: "warning",
+        },
+      ]);
+
+      showErrorNotification({
+        type: "warning",
+        title,
+        body: message,
+        onOk: () => {
+          warningIsShown.current = false;
+        },
       });
     }
 
@@ -1035,10 +1111,10 @@ function Form(props: FormProps, ref: any) {
 
   async function runAction({
     actionData,
-    context,
+    context = {},
   }: {
     actionData: any;
-    context: any;
+    context?: any;
   }) {
     const { closeParent } =
       (await processAction?.({
@@ -1124,7 +1200,11 @@ function Form(props: FormProps, ref: any) {
 
     // We check for required fields
     if (await checkIfFormHasErrors()) {
-      formErrorsDialog(t);
+      showErrorNotification({
+        type: "error",
+        title: t("formHasErrors"),
+        body: t("fillRequiredFields"),
+      });
       return;
     }
 
@@ -1158,7 +1238,7 @@ function Form(props: FormProps, ref: any) {
       mustBlockButtons && updateOperationInProgress(false);
     } catch (err) {
       mustBlockButtons && updateOperationInProgress(false);
-      showErrorDialog(err);
+      showErrorNotification(err);
     }
   }
 
@@ -1180,6 +1260,7 @@ function Form(props: FormProps, ref: any) {
         <FormProvider
           getValues={getValues}
           getPlainValues={getPlainValues}
+          getAllHierarchyValues={getAllHierarchyValues}
           getFields={getFields}
           domain={actionDomain}
           activeId={currentId}
@@ -1193,6 +1274,12 @@ function Form(props: FormProps, ref: any) {
           formHasChanges={formHasChanges}
           elementHasLostFocus={elementHasLostFocus}
           formView={formViewProps}
+          fieldMessages={fieldMessages}
+          setFieldMessage={setFieldMessage}
+          getFieldMessage={getFieldMessage}
+          getFieldMessageType={getFieldMessageType}
+          clearFieldMessage={clearFieldMessage}
+          clearAllFieldMessages={clearAllFieldMessages}
         >
           <AntForm
             form={antForm}
@@ -1258,7 +1345,6 @@ function Form(props: FormProps, ref: any) {
     >
       {({ measureRef }) => (
         <div className="pb-2" ref={measureRef}>
-          {error && <ErrorAlert className="mt-5 mb-10" error={error} />}
           {content()}
           {showFooter && footer()}
         </div>

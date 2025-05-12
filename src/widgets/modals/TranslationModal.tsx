@@ -9,7 +9,7 @@ import useWindowDimensions from "@/hooks/useWindowDimensions";
 import { useLocale } from "@gisce/react-formiga-components";
 import ConnectionProvider from "@/ConnectionProvider";
 import TextArea from "antd/lib/input/TextArea";
-import showErrorDialog from "@/ui/ActionErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 
 type TranslationModalProps = {
   visible: boolean;
@@ -40,6 +40,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
   const [valuesForLangs, setValuesForLangs] = useState<ValuesForLangs>({});
 
   const originalValuesForLangs = useRef<ValuesForLangs>();
+  const { showErrorNotification } = useErrorNotification();
 
   useEffect(() => {
     if (visible) {
@@ -47,6 +48,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
     } else {
       setValuesForLangs({});
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   async function fetchData() {
@@ -56,7 +58,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
       const langs = await getLangs();
       await getValuesForLangs(langs);
     } catch (err) {
-      showErrorDialog(err as any);
+      showErrorNotification(err);
     }
 
     setIsLoading(false);
@@ -144,7 +146,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
         }
       }
     } catch (err) {
-      showErrorDialog(err as any);
+      showErrorNotification(err);
     }
 
     setSubmitLoading(false);

@@ -6,11 +6,17 @@ export enum ErpFeatureKeys {
   FEATURE_USERVIEWPREFS = "user_view_prefs",
   FEATURE_GET_TOOLBAR = "get_toolbar",
   FEATURE_MANY2ONE_SORT = "many2one_sort",
+  FEATURE_LOGGABLE_ACTIONS = "user_action_logs",
   // ... add more features here
 }
 
 export const ErpAllFeatureKeys: string[] = Object.values(ErpFeatureKeys);
 
+export interface ErpFeatureState {
+  isEnabled: boolean;
+  params: Record<string, unknown>;
+}
+
 export type ErpFeaturesMap = {
-  [key in ErpFeatureKeys]?: boolean;
+  [key in ErpFeatureKeys]?: ErpFeatureState;
 };

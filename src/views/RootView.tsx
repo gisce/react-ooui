@@ -4,6 +4,7 @@ import {
   useImperativeHandle,
   useRef,
   ReactNode,
+  useEffect,
 } from "react";
 import { ConnectionProvider, ContentRootProvider, FormView } from "..";
 import Welcome from "./Welcome";
@@ -11,14 +12,16 @@ import TabManagerProvider from "@/context/TabManagerContext";
 import ActionView from "./ActionView";
 import { parseContext } from "@gisce/ooui";
 import { ShortcutApi } from "@/ui/FavouriteButton";
-import showErrorDialog from "@/ui/ActionErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { ActionInfo, Tab, ViewType } from "@/types";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
 import { nanoid } from "nanoid";
 import { useLocale } from "@gisce/react-formiga-components";
-import { useConfigContext } from "@/context/ConfigContext";
+import { useConfigContext, useFeatureData } from "@/context/ConfigContext";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { filterAllowedValues } from "@/helpers/shareUrlHelper";
+import { ErpFeatureKeys } from "@/models/erpFeature";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 
 type RootViewProps = {
   children: ReactNode;
@@ -28,7 +31,21 @@ function RootView(props: RootViewProps, ref: any) {
   const { children } = props;
   const [activeKey, setActiveKey] = useState<string>("welcome");
   const { t } = useLocale();
-  const { globalValues, rootContext, treeMaxLimit } = useConfigContext();
+  const { showErrorNotification } = useErrorNotification();
+  const { globalValues, rootContext } = useConfigContext();
+  const loggableFeature = useFeatureData(
+    ErpFeatureKeys.FEATURE_LOGGABLE_ACTIONS,
+  );
+  const [logAction, cancelRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().logAction,
+  );
+
+  useEffect(() => {
+    return () => {
+      cancelRequest();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [tabs, setTabs] = useState<Tab[]>([
     {
@@ -210,7 +227,11 @@ function RootView(props: RootViewProps, ref: any) {
     });
 
     if (dataForAction.type === "ir.actions.wizard") {
-      showErrorDialog("Action type not supported");
+      showErrorNotification({
+        type: "error",
+        title: "Error",
+        body: "Action type not supported",
+      });
       return;
     }
 
@@ -568,6 +589,21 @@ function RootView(props: RootViewProps, ref: any) {
     } = parms;
 
     const key = nanoid();
+
+    if (
+      loggableFeature?.isEnabled &&
+      (loggableFeature?.params?.types || []).includes(action_type)
+    ) {
+      try {
+        logAction({
+          action_type,
+          action_id,
+          context,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
 
     if (target !== "current" && target !== undefined) {
       const formView = (await ConnectionProvider.getHandler().getView({

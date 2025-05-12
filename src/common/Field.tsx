@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Row, Col } from "antd";
 import { Field as FieldOoui, Label as LabelOoui } from "@gisce/ooui";
 import Label from "@/widgets/base/Label";
 import { useLocale } from "@gisce/react-formiga-components";
+import { useFormContext } from "@/context/FormContext";
 
 export default function Field({
   ooui,
@@ -27,6 +28,7 @@ export default function Field({
 }) {
   const { id, label, tooltip } = ooui;
   const { t } = useLocale();
+  const form = Form.useFormInstance();
 
   const rules = required
     ? [
@@ -39,13 +41,27 @@ export default function Field({
       ]
     : undefined;
 
+  const { getFieldMessage, getFieldMessageType } = useFormContext();
+  const customFieldMessage = getFieldMessage(id);
+  const customFieldMessageType = getFieldMessageType(id);
+
+  const helpMessage =
+    customFieldMessage || (ooui.tooltipInline ? ooui.tooltip : null);
+  const hasError =
+    form.getFieldError(id)?.length > 0 ||
+    (!!customFieldMessage && customFieldMessageType === "error");
+  const hasWarning =
+    !!customFieldMessage && customFieldMessageType === "warning";
+
   const formItem = () => (
     <Form.Item
       className="mb-0"
       name={id}
       valuePropName={valuePropName}
       rules={rules}
-      help={ooui.tooltipInline ? ooui.tooltip : null}
+      validateStatus={hasError ? "error" : hasWarning ? "warning" : undefined}
+      help={helpMessage}
+      hasFeedback={hasError || hasWarning}
     >
       {children}
     </Form.Item>

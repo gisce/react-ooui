@@ -120,4 +120,7 @@ export default {
   nameSearchLimitNote:
     "Només es mostren els primers 80 registres. Si necessiteu veure més registres, utilitzeu la cerca per filtres.",
   filterSearchLink: "cerca per filtres",
+  changeToInfinite: "Canviar a llistat infinit",
+  changeToPaginated: "Canviar a llistat paginat",
+  enterFieldToFilter: "Introdueix el camp per filtrar...",
 };

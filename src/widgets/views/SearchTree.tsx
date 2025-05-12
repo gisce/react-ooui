@@ -25,7 +25,7 @@ import {
   ContentRootContext,
   ContentRootContextType,
 } from "@/context/ContentRootContext";
-import showErrorDialog from "@/ui/ActionErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useSearch } from "@/hooks/useSearch";
 import { TableRef } from "@gisce/react-formiga-table";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
@@ -114,6 +114,8 @@ function SearchTree(props: Props, ref: any) {
     setLimit = undefined,
   } = (rootTree ? actionViewContext : {}) || {};
 
+  const { showErrorNotification } = useErrorNotification();
+
   const changeSelectedRowKeys = useCallback(
     (newSelectedRowKeys: any[]) => {
       setSelectedRowItems?.(newSelectedRowKeys.map((id: number) => ({ id })));
@@ -197,7 +199,7 @@ function SearchTree(props: Props, ref: any) {
       await fetchModelData();
       setInitialFetchDone(true);
     } catch (error) {
-      setInitialError(error);
+      showErrorNotification(error);
       setTreeIsLoading?.(false);
     } finally {
       setIsLoading(false);
@@ -279,7 +281,7 @@ function SearchTree(props: Props, ref: any) {
         try {
           await treeButOpen(record);
         } catch (err) {
-          showErrorDialog(err);
+          showErrorNotification(err);
         }
         return;
       }

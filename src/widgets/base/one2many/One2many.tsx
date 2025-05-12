@@ -6,21 +6,15 @@ import { Views, ViewType } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import { One2manyInput } from "@/widgets/base/one2many/One2manyInput";
 import {
-  One2manyInput as One2manyInputPaginated,
-  One2manyInputPaginatedProps,
-} from "@/widgets/base/one2many/One2manyInputPaginated";
-import {
   One2manyInput as One2manyInputInfinite,
   One2manyInputInfiniteProps,
 } from "@/widgets/base/one2many/One2manyInputInfinite";
-import useDeepCompareEffect from "use-deep-compare-effect";
+import { useDeepCompareEffect } from "use-deep-compare";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { DEFAULT_TREE_TYPE } from "@/views/actionViews/TreeActionView";
 import One2manyProvider, {
-  One2manyContext,
-  One2manyContextType,
   useOne2manyContext,
 } from "@/context/One2manyContext";
 
@@ -165,7 +159,7 @@ const One2manyComponent = (props: One2manyInputInfiniteProps) => {
   }, [ooui.infinite, value]);
 
   return treeType === "infinite" ? (
-    <One2manyInputPaginated {...props} />
+    <One2manyInputInfinite {...props} />
   ) : (
     <One2manyInput {...props} />
   );
