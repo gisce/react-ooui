@@ -12,6 +12,7 @@ import { useSearch } from "@/hooks/useSearch";
 import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import { Spin } from "antd";
 import { mergeParams } from "@/helpers/searchHelper";
+import { GRAPH_DEFAULT_HEIGHT } from "@/widgets/views/Graph/GraphChartComp";
 
 export type GraphActionViewProps = {
   viewData: GraphView;
@@ -168,6 +169,7 @@ export const GraphActionView = (props: GraphActionViewProps) => {
           context={context}
           domain={mergeParams(searchParams || [], domain)}
           limit={applyLimit ? limit : undefined}
+          fixedHeight={GRAPH_DEFAULT_HEIGHT}
           manualIds={
             applyLimit && resultsActionView && resultsActionView.length > 0
               ? resultsActionView.map((r) => r.id)
