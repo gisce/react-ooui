@@ -1,7 +1,7 @@
 import GraphActionBar from "@/actionbar/GraphActionBar";
 import TitleHeader from "@/ui/TitleHeader";
 import { Graph } from "@/widgets/views/Graph/Graph";
-import React, { useContext, useEffect, useRef, useState, useMemo } from "react";
+import { useContext, useEffect, useRef, useState, useMemo } from "react";
 import {
   ActionViewContext,
   ActionViewContextType,
@@ -13,6 +13,9 @@ import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import { Spin } from "antd";
 import { mergeParams } from "@/helpers/searchHelper";
 import { GRAPH_DEFAULT_HEIGHT } from "@/widgets/views/Graph/GraphChartComp";
+import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
+import { GraphServer } from "@/widgets/views/Graph/GraphServer";
 
 export type GraphActionViewProps = {
   viewData: GraphView;
@@ -37,6 +40,9 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     graphView,
   } = props;
   const graphRef = useRef();
+  const readForViewEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_READFORVIEW,
+  );
 
   const actionViewContext = useContext(
     ActionViewContext,
@@ -122,6 +128,8 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     return null;
   }
 
+  const GraphComponent = readForViewEnabled ? GraphServer : Graph;
+
   return (
     <>
       <TitleHeader title={viewData.title || viewData.name}>
@@ -161,7 +169,7 @@ export const GraphActionView = (props: GraphActionViewProps) => {
       {tableRefreshing ? (
         <Spin />
       ) : (
-        <Graph
+        <GraphComponent
           ref={graphRef}
           view_id={viewData.view_id}
           viewData={viewData}
