@@ -25,7 +25,7 @@ type ActionViewProviderProps = {
   currentModel: string;
   sorter: any;
   setSorter: (sorter: any) => void;
-  totalItems: number;
+  totalItems?: number;
   setTotalItems: (totalItems: number) => void;
   selectedRowItems?: any[];
   setSelectedRowItems: (value: any[] | ((prevValue: any[]) => any[])) => void;
@@ -310,7 +310,7 @@ export const useActionViewContext = () => {
       currentModel: "",
       sorter: undefined,
       setSorter: () => {},
-      totalItems: 0,
+      totalItems: undefined,
       setTotalItems: () => {},
       selectedRowItems: [],
       setSelectedRowItems: () => {},
