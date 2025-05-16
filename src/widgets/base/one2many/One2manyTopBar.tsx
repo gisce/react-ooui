@@ -92,7 +92,6 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
       mustDisableButtons: readOnly,
       formRef,
       onRefreshParentValues,
-      totalItems,
     });
 
   const {
