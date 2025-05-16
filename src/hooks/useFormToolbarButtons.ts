@@ -14,7 +14,6 @@ interface UseFormToolbarButtonsProps {
   mustDisableButtons?: boolean;
   formRef: RefObject<any>;
   onRefreshParentValues?: () => void;
-  totalItems?: number;
 }
 
 interface SaveDocumentResult {
@@ -27,7 +26,6 @@ export const useFormToolbarButtons = ({
   mustDisableButtons = false,
   formRef,
   onRefreshParentValues,
-  totalItems = 0,
 }: UseFormToolbarButtonsProps) => {
   const { t } = useLocale();
   const contentRootContext = useContext(
@@ -58,7 +56,7 @@ export const useFormToolbarButtons = ({
   );
 
   const actionButtonProps = {
-    disabled: mustDisableButtons || totalItems === 0,
+    disabled: mustDisableButtons,
     placement: "bottomRight" as const,
     onRetrieveData: async () => [
       { label: t("actions"), items: toolbar?.action },
@@ -72,7 +70,7 @@ export const useFormToolbarButtons = ({
   };
 
   const printButtonProps = {
-    disabled: mustDisableButtons || totalItems === 0,
+    disabled: mustDisableButtons,
     placement: "bottomRight" as const,
     onRetrieveData: async () => [
       { label: t("reports"), items: toolbar?.print },
@@ -94,7 +92,7 @@ export const useFormToolbarButtons = ({
   };
 
   const relateButtonProps = {
-    disabled: mustDisableButtons || totalItems === 0,
+    disabled: mustDisableButtons,
     placement: "bottomRight" as const,
     onRetrieveData: async () => [
       { label: t("related"), items: toolbar?.relate },
