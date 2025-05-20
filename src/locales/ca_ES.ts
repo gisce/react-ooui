@@ -2,7 +2,7 @@ export default {
   true: "Sí",
   false: "No",
   simple_search: "Búsqueda simple",
-  advanced_search: "Búsqueda avançada",
+  advanced_search: "Cerca avançada",
   search: "Buscar",
   parameters: "Paràmetres",
   limit: "Limit",
