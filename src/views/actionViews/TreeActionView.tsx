@@ -6,7 +6,6 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -69,7 +68,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
 
   useDeepCompareEffect(() => {
     if (treeView.isExpandable) {
-      setTreeType("legacy");
+      setTreeType("paginated");
       return;
     }
 
