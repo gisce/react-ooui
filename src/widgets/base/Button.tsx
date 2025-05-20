@@ -63,7 +63,12 @@ export const Button = (props: Props) => {
         icon={getButtonIcon()}
         type={ooui.primary ? "primary" : "default"}
         danger={ooui.danger}
-        style={{ whiteSpace: "normal", height: "auto" }}
+        style={{
+          whiteSpace: "normal",
+          height: "auto",
+          paddingTop: "3px",
+          paddingBottom: "3px",
+        }}
       >
         {label}
       </AntButton>

@@ -62,15 +62,15 @@ export const TimePicker = ({
   return (
     <AntTimePicker
       {...rest}
-      ref={pickerRef}
+      ref={pickerRef as any}
       value={value}
-      onChange={handleChange}
+      onChange={handleChange as any}
       showNow={false}
       defaultOpenValue={defaultOpenValue}
       changeOnBlur={true}
       onSelect={handleSelect}
-      onBlur={handleBlur}
-      onKeyDown={handleKeyDown}
+      onBlur={(e) => handleBlur(e as any)}
+      onKeyDown={(e) => handleKeyDown(e as any)}
       format={TimePickerConfig.displayFormat}
     />
   );
