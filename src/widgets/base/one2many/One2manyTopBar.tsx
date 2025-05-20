@@ -135,7 +135,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
             totalItems={totalItems}
             readOnly={readOnly}
             mode={mode}
-            selectedRowKeys={selectedRowKeys}
+            selectedRowKeys={readOnly ? [] : selectedRowKeys}
             onDelete={onDelete}
           />
         )}
@@ -304,6 +304,7 @@ const ItemBrowser = memo(
           tooltip={t("previousItem")}
           icon={<LeftOutlined />}
           onClick={onPreviousItem}
+          disabled={totalItems === 0}
         />
         <ItemIndex
           currentItemIndex={currentItemIndex}
@@ -313,6 +314,7 @@ const ItemBrowser = memo(
           tooltip={t("nextItem")}
           icon={<RightOutlined />}
           onClick={onNextItem}
+          disabled={totalItems === 0}
         />
       </>
     );

@@ -61,7 +61,7 @@ export const useTreeToolbarButtons = ({
 
   const actionButtonProps = {
     placement: "bottomRight" as const,
-    disabled: !selectedRowItems?.length || disabled,
+    disabled: !selectedRowItems || selectedRowItems.length === 0 || disabled,
     onRetrieveData: async () => [
       { label: t("actions"), items: toolbar?.action || [] },
     ],
@@ -75,7 +75,7 @@ export const useTreeToolbarButtons = ({
 
   const printButtonProps = {
     placement: "bottomRight" as const,
-    disabled: !selectedRowItems?.length || disabled,
+    disabled: !selectedRowItems || selectedRowItems.length === 0,
     onRetrieveData: async () => [
       { label: t("reports"), items: toolbar?.print || [] },
     ],
