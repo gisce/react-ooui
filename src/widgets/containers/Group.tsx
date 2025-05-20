@@ -22,7 +22,7 @@ function Group(props: Props): React.ReactElement {
   const borderColor = backgroundColor
     ? tinycolor(backgroundColor).darken(30).toString()
     : undefined;
-  const shouldShowFieldSet = ooui.label || (icon && showLabel);
+  const shouldShowFieldSet = (ooui.label || icon) && showLabel;
 
   return (
     <div
