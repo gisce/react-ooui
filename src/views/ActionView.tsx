@@ -96,7 +96,7 @@ function ActionView(props: Props, ref: any) {
   const [currentItemIndex, setCurrentItemIndex] = useState<number>();
   const [results, setResults] = useState<any>([]);
   const [sorter, setSorter] = useState<any>();
-  const [totalItems, setTotalItems] = useState<number>(0);
+  const [totalItems, setTotalItems] = useState<number>();
   const [gtResourceModalVisible, setGtResourceModalVisible] =
     useState<boolean>(false);
   const [searchingForResourceId, setSearchingForResourceId] =
