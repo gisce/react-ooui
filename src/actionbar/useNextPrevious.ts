@@ -7,7 +7,7 @@ import { useErrorNotification } from "@/hooks/useErrorNotification";
 export const useNextPrevious = () => {
   const {
     treeType,
-    totalItems,
+    totalItems = 0,
     currentItemIndex,
     setCurrentId,
     setCurrentItemIndex,

@@ -1,7 +1,14 @@
 import GraphActionBar from "@/actionbar/GraphActionBar";
 import TitleHeader from "@/ui/TitleHeader";
 import { Graph } from "@/widgets/views/Graph/Graph";
-import React, { useContext, useEffect, useRef, useState, useMemo } from "react";
+import {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   ActionViewContext,
   ActionViewContextType,
@@ -13,6 +20,15 @@ import SearchFilter from "@/widgets/views/searchFilter/SearchFilter";
 import { Spin } from "antd";
 import { mergeParams } from "@/helpers/searchHelper";
 import { GRAPH_DEFAULT_HEIGHT } from "@/widgets/views/Graph/GraphChartComp";
+import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
+import { GraphServer } from "@/widgets/views/Graph/GraphServer";
+import { ConnectionProvider } from "@/index";
+import {
+  useDeepCompareCallback,
+  useDeepCompareEffect,
+  useDeepCompareMemo,
+} from "use-deep-compare";
 
 export type GraphActionViewProps = {
   viewData: GraphView;
@@ -37,6 +53,9 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     graphView,
   } = props;
   const graphRef = useRef();
+  const readForViewEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_READFORVIEW,
+  );
 
   const actionViewContext = useContext(
     ActionViewContext,
@@ -61,19 +80,91 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     searchValues,
     setSearchValues,
     currentView,
+    totalItems,
+    searchTreeNameSearch,
   } = actionViewContext || {};
 
   const [applyLimit, setApplyLimit] = useState(true);
+  const [idsLoading, setIdsLoading] = useState(true);
+  const [manualIds, setManualIds] = useState<number[]>();
 
   useEffect(() => {
-    (graphRef.current as any)?.refresh();
-  }, [searchParams]);
+    if (visible) {
+      setIdsLoading(true);
+    }
+  }, [visible]);
 
-  useEffect(() => {
+  const mergedParams = useDeepCompareMemo(
+    () => mergeParams(searchParams || [], domain),
+    [domain, searchParams],
+  );
+
+  const getAllIds = useDeepCompareCallback(async () => {
+    if (!visible) {
+      return;
+    }
+    const allRowsResults = await ConnectionProvider.getHandler().searchAllIds({
+      params: searchTreeNameSearch ? domain : mergedParams,
+      model,
+      context,
+      totalItems,
+    });
+    setManualIds(allRowsResults);
+  }, [
+    visible,
+    searchTreeNameSearch,
+    domain,
+    mergedParams,
+    model,
+    context,
+    totalItems,
+  ]);
+
+  const fetchManualIds = useDeepCompareCallback(async () => {
+    if (!visible) {
+      return;
+    }
+    setIdsLoading(true);
+    if (
+      totalItems === undefined ||
+      (resultsActionView?.length !== totalItems && totalItems !== undefined)
+    ) {
+      await getAllIds();
+    } else {
+      const manualIds =
+        applyLimit && resultsActionView && resultsActionView.length > 0
+          ? resultsActionView.map((r) => r.id)
+          : undefined;
+      setManualIds(manualIds);
+    }
+    setIdsLoading(false);
+  }, [visible, totalItems, resultsActionView, getAllIds, applyLimit]);
+
+  useDeepCompareEffect(() => {
+    fetchManualIds();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    visible,
+    searchTreeNameSearch,
+    domain,
+    mergedParams,
+    totalItems,
+    applyLimit,
+    resultsActionView,
+  ]);
+
+  const mustWeApplyLimit = useMemo(() => {
     if (viewData.view_id !== currentView.view_id) {
+      return true;
+    }
+    return false;
+  }, [currentView.view_id, viewData.view_id]);
+
+  useEffect(() => {
+    if (mustWeApplyLimit) {
       setApplyLimit(true);
     }
-  }, [currentView]);
+  }, [mustWeApplyLimit]);
 
   const { clear, searchFilterLoading, searchError, offset, tableRefreshing } =
     useSearch({
@@ -92,7 +183,6 @@ export const GraphActionView = (props: GraphActionViewProps) => {
       setSorter,
       setCurrentItemIndex,
       setResultsActionView,
-      resultsActionView,
       domain,
       currentId,
       setActionViewTotalItems,
@@ -122,12 +212,14 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     return null;
   }
 
+  const GraphComponent = readForViewEnabled ? GraphServer : Graph;
+
   return (
     <>
       <TitleHeader title={viewData.title || viewData.name}>
         <GraphActionBar
           refreshGraph={() => {
-            (graphRef.current as any).refresh();
+            fetchManualIds();
           }}
         />
       </TitleHeader>
@@ -158,10 +250,10 @@ export const GraphActionView = (props: GraphActionViewProps) => {
         searchValues={searchValues}
         showLimitOptions={false}
       />
-      {tableRefreshing ? (
+      {tableRefreshing || idsLoading ? (
         <Spin />
       ) : (
-        <Graph
+        <GraphComponent
           ref={graphRef}
           view_id={viewData.view_id}
           viewData={viewData}
@@ -170,11 +262,7 @@ export const GraphActionView = (props: GraphActionViewProps) => {
           domain={mergeParams(searchParams || [], domain)}
           limit={applyLimit ? limit : undefined}
           fixedHeight={GRAPH_DEFAULT_HEIGHT}
-          manualIds={
-            applyLimit && resultsActionView && resultsActionView.length > 0
-              ? resultsActionView.map((r) => r.id)
-              : undefined
-          }
+          manualIds={manualIds}
         />
       )}
     </>

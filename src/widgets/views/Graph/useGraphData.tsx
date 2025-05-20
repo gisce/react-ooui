@@ -201,8 +201,15 @@ async function retrieveData({
       values = [...values].sort((a, b) => a[order] - b[order]);
     }
 
+    const valuesWithReferencesNames =
+      await getValuesWithReferencesNamesIfNeeded({
+        values,
+        fieldsDefinition,
+        context,
+      });
+
     return {
-      values,
+      values: valuesWithReferencesNames,
       fields: fieldsDefinition,
     };
   }
@@ -215,8 +222,95 @@ async function retrieveData({
     limit,
     order,
   })) as any;
-  return {
+
+  const valuesWithReferencesNames = await getValuesWithReferencesNamesIfNeeded({
     values,
+    fieldsDefinition,
+    context,
+  });
+
+  return {
+    values: valuesWithReferencesNames,
     fields: fieldsDefinition,
   };
+}
+
+async function getValuesWithReferencesNamesIfNeeded({
+  values,
+  fieldsDefinition,
+  context,
+}: {
+  values: any[];
+  fieldsDefinition: any;
+  context: any;
+}) {
+  // Get all fields that are of type reference
+  const referenceFields = Object.entries(fieldsDefinition)
+    .filter(([_, def]: [string, any]) => def.type === "reference")
+    .map(([field]) => field);
+
+  if (referenceFields.length === 0) {
+    return values;
+  }
+
+  // Process each reference field in parallel
+  const updatedValuesByField = await Promise.all(
+    referenceFields.map(async (field) => {
+      // Group values by model for this field
+      const modelGroups: { [key: string]: number[] } = {};
+
+      values.forEach((value) => {
+        const refValue = value[field];
+        if (!refValue) return;
+
+        const [refModel, refId] = refValue.split(",");
+        if (!refModel || !refId) return;
+
+        if (!modelGroups[refModel]) {
+          modelGroups[refModel] = [];
+        }
+        modelGroups[refModel].push(parseInt(refId, 10));
+      });
+
+      // Make parallel name_get calls for each model group
+      const nameGetResults = await Promise.all(
+        Object.entries(modelGroups).map(async ([refModel, ids]) => {
+          const names = await ConnectionProvider.getHandler().execute({
+            action: "name_get",
+            payload: ids,
+            model: refModel,
+            context,
+          });
+          return { refModel, names };
+        }),
+      );
+
+      // Create a map of "model,id" -> name
+      const referenceNameMap: { [key: string]: string } = {};
+      nameGetResults.forEach(({ refModel, names }) => {
+        names.forEach(([id, name]: [number, string]) => {
+          referenceNameMap[`${refModel},${id}`] = name;
+        });
+      });
+
+      // Return field update information
+      return {
+        field,
+        nameMap: referenceNameMap,
+      };
+    }),
+  );
+
+  // Apply all updates to create new values array
+  const updatedValues = values.map((value) => {
+    const newValue = { ...value };
+    updatedValuesByField.forEach(({ field, nameMap }) => {
+      if (value[field] && nameMap[value[field]]) {
+        newValue[field] = nameMap[value[field]];
+      }
+    });
+    return newValue;
+  });
+
+  return updatedValues;
 }
