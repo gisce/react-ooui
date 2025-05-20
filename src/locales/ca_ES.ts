@@ -1,7 +1,7 @@
 export default {
   true: "Sí",
   false: "No",
-  simple_search: "Búsqueda simple",
+  simple_search: "Cerca simple",
   advanced_search: "Cerca avançada",
   search: "Buscar",
   parameters: "Paràmetres",
