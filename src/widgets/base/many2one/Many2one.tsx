@@ -267,17 +267,21 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           }
         />
       </Col>
-      <Col flex="none" style={{ paddingRight: 0, paddingLeft: 0 }}>
-        <Button
-          icon={<FolderOpenOutlined />}
-          disabled={id === undefined || text === "" || inputText === undefined}
-          onClick={() => {
-            setShowFormModal(true);
-          }}
-          style={{ borderRadius: 0 }}
-          tabIndex={-1}
-        />
-      </Col>
+      {ooui.showFolder && (
+        <Col flex="none" style={{ paddingRight: 0, paddingLeft: 0 }}>
+          <Button
+            icon={<FolderOpenOutlined />}
+            disabled={
+              id === undefined || text === "" || inputText === undefined
+            }
+            onClick={() => {
+              setShowFormModal(true);
+            }}
+            style={{ borderRadius: 0 }}
+            tabIndex={-1}
+          />
+        </Col>
+      )}
       <Col flex="none" style={{ paddingLeft: 0 }}>
         <Button
           icon={searching ? <LoadingOutlined /> : <SearchOutlined />}
