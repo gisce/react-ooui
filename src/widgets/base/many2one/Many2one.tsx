@@ -281,7 +281,11 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
             onClick={() => {
               setShowFormModal(true);
             }}
-            style={{ borderRadius: 0 }}
+            style={
+              ooui.showSearch
+                ? { borderRadius: 0 }
+                : { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }
+            }
             tabIndex={-1}
           />
         </Col>
