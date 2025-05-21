@@ -254,16 +254,20 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           onChange={onValueStringChange}
           style={{
             ...requiredStyle,
-            ...{ borderTopRightRadius: 0, borderBottomRightRadius: 0 },
+            ...(ooui.showSearch || ooui.showFolder
+              ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
+              : {}),
           }}
           onBlur={onElementLostFocus}
           onKeyDown={onKeyDown}
           suffix={
-            <Many2oneSuffix
-              id={id}
-              model={relation}
-              context={{ ...getContext?.(), ...context }}
-            />
+            ooui.showMenu && (
+              <Many2oneSuffix
+                id={id}
+                model={relation}
+                context={{ ...getContext?.(), ...context }}
+              />
+            )
           }
         />
       </Col>
@@ -282,18 +286,20 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           />
         </Col>
       )}
-      <Col flex="none" style={{ paddingLeft: 0 }}>
-        <Button
-          icon={searching ? <LoadingOutlined /> : <SearchOutlined />}
-          disabled={readOnly || searching}
-          onClick={() => {
-            searchButtonTappedRef.current = true;
-            tryFetchFirstResultOrShowSearch(text);
-          }}
-          style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
-          tabIndex={-1}
-        />
-      </Col>
+      {ooui.showSearch && (
+        <Col flex="none" style={{ paddingLeft: 0 }}>
+          <Button
+            icon={searching ? <LoadingOutlined /> : <SearchOutlined />}
+            disabled={readOnly || searching}
+            onClick={() => {
+              searchButtonTappedRef.current = true;
+              tryFetchFirstResultOrShowSearch(text);
+            }}
+            style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+            tabIndex={-1}
+          />
+        </Col>
+      )}
       <SearchModal
         model={relation}
         domain={searchDomain}
