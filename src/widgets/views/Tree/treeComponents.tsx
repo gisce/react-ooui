@@ -55,7 +55,7 @@ export const Many2OneComponent = ({
   value: any;
   ooui: Many2oneOoui;
 }): ReactElement => {
-  return useMemo(() => <Many2oneTree m2oField={value} ooui={ooui} />, [value]);
+  return useMemo(() => <Many2oneTree m2oField={value} ooui={ooui} />, [value, ooui]);
 };
 
 export const TextComponent = ({ value }: { value: any }): ReactElement => {
