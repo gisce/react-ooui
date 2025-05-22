@@ -97,6 +97,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = memo(
         picker="date"
         showTime={showTime}
         value={dateValue}
+        defaultPickerValue={dateValue}
         onChange={handleChange}
         onBlur={(e) => handleBlur(e as any)}
         onKeyDown={(e) => handleKeyDown(e as any)}
