@@ -21,7 +21,7 @@ export const DateRangePicker = (props: DateRangePickerProps) => {
         locale={datePickerLocale}
         style={{ width: "100%" }}
         className={className}
-      ></DatePicker.RangePicker>
+      />
     </Field>
   );
 };
