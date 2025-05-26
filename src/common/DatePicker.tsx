@@ -51,26 +51,7 @@ const parseDateSafely = (
   timezone?: string,
 ): Dayjs | null => {
   try {
-    // First try parsing as UTC if timezone is UTC
-    if (timezone === "UTC") {
-      const utcDate = dayjs.utc(value, format);
-      if (utcDate.isValid()) {
-        return utcDate;
-      }
-    }
-
-    // If not UTC or UTC parsing failed, try parsing as local
-    const localDate = dayjs(value, format);
-    if (!localDate.isValid()) {
-      return null;
-    }
-
-    // If timezone is specified and not UTC, convert from local to that timezone
-    if (timezone && timezone !== "UTC") {
-      return localDate.tz(timezone, true);
-    }
-
-    return localDate;
+    return dayjs.tz(value, format, timezone);
   } catch (e) {
     console.error("Parse error:", e);
     return null;
@@ -80,7 +61,12 @@ const parseDateSafely = (
 const DatePickerInput: React.FC<DatePickerInputProps> = memo(
   (props: DatePickerInputProps) => {
     const { value, onChange, ooui, showTime } = props;
-    const { id, readOnly, required, timezone } = ooui;
+    const {
+      id,
+      readOnly,
+      required,
+      timezone = "Europe/Madrid", // TODO: This is hardcoded because server assumes this TZ for the moment
+    } = ooui;
     const datePickerLocale = useDatePickerLocale();
     const requiredStyle = useRequiredStyle(required, !!readOnly);
     const mode: DateMode = showTime ? "time" : "date";
@@ -117,19 +103,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = memo(
           return;
         }
         try {
-          let formattedDate: string;
-
-          if (timezone === "UTC") {
-            // For UTC, ensure we're in UTC before formatting
-            formattedDate = momentDate.utc().format(internalFormat);
-          } else if (timezone) {
-            // For other timezones, convert and format
-            formattedDate = momentDate.tz(timezone).format(internalFormat);
-          } else {
-            // No timezone, use local
-            formattedDate = momentDate.format(internalFormat);
-          }
-
+          const formattedDate = momentDate.format(internalFormat);
           setParseError(null);
           onChange?.(formattedDate);
         } catch (error) {
