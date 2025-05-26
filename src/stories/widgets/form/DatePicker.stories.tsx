@@ -130,30 +130,6 @@ TimezoneInOouiUTC.args = {
   showTime: true,
 };
 
-// Timezone in Value - Madrid Time
-export const TimezoneInValueMadrid = Template.bind({});
-TimezoneInValueMadrid.args = {
-  ooui: new DateOoui({}),
-  value: "2025-05-26 12:00:00+02:00",
-  showTime: true,
-};
-
-// Timezone in Value - Tokyo Time
-export const TimezoneInValueTokyo = Template.bind({});
-TimezoneInValueTokyo.args = {
-  ooui: new DateOoui({}),
-  value: "2025-05-26 21:00:00+09:00",
-  showTime: true,
-};
-
-// Timezone in Value - UTC
-export const TimezoneInValueUTC = Template.bind({});
-TimezoneInValueUTC.args = {
-  ooui: new DateOoui({}),
-  value: "2025-05-26 12:00:00Z",
-  showTime: true,
-};
-
 // DST Edge Cases - Madrid (Start of DST)
 export const DSTStartMadrid = Template.bind({});
 DSTStartMadrid.args = {
@@ -171,16 +147,6 @@ DSTEndMadrid.args = {
     timezone: "Europe/Madrid",
   }),
   value: "2025-10-26 02:59:59", // Just before DST ends
-  showTime: true,
-};
-
-// DST Edge Cases - Tokyo (No DST but timezone handling)
-export const MidnightTokyo = Template.bind({});
-MidnightTokyo.args = {
-  ooui: new DateOoui({
-    timezone: "Asia/Tokyo",
-  }),
-  value: "2025-05-26 23:59:59", // Near midnight in Tokyo
   showTime: true,
 };
 
@@ -244,26 +210,52 @@ DSTUtcFallBack.args = {
   showTime: true,
 };
 
-// DST Transition - With Z Notation Spring Forward
-export const DSTValueSpringForward = Template.bind({});
-DSTValueSpringForward.args = {
-  ooui: new DateOoui({}),
-  value: "2025-03-30 02:00:00+01:00", // Just before the transition with explicit offset
+// UTC Edge Case - Specific UTC Time
+export const SpecificUTCTime = Template.bind({});
+SpecificUTCTime.args = {
+  ooui: new DateOoui({
+    timezone: "UTC",
+  }),
+  value: "2023-03-26 02:00:00", // Specific UTC time
   showTime: true,
 };
 
-// DST Transition - With Z Notation Fall Back First Hour
-export const DSTValueFallBackFirst = Template.bind({});
-DSTValueFallBackFirst.args = {
-  ooui: new DateOoui({}),
-  value: "2025-10-26 02:00:00+02:00", // First occurrence with summer time offset
+// UTC Edge Case - UTC to Madrid DST Transition
+export const UTCToMadridDST = Template.bind({});
+UTCToMadridDST.args = {
+  ooui: new DateOoui({
+    timezone: "Europe/Madrid",
+  }),
+  value: "2023-03-26 02:00:00", // UTC time during Madrid's DST transition
   showTime: true,
 };
 
-// DST Transition - With Z Notation Fall Back Second Hour
-export const DSTValueFallBackSecond = Template.bind({});
-DSTValueFallBackSecond.args = {
-  ooui: new DateOoui({}),
-  value: "2025-10-26 02:00:00+01:00", // Second occurrence with winter time offset
+// UTC Edge Case - UTC Midnight Transition
+export const UTCMidnightTransition = Template.bind({});
+UTCMidnightTransition.args = {
+  ooui: new DateOoui({
+    timezone: "UTC",
+  }),
+  value: "2023-03-26 00:00:00", // UTC midnight
+  showTime: true,
+};
+
+// UTC Edge Case - UTC to Tokyo (Next Day)
+export const UTCToTokyoNextDay = Template.bind({});
+UTCToTokyoNextDay.args = {
+  ooui: new DateOoui({
+    timezone: "Asia/Tokyo",
+  }),
+  value: "2023-03-26 15:00:00", // UTC time that results in next day in Tokyo
+  showTime: true,
+};
+
+// UTC Edge Case - UTC Last Second of Day
+export const UTCLastSecond = Template.bind({});
+UTCLastSecond.args = {
+  ooui: new DateOoui({
+    timezone: "UTC",
+  }),
+  value: "2023-03-26 23:59:59", // Last second of the UTC day
   showTime: true,
 };

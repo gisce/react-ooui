@@ -86,33 +86,14 @@ const DatePickerInput: React.FC<DatePickerInputProps> = memo(
     const mode: DateMode = showTime ? "time" : "date";
     const [parseError, setParseError] = useState<string | null>(null);
 
-    // Detect if value has timezone info
-    const hasTimezoneInValue =
-      value?.includes("Z") || /[+-]\d{2}:\d{2}$/.test(value || "");
+    const internalFormat = DatePickerConfig[mode].dateInternalFormat;
 
-    const internalFormat =
-      hasTimezoneInValue && mode === "time"
-        ? DatePickerConfig[mode].dateInternalFormatWithTimezone
-        : DatePickerConfig[mode].dateInternalFormat;
-
-    // Choose parsing strategy
+    // Parse date value using the timezone from ooui
     const dateValue = useMemo(() => {
       if (!value) return undefined;
 
       try {
-        const format = internalFormat;
-        let parsed: Dayjs | null = null;
-
-        if (timezone) {
-          // If ooui timezone exists, always use it
-          parsed = parseDateSafely(value, format, timezone);
-        } else if (hasTimezoneInValue) {
-          // If no ooui timezone but value has timezone, parse directly
-          parsed = dayjs(value);
-        } else {
-          // No timezone anywhere, parse as local
-          parsed = parseDateSafely(value, format);
-        }
+        const parsed = parseDateSafely(value, internalFormat, timezone);
 
         if (!parsed || !parsed.isValid()) {
           throw new Error("Invalid date format");
@@ -121,13 +102,13 @@ const DatePickerInput: React.FC<DatePickerInputProps> = memo(
         setParseError(null);
         return parsed;
       } catch (error) {
-        console.error({ error, value, timezone, hasTimezoneInValue, mode });
+        console.error({ error, value, timezone, mode });
         const errorMessage =
           error instanceof Error ? error.message : "Invalid date";
         setParseError(errorMessage);
         return undefined;
       }
-    }, [value, internalFormat, hasTimezoneInValue, timezone, mode]);
+    }, [value, internalFormat, timezone, mode]);
 
     const handleChange = useCallback(
       (momentDate: Dayjs | null) => {
