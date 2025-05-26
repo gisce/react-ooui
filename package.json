@@ -28,7 +28,9 @@
     "start": "concurrently npm:dev:*",
     "prepare": "husky install",
     "check": "lint-staged",
-    "analyze": "vite-bundle-visualizer"
+    "analyze": "vite-bundle-visualizer",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@ant-design/colors": "^7.2.0",
@@ -65,6 +67,12 @@
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
     "@semantic-release/npm": "10.0.4",
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/addon-interactions": "^8.6.14",
+    "@storybook/blocks": "^8.6.14",
+    "@storybook/react": "^8.6.14",
+    "@storybook/react-vite": "^8.6.14",
+    "@storybook/test": "^8.6.14",
     "@types/lodash": "^4.14.170",
     "@types/lodash.debounce": "^4.0.9",
     "@types/md5": "^2.3.2",
@@ -96,6 +104,7 @@
     "prettier": "3.0.1",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "semantic-release": "21.0.7",
+    "storybook": "^8.6.14",
     "typescript": "5.3.3",
     "vite": "4.5.2",
     "vite-bundle-visualizer": "^0.10.0",
