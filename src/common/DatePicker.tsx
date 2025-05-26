@@ -2,7 +2,7 @@ import { DatePicker as AntDatePicker, theme, Tooltip } from "antd";
 import React, { useCallback, useMemo, memo, useState } from "react";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
-import { Date as DateOoui } from "@gisce/ooui";
+import { Date as DateOoui, DateTime } from "@gisce/ooui";
 import { Dayjs } from "dayjs";
 import dayjs from "@/helpers/dayjs";
 import { useDatePickerLocale } from "@/helpers/useDatePickerLocale";
@@ -16,7 +16,7 @@ type DatePickerProps = WidgetProps & {
 };
 
 type DatePickerInputProps = {
-  ooui: DateOoui;
+  ooui: DateTime;
   value?: string;
   onChange?: (value: string | null | undefined) => void;
   showTime?: boolean;
@@ -40,7 +40,7 @@ const DatePicker = (props: DatePickerProps) => {
 
   return (
     <Field required={required} {...props}>
-      <DatePickerInput ooui={ooui as DateOoui} showTime={showTime} />
+      <DatePickerInput ooui={ooui as DateTime} showTime={showTime} />
     </Field>
   );
 };
