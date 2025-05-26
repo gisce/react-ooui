@@ -13,7 +13,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { colorFromString } from "@/helpers/formHelper";
 import { EmailTagsRender } from "@/widgets/custom/EmailTags";
 import { ImageRender } from "@/widgets/base/Image";
-import { Char as CharOOui , Many2one as Many2oneOoui } from "@gisce/ooui";
+import { Char as CharOOui, Many2one as Many2oneOoui } from "@gisce/ooui";
 import { DatePickerConfig } from "@/common/DatePicker.helpers";
 import { useActionViewContext } from "@/context/ActionViewContext";
 import { useOne2manyContext } from "@/context/One2manyContext";
@@ -55,7 +55,10 @@ export const Many2OneComponent = ({
   value: any;
   ooui: Many2oneOoui;
 }): ReactElement => {
-  return useMemo(() => <Many2oneTree m2oField={value} ooui={ooui} />, [value]);
+  return useMemo(
+    () => <Many2oneTree m2oField={value} ooui={ooui} />,
+    [value, ooui],
+  );
 };
 
 export const TextComponent = ({ value }: { value: any }): ReactElement => {
