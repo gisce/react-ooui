@@ -12,6 +12,7 @@ export const DatePickerConfig = {
     placeholder: "__/__/____ __:__:__",
     dateDisplayFormat: "DD/MM/YYYY HH:mm:ss",
     dateInternalFormat: "YYYY-MM-DD HH:mm:ss",
+    dateInternalFormatWithTimezone: "YYYY-MM-DD HH:mm:ssZ",
   },
 } as const;
 

@@ -1,5 +1,5 @@
-import { DatePicker as AntDatePicker, theme } from "antd";
-import React, { useCallback, useMemo, memo } from "react";
+import { DatePicker as AntDatePicker, theme, Tooltip } from "antd";
+import React, { useCallback, useMemo, memo, useState } from "react";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 import { Date as DateOoui } from "@gisce/ooui";
@@ -40,26 +40,94 @@ const DatePicker = (props: DatePickerProps) => {
 
   return (
     <Field required={required} {...props}>
-      <DatePickerInput ooui={ooui} showTime={showTime} />
+      <DatePickerInput ooui={ooui as DateOoui} showTime={showTime} />
     </Field>
   );
+};
+
+const parseDateSafely = (
+  value: string,
+  format: string,
+  timezone?: string,
+): Dayjs | null => {
+  try {
+    // First try parsing as UTC if timezone is UTC
+    if (timezone === "UTC") {
+      const utcDate = dayjs.utc(value, format);
+      if (utcDate.isValid()) {
+        return utcDate;
+      }
+    }
+
+    // If not UTC or UTC parsing failed, try parsing as local
+    const localDate = dayjs(value, format);
+    if (!localDate.isValid()) {
+      return null;
+    }
+
+    // If timezone is specified and not UTC, convert from local to that timezone
+    if (timezone && timezone !== "UTC") {
+      return localDate.tz(timezone, true);
+    }
+
+    return localDate;
+  } catch (e) {
+    console.error("Parse error:", e);
+    return null;
+  }
 };
 
 const DatePickerInput: React.FC<DatePickerInputProps> = memo(
   (props: DatePickerInputProps) => {
     const { value, onChange, ooui, showTime } = props;
-    const { id, readOnly, required } = ooui;
+    const { id, readOnly, required, timezone } = ooui;
     const datePickerLocale = useDatePickerLocale();
     const requiredStyle = useRequiredStyle(required, !!readOnly);
     const mode: DateMode = showTime ? "time" : "date";
+    const [parseError, setParseError] = useState<string | null>(null);
 
-    const dateValue = useMemo(
-      () =>
-        value
-          ? dayjs(value, DatePickerConfig[mode].dateInternalFormat)
-          : undefined,
-      [value, mode],
-    );
+    // Detect if value has timezone info
+    const hasTimezoneInValue =
+      value?.includes("Z") || /[+-]\d{2}:\d{2}$/.test(value || "");
+
+    const internalFormat =
+      hasTimezoneInValue && mode === "time"
+        ? DatePickerConfig[mode].dateInternalFormatWithTimezone
+        : DatePickerConfig[mode].dateInternalFormat;
+
+    // Choose parsing strategy
+    const dateValue = useMemo(() => {
+      if (!value) return undefined;
+
+      try {
+        const format = internalFormat;
+        let parsed: Dayjs | null = null;
+
+        if (timezone) {
+          // If ooui timezone exists, always use it
+          parsed = parseDateSafely(value, format, timezone);
+        } else if (hasTimezoneInValue) {
+          // If no ooui timezone but value has timezone, parse directly
+          parsed = dayjs(value);
+        } else {
+          // No timezone anywhere, parse as local
+          parsed = parseDateSafely(value, format);
+        }
+
+        if (!parsed || !parsed.isValid()) {
+          throw new Error("Invalid date format");
+        }
+
+        setParseError(null);
+        return parsed;
+      } catch (error) {
+        console.error({ error, value, timezone, hasTimezoneInValue, mode });
+        const errorMessage =
+          error instanceof Error ? error.message : "Invalid date";
+        setParseError(errorMessage);
+        return undefined;
+      }
+    }, [value, internalFormat, hasTimezoneInValue, timezone, mode]);
 
     const handleChange = useCallback(
       (momentDate: Dayjs | null) => {
@@ -67,11 +135,30 @@ const DatePickerInput: React.FC<DatePickerInputProps> = memo(
           onChange?.(null);
           return;
         }
-        onChange?.(
-          momentDate.format(DatePickerConfig[mode].dateInternalFormat),
-        );
+        try {
+          let formattedDate: string;
+
+          if (timezone === "UTC") {
+            // For UTC, ensure we're in UTC before formatting
+            formattedDate = momentDate.utc().format(internalFormat);
+          } else if (timezone) {
+            // For other timezones, convert and format
+            formattedDate = momentDate.tz(timezone).format(internalFormat);
+          } else {
+            // No timezone, use local
+            formattedDate = momentDate.format(internalFormat);
+          }
+
+          setParseError(null);
+          onChange?.(formattedDate);
+        } catch (error) {
+          console.error({ error, timezone, mode });
+          const errorMessage =
+            error instanceof Error ? error.message : "Invalid date";
+          setParseError(errorMessage);
+        }
       },
-      [onChange, mode],
+      [onChange, timezone, internalFormat, mode],
     );
 
     const { handleKeyDown, handleBlur } = useDatePickerHandlers({
@@ -82,33 +169,46 @@ const DatePickerInput: React.FC<DatePickerInputProps> = memo(
 
     const pickerConfig = useMemo(
       () => ({
-        style: { width: "100%", ...requiredStyle },
+        style: {
+          width: "100%",
+          ...requiredStyle,
+          ...(parseError && { borderColor: "#ff4d4f" }),
+        },
         placeholder: DatePickerConfig[mode].placeholder,
         format: DatePickerConfig[mode].dateDisplayFormat,
       }),
-      [mode, requiredStyle],
+      [mode, requiredStyle, parseError],
     );
 
     return (
-      <AntDatePicker
-        {...pickerConfig}
-        id={id}
-        disabled={readOnly}
-        picker="date"
-        showTime={showTime}
-        value={dateValue}
-        defaultPickerValue={dateValue}
-        onChange={handleChange}
-        onBlur={(e) => handleBlur(e as any)}
-        onKeyDown={(e) => handleKeyDown(e as any)}
-        showNow={false}
-        showToday={false}
-        locale={datePickerLocale}
-      />
+      <Tooltip
+        title={parseError}
+        open={!!parseError}
+        color="#ff4d4f"
+        placement="topLeft"
+      >
+        <AntDatePicker
+          {...pickerConfig}
+          id={id}
+          disabled={readOnly}
+          picker="date"
+          showTime={showTime}
+          value={dateValue}
+          defaultPickerValue={dateValue}
+          onChange={handleChange}
+          onBlur={(e) => handleBlur(e as any)}
+          onKeyDown={(e) => handleKeyDown(e as any)}
+          showNow={false}
+          showToday={false}
+          locale={datePickerLocale}
+          status={parseError ? "error" : undefined}
+        />
+      </Tooltip>
     );
   },
 );
 
 DatePickerInput.displayName = "DatePickerInput";
 
+export { DatePickerInput };
 export default memo(DatePicker);
