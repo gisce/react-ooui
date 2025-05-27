@@ -1,5 +1,5 @@
 import { ReactElement, useCallback, useEffect, useMemo, useState } from "react";
-import { Checkbox, Spin, ColorPicker, Tooltip, Popover } from "antd";
+import { Checkbox, Spin, ColorPicker, Tooltip } from "antd";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../../base/ProgressBar";
 import { One2manyValue } from "../../base/one2many/One2manyInput";
@@ -13,7 +13,11 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { colorFromString } from "@/helpers/formHelper";
 import { EmailTagsRender } from "@/widgets/custom/EmailTags";
 import { ImageRender } from "@/widgets/base/Image";
-import { Char as CharOOui } from "@gisce/ooui";
+import {
+  Char as CharOOui,
+  DateTime,
+  Many2one as Many2oneOoui,
+} from "@gisce/ooui";
 import { DatePickerConfig } from "@/common/DatePicker.helpers";
 import { useActionViewContext } from "@/context/ActionViewContext";
 import { useOne2manyContext } from "@/context/One2manyContext";
@@ -48,8 +52,17 @@ export const EmailTagsComponent = ({
   return useMemo(() => <EmailTagsRender emails={value} />, [value]);
 };
 
-export const Many2OneComponent = ({ value }: { value: any }): ReactElement => {
-  return useMemo(() => <Many2oneTree m2oField={value} />, [value]);
+export const Many2OneComponent = ({
+  value,
+  ooui,
+}: {
+  value: any;
+  ooui: Many2oneOoui;
+}): ReactElement => {
+  return useMemo(
+    () => <Many2oneTree m2oField={value} ooui={ooui} />,
+    [value, ooui],
+  );
 };
 
 export const TextComponent = ({ value }: { value: any }): ReactElement => {
@@ -137,15 +150,24 @@ export const CharComponent = ({
   }, [value, ooui.fieldType]);
 };
 
-export const DateTimeComponent = ({ value }: { value: any }): ReactElement => {
+export const DateTimeComponent = ({
+  value,
+  ooui,
+}: {
+  value: any;
+  ooui: DateTime;
+}): ReactElement => {
   return useMemo(() => {
     if (!value || (value && value.length === 0)) return <></>;
-    const formattedValue = dayjs(
-      value,
-      DatePickerConfig.time.dateInternalFormat,
-    ).format(DatePickerConfig.time.dateDisplayFormat);
+    const formattedValue = dayjs
+      .tz(
+        value,
+        DatePickerConfig.time.dateInternalFormat,
+        ooui.timezone || "Europe/Madrid",
+      )
+      .format(DatePickerConfig.time.dateDisplayFormat);
     return <>{formattedValue}</>;
-  }, [value]);
+  }, [value, ooui.timezone]);
 };
 
 export const One2ManyComponent = ({

@@ -254,42 +254,56 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           onChange={onValueStringChange}
           style={{
             ...requiredStyle,
-            ...{ borderTopRightRadius: 0, borderBottomRightRadius: 0 },
+            ...(ooui.showSearch || ooui.showFolder
+              ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
+              : {}),
           }}
           onBlur={onElementLostFocus}
           onKeyDown={onKeyDown}
           suffix={
-            <Many2oneSuffix
-              id={id}
-              model={relation}
-              context={{ ...getContext?.(), ...context }}
-            />
+            ooui.showMenu && (
+              <Many2oneSuffix
+                id={id}
+                model={relation}
+                context={{ ...getContext?.(), ...context }}
+              />
+            )
           }
         />
       </Col>
-      <Col flex="none" style={{ paddingRight: 0, paddingLeft: 0 }}>
-        <Button
-          icon={<FolderOpenOutlined />}
-          disabled={id === undefined || text === "" || inputText === undefined}
-          onClick={() => {
-            setShowFormModal(true);
-          }}
-          style={{ borderRadius: 0 }}
-          tabIndex={-1}
-        />
-      </Col>
-      <Col flex="none" style={{ paddingLeft: 0 }}>
-        <Button
-          icon={searching ? <LoadingOutlined /> : <SearchOutlined />}
-          disabled={readOnly || searching}
-          onClick={() => {
-            searchButtonTappedRef.current = true;
-            tryFetchFirstResultOrShowSearch(text);
-          }}
-          style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
-          tabIndex={-1}
-        />
-      </Col>
+      {ooui.showFolder && (
+        <Col flex="none" style={{ paddingRight: 0, paddingLeft: 0 }}>
+          <Button
+            icon={<FolderOpenOutlined />}
+            disabled={
+              id === undefined || text === "" || inputText === undefined
+            }
+            onClick={() => {
+              setShowFormModal(true);
+            }}
+            style={
+              ooui.showSearch
+                ? { borderRadius: 0 }
+                : { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }
+            }
+            tabIndex={-1}
+          />
+        </Col>
+      )}
+      {ooui.showSearch && (
+        <Col flex="none" style={{ paddingLeft: 0 }}>
+          <Button
+            icon={searching ? <LoadingOutlined /> : <SearchOutlined />}
+            disabled={readOnly || searching}
+            onClick={() => {
+              searchButtonTappedRef.current = true;
+              tryFetchFirstResultOrShowSearch(text);
+            }}
+            style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+            tabIndex={-1}
+          />
+        </Col>
+      )}
       <SearchModal
         model={relation}
         domain={searchDomain}
