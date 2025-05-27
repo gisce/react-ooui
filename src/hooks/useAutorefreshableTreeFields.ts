@@ -20,6 +20,7 @@ export type UseAutorefreshableTreeFieldsOpts = {
   treeOoui?: TreeOoui;
   updateAttributes?: (attrsEvaluated: any, treeOoui: TreeOoui) => void;
   results?: any[];
+  onRecordsUpdated?: (updatedRecords: any[]) => void;
 };
 
 export const useAutorefreshableTreeFields = (
@@ -35,6 +36,7 @@ export const useAutorefreshableTreeFields = (
     updateAttributes,
     treeView,
     results,
+    onRecordsUpdated,
   } = opts;
 
   const fieldDefs = useMemo(() => {
@@ -177,6 +179,7 @@ export const useAutorefreshableTreeFields = (
       }
 
       tableRef.current?.updateRows(preparedResults);
+      onRecordsUpdated?.(changedResults);
     } catch (err) {
       console.error(err);
     }
@@ -195,6 +198,7 @@ export const useAutorefreshableTreeFields = (
     hasFieldsChanged,
     results,
     parseConditions,
+    onRecordsUpdated,
   ]);
 
   useEffect(() => {
