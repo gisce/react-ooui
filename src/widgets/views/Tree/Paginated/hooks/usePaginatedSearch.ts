@@ -160,6 +160,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     refresh: refreshFunctionFields,
     addRecordsToCheckFunctionFields,
     onHasFunctionFieldsToParseConditions,
+    syncExternalRecordUpdates,
   } = useTreeFunctionFieldsRead({
     model,
     treeView,
@@ -183,6 +184,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     treeOoui,
     updateAttributes,
     results: actionViewResults,
+    onRecordsUpdated: syncExternalRecordUpdates,
   });
 
   // Hooks

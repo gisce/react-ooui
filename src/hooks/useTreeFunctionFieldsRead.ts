@@ -21,6 +21,9 @@ type UseTreeFunctionFieldsReadProps = {
   treeOoui?: TreeOoui;
   updateAttributes?: (attrsEvaluated: any, treeOoui: TreeOoui) => void;
   results?: any[];
+  onExternalRecordsUpdate?: (
+    syncFunction: (updatedRecords: any[]) => void,
+  ) => void;
 };
 
 export const useTreeFunctionFieldsRead = ({
@@ -33,6 +36,7 @@ export const useTreeFunctionFieldsRead = ({
   treeOoui,
   updateAttributes,
   results = [],
+  onExternalRecordsUpdate,
 }: UseTreeFunctionFieldsReadProps) => {
   const [hasFunctionFields, setHasFunctionFields] = useState(false);
   const functionFields = useRef<string[]>([]);
@@ -373,6 +377,46 @@ export const useTreeFunctionFieldsRead = ({
     setInternalIsActive(true);
   }, [SHOULD_MAKE_DEFERRED_FUNCTION_READ]);
 
+  const syncExternalRecordUpdates = useCallback((updatedRecords: any[]) => {
+    if (!updatedRecords || updatedRecords.length === 0) {
+      return;
+    }
+
+    // Update loadedRecords with the external updates
+    const uniqueRecords = [...loadedRecords.current];
+    updatedRecords.forEach((updatedRecord: any) => {
+      const existingIndex = uniqueRecords.findIndex(
+        (record) => record.id === updatedRecord.id,
+      );
+      if (existingIndex >= 0) {
+        // Only update fields that are function fields to preserve function field data
+        const mergedRecord = { ...uniqueRecords[existingIndex] };
+        functionFields.current.forEach((field) => {
+          if (updatedRecord[field] !== undefined) {
+            mergedRecord[field] = updatedRecord[field];
+          }
+        });
+        uniqueRecords[existingIndex] = mergedRecord;
+      } else {
+        // Only add if it contains function fields
+        const hasFunctionFieldData = functionFields.current.some(
+          (field) => updatedRecord[field] !== undefined,
+        );
+        if (hasFunctionFieldData) {
+          uniqueRecords.push(updatedRecord);
+        }
+      }
+    });
+    loadedRecords.current = uniqueRecords;
+  }, []);
+
+  // Set up the external update callback
+  useEffect(() => {
+    if (onExternalRecordsUpdate) {
+      onExternalRecordsUpdate(syncExternalRecordUpdates);
+    }
+  }, [onExternalRecordsUpdate, syncExternalRecordUpdates]);
+
   return {
     refresh: () => {
       setRecordIdsToCheck(new Set());
@@ -385,5 +429,6 @@ export const useTreeFunctionFieldsRead = ({
     pause,
     resume,
     onHasFunctionFieldsToParseConditions,
+    syncExternalRecordUpdates,
   };
 };
