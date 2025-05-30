@@ -5,6 +5,7 @@ import {
   useImperativeHandle,
   useContext,
   useCallback,
+  useEffect,
 } from "react";
 
 import { Spin } from "antd";
@@ -37,6 +38,7 @@ import { DashboardActionView } from "./actionViews/DashboardActionView";
 import { resolveViewInfoPromises } from "@/helpers/viewHelper";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useAutoUpdateUrlAndTitle } from "@/hooks/useAutoUpdateUrlAndTitle";
+import { PermissionType, usePermissionsState } from "@/hooks/usePermissions";
 
 type Props = {
   domain: any;
@@ -105,6 +107,16 @@ function ActionView(props: Props, ref: any) {
 
   const { t } = useLocale();
   const { showErrorNotification } = useErrorNotification();
+
+  const {
+    permissions,
+    loading: permissionsLoading,
+    error: permissionsError,
+  } = usePermissionsState({
+    model,
+    permissions: ["create", "write", "unlink"],
+    enabled: !!model,
+  });
 
   const formRef = useRef();
   const searchTreeRef = useRef();
@@ -336,6 +348,17 @@ function ActionView(props: Props, ref: any) {
     }
   }, [tabs, activeKey]);
 
+  // Handle permissions errors
+  useEffect(() => {
+    if (permissionsError) {
+      showErrorNotification({
+        type: "error",
+        title: "Permissions Error",
+        message: `Error loading permissions for model ${model}: ${permissionsError.message}`,
+      });
+    }
+  }, [permissionsError, model, showErrorNotification]);
+
   async function canWeClose() {
     if (!currentView) {
       return true;
@@ -439,7 +462,7 @@ function ActionView(props: Props, ref: any) {
     }
   }
 
-  if (isLoading) {
+  if (isLoading || permissionsLoading) {
     return <Spin />;
   }
 
@@ -477,6 +500,9 @@ function ActionView(props: Props, ref: any) {
       initialSearchParams={initialSearchParams}
       initialCurrentPage={currentPage}
       initialOrder={order}
+      permissions={permissions}
+      permissionsLoading={permissionsLoading}
+      permissionsError={permissionsError}
     >
       <ActionViewContent
         availableViews={availableViews}

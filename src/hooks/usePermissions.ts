@@ -105,7 +105,8 @@ export const usePermissionsState = ({
     return () => {
       cancelRequest();
     };
-  }, [fetchPermissions, cancelRequest]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Memoize the result to prevent unnecessary re-renders
   const memoizedResult = useMemo(

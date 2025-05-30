@@ -19,6 +19,7 @@ import { Many2oneSuffix } from "./Many2oneSuffix";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
+import { usePermissionsState } from "@/hooks/usePermissions";
 
 const { defaultAlgorithm, defaultSeed } = theme;
 
@@ -90,6 +91,17 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const transformedDomain = useRef<any[]>([]);
   const [searchDomain, setSearchDomain] = useState<any>([]);
   const { showErrorNotification } = useErrorNotification();
+
+  // Check permissions for the relation model
+  const { permissions } = usePermissionsState({
+    model: relation,
+    permissions: ["create", "write"],
+    enabled: true,
+  });
+
+  // When loading, assume permissions are false to avoid showing loading indicators
+  const canCreate = permissions?.create ?? false;
+  const canWrite = permissions?.write ?? false;
 
   const id = (value && value[0]) || undefined;
   const text = (value && value[1]) || "";
@@ -310,6 +322,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
         context={{ ...getContext?.(), ...context }}
         visible={showSearchModal}
         nameSearch={!id ? searchText : undefined}
+        canCreate={canCreate}
         onSelectValues={async (ids: number[]) => {
           setShowSearchModal(false);
           fetchNameAndUpdate(ids[0]);
@@ -334,7 +347,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           setShowFormModal(false);
         }}
         mustClearAfterSave={true}
-        readOnly={readOnly}
+        readOnly={readOnly || !canWrite}
       />
     </Row>
   );
