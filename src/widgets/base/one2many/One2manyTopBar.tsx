@@ -128,6 +128,25 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
     onRefreshParentValues,
   });
 
+  // Computed disabled states for better readability
+  const isCreateDisabled = readOnly || !canCreateModel || !canWriteFormModel;
+
+  const isSearchDisabled = readOnly || !canWriteModel;
+
+  const isDeleteDisabled =
+    totalItems === 0 ||
+    readOnly ||
+    (mode !== "form" && selectedRowKeys.length === 0) ||
+    (isMany2Many ? !canWriteModel : !canUnlinkModel || !canWriteFormModel);
+
+  const isDuplicateDisabled =
+    readOnly ||
+    duplicatingItem ||
+    (mode === "tree" && selectedRowKeys.length !== 1) ||
+    (mode === "form" && (currentId === undefined || currentId < 0)) ||
+    !canCreateModel ||
+    !canWriteFormModel;
+
   return (
     <div className="flex mb-2 pt-3">
       <Title title={titleString} token={token} />
@@ -136,11 +155,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
           <ButtonWithTooltip
             tooltip={t("createNewItem")}
             icon={<FileAddOutlined />}
-            disabled={
-              readOnly ||
-              (isMany2Many && (!canCreateModel || !canWriteFormModel)) ||
-              (!isMany2Many && (!canCreateModel || !canWriteFormModel))
-            }
+            disabled={isCreateDisabled}
             onClick={onCreateItem}
           />
         )}
@@ -150,7 +165,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
             <ButtonWithTooltip
               tooltip={t("searchExistingItem")}
               icon={<SearchOutlined />}
-              disabled={readOnly || (isMany2Many && !canWriteModel)}
+              disabled={isSearchDisabled}
               onClick={onSearchItem}
             />
           </>
@@ -159,14 +174,9 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
         {mode !== "graph" && (
           <DeleteButton
             isMany2Many={isMany2Many}
-            totalItems={totalItems}
-            readOnly={readOnly}
-            mode={mode}
             selectedRowKeys={readOnly ? [] : selectedRowKeys}
             onDelete={onDelete}
-            canWriteModel={canWriteModel}
-            canUnlinkModel={canUnlinkModel}
-            canWriteFormModel={canWriteFormModel}
+            disabled={isDeleteDisabled}
           />
         )}
         {(mode === "tree" || mode === "form") && (
@@ -202,14 +212,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
             <ButtonWithTooltip
               icon={<CopyOutlined />}
               tooltip={t("duplicate")}
-              disabled={
-                readOnly ||
-                duplicatingItem ||
-                (mode === "tree" && selectedRowKeys.length !== 1) ||
-                (mode === "form" &&
-                  (currentId === undefined || currentId < 0)) ||
-                (isMany2Many && (!canCreateModel || !canWriteFormModel))
-              }
+              disabled={isDuplicateDisabled}
               loading={duplicatingItem}
               onClick={() =>
                 showConfirmDialog({
@@ -357,24 +360,14 @@ ItemBrowser.displayName = "ItemBrowser";
 const DeleteButton = memo(
   ({
     isMany2Many,
-    totalItems,
-    readOnly,
-    mode,
     selectedRowKeys,
     onDelete,
-    canWriteModel,
-    canUnlinkModel,
-    canWriteFormModel,
+    disabled,
   }: {
     isMany2Many: boolean;
-    totalItems: number;
-    readOnly: boolean;
-    mode: ViewType;
     selectedRowKeys: string[];
     onDelete: () => void;
-    canWriteModel: boolean;
-    canUnlinkModel: boolean;
-    canWriteFormModel: boolean;
+    disabled: boolean;
   }) => {
     const { t } = useLocale();
     return (
@@ -385,13 +378,7 @@ const DeleteButton = memo(
           onClick={onDelete}
           danger={!isMany2Many}
           type={isMany2Many ? "default" : "primary"}
-          disabled={
-            totalItems === 0 ||
-            readOnly ||
-            (mode !== "form" && selectedRowKeys.length === 0) ||
-            (isMany2Many && !canWriteModel) ||
-            (!isMany2Many && (!canUnlinkModel || !canWriteFormModel))
-          }
+          disabled={disabled}
         />
       </Badge>
     );
