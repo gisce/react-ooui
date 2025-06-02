@@ -22,6 +22,8 @@ import { useTreeToolbarButtons } from "@/hooks/useTreeToolbarButtons";
 import { showLogInfo } from "@/helpers/logInfoHelper";
 import { showConfirmDialog } from "@/index";
 import { useDuplicateItem } from "@/hooks/useDuplicateItem";
+import { useFormContext } from "@/context/FormContext";
+import { usePermissionsState } from "@/hooks/usePermissions";
 const { useToken } = theme;
 
 type One2manyTopBarProps = {
@@ -76,6 +78,27 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
 
   const { token } = useToken();
   const { t } = useLocale();
+  const { activeModel: formModel } = useFormContext();
+
+  // Check permissions for the relation model (from props)
+  const { permissions: modelPermissions } = usePermissionsState({
+    model,
+    permissions: ["create", "write", "unlink"],
+    enabled: true,
+  });
+
+  // Check permissions for the active form model
+  const { permissions: formModelPermissions } = usePermissionsState({
+    model: formModel,
+    permissions: ["write"],
+    enabled: !!formModel,
+  });
+
+  // When loading, assume permissions are false to avoid showing loading indicators
+  const canCreateModel = modelPermissions?.create ?? false;
+  const canWriteModel = modelPermissions?.write ?? false;
+  const canUnlinkModel = modelPermissions?.unlink ?? false;
+  const canWriteFormModel = formModelPermissions?.write ?? false;
 
   const { duplicatingItem, duplicate } = useDuplicateItem({
     currentId: mode === "form" ? currentId : parseInt(selectedRowKeys[0]),
@@ -113,7 +136,11 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
           <ButtonWithTooltip
             tooltip={t("createNewItem")}
             icon={<FileAddOutlined />}
-            disabled={readOnly}
+            disabled={
+              readOnly ||
+              (isMany2Many && (!canCreateModel || !canWriteFormModel)) ||
+              (!isMany2Many && (!canCreateModel || !canWriteFormModel))
+            }
             onClick={onCreateItem}
           />
         )}
@@ -123,7 +150,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
             <ButtonWithTooltip
               tooltip={t("searchExistingItem")}
               icon={<SearchOutlined />}
-              disabled={readOnly}
+              disabled={readOnly || (isMany2Many && !canWriteModel)}
               onClick={onSearchItem}
             />
           </>
@@ -137,6 +164,9 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
             mode={mode}
             selectedRowKeys={readOnly ? [] : selectedRowKeys}
             onDelete={onDelete}
+            canWriteModel={canWriteModel}
+            canUnlinkModel={canUnlinkModel}
+            canWriteFormModel={canWriteFormModel}
           />
         )}
         {(mode === "tree" || mode === "form") && (
@@ -176,7 +206,9 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
                 readOnly ||
                 duplicatingItem ||
                 (mode === "tree" && selectedRowKeys.length !== 1) ||
-                (mode === "form" && (currentId === undefined || currentId < 0))
+                (mode === "form" &&
+                  (currentId === undefined || currentId < 0)) ||
+                (isMany2Many && (!canCreateModel || !canWriteFormModel))
               }
               loading={duplicatingItem}
               onClick={() =>
@@ -330,6 +362,9 @@ const DeleteButton = memo(
     mode,
     selectedRowKeys,
     onDelete,
+    canWriteModel,
+    canUnlinkModel,
+    canWriteFormModel,
   }: {
     isMany2Many: boolean;
     totalItems: number;
@@ -337,6 +372,9 @@ const DeleteButton = memo(
     mode: ViewType;
     selectedRowKeys: string[];
     onDelete: () => void;
+    canWriteModel: boolean;
+    canUnlinkModel: boolean;
+    canWriteFormModel: boolean;
   }) => {
     const { t } = useLocale();
     return (
@@ -350,7 +388,9 @@ const DeleteButton = memo(
           disabled={
             totalItems === 0 ||
             readOnly ||
-            (mode !== "form" && selectedRowKeys.length === 0)
+            (mode !== "form" && selectedRowKeys.length === 0) ||
+            (isMany2Many && !canWriteModel) ||
+            (!isMany2Many && (!canUnlinkModel || !canWriteFormModel))
           }
         />
       </Badge>
