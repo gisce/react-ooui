@@ -3,7 +3,7 @@ import {
   Icon,
   NotificationButton,
   NotificationType,
-  useNotification,
+  useNotificationContext,
 } from "@gisce/react-formiga-components";
 import { Interweave } from "interweave";
 import { Modal, Button, Space, Row } from "antd";
@@ -26,7 +26,7 @@ export const useErrorNotification = ({
 }: {
   onButtonAction?: (payload: any) => void;
 } = {}) => {
-  const { open, destroy } = useNotification();
+  const { open, destroy } = useNotificationContext();
 
   const showErrorNotification = (error: ShowErrorNotificationArg) => {
     // Type guard for Notification-like error
