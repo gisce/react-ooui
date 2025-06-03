@@ -103,9 +103,9 @@ describe("mergeParams", () => {
 
     const expected = [
       "&",
+      ["category", "=", "product"],
       "&",
       ["active", "=", true],
-      ["category", "=", "product"],
       "|",
       ["type", "=", "service"],
       ["type", "=", "consumable"],
@@ -149,9 +149,9 @@ describe("mergeParams", () => {
 
     const expected = [
       "&",
+      ["number", "ilike", "323"],
       "&",
       ["state", "in", ["open"]],
-      ["number", "ilike", "323"],
       "|",
       ["state", "=", "draft"],
       ["type", "in", ["out_invoice", "out_refund"]],
@@ -176,10 +176,9 @@ describe("mergeParams", () => {
 
     const expected = [
       "&",
-      "&",
-      "&",
       ["name", "ilike", "test"],
       ["amount", ">=", 100],
+      "&",
       ["state", "in", ["open"]],
       "|",
       ["type", "=", "sale"],

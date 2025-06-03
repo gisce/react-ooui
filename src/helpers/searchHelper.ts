@@ -175,35 +175,8 @@ export const mergeParams = (searchParams: any[], domainParams: any[]) => {
     return searchParams;
   }
 
-  // Special case: search params with complex domain structure starting with &
-  // and containing both conditions and operators (like |)
-  if (
-    domainParams.length > 2 &&
-    domainParams[0] === "&" &&
-    domainParams
-      .slice(1)
-      .some(
-        (item) => typeof item === "string" && (item === "|" || item === "&"),
-      )
-  ) {
-    if (searchParams.length === 1) {
-      // Single search param: insert it after the first domain condition
-      const [firstDomainOp, firstDomainCondition, ...restDomain] = domainParams;
-      return ["&", "&", firstDomainCondition, ...searchParams, ...restDomain];
-    } else {
-      // Multiple search params: create nested & structure with search params first
-      // For n search params with complex domain, we need n+1 & operators total
-      const additionalAnds = Array(searchParams.length + 1).fill("&");
-      const [, ...domainParamsWithoutFirstAnd] = domainParams;
-      return [
-        ...additionalAnds,
-        ...searchParams,
-        ...domainParamsWithoutFirstAnd,
-      ];
-    }
-  }
+  // TODO: improve function?
 
-  // Default behavior: simple merge with search params first, then domain params
   return ["&", ...searchParams, ...domainParams];
 };
 
