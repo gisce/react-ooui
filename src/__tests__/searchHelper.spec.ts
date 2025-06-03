@@ -33,10 +33,10 @@ describe("mergeParams", () => {
 
     const expected = [
       "&",
-      ["field3", "=", "value"],
-      ["field4", "!=", "other"],
       ["field1", "ilike", "search"],
       ["field2", ">=", 100],
+      ["field3", "=", "value"],
+      ["field4", "!=", "other"],
     ];
 
     expect(result).toEqual(expected);
@@ -53,10 +53,10 @@ describe("mergeParams", () => {
 
     const expected = [
       "&",
+      ["name", "ilike", "test"],
       "|",
       ["active", "=", true],
       ["state", "in", ["draft", "open"]],
-      ["name", "ilike", "test"],
     ];
 
     expect(result).toEqual(expected);
@@ -67,7 +67,7 @@ describe("mergeParams", () => {
     const domainParams = [["active", "=", true]];
     const result = mergeParams(searchParams, domainParams);
 
-    const expected = ["&", ["active", "=", true], ["name", "=", "John"]];
+    const expected = ["&", ["name", "=", "John"], ["active", "=", true]];
 
     expect(result).toEqual(expected);
   });
@@ -82,9 +82,9 @@ describe("mergeParams", () => {
 
     const expected = [
       "&",
-      ["active", "=", true],
       ["name", "ilike", "search"],
       ["age", ">", 18],
+      ["active", "=", true],
     ];
 
     expect(result).toEqual(expected);
@@ -114,7 +114,7 @@ describe("mergeParams", () => {
     expect(result).toEqual(expected);
   });
 
-  it("should preserve order with domainParams first, then searchParams", () => {
+  it("should preserve order with searchParams first, then domainParams", () => {
     const searchParams = [
       ["field_a", "=", "a"],
       ["field_b", "=", "b"],
@@ -127,10 +127,10 @@ describe("mergeParams", () => {
 
     const expected = [
       "&",
-      ["field_1", "=", "1"],
-      ["field_2", "=", "2"],
       ["field_a", "=", "a"],
       ["field_b", "=", "b"],
+      ["field_1", "=", "1"],
+      ["field_2", "=", "2"],
     ];
 
     expect(result).toEqual(expected);
@@ -178,12 +178,12 @@ describe("mergeParams", () => {
       "&",
       "&",
       "&",
+      ["name", "ilike", "test"],
+      ["amount", ">=", 100],
       ["state", "in", ["open"]],
       "|",
       ["type", "=", "sale"],
       ["type", "=", "purchase"],
-      ["name", "ilike", "test"],
-      ["amount", ">=", 100],
     ];
 
     expect(result).toEqual(expected);

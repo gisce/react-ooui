@@ -191,15 +191,20 @@ export const mergeParams = (searchParams: any[], domainParams: any[]) => {
       const [firstDomainOp, firstDomainCondition, ...restDomain] = domainParams;
       return ["&", "&", firstDomainCondition, ...searchParams, ...restDomain];
     } else {
-      // Multiple search params: create nested & structure
-      // For n search params, we need n-1 additional & operators
-      const additionalAnds = Array(searchParams.length - 1).fill("&");
-      return ["&", ...additionalAnds, ...domainParams, ...searchParams];
+      // Multiple search params: create nested & structure with search params first
+      // For n search params with complex domain, we need n+1 & operators total
+      const additionalAnds = Array(searchParams.length + 1).fill("&");
+      const [, ...domainParamsWithoutFirstAnd] = domainParams;
+      return [
+        ...additionalAnds,
+        ...searchParams,
+        ...domainParamsWithoutFirstAnd,
+      ];
     }
   }
 
-  // Default behavior: simple merge with domain params first, then search params
-  return ["&", ...domainParams, ...searchParams];
+  // Default behavior: simple merge with search params first, then domain params
+  return ["&", ...searchParams, ...domainParams];
 };
 
 export const normalizeValues = (values: any) => {
