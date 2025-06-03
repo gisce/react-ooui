@@ -19,6 +19,8 @@ import { Many2oneSuffix } from "./Many2oneSuffix";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
+import { UserFeatureKeys } from "@/models/userFeature";
 import { usePermissionsState } from "@/hooks/usePermissions";
 
 const { defaultAlgorithm, defaultSeed } = theme;
@@ -255,6 +257,10 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   }
 
   const CustomInput: any = required && !readOnly ? RequiredInput : Input;
+  const disableFolderFeature = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_DISABLE_FOLDER,
+  );
+  const shouldShowFolder = ooui.showFolder && !disableFolderFeature;
 
   return (
     <Row gutter={8} wrap={false}>
@@ -266,7 +272,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           onChange={onValueStringChange}
           style={{
             ...requiredStyle,
-            ...(ooui.showSearch || ooui.showFolder
+            ...(ooui.showSearch || shouldShowFolder
               ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
               : {}),
           }}
@@ -283,7 +289,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           }
         />
       </Col>
-      {ooui.showFolder && (
+      {shouldShowFolder && (
         <Col flex="none" style={{ paddingRight: 0, paddingLeft: 0 }}>
           <Button
             icon={<FolderOpenOutlined />}
