@@ -2,8 +2,13 @@ import {
   removeUndefinedFields,
   groupDateTimeValuesIfNeeded,
   getParamsForFields,
-} from "../helpers/searchFilterHelper";
+} from "../helpers/searchHelper";
 import dayjs from "dayjs";
+
+// Helper function to create a mock widget container
+const createMockWidgetContainer = (fields: any) => ({
+  findById: (id: string) => fields[id],
+});
 
 describe("A SearchFilterHelper instance", () => {
   describe("removeUndefinedFields method", () => {
@@ -89,8 +94,8 @@ describe("A SearchFilterHelper instance", () => {
       expect(Array.isArray(filteredObject["dateField#datetime"])).toBeTruthy();
       const from = filteredObject["dateField#datetime"][0];
       const to = filteredObject["dateField#datetime"][1];
-      expect(from).toBe("2021-01-01 00:00");
-      expect(to).toBe("2021-01-02 04:00");
+      expect(from).toBe("2021-01-01 00:00:00");
+      expect(to).toBe("2021-01-02 04:00:00");
     });
   });
   describe("getParamsForField method", () => {
@@ -104,7 +109,10 @@ describe("A SearchFilterHelper instance", () => {
         "floatType#from": 1.1,
         "floatType#to": 1.5,
       };
-      const params = getParamsForFields(values, fields);
+      const params = getParamsForFields(
+        values,
+        createMockWidgetContainer(fields),
+      );
       expect(Array.isArray(params)).toBeTruthy();
       expect(params.length).toBe(2);
       expect(Array.isArray(params[0])).toBeTruthy();
@@ -130,7 +138,10 @@ describe("A SearchFilterHelper instance", () => {
         "floatType#from": 1.1,
         "floatType#to": 1.5,
       };
-      const params = getParamsForFields(values, fields);
+      const params = getParamsForFields(
+        values,
+        createMockWidgetContainer(fields),
+      );
       expect(Array.isArray(params)).toBeTruthy();
       expect(params.length).toBe(2);
       expect(Array.isArray(params[0])).toBeTruthy();
@@ -156,7 +167,10 @@ describe("A SearchFilterHelper instance", () => {
         "floatType#from": 1.1,
         "floatType#to": 1.5,
       };
-      const params = getParamsForFields(values, fields);
+      const params = getParamsForFields(
+        values,
+        createMockWidgetContainer(fields),
+      );
       expect(Array.isArray(params)).toBeTruthy();
       expect(params.length).toBe(2);
       expect(Array.isArray(params[0])).toBeTruthy();
@@ -182,7 +196,10 @@ describe("A SearchFilterHelper instance", () => {
         "field#from": 1,
         "field#to": 5,
       };
-      const params = getParamsForFields(values, fields);
+      const params = getParamsForFields(
+        values,
+        createMockWidgetContainer(fields),
+      );
       expect(Array.isArray(params)).toBeTruthy();
       expect(params.length).toBe(2);
       expect(Array.isArray(params[0])).toBeTruthy();
@@ -207,7 +224,10 @@ describe("A SearchFilterHelper instance", () => {
       const values = {
         field: "lorem ipsum",
       };
-      const params = getParamsForFields(values, fields);
+      const params = getParamsForFields(
+        values,
+        createMockWidgetContainer(fields),
+      );
       expect(Array.isArray(params)).toBeTruthy();
       expect(params.length).toBe(1);
       expect(Array.isArray(params[0])).toBeTruthy();
@@ -226,7 +246,10 @@ describe("A SearchFilterHelper instance", () => {
       const values = {
         field: "lorem ipsum",
       };
-      const params = getParamsForFields(values, fields);
+      const params = getParamsForFields(
+        values,
+        createMockWidgetContainer(fields),
+      );
       expect(Array.isArray(params)).toBeTruthy();
       expect(params.length).toBe(1);
       expect(Array.isArray(params[0])).toBeTruthy();
@@ -245,7 +268,10 @@ describe("A SearchFilterHelper instance", () => {
       const values = {
         field: "lorem ipsum",
       };
-      const params = getParamsForFields(values, fields);
+      const params = getParamsForFields(
+        values,
+        createMockWidgetContainer(fields),
+      );
       expect(Array.isArray(params)).toBeTruthy();
       expect(params.length).toBe(1);
       expect(Array.isArray(params[0])).toBeTruthy();
@@ -264,7 +290,10 @@ describe("A SearchFilterHelper instance", () => {
       const values = {
         field: "lorem ipsum",
       };
-      const params = getParamsForFields(values, fields);
+      const params = getParamsForFields(
+        values,
+        createMockWidgetContainer(fields),
+      );
       expect(Array.isArray(params)).toBeTruthy();
       expect(params.length).toBe(1);
       expect(Array.isArray(params[0])).toBeTruthy();
@@ -283,7 +312,10 @@ describe("A SearchFilterHelper instance", () => {
       const values = {
         field: "lorem ipsum",
       };
-      const params = getParamsForFields(values, fields);
+      const params = getParamsForFields(
+        values,
+        createMockWidgetContainer(fields),
+      );
       expect(Array.isArray(params)).toBeTruthy();
       expect(params.length).toBe(1);
       expect(Array.isArray(params[0])).toBeTruthy();
@@ -300,17 +332,20 @@ describe("A SearchFilterHelper instance", () => {
         },
       };
       const values = {
-        field: "value",
+        field: ["value"],
       };
-      const params = getParamsForFields(values, fields);
+      const params = getParamsForFields(
+        values,
+        createMockWidgetContainer(fields),
+      );
       expect(Array.isArray(params)).toBeTruthy();
       expect(params.length).toBe(1);
       expect(Array.isArray(params[0])).toBeTruthy();
       expect(params[0].length).toBe(3);
       const fieldParams = params[0];
       expect(fieldParams[0]).toBe("field");
-      expect(fieldParams[1]).toBe("=");
-      expect(fieldParams[2]).toBe("value");
+      expect(fieldParams[1]).toBe("in");
+      expect(fieldParams[2]).toEqual(["value"]);
     });
     test("should return properly a boolean parameter", () => {
       const fields = {
@@ -321,7 +356,10 @@ describe("A SearchFilterHelper instance", () => {
       const values = {
         field: "true",
       };
-      const params = getParamsForFields(values, fields);
+      const params = getParamsForFields(
+        values,
+        createMockWidgetContainer(fields),
+      );
       expect(Array.isArray(params)).toBeTruthy();
       expect(params.length).toBe(1);
       expect(Array.isArray(params[0])).toBeTruthy();
@@ -340,7 +378,10 @@ describe("A SearchFilterHelper instance", () => {
       const values = {
         field: [dayjs("2021-01-01"), dayjs("2021-01-02")],
       };
-      const params = getParamsForFields(values, fields);
+      const params = getParamsForFields(
+        values,
+        createMockWidgetContainer(fields),
+      );
       expect(Array.isArray(params)).toBeTruthy();
       expect(params.length).toBe(2);
       expect(Array.isArray(params[0])).toBeTruthy();
@@ -366,7 +407,10 @@ describe("A SearchFilterHelper instance", () => {
         "field#date": [dayjs("2021-01-01"), dayjs("2021-01-02")],
         "field#time": [dayjs("1970-01-01 03:31"), dayjs("1970-01-01 03:32")],
       };
-      const params = getParamsForFields(values, fields);
+      const params = getParamsForFields(
+        values,
+        createMockWidgetContainer(fields),
+      );
       expect(Array.isArray(params)).toBeTruthy();
       expect(params.length).toBe(2);
       expect(Array.isArray(params[0])).toBeTruthy();
@@ -379,8 +423,8 @@ describe("A SearchFilterHelper instance", () => {
       expect(to[0]).toBe("field");
       expect(from[1]).toBe(">=");
       expect(to[1]).toBe("<=");
-      expect(from[2]).toBe("2021-01-01 03:31");
-      expect(to[2]).toBe("2021-01-02 03:32");
+      expect(from[2]).toBe("2021-01-01 03:31:00");
+      expect(to[2]).toBe("2021-01-02 03:32:00");
     });
   });
 });

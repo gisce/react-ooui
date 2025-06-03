@@ -166,35 +166,43 @@ export const removeUndefinedFields = (values: any) => {
   return newValues;
 };
 
-export const getUniqueFieldsForParams = (params: any[]) => {
-  const uniqueFields: any = {};
+export const mergeParams = (
+  searchParams?: any[] | null,
+  domainParams?: any[] | null,
+) => {
+  if (!searchParams || searchParams.length === 0) {
+    return domainParams;
+  }
 
-  params.forEach((param) => {
-    if (Array.isArray(param) && param[0]) {
-      uniqueFields[param[0]] = true;
+  if (!domainParams || domainParams.length === 0) {
+    return searchParams;
+  }
+
+  // Special case: search params with complex domain structure starting with &
+  // and containing both conditions and operators (like |)
+  if (
+    domainParams.length > 2 &&
+    domainParams[0] === "&" &&
+    domainParams
+      .slice(1)
+      .some(
+        (item) => typeof item === "string" && (item === "|" || item === "&"),
+      )
+  ) {
+    if (searchParams.length === 1) {
+      // Single search param: insert it after the first domain condition
+      const [firstDomainOp, firstDomainCondition, ...restDomain] = domainParams;
+      return ["&", "&", firstDomainCondition, ...searchParams, ...restDomain];
     } else {
-      uniqueFields[param] = true;
+      // Multiple search params: create nested & structure
+      // For n search params, we need n-1 additional & operators
+      const additionalAnds = Array(searchParams.length - 1).fill("&");
+      return ["&", ...additionalAnds, ...domainParams, ...searchParams];
     }
-  });
+  }
 
-  return Object.keys(uniqueFields);
-};
-
-export const mergeParams = (searchParams: any[], domainParams: any[]) => {
-  const finalParams = [...searchParams];
-  const uniqueParams = getUniqueFieldsForParams(searchParams);
-
-  domainParams.forEach((element) => {
-    if (Array.isArray(element) && element[0]) {
-      if (!uniqueParams.includes(element[0])) {
-        finalParams.push(element);
-      }
-    } else if (!uniqueParams.includes(element)) {
-      finalParams.push(element);
-    }
-  });
-
-  return finalParams;
+  // Default behavior: simple merge with domain params first, then search params
+  return ["&", ...domainParams, ...searchParams];
 };
 
 export const normalizeValues = (values: any) => {
