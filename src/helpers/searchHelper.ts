@@ -166,16 +166,38 @@ export const removeUndefinedFields = (values: any) => {
   return newValues;
 };
 
-export const mergeParams = (searchParams: any[], domainParams: any[]) => {
+export const mergeParams = (
+  searchParams?: any[] | null,
+  domainParams?: any[] | null,
+) => {
   if (!searchParams || searchParams.length === 0) {
     return domainParams;
   }
 
-  let result = [...domainParams];
-  for (const condition of searchParams) {
-    result = ["&", ...result, condition];
+  if (!domainParams || domainParams.length === 0) {
+    return searchParams;
   }
-  return result;
+
+  // Special case: single search param with complex domain structure starting with &
+  // and containing both conditions and operators (like |)
+  if (
+    searchParams.length === 1 &&
+    domainParams.length > 2 &&
+    domainParams[0] === "&" &&
+    domainParams
+      .slice(1)
+      .some(
+        (item) => typeof item === "string" && (item === "|" || item === "&"),
+      )
+  ) {
+    // Insert search param after the first domain condition
+    const [firstDomainOp, firstDomainCondition, ...restDomain] = domainParams;
+
+    return ["&", "&", firstDomainCondition, ...searchParams, ...restDomain];
+  }
+
+  // Default behavior: simple merge with domain params first, then search params
+  return ["&", ...domainParams, ...searchParams];
 };
 
 export const normalizeValues = (values: any) => {
