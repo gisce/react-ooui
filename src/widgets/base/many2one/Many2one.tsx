@@ -21,7 +21,6 @@ import { transformPlainMany2Ones } from "@/helpers/formHelper";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
 import { UserFeatureKeys } from "@/models/userFeature";
-import { usePermissionsState } from "@/hooks/usePermissions";
 
 const { defaultAlgorithm, defaultSeed } = theme;
 
