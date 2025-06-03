@@ -195,4 +195,33 @@ describe("mergeParams", () => {
 
     expect(result).toEqual(expected);
   });
+
+  it("should handle multiple search parameters with complex domain structure", () => {
+    const searchParams = [
+      ["name", "ilike", "test"],
+      ["amount", ">=", 100],
+    ];
+    const domainParams = [
+      "&",
+      ["state", "in", ["open"]],
+      "|",
+      ["type", "=", "sale"],
+      ["type", "=", "purchase"],
+    ];
+    const result = mergeParams(searchParams, domainParams);
+
+    const expected = [
+      "&",
+      "&",
+      "&",
+      ["state", "in", ["open"]],
+      "|",
+      ["type", "=", "sale"],
+      ["type", "=", "purchase"],
+      ["name", "ilike", "test"],
+      ["amount", ">=", 100],
+    ];
+
+    expect(result).toEqual(expected);
+  });
 });
