@@ -175,8 +175,6 @@ export const mergeParams = (searchParams: any[], domainParams: any[]) => {
     return searchParams;
   }
 
-  // TODO: improve function?
-
   return ["&", ...searchParams, ...domainParams];
 };
 
