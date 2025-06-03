@@ -166,10 +166,7 @@ export const removeUndefinedFields = (values: any) => {
   return newValues;
 };
 
-export const mergeParams = (
-  searchParams?: any[] | null,
-  domainParams?: any[] | null,
-) => {
+export const mergeParams = (searchParams: any[], domainParams: any[]) => {
   if (!searchParams || searchParams.length === 0) {
     return domainParams;
   }

@@ -2,24 +2,6 @@ import { describe, it, expect } from "vitest";
 import { mergeParams } from "../helpers/searchHelper";
 
 describe("mergeParams", () => {
-  it("should return domainParams when searchParams is null", () => {
-    const domainParams = [
-      ["field1", "=", "value1"],
-      ["field2", "!=", "value2"],
-    ];
-    const result = mergeParams(null, domainParams);
-    expect(result).toEqual(domainParams);
-  });
-
-  it("should return domainParams when searchParams is undefined", () => {
-    const domainParams = [
-      ["field1", "=", "value1"],
-      ["field2", "!=", "value2"],
-    ];
-    const result = mergeParams(undefined, domainParams);
-    expect(result).toEqual(domainParams);
-  });
-
   it("should return domainParams when searchParams is empty array", () => {
     const domainParams = [
       ["field1", "=", "value1"],
@@ -27,24 +9,6 @@ describe("mergeParams", () => {
     ];
     const result = mergeParams([], domainParams);
     expect(result).toEqual(domainParams);
-  });
-
-  it("should return searchParams when domainParams is null", () => {
-    const searchParams = [
-      ["field1", "ilike", "search"],
-      ["field2", ">=", 100],
-    ];
-    const result = mergeParams(searchParams, null);
-    expect(result).toEqual(searchParams);
-  });
-
-  it("should return searchParams when domainParams is undefined", () => {
-    const searchParams = [
-      ["field1", "ilike", "search"],
-      ["field2", ">=", 100],
-    ];
-    const result = mergeParams(searchParams, undefined);
-    expect(result).toEqual(searchParams);
   });
 
   it("should return searchParams when domainParams is empty array", () => {
