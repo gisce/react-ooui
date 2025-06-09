@@ -89,7 +89,7 @@ import ActionView from "./views/ActionView";
 import { ErpAllFeatureKeys, ErpFeatureKeys } from "./models/erpFeature";
 import type { ErpFeaturesMap } from "./models/erpFeature";
 import { UserAllFeatureKeys, UserFeatureKeys } from "./models/userFeature";
-import type { UserFeaturesMap } from "./models/userFeature";
+import type { UserFeaturesMap, UserFeaturesState } from "./models/userFeature";
 import { GraphCard } from "./widgets/views/Graph";
 import dayjs from "./helpers/dayjs";
 
@@ -186,4 +186,5 @@ export {
   UserAllFeatureKeys,
   UserFeatureKeys,
   UserFeaturesMap,
+  UserFeaturesState,
 };

@@ -248,7 +248,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const disableFolderFeature = useUserFeatureIsEnabled(
     UserFeatureKeys.FEATURE_MANY2ONE_DISABLE_FOLDER,
   );
-  const shouldShowFolder = ooui.showFolder && !disableFolderFeature;
+  const shouldShowFolder = ooui.showFolder || !disableFolderFeature;
 
   return (
     <Row gutter={8} wrap={false}>
