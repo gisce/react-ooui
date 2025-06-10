@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
+import React, { useState, useRef, useEffect, useContext, useMemo } from "react";
 import { Input, Button, Row, Col, theme } from "antd";
 import {
   SearchOutlined,
@@ -92,6 +92,19 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const transformedDomain = useRef<any[]>([]);
   const [searchDomain, setSearchDomain] = useState<any>([]);
   const { showErrorNotification } = useErrorNotification();
+
+  const showSearch = ooui.showSearch ?? true;
+
+  // Check permissions for the relation model
+  const { permissions } = usePermissionsState({
+    model: relation,
+    permissions: ["create", "write"],
+    enabled: true,
+  });
+
+  // When loading, assume permissions are false to avoid showing loading indicators
+  const canCreate = permissions?.create ?? false;
+  const canWrite = permissions?.write ?? false;
 
   const id = (value && value[0]) || undefined;
   const text = (value && value[1]) || "";
@@ -248,7 +261,23 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const disableFolderFeature = useUserFeatureIsEnabled(
     UserFeatureKeys.FEATURE_MANY2ONE_DISABLE_FOLDER,
   );
-  const shouldShowFolder = ooui.showFolder || !disableFolderFeature;
+  const disableArrowMenu = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_DISABLE_ARROW_MENU,
+  );
+
+  const shouldShowFolder = useMemo(() => {
+    if (ooui.showFolder === true) {
+      return true;
+    }
+    return !disableFolderFeature;
+  }, [ooui.showFolder, disableFolderFeature]);
+
+  const shouldShowMenu = useMemo(() => {
+    if (ooui.showMenu === true) {
+      return true;
+    }
+    return !disableArrowMenu;
+  }, [ooui.showMenu, disableArrowMenu]);
 
   return (
     <Row gutter={8} wrap={false}>
@@ -260,14 +289,14 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           onChange={onValueStringChange}
           style={{
             ...requiredStyle,
-            ...(ooui.showSearch || shouldShowFolder
+            ...(showSearch || shouldShowFolder
               ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
               : {}),
           }}
           onBlur={onElementLostFocus}
           onKeyDown={onKeyDown}
           suffix={
-            ooui.showMenu && (
+            shouldShowMenu && (
               <Many2oneSuffix
                 id={id}
                 model={relation}
@@ -288,7 +317,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
               setShowFormModal(true);
             }}
             style={
-              ooui.showSearch
+              showSearch
                 ? { borderRadius: 0 }
                 : { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }
             }
@@ -296,7 +325,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           />
         </Col>
       )}
-      {ooui.showSearch && (
+      {showSearch && (
         <Col flex="none" style={{ paddingLeft: 0 }}>
           <Button
             icon={searching ? <LoadingOutlined /> : <SearchOutlined />}
