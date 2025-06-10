@@ -15,10 +15,20 @@ export const Many2oneTree = (props: Many2oneTreeProps): React.ReactElement => {
   );
 
   const shouldShowMenu = useMemo(() => {
-    if (ooui.showMenu === true) {
-      return true;
+    // Level 1: Default value
+    let result = true;
+
+    // Level 2: User features (can modify the default)
+    if (disableArrowMenu === true) {
+      result = false;
     }
-    return !disableArrowMenu;
+
+    // Level 3: Forced value (maximum priority)
+    if (ooui.showMenu !== undefined) {
+      result = ooui.showMenu;
+    }
+
+    return result;
   }, [ooui.showMenu, disableArrowMenu]);
 
   if (!m2oField) {
