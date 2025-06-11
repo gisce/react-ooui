@@ -6,7 +6,6 @@ import { One2manyValue } from "../../base/one2many/One2manyInput";
 import { Interweave } from "interweave";
 import { Many2oneTree } from "../../base/many2one/Many2oneTree";
 import { ReferenceTree } from "../../base/ReferenceTree";
-import dayjs from "@/helpers/dayjs";
 import Avatar from "../../custom/Avatar";
 import { CustomTag, TagInput } from "../../custom/Tag";
 import ConnectionProvider from "@/ConnectionProvider";
@@ -18,9 +17,9 @@ import {
   DateTime,
   Many2one as Many2oneOoui,
 } from "@gisce/ooui";
-import { DatePickerConfig } from "@/common/DatePicker.helpers";
 import { useActionViewContext } from "@/context/ActionViewContext";
 import { useOne2manyContext } from "@/context/One2manyContext";
+import { DateValue, DateTimeValue } from "@gisce/react-formiga-components";
 
 export const BooleanComponent = ({
   value,
@@ -120,15 +119,7 @@ export const TextComponent = ({ value }: { value: any }): ReactElement => {
 };
 
 export const DateComponent = ({ value }: { value: any }): ReactElement => {
-  return useMemo(() => {
-    if (!value || (value && value.length === 0)) return <></>;
-
-    const formattedValue = dayjs(
-      value,
-      DatePickerConfig.date.dateInternalFormat,
-    ).format(DatePickerConfig.date.dateDisplayFormat);
-    return <>{formattedValue}</>;
-  }, [value]);
+  return <DateValue value={value} />;
 };
 
 export const CharComponent = ({
@@ -157,17 +148,7 @@ export const DateTimeComponent = ({
   value: any;
   ooui: DateTime;
 }): ReactElement => {
-  return useMemo(() => {
-    if (!value || (value && value.length === 0)) return <></>;
-    const formattedValue = dayjs
-      .tz(
-        value,
-        DatePickerConfig.time.dateInternalFormat,
-        ooui.timezone || "Europe/Madrid",
-      )
-      .format(DatePickerConfig.time.dateDisplayFormat);
-    return <>{formattedValue}</>;
-  }, [value, ooui.timezone]);
+  return <DateTimeValue value={value} timezone={ooui.timezone} />;
 };
 
 export const One2ManyComponent = ({
