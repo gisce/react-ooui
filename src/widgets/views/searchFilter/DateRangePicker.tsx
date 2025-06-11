@@ -1,8 +1,6 @@
-import { DatePicker } from "antd";
-
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
-import { useDatePickerLocale } from "@/helpers/useDatePickerLocale";
+import { DateRangeInput } from "@gisce/react-formiga-components";
 
 interface DateRangePickerProps extends WidgetProps {
   className?: string;
@@ -10,18 +8,11 @@ interface DateRangePickerProps extends WidgetProps {
 }
 
 export const DateRangePicker = (props: DateRangePickerProps) => {
-  const { className = "w-full", layout = "vertical" } = props;
-  const datePickerLocale = useDatePickerLocale();
+  const { className, layout = "vertical" } = props;
 
   return (
     <Field {...props} layout={layout}>
-      <DatePicker.RangePicker
-        allowEmpty={[true, true]}
-        format={"DD/MM/YYYY"}
-        locale={datePickerLocale}
-        style={{ width: "100%" }}
-        className={className}
-      />
+      <DateRangeInput className={className} />
     </Field>
   );
 };
