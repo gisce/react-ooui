@@ -7,6 +7,7 @@ import {
   mergeStrings,
 } from "@gisce/react-formiga-components";
 import { strings } from "@/locales";
+import { UserFeatureKeys, UserFeaturesMap } from "@/models/userFeature";
 
 type ConfigContextProps = Omit<ConfigContextValues, "treeMaxLimit"> & {
   locale: Locale;
@@ -16,6 +17,7 @@ type ConfigContextProps = Omit<ConfigContextValues, "treeMaxLimit"> & {
 
 type ConfigContextValues = {
   erpFeatures: ErpFeaturesMap;
+  userFeatures: UserFeaturesMap;
   title: string;
   globalValues?: Record<string, any>;
   rootContext?: Record<string, any>;
@@ -27,6 +29,7 @@ const DEFAULT_MAX_SEARCH_LIMIT = 100;
 
 const defaultConfigContext: ConfigContextValues = {
   erpFeatures: {},
+  userFeatures: {},
   title: "Webclient",
   globalValues: {},
   rootContext: {},
@@ -47,6 +50,13 @@ export const useConfigContext = () => {
   }
 
   return context;
+};
+
+export const useUserFeatureIsEnabled = (
+  featureKey: UserFeatureKeys,
+): boolean => {
+  const { userFeatures } = useConfigContext();
+  return !!userFeatures[featureKey];
 };
 
 export const useFeatureIsEnabled = (featureKey: ErpFeatureKeys): boolean => {
@@ -70,17 +80,27 @@ export const ConfigContextProvider = memo(
     title,
     treeMaxLimit = DEFAULT_MAX_SEARCH_LIMIT,
     children,
+    userFeatures,
   }: ConfigContextProps & { children?: React.ReactNode }) => {
     const providerValue = useMemo(
       () => ({
         erpFeatures,
         globalValues,
+        userFeatures,
         rootContext,
         devMode,
         title,
         treeMaxLimit,
       }),
-      [erpFeatures, globalValues, rootContext, devMode, title, treeMaxLimit],
+      [
+        erpFeatures,
+        globalValues,
+        userFeatures,
+        rootContext,
+        devMode,
+        title,
+        treeMaxLimit,
+      ],
     );
 
     return (
