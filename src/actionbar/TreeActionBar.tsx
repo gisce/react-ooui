@@ -84,6 +84,7 @@ function TreeActionBarComponent({
     treeType,
     setSearchParams,
     setSearchValues,
+    permissions,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   const advancedExportEnabled = useFeatureIsEnabled(
@@ -323,7 +324,7 @@ function TreeActionBarComponent({
             badgeNumber={searchParams?.length}
           />
           <ActionBarSeparator />
-          <NewButton disabled={treeIsLoading} />
+          <NewButton disabled={treeIsLoading || !permissions?.create} />
           <ActionButton
             icon={<CopyOutlined />}
             tooltip={t("duplicate")}
@@ -331,7 +332,8 @@ function TreeActionBarComponent({
               !selectedRowItems ||
               selectedRowItems?.length !== 1 ||
               duplicatingItem ||
-              treeIsLoading
+              treeIsLoading ||
+              !permissions?.create
             }
             loading={duplicatingItem}
             onClick={tryDuplicate}
@@ -341,7 +343,8 @@ function TreeActionBarComponent({
             tooltip={t("delete")}
             disabled={
               !(selectedRowItems && selectedRowItems?.length > 0) ||
-              treeIsLoading
+              treeIsLoading ||
+              !permissions?.unlink
             }
             loading={removingItem}
             onClick={tryDelete}

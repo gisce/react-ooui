@@ -17,8 +17,6 @@ import {
   Many2oneSuffixOoui,
 } from "./Many2oneSuffixOoui";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
-import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
-import { UserFeatureKeys } from "@/models/userFeature";
 
 type Props = {
   id: number;
@@ -52,10 +50,6 @@ export const Many2oneSuffix = (props: Props) => {
     cancelGetViewRequest();
     cancelReadObjectsRequest();
   }, [cancelGetViewRequest, cancelReadObjectsRequest]);
-
-  const disableArrowMenu = useUserFeatureIsEnabled(
-    UserFeatureKeys.FEATURE_MANY2ONE_DISABLE_ARROW_MENU,
-  );
 
   const fetchData = useCallback(async (): Promise<
     ActionRelatePrint | undefined
@@ -100,10 +94,6 @@ export const Many2oneSuffix = (props: Props) => {
 
   // If there is no id (no record attached to the Many2one), we don't show the suffix
   if (!id) {
-    return null;
-  }
-
-  if (disableArrowMenu) {
     return null;
   }
 

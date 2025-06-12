@@ -166,35 +166,16 @@ export const removeUndefinedFields = (values: any) => {
   return newValues;
 };
 
-export const getUniqueFieldsForParams = (params: any[]) => {
-  const uniqueFields: any = {};
-
-  params.forEach((param) => {
-    if (Array.isArray(param) && param[0]) {
-      uniqueFields[param[0]] = true;
-    } else {
-      uniqueFields[param] = true;
-    }
-  });
-
-  return Object.keys(uniqueFields);
-};
-
 export const mergeParams = (searchParams: any[], domainParams: any[]) => {
-  const finalParams = [...searchParams];
-  const uniqueParams = getUniqueFieldsForParams(searchParams);
+  if (!searchParams || searchParams.length === 0) {
+    return domainParams;
+  }
 
-  domainParams.forEach((element) => {
-    if (Array.isArray(element) && element[0]) {
-      if (!uniqueParams.includes(element[0])) {
-        finalParams.push(element);
-      }
-    } else if (!uniqueParams.includes(element)) {
-      finalParams.push(element);
-    }
-  });
+  if (!domainParams || domainParams.length === 0) {
+    return searchParams;
+  }
 
-  return finalParams;
+  return ["&", ...searchParams, ...domainParams];
 };
 
 export const normalizeValues = (values: any) => {

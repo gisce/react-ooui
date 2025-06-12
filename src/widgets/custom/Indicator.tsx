@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Tooltip, theme, Statistic, Card, Empty, Space } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
@@ -10,7 +10,10 @@ import { CenteredSpinner } from "@/ui/CenteredSpinner";
 import { ErrorAlert } from "@/ui/ErrorAlert";
 import { Graph } from "../views/Graph/Graph";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
-import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import {
+  useFeatureIsEnabled,
+  useUserFeatureIsEnabled,
+} from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { GraphServer } from "../views/Graph/GraphServer";
 import { Many2oneSuffix } from "@/widgets/base/many2one/Many2oneSuffix";
@@ -25,6 +28,7 @@ import styled from "styled-components";
 import dayjs from "@/helpers/dayjs";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import ConnectionProvider from "@/ConnectionProvider";
+import { UserFeatureKeys } from "@/models/userFeature";
 const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
@@ -64,6 +68,9 @@ const IndicatorInput = (props: IndicatorInputProps) => {
   const [parseCondition, cancelRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().parseCondition,
   );
+  const disableArrowMenu = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_DISABLE_ARROW_MENU,
+  );
 
   useEffect(() => {
     async function evaluateCondition(condition: string, setter: Function) {
@@ -87,6 +94,27 @@ const IndicatorInput = (props: IndicatorInputProps) => {
     return () => cancelRequest();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ooui.icon, ooui.color, value]);
+
+  const shouldShowMenu = useMemo(() => {
+    if (ooui.fieldType !== "many2one") {
+      return false;
+    }
+
+    // Level 1: Default value
+    let result = true;
+
+    // Level 2: User features (can modify the default)
+    if (disableArrowMenu === true) {
+      result = false;
+    }
+
+    // Level 3: Forced value (maximum priority)
+    if ((ooui as any).showMenu !== undefined) {
+      result = (ooui as any).showMenu;
+    }
+
+    return result;
+  }, [ooui, disableArrowMenu]);
 
   const title = (
     <>
@@ -125,7 +153,9 @@ const IndicatorInput = (props: IndicatorInputProps) => {
     formattedValue = (
       <Space>
         {formattedValue}
-        <Many2oneSuffix id={value[0]} model={ooui.raw_props.relation} />
+        {shouldShowMenu && (
+          <Many2oneSuffix id={value[0]} model={ooui.raw_props.relation} />
+        )}
       </Space>
     );
   }

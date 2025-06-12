@@ -425,6 +425,13 @@ type ConnectionProviderType = {
     options: { action_type: string; action_id: number; context: any },
     requestConfig?: any,
   ) => Promise<any>;
+  checkPermission: (
+    {
+      model,
+      type,
+    }: { model: string; type: "create" | "read" | "write" | "unlink" },
+    requestConfig?: any,
+  ) => Promise<boolean>;
 };
 
 type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar";

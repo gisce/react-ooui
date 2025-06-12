@@ -65,6 +65,7 @@ function RootView(props: RootViewProps, ref: any) {
     processAction: (contentRootProvider.current as any).processAction,
     handleOpenActionUrl,
     handleOpenActionResourceUrl,
+    handleOpenModelAndViews,
   }));
 
   function remove(key: string) {
@@ -659,6 +660,51 @@ function RootView(props: RootViewProps, ref: any) {
         action: parms,
       });
     }
+  }
+
+  async function handleOpenModelAndViews({
+    model,
+    domain = [],
+    title,
+    viewModes = ["tree", "form"],
+  }: {
+    model: string;
+    domain?: any[];
+    title?: string;
+    viewModes?: ViewType[];
+  }) {
+    const finalViews = [];
+
+    for (const viewType of viewModes) {
+      if (viewType === "dashboard") {
+        finalViews.push([undefined, "dashboard"]);
+      } else {
+        const { view_id } = await ConnectionProvider.getHandler().getView({
+          model,
+          type: viewType,
+          context: rootContext,
+        });
+        finalViews.push([view_id, viewType]);
+      }
+    }
+
+    const [id, type] = finalViews[0];
+    const initialView = {
+      id: id as number | undefined,
+      type: type as ViewType,
+    };
+
+    return await openAction({
+      action_id: -1,
+      action_type: "ir.actions.act_window",
+      model,
+      views: finalViews,
+      context: rootContext,
+      domain,
+      title: title || model,
+      target: "current",
+      initialView,
+    });
   }
 
   return (
