@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "2.88.0-alpha.7",
+  "version": "2.88.0",
   "engines": {
     "node": "20.5.0"
   },
@@ -39,9 +39,9 @@
     "@ant-design/colors": "^7.2.0",
     "@ant-design/plots": "^1.0.9",
     "@gisce/fiber-diagram": "2.1.1",
-    "@gisce/ooui": "2.33.0-alpha.1",
-    "@gisce/react-formiga-components": "1.17.0-alpha.2",
-    "@gisce/react-formiga-table": "1.15.0-alpha.1",
+    "@gisce/ooui": "2.32.1",
+    "@gisce/react-formiga-components": "1.16.0",
+    "@gisce/react-formiga-table": "1.15.0",
     "@monaco-editor/react": "^4.4.5",
     "@types/deep-equal": "^1.0.4",
     "antd": "5.25.1",
