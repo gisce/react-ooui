@@ -7,6 +7,7 @@ import {
 } from "@/views/actionViews/TreeActionView";
 import { ColumnState } from "@gisce/react-formiga-table";
 import { createContext, useContext, useEffect, useState } from "react";
+import { PermissionsMap } from "@/hooks/usePermissions";
 
 type ActionViewProviderProps = {
   title: string;
@@ -38,6 +39,9 @@ type ActionViewProviderProps = {
   initialSearchParams?: any[];
   initialCurrentPage?: number;
   initialOrder?: any[];
+  permissions?: PermissionsMap | null;
+  permissionsLoading?: boolean;
+  permissionsError?: Error | null;
 };
 
 export type ActionViewContextType = Omit<
@@ -128,6 +132,9 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     initialSearchParams,
     initialCurrentPage,
     initialOrder,
+    permissions,
+    permissionsLoading,
+    permissionsError,
   } = props;
 
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
@@ -276,6 +283,9 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setOrder,
         currentPage,
         setCurrentPage,
+        permissions,
+        permissionsLoading,
+        permissionsError,
       }}
     >
       {children}
@@ -358,6 +368,9 @@ export const useActionViewContext = () => {
       setOrder: () => {},
       currentPage: 1,
       setCurrentPage: () => {},
+      permissions: null,
+      permissionsLoading: false,
+      permissionsError: null,
     };
   }
 
