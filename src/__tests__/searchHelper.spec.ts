@@ -20,7 +20,7 @@ describe("mergeParams", () => {
     expect(result).toEqual(searchParams);
   });
 
-  it("should merge searchParams and domainParams with AND operator", () => {
+  it("should merge searchParams and domainParams with implicit AND operator when no OR operators are present", () => {
     const searchParams = [
       ["field1", "ilike", "search"],
       ["field2", ">=", 100],
@@ -31,8 +31,8 @@ describe("mergeParams", () => {
     ];
     const result = mergeParams(searchParams, domainParams);
 
+    // No explicit '&' needed when there are no '|' operators (MongoDB compatibility)
     const expected = [
-      "&",
       ["field1", "ilike", "search"],
       ["field2", ">=", 100],
       ["field3", "=", "value"],
@@ -67,7 +67,11 @@ describe("mergeParams", () => {
     const domainParams = [["active", "=", true]];
     const result = mergeParams(searchParams, domainParams);
 
-    const expected = ["&", ["name", "=", "John"], ["active", "=", true]];
+    // No explicit '&' needed when there are no '|' operators (MongoDB compatibility)
+    const expected = [
+      ["name", "=", "John"],
+      ["active", "=", true],
+    ];
 
     expect(result).toEqual(expected);
   });
@@ -80,8 +84,8 @@ describe("mergeParams", () => {
     const domainParams = [["active", "=", true]];
     const result = mergeParams(searchParams, domainParams);
 
+    // No explicit '&' needed when there are no '|' operators (MongoDB compatibility)
     const expected = [
-      "&",
       ["name", "ilike", "search"],
       ["age", ">", 18],
       ["active", "=", true],
@@ -125,8 +129,8 @@ describe("mergeParams", () => {
     ];
     const result = mergeParams(searchParams, domainParams);
 
+    // No explicit '&' needed when there are no '|' operators (MongoDB compatibility)
     const expected = [
-      "&",
       ["field_a", "=", "a"],
       ["field_b", "=", "b"],
       ["field_1", "=", "1"],
@@ -183,6 +187,68 @@ describe("mergeParams", () => {
       "|",
       ["type", "=", "sale"],
       ["type", "=", "purchase"],
+    ];
+
+    expect(result).toEqual(expected);
+  });
+
+  it("should not add '&' operator for MongoDB compatibility when no '|' operators are present", () => {
+    const searchParams = [["name", "in", ["12345"]]];
+    const domainParams = [["type", "=", "p"]];
+    const result = mergeParams(searchParams, domainParams);
+
+    // For MongoDB, this should be the implicit AND without explicit '&'
+    const expected = [
+      ["name", "in", ["12345"]],
+      ["type", "=", "p"],
+    ];
+
+    expect(result).toEqual(expected);
+  });
+
+  it("should add '&' operator when '|' operators are present in domain", () => {
+    const searchParams = [["name", "in", ["12345"]]];
+    const domainParams = [
+      "|",
+      ["type", "=", "sale"],
+      ["type", "=", "purchase"],
+    ];
+    const result = mergeParams(searchParams, domainParams);
+
+    // When there are '|' operators, we need explicit '&'
+    const expected = [
+      "&",
+      ["name", "in", ["12345"]],
+      "|",
+      ["type", "=", "sale"],
+      ["type", "=", "purchase"],
+    ];
+
+    expect(result).toEqual(expected);
+  });
+
+  it("should add '&' operator when '|' operators are present anywhere in complex domain", () => {
+    const searchParams = [["name", "ilike", "test"]];
+    const domainParams = [
+      "&",
+      ["active", "=", true],
+      ["state", "in", ["open"]],
+      "|",
+      ["type", "=", "service"],
+      ["type", "=", "consumable"],
+    ];
+    const result = mergeParams(searchParams, domainParams);
+
+    // When there are '|' operators anywhere in the domain, we need explicit '&'
+    const expected = [
+      "&",
+      ["name", "ilike", "test"],
+      "&",
+      ["active", "=", true],
+      ["state", "in", ["open"]],
+      "|",
+      ["type", "=", "service"],
+      ["type", "=", "consumable"],
     ];
 
     expect(result).toEqual(expected);
