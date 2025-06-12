@@ -23,6 +23,7 @@ type SearchSelectionProps = {
   onCloseModal: () => void;
   domain?: unknown;
   context?: Record<string, unknown>;
+  canCreate?: boolean;
 };
 
 interface RowClickEvent {
@@ -37,6 +38,7 @@ export const SearchModal = ({
   nameSearch,
   domain,
   context = {},
+  canCreate = true,
 }: SearchSelectionProps) => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
@@ -150,7 +152,7 @@ export const SearchModal = ({
         <Row justify="end">
           <Space>
             <Button
-              disabled={operationInProgress}
+              disabled={operationInProgress || !canCreate}
               icon={<FileAddOutlined />}
               onClick={handleShowCreateModal}
             >
