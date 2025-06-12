@@ -94,8 +94,6 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const [searchDomain, setSearchDomain] = useState<any>([]);
   const { showErrorNotification } = useErrorNotification();
 
-  const showSearch = ooui.showSearch ?? true; // By default is true if not set
-
   // Check permissions for the relation model
   const { permissions } = usePermissionsState({
     model: relation,
@@ -106,6 +104,8 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   // When loading, assume permissions are false to avoid showing loading indicators
   const canCreate = permissions?.create ?? false;
   const canWrite = permissions?.write ?? false;
+
+  const showSearch = ooui.showSearch ?? true; // By default is true if not set
 
   const id = (value && value[0]) || undefined;
   const text = (value && value[1]) || "";
