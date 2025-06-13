@@ -166,6 +166,23 @@ export const removeUndefinedFields = (values: any) => {
   return newValues;
 };
 
+// Helper function to check if domain contains any OR operators
+const containsOrOperator = (domain: any[]): boolean => {
+  if (!Array.isArray(domain)) {
+    return false;
+  }
+
+  return domain.some((item) => {
+    if (item === "|") {
+      return true;
+    }
+    if (Array.isArray(item)) {
+      return containsOrOperator(item);
+    }
+    return false;
+  });
+};
+
 export const mergeParams = (searchParams: any[], domainParams: any[]) => {
   if (!searchParams || searchParams.length === 0) {
     return domainParams;
@@ -175,7 +192,14 @@ export const mergeParams = (searchParams: any[], domainParams: any[]) => {
     return searchParams;
   }
 
-  return ["&", ...searchParams, ...domainParams];
+  // Only add '&' operator if there are '|' operators in the domain
+  // This is for MongoDB ORM compatibility - MongoDB doesn't support explicit '&'
+  // but works fine with implicit AND when there are no OR operations
+  if (containsOrOperator(domainParams)) {
+    return ["&", ...searchParams, ...domainParams];
+  } else {
+    return [...searchParams, ...domainParams];
+  }
 };
 
 export const normalizeValues = (values: any) => {
