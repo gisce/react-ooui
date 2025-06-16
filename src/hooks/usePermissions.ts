@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { ConnectionProvider } from "..";
 import { useNetworkRequest } from "./useNetworkRequest";
+import { useDeepCompareEffect } from "use-deep-compare";
 
 export type PermissionType = "create" | "read" | "write" | "unlink";
 
@@ -74,39 +75,43 @@ export const usePermissionsState = ({
     useState<PermissionsMap | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const isFetchingRef = useRef(false);
 
   const { checkPermissions, cancelRequest } = usePermissions();
 
-  const fetchPermissions = useCallback(async () => {
+  // Fetch permissions on mount and when dependencies change
+  useDeepCompareEffect(() => {
     if (!enabled || !model || !permissions.length) {
       return;
     }
 
-    setLoading(true);
-    setError(null);
+    const fetchPermissions = async () => {
+      if (isFetchingRef.current) return;
 
-    try {
-      const result = await checkPermissions(model, permissions);
-      setPermissionsResult(result);
-    } catch (err) {
-      const error =
-        err instanceof Error ? err : new Error("Unknown error occurred");
-      setError(error);
-      setPermissionsResult(null);
-    } finally {
-      setLoading(false);
-    }
-  }, [checkPermissions, enabled, model, permissions]);
+      isFetchingRef.current = true;
+      setLoading(true);
+      setError(null);
 
-  // Fetch permissions on mount and when dependencies change
-  useEffect(() => {
+      try {
+        const result = await checkPermissions(model, permissions);
+        setPermissionsResult(result);
+      } catch (err) {
+        const error =
+          err instanceof Error ? err : new Error("Unknown error occurred");
+        setError(error);
+        setPermissionsResult(null);
+      } finally {
+        setLoading(false);
+        isFetchingRef.current = false;
+      }
+    };
+
     fetchPermissions();
 
     return () => {
       cancelRequest();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [model, permissions, enabled]);
 
   // Memoize the result to prevent unnecessary re-renders
   const memoizedResult = useMemo(
