@@ -56,7 +56,9 @@ export const ThemeWrapper = ({ children }: { children: any }) => {
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
-            padding: 25,
+            marginTop: 15,
+            marginLeft: 15,
+            marginRight: 15,
           }}
         >
           <ErrorBoundary>
