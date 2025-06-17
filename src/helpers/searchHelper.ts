@@ -166,35 +166,40 @@ export const removeUndefinedFields = (values: any) => {
   return newValues;
 };
 
-export const getUniqueFieldsForParams = (params: any[]) => {
-  const uniqueFields: any = {};
+// Helper function to check if domain contains any OR operators
+const containsOrOperator = (domain: any[]): boolean => {
+  if (!Array.isArray(domain)) {
+    return false;
+  }
 
-  params.forEach((param) => {
-    if (Array.isArray(param) && param[0]) {
-      uniqueFields[param[0]] = true;
-    } else {
-      uniqueFields[param] = true;
+  return domain.some((item) => {
+    if (item === "|") {
+      return true;
     }
+    if (Array.isArray(item)) {
+      return containsOrOperator(item);
+    }
+    return false;
   });
-
-  return Object.keys(uniqueFields);
 };
 
 export const mergeParams = (searchParams: any[], domainParams: any[]) => {
-  const finalParams = [...searchParams];
-  const uniqueParams = getUniqueFieldsForParams(searchParams);
+  if (!searchParams || searchParams.length === 0) {
+    return domainParams;
+  }
 
-  domainParams.forEach((element) => {
-    if (Array.isArray(element) && element[0]) {
-      if (!uniqueParams.includes(element[0])) {
-        finalParams.push(element);
-      }
-    } else if (!uniqueParams.includes(element)) {
-      finalParams.push(element);
-    }
-  });
+  if (!domainParams || domainParams.length === 0) {
+    return searchParams;
+  }
 
-  return finalParams;
+  // Only add '&' operator if there are '|' operators in the domain
+  // This is for MongoDB ORM compatibility - MongoDB doesn't support explicit '&'
+  // but works fine with implicit AND when there are no OR operations
+  if (containsOrOperator(domainParams)) {
+    return ["&", ...searchParams, ...domainParams];
+  } else {
+    return [...searchParams, ...domainParams];
+  }
 };
 
 export const normalizeValues = (values: any) => {

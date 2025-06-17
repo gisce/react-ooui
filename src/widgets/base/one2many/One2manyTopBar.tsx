@@ -22,6 +22,8 @@ import { useTreeToolbarButtons } from "@/hooks/useTreeToolbarButtons";
 import { showLogInfo } from "@/helpers/logInfoHelper";
 import { showConfirmDialog } from "@/index";
 import { useDuplicateItem } from "@/hooks/useDuplicateItem";
+import { useFormContext } from "@/context/FormContext";
+import { usePermissionsState } from "@/hooks/usePermissions";
 const { useToken } = theme;
 
 type One2manyTopBarProps = {
@@ -76,6 +78,27 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
 
   const { token } = useToken();
   const { t } = useLocale();
+  const { activeModel: formModel } = useFormContext();
+
+  // Check permissions for the relation model (from props)
+  const { permissions: modelPermissions } = usePermissionsState({
+    model,
+    permissions: ["create", "write", "unlink"],
+    enabled: true,
+  });
+
+  // Check permissions for the active form model
+  const { permissions: formModelPermissions } = usePermissionsState({
+    model: formModel,
+    permissions: ["write"],
+    enabled: !!formModel,
+  });
+
+  // When loading, assume permissions are false to avoid showing loading indicators
+  const canCreateModel = modelPermissions?.create ?? false;
+  const canWriteModel = modelPermissions?.write ?? false;
+  const canUnlinkModel = modelPermissions?.unlink ?? false;
+  const canWriteFormModel = formModelPermissions?.write ?? false;
 
   const { duplicatingItem, duplicate } = useDuplicateItem({
     currentId: mode === "form" ? currentId : parseInt(selectedRowKeys[0]),
@@ -105,6 +128,25 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
     onRefreshParentValues,
   });
 
+  // Computed disabled states for better readability
+  const isCreateDisabled = readOnly || !canCreateModel || !canWriteFormModel;
+
+  const isSearchDisabled = readOnly || !canWriteModel;
+
+  const isDeleteDisabled =
+    totalItems === 0 ||
+    readOnly ||
+    (mode !== "form" && selectedRowKeys.length === 0) ||
+    (isMany2Many ? !canWriteModel : !canUnlinkModel || !canWriteFormModel);
+
+  const isDuplicateDisabled =
+    readOnly ||
+    duplicatingItem ||
+    (mode === "tree" && selectedRowKeys.length !== 1) ||
+    (mode === "form" && (currentId === undefined || currentId < 0)) ||
+    !canCreateModel ||
+    !canWriteFormModel;
+
   return (
     <div className="flex mb-2 pt-3">
       <Title title={titleString} token={token} />
@@ -113,7 +155,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
           <ButtonWithTooltip
             tooltip={t("createNewItem")}
             icon={<FileAddOutlined />}
-            disabled={readOnly}
+            disabled={isCreateDisabled}
             onClick={onCreateItem}
           />
         )}
@@ -123,7 +165,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
             <ButtonWithTooltip
               tooltip={t("searchExistingItem")}
               icon={<SearchOutlined />}
-              disabled={readOnly}
+              disabled={isSearchDisabled}
               onClick={onSearchItem}
             />
           </>
@@ -132,11 +174,9 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
         {mode !== "graph" && (
           <DeleteButton
             isMany2Many={isMany2Many}
-            totalItems={totalItems}
-            readOnly={readOnly}
-            mode={mode}
             selectedRowKeys={readOnly ? [] : selectedRowKeys}
             onDelete={onDelete}
+            disabled={isDeleteDisabled}
           />
         )}
         {(mode === "tree" || mode === "form") && (
@@ -172,12 +212,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
             <ButtonWithTooltip
               icon={<CopyOutlined />}
               tooltip={t("duplicate")}
-              disabled={
-                readOnly ||
-                duplicatingItem ||
-                (mode === "tree" && selectedRowKeys.length !== 1) ||
-                (mode === "form" && (currentId === undefined || currentId < 0))
-              }
+              disabled={isDuplicateDisabled}
               loading={duplicatingItem}
               onClick={() =>
                 showConfirmDialog({
@@ -325,18 +360,14 @@ ItemBrowser.displayName = "ItemBrowser";
 const DeleteButton = memo(
   ({
     isMany2Many,
-    totalItems,
-    readOnly,
-    mode,
     selectedRowKeys,
     onDelete,
+    disabled,
   }: {
     isMany2Many: boolean;
-    totalItems: number;
-    readOnly: boolean;
-    mode: ViewType;
     selectedRowKeys: string[];
     onDelete: () => void;
+    disabled: boolean;
   }) => {
     const { t } = useLocale();
     return (
@@ -347,11 +378,7 @@ const DeleteButton = memo(
           onClick={onDelete}
           danger={!isMany2Many}
           type={isMany2Many ? "default" : "primary"}
-          disabled={
-            totalItems === 0 ||
-            readOnly ||
-            (mode !== "form" && selectedRowKeys.length === 0)
-          }
+          disabled={disabled}
         />
       </Badge>
     );

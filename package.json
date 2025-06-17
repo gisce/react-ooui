@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "2.87.1",
+  "version": "2.88.2",
   "engines": {
     "node": "20.5.0"
   },
@@ -30,13 +30,16 @@
     "check": "lint-staged",
     "analyze": "vite-bundle-visualizer",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:watch": "vitest --watch"
   },
   "dependencies": {
     "@ant-design/colors": "^7.2.0",
     "@ant-design/plots": "^1.0.9",
     "@gisce/fiber-diagram": "2.1.1",
-    "@gisce/ooui": "2.32.0",
+    "@gisce/ooui": "2.32.1",
     "@gisce/react-formiga-components": "1.16.0",
     "@gisce/react-formiga-table": "1.15.0",
     "@monaco-editor/react": "^4.4.5",
@@ -109,7 +112,8 @@
     "vite": "4.5.2",
     "vite-bundle-visualizer": "^0.10.0",
     "vite-plugin-dts": "^3.6.0",
-    "vite-tsconfig-paths": "3.5.0"
+    "vite-tsconfig-paths": "3.5.0",
+    "vitest": "^3.2.0"
   },
   "peerDependencies": {
     "react": "18.2.0",

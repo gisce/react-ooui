@@ -8,3 +8,8 @@ export const UserAllFeatureKeys: string[] = Object.values(UserFeatureKeys);
 export type UserFeaturesMap = {
   [key in UserFeatureKeys]?: boolean;
 };
+
+export interface UserFeaturesState {
+  features: UserFeaturesMap;
+  canWriteFeatureFlags: boolean;
+}

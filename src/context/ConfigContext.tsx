@@ -7,7 +7,11 @@ import {
   mergeStrings,
 } from "@gisce/react-formiga-components";
 import { strings } from "@/locales";
-import { UserFeatureKeys, UserFeaturesMap } from "@/models/userFeature";
+import {
+  UserFeatureKeys,
+  UserFeaturesMap,
+  UserFeaturesState,
+} from "@/models/userFeature";
 
 type ConfigContextProps = Omit<ConfigContextValues, "treeMaxLimit"> & {
   locale: Locale;
@@ -17,7 +21,7 @@ type ConfigContextProps = Omit<ConfigContextValues, "treeMaxLimit"> & {
 
 type ConfigContextValues = {
   erpFeatures: ErpFeaturesMap;
-  userFeatures: UserFeaturesMap;
+  userFeatures: UserFeaturesState;
   title: string;
   globalValues?: Record<string, any>;
   rootContext?: Record<string, any>;
@@ -29,7 +33,10 @@ const DEFAULT_MAX_SEARCH_LIMIT = 100;
 
 const defaultConfigContext: ConfigContextValues = {
   erpFeatures: {},
-  userFeatures: {},
+  userFeatures: {
+    features: {},
+    canWriteFeatureFlags: false,
+  },
   title: "Webclient",
   globalValues: {},
   rootContext: {},
@@ -56,7 +63,7 @@ export const useUserFeatureIsEnabled = (
   featureKey: UserFeatureKeys,
 ): boolean => {
   const { userFeatures } = useConfigContext();
-  return !!userFeatures[featureKey];
+  return !!userFeatures.features[featureKey];
 };
 
 export const useFeatureIsEnabled = (featureKey: ErpFeatureKeys): boolean => {
