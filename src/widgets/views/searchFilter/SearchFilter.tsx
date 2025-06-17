@@ -63,6 +63,12 @@ function SearchFilter(props: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValues]);
 
+  useEffect(() => {
+    if (searchError) {
+      console.error(searchError);
+    }
+  }, [searchError]);
+
   const getRowsAndCols = () => {
     if (!advancedSearchFields) {
       return;
