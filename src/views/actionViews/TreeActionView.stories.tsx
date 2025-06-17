@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useState, useEffect, createContext, useContext } from "react";
+import { useState, createContext } from "react";
 import { TreeActionView, TreeActionViewProps } from "./TreeActionView";
 import {
   FormView,
@@ -335,20 +335,6 @@ const defaultArgs: Partial<TreeActionViewProps> = {
   limit: DEFAULT_SEARCH_LIMIT,
 };
 
-export const Legacy: Story = {
-  args: {
-    ...defaultArgs,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "The legacy tree view provides a traditional table-like interface with basic functionality.",
-      },
-    },
-  },
-};
-
 export const Infinite: Story = {
   args: {
     ...defaultArgs,
@@ -391,71 +377,6 @@ export const Expandable: Story = {
       description: {
         story:
           "The expandable tree view supports hierarchical data with parent-child relationships. Click the expand icons to reveal child records.",
-      },
-    },
-  },
-};
-
-export const WithSearch: Story = {
-  args: {
-    ...defaultArgs,
-    searchTreeNameSearch: "John",
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Tree view with an active search filter. The search functionality allows filtering records by various criteria.",
-      },
-    },
-  },
-};
-
-export const LargeDataset: Story = {
-  args: {
-    ...defaultArgs,
-    results: Array.from({ length: 100 }, (_, i) => ({
-      id: i + 1,
-      name: `User ${i + 1}`,
-      email: `user${i + 1}@example.com`,
-    })),
-    limit: 50,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Tree view with a large dataset to demonstrate pagination and performance with many records.",
-      },
-    },
-  },
-};
-
-export const Hidden: Story = {
-  args: {
-    ...defaultArgs,
-    visible: false,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Tree view in hidden state. When visible is false, the component renders nothing.",
-      },
-    },
-  },
-};
-
-export const EmptyResults: Story = {
-  args: {
-    ...defaultArgs,
-    results: [],
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Tree view with no data. Shows the empty state when there are no records to display.",
       },
     },
   },
