@@ -3,9 +3,10 @@ import { TreeView, View } from "@/types";
 export const mockTreeView: TreeView = {
   view_id: 2,
   type: "tree",
-  arch: '<tree status="green:status==\'active\' and performance_score&gt;=95 and is_vip==True and department==\'Engineering\';red:status==\'terminated\' and priority==\'critical\' and department==\'Finance\'"><field name="name"/><field name="email"/><field name="department"/><field name="company"/><field name="position"/><field name="status" statusbar_visible="active,pending,on_leave"/><field name="last_login" autorefresh="30"/><field name="annual_bonus" type="function"/><field name="salary" sum="Total Salary"/></tree>',
+  arch: '<tree status="green:status==\'active\' and performance_score&gt;=95 and is_vip==True and department==\'Engineering\';red:status==\'terminated\' and priority==\'critical\' and department==\'Finance\'"><field name="name"/><field name="email"/><field name="department"/><field name="company"/><field name="position"/><field name="status" statusbar_visible="active,pending,on_leave"/><field name="last_login" autorefresh="1"/><field name="annual_bonus"/><field name="computed_rating"/><field name="salary" sum="Total Salary"/></tree>',
   fields_in_conditions: {
     status: ["status", "performance_score", "is_vip", "department", "priority"],
+    colors: ["annual_bonus", "computed_rating"], // Add function fields to colors to enable deferred reading
   },
   fields: {
     name: { type: "char", string: "Name" },
@@ -39,9 +40,18 @@ export const mockTreeView: TreeView = {
     },
     is_vip: { type: "boolean", string: "VIP" },
     performance_score: { type: "integer", string: "Performance Score" },
-    annual_bonus: { type: "function", string: "Annual Bonus" },
+    annual_bonus: {
+      type: "integer",
+      string: "Annual Bonus",
+      is_function: true,
+    },
     last_login: { type: "datetime", string: "Last Login" },
     years_of_service: { type: "integer", string: "Years of Service" },
+    computed_rating: {
+      type: "integer",
+      string: "Computed Rating",
+      is_function: true,
+    },
     id: { type: "integer", string: "ID" },
   },
   search_fields: {
@@ -59,12 +69,12 @@ export const mockTreeViewExpandable: TreeView = {
 
 export const mockTreeViewInfinite: TreeView = {
   ...mockTreeView,
-  arch: '<tree infinite="1" status="green:status==\'active\' and performance_score&gt;=95 and is_vip==True and department==\'Engineering\';red:status==\'terminated\' and priority==\'critical\' and department==\'Finance\'"><field name="name"/><field name="email"/><field name="department"/><field name="company"/><field name="position"/><field name="status" statusbar_visible="active,pending,on_leave"/><field name="last_login" autorefresh="30"/><field name="annual_bonus" type="function"/><field name="salary" sum="Total Salary"/></tree>',
+  arch: '<tree infinite="1" status="green:status==\'active\' and performance_score&gt;=95 and is_vip==True and department==\'Engineering\';red:status==\'terminated\' and priority==\'critical\' and department==\'Finance\'"><field name="name"/><field name="email"/><field name="department"/><field name="company"/><field name="position"/><field name="status" statusbar_visible="active,pending,on_leave"/><field name="last_login" autorefresh="1"/><field name="annual_bonus"/><field name="computed_rating"/><field name="salary" sum="Total Salary"/></tree>',
 };
 
 export const mockTreeViewPaginated: TreeView = {
   ...mockTreeView,
-  arch: '<tree infinite="0" status="green:status==\'active\' and performance_score&gt;=95 and is_vip==True and department==\'Engineering\';red:status==\'terminated\' and priority==\'critical\' and department==\'Finance\'"><field name="name"/><field name="email"/><field name="department"/><field name="company"/><field name="position"/><field name="status" statusbar_visible="active,pending,on_leave"/><field name="last_login" autorefresh="30"/><field name="annual_bonus" type="function"/><field name="salary" sum="Total Salary"/></tree>',
+  arch: '<tree infinite="0" status="green:status==\'active\' and performance_score&gt;=95 and is_vip==True and department==\'Engineering\';red:status==\'terminated\' and priority==\'critical\' and department==\'Finance\'"><field name="name"/><field name="email"/><field name="department"/><field name="company"/><field name="position"/><field name="status" statusbar_visible="active,pending,on_leave"/><field name="last_login" autorefresh="1"/><field name="annual_bonus"/><field name="computed_rating"/><field name="salary" sum="Total Salary"/></tree>',
 };
 
 // Generate a larger dataset for proper infinite scroll and pagination demonstration
@@ -259,14 +269,15 @@ export const generateMockData = (count: number) => {
       priority,
       is_vip: isVip,
       performance_score: performanceScore,
-      // Function field - calculated field
-      annual_bonus: Math.floor(salary * 0.1 * (performanceScore / 100)),
+      // Function field - initially undefined to trigger loading
+      annual_bonus: undefined,
       // Autorefreshable field - last login timestamp
       last_login: new Date(
         Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000,
       ).toISOString(),
       // Additional computed field
       years_of_service: new Date().getFullYear() - (2015 + (i % 9)),
+      computed_rating: undefined, // Function field - initially undefined
     };
   });
 };

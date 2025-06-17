@@ -46,12 +46,22 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
   },
   searchForTree: async (params): Promise<SearchResponse> => {
     console.log("searchForTree called with params:", params);
-    const { limit = 80, offset = 0 } = params || {};
+    const { limit = 80, offset = 0, onIdsRetrieved } = params || {};
     const results = mockResults.slice(offset, offset + limit);
     console.log(
       "searchForTree returning results with status:",
       results.map((r) => ({ id: r.id, hasStatus: r.id % 2 === 1 })),
     );
+
+    // Call the onIdsRetrieved callback with the fetched IDs - this is crucial for function fields!
+    if (onIdsRetrieved && results.length > 0) {
+      console.log(
+        "Calling onIdsRetrieved with IDs:",
+        results.map((r) => r.id),
+      );
+      onIdsRetrieved(results.map((r) => r.id));
+    }
+
     return {
       results,
       totalItems: () => Promise.resolve(mockResults.length),
@@ -69,7 +79,57 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
   create: async () => ({}),
   deleteObjects: async () => ({}),
   execute: async () => ({}),
-  readObjects: async () => [],
+  readObjects: async (params: {
+    model: string;
+    ids: number[];
+    fields?: any;
+    fieldsToRetrieve?: string[];
+    context?: any;
+  }) => {
+    console.log("readObjects called with params:", params);
+    const { ids, fieldsToRetrieve } = params;
+
+    if (!ids || !fieldsToRetrieve) {
+      return [];
+    }
+
+    // Find the records that match the requested IDs
+    const requestedRecords = mockResults.filter((record) =>
+      ids.includes(record.id),
+    );
+
+    // Generate updated values for autorefreshable fields
+    return requestedRecords.map((record) => {
+      const updatedRecord: any = { id: record.id };
+
+      fieldsToRetrieve.forEach((fieldName) => {
+        switch (fieldName) {
+          case "last_login":
+            // Generate a random recent timestamp for autorefresh simulation
+            const randomMinutesAgo = Math.floor(Math.random() * 60); // 0-59 minutes ago
+            updatedRecord[fieldName] = new Date(
+              Date.now() - randomMinutesAgo * 60 * 1000,
+            ).toISOString();
+            break;
+
+          default:
+            // For other fields, return the original value with potential minor variations
+            if (typeof (record as any)[fieldName] === "number") {
+              // Add small random variation to numeric fields
+              const variation = (Math.random() - 0.5) * 0.02; // ±1% variation
+              updatedRecord[fieldName] = Math.round(
+                (record as any)[fieldName] * (1 + variation),
+              );
+            } else {
+              updatedRecord[fieldName] = (record as any)[fieldName];
+            }
+            break;
+        }
+      });
+
+      return updatedRecord;
+    });
+  },
   readEvalUiObjects: async () => [
     mockResults,
     mockResults.map((result) => {
@@ -201,7 +261,114 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
   },
   saveUserViewPrefs: async () => ({}),
   readUserViewPrefs: async () => ({}),
-  processSearchResults: async () => ({ results: [], attrsEvaluated: {} }),
+  processSearchResults: async (params: {
+    searchIds: number[];
+    model: string;
+    fieldsToRetrieve: string[];
+    context?: any;
+    fields?: any;
+  }) => {
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    console.log("processSearchResults called with params:", params);
+    const { searchIds, fieldsToRetrieve } = params;
+
+    if (!searchIds || !fieldsToRetrieve || searchIds.length === 0) {
+      return { results: [], attrsEvaluated: {} };
+    }
+
+    // Find the records that match the requested IDs
+    const requestedRecords = mockResults.filter((record) =>
+      searchIds.includes(record.id),
+    );
+
+    console.log(
+      "Found requested records:",
+      requestedRecords.map((r) => r.id),
+    );
+
+    // Generate updated values for function fields
+    const results = requestedRecords.map((record) => {
+      const updatedRecord: any = { id: record.id };
+
+      fieldsToRetrieve.forEach((fieldName) => {
+        switch (fieldName) {
+          case "annual_bonus":
+            // Recalculate function field based on current salary and performance
+            const salary = record.salary || 50000;
+            const performanceScore = record.performance_score || 75;
+            // Add some randomness to make it appear dynamic
+            const variation = (Math.random() - 0.5) * 0.1; // ±5% variation
+            updatedRecord[fieldName] = Math.floor(
+              salary * 0.1 * (performanceScore / 100) * (1 + variation),
+            );
+            break;
+
+          case "computed_rating":
+            // Calculate a complex rating based on multiple factors
+            const baseRating = record.performance_score || 75;
+            const salaryFactor = Math.min(
+              (record.salary || 50000) / 70000,
+              1.5,
+            ); // Max 1.5x boost
+            const vipBonus = record.is_vip ? 10 : 0;
+            const statusPenalty = record.status === "terminated" ? -20 : 0;
+
+            // Add some time-based variation to simulate real function field behavior
+            const timeVariation = Math.sin(Date.now() / 10000) * 5; // ±5 points variation
+
+            const rawRating =
+              baseRating * salaryFactor +
+              vipBonus +
+              statusPenalty +
+              timeVariation;
+            updatedRecord[fieldName] = Math.max(
+              1,
+              Math.min(5, Math.round(rawRating / 20)),
+            ); // Scale to 1-5
+            break;
+
+          case "last_login":
+            // Generate a random recent timestamp for autorefresh simulation
+            const randomMinutesAgo = Math.floor(Math.random() * 60); // 0-59 minutes ago
+            updatedRecord[fieldName] = new Date(
+              Date.now() - randomMinutesAgo * 60 * 1000,
+            ).toISOString();
+            break;
+
+          default:
+            // For other fields, return the original value with potential minor variations
+            if (typeof (record as any)[fieldName] === "number") {
+              // Add small random variation to numeric fields
+              const variation = (Math.random() - 0.5) * 0.02; // ±1% variation
+              updatedRecord[fieldName] = Math.round(
+                (record as any)[fieldName] * (1 + variation),
+              );
+            } else {
+              updatedRecord[fieldName] = (record as any)[fieldName];
+            }
+            break;
+        }
+      });
+
+      return updatedRecord;
+    });
+
+    // Generate attributes evaluation for the updated records
+    const attrsEvaluated = results.map((result: any) => {
+      // Find the original record to get all fields for condition evaluation
+      const originalRecord = mockResults.find((r) => r.id === result.id) || {};
+      const mergedRecord = { ...originalRecord, ...result };
+      const { colors, status } = generateColorsAndStatus(mergedRecord);
+
+      return {
+        id: result.id,
+        colors,
+        status,
+      };
+    });
+
+    return { results, attrsEvaluated };
+  },
   getToolbar: async () => ({}),
   logAction: async () => ({}),
   checkPermission: async () => true,
