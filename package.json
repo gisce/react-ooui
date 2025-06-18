@@ -33,7 +33,11 @@
     "build-storybook": "storybook build",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:watch": "vitest --watch"
+    "test:watch": "vitest --watch",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug"
   },
   "dependencies": {
     "@ant-design/colors": "^7.2.0",
@@ -67,6 +71,7 @@
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",
     "@gisce/commitlint-rules": "1.0.5",
+    "@playwright/test": "^1.53.0",
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
     "@semantic-release/npm": "10.0.4",
@@ -104,6 +109,7 @@
     "eslint-plugin-react-hooks": "4.6.0",
     "husky": "8.0.3",
     "lint-staged": "13.2.3",
+    "playwright": "^1.53.0",
     "prettier": "3.0.1",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "semantic-release": "21.0.7",
