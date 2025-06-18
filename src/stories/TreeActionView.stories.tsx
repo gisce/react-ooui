@@ -29,7 +29,6 @@ const meta: Meta<typeof TreeActionView> = {
       description: {
         component: `
 The TreeActionView component displays data in a tree format with three different rendering modes:
-- **Legacy**: Traditional tree view
 - **Infinite**: Infinite scroll tree view
 - **Paginated**: Paginated tree view
 
@@ -90,7 +89,7 @@ export const Infinite: Story = {
     docs: {
       description: {
         story:
-          "The infinite tree view with advanced features including: autorefreshable fields (Last Login refreshes every 30s), function fields (Annual Bonus calculated from salary × performance), colored rows (VIP employees in purple, critical priority in red, high priority in orange), status indicators (green dots for active employees, different colors for various statuses), and aggregate summaries at the bottom showing total/average salary and bonus calculations.",
+          "The infinite tree view with advanced features including: autorefreshable fields (Last Login refreshes every 30s), function fields (Annual Bonus calculated from salary × performance), dynamic row coloring based on function field values combined with static properties (golden for VIP employees with high bonuses >$8K, green for high-rated employees with rating ≥4, blue for good bonus earners >$6K, orange for low performers with rating ≤2, red for critical priority, purple for VIP status, gray for inactive/terminated), status indicators with colored dots, and aggregate summaries showing total/average salary and bonus calculations.",
       },
     },
   },
@@ -106,7 +105,7 @@ export const Paginated: Story = {
     docs: {
       description: {
         story:
-          "The paginated tree view with enhanced features demonstrating: autorefreshable Last Login field, calculated Annual Bonus function field, dynamic row coloring based on employee priority and VIP status, status indicators with colored dots, and aggregate summaries. Navigate through 13+ pages to see different employees with varying statuses, priorities, and calculated bonuses.",
+          "The paginated tree view with enhanced features demonstrating: autorefreshable Last Login field, calculated Annual Bonus function field, sophisticated row coloring that combines function field values with static properties (golden color for VIP employees with high bonuses >$8K, green for high-rated employees with computed rating ≥4, blue for employees with good bonuses >$6K, orange for low performers with rating ≤2, plus existing priority and status-based colors), status indicators with colored dots, and aggregate summaries. Navigate through 13+ pages to see different employees with varying bonuses, ratings, and the resulting dynamic color combinations.",
       },
     },
   },

@@ -3,10 +3,10 @@ import { TreeView, View } from "@/types";
 export const mockTreeView: TreeView = {
   view_id: 2,
   type: "tree",
-  arch: '<tree status="green:status==\'active\' and performance_score&gt;=95 and is_vip==True and department==\'Engineering\';red:status==\'terminated\' and priority==\'critical\' and department==\'Finance\'"><field name="name"/><field name="email"/><field name="department"/><field name="company"/><field name="position"/><field name="status" statusbar_visible="active,pending,on_leave"/><field name="last_login" autorefresh="1"/><field name="annual_bonus"/><field name="computed_rating"/><field name="salary" sum="Total Salary"/></tree>',
+  arch: '<tree colors="gold:is_vip==True and annual_bonus&gt;8000;green:computed_rating&gt;=4;blue:annual_bonus&gt;6000;orange:computed_rating&lt;=2;red:priority==\'critical\';orange:priority==\'high\';purple:is_vip==True;gray:status==\'inactive\' or status==\'terminated\'" status="green:status==\'active\' and performance_score&gt;=95 and is_vip==True and department==\'Engineering\';red:status==\'terminated\' and priority==\'critical\' and department==\'Finance\';gold:is_vip==True and annual_bonus&gt;8000;blue:annual_bonus&gt;6000;orange:computed_rating&lt;=2"><field name="name"/><field name="email"/><field name="department"/><field name="company"/><field name="position"/><field name="status" statusbar_visible="active,pending,on_leave"/><field name="last_login" autorefresh="1"/><field name="annual_bonus"/><field name="computed_rating"/><field name="salary" sum="Total Salary"/></tree>',
   fields_in_conditions: {
     status: ["status", "performance_score", "is_vip", "department", "priority"],
-    colors: ["annual_bonus", "computed_rating"], // Add function fields to colors to enable deferred reading
+    colors: ["annual_bonus", "computed_rating", "is_vip", "priority", "status"], // Include function fields in colors
   },
   fields: {
     name: { type: "char", string: "Name" },
@@ -69,12 +69,12 @@ export const mockTreeViewExpandable: TreeView = {
 
 export const mockTreeViewInfinite: TreeView = {
   ...mockTreeView,
-  arch: '<tree infinite="1" status="green:status==\'active\' and performance_score&gt;=95 and is_vip==True and department==\'Engineering\';red:status==\'terminated\' and priority==\'critical\' and department==\'Finance\'"><field name="name"/><field name="email"/><field name="department"/><field name="company"/><field name="position"/><field name="status" statusbar_visible="active,pending,on_leave"/><field name="last_login" autorefresh="1"/><field name="annual_bonus"/><field name="computed_rating"/><field name="salary" sum="Total Salary"/></tree>',
+  arch: '<tree infinite="1" colors="gold:is_vip==True and annual_bonus&gt;8000;green:computed_rating&gt;=4;blue:annual_bonus&gt;6000;orange:computed_rating&lt;=2;red:priority==\'critical\';orange:priority==\'high\';purple:is_vip==True;gray:status==\'inactive\' or status==\'terminated\'" status="green:status==\'active\' and performance_score&gt;=95 and is_vip==True and department==\'Engineering\';red:status==\'terminated\' and priority==\'critical\' and department==\'Finance\';gold:is_vip==True and annual_bonus&gt;8000;blue:annual_bonus&gt;6000;orange:computed_rating&lt;=2"><field name="name"/><field name="email"/><field name="department"/><field name="company"/><field name="position"/><field name="status" statusbar_visible="active,pending,on_leave"/><field name="last_login" autorefresh="1"/><field name="annual_bonus"/><field name="computed_rating"/><field name="salary" sum="Total Salary"/></tree>',
 };
 
 export const mockTreeViewPaginated: TreeView = {
   ...mockTreeView,
-  arch: '<tree infinite="0" status="green:status==\'active\' and performance_score&gt;=95 and is_vip==True and department==\'Engineering\';red:status==\'terminated\' and priority==\'critical\' and department==\'Finance\'"><field name="name"/><field name="email"/><field name="department"/><field name="company"/><field name="position"/><field name="status" statusbar_visible="active,pending,on_leave"/><field name="last_login" autorefresh="1"/><field name="annual_bonus"/><field name="computed_rating"/><field name="salary" sum="Total Salary"/></tree>',
+  arch: '<tree infinite="0" colors="gold:is_vip==True and annual_bonus&gt;8000;green:computed_rating&gt;=4;blue:annual_bonus&gt;6000;orange:computed_rating&lt;=2;red:priority==\'critical\';orange:priority==\'high\';purple:is_vip==True;gray:status==\'inactive\' or status==\'terminated\'" status="green:status==\'active\' and performance_score&gt;=95 and is_vip==True and department==\'Engineering\';red:status==\'terminated\' and priority==\'critical\' and department==\'Finance\';gold:is_vip==True and annual_bonus&gt;8000;blue:annual_bonus&gt;6000;orange:computed_rating&lt;=2"><field name="name"/><field name="email"/><field name="department"/><field name="company"/><field name="position"/><field name="status" statusbar_visible="active,pending,on_leave"/><field name="last_login" autorefresh="1"/><field name="annual_bonus"/><field name="computed_rating"/><field name="salary" sum="Total Salary"/></tree>',
 };
 
 // Generate a larger dataset for proper infinite scroll and pagination demonstration

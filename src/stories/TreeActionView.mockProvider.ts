@@ -7,16 +7,37 @@ const generateColorsAndStatus = (result: any) => {
   let colors = undefined;
   let status = undefined;
 
+  // Get function field values for color resolution
+  const annualBonus = result.annual_bonus || 0;
+  const computedRating = result.computed_rating || 0;
+
+  // Complex color resolution combining function fields with static properties
   if (result.priority === "critical") {
     colors = "#c62828"; // Red text for critical
     status = "#c62828";
   } else if (result.priority === "high") {
     colors = "#ef6c00"; // Orange text for high
     status = "#ef6c00";
+  } else if (result.is_vip && annualBonus > 8000) {
+    // VIP employees with high bonus get special golden color
+    colors = "#ff8f00"; // Golden color for high-bonus VIPs
+    status = "#ff8f00";
   } else if (result.is_vip) {
     colors = "#7b1fa2"; // Purple text for VIP
+  } else if (computedRating >= 4) {
+    // High-rated employees get green color
+    colors = "#388e3c"; // Green for high performers
+    status = "#4caf50";
+  } else if (annualBonus > 6000) {
+    // Employees with good bonus get blue color
+    colors = "#1976d2"; // Blue for good bonus earners
+    status = "#2196f3";
   } else if (result.status === "inactive" || result.status === "terminated") {
     colors = "#757575"; // Gray text for inactive
+  } else if (computedRating <= 2) {
+    // Low-rated employees get orange warning color
+    colors = "#f57c00"; // Orange for low performers
+    status = "#ff9800";
   }
 
   return { colors, status };
