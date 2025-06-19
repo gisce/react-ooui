@@ -99,6 +99,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
   const { actionButtonProps, printButtonProps, relateButtonProps } =
     useFormToolbarButtons({
       toolbar,
+      model: currentModel,
       mustDisableButtons,
       formRef,
       onRefreshParentValues: handleRefresh,

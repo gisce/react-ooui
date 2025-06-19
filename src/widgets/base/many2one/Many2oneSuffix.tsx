@@ -17,6 +17,8 @@ import {
   Many2oneSuffixOoui,
 } from "./Many2oneSuffixOoui";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
 
 type Props = {
   id: number;
@@ -42,55 +44,108 @@ export const Many2oneSuffix = (props: Props) => {
   const [getView, cancelGetViewRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().getView,
   );
+  const [getToolbar, cancelGetToolbarRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().getToolbar,
+  );
+  const [getFields, cancelGetFieldsRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().getFields,
+  );
   const [readObjects, cancelReadObjectsRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().readObjects,
   );
 
+  const getToolbarEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_GET_TOOLBAR,
+  );
+
   const cancelRequests = useCallback(() => {
     cancelGetViewRequest();
+    cancelGetToolbarRequest();
+    cancelGetFieldsRequest();
     cancelReadObjectsRequest();
-  }, [cancelGetViewRequest, cancelReadObjectsRequest]);
+  }, [
+    cancelGetViewRequest,
+    cancelGetToolbarRequest,
+    cancelGetFieldsRequest,
+    cancelReadObjectsRequest,
+  ]);
 
   const fetchData = useCallback(async (): Promise<
     ActionRelatePrint | undefined
   > => {
-    const formView = (await getView({
-      model,
-      type: "form",
-      context,
-    })) as FormView;
-    setFormView(formView);
+    let fields;
+    let toolbar;
 
-    // We get all the fields that are used in context or domains of each action
-    // In order to get the data of the target record
-    const fields = getFieldsToRetrieve(formView);
-
-    let values = {};
-
-    if (fields.length > 0) {
-      const objectValues = (
-        await readObjects({
+    try {
+      if (getToolbarEnabled) {
+        // Get fields and toolbar separately
+        [fields, toolbar] = await Promise.all([
+          getFields({
+            model,
+            context,
+          }),
+          getToolbar({
+            model,
+            type: "form",
+            context,
+          }),
+        ]);
+        setFormView({ fields, toolbar } as FormView);
+      } else {
+        // Get everything through getView
+        const formView = (await getView({
           model,
-          ids: [id],
-          fieldsToRetrieve: fields,
+          type: "form",
           context,
-        })
-      )?.[0];
-      values = { ...objectValues };
-    }
-    values = { ...processValues(values, fields), active_id: id };
-    setTargetValues(values);
+        })) as FormView;
+        setFormView(formView);
+        fields = formView.fields;
+        toolbar = formView.toolbar;
+      }
 
-    if (!formView || !formView.toolbar) {
+      // We get all the fields that are used in context or domains of each action
+      // In order to get the data of the target record
+      const fieldsToRetrieve = getFieldsToRetrieve({ fields, toolbar });
+
+      let values = {};
+
+      if (fieldsToRetrieve.length > 0) {
+        const objectValues = (
+          await readObjects({
+            model,
+            ids: [id],
+            fieldsToRetrieve,
+            context,
+          })
+        )?.[0];
+        values = { ...objectValues };
+      }
+      values = { ...processValues(values, fields), active_id: id };
+      setTargetValues(values);
+
+      if (!toolbar) {
+        return undefined;
+      }
+
+      return {
+        actionItems: toolbar.action,
+        relateItems: toolbar.relate,
+        printItems: toolbar.print,
+      };
+    } catch (error) {
+      console.error("Error in Many2oneSuffix fetchData:", error);
       return undefined;
     }
-
-    return {
-      actionItems: formView.toolbar.action,
-      relateItems: formView.toolbar.relate,
-      printItems: formView.toolbar.print,
-    };
-  }, [context, getView, id, model, readObjects]);
+  }, [
+    context,
+    getView,
+    getToolbar,
+    getFields,
+    id,
+    model,
+    readObjects,
+    getToolbarEnabled,
+  ]);
 
   // If there is no id (no record attached to the Many2one), we don't show the suffix
   if (!id) {
@@ -160,8 +215,13 @@ export const Many2oneSuffix = (props: Props) => {
   );
 };
 
-export const getFieldsToRetrieve = (formView: FormView): string[] => {
-  const { toolbar } = formView;
+export const getFieldsToRetrieve = ({
+  fields,
+  toolbar,
+}: {
+  fields: any;
+  toolbar: any;
+}): string[] => {
   const fieldNames = ["action", "relate", "print"];
 
   const extractedFields = fieldNames.flatMap((fieldName) => {
@@ -176,7 +236,5 @@ export const getFieldsToRetrieve = (formView: FormView): string[] => {
     );
   });
 
-  return [
-    ...new Set(extractedFields.filter((field) => field in formView.fields)),
-  ];
+  return [...new Set(extractedFields.filter((field) => field in fields))];
 };

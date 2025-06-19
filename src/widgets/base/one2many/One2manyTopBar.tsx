@@ -112,6 +112,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
   const { actionButtonProps, printButtonProps, relateButtonProps } =
     useFormToolbarButtons({
       toolbar,
+      model,
       mustDisableButtons: readOnly,
       formRef,
       onRefreshParentValues,
@@ -122,6 +123,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
     printButtonProps: treePrintButtonProps,
   } = useTreeToolbarButtons({
     toolbar,
+    model,
     disabled: readOnly,
     parentContext: context,
     selectedRowItems: selectedRowKeys.map((key) => ({ id: key })),
