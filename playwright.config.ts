@@ -14,7 +14,7 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: "html",
+  reporter: process.env.CI ? "github" : "list",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -25,6 +25,9 @@ export default defineConfig({
 
     /* Take screenshot on failure */
     screenshot: "only-on-failure",
+
+    /* Run in headless mode */
+    headless: true,
   },
 
   /* Configure projects for major browsers */
@@ -40,6 +43,8 @@ export default defineConfig({
     command: "npm run storybook",
     url: "http://localhost:6006",
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
+    timeout: 180 * 1000, // Dev server needs more time
+    stdout: "pipe",
+    stderr: "pipe",
   },
 });

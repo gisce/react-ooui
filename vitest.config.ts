@@ -8,6 +8,12 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "node",
-    exclude: [...configDefaults.exclude, "dist/**"],
+    exclude: [
+      ...configDefaults.exclude,
+      "dist/**",
+      "e2e/**", // Exclude Playwright tests
+      "playwright-report/**",
+      "test-results/**",
+    ],
   },
 });
