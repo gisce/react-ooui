@@ -1,12 +1,12 @@
 import { test, expect } from "@playwright/test";
-import { STORYBOOK_CONFIG, getStoryUrl } from "./config";
+import { E2E_TEST_APP_CONFIG, getStoryUrl } from "./config";
 
 test.describe("Infinite TreeActionView Component", () => {
   test("should render all columns with correct titles and handle horizontal scrolling", async ({
     page,
   }) => {
     await page.goto(
-      getStoryUrl(STORYBOOK_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
     );
 
     // Wait for the AG Grid to be fully loaded

@@ -1,10 +1,8 @@
-/* Storybook specific CSS fixes for TreeActionView components */
+/* Story viewer specific CSS fixes for TreeActionView components */
 
-/* Ensure Storybook root containers use full height */
-#storybook-root,
-#storybook-docs,
-.sb-show-main,
-.sb-main-padded {
+/* Ensure story root containers use full height */
+#root,
+.stories-main {
   height: 100vh !important;
   min-height: 100vh !important;
 }
@@ -48,8 +46,8 @@
   height: 100% !important;
 }
 
-/* Fix for Storybook canvas */
-.sb-show-main .sb-main-padded {
+/* Fix for story canvas */
+.story-content {
   padding: 0 !important;
 }
 
@@ -61,13 +59,13 @@
   min-height: 500px !important;
 }
 
-/* Fix for title header - override sticky positioning for Storybook */
+/* Fix for title header - override sticky positioning for Story viewer */
 .title-header {
   flex-shrink: 0 !important;
   z-index: 10 !important;
 }
 
-/* Override TitleHeader sticky positioning in Storybook */
+/* Override TitleHeader sticky positioning in Story viewer */
 .title-header > div[style*="position: sticky"] {
   position: static !important;
   top: auto !important;
@@ -82,9 +80,4 @@ div[style*="position: sticky"][style*="top: 80"] {
 /* Ensure proper scroll behavior */
 body {
   overflow: hidden !important;
-}
-
-/* Fix for iframe in Storybook */
-iframe[title="storybook-preview-iframe"] {
-  height: 100vh !important;
 }

@@ -1,5 +1,9 @@
-import { ConnectionProviderType, ViewData, SearchResponse } from "@/types";
-import ConnectionProvider from "@/ConnectionProvider";
+import {
+  ConnectionProviderType,
+  ViewData,
+  SearchResponse,
+  ConnectionProvider,
+} from "@gisce/react-ooui";
 import { mockTreeView, mockResults } from "./TreeActionView.mocks";
 
 // Helper function to generate colors and status based on result properties

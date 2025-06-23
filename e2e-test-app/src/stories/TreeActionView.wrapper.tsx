@@ -1,18 +1,25 @@
-import { useState, createContext } from "react";
+import React, { useState, createContext } from "react";
 import {
   TreeActionView,
-  TreeActionViewProps,
-} from "../views/actionViews/TreeActionView";
-import { View } from "@/types";
-import ActionViewProvider from "@/context/ActionViewContext";
-import { ConfigContextProvider } from "@/context/ConfigContext";
-import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
+  View,
+  ActionViewProvider,
+  ConfigContextProvider,
+  DEFAULT_SEARCH_LIMIT,
+} from "@gisce/react-ooui";
+
+type TreeActionViewProps = React.ComponentProps<typeof TreeActionView>;
 import { NotificationProvider } from "@gisce/react-formiga-components";
-import { StorybookTitleHeaderWrapper } from "../../.storybook/StorybookTitleHeaderWrapper";
 import { mockResults } from "./TreeActionView.mocks";
 
-// Create a context for Storybook window dimensions
-const StorybookDimensionsContext = createContext<{
+// Simple wrapper component for story viewer compatibility
+const SimpleWrapper: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  return <div style={{ width: "100%", height: "100%" }}>{children}</div>;
+};
+
+// Create a context for story viewer window dimensions
+const StoryDimensionsContext = createContext<{
   width: number;
   height: number;
   modalWidth: number;
@@ -49,7 +56,7 @@ export const TreeActionViewWrapper = (props: TreeActionViewProps) => {
 
   const goToResourceId = async (ids: number[], openInSameTab?: boolean) => {
     console.log("goToResourceId called with:", ids, openInSameTab);
-    // Mock implementation for storybook
+    // Mock implementation for story viewer
     if (ids.length > 0) {
       const foundItem = mockResults.find((item) => item.id === ids[0]);
       if (foundItem) {
@@ -61,7 +68,7 @@ export const TreeActionViewWrapper = (props: TreeActionViewProps) => {
   };
 
   return (
-    <StorybookDimensionsContext.Provider
+    <StoryDimensionsContext.Provider
       value={{
         width: 1200,
         height: 800,
@@ -77,7 +84,7 @@ export const TreeActionViewWrapper = (props: TreeActionViewProps) => {
           globalValues={{}}
           rootContext={{}}
           devMode={false}
-          title="Storybook Demo"
+          title="Story Viewer Demo"
           treeMaxLimit={100}
         >
           <ActionViewProvider
@@ -132,7 +139,7 @@ export const TreeActionViewWrapper = (props: TreeActionViewProps) => {
                 overflow: "hidden",
               }}
             >
-              <StorybookTitleHeaderWrapper>
+              <SimpleWrapper>
                 <div
                   style={{
                     height: "100%",
@@ -153,11 +160,11 @@ export const TreeActionViewWrapper = (props: TreeActionViewProps) => {
                     }}
                   />
                 </div>
-              </StorybookTitleHeaderWrapper>
+              </SimpleWrapper>
             </div>
           </ActionViewProvider>
         </ConfigContextProvider>
       </NotificationProvider>
-    </StorybookDimensionsContext.Provider>
+    </StoryDimensionsContext.Provider>
   );
 };

@@ -1,0 +1,35 @@
+{
+  "name": "react-ooui-stories",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug"
+  },
+  "dependencies": {
+    "@gisce/react-ooui": "file:../",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-router-dom": "^6.30.1"
+  },
+  "devDependencies": {
+    "playwright": "^1.53.0",
+    "@playwright/test": "^1.53.0",
+    "@types/react": "18.2.18",
+    "@types/react-dom": "18.2.7",
+    "@vitejs/plugin-react-swc": "3.3.2",
+    "typescript": "5.3.3",
+    "vite": "4.5.2",
+    "vite-tsconfig-paths": "3.5.0",
+    "rollup-plugin-sourcemaps": "^0.6.3"
+  },
+  "overrides": {
+    "antd": "5.25.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  }
+}
