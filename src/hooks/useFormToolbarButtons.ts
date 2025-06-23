@@ -1,4 +1,4 @@
-import { useCallback, useContext, RefObject } from "react";
+import { useCallback, useContext, RefObject, useState } from "react";
 import { useLocale } from "@gisce/react-formiga-components";
 import {
   ContentRootContext,
@@ -8,12 +8,19 @@ import {
   TabManagerContext,
   TabManagerContextType,
 } from "@/context/TabManagerContext";
+import { ConnectionProvider } from "..";
+import { useNetworkRequest } from "./useNetworkRequest";
 
 interface UseFormToolbarButtonsProps {
-  toolbar: any;
+  model: string;
   mustDisableButtons?: boolean;
   formRef: RefObject<any>;
   onRefreshParentValues?: () => void;
+  toolbar?: {
+    action?: any[];
+    print?: any[];
+    relate?: any[];
+  };
 }
 
 interface SaveDocumentResult {
@@ -21,11 +28,18 @@ interface SaveDocumentResult {
   currentId?: number;
 }
 
+interface MenuItem {
+  label: string;
+  disabled?: boolean;
+  items: any[];
+}
+
 export const useFormToolbarButtons = ({
-  toolbar,
   mustDisableButtons = false,
   formRef,
   onRefreshParentValues,
+  model,
+  toolbar: initialToolbar,
 }: UseFormToolbarButtonsProps) => {
   const { t } = useLocale();
   const contentRootContext = useContext(
@@ -37,6 +51,15 @@ export const useFormToolbarButtons = ({
 
   const { processAction } = contentRootContext || {};
   const { openRelate } = tabManagerContext || {};
+
+  const [fetchedToolbar, setFetchedToolbar] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [fetchToolbar] = useNetworkRequest(
+    ConnectionProvider.getHandler().getToolbar,
+  );
+
+  // Use initialToolbar if provided, otherwise use fetchedToolbar
+  const toolbar = initialToolbar || fetchedToolbar;
 
   const onFormSave = useCallback(async () => {
     return await formRef.current?.submitForm();
@@ -55,12 +78,58 @@ export const useFormToolbarButtons = ({
     [formRef, processAction, onRefreshParentValues],
   );
 
+  const loadToolbarIfNeeded = useCallback(async () => {
+    // If we have toolbar data from props or already fetched, use it
+    if (
+      initialToolbar ||
+      fetchedToolbar?.action ||
+      fetchedToolbar?.print ||
+      fetchedToolbar?.relate
+    ) {
+      return toolbar;
+    }
+
+    try {
+      setIsLoading(true);
+      const toolbarData = await fetchToolbar({
+        model,
+        type: "form",
+        context: formRef.current.getContext(),
+      });
+      setFetchedToolbar(toolbarData);
+      return toolbarData;
+    } catch (error) {
+      console.error("Error loading toolbar:", error);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [toolbar, fetchToolbar, model, formRef, initialToolbar, fetchedToolbar]);
+
+  const getLoadingMenuItem = useCallback(
+    (): MenuItem => ({
+      label: t("loading"),
+      disabled: true,
+      items: [],
+    }),
+    [t],
+  );
+
   const actionButtonProps = {
-    disabled: mustDisableButtons,
+    disabled: mustDisableButtons || isLoading || !formRef.current,
     placement: "bottomRight" as const,
-    onRetrieveData: async () => [
-      { label: t("actions"), items: toolbar?.action },
-    ],
+    onRetrieveData: async () => {
+      const currentToolbar = await loadToolbarIfNeeded();
+      if (isLoading) {
+        return [getLoadingMenuItem()];
+      }
+      return [
+        {
+          label: t("actions"),
+          items: (currentToolbar || toolbar)?.action || [],
+        },
+      ];
+    },
     onItemClick: async (action: any) => {
       if (action) {
         const result = await saveDocument({ onFormSave });
@@ -70,11 +139,20 @@ export const useFormToolbarButtons = ({
   };
 
   const printButtonProps = {
-    disabled: mustDisableButtons,
+    disabled: mustDisableButtons || isLoading || !formRef.current,
     placement: "bottomRight" as const,
-    onRetrieveData: async () => [
-      { label: t("reports"), items: toolbar?.print },
-    ],
+    onRetrieveData: async () => {
+      const currentToolbar = await loadToolbarIfNeeded();
+      if (isLoading) {
+        return [getLoadingMenuItem()];
+      }
+      return [
+        {
+          label: t("reports"),
+          items: (currentToolbar || toolbar)?.print || [],
+        },
+      ];
+    },
     onItemClick: async (report: any) => {
       if (report) {
         const result = await saveDocument({ onFormSave });
@@ -92,11 +170,20 @@ export const useFormToolbarButtons = ({
   };
 
   const relateButtonProps = {
-    disabled: mustDisableButtons,
+    disabled: mustDisableButtons || isLoading || !formRef.current,
     placement: "bottomRight" as const,
-    onRetrieveData: async () => [
-      { label: t("related"), items: toolbar?.relate },
-    ],
+    onRetrieveData: async () => {
+      const currentToolbar = await loadToolbarIfNeeded();
+      if (isLoading) {
+        return [getLoadingMenuItem()];
+      }
+      return [
+        {
+          label: t("related"),
+          items: (currentToolbar || toolbar)?.relate || [],
+        },
+      ];
+    },
     onItemClick: async (relate: any) => {
       if (relate) {
         const result = await saveDocument({ onFormSave });
