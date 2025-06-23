@@ -11,7 +11,7 @@ export default defineConfig({
     exclude: [
       ...configDefaults.exclude,
       "dist/**",
-      "e2e/**", // Exclude Playwright tests
+      "e2e-test-app/**", // Exclude e2e test app directory
       "playwright-report/**",
       "test-results/**",
     ],
