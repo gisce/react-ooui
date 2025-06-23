@@ -399,4 +399,41 @@ test.describe("Infinite TreeActionView Component", () => {
     const pageText = await page.textContent("body");
     expect(pageText).not.toContain("selected");
   });
+
+  test("should display status indicators as colored dots next to company names", async ({
+    page,
+  }) => {
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
+    );
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+
+    const statusBadges = page.locator(".ag-row .ag-cell .ant-badge");
+    const badgeCount = await statusBadges.count();
+    expect(badgeCount).toBeGreaterThan(0);
+
+    const statusDots = page.locator(
+      ".ag-row .ag-cell .ant-badge .ant-badge-status-dot",
+    );
+    const dotCount = await statusDots.count();
+    expect(dotCount).toBeGreaterThan(0);
+
+    const firstDot = statusDots.first();
+    const dotStyles = await firstDot.evaluate((el) => {
+      const computedStyle = window.getComputedStyle(el);
+      return {
+        backgroundColor: computedStyle.backgroundColor,
+        borderRadius: computedStyle.borderRadius,
+        width: computedStyle.width,
+        height: computedStyle.height,
+      };
+    });
+
+    expect(dotStyles.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
+    expect(dotStyles.borderRadius).toBe("50%");
+    expect(parseInt(dotStyles.width)).toBeGreaterThan(0);
+    expect(parseInt(dotStyles.height)).toBeGreaterThan(0);
+  });
 });
