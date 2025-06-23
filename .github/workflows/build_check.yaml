@@ -34,4 +34,5 @@ jobs:
       run: |
         cd e2e-test-app
         npm install
+        npx playwright install
         npm test
