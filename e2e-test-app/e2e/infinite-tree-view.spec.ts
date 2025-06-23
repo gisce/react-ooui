@@ -137,4 +137,98 @@ test.describe("Infinite TreeActionView Component", () => {
       expect(scrollInfo.maxScrollLeft).toBeGreaterThan(0);
     }
   });
+
+  test("should display total records count of 250 and verify grid scrolling", async ({
+    page,
+  }) => {
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
+    );
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+
+    const totalRecordsText = await page
+      .getByText("Total registers:")
+      .textContent();
+    const totalRecordsMatch = totalRecordsText?.match(
+      /Total registers:\s*(\d+)/,
+    );
+    const expectedTotal = totalRecordsMatch
+      ? parseInt(totalRecordsMatch[1])
+      : 0;
+
+    expect(expectedTotal).toBe(250);
+    console.log(`Total records indicated: ${expectedTotal}`);
+
+    const initialRowCount = await page.locator(".ag-row").count();
+    console.log(`Initial DOM rows rendered: ${initialRowCount}`);
+    expect(initialRowCount).toBeGreaterThan(0);
+
+    const gridBodyViewport = page.locator(".ag-body-viewport");
+
+    const initialScrollTop = await gridBodyViewport.evaluate(
+      (el) => el.scrollTop,
+    );
+    console.log(`Initial scroll position: ${initialScrollTop}`);
+
+    await gridBodyViewport.evaluate((el) => {
+      el.scrollTop = 1000;
+    });
+    await page.waitForTimeout(500);
+
+    const scrolledTop = await gridBodyViewport.evaluate((el) => el.scrollTop);
+    console.log(`After scroll: ${scrolledTop}`);
+    expect(scrolledTop).toBeGreaterThan(initialScrollTop);
+
+    const finalRowCount = await page.locator(".ag-row").count();
+    console.log(`Final DOM rows rendered: ${finalRowCount}`);
+
+    expect(finalRowCount).toBeGreaterThan(0);
+    expect(finalRowCount).toBeLessThanOrEqual(expectedTotal);
+    console.log(
+      `SUCCESS: Total records (${expectedTotal}) correctly indicated, ${finalRowCount} virtualized rows rendered`,
+    );
+  });
+
+  test("should handle row selection correctly", async ({ page }) => {
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
+    );
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+
+    const firstRowCheckbox = page
+      .locator(".ag-row")
+      .first()
+      .locator('input[type="checkbox"]');
+
+    await firstRowCheckbox.click();
+    await page.waitForTimeout(500);
+
+    await expect(firstRowCheckbox).toBeChecked();
+
+    const headerCheckboxes = await page
+      .locator('.ag-header input[type="checkbox"]')
+      .all();
+
+    let foundIndeterminate = false;
+    for (const checkbox of headerCheckboxes) {
+      const isIndeterminate = await checkbox.evaluate(
+        (el: HTMLInputElement) => el.indeterminate,
+      );
+      if (isIndeterminate) {
+        foundIndeterminate = true;
+        break;
+      }
+    }
+
+    expect(foundIndeterminate).toBe(true);
+
+    const pageText = await page.textContent("body");
+    const hasSelectedText = pageText?.includes("1 selected");
+
+    expect(hasSelectedText).toBe(true);
+  });
 });
