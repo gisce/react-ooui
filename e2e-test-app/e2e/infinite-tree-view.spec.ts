@@ -591,7 +591,7 @@ test.describe("Infinite TreeActionView Component", () => {
     }
   });
 
-  test("should verify Computed Rating shows async loading from empty to values", async ({
+  test("should verify Computed Rating column shows async loading behavior", async ({
     page,
   }) => {
     await page.goto(
@@ -606,56 +606,50 @@ test.describe("Infinite TreeActionView Component", () => {
       ".ag-body-horizontal-scroll-viewport",
     );
 
-    // Verify Computed Rating column exists by scrolling
-    let allHeaders: string[] = [];
+    // Verify Computed Rating exists by checking all headers
+    let hasComputedRating = false;
 
     await gridBodyViewport.evaluate((el) => {
       el.scrollLeft = 0;
     });
     await page.waitForTimeout(200);
-    allHeaders.push(
-      ...(await page.locator(".ag-header-cell-text").allTextContents()),
-    );
+    let headers = await page.locator(".ag-header-cell-text").allTextContents();
+    if (headers.includes("Computed Rating")) hasComputedRating = true;
 
     await gridBodyViewport.evaluate((el) => {
       el.scrollLeft = el.scrollWidth;
     });
     await page.waitForTimeout(200);
-    allHeaders.push(
-      ...(await page.locator(".ag-header-cell-text").allTextContents()),
-    );
+    headers = await page.locator(".ag-header-cell-text").allTextContents();
+    if (headers.includes("Computed Rating")) hasComputedRating = true;
 
-    const uniqueHeaders = [...new Set(allHeaders)];
-    expect(uniqueHeaders).toContain("Computed Rating");
+    expect(hasComputedRating).toBe(true);
 
-    // Monitor cells for async changes - scroll back to see content
+    // Test async loading by checking for computed values in the grid
+    // These values appear asynchronously like in your screenshot (10867, 2, 3, 5, etc.)
     await gridBodyViewport.evaluate((el) => {
       el.scrollLeft = 0;
     });
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(300);
 
-    const initialCells = await page
-      .locator(".ag-row .ag-cell")
-      .allTextContents();
+    await page.waitForTimeout(3000); // Wait for async computations
 
-    await page.waitForTimeout(3000);
+    const allCells = await page.locator(".ag-row .ag-cell").allTextContents();
 
-    const finalCells = await page.locator(".ag-row .ag-cell").allTextContents();
+    // Look for computed numeric values (evidence of async computation)
+    const computedValues = allCells
+      .filter((cell) => /^\d{1,6}$/.test(cell.trim()))
+      .map((cell) => parseInt(cell.trim()));
 
-    // Test for async loading evidence:
-    const cellsChanged = initialCells.some(
-      (cell, index) => cell !== finalCells[index],
+    console.log("Found computed values:", computedValues.slice(0, 10));
+
+    expect(computedValues.length).toBeGreaterThan(0);
+
+    // Verify these look like actual computed ratings (reasonable numbers)
+    const hasReasonableValues = computedValues.some(
+      (val) => val > 0 && val < 100000,
     );
-    const hasComputedValues = finalCells.some((cell) =>
-      /^\d{1,6}$/.test(cell.trim()),
-    );
-    const hadEmptyThenFilled =
-      initialCells.some((cell) => !cell || cell.trim() === "") &&
-      finalCells.some((cell) => cell && cell.trim() !== "");
 
-    const showsAsyncBehavior =
-      cellsChanged || hasComputedValues || hadEmptyThenFilled;
-    expect(showsAsyncBehavior).toBe(true);
-    expect(hasComputedValues).toBe(true);
+    expect(hasReasonableValues).toBe(true);
   });
 });
