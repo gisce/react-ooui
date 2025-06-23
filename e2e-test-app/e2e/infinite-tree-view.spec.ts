@@ -268,4 +268,135 @@ test.describe("Infinite TreeActionView Component", () => {
 
     expect(hasSelectedText).toBe(true);
   });
+
+  test("should handle select all with modal confirmation and state transitions", async ({
+    page,
+  }) => {
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
+    );
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+
+    const headerCheckbox = page
+      .locator('.ag-header input[type="checkbox"]')
+      .nth(2);
+
+    await headerCheckbox.click();
+    await page.waitForTimeout(200);
+
+    const modal = page
+      .locator('[role="dialog"], .modal, [data-testid*="modal"]')
+      .first();
+    await expect(modal).toBeVisible();
+
+    const modalText = await modal.textContent();
+    expect(modalText).toContain(
+      "Are you sure you want to select all 250 registers?",
+    );
+
+    const okButton = modal
+      .locator(
+        'button:has-text("OK"), button:has-text("Yes"), button:has-text("Confirm")',
+      )
+      .first();
+    await okButton.click();
+    await page.waitForTimeout(500);
+
+    const headerCheckboxState = await headerCheckbox.evaluate(
+      (el: HTMLInputElement) => ({
+        checked: el.checked,
+        indeterminate: el.indeterminate,
+      }),
+    );
+    expect(headerCheckboxState.checked).toBe(true);
+    expect(headerCheckboxState.indeterminate).toBe(false);
+
+    const pageText = await page.textContent("body");
+    expect(pageText).toContain("250 selected");
+
+    const firstRowCheckbox = page
+      .locator(".ag-row")
+      .first()
+      .locator('input[type="checkbox"]');
+    await firstRowCheckbox.click();
+    await page.waitForTimeout(200);
+
+    const headerAfterUnselect = await headerCheckbox.evaluate(
+      (el: HTMLInputElement) => ({
+        checked: el.checked,
+        indeterminate: el.indeterminate,
+      }),
+    );
+    expect(headerAfterUnselect.indeterminate).toBe(true);
+    expect(headerAfterUnselect.checked).toBe(false);
+
+    await firstRowCheckbox.click();
+    await page.waitForTimeout(200);
+
+    const headerAfterReselect = await headerCheckbox.evaluate(
+      (el: HTMLInputElement) => ({
+        checked: el.checked,
+        indeterminate: el.indeterminate,
+      }),
+    );
+    expect(headerAfterReselect.checked).toBe(true);
+    expect(headerAfterReselect.indeterminate).toBe(false);
+  });
+
+  test("should unselect all when clicking header checkbox in selected state", async ({
+    page,
+  }) => {
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
+    );
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+
+    const headerCheckbox = page
+      .locator('.ag-header input[type="checkbox"]')
+      .nth(2);
+
+    await headerCheckbox.click();
+    await page.waitForTimeout(200);
+
+    const modal = page
+      .locator('[role="dialog"], .modal, [data-testid*="modal"]')
+      .first();
+    const okButton = modal
+      .locator(
+        'button:has-text("OK"), button:has-text("Yes"), button:has-text("Confirm")',
+      )
+      .first();
+    await okButton.click();
+    await page.waitForTimeout(500);
+
+    const headerSelected = await headerCheckbox.evaluate(
+      (el: HTMLInputElement) => el.checked,
+    );
+    expect(headerSelected).toBe(true);
+
+    await headerCheckbox.click();
+    await page.waitForTimeout(200);
+
+    const headerAfterUnselect = await headerCheckbox.evaluate(
+      (el: HTMLInputElement) => ({
+        checked: el.checked,
+        indeterminate: el.indeterminate,
+      }),
+    );
+    expect(headerAfterUnselect.checked).toBe(false);
+    expect(headerAfterUnselect.indeterminate).toBe(false);
+
+    const firstRowCheckbox = page
+      .locator(".ag-row")
+      .first()
+      .locator('input[type="checkbox"]');
+    await expect(firstRowCheckbox).not.toBeChecked();
+
+    const pageText = await page.textContent("body");
+    expect(pageText).not.toContain("selected");
+  });
 });
