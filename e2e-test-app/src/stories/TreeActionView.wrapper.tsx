@@ -1,4 +1,4 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useRef } from "react";
 import {
   TreeActionView,
   View,
@@ -42,25 +42,49 @@ export const TreeActionViewWrapper = (props: TreeActionViewProps) => {
   const [sorter, setSorter] = useState<any>();
   const [totalItems, setTotalItems] = useState<number>(mockResults.length);
   const [selectedRowItems, setSelectedRowItems] = useState<any[]>([]);
+  const [refreshCounter, setRefreshCounter] = useState(0);
 
-  // Mock refs for proper context
+  // Create proper refs for context
   const formRef = { current: null };
-  const searchTreeRef = { current: null };
+  const searchTreeRef = useRef<any>({
+    refreshResults: () => {
+      console.log("Refresh triggered in story - simulating data refresh");
+      // Simulate refresh by incrementing counter which will trigger a re-render
+      setRefreshCounter((prev) => prev + 1);
+
+      // Simulate some dynamic changes to show refresh is working
+      const refreshedResults = mockResults.map((result) => ({
+        ...result,
+        // Update last_login to show refresh effect
+        last_login: new Date().toISOString(),
+        // Add small random variation to annual_bonus to show change
+        annual_bonus:
+          (result.annual_bonus || 0) + Math.floor(Math.random() * 100 - 50),
+      }));
+
+      setResults(refreshedResults);
+      setTotalItems(refreshedResults.length);
+
+      // Show notification that refresh happened
+      console.log(`Mock data refreshed (${new Date().toLocaleTimeString()})`);
+    },
+  });
 
   console.log("TreeActionViewWrapper rendered with props:", {
     model: props.model,
     visible: props.visible,
     results: props.results?.length,
     treeView: props.treeView?.type,
+    refreshCounter,
   });
 
   const goToResourceId = async (ids: number[], openInSameTab?: boolean) => {
     console.log("goToResourceId called with:", ids, openInSameTab);
     // Mock implementation for story viewer
     if (ids.length > 0) {
-      const foundItem = mockResults.find((item) => item.id === ids[0]);
+      const foundItem = results.find((item) => item.id === ids[0]);
       if (foundItem) {
-        const foundIndex = mockResults.findIndex((item) => item.id === ids[0]);
+        const foundIndex = results.findIndex((item) => item.id === ids[0]);
         setCurrentId(ids[0]);
         setCurrentItemIndex(foundIndex);
       }

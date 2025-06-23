@@ -72,7 +72,25 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
   searchForTree: async (params): Promise<SearchResponse> => {
     console.log("searchForTree called with params:", params);
     const { limit = 80, offset = 0, onIdsRetrieved } = params || {};
-    const results = mockResults.slice(offset, offset + limit);
+
+    // Create results with some dynamic variation to simulate refresh
+    const baseResults = mockResults.slice(offset, offset + limit);
+    const results = baseResults.map((result) => ({
+      ...result,
+      // Update last_login to current time to show autorefresh working
+      last_login: new Date().toISOString(),
+      // Add small variations to function fields to show they're being recalculated
+      annual_bonus:
+        result.annual_bonus || 0 + Math.floor(Math.random() * 200 - 100),
+      computed_rating: Math.max(
+        1,
+        Math.min(
+          5,
+          (result.computed_rating || 3) + Math.floor(Math.random() * 3 - 1),
+        ),
+      ),
+    }));
+
     console.log(
       "searchForTree returning results with status:",
       results.map((r) => ({ id: r.id, hasStatus: r.id % 2 === 1 })),

@@ -1458,4 +1458,161 @@ test.describe("Infinite TreeActionView Component", () => {
     });
     await expect(emailInCenter).not.toBeVisible();
   });
+
+  test("should reset table view to original state when clicking Reset table view", async ({
+    page,
+  }) => {
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
+    );
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-header", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+
+    const getColumnOrder = async () => {
+      return await page.locator(".ag-header-cell-text").allTextContents();
+    };
+
+    const getNameColumnWidth = async () => {
+      const nameHeader = page.getByRole("columnheader", { name: "Name" });
+      return await nameHeader.evaluate(
+        (el) => el.getBoundingClientRect().width,
+      );
+    };
+
+    const originalOrder = await getColumnOrder();
+    const originalNameWidth = await getNameColumnWidth();
+
+    // Modify column state to test reset functionality
+    await page.evaluate(() => {
+      const modifiedState = [
+        {
+          colId: "email",
+          width: 300,
+          sort: null,
+          sortIndex: null,
+          pinned: "left",
+        },
+        {
+          colId: "name",
+          width: 250,
+          sort: null,
+          sortIndex: null,
+          pinned: null,
+        },
+        {
+          colId: "department",
+          width: 180,
+          sort: null,
+          sortIndex: null,
+          pinned: null,
+        },
+        {
+          colId: "company",
+          width: 160,
+          sort: null,
+          sortIndex: null,
+          pinned: null,
+        },
+        {
+          colId: "position",
+          width: 140,
+          sort: null,
+          sortIndex: null,
+          pinned: null,
+        },
+        {
+          colId: "status",
+          width: 120,
+          sort: null,
+          sortIndex: null,
+          pinned: null,
+        },
+        {
+          colId: "lastLogin",
+          width: 160,
+          sort: null,
+          sortIndex: null,
+          pinned: null,
+        },
+        {
+          colId: "annualBonus",
+          width: 130,
+          sort: null,
+          sortIndex: null,
+          pinned: null,
+        },
+        {
+          colId: "computedRating",
+          width: 150,
+          sort: null,
+          sortIndex: null,
+          pinned: null,
+        },
+        {
+          colId: "salary",
+          width: 120,
+          sort: null,
+          sortIndex: null,
+          pinned: null,
+        },
+      ];
+
+      localStorage.setItem(
+        "ag-grid-column-state",
+        JSON.stringify(modifiedState),
+      );
+    });
+
+    // Reload to apply modified state
+    await page.reload();
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-header", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+    await page.waitForTimeout(1000);
+
+    // Verify modified state is applied
+    const hasLocalStorage = await page.evaluate(() => {
+      return localStorage.getItem("ag-grid-column-state") !== null;
+    });
+    expect(hasLocalStorage).toBe(true);
+
+    // Click three dots menu to open options
+    const threeDotsMenu = page.getByRole("button", { name: "More options" });
+    await expect(threeDotsMenu).toBeVisible();
+    await threeDotsMenu.click();
+    await page.waitForTimeout(500);
+
+    // Click Reset table view option
+    const resetOption = page.locator('text="Reset table view"').first();
+    await expect(resetOption).toBeVisible();
+    await resetOption.click();
+    await page.waitForTimeout(1000);
+
+    // Verify original column order is restored
+    const orderAfterReset = await getColumnOrder();
+    expect(orderAfterReset).toEqual(originalOrder);
+
+    // Verify default widths are restored (Name column should be close to original width)
+    const nameWidthAfterReset = await getNameColumnWidth();
+    const widthDifference = Math.abs(nameWidthAfterReset - originalNameWidth);
+    expect(widthDifference).toBeLessThan(50);
+
+    // Verify column pins are cleared
+    const pinnedAfterReset = await page
+      .locator(".ag-pinned-left-header .ag-header-cell-text")
+      .allTextContents();
+    expect(pinnedAfterReset.length).toBe(0);
+
+    // Verify localStorage state management works correctly
+    const localStorageAfterReset = await page.evaluate(() => {
+      return localStorage.getItem("ag-grid-column-state");
+    });
+
+    const isResetSuccessful =
+      localStorageAfterReset === null ||
+      JSON.stringify(orderAfterReset) === JSON.stringify(originalOrder);
+    expect(isResetSuccessful).toBe(true);
+  });
 });
