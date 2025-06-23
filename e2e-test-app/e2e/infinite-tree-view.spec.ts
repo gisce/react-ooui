@@ -641,8 +641,6 @@ test.describe("Infinite TreeActionView Component", () => {
       .filter((cell) => /^\d{1,6}$/.test(cell.trim()))
       .map((cell) => parseInt(cell.trim()));
 
-    console.log("Found computed values:", computedValues.slice(0, 10));
-
     expect(computedValues.length).toBeGreaterThan(0);
 
     // Verify these look like actual computed ratings (reasonable numbers)
@@ -701,11 +699,6 @@ test.describe("Infinite TreeActionView Component", () => {
       badgeColors.push({ index: i, initialColor: color, badge });
     }
 
-    console.log(
-      "Initial badge colors:",
-      badgeColors.map((b) => `Row ${b.index + 1}: ${b.initialColor}`),
-    );
-
     // Wait for async loading
     await page.waitForTimeout(4000);
 
@@ -724,18 +717,12 @@ test.describe("Infinite TreeActionView Component", () => {
         return window.getComputedStyle(el).backgroundColor;
       });
 
-      console.log(`Row ${index + 1}: ${initialColor} → ${finalColor}`);
-
       if (greenColors.includes(finalColor)) {
         foundGreenBadge = true;
-        console.log(`✓ Row ${index + 1} badge is green after loading`);
       }
 
       if (initialColor !== finalColor) {
         foundColorChange = true;
-        console.log(
-          `✓ Row ${index + 1} badge color changed (async loading detected)`,
-        );
       }
     }
 
@@ -747,14 +734,112 @@ test.describe("Infinite TreeActionView Component", () => {
       });
 
       if (greenColors.includes(row2FinalColor)) {
-        console.log("🎯 Row 2 badge is GREEN - test success!");
+        foundGreenBadge = true;
       } else if (row2Badge.initialColor !== row2FinalColor) {
-        console.log("🎯 Row 2 badge changed color - async loading detected!");
+        foundColorChange = true;
       }
     }
 
     // Test passes if we find green badge or color change indicating async loading
     const showsAsyncBehavior = foundGreenBadge || foundColorChange;
     expect(showsAsyncBehavior).toBe(true);
+  });
+
+  test("should show company name text color changes after Computed Rating loads", async ({
+    page,
+  }) => {
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
+    );
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-header", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+
+    const rows = page.locator(".ag-row");
+    const rowCount = await rows.count();
+    expect(rowCount).toBeGreaterThan(0);
+
+    // Find company name text elements (they should be in cells with company data)
+    const companyNameCells = page
+      .locator(".ag-row .ag-cell")
+      .filter({ hasText: /\w+/ });
+
+    // Wait for company name cells to be available
+    await page.waitForFunction(
+      () => {
+        const cells = document.querySelectorAll(".ag-row .ag-cell");
+        return Array.from(cells).some(
+          (cell) => cell.textContent && cell.textContent.trim().length > 2,
+        );
+      },
+      { timeout: 5000 },
+    );
+
+    const cellCount = await companyNameCells.count();
+    expect(cellCount).toBeGreaterThan(0);
+
+    // Get initial text colors of first few cells with company names
+    const companyTextColors: Array<{
+      index: number;
+      initialColor: string;
+      text: string;
+      cell: any;
+    }> = [];
+
+    for (let i = 0; i < Math.min(8, cellCount); i++) {
+      const cell = companyNameCells.nth(i);
+      const text = await cell.textContent();
+
+      // Skip cells with just numbers or very short text
+      if (text && text.trim().length > 3 && !/^\d+$/.test(text.trim())) {
+        const color = await cell.evaluate((el) => {
+          return window.getComputedStyle(el).color;
+        });
+        companyTextColors.push({
+          index: i,
+          initialColor: color,
+          text: text.trim(),
+          cell,
+        });
+      }
+    }
+
+    // Wait for Computed Rating column to load and potentially trigger text color changes
+    await page.waitForTimeout(4000);
+
+    // Check for text color changes
+    let foundColorChange = false;
+    let foundSpecialColor = false;
+
+    for (const { index, initialColor, text, cell } of companyTextColors) {
+      const finalColor = await cell.evaluate((el) => {
+        return window.getComputedStyle(el).color;
+      });
+
+      if (initialColor !== finalColor) {
+        foundColorChange = true;
+      }
+
+      // Check for special colors that might indicate computed states
+      const specialColors = [
+        "rgb(56, 142, 60)", // Green
+        "rgb(76, 175, 80)", // Material green
+        "rgb(198, 40, 40)", // Red
+        "rgb(239, 108, 0)", // Orange
+        "rgb(255, 143, 0)", // Amber
+        "rgb(123, 31, 162)", // Purple
+        "rgb(25, 118, 210)", // Blue
+      ];
+
+      if (specialColors.includes(finalColor)) {
+        foundSpecialColor = true;
+      }
+    }
+
+    // Test passes if we find text color changes or special colors indicating async computation effects
+    const showsAsyncTextBehavior = foundColorChange || foundSpecialColor;
+
+    expect(showsAsyncTextBehavior).toBe(true);
   });
 });
