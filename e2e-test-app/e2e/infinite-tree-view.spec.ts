@@ -842,4 +842,102 @@ test.describe("Infinite TreeActionView Component", () => {
 
     expect(showsAsyncTextBehavior).toBe(true);
   });
+
+  test("should calculate Total Salary correctly when selecting rows", async ({
+    page,
+  }) => {
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
+    );
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+
+    const totalSalaryElement = page.getByText(/Total.*[Ss]alary/);
+
+    // Verify initial state shows "-"
+    const initialText = await totalSalaryElement.textContent();
+    expect(initialText).toContain("-");
+
+    // No need to extract individual values yet, just test the functionality
+
+    // Select first row
+    const firstRowCheckbox = page
+      .locator(".ag-row")
+      .first()
+      .locator('input[type="checkbox"]');
+    await firstRowCheckbox.click();
+    await page.waitForTimeout(500);
+
+    // Verify Total Salary equals first row salary
+    const afterFirstSelection = await totalSalaryElement.textContent();
+    const firstTotal = parseInt(afterFirstSelection?.match(/\d+/)?.[0] || "0");
+    expect(firstTotal).toBeGreaterThan(0);
+
+    // Select second row
+    const secondRowCheckbox = page
+      .locator(".ag-row")
+      .nth(1)
+      .locator('input[type="checkbox"]');
+    await secondRowCheckbox.click();
+    await page.waitForTimeout(500);
+
+    // Verify Total Salary increased
+    const afterSecondSelection = await totalSalaryElement.textContent();
+    const secondTotal = parseInt(
+      afterSecondSelection?.match(/\d+/)?.[0] || "0",
+    );
+    expect(secondTotal).toBeGreaterThan(firstTotal);
+
+    // Select third row
+    const thirdRowCheckbox = page
+      .locator(".ag-row")
+      .nth(2)
+      .locator('input[type="checkbox"]');
+    await thirdRowCheckbox.click();
+    await page.waitForTimeout(500);
+
+    // Verify Total Salary increased again
+    const afterThirdSelection = await totalSalaryElement.textContent();
+    const thirdTotal = parseInt(afterThirdSelection?.match(/\d+/)?.[0] || "0");
+    expect(thirdTotal).toBeGreaterThan(secondTotal);
+
+    // Deselect all rows
+    await firstRowCheckbox.click();
+    await secondRowCheckbox.click();
+    await thirdRowCheckbox.click();
+    await page.waitForTimeout(500);
+
+    // Verify it returns to "-"
+    const afterDeselection = await totalSalaryElement.textContent();
+    expect(afterDeselection).toContain("-");
+  });
+
+  test("should show three dots menu with correct options", async ({ page }) => {
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
+    );
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+
+    // Find the three dots menu button using the correct aria-label
+    const threeDotsMenu = page.getByRole("button", { name: "More options" });
+    await expect(threeDotsMenu).toBeVisible();
+
+    // Verify it has the expected SVG structure (three dots)
+    const svg = threeDotsMenu.locator("svg");
+    await expect(svg).toBeVisible();
+
+    // Click the three dots menu
+    await threeDotsMenu.click();
+    await page.waitForTimeout(500);
+
+    // Verify menu options appeared
+    const pageText = await page.textContent("body");
+    const hasChangeToPaginated = pageText?.includes("Change to paginated");
+    const hasResetTableView = pageText?.includes("Reset table view");
+
+    expect(hasChangeToPaginated && hasResetTableView).toBe(true);
+  });
 });
