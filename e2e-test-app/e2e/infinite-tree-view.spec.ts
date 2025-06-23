@@ -400,6 +400,109 @@ test.describe("Infinite TreeActionView Component", () => {
     expect(pageText).not.toContain("selected");
   });
 
+  test("should copy selected row IDs to clipboard when clicking copy button", async ({
+    page,
+    context,
+  }) => {
+    // Grant clipboard permissions
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
+    );
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+
+    // Test 1: Copy single row ID
+    const firstRowCheckbox = page
+      .locator(".ag-row")
+      .first()
+      .locator('input[type="checkbox"]');
+    await firstRowCheckbox.click();
+    await page.waitForTimeout(500);
+
+    const copyButton = page.getByRole("button", { name: "Copy", exact: true });
+    await expect(copyButton).toBeVisible();
+    await copyButton.click();
+    await page.waitForTimeout(200);
+
+    const clipboardSingle = await page.evaluate(() => navigator.clipboard.readText());
+    expect(clipboardSingle).toBeTruthy();
+    expect(clipboardSingle.split(",")).toHaveLength(1);
+
+    // Clear selection
+    await firstRowCheckbox.click();
+    await page.waitForTimeout(200);
+
+    // Test 2: Copy 3 row IDs
+    const rows = page.locator(".ag-row");
+    const firstRow = rows.nth(0).locator('input[type="checkbox"]');
+    const secondRow = rows.nth(1).locator('input[type="checkbox"]');
+    const thirdRow = rows.nth(2).locator('input[type="checkbox"]');
+
+    await firstRow.click();
+    await secondRow.click();
+    await thirdRow.click();
+    await page.waitForTimeout(500);
+
+    await copyButton.click();
+    await page.waitForTimeout(200);
+
+    const clipboardThree = await page.evaluate(() => navigator.clipboard.readText());
+    expect(clipboardThree).toBeTruthy();
+    const threeIds = clipboardThree.split(",");
+    expect(threeIds).toHaveLength(3);
+    expect(threeIds[0]).toBeTruthy();
+    expect(threeIds[1]).toBeTruthy();
+    expect(threeIds[2]).toBeTruthy();
+
+    // Clear selection
+    await firstRow.click();
+    await secondRow.click();
+    await thirdRow.click();
+    await page.waitForTimeout(200);
+
+    // Test 3: Copy all row IDs (select all)
+    const headerCheckbox = page
+      .locator('.ag-header input[type="checkbox"]')
+      .nth(2);
+
+    await headerCheckbox.click();
+    await page.waitForTimeout(200);
+
+    const modal = page
+      .locator('[role="dialog"], .modal, [data-testid*="modal"]')
+      .first();
+    const okButton = modal
+      .locator(
+        'button:has-text("OK"), button:has-text("Yes"), button:has-text("Confirm")',
+      )
+      .first();
+    await okButton.click();
+    await page.waitForTimeout(1000);
+
+    await copyButton.click();
+    await page.waitForTimeout(500);
+
+    const clipboardAll = await page.evaluate(() => navigator.clipboard.readText());
+    expect(clipboardAll).toBeTruthy();
+    const allIds = clipboardAll.split(",");
+    expect(allIds.length).toBe(250);
+    
+    // Verify IDs are valid (should be numbers or strings)
+    expect(allIds[0]).toBeTruthy();
+    expect(allIds[0].trim()).not.toBe("");
+    expect(allIds[249]).toBeTruthy();
+    expect(allIds[249].trim()).not.toBe("");
+
+    // Verify clipboard content matches expected pattern (IDs should be consistent)
+    const firstId = allIds[0].trim();
+    const lastId = allIds[249].trim();
+    expect(firstId).toMatch(/\d+/); // Should contain numbers
+    expect(lastId).toMatch(/\d+/); // Should contain numbers
+  });
+
   test("should display status indicators as colored dots next to company names", async ({
     page,
   }) => {
