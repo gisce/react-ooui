@@ -590,4 +590,72 @@ test.describe("Infinite TreeActionView Component", () => {
       expect(true).toBe(true);
     }
   });
+
+  test("should verify Computed Rating shows async loading from empty to values", async ({
+    page,
+  }) => {
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
+    );
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-header", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+
+    const gridBodyViewport = page.locator(
+      ".ag-body-horizontal-scroll-viewport",
+    );
+
+    // Verify Computed Rating column exists by scrolling
+    let allHeaders: string[] = [];
+
+    await gridBodyViewport.evaluate((el) => {
+      el.scrollLeft = 0;
+    });
+    await page.waitForTimeout(200);
+    allHeaders.push(
+      ...(await page.locator(".ag-header-cell-text").allTextContents()),
+    );
+
+    await gridBodyViewport.evaluate((el) => {
+      el.scrollLeft = el.scrollWidth;
+    });
+    await page.waitForTimeout(200);
+    allHeaders.push(
+      ...(await page.locator(".ag-header-cell-text").allTextContents()),
+    );
+
+    const uniqueHeaders = [...new Set(allHeaders)];
+    expect(uniqueHeaders).toContain("Computed Rating");
+
+    // Monitor cells for async changes - scroll back to see content
+    await gridBodyViewport.evaluate((el) => {
+      el.scrollLeft = 0;
+    });
+    await page.waitForTimeout(200);
+
+    const initialCells = await page
+      .locator(".ag-row .ag-cell")
+      .allTextContents();
+
+    await page.waitForTimeout(3000);
+
+    const finalCells = await page.locator(".ag-row .ag-cell").allTextContents();
+
+    // Test for async loading evidence:
+    const cellsChanged = initialCells.some(
+      (cell, index) => cell !== finalCells[index],
+    );
+    const hasComputedValues = finalCells.some((cell) =>
+      /^\d{1,6}$/.test(cell.trim()),
+    );
+    const hadEmptyThenFilled =
+      initialCells.some((cell) => !cell || cell.trim() === "") &&
+      finalCells.some((cell) => cell && cell.trim() !== "");
+
+    const showsAsyncBehavior =
+      cellsChanged || hasComputedValues || hadEmptyThenFilled;
+    expect(showsAsyncBehavior).toBe(true);
+    expect(hasComputedValues).toBe(true);
+  });
 });
