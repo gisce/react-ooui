@@ -159,10 +159,8 @@ test.describe("Infinite TreeActionView Component", () => {
       : 0;
 
     expect(expectedTotal).toBe(250);
-    console.log(`Total records indicated: ${expectedTotal}`);
 
     const initialRowCount = await page.locator(".ag-row").count();
-    console.log(`Initial DOM rows rendered: ${initialRowCount}`);
     expect(initialRowCount).toBeGreaterThan(0);
 
     const gridBodyViewport = page.locator(".ag-body-viewport");
@@ -170,7 +168,6 @@ test.describe("Infinite TreeActionView Component", () => {
     const initialScrollTop = await gridBodyViewport.evaluate(
       (el) => el.scrollTop,
     );
-    console.log(`Initial scroll position: ${initialScrollTop}`);
 
     await gridBodyViewport.evaluate((el) => {
       el.scrollTop = 1000;
@@ -178,17 +175,12 @@ test.describe("Infinite TreeActionView Component", () => {
     await page.waitForTimeout(500);
 
     const scrolledTop = await gridBodyViewport.evaluate((el) => el.scrollTop);
-    console.log(`After scroll: ${scrolledTop}`);
     expect(scrolledTop).toBeGreaterThan(initialScrollTop);
 
     const finalRowCount = await page.locator(".ag-row").count();
-    console.log(`Final DOM rows rendered: ${finalRowCount}`);
 
     expect(finalRowCount).toBeGreaterThan(0);
     expect(finalRowCount).toBeLessThanOrEqual(expectedTotal);
-    console.log(
-      `SUCCESS: Total records (${expectedTotal}) correctly indicated, ${finalRowCount} virtualized rows rendered`,
-    );
   });
 
   test("should handle row selection correctly", async ({ page }) => {
@@ -228,6 +220,51 @@ test.describe("Infinite TreeActionView Component", () => {
 
     const pageText = await page.textContent("body");
     const hasSelectedText = pageText?.includes("1 selected");
+
+    expect(hasSelectedText).toBe(true);
+  });
+
+  test("should handle multiple row selection correctly", async ({ page }) => {
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
+    );
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+
+    const rows = page.locator(".ag-row");
+    const firstRowCheckbox = rows.nth(0).locator('input[type="checkbox"]');
+    const secondRowCheckbox = rows.nth(1).locator('input[type="checkbox"]');
+    const thirdRowCheckbox = rows.nth(2).locator('input[type="checkbox"]');
+
+    await firstRowCheckbox.click();
+    await secondRowCheckbox.click();
+    await thirdRowCheckbox.click();
+    await page.waitForTimeout(500);
+
+    await expect(firstRowCheckbox).toBeChecked();
+    await expect(secondRowCheckbox).toBeChecked();
+    await expect(thirdRowCheckbox).toBeChecked();
+
+    const headerCheckboxes = await page
+      .locator('.ag-header input[type="checkbox"]')
+      .all();
+
+    let foundIndeterminate = false;
+    for (const checkbox of headerCheckboxes) {
+      const isIndeterminate = await checkbox.evaluate(
+        (el: HTMLInputElement) => el.indeterminate,
+      );
+      if (isIndeterminate) {
+        foundIndeterminate = true;
+        break;
+      }
+    }
+
+    expect(foundIndeterminate).toBe(true);
+
+    const pageText = await page.textContent("body");
+    const hasSelectedText = pageText?.includes("3 selected");
 
     expect(hasSelectedText).toBe(true);
   });
