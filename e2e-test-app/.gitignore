@@ -1,7 +1,7 @@
 # Playwright
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
 e2e/screenshots/
 node_modules/
