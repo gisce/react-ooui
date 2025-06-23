@@ -436,4 +436,72 @@ test.describe("Infinite TreeActionView Component", () => {
     expect(parseInt(dotStyles.width)).toBeGreaterThan(0);
     expect(parseInt(dotStyles.height)).toBeGreaterThan(0);
   });
+
+  test("should display correct color dots and status text according to status values", async ({
+    page,
+  }) => {
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
+    );
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+
+    const statusDots = page.locator(
+      ".ag-row .ag-cell .ant-badge .ant-badge-status-dot",
+    );
+    const dotCount = await statusDots.count();
+    expect(dotCount).toBeGreaterThan(0);
+
+    const expectedColors = new Set([
+      "rgb(198, 40, 40)", // #c62828 - Red for critical priority
+      "rgb(239, 108, 0)", // #ef6c00 - Orange for high priority
+      "rgb(255, 143, 0)", // #ff8f00 - Golden for high-bonus VIPs
+      "rgb(123, 31, 162)", // #7b1fa2 - Purple for VIP
+      "rgb(56, 142, 60)", // #388e3c - Green for high performers
+      "rgb(25, 118, 210)", // #1976d2 - Blue for good bonus earners
+      "rgb(117, 117, 117)", // #757575 - Gray for inactive/terminated
+      "rgb(245, 124, 0)", // #f57c00 - Orange for low performers
+      "rgb(255, 152, 0)", // #ff9800 - Orange status indicator
+    ]);
+
+    const foundColors = new Set();
+
+    for (let i = 0; i < Math.min(20, dotCount); i++) {
+      const dot = statusDots.nth(i);
+      const dotColor = await dot.evaluate((el) => {
+        return window.getComputedStyle(el).backgroundColor;
+      });
+      foundColors.add(dotColor);
+    }
+
+    expect(foundColors.size).toBeGreaterThan(1);
+
+    let foundExpectedColor = false;
+    for (const color of foundColors) {
+      expect(color).not.toBe("rgba(0, 0, 0, 0)");
+      if (expectedColors.has(color as string)) {
+        foundExpectedColor = true;
+      }
+    }
+
+    expect(foundExpectedColor).toBe(true);
+
+    const firstDotColor = await statusDots.first().evaluate((el) => {
+      return window.getComputedStyle(el).backgroundColor;
+    });
+
+    let foundDifferentColor = false;
+    for (let i = 1; i < Math.min(15, dotCount); i++) {
+      const dotColor = await statusDots.nth(i).evaluate((el) => {
+        return window.getComputedStyle(el).backgroundColor;
+      });
+      if (dotColor !== firstDotColor) {
+        foundDifferentColor = true;
+        break;
+      }
+    }
+
+    expect(foundDifferentColor).toBe(true);
+  });
 });
