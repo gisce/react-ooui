@@ -1431,4 +1431,102 @@ test.describe("Infinite TreeActionView Component", () => {
       expect(true).toBe(true);
     }
   });
+
+  test("should handle column sorting with proper arrows and verify Name column values are sorted correctly", async ({
+    page,
+  }) => {
+    test.setTimeout(60000);
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
+    );
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-header", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+
+    await page.waitForTimeout(1000);
+
+    const gridBodyViewport = page.locator(".ag-body-viewport");
+    
+    await gridBodyViewport.evaluate((el) => {
+      el.scrollTop = 1000;
+    });
+    await page.waitForTimeout(1000);
+
+    await gridBodyViewport.evaluate((el) => {
+      el.scrollTop = 0;
+    });
+    await page.waitForTimeout(500);
+
+    const nameHeader = page.getByRole("columnheader", { name: "Name" });
+    await expect(nameHeader).toBeVisible();
+
+    const getNameColumnValues = async () => {
+      const selector = '.ag-row .ag-cell[col-id="name"] div';
+      await page.waitForSelector(selector, { state: 'visible' });
+      await page.waitForTimeout(1500);
+      
+      const elements = page.locator(selector);
+      const count = await elements.count();
+      
+      const names = [];
+      for (let i = 0; i < Math.min(8, count); i++) {
+        const element = elements.nth(i);
+        const text = await element.textContent();
+        
+        if (text && text.trim().length > 2 && /[A-Za-z]/.test(text.trim())) {
+          names.push(text.trim());
+        }
+      }
+      
+      return names;
+    };
+
+    const getSortingIndicator = async () => {
+      const sortAsc = await nameHeader.locator('.ag-icon-asc').count();
+      const sortDesc = await nameHeader.locator('.ag-icon-desc').count();
+      const ariaSort = await nameHeader.getAttribute('aria-sort');
+      
+      return {
+        hasAscIcon: sortAsc > 0,
+        hasDescIcon: sortDesc > 0,
+        ariaSort: ariaSort
+      };
+    };
+
+    const originalNames = await getNameColumnValues();
+
+    await nameHeader.click();
+    await page.waitForTimeout(1000);
+
+    const ascNames = await getNameColumnValues();
+    const ascSort = await getSortingIndicator();
+
+    expect(ascNames.length).toBeGreaterThan(0);
+    const ascSorted = [...ascNames].sort();
+    expect(ascNames).toEqual(ascSorted);
+    expect(ascSort.ariaSort).toBe('ascending');
+
+    await nameHeader.click();
+
+    const descNames = await getNameColumnValues();
+    const descSort = await getSortingIndicator();
+
+    expect(descNames.length).toBeGreaterThan(0);
+    const descSorted = [...descNames].sort().reverse();
+    expect(descNames).toEqual(descSorted);
+    expect(descSort.ariaSort).toBe('descending');
+
+    await nameHeader.click();
+
+    const restoredNames = await getNameColumnValues();
+    const noneSort = await getSortingIndicator();
+
+    expect(restoredNames.length).toBeGreaterThan(0);
+    expect(restoredNames).toEqual(originalNames);
+    expect(noneSort.ariaSort).toBe('none');
+
+    const totalText = await page.getByText("Total registers:").textContent();
+    expect(totalText).toContain("250");
+  });
 });

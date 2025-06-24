@@ -12,7 +12,6 @@ const sortResults = (results: any[], order?: string) => {
     return results;
   }
 
-  console.log("Sorting results with order:", order);
 
   // Parse order string like "name asc, department desc"
   const orderClauses = order.split(',').map(clause => clause.trim());
