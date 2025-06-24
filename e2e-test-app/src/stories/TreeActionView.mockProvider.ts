@@ -6,6 +6,55 @@ import {
 } from "@gisce/react-ooui";
 import { mockTreeView, mockResults } from "./TreeActionView.mocks";
 
+// Helper function to parse order string and sort results
+const sortResults = (results: any[], order?: string) => {
+  if (!order || !order.trim()) {
+    return results;
+  }
+
+  console.log("Sorting results with order:", order);
+
+  // Parse order string like "name asc, department desc"
+  const orderClauses = order.split(',').map(clause => clause.trim());
+  
+  return [...results].sort((a, b) => {
+    for (const clause of orderClauses) {
+      const [fieldName, direction = 'asc'] = clause.split(/\s+/);
+      const isDesc = direction.toLowerCase() === 'desc';
+      
+      const aValue = a[fieldName];
+      const bValue = b[fieldName];
+      
+      // Handle null/undefined values
+      if (aValue == null && bValue == null) continue;
+      if (aValue == null) return isDesc ? 1 : -1;
+      if (bValue == null) return isDesc ? -1 : 1;
+      
+      let comparison = 0;
+      
+      // Handle different data types
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        comparison = aValue.localeCompare(bValue);
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        comparison = aValue - bValue;
+      } else if (fieldName === 'last_login' || fieldName === 'hire_date') {
+        // Handle dates
+        const aDate = new Date(aValue);
+        const bDate = new Date(bValue);
+        comparison = aDate.getTime() - bDate.getTime();
+      } else {
+        // Default string comparison
+        comparison = String(aValue).localeCompare(String(bValue));
+      }
+      
+      if (comparison !== 0) {
+        return isDesc ? -comparison : comparison;
+      }
+    }
+    return 0;
+  });
+};
+
 // Helper function to generate colors and status based on result properties
 const generateColorsAndStatus = (result: any) => {
   let colors = undefined;
@@ -66,15 +115,21 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
   },
   search: async (params: any) => {
     console.log("search called with params:", params);
-    const { limit = 80, offset = 0 } = params || {};
-    return mockResults.slice(offset, offset + limit);
+    const { limit = 80, offset = 0, order } = params || {};
+    
+    // Apply sorting first, then pagination
+    let sortedResults = sortResults(mockResults, order);
+    return sortedResults.slice(offset, offset + limit);
   },
   searchForTree: async (params): Promise<SearchResponse> => {
     console.log("searchForTree called with params:", params);
-    const { limit = 80, offset = 0, onIdsRetrieved } = params || {};
+    const { limit = 80, offset = 0, onIdsRetrieved, order } = params || {};
 
-    // Create results with some dynamic variation to simulate refresh
-    const baseResults = mockResults.slice(offset, offset + limit);
+    // Start with all results and apply sorting first
+    let sortedResults = sortResults(mockResults, order);
+    
+    // Then apply pagination
+    const baseResults = sortedResults.slice(offset, offset + limit);
     const results = baseResults.map((result) => ({
       ...result,
       // Update last_login to current time to show autorefresh working
