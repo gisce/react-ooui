@@ -89,6 +89,7 @@ export const MultiCheckboxInput = (props: MultiCheckboxInputProps) => {
       setIsLoadingOptions(false);
     }
     if (error) {
+      console.error(error);
       return <Alert className="mt-10" message={error} type="error" banner />;
     }
   }

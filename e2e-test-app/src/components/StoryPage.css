@@ -1,0 +1,29 @@
+.story-page-fullscreen {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.story-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  text-align: center;
+  color: #ef4444;
+  background-color: #f8f9fa;
+}
+
+.story-error h2 {
+  margin: 0 0 16px 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.story-error p {
+  margin: 0;
+  font-size: 16px;
+  opacity: 0.8;
+}

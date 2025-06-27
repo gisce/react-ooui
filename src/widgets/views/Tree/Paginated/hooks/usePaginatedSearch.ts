@@ -509,6 +509,8 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       lastAssignedResults.current = [...preparedResults];
       setResults([...preparedResults]);
     } catch (error) {
+      setTreeIsLoading(false);
+      showErrorNotification(error);
       console.error(error);
       throw error;
     } finally {
@@ -537,6 +539,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     updateTotalRows,
     addRecordsToCheckFunctionFields,
     setTotalItemsActionView,
+    showErrorNotification,
   ]);
 
   const refresh = useCallback(async () => {

@@ -33,3 +33,5 @@ dist
 .yalc
 
 *storybook.log
+
+test-results/

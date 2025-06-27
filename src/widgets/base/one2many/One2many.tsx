@@ -68,6 +68,24 @@ export const One2many = (props: Props) => {
       return view;
     }
 
+    if (getToolbarEnabled && (type === "form" || type === "tree")) {
+      // Get view and toolbar in parallel
+      const [viewData, toolbar] = await Promise.all([
+        ConnectionProvider.getHandler().getView({
+          model: relation,
+          type,
+          context: { ...getContext?.(), ...context },
+        }),
+        ConnectionProvider.getHandler().getToolbar({
+          model: relation,
+          type,
+          context: { ...getContext?.(), ...context },
+        }),
+      ]);
+      return { ...viewData, toolbar };
+    }
+
+    // If toolbar not enabled or not form/tree view, just get view
     return await ConnectionProvider.getHandler().getView({
       model: relation,
       type,
@@ -81,14 +99,17 @@ export const One2many = (props: Props) => {
 
     try {
       if (mode && mode.length > 0) {
-        for (const m of mode as ViewType[]) {
+        const viewPromises = (mode as ViewType[]).map(async (m: ViewType) => {
           const v = await getViewData(m);
           views.set(m, v);
-        }
+        });
+        await Promise.all(viewPromises);
         setViews(views);
       } else {
-        const formView = await getViewData("form");
-        const treeView = await getViewData("tree");
+        const [formView, treeView] = await Promise.all([
+          getViewData("form"),
+          getViewData("tree"),
+        ]);
         views.set("form", formView);
         views.set("tree", treeView);
         setViews(views);
@@ -111,6 +132,7 @@ export const One2many = (props: Props) => {
   }
 
   if (error) {
+    console.error(error);
     return <Alert className="mt-10" message={error} type="error" banner />;
   }
 

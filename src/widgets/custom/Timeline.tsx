@@ -91,6 +91,7 @@ export const Timeline = (props: TimelineProps) => {
   }
 
   if (error) {
+    console.error(error);
     return <Alert className="mt-10" message={error} type="error" banner />;
   }
 
@@ -161,6 +162,7 @@ export const TimelineInput = (props: TimelineInputProps) => {
   }
 
   if (error) {
+    console.error(error);
     return <Alert className="mt-10" message={error} type="error" banner />;
   }
 
