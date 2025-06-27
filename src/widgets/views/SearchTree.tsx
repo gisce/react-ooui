@@ -401,6 +401,7 @@ function SearchTree(props: Props, ref: any) {
   const error = initialError || searchError;
 
   if (error) {
+    console.error(error);
     return <Alert className="mt-10" message={error} type="error" banner />;
   }
 

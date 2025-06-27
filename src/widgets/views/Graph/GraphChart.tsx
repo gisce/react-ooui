@@ -49,6 +49,7 @@ export const GraphChart = ({
   const { data, isGroup, isStack, yAxisOpts } = values;
 
   if (error) {
+    console.error(error);
     return <Alert message={error} type="error" banner />;
   }
 

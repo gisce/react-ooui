@@ -30,6 +30,9 @@ export const ErrorAlert = ({
       ? JSON.stringify(error.message)
       : JSON.stringify(error);
   }
+
+  console.error(error);
+
   return (
     <Alert
       className={className}
