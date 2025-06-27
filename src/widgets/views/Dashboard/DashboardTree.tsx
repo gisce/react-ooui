@@ -192,6 +192,7 @@ function DashboardTree(props: Props) {
     if (!treeView || !formView) {
       return null;
     }
+    searchError && console.error(searchError);
 
     return (
       <div style={{ overflowY: "scroll" }}>
@@ -226,6 +227,7 @@ function DashboardTree(props: Props) {
   };
 
   if (initialError) {
+    console.error(initialError);
     return (
       <Alert className="mt-10" message={initialError} type="error" banner />
     );
