@@ -58,6 +58,7 @@ import type {
   TreeView,
   SearchFields,
   FormView,
+  View,
   ConnectionProviderType,
   SearchRequest,
   SearchResponse,
@@ -92,6 +93,9 @@ import { UserAllFeatureKeys, UserFeatureKeys } from "./models/userFeature";
 import type { UserFeaturesMap, UserFeaturesState } from "./models/userFeature";
 import { GraphCard } from "./widgets/views/Graph";
 import dayjs from "./helpers/dayjs";
+import { TreeActionView } from "./views/actionViews/TreeActionView";
+import ActionViewProvider from "./context/ActionViewContext";
+import { DEFAULT_SEARCH_LIMIT } from "./models/constants";
 
 export {
   Button,
@@ -187,4 +191,8 @@ export {
   UserFeatureKeys,
   UserFeaturesMap,
   UserFeaturesState,
+  TreeActionView,
+  ActionViewProvider,
+  View,
+  DEFAULT_SEARCH_LIMIT,
 };

@@ -87,6 +87,7 @@
     "**/*.stories.*",
     "**/*.spec.*",
     "src/__tests__",
-    "src/stories"
+    "src/stories",
+    "e2e"
   ]
 }
