@@ -429,9 +429,17 @@ type ConnectionProviderType = {
     {
       model,
       type,
-    }: { model: string; type: "create" | "read" | "write" | "unlink" },
+    }: {
+      model: string;
+      type:
+        | "create"
+        | "read"
+        | "write"
+        | "unlink"
+        | Array<"create" | "read" | "write" | "unlink">;
+    },
     requestConfig?: any,
-  ) => Promise<boolean>;
+  ) => Promise<boolean | Record<string, boolean>>;
 };
 
 type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar";

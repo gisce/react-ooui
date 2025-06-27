@@ -25,22 +25,23 @@ export const usePermissions = () => {
       permissions: PermissionType[],
     ): Promise<PermissionsMap> => {
       try {
-        // Create parallel requests for all permissions
-        const permissionPromises = permissions.map(async (permission) => {
-          const hasPermission = await fetchRequest({
-            model,
-            type: permission,
-          });
-          return { permission, hasPermission };
+        // Use the existing checkPermission method with array of permissions
+        const permissionsResult = await fetchRequest({
+          model,
+          type: permissions,
         });
 
-        // Wait for all requests to complete
-        const results = await Promise.all(permissionPromises);
+        // If single permission was passed, convert to PermissionsMap
+        if (typeof permissionsResult === "boolean") {
+          const permissionsMap: PermissionsMap = {} as PermissionsMap;
+          permissionsMap[permissions[0]] = permissionsResult;
+          return permissionsMap;
+        }
 
-        // Convert results to a map
+        // Convert the result to PermissionsMap type
         const permissionsMap: PermissionsMap = {} as PermissionsMap;
-        results.forEach(({ permission, hasPermission }) => {
-          permissionsMap[permission] = hasPermission;
+        permissions.forEach((permission) => {
+          permissionsMap[permission] = permissionsResult[permission] || false;
         });
 
         return permissionsMap;
@@ -54,6 +55,7 @@ export const usePermissions = () => {
 
   return { checkPermissions, cancelRequest };
 };
+
 export type UsePermissionsStateResult = {
   permissions: PermissionsMap | null;
   loading: boolean;
