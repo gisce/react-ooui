@@ -1,0 +1,83 @@
+/* Story viewer specific CSS fixes for TreeActionView components */
+
+/* Ensure story root containers use full height */
+#root,
+.stories-main {
+  height: 100vh !important;
+  min-height: 100vh !important;
+}
+
+/* Fix for TreeActionView containers */
+.tree-action-view-container {
+  height: 100vh !important;
+  min-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* Force table containers to take available space */
+.ant-table-wrapper,
+.ant-table-container,
+.ant-table-content {
+  height: 100% !important;
+}
+
+/* Fix for search filter height calculations */
+.ant-form {
+  flex-shrink: 0 !important;
+}
+
+/* Ensure tree tables use remaining space */
+.gisce-table-container {
+  flex: 1 !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+/* Fix for action bar */
+.tree-action-bar {
+  flex-shrink: 0 !important;
+}
+
+/* Override any conflicting height calculations */
+.ant-layout,
+.ant-layout-content {
+  height: 100% !important;
+}
+
+/* Fix for story canvas */
+.story-content {
+  padding: 0 !important;
+}
+
+/* Specific fixes for Tree components */
+[data-testid="tree-container"],
+[data-testid="search-tree"],
+[data-testid="infinite-tree"] {
+  height: 100% !important;
+  min-height: 500px !important;
+}
+
+/* Fix for title header - override sticky positioning for Story viewer */
+.title-header {
+  flex-shrink: 0 !important;
+  z-index: 10 !important;
+}
+
+/* Override TitleHeader sticky positioning in Story viewer */
+.title-header > div[style*="position: sticky"] {
+  position: static !important;
+  top: auto !important;
+}
+
+/* Alternative: if the above doesn't work, target by sticky position directly */
+div[style*="position: sticky"][style*="top: 80"] {
+  position: static !important;
+  top: auto !important;
+}
+
+/* Ensure proper scroll behavior */
+body {
+  overflow: hidden !important;
+}

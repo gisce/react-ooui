@@ -1,0 +1,55 @@
+.stories-index {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 40px 20px;
+}
+
+.stories-index-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.stories-index h1 {
+  text-align: center;
+  margin: 0 0 40px 0;
+  font-size: 32px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.stories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+.story-card {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  border: 1px solid #e1e5e9;
+}
+
+.story-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #3b82f6;
+}
+
+.story-card h2 {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.story-card p {
+  margin: 0;
+  color: #6b7280;
+  line-height: 1.5;
+  font-size: 14px;
+}

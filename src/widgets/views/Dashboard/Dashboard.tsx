@@ -240,6 +240,7 @@ function Dashboard(props: DashboardProps, ref: any) {
   }
 
   if (error) {
+    console.error(error);
     return (
       <Alert className="mt-10 mb-20" message={error} type="error" banner />
     );
