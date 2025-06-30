@@ -126,6 +126,7 @@ export const One2many = (props: Props) => {
   }
 
   if (error) {
+    console.error(error);
     return <Alert className="mt-10" message={error} type="error" banner />;
   }
 
