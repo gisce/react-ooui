@@ -8,6 +8,7 @@ export enum ErpFeatureKeys {
   FEATURE_MANY2ONE_SORT = "many2one_sort",
   FEATURE_LOGGABLE_ACTIONS = "user_action_logs",
   FEATURE_USER_FLAGS = "user_feature_flags",
+  FEATURE_CHECK_PERMS = "check_perms",
   // ... add more features here
 }
 
