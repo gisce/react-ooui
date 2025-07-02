@@ -406,6 +406,7 @@ function ActionView(props: Props, ref: any) {
               model,
               ids: [id],
               context,
+              fieldsToRetrieve: ["id"],
             })
           )?.[0];
         } catch (err) {}
