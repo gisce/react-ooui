@@ -402,10 +402,13 @@ function ActionView(props: Props, ref: any) {
       if (itemIndex === -1) {
         try {
           resource = (
-            await ConnectionProvider.getHandler().readObjects({
+            await ConnectionProvider.getHandler().search({
               model,
-              ids: [id],
-              context,
+              params: [["id", "in", [id]]],
+              skipRead: true,
+              context: {
+                active_test: false,
+              },
             })
           )?.[0];
         } catch (err) {}
