@@ -40,10 +40,11 @@ export const Indicator = (props: IndicatorProps) => {
   const { ooui } = props;
 
   const hasActionId = ooui.actionId !== undefined;
+  const hasActionField = ooui.actionField !== undefined;
 
   return (
     <Field ooui={ooui}>
-      {hasActionId ? (
+      {hasActionId || hasActionField ? (
         <ErrorBoundary>
           <GraphIndicatorInput ooui={ooui} />
         </ErrorBoundary>
