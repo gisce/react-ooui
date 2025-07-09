@@ -62,6 +62,11 @@ type IndicatorInputProps = {
 const IndicatorInput = (props: IndicatorInputProps) => {
   const { token } = useToken();
   const { ooui, value } = props;
+  const { getFieldValue } = useFormContext();
+
+  const effectiveValue = ooui.actionField
+    ? getFieldValue(ooui.actionField)
+    : value;
   const { locale } = useLocale();
   const [icon, setIcon] = useState<string>(ooui.icon);
   const [color, setColor] = useState<string>(ooui.color);
@@ -78,7 +83,7 @@ const IndicatorInput = (props: IndicatorInputProps) => {
         try {
           const iconEval = await parseCondition({
             condition,
-            values: { value },
+            values: { value: effectiveValue },
             context: {},
           });
           setter(iconEval);
@@ -93,7 +98,7 @@ const IndicatorInput = (props: IndicatorInputProps) => {
     evaluateCondition(ooui.color, setColor);
     return () => cancelRequest();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ooui.icon, ooui.color, value]);
+  }, [ooui.icon, ooui.color, effectiveValue, ooui.actionField]);
 
   const shouldShowMenu = useMemo(() => {
     if (ooui.fieldType !== "many2one") {
@@ -130,11 +135,11 @@ const IndicatorInput = (props: IndicatorInputProps) => {
     </>
   );
   const Icon: React.ElementType = iconMapper(icon) as any;
-  let formattedValue = value;
+  let formattedValue = effectiveValue;
   if (ooui.selectionValues.size) {
-    formattedValue = ooui.selectionValues.get(value);
-  } else if (Array.isArray(value)) {
-    formattedValue = value[1];
+    formattedValue = ooui.selectionValues.get(effectiveValue);
+  } else if (Array.isArray(effectiveValue)) {
+    formattedValue = effectiveValue[1];
   } else if (
     ooui.fieldType === "date" ||
     ooui.fieldType === "time" ||
@@ -145,26 +150,38 @@ const IndicatorInput = (props: IndicatorInputProps) => {
       time: "HH:mm",
       datetime: "DD/MM/YYYY HH:mm",
     };
-    formattedValue = value
-      ? dayjs(value).format(formats[ooui.fieldType as keyof typeof formats])
+    formattedValue = effectiveValue
+      ? dayjs(effectiveValue).format(
+          formats[ooui.fieldType as keyof typeof formats],
+        )
       : " ";
   }
-  if (ooui.fieldType === "many2one" && value && ooui.raw_props?.relation) {
+  if (
+    ooui.fieldType === "many2one" &&
+    effectiveValue &&
+    ooui.raw_props?.relation
+  ) {
     formattedValue = (
       <Space>
         {formattedValue}
         {shouldShowMenu && (
-          <Many2oneSuffix id={value[0]} model={ooui.raw_props.relation} />
+          <Many2oneSuffix
+            id={effectiveValue[0]}
+            model={ooui.raw_props.relation}
+          />
         )}
       </Space>
     );
   }
-  if (value && (ooui.fieldType === "float" || ooui.fieldType === "integer")) {
+  if (
+    effectiveValue &&
+    (ooui.fieldType === "float" || ooui.fieldType === "integer")
+  ) {
     try {
       formattedValue = new Intl.NumberFormat(
         locale.replaceAll("_", "-"),
         {},
-      ).format(value);
+      ).format(effectiveValue);
     } catch (e) {
       console.log("Error formatting number with locale", locale);
       console.error(e);
