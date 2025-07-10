@@ -40,7 +40,7 @@ export const Indicator = (props: IndicatorProps) => {
   const { ooui } = props;
 
   const hasActionId = ooui.actionId !== undefined;
-  const hasActionField = (ooui as any).actionField !== undefined;
+  const hasActionField = ooui.actionField !== undefined;
 
   return (
     <Field ooui={ooui}>
