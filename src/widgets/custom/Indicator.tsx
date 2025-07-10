@@ -63,11 +63,6 @@ type IndicatorInputProps = {
 const IndicatorInput = (props: IndicatorInputProps) => {
   const { token } = useToken();
   const { ooui, value } = props;
-  const { getFieldValue } = useFormContext();
-
-  const effectiveValue = ooui.actionField
-    ? getFieldValue(ooui.actionField)
-    : value;
   const { locale } = useLocale();
   const [icon, setIcon] = useState<string>(ooui.icon);
   const [color, setColor] = useState<string>(ooui.color);
@@ -84,7 +79,7 @@ const IndicatorInput = (props: IndicatorInputProps) => {
         try {
           const iconEval = await parseCondition({
             condition,
-            values: { value: effectiveValue },
+            values: { value },
             context: {},
           });
           setter(iconEval);
@@ -99,7 +94,7 @@ const IndicatorInput = (props: IndicatorInputProps) => {
     evaluateCondition(ooui.color, setColor);
     return () => cancelRequest();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ooui.icon, ooui.color, effectiveValue, ooui.actionField]);
+  }, [ooui.icon, ooui.color, value]);
 
   const shouldShowMenu = useMemo(() => {
     if (ooui.fieldType !== "many2one") {
@@ -136,11 +131,11 @@ const IndicatorInput = (props: IndicatorInputProps) => {
     </>
   );
   const Icon: React.ElementType = iconMapper(icon) as any;
-  let formattedValue = effectiveValue;
+  let formattedValue = value;
   if (ooui.selectionValues.size) {
-    formattedValue = ooui.selectionValues.get(effectiveValue);
-  } else if (Array.isArray(effectiveValue)) {
-    formattedValue = effectiveValue[1];
+    formattedValue = ooui.selectionValues.get(value);
+  } else if (Array.isArray(value)) {
+    formattedValue = value[1];
   } else if (
     ooui.fieldType === "date" ||
     ooui.fieldType === "time" ||
@@ -151,38 +146,26 @@ const IndicatorInput = (props: IndicatorInputProps) => {
       time: "HH:mm",
       datetime: "DD/MM/YYYY HH:mm",
     };
-    formattedValue = effectiveValue
-      ? dayjs(effectiveValue).format(
-          formats[ooui.fieldType as keyof typeof formats],
-        )
+    formattedValue = value
+      ? dayjs(value).format(formats[ooui.fieldType as keyof typeof formats])
       : " ";
   }
-  if (
-    ooui.fieldType === "many2one" &&
-    effectiveValue &&
-    ooui.raw_props?.relation
-  ) {
+  if (ooui.fieldType === "many2one" && value && ooui.raw_props?.relation) {
     formattedValue = (
       <Space>
         {formattedValue}
         {shouldShowMenu && (
-          <Many2oneSuffix
-            id={effectiveValue[0]}
-            model={ooui.raw_props.relation}
-          />
+          <Many2oneSuffix id={value[0]} model={ooui.raw_props.relation} />
         )}
       </Space>
     );
   }
-  if (
-    effectiveValue &&
-    (ooui.fieldType === "float" || ooui.fieldType === "integer")
-  ) {
+  if (value && (ooui.fieldType === "float" || ooui.fieldType === "integer")) {
     try {
       formattedValue = new Intl.NumberFormat(
         locale.replaceAll("_", "-"),
         {},
-      ).format(effectiveValue);
+      ).format(value);
     } catch (e) {
       console.log("Error formatting number with locale", locale);
       console.error(e);
@@ -208,10 +191,14 @@ const IndicatorInput = (props: IndicatorInputProps) => {
 const GraphIndicatorInput = (props: IndicatorInputProps) => {
   const { ooui } = props;
   const { actionId, height } = ooui;
+  const { getFieldValue, activeId } = useFormContext();
 
-  const { activeId } = useFormContext();
+  const effectiveActionId = (ooui as any).actionField
+    ? parseInt(getFieldValue((ooui as any).actionField) || "0", 10) || actionId
+    : actionId;
+
   const { actionData, treeShortcut, loading, error, fetchData } =
-    useFormGraphData(actionId!);
+    useFormGraphData(effectiveActionId!);
 
   const readForViewEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_READFORVIEW,
@@ -222,12 +209,12 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
   const { openShortcut } = tabManagerContext || {};
 
   useEffect(() => {
-    if (!ooui) {
+    if (!ooui || !effectiveActionId) {
       return;
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ooui, activeId]);
+  }, [ooui, activeId, effectiveActionId]);
 
   if (error && error.message !== "active_id_not_found") {
     return <ErrorAlert error={error} />;
