@@ -656,6 +656,7 @@ function Form(props: FormProps, ref: any) {
     } else {
       setAttachments?.([]);
       values = await getDefaultValues(fields);
+      createdId.current = (values as any).id;
       defaultGetCalled = true;
     }
     return { values, defaultGetCalled };
