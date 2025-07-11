@@ -49,6 +49,9 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
     const { onSubmit, searchValues, searchFields, onChange, onClear } = props;
     const [form] = Form.useForm();
     const [confirmedValues, setConfirmedValues] = useState<any>({});
+    const [initialConfirmedValues, setInitialConfirmedValues] = useState<any>(
+      {},
+    );
     const [searchText, setSearchText] = useState("");
     const { t } = useLocale();
 
@@ -56,6 +59,7 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
       form.setFieldsValue(searchValues);
       const normalized = normalizeValues(searchValues || {});
       setConfirmedValues(normalized);
+      setInitialConfirmedValues(normalized);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchValues]);
 
@@ -63,6 +67,10 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
       submit: form.submit,
       resetFields: form.resetFields,
       setFieldsValue: form.setFieldsValue,
+      resetInitialValues: () => {
+        setInitialConfirmedValues({});
+        setConfirmedValues({});
+      },
     }));
 
     const getFieldsInputs = ({
@@ -78,7 +86,7 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
 
       const fields = rows?.flatMap((row) => row) as Field[];
 
-      const confirmedValuesKeyExist = Object.keys(confirmedValues).reduce<
+      const currentValues = Object.keys(confirmedValues).reduce<
         Record<string, boolean>
       >((acc, key) => {
         const keyWithoutHash = key.replace(/#.*$/, "");
@@ -87,6 +95,23 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
         }
         return acc;
       }, {});
+
+      const initialValues = Object.keys(initialConfirmedValues).reduce<
+        Record<string, boolean>
+      >((acc, key) => {
+        const keyWithoutHash = key.replace(/#.*$/, "");
+        if (acc[keyWithoutHash] === undefined) {
+          acc[keyWithoutHash] = initialConfirmedValues[key] !== undefined;
+        }
+        return acc;
+      }, {});
+
+      const confirmedValuesKeyExist = onlyInputsWithValue
+        ? fields.reduce<Record<string, boolean>>((acc, field) => {
+            acc[field.id] = currentValues[field.id] && initialValues[field.id];
+            return acc;
+          }, {})
+        : currentValues;
 
       return fields
         .filter((field) => {
@@ -107,9 +132,15 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
           const field = item as Field;
           const hasValue = confirmedValuesKeyExist[field.id] === true;
 
+          const hasInitialValue = Object.keys(initialConfirmedValues).some(
+            (key) =>
+              key.replace(/#.*$/, "") === field.id &&
+              initialConfirmedValues[key] !== undefined,
+          );
           const hasToHide = onlyInputsWithValue
             ? false
-            : (searchText && !matchSearch(searchText, field)) || hasValue;
+            : (searchText && !matchSearch(searchText, field)) ||
+              hasInitialValue;
 
           return (
             <div
@@ -230,13 +261,20 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
 );
 SideSearchFilterComponent.displayName = "SideSearchFilterComponent";
 
+type SideSearchFilterRef = {
+  resetInitialValues: () => void;
+  submit: () => void;
+  resetFields: () => void;
+  setFieldsValue: (values: any) => void;
+};
+
 export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
   const { onSubmit, isOpen, onClose, searchFields, fields, searchValues } =
     props;
   const sfo = useRef<SearchFilterOoui>();
   const { t } = useLocale();
   const [parsedSearchFields, setParsedSearchFields] = useState<Container>();
-  const formRef = useRef<FormInstance>(null);
+  const sideSearchFilterRef = useRef<SideSearchFilterRef>(null);
   const [searchParams, setSearchParams] = useState<any>();
 
   useEffect(() => {
@@ -273,7 +311,7 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
   );
 
   const handleSubmit = useCallback(() => {
-    formRef.current?.submit();
+    sideSearchFilterRef.current?.submit();
   }, []);
 
   const handleOnChange = useCallback(
@@ -304,7 +342,7 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
           }
         });
 
-        formRef.current?.setFieldsValue(filteredValues);
+        sideSearchFilterRef.current?.setFieldsValue(filteredValues);
         const newSearchParams = searchParams?.filter(
           (entry: [string]) =>
             entry[0].replace(/#.*$/, "") !== field.replace(/#.*$/, ""),
@@ -313,8 +351,9 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
         return;
       }
 
-      formRef.current?.resetFields();
-      formRef.current?.setFieldsValue({});
+      sideSearchFilterRef.current?.resetFields();
+      sideSearchFilterRef.current?.setFieldsValue({});
+      sideSearchFilterRef.current?.resetInitialValues?.();
       setSearchParams([]);
     },
     [searchParams],
@@ -340,7 +379,7 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
     >
       {isOpen && (
         <SideSearchFilterComponent
-          ref={formRef}
+          ref={sideSearchFilterRef}
           searchFields={parsedSearchFields}
           onSubmit={onFinish}
           searchValues={searchValues}
