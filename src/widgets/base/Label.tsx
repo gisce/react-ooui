@@ -30,7 +30,11 @@ const Label = (props: Props) => {
   let labelTitle = "";
   if (!ooui.fieldForLabel && ooui._id) {
     labelText = formContext.getFieldValue(ooui._id);
-    if (
+    if (ooui.fieldType === "many2one") {
+      labelText = labelText ? labelText[1] : "";
+    } else if (ooui.fieldType === "selection") {
+      labelText = ooui.selectionValues.get(labelText) || "";
+    } else if (
       ooui.fieldType === "date" ||
       ooui.fieldType === "time" ||
       ooui.fieldType === "datetime"
