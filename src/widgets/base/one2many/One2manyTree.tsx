@@ -59,6 +59,7 @@ export type One2manyTreeProps = {
   selectedRowKeys?: number[];
   showPointerCursorInRows?: boolean;
   treeType: TreeType;
+  onChangeTreeType?: (type: TreeType) => void;
 };
 
 const DEFAULT_HEIGHT = 400;
@@ -83,6 +84,7 @@ export const One2manyTree = ({
   selectedRowKeys = [],
   showPointerCursorInRows = true,
   treeType,
+  onChangeTreeType,
 }: One2manyTreeProps) => {
   const internalGridRef = useRef<InfiniteTableRef | PaginatedTableRef>(null);
   const tableRef: RefObject<InfiniteTableRef | PaginatedTableRef> =
@@ -344,7 +346,7 @@ export const One2manyTree = ({
         refresh={refresh}
         onSortChange={onSortChange}
         isFieldLoading={undefined}
-        onChangeTreeType={undefined}
+        onChangeTreeType={onChangeTreeType}
         onFetchChildrenForRecord={
           treeView?.field_parent ? fetchChildrenForRecord : undefined
         }
@@ -379,6 +381,7 @@ export const One2manyTree = ({
       strings={{
         resetTableViewLabel: t("resetTableView"),
       }}
+      onChangeTableType={onChangeTreeType}
     />
   );
 };

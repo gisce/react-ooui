@@ -61,9 +61,8 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
   const { value, onChange, ooui, views, treeType } = props;
   const { items: one2manyItems = [] } = value || {};
   const items = useOne2manyItems({ one2manyItems });
-  const { currentView, setCurrentView, itemIndex, setItemIndex } = useContext(
-    One2manyContext,
-  ) as One2manyContextType;
+  const { currentView, setCurrentView, itemIndex, setItemIndex, setTreeType } =
+    useContext(One2manyContext) as One2manyContextType;
   const {
     readOnly,
     relation,
@@ -251,6 +250,16 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     return views.get("form")?.fields !== undefined;
   }, [views]);
 
+  const handleTreeTypeChange = useCallback(
+    (newType: TreeType) => {
+      // Don't allow changing from/to legacy type in One2many
+      if (newType !== "legacy" && treeType !== "legacy") {
+        setTreeType(newType);
+      }
+    },
+    [treeType, setTreeType],
+  );
+
   return (
     <>
       <One2manyTopBar
@@ -305,6 +314,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
           }}
           aggregates={aggregates}
           treeType={treeType}
+          onChangeTreeType={handleTreeTypeChange}
         />
       )}
       {currentView === "form" && (
