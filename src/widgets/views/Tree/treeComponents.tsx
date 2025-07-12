@@ -2,7 +2,7 @@ import { ReactElement, useCallback, useEffect, useMemo, useState } from "react";
 import { Checkbox, Spin, ColorPicker, Tooltip } from "antd";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../../base/ProgressBar";
-import { One2manyValue } from "../../base/one2many/One2manyInput";
+import { One2manyValue } from "../../base/one2many/One2manyInputLegacy";
 import { Interweave } from "interweave";
 import { Many2oneTree } from "../../base/many2one/Many2oneTree";
 import { ReferenceTree } from "../../base/ReferenceTree";

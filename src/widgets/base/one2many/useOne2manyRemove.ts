@@ -5,7 +5,7 @@ import {
   One2manyContextType,
 } from "@/context/One2manyContext";
 import { useCallback, useContext } from "react";
-import { One2manyItem } from "./One2manyInput";
+import { One2manyItem } from "./One2manyInputLegacy";
 import { showUnlinkItemDialog } from "@/ui/UnlinkItemDialog";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
 

@@ -1,5 +1,5 @@
 import { Tree as TreeOoui } from "@gisce/ooui";
-import { One2manyItem } from "./One2manyInput";
+import { One2manyItem } from "./One2manyInputLegacy";
 import { useTreeAggregates } from "./useTreeAggregates";
 
 export const useOne2manyTreeAggregates = ({

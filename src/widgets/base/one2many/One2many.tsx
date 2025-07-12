@@ -4,11 +4,11 @@ import Field from "@/common/Field";
 import { Spin, Alert } from "antd";
 import { Views, ViewType } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
-import { One2manyInput } from "@/widgets/base/one2many/One2manyInput";
+import { One2manyInputLegacy } from "@/widgets/base/one2many/One2manyInputLegacy";
 import {
-  One2manyInput as One2manyInputInfinite,
-  One2manyInputInfiniteProps,
-} from "@/widgets/base/one2many/One2manyInputInfinite";
+  One2manyInput,
+  One2manyInputBaseProps,
+} from "@/widgets/base/one2many/One2manyInput";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
@@ -156,7 +156,7 @@ export const One2many = (props: Props) => {
   );
 };
 
-const One2manyComponent = (props: One2manyInputInfiniteProps) => {
+const One2manyComponent = (props: One2manyInputBaseProps) => {
   const { ooui, value } = props;
 
   const { treeType, setTreeType } = useOne2manyContext();
@@ -180,9 +180,8 @@ const One2manyComponent = (props: One2manyInputInfiniteProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ooui.infinite, value]);
 
-  return treeType === "infinite" ? (
-    <One2manyInputInfinite {...props} />
-  ) : (
-    <One2manyInput {...props} />
-  );
+  if (treeType === "legacy") {
+    return <One2manyInputLegacy {...props} />;
+  }
+  return <One2manyInput {...props} treeType={treeType} />;
 };
