@@ -1,13 +1,15 @@
 import { useState, useCallback, useRef } from "react";
 import { Button, Input, message, Space, Popover, theme } from "antd";
 import { CopyOutlined, CheckOutlined } from "@ant-design/icons";
-import { useLocale } from "@gisce/react-formiga-components";
+import { useLocale, getTablerIcon } from "@gisce/react-formiga-components";
 import { createShareOpenUrl } from "@/helpers/shareUrlHelper";
 import ActionButton from "./ActionButton";
-import { IconExternalLink, IconShare2 } from "@tabler/icons-react";
 import { useTabs } from "@/context/TabManagerContext";
 import { useActionViewContext } from "@/context/ActionViewContext";
 import { ActionInfo } from "@/types";
+
+const IconExternalLink = getTablerIcon("IconExternalLink") as React.FC<any>;
+const IconShare2 = getTablerIcon("IconShare2") as React.FC<any>;
 
 export type ShareUrlButtonProps = {
   res_id?: number;
@@ -111,8 +113,8 @@ export function ShareUrlButton({ res_id, searchParams }: ShareUrlButtonProps) {
         <Button
           title={t("openInNewTab")}
           style={{ height: 28 }}
-          type="text"
           icon={<IconExternalLink size={18} color={token.colorTextSecondary} />}
+          type="text"
           onClick={() => window.open(shareUrl, "_blank", "noopener,noreferrer")}
         />
       </Space.Compact>

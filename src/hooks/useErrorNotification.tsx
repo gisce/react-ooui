@@ -3,7 +3,7 @@ import {
   Icon,
   NotificationButton,
   NotificationType,
-  useNotification,
+  useNotificationContext,
 } from "@gisce/react-formiga-components";
 import { Interweave } from "interweave";
 import { Modal, Button, Space, Row } from "antd";
@@ -26,7 +26,7 @@ export const useErrorNotification = ({
 }: {
   onButtonAction?: (payload: any) => void;
 } = {}) => {
-  const { open, destroy } = useNotification();
+  const { open, destroy } = useNotificationContext();
 
   const showErrorNotification = (error: ShowErrorNotificationArg) => {
     // Type guard for Notification-like error
@@ -51,6 +51,8 @@ export const useErrorNotification = ({
       // Show modal for warnings and errors
       if (type === "warning" || type === "error") {
         const buttons = error.buttons || [];
+        // eslint-disable-next-line prefer-const
+        let modalInstance: any;
         const buttonsComponent =
           buttons.length > 0 ? (
             <Row justify="end" style={{ marginTop: 16 }}>
@@ -58,24 +60,36 @@ export const useErrorNotification = ({
                 {buttons.map((button: NotificationButton) => {
                   return (
                     <Button
-                      key={button.label}
+                      key={button.name}
                       icon={<Icon icon={button.icon} />}
                       size="small"
                       onClick={() => {
-                        onButtonAction?.(button.payload);
-                        Modal.destroyAll();
+                        onButtonAction?.(button.action);
+                        modalInstance?.destroy();
                       }}
                     >
-                      {button.label}
+                      {button.name}
                     </Button>
                   );
                 })}
+                <Button
+                  key="ok"
+                  type="primary"
+                  icon={<Icon icon="check" />}
+                  size="small"
+                  onClick={() => {
+                    error.onOk?.();
+                    modalInstance?.destroy();
+                  }}
+                >
+                  OK
+                </Button>
               </Space>
             </Row>
           ) : undefined;
 
         const modalMethod = type === "error" ? Modal.error : Modal.warning;
-        modalMethod({
+        modalInstance = modalMethod({
           title: error.title,
           content,
           centered: true,

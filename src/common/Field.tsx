@@ -59,6 +59,7 @@ export default function Field({
       name={id}
       valuePropName={valuePropName}
       rules={rules}
+      validateTrigger={required ? "onBlur" : "onChange"}
       validateStatus={hasError ? "error" : hasWarning ? "warning" : undefined}
       help={helpMessage}
       hasFeedback={hasError || hasWarning}

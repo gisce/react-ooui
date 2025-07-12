@@ -4,6 +4,8 @@ import React, { useCallback, useState } from "react";
 import { Many2oneSuffix } from "./many2one/Many2oneSuffix";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useDeepCompareEffect } from "use-deep-compare";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
+import { UserFeatureKeys } from "@/models/userFeature";
 
 export type ReferenceTreeProps = {
   value: string;
@@ -46,6 +48,10 @@ export const ReferenceTree = (
     fetchName();
   }, [value]);
 
+  const disableArrowMenu = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_DISABLE_ARROW_MENU,
+  );
+
   if (!value && !loading) {
     return <></>;
   }
@@ -60,7 +66,7 @@ export const ReferenceTree = (
     <Space>
       <>{`${selectionDescription}:`}</>
       <>{name}</>
-      <Many2oneSuffix id={intId} model={model} />
+      {!disableArrowMenu && <Many2oneSuffix id={intId} model={model} />}
     </Space>
   );
 };

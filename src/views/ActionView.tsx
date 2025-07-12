@@ -5,6 +5,7 @@ import {
   useImperativeHandle,
   useContext,
   useCallback,
+  useEffect,
 } from "react";
 
 import { Spin } from "antd";
@@ -37,6 +38,7 @@ import { DashboardActionView } from "./actionViews/DashboardActionView";
 import { resolveViewInfoPromises } from "@/helpers/viewHelper";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useAutoUpdateUrlAndTitle } from "@/hooks/useAutoUpdateUrlAndTitle";
+import { PermissionType, usePermissionsState } from "@/hooks/usePermissions";
 
 type Props = {
   domain: any;
@@ -96,7 +98,7 @@ function ActionView(props: Props, ref: any) {
   const [currentItemIndex, setCurrentItemIndex] = useState<number>();
   const [results, setResults] = useState<any>([]);
   const [sorter, setSorter] = useState<any>();
-  const [totalItems, setTotalItems] = useState<number>(0);
+  const [totalItems, setTotalItems] = useState<number>();
   const [gtResourceModalVisible, setGtResourceModalVisible] =
     useState<boolean>(false);
   const [searchingForResourceId, setSearchingForResourceId] =
@@ -105,6 +107,16 @@ function ActionView(props: Props, ref: any) {
 
   const { t } = useLocale();
   const { showErrorNotification } = useErrorNotification();
+
+  const {
+    permissions,
+    loading: permissionsLoading,
+    error: permissionsError,
+  } = usePermissionsState({
+    model,
+    permissions: ["create", "write", "unlink"],
+    enabled: !!model,
+  });
 
   const formRef = useRef();
   const searchTreeRef = useRef();
@@ -336,6 +348,17 @@ function ActionView(props: Props, ref: any) {
     }
   }, [tabs, activeKey]);
 
+  // Handle permissions errors
+  useEffect(() => {
+    if (permissionsError) {
+      showErrorNotification({
+        type: "error",
+        title: "Permissions Error",
+        message: `Error loading permissions for model ${model}: ${permissionsError.message}`,
+      });
+    }
+  }, [permissionsError, model, showErrorNotification]);
+
   async function canWeClose() {
     if (!currentView) {
       return true;
@@ -379,10 +402,13 @@ function ActionView(props: Props, ref: any) {
       if (itemIndex === -1) {
         try {
           resource = (
-            await ConnectionProvider.getHandler().readObjects({
+            await ConnectionProvider.getHandler().search({
               model,
-              ids: [id],
-              context,
+              params: [["id", "in", [id]]],
+              skipRead: true,
+              context: {
+                active_test: false,
+              },
             })
           )?.[0];
         } catch (err) {}
@@ -439,7 +465,7 @@ function ActionView(props: Props, ref: any) {
     }
   }
 
-  if (isLoading) {
+  if (isLoading || permissionsLoading) {
     return <Spin />;
   }
 
@@ -477,6 +503,9 @@ function ActionView(props: Props, ref: any) {
       initialSearchParams={initialSearchParams}
       initialCurrentPage={currentPage}
       initialOrder={order}
+      permissions={permissions}
+      permissionsLoading={permissionsLoading}
+      permissionsError={permissionsError}
     >
       <ActionViewContent
         availableViews={availableViews}

@@ -189,6 +189,23 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     tableRef,
   });
 
+  const {
+    isFieldLoading,
+    refresh: refreshFunctionFields,
+    addRecordsToCheckFunctionFields,
+    onHasFunctionFieldsToParseConditions,
+    syncExternalRecordUpdates,
+  } = useTreeFunctionFieldsRead({
+    model,
+    treeView,
+    tableRef,
+    context: parentContext,
+    isActive,
+    treeOoui,
+    updateAttributes,
+    results: actionViewResults,
+  });
+
   const { clear: clearAutorefreshableFields } = useAutorefreshableTreeFields({
     model,
     tableRef,
@@ -199,22 +216,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     treeOoui,
     updateAttributes,
     results: actionViewResults,
-  });
-
-  const {
-    isFieldLoading,
-    refresh: refreshFunctionFields,
-    addRecordsToCheckFunctionFields,
-    onHasFunctionFieldsToParseConditions,
-  } = useTreeFunctionFieldsRead({
-    model,
-    treeView,
-    tableRef,
-    context: parentContext,
-    isActive,
-    treeOoui,
-    updateAttributes,
-    results: actionViewResults,
+    onRecordsUpdated: syncExternalRecordUpdates,
   });
 
   const { columns, strings } = useTableConfiguration(treeOoui, parentContext);

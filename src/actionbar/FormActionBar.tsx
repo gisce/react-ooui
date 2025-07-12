@@ -71,6 +71,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
     setPreviousView,
     goToResourceId,
     isActive,
+    permissions,
   } = useActionViewContext();
 
   const { openDefaultActionForModel } = tabManagerContext || {};
@@ -98,6 +99,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
   const { actionButtonProps, printButtonProps, relateButtonProps } =
     useFormToolbarButtons({
       toolbar,
+      model: currentModel,
       mustDisableButtons,
       formRef,
       onRefreshParentValues: handleRefresh,
@@ -276,11 +278,11 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
           <ActionBarSeparator />
         </>
       )}
-      <NewButton disabled={mustDisableButtons} />
+      <NewButton disabled={mustDisableButtons || !permissions?.create} />
       <ActionButton
         icon={<SaveOutlined />}
         tooltip={t("save")}
-        disabled={!formHasChanges || mustDisableButtons}
+        disabled={!formHasChanges || mustDisableButtons || !permissions?.write}
         loading={formIsSaving}
         onClick={onFormSave}
       />
@@ -288,7 +290,10 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
         icon={<CopyOutlined />}
         tooltip={t("duplicate")}
         disabled={
-          formHasChanges || mustDisableButtons || currentId === undefined
+          formHasChanges ||
+          mustDisableButtons ||
+          currentId === undefined ||
+          !permissions?.create
         }
         loading={duplicatingItem}
         onClick={() =>
@@ -302,7 +307,9 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
       <ActionDangerButton
         icon={<DeleteOutlined />}
         tooltip={t("delete")}
-        disabled={mustDisableButtons || currentId === undefined}
+        disabled={
+          mustDisableButtons || currentId === undefined || !permissions?.unlink
+        }
         loading={removingItem}
         onClick={() =>
           showConfirmDialog({
