@@ -11,10 +11,8 @@ import { Tree as TreeOoui } from "@gisce/ooui";
 import { RefObject, useCallback, useMemo, useRef, useState } from "react";
 import { getSortedFieldsFromState, getTableItems } from "@/helpers/treeHelper";
 import { useDeepCompareEffect, useDeepCompareMemo } from "use-deep-compare";
-import { TreeAggregates } from "./useTreeAggregates";
-import { AggregatesFooter } from "./AggregatesFooter";
-import { useTreeColumnStorageFetch } from "./useTreeColumnStorageFetch";
-import { Spin, Badge } from "antd";
+import { TreeAggregates, useSharedAggregates } from "./useTreeAggregates";
+import { Spin } from "antd";
 import {
   One2manyTreeDataForHash,
   getKey,
@@ -22,10 +20,10 @@ import {
 import { useLocale } from "@gisce/react-formiga-components";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 import { PaginatedTableComponent } from "@/widgets/views/Tree/Paginated/components/PaginatedTableComponent";
-import { useTableConfiguration } from "@/hooks/useTableConfiguration";
 import { OnRowClickedData } from "@/widgets/views/Tree/Paginated/SearchTreePaginated.types";
 import { ConnectionProvider } from "@/index";
 import { TreeView } from "@/types";
+import { useInfiniteTable } from "@/hooks/useInfiniteTable";
 
 export type One2manyTreeProps = {
   items: One2manyItem[];
@@ -90,9 +88,6 @@ export const One2manyTree = ({
   const tableRef: RefObject<InfiniteTableRef | PaginatedTableRef> =
     gridRef || internalGridRef;
 
-  const colorsForResults = useRef<{ [key: number]: string }>({});
-  const statusForResults = useRef<{ [key: number]: string }>();
-
   const prevItemsValue = useRef<One2manyItem[]>();
   const itemsRef = useRef<One2manyItem[]>(items);
   const { t } = useLocale();
@@ -111,7 +106,36 @@ export const One2manyTree = ({
 
   const totalRows = useDeepCompareMemo(() => items.length, [items]);
 
-  const { columns, strings } = useTableConfiguration(ooui, context);
+  // Use shared infinite table functionality
+  const {
+    columns,
+    strings,
+    colorsForResults,
+    statusForResults,
+    onRowStyle,
+    statusComponent,
+    onRowStatus,
+    getColumnState,
+    updateColumnState,
+    isColumnStateLoading,
+  } = useInfiniteTable({
+    treeOoui: ooui,
+    parentContext: context,
+    columnStateKey: getKey({
+      ...dataForHash,
+      model: relation,
+    }),
+    selectedRowKeys,
+    hasStatusColumn: ooui.status !== null,
+  });
+
+  // Use shared aggregates functionality
+  const { footerComponent } = useSharedAggregates({
+    treeOoui: ooui,
+    model: relation,
+    selectedRowKeys,
+    showEmptyValues: false,
+  });
 
   // Reuse onFetchRecords for infinite mode data fetching
   const onRequestData = useCallback(
@@ -133,32 +157,19 @@ export const One2manyTree = ({
       });
 
       // Update color and status refs
-      colorsForResults.current = { ...colorsForResults.current, ...colors };
-      if (!statusForResults.current && status) {
-        statusForResults.current = {};
+      if (colors) {
+        colorsForResults.current = { ...colorsForResults.current, ...colors };
       }
       if (status) {
+        if (!statusForResults.current) {
+          statusForResults.current = {};
+        }
         statusForResults.current = { ...statusForResults.current, ...status };
       }
       return results;
     },
-    [onFetchRecords],
+    [colorsForResults, onFetchRecords, statusForResults],
   );
-
-  const onRowStyle = useCallback((record: any) => {
-    if (colorsForResults.current[record.node?.data?.id]) {
-      return { color: colorsForResults.current[record.node?.data?.id] };
-    }
-    return undefined;
-  }, []);
-
-  const { loading, getColumnState, updateColumnState } =
-    useTreeColumnStorageFetch({
-      key: getKey({
-        ...dataForHash,
-        model: relation,
-      }),
-    });
 
   // For paginated mode, use onRequestData pattern like usePaginatedSearch
   const onPaginatedRequestData = useCallback(async () => {
@@ -300,7 +311,7 @@ export const One2manyTree = ({
     [treeView, ooui, relation, context],
   );
 
-  if (loading) {
+  if (isColumnStateLoading) {
     return <Spin />;
   }
 
@@ -325,15 +336,9 @@ export const One2manyTree = ({
         onGetFirstVisibleRowIndex={onGetFirstVisibleRowIndex}
         onGetFirstVisibleColumn={onGetFirstVisibleColumn}
         setTreeFirstVisibleColumn={setTreeFirstVisibleColumn}
-        footerComp={
-          aggregates && (
-            <AggregatesFooter aggregates={aggregates} isLoading={false} />
-          )
-        }
-        statusComp={(status: any) => (
-          <Badge color={status} style={{ marginLeft: 7 }} />
-        )}
-        onRowStatus={(record: any) => statusForResults.current?.[record.id]}
+        footerComp={footerComponent}
+        statusComp={statusComponent}
+        onRowStatus={onRowStatus}
         headerCheckboxState={headerCheckboxState}
         onHeaderCheckboxClick={onHeaderCheckboxClick}
         refresh={refresh}
@@ -366,16 +371,11 @@ export const One2manyTree = ({
       selectedRowKeys={selectedRowKeys}
       onSelectionCheckboxClicked={onSelectionCheckboxClicked}
       totalRows={totalRows}
-      footer={
-        aggregates && (
-          <AggregatesFooter aggregates={aggregates} isLoading={false} />
-        )
-      }
+      footer={footerComponent}
+      isLoading={false}
       hasStatusColumn={ooui.status !== null}
-      statusComponent={(status: any) => (
-        <Badge color={status} style={{ marginLeft: 7 }} />
-      )}
-      onRowStatus={(record: any) => statusForResults.current?.[record.id]}
+      statusComponent={statusComponent}
+      onRowStatus={onRowStatus}
       strings={{
         resetTableViewLabel: t("resetTableView"),
       }}
