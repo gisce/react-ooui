@@ -1,4 +1,4 @@
-import { One2manyItem } from "@/widgets/base/one2many/One2manyInput";
+import { One2manyItem } from "@/widgets/base/one2many/One2manyInputLegacy";
 import { Form as FormOoui } from "@gisce/ooui";
 import { generate } from "@ant-design/colors";
 
