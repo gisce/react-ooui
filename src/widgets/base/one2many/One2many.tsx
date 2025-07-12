@@ -11,12 +11,16 @@ import {
 } from "@/widgets/base/one2many/One2manyInput";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { FormContext, FormContextType } from "@/context/FormContext";
-import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import {
+  useFeatureIsEnabled,
+  useUserFeatureIsEnabled,
+} from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { DEFAULT_TREE_TYPE } from "@/views/actionViews/TreeActionView";
 import One2manyProvider, {
   useOne2manyContext,
 } from "@/context/One2manyContext";
+import { UserFeatureKeys } from "@/models/userFeature";
 
 const MIN_ITEMS_TO_USE_INFINITE = 30;
 
@@ -160,6 +164,9 @@ const One2manyComponent = (props: One2manyInputBaseProps) => {
   const { ooui, value } = props;
 
   const { treeType, setTreeType } = useOne2manyContext();
+  const enableNewTable = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_ONE2MANY_ENABLE_NEW_TABLE,
+  );
 
   useDeepCompareEffect(() => {
     if (ooui.infinite) {
@@ -176,7 +183,7 @@ const One2manyComponent = (props: One2manyInputBaseProps) => {
       return;
     }
 
-    setTreeType(DEFAULT_TREE_TYPE);
+    setTreeType(enableNewTable ? "paginated" : DEFAULT_TREE_TYPE);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ooui.infinite, value]);
 

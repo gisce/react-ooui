@@ -16,7 +16,7 @@ import { One2manyForm } from "./One2manyForm";
 import { useOne2manyRemove } from "./useOne2manyRemove";
 import { InfiniteTableRef } from "@gisce/react-formiga-table";
 import { useDeepCompareCallback } from "use-deep-compare";
-import { FormModal, SearchModal } from "@/index";
+import { FormModal, SearchModal, UserFeatureKeys } from "@/index";
 import { useOne2manyFormModal } from "./useOne2manyFormModal";
 import { useOne2manySearchModal } from "./useOne2manySearchModal";
 import { One2manyTree } from "./One2manyTree";
@@ -24,6 +24,7 @@ import "@gisce/react-formiga-table/style.css";
 import { Graph } from "@/widgets/views/Graph/Graph";
 import { useOne2manyTreeAggregates } from "./useOne2manyTreeAggregates";
 import { TreeType } from "@/views/actionViews/TreeActionView";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
 
 const SUPPORTED_VIEWS = ["form", "tree", "graph"];
 
@@ -260,6 +261,10 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     [treeType, setTreeType],
   );
 
+  const enableNewTable = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_ONE2MANY_ENABLE_NEW_TABLE,
+  );
+
   return (
     <>
       <One2manyTopBar
@@ -314,7 +319,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
           }}
           aggregates={aggregates}
           treeType={treeType}
-          onChangeTreeType={handleTreeTypeChange}
+          onChangeTreeType={enableNewTable ? handleTreeTypeChange : undefined}
         />
       )}
       {currentView === "form" && (
