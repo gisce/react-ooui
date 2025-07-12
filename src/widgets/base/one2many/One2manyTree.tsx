@@ -7,23 +7,16 @@ import {
 import { One2manyItem } from "./One2manyInput";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { RefObject, useCallback, useRef } from "react";
-import {
-  getSortedFieldsFromState,
-  getTableColumns,
-} from "@/helpers/treeHelper";
-import { COLUMN_COMPONENTS } from "@/widgets/views/Tree/treeComponents";
+import { getSortedFieldsFromState } from "@/helpers/treeHelper";
 import { useDeepCompareEffect, useDeepCompareMemo } from "use-deep-compare";
-import { TreeAggregates } from "./useTreeAggregates";
+import { TreeAggregates , useSharedAggregates } from "./useTreeAggregates";
 import { AggregatesFooter } from "./AggregatesFooter";
-import { useTreeColumnStorageFetch } from "./useTreeColumnStorageFetch";
-import { Spin, Badge } from "antd";
+import { Spin } from "antd";
 import {
   One2manyTreeDataForHash,
   getKey,
 } from "@/helpers/o2m-columnStorageHelper";
-import { useLocale } from "@gisce/react-formiga-components";
-import { useFeatureIsEnabled } from "@/context/ConfigContext";
-import { ErpFeatureKeys } from "@/models/erpFeature";
+import { useInfiniteTable } from "@/hooks/useInfiniteTable";
 
 export type One2manyTreeProps = {
   items: One2manyItem[];
@@ -83,16 +76,39 @@ export const One2manyTree = ({
   const internalGridRef = useRef<InfiniteTableRef>();
   const tableRef: RefObject<InfiniteTableRef> = gridRef! || internalGridRef!;
 
-  const colorsForResults = useRef<{ [key: number]: string }>({});
-  const statusForResults = useRef<{ [key: number]: string }>();
-
   const prevItemsValue = useRef<One2manyItem[]>();
   const itemsRef = useRef<One2manyItem[]>(items);
-  const { t } = useLocale();
 
-  const many2oneSortEnabled = useFeatureIsEnabled(
-    ErpFeatureKeys.FEATURE_MANY2ONE_SORT,
-  );
+  // Use shared infinite table functionality
+  const {
+    columns,
+    strings,
+    colorsForResults,
+    statusForResults,
+    onRowStyle,
+    statusComponent,
+    onRowStatus,
+    getColumnState,
+    updateColumnState,
+    isColumnStateLoading,
+  } = useInfiniteTable({
+    treeOoui: ooui,
+    parentContext: context,
+    columnStateKey: getKey({
+      ...dataForHash,
+      model: relation,
+    }),
+    selectedRowKeys,
+    hasStatusColumn: ooui.status !== null,
+  });
+
+  // Use shared aggregates functionality
+  const { footerComponent } = useSharedAggregates({
+    treeOoui: ooui,
+    model: relation,
+    selectedRowKeys,
+    showEmptyValues: false,
+  });
 
   useDeepCompareEffect(() => {
     itemsRef.current = items;
@@ -107,17 +123,6 @@ export const One2manyTree = ({
   }, [items]);
 
   const totalRows = useDeepCompareMemo(() => items.length, [items]);
-
-  const columns = useDeepCompareMemo(() => {
-    return getTableColumns(
-      ooui,
-      {
-        ...COLUMN_COMPONENTS,
-      },
-      context,
-      many2oneSortEnabled,
-    );
-  }, [context, ooui, many2oneSortEnabled]);
 
   const onRequestData = useCallback(
     async ({
@@ -139,11 +144,14 @@ export const One2manyTree = ({
         sortFields,
       });
 
-      colorsForResults.current = { ...colorsForResults.current, ...colors };
-      if (!statusForResults.current && status) {
-        statusForResults.current = {};
+      // Update shared colors and status refs
+      if (colors) {
+        colorsForResults.current = { ...colorsForResults.current, ...colors };
       }
       if (status) {
+        if (!statusForResults.current) {
+          statusForResults.current = {};
+        }
         statusForResults.current = { ...statusForResults.current, ...status };
       }
       return results;
@@ -151,22 +159,7 @@ export const One2manyTree = ({
     [onFetchRecords],
   );
 
-  const onRowStyle = useCallback((record: any) => {
-    if (colorsForResults.current[record.node?.data?.id]) {
-      return { color: colorsForResults.current[record.node?.data?.id] };
-    }
-    return undefined;
-  }, []);
-
-  const { loading, getColumnState, updateColumnState } =
-    useTreeColumnStorageFetch({
-      key: getKey({
-        ...dataForHash,
-        model: relation,
-      }),
-    });
-
-  if (loading) {
+  if (isColumnStateLoading) {
     return <Spin />;
   }
 
@@ -189,18 +182,16 @@ export const One2manyTree = ({
       onSelectionCheckboxClicked={onSelectionCheckboxClicked}
       totalRows={totalRows}
       footer={
-        aggregates && (
+        aggregates ? (
           <AggregatesFooter aggregates={aggregates} isLoading={false} />
+        ) : (
+          footerComponent
         )
       }
       hasStatusColumn={ooui.status !== null}
-      statusComponent={(status: any) => (
-        <Badge color={status} style={{ marginLeft: 7 }} />
-      )}
-      onRowStatus={(record: any) => statusForResults.current?.[record.id]}
-      strings={{
-        resetTableViewLabel: t("resetTableView"),
-      }}
+      statusComponent={statusComponent}
+      onRowStatus={onRowStatus}
+      strings={strings}
     />
   );
 };
