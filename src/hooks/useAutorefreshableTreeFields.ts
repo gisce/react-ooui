@@ -2,7 +2,10 @@ import { ConnectionProvider, TreeView } from "..";
 import { useNetworkRequest } from "./useNetworkRequest";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useRef, useState, useCallback, useEffect, useMemo } from "react";
-import { InfiniteTableRef } from "@gisce/react-formiga-table";
+import {
+  InfiniteTableRef,
+  PaginatedTableRef,
+} from "@gisce/react-formiga-table";
 import { useBrowserVisibility } from "./useBrowserVisibility";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { getTableItems } from "@/helpers/treeHelper";
@@ -11,7 +14,7 @@ import { getAttributesConditionsFromOoui } from "./useTreeAttributesState";
 const AUTOREFRESH_INTERVAL_SECONDS = 3 * 1000;
 
 export type UseAutorefreshableTreeFieldsOpts = {
-  tableRef: React.RefObject<InfiniteTableRef>;
+  tableRef: React.RefObject<InfiniteTableRef | PaginatedTableRef>;
   model: string;
   context: any;
   autorefreshableFields?: string[];

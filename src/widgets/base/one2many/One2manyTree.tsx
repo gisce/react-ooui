@@ -24,6 +24,8 @@ import { OnRowClickedData } from "@/widgets/views/Tree/Paginated/SearchTreePagin
 import { ConnectionProvider } from "@/index";
 import { TreeView } from "@/types";
 import { useTableCore } from "@/hooks/useTableCore";
+import { useTreeSharedHooks } from "@/hooks/useTreeSharedHooks";
+import { CellRenderer } from "@/widgets/views/Tree/CellRenderer";
 
 export type One2manyTreeProps = {
   items: One2manyItem[];
@@ -140,6 +142,54 @@ export const One2manyTree = ({
     showEmptyValues: false,
   });
 
+  // This will be moved after onPaginatedRequestData is defined
+
+  // Filter items like legacy One2manyInput does
+  const itemsToShow = useMemo(
+    () =>
+      items.filter(
+        (item) =>
+          (item.values || item.treeValues) &&
+          item.operation !== "pendingRemove",
+      ),
+    [items],
+  );
+
+  // Add enhanced fields support (function fields + auto-refresh)
+  const {
+    isFieldLoading,
+    refreshFunctionFields,
+    clearAutorefreshableFields,
+    addRecordsToCheckFunctionFields,
+    onHasFunctionFieldsToParseConditions,
+    syncExternalRecordUpdates,
+  } = useTreeSharedHooks({
+    model: relation,
+    treeView,
+    tableRef,
+    context,
+    isActive: true, // One2many is always active when rendered
+    treeOoui: ooui,
+    updateAttributes,
+    results: itemsToShow,
+  });
+
+  // Ensure columns is never undefined and add loading support
+  const safeColumns = useMemo(() => {
+    if (!columns) return [];
+    return columns.map((column: any) => ({
+      ...column,
+      render: (value: any, record: any) => (
+        <CellRenderer
+          value={value}
+          record={record}
+          column={column}
+          isFieldLoading={isFieldLoading}
+        />
+      ),
+    }));
+  }, [columns, isFieldLoading]);
+
   // Reuse onFetchRecords for infinite mode data fetching
   const onRequestData = useCallback(
     async ({
@@ -178,6 +228,12 @@ export const One2manyTree = ({
       }));
       updateAttributes(attrsEvaluated, ooui);
 
+      // Add records to check for function fields
+      const resultIds = results.map((result) => result.id).filter(Boolean);
+      if (resultIds.length > 0) {
+        addRecordsToCheckFunctionFields(resultIds);
+      }
+
       return results;
     },
     [
@@ -186,6 +242,7 @@ export const One2manyTree = ({
       statusForResults,
       updateAttributes,
       ooui,
+      addRecordsToCheckFunctionFields,
     ],
   );
 
@@ -222,6 +279,12 @@ export const One2manyTree = ({
     }));
     updateAttributes(attrsEvaluated, ooui);
 
+    // Add records to check for function fields in paginated mode
+    const resultIds = results.map((result) => result.id).filter(Boolean);
+    if (resultIds.length > 0) {
+      addRecordsToCheckFunctionFields(resultIds);
+    }
+
     return results;
   }, [
     treeType,
@@ -231,6 +294,7 @@ export const One2manyTree = ({
     statusForResults,
     updateAttributes,
     ooui,
+    addRecordsToCheckFunctionFields,
   ]);
 
   useDeepCompareEffect(() => {
@@ -247,20 +311,6 @@ export const One2manyTree = ({
     tableRef?.current?.refresh();
     tableRef?.current?.unselectAll();
   }, [items, treeType, onPaginatedRequestData, clearAttributes]);
-
-  // Ensure columns is never undefined
-  const safeColumns = useMemo(() => columns || [], [columns]);
-
-  // Filter items like legacy One2manyInput does
-  const itemsToShow = useMemo(
-    () =>
-      items.filter(
-        (item) =>
-          (item.values || item.treeValues) &&
-          item.operation !== "pendingRemove",
-      ),
-    [items],
-  );
 
   // Shared callbacks for both modes
   const onGetFirstVisibleRowIndex = useCallback(() => {

@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import ConnectionProvider from "@/ConnectionProvider";
-import { InfiniteTableRef } from "@gisce/react-formiga-table";
+import {
+  InfiniteTableRef,
+  PaginatedTableRef,
+} from "@gisce/react-formiga-table";
 import { useNetworkRequest } from "./useNetworkRequest";
 import { useBrowserVisibility } from "./useBrowserVisibility";
 import { useDeepCompareEffect } from "use-deep-compare";
@@ -14,7 +17,7 @@ const AUTOREFRESH_INTERVAL_SECONDS = 0.5 * 1000;
 type UseTreeFunctionFieldsReadProps = {
   model: string;
   treeView?: TreeView;
-  tableRef: React.RefObject<InfiniteTableRef>;
+  tableRef: React.RefObject<InfiniteTableRef | PaginatedTableRef>;
   context?: any;
   isActive?: boolean;
   onResultsUpdated?: (updatedResults: any[]) => void;

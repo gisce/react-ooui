@@ -20,10 +20,9 @@ import {
   getOrderFromSortFields,
 } from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
-import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { getAttributesConditionsFromOoui } from "@/hooks/useTreeAttributesState";
-import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
+import { useTreeSharedHooks } from "@/hooks/useTreeSharedHooks";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 import { useConfigContext } from "@/context/ConfigContext";
 export const DEFAULT_PAGE_SIZE = DEFAULT_SEARCH_LIMIT;
@@ -137,11 +136,11 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
   const {
     isFieldLoading,
-    refresh: refreshFunctionFields,
+    refreshFunctionFields,
+    clearAutorefreshableFields,
     addRecordsToCheckFunctionFields,
     onHasFunctionFieldsToParseConditions,
-    syncExternalRecordUpdates,
-  } = useTreeFunctionFieldsRead({
+  } = useTreeSharedHooks({
     model,
     treeView,
     tableRef,
@@ -151,20 +150,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     treeOoui,
     updateAttributes,
     results: actionViewResults,
-  });
-
-  // Setup auto-refresh fields
-  const { clear: clearAutorefreshableFields } = useAutorefreshableTreeFields({
-    model,
-    tableRef,
-    autorefreshableFields: treeOoui?.autorefreshableFields,
-    treeView,
-    context,
-    isActive,
-    treeOoui,
-    updateAttributes,
-    results: actionViewResults,
-    onRecordsUpdated: syncExternalRecordUpdates,
   });
 
   // Hooks

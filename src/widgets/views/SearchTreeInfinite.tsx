@@ -40,8 +40,7 @@ import { useErrorNotification } from "@/hooks/useErrorNotification";
 import SearchFilter from "./searchFilter/SearchFilter";
 import { useSearchTreeState } from "@/hooks/useSearchTreeState";
 import { Tree as TreeOoui } from "@gisce/ooui";
-import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
-import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
+import { useTreeSharedHooks } from "@/hooks/useTreeSharedHooks";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { NameSearchWarning } from "./Tree/NameSearchWarning";
 import { SearchTreeHeader } from "./SearchTreeHeader";
@@ -198,11 +197,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
   const {
     isFieldLoading,
-    refresh: refreshFunctionFields,
+    refreshFunctionFields,
+    clearAutorefreshableFields,
     addRecordsToCheckFunctionFields,
     onHasFunctionFieldsToParseConditions,
     syncExternalRecordUpdates,
-  } = useTreeFunctionFieldsRead({
+  } = useTreeSharedHooks({
     model,
     treeView,
     tableRef,
@@ -211,19 +211,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     treeOoui,
     updateAttributes,
     results: actionViewResults,
-  });
-
-  const { clear: clearAutorefreshableFields } = useAutorefreshableTreeFields({
-    model,
-    tableRef,
-    autorefreshableFields: treeOoui?.autorefreshableFields,
-    treeView,
-    context: parentContext,
-    isActive,
-    treeOoui,
-    updateAttributes,
-    results: actionViewResults,
-    onRecordsUpdated: syncExternalRecordUpdates,
   });
 
   // Calculate selectedRowKeys for shared hooks
