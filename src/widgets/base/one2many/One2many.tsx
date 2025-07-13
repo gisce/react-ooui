@@ -16,7 +16,10 @@ import {
   useUserFeatureIsEnabled,
 } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
-import { DEFAULT_TREE_TYPE } from "@/views/actionViews/TreeActionView";
+import {
+  DEFAULT_TREE_TYPE,
+  TreeType,
+} from "@/views/actionViews/TreeActionView";
 import One2manyProvider, {
   useOne2manyContext,
 } from "@/context/One2manyContext";
@@ -169,23 +172,51 @@ const One2manyComponent = (props: One2manyInputBaseProps) => {
   );
 
   useDeepCompareEffect(() => {
-    if (ooui.infinite) {
-      setTreeType("infinite");
-      return;
-    }
+    const determineTreeType = (): TreeType => {
+      // Priority 1: Explicit infinite="1" in XML → always infinite
+      if (ooui.infinite === "1") {
+        return "infinite";
+      }
 
-    if (
-      value &&
-      Array.isArray(value.items) &&
-      value.items.length >= MIN_ITEMS_TO_USE_INFINITE
-    ) {
-      setTreeType("infinite");
-      return;
-    }
+      // Priority 2: Explicit infinite="0" in XML → always paginated (if feature enabled)
+      if (ooui.infinite === "0") {
+        return enableNewTable ? "paginated" : "legacy";
+      }
 
-    setTreeType(enableNewTable ? "paginated" : DEFAULT_TREE_TYPE);
+      // Priority 3: No infinite attribute - depends on user feature and item count
+      if (ooui.infinite === undefined || ooui.infinite === null) {
+        // If new table feature is enabled, use paginated by default
+        if (enableNewTable) {
+          // But still auto-switch to infinite for large datasets
+          if (
+            value &&
+            Array.isArray(value.items) &&
+            value.items.length >= MIN_ITEMS_TO_USE_INFINITE
+          ) {
+            return "infinite";
+          }
+          return "paginated";
+        }
+
+        // If new table feature is disabled, use legacy
+        // But still auto-switch to infinite for large datasets
+        if (
+          value &&
+          Array.isArray(value.items) &&
+          value.items.length >= MIN_ITEMS_TO_USE_INFINITE
+        ) {
+          return "infinite";
+        }
+        return "legacy";
+      }
+
+      // Fallback (should not reach here)
+      return enableNewTable ? "paginated" : "legacy";
+    };
+
+    setTreeType(determineTreeType());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ooui.infinite, value]);
+  }, [ooui.infinite, value, enableNewTable]);
 
   if (treeType === "legacy") {
     return <One2manyInputLegacy {...props} />;
