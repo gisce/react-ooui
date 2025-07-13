@@ -86,10 +86,15 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     getColumnState,
     updateColumnState,
     isColumnStateLoading,
+    updateAttributes,
+    clearAttributes,
+    colorsForResults,
+    statusForResults,
   } = useTableCore({
     treeOoui,
     parentContext,
     columnStateKey: getKey({ treeViewId: treeView?.view_id, model }),
+    tableRef,
   });
 
   // Ensure columns is never undefined
@@ -141,6 +146,10 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     filterType,
     context: parentContext,
     onChangeTreeType,
+    updateAttributes,
+    clearAttributes,
+    colorsForResults,
+    statusForResults,
   });
 
   const { handleExpandableRowDoubleClick } = useExpandableTreeDoubleClick({

@@ -22,10 +22,7 @@ import {
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
-import {
-  getAttributesConditionsFromOoui,
-  useTreeAttributesState,
-} from "@/hooks/useTreeAttributesState";
+import { getAttributesConditionsFromOoui } from "@/hooks/useTreeAttributesState";
 import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 import { useConfigContext } from "@/context/ConfigContext";
@@ -43,6 +40,10 @@ export type PaginatedSearchProps = {
   context?: any;
   filterType?: "side" | "top";
   onChangeTreeType?: (type: TreeType) => void;
+  updateAttributes?: (attrsEvaluated: any[], treeOoui: TreeOoui) => void;
+  clearAttributes?: () => void;
+  colorsForResults?: React.MutableRefObject<{ [key: number]: string }>;
+  statusForResults?: React.MutableRefObject<{ [key: number]: string }>;
 };
 
 export const usePaginatedSearch = (props: PaginatedSearchProps) => {
@@ -58,6 +59,10 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     context,
     filterType = "side",
     onChangeTreeType,
+    updateAttributes,
+    clearAttributes,
+    colorsForResults,
+    statusForResults,
   } = props;
 
   // State from useSearchTreeState
@@ -129,15 +134,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       });
     });
   }, []);
-
-  const {
-    colorsForResults,
-    statusForResults,
-    updateAttributes,
-    clearAttributes,
-  } = useTreeAttributesState({
-    tableRef,
-  });
 
   const {
     isFieldLoading,
@@ -246,7 +242,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   }, [treeFirstVisibleColumn]);
 
   const onRowStyle = useCallback((item: Record<string, any>): CSSProperties => {
-    if (colorsForResults.current[item.node?.data?.id]) {
+    if (colorsForResults?.current?.[item.node?.data?.id]) {
       return { color: colorsForResults.current[item.node?.data?.id] };
     }
     return {};
@@ -254,7 +250,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   }, []);
 
   const onRowStatus = useCallback(
-    (record: any) => statusForResults.current?.[record.id],
+    (record: any) => statusForResults?.current?.[record.id],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
@@ -487,7 +483,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       }
 
       const preparedResults = getTableItems(treeOoui, results);
-      updateAttributes(attrsEvaluated, treeOoui);
+      updateAttributes?.(attrsEvaluated, treeOoui);
 
       setTreeIsLoading(false);
       lastAssignedResults.current = [...preparedResults];
@@ -527,7 +523,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   ]);
 
   const refresh = useCallback(async () => {
-    clearAttributes();
+    clearAttributes?.();
     clearAutorefreshableFields();
     setTotalRowsLoading(true);
     setTreeFirstVisibleRow(0);
@@ -679,7 +675,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
           context,
         });
 
-        updateAttributes(attrsEvaluated, treeOoui!);
+        updateAttributes?.(attrsEvaluated, treeOoui!);
         tableRef?.current?.refreshRowStyles();
       } catch (error) {
         console.error(error);

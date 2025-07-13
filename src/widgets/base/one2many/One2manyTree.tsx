@@ -120,6 +120,8 @@ export const One2manyTree = ({
     getColumnState,
     updateColumnState,
     isColumnStateLoading,
+    updateAttributes,
+    clearAttributes,
   } = useTableCore({
     treeOoui: ooui,
     parentContext: context,
@@ -127,6 +129,7 @@ export const One2manyTree = ({
       ...dataForHash,
       model: relation,
     }),
+    tableRef,
   });
 
   // Use shared aggregates functionality
@@ -166,9 +169,24 @@ export const One2manyTree = ({
         }
         statusForResults.current = { ...statusForResults.current, ...status };
       }
+
+      // Update attributes for dynamic row styling
+      const attrsEvaluated = results.map((result) => ({
+        id: result.id,
+        colors: colors?.[result.id],
+        status: status?.[result.id],
+      }));
+      updateAttributes(attrsEvaluated, ooui);
+
       return results;
     },
-    [colorsForResults, onFetchRecords, statusForResults],
+    [
+      colorsForResults,
+      onFetchRecords,
+      statusForResults,
+      updateAttributes,
+      ooui,
+    ],
   );
 
   // For paginated mode, use onRequestData pattern like usePaginatedSearch
@@ -178,14 +196,42 @@ export const One2manyTree = ({
     const sortFields = getSortedFieldsFromState({
       state: sortStateRef.current,
     });
-    const { results } = await onFetchRecords({
+    const { results, colors, status } = await onFetchRecords({
       allItems: items,
       startRow: 0,
       endRow: items.length,
       sortFields,
     });
+
+    // Update color and status refs for paginated mode too
+    if (colors) {
+      colorsForResults.current = { ...colorsForResults.current, ...colors };
+    }
+    if (status) {
+      if (!statusForResults.current) {
+        statusForResults.current = {};
+      }
+      statusForResults.current = { ...statusForResults.current, ...status };
+    }
+
+    // Update attributes for dynamic row styling
+    const attrsEvaluated = results.map((result) => ({
+      id: result.id,
+      colors: colors?.[result.id],
+      status: status?.[result.id],
+    }));
+    updateAttributes(attrsEvaluated, ooui);
+
     return results;
-  }, [treeType, items, onFetchRecords]);
+  }, [
+    treeType,
+    items,
+    onFetchRecords,
+    colorsForResults,
+    statusForResults,
+    updateAttributes,
+    ooui,
+  ]);
 
   useDeepCompareEffect(() => {
     itemsRef.current = items;
@@ -197,14 +243,10 @@ export const One2manyTree = ({
     prevItemsValue.current = items;
 
     // Refresh table for both modes
+    clearAttributes();
     tableRef?.current?.refresh();
     tableRef?.current?.unselectAll();
-
-    // // For paginated mode, also refresh data
-    // if (treeType === "paginated") {
-    //   onPaginatedRequestData().then(setPaginatedResults);
-    // }
-  }, [items, treeType, onPaginatedRequestData]);
+  }, [items, treeType, onPaginatedRequestData, clearAttributes]);
 
   // Ensure columns is never undefined
   const safeColumns = useMemo(() => columns || [], [columns]);
@@ -236,7 +278,10 @@ export const One2manyTree = ({
     () => onSelectionCheckboxClicked?.(),
     [onSelectionCheckboxClicked],
   );
-  const refresh = useCallback(() => tableRef?.current?.refresh(), [tableRef]);
+  const refresh = useCallback(() => {
+    clearAttributes();
+    tableRef?.current?.refresh();
+  }, [tableRef, clearAttributes]);
 
   const onRowHasBeenSelected = useCallback(
     (changedRow: { id: number; selected: boolean }) => {

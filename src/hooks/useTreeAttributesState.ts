@@ -9,7 +9,7 @@ export function useTreeAttributesState({
   tableRef?: React.RefObject<InfiniteTableRef>;
 } = {}) {
   const colorsForResults = useRef<{ [key: number]: string }>({});
-  const statusForResults = useRef<{ [key: number]: string }>();
+  const statusForResults = useRef<{ [key: number]: string }>({});
 
   const clearAttributes = useCallback(() => {
     colorsForResults.current = {};

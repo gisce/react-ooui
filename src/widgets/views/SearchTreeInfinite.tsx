@@ -13,7 +13,7 @@ import {
 import { FormView, TreeView } from "@/types/index";
 
 import { useFetchTreeViews } from "@/hooks/useFetchTreeViews";
-import { Badge, Spin } from "antd";
+import { Spin } from "antd";
 import {
   getOrderFromSortFields,
   getSortedFieldsFromState,
@@ -29,13 +29,10 @@ import {
 import ConnectionProvider from "@/ConnectionProvider";
 import { useAvailableHeight } from "@/hooks/useAvailableHeight";
 import { mergeSearchFields } from "@/helpers/formHelper";
-import { useTreeColumnStorageFetch } from "../base/one2many/useTreeColumnStorageFetch";
 import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { useTableCore } from "@/hooks/useTableCore";
 import { useSharedAggregates } from "../base/one2many/useTreeAggregates";
 import { useInfiniteRowSelection } from "@/hooks/useInfiniteRowSelection";
-import { useLocale } from "@gisce/react-formiga-components";
-import showConfirmDialog from "@/ui/ConfirmDialog";
 import { SideSearchFilter } from "./searchFilter/SideSearchFilter";
 import { mergeParams } from "@/helpers/searchHelper";
 import deepEqual from "deep-equal";
@@ -48,10 +45,7 @@ import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { NameSearchWarning } from "./Tree/NameSearchWarning";
 import { SearchTreeHeader } from "./SearchTreeHeader";
-import {
-  getAttributesConditionsFromOoui,
-  useTreeAttributesState,
-} from "@/hooks/useTreeAttributesState";
+import { getAttributesConditionsFromOoui } from "@/hooks/useTreeAttributesState";
 import { CellRenderer } from "./Tree/CellRenderer";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 
@@ -104,8 +98,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const [totalRows, setTotalRows] = useState<number | null>();
   const [nameSearchFetchCompleted, setNameSearchFetchCompleted] =
     useState<boolean>(false);
-
-  const { t } = useLocale();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const availableHeight = useAvailableHeight({
@@ -180,7 +172,27 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     return getTree(treeView);
   }, [treeView]);
 
-  const { updateAttributes, clearAttributes } = useTreeAttributesState({
+  // Use shared infinite table functionality - moved before function fields hooks
+  const {
+    columns: baseColumns,
+    strings,
+    colorsForResults,
+    statusForResults,
+    onRowStyle,
+    statusComponent,
+    onRowStatus,
+    getColumnState,
+    updateColumnState,
+    isColumnStateLoading,
+    updateAttributes,
+    clearAttributes,
+  } = useTableCore({
+    treeOoui,
+    parentContext,
+    columnStateKey: getKey({
+      treeViewId: treeView?.view_id,
+      model,
+    }),
     tableRef,
   });
 
@@ -218,27 +230,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const selectedRowKeys = useMemo(() => {
     return selectedRowItems?.map((item) => item.id) || [];
   }, [selectedRowItems]);
-
-  // Use shared infinite table functionality
-  const {
-    columns: baseColumns,
-    strings,
-    colorsForResults,
-    statusForResults,
-    onRowStyle,
-    statusComponent,
-    onRowStatus,
-    getColumnState,
-    updateColumnState,
-    isColumnStateLoading,
-  } = useTableCore({
-    treeOoui,
-    parentContext,
-    columnStateKey: getKey({
-      treeViewId: treeView?.view_id,
-      model,
-    }),
-  });
 
   const columnsWithLoading = useMemo(() => {
     if (!baseColumns) {

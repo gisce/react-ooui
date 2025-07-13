@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { ColumnState } from "@gisce/react-formiga-table";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { Badge } from "antd";
@@ -9,6 +9,7 @@ import { getTableColumns } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "../widgets/views/Tree/treeComponents";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "..";
+import { useTreeAttributesState } from "./useTreeAttributesState";
 
 export interface SharedTableColors {
   [key: number]: string;
@@ -23,6 +24,7 @@ export interface UseTableCoreProps {
   parentContext: Record<string, unknown>;
   columnStateKey?: string;
   enableColumnState?: boolean;
+  tableRef?: React.RefObject<any>;
 }
 
 export interface UseTableCoreReturn {
@@ -36,6 +38,8 @@ export interface UseTableCoreReturn {
   getColumnState: () => ColumnState[] | undefined;
   updateColumnState: (state: ColumnState[]) => void;
   isColumnStateLoading: boolean;
+  updateAttributes: (attrsEvaluated: any[], treeOoui: TreeOoui) => void;
+  clearAttributes: () => void;
 }
 
 export const useTableCore = ({
@@ -43,10 +47,19 @@ export const useTableCore = ({
   parentContext,
   columnStateKey,
   enableColumnState = true,
+  tableRef,
 }: UseTableCoreProps): UseTableCoreReturn => {
   const { t } = useLocale();
-  const colorsForResults = useRef<SharedTableColors>({});
-  const statusForResults = useRef<SharedTableStatus>({});
+
+  // Use attribute state management for dynamic row colors and status
+  const {
+    colorsForResults,
+    statusForResults,
+    updateAttributes,
+    clearAttributes,
+  } = useTreeAttributesState({
+    tableRef,
+  });
 
   // Feature flags
   const many2oneSortEnabled = useFeatureIsEnabled(
@@ -82,12 +95,15 @@ export const useTableCore = ({
       };
 
   // Row styling based on colors
-  const onRowStyle = useCallback((record: any) => {
-    if (colorsForResults.current[record.node?.data?.id]) {
-      return { color: colorsForResults.current[record.node?.data?.id] };
-    }
-    return undefined;
-  }, []);
+  const onRowStyle = useCallback(
+    (record: any) => {
+      if (colorsForResults.current[record.node?.data?.id]) {
+        return { color: colorsForResults.current[record.node?.data?.id] };
+      }
+      return undefined;
+    },
+    [colorsForResults],
+  );
 
   // Status component renderer
   const statusComponent = useCallback(
@@ -99,7 +115,7 @@ export const useTableCore = ({
   // Row status getter
   const onRowStatus = useCallback(
     (record: any) => statusForResults.current?.[record.id],
-    [],
+    [statusForResults],
   );
 
   // Table-specific translations
@@ -124,5 +140,7 @@ export const useTableCore = ({
     getColumnState,
     updateColumnState,
     isColumnStateLoading,
+    updateAttributes,
+    clearAttributes,
   };
 };
