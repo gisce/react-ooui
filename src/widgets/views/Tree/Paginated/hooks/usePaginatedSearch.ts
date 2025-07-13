@@ -20,8 +20,6 @@ import {
   getOrderFromSortFields,
 } from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
-import { getKey } from "@/helpers/tree-columnStorageHelper";
-import { useTreeColumnStorageFetch } from "@/widgets/base/one2many/useTreeColumnStorageFetch";
 import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import {
@@ -115,23 +113,9 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   const SHOULD_MAKE_DEFERRED_FUNCTION_READ =
     treeView?.fields_in_conditions !== undefined;
 
-  const columnStateKey = useMemo(() => {
-    return getKey({ treeViewId: treeView?.view_id, model });
-  }, [treeView?.view_id, model]);
-
   const [parseConditions, cancelParseConditions] = useNetworkRequest(
     ConnectionProvider.getHandler().parseConditions,
   );
-
-  const {
-    fetchColumnState,
-    loading: getColumnStateInProgress,
-    getColumnState,
-    updateColumnState,
-  } = useTreeColumnStorageFetch({
-    key: columnStateKey,
-    treeViewFetching,
-  });
 
   const onFunctionFieldsUpdated = useCallback((updatedResults: any[]) => {
     lastAssignedResults.current = lastAssignedResults.current.map((result) => {
@@ -547,7 +531,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     clearAutorefreshableFields();
     setTotalRowsLoading(true);
     setTreeFirstVisibleRow(0);
-    fetchColumnState();
     setSelectedRowItems([]);
     currentSearchParamsString.current = undefined;
 
@@ -562,7 +545,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     clearAttributes,
     clearAutorefreshableFields,
     setTreeFirstVisibleRow,
-    fetchColumnState,
     setSelectedRowItems,
     nameSearch,
     fetchResults,
@@ -746,9 +728,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     selectAllRecords,
     onHeaderCheckboxClick,
     headerCheckboxState,
-    getColumnStateInProgress,
-    getColumnState,
-    updateColumnState,
     currentPage,
     limit,
     order: actionViewOrder,

@@ -1,10 +1,14 @@
 import React, { useCallback, useRef, useMemo } from "react";
-import { ColumnState, InfiniteTableRef } from "@gisce/react-formiga-table";
+import { ColumnState } from "@gisce/react-formiga-table";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { Badge } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
 import { useTreeColumnStorageFetch } from "@/widgets/base/one2many/useTreeColumnStorageFetch";
-import { useTableConfiguration } from "./useTableConfiguration";
+import { useDeepCompareMemo } from "use-deep-compare";
+import { getTableColumns } from "@/helpers/treeHelper";
+import { COLUMN_COMPONENTS } from "../widgets/views/Tree/treeComponents";
+import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "..";
 
 export interface SharedTableColors {
   [key: number]: string;
@@ -14,15 +18,14 @@ export interface SharedTableStatus {
   [key: number]: string;
 }
 
-export interface UseInfiniteTableProps {
+export interface UseTableCoreProps {
   treeOoui: TreeOoui | undefined;
   parentContext: Record<string, unknown>;
   columnStateKey?: string;
-  selectedRowKeys?: number[];
-  hasStatusColumn?: boolean;
+  enableColumnState?: boolean;
 }
 
-export interface UseInfiniteTableReturn {
+export interface UseTableCoreReturn {
   columns: any[] | undefined;
   strings: Record<string, string>;
   colorsForResults: React.MutableRefObject<SharedTableColors>;
@@ -35,26 +38,48 @@ export interface UseInfiniteTableReturn {
   isColumnStateLoading: boolean;
 }
 
-export const useInfiniteTable = ({
+export const useTableCore = ({
   treeOoui,
   parentContext,
   columnStateKey,
-  selectedRowKeys = [],
-  hasStatusColumn = false,
-}: UseInfiniteTableProps): UseInfiniteTableReturn => {
+  enableColumnState = true,
+}: UseTableCoreProps): UseTableCoreReturn => {
   const { t } = useLocale();
   const colorsForResults = useRef<SharedTableColors>({});
   const statusForResults = useRef<SharedTableStatus>({});
 
-  // Get table configuration (columns and strings)
-  const { columns, strings } = useTableConfiguration(treeOoui, parentContext);
+  // Feature flags
+  const many2oneSortEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_MANY2ONE_SORT,
+  );
 
-  // Column state management
+  // Get table columns
+  const columns = useDeepCompareMemo(() => {
+    if (!treeOoui) return undefined;
+    return getTableColumns(
+      treeOoui,
+      { ...COLUMN_COMPONENTS },
+      parentContext,
+      many2oneSortEnabled,
+    );
+  }, [treeOoui, parentContext, many2oneSortEnabled]);
+
+  // Column state management (optional)
+  const columnStateResult = useTreeColumnStorageFetch({
+    key: enableColumnState ? columnStateKey : undefined,
+  });
+
   const {
     loading: isColumnStateLoading,
     getColumnState,
     updateColumnState,
-  } = useTreeColumnStorageFetch({ key: columnStateKey });
+  } = enableColumnState
+    ? columnStateResult
+    : {
+        loading: false,
+        getColumnState: () => undefined,
+        updateColumnState: () => {},
+      };
 
   // Row styling based on colors
   const onRowStyle = useCallback((record: any) => {
@@ -77,21 +102,20 @@ export const useInfiniteTable = ({
     [],
   );
 
-  // Enhanced strings with additional table-specific translations
-  const enhancedStrings = useMemo(
+  // Table-specific translations
+  const strings = useMemo(
     () => ({
-      ...strings,
       resetTableViewLabel: t("resetTableView"),
       changeToInfiniteLabel: t("changeToInfinite"),
       changeToPaginatedLabel: t("changeToPaginated"),
       noResultsLabel: t("no_results"),
     }),
-    [strings, t],
+    [t],
   );
 
   return {
     columns,
-    strings: enhancedStrings,
+    strings,
     colorsForResults,
     statusForResults,
     onRowStyle,

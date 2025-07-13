@@ -31,7 +31,7 @@ import { useAvailableHeight } from "@/hooks/useAvailableHeight";
 import { mergeSearchFields } from "@/helpers/formHelper";
 import { useTreeColumnStorageFetch } from "../base/one2many/useTreeColumnStorageFetch";
 import { getKey } from "@/helpers/tree-columnStorageHelper";
-import { useInfiniteTable } from "@/hooks/useInfiniteTable";
+import { useTableCore } from "@/hooks/useTableCore";
 import { useSharedAggregates } from "../base/one2many/useTreeAggregates";
 import { useInfiniteRowSelection } from "@/hooks/useInfiniteRowSelection";
 import { useLocale } from "@gisce/react-formiga-components";
@@ -54,7 +54,6 @@ import {
 } from "@/hooks/useTreeAttributesState";
 import { CellRenderer } from "./Tree/CellRenderer";
 import { TreeType } from "@/views/actionViews/TreeActionView";
-import { useTableConfiguration } from "@/hooks/useTableConfiguration";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -232,15 +231,13 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     getColumnState,
     updateColumnState,
     isColumnStateLoading,
-  } = useInfiniteTable({
+  } = useTableCore({
     treeOoui,
     parentContext,
     columnStateKey: getKey({
       treeViewId: treeView?.view_id,
       model,
     }),
-    selectedRowKeys,
-    hasStatusColumn: treeOoui?.status !== null,
   });
 
   const columnsWithLoading = useMemo(() => {

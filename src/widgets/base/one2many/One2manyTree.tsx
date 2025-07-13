@@ -23,7 +23,7 @@ import { PaginatedTableComponent } from "@/widgets/views/Tree/Paginated/componen
 import { OnRowClickedData } from "@/widgets/views/Tree/Paginated/SearchTreePaginated.types";
 import { ConnectionProvider } from "@/index";
 import { TreeView } from "@/types";
-import { useInfiniteTable } from "@/hooks/useInfiniteTable";
+import { useTableCore } from "@/hooks/useTableCore";
 
 export type One2manyTreeProps = {
   items: One2manyItem[];
@@ -120,15 +120,13 @@ export const One2manyTree = ({
     getColumnState,
     updateColumnState,
     isColumnStateLoading,
-  } = useInfiniteTable({
+  } = useTableCore({
     treeOoui: ooui,
     parentContext: context,
     columnStateKey: getKey({
       ...dataForHash,
       model: relation,
     }),
-    selectedRowKeys,
-    hasStatusColumn: ooui.status !== null,
   });
 
   // Use shared aggregates functionality

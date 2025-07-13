@@ -28,7 +28,8 @@ import {
   OnRowClickedData,
   SearchTreePaginatedProps,
 } from "./SearchTreePaginated.types";
-import { useTableConfiguration } from "../../../../hooks/useTableConfiguration";
+import { useTableCore } from "../../../../hooks/useTableCore";
+import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { PaginatedSearchControls } from "./components/PaginatedSearchControls";
 import { PaginatedTableComponent } from "./components/PaginatedTableComponent";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
@@ -79,7 +80,17 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     return getTree(treeView);
   }, [treeView]);
 
-  const { columns, strings } = useTableConfiguration(treeOoui, parentContext);
+  const {
+    columns,
+    strings,
+    getColumnState,
+    updateColumnState,
+    isColumnStateLoading,
+  } = useTableCore({
+    treeOoui,
+    parentContext,
+    columnStateKey: getKey({ treeViewId: treeView?.view_id, model }),
+  });
 
   // Ensure columns is never undefined
   const safeColumns = useMemo(() => columns || [], [columns]);
@@ -107,9 +118,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     selectAllRecords,
     onHeaderCheckboxClick,
     headerCheckboxState,
-    getColumnStateInProgress,
-    getColumnState,
-    updateColumnState,
     currentPage,
     limit,
     order: actionViewSortState,
@@ -268,7 +276,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             columns={safeColumns}
             treeOoui={treeOoui!}
             strings={strings}
-            isLoading={treeIsLoading || getColumnStateInProgress}
+            isLoading={treeIsLoading || isColumnStateLoading}
             availableHeight={availableHeight}
             results={results}
             handleRowDoubleClick={handleRowDoubleClick}
