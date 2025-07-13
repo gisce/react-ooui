@@ -16,33 +16,36 @@ export function useTreeAttributesState({
     statusForResults.current = {};
   }, []);
 
-  const updateAttributes = (attrsEvaluated: any, treeOoui: TreeOoui) => {
-    const colors = getColorMap(attrsEvaluated);
-    colorsForResults.current = {
-      ...colorsForResults.current,
-      ...colors,
-    };
-
-    if (!statusForResults.current && treeOoui.status) {
-      statusForResults.current = {};
-    }
-
-    if (treeOoui.status) {
-      const status = getStatusMap(attrsEvaluated);
-      if (tableRef?.current) {
-        tableRef.current.updateRows(
-          Object.keys(status).map((id) => ({
-            id: parseInt(id),
-            $status: status[id],
-          })),
-        );
-      }
-      statusForResults.current = {
-        ...statusForResults.current,
-        ...status,
+  const updateAttributes = useCallback(
+    (attrsEvaluated: any, treeOoui: TreeOoui) => {
+      const colors = getColorMap(attrsEvaluated);
+      colorsForResults.current = {
+        ...colorsForResults.current,
+        ...colors,
       };
-    }
-  };
+
+      if (!statusForResults.current && treeOoui.status) {
+        statusForResults.current = {};
+      }
+
+      if (treeOoui.status) {
+        const status = getStatusMap(attrsEvaluated);
+        if (tableRef?.current) {
+          tableRef.current.updateRows(
+            Object.keys(status).map((id) => ({
+              id: parseInt(id),
+              $status: status[id],
+            })),
+          );
+        }
+        statusForResults.current = {
+          ...statusForResults.current,
+          ...status,
+        };
+      }
+    },
+    [tableRef],
+  );
 
   return {
     colorsForResults,

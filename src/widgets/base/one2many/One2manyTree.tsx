@@ -26,6 +26,7 @@ import { TreeView } from "@/types";
 import { useTableCore } from "@/hooks/useTableCore";
 import { useTreeSharedHooks } from "@/hooks/useTreeSharedHooks";
 import { CellRenderer } from "@/widgets/views/Tree/CellRenderer";
+import { useCallbackRef } from "@/hooks/useCallbackRef";
 
 export type One2manyTreeProps = {
   items: One2manyItem[];
@@ -220,13 +221,15 @@ export const One2manyTree = ({
         statusForResults.current = { ...statusForResults.current, ...status };
       }
 
-      // Update attributes for dynamic row styling
-      const attrsEvaluated = results.map((result) => ({
-        id: result.id,
-        colors: colors?.[result.id],
-        status: status?.[result.id],
-      }));
-      updateAttributes(attrsEvaluated, ooui);
+      // Update attributes for dynamic row styling only if there are colors or status
+      if (colors || status) {
+        const attrsEvaluated = results.map((result) => ({
+          id: result.id,
+          colors: colors?.[result.id],
+          status: status?.[result.id],
+        }));
+        updateAttributes(attrsEvaluated, ooui);
+      }
 
       // Add records to check for function fields
       const resultIds = results.map((result) => result.id).filter(Boolean);
@@ -240,7 +243,6 @@ export const One2manyTree = ({
       colorsForResults,
       onFetchRecords,
       statusForResults,
-      updateAttributes,
       ooui,
       addRecordsToCheckFunctionFields,
     ],
@@ -271,13 +273,15 @@ export const One2manyTree = ({
       statusForResults.current = { ...statusForResults.current, ...status };
     }
 
-    // Update attributes for dynamic row styling
-    const attrsEvaluated = results.map((result) => ({
-      id: result.id,
-      colors: colors?.[result.id],
-      status: status?.[result.id],
-    }));
-    updateAttributes(attrsEvaluated, ooui);
+    // Update attributes for dynamic row styling only if there are colors or status
+    if (colors || status) {
+      const attrsEvaluated = results.map((result) => ({
+        id: result.id,
+        colors: colors?.[result.id],
+        status: status?.[result.id],
+      }));
+      updateAttributes(attrsEvaluated, ooui);
+    }
 
     // Add records to check for function fields in paginated mode
     const resultIds = results.map((result) => result.id).filter(Boolean);
@@ -292,7 +296,6 @@ export const One2manyTree = ({
     onFetchRecords,
     colorsForResults,
     statusForResults,
-    updateAttributes,
     ooui,
     addRecordsToCheckFunctionFields,
   ]);
@@ -310,7 +313,7 @@ export const One2manyTree = ({
     clearAttributes();
     tableRef?.current?.refresh();
     tableRef?.current?.unselectAll();
-  }, [items, treeType, onPaginatedRequestData, clearAttributes]);
+  }, [items, treeType]);
 
   // Shared callbacks for both modes
   const onGetFirstVisibleRowIndex = useCallback(() => {
@@ -356,21 +359,22 @@ export const One2manyTree = ({
   const onSortChange = useCallback(
     (state: any) => {
       sortStateRef.current = state;
-      updateColumnState(state);
       setTreeFirstVisibleRow(0);
       setTreeFirstVisibleColumn(undefined);
       if (treeType === "paginated" && items.length > 0) {
         onPaginatedRequestData().then(setPaginatedResults);
       }
     },
-    [updateColumnState, treeType, items, onPaginatedRequestData],
+    [treeType, items, onPaginatedRequestData],
   );
+
+  const onPaginatedRequestDataRef = useCallbackRef(onPaginatedRequestData);
 
   useDeepCompareEffect(() => {
     if (treeType === "paginated" && items.length > 0) {
-      onPaginatedRequestData().then(setPaginatedResults);
+      onPaginatedRequestDataRef().then(setPaginatedResults);
     }
-  }, [treeType, onPaginatedRequestData]);
+  }, [treeType]);
 
   // Results based on tree type
   const results = useMemo(() => {
