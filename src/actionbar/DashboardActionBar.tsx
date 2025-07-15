@@ -13,38 +13,44 @@ import {
 import { useLocale } from "@gisce/react-formiga-components";
 import { ActionBarSeparator } from "./ActionBarSeparator";
 import { ShareUrlButton } from "./ShareUrlButton";
+import { useActionViewContext } from "@/context/ActionViewContext";
 
 function DashboardActionBar() {
   const { isLoading, dashboardRef, moveItemsEnabled, setMoveItemsEnabled } =
     useContext(DashboardActionContext) as DashboardActionContextType;
+  const { permissions } = useActionViewContext();
   const { t } = useLocale();
 
   return (
     <Space wrap={true}>
-      <ActionButton
-        icon={
-          <BorderOuterOutlined
-            style={{ color: moveItemsEnabled ? "white" : undefined }}
-          />
-        }
-        type={moveItemsEnabled ? "primary" : "default"}
-        tooltip={t("moveDashboard")}
-        disabled={isLoading}
-        loading={false}
-        onClick={() => {
-          setMoveItemsEnabled(!moveItemsEnabled);
-        }}
-      />
+      {permissions?.write && (
+        <ActionButton
+          icon={
+            <BorderOuterOutlined
+              style={{ color: moveItemsEnabled ? "white" : undefined }}
+            />
+          }
+          type={moveItemsEnabled ? "primary" : "default"}
+          tooltip={t("moveDashboard")}
+          disabled={isLoading}
+          loading={false}
+          onClick={() => {
+            setMoveItemsEnabled(!moveItemsEnabled);
+          }}
+        />
+      )}
       <ActionBarSeparator />
-      <ActionButton
-        icon={<SettingOutlined />}
-        tooltip={t("configDashboard")}
-        disabled={isLoading}
-        loading={false}
-        onClick={() => {
-          dashboardRef?.current.configDashboard();
-        }}
-      />
+      {permissions?.write && (
+        <ActionButton
+          icon={<SettingOutlined />}
+          tooltip={t("configDashboard")}
+          disabled={isLoading}
+          loading={false}
+          onClick={() => {
+            dashboardRef?.current.configDashboard();
+          }}
+        />
+      )}
       <ActionButton
         icon={<ReloadOutlined />}
         tooltip={t("refresh")}
