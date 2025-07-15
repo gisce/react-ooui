@@ -68,13 +68,19 @@ export const mockOne2ManyTreeView = {
   view_id: 1002,
   type: "tree",
   arch: `<?xml version="1.0"?>
-    <tree string="Order Lines">
+    <tree string="Order Lines" 
+          colors="red:discount>20;orange:discount>10;green:quantity>=5;blue:price_unit>300;purple:price_unit>400" 
+          status="green:quantity>=8;red:discount>20;orange:discount>10;blue:price_unit>300">
       <field name="sequence" widget="handle"/>
       <field name="description"/>
-      <field name="quantity"/>
-      <field name="price_unit"/>
+      <field name="quantity" sum="Total Qty"/>
+      <field name="price_unit" sum="Avg Price"/>
       <field name="discount"/>
     </tree>`,
+  fields_in_conditions: {
+    status: ["quantity", "discount", "price_unit"],
+    colors: ["discount", "quantity", "price_unit"],
+  },
   fields: {
     sequence: {
       type: "integer",

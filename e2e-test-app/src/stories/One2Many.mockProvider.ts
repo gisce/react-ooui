@@ -642,7 +642,94 @@ class MockConnectionProvider implements ConnectionProvider {
   async getRelatedFieldData() { return null; }
   async getReferencedModels() { return []; }
   async getTitleFromId() { return ""; }
-  readAggregates() { return []; }
+  readAggregates = async ({ model, domain, aggregateFields }: { model: string; domain: any[]; aggregateFields: any }) => {
+    console.log("🔍🔍🔍🔍🔍 readAggregates called:", { model, domain, aggregateFields });
+    console.log("🔍🔍🔍🔍🔍 AGGREGATES METHOD IS BEING CALLED! This should work now!");
+    console.log("🔍🔍🔍🔍🔍 this.orderLineData:", this.orderLineData ? this.orderLineData.length : 'undefined');
+    
+    if (model === "sale.order.line") {
+      // Filter lines based on domain
+      let filteredLines = [...this.orderLineData];
+      
+      if (domain && domain.length > 0) {
+        // Simple domain filtering for ["id", "in", [ids...]] format
+        const idInCondition = domain.find(
+          (condition) =>
+            Array.isArray(condition) &&
+            condition.length === 3 &&
+            condition[0] === "id" &&
+            condition[1] === "in",
+        );
+
+        if (idInCondition) {
+          const idsToInclude = idInCondition[2];
+          filteredLines = filteredLines.filter((line) =>
+            idsToInclude.includes(line.id),
+          );
+        }
+      }
+      
+      console.log("🔍🔍🔍 Computing aggregates for", filteredLines.length, "lines");
+      
+      const result: any = {};
+      
+      // Process each field that needs aggregation
+      Object.entries(aggregateFields).forEach(([fieldName, operations]) => {
+        const fieldOps = operations as string[];
+        result[fieldName] = {};
+        
+        // Get field values from filtered results
+        const fieldValues = filteredLines
+          .map((item) => item[fieldName])
+          .filter(
+            (value) =>
+              value !== undefined && value !== null && !isNaN(Number(value)),
+          );
+
+        fieldOps.forEach(operation => {
+          switch (operation) {
+            case 'sum':
+              result[fieldName][operation] = fieldValues.reduce(
+                (sum, val) => sum + Number(val),
+                0,
+              );
+              break;
+            case 'count':
+              result[fieldName][operation] = fieldValues.length;
+              break;
+            case 'avg':
+              result[fieldName][operation] =
+                fieldValues.length > 0
+                  ? Math.round(
+                      fieldValues.reduce((sum, val) => sum + Number(val), 0) /
+                        fieldValues.length,
+                    )
+                  : 0;
+              break;
+            case 'max':
+              result[fieldName][operation] =
+                fieldValues.length > 0
+                  ? Math.max(...fieldValues.map((val) => Number(val)))
+                  : 0;
+              break;
+            case 'min':
+              result[fieldName][operation] =
+                fieldValues.length > 0
+                  ? Math.min(...fieldValues.map((val) => Number(val)))
+                  : 0;
+              break;
+            default:
+              result[fieldName][operation] = 0;
+          }
+        });
+      });
+      
+      console.log("🔍🔍🔍 readAggregates result:", result);
+      return result;
+    }
+    
+    return {};
+  }
   async writeConcurrencyField() { return true; }
   parseConditions() { return { colors: {}, icons: {}, status: [] }; }
   processSearchResults() { return { items: [], totalItems: () => 0 }; }
@@ -820,7 +907,14 @@ class MockConnectionProvider implements ConnectionProvider {
         treeOoui.parse(arch);
         
         console.log("🔍🔍🔍 TreeOoui created successfully, processing data...");
-        console.log("🔍🔍🔍 TreeOoui columns:", treeOoui.columns.map(col => ({ id: col.id, type: col.type, string: col.string })));
+        console.log("🔍🔍🔍 TreeOoui columns:", treeOoui.columns.map(col => ({ 
+          id: col.id, 
+          type: col.type, 
+          string: col.string,
+          _sum: col._sum,
+          sum: col.sum,
+          allProps: Object.keys(col)
+        })));
         
         // Process the data using the same logic as getTableItems
         const tableItems = this.getTableItems(treeOoui, processedLines);
@@ -831,15 +925,20 @@ class MockConnectionProvider implements ConnectionProvider {
         // Return in the format expected by the One2manyTree component
         // First element is the data, second is attributes for UI evaluation
         // The second element should be an array of objects with id, colors, status properties
-        const attributes = tableItems.map(item => ({
-          id: item.id,
-          colors: null, // No special colors for now
-          status: null, // No special status for now
-        }));
+        const attributes = tableItems.map(item => {
+          // Get the original processed line data for condition evaluation
+          const lineData = processedLines.find(line => line.id === item.id);
+          
+          return {
+            id: item.id,
+            colors: this.evaluateColorCondition(lineData),
+            status: this.evaluateStatusCondition(lineData),
+          };
+        });
         
         return [
           tableItems,
-          attributes // Array of attribute objects, not empty object
+          attributes // Array of attribute objects with proper colors and status
         ];
       }
       
@@ -933,6 +1032,39 @@ class MockConnectionProvider implements ConnectionProvider {
     });
   }
 
+  // Evaluate color condition based on XML colors attribute
+  // colors="red:discount>20;orange:discount>10;green:quantity>=5;blue:price_unit>300;purple:price_unit>400"
+  private evaluateColorCondition(lineData: any): string | null {
+    if (!lineData) return null;
+    
+    const { discount, quantity, price_unit } = lineData;
+    
+    // Check conditions in order of priority
+    if (discount > 20) return "red";
+    if (price_unit > 400) return "purple";
+    if (price_unit > 300) return "blue";
+    if (discount > 10) return "orange";
+    if (quantity >= 5) return "green";
+    
+    return null; // No color condition met
+  }
+
+  // Evaluate status condition based on XML status attribute
+  // status="green:quantity>=8;red:discount>20;orange:discount>10;blue:price_unit>300"
+  private evaluateStatusCondition(lineData: any): string | null {
+    if (!lineData) return null;
+    
+    const { discount, quantity, price_unit } = lineData;
+    
+    // Check conditions in order of priority
+    if (quantity >= 8) return "green";
+    if (discount > 20) return "red";
+    if (price_unit > 300) return "blue";
+    if (discount > 10) return "orange";
+    
+    return null; // No status condition met
+  }
+
   constructor() {
     // Initialize with mock data
     this.orderLineData = mockParentRecord.order_line;
@@ -975,6 +1107,9 @@ export function initializeMockProvider() {
           }
           if (prop === 'searchAllIds') {
             return target.searchAllIds.bind(target);
+          }
+          if (prop === 'readAggregates') {
+            return target.readAggregates.bind(target);
           }
           
           return {
