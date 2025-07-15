@@ -44,49 +44,46 @@ test.describe("Infinite One2Many Component", () => {
       maxScrollLeft: el.scrollWidth - el.clientWidth,
     }));
 
-    // If there's horizontal scrolling available, scroll through all positions
-    if (scrollInfo.maxScrollLeft > 0) {
-      // Reset to beginning
-      await gridBodyViewport.evaluate((el) => {
-        el.scrollLeft = 0;
-      });
-      await page.waitForTimeout(200);
+    // Reset to beginning
+    await gridBodyViewport.evaluate((el) => {
+      el.scrollLeft = 0;
+    });
+    await page.waitForTimeout(200);
 
-      // Scroll in increments to capture all columns
-      const scrollStep = Math.max(100, scrollInfo.clientWidth / 3);
-      let currentScrollLeft = 0;
+    // Scroll in increments to capture all columns
+    const scrollStep = Math.max(100, scrollInfo.clientWidth / 3);
+    let currentScrollLeft = 0;
 
-      while (currentScrollLeft <= scrollInfo.maxScrollLeft) {
-        // Scroll to current position
-        await gridBodyViewport.evaluate((el, scrollLeft) => {
-          el.scrollLeft = scrollLeft;
-        }, currentScrollLeft);
+    while (currentScrollLeft <= scrollInfo.maxScrollLeft) {
+      // Scroll to current position
+      await gridBodyViewport.evaluate((el, scrollLeft) => {
+        el.scrollLeft = scrollLeft;
+      }, currentScrollLeft);
 
-        // Wait for scroll to complete and grid to update
-        await page.waitForTimeout(300);
-
-        // Collect headers at this scroll position
-        currentHeaders = await page
-          .locator(".ag-header-cell-text")
-          .allTextContents();
-        currentHeaders.forEach((header) => visibleHeaders.add(header));
-
-        currentScrollLeft += scrollStep;
-      }
-
-      // Make sure we scroll to the very end to catch any remaining columns
-      await gridBodyViewport.evaluate((el, maxScroll) => {
-        el.scrollLeft = maxScroll;
-      }, scrollInfo.maxScrollLeft);
-
+      // Wait for scroll to complete and grid to update
       await page.waitForTimeout(300);
 
-      // Final collection of headers
+      // Collect headers at this scroll position
       currentHeaders = await page
         .locator(".ag-header-cell-text")
         .allTextContents();
       currentHeaders.forEach((header) => visibleHeaders.add(header));
+
+      currentScrollLeft += scrollStep;
     }
+
+    // Make sure we scroll to the very end to catch any remaining columns
+    await gridBodyViewport.evaluate((el, maxScroll) => {
+      el.scrollLeft = maxScroll;
+    }, scrollInfo.maxScrollLeft);
+
+    await page.waitForTimeout(300);
+
+    // Final collection of headers
+    currentHeaders = await page
+      .locator(".ag-header-cell-text")
+      .allTextContents();
+    currentHeaders.forEach((header) => visibleHeaders.add(header));
 
     // Convert Set to Array for comparison
     const foundHeaders = Array.from(visibleHeaders).filter(
@@ -105,30 +102,24 @@ test.describe("Infinite One2Many Component", () => {
     const rowCount = await page.locator(".ag-row").count();
     expect(rowCount).toBeGreaterThan(0);
 
-    // Verify horizontal scrolling is working within the AG Grid
-    if (scrollInfo.maxScrollLeft > 0) {
-      // Test scrolling functionality
-      await gridBodyViewport.evaluate((el) => {
-        el.scrollLeft = 0;
-      });
-      await page.waitForTimeout(100);
+    // Test scrolling functionality
+    await gridBodyViewport.evaluate((el) => {
+      el.scrollLeft = 0;
+    });
+    await page.waitForTimeout(100);
 
-      const initialScrollLeft = await gridBodyViewport.evaluate(
-        (el) => el.scrollLeft,
-      );
+    const initialScrollLeft = await gridBodyViewport.evaluate(
+      (el) => el.scrollLeft,
+    );
 
-      await gridBodyViewport.evaluate((el) => {
-        el.scrollLeft = 200;
-      });
-      await page.waitForTimeout(100);
+    await gridBodyViewport.evaluate((el) => {
+      el.scrollLeft = 200;
+    });
+    await page.waitForTimeout(100);
 
-      const scrolledLeft = await gridBodyViewport.evaluate(
-        (el) => el.scrollLeft,
-      );
-      expect(scrolledLeft).toBeGreaterThan(initialScrollLeft);
-
-      expect(scrollInfo.maxScrollLeft).toBeGreaterThan(0);
-    }
+    const scrolledLeft = await gridBodyViewport.evaluate((el) => el.scrollLeft);
+    expect(scrolledLeft).toBeGreaterThan(initialScrollLeft);
+    expect(scrollInfo.maxScrollLeft).toBeGreaterThan(0);
   });
 
   test("should display total records count and verify grid scrolling", async ({
@@ -177,22 +168,14 @@ test.describe("Infinite One2Many Component", () => {
 
     await expect(firstRowCheckbox).toBeChecked();
 
-    const headerCheckboxes = await page
+    const headerCheckbox = page
       .locator('.ag-header input[type="checkbox"]')
-      .all();
+      .nth(2);
 
-    let foundIndeterminate = false;
-    for (const checkbox of headerCheckboxes) {
-      const isIndeterminate = await checkbox.evaluate(
-        (el: HTMLInputElement) => el.indeterminate,
-      );
-      if (isIndeterminate) {
-        foundIndeterminate = true;
-        break;
-      }
-    }
-
-    expect(foundIndeterminate).toBe(true);
+    const isIndeterminate = await headerCheckbox.evaluate(
+      (el: HTMLInputElement) => el.indeterminate,
+    );
+    expect(isIndeterminate).toBe(true);
   });
 
   test("should handle multiple row selection correctly", async ({ page }) => {
@@ -215,22 +198,14 @@ test.describe("Infinite One2Many Component", () => {
     await expect(secondRowCheckbox).toBeChecked();
     await expect(thirdRowCheckbox).toBeChecked();
 
-    const headerCheckboxes = await page
+    const headerCheckbox = page
       .locator('.ag-header input[type="checkbox"]')
-      .all();
+      .nth(2);
 
-    let foundIndeterminate = false;
-    for (const checkbox of headerCheckboxes) {
-      const isIndeterminate = await checkbox.evaluate(
-        (el: HTMLInputElement) => el.indeterminate,
-      );
-      if (isIndeterminate) {
-        foundIndeterminate = true;
-        break;
-      }
-    }
-
-    expect(foundIndeterminate).toBe(true);
+    const isIndeterminate = await headerCheckbox.evaluate(
+      (el: HTMLInputElement) => el.indeterminate,
+    );
+    expect(isIndeterminate).toBe(true);
   });
 
   test("should calculate aggregates correctly when selecting rows", async ({
@@ -241,7 +216,6 @@ test.describe("Infinite One2Many Component", () => {
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
 
-    // Look for aggregate elements - AG Grid shows aggregates in status bar, footer, or column headers
     const aggregateElements = page.locator(
       "text=/Total.*Qty|.*Total.*Price|.*Avg.*Price|Sum:|Avg:|Count:/i",
     );
@@ -307,10 +281,9 @@ test.describe("Infinite One2Many Component", () => {
       ),
     ).toBeGreaterThan(0);
 
-    // If aggregates showed up during selection, they should have content
-    if (aggregateTextAfterSelection) {
-      expect(aggregateTextAfterSelection.trim()).not.toBe("");
-    }
+    // Aggregates should have content when they appear
+    expect(aggregateTextAfterSelection).toBeTruthy();
+    expect(aggregateTextAfterSelection!.trim()).not.toBe("");
   });
 
   test("should show three dots menu with reset table view option", async ({
@@ -340,165 +313,95 @@ test.describe("Infinite One2Many Component", () => {
     expect(hasResetTableView).toBe(true);
   });
 
-  test.skip("should persist column state changes after page reload", async ({
+  test("Should persist column order after drag and drop @headed", async ({
     page,
   }) => {
-    // SKIPPED: Column reordering functionality does not appear to be implemented
-    // in the One2Many component. This test was failing because neither programmatic
-    // API calls nor drag-and-drop operations could change the column order.
-    //
-    // TODO: Either implement column reordering in One2Many component or remove this test entirely.
-    // If column reordering should work, investigate why AG Grid API and drag-and-drop fail.
-
     await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
 
-    await page.waitForSelector(".ag-root", { state: "visible" });
-    await page.waitForSelector(".ag-header", { state: "visible" });
-    await page.waitForSelector(".ag-row", { state: "visible" });
-
-    // Wait for grid to fully initialize
-    await page.waitForTimeout(3000);
-
-    const getColumnOrder = async () => {
-      // Wait for columns to stabilize
-      await page.waitForTimeout(500);
-      return await page.locator(".ag-header-cell-text").allTextContents();
-    };
-
-    // First, let's clear any existing localStorage to start fresh
+    // Clear any existing localStorage to start fresh
     await page.evaluate(() => {
       localStorage.clear();
     });
 
-    // Reload to ensure clean state
     await page.reload();
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-header", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
     await page.waitForTimeout(3000);
 
+    const getColumnOrder = async () => {
+      return await page.evaluate(() => {
+        // Get the visual order by position
+        const headers = Array.from(
+          document.querySelectorAll(".ag-header-cell"),
+        );
+        const headerData = headers
+          .map((header) => {
+            const rect = header.getBoundingClientRect();
+            const text = header.textContent?.trim();
+            return { text, x: rect.x, element: header };
+          })
+          .filter((item) => item.text && item.text !== "")
+          .sort((a, b) => a.x - b.x);
+
+        return headerData.map((item) => item.text);
+      });
+    };
+
     const originalOrder = await getColumnOrder();
-    expect(originalOrder.length).toBeGreaterThan(2);
-    console.log("Clean initial order:", originalOrder);
 
-    // Use AG Grid's API to reorder columns programmatically (more reliable than drag)
-    const reorderResult = await page.evaluate(() => {
-      const gridApi = (window as any).agGridInstances?.[0]?.api;
-      if (gridApi) {
-        // Move "Sequence" column to after "Description"
-        const currentCols = gridApi.getColumnState();
-        console.log("Current column state:", currentCols);
-
-        // Find sequence and description columns
-        const sequenceCol = currentCols.find(
-          (col: any) => col.colId === "sequence",
-        );
-        const descriptionCol = currentCols.find(
-          (col: any) => col.colId === "description",
-        );
-
-        if (sequenceCol && descriptionCol) {
-          // Swap their positions
-          const newOrder = [...currentCols];
-          const sequenceIndex = newOrder.findIndex(
-            (col: any) => col.colId === "sequence",
-          );
-          const descriptionIndex = newOrder.findIndex(
-            (col: any) => col.colId === "description",
-          );
-
-          // Move sequence to after description
-          if (sequenceIndex < descriptionIndex) {
-            newOrder.splice(sequenceIndex, 1);
-            newOrder.splice(descriptionIndex, 0, sequenceCol);
-          }
-
-          console.log("Applying new column order:", newOrder);
-          gridApi.applyColumnState({ state: newOrder, applyOrder: true });
-          return true;
-        }
-      }
-      return false;
-    });
-
-    if (reorderResult) {
-      await page.waitForTimeout(1000);
-      const orderAfterProgrammaticChange = await getColumnOrder();
-      console.log(
-        "Order after programmatic change:",
-        orderAfterProgrammaticChange,
-      );
-
-      // Check if the programmatic change worked
-      const changeWorked = !originalOrder.every(
-        (col, index) => col === orderAfterProgrammaticChange[index],
-      );
-
-      if (changeWorked) {
-        console.log("Column order successfully changed programmatically");
-
-        // Reload the page to test persistence
-        await page.reload();
-        await page.waitForSelector(".ag-root", { state: "visible" });
-        await page.waitForSelector(".ag-header", { state: "visible" });
-        await page.waitForSelector(".ag-row", { state: "visible" });
-        await page.waitForTimeout(3000);
-
-        const orderAfterReload = await getColumnOrder();
-        console.log("Order after reload:", orderAfterReload);
-
-        // The order should be preserved
-        expect(orderAfterReload).toEqual(orderAfterProgrammaticChange);
-        return;
-      }
-    }
-
-    // Fall back to drag and drop test
-    console.log("Programmatic change didn't work, trying drag and drop");
-
-    const sequenceHeader = page.getByRole("columnheader", { name: "Sequence" });
+    // Find the Description and Sequence column headers
     const descriptionHeader = page.getByRole("columnheader", {
       name: "Description",
     });
+    const sequenceHeader = page.getByRole("columnheader", { name: "Sequence" });
 
-    await expect(sequenceHeader).toBeVisible();
     await expect(descriptionHeader).toBeVisible();
+    await expect(sequenceHeader).toBeVisible();
 
-    // More robust drag and drop
-    await sequenceHeader.hover();
-    await page.mouse.down();
-    await page.waitForTimeout(500);
-    await descriptionHeader.hover();
-    await page.waitForTimeout(500);
-    await page.mouse.up();
-    await page.waitForTimeout(1000);
+    // Get bounding boxes for drag operation
+    const descriptionBox = await descriptionHeader.boundingBox();
+    const sequenceBox = await sequenceHeader.boundingBox();
 
+    expect(descriptionBox).toBeTruthy();
+    expect(sequenceBox).toBeTruthy();
+
+    // Drag using the header label element specifically
+    const descriptionLabel = page
+      .locator(".ag-header-cell")
+      .filter({ hasText: "Description" })
+      .locator(".ag-header-cell-label");
+    const sequenceLabel = page
+      .locator(".ag-header-cell")
+      .filter({ hasText: "Sequence" })
+      .locator(".ag-header-cell-label");
+
+    await expect(descriptionLabel).toBeVisible();
+    await expect(sequenceLabel).toBeVisible();
+
+    // Perform drag operation
+    await descriptionLabel.dragTo(sequenceLabel);
+    await page.waitForTimeout(5000); // Wait for drag animation to complete and localStorage updates
+
+    // Check order after drag
     const orderAfterDrag = await getColumnOrder();
-    console.log("Order after drag:", orderAfterDrag);
 
-    const dragWorked = !originalOrder.every(
-      (col, index) => col === orderAfterDrag[index],
+    // The drag should have worked - verify that the order changed
+    expect(JSON.stringify(originalOrder)).not.toEqual(
+      JSON.stringify(orderAfterDrag),
     );
 
-    if (dragWorked) {
-      // Test persistence
-      await page.reload();
-      await page.waitForSelector(".ag-root", { state: "visible" });
-      await page.waitForSelector(".ag-header", { state: "visible" });
-      await page.waitForSelector(".ag-row", { state: "visible" });
-      await page.waitForTimeout(3000);
+    // Reload page to test persistence
+    await page.reload();
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-header", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+    await page.waitForTimeout(3000); // Increased timeout
 
-      const orderAfterReload = await getColumnOrder();
-      expect(orderAfterReload).toEqual(orderAfterDrag);
-    } else {
-      // If neither method works, fail the test with a clear message
-      throw new Error(
-        "Column reordering functionality does not appear to be working. " +
-          "Neither programmatic API calls nor drag-and-drop operations changed the column order. " +
-          "This test is specifically for persistence of column order changes, so it requires " +
-          "the ability to reorder columns in the first place.",
-      );
-    }
+    const orderAfterReload = await getColumnOrder();
+
+    // Verify persistence - the order should be the same as after drag
+    expect(orderAfterReload).toEqual(orderAfterDrag);
   });
 
   test("should handle column sorting with proper arrows and verify Description column values are sorted correctly", async ({
@@ -543,9 +446,7 @@ test.describe("Infinite One2Many Component", () => {
         const element = elements.nth(i);
         const text = await element.textContent();
 
-        if (text && text.trim().length > 2 && /[A-Za-z]/.test(text.trim())) {
-          descriptions.push(text.trim());
-        }
+        descriptions.push(text!.trim());
       }
 
       return descriptions;
@@ -571,8 +472,6 @@ test.describe("Infinite One2Many Component", () => {
 
     expect(ascDescriptions.length).toBeGreaterThan(0);
 
-    // For now, just verify that the sorting indicator is working correctly
-    // The actual data sorting might be handled differently in One2Many vs TreeActionView
     expect(ascSort.ariaSort).toBe("ascending");
     expect(ascSort.hasAscIcon).toBe(true);
 

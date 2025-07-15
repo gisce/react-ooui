@@ -34,5 +34,8 @@ jobs:
       run: |
         cd e2e-test-app
         npm install
-        npx playwright install
-        npm test
+        npx playwright install --with-deps
+        # Run headless tests first (excluding @headed tagged tests)
+        npm run test:headless
+        # Run headed tests for specific tests that need them
+        xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" npm run test:headed

@@ -26,8 +26,8 @@ export default defineConfig({
     /* Take screenshot on failure */
     screenshot: "only-on-failure",
 
-    /* Run in headless mode */
-    headless: true,
+    /* Run in headless mode by default */
+    headless: !process.env.HEADED,
   },
 
   /* Configure projects for major browsers */
