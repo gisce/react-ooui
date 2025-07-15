@@ -406,7 +406,7 @@ test.describe("Infinite TreeActionView Component", () => {
   }) => {
     // Grant clipboard permissions
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-    
+
     await page.goto(
       getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
     );
@@ -427,7 +427,9 @@ test.describe("Infinite TreeActionView Component", () => {
     await copyButton.click();
     await page.waitForTimeout(200);
 
-    const clipboardSingle = await page.evaluate(() => navigator.clipboard.readText());
+    const clipboardSingle = await page.evaluate(() =>
+      navigator.clipboard.readText(),
+    );
     expect(clipboardSingle).toBeTruthy();
     expect(clipboardSingle.split(",")).toHaveLength(1);
 
@@ -449,7 +451,9 @@ test.describe("Infinite TreeActionView Component", () => {
     await copyButton.click();
     await page.waitForTimeout(200);
 
-    const clipboardThree = await page.evaluate(() => navigator.clipboard.readText());
+    const clipboardThree = await page.evaluate(() =>
+      navigator.clipboard.readText(),
+    );
     expect(clipboardThree).toBeTruthy();
     const threeIds = clipboardThree.split(",");
     expect(threeIds).toHaveLength(3);
@@ -485,11 +489,13 @@ test.describe("Infinite TreeActionView Component", () => {
     await copyButton.click();
     await page.waitForTimeout(500);
 
-    const clipboardAll = await page.evaluate(() => navigator.clipboard.readText());
+    const clipboardAll = await page.evaluate(() =>
+      navigator.clipboard.readText(),
+    );
     expect(clipboardAll).toBeTruthy();
     const allIds = clipboardAll.split(",");
     expect(allIds.length).toBe(250);
-    
+
     // Verify IDs are valid (should be numbers or strings)
     expect(allIds[0]).toBeTruthy();
     expect(allIds[0].trim()).not.toBe("");
@@ -1389,11 +1395,11 @@ test.describe("Infinite TreeActionView Component", () => {
       // Click three dots menu to open options
       const threeDotsMenu = page.getByRole("button", { name: "More options" });
       await expect(threeDotsMenu).toBeVisible();
-      
+
       // Verify it's actually the SVG button
       const svg = threeDotsMenu.locator("svg");
       await expect(svg).toBeVisible();
-      
+
       await threeDotsMenu.click();
       await page.waitForTimeout(500);
 
@@ -1447,7 +1453,7 @@ test.describe("Infinite TreeActionView Component", () => {
     await page.waitForTimeout(1000);
 
     const gridBodyViewport = page.locator(".ag-body-viewport");
-    
+
     await gridBodyViewport.evaluate((el) => {
       el.scrollTop = 1000;
     });
@@ -1463,34 +1469,34 @@ test.describe("Infinite TreeActionView Component", () => {
 
     const getNameColumnValues = async () => {
       const selector = '.ag-row .ag-cell[col-id="name"] div';
-      await page.waitForSelector(selector, { state: 'visible' });
+      await page.waitForSelector(selector, { state: "visible" });
       await page.waitForTimeout(1500);
-      
+
       const elements = page.locator(selector);
       const count = await elements.count();
-      
-      const names = [];
+
+      const names: string[] = [];
       for (let i = 0; i < Math.min(8, count); i++) {
         const element = elements.nth(i);
         const text = await element.textContent();
-        
+
         if (text && text.trim().length > 2 && /[A-Za-z]/.test(text.trim())) {
           names.push(text.trim());
         }
       }
-      
+
       return names;
     };
 
     const getSortingIndicator = async () => {
-      const sortAsc = await nameHeader.locator('.ag-icon-asc').count();
-      const sortDesc = await nameHeader.locator('.ag-icon-desc').count();
-      const ariaSort = await nameHeader.getAttribute('aria-sort');
-      
+      const sortAsc = await nameHeader.locator(".ag-icon-asc").count();
+      const sortDesc = await nameHeader.locator(".ag-icon-desc").count();
+      const ariaSort = await nameHeader.getAttribute("aria-sort");
+
       return {
         hasAscIcon: sortAsc > 0,
         hasDescIcon: sortDesc > 0,
-        ariaSort: ariaSort
+        ariaSort: ariaSort,
       };
     };
 
@@ -1505,7 +1511,7 @@ test.describe("Infinite TreeActionView Component", () => {
     expect(ascNames.length).toBeGreaterThan(0);
     const ascSorted = [...ascNames].sort();
     expect(ascNames).toEqual(ascSorted);
-    expect(ascSort.ariaSort).toBe('ascending');
+    expect(ascSort.ariaSort).toBe("ascending");
 
     await nameHeader.click();
 
@@ -1515,7 +1521,7 @@ test.describe("Infinite TreeActionView Component", () => {
     expect(descNames.length).toBeGreaterThan(0);
     const descSorted = [...descNames].sort().reverse();
     expect(descNames).toEqual(descSorted);
-    expect(descSort.ariaSort).toBe('descending');
+    expect(descSort.ariaSort).toBe("descending");
 
     await nameHeader.click();
 
@@ -1524,7 +1530,7 @@ test.describe("Infinite TreeActionView Component", () => {
 
     expect(restoredNames.length).toBeGreaterThan(0);
     expect(restoredNames).toEqual(originalNames);
-    expect(noneSort.ariaSort).toBe('none');
+    expect(noneSort.ariaSort).toBe("none");
 
     const totalText = await page.getByText("Total registers:").textContent();
     expect(totalText).toContain("250");

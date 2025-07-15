@@ -202,11 +202,13 @@ export function generateMockOrderLines(orderId: number, count: number = 200) {
   const lines = [];
 
   for (let i = 1; i <= count; i++) {
-    const product =
-      mockProducts[Math.floor(Math.random() * mockProducts.length)];
-    const quantity = Math.floor(Math.random() * 10) + 1;
-    const discount = Math.random() > 0.7 ? Math.floor(Math.random() * 25) : 0;
-    const priceUnit = product.list_price * (1 + (Math.random() - 0.5) * 0.2); // ±10% variation
+    // Use deterministic product selection for consistent sorting tests
+    const product = mockProducts[(i - 1) % mockProducts.length];
+    
+    // Use deterministic values based on index for consistent testing
+    const quantity = (i % 10) + 1; // 1-10
+    const discount = i % 5 === 0 ? (i % 25) : 0; // Every 5th item has discount
+    const priceUnit = product.list_price * (1 + ((i % 10) - 5) * 0.02); // Small variation based on index
 
     lines.push({
       id: i,
