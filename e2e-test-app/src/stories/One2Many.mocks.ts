@@ -1,0 +1,240 @@
+// Mock form view with one2many field
+// Simple form first to test
+export const mockSimpleFormView = {
+  view_id: 1001,
+  type: "form",
+  arch: `<?xml version="1.0"?>
+    <form string="Sales Order">
+        <group>
+          <field name="name"/>
+          <field name="partner_id"/>
+          <field name="date_order"/>
+          <field name="state"/>
+        </group>
+    </form>`,
+  fields: {
+    name: {
+      type: "char",
+      string: "Order Reference",
+      required: true,
+      size: 64,
+    },
+    partner_id: {
+      type: "many2one",
+      string: "Customer",
+      relation: "res.partner",
+      required: true,
+    },
+    date_order: {
+      type: "datetime",
+      string: "Order Date",
+      required: true,
+    },
+    state: {
+      type: "selection",
+      string: "Status",
+      selection: [
+        ["draft", "Draft"],
+        ["confirmed", "Confirmed"],
+        ["done", "Done"],
+        ["cancel", "Cancelled"],
+      ],
+    },
+  },
+};
+
+export const mockFormView = {
+  view_id: 1001,
+  type: "form",
+  arch: `<?xml version="1.0"?>
+    <form string="Sales Order">
+        <field name="order_line"
+        widget_props="{'infinite': true}"
+        context="{'default_order_id': active_id}"/>
+    </form>`,
+  fields: {
+    order_line: {
+      type: "one2many",
+      string: "Order Lines",
+      relation: "sale.order.line",
+      relation_field: "order_id",
+      infinite: true, // Add infinite property directly to field definition
+    },
+  },
+};
+
+// Mock tree view for one2many field (embedded in form)
+export const mockOne2ManyTreeView = {
+  view_id: 1002,
+  type: "tree",
+  arch: `<?xml version="1.0"?>
+    <tree string="Order Lines">
+      <field name="sequence" widget="handle"/>
+      <field name="description"/>
+      <field name="quantity"/>
+      <field name="price_unit"/>
+      <field name="discount"/>
+    </tree>`,
+  fields: {
+    sequence: {
+      type: "integer",
+      string: "Sequence",
+    },
+    order_id: {
+      type: "many2one",
+      string: "Order",
+      relation: "sale.order",
+      required: true,
+    },
+    product_id: {
+      type: "many2one",
+      string: "Product",
+      relation: "product.product",
+      required: true,
+    },
+    description: {
+      type: "text",
+      string: "Description",
+    },
+    quantity: {
+      type: "float",
+      string: "Quantity",
+      required: true,
+    },
+    price_unit: {
+      type: "float",
+      string: "Unit Price",
+      required: true,
+    },
+    discount: {
+      type: "float",
+      string: "Discount (%)",
+    },
+    price_subtotal: {
+      type: "function",
+      string: "Subtotal",
+      fnct_type: "float",
+    },
+  },
+};
+
+// Mock partner data
+export const mockPartners = [
+  { id: 1, name: "Acme Corporation" },
+  { id: 2, name: "Tech Solutions Ltd" },
+  { id: 3, name: "Global Industries" },
+  { id: 4, name: "Smart Systems Inc" },
+  { id: 5, name: "Digital Partners" },
+];
+
+// Mock product data
+export const mockProducts = [
+  {
+    id: 1,
+    name: "[DESK001] Office Desk",
+    default_code: "DESK001",
+    list_price: 450.0,
+  },
+  {
+    id: 2,
+    name: "[CHAIR001] Ergonomic Chair",
+    default_code: "CHAIR001",
+    list_price: 250.0,
+  },
+  {
+    id: 3,
+    name: '[MON001] Computer Monitor 27"',
+    default_code: "MON001",
+    list_price: 350.0,
+  },
+  {
+    id: 4,
+    name: "[KEY001] Mechanical Keyboard",
+    default_code: "KEY001",
+    list_price: 120.0,
+  },
+  {
+    id: 5,
+    name: "[MOUSE001] Wireless Mouse",
+    default_code: "MOUSE001",
+    list_price: 45.0,
+  },
+  {
+    id: 6,
+    name: "[LAMP001] Desk Lamp LED",
+    default_code: "LAMP001",
+    list_price: 75.0,
+  },
+  {
+    id: 7,
+    name: "[STAND001] Monitor Stand",
+    default_code: "STAND001",
+    list_price: 85.0,
+  },
+  {
+    id: 8,
+    name: "[HDD001] External HDD 2TB",
+    default_code: "HDD001",
+    list_price: 150.0,
+  },
+  {
+    id: 9,
+    name: "[USB001] USB Hub 7-Port",
+    default_code: "USB001",
+    list_price: 35.0,
+  },
+  {
+    id: 10,
+    name: "[CAB001] Filing Cabinet",
+    default_code: "CAB001",
+    list_price: 320.0,
+  },
+];
+
+// Generate mock order line data
+export function generateMockOrderLines(orderId: number, count: number = 200) {
+  const lines = [];
+
+  for (let i = 1; i <= count; i++) {
+    const product =
+      mockProducts[Math.floor(Math.random() * mockProducts.length)];
+    const quantity = Math.floor(Math.random() * 10) + 1;
+    const discount = Math.random() > 0.7 ? Math.floor(Math.random() * 25) : 0;
+    const priceUnit = product.list_price * (1 + (Math.random() - 0.5) * 0.2); // ±10% variation
+
+    lines.push({
+      id: i,
+      sequence: i * 10,
+      order_id: [orderId, `SO/2024/000${orderId}`], // Use proper many2one format
+      product_id: [product.id, product.name], // Use proper many2one format
+      product_id_name: product.name, // Add separate name field
+      description: `${product.name}\nStandard configuration`,
+      quantity: quantity,
+      price_unit: Math.round(priceUnit * 100) / 100,
+      discount: discount,
+      price_subtotal: 0, // Will be calculated as function field
+    });
+  }
+
+  return lines;
+}
+
+// Mock parent record (sales order)
+export const mockParentRecord = {
+  id: 1,
+  name: "SO/2024/0001",
+  partner_id: 1,
+  partner_id_name: "Acme Corporation",
+  date_order: "2024-01-15 10:30:00",
+  state: "draft",
+  order_line: generateMockOrderLines(1, 50), // Generate 50 lines to trigger infinite scroll
+  amount_untaxed: 0, // Will be calculated
+  amount_tax: 0, // Will be calculated
+  amount_total: 0, // Will be calculated
+};
+
+// Available views for the action
+export const mockAvailableViews = {
+  form: { view_id: 1001 },
+  tree: { view_id: 1002 },
+};
