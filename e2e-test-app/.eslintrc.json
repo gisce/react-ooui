@@ -15,9 +15,8 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
-  "plugins": ["react", "react-compiler"],
+  "plugins": ["react"],
   "rules": {
-    "react-compiler/react-compiler": "off",
     "@typescript-eslint/semi": "off",
     "@typescript-eslint/member-delimiter-style": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
@@ -30,37 +29,14 @@
     "@typescript-eslint/no-empty-interface": "off",
     "@typescript-eslint/naming-convention": "off",
     "react/react-in-jsx-scope": "off",
-    // These have to be reviewed and turn to on/warn
-    "no-empty": "warn",
-    "one-var": "warn",
-    "react/prop-types": "warn",
-    "react/display-name": "warn",
     "@typescript-eslint/no-unused-vars": "warn",
     "prefer-const": "warn",
-    "import/no-duplicates": "warn",
-    "@typescript-eslint/array-type": "warn",
-    "no-prototype-builtins": "warn",
-    "no-useless-return": "warn",
-    "array-callback-return": "warn",
-    "eqeqeq": "warn",
-    "no-useless-escape": "warn",
-    "no-irregular-whitespace": "warn",
-    "no-undef-init": "warn",
-    "react/jsx-no-target-blank": "warn",
-    "react/jsx-key": "warn",
-    "react/no-children-prop": "warn",
-    "import/first": "warn",
-    "no-unneeded-ternary": "warn",
-    "react-hooks/rules-of-hooks": "warn",
-    "spaced-comment": "warn",
-    "no-async-promise-executor": "warn",
     "@typescript-eslint/return-await": "off",
     "@typescript-eslint/no-dynamic-delete": "off",
     "@typescript-eslint/no-unnecessary-boolean-literal-compare": "off",
     "@typescript-eslint/restrict-plus-operands": "off",
     "@typescript-eslint/consistent-indexed-object-style": "off",
     "@typescript-eslint/no-misused-promises": "off",
-    "@typescript-eslint/no-misused-promise": "off",
     "@typescript-eslint/no-unnecessary-type-assertion": "off",
     "@typescript-eslint/restrict-template-expressions": "off",
     "@typescript-eslint/no-floating-promises": "off",
@@ -74,20 +50,7 @@
   },
   "settings": {
     "react": {
-      "version": "18.2.0" // React version. "detect" automatically picks the version you have installed.
+      "version": "18.2.0"
     }
-  },
-  "ignorePatterns": [
-    "node_modules",
-    "build",
-    "report",
-    "coverage",
-    "public",
-    "**/*.test.*",
-    "**/*.stories.*",
-    "**/*.spec.*",
-    "src/__tests__",
-    "src/stories",
-    "e2e-test-app"
-  ]
+  }
 }

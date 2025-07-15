@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.paths.json",
-  "include": ["src"],
+  "include": ["src/**/*"],
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
