@@ -1077,6 +1077,7 @@ test.describe("Infinite TreeActionView Component", () => {
   test("should persist column order after drag and drop @headed", async ({
     page,
   }) => {
+    test.setTimeout(60000);
     await page.goto(
       getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
     );
@@ -1090,7 +1091,16 @@ test.describe("Infinite TreeActionView Component", () => {
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-header", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
-    await page.waitForTimeout(3000); // Increased timeout
+    // Wait for AG Grid to be fully initialized
+    await page.waitForFunction(
+      () => {
+        const grid = document.querySelector(".ag-root");
+        const headers = document.querySelectorAll(".ag-header-cell");
+        const rows = document.querySelectorAll(".ag-row");
+        return grid && headers.length > 0 && rows.length > 0;
+      },
+      { timeout: 5000 }
+    );
 
     const getColumnOrder = async () => {
       return await page.evaluate(() => {
@@ -1150,7 +1160,30 @@ test.describe("Infinite TreeActionView Component", () => {
 
     // Perform drag operation
     await firstLabel.dragTo(secondLabel);
-    await page.waitForTimeout(5000); // Wait for drag animation to complete and localStorage updates
+    
+    // Wait for the column order to change instead of using a fixed timeout
+    try {
+      await page.waitForFunction(
+        (expectedOrder) => {
+          const headers = Array.from(document.querySelectorAll(".ag-header-cell"));
+          const currentOrder = headers
+            .map((header) => ({
+              text: header.textContent?.trim(),
+              x: header.getBoundingClientRect().x
+            }))
+            .filter((item) => item.text && item.text !== "")
+            .sort((a, b) => a.x - b.x)
+            .map((item) => item.text);
+          
+          return JSON.stringify(currentOrder) !== JSON.stringify(expectedOrder);
+        },
+        originalOrder,
+        { timeout: 10000 }
+      );
+    } catch (error) {
+      const currentOrder = await getColumnOrder();
+      throw error;
+    }
 
     // Check order after drag
     const orderAfterDrag = await getColumnOrder();
@@ -1165,7 +1198,16 @@ test.describe("Infinite TreeActionView Component", () => {
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-header", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
-    await page.waitForTimeout(3000); // Increased timeout
+    // Wait for AG Grid to be fully initialized
+    await page.waitForFunction(
+      () => {
+        const grid = document.querySelector(".ag-root");
+        const headers = document.querySelectorAll(".ag-header-cell");
+        const rows = document.querySelectorAll(".ag-row");
+        return grid && headers.length > 0 && rows.length > 0;
+      },
+      { timeout: 5000 }
+    );
 
     const orderAfterReload = await getColumnOrder();
 
