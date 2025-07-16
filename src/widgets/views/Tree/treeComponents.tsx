@@ -298,7 +298,7 @@ export const TagsComponent = ({
       const optionsRead = await ConnectionProvider.getHandler().search({
         model: relation,
         params: [["id", "in", value.items.map((v: any) => v.id)]],
-        fields: [field],
+        fieldsToRetrieve: [field],
         context,
       });
       setValues(
