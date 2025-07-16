@@ -49,7 +49,7 @@ export const mockFormView = {
   arch: `<?xml version="1.0"?>
     <form string="Sales Order">
         <field name="order_line"
-        widget_props="{'infinite': true}"
+        widget_props="{'infinite': "1"}"
         context="{'default_order_id': active_id}"/>
     </form>`,
   fields: {
@@ -68,8 +68,8 @@ export const mockOne2ManyTreeView = {
   view_id: 1002,
   type: "tree",
   arch: `<?xml version="1.0"?>
-    <tree string="Order Lines" 
-          colors="red:discount>20;orange:discount>10;green:quantity>=5;blue:price_unit>300;purple:price_unit>400" 
+    <tree string="Order Lines"
+          colors="red:discount>20;orange:discount>10;green:quantity>=5;blue:price_unit>300;purple:price_unit>400"
           status="green:quantity>=8;red:discount>20;orange:discount>10;blue:price_unit>300">
       <field name="sequence" widget="handle"/>
       <field name="description"/>
@@ -204,7 +204,7 @@ export function generateMockOrderLines(orderId: number, count: number = 200) {
   for (let i = 1; i <= count; i++) {
     // Use deterministic product selection for consistent sorting tests
     const product = mockProducts[(i - 1) % mockProducts.length];
-    
+
     // Use deterministic values based on index for consistent testing
     const quantity = (i % 10) + 1; // 1-10
     const discount = i % 5 === 0 ? (i % 25) : 0; // Every 5th item has discount
