@@ -94,6 +94,7 @@ import type { UserFeaturesMap, UserFeaturesState } from "./models/userFeature";
 import { GraphCard } from "./widgets/views/Graph";
 import dayjs from "./helpers/dayjs";
 import { TreeActionView } from "./views/actionViews/TreeActionView";
+import { FormActionView } from "./views/actionViews/FormActionView";
 import ActionViewProvider from "./context/ActionViewContext";
 import { DEFAULT_SEARCH_LIMIT } from "./models/constants";
 
@@ -192,6 +193,7 @@ export {
   UserFeaturesMap,
   UserFeaturesState,
   TreeActionView,
+  FormActionView,
   ActionViewProvider,
   View,
   DEFAULT_SEARCH_LIMIT,
