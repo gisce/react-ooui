@@ -740,9 +740,6 @@ test.describe("Paginated TreeActionView Component", () => {
 
       await page.waitForTimeout(300);
 
-      // Now access the Last Login cell using col-id attribute (works with virtualization)
-      const firstRow = page.locator(".ag-row").first();
-
       // Use col-id to find Last Login cell (like the working name column test)
       let lastLoginCell = page
         .locator('.ag-row .ag-cell[col-id*="last"]')

@@ -507,4 +507,232 @@ test.describe("Infinite One2Many Component", () => {
     expect(restoredDescriptions.length).toBeGreaterThan(0);
     expect(noneSort.ariaSort).toBe("none");
   });
+
+  test("should pin and unpin columns correctly @headed", async ({ page }) => {
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-header", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+    await page.waitForTimeout(2000);
+
+    // Check initial pinned columns
+    const initialPinnedColumns = await page
+      .locator(".ag-pinned-left-header .ag-header-cell-text")
+      .allTextContents();
+    expect(initialPinnedColumns).not.toContain("Description");
+
+    // Find the Description column header
+    const descriptionHeader = page.getByRole("columnheader", {
+      name: "Description",
+    });
+    await expect(descriptionHeader).toBeVisible();
+
+    const descriptionBox = await descriptionHeader.boundingBox();
+    expect(descriptionBox).toBeTruthy();
+
+    const agRoot = page.locator(".ag-root");
+    const rootBox = await agRoot.boundingBox();
+    expect(rootBox).toBeTruthy();
+
+    // Pin the Description column by dragging it to the left edge
+    const pinDescriptionCenter = {
+      x: descriptionBox!.x + descriptionBox!.width / 2,
+      y: descriptionBox!.y + descriptionBox!.height / 2,
+    };
+    const leftEdge = { x: rootBox!.x + 30, y: pinDescriptionCenter.y };
+
+    await page.mouse.move(pinDescriptionCenter.x, pinDescriptionCenter.y);
+    await page.waitForTimeout(200);
+    await page.mouse.down();
+    await page.waitForTimeout(300);
+    await page.mouse.move(leftEdge.x, leftEdge.y, { steps: 10 });
+    await page.waitForTimeout(300);
+    await page.mouse.up();
+    await page.waitForTimeout(2000);
+
+    // Verify the column is pinned
+    const pinnedAfterDrag = await page
+      .locator(".ag-pinned-left-header .ag-header-cell-text")
+      .allTextContents();
+    expect(pinnedAfterDrag).toContain("Description");
+
+    // Unpin by dragging back to the main header area (right side)
+    const pinnedDescriptionHeader = page.locator(
+      ".ag-pinned-left-header .ag-header-cell"
+    ).filter({ hasText: "Description" });
+    await expect(pinnedDescriptionHeader).toBeVisible();
+
+    const pinnedBox = await pinnedDescriptionHeader.boundingBox();
+    expect(pinnedBox).toBeTruthy();
+
+    const unpinCenter = {
+      x: pinnedBox!.x + pinnedBox!.width / 2,
+      y: pinnedBox!.y + pinnedBox!.height / 2,
+    };
+    // Drag to the right side of the grid to unpin
+    const rightArea = { x: rootBox!.x + rootBox!.width - 100, y: unpinCenter.y };
+
+    await page.mouse.move(unpinCenter.x, unpinCenter.y);
+    await page.waitForTimeout(200);
+    await page.mouse.down();
+    await page.waitForTimeout(300);
+    await page.mouse.move(rightArea.x, rightArea.y, { steps: 10 });
+    await page.waitForTimeout(300);
+    await page.mouse.up();
+    await page.waitForTimeout(2000);
+
+    // Verify the column is no longer pinned
+    const pinnedAfterUnpin = await page
+      .locator(".ag-pinned-left-header .ag-header-cell-text")
+      .allTextContents();
+    expect(pinnedAfterUnpin).not.toContain("Description");
+  });
+
+  test("should resize columns correctly @headed", async ({ page }) => {
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-header", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+    await page.waitForTimeout(2000);
+
+    // Find the Description column header
+    const descriptionHeader = page.getByRole("columnheader", {
+      name: "Description",
+    });
+    await expect(descriptionHeader).toBeVisible();
+
+    // Get initial width of the Description column
+    const initialWidth = await descriptionHeader.evaluate((el) => 
+      el.getBoundingClientRect().width
+    );
+
+    // Find the resize handle (right edge of the header)
+    const resizeHandle = descriptionHeader.locator(".ag-header-cell-resize");
+    await expect(resizeHandle).toBeVisible();
+
+    // Get the initial position of the resize handle
+    const resizeHandleBox = await resizeHandle.boundingBox();
+    expect(resizeHandleBox).toBeTruthy();
+
+    // Perform resize by dragging the handle to the right
+    await page.mouse.move(resizeHandleBox!.x + resizeHandleBox!.width / 2, resizeHandleBox!.y + resizeHandleBox!.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(resizeHandleBox!.x + 100, resizeHandleBox!.y + resizeHandleBox!.height / 2);
+    await page.mouse.up();
+    await page.waitForTimeout(1000);
+
+    // Get the new width and verify it increased
+    const newWidth = await descriptionHeader.evaluate((el) => 
+      el.getBoundingClientRect().width
+    );
+
+    expect(newWidth).toBeGreaterThan(initialWidth);
+    expect(newWidth - initialWidth).toBeGreaterThan(80); // Should be around 100px wider
+  });
+
+  test("should drag, resize and pin columns with localStorage persistence @headed", async ({ page }) => {
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+
+    // Clear localStorage to start fresh
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-header", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+    await page.waitForTimeout(2000);
+
+    const getColumnOrder = async () => {
+      return await page.evaluate(() => {
+        const headers = Array.from(document.querySelectorAll(".ag-header-cell"));
+        const headerData = headers
+          .map((header) => ({
+            text: header.textContent?.trim(),
+            x: header.getBoundingClientRect().x
+          }))
+          .filter((item) => item.text && item.text !== "")
+          .sort((a, b) => a.x - b.x);
+        return headerData.map((item) => item.text);
+      });
+    };
+
+    // Step 1: Drag Description column to first position
+    const descriptionHeader = page.getByRole("columnheader", { name: "Description" });
+    const sequenceHeader = page.getByRole("columnheader", { name: "Sequence" });
+    
+    await expect(descriptionHeader).toBeVisible();
+    await expect(sequenceHeader).toBeVisible();
+
+    const descriptionLabel = page.locator(".ag-header-cell")
+      .filter({ hasText: "Description" })
+      .locator(".ag-header-cell-label");
+    const sequenceLabel = page.locator(".ag-header-cell")
+      .filter({ hasText: "Sequence" })
+      .locator(".ag-header-cell-label");
+
+    await descriptionLabel.dragTo(sequenceLabel);
+    await page.waitForTimeout(2000);
+
+    // Step 2: Resize the Description column
+    const resizeHandle = descriptionHeader.locator(".ag-header-cell-resize");
+    await expect(resizeHandle).toBeVisible();
+
+    const resizeHandleBox = await resizeHandle.boundingBox();
+    expect(resizeHandleBox).toBeTruthy();
+
+    await page.mouse.move(resizeHandleBox!.x + resizeHandleBox!.width / 2, resizeHandleBox!.y + resizeHandleBox!.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(resizeHandleBox!.x + 100, resizeHandleBox!.y + resizeHandleBox!.height / 2);
+    await page.mouse.up();
+    await page.waitForTimeout(2000);
+
+    // Step 3: Pin the Description column by dragging to left edge
+    const agRoot = page.locator(".ag-root");
+    const rootBox = await agRoot.boundingBox();
+    expect(rootBox).toBeTruthy();
+
+    const updatedDescriptionBox = await descriptionHeader.boundingBox();
+    expect(updatedDescriptionBox).toBeTruthy();
+
+    const pinDescriptionCenter = {
+      x: updatedDescriptionBox!.x + updatedDescriptionBox!.width / 2,
+      y: updatedDescriptionBox!.y + updatedDescriptionBox!.height / 2,
+    };
+    const leftEdge = { x: rootBox!.x + 30, y: pinDescriptionCenter.y };
+
+    await page.mouse.move(pinDescriptionCenter.x, pinDescriptionCenter.y);
+    await page.waitForTimeout(200);
+    await page.mouse.down();
+    await page.waitForTimeout(300);
+    await page.mouse.move(leftEdge.x, leftEdge.y, { steps: 10 });
+    await page.waitForTimeout(300);
+    await page.mouse.up();
+    await page.waitForTimeout(2000);
+
+    // Verify the column is pinned
+    const pinnedDescriptionHeader = page.locator(".ag-pinned-left-header .ag-header-cell")
+      .filter({ hasText: "Description" });
+    await expect(pinnedDescriptionHeader).toBeVisible();
+
+    // Get final state after all operations
+    const finalOrder = await getColumnOrder();
+    
+    // Reload page to test persistence
+    await page.reload();
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-header", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+    await page.waitForTimeout(3000);
+
+    // Verify persistence after reload
+    const orderAfterReload = await getColumnOrder();
+    expect(orderAfterReload).toEqual(finalOrder);
+
+    // Verify Description column is still pinned
+    const pinnedAfterReload = page.locator(".ag-pinned-left-header .ag-header-cell")
+      .filter({ hasText: "Description" });
+    await expect(pinnedAfterReload).toBeVisible();
+  });
 });
