@@ -592,7 +592,7 @@ test.describe("Infinite TreeActionView Component", () => {
     expect(foundDifferentColor).toBe(true);
   });
 
-  test("should have Last Login column with automatic refresh @headed", async ({
+  test("should have Last Login column with automatic refresh", async ({
     page,
   }) => {
     await page.goto(
@@ -1071,7 +1071,7 @@ test.describe("Infinite TreeActionView Component", () => {
     expect(hasChangeToPaginated && hasResetTableView).toBe(true);
   });
 
-  test("should persist column order after drag and drop @headed", async ({
+  test("should persist column order after drag and drop", async ({
     page,
   }) => {
     test.setTimeout(60000);

@@ -6,11 +6,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "npm run test:headed && npm run test:headless",
+    "test": "playwright test",
     "test:ui": "playwright test --ui",
-    "test:debug": "playwright test --debug",
-    "test:headless": "playwright test --grep-invert \"@headed\"",
-    "test:headed": "HEADED=1 playwright test --grep \"@headed\""
+    "test:debug": "playwright test --debug"
   },
   "dependencies": {
     "@gisce/react-ooui": "file:../",

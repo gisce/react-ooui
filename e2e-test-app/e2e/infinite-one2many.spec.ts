@@ -7,14 +7,9 @@ test.describe("Infinite One2Many Component", () => {
   }) => {
     await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
 
-    // Wait for the AG Grid to be fully loaded
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-header", { state: "visible" });
-
-    // Wait for data to load
     await page.waitForSelector(".ag-row", { state: "visible" });
-
-    // Expected column titles based on our One2Many tree view XML configuration
     const expectedColumns = [
       "Sequence",
       "Description",
@@ -23,47 +18,34 @@ test.describe("Infinite One2Many Component", () => {
       "Discount (%)",
     ];
 
-    // Collect all visible column headers
     const visibleHeaders = new Set<string>();
-
-    // Get the AG Grid body viewport for horizontal scrolling (this is where the actual scrolling happens)
     const gridBodyViewport = page.locator(
       ".ag-body-horizontal-scroll-viewport",
     );
-
-    // First, collect initially visible headers
     let currentHeaders = await page
       .locator(".ag-header-cell-text")
       .allTextContents();
     currentHeaders.forEach((header) => visibleHeaders.add(header));
 
-    // Get the initial scroll position and total scroll width
     const scrollInfo = await gridBodyViewport.evaluate((el) => ({
       scrollWidth: el.scrollWidth,
       clientWidth: el.clientWidth,
       maxScrollLeft: el.scrollWidth - el.clientWidth,
     }));
-
-    // Reset to beginning
     await gridBodyViewport.evaluate((el) => {
       el.scrollLeft = 0;
     });
     await page.waitForTimeout(200);
 
-    // Scroll in increments to capture all columns
     const scrollStep = Math.max(100, scrollInfo.clientWidth / 3);
     let currentScrollLeft = 0;
 
     while (currentScrollLeft <= scrollInfo.maxScrollLeft) {
-      // Scroll to current position
       await gridBodyViewport.evaluate((el, scrollLeft) => {
         el.scrollLeft = scrollLeft;
       }, currentScrollLeft);
-
-      // Wait for scroll to complete and grid to update
       await page.waitForTimeout(300);
 
-      // Collect headers at this scroll position
       currentHeaders = await page
         .locator(".ag-header-cell-text")
         .allTextContents();
@@ -71,8 +53,6 @@ test.describe("Infinite One2Many Component", () => {
 
       currentScrollLeft += scrollStep;
     }
-
-    // Make sure we scroll to the very end to catch any remaining columns
     await gridBodyViewport.evaluate((el, maxScroll) => {
       el.scrollLeft = maxScroll;
     }, scrollInfo.maxScrollLeft);
@@ -235,11 +215,7 @@ test.describe("Infinite One2Many Component", () => {
       "text=/Total.*Qty|.*Total.*Price|.*Avg.*Price|Sum:|Avg:|Count:/i",
     );
 
-    // Wait for any aggregates to appear
     await page.waitForTimeout(1000);
-
-    // Get initial aggregate text content (if any)
-    const initialAggregateCount = await aggregateElements.count();
 
     // Select first row
     const firstRowCheckbox = page
@@ -265,40 +241,25 @@ test.describe("Infinite One2Many Component", () => {
     await thirdRowCheckbox.click();
     await page.waitForTimeout(500);
 
-    // Check if aggregates appeared or changed after selection
     const aggregatesAfterSelection = await aggregateElements.count();
     const aggregateTextAfterSelection =
       aggregatesAfterSelection > 0
         ? await aggregateElements.first().textContent()
         : null;
 
-    // Deselect all rows
     await firstRowCheckbox.click();
     await secondRowCheckbox.click();
     await thirdRowCheckbox.click();
     await page.waitForTimeout(500);
 
-    // Check final state
-    const aggregatesAfterDeselection = await aggregateElements.count();
-
-    // Verify that the grid supports row selection (minimum requirement)
     expect(await page.locator(".ag-row").count()).toBeGreaterThan(0);
     expect(await firstRowCheckbox.isChecked()).toBe(false);
     expect(await secondRowCheckbox.isChecked()).toBe(false);
     expect(await thirdRowCheckbox.isChecked()).toBe(false);
 
-    // At least one aggregate should be visible at some point
-    expect(
-      Math.max(
-        initialAggregateCount,
-        aggregatesAfterSelection,
-        aggregatesAfterDeselection,
-      ),
-    ).toBeGreaterThan(0);
-
-    // Aggregates should have content when they appear
-    expect(aggregateTextAfterSelection).toBeTruthy();
-    expect(aggregateTextAfterSelection!.trim()).not.toBe("");
+    expect(aggregatesAfterSelection).toBeGreaterThan(0);
+    expect(aggregateTextAfterSelection).toContain("Total Qty:");
+    expect(aggregateTextAfterSelection).toContain("Avg Price:");
   });
 
   test("should show three dots menu with reset table view option", async ({
@@ -328,7 +289,7 @@ test.describe("Infinite One2Many Component", () => {
     expect(hasResetTableView).toBe(true);
   });
 
-  test("Should persist column order after drag and drop @headed", async ({
+  test("Should persist column order after drag and drop", async ({
     page,
   }) => {
     await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
@@ -508,7 +469,7 @@ test.describe("Infinite One2Many Component", () => {
     expect(noneSort.ariaSort).toBe("none");
   });
 
-  test("should pin and unpin columns correctly @headed", async ({ page }) => {
+  test("should pin and unpin columns correctly", async ({ page }) => {
     await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
 
     await page.waitForSelector(".ag-root", { state: "visible" });
@@ -589,7 +550,7 @@ test.describe("Infinite One2Many Component", () => {
     expect(pinnedAfterUnpin).not.toContain("Description");
   });
 
-  test("should resize columns correctly @headed", async ({ page }) => {
+  test("should resize columns correctly", async ({ page }) => {
     await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
 
     await page.waitForSelector(".ag-root", { state: "visible" });
@@ -632,7 +593,7 @@ test.describe("Infinite One2Many Component", () => {
     expect(newWidth - initialWidth).toBeGreaterThan(80); // Should be around 100px wider
   });
 
-  test("should drag, resize and pin columns with localStorage persistence @headed", async ({ page }) => {
+  test("should drag, resize and pin columns with localStorage persistence", async ({ page }) => {
     await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
 
     // Clear localStorage to start fresh

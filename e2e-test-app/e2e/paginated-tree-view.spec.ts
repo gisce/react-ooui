@@ -679,7 +679,7 @@ test.describe("Paginated TreeActionView Component", () => {
 
   // === DYNAMIC FIELDS AND ASYNC LOADING TESTS ===
   test.describe("Dynamic Fields and Async Loading", () => {
-    test("should have Last Login column with automatic refresh @headed", async ({
+    test("should have Last Login column with automatic refresh", async ({
       page,
     }) => {
       await page.goto(
@@ -1122,7 +1122,7 @@ test.describe("Paginated TreeActionView Component", () => {
 
   // === TABLE CUSTOMIZATION TESTS ===
   test.describe("Table Customization", () => {
-    test("should reorder columns and persist changes through localStorage @headed", async ({
+    test("should reorder columns and persist changes through localStorage", async ({
       page,
     }) => {
       await page.goto(
