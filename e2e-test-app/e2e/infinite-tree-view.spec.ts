@@ -9,14 +9,9 @@ test.describe("Infinite TreeActionView Component", () => {
       getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
     );
 
-    // Wait for the AG Grid to be fully loaded
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-header", { state: "visible" });
-
-    // Wait for data to load
     await page.waitForSelector(".ag-row", { state: "visible" });
-
-    // Expected column titles based on the TreeView arch XML configuration
     const expectedColumns = [
       "Name",
       "Email",
@@ -30,47 +25,34 @@ test.describe("Infinite TreeActionView Component", () => {
       "Salary",
     ];
 
-    // Collect all visible column headers
     const visibleHeaders = new Set<string>();
-
-    // Get the AG Grid body viewport for horizontal scrolling (this is where the actual scrolling happens)
     const gridBodyViewport = page.locator(
       ".ag-body-horizontal-scroll-viewport",
     );
 
-    // First, collect initially visible headers
     let currentHeaders = await page
       .locator(".ag-header-cell-text")
       .allTextContents();
     currentHeaders.forEach((header) => visibleHeaders.add(header));
-
-    // Get the initial scroll position and total scroll width
     const scrollInfo = await gridBodyViewport.evaluate((el) => ({
       scrollWidth: el.scrollWidth,
       clientWidth: el.clientWidth,
       maxScrollLeft: el.scrollWidth - el.clientWidth,
     }));
 
-    // Reset to beginning
     await gridBodyViewport.evaluate((el) => {
       el.scrollLeft = 0;
     });
     await page.waitForTimeout(200);
-
-    // Scroll in increments to capture all columns
     const scrollStep = Math.max(100, scrollInfo.clientWidth / 3);
     let currentScrollLeft = 0;
 
     while (currentScrollLeft <= scrollInfo.maxScrollLeft) {
-      // Scroll to current position
       await gridBodyViewport.evaluate((el, scrollLeft) => {
         el.scrollLeft = scrollLeft;
       }, currentScrollLeft);
-
-      // Wait for scroll to complete and grid to update
       await page.waitForTimeout(300);
 
-      // Collect headers at this scroll position
       currentHeaders = await page
         .locator(".ag-header-cell-text")
         .allTextContents();
@@ -78,38 +60,29 @@ test.describe("Infinite TreeActionView Component", () => {
 
       currentScrollLeft += scrollStep;
     }
-
-    // Make sure we scroll to the very end to catch any remaining columns
     await gridBodyViewport.evaluate((el, maxScroll) => {
       el.scrollLeft = maxScroll;
     }, scrollInfo.maxScrollLeft);
 
     await page.waitForTimeout(300);
 
-    // Final collection of headers
     currentHeaders = await page
       .locator(".ag-header-cell-text")
       .allTextContents();
     currentHeaders.forEach((header) => visibleHeaders.add(header));
 
-    // Convert Set to Array for comparison
     const foundHeaders = Array.from(visibleHeaders).filter(
       (header) => header.trim() !== "",
     );
 
-    // Verify that all expected columns are present
     for (const expectedColumn of expectedColumns) {
       expect(foundHeaders).toContain(expectedColumn);
     }
 
-    // Verify we found the correct number of columns
     expect(foundHeaders).toHaveLength(expectedColumns.length);
-
-    // Additional check: verify grid has data rows
     const rowCount = await page.locator(".ag-row").count();
     expect(rowCount).toBeGreaterThan(0);
 
-    // Verify horizontal scrolling is working within the AG Grid
     await gridBodyViewport.evaluate((el) => {
       el.scrollLeft = 0;
     });
@@ -408,7 +381,7 @@ test.describe("Infinite TreeActionView Component", () => {
     const clipboardSingle = await page.evaluate(() =>
       navigator.clipboard.readText(),
     );
-    expect(clipboardSingle).toBeTruthy();
+    expect(clipboardSingle).toMatch(/^\d+$/);
     expect(clipboardSingle.split(",")).toHaveLength(1);
 
     // Clear selection
@@ -432,12 +405,13 @@ test.describe("Infinite TreeActionView Component", () => {
     const clipboardThree = await page.evaluate(() =>
       navigator.clipboard.readText(),
     );
-    expect(clipboardThree).toBeTruthy();
-    const threeIds = clipboardThree.split(",");
+    expect(clipboardThree).toMatch(/^\d+,\s*\d+,\s*\d+$/);
+    const threeIds = clipboardThree.split(",").map(id => id.trim());
     expect(threeIds).toHaveLength(3);
-    expect(threeIds[0]).toBeTruthy();
-    expect(threeIds[1]).toBeTruthy();
-    expect(threeIds[2]).toBeTruthy();
+    expect(threeIds[0]).toMatch(/^\d+$/);
+    expect(threeIds[1]).toMatch(/^\d+$/);
+    expect(threeIds[2]).toMatch(/^\d+$/);
+    expect(new Set(threeIds)).toHaveProperty('size', 3);
 
     // Clear selection
     await firstRow.click();
@@ -470,21 +444,13 @@ test.describe("Infinite TreeActionView Component", () => {
     const clipboardAll = await page.evaluate(() =>
       navigator.clipboard.readText(),
     );
-    expect(clipboardAll).toBeTruthy();
-    const allIds = clipboardAll.split(",");
+    expect(clipboardAll).toMatch(/^\d+(?:,\s*\d+)*$/);
+    const allIds = clipboardAll.split(",").map(id => id.trim());
     expect(allIds.length).toBe(250);
 
-    // Verify IDs are valid (should be numbers or strings)
-    expect(allIds[0]).toBeTruthy();
-    expect(allIds[0].trim()).not.toBe("");
-    expect(allIds[249]).toBeTruthy();
-    expect(allIds[249].trim()).not.toBe("");
-
-    // Verify clipboard content matches expected pattern (IDs should be consistent)
-    const firstId = allIds[0].trim();
-    const lastId = allIds[249].trim();
-    expect(firstId).toMatch(/\d+/); // Should contain numbers
-    expect(lastId).toMatch(/\d+/); // Should contain numbers
+    expect(allIds[0]).toMatch(/^\d+$/);
+    expect(allIds[249]).toMatch(/^\d+$/);
+    expect(new Set(allIds)).toHaveProperty('size', 250);
   });
 
   test("should display status indicators as colored dots next to company names", async ({
@@ -603,21 +569,16 @@ test.describe("Infinite TreeActionView Component", () => {
     await page.waitForSelector(".ag-header", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
 
-    // Wait for data to load
     await page.waitForTimeout(2000);
 
-    // Verify Last Login column header is present
     let currentHeaders = await page
       .locator(".ag-header-cell-text")
       .allTextContents();
     expect(currentHeaders).toContain("Last Login");
 
-    // Use the proven incremental scrolling approach to ensure all columns are rendered
     const gridBodyViewport = page.locator(
       ".ag-body-horizontal-scroll-viewport",
     );
-
-    // Get the initial scroll position and total scroll width
     const scrollInfo = await gridBodyViewport.evaluate((el) => ({
       scrollWidth: el.scrollWidth,
       clientWidth: el.clientWidth,
@@ -687,26 +648,21 @@ test.describe("Infinite TreeActionView Component", () => {
     expect(initialValue).toBeTruthy();
     expect(initialValue?.trim()).toBeTruthy();
 
-    // Parse DD/MM/YYYY format by converting to MM/DD/YYYY
     const parseDateDDMMYYYY = (dateStr: string) => {
-      // Pattern: DD/MM/YYYY HH:MM:SS
       const match = dateStr.match(
         /(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})/,
       );
       if (match) {
         const [, day, month, year, hour, minute, second] = match;
-        // Convert to MM/DD/YYYY format
         const usFormat = `${month}/${day}/${year} ${hour}:${minute}:${second}`;
         return Date.parse(usFormat);
       }
       return NaN;
     };
 
-    // Initial value should be a valid date
     const initialTimestamp = parseDateDDMMYYYY(initialValue!);
     expect(isNaN(initialTimestamp)).toBe(false);
 
-    // Wait for automatic refresh (Last Login values should update every ~5 seconds)
     await page.waitForTimeout(6000);
 
     const updatedValue = await lastLoginCell.textContent({
@@ -716,11 +672,8 @@ test.describe("Infinite TreeActionView Component", () => {
     expect(updatedValue).toBeTruthy();
     expect(updatedValue?.trim()).toBeTruthy();
 
-    // Updated value should also be a valid date
     const updatedTimestamp = parseDateDDMMYYYY(updatedValue!);
     expect(isNaN(updatedTimestamp)).toBe(false);
-
-    // Most importantly: verify that the value has actually changed (automatic refresh)
     expect(updatedValue).not.toEqual(initialValue);
     expect(initialTimestamp).toBeGreaterThan(0);
     expect(updatedTimestamp).toBeGreaterThan(0);
@@ -872,9 +825,9 @@ test.describe("Infinite TreeActionView Component", () => {
       foundColorChange = true;
     }
 
-    // Test expects green badge or color change indicating async loading
-    const showsAsyncBehavior = foundGreenBadge || foundColorChange;
-    expect(showsAsyncBehavior).toBe(true);
+    // Test expects both green badge and color change indicating async loading
+    expect(foundGreenBadge).toBe(true);
+    expect(foundColorChange).toBe(true);
   });
 
   test("should show company name text color changes after Computed Rating loads", async ({
@@ -969,10 +922,9 @@ test.describe("Infinite TreeActionView Component", () => {
       }
     }
 
-    // Test expects text color changes or special colors indicating async computation effects
-    const showsAsyncTextBehavior = foundColorChange || foundSpecialColor;
-
-    expect(showsAsyncTextBehavior).toBe(true);
+    // Test expects text color changes and special colors indicating async computation effects
+    expect(foundColorChange).toBe(true);
+    expect(foundSpecialColor).toBe(true);
   });
 
   test("should calculate Total Salary correctly when selecting rows", async ({

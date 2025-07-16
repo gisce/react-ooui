@@ -78,9 +78,8 @@ test.describe("Infinite One2Many Component", () => {
     // Verify we found the correct number of columns
     expect(foundHeaders).toHaveLength(expectedColumns.length);
 
-    // Additional check: verify grid has data rows
     const rowCount = await page.locator(".ag-row").count();
-    expect(rowCount).toBeGreaterThan(0);
+    expect(rowCount).toBeGreaterThanOrEqual(10);
 
     // Test scrolling functionality if horizontal scrolling is available
     await gridBodyViewport.evaluate((el) => {
@@ -126,7 +125,7 @@ test.describe("Infinite One2Many Component", () => {
     await page.waitForSelector(".ag-row", { state: "visible" });
 
     const initialRowCount = await page.locator(".ag-row").count();
-    expect(initialRowCount).toBeGreaterThan(0);
+    expect(initialRowCount).toBeGreaterThanOrEqual(10);
 
     const gridBodyViewport = page.locator(".ag-body-viewport");
 
@@ -143,8 +142,7 @@ test.describe("Infinite One2Many Component", () => {
     expect(scrolledTop).toBeGreaterThan(initialScrollTop);
 
     const finalRowCount = await page.locator(".ag-row").count();
-
-    expect(finalRowCount).toBeGreaterThan(0);
+    expect(finalRowCount).toBeGreaterThanOrEqual(10);
   });
 
   test("should handle row selection correctly", async ({ page }) => {
@@ -252,7 +250,7 @@ test.describe("Infinite One2Many Component", () => {
     await thirdRowCheckbox.click();
     await page.waitForTimeout(500);
 
-    expect(await page.locator(".ag-row").count()).toBeGreaterThan(0);
+    expect(await page.locator(".ag-row").count()).toBeGreaterThanOrEqual(10);
     expect(await firstRowCheckbox.isChecked()).toBe(false);
     expect(await secondRowCheckbox.isChecked()).toBe(false);
     expect(await thirdRowCheckbox.isChecked()).toBe(false);
@@ -446,7 +444,7 @@ test.describe("Infinite One2Many Component", () => {
     const ascDescriptions = await getDescriptionColumnValues();
     const ascSort = await getSortingIndicator();
 
-    expect(ascDescriptions.length).toBeGreaterThan(0);
+    expect(ascDescriptions.length).toBeGreaterThanOrEqual(5);
 
     expect(ascSort.ariaSort).toBe("ascending");
     expect(ascSort.hasAscIcon).toBe(true);
@@ -456,7 +454,7 @@ test.describe("Infinite One2Many Component", () => {
     const descDescriptions = await getDescriptionColumnValues();
     const descSort = await getSortingIndicator();
 
-    expect(descDescriptions.length).toBeGreaterThan(0);
+    expect(descDescriptions.length).toBeGreaterThanOrEqual(5);
     expect(descSort.ariaSort).toBe("descending");
     expect(descSort.hasDescIcon).toBe(true);
 
@@ -465,7 +463,7 @@ test.describe("Infinite One2Many Component", () => {
     const restoredDescriptions = await getDescriptionColumnValues();
     const noneSort = await getSortingIndicator();
 
-    expect(restoredDescriptions.length).toBeGreaterThan(0);
+    expect(restoredDescriptions.length).toBeGreaterThanOrEqual(5);
     expect(noneSort.ariaSort).toBe("none");
   });
 
