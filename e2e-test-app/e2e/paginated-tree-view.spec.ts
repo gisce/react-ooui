@@ -325,23 +325,32 @@ test.describe("Paginated TreeActionView Component", () => {
 
       await page.waitForSelector(".ag-root", { state: "visible" });
       await page.waitForSelector(".ag-row", { state: "visible" });
+      await page.waitForTimeout(1000);
 
       const rows = page.locator(".ag-row");
       const firstRowCheckbox = rows.nth(0).locator('input[type="checkbox"]');
       const secondRowCheckbox = rows.nth(1).locator('input[type="checkbox"]');
       const thirdRowCheckbox = rows.nth(2).locator('input[type="checkbox"]');
 
+      // Ensure all checkboxes are visible before clicking
+      await expect(firstRowCheckbox).toBeVisible();
+      await expect(secondRowCheckbox).toBeVisible();
+      await expect(thirdRowCheckbox).toBeVisible();
+
       // Click each checkbox with sufficient wait time between clicks
       await firstRowCheckbox.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(500);
       await expect(firstRowCheckbox).toBeChecked();
 
       await secondRowCheckbox.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(500);
       await expect(secondRowCheckbox).toBeChecked();
 
-      await thirdRowCheckbox.click();
+      // Scroll to ensure third row is in viewport
+      await thirdRowCheckbox.scrollIntoViewIfNeeded();
       await page.waitForTimeout(300);
+      await thirdRowCheckbox.click();
+      await page.waitForTimeout(800);
       await expect(thirdRowCheckbox).toBeChecked();
 
       // Directly check that the header checkbox is in indeterminate state
@@ -1308,12 +1317,12 @@ test.describe("Paginated TreeActionView Component", () => {
       page,
     }) => {
       test.setTimeout(60000);
-      
+
       // Clear localStorage completely and ensure fresh state
       await page.goto(
         getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.PAGINATED),
       );
-      
+
       await page.evaluate(() => {
         localStorage.clear();
         sessionStorage.clear();
@@ -1323,7 +1332,7 @@ test.describe("Paginated TreeActionView Component", () => {
       await page.waitForSelector(".ag-root", { state: "visible" });
       await page.waitForSelector(".ag-header", { state: "visible" });
       await page.waitForSelector(".ag-row", { state: "visible" });
-      
+
       // Extra wait to ensure grid is fully initialized
       await page.waitForTimeout(2000);
 
@@ -1393,7 +1402,7 @@ test.describe("Paginated TreeActionView Component", () => {
       await page.waitForTimeout(5000); // Extra time for localStorage to update
 
       const orderAfterDrag = await getColumnOrder();
-      
+
       // Expect the drag operation to change the column order
       expect(JSON.stringify(originalOrder)).not.toEqual(
         JSON.stringify(orderAfterDrag),
@@ -1406,7 +1415,7 @@ test.describe("Paginated TreeActionView Component", () => {
       // Get fresh nameBox after drag operation
       const nameBoxAfterDrag = await nameHeader.boundingBox();
       expect(nameBoxAfterDrag).toBeTruthy();
-      
+
       const resizeHandleX = nameBoxAfterDrag!.x + nameBoxAfterDrag!.width - 2;
       const resizeHandleY = nameBoxAfterDrag!.y + nameBoxAfterDrag!.height / 2;
 
@@ -1422,7 +1431,7 @@ test.describe("Paginated TreeActionView Component", () => {
       await page.waitForTimeout(5000); // Extra time for localStorage to update
 
       const widthAfterResize = await getNameColumnWidth();
-      
+
       // Expect the resize operation to change the width
       expect(Math.abs(widthAfterResize - originalNameWidth)).toBeGreaterThan(
         10,
@@ -1453,7 +1462,7 @@ test.describe("Paginated TreeActionView Component", () => {
       await page.waitForTimeout(5000); // Extra time for localStorage to update
 
       const pinnedAfterDrag = await getPinnedColumns();
-      
+
       // Expect the pin operation to add Name to pinned columns
       expect(pinnedAfterDrag).toContain("Name");
 
@@ -1463,13 +1472,16 @@ test.describe("Paginated TreeActionView Component", () => {
       // Force AG Grid to save its state explicitly
       await page.evaluate(() => {
         // Try to get AG Grid instance and force state save
-        const gridElement = document.querySelector('.ag-root');
+        const gridElement = document.querySelector(".ag-root");
         if (gridElement && (gridElement as any).gridApi) {
           const gridApi = (gridElement as any).gridApi;
           // Force column state save
           if (gridApi.getColumnState) {
             const columnState = gridApi.getColumnState();
-            localStorage.setItem('columnState-2-demo.model', JSON.stringify(columnState));
+            localStorage.setItem(
+              "columnState-2-demo.model",
+              JSON.stringify(columnState),
+            );
           }
         }
       });
@@ -1484,25 +1496,23 @@ test.describe("Paginated TreeActionView Component", () => {
       const orderBeforeReset = await getColumnOrder();
       const widthBeforeReset = await getNameColumnWidth();
       const pinnedBeforeReset = await getPinnedColumns();
-      
 
       // Verify all changes persisted before reset
       // After drag (Email->Name), resize (Name), and pin (Name), the expected order should be:
       // Name (pinned, so first), Email (second), Department, Company, etc.
       const expectedOrderAfterAllOperations = [
-        'Name',      // Name is pinned, so it comes first
-        'Email',     // Email was dragged to first position originally, but now second due to Name being pinned
-        'Department',
-        'Company',
-        'Position',
-        'Status',
-        'Last Login',
-        'Annual Bonus',
-        'Computed Rating',
-        'Salary'
+        "Name", // Name is pinned, so it comes first
+        "Email", // Email was dragged to first position originally, but now second due to Name being pinned
+        "Department",
+        "Company",
+        "Position",
+        "Status",
+        "Last Login",
+        "Annual Bonus",
+        "Computed Rating",
+        "Salary",
       ];
-      
-      
+
       // The order should match our expected final state
       expect(orderBeforeReset).toEqual(expectedOrderAfterAllOperations);
       expect(Math.abs(widthBeforeReset - originalNameWidth)).toBeGreaterThan(
