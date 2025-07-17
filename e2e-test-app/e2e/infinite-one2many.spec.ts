@@ -762,4 +762,124 @@ test.describe("Infinite One2Many Component", () => {
       .filter({ hasText: "Description" });
     await expect(pinnedAfterReload).toBeVisible();
   });
+
+  test("should have Last Updated column with automatic refresh", async ({
+    page,
+  }) => {
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-header", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+
+    await page.waitForTimeout(2000);
+
+    // Verify Last Updated column exists
+    let currentHeaders = await page
+      .locator(".ag-header-cell-text")
+      .allTextContents();
+    expect(currentHeaders).toContain("Last Updated");
+
+    const gridBodyViewport = page.locator(
+      ".ag-body-horizontal-scroll-viewport",
+    );
+    const scrollInfo = await gridBodyViewport.evaluate((el) => ({
+      scrollWidth: el.scrollWidth,
+      clientWidth: el.clientWidth,
+      maxScrollLeft: el.scrollWidth - el.clientWidth,
+    }));
+
+    // Reset to beginning
+    await gridBodyViewport.evaluate((el) => {
+      el.scrollLeft = 0;
+    });
+    await page.waitForTimeout(200);
+
+    // Scroll in increments to ensure all columns are rendered
+    const scrollStep = Math.max(100, scrollInfo.clientWidth / 3);
+    let currentScrollLeft = 0;
+
+    while (currentScrollLeft <= scrollInfo.maxScrollLeft) {
+      // Scroll to current position
+      await gridBodyViewport.evaluate((el, scrollLeft) => {
+        el.scrollLeft = scrollLeft;
+      }, currentScrollLeft);
+
+      // Wait for scroll to complete and grid to update
+      await page.waitForTimeout(300);
+
+      currentScrollLeft += scrollStep;
+    }
+
+    // Make sure we scroll to the very end to catch any remaining columns
+    await gridBodyViewport.evaluate((el, maxScroll) => {
+      el.scrollLeft = maxScroll;
+    }, scrollInfo.maxScrollLeft);
+
+    await page.waitForTimeout(300);
+
+    // Use col-id to find Last Updated cell
+    let lastUpdatedCell = page
+      .locator('.ag-row .ag-cell[col-id*="updated"]')
+      .first();
+
+    // If that doesn't work, try other possible col-id patterns
+    if ((await lastUpdatedCell.count()) === 0) {
+      // Try alternative col-id patterns
+      const alternativeSelectors = [
+        '.ag-row .ag-cell[col-id="last_updated"]',
+        '.ag-row .ag-cell[col-id="lastUpdated"]',
+        '.ag-row .ag-cell[col-id="Last Updated"]',
+        '.ag-row .ag-cell[col-id*="update"]',
+      ];
+
+      for (const selector of alternativeSelectors) {
+        const cell = page.locator(selector).first();
+        if ((await cell.count()) > 0) {
+          lastUpdatedCell = cell;
+          break;
+        }
+      }
+    }
+
+    // Expect the Last Updated column to be accessible
+    await expect(lastUpdatedCell).toBeVisible();
+
+    const initialValue = await lastUpdatedCell.textContent({ timeout: 5000 });
+
+    // Last Updated column should have content (date/time value)
+    expect(initialValue).toBeTruthy();
+    expect(initialValue?.trim()).toBeTruthy();
+
+    const parseDateDDMMYYYY = (dateStr: string) => {
+      const match = dateStr.match(
+        /(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})/,
+      );
+      if (match) {
+        const [, day, month, year, hour, minute, second] = match;
+        const usFormat = `${month}/${day}/${year} ${hour}:${minute}:${second}`;
+        return Date.parse(usFormat);
+      }
+      return NaN;
+    };
+
+    const initialTimestamp = parseDateDDMMYYYY(initialValue!);
+    expect(isNaN(initialTimestamp)).toBe(false);
+
+    // Wait for auto-refresh to happen
+    await page.waitForTimeout(6000);
+
+    const updatedValue = await lastUpdatedCell.textContent({
+      timeout: 2000,
+    });
+
+    expect(updatedValue).toBeTruthy();
+    expect(updatedValue?.trim()).toBeTruthy();
+
+    const updatedTimestamp = parseDateDDMMYYYY(updatedValue!);
+    expect(isNaN(updatedTimestamp)).toBe(false);
+    expect(updatedValue).not.toEqual(initialValue);
+    expect(initialTimestamp).toBeGreaterThan(0);
+    expect(updatedTimestamp).toBeGreaterThan(0);
+  });
 });
