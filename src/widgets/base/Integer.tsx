@@ -45,10 +45,10 @@ export const Integer = memo((props: IntegerProps) => {
 
     if (typeof value === "string" && !isNaN(parseFloat(value))) {
       const truncatedValue = Math.trunc(parseFloat(value));
-      return `${truncatedValue}`.replace(/[^0-9\-]+/g, "");
+      return `${truncatedValue}`.replace(/[^0-9-]+/g, "");
     } else if (typeof value === "number") {
       const truncatedValue = Math.trunc(value);
-      return `${truncatedValue}`.replace(/[^0-9\-]+/g, "");
+      return `${truncatedValue}`.replace(/[^0-9-]+/g, "");
     }
 
     return "";

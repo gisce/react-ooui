@@ -25,7 +25,6 @@ export type AttachmentsButtonWrapperProps = {
   attachments: Attachment[] | undefined;
   numberOfAttachments: number;
   disabled: boolean;
-  loading: boolean;
   onAddNewAttachment: () => void;
   onListAllAttachments: () => void;
   onOpenAttachmentLink: (attachment: Attachment) => void;

@@ -11,7 +11,7 @@ import { Tree as TreeOoui } from "@gisce/ooui";
 import { RefObject, useCallback, useMemo, useRef, useState } from "react";
 import { getSortedFieldsFromState, getTableItems } from "@/helpers/treeHelper";
 import { useDeepCompareEffect, useDeepCompareMemo } from "use-deep-compare";
-import { TreeAggregates, useSharedAggregates } from "./useTreeAggregates";
+import { useSharedAggregates } from "./useTreeAggregates";
 import { Spin } from "antd";
 import {
   One2manyTreeDataForHash,
@@ -57,7 +57,6 @@ export type One2manyTreeProps = {
   onGetFirstVisibleRowIndex?: () => number | undefined;
   onSelectionCheckboxClicked?: () => void;
   dataForHash: One2manyTreeDataForHash;
-  aggregates?: TreeAggregates;
   selectedRowKeys?: number[];
   showPointerCursorInRows?: boolean;
   treeType: TreeType;

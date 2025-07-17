@@ -108,7 +108,7 @@ export const MultiCheckboxInput = (props: MultiCheckboxInputProps) => {
   const onChangeSelected = (ids: any[]) => {
     const newItems: One2manyItem[] = items.map((item) => {
       if (ids.includes(item.id as number)) {
-        if (item.operation == "pendingRemove") {
+        if (item.operation === "pendingRemove") {
           return {
             ...item,
             operation: "original",
@@ -123,7 +123,7 @@ export const MultiCheckboxInput = (props: MultiCheckboxInputProps) => {
     const currentIds = newItems.map((item) => item.id);
     ids
       .filter((id) => !currentIds.includes(id))
-      .map((id) => {
+      .forEach((id) => {
         newItems.push({ id, operation: "pendingLink" });
       });
     triggerChange(newItems);
@@ -144,7 +144,7 @@ export const MultiCheckboxInput = (props: MultiCheckboxInputProps) => {
         >
           <Row>
             {options.map((option) => (
-              <Col span={Math.floor(24 / columns)}>
+              <Col span={Math.floor(24 / columns)} key={option.value}>
                 <Checkbox value={option.value}>{option.label}</Checkbox>
               </Col>
             ))}
@@ -154,7 +154,7 @@ export const MultiCheckboxInput = (props: MultiCheckboxInputProps) => {
           <Space>
             <Button
               onClick={checkAll}
-              disabled={itemsToShow.length == options.length}
+              disabled={itemsToShow.length === options.length}
             >
               Check all
             </Button>

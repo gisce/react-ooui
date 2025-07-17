@@ -22,7 +22,6 @@ import { useOne2manySearchModal } from "./useOne2manySearchModal";
 import { One2manyTree } from "./One2manyTree";
 import "@gisce/react-formiga-table/style.css";
 import { Graph } from "@/widgets/views/Graph/Graph";
-import { useOne2manyTreeAggregates } from "./useOne2manyTreeAggregates";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
 
@@ -107,13 +106,6 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
       .filter((item) => item.id !== undefined)
       .map((item) => item.id!),
     gridRef,
-  });
-
-  const [, aggregates] = useOne2manyTreeAggregates({
-    ooui: treeOoui,
-    model: relation,
-    items,
-    selectedRowKeys,
   });
 
   const title = useMemo(() => {
@@ -317,7 +309,6 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
             treeViewId: props.treeViewId,
             one2ManyFieldName: fieldName,
           }}
-          aggregates={aggregates}
           treeType={treeType}
           onChangeTreeType={enableNewTable ? handleTreeTypeChange : undefined}
         />

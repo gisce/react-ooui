@@ -11,12 +11,6 @@ import { SelectionInput } from "./Selection";
 
 type Props = {
   ooui: ReferenceOoui;
-  onOpenDetailClick?:
-    | ((event: React.MouseEvent<HTMLElement, MouseEvent>) => void)
-    | undefined;
-  onSearchClick?:
-    | ((event: React.MouseEvent<HTMLElement, MouseEvent>) => void)
-    | undefined;
 };
 
 export const Reference = (props: Props) => {
@@ -59,6 +53,7 @@ export const ReferenceInput: React.FC<ReferenceInputProps> = (
       value && splittedValue && splittedValue[1] && parseInt(splittedValue[1]);
     setMany2oneValue([id, undefined]);
     setSelectionValue(model!);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   return (

@@ -151,15 +151,18 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, treeType]);
 
-  const handleTreeTypeChange = useCallback((newType: TreeType) => {
-    setTreeType(newType);
-    if (newType === "paginated") {
-      setLimit?.(limit || DEFAULT_SEARCH_LIMIT);
-    }
-    if (newType === "infinite") {
-      setLimit?.(0);
-    }
-  }, []);
+  const handleTreeTypeChange = useCallback(
+    (newType: TreeType) => {
+      setTreeType(newType);
+      if (newType === "paginated") {
+        setLimit?.(limit || DEFAULT_SEARCH_LIMIT);
+      }
+      if (newType === "infinite") {
+        setLimit?.(0);
+      }
+    },
+    [limit, setLimit],
+  );
 
   if (!visible) {
     return null;

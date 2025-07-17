@@ -80,7 +80,10 @@ const readObjectValues = async (
     const resultFormValues: any = {};
     Object.keys(result).forEach((key) => {
       if (
-        fieldsToRetrieve[currentView as string].hasOwnProperty(key) ||
+        Object.prototype.hasOwnProperty.call(
+          fieldsToRetrieve[currentView as string],
+          key,
+        ) ||
         key === "id"
       ) {
         resultFormValues[key] = result[key];
@@ -178,7 +181,7 @@ const convertToPlain2ManyValues = (values: any, fields: any) => {
   const result: any = {};
   Object.keys(values).forEach((key) => {
     if (
-      fields.hasOwnProperty(key) &&
+      Object.prototype.hasOwnProperty.call(fields, key) &&
       (fields[key].type === "one2many" || fields[key].type === "many2many") &&
       values[key] &&
       values[key]?.items

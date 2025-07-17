@@ -3,7 +3,7 @@
  * @param {String} text
  * @param {String} font
  */
-const getTextWidth = (text: string, font = "14px -apple-system") => {
+const getTextWidth = (text: string, font: string = "14px -apple-system") => {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
   context!.font = font;
@@ -20,7 +20,7 @@ const getTextWidth = (text: string, font = "14px -apple-system") => {
 export const calculateColumnsWidth = (
   columns: any,
   source: any,
-  maxWidthPerCell = 500,
+  maxWidthPerCell: number = 500,
 ) => {
   if (columns.length === 0) {
     return { columns };
@@ -39,8 +39,8 @@ export const calculateColumnsWidth = (
   // now we are going to verify if the cell value is bigger
   // than the column width which is already set
 
-  source.map((entry: any) => {
-    columnsWithWidth.map((column: any, indexColumn: number) => {
+  source.forEach((entry: any) => {
+    columnsWithWidth.forEach((column: any, indexColumn: number) => {
       const columnWidth = column.width;
       const cellValue = (entry[column.key] as string) || "";
 
