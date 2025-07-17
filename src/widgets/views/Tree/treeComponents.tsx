@@ -20,6 +20,7 @@ import {
 import { useActionViewContext } from "@/context/ActionViewContext";
 import { useOne2manyContext } from "@/context/One2manyContext";
 import { DateValue, DateTimeValue } from "@gisce/react-formiga-components";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 
 export const BooleanComponent = ({
   value,
@@ -201,6 +202,7 @@ export const ColorPickerComponent = ({
 }): ReactElement => {
   return useMemo(
     () => <ColorPicker value={value} disabled showText />,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [ooui, value],
   );
 };
@@ -290,19 +292,22 @@ export const TagsComponent = ({
 }): ReactElement => {
   const [values, setValues] = useState<Array<{ id: number; name: string }>>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [readObjects, cancelReadObjectsRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().readObjects,
+  );
   const { relation, field } = ooui;
 
   const loadValues = useCallback(async () => {
     try {
       setLoading(true);
-      const optionsRead = await ConnectionProvider.getHandler().search({
+      const response = await readObjects({
         model: relation,
-        params: [["id", "in", value.items.map((v: any) => v.id)]],
-        fields: [field],
+        ids: value.items.map((v: any) => v.id),
+        fieldsToRetrieve: [field],
         context,
       });
       setValues(
-        optionsRead.map((i: any) => {
+        response.map((i: any) => {
           return { id: i.id, name: i[field] };
         }),
       );
@@ -311,7 +316,7 @@ export const TagsComponent = ({
     } finally {
       setLoading(false);
     }
-  }, [context, field, relation, value?.items]);
+  }, [context, field, relation, value?.items, readObjects]);
 
   useEffect(() => {
     if (value?.items && value?.items.length > 0) {
@@ -319,6 +324,13 @@ export const TagsComponent = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value?.items]);
+
+  useEffect(() => {
+    return () => {
+      cancelReadObjectsRequest();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const tags = useMemo(
     () =>

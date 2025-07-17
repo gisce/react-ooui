@@ -460,7 +460,6 @@ export const One2manyTree = ({
         onHeaderCheckboxClick={onHeaderCheckboxClick}
         refresh={refresh}
         onSortChange={onSortChange}
-        isFieldLoading={isFieldLoading}
         onChangeTreeType={onChangeTreeType}
         onFetchChildrenForRecord={stableFetchChildrenForRecord}
         childField={treeView?.field_parent}
