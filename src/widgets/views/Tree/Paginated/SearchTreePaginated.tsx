@@ -321,7 +321,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             actionViewSortState={actionViewSortState}
             onSortChange={onSortChange}
             tableRef={tableRef}
-            isFieldLoading={isFieldLoading}
             onChangeTreeType={!isExpandable ? onChangeTreeType : undefined}
             onFetchChildrenForRecord={
               treeView?.isExpandable ? fetchChildrenForRecord : undefined
