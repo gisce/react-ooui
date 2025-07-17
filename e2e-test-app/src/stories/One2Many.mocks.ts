@@ -1,55 +1,10 @@
-// Mock form view with one2many field
-// Simple form first to test
-export const mockSimpleFormView = {
-  view_id: 1001,
-  type: "form",
-  arch: `<?xml version="1.0"?>
-    <form string="Sales Order">
-        <group>
-          <field name="name"/>
-          <field name="partner_id"/>
-          <field name="date_order"/>
-          <field name="state"/>
-        </group>
-    </form>`,
-  fields: {
-    name: {
-      type: "char",
-      string: "Order Reference",
-      required: true,
-      size: 64,
-    },
-    partner_id: {
-      type: "many2one",
-      string: "Customer",
-      relation: "res.partner",
-      required: true,
-    },
-    date_order: {
-      type: "datetime",
-      string: "Order Date",
-      required: true,
-    },
-    state: {
-      type: "selection",
-      string: "Status",
-      selection: [
-        ["draft", "Draft"],
-        ["confirmed", "Confirmed"],
-        ["done", "Done"],
-        ["cancel", "Cancelled"],
-      ],
-    },
-  },
-};
-
 export const mockFormView = {
   view_id: 1001,
   type: "form",
   arch: `<?xml version="1.0"?>
     <form string="Sales Order">
         <field name="order_line"
-        widget_props="{'infinite': "1"}"
+        widget_props="{'infinite': '1'}"
         context="{'default_order_id': active_id}"/>
     </form>`,
   fields: {
@@ -207,7 +162,7 @@ export function generateMockOrderLines(orderId: number, count: number = 200) {
 
     // Use deterministic values based on index for consistent testing
     const quantity = (i % 10) + 1; // 1-10
-    const discount = i % 5 === 0 ? (i % 25) : 0; // Every 5th item has discount
+    const discount = i % 5 === 0 ? i % 25 : 0; // Every 5th item has discount
     const priceUnit = product.list_price * (1 + ((i % 10) - 5) * 0.02); // Small variation based on index
 
     lines.push({
