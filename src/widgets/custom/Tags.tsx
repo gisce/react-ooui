@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Tags as TagsOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
@@ -13,6 +13,7 @@ import {
 } from "@/helpers/formHelper";
 import ConnectionProvider from "@/ConnectionProvider";
 import { CustomTag } from "@/widgets/custom/Tag";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 
 type TagsProps = WidgetProps & {
   ooui: TagsOoui;
@@ -48,6 +49,21 @@ export const TagsInput = (props: TagsInputProps) => {
   const formContext = useContext(FormContext) as FormContextType;
   const { getContext } = formContext || {};
 
+  const [evalDomainRequest, cancelEvalDomainRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().evalDomain,
+  );
+  const [searchRequest, cancelSearchRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().search,
+  );
+
+  useEffect(() => {
+    return () => {
+      cancelEvalDomainRequest();
+      cancelSearchRequest();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useDeepCompareEffect(() => {
     fetchOptions();
   }, [items]);
@@ -66,20 +82,19 @@ export const TagsInput = (props: TagsInputProps) => {
         params = [["id", "in", itemsToShow]];
       }
       if (ooui.domain) {
-        const evaluatedDomain =
-          await ConnectionProvider.getHandler().evalDomain({
-            domain: ooui.domain,
-            values: transformPlainMany2Ones({
-              fields: formContext?.getFields(),
-              values: formContext.getAllHierarchyValues(),
-            }),
+        const evaluatedDomain = await evalDomainRequest({
+          domain: ooui.domain,
+          values: transformPlainMany2Ones({
             fields: formContext?.getFields(),
-            context: formContext.getContext(),
-          });
+            values: formContext.getAllHierarchyValues(),
+          }),
+          fields: formContext?.getFields(),
+          context: formContext.getContext(),
+        });
         params = [...params, ...evaluatedDomain];
       }
 
-      const optionsRead = await ConnectionProvider.getHandler().search({
+      const optionsRead = await searchRequest({
         model: relation,
         params,
         fieldsToRetrieve: [field],
