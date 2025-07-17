@@ -106,15 +106,25 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   });
 
   // Network request hooks
-  const [searchCount] = useNetworkRequest(
+  const [searchCount, cancelSearchCount] = useNetworkRequest(
     ConnectionProvider.getHandler().searchCount,
   );
-  const [searchForTree] = useNetworkRequest(
+  const [searchForTree, cancelSearchForTree] = useNetworkRequest(
     ConnectionProvider.getHandler().searchForTree,
   );
-  const [searchAllIds] = useNetworkRequest(
+  const [searchAllIds, cancelSearchAllIds] = useNetworkRequest(
     ConnectionProvider.getHandler().searchAllIds,
   );
+
+  // Cancel all requests on component unmount
+  useEffect(() => {
+    return () => {
+      cancelSearchCount();
+      cancelSearchForTree();
+      cancelSearchAllIds();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { treeView, formView, loading } = useFetchTreeViews({
     model,
