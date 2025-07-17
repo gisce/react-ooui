@@ -16,6 +16,7 @@ test.describe("Infinite One2Many Component", () => {
       "Quantity",
       "Unit Price",
       "Discount (%)",
+      "Last Updated",
     ];
 
     const visibleHeaders = new Set<string>();

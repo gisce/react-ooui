@@ -33,6 +33,7 @@
 - If you encounter difficulties or the tests are not behaving as expected, employ debugging techniques to investigate the issue.
 - Add strategic console.log statements to inspect the state of the DOM or relevant variables at specific points in the test.
 - Consider capturing snapshots of the rendered output and analyzing the images to identify any discrepancies or visual regressions.
+- Consider also inspecting the JS console if you have access to it with Playwright for checking JS errors that might be interesting.
 
 ## Learn from Existing Tests
 - Take the time to review and understand the current working tests in the codebase.
