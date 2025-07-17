@@ -74,21 +74,96 @@ class MockConnectionProvider implements ConnectionProvider {
     throw new Error(`View not found for model: ${model}, type: ${viewType}`);
   }
 
-  async readObjects(params: {
+  readObjects = async (params: {
     model: string;
     ids: number[];
-    fields: any;
+    fields?: any;
+    fieldsToRetrieve?: string[];
     context?: any;
-  }) {
+  }) => {
     console.log("🔍 readObjects called with params:", params);
+    console.log(
+      "🔍 this.orderLineData at start:",
+      this.orderLineData ? this.orderLineData.length : "undefined",
+    );
+    console.log("🔍 this context:", this);
+    const { ids, fieldsToRetrieve } = params;
+
     if (params.model === "sale.order.line") {
       console.log(
-        "🔍 FORCED: readObjects for sale.order.line, calling read directly",
+        "🔍 readObjects for sale.order.line with fieldsToRetrieve:",
+        fieldsToRetrieve,
       );
-      return this.read(params);
+
+      if (!ids || !fieldsToRetrieve) {
+        return this.read(params);
+      }
+
+      // Ensure orderLineData is initialized
+      if (!this.orderLineData || this.orderLineData.length === 0) {
+        console.log("🔍 Initializing orderLineData from mockParentRecord");
+        console.log(
+          "🔍 mockParentRecord.order_line available:",
+          mockParentRecord.order_line
+            ? mockParentRecord.order_line.length
+            : "undefined",
+        );
+        this.orderLineData = mockParentRecord.order_line;
+        console.log(
+          "🔍 this.orderLineData after re-initialization:",
+          this.orderLineData ? this.orderLineData.length : "undefined",
+        );
+      }
+
+      // Find the records that match the requested IDs
+      const requestedRecords = this.orderLineData.filter((record) =>
+        ids.includes(record.id),
+      );
+
+      // Generate updated values for autorefreshable fields
+      return requestedRecords.map((record) => {
+        const updatedRecord: any = { id: record.id };
+
+        fieldsToRetrieve.forEach((fieldName) => {
+          switch (fieldName) {
+            case "last_updated":
+              // Generate a random recent timestamp for autorefresh simulation
+              const randomMinutesAgo = Math.floor(Math.random() * 60); // 0-59 minutes ago
+              updatedRecord[fieldName] = new Date(
+                Date.now() - randomMinutesAgo * 60 * 1000,
+              ).toISOString();
+              break;
+
+            case "price_subtotal":
+              // Recalculate function field
+              updatedRecord[fieldName] = this.calculateSubtotal(record);
+              break;
+
+            case "total_amount":
+              // Recalculate function field with time-based variation
+              updatedRecord[fieldName] = this.calculateTotalAmount(record);
+              break;
+
+            default:
+              // For other fields, return the original value with potential minor variations
+              if (typeof (record as any)[fieldName] === "number") {
+                // Add small random variation to numeric fields
+                const variation = (Math.random() - 0.5) * 0.02; // ±1% variation
+                updatedRecord[fieldName] = Math.round(
+                  (record as any)[fieldName] * (1 + variation),
+                );
+              } else {
+                updatedRecord[fieldName] = (record as any)[fieldName];
+              }
+              break;
+          }
+        });
+
+        return updatedRecord;
+      });
     }
     return this.read(params);
-  }
+  };
 
   async read({ model, ids, fields }: any) {
     console.log("read called:", { model, ids, fields });
@@ -97,6 +172,12 @@ class MockConnectionProvider implements ConnectionProvider {
       if (model === "sale.order" && ids.includes(1)) {
         // Calculate totals from order lines
         const lines = this.orderLineData || [];
+        console.log(
+          "📊 Calculating function fields for",
+          lines.length,
+          "order lines",
+        );
+
         const subtotals = lines.map((line) => this.calculateSubtotal(line));
         const amount_untaxed = subtotals.reduce(
           (sum, subtotal) => sum + subtotal,
@@ -112,6 +193,7 @@ class MockConnectionProvider implements ConnectionProvider {
             const processedLine = {
               ...line,
               price_subtotal: this.calculateSubtotal(line),
+              total_amount: this.calculateTotalAmount(line),
               // Ensure product_id is properly formatted
               product_id: Array.isArray(line.product_id)
                 ? line.product_id
@@ -173,6 +255,15 @@ class MockConnectionProvider implements ConnectionProvider {
 
     if (model === "sale.order.line") {
       console.log("🔍 Reading order lines with IDs:", ids);
+
+      // Ensure orderLineData is initialized
+      if (!this.orderLineData || this.orderLineData.length === 0) {
+        console.log(
+          "🔍 Initializing orderLineData from mockParentRecord in read",
+        );
+        this.orderLineData = mockParentRecord.order_line;
+      }
+
       const lines = this.orderLineData.filter((line) => ids.includes(line.id));
       console.log(
         "🔍 Found",
@@ -216,6 +307,14 @@ class MockConnectionProvider implements ConnectionProvider {
 
     try {
       if (model === "sale.order.line") {
+        // Ensure orderLineData is initialized
+        if (!this.orderLineData || this.orderLineData.length === 0) {
+          console.log(
+            "🔍 Initializing orderLineData from mockParentRecord in searchForTree",
+          );
+          this.orderLineData = mockParentRecord.order_line;
+        }
+
         // Filter lines based on domain if needed
         let filteredLines = [...this.orderLineData];
 
@@ -251,10 +350,17 @@ class MockConnectionProvider implements ConnectionProvider {
         }
 
         // Calculate function fields and ensure all fields are properly formatted
+        console.log(
+          "🔍 Calculating function fields for",
+          filteredLines.length,
+          "order lines",
+        );
+
         const processedLines = filteredLines.map((line) => {
           const processed = {
             ...line,
             price_subtotal: this.calculateSubtotal(line),
+            total_amount: this.calculateTotalAmount(line),
             // Ensure product_id is properly formatted for many2one field
             product_id: Array.isArray(line.product_id)
               ? line.product_id
@@ -263,6 +369,8 @@ class MockConnectionProvider implements ConnectionProvider {
             order_id: Array.isArray(line.order_id)
               ? line.order_id
               : [line.order_id, `SO/2024/000${line.order_id}`],
+            // Update last_updated to current time to show autorefresh working
+            last_updated: new Date().toISOString(),
           };
 
           // Remove any undefined/null values that might cause {} errors
@@ -337,6 +445,15 @@ class MockConnectionProvider implements ConnectionProvider {
       console.log(
         "🔍 Search called for sale.order.line - returning IDs directly",
       );
+
+      // Ensure orderLineData is initialized
+      if (!this.orderLineData || this.orderLineData.length === 0) {
+        console.log(
+          "🔍 Initializing orderLineData from mockParentRecord in search",
+        );
+        this.orderLineData = mockParentRecord.order_line;
+      }
+
       // For One2Many, just return the IDs of the lines that belong to order 1
       const filteredLines = this.orderLineData.filter((line) => {
         const lineOrderId = Array.isArray(line.order_id)
@@ -421,6 +538,14 @@ class MockConnectionProvider implements ConnectionProvider {
     console.log("create called:", { model, values });
 
     if (model === "sale.order.line") {
+      // Ensure orderLineData is initialized
+      if (!this.orderLineData || this.orderLineData.length === 0) {
+        console.log(
+          "🔍 Initializing orderLineData from mockParentRecord in create",
+        );
+        this.orderLineData = mockParentRecord.order_line;
+      }
+
       const newId = Math.max(...this.orderLineData.map((l) => l.id)) + 1;
       const newLine = {
         id: newId,
@@ -447,6 +572,14 @@ class MockConnectionProvider implements ConnectionProvider {
     console.log("write called:", { model, ids, values });
 
     if (model === "sale.order.line") {
+      // Ensure orderLineData is initialized
+      if (!this.orderLineData || this.orderLineData.length === 0) {
+        console.log(
+          "🔍 Initializing orderLineData from mockParentRecord in write",
+        );
+        this.orderLineData = mockParentRecord.order_line;
+      }
+
       this.orderLineData = this.orderLineData.map((line) => {
         if (ids.includes(line.id)) {
           const updatedLine = { ...line, ...values };
@@ -475,6 +608,14 @@ class MockConnectionProvider implements ConnectionProvider {
     console.log("unlink called:", { model, ids });
 
     if (model === "sale.order.line") {
+      // Ensure orderLineData is initialized
+      if (!this.orderLineData || this.orderLineData.length === 0) {
+        console.log(
+          "🔍 Initializing orderLineData from mockParentRecord in unlink",
+        );
+        this.orderLineData = mockParentRecord.order_line;
+      }
+
       this.orderLineData = this.orderLineData.filter(
         (line) => !ids.includes(line.id),
       );
@@ -490,6 +631,20 @@ class MockConnectionProvider implements ConnectionProvider {
     const discount = line.discount || 0;
     const subtotal = baseAmount * (1 - discount / 100);
     return Math.round(subtotal * 100) / 100;
+  }
+
+  private calculateTotalAmount(line: any): number {
+    const quantity = line.quantity || 0;
+    const priceUnit = line.price_unit || 0;
+    const discount = line.discount || 0;
+
+    // Add some time-based variation to simulate real function field behavior
+    const timeVariation = Math.sin(Date.now() / 5000) * 0.05; // ±5% variation
+    const baseAmount = quantity * priceUnit;
+    const discountAmount = baseAmount * (discount / 100);
+    const totalAmount = (baseAmount - discountAmount) * (1 + timeVariation);
+
+    return Math.round(totalAmount * 100) / 100;
   }
 
   private sortResults(results: any[], orderString: string): any[] {
@@ -754,6 +909,14 @@ class MockConnectionProvider implements ConnectionProvider {
     console.log("searchCount called:", { model, domain });
 
     if (model === "sale.order.line") {
+      // Ensure orderLineData is initialized
+      if (!this.orderLineData || this.orderLineData.length === 0) {
+        console.log(
+          "🔍 Initializing orderLineData from mockParentRecord in searchCount",
+        );
+        this.orderLineData = mockParentRecord.order_line;
+      }
+
       if (domain && domain.length > 0) {
         const flatDomain = domain.flat(Infinity);
         for (let i = 0; i < flatDomain.length; i += 3) {
@@ -916,6 +1079,14 @@ class MockConnectionProvider implements ConnectionProvider {
     );
 
     if (model === "sale.order.line") {
+      // Ensure orderLineData is initialized
+      if (!this.orderLineData || this.orderLineData.length === 0) {
+        console.log(
+          "🔍 Initializing orderLineData from mockParentRecord in readAggregates",
+        );
+        this.orderLineData = mockParentRecord.order_line;
+      }
+
       // Filter lines based on domain
       let filteredLines = [...this.orderLineData];
 
@@ -1005,12 +1176,127 @@ class MockConnectionProvider implements ConnectionProvider {
   async writeConcurrencyField() {
     return true;
   }
-  parseConditions() {
-    return { colors: {}, icons: {}, status: [] };
+  parseConditions = async (params?: any) => {
+    console.log("🔍 parseConditions called with params:", params);
+    const { values } = params || {};
+
+    // Use the order line data to generate condition results
+    const dataToProcess = values || this.orderLineData || [];
+    
+    return dataToProcess.map((result: any) => {
+      return {
+        id: result.id,
+        colors: this.evaluateColorCondition(result),
+        status: this.evaluateStatusCondition(result),
+      };
+    });
   }
-  processSearchResults() {
-    return { items: [], totalItems: () => 0 };
+
+  parseCondition = async () => {
+    return {};
   }
+
+  processSearchResults = async (params: {
+    searchIds: number[];
+    model: string;
+    fieldsToRetrieve: string[];
+    context?: any;
+    fields?: any;
+  }) => {
+    console.log("processSearchResults called with params:", params);
+    const { searchIds, fieldsToRetrieve } = params;
+
+    if (params.model === "sale.order.line") {
+      // Check if we're processing function fields
+      const functionFields = fieldsToRetrieve.filter(
+        (field) => field === "total_amount" || field === "price_subtotal",
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate processing delay
+
+      if (!searchIds || !fieldsToRetrieve || searchIds.length === 0) {
+        return { results: [], attrsEvaluated: [] };
+      }
+
+      // Ensure orderLineData is initialized
+      if (!this.orderLineData || this.orderLineData.length === 0) {
+        console.log(
+          "🔍 Initializing orderLineData from mockParentRecord in processSearchResults",
+        );
+        this.orderLineData = mockParentRecord.order_line;
+      }
+
+      // Find the records that match the requested IDs
+      const requestedRecords = this.orderLineData.filter((record) =>
+        searchIds.includes(record.id),
+      );
+
+      console.log(
+        "Found requested records:",
+        requestedRecords.map((r) => r.id),
+      );
+
+      // Generate updated values for function fields and autorefresh fields
+      const results = requestedRecords.map((record) => {
+        const updatedRecord: any = { id: record.id };
+
+        fieldsToRetrieve.forEach((fieldName) => {
+          switch (fieldName) {
+            case "price_subtotal":
+              // Recalculate function field based on current values
+              updatedRecord[fieldName] = this.calculateSubtotal(record);
+              break;
+
+            case "total_amount":
+              // Recalculate function field with time-based variation
+              updatedRecord[fieldName] = this.calculateTotalAmount(record);
+              break;
+
+            case "last_updated":
+              // Generate a random recent timestamp for autorefresh simulation
+              const randomMinutesAgo = Math.floor(Math.random() * 60); // 0-59 minutes ago
+              updatedRecord[fieldName] = new Date(
+                Date.now() - randomMinutesAgo * 60 * 1000,
+              ).toISOString();
+              break;
+
+            default:
+              // For other fields, return the original value with potential minor variations
+              if (typeof (record as any)[fieldName] === "number") {
+                // Add small random variation to numeric fields
+                const variation = (Math.random() - 0.5) * 0.02; // ±1% variation
+                updatedRecord[fieldName] = Math.round(
+                  (record as any)[fieldName] * (1 + variation),
+                );
+              } else {
+                updatedRecord[fieldName] = (record as any)[fieldName];
+              }
+              break;
+          }
+        });
+
+        return updatedRecord;
+      });
+
+      // Generate attributes evaluation for the updated records
+      const attrsEvaluated = results.map((result: any) => {
+        // Find the original record to get all fields for condition evaluation
+        const originalRecord =
+          this.orderLineData.find((r) => r.id === result.id) || {};
+        const mergedRecord = { ...originalRecord, ...result };
+
+        return {
+          id: result.id,
+          colors: this.evaluateColorCondition(mergedRecord),
+          status: this.evaluateStatusCondition(mergedRecord),
+        };
+      });
+
+      return { results, attrsEvaluated };
+    }
+
+    return { results: [], attrsEvaluated: [] };
+  };
 
   // User view preferences methods for saving/restoring column order and state
   private userViewPrefs: { [key: string]: any } = {};
@@ -1176,6 +1462,14 @@ class MockConnectionProvider implements ConnectionProvider {
 
     try {
       if (model === "sale.order.line") {
+        // Ensure orderLineData is initialized
+        if (!this.orderLineData || this.orderLineData.length === 0) {
+          console.log(
+            "🔍 Initializing orderLineData from mockParentRecord in readEvalUiObjects",
+          );
+          this.orderLineData = mockParentRecord.order_line;
+        }
+
         // This is the main method that One2manyTree uses to fetch data
         const lines = this.orderLineData.filter((line) =>
           ids.includes(line.id),
@@ -1200,9 +1494,13 @@ class MockConnectionProvider implements ConnectionProvider {
             price_unit: line.price_unit || 0,
             discount: line.discount || 0,
             price_subtotal: this.calculateSubtotal(line),
+            total_amount: this.calculateTotalAmount(line),
             order_id: Array.isArray(line.order_id)
               ? line.order_id
               : [line.order_id, `SO/2024/000${line.order_id}`],
+            last_updated: new Date(
+              Date.now() - Math.random() * 60 * 60 * 1000,
+            ).toISOString(), // Random timestamp within last hour for autorefresh
           };
 
           // Ensure no undefined values
@@ -1292,6 +1590,14 @@ class MockConnectionProvider implements ConnectionProvider {
     });
 
     if (model === "sale.order.line") {
+      // Ensure orderLineData is initialized
+      if (!this.orderLineData || this.orderLineData.length === 0) {
+        console.log(
+          "🔍 Initializing orderLineData from mockParentRecord in searchAllIds",
+        );
+        this.orderLineData = mockParentRecord.order_line;
+      }
+
       // This is called when sorting is applied
       let filteredLines = [...this.orderLineData];
 
@@ -1386,12 +1692,13 @@ class MockConnectionProvider implements ConnectionProvider {
 
     const { discount, quantity, price_unit } = lineData;
 
-    // Check conditions in order of priority
-    if (discount > 20) return "red";
-    if (price_unit > 400) return "purple";
-    if (price_unit > 300) return "blue";
-    if (discount > 10) return "orange";
-    if (quantity >= 5) return "green";
+    // Check conditions in order of priority - return hex color codes
+    // Only use non-function fields to ensure colors remain stable
+    if (discount > 20) return "#c62828"; // Red - high discount
+    if (price_unit > 400) return "#7b1fa2"; // Purple - expensive items
+    if (price_unit > 300) return "#1976d2"; // Blue - moderately expensive
+    if (discount > 10) return "#ef6c00"; // Orange - medium discount
+    if (quantity >= 5) return "#388e3c"; // Green - high quantity
 
     return null; // No color condition met
   }
@@ -1403,18 +1710,30 @@ class MockConnectionProvider implements ConnectionProvider {
 
     const { discount, quantity, price_unit } = lineData;
 
-    // Check conditions in order of priority
-    if (quantity >= 8) return "green";
-    if (discount > 20) return "red";
-    if (price_unit > 300) return "blue";
-    if (discount > 10) return "orange";
+    // Check conditions in order of priority - return hex color codes
+    // Only use non-function fields to ensure status remains stable
+    if (quantity >= 8) return "#4caf50"; // Green - high quantity
+    if (discount > 20) return "#c62828"; // Red - high discount
+    if (price_unit > 300) return "#2196f3"; // Blue - expensive items
+    if (discount > 10) return "#ff9800"; // Orange - medium discount
 
     return null; // No status condition met
   }
 
   constructor() {
     // Initialize with mock data
+    console.log("🔍 MockConnectionProvider constructor called");
+    console.log(
+      "🔍 mockParentRecord.order_line:",
+      mockParentRecord.order_line
+        ? mockParentRecord.order_line.length
+        : "undefined",
+    );
     this.orderLineData = mockParentRecord.order_line;
+    console.log(
+      "🔍 this.orderLineData after assignment:",
+      this.orderLineData ? this.orderLineData.length : "undefined",
+    );
   }
 }
 
@@ -1427,6 +1746,12 @@ export function initializeMockProvider() {
   mockProviderInstance = new Proxy(provider, {
     get(target, prop, receiver) {
       const value = Reflect.get(target, prop, receiver);
+
+      // Return the value directly for existing methods (arrow functions are already bound)
+      if (value !== undefined) {
+        return value;
+      }
+
       if (
         value === undefined &&
         typeof prop === "string" &&
@@ -1445,7 +1770,7 @@ export function initializeMockProvider() {
             return target.saveUserViewPrefs.bind(target);
           }
           if (prop === "readEvalUiObjects") {
-            return {};
+            return target.readEvalUiObjects.bind(target);
           }
           if (prop === "searchForTree") {
             return target.searchForTree.bind(target);
@@ -1453,14 +1778,17 @@ export function initializeMockProvider() {
           if (prop === "searchRead" || prop === "search_read") {
             return target.search_read.bind(target);
           }
-          if (prop === "readEvalUiObjects") {
-            return target.readEvalUiObjects.bind(target);
-          }
           if (prop === "searchAllIds") {
             return target.searchAllIds.bind(target);
           }
           if (prop === "readAggregates") {
             return target.readAggregates.bind(target);
+          }
+          if (prop === "processSearchResults") {
+            return target.processSearchResults.bind(target);
+          }
+          if (prop === "readObjects") {
+            return target.readObjects.bind(target);
           }
 
           return {
@@ -1491,3 +1819,124 @@ export function getMockProvider(): MockConnectionProvider {
 
 // Export a simple instance for direct use in ActionViewProvider
 export const mockConnectionProvider = new MockConnectionProvider();
+
+// Paginated mock form view - use infinite: '0' to force paginated mode
+const mockPaginatedFormView = {
+  ...mockFormView,
+  arch: `<?xml version="1.0"?>
+    <form string="Sales Order">
+        <field name="order_line"
+        widget_props="{'infinite': '0'}"
+        context="{'default_order_id': active_id}"/>
+    </form>`,
+  fields: {
+    ...mockFormView.fields,
+    order_line: {
+      ...mockFormView.fields.order_line,
+      infinite: false, // Explicitly set to false for paginated mode
+    },
+  },
+};
+
+class PaginatedMockConnectionProvider extends MockConnectionProvider {
+  async fieldsViewGet({ model, viewId, viewType, context }: any) {
+    console.log("🔍 [PAGINATED] fieldsViewGet called:", {
+      model,
+      viewId,
+      viewType,
+      context,
+    });
+
+    if (model === "sale.order" && viewType === "form") {
+      console.log("🔍 [PAGINATED] Returning paginated form view");
+      console.log("🔍 [PAGINATED] Form view arch:", mockPaginatedFormView.arch);
+      return mockPaginatedFormView;
+    }
+
+    // For other views, use the parent class method
+    return super.fieldsViewGet({ model, viewId, viewType, context });
+  }
+
+  async getView({ model, type, context }: any) {
+    console.log("[PAGINATED] getView called:", { model, type, context });
+
+    if (model === "sale.order" && type === "form") {
+      console.log("[PAGINATED] Returning paginated form view:", mockPaginatedFormView);
+      return mockPaginatedFormView;
+    }
+
+    // For other views, use the parent class method
+    return super.getView({ model, type, context });
+  }
+}
+
+let paginatedMockProviderInstance: PaginatedMockConnectionProvider | null = null;
+
+export function initializePaginatedMockProvider() {
+  const provider = new PaginatedMockConnectionProvider();
+
+  // Wrap in a Proxy to catch any missing method calls (same as infinite version)
+  paginatedMockProviderInstance = new Proxy(provider, {
+    get(target, prop, receiver) {
+      const value = Reflect.get(target, prop, receiver);
+
+      // Return the value directly for existing methods
+      if (value !== undefined) {
+        return value;
+      }
+
+      if (
+        value === undefined &&
+        typeof prop === "string" &&
+        prop !== "constructor"
+      ) {
+        console.log("🚨 [PAGINATED] Missing method called:", prop);
+        // Return a function that logs and returns a default value
+        return function (...args: any[]) {
+          console.log("🚨 [PAGINATED] Missing method", prop, "called with args:", args);
+
+          // Handle specific missing methods (same as infinite version)
+          if (prop === "readUserViewPrefs") {
+            return target.readUserViewPrefs.bind(target);
+          }
+          if (prop === "saveUserViewPrefs") {
+            return target.saveUserViewPrefs.bind(target);
+          }
+          if (prop === "readEvalUiObjects") {
+            return target.readEvalUiObjects.bind(target);
+          }
+          if (prop === "searchForTree") {
+            return target.searchForTree.bind(target);
+          }
+          if (prop === "searchRead" || prop === "search_read") {
+            return target.search_read.bind(target);
+          }
+          if (prop === "searchAllIds") {
+            return target.searchAllIds.bind(target);
+          }
+          if (prop === "readAggregates") {
+            return target.readAggregates.bind(target);
+          }
+          if (prop === "processSearchResults") {
+            return target.processSearchResults.bind(target);
+          }
+          if (prop === "readObjects") {
+            return target.readObjects.bind(target);
+          }
+
+          return {
+            read: true,
+            write: true,
+            create: true,
+            unlink: true,
+          };
+        };
+      }
+      return value;
+    },
+  });
+
+  // Set this as the global provider for the paginated story
+  ConnectionProvider.init(paginatedMockProviderInstance as ConnectionProviderType);
+  return paginatedMockProviderInstance;
+}

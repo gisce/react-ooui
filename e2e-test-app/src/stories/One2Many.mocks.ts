@@ -31,6 +31,8 @@ export const mockOne2ManyTreeView = {
       <field name="quantity" sum="Total Qty"/>
       <field name="price_unit" sum="Avg Price"/>
       <field name="discount"/>
+      <field name="total_amount" sum="Total Amount"/>
+      <field name="last_updated" autorefresh="1"/>
     </tree>`,
   fields_in_conditions: {
     status: ["quantity", "discount", "price_unit"],
@@ -72,9 +74,18 @@ export const mockOne2ManyTreeView = {
       string: "Discount (%)",
     },
     price_subtotal: {
-      type: "function",
+      type: "float",
       string: "Subtotal",
-      fnct_type: "float",
+      is_function: true,
+    },
+    total_amount: {
+      type: "float",
+      string: "Total Amount",
+      is_function: true,
+    },
+    last_updated: {
+      type: "datetime",
+      string: "Last Updated",
     },
   },
 };
@@ -176,6 +187,10 @@ export function generateMockOrderLines(orderId: number, count: number = 200) {
       price_unit: Math.round(priceUnit * 100) / 100,
       discount: discount,
       price_subtotal: 0, // Will be calculated as function field
+      total_amount: undefined, // Function field - initially undefined to trigger loading
+      last_updated: new Date(
+        Date.now() - Math.random() * 24 * 60 * 60 * 1000,
+      ).toISOString(), // Random timestamp within last 24 hours
     });
   }
 

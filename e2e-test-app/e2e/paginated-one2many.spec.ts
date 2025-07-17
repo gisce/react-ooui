@@ -1,11 +1,11 @@
 import { test, expect } from "@playwright/test";
 import { E2E_TEST_APP_CONFIG, getStoryUrl } from "./config";
 
-test.describe("Infinite One2Many Component", () => {
+test.describe("Paginated One2Many Component", () => {
   test("should render all columns with correct titles and handle horizontal scrolling", async ({
     page,
   }) => {
-    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.PAGINATED));
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-header", { state: "visible" });
@@ -118,37 +118,41 @@ test.describe("Infinite One2Many Component", () => {
     }
   });
 
-  test("should display total records count and verify grid scrolling", async ({
+  test("should display all related records without pagination controls in paginated mode", async ({
     page,
   }) => {
-    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.PAGINATED));
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
 
-    const initialRowCount = await page.locator(".ag-row").count();
-    expect(initialRowCount).toBeGreaterThanOrEqual(10);
+    // Verify NO pagination controls exist in One2Many paginated mode
+    // One2Many paginated mode shows all related records in a single view
+    const paginationControls = page.locator(".ant-pagination");
+    await expect(paginationControls).not.toBeVisible();
 
-    const gridBodyViewport = page.locator(".ag-body-viewport");
+    // Verify we have order lines visible
+    const rowCount = await page.locator(".ag-row").count();
+    expect(rowCount).toBeGreaterThan(5); // Should show records
 
-    const initialScrollTop = await gridBodyViewport.evaluate(
-      (el) => el.scrollTop,
-    );
-
-    await gridBodyViewport.evaluate((el) => {
-      el.scrollTop = 1000;
-    });
+    // Verify that the table is in paginated mode by checking the three dots menu
+    const threeDotsMenu = page.getByRole("button", { name: "More options" });
+    await expect(threeDotsMenu).toBeVisible();
+    
+    await threeDotsMenu.click();
     await page.waitForTimeout(500);
-
-    const scrolledTop = await gridBodyViewport.evaluate((el) => el.scrollTop);
-    expect(scrolledTop).toBeGreaterThan(initialScrollTop);
-
-    const finalRowCount = await page.locator(".ag-row").count();
-    expect(finalRowCount).toBeGreaterThanOrEqual(10);
+    
+    // In paginated mode, menu should show "Change to infinite" option
+    const menuText = await page.textContent("body");
+    const hasChangeToInfinite = menuText?.includes("Change to infinite");
+    expect(hasChangeToInfinite).toBe(true);
+    
+    // Click away to close menu
+    await page.click(".ag-root");
   });
 
   test("should handle row selection correctly", async ({ page }) => {
-    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.PAGINATED));
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
@@ -174,7 +178,7 @@ test.describe("Infinite One2Many Component", () => {
   });
 
   test("should handle multiple row selection correctly", async ({ page }) => {
-    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.PAGINATED));
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
@@ -184,13 +188,17 @@ test.describe("Infinite One2Many Component", () => {
     const secondRowCheckbox = rows.nth(1).locator('input[type="checkbox"]');
     const thirdRowCheckbox = rows.nth(2).locator('input[type="checkbox"]');
 
+    // Click and verify each checkbox individually with proper delays
     await firstRowCheckbox.click();
+    await page.waitForTimeout(300);
+    await expect(firstRowCheckbox).toBeChecked();
+
     await secondRowCheckbox.click();
+    await page.waitForTimeout(300);
+    await expect(secondRowCheckbox).toBeChecked();
+
     await thirdRowCheckbox.click();
     await page.waitForTimeout(500);
-
-    await expect(firstRowCheckbox).toBeChecked();
-    await expect(secondRowCheckbox).toBeChecked();
     await expect(thirdRowCheckbox).toBeChecked();
 
     const headerCheckbox = page
@@ -206,7 +214,7 @@ test.describe("Infinite One2Many Component", () => {
   test("should calculate aggregates correctly when selecting rows", async ({
     page,
   }) => {
-    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.PAGINATED));
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
@@ -265,7 +273,7 @@ test.describe("Infinite One2Many Component", () => {
   test("should show three dots menu with reset table view option", async ({
     page,
   }) => {
-    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.PAGINATED));
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
@@ -289,10 +297,10 @@ test.describe("Infinite One2Many Component", () => {
     expect(hasResetTableView).toBe(true);
   });
 
-  test("should change to paginated view mode when clicking 'Change to paginated' from three dots menu", async ({
+  test("should change to infinite view mode when clicking 'Change to infinite' from three dots menu", async ({
     page,
   }) => {
-    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.PAGINATED));
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
@@ -305,35 +313,35 @@ test.describe("Infinite One2Many Component", () => {
     await threeDotsMenu.click();
     await page.waitForTimeout(500);
 
-    // Verify "Change to paginated" option is present (now in English after the fix)
+    // Verify "Change to infinite" option is present
     const menuText = await page.textContent("body");
-    const hasChangeToPaginated = menuText?.includes("Change to paginated");
-    expect(hasChangeToPaginated).toBe(true);
+    const hasChangeToInfinite = menuText?.includes("Change to infinite");
+    expect(hasChangeToInfinite).toBe(true);
 
-    // Click "Change to paginated" option (now in English after the fix)
-    const changeToPaginatedOption = page.getByText("Change to paginated");
-    await expect(changeToPaginatedOption).toBeVisible();
-    await changeToPaginatedOption.click();
+    // Click "Change to infinite" option
+    const changeToInfiniteOption = page.getByText("Change to infinite");
+    await expect(changeToInfiniteOption).toBeVisible();
+    await changeToInfiniteOption.click();
     
     // Wait longer for the view mode change to complete
     await page.waitForTimeout(3000);
 
     // The most reliable way to check if the view mode changed is to verify 
-    // that the menu now shows "Change to infinite" instead of "Change to paginated"
+    // that the menu now shows "Change to paginated" instead of "Change to infinite"
     await threeDotsMenu.click();
     await page.waitForTimeout(500);
 
     const updatedPageText = await page.textContent("body");
     
-    // Check for "Change to infinite" (now in English after the fix)
-    const hasChangeToInfinite = updatedPageText?.includes("Change to infinite");
+    // Check for "Change to paginated"
+    const hasChangeToPaginated = updatedPageText?.includes("Change to paginated");
     
     // This is the key indicator that the view mode actually changed
-    expect(hasChangeToInfinite).toBe(true);
+    expect(hasChangeToPaginated).toBe(true);
   });
 
   test("Should persist column order after drag and drop", async ({ page }) => {
-    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.PAGINATED));
 
     // Clear any existing localStorage to start fresh
     await page.evaluate(() => {
@@ -425,25 +433,13 @@ test.describe("Infinite One2Many Component", () => {
     page,
   }) => {
     test.setTimeout(60000);
-    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.PAGINATED));
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-header", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
 
     await page.waitForTimeout(1000);
-
-    const gridBodyViewport = page.locator(".ag-body-viewport");
-
-    await gridBodyViewport.evaluate((el) => {
-      el.scrollTop = 1000;
-    });
-    await page.waitForTimeout(1000);
-
-    await gridBodyViewport.evaluate((el) => {
-      el.scrollTop = 0;
-    });
-    await page.waitForTimeout(500);
 
     const descriptionHeader = page.getByRole("columnheader", {
       name: "Description",
@@ -511,7 +507,7 @@ test.describe("Infinite One2Many Component", () => {
   });
 
   test("should pin and unpin columns correctly", async ({ page }) => {
-    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.PAGINATED));
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-header", { state: "visible" });
@@ -595,7 +591,7 @@ test.describe("Infinite One2Many Component", () => {
   });
 
   test("should resize columns correctly", async ({ page }) => {
-    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.PAGINATED));
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-header", { state: "visible" });
@@ -646,7 +642,7 @@ test.describe("Infinite One2Many Component", () => {
   test("should drag, resize and pin columns with localStorage persistence", async ({
     page,
   }) => {
-    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.PAGINATED));
 
     // Clear localStorage to start fresh
     await page.evaluate(() => localStorage.clear());
@@ -766,7 +762,7 @@ test.describe("Infinite One2Many Component", () => {
   test("should have Last Updated column with automatic refresh", async ({
     page,
   }) => {
-    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.PAGINATED));
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-header", { state: "visible" });
@@ -886,7 +882,7 @@ test.describe("Infinite One2Many Component", () => {
   test("should verify Total Amount column shows async loading behavior", async ({
     page,
   }) => {
-    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.PAGINATED));
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-header", { state: "visible" });

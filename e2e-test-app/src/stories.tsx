@@ -1,8 +1,8 @@
 import React from "react";
 // Import the TreeActionView stories (now pure React components)
 import { Infinite, Paginated } from "./stories/TreeActionView.stories";
-// Import the One2Many story
-import { Infinite as One2ManyInfinite } from "./stories/One2Many.stories";
+// Import the One2Many stories
+import { Infinite as One2ManyInfinite, Paginated as One2ManyPaginated } from "./stories/One2Many.stories";
 
 export interface Story {
   id: string;
@@ -33,5 +33,12 @@ export const stories: Story[] = [
     component: One2ManyInfinite,
     description:
       "A form view with a One2Many widget displaying order lines with infinite scroll. The One2Many field shows product details, quantities, prices, and automatically calculates subtotals. The form demonstrates parent-child relationships with 200+ line items for testing infinite scroll functionality. Features include: dynamic subtotal calculations, sum fields showing totals, product selection with many2one fields, and proper handling of large datasets with smooth scrolling.",
+  },
+  {
+    id: "one2many-paginated",
+    title: "One2Many - Paginated",
+    component: One2ManyPaginated,
+    description:
+      "A form view with a One2Many widget displaying order lines with pagination controls. The One2Many field shows product details, quantities, prices, and automatically calculates subtotals. The form demonstrates parent-child relationships with proper pagination navigation. Features include: dynamic subtotal calculations, sum fields showing totals, product selection with many2one fields, autorefreshable timestamp columns (Last Updated), function columns (Total Amount), and pagination controls for easy navigation through large datasets.",
   },
 ];
