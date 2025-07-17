@@ -219,14 +219,15 @@ export const useTreeFunctionFieldsRead = ({
         return newSet;
       });
 
-      // Immediately request function fields for these IDs
-      if (hasFunctionFields && isActive && treeOoui) {
+      // Use functionFields.current.length instead of hasFunctionFields state to avoid timing issues
+      const hasFunctionFieldsSync = functionFields.current.length > 0;
+      if (hasFunctionFieldsSync && isActive && treeOoui) {
         setTimeout(() => {
           requestFunctionFields();
         }, 100);
       }
     },
-    [hasFunctionFields, isActive, treeOoui, requestFunctionFields],
+    [isActive, treeOoui, requestFunctionFields],
   );
 
   const processUpdatedResults = useCallback(

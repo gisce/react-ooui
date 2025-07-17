@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo, useMemo, useRef, useEffect } from "react";
 import { PaginatedTable } from "@gisce/react-formiga-table";
 import { PaginatedTableContentProps } from "../SearchTreePaginated.types";
 import { CellRenderer } from "../../CellRenderer";
@@ -39,25 +39,64 @@ export const PaginatedTableComponent = memo(
     onFetchChildrenForRecord,
     childField,
   }: PaginatedTableContentProps) => {
-    // Wrap column components to inject loading state
+    // Use a ref to store the last stable columns to prevent unnecessary re-creation
+    const stableColumnsRef = useRef<any[]>([]);
+    const isFieldLoadingRef = useRef(isFieldLoading);
+
+    // Update isFieldLoading ref
+    useEffect(() => {
+      isFieldLoadingRef.current = isFieldLoading;
+    }, [isFieldLoading]);
+
+    // Create ultra-stable columns that only change when absolutely necessary
     const columnsWithLoading = useMemo(() => {
-      return columns.map((column) => ({
-        ...column,
-        render: (value: any, record: any) => (
+      if (!columns) return [];
+
+      // Check if we need to recreate columns (only when column structure changes)
+      const needsUpdate =
+        stableColumnsRef.current.length !== columns.length ||
+        columns.some((col, index) => {
+          const existing = stableColumnsRef.current[index];
+          return (
+            !existing ||
+            existing.key !== col.key ||
+            existing.dataIndex !== col.dataIndex
+          );
+        });
+
+      if (!needsUpdate && stableColumnsRef.current.length > 0) {
+        // Return existing stable columns
+        return stableColumnsRef.current;
+      }
+
+      // Create new stable columns only when needed
+      const newColumns = columns.map((column) => {
+        // Create a single stable render function per column that uses the ref
+        const stableRender = (value: any, record: any) => (
           <CellRenderer
             value={value}
             record={record}
             column={column}
-            isFieldLoading={isFieldLoading}
+            isFieldLoading={isFieldLoadingRef.current}
           />
-        ),
-      }));
-    }, [columns, isFieldLoading]);
+        );
+
+        return {
+          ...column,
+          render: stableRender,
+        };
+      });
+
+      // Store the new stable columns
+      stableColumnsRef.current = newColumns;
+      return newColumns;
+    }, [columns]); // Include columns but use internal logic to prevent unnecessary updates
 
     if (!columns || !treeOoui) return null;
 
     return (
       <PaginatedTable
+        debug={true}
         ref={tableRef}
         strings={strings}
         isLoading={isLoading}
@@ -100,3 +139,6 @@ export const PaginatedTableComponent = memo(
 );
 
 PaginatedTableComponent.displayName = "PaginatedTableComponent";
+
+// Use regular memo with ultra-stable columns
+export const StablePaginatedTableComponent = memo(PaginatedTableComponent);

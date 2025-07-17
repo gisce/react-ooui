@@ -19,7 +19,7 @@ import {
 } from "@/helpers/o2m-columnStorageHelper";
 import { useLocale } from "@gisce/react-formiga-components";
 import { TreeType } from "@/views/actionViews/TreeActionView";
-import { PaginatedTableComponent } from "@/widgets/views/Tree/Paginated/components/PaginatedTableComponent";
+import { StablePaginatedTableComponent } from "@/widgets/views/Tree/Paginated/components/PaginatedTableComponent";
 import { OnRowClickedData } from "@/widgets/views/Tree/Paginated/SearchTreePaginated.types";
 import { ConnectionProvider } from "@/index";
 import { TreeView } from "@/types";
@@ -178,17 +178,20 @@ export const One2manyTree = ({
   // Ensure columns is never undefined and add loading support
   const safeColumns = useMemo(() => {
     if (!columns) return [];
-    return columns.map((column: any) => ({
-      ...column,
-      render: (value: any, record: any) => (
+    return columns.map((column: any) => {
+      const stableRender = (value: any, record: any) => (
         <CellRenderer
           value={value}
           record={record}
           column={column}
           isFieldLoading={isFieldLoading}
         />
-      ),
-    }));
+      );
+      return {
+        ...column,
+        render: stableRender,
+      };
+    });
   }, [columns, isFieldLoading]);
 
   // Reuse onFetchRecords for infinite mode data fetching
@@ -245,6 +248,7 @@ export const One2manyTree = ({
       statusForResults,
       ooui,
       addRecordsToCheckFunctionFields,
+      updateAttributes,
     ],
   );
 
@@ -298,6 +302,7 @@ export const One2manyTree = ({
     statusForResults,
     ooui,
     addRecordsToCheckFunctionFields,
+    updateAttributes,
   ]);
 
   useDeepCompareEffect(() => {
@@ -315,7 +320,7 @@ export const One2manyTree = ({
     tableRef?.current?.unselectAll();
   }, [items, treeType]);
 
-  // Shared callbacks for both modes
+  // Shared callbacks for both modes - stabilize all callbacks
   const onGetFirstVisibleRowIndex = useCallback(() => {
     if (onGetFirstVisibleRowIndexProp) {
       const result = onGetFirstVisibleRowIndexProp();
@@ -323,18 +328,29 @@ export const One2manyTree = ({
     }
     return treeFirstVisibleRow;
   }, [onGetFirstVisibleRowIndexProp, treeFirstVisibleRow]);
-  const onGetFirstVisibleColumn = useCallback(
-    () => treeFirstVisibleColumn,
-    [treeFirstVisibleColumn],
-  );
+
+  // Use useCallbackRef to prevent re-renders during horizontal scrolling
+  const onGetFirstVisibleColumn = useCallbackRef(() => treeFirstVisibleColumn);
+
   const onHeaderCheckboxClick = useCallback(
     () => onSelectionCheckboxClicked?.(),
     [onSelectionCheckboxClicked],
   );
+
   const refresh = useCallback(() => {
     clearAttributes();
     tableRef?.current?.refresh();
   }, [tableRef, clearAttributes]);
+
+  // Use useCallbackRef for better stability
+  const setTreeFirstVisibleRowStable = useCallbackRef(setTreeFirstVisibleRow);
+  const setTreeFirstVisibleColumnStable = useCallbackRef(
+    setTreeFirstVisibleColumn,
+  );
+  const updateColumnStateStable = useCallbackRef(updateColumnState);
+  const getColumnStateStable = useCallbackRef(getColumnState);
+  const onRowStatusStable = useCallbackRef(onRowStatus);
+  const onRowStyleStable = useCallbackRef(onRowStyle);
 
   const onRowHasBeenSelected = useCallback(
     (changedRow: { id: number; selected: boolean }) => {
@@ -355,18 +371,15 @@ export const One2manyTree = ({
     return "indeterminate";
   }, [selectedRowKeys, itemsToShow.length]);
 
-  // Reuse sorting pattern from infinite mode and usePaginatedSearch
-  const onSortChange = useCallback(
-    (state: any) => {
-      sortStateRef.current = state;
-      setTreeFirstVisibleRow(0);
-      setTreeFirstVisibleColumn(undefined);
-      if (treeType === "paginated" && items.length > 0) {
-        onPaginatedRequestData().then(setPaginatedResults);
-      }
-    },
-    [treeType, items, onPaginatedRequestData],
-  );
+  // Stabilize onSortChange using useCallbackRef to prevent re-renders
+  const onSortChange = useCallbackRef((state: any) => {
+    sortStateRef.current = state;
+    setTreeFirstVisibleRow(0);
+    setTreeFirstVisibleColumn(undefined);
+    if (treeType === "paginated" && items.length > 0) {
+      onPaginatedRequestData().then(setPaginatedResults);
+    }
+  });
 
   const onPaginatedRequestDataRef = useCallbackRef(onPaginatedRequestData);
 
@@ -410,43 +423,52 @@ export const One2manyTree = ({
     [treeView, ooui, relation, context],
   );
 
+  // Stabilize the fetchChildren prop
+  const stableFetchChildrenForRecord = useMemo(() => {
+    return treeView?.field_parent ? fetchChildrenForRecord : undefined;
+  }, [treeView?.field_parent, fetchChildrenForRecord]);
+
+  // Stabilize the handleRowDoubleClick callback
+  const handleRowDoubleClickStable = useCallback(
+    (data: OnRowClickedData) => {
+      onRowDoubleClick?.(data);
+    },
+    [onRowDoubleClick],
+  );
+
   if (isColumnStateLoading) {
     return <Spin />;
   }
 
   if (treeType === "paginated") {
     return (
-      <PaginatedTableComponent
+      <StablePaginatedTableComponent
         tableRef={tableRef as RefObject<PaginatedTableRef>}
-        onRowStyle={onRowStyle}
+        onRowStyle={onRowStyleStable}
         availableHeight={height || DEFAULT_HEIGHT}
         columns={safeColumns}
         treeOoui={ooui}
         strings={strings}
         isLoading={false}
         results={results}
-        handleRowDoubleClick={(data: OnRowClickedData) => {
-          onRowDoubleClick?.(data);
-        }}
+        handleRowDoubleClick={handleRowDoubleClickStable}
         onRowHasBeenSelected={onRowHasBeenSelected}
-        updateColumnState={updateColumnState}
-        getColumnState={getColumnState}
-        setTreeFirstVisibleRow={setTreeFirstVisibleRow}
+        updateColumnState={updateColumnStateStable}
+        getColumnState={getColumnStateStable}
+        setTreeFirstVisibleRow={setTreeFirstVisibleRowStable}
         onGetFirstVisibleRowIndex={onGetFirstVisibleRowIndex}
         onGetFirstVisibleColumn={onGetFirstVisibleColumn}
-        setTreeFirstVisibleColumn={setTreeFirstVisibleColumn}
+        setTreeFirstVisibleColumn={setTreeFirstVisibleColumnStable}
         footerComp={footerComponent}
         statusComp={statusComponent}
-        onRowStatus={onRowStatus}
+        onRowStatus={onRowStatusStable}
         headerCheckboxState={headerCheckboxState}
         onHeaderCheckboxClick={onHeaderCheckboxClick}
         refresh={refresh}
         onSortChange={onSortChange}
-        isFieldLoading={undefined}
+        isFieldLoading={isFieldLoading}
         onChangeTreeType={onChangeTreeType}
-        onFetchChildrenForRecord={
-          treeView?.field_parent ? fetchChildrenForRecord : undefined
-        }
+        onFetchChildrenForRecord={stableFetchChildrenForRecord}
         childField={treeView?.field_parent}
       />
     );
@@ -454,6 +476,7 @@ export const One2manyTree = ({
 
   return (
     <InfiniteTable
+      debug={true}
       ref={tableRef}
       height={height || DEFAULT_HEIGHT}
       columns={safeColumns}
