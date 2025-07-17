@@ -202,6 +202,7 @@ export const ColorPickerComponent = ({
 }): ReactElement => {
   return useMemo(
     () => <ColorPicker value={value} disabled showText />,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [ooui, value],
   );
 };
