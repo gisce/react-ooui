@@ -1,23 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { Form, ConfigContextProvider } from "@gisce/react-ooui";
 import { NotificationProvider } from "@gisce/react-formiga-components";
-import { initializeMockProvider } from "./One2Many.mockProvider";
+import { initializeMockProvider, initializePaginatedMockProvider } from "./One2Many.mockProvider";
 
-export const Infinite = () => {
+interface One2ManyStoryProps {
+  paginated?: boolean;
+}
+
+const One2ManyStory: React.FC<One2ManyStoryProps> = ({ paginated = false }) => {
   const [mockProviderReady, setMockProviderReady] = useState(false);
 
   useEffect(() => {
-    // Initialize the mock provider when component mounts
-    console.log("Initializing mock provider for One2Many story");
-    const provider = initializeMockProvider();
+    // Initialize the appropriate mock provider when component mounts
+    console.log(`Initializing ${paginated ? 'paginated' : 'infinite'} mock provider for One2Many story`);
+    const provider = paginated ? initializePaginatedMockProvider() : initializeMockProvider();
     setMockProviderReady(true);
-    console.log("Mock provider initialized successfully");
+    console.log(`${paginated ? 'Paginated' : 'Infinite'} mock provider initialized successfully`);
 
     return () => {
       // Cleanup if needed
       console.log("Cleaning up mock provider");
     };
-  }, []);
+  }, [paginated]);
 
   if (!mockProviderReady) {
     return <div>Loading mock provider...</div>;
@@ -37,7 +41,7 @@ export const Infinite = () => {
         globalValues={{}}
         rootContext={{}}
         devMode={false}
-        title="One2Many Story Demo"
+        title={`One2Many ${paginated ? 'Paginated' : 'Infinite'} Story Demo`}
         treeMaxLimit={100}
       >
         <div
@@ -75,3 +79,7 @@ export const Infinite = () => {
     </NotificationProvider>
   );
 };
+
+// Export the specific story variants
+export const Infinite = () => <One2ManyStory paginated={false} />;
+export const Paginated = () => <One2ManyStory paginated={true} />;

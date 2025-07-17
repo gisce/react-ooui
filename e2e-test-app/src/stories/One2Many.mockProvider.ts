@@ -1819,3 +1819,124 @@ export function getMockProvider(): MockConnectionProvider {
 
 // Export a simple instance for direct use in ActionViewProvider
 export const mockConnectionProvider = new MockConnectionProvider();
+
+// Paginated mock form view - use infinite: '0' to force paginated mode
+const mockPaginatedFormView = {
+  ...mockFormView,
+  arch: `<?xml version="1.0"?>
+    <form string="Sales Order">
+        <field name="order_line"
+        widget_props="{'infinite': '0'}"
+        context="{'default_order_id': active_id}"/>
+    </form>`,
+  fields: {
+    ...mockFormView.fields,
+    order_line: {
+      ...mockFormView.fields.order_line,
+      infinite: false, // Explicitly set to false for paginated mode
+    },
+  },
+};
+
+class PaginatedMockConnectionProvider extends MockConnectionProvider {
+  async fieldsViewGet({ model, viewId, viewType, context }: any) {
+    console.log("🔍 [PAGINATED] fieldsViewGet called:", {
+      model,
+      viewId,
+      viewType,
+      context,
+    });
+
+    if (model === "sale.order" && viewType === "form") {
+      console.log("🔍 [PAGINATED] Returning paginated form view");
+      console.log("🔍 [PAGINATED] Form view arch:", mockPaginatedFormView.arch);
+      return mockPaginatedFormView;
+    }
+
+    // For other views, use the parent class method
+    return super.fieldsViewGet({ model, viewId, viewType, context });
+  }
+
+  async getView({ model, type, context }: any) {
+    console.log("[PAGINATED] getView called:", { model, type, context });
+
+    if (model === "sale.order" && type === "form") {
+      console.log("[PAGINATED] Returning paginated form view:", mockPaginatedFormView);
+      return mockPaginatedFormView;
+    }
+
+    // For other views, use the parent class method
+    return super.getView({ model, type, context });
+  }
+}
+
+let paginatedMockProviderInstance: PaginatedMockConnectionProvider | null = null;
+
+export function initializePaginatedMockProvider() {
+  const provider = new PaginatedMockConnectionProvider();
+
+  // Wrap in a Proxy to catch any missing method calls (same as infinite version)
+  paginatedMockProviderInstance = new Proxy(provider, {
+    get(target, prop, receiver) {
+      const value = Reflect.get(target, prop, receiver);
+
+      // Return the value directly for existing methods
+      if (value !== undefined) {
+        return value;
+      }
+
+      if (
+        value === undefined &&
+        typeof prop === "string" &&
+        prop !== "constructor"
+      ) {
+        console.log("🚨 [PAGINATED] Missing method called:", prop);
+        // Return a function that logs and returns a default value
+        return function (...args: any[]) {
+          console.log("🚨 [PAGINATED] Missing method", prop, "called with args:", args);
+
+          // Handle specific missing methods (same as infinite version)
+          if (prop === "readUserViewPrefs") {
+            return target.readUserViewPrefs.bind(target);
+          }
+          if (prop === "saveUserViewPrefs") {
+            return target.saveUserViewPrefs.bind(target);
+          }
+          if (prop === "readEvalUiObjects") {
+            return target.readEvalUiObjects.bind(target);
+          }
+          if (prop === "searchForTree") {
+            return target.searchForTree.bind(target);
+          }
+          if (prop === "searchRead" || prop === "search_read") {
+            return target.search_read.bind(target);
+          }
+          if (prop === "searchAllIds") {
+            return target.searchAllIds.bind(target);
+          }
+          if (prop === "readAggregates") {
+            return target.readAggregates.bind(target);
+          }
+          if (prop === "processSearchResults") {
+            return target.processSearchResults.bind(target);
+          }
+          if (prop === "readObjects") {
+            return target.readObjects.bind(target);
+          }
+
+          return {
+            read: true,
+            write: true,
+            create: true,
+            unlink: true,
+          };
+        };
+      }
+      return value;
+    },
+  });
+
+  // Set this as the global provider for the paginated story
+  ConnectionProvider.init(paginatedMockProviderInstance as ConnectionProviderType);
+  return paginatedMockProviderInstance;
+}

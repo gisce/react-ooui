@@ -8,6 +8,7 @@ export const E2E_TEST_APP_CONFIG = {
     },
     ONE2MANY: {
       INFINITE: "one2many-infinite",
+      PAGINATED: "one2many-paginated",
     },
   },
 } as const;
