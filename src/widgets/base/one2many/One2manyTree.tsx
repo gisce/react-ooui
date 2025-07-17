@@ -476,7 +476,6 @@ export const One2manyTree = ({
 
   return (
     <InfiniteTable
-      debug={true}
       ref={tableRef}
       height={height || DEFAULT_HEIGHT}
       columns={safeColumns}

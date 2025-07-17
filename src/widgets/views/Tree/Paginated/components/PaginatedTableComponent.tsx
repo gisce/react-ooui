@@ -96,7 +96,6 @@ export const PaginatedTableComponent = memo(
 
     return (
       <PaginatedTable
-        debug={true}
         ref={tableRef}
         strings={strings}
         isLoading={isLoading}
