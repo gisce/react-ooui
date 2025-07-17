@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { 
-  Form, 
-  ConfigContextProvider,
-  ConnectionProvider
-} from "@gisce/react-ooui";
+import { Form, ConfigContextProvider } from "@gisce/react-ooui";
 import { NotificationProvider } from "@gisce/react-formiga-components";
 import { initializeMockProvider } from "./One2Many.mockProvider";
 
@@ -16,7 +12,7 @@ export const Infinite = () => {
     const provider = initializeMockProvider();
     setMockProviderReady(true);
     console.log("Mock provider initialized successfully");
-    
+
     return () => {
       // Cleanup if needed
       console.log("Cleaning up mock provider");
@@ -32,7 +28,12 @@ export const Infinite = () => {
       <ConfigContextProvider
         locale="en_US"
         erpFeatures={{}}
-        userFeatures={{ features: {}, canWriteFeatureFlags: false }}
+        userFeatures={{
+          features: {
+            "widget.one2many.enable_new_table": true,
+          },
+          canWriteFeatureFlags: false,
+        }}
         globalValues={{}}
         rootContext={{}}
         devMode={false}

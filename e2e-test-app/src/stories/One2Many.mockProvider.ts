@@ -1,7 +1,6 @@
 import { ConnectionProvider, ConnectionProviderType } from "@gisce/react-ooui";
 import {
   mockFormView,
-  mockSimpleFormView,
   mockOne2ManyTreeView,
   mockParentRecord,
   mockPartners,
