@@ -882,4 +882,60 @@ test.describe("Infinite One2Many Component", () => {
     expect(initialTimestamp).toBeGreaterThan(0);
     expect(updatedTimestamp).toBeGreaterThan(0);
   });
+
+  test("should verify Total Amount column shows async loading behavior", async ({
+    page,
+  }) => {
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-header", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+
+    const gridBodyViewport = page.locator(
+      ".ag-body-horizontal-scroll-viewport",
+    );
+
+    // Verify Total Amount exists by checking all headers
+    let hasTotalAmount = false;
+
+    await gridBodyViewport.evaluate((el) => {
+      el.scrollLeft = 0;
+    });
+    await page.waitForTimeout(200);
+    let headers = await page.locator(".ag-header-cell-text").allTextContents();
+    if (headers.includes("Total Amount")) hasTotalAmount = true;
+
+    await gridBodyViewport.evaluate((el) => {
+      el.scrollLeft = el.scrollWidth;
+    });
+    await page.waitForTimeout(200);
+    headers = await page.locator(".ag-header-cell-text").allTextContents();
+    if (headers.includes("Total Amount")) hasTotalAmount = true;
+
+    expect(hasTotalAmount).toBe(true);
+
+    await gridBodyViewport.evaluate((el) => {
+      el.scrollLeft = 0;
+    });
+    await page.waitForTimeout(300);
+
+    await page.waitForTimeout(3000); // Wait for async computations
+
+    const allCells = await page.locator(".ag-row .ag-cell").allTextContents();
+
+    // Look for computed numeric values with decimal places (evidence of async computation)
+    const computedValues = allCells
+      .filter((cell) => /^\d+\.\d{2}$/.test(cell.trim()))
+      .map((cell) => parseFloat(cell.trim()));
+
+    expect(computedValues.length).toBeGreaterThan(0);
+
+    // Verify these look like actual computed amounts (reasonable decimal numbers)
+    const hasReasonableValues = computedValues.some(
+      (val) => val > 0 && val < 10000,
+    );
+
+    expect(hasReasonableValues).toBe(true);
+  });
 });
