@@ -13,45 +13,20 @@ class MockConnectionProvider implements ConnectionProvider {
   private orderLineData: any[] = [];
 
   async fieldsViewGet({ model, viewId, viewType, context }: any) {
-    console.log("🔍 fieldsViewGet called:", {
-      model,
-      viewId,
-      viewType,
-      context,
-    });
-
     if (model === "sale.order" && viewType === "form") {
-      console.log("🔍 Returning form view");
-      console.log("🔍 Form view arch:", mockFormView.arch);
-      console.log(
-        "🔍 Form view fields:",
-        JSON.stringify(mockFormView.fields, null, 2),
-      );
       return mockFormView;
     }
 
     if (model === "sale.order.line" && viewType === "tree") {
-      console.log("🔍 Returning tree view for One2Many");
-      console.log("🔍 Tree view arch:", mockOne2ManyTreeView.arch);
-      console.log(
-        "🔍 Tree view fields:",
-        Object.keys(mockOne2ManyTreeView.fields),
-      );
-      console.log(
-        "🔍 Full tree view:",
-        JSON.stringify(mockOne2ManyTreeView, null, 2),
-      );
       return mockOne2ManyTreeView;
     }
 
     // Handle specific view ID requests
     if (viewId === 1002 && model === "sale.order.line") {
-      console.log("🔍 Returning tree view by ID 1002");
       return mockOne2ManyTreeView;
     }
 
     if (model === "sale.order.line" && viewType === "form") {
-      console.log("🔍 Returning order line form view");
       // Return a simple form view for order lines
       return {
         view_id: 1003,
@@ -70,7 +45,6 @@ class MockConnectionProvider implements ConnectionProvider {
       };
     }
 
-    console.error(`View not found for model: ${model}, type: ${viewType}`);
     throw new Error(`View not found for model: ${model}, type: ${viewType}`);
   }
 
@@ -81,38 +55,16 @@ class MockConnectionProvider implements ConnectionProvider {
     fieldsToRetrieve?: string[];
     context?: any;
   }) => {
-    console.log("🔍 readObjects called with params:", params);
-    console.log(
-      "🔍 this.orderLineData at start:",
-      this.orderLineData ? this.orderLineData.length : "undefined",
-    );
-    console.log("🔍 this context:", this);
     const { ids, fieldsToRetrieve } = params;
 
     if (params.model === "sale.order.line") {
-      console.log(
-        "🔍 readObjects for sale.order.line with fieldsToRetrieve:",
-        fieldsToRetrieve,
-      );
-
       if (!ids || !fieldsToRetrieve) {
         return this.read(params);
       }
 
       // Ensure orderLineData is initialized
       if (!this.orderLineData || this.orderLineData.length === 0) {
-        console.log("🔍 Initializing orderLineData from mockParentRecord");
-        console.log(
-          "🔍 mockParentRecord.order_line available:",
-          mockParentRecord.order_line
-            ? mockParentRecord.order_line.length
-            : "undefined",
-        );
         this.orderLineData = mockParentRecord.order_line;
-        console.log(
-          "🔍 this.orderLineData after re-initialization:",
-          this.orderLineData ? this.orderLineData.length : "undefined",
-        );
       }
 
       // Find the records that match the requested IDs
@@ -166,17 +118,10 @@ class MockConnectionProvider implements ConnectionProvider {
   };
 
   async read({ model, ids, fields }: any) {
-    console.log("read called:", { model, ids, fields });
-
     try {
       if (model === "sale.order" && ids.includes(1)) {
         // Calculate totals from order lines
         const lines = this.orderLineData || [];
-        console.log(
-          "📊 Calculating function fields for",
-          lines.length,
-          "order lines",
-        );
 
         const subtotals = lines.map((line) => this.calculateSubtotal(line));
         const amount_untaxed = subtotals.reduce(
@@ -227,50 +172,19 @@ class MockConnectionProvider implements ConnectionProvider {
           },
         ];
 
-        console.log(
-          "📋 Order line structured value being returned:",
-          one2manyValue.items.length,
-          "records",
-        );
-        console.log(
-          "📋 All item IDs:",
-          one2manyValue.items.map((item) => item.id),
-        );
-        console.log(
-          "📋 First few items with treeValues:",
-          JSON.stringify(one2manyValue.items.slice(0, 2), null, 2),
-        );
-        console.log("📋 Sample line data:", JSON.stringify(lines[0], null, 2));
-
-        console.log(
-          "Returning sales order data:",
-          JSON.stringify(result, null, 2),
-        );
         return result;
       }
     } catch (error) {
-      console.error("Error in read method:", error);
       throw error;
     }
 
     if (model === "sale.order.line") {
-      console.log("🔍 Reading order lines with IDs:", ids);
-
       // Ensure orderLineData is initialized
       if (!this.orderLineData || this.orderLineData.length === 0) {
-        console.log(
-          "🔍 Initializing orderLineData from mockParentRecord in read",
-        );
         this.orderLineData = mockParentRecord.order_line;
       }
 
       const lines = this.orderLineData.filter((line) => ids.includes(line.id));
-      console.log(
-        "🔍 Found",
-        lines.length,
-        "order lines:",
-        JSON.stringify(lines.slice(0, 2), null, 2),
-      );
       return lines;
     }
 
@@ -294,24 +208,10 @@ class MockConnectionProvider implements ConnectionProvider {
     order,
     context,
   }: any) {
-    console.log("🔍🔍🔍 searchForTree called:", {
-      model,
-      domain,
-      fields,
-      limit,
-      offset,
-      order,
-      context,
-    });
-    console.log("🔍🔍🔍 THIS IS THE CALL WE'VE BEEN WAITING FOR!");
-
     try {
       if (model === "sale.order.line") {
         // Ensure orderLineData is initialized
         if (!this.orderLineData || this.orderLineData.length === 0) {
-          console.log(
-            "🔍 Initializing orderLineData from mockParentRecord in searchForTree",
-          );
           this.orderLineData = mockParentRecord.order_line;
         }
 
@@ -320,8 +220,6 @@ class MockConnectionProvider implements ConnectionProvider {
 
         // Apply domain filters if any
         if (domain && domain.length > 0) {
-          console.log("🔍 Applying domain filters:", JSON.stringify(domain));
-
           // Handle different domain formats
           const flatDomain = domain.flat(Infinity);
 
@@ -331,12 +229,10 @@ class MockConnectionProvider implements ConnectionProvider {
             const value = flatDomain[i + 2];
 
             if (field === "id" && operator === "in" && Array.isArray(value)) {
-              console.log("🔍 Filtering by IDs:", value);
               filteredLines = filteredLines.filter((line) =>
                 value.includes(line.id),
               );
             } else if (field === "order_id" && operator === "=") {
-              console.log("🔍 Filtering by order_id:", value);
               filteredLines = filteredLines.filter((line) => {
                 const lineOrderId = Array.isArray(line.order_id)
                   ? line.order_id[0]
@@ -345,16 +241,9 @@ class MockConnectionProvider implements ConnectionProvider {
               });
             }
           }
-        } else {
-          console.log("🔍 No domain filters provided, returning all lines");
         }
 
         // Calculate function fields and ensure all fields are properly formatted
-        console.log(
-          "🔍 Calculating function fields for",
-          filteredLines.length,
-          "order lines",
-        );
 
         const processedLines = filteredLines.map((line) => {
           const processed = {
@@ -392,16 +281,6 @@ class MockConnectionProvider implements ConnectionProvider {
         // Apply pagination for infinite scroll
         const paginatedLines = finalLines.slice(offset, offset + limit);
 
-        console.log(
-          `Returning ${paginatedLines.length} order lines (${offset}-${
-            offset + limit
-          } of ${finalLines.length})`,
-        );
-        console.log(
-          "Sample paginated line:",
-          JSON.stringify(paginatedLines[0], null, 2),
-        );
-
         return {
           items: paginatedLines,
           totalItems: () => finalLines.length,
@@ -413,7 +292,6 @@ class MockConnectionProvider implements ConnectionProvider {
         totalItems: () => 0,
       };
     } catch (error) {
-      console.error("Error in searchForTree:", error);
       return {
         items: [],
         totalItems: () => 0,
@@ -431,26 +309,9 @@ class MockConnectionProvider implements ConnectionProvider {
     params,
     fieldsToRetrieve,
   }: any) {
-    console.log("🔍 search called with params:", {
-      model,
-      domain,
-      offset,
-      limit,
-      order,
-      params,
-      fieldsToRetrieve,
-    });
-
     if (model === "sale.order.line") {
-      console.log(
-        "🔍 Search called for sale.order.line - returning IDs directly",
-      );
-
       // Ensure orderLineData is initialized
       if (!this.orderLineData || this.orderLineData.length === 0) {
-        console.log(
-          "🔍 Initializing orderLineData from mockParentRecord in search",
-        );
         this.orderLineData = mockParentRecord.order_line;
       }
 
@@ -461,11 +322,9 @@ class MockConnectionProvider implements ConnectionProvider {
           : line.order_id;
         return lineOrderId === 1; // Filter for order ID 1
       });
-      console.log("🔍 Found", filteredLines.length, "lines for order 1");
 
       // Force a read call to demonstrate the flow
       setTimeout(async () => {
-        console.log("🔍 FORCING READ CALL after search");
         await this.read({
           model: "sale.order.line",
           ids: filteredLines.map((line) => line.id),
@@ -497,7 +356,6 @@ class MockConnectionProvider implements ConnectionProvider {
   }
 
   async nameGet({ model, ids }: any) {
-    console.log("nameGet called:", { model, ids });
 
     if (model === "res.partner") {
       return mockPartners
@@ -515,7 +373,6 @@ class MockConnectionProvider implements ConnectionProvider {
   }
 
   async nameSearch({ model, name, args, limit }: any) {
-    console.log("nameSearch called:", { model, name, args, limit });
 
     if (model === "res.partner") {
       const filtered = mockPartners.filter((p) =>
@@ -535,14 +392,9 @@ class MockConnectionProvider implements ConnectionProvider {
   }
 
   async create({ model, values }: any) {
-    console.log("create called:", { model, values });
-
     if (model === "sale.order.line") {
       // Ensure orderLineData is initialized
       if (!this.orderLineData || this.orderLineData.length === 0) {
-        console.log(
-          "🔍 Initializing orderLineData from mockParentRecord in create",
-        );
         this.orderLineData = mockParentRecord.order_line;
       }
 
@@ -569,14 +421,9 @@ class MockConnectionProvider implements ConnectionProvider {
   }
 
   async write({ model, ids, values }: any) {
-    console.log("write called:", { model, ids, values });
-
     if (model === "sale.order.line") {
       // Ensure orderLineData is initialized
       if (!this.orderLineData || this.orderLineData.length === 0) {
-        console.log(
-          "🔍 Initializing orderLineData from mockParentRecord in write",
-        );
         this.orderLineData = mockParentRecord.order_line;
       }
 
@@ -605,14 +452,9 @@ class MockConnectionProvider implements ConnectionProvider {
   }
 
   async unlink({ model, ids }: any) {
-    console.log("unlink called:", { model, ids });
-
     if (model === "sale.order.line") {
       // Ensure orderLineData is initialized
       if (!this.orderLineData || this.orderLineData.length === 0) {
-        console.log(
-          "🔍 Initializing orderLineData from mockParentRecord in unlink",
-        );
         this.orderLineData = mockParentRecord.order_line;
       }
 
@@ -677,12 +519,6 @@ class MockConnectionProvider implements ConnectionProvider {
     toolbar,
     submenu,
   }: any) {
-    console.log("fields_view_get called:", {
-      model,
-      view_id,
-      view_type,
-      context,
-    });
     return this.fieldsViewGet({
       model,
       viewId: view_id,
@@ -693,12 +529,9 @@ class MockConnectionProvider implements ConnectionProvider {
 
   // Add load_views method that might be called by One2Many
   async load_views({ model, views, context }: any) {
-    console.log("🔍 load_views called:", { model, views, context });
-
     const result: any = {};
 
     for (const [view_id, view_type] of views) {
-      console.log(`🔍 Loading view: ${view_type} with ID: ${view_id}`);
       try {
         const view = await this.fieldsViewGet({
           model,
@@ -708,10 +541,7 @@ class MockConnectionProvider implements ConnectionProvider {
         });
         result[view_type] = view;
       } catch (error) {
-        console.error(
-          `Failed to load view ${view_type} for model ${model}:`,
-          error,
-        );
+        // silently continue
       }
     }
 
@@ -720,20 +550,15 @@ class MockConnectionProvider implements ConnectionProvider {
 
   // Methods required by FormActionView
   async getView({ model, type, context }: any) {
-    console.log("getView called:", { model, type, context });
-
     if (model === "sale.order" && type === "form") {
-      console.log("Returning form view:", mockFormView);
       return mockFormView;
     }
 
     if (model === "sale.order.line" && type === "tree") {
-      console.log("Returning tree view:", mockOne2ManyTreeView);
       return mockOne2ManyTreeView;
     }
 
     if (model === "sale.order.line" && type === "form") {
-      console.log("Returning order line form view");
       // Return a simple form view for order lines
       return {
         view_id: 1003,
@@ -752,13 +577,10 @@ class MockConnectionProvider implements ConnectionProvider {
       };
     }
 
-    console.log("No view found for:", { model, type });
     throw new Error(`View not found for model: ${model}, type: ${type}`);
   }
 
   async defaultGet({ model, fields, context, extraValues }: any) {
-    console.log("defaultGet called:", { model, fields, context, extraValues });
-
     try {
       if (model === "sale.order") {
         return {
@@ -781,25 +603,15 @@ class MockConnectionProvider implements ConnectionProvider {
 
       return extraValues || {};
     } catch (error) {
-      console.error("Error in defaultGet:", error);
       throw error;
     }
   }
 
   async update({ model, id, values, fields, context }: any) {
-    console.log("update called:", { model, id, values, fields, context });
     return this.write({ model, ids: [id], values });
   }
 
   async executeOnChange({ model, action, ids, payload, fields }: any) {
-    console.log("executeOnChange called:", {
-      model,
-      action,
-      ids,
-      payload,
-      fields,
-    });
-
     // Return empty response - no onchange logic for this mock
     return {
       value: {},
@@ -818,15 +630,6 @@ class MockConnectionProvider implements ConnectionProvider {
     order,
     context,
   }: any) {
-    console.log("🔍🔍🔍 search_read called:", {
-      model,
-      domain,
-      fields,
-      limit,
-      offset,
-      order,
-      context,
-    });
 
     if (model === "sale.order.line") {
       // Use the same logic as searchForTree
@@ -855,15 +658,6 @@ class MockConnectionProvider implements ConnectionProvider {
     order,
     context,
   }: any) {
-    console.log("🔍🔍🔍 searchRead called:", {
-      model,
-      domain,
-      fields,
-      limit,
-      offset,
-      order,
-      context,
-    });
     return this.search_read({
       model,
       domain,
@@ -888,7 +682,6 @@ class MockConnectionProvider implements ConnectionProvider {
 
   // Fix the permission method signature that's causing the TypeError
   getPermissions(model: string) {
-    console.log("🔍 getPermissions (sync) called for model:", model);
     return {
       read: true,
       write: true,
@@ -906,14 +699,9 @@ class MockConnectionProvider implements ConnectionProvider {
     return null;
   }
   async searchCount({ model, domain }: any) {
-    console.log("searchCount called:", { model, domain });
-
     if (model === "sale.order.line") {
       // Ensure orderLineData is initialized
       if (!this.orderLineData || this.orderLineData.length === 0) {
-        console.log(
-          "🔍 Initializing orderLineData from mockParentRecord in searchCount",
-        );
         this.orderLineData = mockParentRecord.order_line;
       }
 
@@ -945,7 +733,6 @@ class MockConnectionProvider implements ConnectionProvider {
     order,
     context,
   }: any) {
-    console.log("readGroup called:", { model, domain, fields, groupby });
 
     if (model === "sale.order.line" && fields.includes("price_subtotal")) {
       // Calculate aggregate for price_subtotal
@@ -1065,25 +852,9 @@ class MockConnectionProvider implements ConnectionProvider {
     domain: any[];
     aggregateFields: any;
   }) => {
-    console.log("🔍🔍🔍🔍🔍 readAggregates called:", {
-      model,
-      domain,
-      aggregateFields,
-    });
-    console.log(
-      "🔍🔍🔍🔍🔍 AGGREGATES METHOD IS BEING CALLED! This should work now!",
-    );
-    console.log(
-      "🔍🔍🔍🔍🔍 this.orderLineData:",
-      this.orderLineData ? this.orderLineData.length : "undefined",
-    );
-
     if (model === "sale.order.line") {
       // Ensure orderLineData is initialized
       if (!this.orderLineData || this.orderLineData.length === 0) {
-        console.log(
-          "🔍 Initializing orderLineData from mockParentRecord in readAggregates",
-        );
         this.orderLineData = mockParentRecord.order_line;
       }
 
@@ -1108,11 +879,6 @@ class MockConnectionProvider implements ConnectionProvider {
         }
       }
 
-      console.log(
-        "🔍🔍🔍 Computing aggregates for",
-        filteredLines.length,
-        "lines",
-      );
 
       const result: any = {};
 
@@ -1167,7 +933,6 @@ class MockConnectionProvider implements ConnectionProvider {
         });
       });
 
-      console.log("🔍🔍🔍 readAggregates result:", result);
       return result;
     }
 
@@ -1177,7 +942,6 @@ class MockConnectionProvider implements ConnectionProvider {
     return true;
   }
   parseConditions = async (params?: any) => {
-    console.log("🔍 parseConditions called with params:", params);
     const { values } = params || {};
 
     // Use the order line data to generate condition results
@@ -1203,7 +967,6 @@ class MockConnectionProvider implements ConnectionProvider {
     context?: any;
     fields?: any;
   }) => {
-    console.log("processSearchResults called with params:", params);
     const { searchIds, fieldsToRetrieve } = params;
 
     if (params.model === "sale.order.line") {
@@ -1220,20 +983,12 @@ class MockConnectionProvider implements ConnectionProvider {
 
       // Ensure orderLineData is initialized
       if (!this.orderLineData || this.orderLineData.length === 0) {
-        console.log(
-          "🔍 Initializing orderLineData from mockParentRecord in processSearchResults",
-        );
         this.orderLineData = mockParentRecord.order_line;
       }
 
       // Find the records that match the requested IDs
       const requestedRecords = this.orderLineData.filter((record) =>
         searchIds.includes(record.id),
-      );
-
-      console.log(
-        "Found requested records:",
-        requestedRecords.map((r) => r.id),
       );
 
       // Generate updated values for function fields and autorefresh fields
@@ -1302,13 +1057,10 @@ class MockConnectionProvider implements ConnectionProvider {
   private userViewPrefs: { [key: string]: any } = {};
 
   async readUserViewPrefs({ key }: { key: string }) {
-    console.log("🔍 readUserViewPrefs called with key:", key);
     const prefs = this.userViewPrefs[key];
     if (!prefs) {
-      console.log("🔍 No preferences found for key:", key);
       return false; // Return false to indicate no stored preferences
     }
-    console.log("🔍 Returning stored preferences:", prefs);
     return prefs;
   }
 
@@ -1319,32 +1071,22 @@ class MockConnectionProvider implements ConnectionProvider {
     key: string;
     preferences: any;
   }) {
-    console.log(
-      "🔍🔍🔍 saveUserViewPrefs called with key:",
-      key,
-      "preferences:",
-      preferences,
-    );
-
     // If preferences is null, undefined, or empty array, clear the stored preferences (RESET)
     if (
       !preferences ||
       (Array.isArray(preferences) && preferences.length === 0)
     ) {
-      console.log("🔍🔍🔍 RESET: Clearing preferences for key:", key);
       delete this.userViewPrefs[key];
       return true;
     }
 
     // Store the preferences
     this.userViewPrefs[key] = preferences;
-    console.log("🔍🔍🔍 Preferences saved for key:", key);
     return true;
   }
 
   // Comprehensive permission methods to fix TypeError: e is not a function
   checkPermission = (model: string) => {
-    console.log("🔍 checkPermission (singular) called for model:", model);
     return {
       read: true,
       write: true,
@@ -1354,7 +1096,6 @@ class MockConnectionProvider implements ConnectionProvider {
   };
 
   checkPermissions = (model: string) => {
-    console.log("🔍 checkPermissions (plural) called for model:", model);
     return {
       read: true,
       write: true,
@@ -1364,7 +1105,6 @@ class MockConnectionProvider implements ConnectionProvider {
   };
 
   permissions = (model: string) => {
-    console.log("🔍 permissions (arrow function) called for model:", model);
     return {
       read: true,
       write: true,
@@ -1377,7 +1117,6 @@ class MockConnectionProvider implements ConnectionProvider {
 
   // Also try bound methods
   async checkPermissionsAsync({ model }: any) {
-    console.log("🔍 checkPermissionsAsync called for model:", model);
     return {
       read: true,
       write: true,
@@ -1387,7 +1126,6 @@ class MockConnectionProvider implements ConnectionProvider {
   }
 
   async getPermissionsAsync({ model }: any) {
-    console.log("🔍 getPermissionsAsync called for model:", model);
     return {
       read: true,
       write: true,
@@ -1398,8 +1136,6 @@ class MockConnectionProvider implements ConnectionProvider {
 
   // Helper function to process data like getTableItems does
   private getTableItems(treeOoui: TreeOoui, results: any[]): any[] {
-    console.log("🔍🔍🔍 getTableItems processing", results.length, "results");
-
     return results.map((item: any, index: number) => {
       try {
         const parsedItem: any = {};
@@ -1408,11 +1144,6 @@ class MockConnectionProvider implements ConnectionProvider {
             parsedItem[key] = item[key];
           } else {
             const widget = treeOoui.findById(key);
-            console.log(
-              `🔍🔍🔍 Processing field ${key}, widget:`,
-              widget?.constructor.name,
-              widget?.type,
-            );
 
             if (widget instanceof Reference) {
               parsedItem[key] = item[key];
@@ -1437,8 +1168,6 @@ class MockConnectionProvider implements ConnectionProvider {
         });
         return parsedItem;
       } catch (error) {
-        console.error(`🚨🚨🚨 Error processing item ${index}:`, error);
-        console.error("🚨🚨🚨 Item data:", item);
         throw error;
       }
     });
@@ -1446,39 +1175,16 @@ class MockConnectionProvider implements ConnectionProvider {
 
   // Add the missing methods that One2manyTree component needs
   async readEvalUiObjects({ model, ids, arch, fields, context, attrs }: any) {
-    console.log("🔍🔍🔍 readEvalUiObjects called (THIS IS THE KEY METHOD!):", {
-      model,
-      ids,
-      arch,
-      fields,
-      context,
-      attrs,
-    });
-    console.log("🔍🔍🔍 Requested IDs:", ids);
-    console.log(
-      "🔍🔍🔍 Available order line IDs:",
-      this.orderLineData.map((l) => l.id),
-    );
-
     try {
       if (model === "sale.order.line") {
         // Ensure orderLineData is initialized
         if (!this.orderLineData || this.orderLineData.length === 0) {
-          console.log(
-            "🔍 Initializing orderLineData from mockParentRecord in readEvalUiObjects",
-          );
           this.orderLineData = mockParentRecord.order_line;
         }
 
         // This is the main method that One2manyTree uses to fetch data
         const lines = this.orderLineData.filter((line) =>
           ids.includes(line.id),
-        );
-        console.log(
-          "🔍🔍🔍 Found",
-          lines.length,
-          "matching lines for IDs:",
-          ids,
         );
 
         // Process lines with proper formatting - ensure ALL fields are present
@@ -1513,45 +1219,12 @@ class MockConnectionProvider implements ConnectionProvider {
           return processed;
         });
 
-        console.log(
-          "🔍🔍🔍 About to create TreeOoui with fields:",
-          Object.keys(fields),
-        );
-        console.log(
-          "🔍🔍🔍 Field definitions:",
-          JSON.stringify(fields, null, 2),
-        );
-        console.log("🔍🔍🔍 About to parse arch:", arch);
-
         // Create TreeOoui instance to process the data correctly
         const treeOoui = new TreeOoui(fields);
         treeOoui.parse(arch);
 
-        console.log("🔍🔍🔍 TreeOoui created successfully, processing data...");
-        console.log(
-          "🔍🔍🔍 TreeOoui columns:",
-          treeOoui.columns.map((col) => ({
-            id: col.id,
-            type: col.type,
-            string: col.string,
-            _sum: col._sum,
-            sum: col.sum,
-            allProps: Object.keys(col),
-          })),
-        );
-
         // Process the data using the same logic as getTableItems
         const tableItems = this.getTableItems(treeOoui, processedLines);
-
-        console.log(
-          "🔍🔍🔍 readEvalUiObjects returning",
-          tableItems.length,
-          "records",
-        );
-        console.log(
-          "🔍🔍🔍 Sample processed record:",
-          JSON.stringify(tableItems[0], null, 2),
-        );
 
         // Return in the format expected by the One2manyTree component
         // First element is the data, second is attributes for UI evaluation
@@ -1575,26 +1248,14 @@ class MockConnectionProvider implements ConnectionProvider {
 
       return [[], {}];
     } catch (error) {
-      console.error("🚨🚨🚨 Error in readEvalUiObjects:", error);
-      console.error("🚨🚨🚨 Stack trace:", error.stack);
       throw error;
     }
   }
 
   async searchAllIds({ model, params, context, order }: any) {
-    console.log("🔍🔍🔍 searchAllIds called:", {
-      model,
-      params,
-      context,
-      order,
-    });
-
     if (model === "sale.order.line") {
       // Ensure orderLineData is initialized
       if (!this.orderLineData || this.orderLineData.length === 0) {
-        console.log(
-          "🔍 Initializing orderLineData from mockParentRecord in searchAllIds",
-        );
         this.orderLineData = mockParentRecord.order_line;
       }
 
@@ -1613,18 +1274,10 @@ class MockConnectionProvider implements ConnectionProvider {
 
       // Apply sorting using the improved sort method
       if (order) {
-        console.log("🔍 Applying sorting with order:", order);
         filteredLines = this.sortResultsAdvanced(filteredLines, order);
       }
 
       const ids = filteredLines.map((line) => line.id);
-      console.log(
-        "🔍 searchAllIds returning",
-        ids.length,
-        "IDs:",
-        ids.slice(0, 10),
-      );
-
       return ids;
     }
 
@@ -1636,8 +1289,6 @@ class MockConnectionProvider implements ConnectionProvider {
     if (!order || !order.trim()) {
       return results;
     }
-
-    console.log("🔍 Sorting results with order:", order);
 
     // Parse order string like "name asc, department desc"
     const orderClauses = order.split(",").map((clause) => clause.trim());
@@ -1722,18 +1373,7 @@ class MockConnectionProvider implements ConnectionProvider {
 
   constructor() {
     // Initialize with mock data
-    console.log("🔍 MockConnectionProvider constructor called");
-    console.log(
-      "🔍 mockParentRecord.order_line:",
-      mockParentRecord.order_line
-        ? mockParentRecord.order_line.length
-        : "undefined",
-    );
     this.orderLineData = mockParentRecord.order_line;
-    console.log(
-      "🔍 this.orderLineData after assignment:",
-      this.orderLineData ? this.orderLineData.length : "undefined",
-    );
   }
 }
 
@@ -1757,10 +1397,8 @@ export function initializeMockProvider() {
         typeof prop === "string" &&
         prop !== "constructor"
       ) {
-        console.log("🚨 Missing method called:", prop);
         // Return a function that logs and returns a default value
         return function (...args: any[]) {
-          console.log("🚨 Missing method", prop, "called with args:", args);
 
           // Handle specific missing methods
           if (prop === "readUserViewPrefs") {
@@ -1840,16 +1478,7 @@ const mockPaginatedFormView = {
 
 class PaginatedMockConnectionProvider extends MockConnectionProvider {
   async fieldsViewGet({ model, viewId, viewType, context }: any) {
-    console.log("🔍 [PAGINATED] fieldsViewGet called:", {
-      model,
-      viewId,
-      viewType,
-      context,
-    });
-
     if (model === "sale.order" && viewType === "form") {
-      console.log("🔍 [PAGINATED] Returning paginated form view");
-      console.log("🔍 [PAGINATED] Form view arch:", mockPaginatedFormView.arch);
       return mockPaginatedFormView;
     }
 
@@ -1858,10 +1487,7 @@ class PaginatedMockConnectionProvider extends MockConnectionProvider {
   }
 
   async getView({ model, type, context }: any) {
-    console.log("[PAGINATED] getView called:", { model, type, context });
-
     if (model === "sale.order" && type === "form") {
-      console.log("[PAGINATED] Returning paginated form view:", mockPaginatedFormView);
       return mockPaginatedFormView;
     }
 
@@ -1890,10 +1516,8 @@ export function initializePaginatedMockProvider() {
         typeof prop === "string" &&
         prop !== "constructor"
       ) {
-        console.log("🚨 [PAGINATED] Missing method called:", prop);
         // Return a function that logs and returns a default value
         return function (...args: any[]) {
-          console.log("🚨 [PAGINATED] Missing method", prop, "called with args:", args);
 
           // Handle specific missing methods (same as infinite version)
           if (prop === "readUserViewPrefs") {

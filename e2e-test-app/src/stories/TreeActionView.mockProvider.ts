@@ -108,11 +108,9 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
   getFields: async () => ({}),
   searchAllIds: async () => mockResults.map((r) => r.id),
   searchCount: async (params: any) => {
-    console.log("searchCount called with params:", params);
     return mockResults.length;
   },
   search: async (params: any) => {
-    console.log("search called with params:", params);
     const { limit = 80, offset = 0, order } = params || {};
 
     // Apply sorting first, then pagination
@@ -120,7 +118,6 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
     return sortedResults.slice(offset, offset + limit);
   },
   searchForTree: async (params: any): Promise<SearchResponse> => {
-    console.log("searchForTree called with params:", params);
     const { limit = 80, offset = 0, onIdsRetrieved, order } = params || {};
 
     // Start with all results and apply sorting first
@@ -144,17 +141,9 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
       ),
     }));
 
-    console.log(
-      "searchForTree returning results with status:",
-      results.map((r) => ({ id: r.id, hasStatus: r.id % 2 === 1 })),
-    );
 
     // Call the onIdsRetrieved callback with the fetched IDs - this is crucial for function fields!
     if (onIdsRetrieved && results.length > 0) {
-      console.log(
-        "Calling onIdsRetrieved with IDs:",
-        results.map((r) => r.id),
-      );
       onIdsRetrieved(results.map((r) => r.id));
     }
 
@@ -182,7 +171,6 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
     fieldsToRetrieve?: string[];
     context?: any;
   }) => {
-    console.log("readObjects called with params:", params);
     const { ids, fieldsToRetrieve } = params;
 
     if (!ids || !fieldsToRetrieve) {
@@ -238,7 +226,6 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
     }),
   ],
   parseConditions: async (params: any) => {
-    console.log("parseConditions called with params:", params);
     const { values } = params || {};
 
     return (values || mockResults).map((result: any) => {
@@ -260,7 +247,6 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
   defaultGet: async () => ({}),
   getActionData: async () => ({}),
   nameSearch: async (params: any) => {
-    console.log("nameSearch called with params:", params);
     return mockResults.map((result) => [result.id, result.name]);
   },
   duplicate: async () => ({}),
@@ -365,7 +351,6 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
     fields?: any;
   }) => {
     await new Promise((resolve) => setTimeout(resolve, 3000));
-    console.log("processSearchResults called with params:", params);
     const { searchIds, fieldsToRetrieve } = params;
 
     if (!searchIds || !fieldsToRetrieve || searchIds.length === 0) {
@@ -377,10 +362,6 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
       searchIds.includes(record.id),
     );
 
-    console.log(
-      "Found requested records:",
-      requestedRecords.map((r) => r.id),
-    );
 
     // Generate updated values for function fields
     const results = requestedRecords.map((record) => {

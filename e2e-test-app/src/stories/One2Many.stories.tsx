@@ -12,14 +12,11 @@ const One2ManyStory: React.FC<One2ManyStoryProps> = ({ paginated = false }) => {
 
   useEffect(() => {
     // Initialize the appropriate mock provider when component mounts
-    console.log(`Initializing ${paginated ? 'paginated' : 'infinite'} mock provider for One2Many story`);
-    const provider = paginated ? initializePaginatedMockProvider() : initializeMockProvider();
+    paginated ? initializePaginatedMockProvider() : initializeMockProvider();
     setMockProviderReady(true);
-    console.log(`${paginated ? 'Paginated' : 'Infinite'} mock provider initialized successfully`);
 
     return () => {
       // Cleanup if needed
-      console.log("Cleaning up mock provider");
     };
   }, [paginated]);
 
