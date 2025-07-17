@@ -54,6 +54,7 @@ import {
 import { CellRenderer } from "./Tree/CellRenderer";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 import { useTableConfiguration } from "@/hooks/useTableConfiguration";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -112,6 +113,26 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     elementRef: containerRef,
     offset: HEIGHT_OFFSET,
   });
+
+  // Network request hooks
+  const [searchCountRequest, cancelSearchCountRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().searchCount,
+  );
+  const [searchForTreeRequest, cancelSearchForTreeRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().searchForTree,
+  );
+  const [searchAllIdsRequest, cancelSearchAllIdsRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().searchAllIds,
+  );
+
+  useEffect(() => {
+    return () => {
+      cancelSearchCountRequest();
+      cancelSearchForTreeRequest();
+      cancelSearchAllIdsRequest();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { treeView, formView, loading } = useFetchTreeViews({
     model,
@@ -284,7 +305,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     setTotalRows(undefined);
     setTotalItemsActionView(0);
     try {
-      const totalItems = await ConnectionProvider.getHandler().searchCount({
+      const totalItems = await searchCountRequest({
         params: nameSearch ? domain : mergedParams,
         model,
         context: parentContext,
@@ -305,6 +326,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     parentContext,
     setTotalItemsActionView,
     showErrorNotification,
+    searchCountRequest,
   ]);
 
   const fetchResults = useDeepCompareCallback(
@@ -360,24 +382,23 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           onHasFunctionFieldsToParseConditions(),
       });
 
-      const { results, attrsEvaluated } =
-        await ConnectionProvider.getHandler().searchForTree({
-          params,
-          limit: endRow - startRow,
-          offset: startRow,
-          model,
-          fields: treeView!.field_parent
-            ? { ...treeView!.fields, [treeView!.field_parent]: {} }
-            : treeView!.fields,
-          context: parentContext,
-          attrs,
-          order,
-          name_search: nameSearch,
-          skipFunctionFields: SHOULD_MAKE_DEFERRED_FUNCTION_READ,
-          onIdsRetrieved: (ids: number[]) => {
-            addRecordsToCheckFunctionFields(ids);
-          },
-        });
+      const { results, attrsEvaluated } = await searchForTreeRequest({
+        params,
+        limit: endRow - startRow,
+        offset: startRow,
+        model,
+        fields: treeView!.field_parent
+          ? { ...treeView!.fields, [treeView!.field_parent]: {} }
+          : treeView!.fields,
+        context: parentContext,
+        attrs,
+        order,
+        name_search: nameSearch,
+        skipFunctionFields: SHOULD_MAKE_DEFERRED_FUNCTION_READ,
+        onIdsRetrieved: (ids: number[]) => {
+          addRecordsToCheckFunctionFields(ids);
+        },
+      });
 
       setSearchQuery?.({
         model,
@@ -436,6 +457,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       onHasFunctionFieldsToParseConditions,
       setNameSearchFetchCompleted,
       updateAttributes,
+      searchForTreeRequest,
     ],
   );
 
@@ -541,14 +563,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         return;
       }
 
-      const allRowsResults = await ConnectionProvider.getHandler().searchAllIds(
-        {
-          params: nameSearch ? domain : mergedParams,
-          model,
-          context: parentContext,
-          totalItems: totalRows,
-        },
-      );
+      const allRowsResults = await searchAllIdsRequest({
+        params: nameSearch ? domain : mergedParams,
+        model,
+        context: parentContext,
+        totalItems: totalRows,
+      });
       changeSelectedRowItems(allRowsResults.map((id: number) => ({ id })));
     };
 
@@ -579,6 +599,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     setSelectedRowItems,
     t,
     totalRows,
+    searchAllIdsRequest,
   ]);
 
   const firstVisibleRowIndex = useCallback(() => {
