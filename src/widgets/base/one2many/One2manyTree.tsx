@@ -157,23 +157,17 @@ export const One2manyTree = ({
   );
 
   // Add enhanced fields support (function fields + auto-refresh)
-  const {
-    isFieldLoading,
-    refreshFunctionFields,
-    clearAutorefreshableFields,
-    addRecordsToCheckFunctionFields,
-    onHasFunctionFieldsToParseConditions,
-    syncExternalRecordUpdates,
-  } = useTreeSharedHooks({
-    model: relation,
-    treeView,
-    tableRef,
-    context,
-    isActive: true, // One2many is always active when rendered
-    treeOoui: ooui,
-    updateAttributes,
-    results: itemsToShow,
-  });
+  const { isFieldLoading, addRecordsToCheckFunctionFields } =
+    useTreeSharedHooks({
+      model: relation,
+      treeView,
+      tableRef,
+      context,
+      isActive: true, // One2many is always active when rendered
+      treeOoui: ooui,
+      updateAttributes,
+      results: itemsToShow,
+    });
 
   // Ensure columns is never undefined and add loading support
   const safeColumns = useMemo(() => {

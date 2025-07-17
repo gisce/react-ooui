@@ -37,6 +37,7 @@ import { NameSearchWarning } from "../NameSearchWarning";
 import { useCallbackRef } from "@/hooks/useCallbackRef";
 import { useConfigContext } from "@/context/ConfigContext";
 import { useExpandableTreeDoubleClick } from "@/hooks/useExpandableTreeDoubleClick";
+import { CellRenderer } from "../CellRenderer";
 
 export const HEIGHT_OFFSET = 10;
 export const EXPANDABLE_HEIGHT_OFFSET = -30;
@@ -151,6 +152,20 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     colorsForResults,
     statusForResults,
   });
+
+  const paginatedColumns = useMemo(() => {
+    return safeColumns.map((column) => ({
+      ...column,
+      render: (value: any, record: any) => (
+        <CellRenderer
+          value={value}
+          record={record}
+          column={column}
+          isFieldLoading={isFieldLoading}
+        />
+      ),
+    }));
+  }, [isFieldLoading, safeColumns]);
 
   const { handleExpandableRowDoubleClick } = useExpandableTreeDoubleClick({
     treeView,
@@ -282,7 +297,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
           <Spin />
         ) : (
           <PaginatedTableComponent
-            columns={safeColumns}
+            columns={paginatedColumns}
             treeOoui={treeOoui!}
             strings={strings}
             isLoading={treeIsLoading || isColumnStateLoading}
