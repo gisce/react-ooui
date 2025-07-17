@@ -17,7 +17,6 @@ import {
   One2manyTreeDataForHash,
   getKey,
 } from "@/helpers/o2m-columnStorageHelper";
-import { useLocale } from "@gisce/react-formiga-components";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 import { StablePaginatedTableComponent } from "@/widgets/views/Tree/Paginated/components/PaginatedTableComponent";
 import { OnRowClickedData } from "@/widgets/views/Tree/Paginated/SearchTreePaginated.types";
@@ -83,7 +82,6 @@ export const One2manyTree = ({
   onGetFirstVisibleRowIndex: onGetFirstVisibleRowIndexProp,
   onSelectionCheckboxClicked,
   dataForHash,
-  aggregates,
   selectedRowKeys = [],
   showPointerCursorInRows = true,
   treeType,
@@ -95,7 +93,6 @@ export const One2manyTree = ({
 
   const prevItemsValue = useRef<One2manyItem[]>();
   const itemsRef = useRef<One2manyItem[]>(items);
-  const { t } = useLocale();
 
   // Shared state for both modes
   const [treeFirstVisibleRow, setTreeFirstVisibleRow] = useState<number>(0);

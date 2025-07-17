@@ -7,11 +7,7 @@ import {
   mergeStrings,
 } from "@gisce/react-formiga-components";
 import { strings } from "@/locales";
-import {
-  UserFeatureKeys,
-  UserFeaturesMap,
-  UserFeaturesState,
-} from "@/models/userFeature";
+import { UserFeatureKeys, UserFeaturesState } from "@/models/userFeature";
 
 type ConfigContextProps = Omit<ConfigContextValues, "treeMaxLimit"> & {
   locale: Locale;

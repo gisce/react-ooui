@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback } from "react";
+import { useContext, useState, useEffect, useCallback } from "react";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 import { Tag as AntdTag, TagProps } from "antd";

@@ -2,7 +2,7 @@ import DashboardActionBar from "@/actionbar/DashboardActionBar";
 import DashboardActionProvider from "@/context/DashboardActionContext";
 import TitleHeader from "@/ui/TitleHeader";
 import Dashboard from "@/widgets/views/Dashboard/Dashboard";
-import React, { useContext, useRef } from "react";
+import { useContext, useRef } from "react";
 import {
   TabManagerContext,
   TabManagerContextType,

@@ -24,7 +24,7 @@ type TimeInputProps = {
 export const TimeInput = (props: TimeInputProps) => {
   const { readOnly } = props.ooui;
 
-  const onChange = (time: Dayjs | null, timestring?: string) => {
+  const onChange = (_time: Dayjs | null, timestring?: string) => {
     if (props.onChange) {
       props.onChange(timestring);
     }

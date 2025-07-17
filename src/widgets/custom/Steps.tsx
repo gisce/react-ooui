@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Steps as AntdSteps } from "antd";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import Field from "@/common/Field";

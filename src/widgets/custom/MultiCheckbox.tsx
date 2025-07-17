@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { MultiCheckbox as MultiCheckboxOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import {

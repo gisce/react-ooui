@@ -1,10 +1,6 @@
 import { useEffect, useRef } from "react";
 
-export function useWhyDidYouRender(
-  componentName: string,
-  props: any,
-  log: boolean = false,
-) {
+export function useWhyDidYouRender(componentName: string, props: any) {
   const previousProps = useRef(props);
 
   useEffect(() => {

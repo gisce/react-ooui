@@ -1,4 +1,3 @@
-import React from "react";
 import ButtonWithTooltip, {
   Props as ButtonWithTooltipProps,
 } from "@/common/ButtonWithTooltip";
