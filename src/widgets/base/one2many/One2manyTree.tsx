@@ -475,9 +475,7 @@ export const One2manyTree = ({
       hasStatusColumn={ooui.status !== null}
       statusComponent={statusComponent}
       onRowStatus={onRowStatus}
-      strings={{
-        resetTableViewLabel: t("resetTableView"),
-      }}
+      strings={strings}
       onChangeTableType={onChangeTreeType}
     />
   );

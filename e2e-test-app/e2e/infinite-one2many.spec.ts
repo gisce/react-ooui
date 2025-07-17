@@ -16,6 +16,7 @@ test.describe("Infinite One2Many Component", () => {
       "Quantity",
       "Unit Price",
       "Discount (%)",
+      "Total Amount",
       "Last Updated",
     ];
 
@@ -288,9 +289,50 @@ test.describe("Infinite One2Many Component", () => {
     expect(hasResetTableView).toBe(true);
   });
 
-  test("Should persist column order after drag and drop", async ({
+  test("should change to paginated view mode when clicking 'Change to paginated' from three dots menu", async ({
     page,
   }) => {
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
+
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+
+    // Find the three dots menu button using the correct aria-label
+    const threeDotsMenu = page.getByRole("button", { name: "More options" });
+    await expect(threeDotsMenu).toBeVisible();
+
+    // Click the three dots menu
+    await threeDotsMenu.click();
+    await page.waitForTimeout(500);
+
+    // Verify "Change to paginated" option is present (now in English after the fix)
+    const menuText = await page.textContent("body");
+    const hasChangeToPaginated = menuText?.includes("Change to paginated");
+    expect(hasChangeToPaginated).toBe(true);
+
+    // Click "Change to paginated" option (now in English after the fix)
+    const changeToPaginatedOption = page.getByText("Change to paginated");
+    await expect(changeToPaginatedOption).toBeVisible();
+    await changeToPaginatedOption.click();
+    
+    // Wait longer for the view mode change to complete
+    await page.waitForTimeout(3000);
+
+    // The most reliable way to check if the view mode changed is to verify 
+    // that the menu now shows "Change to infinite" instead of "Change to paginated"
+    await threeDotsMenu.click();
+    await page.waitForTimeout(500);
+
+    const updatedPageText = await page.textContent("body");
+    
+    // Check for "Change to infinite" (now in English after the fix)
+    const hasChangeToInfinite = updatedPageText?.includes("Change to infinite");
+    
+    // This is the key indicator that the view mode actually changed
+    expect(hasChangeToInfinite).toBe(true);
+  });
+
+  test("Should persist column order after drag and drop", async ({ page }) => {
     await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
 
     // Clear any existing localStorage to start fresh
@@ -518,9 +560,9 @@ test.describe("Infinite One2Many Component", () => {
     expect(pinnedAfterDrag).toContain("Description");
 
     // Unpin by dragging back to the main header area (right side)
-    const pinnedDescriptionHeader = page.locator(
-      ".ag-pinned-left-header .ag-header-cell"
-    ).filter({ hasText: "Description" });
+    const pinnedDescriptionHeader = page
+      .locator(".ag-pinned-left-header .ag-header-cell")
+      .filter({ hasText: "Description" });
     await expect(pinnedDescriptionHeader).toBeVisible();
 
     const pinnedBox = await pinnedDescriptionHeader.boundingBox();
@@ -531,7 +573,10 @@ test.describe("Infinite One2Many Component", () => {
       y: pinnedBox!.y + pinnedBox!.height / 2,
     };
     // Drag to the right side of the grid to unpin
-    const rightArea = { x: rootBox!.x + rootBox!.width - 100, y: unpinCenter.y };
+    const rightArea = {
+      x: rootBox!.x + rootBox!.width - 100,
+      y: unpinCenter.y,
+    };
 
     await page.mouse.move(unpinCenter.x, unpinCenter.y);
     await page.waitForTimeout(200);
@@ -564,8 +609,8 @@ test.describe("Infinite One2Many Component", () => {
     await expect(descriptionHeader).toBeVisible();
 
     // Get initial width of the Description column
-    const initialWidth = await descriptionHeader.evaluate((el) => 
-      el.getBoundingClientRect().width
+    const initialWidth = await descriptionHeader.evaluate(
+      (el) => el.getBoundingClientRect().width,
     );
 
     // Find the resize handle (right edge of the header)
@@ -577,22 +622,30 @@ test.describe("Infinite One2Many Component", () => {
     expect(resizeHandleBox).toBeTruthy();
 
     // Perform resize by dragging the handle to the right
-    await page.mouse.move(resizeHandleBox!.x + resizeHandleBox!.width / 2, resizeHandleBox!.y + resizeHandleBox!.height / 2);
+    await page.mouse.move(
+      resizeHandleBox!.x + resizeHandleBox!.width / 2,
+      resizeHandleBox!.y + resizeHandleBox!.height / 2,
+    );
     await page.mouse.down();
-    await page.mouse.move(resizeHandleBox!.x + 100, resizeHandleBox!.y + resizeHandleBox!.height / 2);
+    await page.mouse.move(
+      resizeHandleBox!.x + 100,
+      resizeHandleBox!.y + resizeHandleBox!.height / 2,
+    );
     await page.mouse.up();
     await page.waitForTimeout(1000);
 
     // Get the new width and verify it increased
-    const newWidth = await descriptionHeader.evaluate((el) => 
-      el.getBoundingClientRect().width
+    const newWidth = await descriptionHeader.evaluate(
+      (el) => el.getBoundingClientRect().width,
     );
 
     expect(newWidth).toBeGreaterThan(initialWidth);
     expect(newWidth - initialWidth).toBeGreaterThan(80); // Should be around 100px wider
   });
 
-  test("should drag, resize and pin columns with localStorage persistence", async ({ page }) => {
+  test("should drag, resize and pin columns with localStorage persistence", async ({
+    page,
+  }) => {
     await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
 
     // Clear localStorage to start fresh
@@ -606,11 +659,13 @@ test.describe("Infinite One2Many Component", () => {
 
     const getColumnOrder = async () => {
       return await page.evaluate(() => {
-        const headers = Array.from(document.querySelectorAll(".ag-header-cell"));
+        const headers = Array.from(
+          document.querySelectorAll(".ag-header-cell"),
+        );
         const headerData = headers
           .map((header) => ({
             text: header.textContent?.trim(),
-            x: header.getBoundingClientRect().x
+            x: header.getBoundingClientRect().x,
           }))
           .filter((item) => item.text && item.text !== "")
           .sort((a, b) => a.x - b.x);
@@ -619,16 +674,20 @@ test.describe("Infinite One2Many Component", () => {
     };
 
     // Step 1: Drag Description column to first position
-    const descriptionHeader = page.getByRole("columnheader", { name: "Description" });
+    const descriptionHeader = page.getByRole("columnheader", {
+      name: "Description",
+    });
     const sequenceHeader = page.getByRole("columnheader", { name: "Sequence" });
-    
+
     await expect(descriptionHeader).toBeVisible();
     await expect(sequenceHeader).toBeVisible();
 
-    const descriptionLabel = page.locator(".ag-header-cell")
+    const descriptionLabel = page
+      .locator(".ag-header-cell")
       .filter({ hasText: "Description" })
       .locator(".ag-header-cell-label");
-    const sequenceLabel = page.locator(".ag-header-cell")
+    const sequenceLabel = page
+      .locator(".ag-header-cell")
       .filter({ hasText: "Sequence" })
       .locator(".ag-header-cell-label");
 
@@ -642,9 +701,15 @@ test.describe("Infinite One2Many Component", () => {
     const resizeHandleBox = await resizeHandle.boundingBox();
     expect(resizeHandleBox).toBeTruthy();
 
-    await page.mouse.move(resizeHandleBox!.x + resizeHandleBox!.width / 2, resizeHandleBox!.y + resizeHandleBox!.height / 2);
+    await page.mouse.move(
+      resizeHandleBox!.x + resizeHandleBox!.width / 2,
+      resizeHandleBox!.y + resizeHandleBox!.height / 2,
+    );
     await page.mouse.down();
-    await page.mouse.move(resizeHandleBox!.x + 100, resizeHandleBox!.y + resizeHandleBox!.height / 2);
+    await page.mouse.move(
+      resizeHandleBox!.x + 100,
+      resizeHandleBox!.y + resizeHandleBox!.height / 2,
+    );
     await page.mouse.up();
     await page.waitForTimeout(2000);
 
@@ -672,13 +737,14 @@ test.describe("Infinite One2Many Component", () => {
     await page.waitForTimeout(2000);
 
     // Verify the column is pinned
-    const pinnedDescriptionHeader = page.locator(".ag-pinned-left-header .ag-header-cell")
+    const pinnedDescriptionHeader = page
+      .locator(".ag-pinned-left-header .ag-header-cell")
       .filter({ hasText: "Description" });
     await expect(pinnedDescriptionHeader).toBeVisible();
 
     // Get final state after all operations
     const finalOrder = await getColumnOrder();
-    
+
     // Reload page to test persistence
     await page.reload();
     await page.waitForSelector(".ag-root", { state: "visible" });
@@ -691,7 +757,8 @@ test.describe("Infinite One2Many Component", () => {
     expect(orderAfterReload).toEqual(finalOrder);
 
     // Verify Description column is still pinned
-    const pinnedAfterReload = page.locator(".ag-pinned-left-header .ag-header-cell")
+    const pinnedAfterReload = page
+      .locator(".ag-pinned-left-header .ag-header-cell")
       .filter({ hasText: "Description" });
     await expect(pinnedAfterReload).toBeVisible();
   });
