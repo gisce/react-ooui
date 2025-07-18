@@ -8,7 +8,9 @@
     "preview": "vite preview",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
-    "test:debug": "playwright test --debug"
+    "test:debug": "playwright test --debug",
+    "test:parallel": "playwright test --workers=5",
+    "test:ci": "playwright test --workers=5 --reporter=github"
   },
   "dependencies": {
     "@gisce/react-ooui": "file:../",

@@ -11,8 +11,8 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  /* Use more workers on CI for faster execution. */
+  workers: process.env.CI ? 5 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: process.env.CI ? "github" : "list",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -28,6 +28,12 @@ export default defineConfig({
 
     /* Run in headless mode */
     headless: true,
+
+    /* Reduce navigation timeout on CI for faster failures */
+    navigationTimeout: process.env.CI ? 30000 : 60000,
+
+    /* Reduce action timeout on CI */
+    actionTimeout: process.env.CI ? 10000 : 20000,
   },
 
   /* Configure projects for major browsers */
@@ -43,7 +49,7 @@ export default defineConfig({
     command: "npm run dev",
     url: "http://localhost:6006",
     reuseExistingServer: !process.env.CI,
-    timeout: 180 * 1000, // Dev server needs more time
+    timeout: process.env.CI ? 120 * 1000 : 180 * 1000, // Shorter timeout on CI
     stdout: "pipe",
     stderr: "pipe",
   },
