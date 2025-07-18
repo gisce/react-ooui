@@ -98,6 +98,7 @@ export const One2manyTree = ({
   const [treeFirstVisibleColumn, setTreeFirstVisibleColumn] = useState<
     string | undefined
   >();
+  const [refreshKey, setRefreshKey] = useState<number>(0);
 
   // Shared sorting state (reuse same pattern as infinite mode)
   const sortStateRef = useRef<any[]>([]);
@@ -329,8 +330,13 @@ export const One2manyTree = ({
 
   const refresh = useCallback(() => {
     clearAttributes();
-    tableRef?.current?.refresh();
-  }, [tableRef, clearAttributes]);
+    if (treeType === "paginated") {
+      // Force a refresh of the table by changing the key, this will trigger a refresh of the table
+      setRefreshKey((prev) => prev + 1);
+    } else {
+      tableRef?.current?.refresh();
+    }
+  }, [clearAttributes, treeType, tableRef]);
 
   // Use useCallbackRef for better stability
   const setTreeFirstVisibleRowStable = useCallbackRef(setTreeFirstVisibleRow);
@@ -433,6 +439,7 @@ export const One2manyTree = ({
   if (treeType === "paginated") {
     return (
       <StablePaginatedTableComponent
+        key={refreshKey}
         tableRef={tableRef as RefObject<PaginatedTableRef>}
         onRowStyle={onRowStyleStable}
         availableHeight={height || DEFAULT_HEIGHT}
