@@ -1,4 +1,4 @@
-import { FormView, TreeView } from "@/types/index";
+import { Column, FormView, TreeView } from "@/types/index";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { PaginatedTableRef } from "@gisce/react-formiga-table";
@@ -39,7 +39,7 @@ export type PaginatedSearchControlsProps = {
 };
 
 export type PaginatedTableContentProps = {
-  columns: any[];
+  columns: Column[];
   treeOoui: TreeOoui;
   strings: Record<string, string>;
   isLoading: boolean;
@@ -51,10 +51,10 @@ export type PaginatedTableContentProps = {
     | undefined;
   updateColumnState: (state: any) => void;
   getColumnState: () => any;
-  setTreeFirstVisibleRow: (index: number) => void;
-  onGetFirstVisibleRowIndex: () => number;
+  setTreeFirstVisibleRow?: (index: number) => void;
+  onGetFirstVisibleRowIndex?: () => number;
   onGetFirstVisibleColumn?: (() => string | undefined) | undefined;
-  setTreeFirstVisibleColumn: ((columnId: string) => void) | undefined;
+  setTreeFirstVisibleColumn?: ((columnId: string) => void) | undefined;
   footerComp: React.ReactNode;
   statusComp: (status: any) => React.ReactNode;
   onRowStatus: (record: any) => any;
@@ -62,10 +62,9 @@ export type PaginatedTableContentProps = {
   headerCheckboxState: CheckboxState;
   onHeaderCheckboxClick: () => void;
   refresh: () => void;
-  actionViewSortState: any;
+  actionViewSortState?: any;
   onSortChange: (state: any) => void;
   tableRef: RefObject<PaginatedTableRef>;
-  isFieldLoading?: (record: any, fieldName: string) => boolean;
   onChangeTreeType?: (type: TreeType) => void;
   onFetchChildrenForRecord?: (item: any) => Promise<any[]>;
   childField?: string;

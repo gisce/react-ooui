@@ -1,7 +1,7 @@
 import ConnectionProvider from "@/ConnectionProvider";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
 import { transformDomainForChildWidget } from "@gisce/ooui";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useState } from "react";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { useDeepCompareEffect } from "use-deep-compare";
 

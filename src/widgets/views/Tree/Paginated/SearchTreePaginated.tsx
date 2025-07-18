@@ -28,7 +28,8 @@ import {
   OnRowClickedData,
   SearchTreePaginatedProps,
 } from "./SearchTreePaginated.types";
-import { useTableConfiguration } from "../../../../hooks/useTableConfiguration";
+import { useTableCore } from "../../../../hooks/useTableCore";
+import { getKey } from "@/helpers/tree-columnStorageHelper";
 import { PaginatedSearchControls } from "./components/PaginatedSearchControls";
 import { PaginatedTableComponent } from "./components/PaginatedTableComponent";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
@@ -36,6 +37,7 @@ import { NameSearchWarning } from "../NameSearchWarning";
 import { useCallbackRef } from "@/hooks/useCallbackRef";
 import { useConfigContext } from "@/context/ConfigContext";
 import { useExpandableTreeDoubleClick } from "@/hooks/useExpandableTreeDoubleClick";
+import { CellRenderer } from "../CellRenderer";
 
 export const HEIGHT_OFFSET = 10;
 export const EXPANDABLE_HEIGHT_OFFSET = -30;
@@ -79,7 +81,27 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     return getTree(treeView);
   }, [treeView]);
 
-  const { columns, strings } = useTableConfiguration(treeOoui, parentContext);
+  const {
+    columns,
+    strings,
+    getColumnState,
+    updateColumnState,
+    isColumnStateLoading,
+    updateAttributes,
+    clearAttributes,
+    colorsForResults,
+    statusForResults,
+  } = useTableCore({
+    treeOoui,
+    parentContext,
+    columnStateKey: treeView
+      ? getKey({
+          treeViewId: treeView.view_id,
+          model,
+        })
+      : undefined,
+    tableRef,
+  });
 
   // Ensure columns is never undefined
   const safeColumns = useMemo(() => columns || [], [columns]);
@@ -107,9 +129,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     selectAllRecords,
     onHeaderCheckboxClick,
     headerCheckboxState,
-    getColumnStateInProgress,
-    getColumnState,
-    updateColumnState,
     currentPage,
     limit,
     order: actionViewSortState,
@@ -133,7 +152,25 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     filterType,
     context: parentContext,
     onChangeTreeType,
+    updateAttributes,
+    clearAttributes,
+    colorsForResults,
+    statusForResults,
   });
+
+  const paginatedColumns = useMemo(() => {
+    return safeColumns.map((column) => ({
+      ...column,
+      render: (value: any, record: any) => (
+        <CellRenderer
+          value={value}
+          record={record}
+          column={column}
+          isFieldLoading={isFieldLoading}
+        />
+      ),
+    }));
+  }, [isFieldLoading, safeColumns]);
 
   const { handleExpandableRowDoubleClick } = useExpandableTreeDoubleClick({
     treeView,
@@ -265,10 +302,10 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
           <Spin />
         ) : (
           <PaginatedTableComponent
-            columns={safeColumns}
+            columns={paginatedColumns}
             treeOoui={treeOoui!}
             strings={strings}
-            isLoading={treeIsLoading || getColumnStateInProgress}
+            isLoading={treeIsLoading || isColumnStateLoading}
             availableHeight={availableHeight}
             results={results}
             handleRowDoubleClick={handleRowDoubleClick}
@@ -289,7 +326,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             actionViewSortState={actionViewSortState}
             onSortChange={onSortChange}
             tableRef={tableRef}
-            isFieldLoading={isFieldLoading}
             onChangeTreeType={!isExpandable ? onChangeTreeType : undefined}
             onFetchChildrenForRecord={
               treeView?.isExpandable ? fetchChildrenForRecord : undefined

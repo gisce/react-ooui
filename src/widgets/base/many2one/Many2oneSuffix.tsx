@@ -139,16 +139,7 @@ export const Many2oneSuffix = (props: Props) => {
       console.error("Error in Many2oneSuffix fetchData:", error);
       return undefined;
     }
-  }, [
-    context,
-    getView,
-    getToolbar,
-    getFields,
-    id,
-    model,
-    readObjects,
-    getToolbarEnabled,
-  ]);
+  }, [context, getView, getToolbar, id, model, readObjects, getToolbarEnabled]);
 
   // If there is no id (no record attached to the Many2one), we don't show the suffix
   if (!id) {

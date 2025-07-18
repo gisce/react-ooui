@@ -1,12 +1,13 @@
+import React, { useMemo, useState } from "react";
 import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { Tree as TreeOoui } from "@gisce/ooui";
-import { useState } from "react";
 import {
   useDeepCompareEffect,
   useDeepCompareCallback,
   useDeepCompareMemo,
 } from "use-deep-compare";
+import { AggregatesFooter } from "./AggregatesFooter";
 
 const OPERATION_KEYS = ["sum", "count", "max", "min"];
 
@@ -150,4 +151,64 @@ export const useTreeAggregates = ({
     Object.keys(fieldsAndOpToRetrieve).length > 0;
 
   return [loading, aggregates, hasAggregates];
+};
+
+// Shared aggregates hook that includes footer component
+export interface UseSharedAggregatesProps {
+  treeOoui: TreeOoui | undefined;
+  model: string;
+  selectedRowKeys?: number[];
+  showEmptyValues?: boolean;
+  customDomain?: any[];
+}
+
+export interface UseSharedAggregatesReturn {
+  footerComponent: React.ReactNode | null;
+  aggregates: TreeAggregates;
+  hasAggregates: boolean;
+  isLoading: boolean;
+}
+
+export const useSharedAggregates = ({
+  treeOoui,
+  model,
+  selectedRowKeys = [],
+  showEmptyValues = true,
+  customDomain,
+}: UseSharedAggregatesProps): UseSharedAggregatesReturn => {
+  // Calculate domain for aggregates
+  const domain = useMemo(() => {
+    if (customDomain) {
+      return customDomain;
+    }
+
+    if (selectedRowKeys.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/require-array-sort-compare
+      return [["id", "in", selectedRowKeys.sort()]];
+    }
+
+    return undefined;
+  }, [selectedRowKeys, customDomain]);
+
+  const [isLoading, aggregates, hasAggregates] = useTreeAggregates({
+    ooui: treeOoui,
+    model,
+    showEmptyValues,
+    domain,
+  });
+
+  // Create footer component
+  const footerComponent = useMemo(() => {
+    if (!hasAggregates) {
+      return null;
+    }
+    return React.createElement(AggregatesFooter, { aggregates, isLoading });
+  }, [aggregates, isLoading, hasAggregates]);
+
+  return {
+    footerComponent,
+    aggregates,
+    hasAggregates,
+    isLoading,
+  };
 };

@@ -57,7 +57,7 @@ export const MultiSelectionInput = (props: SelectionInputProps) => {
 
   function handleChange(changedValues: string[]) {
     const keysForChangedValues = changedValues.map((changedValue) => {
-      const entry = values.find(([key, value]) => changedValue === value);
+      const entry = values.find(([, value]) => changedValue === value);
       return entry && entry[0];
     });
 

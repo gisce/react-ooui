@@ -6,6 +6,10 @@ export const E2E_TEST_APP_CONFIG = {
       INFINITE: "tree-action-view-infinite",
       PAGINATED: "tree-action-view-paginated",
     },
+    ONE2MANY: {
+      INFINITE: "one2many-infinite",
+      PAGINATED: "one2many-paginated",
+    },
   },
 } as const;
 

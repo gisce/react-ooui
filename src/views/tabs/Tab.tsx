@@ -1,4 +1,3 @@
-import React from "react";
 import { CloseOutlined } from "@ant-design/icons";
 import { theme } from "antd";
 const { useToken } = theme;

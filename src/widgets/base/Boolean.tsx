@@ -1,4 +1,3 @@
-import React from "react";
 import { Checkbox as AntCheckbox, theme } from "antd";
 import styled from "styled-components";
 

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Steps as AntdSteps } from "antd";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import Field from "@/common/Field";
@@ -50,7 +50,7 @@ export const StepsInput = (props: StepsInputProps) => {
       status = "error";
     }
   }
-  if (lastStep && current + 1 == values.length) {
+  if (lastStep && current + 1 === values.length) {
     status = "finish";
   }
 
@@ -60,6 +60,7 @@ export const StepsInput = (props: StepsInputProps) => {
         <AntdSteps.Step
           title={val[1]}
           description={idx === current && status === "error" ? error : null}
+          key={val[1]}
         />
       ))}
     </AntdSteps>

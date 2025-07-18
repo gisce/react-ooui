@@ -1,4 +1,4 @@
-import { TreeView, View } from "@/types";
+import { TreeView, View } from "@gisce/react-ooui";
 
 export const mockTreeView: TreeView = {
   view_id: 2,

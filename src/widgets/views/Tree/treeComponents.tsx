@@ -2,7 +2,7 @@ import { ReactElement, useCallback, useEffect, useMemo, useState } from "react";
 import { Checkbox, Spin, ColorPicker, Tooltip } from "antd";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../../base/ProgressBar";
-import { One2manyValue } from "../../base/one2many/One2manyInput";
+import { One2manyValue } from "../../base/one2many/One2manyInputLegacy";
 import { Interweave } from "interweave";
 import { Many2oneTree } from "../../base/many2one/Many2oneTree";
 import { ReferenceTree } from "../../base/ReferenceTree";
@@ -191,9 +191,7 @@ export const ImageComponent = ({ value }: { value: string }): ReactElement => {
 
 export const ColorPickerComponent = ({
   value,
-  key,
   ooui,
-  context,
 }: {
   value: any;
   key: string;
@@ -209,9 +207,7 @@ export const ColorPickerComponent = ({
 
 export const TagComponent = ({
   value,
-  key,
   ooui,
-  context,
 }: {
   value: any;
   key: string;
@@ -223,9 +219,7 @@ export const TagComponent = ({
 
 export const SelectionComponent = ({
   value,
-  key,
   ooui,
-  context,
 }: {
   value: any;
   key: string;
@@ -244,7 +238,6 @@ export const SelectionComponent = ({
 
 export const ReferenceComponent = ({
   value,
-  key,
   ooui,
   context,
 }: {
@@ -267,9 +260,7 @@ export const ReferenceComponent = ({
 
 export const AvatarComponent = ({
   value,
-  key,
   ooui,
-  context,
 }: {
   value: any;
   key: string;
@@ -281,7 +272,6 @@ export const AvatarComponent = ({
 
 export const TagsComponent = ({
   value,
-  key,
   ooui,
   context,
 }: {

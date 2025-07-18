@@ -1,6 +1,5 @@
 import Field from "@/common/Field";
 import ReactMarkdown from "react-markdown";
-import React from "react";
 import { WidgetProps } from "@/types";
 import remarkGfm from "remark-gfm";
 

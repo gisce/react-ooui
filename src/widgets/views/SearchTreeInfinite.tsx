@@ -13,7 +13,7 @@ import {
 import { FormView, TreeView } from "@/types/index";
 
 import { useFetchTreeViews } from "@/hooks/useFetchTreeViews";
-import { Badge, Spin } from "antd";
+import { Spin } from "antd";
 import {
   getOrderFromSortFields,
   getSortedFieldsFromState,
@@ -29,12 +29,10 @@ import {
 import ConnectionProvider from "@/ConnectionProvider";
 import { useAvailableHeight } from "@/hooks/useAvailableHeight";
 import { mergeSearchFields } from "@/helpers/formHelper";
-import { useTreeColumnStorageFetch } from "../base/one2many/useTreeColumnStorageFetch";
 import { getKey } from "@/helpers/tree-columnStorageHelper";
-import { useTreeAggregates } from "../base/one2many/useTreeAggregates";
-import { AggregatesFooter } from "../base/one2many/AggregatesFooter";
-import { useLocale } from "@gisce/react-formiga-components";
-import showConfirmDialog from "@/ui/ConfirmDialog";
+import { useTableCore } from "@/hooks/useTableCore";
+import { useSharedAggregates } from "../base/one2many/useTreeAggregates";
+import { useInfiniteRowSelection } from "@/hooks/useInfiniteRowSelection";
 import { SideSearchFilter } from "./searchFilter/SideSearchFilter";
 import { mergeParams } from "@/helpers/searchHelper";
 import deepEqual from "deep-equal";
@@ -42,18 +40,13 @@ import { useErrorNotification } from "@/hooks/useErrorNotification";
 import SearchFilter from "./searchFilter/SearchFilter";
 import { useSearchTreeState } from "@/hooks/useSearchTreeState";
 import { Tree as TreeOoui } from "@gisce/ooui";
-import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
-import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
+import { useTreeSharedHooks } from "@/hooks/useTreeSharedHooks";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { NameSearchWarning } from "./Tree/NameSearchWarning";
 import { SearchTreeHeader } from "./SearchTreeHeader";
-import {
-  getAttributesConditionsFromOoui,
-  useTreeAttributesState,
-} from "@/hooks/useTreeAttributesState";
+import { getAttributesConditionsFromOoui } from "@/hooks/useTreeAttributesState";
 import { CellRenderer } from "./Tree/CellRenderer";
 import { TreeType } from "@/views/actionViews/TreeActionView";
-import { useTableConfiguration } from "@/hooks/useTableConfiguration";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 
 export const HEIGHT_OFFSET = 10;
@@ -106,8 +99,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const [nameSearchFetchCompleted, setNameSearchFetchCompleted] =
     useState<boolean>(false);
 
-  const { t } = useLocale();
-
   const containerRef = useRef<HTMLDivElement>(null);
   const availableHeight = useAvailableHeight({
     elementRef: containerRef,
@@ -115,21 +106,22 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   });
 
   // Network request hooks
-  const [searchCountRequest, cancelSearchCountRequest] = useNetworkRequest(
+  const [searchCount, cancelSearchCount] = useNetworkRequest(
     ConnectionProvider.getHandler().searchCount,
   );
-  const [searchForTreeRequest, cancelSearchForTreeRequest] = useNetworkRequest(
+  const [searchForTree, cancelSearchForTree] = useNetworkRequest(
     ConnectionProvider.getHandler().searchForTree,
   );
-  const [searchAllIdsRequest, cancelSearchAllIdsRequest] = useNetworkRequest(
+  const [searchAllIds, cancelSearchAllIds] = useNetworkRequest(
     ConnectionProvider.getHandler().searchAllIds,
   );
 
+  // Cancel all requests on component unmount
   useEffect(() => {
     return () => {
-      cancelSearchCountRequest();
-      cancelSearchForTreeRequest();
-      cancelSearchAllIdsRequest();
+      cancelSearchCount();
+      cancelSearchForTree();
+      cancelSearchAllIds();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -201,22 +193,39 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     return getTree(treeView);
   }, [treeView]);
 
+  // Use shared infinite table functionality - moved before function fields hooks
   const {
+    columns: baseColumns,
+    strings,
     colorsForResults,
     statusForResults,
+    onRowStyle,
+    statusComponent,
+    onRowStatus,
+    getColumnState,
+    updateColumnState,
+    isColumnStateLoading,
     updateAttributes,
     clearAttributes,
-  } = useTreeAttributesState({
+  } = useTableCore({
+    treeOoui,
+    parentContext,
+    columnStateKey: treeView
+      ? getKey({
+          treeViewId: treeView.view_id,
+          model,
+        })
+      : undefined,
     tableRef,
   });
 
   const {
     isFieldLoading,
-    refresh: refreshFunctionFields,
+    refreshFunctionFields,
+    clearAutorefreshableFields,
     addRecordsToCheckFunctionFields,
     onHasFunctionFieldsToParseConditions,
-    syncExternalRecordUpdates,
-  } = useTreeFunctionFieldsRead({
+  } = useTreeSharedHooks({
     model,
     treeView,
     tableRef,
@@ -227,26 +236,16 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     results: actionViewResults,
   });
 
-  const { clear: clearAutorefreshableFields } = useAutorefreshableTreeFields({
-    model,
-    tableRef,
-    autorefreshableFields: treeOoui?.autorefreshableFields,
-    treeView,
-    context: parentContext,
-    isActive,
-    treeOoui,
-    updateAttributes,
-    results: actionViewResults,
-    onRecordsUpdated: syncExternalRecordUpdates,
-  });
-
-  const { columns, strings } = useTableConfiguration(treeOoui, parentContext);
+  // Calculate selectedRowKeys for shared hooks
+  const selectedRowKeys = useMemo(() => {
+    return selectedRowItems?.map((item) => item.id) || [];
+  }, [selectedRowItems]);
 
   const columnsWithLoading = useMemo(() => {
-    if (!columns) {
+    if (!baseColumns) {
       return;
     }
-    return columns.map((column: any) => ({
+    return baseColumns.map((column: any) => ({
       ...column,
       render: (value: any, record: any) => (
         <CellRenderer
@@ -257,23 +256,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         />
       ),
     }));
-  }, [columns, isFieldLoading]);
-
-  const columnStateKey = useMemo(() => {
-    if (loading) {
-      return undefined;
-    }
-    return getKey({
-      treeViewId: treeView?.view_id,
-      model,
-    });
-  }, [model, treeView?.view_id, loading]);
-
-  const {
-    loading: getColumnStateInProgress,
-    getColumnState,
-    updateColumnState,
-  } = useTreeColumnStorageFetch({ key: columnStateKey });
+  }, [baseColumns, isFieldLoading]);
 
   const mergedParams = useMemo(
     () => mergeParams(searchParams || [], domain),
@@ -305,7 +288,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     setTotalRows(undefined);
     setTotalItemsActionView(0);
     try {
-      const totalItems = await searchCountRequest({
+      const totalItems = await searchCount({
         params: nameSearch ? domain : mergedParams,
         model,
         context: parentContext,
@@ -324,9 +307,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     model,
     nameSearch,
     parentContext,
+    searchCount,
     setTotalItemsActionView,
     showErrorNotification,
-    searchCountRequest,
   ]);
 
   const fetchResults = useDeepCompareCallback(
@@ -382,14 +365,14 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           onHasFunctionFieldsToParseConditions(),
       });
 
-      const { results, attrsEvaluated } = await searchForTreeRequest({
+      const { results, attrsEvaluated } = await searchForTree({
         params,
         limit: endRow - startRow,
         offset: startRow,
         model,
-        fields: treeView!.field_parent
-          ? { ...treeView!.fields, [treeView!.field_parent]: {} }
-          : treeView!.fields,
+        fields: treeView?.field_parent
+          ? { ...treeView?.fields, [treeView?.field_parent]: {} }
+          : treeView?.fields,
         context: parentContext,
         attrs,
         order,
@@ -435,47 +418,76 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
       const preparedResults = getTableItems(treeOoui, results);
       updateAttributes(attrsEvaluated, treeOoui);
+
+      // Update shared colors and status refs from attrsEvaluated array
+      if (attrsEvaluated && Array.isArray(attrsEvaluated)) {
+        attrsEvaluated.forEach((attr) => {
+          if (attr.id !== undefined) {
+            if (attr.colors) {
+              colorsForResults.current[attr.id] = attr.colors;
+            }
+            if (attr.status) {
+              statusForResults.current[attr.id] = attr.status;
+            }
+          }
+        });
+      }
+
       lastAssignedResults.current = [...preparedResults];
       return preparedResults;
     },
     [
       actionViewResults,
       actionViewSortState,
+      addRecordsToCheckFunctionFields,
       domain,
       mergedParams,
       model,
       mustUpdateTotal,
       nameSearch,
+      onHasFunctionFieldsToParseConditions,
       parentContext,
+      searchForTree,
       setActionViewResults,
       setActionViewSortState,
+      setNameSearchFetchCompleted,
       setSearchQuery,
       setTotalItemsActionView,
       treeOoui,
       treeView,
-      addRecordsToCheckFunctionFields,
-      onHasFunctionFieldsToParseConditions,
-      setNameSearchFetchCompleted,
       updateAttributes,
-      searchForTreeRequest,
     ],
   );
 
-  const changeSelectedRowItems = useCallback(
-    (newSelectedRowItems: any[]) => {
-      setSelectedRowItems?.(newSelectedRowItems);
-      onChangeSelectedRowKeys?.(newSelectedRowItems.map((item) => item.id));
-    },
-    [onChangeSelectedRowKeys, setSelectedRowItems],
-  );
+  // Use shared row selection functionality
+  const {
+    changeSelectedRowItems,
+    changeSelectedRowKeys,
+    onSelectionCheckboxClicked,
+  } = useInfiniteRowSelection({
+    selectedRowItems,
+    setSelectedRowItems,
+    onChangeSelectedRowKeys,
+    totalRows,
+    maxRowsToSelect: MAX_ROWS_TO_SELECT,
+    onSelectAll: async () => {
+      if (nameSearch) {
+        return lastAssignedResults.current;
+      }
 
-  const changeSelectedRowKeys = useCallback(
-    (newSelectedRowKeys: number[]) => {
-      setSelectedRowItems?.(newSelectedRowKeys.map((id: number) => ({ id })));
-      onChangeSelectedRowKeys?.(newSelectedRowKeys);
+      if (!totalRows) {
+        return [];
+      }
+
+      const allRowsResults = await searchAllIds({
+        params: nameSearch ? domain : mergedParams,
+        model,
+        context: parentContext,
+        totalItems: totalRows,
+      });
+      return allRowsResults.map((id: number) => ({ id }));
     },
-    [onChangeSelectedRowKeys, setSelectedRowItems],
-  );
+  });
 
   const onRequestData = useCallback(
     async ({
@@ -522,111 +534,20 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     ],
   );
 
-  const onRowStyle = useCallback((record: any) => {
-    if (colorsForResults.current[record.node?.data?.id]) {
-      return { color: colorsForResults.current[record.node?.data?.id] };
-    }
-    return undefined;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const selectedRowKeys = useMemo(() => {
-    return selectedRowItems?.map((item) => item.id) || [];
-  }, [selectedRowItems]);
-
-  const [loadingAggregates, aggregates, hasAggregates] = useTreeAggregates({
-    ooui: treeOoui,
+  // Use shared aggregates functionality
+  const { footerComponent } = useSharedAggregates({
+    treeOoui,
     model,
+    selectedRowKeys,
     showEmptyValues: true,
-    domain:
-      selectedRowKeys?.length > 0
-        ? // eslint-disable-next-line @typescript-eslint/require-array-sort-compare
-          [["id", "in", selectedRowKeys.sort()]]
-        : undefined,
   });
-
-  const onSelectionCheckboxClicked = useCallback(async () => {
-    let mustSelectAll = false;
-    if (selectedRowItems?.length === 0) {
-      mustSelectAll = true;
-    } else {
-      mustSelectAll = false;
-    }
-
-    const selectAllPromise = async () => {
-      if (nameSearch) {
-        changeSelectedRowItems(lastAssignedResults.current);
-        return;
-      }
-
-      if (!totalRows) {
-        return;
-      }
-
-      const allRowsResults = await searchAllIdsRequest({
-        params: nameSearch ? domain : mergedParams,
-        model,
-        context: parentContext,
-        totalItems: totalRows,
-      });
-      changeSelectedRowItems(allRowsResults.map((id: number) => ({ id })));
-    };
-
-    if (mustSelectAll) {
-      if (totalRows && totalRows > MAX_ROWS_TO_SELECT) {
-        showConfirmDialog({
-          confirmMessage: t("confirmSelectAllRegisters").replace(
-            "{totalRecords}",
-            totalRows.toString(),
-          ),
-          t,
-          onOk: selectAllPromise,
-        });
-      } else {
-        selectAllPromise();
-      }
-    } else {
-      setSelectedRowItems([]);
-    }
-  }, [
-    changeSelectedRowItems,
-    domain,
-    mergedParams,
-    model,
-    nameSearch,
-    parentContext,
-    selectedRowItems?.length,
-    setSelectedRowItems,
-    t,
-    totalRows,
-    searchAllIdsRequest,
-  ]);
 
   const firstVisibleRowIndex = useCallback(() => {
     return treeFirstVisibleRow;
   }, [treeFirstVisibleRow]);
 
-  const footerComp = useMemo(() => {
-    if (!hasAggregates) {
-      return null;
-    }
-    return (
-      <AggregatesFooter aggregates={aggregates} isLoading={loadingAggregates} />
-    );
-  }, [aggregates, loadingAggregates, hasAggregates]);
-
-  const statusComp = useCallback((status: any) => {
-    return <Badge color={status} style={{ marginLeft: 7 }} />;
-  }, []);
-
-  const onRowStatus = useCallback(
-    (record: any) => statusForResults.current?.[record.id],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
-
   const content = useMemo(() => {
-    if (!columns || !treeOoui) {
+    if (!columnsWithLoading || !treeOoui) {
       return null;
     }
 
@@ -651,9 +572,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         selectedRowKeys={selectedRowKeys}
         onSelectionCheckboxClicked={onSelectionCheckboxClicked}
         totalRows={totalRows || 99999}
-        footer={footerComp}
+        footer={footerComponent}
         hasStatusColumn={treeOoui.status !== null}
-        statusComponent={statusComp}
+        statusComponent={statusComponent}
         onRowStatus={onRowStatus}
         strings={strings}
         initialSortState={actionViewSortState}
@@ -662,10 +583,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       />
     );
   }, [
-    columns,
+    columnsWithLoading,
     treeOoui,
     availableHeight,
-    columnsWithLoading,
     onRequestData,
     onRowClicked,
     onRowStyle,
@@ -677,8 +597,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     selectedRowKeys,
     onSelectionCheckboxClicked,
     totalRows,
-    footerComp,
-    statusComp,
+    footerComponent,
+    statusComponent,
     onRowStatus,
     strings,
     actionViewSortState,
@@ -866,7 +786,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         }
       />
       <div ref={containerRef} style={containerStyle}>
-        {loading || getColumnStateInProgress ? <Spin /> : content}
+        {loading || isColumnStateLoading ? <Spin /> : content}
       </div>
     </Fragment>
   );

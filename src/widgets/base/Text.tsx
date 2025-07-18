@@ -1,4 +1,4 @@
-import React, { CSSProperties, useContext, useState } from "react";
+import { CSSProperties, useContext, useState } from "react";
 import { Input, Row, theme } from "antd";
 import Field from "@/common/Field";
 import { Text as TextOoui } from "@gisce/ooui";

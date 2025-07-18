@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import ConnectionProvider from "@/ConnectionProvider";
-import { InfiniteTableRef } from "@gisce/react-formiga-table";
+import {
+  InfiniteTableRef,
+  PaginatedTableRef,
+} from "@gisce/react-formiga-table";
 import { useNetworkRequest } from "./useNetworkRequest";
 import { useBrowserVisibility } from "./useBrowserVisibility";
 import { useDeepCompareEffect } from "use-deep-compare";
@@ -14,7 +17,7 @@ const AUTOREFRESH_INTERVAL_SECONDS = 0.5 * 1000;
 type UseTreeFunctionFieldsReadProps = {
   model: string;
   treeView?: TreeView;
-  tableRef: React.RefObject<InfiniteTableRef>;
+  tableRef: React.RefObject<InfiniteTableRef | PaginatedTableRef>;
   context?: any;
   isActive?: boolean;
   onResultsUpdated?: (updatedResults: any[]) => void;
@@ -216,14 +219,15 @@ export const useTreeFunctionFieldsRead = ({
         return newSet;
       });
 
-      // Immediately request function fields for these IDs
-      if (hasFunctionFields && isActive && treeOoui) {
+      // Use functionFields.current.length instead of hasFunctionFields state to avoid timing issues
+      const hasFunctionFieldsSync = functionFields.current.length > 0;
+      if (hasFunctionFieldsSync && isActive && treeOoui) {
         setTimeout(() => {
           requestFunctionFields();
         }, 100);
       }
     },
-    [hasFunctionFields, isActive, treeOoui, requestFunctionFields],
+    [isActive, treeOoui, requestFunctionFields],
   );
 
   const processUpdatedResults = useCallback(
