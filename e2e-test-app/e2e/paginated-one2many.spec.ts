@@ -138,15 +138,15 @@ test.describe("Paginated One2Many Component", () => {
     // Verify that the table is in paginated mode by checking the three dots menu
     const threeDotsMenu = page.getByRole("button", { name: "More options" });
     await expect(threeDotsMenu).toBeVisible();
-    
+
     await threeDotsMenu.click();
     await page.waitForTimeout(500);
-    
+
     // In paginated mode, menu should show "Change to infinite" option
     const menuText = await page.textContent("body");
     const hasChangeToInfinite = menuText?.includes("Change to infinite");
     expect(hasChangeToInfinite).toBe(true);
-    
+
     // Click away to close menu
     await page.click(".ag-root");
   });
@@ -182,25 +182,35 @@ test.describe("Paginated One2Many Component", () => {
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
+    await page.waitForTimeout(1000);
 
     const rows = page.locator(".ag-row");
     const firstRowCheckbox = rows.nth(0).locator('input[type="checkbox"]');
     const secondRowCheckbox = rows.nth(1).locator('input[type="checkbox"]');
     const thirdRowCheckbox = rows.nth(2).locator('input[type="checkbox"]');
 
-    // Click and verify each checkbox individually with proper delays
+    // Ensure all checkboxes are visible before clicking
+    await expect(firstRowCheckbox).toBeVisible();
+    await expect(secondRowCheckbox).toBeVisible();
+    await expect(thirdRowCheckbox).toBeVisible();
+
+    // Click each checkbox with sufficient wait time between clicks
     await firstRowCheckbox.click();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(500);
     await expect(firstRowCheckbox).toBeChecked();
 
     await secondRowCheckbox.click();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(500);
     await expect(secondRowCheckbox).toBeChecked();
 
+    // Scroll to ensure third row is in viewport
+    await thirdRowCheckbox.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(300);
     await thirdRowCheckbox.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(800);
     await expect(thirdRowCheckbox).toBeChecked();
 
+    // Directly check that the header checkbox is in indeterminate state
     const headerCheckbox = page
       .locator('.ag-header input[type="checkbox"]')
       .nth(2);
@@ -322,20 +332,20 @@ test.describe("Paginated One2Many Component", () => {
     const changeToInfiniteOption = page.getByText("Change to infinite");
     await expect(changeToInfiniteOption).toBeVisible();
     await changeToInfiniteOption.click();
-    
+
     // Wait longer for the view mode change to complete
     await page.waitForTimeout(3000);
 
-    // The most reliable way to check if the view mode changed is to verify 
+    // The most reliable way to check if the view mode changed is to verify
     // that the menu now shows "Change to paginated" instead of "Change to infinite"
     await threeDotsMenu.click();
     await page.waitForTimeout(500);
 
     const updatedPageText = await page.textContent("body");
-    
+
     // Check for "Change to paginated"
     const hasChangeToPaginated = updatedPageText?.includes("Change to paginated");
-    
+
     // This is the key indicator that the view mode actually changed
     expect(hasChangeToPaginated).toBe(true);
   });
