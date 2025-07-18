@@ -11,6 +11,7 @@ import { ErrorAlert } from "@/ui/ErrorAlert";
 import { Graph } from "../views/Graph/Graph";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import {
+  useFeatureData,
   useFeatureIsEnabled,
   useUserFeatureIsEnabled,
 } from "@/context/ConfigContext";
@@ -40,10 +41,11 @@ export const Indicator = (props: IndicatorProps) => {
   const { ooui } = props;
 
   const hasActionId = ooui.actionId !== undefined;
+  const hasActionField = ooui.actionField !== undefined;
 
   return (
     <Field ooui={ooui}>
-      {hasActionId ? (
+      {hasActionId || hasActionField ? (
         <ErrorBoundary>
           <GraphIndicatorInput ooui={ooui} />
         </ErrorBoundary>
@@ -190,26 +192,29 @@ const IndicatorInput = (props: IndicatorInputProps) => {
 const GraphIndicatorInput = (props: IndicatorInputProps) => {
   const { ooui } = props;
   const { actionId, height } = ooui;
+  const { getFieldValue, activeId } = useFormContext();
 
-  const { activeId } = useFormContext();
+  const effectiveActionId = (ooui as any).actionField
+    ? parseInt(getFieldValue((ooui as any).actionField) || "0", 10) || actionId
+    : actionId;
+
   const { actionData, treeShortcut, loading, error, fetchData } =
-    useFormGraphData(actionId!);
+    useFormGraphData(effectiveActionId!);
 
-  const readForViewEnabled = useFeatureIsEnabled(
-    ErpFeatureKeys.FEATURE_READFORVIEW,
-  );
+  const readForViewFeature = useFeatureData(ErpFeatureKeys.FEATURE_READFORVIEW);
+
   const tabManagerContext = useContext(
     TabManagerContext,
   ) as TabManagerContextType;
   const { openShortcut } = tabManagerContext || {};
 
   useEffect(() => {
-    if (!ooui) {
+    if (!ooui || !effectiveActionId) {
       return;
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ooui, activeId]);
+  }, [ooui, activeId, effectiveActionId]);
 
   if (error && error.message !== "active_id_not_found") {
     return <ErrorAlert error={error} />;
@@ -218,7 +223,24 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
   const { id, model, limit, domain, context, initialView, description } =
     actionData || {};
 
-  const GraphComponent = readForViewEnabled ? GraphServer : Graph;
+  const GraphComponent = readForViewFeature?.isEnabled ? GraphServer : Graph;
+
+  if (
+    !loading &&
+    readForViewFeature?.isEnabled &&
+    !readForViewFeature?.params?.types.includes(initialView?.type)
+  ) {
+    return (
+      <ErrorAlert
+        error={
+          new Error(
+            "Error rendering Indicator widget: Invalid view type for read_for_view: " +
+              initialView?.type,
+          )
+        }
+      />
+    );
+  }
 
   return (
     <GraphCard
