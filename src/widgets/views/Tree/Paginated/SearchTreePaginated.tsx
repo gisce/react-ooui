@@ -94,7 +94,12 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   } = useTableCore({
     treeOoui,
     parentContext,
-    columnStateKey: getKey({ treeViewId: treeView?.view_id, model }),
+    columnStateKey: treeView
+      ? getKey({
+          treeViewId: treeView.view_id,
+          model,
+        })
+      : undefined,
     tableRef,
   });
 

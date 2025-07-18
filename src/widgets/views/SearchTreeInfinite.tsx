@@ -210,10 +210,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   } = useTableCore({
     treeOoui,
     parentContext,
-    columnStateKey: getKey({
-      treeViewId: treeView?.view_id,
-      model,
-    }),
+    columnStateKey: treeView
+      ? getKey({
+          treeViewId: treeView.view_id,
+          model,
+        })
+      : undefined,
     tableRef,
   });
 
@@ -368,9 +370,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         limit: endRow - startRow,
         offset: startRow,
         model,
-        fields: treeView!.field_parent
-          ? { ...treeView!.fields, [treeView!.field_parent]: {} }
-          : treeView!.fields,
+        fields: treeView?.field_parent
+          ? { ...treeView?.fields, [treeView?.field_parent]: {} }
+          : treeView?.fields,
         context: parentContext,
         attrs,
         order,
