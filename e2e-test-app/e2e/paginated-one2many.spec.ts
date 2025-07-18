@@ -307,6 +307,84 @@ test.describe("Paginated One2Many Component", () => {
     expect(hasResetTableView).toBe(true);
   });
 
+  test("should reset table view to original state when clicking Reset table view", async ({
+    page,
+  }) => {
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.PAGINATED));
+
+    await page.evaluate(() => {
+      localStorage.clear();
+    });
+
+    await page.reload();
+    await page.waitForSelector(".ag-root", { state: "visible" });
+    await page.waitForSelector(".ag-header", { state: "visible" });
+    await page.waitForSelector(".ag-row", { state: "visible" });
+    await page.waitForTimeout(1000);
+
+    const getColumnOrder = async () => {
+      return await page.evaluate(() => {
+        const headers = Array.from(
+          document.querySelectorAll(".ag-header-cell"),
+        );
+        const headerData = headers
+          .map((header) => {
+            const rect = header.getBoundingClientRect();
+            const text = header.textContent?.trim();
+            return { text, x: rect.x, element: header };
+          })
+          .filter((item) => item.text && item.text !== "")
+          .sort((a, b) => a.x - b.x);
+
+        return headerData.map((item) => item.text);
+      });
+    };
+
+    const originalOrder = await getColumnOrder();
+
+    const descriptionHeader = page.getByRole("columnheader", {
+      name: "Description",
+    });
+    const sequenceHeader = page.getByRole("columnheader", { name: "Sequence" });
+
+    await expect(descriptionHeader).toBeVisible();
+    await expect(sequenceHeader).toBeVisible();
+
+    const descriptionLabel = page
+      .locator(".ag-header-cell")
+      .filter({ hasText: "Description" })
+      .locator(".ag-header-cell-label");
+    const sequenceLabel = page
+      .locator(".ag-header-cell")
+      .filter({ hasText: "Sequence" })
+      .locator(".ag-header-cell-label");
+
+    await expect(descriptionLabel).toBeVisible();
+    await expect(sequenceLabel).toBeVisible();
+
+    await descriptionLabel.dragTo(sequenceLabel);
+    await page.waitForTimeout(3000);
+
+    const orderAfterDrag = await getColumnOrder();
+    expect(JSON.stringify(originalOrder)).not.toEqual(
+      JSON.stringify(orderAfterDrag),
+    );
+
+    const threeDotsMenu = page.getByRole("button", { name: "More options" });
+    await expect(threeDotsMenu).toBeVisible();
+
+    await threeDotsMenu.click();
+    await page.waitForTimeout(500);
+
+    const resetOption = page.locator('text="Reset table view"').first();
+    await expect(resetOption).toBeVisible();
+    await resetOption.click();
+    await page.waitForTimeout(2000);
+
+    const orderAfterReset = await getColumnOrder();
+    expect(orderAfterReset).toEqual(originalOrder);
+  });
+
   test("should change to infinite view mode when clicking 'Change to infinite' from three dots menu", async ({
     page,
   }) => {

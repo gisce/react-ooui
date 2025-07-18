@@ -292,171 +292,79 @@ test.describe("Infinite One2Many Component", () => {
   test("should reset table view to original state when clicking Reset table view", async ({
     page,
   }) => {
-    test.setTimeout(60000);
     await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
 
+    await page.evaluate(() => {
+      localStorage.clear();
+    });
+
+    await page.reload();
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-header", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
     await page.waitForTimeout(1000);
 
     const getColumnOrder = async () => {
-      return await page.locator(".ag-header-cell-text").allTextContents();
+      return await page.evaluate(() => {
+        const headers = Array.from(
+          document.querySelectorAll(".ag-header-cell"),
+        );
+        const headerData = headers
+          .map((header) => {
+            const rect = header.getBoundingClientRect();
+            const text = header.textContent?.trim();
+            return { text, x: rect.x, element: header };
+          })
+          .filter((item) => item.text && item.text !== "")
+          .sort((a, b) => a.x - b.x);
+
+        return headerData.map((item) => item.text);
+      });
     };
 
-    const getDescriptionColumnWidth = async () => {
-      const descriptionHeader = page.getByRole("columnheader", { name: "Description" });
-      return await descriptionHeader.evaluate(
-        (el) => el.getBoundingClientRect().width,
-      );
-    };
-
-    const getPinnedColumns = async () => {
-      return await page
-        .locator(".ag-pinned-left-header .ag-header-cell-text")
-        .allTextContents();
-    };
-
-    // Get original state
     const originalOrder = await getColumnOrder();
-    const originalDescriptionWidth = await getDescriptionColumnWidth();
-    const originalPinned = await getPinnedColumns();
 
-    // 1. Make some column changes through UI interactions
-    const descriptionHeader = page.getByRole("columnheader", { name: "Description" });
+    const descriptionHeader = page.getByRole("columnheader", {
+      name: "Description",
+    });
     const sequenceHeader = page.getByRole("columnheader", { name: "Sequence" });
 
-    // Reorder columns (drag Description to Sequence position)
-    const descriptionBox = await descriptionHeader.boundingBox();
-    const sequenceBox = await sequenceHeader.boundingBox();
-    expect(descriptionBox).toBeTruthy();
-    expect(sequenceBox).toBeTruthy();
+    await expect(descriptionHeader).toBeVisible();
+    await expect(sequenceHeader).toBeVisible();
 
-    const dragDescriptionCenter = {
-      x: descriptionBox!.x + descriptionBox!.width / 2,
-      y: descriptionBox!.y + descriptionBox!.height / 2,
-    };
-    const sequenceCenter = {
-      x: sequenceBox!.x + sequenceBox!.width / 2,
-      y: sequenceBox!.y + sequenceBox!.height / 2,
-    };
+    const descriptionLabel = page
+      .locator(".ag-header-cell")
+      .filter({ hasText: "Description" })
+      .locator(".ag-header-cell-label");
+    const sequenceLabel = page
+      .locator(".ag-header-cell")
+      .filter({ hasText: "Sequence" })
+      .locator(".ag-header-cell-label");
 
-    await page.mouse.move(dragDescriptionCenter.x, dragDescriptionCenter.y);
-    await page.waitForTimeout(200);
-    await page.mouse.down();
-    await page.waitForTimeout(300);
-    await page.mouse.move(sequenceCenter.x, sequenceCenter.y, { steps: 10 });
-    await page.waitForTimeout(300);
-    await page.mouse.up();
-    await page.waitForTimeout(1000);
+    await expect(descriptionLabel).toBeVisible();
+    await expect(sequenceLabel).toBeVisible();
 
-    // Resize Description column using the resize handle
-    const resizeHandle = descriptionHeader.locator(".ag-header-cell-resize");
-    await expect(resizeHandle).toBeVisible();
+    await descriptionLabel.dragTo(sequenceLabel);
+    await page.waitForTimeout(3000);
 
-    const resizeHandleBox = await resizeHandle.boundingBox();
-    expect(resizeHandleBox).toBeTruthy();
-
-    await page.mouse.move(
-      resizeHandleBox!.x + resizeHandleBox!.width / 2,
-      resizeHandleBox!.y + resizeHandleBox!.height / 2,
+    const orderAfterDrag = await getColumnOrder();
+    expect(JSON.stringify(originalOrder)).not.toEqual(
+      JSON.stringify(orderAfterDrag),
     );
-    await page.mouse.down();
-    await page.mouse.move(
-      resizeHandleBox!.x + 100,
-      resizeHandleBox!.y + resizeHandleBox!.height / 2,
-    );
-    await page.mouse.up();
-    await page.waitForTimeout(1000);
 
-    // Pin Description column by dragging to left edge
-    const agRoot = page.locator(".ag-root");
-    const rootBox = await agRoot.boundingBox();
-    expect(rootBox).toBeTruthy();
-
-    const pinDescriptionCenter = {
-      x: descriptionBox!.x + descriptionBox!.width / 2,
-      y: descriptionBox!.y + descriptionBox!.height / 2,
-    };
-    const leftEdge = {
-      x: rootBox!.x + 30,
-      y: pinDescriptionCenter.y,
-    };
-
-    await page.mouse.move(pinDescriptionCenter.x, pinDescriptionCenter.y);
-    await page.waitForTimeout(200);
-    await page.mouse.down();
-    await page.waitForTimeout(300);
-    await page.mouse.move(leftEdge.x, leftEdge.y, { steps: 10 });
-    await page.waitForTimeout(300);
-    await page.mouse.up();
-    await page.waitForTimeout(1000);
-
-    // Reload page to verify changes persist
-    await page.reload();
-    await page.waitForSelector(".ag-root", { state: "visible" });
-    await page.waitForSelector(".ag-header", { state: "visible" });
-    await page.waitForSelector(".ag-row", { state: "visible" });
-    await page.waitForTimeout(1000);
-
-    // Verify changes are persisted
-    const orderAfterChanges = await getColumnOrder();
-    const widthAfterChanges = await getDescriptionColumnWidth();
-    const pinnedAfterChanges = await getPinnedColumns();
-
-    // Should be different from original (at least one of order change or pinning should work)
-    const orderChanged = JSON.stringify(orderAfterChanges) !== JSON.stringify(originalOrder);
-    const widthChanged = Math.abs(widthAfterChanges - originalDescriptionWidth) > 10;
-    const pinnedChanged = pinnedAfterChanges.includes("Description");
-    
-    // At least one change should have persisted
-    expect(orderChanged || widthChanged || pinnedChanged).toBe(true);
-
-    // 2. Now click Reset table view
     const threeDotsMenu = page.getByRole("button", { name: "More options" });
     await expect(threeDotsMenu).toBeVisible();
-
-    const svg = threeDotsMenu.locator("svg");
-    await expect(svg).toBeVisible();
 
     await threeDotsMenu.click();
     await page.waitForTimeout(500);
 
-    // Click Reset table view option
     const resetOption = page.locator('text="Reset table view"').first();
     await expect(resetOption).toBeVisible();
     await resetOption.click();
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(2000);
 
-    // Verify reset worked
     const orderAfterReset = await getColumnOrder();
-    const widthAfterReset = await getDescriptionColumnWidth();
-    const pinnedAfterReset = await getPinnedColumns();
-
-    // Should have reasonable values (not exact match due to potential UI differences)
-    expect(orderAfterReset.length).toEqual(originalOrder.length);
-    expect(orderAfterReset).toContain("Description");
-    expect(orderAfterReset).toContain("Sequence");
-    expect(widthAfterReset).toBeGreaterThan(50); // Reasonable column width
-    expect(pinnedAfterReset.length).toBeGreaterThanOrEqual(0); // Valid pinned state
-
-    // Reload page to verify reset persists
-    await page.reload();
-    await page.waitForSelector(".ag-root", { state: "visible" });
-    await page.waitForSelector(".ag-header", { state: "visible" });
-    await page.waitForSelector(".ag-row", { state: "visible" });
-    await page.waitForTimeout(1000);
-
-    const orderAfterReload = await getColumnOrder();
-    const widthAfterReload = await getDescriptionColumnWidth();
-    const pinnedAfterReload = await getPinnedColumns();
-
-    // Verify the reset state persists after reload
-    expect(orderAfterReload.length).toEqual(originalOrder.length);
-    expect(orderAfterReload).toContain("Description");
-    expect(orderAfterReload).toContain("Sequence");
-    expect(widthAfterReload).toBeGreaterThan(50);
-    expect(pinnedAfterReload.length).toBeGreaterThanOrEqual(0);
+    expect(orderAfterReset).toEqual(originalOrder);
   });
 
   test("should change to paginated view mode when clicking 'Change to paginated' from three dots menu", async ({
