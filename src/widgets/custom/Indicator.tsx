@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Tooltip, theme, Statistic, Card, Empty, Space } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
@@ -12,17 +12,13 @@ import { Graph } from "../views/Graph/Graph";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import {
   useFeatureData,
-  useFeatureIsEnabled,
   useUserFeatureIsEnabled,
 } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { GraphServer } from "../views/Graph/GraphServer";
 import { Many2oneSuffix } from "@/widgets/base/many2one/Many2oneSuffix";
 import { useLocale, iconMapper } from "@gisce/react-formiga-components";
-import {
-  TabManagerContext,
-  TabManagerContextType,
-} from "@/context/TabManagerContext";
+import { useTabs } from "@/context/TabManagerContext";
 import { GraphCard } from "../views/Graph";
 import { useFormContext } from "@/context/FormContext";
 import styled from "styled-components";
@@ -30,6 +26,9 @@ import dayjs from "@/helpers/dayjs";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import ConnectionProvider from "@/ConnectionProvider";
 import { UserFeatureKeys } from "@/models/userFeature";
+import { DashboardForm } from "../views/Dashboard/DashboardForm";
+import DashboardTree from "../views/Dashboard/DashboardTree";
+import { ShortcutApi } from "@/ui/FavouriteButton";
 const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
@@ -201,12 +200,7 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
   const { actionData, treeShortcut, loading, error, fetchData } =
     useFormGraphData(effectiveActionId!);
 
-  const readForViewFeature = useFeatureData(ErpFeatureKeys.FEATURE_READFORVIEW);
-
-  const tabManagerContext = useContext(
-    TabManagerContext,
-  ) as TabManagerContextType;
-  const { openShortcut } = tabManagerContext || {};
+  const { openShortcut } = useTabs();
 
   useEffect(() => {
     if (!ooui || !effectiveActionId) {
@@ -220,27 +214,7 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
     return <ErrorAlert error={error} />;
   }
 
-  const { id, model, limit, domain, context, initialView, description } =
-    actionData || {};
-
-  const GraphComponent = readForViewFeature?.isEnabled ? GraphServer : Graph;
-
-  if (
-    !loading &&
-    readForViewFeature?.isEnabled &&
-    !readForViewFeature?.params?.types.includes(initialView?.type)
-  ) {
-    return (
-      <ErrorAlert
-        error={
-          new Error(
-            "Error rendering Indicator widget: Invalid view type for read_for_view: " +
-              initialView?.type,
-          )
-        }
-      />
-    );
-  }
+  const { id, initialView, description } = actionData || {};
 
   return (
     <GraphCard
@@ -262,20 +236,89 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
             />
           ) : (
             initialView?.id && (
-              <GraphComponent
-                view_id={initialView.id}
-                model={model}
-                context={context}
-                domain={domain}
-                limit={limit}
-                fixedHeight={height}
-              />
+              <CardContent fixedHeight={height} actionData={actionData} />
             )
           )}
         </>
       )}
     </GraphCard>
   );
+};
+
+const CardContent = ({
+  actionData,
+  fixedHeight,
+}: {
+  fixedHeight?: number;
+  actionData: any;
+}) => {
+  const { initialView, views, model, domain, context, limit } = actionData;
+  const readForViewFeature = useFeatureData(ErpFeatureKeys.FEATURE_READFORVIEW);
+  const GraphComponent = readForViewFeature?.isEnabled ? GraphServer : Graph;
+  const { openAction } = useTabs();
+
+  const onRowClicked = useCallback(
+    (record: any) => {
+      const formView = views.find((view: any[]) => {
+        const [, type] = view;
+        return type === "form";
+      });
+      if (formView) {
+        const [id, type] = formView;
+        const {
+          actionId: action_id,
+          actionType: action_type,
+          title: name,
+          model: res_model,
+        } = actionData;
+
+        const action: ShortcutApi = {
+          action_id,
+          action_type,
+          name,
+          res_id: record.id,
+          res_model,
+          view_id: id,
+          view_type: type,
+        };
+        openAction(action as any);
+      }
+    },
+    [actionData, openAction, views],
+  );
+
+  if (initialView.type === "graph") {
+    return (
+      <GraphComponent
+        view_id={initialView.id}
+        model={model}
+        context={context}
+        domain={domain}
+        limit={limit}
+        fixedHeight={fixedHeight}
+      />
+    );
+  } else if (initialView.type === "form") {
+    return (
+      <DashboardForm key={initialView.id} model={model} actionDomain={domain} />
+    );
+  } else if (initialView.type === "tree") {
+    return (
+      <DashboardTree
+        key={initialView.id}
+        model={model}
+        domain={domain}
+        view_id={initialView.id}
+        onRowClicked={onRowClicked}
+      />
+    );
+  } else {
+    return (
+      <ErrorAlert
+        error={new Error("Unsupported view type: " + initialView.type)}
+      />
+    );
+  }
 };
 
 const StyledEmpty = styled(Empty)`
