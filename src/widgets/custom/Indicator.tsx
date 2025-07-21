@@ -11,6 +11,7 @@ import { ErrorAlert } from "@/ui/ErrorAlert";
 import { Graph } from "../views/Graph/Graph";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import {
+  useFeatureData,
   useFeatureIsEnabled,
   useUserFeatureIsEnabled,
 } from "@/context/ConfigContext";
@@ -200,9 +201,8 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
   const { actionData, treeShortcut, loading, error, fetchData } =
     useFormGraphData(effectiveActionId!);
 
-  const readForViewEnabled = useFeatureIsEnabled(
-    ErpFeatureKeys.FEATURE_READFORVIEW,
-  );
+  const readForViewFeature = useFeatureData(ErpFeatureKeys.FEATURE_READFORVIEW);
+
   const tabManagerContext = useContext(
     TabManagerContext,
   ) as TabManagerContextType;
@@ -223,7 +223,24 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
   const { id, model, limit, domain, context, initialView, description } =
     actionData || {};
 
-  const GraphComponent = readForViewEnabled ? GraphServer : Graph;
+  const GraphComponent = readForViewFeature?.isEnabled ? GraphServer : Graph;
+
+  if (
+    !loading &&
+    readForViewFeature?.isEnabled &&
+    !readForViewFeature?.params?.types.includes(initialView?.type)
+  ) {
+    return (
+      <ErrorAlert
+        error={
+          new Error(
+            "Error rendering Indicator widget: Invalid view type for read_for_view: " +
+              initialView?.type,
+          )
+        }
+      />
+    );
+  }
 
   return (
     <GraphCard
