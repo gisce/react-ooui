@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Tooltip, theme, Statistic, Card, Empty, Space } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
@@ -11,17 +11,14 @@ import { ErrorAlert } from "@/ui/ErrorAlert";
 import { Graph } from "../views/Graph/Graph";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import {
-  useFeatureIsEnabled,
+  useFeatureData,
   useUserFeatureIsEnabled,
 } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { GraphServer } from "../views/Graph/GraphServer";
 import { Many2oneSuffix } from "@/widgets/base/many2one/Many2oneSuffix";
 import { useLocale, iconMapper } from "@gisce/react-formiga-components";
-import {
-  TabManagerContext,
-  TabManagerContextType,
-} from "@/context/TabManagerContext";
+import { useTabs } from "@/context/TabManagerContext";
 import { GraphCard } from "../views/Graph";
 import { useFormContext } from "@/context/FormContext";
 import styled from "styled-components";
@@ -29,6 +26,9 @@ import dayjs from "@/helpers/dayjs";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import ConnectionProvider from "@/ConnectionProvider";
 import { UserFeatureKeys } from "@/models/userFeature";
+import { DashboardForm } from "../views/Dashboard/DashboardForm";
+import DashboardTree from "../views/Dashboard/DashboardTree";
+import { ShortcutApi } from "@/ui/FavouriteButton";
 const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
@@ -40,10 +40,11 @@ export const Indicator = (props: IndicatorProps) => {
   const { ooui } = props;
 
   const hasActionId = ooui.actionId !== undefined;
+  const hasActionField = ooui.actionField !== undefined;
 
   return (
     <Field ooui={ooui}>
-      {hasActionId ? (
+      {hasActionId || hasActionField ? (
         <ErrorBoundary>
           <GraphIndicatorInput ooui={ooui} />
         </ErrorBoundary>
@@ -190,35 +191,30 @@ const IndicatorInput = (props: IndicatorInputProps) => {
 const GraphIndicatorInput = (props: IndicatorInputProps) => {
   const { ooui } = props;
   const { actionId, height } = ooui;
+  const { getFieldValue, activeId } = useFormContext();
 
-  const { activeId } = useFormContext();
+  const effectiveActionId = (ooui as any).actionField
+    ? parseInt(getFieldValue((ooui as any).actionField) || "0", 10) || actionId
+    : actionId;
+
   const { actionData, treeShortcut, loading, error, fetchData } =
-    useFormGraphData(actionId!);
+    useFormGraphData(effectiveActionId!);
 
-  const readForViewEnabled = useFeatureIsEnabled(
-    ErpFeatureKeys.FEATURE_READFORVIEW,
-  );
-  const tabManagerContext = useContext(
-    TabManagerContext,
-  ) as TabManagerContextType;
-  const { openShortcut } = tabManagerContext || {};
+  const { openShortcut } = useTabs();
 
   useEffect(() => {
-    if (!ooui) {
+    if (!ooui || !effectiveActionId) {
       return;
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ooui, activeId]);
+  }, [ooui, activeId, effectiveActionId]);
 
   if (error && error.message !== "active_id_not_found") {
     return <ErrorAlert error={error} />;
   }
 
-  const { id, model, limit, domain, context, initialView, description } =
-    actionData || {};
-
-  const GraphComponent = readForViewEnabled ? GraphServer : Graph;
+  const { id, initialView, description } = actionData || {};
 
   return (
     <GraphCard
@@ -240,20 +236,89 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
             />
           ) : (
             initialView?.id && (
-              <GraphComponent
-                view_id={initialView.id}
-                model={model}
-                context={context}
-                domain={domain}
-                limit={limit}
-                fixedHeight={height}
-              />
+              <CardContent fixedHeight={height} actionData={actionData} />
             )
           )}
         </>
       )}
     </GraphCard>
   );
+};
+
+const CardContent = ({
+  actionData,
+  fixedHeight,
+}: {
+  fixedHeight?: number;
+  actionData: any;
+}) => {
+  const { initialView, views, model, domain, context, limit } = actionData;
+  const readForViewFeature = useFeatureData(ErpFeatureKeys.FEATURE_READFORVIEW);
+  const GraphComponent = readForViewFeature?.isEnabled ? GraphServer : Graph;
+  const { openAction } = useTabs();
+
+  const onRowClicked = useCallback(
+    (record: any) => {
+      const formView = views.find((view: any[]) => {
+        const [, type] = view;
+        return type === "form";
+      });
+      if (formView) {
+        const [id, type] = formView;
+        const {
+          actionId: action_id,
+          actionType: action_type,
+          title: name,
+          model: res_model,
+        } = actionData;
+
+        const action: ShortcutApi = {
+          action_id,
+          action_type,
+          name,
+          res_id: record.id,
+          res_model,
+          view_id: id,
+          view_type: type,
+        };
+        openAction(action as any);
+      }
+    },
+    [actionData, openAction, views],
+  );
+
+  if (initialView.type === "graph") {
+    return (
+      <GraphComponent
+        view_id={initialView.id}
+        model={model}
+        context={context}
+        domain={domain}
+        limit={limit}
+        fixedHeight={fixedHeight}
+      />
+    );
+  } else if (initialView.type === "form") {
+    return (
+      <DashboardForm key={initialView.id} model={model} actionDomain={domain} />
+    );
+  } else if (initialView.type === "tree") {
+    return (
+      <DashboardTree
+        key={initialView.id}
+        model={model}
+        domain={domain}
+        view_id={initialView.id}
+        onRowClicked={onRowClicked}
+      />
+    );
+  } else {
+    return (
+      <ErrorAlert
+        error={new Error("Unsupported view type: " + initialView.type)}
+      />
+    );
+  }
 };
 
 const StyledEmpty = styled(Empty)`
