@@ -1,6 +1,6 @@
 import { ConnectionProvider, ConnectionProviderType } from "@gisce/react-ooui";
 import {
-  mockFormView,
+  createMockFormView,
   mockOne2ManyTreeView,
   mockParentRecord,
   mockPartners,
@@ -10,11 +10,12 @@ import {
 import { Tree as TreeOoui, Many2one, Selection, Reference } from "@gisce/ooui";
 
 class MockConnectionProvider implements ConnectionProvider {
+  private fieldType: "one2many" | "many2many";
   private orderLineData: any[] = [];
 
   async fieldsViewGet({ model, viewId, viewType, context }: any) {
     if (model === "sale.order" && viewType === "form") {
-      return mockFormView;
+      return createMockFormView(this.fieldType);
     }
 
     if (model === "sale.order.line" && viewType === "tree") {
@@ -356,7 +357,6 @@ class MockConnectionProvider implements ConnectionProvider {
   }
 
   async nameGet({ model, ids }: any) {
-
     if (model === "res.partner") {
       return mockPartners
         .filter((p) => ids.includes(p.id))
@@ -373,7 +373,6 @@ class MockConnectionProvider implements ConnectionProvider {
   }
 
   async nameSearch({ model, name, args, limit }: any) {
-
     if (model === "res.partner") {
       const filtered = mockPartners.filter((p) =>
         p.name.toLowerCase().includes((name || "").toLowerCase()),
@@ -551,7 +550,7 @@ class MockConnectionProvider implements ConnectionProvider {
   // Methods required by FormActionView
   async getView({ model, type, context }: any) {
     if (model === "sale.order" && type === "form") {
-      return mockFormView;
+      return createMockFormView(this.fieldType);
     }
 
     if (model === "sale.order.line" && type === "tree") {
@@ -630,7 +629,6 @@ class MockConnectionProvider implements ConnectionProvider {
     order,
     context,
   }: any) {
-
     if (model === "sale.order.line") {
       // Use the same logic as searchForTree
       const result = await this.searchForTree({
@@ -733,7 +731,6 @@ class MockConnectionProvider implements ConnectionProvider {
     order,
     context,
   }: any) {
-
     if (model === "sale.order.line" && fields.includes("price_subtotal")) {
       // Calculate aggregate for price_subtotal
       let filteredLines = [...this.orderLineData];
@@ -879,7 +876,6 @@ class MockConnectionProvider implements ConnectionProvider {
         }
       }
 
-
       const result: any = {};
 
       // Process each field that needs aggregation
@@ -946,7 +942,7 @@ class MockConnectionProvider implements ConnectionProvider {
 
     // Use the order line data to generate condition results
     const dataToProcess = values || this.orderLineData || [];
-    
+
     return dataToProcess.map((result: any) => {
       return {
         id: result.id,
@@ -954,11 +950,11 @@ class MockConnectionProvider implements ConnectionProvider {
         status: this.evaluateStatusCondition(result),
       };
     });
-  }
+  };
 
   parseCondition = async () => {
     return {};
-  }
+  };
 
   processSearchResults = async (params: {
     searchIds: number[];
@@ -1371,16 +1367,19 @@ class MockConnectionProvider implements ConnectionProvider {
     return null; // No status condition met
   }
 
-  constructor() {
+  constructor(fieldType: "one2many" | "many2many" = "one2many") {
     // Initialize with mock data
+    this.fieldType = fieldType;
     this.orderLineData = mockParentRecord.order_line;
   }
 }
 
 let mockProviderInstance: MockConnectionProvider | null = null;
 
-export function initializeMockProvider() {
-  const provider = new MockConnectionProvider();
+export function initializeMockProvider(
+  fieldType: "one2many" | "many2many" = "one2many",
+) {
+  const provider = new MockConnectionProvider(fieldType);
 
   // Wrap in a Proxy to catch any missing method calls
   mockProviderInstance = new Proxy(provider, {
@@ -1399,7 +1398,6 @@ export function initializeMockProvider() {
       ) {
         // Return a function that logs and returns a default value
         return function (...args: any[]) {
-
           // Handle specific missing methods
           if (prop === "readUserViewPrefs") {
             return target.readUserViewPrefs.bind(target);
@@ -1458,28 +1456,35 @@ export function getMockProvider(): MockConnectionProvider {
 // Export a simple instance for direct use in ActionViewProvider
 export const mockConnectionProvider = new MockConnectionProvider();
 
-// Paginated mock form view - use infinite: '0' to force paginated mode
-const mockPaginatedFormView = {
-  ...mockFormView,
-  arch: `<?xml version="1.0"?>
-    <form string="Sales Order">
-        <field name="order_line"
-        widget_props="{'infinite': '0'}"
-        context="{'default_order_id': active_id}"/>
-    </form>`,
-  fields: {
-    ...mockFormView.fields,
-    order_line: {
-      ...mockFormView.fields.order_line,
-      infinite: false, // Explicitly set to false for paginated mode
-    },
-  },
-};
-
 class PaginatedMockConnectionProvider extends MockConnectionProvider {
+  private paginatedFormView: any;
+
+  constructor(fieldType: "one2many" | "many2many" = "one2many") {
+    super(fieldType);
+    
+    // Create paginated form view - use infinite: '0' to force paginated mode
+    const baseFormView = createMockFormView(fieldType);
+    this.paginatedFormView = {
+      ...baseFormView,
+      arch: `<?xml version="1.0"?>
+        <form string="Sales Order">
+            <field name="order_line"
+            widget_props="{'infinite': '0'}"
+            context="{'default_order_id': active_id}"/>
+        </form>`,
+      fields: {
+        ...baseFormView.fields,
+        order_line: {
+          ...baseFormView.fields.order_line,
+          infinite: false, // Explicitly set to false for paginated mode
+        },
+      },
+    };
+  }
+
   async fieldsViewGet({ model, viewId, viewType, context }: any) {
     if (model === "sale.order" && viewType === "form") {
-      return mockPaginatedFormView;
+      return this.paginatedFormView;
     }
 
     // For other views, use the parent class method
@@ -1488,7 +1493,7 @@ class PaginatedMockConnectionProvider extends MockConnectionProvider {
 
   async getView({ model, type, context }: any) {
     if (model === "sale.order" && type === "form") {
-      return mockPaginatedFormView;
+      return this.paginatedFormView;
     }
 
     // For other views, use the parent class method
@@ -1496,10 +1501,13 @@ class PaginatedMockConnectionProvider extends MockConnectionProvider {
   }
 }
 
-let paginatedMockProviderInstance: PaginatedMockConnectionProvider | null = null;
+let paginatedMockProviderInstance: PaginatedMockConnectionProvider | null =
+  null;
 
-export function initializePaginatedMockProvider() {
-  const provider = new PaginatedMockConnectionProvider();
+export function initializePaginatedMockProvider(
+  fieldType: "one2many" | "many2many" = "one2many",
+) {
+  const provider = new PaginatedMockConnectionProvider(fieldType);
 
   // Wrap in a Proxy to catch any missing method calls (same as infinite version)
   paginatedMockProviderInstance = new Proxy(provider, {
@@ -1518,7 +1526,6 @@ export function initializePaginatedMockProvider() {
       ) {
         // Return a function that logs and returns a default value
         return function (...args: any[]) {
-
           // Handle specific missing methods (same as infinite version)
           if (prop === "readUserViewPrefs") {
             return target.readUserViewPrefs.bind(target);
@@ -1561,6 +1568,8 @@ export function initializePaginatedMockProvider() {
   });
 
   // Set this as the global provider for the paginated story
-  ConnectionProvider.init(paginatedMockProviderInstance as ConnectionProviderType);
+  ConnectionProvider.init(
+    paginatedMockProviderInstance as ConnectionProviderType,
+  );
   return paginatedMockProviderInstance;
 }

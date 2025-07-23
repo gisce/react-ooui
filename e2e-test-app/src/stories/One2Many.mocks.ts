@@ -1,4 +1,4 @@
-export const mockFormView = {
+export const createMockFormView = (fieldType: "one2many" | "many2many" = "one2many") => ({
   view_id: 1001,
   type: "form",
   arch: `<?xml version="1.0"?>
@@ -9,14 +9,17 @@ export const mockFormView = {
     </form>`,
   fields: {
     order_line: {
-      type: "one2many",
+      type: fieldType,
       string: "Order Lines",
       relation: "sale.order.line",
-      relation_field: "order_id",
+      relation_field: fieldType === "one2many" ? "order_id" : undefined,
       infinite: true, // Add infinite property directly to field definition
     },
   },
-};
+});
+
+// Keep the original export for backward compatibility
+export const mockFormView = createMockFormView("one2many");
 
 // Mock tree view for one2many field (embedded in form)
 export const mockOne2ManyTreeView = {
