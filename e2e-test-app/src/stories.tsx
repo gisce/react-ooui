@@ -3,6 +3,8 @@ import React from "react";
 import { Infinite, Paginated } from "./stories/TreeActionView.stories";
 // Import the One2Many stories
 import { Infinite as One2ManyInfinite, Paginated as One2ManyPaginated } from "./stories/One2Many.stories";
+// Import the Many2Many stories
+import { Infinite as Many2ManyInfinite, Paginated as Many2ManyPaginated } from "./stories/Many2Many.stories";
 
 export interface Story {
   id: string;
@@ -40,5 +42,19 @@ export const stories: Story[] = [
     component: One2ManyPaginated,
     description:
       "A form view with a One2Many widget displaying order lines with pagination controls. The One2Many field shows product details, quantities, prices, and automatically calculates subtotals. The form demonstrates parent-child relationships with proper pagination navigation. Features include: dynamic subtotal calculations, sum fields showing totals, product selection with many2one fields, autorefreshable timestamp columns (Last Updated), function columns (Total Amount), and pagination controls for easy navigation through large datasets.",
+  },
+  {
+    id: "many2many-infinite",
+    title: "Many2Many - Infinite Scroll",
+    component: Many2ManyInfinite,
+    description:
+      "A form view with a Many2Many widget displaying product categories with infinite scroll. The Many2Many field shows category hierarchies, priorities, and status information. Unlike One2Many which represents parent-child relationships, Many2Many represents many-to-many associations where records can be linked to multiple other records. Features include: dynamic product count calculations, priority-based row coloring, parent-child category relationships, active/inactive status indicators, and smooth infinite scrolling through large category datasets.",
+  },
+  {
+    id: "many2many-paginated",
+    title: "Many2Many - Paginated",
+    component: Many2ManyPaginated,
+    description:
+      "A form view with a Many2Many widget displaying product categories with pagination controls. The Many2Many field demonstrates the key difference from One2Many: it shows selected records from a pool of available options rather than child records. Features include: category hierarchy visualization with parent_id relationships, priority-based coloring system (red for high priority >8, orange for medium >5, green for active categories, blue for subcategories, purple for coded categories), function field calculations for product counts, and pagination controls for easy navigation through selected categories.",
   },
 ];
