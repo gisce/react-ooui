@@ -215,6 +215,10 @@ const One2manyComponent = (props: One2manyInputBaseProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ooui.infinite, value, enableNewTable]);
 
+  if (treeType === undefined) {
+    return <Spin />;
+  }
+
   if (treeType === "legacy") {
     return <One2manyInputLegacy {...props} />;
   }
