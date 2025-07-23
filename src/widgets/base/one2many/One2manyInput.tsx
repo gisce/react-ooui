@@ -207,32 +207,40 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     parseDomain();
   }, [getAllHierarchyValues()]);
 
-  async function parseDomain() {
+  const parseDomain = useCallback(async () => {
+    let tempTransformedDomain: any[] = [];
     if (widgetDomain) {
-      setTransformedDomain(
-        await ConnectionProvider.getHandler().evalDomain({
-          domain: widgetDomain,
-          values: transformPlainMany2Ones({
-            fields: getFields(),
-            values: getAllHierarchyValues(),
-          }),
+      tempTransformedDomain = await ConnectionProvider.getHandler().evalDomain({
+        domain: widgetDomain,
+        values: transformPlainMany2Ones({
           fields: getFields(),
-          context: getContext(),
+          values: getAllHierarchyValues(),
+        }),
+        fields: getFields(),
+        context: getContext(),
+      });
+    }
+
+    if (domain && domain.length > 0) {
+      tempTransformedDomain = tempTransformedDomain.concat(
+        transformDomainForChildWidget({
+          domain,
+          widgetFieldName: fieldName,
         }),
       );
     }
 
-    if (domain && domain.length > 0) {
-      setTransformedDomain(
-        transformedDomain.concat(
-          transformDomainForChildWidget({
-            domain,
-            widgetFieldName: fieldName,
-          }),
-        ),
-      );
+    if (tempTransformedDomain.length > 0) {
+      setTransformedDomain(tempTransformedDomain);
     }
-  }
+  }, [
+    widgetDomain,
+    domain,
+    getFields,
+    getAllHierarchyValues,
+    getContext,
+    fieldName,
+  ]);
 
   const toggleViewMode = () => {
     const keys = Array.from(views.keys());
