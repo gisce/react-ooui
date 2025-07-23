@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Modal, Button, Divider, Row, Space } from "antd";
 import { FormModal } from "./FormModal";
 import { SearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
@@ -14,6 +14,8 @@ import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useFetchTreeViews } from "@/hooks/useFetchTreeViews";
 import { extractTreeXmlAttribute } from "@/helpers/treeHelper";
 import SearchTree from "../views/SearchTree";
+import { SearchTreePaginated } from "../views/Tree/Paginated/SearchTreePaginated";
+import { TreeType } from "@/views/actionViews/TreeActionView";
 
 type SearchSelectionProps = {
   visible: boolean;
@@ -47,6 +49,7 @@ export const SearchModal = ({
   const { modalWidth, modalHeight } = useWindowDimensions();
   const { t } = useLocale();
   const { showErrorNotification } = useErrorNotification();
+  const [treeType, setTreeType] = useState<TreeType | undefined>(undefined);
 
   const {
     treeView,
@@ -60,10 +63,22 @@ export const SearchModal = ({
     enabled: visible,
   });
 
-  const shouldShowInfiniteTree = useMemo(() => {
-    if (!treeView?.arch) return false;
-    return extractTreeXmlAttribute(treeView.arch, "infinite") === "1";
+  useEffect(() => {
+    if (!treeView?.arch) {
+      setTreeType("legacy");
+      return;
+    }
+    const infinite = extractTreeXmlAttribute(treeView.arch, "infinite");
+    if (infinite === "1") {
+      setTreeType("infinite");
+    } else if (infinite === "0") {
+      setTreeType("paginated");
+    }
   }, [treeView?.arch]);
+
+  const onChangeTreeType = useCallback((type: TreeType) => {
+    setTreeType(type);
+  }, []);
 
   const handleSelectValues = useCallback(
     async (keys: number[]) => {
@@ -98,10 +113,60 @@ export const SearchModal = ({
     void handleSelectValues(selectedRowKeys);
   }, [selectedRowKeys, handleCloseModal, handleSelectValues]);
 
-  const SearchTreeComp = useMemo(
-    () => (shouldShowInfiniteTree ? SearchTreeInfinite : SearchTree),
-    [shouldShowInfiniteTree],
-  );
+  const SearchTreeComp = useMemo(() => {
+    if (fetchingViewsInfo) {
+      return null;
+    }
+
+    const commonProps = {
+      formView: formView!,
+      treeView: treeView!,
+      model,
+      nameSearch,
+      onRowClicked: handleRowClicked,
+      domain: domain as any[],
+      parentContext: context,
+      filterType: "top" as const,
+      onChangeTreeType,
+    };
+
+    if (treeType === "infinite") {
+      // SearchTreeInfinite supports both treeScrollY and onChangeSelectedRowKeys
+      return (
+        <SearchTreeInfinite
+          {...commonProps}
+          treeScrollY={modalHeight * 0.3}
+          onChangeSelectedRowKeys={setSelectedRowKeys}
+          onChangeTreeType={onChangeTreeType}
+        />
+      );
+    } else if (treeType === "paginated") {
+      // SearchTreePaginated supports onChangeSelectedRowKeys but not treeScrollY
+      return (
+        <SearchTreePaginated
+          {...commonProps}
+          onChangeSelectedRowKeys={setSelectedRowKeys}
+          onChangeTreeType={onChangeTreeType}
+        />
+      );
+    } else {
+      // SearchTree (legacy) supports treeScrollY but not onChangeSelectedRowKeys
+      return <SearchTree {...commonProps} treeScrollY={modalHeight * 0.3} />;
+    }
+  }, [
+    fetchingViewsInfo,
+    treeType,
+    formView,
+    treeView,
+    model,
+    nameSearch,
+    handleRowClicked,
+    domain,
+    context,
+    onChangeTreeType,
+    modalHeight,
+    setSelectedRowKeys,
+  ]);
 
   const handleShowCreateModal = useCallback(() => {
     setShowCreateModal(true);
@@ -134,20 +199,7 @@ export const SearchModal = ({
         destroyOnClose
         maskClosable={false}
       >
-        {!fetchingViewsInfo && (
-          <SearchTreeComp
-            formView={formView!}
-            treeView={treeView!}
-            model={model}
-            nameSearch={nameSearch}
-            onRowClicked={handleRowClicked}
-            treeScrollY={modalHeight * 0.3}
-            domain={domain}
-            parentContext={context}
-            onChangeSelectedRowKeys={setSelectedRowKeys}
-            filterType={"top"}
-          />
-        )}
+        {SearchTreeComp}
         <Divider />
         <Row justify="end">
           <Space>

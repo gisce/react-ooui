@@ -35,6 +35,7 @@ import { PaginatedTableComponent } from "./components/PaginatedTableComponent";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { NameSearchWarning } from "../NameSearchWarning";
 import { useCallbackRef } from "@/hooks/useCallbackRef";
+import { useDeepCompareEffect } from "use-deep-compare";
 import { useConfigContext } from "@/context/ConfigContext";
 import { useExpandableTreeDoubleClick } from "@/hooks/useExpandableTreeDoubleClick";
 import { CellRenderer } from "../CellRenderer";
@@ -55,6 +56,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     nameSearch: nameSearchProps,
     filterType = "side",
     onChangeTreeType,
+    onChangeSelectedRowKeys,
   } = props;
 
   // Refs
@@ -187,6 +189,13 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   });
 
   const refreshCallbackRef = useCallbackRef(refresh);
+
+  // Notify parent component about selected row changes
+  useDeepCompareEffect(() => {
+    if (onChangeSelectedRowKeys) {
+      onChangeSelectedRowKeys(selectedRowKeys);
+    }
+  }, [selectedRowKeys, onChangeSelectedRowKeys]);
 
   // Aggregates handling
   const [loadingAggregates, aggregates, hasAggregates] = useTreeAggregates({
