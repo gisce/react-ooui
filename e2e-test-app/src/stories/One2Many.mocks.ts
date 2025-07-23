@@ -1,4 +1,6 @@
-export const createMockFormView = (fieldType: "one2many" | "many2many" = "one2many") => ({
+export const createMockFormView = (
+  fieldType: "one2many" | "many2many" = "one2many",
+) => ({
   view_id: 1001,
   type: "form",
   arch: `<?xml version="1.0"?>

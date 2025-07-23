@@ -12,6 +12,33 @@ import { Tree as TreeOoui, Many2one, Selection, Reference } from "@gisce/ooui";
 class MockConnectionProvider implements ConnectionProvider {
   private fieldType: "one2many" | "many2many";
   private orderLineData: any[] = [];
+  
+  // Generate different mock data for many2many search modal (different IDs to avoid duplicates)
+  private getSearchModalData() {
+    const searchLines = [];
+    for (let i = 101; i <= 150; i++) { // Use IDs 101-150 to avoid conflicts
+      const product = mockProducts[(i - 101) % mockProducts.length];
+      const quantity = ((i - 100) % 10) + 1;
+      const discount = (i - 100) % 5 === 0 ? ((i - 100) % 25) : 0;
+      const priceUnit = product.list_price * (1 + (((i - 100) % 10) - 5) * 0.02);
+
+      searchLines.push({
+        id: i,
+        sequence: i * 10,
+        order_id: [2, `SO/2024/0002`], // Different order to make it clear these are different
+        product_id: [product.id, product.name],
+        product_id_name: product.name,
+        description: `${product.name}\nAvailable for selection`,
+        quantity: quantity,
+        price_unit: Math.round(priceUnit * 100) / 100,
+        discount: discount,
+        price_subtotal: 0,
+        total_amount: undefined,
+        last_updated: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000).toISOString(),
+      });
+    }
+    return searchLines;
+  }
 
   async fieldsViewGet({ model, viewId, viewType, context }: any) {
     if (model === "sale.order" && viewType === "form") {
@@ -56,24 +83,40 @@ class MockConnectionProvider implements ConnectionProvider {
     fieldsToRetrieve?: string[];
     context?: any;
   }) => {
-    const { ids, fieldsToRetrieve } = params;
+    const { ids, fieldsToRetrieve, fields } = params;
 
     if (params.model === "sale.order.line") {
-      if (!ids || !fieldsToRetrieve) {
-        return this.read(params);
-      }
-
       // Ensure orderLineData is initialized
       if (!this.orderLineData || this.orderLineData.length === 0) {
         this.orderLineData = mockParentRecord.order_line;
       }
 
+      // Look in both current order lines and search modal data
+      const searchModalData = this.getSearchModalData();
+      const allRecords = [...this.orderLineData, ...searchModalData];
+
       // Find the records that match the requested IDs
-      const requestedRecords = this.orderLineData.filter((record) =>
+      const requestedRecords = allRecords.filter((record) =>
         ids.includes(record.id),
       );
 
-      // Generate updated values for autorefreshable fields
+      // If no specific fields requested, return full records
+      if (!fieldsToRetrieve || fieldsToRetrieve.length === 0) {
+        return requestedRecords.map((record) => ({
+          ...record,
+          price_subtotal: this.calculateSubtotal(record),
+          total_amount: this.calculateTotalAmount(record),
+          // Ensure proper formatting for many2one fields
+          product_id: Array.isArray(record.product_id)
+            ? record.product_id
+            : [record.product_id, record.product_id_name || ""],
+          order_id: Array.isArray(record.order_id)
+            ? record.order_id
+            : [record.order_id, `SO/2024/000${record.order_id}`],
+        }));
+      }
+
+      // Generate updated values for specific fields
       return requestedRecords.map((record) => {
         const updatedRecord: any = { id: record.id };
 
@@ -95,6 +138,20 @@ class MockConnectionProvider implements ConnectionProvider {
             case "total_amount":
               // Recalculate function field with time-based variation
               updatedRecord[fieldName] = this.calculateTotalAmount(record);
+              break;
+
+            case "product_id":
+              // Ensure proper many2one formatting
+              updatedRecord[fieldName] = Array.isArray(record.product_id)
+                ? record.product_id
+                : [record.product_id, record.product_id_name || ""];
+              break;
+
+            case "order_id":
+              // Ensure proper many2one formatting
+              updatedRecord[fieldName] = Array.isArray(record.order_id)
+                ? record.order_id
+                : [record.order_id, `SO/2024/000${record.order_id}`];
               break;
 
             default:
@@ -185,7 +242,11 @@ class MockConnectionProvider implements ConnectionProvider {
         this.orderLineData = mockParentRecord.order_line;
       }
 
-      const lines = this.orderLineData.filter((line) => ids.includes(line.id));
+      // Look in both current order lines and search modal data
+      const searchModalData = this.getSearchModalData();
+      const allRecords = [...this.orderLineData, ...searchModalData];
+
+      const lines = allRecords.filter((line) => ids.includes(line.id));
       return lines;
     }
 
@@ -216,8 +277,9 @@ class MockConnectionProvider implements ConnectionProvider {
           this.orderLineData = mockParentRecord.order_line;
         }
 
-        // Filter lines based on domain if needed
-        let filteredLines = [...this.orderLineData];
+        // For many2many fields, use different data for search modal to avoid duplicates
+        const isMany2ManyField = this.fieldType === "many2many";
+        let filteredLines = isMany2ManyField ? this.getSearchModalData() : [...this.orderLineData];
 
         // Apply domain filters if any
         if (domain && domain.length > 0) {
@@ -239,6 +301,19 @@ class MockConnectionProvider implements ConnectionProvider {
                   ? line.order_id[0]
                   : line.order_id;
                 return lineOrderId === value;
+              });
+            } else if (field === "description" && operator === "ilike") {
+              // Handle text search for many2many modal search
+              filteredLines = filteredLines.filter((line) =>
+                line.description?.toLowerCase().includes(value.toLowerCase())
+              );
+            } else if (field === "product_id" && operator === "in") {
+              // Handle product filtering
+              filteredLines = filteredLines.filter((line) => {
+                const productId = Array.isArray(line.product_id)
+                  ? line.product_id[0]
+                  : line.product_id;
+                return Array.isArray(value) ? value.includes(productId) : productId === value;
               });
             }
           }
@@ -282,20 +357,34 @@ class MockConnectionProvider implements ConnectionProvider {
         // Apply pagination for infinite scroll
         const paginatedLines = finalLines.slice(offset, offset + limit);
 
+        // Generate attributes evaluation for the results
+        const attrsEvaluated = paginatedLines.map((result) => ({
+          id: result.id,
+          colors: this.evaluateColorCondition(result),
+          status: this.evaluateStatusCondition(result),
+        }));
+
         return {
+          results: paginatedLines,
+          totalItems: async () => finalLines.length,
+          attrsEvaluated: attrsEvaluated,
+          // Keep items for backward compatibility
           items: paginatedLines,
-          totalItems: () => finalLines.length,
         };
       }
 
       return {
+        results: [],
+        totalItems: async () => 0,
+        attrsEvaluated: [],
         items: [],
-        totalItems: () => 0,
       };
     } catch (error) {
       return {
+        results: [],
+        totalItems: async () => 0,
+        attrsEvaluated: [],
         items: [],
-        totalItems: () => 0,
       };
     }
   }
@@ -314,6 +403,11 @@ class MockConnectionProvider implements ConnectionProvider {
       // Ensure orderLineData is initialized
       if (!this.orderLineData || this.orderLineData.length === 0) {
         this.orderLineData = mockParentRecord.order_line;
+      }
+
+      // For many2many fields, return different search modal data IDs
+      if (this.fieldType === "many2many") {
+        return this.getSearchModalData().map((line) => line.id);
       }
 
       // For One2Many, just return the IDs of the lines that belong to order 1
@@ -372,19 +466,42 @@ class MockConnectionProvider implements ConnectionProvider {
     return [];
   }
 
-  async nameSearch({ model, name, args, limit }: any) {
+  async nameSearch({ model, name, payload, args, limit, attrs, context }: any) {
+    // Use payload if provided, otherwise fall back to name for backward compatibility
+    const searchTerm = payload || name || "";
+    
     if (model === "res.partner") {
       const filtered = mockPartners.filter((p) =>
-        p.name.toLowerCase().includes((name || "").toLowerCase()),
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()),
       );
       return filtered.slice(0, limit || 7).map((p) => [p.id, p.name]);
     }
 
     if (model === "product.product") {
       const filtered = mockProducts.filter((p) =>
-        p.name.toLowerCase().includes((name || "").toLowerCase()),
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()),
       );
       return filtered.slice(0, limit || 7).map((p) => [p.id, p.name]);
+    }
+
+    if (model === "sale.order.line") {
+      // Handle order line search for many2many modal
+      if (!this.orderLineData || this.orderLineData.length === 0) {
+        this.orderLineData = mockParentRecord.order_line;
+      }
+      
+      // For many2many, search in different data to avoid showing current items
+      const linesToSearch = this.fieldType === "many2many" ? this.getSearchModalData() : this.orderLineData;
+      
+      const filtered = linesToSearch.filter((line) =>
+        line.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (Array.isArray(line.product_id) ? line.product_id[1] : line.product_id_name || "")
+          .toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      return filtered.slice(0, limit || 7).map((line) => [
+        line.id, 
+        line.description || (Array.isArray(line.product_id) ? line.product_id[1] : line.product_id_name || `Line ${line.id}`)
+      ]);
     }
 
     return [];
@@ -558,7 +675,7 @@ class MockConnectionProvider implements ConnectionProvider {
     }
 
     if (model === "sale.order.line" && type === "form") {
-      // Return a simple form view for order lines
+      // Return a simple form view for order lines - used in many2many search modal
       return {
         view_id: 1003,
         type: "form",
@@ -577,6 +694,26 @@ class MockConnectionProvider implements ConnectionProvider {
     }
 
     throw new Error(`View not found for model: ${model}, type: ${type}`);
+  }
+
+  // Additional method to handle multiple view loading for many2many search modal
+  async loadViews({ model, views, context }: any) {
+    const result: any = {};
+    
+    for (const [viewId, viewType] of views) {
+      try {
+        const view = await this.getView({
+          model,
+          type: viewType,
+          context,
+        });
+        result[viewType] = view;
+      } catch (error) {
+        // Silently continue if view not found
+      }
+    }
+    
+    return result;
   }
 
   async defaultGet({ model, fields, context, extraValues }: any) {
@@ -674,8 +811,14 @@ class MockConnectionProvider implements ConnectionProvider {
   async getDefaults() {
     return {};
   }
-  async getToolbar() {
-    return {};
+  async getToolbar({ model, type, context }: any) {
+    // Return empty toolbar for simplicity - can be enhanced if needed
+    return {
+      action: {},
+      relate: [],
+      print: [],
+      other: []
+    };
   }
 
   // Fix the permission method signature that's causing the TypeError
@@ -839,6 +982,20 @@ class MockConnectionProvider implements ConnectionProvider {
   }
   async getTitleFromId() {
     return "";
+  }
+
+  async treeButOpen({ id, model, context }: any) {
+    // Mock implementation for expandable tree buttons in search modal
+    // Returns action data in the expected format: [[null, null, actionData]]
+    return [[null, null, {
+      name: "Expand Action",
+      type: "ir.actions.act_window",
+      res_model: model,
+      view_mode: "form",
+      res_id: id,
+      target: "new",
+      context: context || {}
+    }]];
   }
   readAggregates = async ({
     model,
@@ -1090,6 +1247,15 @@ class MockConnectionProvider implements ConnectionProvider {
       unlink: true,
     };
   };
+
+  async checkPermissionAsync({ model, type }: { model: string; type: string }) {
+    return {
+      read: true,
+      write: true,
+      create: true,
+      unlink: true,
+    };
+  }
 
   checkPermissions = (model: string) => {
     return {
@@ -1367,10 +1533,12 @@ class MockConnectionProvider implements ConnectionProvider {
     return null; // No status condition met
   }
 
-  constructor(fieldType: "one2many" | "many2many" = "one2many") {
+  constructor(fieldType: "one2many" | "many2many" = "one2many", lineCount?: number) {
     // Initialize with mock data
     this.fieldType = fieldType;
-    this.orderLineData = mockParentRecord.order_line;
+    // Use provided line count or default based on field type
+    const count = lineCount ?? (fieldType === "one2many" ? 50 : 2);
+    this.orderLineData = generateMockOrderLines(1, count);
   }
 }
 
@@ -1378,8 +1546,9 @@ let mockProviderInstance: MockConnectionProvider | null = null;
 
 export function initializeMockProvider(
   fieldType: "one2many" | "many2many" = "one2many",
+  lineCount?: number,
 ) {
-  const provider = new MockConnectionProvider(fieldType);
+  const provider = new MockConnectionProvider(fieldType, lineCount);
 
   // Wrap in a Proxy to catch any missing method calls
   mockProviderInstance = new Proxy(provider, {
@@ -1459,8 +1628,8 @@ export const mockConnectionProvider = new MockConnectionProvider();
 class PaginatedMockConnectionProvider extends MockConnectionProvider {
   private paginatedFormView: any;
 
-  constructor(fieldType: "one2many" | "many2many" = "one2many") {
-    super(fieldType);
+  constructor(fieldType: "one2many" | "many2many" = "one2many", lineCount?: number) {
+    super(fieldType, lineCount);
     
     // Create paginated form view - use infinite: '0' to force paginated mode
     const baseFormView = createMockFormView(fieldType);
@@ -1506,8 +1675,9 @@ let paginatedMockProviderInstance: PaginatedMockConnectionProvider | null =
 
 export function initializePaginatedMockProvider(
   fieldType: "one2many" | "many2many" = "one2many",
+  lineCount?: number,
 ) {
-  const provider = new PaginatedMockConnectionProvider(fieldType);
+  const provider = new PaginatedMockConnectionProvider(fieldType, lineCount);
 
   // Wrap in a Proxy to catch any missing method calls (same as infinite version)
   paginatedMockProviderInstance = new Proxy(provider, {
