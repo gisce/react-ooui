@@ -29,6 +29,11 @@ export const useErrorNotification = ({
   const { open, destroy } = useNotificationContext();
 
   const showErrorNotification = (error: ShowErrorNotificationArg) => {
+    // ignore canceled requests errors
+    if ((error as any)?.code === "ERR_CANCELED") {
+      return;
+    }
+
     // Type guard for Notification-like error
     if (
       typeof error === "object" &&
