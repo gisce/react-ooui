@@ -32,6 +32,7 @@ import { SearchModal } from "@/widgets/modals/SearchModal";
 import { useLocale } from "@gisce/react-formiga-components";
 import { sortResults } from "@/helpers/treeHelper";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
+import { useDeepCompareEffect } from "use-deep-compare";
 
 type One2manyValue = {
   fields?: any;
@@ -87,10 +88,10 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const {
     activeId,
     getFields,
-    getValues,
     getContext,
     domain,
     fetchValues: fetchParentFormValues,
+    getAllHierarchyValues,
   } = formContext || {};
   const { t } = useLocale();
 
@@ -103,7 +104,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
   const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
   const [continuousEntryMode, setContinuousEntryMode] =
     useState<boolean>(false);
-  const transformedDomain = useRef<any[]>([]);
+  const [transformedDomain, setTransformedDomain] = useState<any[]>([]);
   const [sorter, setSorter] = useState<any>();
   const originalSortItemIds = useRef<number[]>();
   const [colorsForResults, setColorsForResults] = useState<any>(undefined);
@@ -146,7 +147,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items, currentView]);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     parseDomain();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [domain]);
@@ -202,26 +203,33 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     }
   };
 
+  useDeepCompareEffect(() => {
+    parseDomain();
+  }, [getAllHierarchyValues()]);
+
   async function parseDomain() {
     if (widgetDomain) {
-      transformedDomain.current =
+      setTransformedDomain(
         await ConnectionProvider.getHandler().evalDomain({
           domain: widgetDomain,
           values: transformPlainMany2Ones({
             fields: getFields(),
-            values: getValues(),
+            values: getAllHierarchyValues(),
           }),
           fields: getFields(),
           context: getContext(),
-        });
+        }),
+      );
     }
 
     if (domain && domain.length > 0) {
-      transformedDomain.current = transformedDomain.current.concat(
-        transformDomainForChildWidget({
-          domain,
-          widgetFieldName: fieldName,
-        }),
+      setTransformedDomain(
+        transformedDomain.concat(
+          transformDomainForChildWidget({
+            domain,
+            widgetFieldName: fieldName,
+          }),
+        ),
       );
     }
   }
@@ -743,7 +751,7 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         }}
       />
       <SearchModal
-        domain={transformedDomain.current}
+        domain={transformedDomain}
         model={relation}
         context={{ ...getContext?.(), ...context }}
         visible={showSearchModal}

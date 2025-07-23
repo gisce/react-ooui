@@ -214,9 +214,14 @@ export const mergeSearchFields = (searchFields: any[]) => {
     );
   });
 
+  const uniquePrimary = mergedSearchFields.primary.filter(onlyUnique);
+  const uniqueSecondary = mergedSearchFields.secondary
+    .filter(onlyUnique)
+    .filter((field) => !uniquePrimary.includes(field));
+
   return {
-    primary: mergedSearchFields.primary.filter(onlyUnique),
-    secondary: mergedSearchFields.secondary.filter(onlyUnique),
+    primary: uniquePrimary,
+    secondary: uniqueSecondary,
   };
 };
 

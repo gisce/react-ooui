@@ -1,21 +1,26 @@
 import { ReactElement, useCallback, useEffect, useMemo, useState } from "react";
-import { Checkbox, Spin, ColorPicker, Tooltip, Popover } from "antd";
+import { Checkbox, Spin, ColorPicker, Tooltip } from "antd";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../../base/ProgressBar";
 import { One2manyValue } from "../../base/one2many/One2manyInput";
 import { Interweave } from "interweave";
 import { Many2oneTree } from "../../base/many2one/Many2oneTree";
 import { ReferenceTree } from "../../base/ReferenceTree";
-import dayjs from "@/helpers/dayjs";
 import Avatar from "../../custom/Avatar";
 import { CustomTag, TagInput } from "../../custom/Tag";
 import ConnectionProvider from "@/ConnectionProvider";
 import { colorFromString } from "@/helpers/formHelper";
 import { EmailTagsRender } from "@/widgets/custom/EmailTags";
 import { ImageRender } from "@/widgets/base/Image";
-import { Char as CharOOui } from "@gisce/ooui";
-import { DatePickerConfig } from "@/common/DatePicker.helpers";
+import {
+  Char as CharOOui,
+  DateTime,
+  Many2one as Many2oneOoui,
+} from "@gisce/ooui";
 import { useActionViewContext } from "@/context/ActionViewContext";
+import { useOne2manyContext } from "@/context/One2manyContext";
+import { DateValue, DateTimeValue } from "@gisce/react-formiga-components";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 
 export const BooleanComponent = ({
   value,
@@ -47,13 +52,23 @@ export const EmailTagsComponent = ({
   return useMemo(() => <EmailTagsRender emails={value} />, [value]);
 };
 
-export const Many2OneComponent = ({ value }: { value: any }): ReactElement => {
-  return useMemo(() => <Many2oneTree m2oField={value} />, [value]);
+export const Many2OneComponent = ({
+  value,
+  ooui,
+}: {
+  value: any;
+  ooui: Many2oneOoui;
+}): ReactElement => {
+  return useMemo(
+    () => <Many2oneTree m2oField={value} ooui={ooui} />,
+    [value, ooui],
+  );
 };
 
 export const TextComponent = ({ value }: { value: any }): ReactElement => {
   const { treeType } = useActionViewContext();
-  const mustHaveAHover = treeType === "infinite";
+  const { treeType: one2manyTreeType } = useOne2manyContext() || {};
+  const mustHaveAHover = (one2manyTreeType || treeType) === "infinite";
 
   return useMemo(() => {
     const contentWithNewlines = (
@@ -105,15 +120,7 @@ export const TextComponent = ({ value }: { value: any }): ReactElement => {
 };
 
 export const DateComponent = ({ value }: { value: any }): ReactElement => {
-  return useMemo(() => {
-    if (!value || (value && value.length === 0)) return <></>;
-
-    const formattedValue = dayjs(
-      value,
-      DatePickerConfig.date.dateInternalFormat,
-    ).format(DatePickerConfig.date.dateDisplayFormat);
-    return <>{formattedValue}</>;
-  }, [value]);
+  return <DateValue value={value} />;
 };
 
 export const CharComponent = ({
@@ -135,15 +142,14 @@ export const CharComponent = ({
   }, [value, ooui.fieldType]);
 };
 
-export const DateTimeComponent = ({ value }: { value: any }): ReactElement => {
-  return useMemo(() => {
-    if (!value || (value && value.length === 0)) return <></>;
-    const formattedValue = dayjs(
-      value,
-      DatePickerConfig.time.dateInternalFormat,
-    ).format(DatePickerConfig.time.dateDisplayFormat);
-    return <>{formattedValue}</>;
-  }, [value]);
+export const DateTimeComponent = ({
+  value,
+  ooui,
+}: {
+  value: any;
+  ooui: DateTime;
+}): ReactElement => {
+  return <DateTimeValue value={value} timezone={ooui.timezone} />;
 };
 
 export const One2ManyComponent = ({
@@ -196,6 +202,7 @@ export const ColorPickerComponent = ({
 }): ReactElement => {
   return useMemo(
     () => <ColorPicker value={value} disabled showText />,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [ooui, value],
   );
 };
@@ -285,19 +292,22 @@ export const TagsComponent = ({
 }): ReactElement => {
   const [values, setValues] = useState<Array<{ id: number; name: string }>>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [readObjects, cancelReadObjectsRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().readObjects,
+  );
   const { relation, field } = ooui;
 
   const loadValues = useCallback(async () => {
     try {
       setLoading(true);
-      const optionsRead = await ConnectionProvider.getHandler().search({
+      const response = await readObjects({
         model: relation,
-        params: [["id", "in", value.items.map((v: any) => v.id)]],
-        fields: [field],
+        ids: value.items.map((v: any) => v.id),
+        fieldsToRetrieve: [field],
         context,
       });
       setValues(
-        optionsRead.map((i: any) => {
+        response.map((i: any) => {
           return { id: i.id, name: i[field] };
         }),
       );
@@ -306,7 +316,7 @@ export const TagsComponent = ({
     } finally {
       setLoading(false);
     }
-  }, [context, field, relation, value?.items]);
+  }, [context, field, relation, value?.items, readObjects]);
 
   useEffect(() => {
     if (value?.items && value?.items.length > 0) {
@@ -314,6 +324,13 @@ export const TagsComponent = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value?.items]);
+
+  useEffect(() => {
+    return () => {
+      cancelReadObjectsRequest();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const tags = useMemo(
     () =>

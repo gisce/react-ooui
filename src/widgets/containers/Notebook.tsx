@@ -1,7 +1,7 @@
 import React from "react";
 import { Tabs, theme } from "antd";
 import styled from "styled-components";
-import iconMapper from "@/helpers/iconMapper";
+import { iconMapper } from "@gisce/react-formiga-components";
 
 import { Notebook as NotebookOoui, Group as GroupOoui } from "@gisce/ooui";
 import { Group } from "@/index";

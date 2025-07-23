@@ -10,8 +10,7 @@ import {
 } from "@ant-design/icons";
 
 import { toBase64, getMimeType } from "@/helpers/filesHelper";
-import iconMapper from "@/helpers/iconMapper";
-import { useLocale } from "@gisce/react-formiga-components";
+import { iconMapper, useLocale } from "@gisce/react-formiga-components";
 
 type ImageProps = {
   ooui: ImageOoui;

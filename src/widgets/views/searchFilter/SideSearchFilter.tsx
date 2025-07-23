@@ -7,8 +7,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { Form, Button, FormInstance } from "antd";
-import useDeepCompareEffect from "use-deep-compare-effect";
+import { Form, Button, FormInstance, Input, Space } from "antd";
+import { useDeepCompareEffect } from "use-deep-compare";
 import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 
 import {
@@ -23,7 +23,6 @@ import { SearchFields } from "@/types";
 import { getParamsForFields, normalizeValues } from "@/helpers/searchHelper";
 import { useLocale } from "@gisce/react-formiga-components";
 import { FloatingDrawer } from "@/ui/FloatingDrawer";
-import debounce from "lodash.debounce";
 import deepEqual from "deep-equal";
 
 type SideSearchFilterBaseProps = {
@@ -42,16 +41,25 @@ type SideSearchFilterContainerProps = SideSearchFilterBaseProps & {
 export type SideSearchFilterProps = SideSearchFilterBaseProps & {
   searchFields?: Container;
   onChange?: (values: any) => void;
+  onClear?: (field?: string, formValues?: any) => void;
 };
 
-// eslint-disable-next-line react/display-name
 export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
   (props, ref) => {
-    const { onSubmit, searchValues, searchFields, onChange } = props;
+    const { onSubmit, searchValues, searchFields, onChange, onClear } = props;
     const [form] = Form.useForm();
+    const [confirmedValues, setConfirmedValues] = useState<any>({});
+    const [initialConfirmedValues, setInitialConfirmedValues] = useState<any>(
+      {},
+    );
+    const [searchText, setSearchText] = useState("");
+    const { t } = useLocale();
 
     useEffect(() => {
       form.setFieldsValue(searchValues);
+      const normalized = normalizeValues(searchValues || {});
+      setConfirmedValues(normalized);
+      setInitialConfirmedValues(normalized);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchValues]);
 
@@ -59,23 +67,86 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
       submit: form.submit,
       resetFields: form.resetFields,
       setFieldsValue: form.setFieldsValue,
+      resetInitialValues: () => {
+        setInitialConfirmedValues({});
+        setConfirmedValues({});
+      },
     }));
 
-    const getRowsAndCols = () => {
+    const getFieldsInputs = ({
+      searchText,
+      onlyInputsWithValue = false,
+    }: {
+      searchText?: string;
+      onlyInputsWithValue?: boolean;
+    }) => {
       if (!searchFields) return;
 
       const rows = searchFields?.rows;
 
-      const formValues = normalizeValues(form.getFieldsValue());
+      const fields = rows?.flatMap((row) => row) as Field[];
 
-      return rows?.map((row, i) => {
-        return row.map((item, j) => {
-          const hasValue = formValues[(item as Field).id] !== undefined;
+      const currentValues = Object.keys(confirmedValues).reduce<
+        Record<string, boolean>
+      >((acc, key) => {
+        const keyWithoutHash = key.replace(/#.*$/, "");
+        if (acc[keyWithoutHash] === undefined) {
+          acc[keyWithoutHash] = confirmedValues[key] !== undefined;
+        }
+        return acc;
+      }, {});
+
+      const initialValues = Object.keys(initialConfirmedValues).reduce<
+        Record<string, boolean>
+      >((acc, key) => {
+        const keyWithoutHash = key.replace(/#.*$/, "");
+        if (acc[keyWithoutHash] === undefined) {
+          acc[keyWithoutHash] = initialConfirmedValues[key] !== undefined;
+        }
+        return acc;
+      }, {});
+
+      const confirmedValuesKeyExist = onlyInputsWithValue
+        ? fields.reduce<Record<string, boolean>>((acc, field) => {
+            acc[field.id] = currentValues[field.id] && initialValues[field.id];
+            return acc;
+          }, {})
+        : currentValues;
+
+      return fields
+        .filter((field) => {
+          if (onlyInputsWithValue) {
+            return confirmedValuesKeyExist[field.id] === true;
+          }
+          return true;
+        })
+        .sort((a, b) => {
+          const fieldA = a as Field;
+          const fieldB = b as Field;
+
+          return normalizeString(fieldA.label).localeCompare(
+            normalizeString(fieldB.label),
+          );
+        })
+        .map((item, i) => {
+          const field = item as Field;
+          const hasValue = confirmedValuesKeyExist[field.id] === true;
+
+          const hasInitialValue = Object.keys(initialConfirmedValues).some(
+            (key) =>
+              key.replace(/#.*$/, "") === field.id &&
+              initialConfirmedValues[key] !== undefined,
+          );
+          const hasToHide = onlyInputsWithValue
+            ? false
+            : (searchText && !matchSearch(searchText, field)) ||
+              hasInitialValue;
+
           return (
             <div
               key={i}
               style={{
-                display: "block",
+                display: hasToHide ? "none" : "block",
                 paddingTop: 5,
                 paddingBottom: 15,
                 backgroundColor: hasValue ? "#f0f0f0" : undefined,
@@ -83,44 +154,119 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
               }}
             >
               <div style={{ paddingLeft: 18, paddingRight: 18 }}>
-                <SearchField key={`sf-${i}-${j}`} field={item as Field} />
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-end",
+                    gap: "8px",
+                  }}
+                >
+                  <div style={{ flex: 1 }}>
+                    <SearchField key={`sf-${i}`} field={field} />
+                  </div>
+                  {hasValue && (
+                    <Button
+                      icon={<ClearOutlined />}
+                      tabIndex={-1}
+                      type="default"
+                      style={{
+                        height: 28,
+                      }}
+                      onClick={() => {
+                        onClear?.(field.id, form.getFieldsValue());
+                        handleFormBlur();
+                      }}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           );
         });
-      });
     };
 
-    const rows = getRowsAndCols();
-
-    const checkFieldsChanges = useCallback(() => {
+    const handleFormBlur = useCallback(() => {
       const touchedValues = form.getFieldsValue();
+      const normalizedTouchedValues = normalizeValues(touchedValues);
+      setConfirmedValues(normalizedTouchedValues);
       onChange?.(touchedValues);
     }, [form, onChange]);
 
-    const debouncedCheckFieldsChanges = debounce(checkFieldsChanges, 100);
+    const handleKeyPress = useCallback(
+      (event: React.KeyboardEvent) => {
+        if (event.key === "Enter") {
+          form.submit();
+        }
+      },
+      [form],
+    );
 
-    const handleKeyPress = (event: React.KeyboardEvent) => {
-      if (event.key === "Enter") {
-        form.submit();
-      }
-    };
     return (
       <Fragment>
         <Form
           form={form}
           onFinish={onSubmit}
-          onFieldsChange={debouncedCheckFieldsChanges as any}
+          onBlurCapture={handleFormBlur}
           onKeyPress={handleKeyPress}
-          className="pt-3 pb-3"
+          className="pb-3"
+          style={{
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+          }}
         >
-          {rows}
+          <div
+            style={{
+              borderBottom: "1px solid #f0f0f0",
+              flexShrink: 0,
+            }}
+          >
+            <Space direction="vertical" style={{ rowGap: 0, width: "100%" }}>
+              {getFieldsInputs({
+                onlyInputsWithValue: true,
+              })}
+            </Space>
+            <div style={{ padding: "12px 12px 12px 12px" }}>
+              <Input
+                placeholder={t("enterFieldToFilter")}
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                allowClear
+                prefix={<SearchOutlined />}
+                name={undefined}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                  }
+                }}
+              />
+            </div>
+          </div>
+          <div
+            style={{
+              flex: 1,
+              overflowY: "auto",
+              marginTop: 8,
+              paddingBottom: 16,
+            }}
+          >
+            {getFieldsInputs({
+              searchText,
+            })}
+          </div>
         </Form>
-        <div className="pb-2" />
       </Fragment>
     );
   },
 );
+SideSearchFilterComponent.displayName = "SideSearchFilterComponent";
+
+type SideSearchFilterRef = {
+  resetInitialValues: () => void;
+  submit: () => void;
+  resetFields: () => void;
+  setFieldsValue: (values: any) => void;
+};
 
 export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
   const { onSubmit, isOpen, onClose, searchFields, fields, searchValues } =
@@ -128,7 +274,7 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
   const sfo = useRef<SearchFilterOoui>();
   const { t } = useLocale();
   const [parsedSearchFields, setParsedSearchFields] = useState<Container>();
-  const formRef = useRef<FormInstance>(null);
+  const sideSearchFilterRef = useRef<SideSearchFilterRef>(null);
   const [searchParams, setSearchParams] = useState<any>();
 
   useEffect(() => {
@@ -165,7 +311,7 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
   );
 
   const handleSubmit = useCallback(() => {
-    formRef.current?.submit();
+    sideSearchFilterRef.current?.submit();
   }, []);
 
   const handleOnChange = useCallback(
@@ -185,11 +331,33 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
     [searchValues],
   );
 
-  const handleClear = useCallback(() => {
-    formRef.current?.resetFields();
-    formRef?.current?.setFieldsValue({});
-    setSearchParams([]);
-  }, []);
+  const handleClear = useCallback(
+    (field?: string, formValues: any = {}) => {
+      if (field) {
+        const filteredValues = { ...formValues };
+
+        Object.entries(formValues).forEach(([key]) => {
+          if (key.replace(/#.*$/, "") === field.replace(/#.*$/, "")) {
+            filteredValues[key] = undefined;
+          }
+        });
+
+        sideSearchFilterRef.current?.setFieldsValue(filteredValues);
+        const newSearchParams = searchParams?.filter(
+          (entry: [string]) =>
+            entry[0].replace(/#.*$/, "") !== field.replace(/#.*$/, ""),
+        );
+        setSearchParams(newSearchParams);
+        return;
+      }
+
+      sideSearchFilterRef.current?.resetFields();
+      sideSearchFilterRef.current?.setFieldsValue({});
+      sideSearchFilterRef.current?.resetInitialValues?.();
+      setSearchParams([]);
+    },
+    [searchParams],
+  );
 
   const paramsToShow = isOpen
     ? searchParams ||
@@ -211,11 +379,12 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
     >
       {isOpen && (
         <SideSearchFilterComponent
-          ref={formRef}
+          ref={sideSearchFilterRef}
           searchFields={parsedSearchFields}
           onSubmit={onFinish}
           searchValues={searchValues}
           onChange={handleOnChange}
+          onClear={handleClear}
         />
       )}
     </FloatingDrawer>
@@ -256,11 +425,29 @@ export const SideSearchFooter = ({
       <Button
         icon={<ClearOutlined />}
         size={"large"}
-        onClick={onClear}
-        style={{ width: "80px" }}
+        onClick={() => {
+          onClear();
+        }}
+        style={{ width: "100px" }}
       >
         {t("clear")}
       </Button>
     </div>
   );
+};
+
+const normalizeString = (str: string) => {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Remove diacritics
+    .replace(/[^a-zA-Z0-9\s]/g, "") // Remove special characters
+    .toLowerCase();
+};
+
+const matchSearch = (searchText: string, field: Field) => {
+  if (!searchText) return true;
+
+  const normalizedLabel = normalizeString(field.label);
+  const normalizedSearch = normalizeString(searchText);
+  return normalizedLabel.includes(normalizedSearch);
 };

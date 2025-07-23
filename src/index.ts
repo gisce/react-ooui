@@ -30,7 +30,6 @@ import type {
 } from "@/widgets/base/one2many/One2manyInput";
 import { Reference } from "@/widgets/base/Reference";
 import { Binary } from "@/widgets/base/Binary";
-import iconMapper from "@/helpers/iconMapper";
 import ActionBar from "@/actionbar/FormActionBar";
 import { Url } from "@/widgets/base/Url";
 import { Email } from "@/widgets/base/Email";
@@ -59,6 +58,7 @@ import type {
   TreeView,
   SearchFields,
   FormView,
+  View,
   ConnectionProviderType,
   SearchRequest,
   SearchResponse,
@@ -89,8 +89,13 @@ import Tab from "./views/tabs/Tab";
 import ActionView from "./views/ActionView";
 import { ErpAllFeatureKeys, ErpFeatureKeys } from "./models/erpFeature";
 import type { ErpFeaturesMap } from "./models/erpFeature";
+import { UserAllFeatureKeys, UserFeatureKeys } from "./models/userFeature";
+import type { UserFeaturesMap, UserFeaturesState } from "./models/userFeature";
 import { GraphCard } from "./widgets/views/Graph";
 import dayjs from "./helpers/dayjs";
+import { TreeActionView } from "./views/actionViews/TreeActionView";
+import ActionViewProvider from "./context/ActionViewContext";
+import { DEFAULT_SEARCH_LIMIT } from "./models/constants";
 
 export {
   Button,
@@ -136,7 +141,6 @@ export {
   Time,
   Reference,
   Binary,
-  iconMapper,
   CreateReportRequest,
   GetReportRequest,
   ExecuteOnChangeRequest,
@@ -183,4 +187,12 @@ export {
   Spinner,
   Carousel,
   ColorPicker,
+  UserAllFeatureKeys,
+  UserFeatureKeys,
+  UserFeaturesMap,
+  UserFeaturesState,
+  TreeActionView,
+  ActionViewProvider,
+  View,
+  DEFAULT_SEARCH_LIMIT,
 };

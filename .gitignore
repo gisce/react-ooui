@@ -31,3 +31,7 @@ yarn.lock
 dist
 
 .yalc
+
+*storybook.log
+
+test-results/

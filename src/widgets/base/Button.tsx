@@ -5,8 +5,7 @@ import { Button as ButtonOoui } from "@gisce/ooui";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { LoadingOutlined } from "@ant-design/icons";
-import iconMapper from "@/helpers/iconMapper";
-import { useLocale } from "@gisce/react-formiga-components";
+import { useLocale, Icon } from "@gisce/react-formiga-components";
 
 type Props = {
   ooui: ButtonOoui;
@@ -52,11 +51,7 @@ export const Button = (props: Props) => {
 
   function getButtonIcon() {
     if (isRunning) return <LoadingOutlined />;
-    if (icon) {
-      const Icon: React.ElementType = iconMapper(icon) as any;
-      return Icon && <Icon />;
-    }
-    return undefined;
+    return <Icon icon={icon} />;
   }
 
   return (
@@ -68,7 +63,12 @@ export const Button = (props: Props) => {
         icon={getButtonIcon()}
         type={ooui.primary ? "primary" : "default"}
         danger={ooui.danger}
-        style={{ whiteSpace: "normal", height: "auto" }}
+        style={{
+          whiteSpace: "normal",
+          height: "auto",
+          paddingTop: "3px",
+          paddingBottom: "3px",
+        }}
       >
         {label}
       </AntButton>

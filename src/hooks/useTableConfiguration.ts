@@ -29,6 +29,9 @@ export const useTableConfiguration = (
   const strings = useMemo(
     () => ({
       resetTableViewLabel: t("resetTableView"),
+      changeToInfiniteLabel: t("changeToInfinite"),
+      changeToPaginatedLabel: t("changeToPaginated"),
+      noResultsLabel: t("no_results"),
     }),
     [t],
   );

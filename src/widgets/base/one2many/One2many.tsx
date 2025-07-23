@@ -2,18 +2,21 @@ import { useContext, useState } from "react";
 import { One2many as One2manyOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { Spin, Alert } from "antd";
-import { FormView, TreeView, Views, ViewType } from "@/types";
+import { Views, ViewType } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
-import One2manyProvider from "@/context/One2manyContext";
 import { One2manyInput } from "@/widgets/base/one2many/One2manyInput";
 import {
   One2manyInput as One2manyInputInfinite,
   One2manyInputInfiniteProps,
 } from "@/widgets/base/one2many/One2manyInputInfinite";
-import useDeepCompareEffect from "use-deep-compare-effect";
+import { useDeepCompareEffect } from "use-deep-compare";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
+import { DEFAULT_TREE_TYPE } from "@/views/actionViews/TreeActionView";
+import One2manyProvider, {
+  useOne2manyContext,
+} from "@/context/One2manyContext";
 
 const MIN_ITEMS_TO_USE_INFINITE = 30;
 
@@ -65,6 +68,24 @@ export const One2many = (props: Props) => {
       return view;
     }
 
+    if (getToolbarEnabled && (type === "form" || type === "tree")) {
+      // Get view and toolbar in parallel
+      const [viewData, toolbar] = await Promise.all([
+        ConnectionProvider.getHandler().getView({
+          model: relation,
+          type,
+          context: { ...getContext?.(), ...context },
+        }),
+        ConnectionProvider.getHandler().getToolbar({
+          model: relation,
+          type,
+          context: { ...getContext?.(), ...context },
+        }),
+      ]);
+      return { ...viewData, toolbar };
+    }
+
+    // If toolbar not enabled or not form/tree view, just get view
     return await ConnectionProvider.getHandler().getView({
       model: relation,
       type,
@@ -78,14 +99,17 @@ export const One2many = (props: Props) => {
 
     try {
       if (mode && mode.length > 0) {
-        for (const m of mode as ViewType[]) {
+        const viewPromises = (mode as ViewType[]).map(async (m: ViewType) => {
           const v = await getViewData(m);
           views.set(m, v);
-        }
+        });
+        await Promise.all(viewPromises);
         setViews(views);
       } else {
-        const formView = await getViewData("form");
-        const treeView = await getViewData("tree");
+        const [formView, treeView] = await Promise.all([
+          getViewData("form"),
+          getViewData("tree"),
+        ]);
         views.set("form", formView);
         views.set("tree", treeView);
         setViews(views);
@@ -108,6 +132,7 @@ export const One2many = (props: Props) => {
   }
 
   if (error) {
+    console.error(error);
     return <Alert className="mt-10" message={error} type="error" banner />;
   }
 
@@ -139,13 +164,29 @@ export const One2many = (props: Props) => {
 
 const One2manyComponent = (props: One2manyInputInfiniteProps) => {
   const { ooui, value } = props;
-  const shouldUseInfiniteComponent =
-    ooui.infinite ||
-    (value &&
-      Array.isArray(value.items) &&
-      value.items.length >= MIN_ITEMS_TO_USE_INFINITE);
 
-  return shouldUseInfiniteComponent ? (
+  const { treeType, setTreeType } = useOne2manyContext();
+
+  useDeepCompareEffect(() => {
+    if (ooui.infinite) {
+      setTreeType("infinite");
+      return;
+    }
+
+    if (
+      value &&
+      Array.isArray(value.items) &&
+      value.items.length >= MIN_ITEMS_TO_USE_INFINITE
+    ) {
+      setTreeType("infinite");
+      return;
+    }
+
+    setTreeType(DEFAULT_TREE_TYPE);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ooui.infinite, value]);
+
+  return treeType === "infinite" ? (
     <One2manyInputInfinite {...props} />
   ) : (
     <One2manyInput {...props} />

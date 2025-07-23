@@ -11,7 +11,7 @@ import {
 } from "./useServerGraphData";
 import { GraphIndicatorComp } from "./GraphIndicatorComp";
 import { isNumber } from "./GraphDefaults";
-import { GRAPH_DEFAULT_HEIGHT, GraphChartComp } from "./GraphChartComp";
+import { GraphChartComp } from "./GraphChartComp";
 import { CenteredSpinner } from "@/ui/CenteredSpinner";
 
 export type GraphProps = {
@@ -59,6 +59,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
   }
 
   if (error) {
+    console.error(error);
     return <Alert className="mt-10" message={error} type="error" banner />;
   }
 
@@ -93,7 +94,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
           isStack={chart.isStack}
           numItems={chart.num_items}
           yAxisOpts={chart.yAxisOpts}
-          fixedHeight={fixedHeight || GRAPH_DEFAULT_HEIGHT}
+          fixedHeight={fixedHeight}
         />
       );
     }

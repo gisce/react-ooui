@@ -27,7 +27,6 @@ import Icon, {
 import { useLocale, DropdownButton } from "@gisce/react-formiga-components";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import ConnectionProvider from "@/ConnectionProvider";
-import showErrorDialog from "@/ui/ActionErrorDialog";
 import ButtonWithBadge from "./ButtonWithBadge";
 import { showLogInfo } from "@/helpers/logInfoHelper";
 import SearchBar from "./SearchBar";
@@ -42,6 +41,7 @@ import {
 } from "@/hooks/useTreeToolbarButtons";
 import { ActionBarSeparator } from "./ActionBarSeparator";
 import { ShareUrlButton } from "./ShareUrlButton";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 
 type Props = {
   parentContext?: any;
@@ -84,6 +84,7 @@ function TreeActionBarComponent({
     treeType,
     setSearchParams,
     setSearchValues,
+    permissions,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
   const advancedExportEnabled = useFeatureIsEnabled(
@@ -92,6 +93,7 @@ function TreeActionBarComponent({
   const { t } = useLocale();
   const [exportModalVisible, setExportModalVisible] = useState(false);
   const isFirstMount = useRef(true);
+  const { showErrorNotification } = useErrorNotification();
 
   const handleRefresh = useCallback(() => {
     searchTreeRef?.current?.refreshResults();
@@ -99,6 +101,7 @@ function TreeActionBarComponent({
 
   const { actionButtonProps, printButtonProps } = useTreeToolbarButtons({
     toolbar,
+    model: currentModel,
     disabled: treeIsLoading,
     parentContext,
     selectedRowItems,
@@ -134,7 +137,7 @@ function TreeActionBarComponent({
         searchTreeRef?.current?.refreshResults();
       }
     } catch (e) {
-      showErrorDialog(e);
+      showErrorNotification(e);
     } finally {
       setDuplicatingItem?.(false);
     }
@@ -144,6 +147,7 @@ function TreeActionBarComponent({
     searchTreeRef,
     selectedRowItems,
     setDuplicatingItem,
+    showErrorNotification,
   ]);
 
   const handleRemove = useCallback(async () => {
@@ -158,7 +162,7 @@ function TreeActionBarComponent({
       setCurrentItemIndex?.(undefined);
       searchTreeRef?.current?.refreshResults();
     } catch (e) {
-      showErrorDialog(e);
+      showErrorNotification(e);
     } finally {
       setRemovingItem?.(false);
     }
@@ -170,6 +174,7 @@ function TreeActionBarComponent({
     setCurrentId,
     setCurrentItemIndex,
     setRemovingItem,
+    showErrorNotification,
   ]);
 
   const handleChangeView = useCallback(
@@ -186,13 +191,17 @@ function TreeActionBarComponent({
         return;
       }
 
-      if (searchString && searchString.trim().length > 0) {
+      if (
+        searchString &&
+        searchString.trim().length > 0 &&
+        !searchTreeNameSearch
+      ) {
         setSearchParams?.([]);
         setSearchValues?.({});
       }
 
       setSearchTreeNameSearch?.(searchString);
-      if (searchTreeNameSearch !== undefined && treeType !== "infinite") {
+      if (searchTreeNameSearch !== undefined) {
         setTimeout(() => {
           searchTreeRef?.current?.refreshResults();
         }, 50);
@@ -201,7 +210,6 @@ function TreeActionBarComponent({
     [
       searchTreeNameSearch,
       setSearchTreeNameSearch,
-      treeType,
       setSearchParams,
       setSearchValues,
       searchTreeRef,
@@ -317,7 +325,7 @@ function TreeActionBarComponent({
             badgeNumber={searchParams?.length}
           />
           <ActionBarSeparator />
-          <NewButton disabled={treeIsLoading} />
+          <NewButton disabled={treeIsLoading || !permissions?.create} />
           <ActionButton
             icon={<CopyOutlined />}
             tooltip={t("duplicate")}
@@ -325,7 +333,8 @@ function TreeActionBarComponent({
               !selectedRowItems ||
               selectedRowItems?.length !== 1 ||
               duplicatingItem ||
-              treeIsLoading
+              treeIsLoading ||
+              !permissions?.create
             }
             loading={duplicatingItem}
             onClick={tryDuplicate}
@@ -335,7 +344,8 @@ function TreeActionBarComponent({
             tooltip={t("delete")}
             disabled={
               !(selectedRowItems && selectedRowItems?.length > 0) ||
-              treeIsLoading
+              treeIsLoading ||
+              !permissions?.unlink
             }
             loading={removingItem}
             onClick={tryDelete}

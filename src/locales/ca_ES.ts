@@ -1,8 +1,8 @@
 export default {
   true: "Sí",
   false: "No",
-  simple_search: "Búsqueda simple",
-  advanced_search: "Búsqueda avançada",
+  simple_search: "Cerca simple",
+  advanced_search: "Cerca avançada",
   search: "Buscar",
   parameters: "Paràmetres",
   limit: "Limit",
@@ -120,4 +120,7 @@ export default {
   nameSearchLimitNote:
     "Només es mostren els primers 80 registres. Si necessiteu veure més registres, utilitzeu la cerca per filtres.",
   filterSearchLink: "cerca per filtres",
+  changeToInfinite: "Canviar a llistat infinit",
+  changeToPaginated: "Canviar a llistat paginat",
+  enterFieldToFilter: "Introdueix el camp per filtrar...",
 };

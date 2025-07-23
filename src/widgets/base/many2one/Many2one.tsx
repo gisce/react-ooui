@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
+import React, { useState, useRef, useEffect, useContext, useMemo } from "react";
 import { Input, Button, Row, Col, theme } from "antd";
 import {
   SearchOutlined,
@@ -16,9 +16,12 @@ import { SearchModal } from "@/widgets/modals/SearchModal";
 import { FormModal } from "@/widgets/modals/FormModal";
 import ConnectionProvider from "@/ConnectionProvider";
 import { Many2oneSuffix } from "./Many2oneSuffix";
-import { showErrorDialog } from "@/ui/GenericErrorDialog";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { transformPlainMany2Ones } from "@/helpers/formHelper";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
+import { UserFeatureKeys } from "@/models/userFeature";
+import { usePermissionsState } from "@/hooks/usePermissions";
 
 const { defaultAlgorithm, defaultSeed } = theme;
 
@@ -80,10 +83,29 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const [inputText, setInputText] = useState<string>("");
   const inputTextRef = useRef<string>();
   const formContext = useContext(FormContext) as FormContextType;
-  const { domain, getValues, getFields, getContext, elementHasLostFocus } =
-    formContext || {};
+  const {
+    domain,
+    getFields,
+    getContext,
+    elementHasLostFocus,
+    getAllHierarchyValues,
+  } = formContext || {};
   const transformedDomain = useRef<any[]>([]);
   const [searchDomain, setSearchDomain] = useState<any>([]);
+  const { showErrorNotification } = useErrorNotification();
+
+  // Check permissions for the relation model
+  const { permissions } = usePermissionsState({
+    model: relation,
+    permissions: ["create", "write"],
+    enabled: true,
+  });
+
+  // When loading, assume permissions are false to avoid showing loading indicators
+  const canCreate = permissions?.create ?? false;
+  const canWrite = permissions?.write ?? false;
+
+  const showSearch = ooui.showSearch ?? true; // By default is true if not set
 
   const id = (value && value[0]) || undefined;
   const text = (value && value[1]) || "";
@@ -92,6 +114,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     if (!Array.isArray(value) && value) {
       fetchNameAndUpdate(value as any);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   useEffect(() => {
@@ -102,6 +125,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     } else if (!id && !text) {
       setInputText(inputTextRef.current || "");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   const triggerChange = (changedValue: any[]) => {
@@ -146,7 +170,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           }
         }
       } catch (err) {
-        showErrorDialog(err);
+        showErrorNotification(err);
       } finally {
         setSearching(false);
       }
@@ -190,7 +214,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
 
       triggerChange([id, value[0][1]]);
     } catch (err) {
-      showErrorDialog(err);
+      showErrorNotification(err);
     } finally {
       setSearching(false);
     }
@@ -203,7 +227,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           domain: widgetDomain,
           values: transformPlainMany2Ones({
             fields: getFields(),
-            values: getValues(),
+            values: getAllHierarchyValues(),
           }),
           fields: getFields(),
           context: getContext(),
@@ -235,6 +259,46 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   }
 
   const CustomInput: any = required && !readOnly ? RequiredInput : Input;
+  const disableFolderFeature = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_DISABLE_FOLDER,
+  );
+  const disableArrowMenu = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_DISABLE_ARROW_MENU,
+  );
+
+  const shouldShowFolder = useMemo(() => {
+    // Level 1: Default value
+    let result = true;
+
+    // Level 2: User features (can modify the default)
+    if (disableFolderFeature === true) {
+      result = false;
+    }
+
+    // Level 3: Forced value (maximum priority)
+    if (ooui.showFolder !== undefined) {
+      result = ooui.showFolder;
+    }
+
+    return result;
+  }, [ooui.showFolder, disableFolderFeature]);
+
+  const shouldShowMenu = useMemo(() => {
+    // Level 1: Default value
+    let result = true;
+
+    // Level 2: User features (can modify the default)
+    if (disableArrowMenu === true) {
+      result = false;
+    }
+
+    // Level 3: Forced value (maximum priority)
+    if (ooui.showMenu !== undefined) {
+      result = ooui.showMenu;
+    }
+
+    return result;
+  }, [ooui.showMenu, disableArrowMenu]);
 
   return (
     <Row gutter={8} wrap={false}>
@@ -246,48 +310,63 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           onChange={onValueStringChange}
           style={{
             ...requiredStyle,
-            ...{ borderTopRightRadius: 0, borderBottomRightRadius: 0 },
+            ...(showSearch || shouldShowFolder
+              ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
+              : {}),
           }}
           onBlur={onElementLostFocus}
           onKeyDown={onKeyDown}
           suffix={
-            <Many2oneSuffix
-              id={id}
-              model={relation}
-              context={{ ...getContext?.(), ...context }}
-            />
+            shouldShowMenu && (
+              <Many2oneSuffix
+                id={id}
+                model={relation}
+                context={{ ...getContext?.(), ...context }}
+              />
+            )
           }
         />
       </Col>
-      <Col flex="none" style={{ paddingRight: 0, paddingLeft: 0 }}>
-        <Button
-          icon={<FolderOpenOutlined />}
-          disabled={id === undefined || text === "" || inputText === undefined}
-          onClick={() => {
-            setShowFormModal(true);
-          }}
-          style={{ borderRadius: 0 }}
-          tabIndex={-1}
-        />
-      </Col>
-      <Col flex="none" style={{ paddingLeft: 0 }}>
-        <Button
-          icon={searching ? <LoadingOutlined /> : <SearchOutlined />}
-          disabled={readOnly || searching}
-          onClick={() => {
-            searchButtonTappedRef.current = true;
-            tryFetchFirstResultOrShowSearch(text);
-          }}
-          style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
-          tabIndex={-1}
-        />
-      </Col>
+      {shouldShowFolder && (
+        <Col flex="none" style={{ paddingRight: 0, paddingLeft: 0 }}>
+          <Button
+            icon={<FolderOpenOutlined />}
+            disabled={
+              id === undefined || text === "" || inputText === undefined
+            }
+            onClick={() => {
+              setShowFormModal(true);
+            }}
+            style={
+              showSearch
+                ? { borderRadius: 0 }
+                : { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }
+            }
+            tabIndex={-1}
+          />
+        </Col>
+      )}
+      {showSearch && (
+        <Col flex="none" style={{ paddingLeft: 0 }}>
+          <Button
+            icon={searching ? <LoadingOutlined /> : <SearchOutlined />}
+            disabled={readOnly || searching}
+            onClick={() => {
+              searchButtonTappedRef.current = true;
+              tryFetchFirstResultOrShowSearch(text);
+            }}
+            style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+            tabIndex={-1}
+          />
+        </Col>
+      )}
       <SearchModal
         model={relation}
         domain={searchDomain}
         context={{ ...getContext?.(), ...context }}
         visible={showSearchModal}
         nameSearch={!id ? searchText : undefined}
+        canCreate={canCreate}
         onSelectValues={async (ids: number[]) => {
           setShowSearchModal(false);
           fetchNameAndUpdate(ids[0]);
@@ -312,7 +391,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
           setShowFormModal(false);
         }}
         mustClearAfterSave={true}
-        readOnly={readOnly}
+        readOnly={readOnly || !canWrite}
       />
     </Row>
   );

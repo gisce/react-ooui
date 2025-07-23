@@ -19,13 +19,20 @@ export const ErrorAlert = ({
     error.indexOf("\n\n") !== -1
   ) {
     const { message, type, title } = parseError(error);
-    messageContent = <Interweave content={`${title}<br />${message}`} />;
+    messageContent = (
+      <Interweave
+        content={`${title}<br />${message.replace(/\n/g, "<br />")}`}
+      />
+    );
     messageType = type;
   } else {
     messageContent = error.message
       ? JSON.stringify(error.message)
       : JSON.stringify(error);
   }
+
+  console.error(error);
+
   return (
     <Alert
       className={className}

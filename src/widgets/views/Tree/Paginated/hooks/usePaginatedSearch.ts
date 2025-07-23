@@ -11,7 +11,7 @@ import {
 } from "react";
 import { useNetworkRequest } from "../../../../../hooks/useNetworkRequest";
 import { ConnectionProvider, TreeView } from "../../../../..";
-import { useShowErrorDialog } from "@/ui/GenericErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useDeepCompareEffect } from "use-deep-compare";
 import deepEqual from "deep-equal";
 import {
@@ -112,9 +112,16 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   const lastAssignedResults = useRef<any[]>([]);
   const fetchInProgress = useRef<boolean>(false);
 
+  const SHOULD_MAKE_DEFERRED_FUNCTION_READ =
+    treeView?.fields_in_conditions !== undefined;
+
   const columnStateKey = useMemo(() => {
     return getKey({ treeViewId: treeView?.view_id, model });
   }, [treeView?.view_id, model]);
+
+  const [parseConditions, cancelParseConditions] = useNetworkRequest(
+    ConnectionProvider.getHandler().parseConditions,
+  );
 
   const {
     fetchColumnState,
@@ -153,6 +160,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     refresh: refreshFunctionFields,
     addRecordsToCheckFunctionFields,
     onHasFunctionFieldsToParseConditions,
+    syncExternalRecordUpdates,
   } = useTreeFunctionFieldsRead({
     model,
     treeView,
@@ -176,10 +184,11 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     treeOoui,
     updateAttributes,
     results: actionViewResults,
+    onRecordsUpdated: syncExternalRecordUpdates,
   });
 
   // Hooks
-  const showErrorDialog = useShowErrorDialog();
+  const { showErrorNotification } = useErrorNotification();
   const [fetchTotalRows, cancelFetchTotalRows] = useNetworkRequest(
     ConnectionProvider.getHandler().searchCount,
   );
@@ -228,7 +237,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       setTotalRows(totalItems);
       setTotalItemsActionView(totalItems);
     } catch (err) {
-      showErrorDialog(err);
+      showErrorNotification(err);
     } finally {
       setTotalRowsLoading(false);
     }
@@ -240,7 +249,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     mergedParams,
     model,
     context,
-    showErrorDialog,
+    showErrorNotification,
   ]);
 
   // Event handlers
@@ -334,6 +343,13 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [treeViewFetching]);
+
+  useEffect(() => {
+    return () => {
+      cancelParseConditions();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useDeepCompareEffect(() => {
     if (!treeOoui || !treeView || treeViewFetching) {
@@ -430,9 +446,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
       const params = nameSearch ? domain : mergedParams;
 
-      const SHOULD_MAKE_DEFERRED_FUNCTION_READ =
-        treeView?.fields_in_conditions !== undefined;
-
       const attrs = getAttributesConditionsFromOoui({
         treeOoui,
         hasFunctionFieldsToParseConditions:
@@ -496,6 +509,8 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       lastAssignedResults.current = [...preparedResults];
       setResults([...preparedResults]);
     } catch (error) {
+      setTreeIsLoading(false);
+      showErrorNotification(error);
       console.error(error);
       throw error;
     } finally {
@@ -509,20 +524,22 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     nameSearch,
     domain,
     mergedParams,
+    SHOULD_MAKE_DEFERRED_FUNCTION_READ,
+    onHasFunctionFieldsToParseConditions,
+    mustUpdateTotal,
     searchForTree,
     limit,
     currentPage,
     model,
     treeView,
     context,
-    onHasFunctionFieldsToParseConditions,
     setSearchQuery,
     setActionViewResults,
-    mustUpdateTotal,
     updateAttributes,
+    updateTotalRows,
     addRecordsToCheckFunctionFields,
     setTotalItemsActionView,
-    updateTotalRows,
+    showErrorNotification,
   ]);
 
   const refresh = useCallback(async () => {
@@ -638,6 +655,74 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     [results, setSelectedRowItems],
   );
 
+  const fetchChildrenForRecord = useCallback(
+    async (record: any) => {
+      const child_id = record[treeView?.field_parent || "child_id"];
+
+      let mergedFields: Record<string, any> = treeView!.field_parent
+        ? { ...treeView!.fields, [treeView!.field_parent]: {} }
+        : treeView!.fields;
+
+      if (SHOULD_MAKE_DEFERRED_FUNCTION_READ) {
+        // We need here the fields that are not function fields
+        mergedFields = Object.entries(mergedFields).reduce(
+          (acc: Record<string, any>, [fieldName, fieldValue]) => {
+            if (!fieldValue?.is_function) {
+              acc[fieldName] = fieldValue;
+            }
+            return acc;
+          },
+          {},
+        );
+      }
+
+      const children = await ConnectionProvider.getHandler().readObjects({
+        model,
+        ids: child_id,
+        fields: mergedFields,
+        context,
+      });
+
+      const preparedResults = getTableItems(treeOoui!, children);
+      const mergedResults = [...results, ...preparedResults];
+
+      const conditions = getAttributesConditionsFromOoui({
+        treeOoui,
+      });
+
+      try {
+        const attrsEvaluated = await parseConditions({
+          conditions,
+          values: mergedResults,
+          context,
+        });
+
+        updateAttributes(attrsEvaluated, treeOoui!);
+        tableRef?.current?.refreshRowStyles();
+      } catch (error) {
+        console.error(error);
+      }
+
+      lastAssignedResults.current = [...mergedResults];
+      setResults([...mergedResults]);
+      addRecordsToCheckFunctionFields(children.map((child: any) => child.id));
+
+      return preparedResults;
+    },
+    [
+      treeView,
+      SHOULD_MAKE_DEFERRED_FUNCTION_READ,
+      model,
+      context,
+      treeOoui,
+      results,
+      addRecordsToCheckFunctionFields,
+      parseConditions,
+      updateAttributes,
+      tableRef,
+    ],
+  );
+
   return {
     isActive,
     searchVisible,
@@ -675,5 +760,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     setSearchVisible,
     nameSearchFetchCompleted,
     nameSearch,
+    fetchChildrenForRecord,
   };
 };

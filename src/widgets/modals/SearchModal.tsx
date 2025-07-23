@@ -10,7 +10,7 @@ import {
 } from "@ant-design/icons";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import { useLocale } from "@gisce/react-formiga-components";
-import { showErrorDialog } from "@/ui/GenericErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useFetchTreeViews } from "@/hooks/useFetchTreeViews";
 import { extractTreeXmlAttribute } from "@/helpers/treeHelper";
 import SearchTree from "../views/SearchTree";
@@ -23,6 +23,7 @@ type SearchSelectionProps = {
   onCloseModal: () => void;
   domain?: unknown;
   context?: Record<string, unknown>;
+  canCreate?: boolean;
 };
 
 interface RowClickEvent {
@@ -37,6 +38,7 @@ export const SearchModal = ({
   nameSearch,
   domain,
   context = {},
+  canCreate = true,
 }: SearchSelectionProps) => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
@@ -44,6 +46,7 @@ export const SearchModal = ({
 
   const { modalWidth, modalHeight } = useWindowDimensions();
   const { t } = useLocale();
+  const { showErrorNotification } = useErrorNotification();
 
   const {
     treeView,
@@ -68,12 +71,12 @@ export const SearchModal = ({
       try {
         await onSelectValuesProps(keys);
       } catch (err) {
-        showErrorDialog(err);
+        showErrorNotification(err);
       } finally {
         setOperationInProgress(false);
       }
     },
-    [onSelectValuesProps],
+    [onSelectValuesProps, showErrorNotification],
   );
 
   const handleCloseModal = useCallback(() => {
@@ -149,7 +152,7 @@ export const SearchModal = ({
         <Row justify="end">
           <Space>
             <Button
-              disabled={operationInProgress}
+              disabled={operationInProgress || !canCreate}
               icon={<FileAddOutlined />}
               onClick={handleShowCreateModal}
             >

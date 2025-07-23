@@ -76,11 +76,28 @@ export const TagInput = (props: any) => {
           : ooui.colors[colorValue] || colorMethod(colorValue),
       );
     }
-  }, [ooui?.colorField]);
+  }, [
+    ooui?.colorField,
+    value,
+    colorValue,
+    ooui.colors,
+    ooui.fieldType,
+    ooui.raw_props?.relation,
+    readObjects,
+    getFieldValue,
+    colorMethod,
+  ]);
 
   useEffect(() => {
     updateColor().catch((err) => console.error(err));
-  }, [ooui?.colorField]);
+  }, [updateColor]);
+
+  useEffect(() => {
+    return () => {
+      cancelReadObjectsRequest();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!formattedValue) {
     return null;

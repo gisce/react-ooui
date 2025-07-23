@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { MultiCheckbox as MultiCheckboxOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { One2manyItem, One2manyValue } from "../base/one2many/One2manyInput";
-import useDeepCompareEffect from "use-deep-compare-effect";
+import { useDeepCompareEffect } from "use-deep-compare";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { Alert, Checkbox, Spin, Col, Row, Button, Space } from "antd";
 import ConnectionProvider from "@/ConnectionProvider";
@@ -60,7 +60,7 @@ export const MultiCheckboxInput = (props: MultiCheckboxInputProps) => {
         domain: ooui.domain,
         values: transformPlainMany2Ones({
           fields: formContext?.getFields(),
-          values: formContext.getPlainValues(),
+          values: formContext.getAllHierarchyValues(),
         }),
         fields: formContext?.getFields(),
         context: formContext.getContext(),
@@ -89,6 +89,7 @@ export const MultiCheckboxInput = (props: MultiCheckboxInputProps) => {
       setIsLoadingOptions(false);
     }
     if (error) {
+      console.error(error);
       return <Alert className="mt-10" message={error} type="error" banner />;
     }
   }

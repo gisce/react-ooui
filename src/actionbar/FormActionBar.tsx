@@ -18,7 +18,7 @@ import { useActionViewContext } from "@/context/ActionViewContext";
 import NewButton from "./NewButton";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import showConfirmDialog from "@/ui/ConfirmDialog";
-import { showErrorDialog } from "@/ui/GenericErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 import ConnectionProvider from "@/ConnectionProvider";
 import { showLogInfo } from "@/helpers/logInfoHelper";
 import { DropdownButton, useLocale } from "@gisce/react-formiga-components";
@@ -43,6 +43,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
   ) as TabManagerContextType;
   const { t } = useLocale();
   const { onNextClick, onPreviousClick } = useNextPrevious();
+  const { showErrorNotification } = useErrorNotification();
 
   const {
     availableViews,
@@ -70,6 +71,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
     setPreviousView,
     goToResourceId,
     isActive,
+    permissions,
   } = useActionViewContext();
 
   const { openDefaultActionForModel } = tabManagerContext || {};
@@ -97,6 +99,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
   const { actionButtonProps, printButtonProps, relateButtonProps } =
     useFormToolbarButtons({
       toolbar,
+      model: currentModel,
       mustDisableButtons,
       formRef,
       onRefreshParentValues: handleRefresh,
@@ -125,7 +128,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
         setCurrentItemIndex?.(newIndex);
       }
     } catch (e) {
-      showErrorDialog(JSON.stringify(e));
+      showErrorNotification(e);
     } finally {
       setRemovingItem?.(false);
     }
@@ -139,6 +142,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
     setCurrentItemIndex,
     setRemovingItem,
     setResults,
+    showErrorNotification,
   ]);
 
   const handleDuplicate = useCallback(async () => {
@@ -153,11 +157,18 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
         await goToResourceId?.([newId]);
       }
     } catch (e) {
-      showErrorDialog(JSON.stringify(e));
+      showErrorNotification(e);
     } finally {
       setDuplicatingItem?.(false);
     }
-  }, [currentId, currentModel, formRef, goToResourceId, setDuplicatingItem]);
+  }, [
+    currentId,
+    currentModel,
+    formRef,
+    goToResourceId,
+    setDuplicatingItem,
+    showErrorNotification,
+  ]);
 
   const handleChangeView = useCallback(
     (view: any) => {
@@ -267,11 +278,11 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
           <ActionBarSeparator />
         </>
       )}
-      <NewButton disabled={mustDisableButtons} />
+      <NewButton disabled={mustDisableButtons || !permissions?.create} />
       <ActionButton
         icon={<SaveOutlined />}
         tooltip={t("save")}
-        disabled={!formHasChanges || mustDisableButtons}
+        disabled={!formHasChanges || mustDisableButtons || !permissions?.write}
         loading={formIsSaving}
         onClick={onFormSave}
       />
@@ -279,7 +290,10 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
         icon={<CopyOutlined />}
         tooltip={t("duplicate")}
         disabled={
-          formHasChanges || mustDisableButtons || currentId === undefined
+          formHasChanges ||
+          mustDisableButtons ||
+          currentId === undefined ||
+          !permissions?.create
         }
         loading={duplicatingItem}
         onClick={() =>
@@ -293,7 +307,9 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
       <ActionDangerButton
         icon={<DeleteOutlined />}
         tooltip={t("delete")}
-        disabled={mustDisableButtons || currentId === undefined}
+        disabled={
+          mustDisableButtons || currentId === undefined || !permissions?.unlink
+        }
         loading={removingItem}
         onClick={() =>
           showConfirmDialog({

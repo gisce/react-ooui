@@ -1,17 +1,13 @@
-import {
-  FormView,
-  GenerateReportOptions,
-  ViewType,
-  ActionRawData,
-} from "@/types";
+import { FormView, GenerateReportOptions, ViewType } from "@/types";
 import React, {
   useContext,
   useRef,
   useState,
   forwardRef,
   useImperativeHandle,
+  useEffect,
 } from "react";
-import showErrorDialog from "@/ui/ActionErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { openBase64InNewTab, getMimeType } from "@/helpers/filesHelper";
 import { parseContext } from "@gisce/ooui";
 import ConnectionProvider from "@/ConnectionProvider";
@@ -23,6 +19,9 @@ import {
 import { FormModal } from "@/widgets/modals/FormModal";
 import { useLocale } from "@gisce/react-formiga-components";
 import { transformPlainMany2Ones, stringFormat } from "@/helpers/formHelper";
+import { useFeatureData } from "./ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 
 export type ContentRootContextType = {
   processAction: ({
@@ -76,6 +75,20 @@ const ContentRootProvider = (
   const { openAction } = tabManagerContext || {};
   const onRefreshParentValues = useRef<any>([]);
   const { t } = useLocale();
+  const { showErrorNotification } = useErrorNotification();
+  const loggableFeature = useFeatureData(
+    ErpFeatureKeys.FEATURE_LOGGABLE_ACTIONS,
+  );
+  const [logAction, cancelRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().logAction,
+  );
+
+  useEffect(() => {
+    return () => {
+      cancelRequest();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useImperativeHandle(ref, () => ({
     openActionModal,
@@ -103,7 +116,11 @@ const ContentRootProvider = (
     } = reportData;
 
     if (type !== "ir.actions.report.xml") {
-      showErrorDialog(`${type} action not supported`);
+      showErrorNotification({
+        type: "error",
+        title: "Error",
+        body: `${type} action not supported`,
+      });
       return;
     }
 
@@ -138,7 +155,7 @@ const ContentRootProvider = (
     } catch (err) {
       waitingForReport.current = false;
       clearInterval(reportInProgressInterval.current);
-      showErrorDialog(err);
+      showErrorNotification(err);
       setReportGenerating(false);
     }
   }
@@ -160,7 +177,7 @@ const ContentRootProvider = (
       waitingForReport.current = false;
       clearInterval(reportInProgressInterval.current);
       setReportGenerating(false);
-      showErrorDialog(error.exception || error);
+      showErrorNotification(error.exception || error);
     }
   }
 
@@ -197,7 +214,11 @@ const ContentRootProvider = (
         "_blank",
       );
     } else {
-      showErrorDialog(`${type} action not supported`);
+      showErrorNotification({
+        type: "error",
+        title: "Error",
+        body: `${type} action not supported`,
+      });
       return {};
     }
   }
@@ -272,6 +293,7 @@ const ContentRootProvider = (
         model: actionData.res_model,
         formView,
         context: mergedContext,
+        actionData,
       });
 
       return {};
@@ -319,6 +341,23 @@ const ContentRootProvider = (
     context: any;
     actionData?: any;
   }) {
+    const { type, id } = actionData || {};
+
+    if (
+      loggableFeature?.isEnabled &&
+      (loggableFeature?.params?.types || []).includes(type)
+    ) {
+      try {
+        logAction({
+          action_type: type,
+          action_id: id,
+          context,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
     if (actionModalVisible) {
       openNewActionModal({ domain, model, formView, context, actionData });
     } else {

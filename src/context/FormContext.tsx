@@ -1,5 +1,6 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext } from "react";
 import { FormView } from "..";
+import { FieldMessageType, FieldMessages } from "../hooks/useFieldMessages";
 
 export type FormContextType = {
   activeId?: number;
@@ -18,6 +19,7 @@ export type FormContextType = {
   getContext: () => Promise<any>;
   getValues: () => Promise<any>;
   getPlainValues: () => { [key: string]: any };
+  getAllHierarchyValues: () => { [key: string]: any };
   getFields: () => Promise<any>;
   domain: any[];
   submitForm?: (options?: {
@@ -27,6 +29,16 @@ export type FormContextType = {
   formHasChanges?: () => boolean;
   elementHasLostFocus?: () => void;
   formView?: FormView;
+  fieldMessages: FieldMessages;
+  setFieldMessage: (
+    field: string,
+    message: string,
+    type: FieldMessageType,
+  ) => void;
+  getFieldMessage: (field: string) => string | undefined;
+  getFieldMessageType: (field: string) => FieldMessageType | undefined;
+  clearFieldMessage: (field: string) => void;
+  clearAllFieldMessages: () => void;
 };
 
 export const FormContext = React.createContext<FormContextType | null>(null);
@@ -46,6 +58,7 @@ const FormProvider = (props: FormProviderProps): any => {
     getContext,
     getValues,
     getPlainValues,
+    getAllHierarchyValues,
     domain,
     submitForm,
     fetchValues,
@@ -53,6 +66,12 @@ const FormProvider = (props: FormProviderProps): any => {
     elementHasLostFocus,
     getFields,
     formView,
+    fieldMessages,
+    setFieldMessage,
+    getFieldMessage,
+    getFieldMessageType,
+    clearFieldMessage,
+    clearAllFieldMessages,
   } = props;
 
   return (
@@ -61,6 +80,7 @@ const FormProvider = (props: FormProviderProps): any => {
         domain,
         getValues,
         getPlainValues,
+        getAllHierarchyValues,
         getFields,
         activeId,
         activeModel,
@@ -73,6 +93,12 @@ const FormProvider = (props: FormProviderProps): any => {
         formHasChanges,
         elementHasLostFocus,
         formView,
+        fieldMessages,
+        setFieldMessage,
+        getFieldMessage,
+        getFieldMessageType,
+        clearFieldMessage,
+        clearAllFieldMessages,
       }}
     >
       {children}
@@ -92,6 +118,7 @@ export const useFormContext = () => {
       getContext: async () => ({}),
       getValues: async () => ({}),
       getPlainValues: () => ({}),
+      getAllHierarchyValues: () => ({}),
       getFields: async () => ({}),
       domain: [],
       submitForm: async () => ({ succeed: false, id: 0 }),
@@ -99,6 +126,12 @@ export const useFormContext = () => {
       formHasChanges: () => false,
       elementHasLostFocus: () => {},
       formView: undefined,
+      fieldMessages: {},
+      setFieldMessage: () => {},
+      getFieldMessage: () => undefined,
+      getFieldMessageType: () => undefined,
+      clearFieldMessage: () => {},
+      clearAllFieldMessages: () => {},
     } as FormContextType;
   }
   return context;

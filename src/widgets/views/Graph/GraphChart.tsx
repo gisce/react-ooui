@@ -1,7 +1,7 @@
 import { useGraphData } from "./useGraphData";
 import { Alert } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
-import useDeepCompareEffect from "use-deep-compare-effect";
+import { useDeepCompareEffect } from "use-deep-compare";
 import { GraphChartComp } from "./GraphChartComp";
 import { CenteredSpinner } from "@/ui/CenteredSpinner";
 import { GraphChart as GraphChartOoui } from "@gisce/ooui";
@@ -49,6 +49,7 @@ export const GraphChart = ({
   const { data, isGroup, isStack, yAxisOpts } = values;
 
   if (error) {
+    console.error(error);
     return <Alert message={error} type="error" banner />;
   }
 

@@ -17,16 +17,10 @@ import { Badge, Spin } from "antd";
 import {
   getOrderFromSortFields,
   getSortedFieldsFromState,
-  getTableColumns,
   getTableItems,
   getTree,
 } from "@/helpers/treeHelper";
-import { COLUMN_COMPONENTS } from "./Tree/treeComponents";
-import {
-  useDeepCompareCallback,
-  useDeepCompareEffect,
-  useDeepCompareMemo,
-} from "use-deep-compare";
+import { useDeepCompareCallback, useDeepCompareEffect } from "use-deep-compare";
 import {
   ColumnState,
   InfiniteTable,
@@ -44,7 +38,7 @@ import showConfirmDialog from "@/ui/ConfirmDialog";
 import { SideSearchFilter } from "./searchFilter/SideSearchFilter";
 import { mergeParams } from "@/helpers/searchHelper";
 import deepEqual from "deep-equal";
-import { useShowErrorDialog } from "@/ui/GenericErrorDialog";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 import SearchFilter from "./searchFilter/SearchFilter";
 import { useSearchTreeState } from "@/hooks/useSearchTreeState";
 import { Tree as TreeOoui } from "@gisce/ooui";
@@ -53,14 +47,14 @@ import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { NameSearchWarning } from "./Tree/NameSearchWarning";
 import { SearchTreeHeader } from "./SearchTreeHeader";
-import { useFeatureIsEnabled } from "@/context/ConfigContext";
-import { ErpFeatureKeys } from "@/models/erpFeature";
 import {
   getAttributesConditionsFromOoui,
   useTreeAttributesState,
 } from "@/hooks/useTreeAttributesState";
 import { CellRenderer } from "./Tree/CellRenderer";
 import { TreeType } from "@/views/actionViews/TreeActionView";
+import { useTableConfiguration } from "@/hooks/useTableConfiguration";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -106,7 +100,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
   const lastAssignedResults = useRef<any[]>([]);
   const hasRestoredSortStateForFirstTime = useRef<boolean>(false);
-  const showErrorDialog = useShowErrorDialog();
+  const { showErrorNotification } = useErrorNotification();
 
   const [totalRows, setTotalRows] = useState<number | null>();
   const [nameSearchFetchCompleted, setNameSearchFetchCompleted] =
@@ -119,6 +113,26 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     elementRef: containerRef,
     offset: HEIGHT_OFFSET,
   });
+
+  // Network request hooks
+  const [searchCountRequest, cancelSearchCountRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().searchCount,
+  );
+  const [searchForTreeRequest, cancelSearchForTreeRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().searchForTree,
+  );
+  const [searchAllIdsRequest, cancelSearchAllIdsRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().searchAllIds,
+  );
+
+  useEffect(() => {
+    return () => {
+      cancelSearchCountRequest();
+      cancelSearchForTreeRequest();
+      cancelSearchAllIdsRequest();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { treeView, formView, loading } = useFetchTreeViews({
     model,
@@ -154,10 +168,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const prevNameSearch = useRef(nameSearch);
   const isNameSearchMode = useRef(false);
 
-  const many2oneSortEnabled = useFeatureIsEnabled(
-    ErpFeatureKeys.FEATURE_MANY2ONE_SORT,
-  );
-
   const currentSearchParamsString = useRef<string>();
   const prevSortOrder = useRef<string>();
   const isUpdatingTotalRows = useRef<boolean>(false);
@@ -167,12 +177,17 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       (nameSearch !== undefined && prevNameSearch.current === undefined) ||
       (typeof nameSearch === "string" &&
         typeof prevNameSearch.current === "string" &&
-        nameSearch !== prevNameSearch.current) ||
-      (nameSearch === undefined && prevNameSearch.current !== undefined)
+        nameSearch !== prevNameSearch.current)
     ) {
       isNameSearchMode.current = Boolean(nameSearch);
       setSearchParams?.([]);
       setSearchValues?.({});
+      tableRef.current?.unselectAll();
+    } else if (
+      nameSearch === undefined &&
+      prevNameSearch.current !== undefined
+    ) {
+      isNameSearchMode.current = false;
       tableRef.current?.unselectAll();
     }
     prevNameSearch.current = nameSearch;
@@ -195,23 +210,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     tableRef,
   });
 
-  const { clear: clearAutorefreshableFields } = useAutorefreshableTreeFields({
-    model,
-    tableRef,
-    autorefreshableFields: treeOoui?.autorefreshableFields,
-    treeView,
-    context: parentContext,
-    isActive,
-    treeOoui,
-    updateAttributes,
-    results: actionViewResults,
-  });
-
   const {
     isFieldLoading,
     refresh: refreshFunctionFields,
     addRecordsToCheckFunctionFields,
     onHasFunctionFieldsToParseConditions,
+    syncExternalRecordUpdates,
   } = useTreeFunctionFieldsRead({
     model,
     treeView,
@@ -223,19 +227,20 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     results: actionViewResults,
   });
 
-  const columns = useDeepCompareMemo(() => {
-    if (!treeOoui) {
-      return;
-    }
-    return getTableColumns(
-      treeOoui,
-      {
-        ...COLUMN_COMPONENTS,
-      },
-      parentContext,
-      many2oneSortEnabled,
-    );
-  }, [treeOoui, parentContext, many2oneSortEnabled]);
+  const { clear: clearAutorefreshableFields } = useAutorefreshableTreeFields({
+    model,
+    tableRef,
+    autorefreshableFields: treeOoui?.autorefreshableFields,
+    treeView,
+    context: parentContext,
+    isActive,
+    treeOoui,
+    updateAttributes,
+    results: actionViewResults,
+    onRecordsUpdated: syncExternalRecordUpdates,
+  });
+
+  const { columns, strings } = useTableConfiguration(treeOoui, parentContext);
 
   const columnsWithLoading = useMemo(() => {
     if (!columns) {
@@ -300,7 +305,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     setTotalRows(undefined);
     setTotalItemsActionView(0);
     try {
-      const totalItems = await ConnectionProvider.getHandler().searchCount({
+      const totalItems = await searchCountRequest({
         params: nameSearch ? domain : mergedParams,
         model,
         context: parentContext,
@@ -309,7 +314,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       setTotalRows(totalItems);
       setTotalItemsActionView(totalItems);
     } catch (err) {
-      showErrorDialog(err);
+      showErrorNotification(err);
     } finally {
       isUpdatingTotalRows.current = false;
     }
@@ -320,7 +325,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     nameSearch,
     parentContext,
     setTotalItemsActionView,
-    showErrorDialog,
+    showErrorNotification,
+    searchCountRequest,
   ]);
 
   const fetchResults = useDeepCompareCallback(
@@ -376,24 +382,23 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           onHasFunctionFieldsToParseConditions(),
       });
 
-      const { results, attrsEvaluated } =
-        await ConnectionProvider.getHandler().searchForTree({
-          params,
-          limit: endRow - startRow,
-          offset: startRow,
-          model,
-          fields: treeView!.field_parent
-            ? { ...treeView!.fields, [treeView!.field_parent]: {} }
-            : treeView!.fields,
-          context: parentContext,
-          attrs,
-          order,
-          name_search: nameSearch,
-          skipFunctionFields: SHOULD_MAKE_DEFERRED_FUNCTION_READ,
-          onIdsRetrieved: (ids: number[]) => {
-            addRecordsToCheckFunctionFields(ids);
-          },
-        });
+      const { results, attrsEvaluated } = await searchForTreeRequest({
+        params,
+        limit: endRow - startRow,
+        offset: startRow,
+        model,
+        fields: treeView!.field_parent
+          ? { ...treeView!.fields, [treeView!.field_parent]: {} }
+          : treeView!.fields,
+        context: parentContext,
+        attrs,
+        order,
+        name_search: nameSearch,
+        skipFunctionFields: SHOULD_MAKE_DEFERRED_FUNCTION_READ,
+        onIdsRetrieved: (ids: number[]) => {
+          addRecordsToCheckFunctionFields(ids);
+        },
+      });
 
       setSearchQuery?.({
         model,
@@ -452,6 +457,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       onHasFunctionFieldsToParseConditions,
       setNameSearchFetchCompleted,
       updateAttributes,
+      searchForTreeRequest,
     ],
   );
 
@@ -502,7 +508,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         setTotalRows(null);
         setTotalItemsActionView(0);
         setTreeIsLoading?.(false);
-        showErrorDialog(error);
+        showErrorNotification(error);
         throw error;
       }
     },
@@ -510,7 +516,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       fetchResults,
       setTotalItemsActionView,
       setTreeIsLoading,
-      showErrorDialog,
+      showErrorNotification,
       updateTotalRows,
       nameSearch,
     ],
@@ -557,14 +563,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         return;
       }
 
-      const allRowsResults = await ConnectionProvider.getHandler().searchAllIds(
-        {
-          params: nameSearch ? domain : mergedParams,
-          model,
-          context: parentContext,
-          totalItems: totalRows,
-        },
-      );
+      const allRowsResults = await searchAllIdsRequest({
+        params: nameSearch ? domain : mergedParams,
+        model,
+        context: parentContext,
+        totalItems: totalRows,
+      });
       changeSelectedRowItems(allRowsResults.map((id: number) => ({ id })));
     };
 
@@ -595,6 +599,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     setSelectedRowItems,
     t,
     totalRows,
+    searchAllIdsRequest,
   ]);
 
   const firstVisibleRowIndex = useCallback(() => {
@@ -618,13 +623,6 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     (record: any) => statusForResults.current?.[record.id],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
-  );
-
-  const strings = useMemo(
-    () => ({
-      resetTableViewLabel: t("resetTableView"),
-    }),
-    [t],
   );
 
   const content = useMemo(() => {
