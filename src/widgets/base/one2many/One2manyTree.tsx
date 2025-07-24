@@ -307,7 +307,18 @@ export const One2manyTree = ({
 
     // Refresh table for both modes
     clearAttributes();
-    tableRef?.current?.refresh();
+    if (treeType === "paginated") {
+      // Force a refresh of the paginated table by changing the key
+      setRefreshKey((prev) => prev + 1);
+      // Also refresh the paginated results when items change
+      if (items.length > 0) {
+        onPaginatedRequestData().then(setPaginatedResults);
+      } else {
+        setPaginatedResults([]);
+      }
+    } else {
+      tableRef?.current?.refresh();
+    }
     tableRef?.current?.unselectAll();
   }, [items, treeType]);
 
