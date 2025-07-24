@@ -133,7 +133,11 @@ export const useAutorefreshableTreeFields = (
         fieldsToRetrieve: autorefreshableFields,
         context,
       });
-      const preparedResults = getTableItems(treeOoui, resultsWithUpdatedFields);
+      const preparedResults = await getTableItems(
+        treeOoui,
+        resultsWithUpdatedFields,
+        context,
+      );
 
       // Get only the changed records
       const changedResults = preparedResults.filter((newItem) => {

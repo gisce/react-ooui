@@ -420,7 +420,11 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         return [];
       }
 
-      const preparedResults = getTableItems(treeOoui, results);
+      const preparedResults = await getTableItems(
+        treeOoui,
+        results,
+        parentContext,
+      );
       updateAttributes(attrsEvaluated, treeOoui);
 
       // Update shared colors and status refs from attrsEvaluated array

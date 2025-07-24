@@ -189,7 +189,11 @@ export const useTreeFunctionFieldsRead = ({
         searchIds: recordsToProcess,
         fieldsToRetrieve: functionFields.current,
       });
-      const tableItems = getTableItems(treeOoui, functionResults);
+      const tableItems = await getTableItems(
+        treeOoui,
+        functionResults,
+        context,
+      );
 
       // Add the loaded ids to the loaded ids set, ensuring no duplicates by ID
       const uniqueRecords = [...loadedRecords.current];
