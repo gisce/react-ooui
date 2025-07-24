@@ -90,29 +90,21 @@ export const useTreeFunctionFieldsRead = ({
   }, [isActive, tabOrWindowIsVisible]);
 
   useEffect(() => {
-    // Capture refs to avoid stale closure warnings
-    const loadingIdsRef = loadingIds.current;
-    const loadedRecordsRef = loadedRecords;
-    const functionFieldsRef = functionFields;
-    const isRequestInProgressRef = isRequestInProgress;
-    const intervalRefValue = intervalRef;
-
     return () => {
       // Cancel network requests
       cancelFunctionFieldsRequest();
       cancelParseConditions();
 
       // Clear interval
-      if (intervalRefValue.current) {
-        clearInterval(intervalRefValue.current);
-        intervalRefValue.current = null;
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
 
       // Clear all ref states to prevent stale data on remount
-      loadingIdsRef.clear();
-      loadedRecordsRef.current = [];
-      functionFieldsRef.current = [];
-      isRequestInProgressRef.current = false;
+      loadingIds.current.clear();
+      loadedRecords.current = [];
+      functionFields.current = [];
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
