@@ -345,6 +345,7 @@ const fetchAndPrepareData = async ({
   context,
   attrs,
   treeOoui,
+  skipFunctionFields = false,
 }: {
   relation: string;
   ids: number[];
@@ -352,7 +353,29 @@ const fetchAndPrepareData = async ({
   context: any;
   attrs: any;
   treeOoui: any;
+  skipFunctionFields?: boolean;
 }) => {
+  const fieldsToRetrieve: string[] = skipFunctionFields
+    ? Object.keys(treeView.fields).reduce<string[]>((acc, fieldName) => {
+        const field = treeView.fields[fieldName];
+        if (!field.is_function) {
+          acc.push(fieldName);
+        }
+        return acc;
+      }, [])
+    : Object.keys(treeView.fields);
+
+  if (fieldsToRetrieve.length === 0) {
+    return {
+      items: getTableItems(
+        treeOoui,
+        ids.map((id) => ({ id })),
+      ),
+      colors: {},
+      status: {},
+    };
+  }
+
   const fetchedData = await ConnectionProvider.getHandler().readEvalUiObjects({
     model: relation,
     ids,
@@ -360,6 +383,7 @@ const fetchAndPrepareData = async ({
     fields: treeView.fields,
     context,
     attrs,
+    fieldsToRetrieve,
   });
 
   return {
