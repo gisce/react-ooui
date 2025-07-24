@@ -91,8 +91,20 @@ export const useTreeFunctionFieldsRead = ({
 
   useEffect(() => {
     return () => {
+      // Cancel network requests
       cancelFunctionFieldsRequest();
       cancelParseConditions();
+
+      // Clear interval
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+
+      // Clear all ref states to prevent stale data on remount
+      loadingIds.current.clear();
+      loadedRecords.current = [];
+      functionFields.current = [];
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -102,6 +114,8 @@ export const useTreeFunctionFieldsRead = ({
     if (!isActive) {
       cancelFunctionFieldsRequest();
       cancelParseConditions();
+      // Clear loading states when component becomes inactive
+      loadingIds.current.clear();
     }
     return () => {
       cancelFunctionFieldsRequest();
@@ -186,9 +200,14 @@ export const useTreeFunctionFieldsRead = ({
         } else {
           uniqueRecords.push(item); // Add new record
         }
+        // Clear loading state for successfully loaded records
+        loadingIds.current.delete(item.id);
       });
       loadedRecords.current = uniqueRecords;
     } catch (error) {
+      // Clear loading state for all records that failed to load
+      recordsToProcess.forEach((id) => loadingIds.current.delete(id));
+
       if (error.name !== "AbortError") {
         console.error("Error updating function fields:", error);
       }
@@ -324,9 +343,6 @@ export const useTreeFunctionFieldsRead = ({
       .filter(Boolean);
 
     if (recordsToUpdate.length > 0) {
-      // remove each record to update from loading id's.
-      recordsToUpdate.forEach((record) => loadingIds.current.delete(record.id));
-
       // Process the updated results (includes both parent notification and condition parsing)
       processUpdatedResults(recordsToUpdate);
 
@@ -339,6 +355,11 @@ export const useTreeFunctionFieldsRead = ({
     // First check if the field is a function field
     if (!functionFields.current.includes(fieldName)) {
       return false;
+    }
+
+    // If record is currently being loaded, show loading state
+    if (loadingIds.current.has(record?.id)) {
+      return true;
     }
 
     // Then check if this record is not loaded yet
@@ -372,6 +393,8 @@ export const useTreeFunctionFieldsRead = ({
     }
     cancelFunctionFieldsRequest();
     cancelParseConditions();
+    // Clear loading states when pausing
+    loadingIds.current.clear();
   }, [cancelFunctionFieldsRequest, cancelParseConditions]);
 
   const resume = useCallback(() => {
