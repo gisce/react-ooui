@@ -102,6 +102,7 @@ export const useTreeFunctionFieldsRead = ({
       }
 
       // Clear all ref states to prevent stale data on remount
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       loadingIds.current.clear();
       loadedRecords.current = [];
       functionFields.current = [];
