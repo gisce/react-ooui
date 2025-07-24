@@ -9,6 +9,7 @@ import {
   One2manyInput,
   One2manyInputBaseProps,
 } from "@/widgets/base/one2many/One2manyInput";
+import { One2manyInput as One2manyInputInfinite } from "@/widgets/base/one2many/OldOne2manyInputInfinite";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import {
@@ -16,7 +17,10 @@ import {
   useUserFeatureIsEnabled,
 } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
-import { TreeType } from "@/views/actionViews/TreeActionView";
+import {
+  DEFAULT_TREE_TYPE,
+  TreeType,
+} from "@/views/actionViews/TreeActionView";
 import One2manyProvider, {
   useOne2manyContext,
 } from "@/context/One2manyContext";
@@ -170,21 +174,21 @@ const One2manyComponent = (props: One2manyInputBaseProps) => {
   );
 
   useDeepCompareEffect(() => {
-    const determineTreeType = (): TreeType => {
-      // Priority 1: Explicit infinite="1" in XML → always infinite
-      if (ooui.infinite === "1") {
-        return "infinite";
-      }
+    if (enableNewTable) {
+      const determineTreeType = (): TreeType => {
+        // Priority 1: Explicit infinite="1" in XML → always infinite
+        if (ooui.infinite === "1") {
+          return "infinite";
+        }
 
-      // Priority 2: Explicit infinite="0" in XML → always paginated (if feature enabled)
-      if (ooui.infinite === "0") {
-        return enableNewTable ? "paginated" : "legacy";
-      }
+        // Priority 2: Explicit infinite="0" in XML → always paginated
+        if (ooui.infinite === "0") {
+          return "paginated";
+        }
 
-      // Priority 3: No infinite attribute - depends on user feature and item count
-      if (ooui.infinite === undefined || ooui.infinite === null) {
-        // If new table feature is enabled, use paginated by default
-        if (enableNewTable) {
+        // Priority 3: No infinite attribute - depends on item count
+        if (ooui.infinite === undefined || ooui.infinite === null) {
+          // If new table feature is enabled, use paginated by default
           // But still auto-switch to infinite for large datasets
           if (
             value &&
@@ -195,24 +199,29 @@ const One2manyComponent = (props: One2manyInputBaseProps) => {
           }
           return "paginated";
         }
+        return "paginated";
+      };
 
-        // If new table feature is disabled, use legacy
-        // But still auto-switch to infinite for large datasets
-        if (
-          value &&
-          Array.isArray(value.items) &&
-          value.items.length >= MIN_ITEMS_TO_USE_INFINITE
-        ) {
-          return "infinite";
-        }
-        return "legacy";
-      }
+      setTreeType(determineTreeType());
+      return;
+    }
 
-      // Fallback (should not reach here)
-      return enableNewTable ? "paginated" : "legacy";
-    };
+    if (ooui.infinite) {
+      setTreeType("infinite");
+      return;
+    }
 
-    setTreeType(determineTreeType());
+    if (
+      value &&
+      Array.isArray(value.items) &&
+      value.items.length >= MIN_ITEMS_TO_USE_INFINITE
+    ) {
+      setTreeType("infinite");
+      return;
+    }
+
+    setTreeType(DEFAULT_TREE_TYPE);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ooui.infinite, value, enableNewTable]);
 
@@ -220,8 +229,12 @@ const One2manyComponent = (props: One2manyInputBaseProps) => {
     return <Spin />;
   }
 
-  if (treeType === "legacy") {
+  if (enableNewTable) {
+    return <One2manyInput {...props} treeType={treeType} />;
+  } else if (treeType === "infinite") {
+    // Old infinite table with refactor and improvements
+    return <One2manyInputInfinite {...props} />;
+  } else if (treeType === "legacy") {
     return <One2manyInputLegacy {...props} />;
   }
-  return <One2manyInput {...props} treeType={treeType} />;
 };
