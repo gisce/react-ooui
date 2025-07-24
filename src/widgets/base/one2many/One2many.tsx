@@ -37,7 +37,7 @@ export const One2many = (props: Props) => {
   const [error, setError] = useState<string>();
   const [views, setViews] = useState<Views>(new Map<string, any>());
   const formContext = useContext(FormContext) as FormContextType;
-  const { getContext, formView } = formContext || {};
+  const { getContext, formView, refreshCounter } = formContext || {};
   const { view_id: parentViewId } = formView || {};
 
   useDeepCompareEffect(() => {
@@ -150,6 +150,7 @@ export const One2many = (props: Props) => {
         {...props}
       >
         <One2manyComponent
+          key={refreshCounter}
           ooui={ooui}
           views={views}
           parentViewId={parentViewId}
