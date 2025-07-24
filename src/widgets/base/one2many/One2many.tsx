@@ -170,7 +170,7 @@ const One2manyComponent = (props: One2manyInputBaseProps) => {
 
   const { treeType, setTreeType } = useOne2manyContext();
   const enableNewTable = useUserFeatureIsEnabled(
-    UserFeatureKeys.FEATURE_ONE2MANY_ENABLE_NEW_TABLE,
+    UserFeatureKeys.FEATURE_TREE_V2,
   );
 
   useDeepCompareEffect(() => {
