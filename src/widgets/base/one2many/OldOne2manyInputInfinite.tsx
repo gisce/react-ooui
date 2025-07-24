@@ -7,7 +7,7 @@ import {
 import { One2many as One2manyOoui } from "@gisce/ooui";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { useOne2ManyDomain } from "./useOne2manyDomain";
-import { useOne2manyTree } from "./useOne2manyTree";
+import { useOne2manyTree } from "./useOldOne2manyTree";
 import { One2manyTopBar } from "./One2manyTopBar";
 import { ViewType } from "@/types";
 import { useOne2manyForm } from "./useOne2manyForm";
