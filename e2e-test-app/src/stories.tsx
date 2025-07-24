@@ -48,13 +48,13 @@ export const stories: Story[] = [
     title: "Many2Many - Infinite Scroll",
     component: Many2ManyInfinite,
     description:
-      "A form view with a Many2Many widget displaying product categories with infinite scroll. The Many2Many field shows category hierarchies, priorities, and status information. Unlike One2Many which represents parent-child relationships, Many2Many represents many-to-many associations where records can be linked to multiple other records. Features include: dynamic product count calculations, priority-based row coloring, parent-child category relationships, active/inactive status indicators, and smooth infinite scrolling through large category datasets.",
+      "A form view with a Many2Many widget displaying related records with infinite scroll. The Many2Many field shows product details, quantities, prices, and automatically calculates subtotals. Unlike One2Many, this demonstrates many-to-many relationships where records can be associated with multiple parents. Features include: dynamic subtotal calculations, sum fields showing totals, product selection with many2one fields, and proper handling of large datasets with smooth scrolling for many-to-many relationships.",
   },
   {
     id: "many2many-paginated",
     title: "Many2Many - Paginated",
     component: Many2ManyPaginated,
     description:
-      "A form view with a Many2Many widget displaying product categories with pagination controls. The Many2Many field demonstrates the key difference from One2Many: it shows selected records from a pool of available options rather than child records. Features include: category hierarchy visualization with parent_id relationships, priority-based coloring system (red for high priority >8, orange for medium >5, green for active categories, blue for subcategories, purple for coded categories), function field calculations for product counts, and pagination controls for easy navigation through selected categories.",
-  },
+      "A form view with a Many2Many widget displaying related records with pagination controls. The Many2Many field shows product details, quantities, prices, and automatically calculates subtotals for many-to-many relationships. Features include: dynamic subtotal calculations, sum fields showing totals, product selection with many2one fields, autorefreshable timestamp columns (Last Updated), function columns (Total Amount), and pagination controls for easy navigation through large datasets in many-to-many contexts.",
+  }
 ];

@@ -186,6 +186,7 @@ type ReadEvalUiObjectsRequest = {
   ids: number[];
   context?: any;
   attrs?: any;
+  fieldsToRetrieve?: string[];
 };
 
 type ParseConditionsRequest = {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, ConfigContextProvider } from "@gisce/react-ooui";
 import { NotificationProvider } from "@gisce/react-formiga-components";
-import { initializeMockProvider, initializePaginatedMockProvider } from "./Many2Many.mockProvider";
+import { initializeMockProvider, initializePaginatedMockProvider } from "./One2Many.mockProvider";
 
 interface Many2ManyStoryProps {
   paginated?: boolean;
@@ -11,8 +11,9 @@ const Many2ManyStory: React.FC<Many2ManyStoryProps> = ({ paginated = false }) =>
   const [mockProviderReady, setMockProviderReady] = useState(false);
 
   useEffect(() => {
-    // Initialize the appropriate mock provider when component mounts
-    paginated ? initializePaginatedMockProvider() : initializeMockProvider();
+    // Initialize the appropriate mock provider when component mounts with many2many field type
+    // Use 2 lines for many2many to keep it minimal
+    paginated ? initializePaginatedMockProvider("many2many", 2) : initializeMockProvider("many2many", 2);
     setMockProviderReady(true);
 
     return () => {

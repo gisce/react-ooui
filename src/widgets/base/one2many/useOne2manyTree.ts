@@ -99,6 +99,7 @@ export const useOne2manyTree = ({
         context,
         attrs,
         treeOoui,
+        skipFunctionFields: true,
       });
 
       const weCanAddOtherItems = realIdsToFetch.length < endRow - startRow;

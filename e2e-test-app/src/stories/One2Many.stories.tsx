@@ -12,7 +12,8 @@ const One2ManyStory: React.FC<One2ManyStoryProps> = ({ paginated = false }) => {
 
   useEffect(() => {
     // Initialize the appropriate mock provider when component mounts
-    paginated ? initializePaginatedMockProvider() : initializeMockProvider();
+    // Use 50 lines for one2many to trigger infinite scroll
+    paginated ? initializePaginatedMockProvider("one2many", 50) : initializeMockProvider("one2many", 50);
     setMockProviderReady(true);
 
     return () => {

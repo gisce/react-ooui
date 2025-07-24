@@ -135,6 +135,7 @@ function Form(props: FormProps, ref: any) {
   const formModalContext = useContext(FormModalContext) as FormModalContextType;
   const [containerWidth, setContainerWidth] = useState<any>();
   const [defaultGetCalled, setDefaultGetCalled] = useState<boolean>(false);
+  const [refreshCounter, setRefreshCounter] = useState<number>(0);
 
   const createdId = useRef<number>();
   const originalFormValues = useRef<any>({});
@@ -491,6 +492,9 @@ function Form(props: FormProps, ref: any) {
   };
 
   const fetchValues = async (options?: FetchValuesOptions) => {
+    // Increment refresh counter to trigger One2many refreshes
+    setRefreshCounter((prev) => prev + 1);
+
     let values;
     let _fields;
     let _arch;
@@ -1283,6 +1287,7 @@ function Form(props: FormProps, ref: any) {
           getFieldMessageType={getFieldMessageType}
           clearFieldMessage={clearFieldMessage}
           clearAllFieldMessages={clearAllFieldMessages}
+          refreshCounter={refreshCounter}
         >
           <AntForm
             form={antForm}

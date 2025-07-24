@@ -40,10 +40,11 @@ const readObjectValues = async (
     (item) => !operationsToRead.includes(item.operation!),
   );
 
-  // We get a number array of id's
+  // We get a number array of id's, filtering out negative/temporal IDs
   const idsToFetch = items
     .filter((item) => operationsToRead.includes(item.operation!))
-    .map((item) => item.id) as number[];
+    .map((item) => item.id)
+    .filter((id) => (id as number) > 0) as number[]; // Skip negative/temporal IDs
 
   const fieldsToRetrieve: { [key: string]: any } = {
     form: formView.fields,
@@ -276,7 +277,8 @@ const getIdsToFetch = ({
     const item = allItems.find((item) => item.id === id);
     return (
       item &&
-      (item.operation === "original" || item.operation === "pendingLink")
+      (item.operation === "original" || item.operation === "pendingLink") &&
+      id > 0 // Skip negative/temporal IDs
     );
   });
 
@@ -345,6 +347,7 @@ const fetchAndPrepareData = async ({
   context,
   attrs,
   treeOoui,
+  skipFunctionFields = false,
 }: {
   relation: string;
   ids: number[];
@@ -352,20 +355,55 @@ const fetchAndPrepareData = async ({
   context: any;
   attrs: any;
   treeOoui: any;
+  skipFunctionFields?: boolean;
 }) => {
+  // Filter out negative/temporal IDs to avoid server requests
+  const validIds = ids.filter((id) => id > 0);
+  const fieldsToRetrieve: string[] = skipFunctionFields
+    ? Object.keys(treeView.fields).reduce<string[]>((acc, fieldName) => {
+        const field = treeView.fields[fieldName];
+        if (!field.is_function) {
+          acc.push(fieldName);
+        }
+        return acc;
+      }, [])
+    : Object.keys(treeView.fields);
+
+  if (fieldsToRetrieve.length === 0 || validIds.length === 0) {
+    return {
+      items: getTableItems(
+        treeOoui,
+        ids.map((id) => ({ id })),
+      ),
+      colors: {},
+      status: {},
+    };
+  }
+
   const fetchedData = await ConnectionProvider.getHandler().readEvalUiObjects({
     model: relation,
-    ids,
+    ids: validIds, // Use filtered IDs
     arch: treeView.arch,
     fields: treeView.fields,
     context,
     attrs,
+    fieldsToRetrieve,
+  });
+
+  // Combine fetched data with placeholder data for negative IDs
+  const allData = ids.map((id) => {
+    if (id > 0) {
+      return fetchedData[0].find((item: any) => item.id === id) || { id };
+    } else {
+      // Return placeholder data for negative/temporal IDs
+      return { id };
+    }
   });
 
   return {
-    items: getTableItems(treeOoui, fetchedData[0]),
-    colors: getColorMap(fetchedData[1]),
-    status: getStatusMap(fetchedData[1]),
+    items: getTableItems(treeOoui, allData),
+    colors: getColorMap(fetchedData[1] || {}),
+    status: getStatusMap(fetchedData[1] || {}),
   };
 };
 
