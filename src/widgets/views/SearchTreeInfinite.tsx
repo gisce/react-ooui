@@ -20,7 +20,11 @@ import {
   getTableItems,
   getTree,
 } from "@/helpers/treeHelper";
-import { useDeepCompareCallback, useDeepCompareEffect } from "use-deep-compare";
+import {
+  useDeepCompareCallback,
+  useDeepCompareEffect,
+  useDeepCompareMemo,
+} from "use-deep-compare";
 import {
   ColumnState,
   InfiniteTable,
@@ -459,6 +463,33 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     ],
   );
 
+  // Stabilize onSelectAll callback to prevent recreation
+  const stableOnSelectAll = useCallback(async () => {
+    if (nameSearch) {
+      return lastAssignedResults.current;
+    }
+
+    if (!totalRows) {
+      return [];
+    }
+
+    const allRowsResults = await searchAllIds({
+      params: nameSearch ? domain : mergedParams,
+      model,
+      context: parentContext,
+      totalItems: totalRows,
+    });
+    return allRowsResults.map((id: number) => ({ id }));
+  }, [
+    nameSearch,
+    totalRows,
+    searchAllIds,
+    domain,
+    mergedParams,
+    model,
+    parentContext,
+  ]);
+
   // Use shared row selection functionality
   const {
     changeSelectedRowItems,
@@ -470,23 +501,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     onChangeSelectedRowKeys,
     totalRows,
     maxRowsToSelect: MAX_ROWS_TO_SELECT,
-    onSelectAll: async () => {
-      if (nameSearch) {
-        return lastAssignedResults.current;
-      }
-
-      if (!totalRows) {
-        return [];
-      }
-
-      const allRowsResults = await searchAllIds({
-        params: nameSearch ? domain : mergedParams,
-        model,
-        context: parentContext,
-        totalItems: totalRows,
-      });
-      return allRowsResults.map((id: number) => ({ id }));
-    },
+    onSelectAll: stableOnSelectAll,
   });
 
   const onRequestData = useCallback(
@@ -542,18 +557,25 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     showEmptyValues: true,
   });
 
-  const firstVisibleRowIndex = useCallback(() => {
-    return treeFirstVisibleRow;
-  }, [treeFirstVisibleRow]);
+  // Create a ref to store the latest treeFirstVisibleRow value
+  const treeFirstVisibleRowRef = useRef(treeFirstVisibleRow);
+  treeFirstVisibleRowRef.current = treeFirstVisibleRow;
 
-  const content = useMemo(() => {
+  // Create a stable firstVisibleRowIndex function that uses ref to avoid recreation
+  const stableFirstVisibleRowIndex = useCallback(() => {
+    return treeFirstVisibleRowRef.current;
+  }, []);
+
+  // Calculate cache block size outside of render
+  const cacheBlockSize = isNameSearchMode.current
+    ? DEFAULT_SEARCH_LIMIT
+    : undefined;
+
+  // Use deep comparison memoization - recreates only when content actually changes
+  const content = useDeepCompareMemo(() => {
     if (!columnsWithLoading || !treeOoui) {
       return null;
     }
-
-    const cacheBlockSize = isNameSearchMode.current
-      ? DEFAULT_SEARCH_LIMIT
-      : undefined;
 
     return (
       <InfiniteTable
@@ -568,7 +590,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         onColumnChanged={updateColumnState}
         onGetColumnsState={getColumnState}
         onChangeFirstVisibleRowIndex={setTreeFirstVisibleRow}
-        onGetFirstVisibleRowIndex={firstVisibleRowIndex}
+        onGetFirstVisibleRowIndex={stableFirstVisibleRowIndex}
         selectedRowKeys={selectedRowKeys}
         onSelectionCheckboxClicked={onSelectionCheckboxClicked}
         totalRows={totalRows || 99999}
@@ -593,7 +615,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     updateColumnState,
     getColumnState,
     setTreeFirstVisibleRow,
-    firstVisibleRowIndex,
+    stableFirstVisibleRowIndex,
     selectedRowKeys,
     onSelectionCheckboxClicked,
     totalRows,
@@ -602,6 +624,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     onRowStatus,
     strings,
     actionViewSortState,
+    cacheBlockSize,
     onChangeTreeType,
   ]);
 
