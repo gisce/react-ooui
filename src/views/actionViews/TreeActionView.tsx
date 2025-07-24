@@ -72,7 +72,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
 
   const { setLimit } = useActionViewContext();
   const enableNewTable = useUserFeatureIsEnabled(
-    UserFeatureKeys.FEATURE_TREE_V2,
+    UserFeatureKeys.FEATURE_ONE2MANY_ENABLE_NEW_TABLE,
   );
 
   const SearchTreeInfinite = enableNewTable

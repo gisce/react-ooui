@@ -254,7 +254,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
   );
 
   const enableNewTable = useUserFeatureIsEnabled(
-    UserFeatureKeys.FEATURE_TREE_V2,
+    UserFeatureKeys.FEATURE_ONE2MANY_ENABLE_NEW_TABLE,
   );
 
   return (
