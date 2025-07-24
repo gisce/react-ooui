@@ -117,7 +117,7 @@ export const useAutorefreshableTreeFields = (
 
     const ids = tableRef.current
       ?.getVisibleRowIds()
-      .filter((id: any) => id !== undefined && id !== null);
+      .filter((id: any) => id !== undefined && id !== null && id > 0); // Filter out negative/temporal IDs
 
     if (!ids || ids.length === 0) return;
 

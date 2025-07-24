@@ -55,7 +55,8 @@ export const useAutorefreshableFormFields = (
   }, [isActive, tabOrWindowIsVisible]);
 
   const refresh = useCallback(async () => {
-    if (!id || !autorefreshableFields?.length || !internalIsActive) return;
+    if (!id || id <= 0 || !autorefreshableFields?.length || !internalIsActive)
+      return; // Skip negative/temporal IDs
 
     try {
       const [result] = await fetchRequest({
@@ -81,7 +82,8 @@ export const useAutorefreshableFormFields = (
   ]);
 
   useDeepCompareEffect(() => {
-    const shouldStart = id && autorefreshableFields?.length && internalIsActive;
+    const shouldStart =
+      id && id > 0 && autorefreshableFields?.length && internalIsActive; // Skip negative/temporal IDs
 
     if (shouldStart) {
       refresh();

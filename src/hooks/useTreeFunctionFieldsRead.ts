@@ -169,9 +169,10 @@ export const useTreeFunctionFieldsRead = ({
       return;
     }
 
-    // We need to check which id's aren't loading or loaded
+    // We need to check which id's aren't loading or loaded, and filter out negative IDs
     const recordsToProcess = Array.from(recordIdsToCheck).filter(
       (id) =>
+        id > 0 && // Skip negative/temporal IDs
         !loadingIds.current.has(id) &&
         !loadedRecords.current.find((record) => record.id === id),
     );
@@ -232,10 +233,14 @@ export const useTreeFunctionFieldsRead = ({
     (ids: number[]) => {
       if (!ids || ids.length === 0) return;
 
+      // Filter out negative/temporal IDs to avoid server requests
+      const validIds = ids.filter((id) => id > 0);
+      if (validIds.length === 0) return;
+
       // Create a new Set to ensure React detects the state change
       setRecordIdsToCheck((prev) => {
         const newSet = new Set(prev);
-        ids.forEach((id) => newSet.add(id));
+        validIds.forEach((id) => newSet.add(id));
         return newSet;
       });
 
