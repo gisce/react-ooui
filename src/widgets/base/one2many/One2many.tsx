@@ -180,6 +180,10 @@ const One2manyComponent = (props: One2manyInputInfiniteProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ooui.infinite, value]);
 
+  if (treeType === undefined) {
+    return <Spin />;
+  }
+
   return treeType === "infinite" ? (
     <One2manyInputInfinite {...props} />
   ) : (
