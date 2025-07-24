@@ -177,12 +177,12 @@ const One2manyComponent = (props: One2manyInputBaseProps) => {
     if (enableNewTable) {
       const determineTreeType = (): TreeType => {
         // Priority 1: Explicit infinite="1" in XML → always infinite
-        if (ooui.infinite === "1") {
+        if (ooui.infinite === "1" || ooui.infinite === true) {
           return "infinite";
         }
 
         // Priority 2: Explicit infinite="0" in XML → always paginated
-        if (ooui.infinite === "0") {
+        if (ooui.infinite === "0" || ooui.infinite === false) {
           return "paginated";
         }
 
