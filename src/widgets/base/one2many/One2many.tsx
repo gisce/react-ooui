@@ -222,19 +222,13 @@ const One2manyComponent = (props: One2manyInputBaseProps) => {
 
     setTreeType(DEFAULT_TREE_TYPE);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ooui.infinite, value, enableNewTable]);
-
   if (treeType === undefined) {
     return <Spin />;
   }
 
-  if (enableNewTable) {
-    return <One2manyInput {...props} treeType={treeType} />;
-  } else if (treeType === "infinite") {
-    // Old infinite table with refactor and improvements
-    return <One2manyInputInfinite {...props} />;
-  } else if (treeType === "legacy") {
-    return <One2manyInputLegacy {...props} />;
-  }
+  return treeType === "infinite" ? (
+    <One2manyInputInfinite {...props} />
+  ) : (
+    <One2manyInput {...props} />
+  );
 };

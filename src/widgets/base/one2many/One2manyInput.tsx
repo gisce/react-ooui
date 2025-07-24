@@ -176,14 +176,44 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     relation,
   });
 
-  const { showRemoveConfirm } = useOne2manyRemove({
-    isMany2many,
-    items,
-    triggerChange,
-    setFormHasChanges,
-    selectedRowKeys,
-    setSelectedRowKeys,
-  });
+  useDeepCompareEffect(() => {
+    parseDomain();
+  }, [getAllHierarchyValues()]);
+
+  const parseDomain = useCallback(async () => {
+    let tempTransformedDomain: any[] = [];
+    if (widgetDomain) {
+      tempTransformedDomain = await ConnectionProvider.getHandler().evalDomain({
+        domain: widgetDomain,
+        values: transformPlainMany2Ones({
+          fields: getFields(),
+          values: getAllHierarchyValues(),
+        }),
+        fields: getFields(),
+        context: getContext(),
+      });
+    }
+
+    if (domain && domain.length > 0) {
+      tempTransformedDomain = tempTransformedDomain.concat(
+        transformDomainForChildWidget({
+          domain,
+          widgetFieldName: fieldName,
+        }),
+      );
+    }
+
+    if (tempTransformedDomain.length > 0) {
+      setTransformedDomain(tempTransformedDomain);
+    }
+  }, [
+    widgetDomain,
+    domain,
+    getFields,
+    getAllHierarchyValues,
+    getContext,
+    fieldName,
+  ]);
 
   const toggleViewMode = () => {
     const keys = Array.from(views.keys());
