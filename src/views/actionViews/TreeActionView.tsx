@@ -14,19 +14,13 @@ import {
   ActionViewContextType,
   useActionViewContext,
 } from "@/context/ActionViewContext";
-import { SearchTreeInfinite as NewSearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
-import { SearchTreeInfinite as OldSearchTreeInfinite } from "@/widgets/views/OldSearchTreeInfinite";
+import { SearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
 import SearchTree from "@/widgets/views/SearchTree";
 import { extractTreeXmlAttribute } from "@/helpers/treeHelper";
-import { SearchTreePaginated as NewSearchTreePaginated } from "@/widgets/views/Tree/Paginated/SearchTreePaginated";
-import { SearchTreePaginated as OldSearchTreePaginated } from "@/widgets/views/Tree/OldPaginated/SearchTreePaginated";
+import { SearchTreePaginated } from "@/widgets/views/Tree/Paginated/SearchTreePaginated";
 import { useDeepCompareEffect } from "use-deep-compare";
-import {
-  useConfigContext,
-  useUserFeatureIsEnabled,
-} from "@/context/ConfigContext";
+import { useConfigContext } from "@/context/ConfigContext";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
-import { UserFeatureKeys } from "@/models/userFeature";
 
 export type TreeActionViewProps = {
   formView: FormView;
@@ -71,16 +65,6 @@ export const TreeActionView = (props: TreeActionViewProps) => {
   const { treeMaxLimit } = useConfigContext();
 
   const { setLimit } = useActionViewContext();
-  const enableNewTable = useUserFeatureIsEnabled(
-    UserFeatureKeys.FEATURE_ONE2MANY_ENABLE_NEW_TABLE,
-  );
-
-  const SearchTreeInfinite = enableNewTable
-    ? NewSearchTreeInfinite
-    : OldSearchTreeInfinite;
-  const SearchTreePaginated = enableNewTable
-    ? NewSearchTreePaginated
-    : OldSearchTreePaginated;
 
   useDeepCompareEffect(() => {
     if (treeView.isExpandable) {
