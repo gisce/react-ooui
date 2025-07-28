@@ -1,72 +1,40 @@
-import ConnectionProvider from "@/ConnectionProvider";
 import { Space } from "antd";
-import React, { useCallback, useState } from "react";
+import React from "react";
 import { Many2oneSuffix } from "./many2one/Many2oneSuffix";
-import { LoadingOutlined } from "@ant-design/icons";
-import { useDeepCompareEffect } from "use-deep-compare";
 import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
 import { UserFeatureKeys } from "@/models/userFeature";
 
 export type ReferenceTreeProps = {
-  value: string;
-  context?: any;
+  value: {
+    model: string;
+    id: number;
+    name: string;
+    originalValue: string;
+  };
   selectionValues?: any;
 };
 
 export const ReferenceTree = (
   props: ReferenceTreeProps,
 ): React.ReactElement => {
-  const { value, context, selectionValues } = props;
-  const [name, setName] = useState();
-  const [loading, setLoading] = useState(false);
-
-  const [model, id] = value ? value.split(",") : [];
-  const intId = parseInt(id);
-
-  const fetchName = useCallback(async () => {
-    if (!value) {
-      return;
-    }
-    if (value && name && loading) {
-      return;
-    }
-    setLoading(true);
-    const nameResponse = await ConnectionProvider.getHandler().execute({
-      action: "name_get",
-      payload: [intId],
-      model,
-      context,
-    });
-    const m2o = nameResponse[0];
-    if (m2o && m2o[1]) {
-      setName(m2o[1]);
-    }
-    setLoading(false);
-  }, [value, name, loading, intId, model, context]);
-
-  useDeepCompareEffect(() => {
-    fetchName();
-  }, [value]);
-
+  const { value, selectionValues } = props;
   const disableArrowMenu = useUserFeatureIsEnabled(
     UserFeatureKeys.FEATURE_MANY2ONE_DISABLE_ARROW_MENU,
   );
 
-  if (!value && !loading) {
+  // Expect prefetched data - value should contain model, id, and name properties
+  if (!value || !value.model || !value.name) {
     return <></>;
   }
 
-  if (loading) {
-    return <LoadingOutlined />;
-  }
-
+  const { model, id, name } = value;
   const selectionDescription = selectionValues.get(model);
 
   return (
     <Space>
       <>{`${selectionDescription}:`}</>
       <>{name}</>
-      {!disableArrowMenu && <Many2oneSuffix id={intId} model={model} />}
+      {!disableArrowMenu && <Many2oneSuffix id={id} model={model} />}
     </Space>
   );
 };

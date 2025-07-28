@@ -21,6 +21,7 @@ import { useActionViewContext } from "@/context/ActionViewContext";
 import { useOne2manyContext } from "@/context/One2manyContext";
 import { DateValue, DateTimeValue } from "@gisce/react-formiga-components";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import { useDeepCompareMemo } from "use-deep-compare";
 
 export const BooleanComponent = ({
   value,
@@ -248,11 +249,7 @@ export const ReferenceComponent = ({
 }): ReactElement => {
   return useMemo(
     () => (
-      <ReferenceTree
-        value={value}
-        selectionValues={ooui.selectionValues}
-        context={context}
-      />
+      <ReferenceTree value={value} selectionValues={ooui.selectionValues} />
     ),
     [context, ooui.selectionValues, value],
   );
@@ -280,52 +277,16 @@ export const TagsComponent = ({
   ooui: any;
   context: any;
 }): ReactElement => {
-  const [values, setValues] = useState<Array<{ id: number; name: string }>>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [readObjects, cancelReadObjectsRequest] = useNetworkRequest(
-    ConnectionProvider.getHandler().readObjects,
+  // Expect prefetched data - value.items should contain enriched items with name property
+  const enrichedItems = useDeepCompareMemo(
+    () => value?.items || [],
+    [value?.items],
   );
-  const { relation, field } = ooui;
-
-  const loadValues = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await readObjects({
-        model: relation,
-        ids: value.items.map((v: any) => v.id),
-        fieldsToRetrieve: [field],
-        context,
-      });
-      setValues(
-        response.map((i: any) => {
-          return { id: i.id, name: i[field] };
-        }),
-      );
-    } catch (error) {
-      console.error("Error loading data", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [context, field, relation, value?.items, readObjects]);
-
-  useEffect(() => {
-    if (value?.items && value?.items.length > 0) {
-      loadValues();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value?.items]);
-
-  useEffect(() => {
-    return () => {
-      cancelReadObjectsRequest();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const tags = useMemo(
     () =>
-      values.map((entry) => {
-        const { id, name } = entry;
+      enrichedItems.map((item: any) => {
+        const { id, name } = item;
         const color = colorFromString(name);
         return (
           <CustomTag key={`${id}`} color={color}>
@@ -333,14 +294,11 @@ export const TagsComponent = ({
           </CustomTag>
         );
       }),
-    [values],
+    [enrichedItems],
   );
 
-  return useMemo(() => {
-    if (loading) {
-      return <Spin />;
-    }
-    return (
+  return useMemo(
+    () => (
       <div
         style={{
           maxWidth: "300px",
@@ -350,8 +308,9 @@ export const TagsComponent = ({
       >
         {tags}
       </div>
-    );
-  }, [tags, loading]);
+    ),
+    [tags],
+  );
 };
 
 export const COLUMN_COMPONENTS = {
