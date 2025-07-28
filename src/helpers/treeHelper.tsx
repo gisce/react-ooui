@@ -81,9 +81,10 @@ const getTableColumns = (
         return 0;
       },
       isSortable:
-        type !== "one2many" &&
-        !column.isFunction &&
-        (type !== "many2one" || many2oneSortEnabled),
+        (type !== "one2many" &&
+          !column.isFunction &&
+          (type !== "many2one" || many2oneSortEnabled)) ||
+        column.isSortable,
     };
   });
   return tableColumns;
