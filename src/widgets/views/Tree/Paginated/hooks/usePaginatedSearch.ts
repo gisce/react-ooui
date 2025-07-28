@@ -467,7 +467,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
         return;
       }
 
-      const preparedResults = getTableItems(treeOoui, results);
+      const preparedResults = await getTableItems(treeOoui, results, context);
       updateAttributes?.(attrsEvaluated, treeOoui);
 
       setTreeIsLoading(false);
@@ -646,7 +646,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
         context,
       });
 
-      const preparedResults = getTableItems(treeOoui!, children);
+      const preparedResults = await getTableItems(treeOoui!, children, context);
       const mergedResults = [...results, ...preparedResults];
 
       const conditions = getAttributesConditionsFromOoui({

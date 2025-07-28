@@ -421,7 +421,7 @@ export const One2manyTree = ({
           context,
         });
 
-        return getTableItems(ooui, children);
+        return await getTableItems(ooui, children, context);
       } catch (error) {
         console.error("Error fetching children:", error);
         return [];

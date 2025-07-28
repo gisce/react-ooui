@@ -371,9 +371,10 @@ const fetchAndPrepareData = async ({
 
   if (fieldsToRetrieve.length === 0 || validIds.length === 0) {
     return {
-      items: getTableItems(
+      items: await getTableItems(
         treeOoui,
         ids.map((id) => ({ id })),
+        context,
       ),
       colors: {},
       status: {},
@@ -401,7 +402,7 @@ const fetchAndPrepareData = async ({
   });
 
   return {
-    items: getTableItems(treeOoui, allData),
+    items: await getTableItems(treeOoui, allData, context),
     colors: getColorMap(fetchedData[1] || {}),
     status: getStatusMap(fetchedData[1] || {}),
   };
