@@ -152,7 +152,7 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
 
       loadItems();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [results]);
+    }, [results, treeOoui, context]);
 
     useEffect(() => {
       internalLimit.current = limit;
