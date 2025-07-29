@@ -89,43 +89,6 @@ const getTableColumns = (
   return tableColumns;
 };
 
-// @deprecated
-const getOldTableItems = (treeOoui: TreeOoui, results: any[]): any[] => {
-  const tableItems = results.map((item: any) => {
-    const parsedItem: any = {};
-    Object.keys(item).forEach((key) => {
-      if (key === "id") {
-        parsedItem[key] = item[key];
-      } else {
-        const widget = treeOoui.findById(key);
-
-        if (widget instanceof Reference) {
-          parsedItem[key] = item[key];
-        } else if (widget instanceof Selection) {
-          parsedItem[key] = item[key];
-        } else if (widget instanceof Many2one) {
-          parsedItem[key] = item[key] &&
-            Array.isArray(item[key]) &&
-            item[key].length === 2 && {
-              model: widget.relation,
-              id: item[key][0],
-              value: item[key][1],
-            };
-        } else if (widget instanceof Boolean) {
-          parsedItem[key] = item[key];
-        } else if (widget) {
-          parsedItem[key] = item[key] === false ? "" : item[key];
-        } else {
-          parsedItem[key] = item[key];
-        }
-      }
-    });
-    return parsedItem;
-  });
-
-  return tableItems;
-};
-
 const getTableItems = async (
   treeOoui: TreeOoui,
   results: any[],
@@ -476,5 +439,4 @@ export {
   getOrderFromSortFields,
   extractTreeXmlAttribute,
   getSortedFieldsFromState,
-  getOldTableItems,
 };
