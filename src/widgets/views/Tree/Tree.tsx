@@ -12,8 +12,8 @@ import { Pagination as AntPagination, Row, Col, Spin, Badge } from "antd";
 import {
   getTree,
   getTableColumns,
-  getTableItems,
   hasActualValues,
+  getOldTableItems,
 } from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { TreeView } from "@/types";
@@ -34,7 +34,6 @@ import { COLUMN_COMPONENTS } from "./treeComponents";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
-import { useDeepCompareEffect } from "use-deep-compare";
 
 type Props = {
   total?: number;
@@ -139,18 +138,13 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [treeView, title]);
 
-    useDeepCompareEffect(() => {
+    useEffect(() => {
       if (!treeOoui) {
         return;
       }
       errorInParseColors.current = false;
-
-      const loadItems = async () => {
-        const items = await getTableItems(treeOoui, results, context);
-        setItems(items);
-      };
-
-      loadItems();
+      const items = getOldTableItems(treeOoui, results);
+      setItems(items);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [results]);
 
