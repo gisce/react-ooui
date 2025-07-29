@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Form, Button, FormInstance, Input, Space } from "antd";
+import { Form, Button, Input, Space } from "antd";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 
@@ -54,14 +54,45 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
     );
     const [searchText, setSearchText] = useState("");
     const { t } = useLocale();
+    const [topSectionHeight, setTopSectionHeight] = useState(0);
+    const topSectionRef = useRef<HTMLDivElement>(null);
+    const [fieldAdditionOrder, setFieldAdditionOrder] = useState<string[]>([]);
 
     useEffect(() => {
       form.setFieldsValue(searchValues);
       const normalized = normalizeValues(searchValues || {});
       setConfirmedValues(normalized);
       setInitialConfirmedValues(normalized);
+
+      // Initialize field addition order from existing values
+      const existingFields = Object.keys(normalized).filter(
+        (key) => normalized[key] !== undefined,
+      );
+      const existingFieldIds = existingFields.map((key) =>
+        key.replace(/#.*$/, ""),
+      );
+      setFieldAdditionOrder(existingFieldIds);
+
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchValues]);
+
+    useEffect(() => {
+      const hasValues =
+        Object.keys(confirmedValues).filter(
+          (key) => confirmedValues[key] !== undefined,
+        ).length > 0;
+
+      if (hasValues && topSectionRef.current) {
+        const observer = new ResizeObserver(() => {
+          setTopSectionHeight(topSectionRef.current?.offsetHeight || 0);
+        });
+        observer.observe(topSectionRef.current);
+        return () => observer.disconnect();
+      } else {
+        // Reset height when no values
+        setTopSectionHeight(0);
+      }
+    }, [confirmedValues]);
 
     useImperativeHandle(ref, () => ({
       submit: form.submit,
@@ -76,9 +107,11 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
     const getFieldsInputs = ({
       searchText,
       onlyInputsWithValue = false,
+      isTopSection = false,
     }: {
       searchText?: string;
       onlyInputsWithValue?: boolean;
+      isTopSection?: boolean;
     }) => {
       if (!searchFields) return;
 
@@ -96,19 +129,9 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
         return acc;
       }, {});
 
-      const initialValues = Object.keys(initialConfirmedValues).reduce<
-        Record<string, boolean>
-      >((acc, key) => {
-        const keyWithoutHash = key.replace(/#.*$/, "");
-        if (acc[keyWithoutHash] === undefined) {
-          acc[keyWithoutHash] = initialConfirmedValues[key] !== undefined;
-        }
-        return acc;
-      }, {});
-
       const confirmedValuesKeyExist = onlyInputsWithValue
         ? fields.reduce<Record<string, boolean>>((acc, field) => {
-            acc[field.id] = currentValues[field.id] && initialValues[field.id];
+            acc[field.id] = currentValues[field.id];
             return acc;
           }, {})
         : currentValues;
@@ -124,27 +147,33 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
           const fieldA = a as Field;
           const fieldB = b as Field;
 
+          // For top section, sort by addition order
+          if (onlyInputsWithValue) {
+            const indexA = fieldAdditionOrder.indexOf(fieldA.id);
+            const indexB = fieldAdditionOrder.indexOf(fieldB.id);
+            return indexA - indexB;
+          }
+
           return normalizeString(fieldA.label).localeCompare(
             normalizeString(fieldB.label),
           );
         })
-        .map((item, i) => {
+        .map((item) => {
           const field = item as Field;
           const hasValue = confirmedValuesKeyExist[field.id] === true;
 
-          const hasInitialValue = Object.keys(initialConfirmedValues).some(
-            (key) =>
-              key.replace(/#.*$/, "") === field.id &&
-              initialConfirmedValues[key] !== undefined,
-          );
           const hasToHide = onlyInputsWithValue
             ? false
-            : (searchText && !matchSearch(searchText, field)) ||
-              hasInitialValue;
+            : searchText && !matchSearch(searchText, field);
+
+          const fieldKey = isTopSection
+            ? `${field.id}-top`
+            : `${field.id}-bottom`;
 
           return (
             <div
-              key={i}
+              key={fieldKey}
+              id={`field-container-${fieldKey}`}
               style={{
                 display: hasToHide ? "none" : "block",
                 paddingTop: 5,
@@ -160,9 +189,10 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
                     alignItems: "flex-end",
                     gap: "8px",
                   }}
+                  data-field-id={fieldKey}
                 >
                   <div style={{ flex: 1 }}>
-                    <SearchField key={`sf-${i}`} field={field} />
+                    <SearchField key={`sf-${fieldKey}`} field={field} />
                   </div>
                   {hasValue && (
                     <Button
@@ -188,9 +218,57 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
     const handleFormBlur = useCallback(() => {
       const touchedValues = form.getFieldsValue();
       const normalizedTouchedValues = normalizeValues(touchedValues);
+      const prevConfirmedValues = confirmedValues;
+
       setConfirmedValues(normalizedTouchedValues);
       onChange?.(touchedValues);
-    }, [form, onChange]);
+
+      // Find the newly added field
+      const prevKeys = Object.keys(prevConfirmedValues).filter(
+        (key) => prevConfirmedValues[key] !== undefined,
+      );
+      const newKeys = Object.keys(normalizedTouchedValues).filter(
+        (key) => normalizedTouchedValues[key] !== undefined,
+      );
+
+      if (newKeys.length > prevKeys.length) {
+        // Find which field was newly added
+        const newlyAddedKey = newKeys.find((key) => !prevKeys.includes(key));
+
+        if (newlyAddedKey) {
+          const fieldId = newlyAddedKey.replace(/#.*$/, "");
+
+          // Add to addition order if not already there
+          setFieldAdditionOrder((prev) => {
+            if (!prev.includes(fieldId)) {
+              return [...prev, fieldId];
+            }
+            return prev;
+          });
+
+          // Scroll to bottom of top section
+          if (topSectionRef.current) {
+            setTimeout(() => {
+              if (topSectionRef.current) {
+                topSectionRef.current.scrollTop =
+                  topSectionRef.current.scrollHeight;
+              }
+            }, 150);
+          }
+        }
+      }
+
+      // Clean up removed fields from addition order
+      const removedKeys = prevKeys.filter((key) => !newKeys.includes(key));
+      if (removedKeys.length > 0) {
+        setFieldAdditionOrder((prev) => {
+          const removedFieldIds = removedKeys.map((key) =>
+            key.replace(/#.*$/, ""),
+          );
+          return prev.filter((fieldId) => !removedFieldIds.includes(fieldId));
+        });
+      }
+    }, [form, onChange, confirmedValues]);
 
     const handleKeyPress = useCallback(
       (event: React.KeyboardEvent) => {
@@ -207,26 +285,65 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
           form={form}
           onFinish={onSubmit}
           onBlurCapture={handleFormBlur}
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyPress}
           className="pb-3"
           style={{
             height: "100%",
-            display: "flex",
-            flexDirection: "column",
           }}
         >
-          <div
-            style={{
-              borderBottom: "1px solid #f0f0f0",
-              flexShrink: 0,
-            }}
-          >
-            <Space direction="vertical" style={{ rowGap: 0, width: "100%" }}>
-              {getFieldsInputs({
-                onlyInputsWithValue: true,
-              })}
-            </Space>
-            <div style={{ padding: "12px 12px 12px 12px" }}>
+          <div style={{ position: "relative", height: "100%" }}>
+            {Object.keys(confirmedValues).filter(
+              (key) => confirmedValues[key] !== undefined,
+            ).length > 0 && (
+              <div
+                ref={topSectionRef}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  maxHeight: "400px",
+                  overflowY: "auto",
+                  backgroundColor: "white",
+                  zIndex: 5,
+                }}
+                onScroll={() => {
+                  // Close any open dropdowns when scrolling
+                  const selectInputs = document.querySelectorAll(
+                    ".ant-select-focused .ant-select-selector",
+                  );
+                  selectInputs.forEach((selector) => {
+                    if (selector instanceof HTMLElement) {
+                      selector.blur();
+                    }
+                  });
+                }}
+              >
+                <Space
+                  direction="vertical"
+                  style={{ rowGap: 0, width: "100%" }}
+                >
+                  {getFieldsInputs({
+                    onlyInputsWithValue: true,
+                    isTopSection: true,
+                  })}
+                </Space>
+              </div>
+            )}
+            <div
+              style={{
+                position: "absolute",
+                top: topSectionHeight > 0 ? topSectionHeight : 0,
+                left: 0,
+                right: 0,
+                padding: "12px",
+                backgroundColor: "white",
+                borderBottom: "2px solid #bbbbbb",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                zIndex: 5,
+                transition: "top 0.2s ease",
+              }}
+            >
               <Input
                 placeholder={t("enterFieldToFilter")}
                 value={searchText}
@@ -241,18 +358,34 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
                 }}
               />
             </div>
-          </div>
-          <div
-            style={{
-              flex: 1,
-              overflowY: "auto",
-              marginTop: 8,
-              paddingBottom: 16,
-            }}
-          >
-            {getFieldsInputs({
-              searchText,
-            })}
+            <div
+              style={{
+                position: "absolute",
+                top: topSectionHeight > 0 ? topSectionHeight + 56 : 56,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                overflowY: "auto",
+                paddingTop: 8,
+                paddingBottom: 16,
+                transition: "top 0.2s ease",
+              }}
+              onScroll={() => {
+                // Close any open dropdowns when scrolling
+                const selectInputs = document.querySelectorAll(
+                  ".ant-select-focused .ant-select-selector",
+                );
+                selectInputs.forEach((selector) => {
+                  if (selector instanceof HTMLElement) {
+                    selector.blur();
+                  }
+                });
+              }}
+            >
+              {getFieldsInputs({
+                searchText,
+              })}
+            </div>
           </div>
         </Form>
       </Fragment>
