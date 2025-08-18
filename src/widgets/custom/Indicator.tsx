@@ -255,7 +255,7 @@ const CardContent = ({
   const { initialView, views, model, domain, context, limit } = actionData;
   const readForViewFeature = useFeatureData(ErpFeatureKeys.FEATURE_READFORVIEW);
   const GraphComponent = readForViewFeature?.isEnabled ? GraphServer : Graph;
-  const { openAction } = useTabs();
+  const { openShortcut } = useTabs();
 
   const onRowClicked = useCallback(
     (record: any) => {
@@ -281,10 +281,10 @@ const CardContent = ({
           view_id: id,
           view_type: type,
         };
-        openAction(action as any);
+        openShortcut(action as any);
       }
     },
-    [actionData, openAction, views],
+    [actionData, openShortcut, views],
   );
 
   if (initialView.type === "graph") {
@@ -310,6 +310,7 @@ const CardContent = ({
         domain={domain}
         view_id={initialView.id}
         onRowClicked={onRowClicked}
+        treeExpandable={actionData.treeExpandable}
       />
     );
   } else {
