@@ -16,11 +16,11 @@ import {
 } from "@/context/ActionViewContext";
 import { SearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
 import SearchTree from "@/widgets/views/SearchTree";
-import { extractTreeXmlAttribute } from "@/helpers/treeHelper";
 import { SearchTreePaginated } from "@/widgets/views/Tree/Paginated/SearchTreePaginated";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useConfigContext } from "@/context/ConfigContext";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
+import { determineTreeType, isTreeExpandable } from "@/helpers/treeHelper";
 
 export type TreeActionViewProps = {
   formView: FormView;
@@ -67,44 +67,14 @@ export const TreeActionView = (props: TreeActionViewProps) => {
   const { setLimit } = useActionViewContext();
 
   useDeepCompareEffect(() => {
-    if (treeView.isExpandable) {
-      setTreeType("paginated");
-      return;
-    }
+    const newTreeType = determineTreeType({
+      treeView,
+      limit,
+      treeMaxLimit,
+    });
 
-    if (limit === 0) {
-      setTreeType("infinite");
-      return;
-    }
-
-    if (limit && limit > treeMaxLimit) {
-      setTreeType("infinite");
-      return;
-    }
-
-    if (!treeView?.arch) {
-      setTreeType("legacy");
-      return;
-    }
-
-    const tagValue = extractTreeXmlAttribute(treeView.arch, "infinite");
-    if (!tagValue) {
-      setTreeType("legacy");
-      return;
-    }
-
-    if (tagValue === "1") {
-      setTreeType("infinite");
-      return;
-    }
-
-    if (tagValue === "0") {
-      setTreeType("paginated");
-      return;
-    }
-
-    setTreeType("legacy");
-  }, [treeView]);
+    setTreeType(newTreeType);
+  }, [treeView, limit, treeMaxLimit]);
 
   const {
     currentView,
@@ -175,7 +145,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
           domain={domain}
           toolbar={treeView?.toolbar}
           parentContext={context}
-          treeExpandable={treeView?.isExpandable || false}
+          treeExpandable={isTreeExpandable(treeView)}
         />
       </TitleHeader>
       {treeType === "infinite" && (

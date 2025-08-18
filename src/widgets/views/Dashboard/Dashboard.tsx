@@ -311,6 +311,7 @@ function Dashboard(props: DashboardProps, ref: any) {
                   (view: [number, string]) => view[1] === "tree",
                 )[0][0]
               }
+              treeExpandable={actionData.treeExpandable}
               onRowClicked={(record) => {
                 const formView = views.find((view: any[]) => {
                   const [, type] = view;
