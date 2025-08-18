@@ -103,8 +103,9 @@ export const One2manyTree = ({
   // Shared sorting state (reuse same pattern as infinite mode)
   const sortStateRef = useRef<any[]>([]);
 
-  // State for paginated results
+  // State for paginated results and loading
   const [paginatedResults, setPaginatedResults] = useState<any[]>([]);
+  const [paginatedLoading, setPaginatedLoading] = useState<boolean>(false);
 
   const totalRows = useDeepCompareMemo(() => items.length, [items]);
 
@@ -245,46 +246,55 @@ export const One2manyTree = ({
 
   // For paginated mode, use onRequestData pattern like usePaginatedSearch
   const onPaginatedRequestData = useCallback(async () => {
-    if (treeType !== "paginated" || items.length === 0) return [];
-
-    const sortFields = getSortedFieldsFromState({
-      state: sortStateRef.current,
-    });
-    const { results, colors, status } = await onFetchRecords({
-      allItems: items,
-      startRow: 0,
-      endRow: items.length,
-      sortFields,
-    });
-
-    // Update color and status refs for paginated mode too
-    if (colors) {
-      colorsForResults.current = { ...colorsForResults.current, ...colors };
+    if (treeType !== "paginated" || items.length === 0) {
+      setPaginatedLoading(false);
+      return [];
     }
-    if (status) {
-      if (!statusForResults.current) {
-        statusForResults.current = {};
+
+    setPaginatedLoading(true);
+
+    try {
+      const sortFields = getSortedFieldsFromState({
+        state: sortStateRef.current,
+      });
+      const { results, colors, status } = await onFetchRecords({
+        allItems: items,
+        startRow: 0,
+        endRow: items.length,
+        sortFields,
+      });
+
+      // Update color and status refs for paginated mode too
+      if (colors) {
+        colorsForResults.current = { ...colorsForResults.current, ...colors };
       }
-      statusForResults.current = { ...statusForResults.current, ...status };
-    }
+      if (status) {
+        if (!statusForResults.current) {
+          statusForResults.current = {};
+        }
+        statusForResults.current = { ...statusForResults.current, ...status };
+      }
 
-    // Update attributes for dynamic row styling only if there are colors or status
-    if (colors || status) {
-      const attrsEvaluated = results.map((result) => ({
-        id: result.id,
-        colors: colors?.[result.id],
-        status: status?.[result.id],
-      }));
-      updateAttributes(attrsEvaluated, ooui);
-    }
+      // Update attributes for dynamic row styling only if there are colors or status
+      if (colors || status) {
+        const attrsEvaluated = results.map((result) => ({
+          id: result.id,
+          colors: colors?.[result.id],
+          status: status?.[result.id],
+        }));
+        updateAttributes(attrsEvaluated, ooui);
+      }
 
-    // Add records to check for function fields in paginated mode
-    const resultIds = results.map((result) => result.id).filter(Boolean);
-    if (resultIds.length > 0) {
-      addRecordsToCheckFunctionFields(resultIds);
-    }
+      // Add records to check for function fields in paginated mode
+      const resultIds = results.map((result) => result.id).filter(Boolean);
+      if (resultIds.length > 0) {
+        addRecordsToCheckFunctionFields(resultIds);
+      }
 
-    return results;
+      return results;
+    } finally {
+      setPaginatedLoading(false);
+    }
   }, [
     treeType,
     items,
@@ -315,6 +325,7 @@ export const One2manyTree = ({
         onPaginatedRequestData().then(setPaginatedResults);
       } else {
         setPaginatedResults([]);
+        setPaginatedLoading(false);
       }
     } else {
       tableRef?.current?.refresh();
@@ -457,7 +468,7 @@ export const One2manyTree = ({
         columns={safeColumns}
         treeOoui={ooui}
         strings={strings}
-        isLoading={false}
+        isLoading={paginatedLoading}
         results={results}
         handleRowDoubleClick={handleRowDoubleClickStable}
         onRowHasBeenSelected={onRowHasBeenSelected}
