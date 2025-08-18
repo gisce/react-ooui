@@ -30,13 +30,24 @@ function Tab(props: TabProps) {
         paddingRight: 10,
         backgroundColor: bgColor,
         display: "inline-flex",
-        flex: 1,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
         borderTopLeftRadius: token.borderRadius,
         borderTopRightRadius: token.borderRadius,
         marginLeft: 2,
+        minWidth: "fit-content",
+        flexShrink: 0,
+        whiteSpace: "nowrap",
+        borderBottom: `2px solid ${token.colorTextSecondary}`,
+        ...(isActive && {
+          borderLeft: `2px solid ${token.colorTextSecondary}`,
+          borderTop: `2px solid ${token.colorTextSecondary}`,
+          borderRight: `2px solid ${token.colorTextSecondary}`,
+          borderBottom: "none",
+          zIndex: 1,
+          position: "relative",
+        }),
       }}
     >
       <div
@@ -53,13 +64,12 @@ function Tab(props: TabProps) {
           fontWeight: isActive ? 500 : "normal",
         }}
       >
-        {label}
+        {label || ""}
       </div>
       <div
         style={{
           paddingLeft: 5,
           height: 40,
-
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
