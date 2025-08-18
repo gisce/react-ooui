@@ -1,5 +1,4 @@
-import React, { useContext } from "react";
-import { theme } from "antd";
+import { useContext } from "react";
 
 import {
   TabManagerContext,
@@ -8,7 +7,6 @@ import {
 import Tab from "./tabs/Tab";
 
 function TabSelector() {
-  const { token } = theme.useToken();
   const tabManagerContext = useContext(
     TabManagerContext,
   ) as TabManagerContextType;
