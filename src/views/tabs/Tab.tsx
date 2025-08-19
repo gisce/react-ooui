@@ -63,7 +63,7 @@ function Tab(props: TabProps) {
           paddingLeft: 5,
           paddingRight: 5,
           marginBottom: 2,
-          fontWeight: isActive ? 500 : "normal",
+          fontWeight: isActive ? "bold" : "normal",
         }}
       >
         {label || ""}
