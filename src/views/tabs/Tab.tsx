@@ -15,6 +15,8 @@ function Tab(props: TabProps) {
   const { token } = useToken();
   const bgColor = isActive ? token.colorBgContainer : token.colorPrimaryBg;
 
+  const outlineColor = token.colorPrimaryActive;
+
   return (
     <div
       onClick={() => {
@@ -38,11 +40,11 @@ function Tab(props: TabProps) {
         minWidth: "fit-content",
         flexShrink: 0,
         whiteSpace: "nowrap",
-        borderBottom: `2px solid ${token.colorTextSecondary}`,
+        borderBottom: `2px solid ${outlineColor}`,
         ...(isActive && {
-          borderLeft: `2px solid ${token.colorTextSecondary}`,
-          borderTop: `2px solid ${token.colorTextSecondary}`,
-          borderRight: `2px solid ${token.colorTextSecondary}`,
+          borderLeft: `2px solid ${outlineColor}`,
+          borderTop: `2px solid ${outlineColor}`,
+          borderRight: `2px solid ${outlineColor}`,
           borderBottom: "none",
           zIndex: 1,
           position: "relative",
@@ -60,7 +62,7 @@ function Tab(props: TabProps) {
           paddingLeft: 5,
           paddingRight: 5,
           marginBottom: 2,
-          fontWeight: isActive ? 500 : "normal",
+          fontWeight: isActive ? "bold" : "normal",
         }}
       >
         {label || ""}
