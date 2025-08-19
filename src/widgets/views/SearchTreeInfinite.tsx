@@ -249,8 +249,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     if (!baseColumns) {
       return;
     }
+    const shouldDisableSorting = nameSearch !== undefined;
     return baseColumns.map((column: any) => ({
       ...column,
+      isSortable: shouldDisableSorting ? false : column.isSortable,
       render: (value: any, record: any) => (
         <CellRenderer
           value={value}
@@ -260,7 +262,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         />
       ),
     }));
-  }, [baseColumns, isFieldLoading]);
+  }, [baseColumns, isFieldLoading, nameSearch]);
 
   const mergedParams = useMemo(
     () => mergeParams(searchParams || [], domain),
