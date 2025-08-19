@@ -22,6 +22,12 @@ function Tab(props: TabProps) {
       onClick={() => {
         !isActive && onSelected(tabKey);
       }}
+      onMouseDown={(e) => {
+        if (e.button === 1) {
+          e.preventDefault();
+          onClose(tabKey);
+        }
+      }}
       style={{
         cursor: "pointer",
         height: 40,
