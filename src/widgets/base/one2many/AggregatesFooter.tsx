@@ -10,13 +10,15 @@ export const AggregatesFooter = ({
 }) => {
   const summary =
     aggregates &&
-    Object.keys(aggregates).map((fieldKey) => {
-      const fieldAggregates = aggregates[fieldKey];
-      const fieldSummary = fieldAggregates.map((aggregate) => {
-        return `${aggregate.label}: ${aggregate.amount}`;
+    Object.keys(aggregates)
+      .sort()
+      .map((fieldKey) => {
+        const fieldAggregates = aggregates[fieldKey];
+        const fieldSummary = fieldAggregates.map((aggregate) => {
+          return `${aggregate.label}: ${aggregate.amount}`;
+        });
+        return fieldSummary.join(", ");
       });
-      return fieldSummary.join(", ");
-    });
 
   return (
     <div
