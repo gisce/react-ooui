@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { CloseOutlined } from "@ant-design/icons";
-import { theme } from "antd";
+import { theme, Input, InputRef } from "antd";
 const { useToken } = theme;
 
 type TabProps = {
@@ -15,8 +15,44 @@ function Tab(props: TabProps) {
   const { label, onClose, tabKey, isActive, onSelected } = props;
   const { token } = useToken();
   const bgColor = isActive ? token.colorBgContainer : token.colorPrimaryBg;
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(label);
+  const inputRef = useRef<InputRef>(null);
 
   const outlineColor = token.colorPrimaryActive;
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isEditing]);
+
+  const handleDoubleClick = () => {
+    setIsEditing(true);
+    setEditValue((prev) => prev || label);
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSaveEdit();
+    } else if (e.key === "Escape") {
+      handleCancelEdit();
+    }
+  };
+
+  const handleSaveEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditValue((prev) => prev || label);
+    setIsEditing(false);
+  };
+
+  const handleInputBlur = () => {
+    handleSaveEdit();
+  };
 
   return (
     <div
@@ -71,8 +107,28 @@ function Tab(props: TabProps) {
           marginBottom: 2,
           fontWeight: isActive ? "bold" : "normal",
         }}
+        onDoubleClick={handleDoubleClick}
       >
-        {label || ""}
+        {isEditing ? (
+          <Input
+            ref={inputRef}
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onKeyDown={handleInputKeyDown}
+            onBlur={handleInputBlur}
+            style={{
+              width: Math.max(editValue.length * 8, 50),
+              height: 24,
+              fontSize: 14,
+              padding: "0 4px",
+              border: `1px solid ${token.colorPrimaryActive}`,
+              borderRadius: token.borderRadius,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          />
+        ) : (
+          editValue || label || ""
+        )}
       </div>
       <div
         style={{
