@@ -62,6 +62,8 @@ export default {
   favorites: "Mis favoritos",
   edit_favorites: "Edita los favoritos",
   no_favorites: "No tienes favoritos guardados",
+  saved_searches: "Búsquedas guardadas",
+  edit_saved_searches: "Editar búsquedas guardadas",
   register: "Registro",
   of: "de",
   editingDocument: "Editando documento",

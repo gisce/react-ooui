@@ -34,6 +34,7 @@ import { ExportModal } from "..";
 import { mergeParams } from "@/helpers/searchHelper";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
+import SavedSearchesButton from "@/ui/SavedSearchesButton";
 import { useHotkeys } from "react-hotkeys-hook";
 import {
   useTreeToolbarButtons,
@@ -89,6 +90,9 @@ function TreeActionBarComponent({
 
   const advancedExportEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_ADVANCED_EXPORT,
+  );
+  const savedSearchesEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_SAVED_SEARCHES,
   );
   const { t } = useLocale();
   const [exportModalVisible, setExportModalVisible] = useState(false);
@@ -312,18 +316,28 @@ function TreeActionBarComponent({
             searchText={searchTreeNameSearch}
             onSearch={handleSearch}
           />
-          <ButtonWithBadge
-            icon={
-              <FilterOutlined
-                style={{ color: searchVisible ? "white" : undefined }}
-              />
-            }
-            tooltip={t("advanced_search")}
-            type={searchVisible ? "primary" : "default"}
-            onClick={() => setSearchVisible?.(!searchVisible)}
-            disabled={duplicatingItem || removingItem || treeIsLoading}
-            badgeNumber={searchParams?.length}
-          />
+          {savedSearchesEnabled ? (
+            <SavedSearchesButton
+              context={parentContext}
+              searchVisible={!!searchVisible}
+              onToggleSearch={() => setSearchVisible?.(!searchVisible)}
+              searchParams={searchParams}
+              disabled={duplicatingItem || removingItem || treeIsLoading}
+            />
+          ) : (
+            <ButtonWithBadge
+              icon={
+                <FilterOutlined
+                  style={{ color: searchVisible ? "white" : undefined }}
+                />
+              }
+              tooltip={t("advanced_search")}
+              type={searchVisible ? "primary" : "default"}
+              onClick={() => setSearchVisible?.(!searchVisible)}
+              disabled={duplicatingItem || removingItem || treeIsLoading}
+              badgeNumber={searchParams?.length}
+            />
+          )}
           <ActionBarSeparator />
           <NewButton disabled={treeIsLoading || !permissions?.create} />
           <ActionButton

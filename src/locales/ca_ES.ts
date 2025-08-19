@@ -61,6 +61,8 @@ export default {
   favorites: "Els meus favorits",
   edit_favorites: "Edita els favorits",
   no_favorites: "No tens favorits guardats",
+  saved_searches: "Cerques guardades",
+  edit_saved_searches: "Editar cerques guardades",
   register: "Registre",
   of: "de",
   editingDocument: "Editant document",
