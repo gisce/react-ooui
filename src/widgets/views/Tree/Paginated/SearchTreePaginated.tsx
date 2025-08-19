@@ -159,8 +159,10 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   });
 
   const paginatedColumns = useMemo(() => {
+    const shouldDisableSorting = nameSearch !== undefined;
     return safeColumns.map((column) => ({
       ...column,
+      isSortable: shouldDisableSorting ? false : column.isSortable,
       render: (value: any, record: any) => (
         <CellRenderer
           value={value}
@@ -170,7 +172,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
         />
       ),
     }));
-  }, [isFieldLoading, safeColumns]);
+  }, [isFieldLoading, safeColumns, nameSearch]);
 
   const { handleExpandableRowDoubleClick } = useExpandableTreeDoubleClick({
     treeView,
