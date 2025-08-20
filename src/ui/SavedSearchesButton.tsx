@@ -18,6 +18,8 @@ import {
 } from "@/context/ActionViewContext";
 import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import { useFeatureData } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
 const { useToken } = theme;
 
 export type SavedSearchApi = {
@@ -56,6 +58,10 @@ const SavedSearchesButton = (props: Props) => {
   const { currentModel, setSearchParams, setSearchValues } =
     actionViewContext || {};
 
+  const loggableFeature = useFeatureData(
+    ErpFeatureKeys.FEATURE_LOGGABLE_ACTIONS,
+  );
+
   // Network request hooks
   const [searchAllIdsRequest, cancelSearchAllIdsRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().searchAllIds,
@@ -63,10 +69,7 @@ const SavedSearchesButton = (props: Props) => {
   const [readObjectsRequest, cancelReadObjectsRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().readObjects,
   );
-  const [executeRequest, cancelExecuteRequest] = useNetworkRequest(
-    ConnectionProvider.getHandler().execute,
-  );
-  const [logActionRequest, cancelLogActionRequest] = useNetworkRequest(
+  const [logAction, cancelLogActionRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().logAction,
   );
 
@@ -74,7 +77,6 @@ const SavedSearchesButton = (props: Props) => {
     return () => {
       cancelSearchAllIdsRequest();
       cancelReadObjectsRequest();
-      cancelExecuteRequest();
       cancelLogActionRequest();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -143,27 +145,22 @@ const SavedSearchesButton = (props: Props) => {
 
   const logSearchAction = useCallback(
     async (searchId: number) => {
-      try {
-        // Check if user_action_logs feature supports ir.search
-        const userActionTypes = await executeRequest({
-          model: "user.action.logs",
-          action: "get_supported_types",
-          payload: [],
-          context,
-        });
-
-        if (userActionTypes?.includes?.("ir.search")) {
-          await logActionRequest({
+      if (
+        loggableFeature?.isEnabled &&
+        (loggableFeature?.params?.types || []).includes("ir.search")
+      ) {
+        try {
+          await logAction({
             action_type: "ir.search",
             action_id: searchId,
             context,
           });
+        } catch (error) {
+          console.error("Error logging search action:", error);
         }
-      } catch (error) {
-        console.error("Error logging search action:", error);
       }
     },
-    [context, executeRequest, logActionRequest],
+    [context, logAction, loggableFeature],
   );
 
   const handleMenuClick = useCallback(
