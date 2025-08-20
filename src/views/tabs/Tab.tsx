@@ -165,9 +165,9 @@ function Tab(props: TabProps) {
             paddingRight: 5,
             marginBottom: 2,
             fontWeight: isActive ? "bold" : "normal",
-            cursor: isEditing ? "text" : isDragging ? "grabbing" : "grab",
+            cursor: isDragging ? "grabbing" : "grab",
           }),
-          [token.colorPrimaryActive, isActive, isDragging, isEditing],
+          [token.colorPrimaryActive, isActive, isDragging],
         )}
         onDoubleClick={handleDoubleClick}
       >
