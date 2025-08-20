@@ -127,8 +127,6 @@ function TabSelector() {
         ? ("auto" as const)
         : ("touch" as const),
       position: "relative" as const,
-      scrollbarWidth: "none" as const,
-      msOverflowStyle: "none" as const,
       height: "40px",
       minHeight: "40px",
       maxHeight: "40px",
