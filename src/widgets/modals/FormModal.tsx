@@ -112,7 +112,7 @@ export const FormModal = (props: FormModalProps) => {
       >
         <Form
           key={`${model}-${id}-${action_id}-${res_id}-${action_type}-${view_id}-${title}`}
-          id={id}
+          id={id || res_id}
           showFooter={true}
           insideButtonModal={buttonModal}
           onCancel={onCancel}
