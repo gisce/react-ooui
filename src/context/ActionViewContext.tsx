@@ -87,6 +87,8 @@ export type ActionViewContextType = Omit<
   setOrder?: (value: ColumnState[] | undefined) => void;
   currentPage?: number;
   setCurrentPage?: (value: number) => void;
+  currentSavedSearch?: any;
+  setCurrentSavedSearch?: (value: any) => void;
 };
 
 export const ActionViewContext = createContext<ActionViewContextType | null>(
@@ -174,6 +176,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [currentPage, setCurrentPage] = useState<number>(
     initialCurrentPage || 1,
   );
+  const [currentSavedSearch, setCurrentSavedSearch] = useState<any>(null);
 
   useEffect(() => {
     if (results && results.length > 0 && !currentItemIndex) {
@@ -283,6 +286,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setOrder,
         currentPage,
         setCurrentPage,
+        currentSavedSearch,
+        setCurrentSavedSearch,
         permissions,
         permissionsLoading,
         permissionsError,
@@ -368,6 +373,8 @@ export const useActionViewContext = () => {
       setOrder: () => {},
       currentPage: 1,
       setCurrentPage: () => {},
+      currentSavedSearch: null,
+      setCurrentSavedSearch: () => {},
       permissions: null,
       permissionsLoading: false,
       permissionsError: null,

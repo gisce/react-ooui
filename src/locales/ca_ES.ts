@@ -125,4 +125,8 @@ export default {
   changeToInfinite: "Canviar a llistat infinit",
   changeToPaginated: "Canviar a llistat paginat",
   enterFieldToFilter: "Introdueix el camp per filtrar...",
+  saveSearchFilter: "Desar filtre de cerca",
+  saveAsNewSearchFilter: "Desar com a nou filtre de cerca",
+  searchFilterName: "Nom del filtre de cerca",
+  searchFilterNamePlaceholder: "Introdueix el nom del filtre de cerca",
 };

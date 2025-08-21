@@ -1,5 +1,5 @@
-import { useCallback, useContext, useRef, useEffect } from "react";
-import { FilterOutlined, EditOutlined } from "@ant-design/icons";
+import { useCallback, useContext, useEffect, useRef } from "react";
+import { FilterOutlined, EditOutlined, CheckOutlined } from "@ant-design/icons";
 import { Tooltip, theme, Badge } from "antd";
 import {
   TabManagerContext,
@@ -19,12 +19,14 @@ import {
 import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { useFeatureData } from "@/context/ConfigContext";
+import deepEqual from "deep-equal";
 import { ErpFeatureKeys } from "@/models/erpFeature";
+import { convertParamsToValues } from "@/helpers/searchHelper";
+import { useDeepCompareEffect } from "use-deep-compare";
 const { useToken } = theme;
 
 export type SavedSearchApi = {
   id: number;
-  user_id: number;
   model: string;
   domain: any;
   name: string;
@@ -37,11 +39,20 @@ type Props = {
   searchParams?: any[];
   disabled?: boolean;
   context: any;
+  onApplySearch?: () => void;
+  onCurrentSavedSearchChange?: (savedSearch: SavedSearchApi | null) => void;
 };
 
 const SavedSearchesButton = (props: Props) => {
-  const { searchVisible, onToggleSearch, searchParams, disabled, context } =
-    props;
+  const {
+    searchVisible,
+    onToggleSearch,
+    searchParams,
+    disabled,
+    context,
+    onApplySearch,
+    onCurrentSavedSearchChange,
+  } = props;
 
   const { t } = useLocale();
   const { token } = useToken();
@@ -55,7 +66,7 @@ const SavedSearchesButton = (props: Props) => {
   const actionViewContext = useContext(
     ActionViewContext,
   ) as ActionViewContextType;
-  const { currentModel, setSearchParams, setSearchValues } =
+  const { currentModel, setSearchParams, setSearchValues, currentView } =
     actionViewContext || {};
 
   const loggableFeature = useFeatureData(
@@ -82,10 +93,55 @@ const SavedSearchesButton = (props: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Check for matching saved search when component mounts or searchParams change
+  useDeepCompareEffect(() => {
+    const checkCurrentSavedSearch = async () => {
+      // Always clear if no search params
+      if (!currentModel || !searchParams?.length) {
+        onCurrentSavedSearchChange?.(null);
+        return;
+      }
+
+      try {
+        const searchIds = await searchAllIdsRequest({
+          params: [["model", "=", currentModel]],
+          model: "ir.search",
+          context,
+        });
+
+        if (searchIds.length === 0) {
+          onCurrentSavedSearchChange?.(null);
+          return;
+        }
+
+        const searches = await readObjectsRequest({
+          model: "ir.search",
+          ids: searchIds,
+          fieldsToRetrieve: ["id", "model", "domain", "name"],
+          context,
+        });
+
+        // Find if any saved search matches current searchParams
+        const matchingSearch = searches.find((search: SavedSearchApi) =>
+          deepEqual(search.domain, searchParams),
+        );
+
+        onCurrentSavedSearchChange?.(matchingSearch || null);
+      } catch (error) {
+        console.error("Error checking current saved search:", error);
+        onCurrentSavedSearchChange?.(null);
+      }
+    };
+
+    checkCurrentSavedSearch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentModel, searchParams]);
+
   const getSavedSearches = useCallback(async (): Promise<
     DropdownMenuGroup[]
   > => {
     if (!currentModel) {
+      onCurrentSavedSearchChange?.(null);
       return [];
     }
 
@@ -98,6 +154,7 @@ const SavedSearchesButton = (props: Props) => {
       });
 
       if (searchIds.length === 0) {
+        onCurrentSavedSearchChange?.(null);
         return [
           {
             items: [],
@@ -108,25 +165,41 @@ const SavedSearchesButton = (props: Props) => {
       const searches = await readObjectsRequest({
         model: "ir.search",
         ids: searchIds,
-        fieldsToRetrieve: [
-          "id",
-          "user_id",
-          "model",
-          "domain",
-          "name",
-          "last_run",
-        ],
+        fieldsToRetrieve: ["id", "model", "domain", "name", "last_run"],
         context,
       });
 
+      let currentSavedSearch: SavedSearchApi | null = null;
       const items: DropdownMenuItem[] = searches.map(
         (search: SavedSearchApi) => {
+          const isCurrentlyActive = deepEqual(search.domain, searchParams);
+          if (isCurrentlyActive) {
+            currentSavedSearch = search;
+          }
           return {
             icon: <FilterOutlined />,
             ...search,
+            name: isCurrentlyActive ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "100%",
+                }}
+              >
+                <strong>{search.name}</strong>
+                <CheckOutlined style={{ color: token.colorPrimary }} />
+              </div>
+            ) : (
+              search.name
+            ),
           } as DropdownMenuItem;
         },
       );
+
+      // Notify about current saved search
+      onCurrentSavedSearchChange?.(currentSavedSearch);
 
       return [
         {
@@ -141,7 +214,15 @@ const SavedSearchesButton = (props: Props) => {
         },
       ];
     }
-  }, [currentModel, context, searchAllIdsRequest, readObjectsRequest]);
+  }, [
+    currentModel,
+    context,
+    searchParams,
+    token.colorPrimary,
+    searchAllIdsRequest,
+    readObjectsRequest,
+    onCurrentSavedSearchChange,
+  ]);
 
   const logSearchAction = useCallback(
     async (searchId: number) => {
@@ -167,14 +248,32 @@ const SavedSearchesButton = (props: Props) => {
     (item: DropdownMenuItem) => {
       const savedSearch = item as SavedSearchApi;
       if (savedSearch?.domain) {
+        onCurrentSavedSearchChange?.(savedSearch);
+
         setSearchParams?.(savedSearch.domain);
-        setSearchValues?.({});
+
+        const fields = (currentView as any)?.fields;
+        const searchValues = convertParamsToValues(savedSearch.domain, fields);
+        setSearchValues?.(searchValues);
+
+        if (onApplySearch) {
+          setTimeout(() => {
+            onApplySearch();
+          }, 100);
+        }
 
         // Log action if supported
         logSearchAction(savedSearch.id);
       }
     },
-    [setSearchParams, setSearchValues, logSearchAction],
+    [
+      setSearchParams,
+      setSearchValues,
+      onApplySearch,
+      logSearchAction,
+      currentView,
+      onCurrentSavedSearchChange,
+    ],
   );
 
   const editSavedSearches = useCallback(async () => {
@@ -183,7 +282,11 @@ const SavedSearchesButton = (props: Props) => {
   }, [openDefaultActionForModel]);
 
   return (
-    <Badge count={searchParams?.length || 0} size="small" offset={[-10, 10]}>
+    <Badge
+      count={searchParams?.length || 0}
+      color={token.colorPrimary}
+      offset={[-70, 2]}
+    >
       <Tooltip title={t?.("advanced_search")}>
         <ToggleDropdownButton
           ref={savedSearchesButtonRef}

@@ -127,4 +127,8 @@ export default {
   changeToInfinite: "Cambiar a listado infinito",
   changeToPaginated: "Cambiar a listado paginado",
   enterFieldToFilter: "Introduce el campo para filtrar...",
+  saveSearchFilter: "Guardar filtro de búsqueda",
+  saveAsNewSearchFilter: "Guardar como nuevo filtro de búsqueda",
+  searchFilterName: "Nombre del filtro de búsqueda",
+  searchFilterNamePlaceholder: "Introduce el nombre del filtro de búsqueda",
 };

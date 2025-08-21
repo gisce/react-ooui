@@ -85,6 +85,7 @@ function TreeActionBarComponent({
     treeType,
     setSearchParams,
     setSearchValues,
+    setCurrentSavedSearch,
     permissions,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
@@ -323,6 +324,8 @@ function TreeActionBarComponent({
               onToggleSearch={() => setSearchVisible?.(!searchVisible)}
               searchParams={searchParams}
               disabled={duplicatingItem || removingItem || treeIsLoading}
+              onApplySearch={handleRefresh}
+              onCurrentSavedSearchChange={setCurrentSavedSearch}
             />
           ) : (
             <ButtonWithBadge

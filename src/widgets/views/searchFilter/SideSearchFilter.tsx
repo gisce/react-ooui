@@ -7,9 +7,19 @@ import {
   useRef,
   useState,
 } from "react";
-import { Form, Button, Input, Space } from "antd";
-import { useDeepCompareEffect } from "use-deep-compare";
-import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
+import { Form, Button, Input, Space, Modal, Dropdown } from "antd";
+import {
+  useDeepCompareEffect,
+  useDeepCompareCallback,
+  useDeepCompareMemo,
+} from "use-deep-compare";
+import {
+  SearchOutlined,
+  ClearOutlined,
+  SaveOutlined,
+  PlusOutlined,
+  DownOutlined,
+} from "@ant-design/icons";
 
 import {
   SearchFilter as SearchFilterOoui,
@@ -24,6 +34,7 @@ import { getParamsForFields, normalizeValues } from "@/helpers/searchHelper";
 import { useLocale } from "@gisce/react-formiga-components";
 import { FloatingDrawer } from "@/ui/FloatingDrawer";
 import deepEqual from "deep-equal";
+import { useSavedSearches } from "@/hooks/useSavedSearches";
 
 type SideSearchFilterBaseProps = {
   onSubmit: (values: any) => void;
@@ -36,6 +47,10 @@ type SideSearchFilterContainerProps = SideSearchFilterBaseProps & {
   searchFields: SearchFields;
   isOpen: boolean;
   onClose: () => void;
+  onClear?: () => void;
+  currentModel?: string;
+  context?: any;
+  domain?: any[];
 };
 
 export type SideSearchFilterProps = SideSearchFilterBaseProps & {
@@ -49,9 +64,6 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
     const { onSubmit, searchValues, searchFields, onChange, onClear } = props;
     const [form] = Form.useForm();
     const [confirmedValues, setConfirmedValues] = useState<any>({});
-    const [initialConfirmedValues, setInitialConfirmedValues] = useState<any>(
-      {},
-    );
     const [searchText, setSearchText] = useState("");
     const { t } = useLocale();
     const [topSectionHeight, setTopSectionHeight] = useState(0);
@@ -62,7 +74,6 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
       form.setFieldsValue(searchValues);
       const normalized = normalizeValues(searchValues || {});
       setConfirmedValues(normalized);
-      setInitialConfirmedValues(normalized);
 
       // Initialize field addition order from existing values
       const existingFields = Object.keys(normalized).filter(
@@ -99,7 +110,6 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
       resetFields: form.resetFields,
       setFieldsValue: form.setFieldsValue,
       resetInitialValues: () => {
-        setInitialConfirmedValues({});
         setConfirmedValues({});
       },
     }));
@@ -215,7 +225,7 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
         });
     };
 
-    const handleFormBlur = useCallback(() => {
+    const handleFormBlur = useDeepCompareCallback(() => {
       const touchedValues = form.getFieldsValue();
       const normalizedTouchedValues = normalizeValues(touchedValues);
       const prevConfirmedValues = confirmedValues;
@@ -402,26 +412,117 @@ type SideSearchFilterRef = {
 };
 
 export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
-  const { onSubmit, isOpen, onClose, searchFields, fields, searchValues } =
-    props;
+  const {
+    onSubmit,
+    isOpen,
+    onClose,
+    onClear: onClearCallback,
+    searchFields,
+    fields,
+    searchValues,
+    currentModel,
+    context,
+    domain,
+  } = props;
   const sfo = useRef<SearchFilterOoui>();
   const { t } = useLocale();
   const [parsedSearchFields, setParsedSearchFields] = useState<Container>();
   const sideSearchFilterRef = useRef<SideSearchFilterRef>(null);
   const [searchParams, setSearchParams] = useState<any>();
 
+  const paramsToShow = useDeepCompareMemo(() => {
+    if (!isOpen) return [];
+
+    if (searchParams) {
+      return searchParams;
+    }
+
+    if (searchValues && sfo.current?._advancedSearchContainer) {
+      return getParamsForFields(
+        searchValues,
+        sfo.current._advancedSearchContainer,
+      );
+    }
+
+    // If no advanced container yet but we have searchValues, try to estimate count
+    if (searchValues) {
+      return Object.keys(searchValues).filter((key) => {
+        const value = searchValues[key];
+        return (
+          value !== null &&
+          value !== undefined &&
+          value !== "" &&
+          (!Array.isArray(value) ||
+            value.some((v) => v !== null && v !== undefined && v !== ""))
+        );
+      });
+    }
+
+    return [];
+  }, [isOpen, searchParams, searchValues]);
+
+  const filledFieldsCount = useDeepCompareMemo(() => {
+    if (!searchValues) return 0;
+
+    const uniqueFieldIds = new Set<string>();
+
+    Object.keys(searchValues).forEach((key) => {
+      const value = searchValues[key];
+      const hasValue =
+        value !== null &&
+        value !== undefined &&
+        value !== "" &&
+        (!Array.isArray(value) ||
+          value.some((v) => v !== null && v !== undefined && v !== ""));
+
+      if (hasValue) {
+        const fieldId = key.replace(/#.*$/, "");
+        uniqueFieldIds.add(fieldId);
+      }
+    });
+
+    return uniqueFieldIds.size;
+  }, [searchValues]);
+
+  const {
+    savedSearchName,
+    hasChanges,
+    showSaveModal,
+    saveAsNew,
+    tempModalName,
+    setShowSaveModal,
+    setNewSearchName,
+    setTempModalName,
+    handleSave,
+    handleSaveAsNew,
+    handleModalSave,
+    renderSavedSearchTitle,
+    shouldShowSaveButtons,
+    shouldShowSingleSaveButton,
+    shouldShowSaveButtonGroup,
+  } = useSavedSearches({
+    currentModel,
+    context,
+    searchParams:
+      searchParams ||
+      (searchValues && sfo.current?._advancedSearchContainer
+        ? getParamsForFields(searchValues, sfo.current._advancedSearchContainer)
+        : undefined),
+    hasActiveFilters: Boolean(filledFieldsCount),
+    domain,
+  });
+
   useEffect(() => {
     if (!isOpen) {
       return;
     }
     setSearchParams(undefined);
-    // Focus the first input after the drawer animation completes
     setTimeout(() => {
-      const firstInput = document.querySelector(
-        "#floating-drawer-overlay input",
+      const searchInput = document.querySelector(
+        ".ant-input[placeholder*='enterFieldToFilter'], .ant-input[placeholder*='filter']",
       );
-      if (firstInput instanceof HTMLElement) {
-        firstInput.focus();
+      if (searchInput instanceof HTMLElement) {
+        searchInput.focus();
       }
     }, 300);
   }, [isOpen]);
@@ -447,12 +548,12 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
     sideSearchFilterRef.current?.submit();
   }, []);
 
-  const handleOnChange = useCallback(
+  const handleOnChange = useDeepCompareCallback(
     (values: any) => {
       const convertedValues = normalizeValues(values);
 
       if (deepEqual(convertedValues, searchValues)) {
-        setSearchParams([]);
+        setSearchParams(undefined);
         return;
       }
       const newParams = getParamsForFields(
@@ -464,7 +565,7 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
     [searchValues],
   );
 
-  const handleClear = useCallback(
+  const handleClear = useDeepCompareCallback(
     (field?: string, formValues: any = {}) => {
       if (field) {
         const filteredValues = { ...formValues };
@@ -488,39 +589,162 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
       sideSearchFilterRef.current?.setFieldsValue({});
       sideSearchFilterRef.current?.resetInitialValues?.();
       setSearchParams([]);
+
+      if (onClearCallback) {
+        onClearCallback();
+      }
     },
-    [searchParams],
+    [searchParams, onClearCallback],
   );
 
-  const paramsToShow = isOpen
-    ? searchParams ||
-      getParamsForFields(searchValues, sfo.current?._advancedSearchContainer)
-    : [];
+  const headerButtons = useDeepCompareMemo(() => {
+    if (!shouldShowSaveButtons) return null;
+
+    return shouldShowSaveButtonGroup ? (
+      <Space.Compact size="small">
+        <Button
+          size="small"
+          icon={<SaveOutlined />}
+          onClick={handleSave}
+          style={{ height: "24px" }}
+        >
+          {t("saveSearchFilter")}
+        </Button>
+        <Dropdown
+          menu={{
+            items: [
+              {
+                key: "saveAsNew",
+                label: t("saveAsNewSearchFilter"),
+                icon: <PlusOutlined />,
+              },
+            ],
+            onClick: ({ key }) => {
+              if (key === "saveAsNew") {
+                handleSaveAsNew();
+              }
+            },
+          }}
+          placement="bottomRight"
+        >
+          <Button
+            size="small"
+            icon={<DownOutlined />}
+            style={{ height: "24px", minWidth: "24px" }}
+          />
+        </Dropdown>
+      </Space.Compact>
+    ) : (
+      <Button
+        size="small"
+        icon={shouldShowSingleSaveButton ? <SaveOutlined /> : <PlusOutlined />}
+        onClick={shouldShowSingleSaveButton ? handleSave : handleSaveAsNew}
+      >
+        {shouldShowSingleSaveButton
+          ? t("saveSearchFilter")
+          : t("saveAsNewSearchFilter")}
+      </Button>
+    );
+  }, [
+    shouldShowSaveButtons,
+    shouldShowSaveButtonGroup,
+    shouldShowSingleSaveButton,
+    hasChanges,
+    t,
+    handleSave,
+    handleSaveAsNew,
+  ]);
 
   return (
-    <FloatingDrawer
-      title={`${t("filter")} (${paramsToShow?.length || 0})`}
-      isOpen={isOpen}
-      onClose={onClose}
-      footer={
-        <SideSearchFooter
-          onClear={handleClear}
-          onSubmit={handleSubmit}
-          searchParams={paramsToShow}
-        />
-      }
-    >
-      {isOpen && (
-        <SideSearchFilterComponent
-          ref={sideSearchFilterRef}
-          searchFields={parsedSearchFields}
-          onSubmit={onFinish}
-          searchValues={searchValues}
-          onChange={handleOnChange}
-          onClear={handleClear}
-        />
-      )}
-    </FloatingDrawer>
+    <>
+      <FloatingDrawer
+        title={renderSavedSearchTitle(
+          `${t("filter")} (${paramsToShow?.length || 0})`,
+        )}
+        isOpen={isOpen}
+        onClose={onClose}
+        headerButtons={headerButtons}
+        footer={
+          <SideSearchFooter
+            onClear={handleClear}
+            onSubmit={handleSubmit}
+            searchParams={paramsToShow}
+          />
+        }
+      >
+        {isOpen && (
+          <SideSearchFilterComponent
+            ref={sideSearchFilterRef}
+            searchFields={parsedSearchFields}
+            onSubmit={onFinish}
+            searchValues={searchValues}
+            onChange={handleOnChange}
+            onClear={handleClear}
+          />
+        )}
+      </FloatingDrawer>
+
+      <Modal
+        title={saveAsNew ? t("saveAsNewSearchFilter") : t("saveSearchFilter")}
+        open={showSaveModal}
+        onOk={handleModalSave}
+        okButtonProps={{
+          disabled: !(tempModalName || savedSearchName)?.trim(),
+        }}
+        onCancel={useCallback(() => {
+          setShowSaveModal(false);
+          setNewSearchName("");
+          setTempModalName("");
+        }, [setShowSaveModal, setNewSearchName, setTempModalName])}
+        okText={t("saveSearchFilter")}
+        cancelText={t("cancel")}
+        afterOpenChange={useCallback(
+          (open: boolean) => {
+            if (open && !tempModalName) {
+              setTempModalName(savedSearchName || "");
+            }
+          },
+          [tempModalName, savedSearchName, setTempModalName],
+        )}
+      >
+        <Form layout="vertical">
+          <Form.Item label={t("searchFilterName")} required>
+            <Input
+              value={tempModalName || savedSearchName || ""}
+              onChange={useCallback(
+                (e: React.ChangeEvent<HTMLInputElement>) => {
+                  setTempModalName(e.target.value);
+                },
+                [setTempModalName],
+              )}
+              onKeyDown={useCallback(
+                (e: React.KeyboardEvent) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleModalSave();
+                  }
+                },
+                [handleModalSave],
+              )}
+              placeholder={t("searchFilterNamePlaceholder")}
+              ref={useCallback(
+                (inputRef: any) => {
+                  if (inputRef?.input && showSaveModal) {
+                    setTimeout(() => {
+                      const htmlInput = inputRef.input;
+                      htmlInput.focus();
+                      const length = htmlInput.value?.length || 0;
+                      htmlInput.setSelectionRange(length, length);
+                    }, 0);
+                  }
+                },
+                [showSaveModal],
+              )}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
   );
 };
 
@@ -528,10 +752,22 @@ export const SideSearchFooter = ({
   onClear,
   onSubmit,
   searchParams,
+  shouldShowSaveButtons,
+  shouldShowSingleSaveButton,
+  shouldShowSaveButtonGroup,
+  handleSave,
+  handleSaveAsNew,
+  hasChanges,
 }: {
   onClear: () => void;
   onSubmit: () => void;
   searchParams?: any[];
+  shouldShowSaveButtons?: boolean;
+  shouldShowSingleSaveButton?: boolean;
+  shouldShowSaveButtonGroup?: boolean;
+  handleSave?: () => void;
+  handleSaveAsNew?: () => void;
+  hasChanges?: boolean;
 }) => {
   const { t } = useLocale();
 
