@@ -50,7 +50,6 @@ type SideSearchFilterContainerProps = SideSearchFilterBaseProps & {
   onClear?: () => void;
   currentModel?: string;
   context?: any;
-  domain?: any[];
 };
 
 export type SideSearchFilterProps = SideSearchFilterBaseProps & {
@@ -422,7 +421,6 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
     searchValues,
     currentModel,
     context,
-    domain,
   } = props;
   const sfo = useRef<SearchFilterOoui>();
   const { t } = useLocale();
@@ -496,10 +494,12 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
     handleSave,
     handleSaveAsNew,
     handleModalSave,
+    handleClear: handleClearSavedSearch,
     renderSavedSearchTitle,
     shouldShowSaveButtons,
     shouldShowSingleSaveButton,
     shouldShowSaveButtonGroup,
+    shouldShowSaveAsNew,
   } = useSavedSearches({
     currentModel,
     context,
@@ -509,7 +509,7 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
         ? getParamsForFields(searchValues, sfo.current._advancedSearchContainer)
         : undefined),
     hasActiveFilters: Boolean(filledFieldsCount),
-    domain,
+    isOpen,
   });
 
   useEffect(() => {
@@ -590,11 +590,14 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
       sideSearchFilterRef.current?.resetInitialValues?.();
       setSearchParams([]);
 
+      // Clear the saved search state as well
+      handleClearSavedSearch();
+
       if (onClearCallback) {
         onClearCallback();
       }
     },
-    [searchParams, onClearCallback],
+    [searchParams, onClearCallback, handleClearSavedSearch],
   );
 
   const headerButtons = useDeepCompareMemo(() => {
@@ -637,18 +640,20 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
     ) : (
       <Button
         size="small"
-        icon={shouldShowSingleSaveButton ? <SaveOutlined /> : <PlusOutlined />}
-        onClick={shouldShowSingleSaveButton ? handleSave : handleSaveAsNew}
+        icon={shouldShowSaveAsNew ? <PlusOutlined /> : <SaveOutlined />}
+        onClick={shouldShowSaveAsNew ? handleSaveAsNew : handleSave}
+        style={{ height: "24px" }}
       >
-        {shouldShowSingleSaveButton
-          ? t("saveSearchFilter")
-          : t("saveAsNewSearchFilter")}
+        {shouldShowSaveAsNew
+          ? t("saveAsNewSearchFilter")
+          : t("saveSearchFilter")}
       </Button>
     );
   }, [
     shouldShowSaveButtons,
     shouldShowSaveButtonGroup,
     shouldShowSingleSaveButton,
+    shouldShowSaveAsNew,
     hasChanges,
     t,
     handleSave,
