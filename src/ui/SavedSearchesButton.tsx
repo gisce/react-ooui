@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef } from "react";
+import { useCallback, useContext, useEffect, useRef, useMemo } from "react";
 import { FilterOutlined, EditOutlined, CheckOutlined } from "@ant-design/icons";
 import { Tooltip, theme, Badge } from "antd";
 import {
@@ -66,8 +66,13 @@ const SavedSearchesButton = (props: Props) => {
   const actionViewContext = useContext(
     ActionViewContext,
   ) as ActionViewContextType;
-  const { currentModel, setSearchParams, setSearchValues, currentView } =
-    actionViewContext || {};
+  const {
+    currentModel,
+    setSearchParams,
+    setSearchValues,
+    currentView,
+    availableViews,
+  } = actionViewContext || {};
 
   const loggableFeature = useFeatureData(
     ErpFeatureKeys.FEATURE_LOGGABLE_ACTIONS,
@@ -224,6 +229,17 @@ const SavedSearchesButton = (props: Props) => {
     onCurrentSavedSearchChange,
   ]);
 
+  const allViewFields = useMemo(() => {
+    if (!availableViews || availableViews.length === 0) {
+      return (currentView as any)?.fields || {};
+    }
+
+    // Merge fields from all available views
+    return availableViews.reduce((mergedFields: any, view: any) => {
+      return { ...mergedFields, ...(view.fields || {}) };
+    }, {});
+  }, [availableViews, currentView]);
+
   const logSearchAction = useCallback(
     async (searchId: number) => {
       if (
@@ -252,8 +268,10 @@ const SavedSearchesButton = (props: Props) => {
 
         setSearchParams?.(savedSearch.domain);
 
-        const fields = (currentView as any)?.fields;
-        const searchValues = convertParamsToValues(savedSearch.domain, fields);
+        const searchValues = convertParamsToValues(
+          savedSearch.domain,
+          allViewFields,
+        );
         setSearchValues?.(searchValues);
 
         if (onApplySearch) {
@@ -271,7 +289,7 @@ const SavedSearchesButton = (props: Props) => {
       setSearchValues,
       onApplySearch,
       logSearchAction,
-      currentView,
+      allViewFields,
       onCurrentSavedSearchChange,
     ],
   );
