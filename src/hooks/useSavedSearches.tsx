@@ -1,4 +1,5 @@
 import React, { useCallback, useState, useMemo, useEffect } from "react";
+import deepEqual from "deep-equal";
 import { Input, Typography } from "antd";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { useActionViewContext } from "@/context/ActionViewContext";
@@ -118,6 +119,33 @@ export const useSavedSearches = ({
       setIsExplicitlyCleared(false);
     }
   }, [searchParams, isExplicitlyCleared]);
+
+  // Detect changes when searchParams differ from saved search domain
+  useDeepCompareEffect(() => {
+    if (!savedSearchesEnabled || isExplicitlyCleared) {
+      return;
+    }
+
+    if (currentSavedSearch) {
+      // If we have a saved search, check if current params differ from saved domain
+      const hasChangedFromSaved = !deepEqual(
+        searchParams,
+        currentSavedSearch.domain,
+      );
+      setHasChanges(hasChangedFromSaved);
+    } else if (searchParams?.length) {
+      // If no saved search but we have params, that means there are unsaved changes
+      setHasChanges(true);
+    } else {
+      // No saved search and no params, no changes
+      setHasChanges(false);
+    }
+  }, [
+    searchParams,
+    currentSavedSearch?.domain,
+    savedSearchesEnabled,
+    isExplicitlyCleared,
+  ]);
 
   const [wasOpen, setWasOpen] = useState(false);
   useEffect(() => {
