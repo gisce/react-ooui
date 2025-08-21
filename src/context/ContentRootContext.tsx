@@ -113,6 +113,7 @@ const ContentRootProvider = (
       datas = {},
       report_name,
       type,
+      id: reportId,
     } = reportData;
 
     if (type !== "ir.actions.report.xml") {
@@ -138,6 +139,21 @@ const ContentRootProvider = (
         : reportContext;
 
     try {
+      if (
+        loggableFeature?.isEnabled &&
+        (loggableFeature?.params?.types || []).includes(type)
+      ) {
+        try {
+          logAction({
+            action_type: type,
+            action_id: reportId,
+            context,
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
       const newReportId = await ConnectionProvider.getHandler().createReport({
         model,
         name: report_name,
