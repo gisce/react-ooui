@@ -215,31 +215,36 @@ test.describe("Infinite One2Many Component", () => {
       "text=/Total.*Qty|.*Total.*Price|.*Avg.*Price|Sum:|Avg:|Count:/i",
     );
 
+    // Wait for initial grid to be fully loaded
+    await page.waitForLoadState("networkidle");
     await page.waitForTimeout(1000);
 
-    // Select first row
+    // Select first row and wait for checkbox to be checked
     const firstRowCheckbox = page
       .locator(".ag-row")
       .first()
       .locator('input[type="checkbox"]');
     await firstRowCheckbox.click();
-    await page.waitForTimeout(500);
+    await expect(firstRowCheckbox).toBeChecked({ timeout: 5000 });
 
-    // Select second row
+    // Select second row and wait for checkbox to be checked
     const secondRowCheckbox = page
       .locator(".ag-row")
       .nth(1)
       .locator('input[type="checkbox"]');
     await secondRowCheckbox.click();
-    await page.waitForTimeout(500);
+    await expect(secondRowCheckbox).toBeChecked({ timeout: 5000 });
 
-    // Select third row
+    // Select third row and wait for checkbox to be checked
     const thirdRowCheckbox = page
       .locator(".ag-row")
       .nth(2)
       .locator('input[type="checkbox"]');
     await thirdRowCheckbox.click();
-    await page.waitForTimeout(500);
+    await expect(thirdRowCheckbox).toBeChecked({ timeout: 5000 });
+
+    // Wait for aggregates to appear after selection
+    await expect(aggregateElements.first()).toBeVisible({ timeout: 10000 });
 
     const aggregatesAfterSelection = await aggregateElements.count();
     const aggregateTextAfterSelection =
@@ -247,16 +252,20 @@ test.describe("Infinite One2Many Component", () => {
         ? await aggregateElements.first().textContent()
         : null;
 
+    // Unselect all rows and wait for them to be unchecked
     await firstRowCheckbox.click();
+    await expect(firstRowCheckbox).not.toBeChecked({ timeout: 5000 });
+
     await secondRowCheckbox.click();
+    await expect(secondRowCheckbox).not.toBeChecked({ timeout: 5000 });
+
     await thirdRowCheckbox.click();
-    await page.waitForTimeout(500);
+    await expect(thirdRowCheckbox).not.toBeChecked({ timeout: 5000 });
 
+    // Verify grid state
     expect(await page.locator(".ag-row").count()).toBeGreaterThanOrEqual(10);
-    expect(await firstRowCheckbox.isChecked()).toBe(false);
-    expect(await secondRowCheckbox.isChecked()).toBe(false);
-    expect(await thirdRowCheckbox.isChecked()).toBe(false);
 
+    // Verify aggregate calculations were shown
     expect(aggregatesAfterSelection).toBeGreaterThan(0);
     expect(aggregateTextAfterSelection).toContain("Total Qty:");
     expect(aggregateTextAfterSelection).toContain("Avg Price:");
@@ -392,20 +401,20 @@ test.describe("Infinite One2Many Component", () => {
     const changeToPaginatedOption = page.getByText("Change to paginated");
     await expect(changeToPaginatedOption).toBeVisible();
     await changeToPaginatedOption.click();
-    
+
     // Wait longer for the view mode change to complete
     await page.waitForTimeout(3000);
 
-    // The most reliable way to check if the view mode changed is to verify 
+    // The most reliable way to check if the view mode changed is to verify
     // that the menu now shows "Change to infinite" instead of "Change to paginated"
     await threeDotsMenu.click();
     await page.waitForTimeout(500);
 
     const updatedPageText = await page.textContent("body");
-    
+
     // Check for "Change to infinite" (now in English after the fix)
     const hasChangeToInfinite = updatedPageText?.includes("Change to infinite");
-    
+
     // This is the key indicator that the view mode actually changed
     expect(hasChangeToInfinite).toBe(true);
   });
