@@ -36,9 +36,9 @@ export const TreeActionViewWrapper = (props: TreeActionViewProps) => {
     props.results && props.results.length > 0 ? 0 : undefined,
   );
   const [results, setResults] = useState(props.results || []);
-  const [searchTreeNameSearch, setSearchTreeNameSearch] = useState<string>(
-    props.searchTreeNameSearch || "",
-  );
+  const [searchTreeNameSearch, setSearchTreeNameSearch] = useState<
+    string | undefined
+  >(props.searchTreeNameSearch);
   const [sorter, setSorter] = useState<any>();
   const [totalItems, setTotalItems] = useState<number>(mockResults.length);
   const [selectedRowItems, setSelectedRowItems] = useState<any[]>([]);
@@ -67,7 +67,6 @@ export const TreeActionViewWrapper = (props: TreeActionViewProps) => {
       // Show notification that refresh happened
     },
   });
-
 
   const goToResourceId = async (ids: number[], openInSameTab?: boolean) => {
     // Mock implementation for story viewer
@@ -108,8 +107,7 @@ export const TreeActionViewWrapper = (props: TreeActionViewProps) => {
             availableViews={props.availableViews || [props.treeView]}
             formRef={formRef}
             searchTreeRef={searchTreeRef}
-            onNewClicked={() => {
-            }}
+            onNewClicked={() => {}}
             currentId={currentId}
             setCurrentId={setCurrentId}
             setCurrentItemIndex={setCurrentItemIndex}
@@ -124,7 +122,7 @@ export const TreeActionViewWrapper = (props: TreeActionViewProps) => {
             selectedRowItems={selectedRowItems}
             setSelectedRowItems={setSelectedRowItems}
             setSearchTreeNameSearch={(searchString?: string) =>
-              setSearchTreeNameSearch(searchString || "")
+              setSearchTreeNameSearch(searchString)
             }
             searchTreeNameSearch={searchTreeNameSearch}
             goToResourceId={goToResourceId}
