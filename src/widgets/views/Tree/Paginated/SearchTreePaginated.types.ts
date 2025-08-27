@@ -36,6 +36,8 @@ export type PaginatedSearchControlsProps = {
   onSearchFilterSubmit: (values: any) => void;
   onSideSearchFilterClose: () => void;
   onSideSearchFilterSubmit: (values: any) => void;
+  currentModel?: string;
+  context?: any;
 };
 
 export type PaginatedTableContentProps = {

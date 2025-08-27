@@ -746,6 +746,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         treeView?.search_fields,
       ]),
       searchValues,
+      currentModel: model,
+      context: parentContext,
+      domain,
     }),
     [
       searchVisible,
@@ -754,6 +757,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       treeView?.fields,
       treeView?.search_fields,
       searchValues,
+      model,
+      parentContext,
+      domain,
     ],
   );
 

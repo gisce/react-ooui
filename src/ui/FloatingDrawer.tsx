@@ -12,8 +12,9 @@ interface FloatingDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  title?: string;
+  title?: React.ReactNode;
   footer?: React.ReactNode;
+  headerButtons?: React.ReactNode;
 }
 
 export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
@@ -22,8 +23,10 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
   children,
   title,
   footer,
+  headerButtons,
 }) => {
   const [showDrawer, setShowDrawer] = useState(isOpen);
+  const [hasModalOpen, setHasModalOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
   const { token } = useToken();
 
@@ -60,6 +63,25 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
       document.body.style.overflow = "";
     };
   }, [isOpen, handleKeyDown]);
+
+  useEffect(() => {
+    const checkForModal = () => {
+      const modalExists = !!document.querySelector(".ant-modal-mask");
+      setHasModalOpen(modalExists);
+    };
+
+    if (isOpen) {
+      const observer = new MutationObserver(checkForModal);
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+
+      return () => observer.disconnect();
+    }
+  }, [isOpen]);
 
   const handleAnimationComplete = () => {
     if (!isOpen) {
@@ -99,7 +121,7 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
             onClick={handleOverlayClick}
           />
           <FocusTrap
-            active={isOpen}
+            active={isOpen && !hasModalOpen}
             focusTrapOptions={{
               initialFocus: "#floating-drawer-overlay input",
               allowOutsideClick: true,
@@ -131,6 +153,17 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
                 <Title level={3} style={{ margin: 0, flex: 1 }}>
                   {title}
                 </Title>
+                {headerButtons && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    {headerButtons}
+                  </div>
+                )}
                 <Button
                   type="text"
                   icon={<CloseOutlined />}
