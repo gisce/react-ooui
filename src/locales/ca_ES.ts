@@ -61,6 +61,8 @@ export default {
   favorites: "Els meus favorits",
   edit_favorites: "Edita els favorits",
   no_favorites: "No tens favorits guardats",
+  saved_searches: "Cerques guardades",
+  edit_saved_searches: "Editar cerques guardades",
   register: "Registre",
   of: "de",
   editingDocument: "Editant document",
@@ -123,4 +125,8 @@ export default {
   changeToInfinite: "Canviar a llistat infinit",
   changeToPaginated: "Canviar a llistat paginat",
   enterFieldToFilter: "Introdueix el camp per filtrar...",
+  saveSearchFilter: "Desar filtre de cerca",
+  saveAsNewSearchFilter: "Desar com a nou filtre de cerca",
+  searchFilterName: "Nom del filtre de cerca",
+  searchFilterNamePlaceholder: "Introdueix el nom del filtre de cerca",
 };

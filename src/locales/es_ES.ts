@@ -62,6 +62,8 @@ export default {
   favorites: "Mis favoritos",
   edit_favorites: "Edita los favoritos",
   no_favorites: "No tienes favoritos guardados",
+  saved_searches: "Búsquedas guardadas",
+  edit_saved_searches: "Editar búsquedas guardadas",
   register: "Registro",
   of: "de",
   editingDocument: "Editando documento",
@@ -125,4 +127,8 @@ export default {
   changeToInfinite: "Cambiar a listado infinito",
   changeToPaginated: "Cambiar a listado paginado",
   enterFieldToFilter: "Introduce el campo para filtrar...",
+  saveSearchFilter: "Guardar filtro de búsqueda",
+  saveAsNewSearchFilter: "Guardar como nuevo filtro de búsqueda",
+  searchFilterName: "Nombre del filtro de búsqueda",
+  searchFilterNamePlaceholder: "Introduce el nombre del filtro de búsqueda",
 };

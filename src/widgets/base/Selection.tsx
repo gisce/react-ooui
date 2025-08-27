@@ -51,7 +51,7 @@ export const SelectionInput = (props: SelectionInputProps) => {
     <CustomSelect
       disabled={readOnly}
       onChange={onChange}
-      value={value}
+      value={value?.toString()}
       optionFilterProp="children"
       allowClear
       filterOption={(input: string, option: any) =>
