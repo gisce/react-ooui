@@ -49,6 +49,7 @@ export default {
   selectAction: "Select an action",
   download: "Download",
   clear: "Clear",
+  clear_search: "Clear current search filters",
   open: "Open",
   uploadNewImage: "Upload new image",
   noCurrentEntries: "No current entries",
