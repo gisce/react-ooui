@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "2.96.2",
+  "version": "2.97.0",
   "engines": {
     "node": "20.5.0"
   },
@@ -36,6 +36,10 @@
   "dependencies": {
     "@ant-design/colors": "^7.2.0",
     "@ant-design/plots": "^1.0.9",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/modifiers": "^9.0.0",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@gisce/fiber-diagram": "2.1.1",
     "@gisce/ooui": "2.34.0",
     "@gisce/react-formiga-components": "1.17.1",

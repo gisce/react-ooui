@@ -5,6 +5,7 @@ import {
   useRef,
   ReactNode,
   useEffect,
+  useCallback,
 } from "react";
 import { ConnectionProvider, ContentRootProvider, FormView } from "..";
 import Welcome from "./Welcome";
@@ -83,6 +84,24 @@ function RootView(props: RootViewProps, ref: any) {
     setTabs(tabs.filter((tab: any) => tab.key !== key));
     tabViewsCloseFunctions.current.delete(key);
   }
+
+  const reorderTabs = useCallback(
+    (oldIndex: number, newIndex: number) => {
+      const newTabs = [...tabs];
+      const [movedTab] = newTabs.splice(oldIndex, 1);
+      newTabs.splice(newIndex, 0, movedTab);
+      setTabs(newTabs);
+    },
+    [tabs],
+  );
+
+  const updateTabTitle = useCallback((key: string, newTitle: string) => {
+    setTabs((prevTabs) =>
+      prevTabs.map((tab) =>
+        tab.key === key ? { ...tab, title: newTitle } : tab,
+      ),
+    );
+  }, []);
 
   function registerViewCloseFn({
     tabKey,
@@ -731,6 +750,8 @@ function RootView(props: RootViewProps, ref: any) {
       onChangeTab={(key: string) => {
         setActiveKey(key);
       }}
+      onReorderTabs={reorderTabs}
+      onUpdateTabTitle={updateTabTitle}
     >
       <ContentRootProvider
         ref={contentRootProvider}
