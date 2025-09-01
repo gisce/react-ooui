@@ -77,6 +77,7 @@ export type SearchTreeInfiniteProps = {
   onChangeSelectedRowKeys?: (selectedRowKeys: any) => void;
   filterType?: "side" | "top";
   onChangeTreeType?: (type: TreeType) => void;
+  hideHeaders?: boolean;
 };
 
 function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
@@ -93,6 +94,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     nameSearch: nameSearchProps,
     filterType = "side",
     onChangeTreeType,
+    hideHeaders = false,
   } = props;
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
   const lastAssignedResults = useRef<any[]>([]);
@@ -809,17 +811,19 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
           onSubmit={onSideSearchFilterSubmit}
         />
       )}
-      <SearchTreeHeader
-        selectedRowKeys={selectedRowKeys}
-        totalRows={totalRows}
-        customMiddleComponent={
-          shouldShowNameSearchWarning && (
-            <NameSearchWarning
-              onFilterSearchClick={() => setSearchVisible?.(true)}
-            />
-          )
-        }
-      />
+      {!hideHeaders && (
+        <SearchTreeHeader
+          selectedRowKeys={selectedRowKeys}
+          totalRows={totalRows}
+          customMiddleComponent={
+            shouldShowNameSearchWarning && (
+              <NameSearchWarning
+                onFilterSearchClick={() => setSearchVisible?.(true)}
+              />
+            )
+          }
+        />
+      )}
       <div ref={containerRef} style={containerStyle}>
         {loading || isColumnStateLoading ? <Spin /> : content}
       </div>

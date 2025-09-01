@@ -24,6 +24,7 @@ export type SearchTreePaginatedProps = {
   parentContext?: Record<string, unknown>;
   filterType?: "side" | "top";
   onChangeTreeType?: (type: TreeType) => void;
+  hideHeaders?: boolean;
 };
 
 export type PaginatedSearchControlsProps = {

@@ -246,6 +246,7 @@ function DashboardTree(props: Props) {
         )}
         {treeType === "infinite" && (
           <SearchTreeInfinite
+            hideHeaders={true}
             rootTree={false}
             model={currentModel!}
             parentContext={parentContext}
@@ -260,6 +261,7 @@ function DashboardTree(props: Props) {
         )}
         {treeType === "paginated" && (
           <SearchTreePaginated
+            hideHeaders={true}
             rootTree={false}
             model={currentModel!}
             parentContext={parentContext}
