@@ -16,10 +16,18 @@ function Tab(props: TabProps) {
   const { token } = useToken();
   const bgColor = isActive ? token.colorBgContainer : token.colorPrimaryBg;
 
+  const outlineColor = token.colorPrimaryActive;
+
   return (
     <div
       onClick={() => {
         !isActive && onSelected(tabKey);
+      }}
+      onMouseDown={(e) => {
+        if (e.button === 1) {
+          e.preventDefault();
+          onClose(tabKey);
+        }
       }}
       style={{
         cursor: "pointer",
@@ -30,13 +38,24 @@ function Tab(props: TabProps) {
         paddingRight: 10,
         backgroundColor: bgColor,
         display: "inline-flex",
-        flex: 1,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
         borderTopLeftRadius: token.borderRadius,
         borderTopRightRadius: token.borderRadius,
         marginLeft: 2,
+        minWidth: "fit-content",
+        flexShrink: 0,
+        whiteSpace: "nowrap",
+        borderBottom: `2px solid ${outlineColor}`,
+        ...(isActive && {
+          borderLeft: `2px solid ${outlineColor}`,
+          borderTop: `2px solid ${outlineColor}`,
+          borderRight: `2px solid ${outlineColor}`,
+          borderBottom: "none",
+          zIndex: 1,
+          position: "relative",
+        }),
       }}
     >
       <div
@@ -50,16 +69,15 @@ function Tab(props: TabProps) {
           paddingLeft: 5,
           paddingRight: 5,
           marginBottom: 2,
-          fontWeight: isActive ? 500 : "normal",
+          fontWeight: isActive ? "bold" : "normal",
         }}
       >
-        {label}
+        {label || ""}
       </div>
       <div
         style={{
           paddingLeft: 5,
           height: 40,
-
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
