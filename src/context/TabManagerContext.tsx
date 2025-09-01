@@ -25,6 +25,7 @@ export type TabManagerContextType = {
     initialViewType,
     res_id,
     domain,
+    context,
   }: {
     model: string;
     values?: any;
@@ -32,6 +33,7 @@ export type TabManagerContextType = {
     initialViewType?: ViewType;
     res_id?: number;
     domain?: any;
+    context?: any;
   }) => void;
   activeKey: string;
   onChangeTab: (key: string) => void;

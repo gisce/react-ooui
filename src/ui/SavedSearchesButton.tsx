@@ -296,7 +296,12 @@ const SavedSearchesButton = (props: Props) => {
 
   const editSavedSearches = useCallback(async () => {
     savedSearchesButtonRef?.current?.close();
-    openDefaultActionForModel?.({ model: "ir.search" });
+    openDefaultActionForModel?.({
+      model: "ir.search",
+      context: {
+        model: currentModel,
+      },
+    });
   }, [openDefaultActionForModel]);
 
   return (
