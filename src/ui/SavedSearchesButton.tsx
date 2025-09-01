@@ -88,7 +88,7 @@ const SavedSearchesButton = (props: Props) => {
     ConnectionProvider.getHandler().searchAllIds,
   );
   const [readObjectsRequest, cancelReadObjectsRequest] = useNetworkRequest(
-    ConnectionProvider.getHandler().readObjects,
+    ConnectionProvider.getHandler().readEvalUiObjects,
   );
   const [logAction, cancelLogActionRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().logAction,
@@ -124,7 +124,7 @@ const SavedSearchesButton = (props: Props) => {
           return;
         }
 
-        const searches = await readObjectsRequest({
+        const [searches] = await readObjectsRequest({
           model: "ir.search",
           ids: searchIds,
           fieldsToRetrieve: ["id", "model", "domain", "name"],
@@ -172,7 +172,7 @@ const SavedSearchesButton = (props: Props) => {
         ];
       }
 
-      const searches = await readObjectsRequest({
+      const [searches] = await readObjectsRequest({
         model: "ir.search",
         ids: searchIds,
         fieldsToRetrieve: ["id", "model", "domain", "name", "last_run"],
