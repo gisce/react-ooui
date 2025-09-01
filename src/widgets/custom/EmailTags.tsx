@@ -37,10 +37,7 @@ export const EmailTagsRender: React.FC<EmailTagsRenderProps> = ({
   }
   const emailArray =
     typeof emails === "string"
-      ? emails
-          .replace(/,/g, ";")
-          .split(";")
-          .map((email) => email.trim())
+      ? emails.split(/[,;]/).map((email) => email.trim())
       : emails;
   return (
     <>
@@ -79,8 +76,7 @@ export const EmailTagsInput: React.FC<EmailTagsInputProps> = ({
   const [emails, setEmails] = useState<string[]>(
     value
       ? value
-          .replace(/,/g, ";")
-          .split(";")
+          .split(/[,;]/)
           .map((email) => email.trim())
           .filter((email) => email)
       : [],
@@ -93,8 +89,7 @@ export const EmailTagsInput: React.FC<EmailTagsInputProps> = ({
   useDeepCompareEffect(() => {
     if (value) {
       const newEmails = value
-        .replace(/,/g, ";")
-        .split(";")
+        .split(/[,;]/)
         .map((email) => email.trim())
         .filter(Boolean);
       // Only update state, don't trigger handleChange
@@ -108,7 +103,7 @@ export const EmailTagsInput: React.FC<EmailTagsInputProps> = ({
   const handleChange = useCallback(
     (newEmails: string[]) => {
       if (onChange) {
-        onChange(newEmails.join(";"));
+        onChange(newEmails.join(","));
       }
     },
     [onChange],
@@ -141,7 +136,7 @@ export const EmailTagsInput: React.FC<EmailTagsInputProps> = ({
 
     // Only update state if we have valid emails to add
     if (validEmails.length > 0) {
-      const concatenatedEmails = [...emails, ...validEmails].join(";");
+      const concatenatedEmails = [...emails, ...validEmails].join(",");
       if (
         !maxLength ||
         concatenatedEmails.length + parts[parts.length - 1].length <= maxLength
@@ -159,11 +154,10 @@ export const EmailTagsInput: React.FC<EmailTagsInputProps> = ({
   const handleInputConfirm = () => {
     if (inputValue) {
       const newEmails = inputValue
-        .replace(/,/g, ";")
-        .split(";")
+        .split(/[,;]/)
         .map((email) => email.trim())
         .filter((email) => email && !emails.includes(email));
-      const concatenatedEmails = [...emails, ...newEmails].join(";");
+      const concatenatedEmails = [...emails, ...newEmails].join(",");
       if (!maxLength || concatenatedEmails.length <= maxLength) {
         setEmails([...emails, ...newEmails]);
         handleChange([...emails, ...newEmails]);
