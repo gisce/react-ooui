@@ -36,9 +36,9 @@ export const TreeActionViewWrapper = (props: TreeActionViewProps) => {
     props.results && props.results.length > 0 ? 0 : undefined,
   );
   const [results, setResults] = useState(props.results || []);
-  const [searchTreeNameSearch, setSearchTreeNameSearch] = useState<string>(
-    props.searchTreeNameSearch || "",
-  );
+  const [searchTreeNameSearch, setSearchTreeNameSearch] = useState<
+    string | undefined
+  >(props.searchTreeNameSearch);
   const [sorter, setSorter] = useState<any>();
   const [totalItems, setTotalItems] = useState<number>(mockResults.length);
   const [selectedRowItems, setSelectedRowItems] = useState<any[]>([]);
@@ -48,7 +48,6 @@ export const TreeActionViewWrapper = (props: TreeActionViewProps) => {
   const formRef = { current: null };
   const searchTreeRef = useRef<any>({
     refreshResults: () => {
-      console.log("Refresh triggered in story - simulating data refresh");
       // Simulate refresh by incrementing counter which will trigger a re-render
       setRefreshCounter((prev) => prev + 1);
 
@@ -66,20 +65,10 @@ export const TreeActionViewWrapper = (props: TreeActionViewProps) => {
       setTotalItems(refreshedResults.length);
 
       // Show notification that refresh happened
-      console.log(`Mock data refreshed (${new Date().toLocaleTimeString()})`);
     },
   });
 
-  console.log("TreeActionViewWrapper rendered with props:", {
-    model: props.model,
-    visible: props.visible,
-    results: props.results?.length,
-    treeView: props.treeView?.type,
-    refreshCounter,
-  });
-
   const goToResourceId = async (ids: number[], openInSameTab?: boolean) => {
-    console.log("goToResourceId called with:", ids, openInSameTab);
     // Mock implementation for story viewer
     if (ids.length > 0) {
       const foundItem = results.find((item) => item.id === ids[0]);
@@ -118,9 +107,7 @@ export const TreeActionViewWrapper = (props: TreeActionViewProps) => {
             availableViews={props.availableViews || [props.treeView]}
             formRef={formRef}
             searchTreeRef={searchTreeRef}
-            onNewClicked={() => {
-              console.log("New button clicked");
-            }}
+            onNewClicked={() => {}}
             currentId={currentId}
             setCurrentId={setCurrentId}
             setCurrentItemIndex={setCurrentItemIndex}
@@ -135,7 +122,7 @@ export const TreeActionViewWrapper = (props: TreeActionViewProps) => {
             selectedRowItems={selectedRowItems}
             setSelectedRowItems={setSelectedRowItems}
             setSearchTreeNameSearch={(searchString?: string) =>
-              setSearchTreeNameSearch(searchString || "")
+              setSearchTreeNameSearch(searchString)
             }
             searchTreeNameSearch={searchTreeNameSearch}
             goToResourceId={goToResourceId}
