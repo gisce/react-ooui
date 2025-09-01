@@ -1,5 +1,10 @@
 import { useCallback, useContext, useEffect, useRef, useMemo } from "react";
-import { FilterOutlined, EditOutlined, CheckOutlined } from "@ant-design/icons";
+import {
+  FilterOutlined,
+  EditOutlined,
+  CheckOutlined,
+  ClearOutlined,
+} from "@ant-design/icons";
 import { Tooltip, theme, Badge } from "antd";
 import {
   TabManagerContext,
@@ -302,7 +307,25 @@ const SavedSearchesButton = (props: Props) => {
         model: currentModel,
       },
     });
-  }, [openDefaultActionForModel]);
+  }, [currentModel, openDefaultActionForModel]);
+
+  const clearSearch = useCallback(() => {
+    savedSearchesButtonRef?.current?.close();
+    onCurrentSavedSearchChange?.(null);
+    setSearchParams?.([]);
+    setSearchValues?.({});
+
+    if (onApplySearch) {
+      setTimeout(() => {
+        onApplySearch();
+      }, 100);
+    }
+  }, [
+    setSearchParams,
+    setSearchValues,
+    onApplySearch,
+    onCurrentSavedSearchChange,
+  ]);
 
   return (
     <Badge
@@ -321,17 +344,53 @@ const SavedSearchesButton = (props: Props) => {
           placement={"bottomRight"}
           disabled={disabled}
           header={
-            <div style={{ width: 300, padding: 5, display: "flex" }}>
-              <div style={{ paddingLeft: 15, color: "#ccc" }}>
-                {t?.("saved_searches")?.toUpperCase()}
-              </div>
-              <div style={{ flexGrow: 1, paddingLeft: 10 }}>
-                <Tooltip title={t?.("edit_saved_searches")}>
-                  <EditOutlined
-                    style={{ color: token.colorPrimary, cursor: "pointer" }}
-                    onClick={editSavedSearches}
+            <div style={{ width: 300, padding: 5 }}>
+              {searchParams && searchParams.length > 0 && (
+                <>
+                  <div
+                    style={{ paddingLeft: 15, color: "#ccc", paddingBottom: 2 }}
+                  >
+                    {t?.("actions")?.toUpperCase()}
+                  </div>
+                  <div style={{ paddingBottom: 5 }}>
+                    <Tooltip title={t?.("clear_search")}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          cursor: "pointer",
+                          color: token.colorPrimary,
+                          fontWeight: "400",
+                          padding: "4px 8px",
+                          borderRadius: "4px",
+                        }}
+                        onClick={clearSearch}
+                      >
+                        <ClearOutlined style={{ marginRight: 8 }} />
+                        {t?.("clear_search") || "Clear search"}
+                      </div>
+                    </Tooltip>
+                  </div>
+                  <div
+                    style={{
+                      borderBottom: "1px solid #f0f0f0",
+                      marginBottom: 5,
+                    }}
                   />
-                </Tooltip>
+                </>
+              )}
+              <div style={{ display: "flex" }}>
+                <div style={{ paddingLeft: 15, color: "#ccc" }}>
+                  {t?.("saved_searches")?.toUpperCase()}
+                </div>
+                <div style={{ flexGrow: 1, paddingLeft: 10 }}>
+                  <Tooltip title={t?.("edit_saved_searches")}>
+                    <EditOutlined
+                      style={{ color: token.colorPrimary, cursor: "pointer" }}
+                      onClick={editSavedSearches}
+                    />
+                  </Tooltip>
+                </div>
               </div>
             </div>
           }

@@ -52,6 +52,7 @@ export default {
   selectAction: "Selecciona una acción",
   download: "Descarga",
   clear: "Limpiar",
+  clear_search: "Limpiar filtros de búsqueda actuales",
   open: "Abrir",
   uploadNewImage: "Subir una nueva imágen",
   noCurrentEntries: "No hay registros",
