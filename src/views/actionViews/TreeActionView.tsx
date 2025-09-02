@@ -15,8 +15,8 @@ import {
   ActionViewContextType,
   useActionViewContext,
 } from "@/context/ActionViewContext";
-import { useLocale } from "@gisce/react-formiga-components";
-import { Typography, theme } from "antd";
+import { Tooltip, theme } from "antd";
+import { FilterOutlined, CloseOutlined } from "@ant-design/icons";
 import { SearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
 import SearchTree from "@/widgets/views/SearchTree";
 import { SearchTreePaginated } from "@/widgets/views/Tree/Paginated/SearchTreePaginated";
@@ -24,8 +24,8 @@ import { useDeepCompareEffect } from "use-deep-compare";
 import { useConfigContext } from "@/context/ConfigContext";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { determineTreeType, isTreeExpandable } from "@/helpers/treeHelper";
+import { useLocale } from "@gisce/react-formiga-components";
 
-const { Text } = Typography;
 const { useToken } = theme;
 
 export type TreeActionViewProps = {
@@ -88,9 +88,13 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     setTreeType: setContextTreeType,
     setSelectedRowItems,
     currentSavedSearch,
+    setCurrentSavedSearch,
+    setSearchVisible,
+    setSearchParams,
+    setSearchValues,
   } = useContext(ActionViewContext) as ActionViewContextType;
-  const { t } = useLocale();
   const { token } = useToken();
+  const { t } = useLocale();
 
   useEffect(() => {
     setContextTreeType?.(treeType);
@@ -143,16 +147,95 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     [limit, setLimit],
   );
 
+  const handleClearSavedSearch = useCallback(() => {
+    setCurrentSavedSearch?.(null);
+    setSearchParams?.([]);
+    setSearchValues?.({});
+
+    setTimeout(() => {
+      searchTreeRef?.current?.refreshResults();
+    }, 100);
+  }, [setCurrentSavedSearch, setSearchParams, setSearchValues, searchTreeRef]);
+
+  const handleOpenSidebar = useCallback(() => {
+    setSearchVisible?.(true);
+  }, [setSearchVisible]);
+
   const subtitle = useMemo(() => {
     return currentSavedSearch?.name ? (
-      <Text style={{ fontSize: "14px", color: token.colorTextSecondary }}>
-        {t("appliedSavedSearch")}{" "}
-        <Text strong style={{ fontSize: "14px" }}>
-          {currentSavedSearch.name}
-        </Text>
-      </Text>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginTop: "6px",
+        }}
+      >
+        <Tooltip
+          title={
+            <div>
+              <div>{t("openSavedSearchInSidebar")}</div>
+              <div style={{ fontWeight: "bold", marginTop: "2px" }}>
+                {currentSavedSearch.name}
+              </div>
+            </div>
+          }
+        >
+          <div
+            style={{
+              backgroundColor: token.colorPrimary,
+              color: "white",
+              borderRadius: "8px",
+              padding: "2px 6px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              fontSize: "11px",
+              opacity: 0.8,
+              maxWidth: "200px",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+            }}
+            onClick={handleOpenSidebar}
+          >
+            <FilterOutlined
+              style={{ marginRight: "3px", fontSize: "10px", flexShrink: 0 }}
+            />
+            <span
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {currentSavedSearch.name}
+            </span>
+          </div>
+        </Tooltip>
+        <Tooltip title={t("clear_search")}>
+          <CloseOutlined
+            style={{
+              marginLeft: "4px",
+              cursor: "pointer",
+              color: token.colorText,
+              fontSize: "9px",
+              display: "flex",
+              alignItems: "flex-end",
+              fontWeight: "bold",
+              transform: "translateY(1px)",
+            }}
+            onClick={handleClearSavedSearch}
+          />
+        </Tooltip>
+      </div>
     ) : null;
-  }, [currentSavedSearch?.name, t, token.colorTextSecondary]);
+  }, [
+    currentSavedSearch?.name,
+    token.colorPrimary,
+    token.colorText,
+    handleOpenSidebar,
+    handleClearSavedSearch,
+    t,
+  ]);
 
   if (!visible) {
     return null;
