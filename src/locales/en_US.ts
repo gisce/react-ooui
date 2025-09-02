@@ -127,4 +127,5 @@ export default {
   saveAsNewSearchFilter: "Save as new search filter",
   searchFilterName: "Search filter name",
   searchFilterNamePlaceholder: "Enter the search filter name",
+  appliedSavedSearch: "Applied saved search:",
 };

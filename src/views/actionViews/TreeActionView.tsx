@@ -6,6 +6,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -14,6 +15,8 @@ import {
   ActionViewContextType,
   useActionViewContext,
 } from "@/context/ActionViewContext";
+import { useLocale } from "@gisce/react-formiga-components";
+import { Typography, theme } from "antd";
 import { SearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
 import SearchTree from "@/widgets/views/SearchTree";
 import { SearchTreePaginated } from "@/widgets/views/Tree/Paginated/SearchTreePaginated";
@@ -21,6 +24,9 @@ import { useDeepCompareEffect } from "use-deep-compare";
 import { useConfigContext } from "@/context/ConfigContext";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { determineTreeType, isTreeExpandable } from "@/helpers/treeHelper";
+
+const { Text } = Typography;
+const { useToken } = theme;
 
 export type TreeActionViewProps = {
   formView: FormView;
@@ -81,7 +87,10 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     setPreviousView,
     setTreeType: setContextTreeType,
     setSelectedRowItems,
+    currentSavedSearch,
   } = useContext(ActionViewContext) as ActionViewContextType;
+  const { t } = useLocale();
+  const { token } = useToken();
 
   useEffect(() => {
     setContextTreeType?.(treeType);
@@ -134,13 +143,24 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     [limit, setLimit],
   );
 
+  const subtitle = useMemo(() => {
+    return currentSavedSearch?.name ? (
+      <Text style={{ fontSize: "14px", color: token.colorTextSecondary }}>
+        {t("appliedSavedSearch")}{" "}
+        <Text strong style={{ fontSize: "14px" }}>
+          {currentSavedSearch.name}
+        </Text>
+      </Text>
+    ) : null;
+  }, [currentSavedSearch?.name, t, token.colorTextSecondary]);
+
   if (!visible) {
     return null;
   }
 
   return (
     <Fragment>
-      <TitleHeader showSummary={treeType !== "infinite"}>
+      <TitleHeader showSummary={treeType !== "infinite"} subtitle={subtitle}>
         <TreeActionBar
           domain={domain}
           toolbar={treeView?.toolbar}
