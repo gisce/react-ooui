@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useMemo } from "react";
+import { useCallback, useContext, useRef, useMemo } from "react";
 import {
   FilterOutlined,
   EditOutlined,
@@ -21,13 +21,11 @@ import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
-import ConnectionProvider from "@/ConnectionProvider";
-import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { useFeatureData } from "@/context/ConfigContext";
-import deepEqual from "deep-equal";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { convertParamsToValues } from "@/helpers/searchHelper";
-import { useDeepCompareEffect } from "use-deep-compare";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import ConnectionProvider from "@/ConnectionProvider";
 const { useToken } = theme;
 
 export type SavedSearchApi = {
@@ -45,7 +43,8 @@ type Props = {
   disabled?: boolean;
   context: any;
   onApplySearch?: () => void;
-  onCurrentSavedSearchChange?: (savedSearch: SavedSearchApi | null) => void;
+  onRefetchSavedSearches?: () => Promise<void>;
+  onClearSavedSearch?: () => void;
 };
 
 const SavedSearchesButton = (props: Props) => {
@@ -56,7 +55,8 @@ const SavedSearchesButton = (props: Props) => {
     disabled,
     context,
     onApplySearch,
-    onCurrentSavedSearchChange,
+    onRefetchSavedSearches,
+    onClearSavedSearch,
   } = props;
 
   const { t } = useLocale();
@@ -77,161 +77,60 @@ const SavedSearchesButton = (props: Props) => {
     setSearchValues,
     currentView,
     availableViews,
+    savedSearches,
+    currentSavedSearch,
+    setCurrentSavedSearch,
   } = actionViewContext || {};
 
   const loggableFeature = useFeatureData(
     ErpFeatureKeys.FEATURE_LOGGABLE_ACTIONS,
   );
 
-  // Network request hooks
-  const [searchAllIdsRequest, cancelSearchAllIdsRequest] = useNetworkRequest(
-    ConnectionProvider.getHandler().searchAllIds,
-  );
-  const [readObjectsRequest, cancelReadObjectsRequest] = useNetworkRequest(
-    ConnectionProvider.getHandler().readEvalUiObjects,
-  );
-  const [logAction, cancelLogActionRequest] = useNetworkRequest(
+  const [logAction] = useNetworkRequest(
     ConnectionProvider.getHandler().logAction,
   );
-
-  useEffect(() => {
-    return () => {
-      cancelSearchAllIdsRequest();
-      cancelReadObjectsRequest();
-      cancelLogActionRequest();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Check for matching saved search when component mounts or searchParams change
-  useDeepCompareEffect(() => {
-    const checkCurrentSavedSearch = async () => {
-      // Always clear if no search params
-      if (!currentModel || !searchParams?.length) {
-        onCurrentSavedSearchChange?.(null);
-        return;
-      }
-
-      try {
-        const searchIds = await searchAllIdsRequest({
-          params: [["model", "=", currentModel]],
-          model: "ir.search",
-          context,
-        });
-
-        if (searchIds.length === 0) {
-          onCurrentSavedSearchChange?.(null);
-          return;
-        }
-
-        const [searches] = await readObjectsRequest({
-          model: "ir.search",
-          ids: searchIds,
-          fieldsToRetrieve: ["id", "model", "domain", "name"],
-          context,
-        });
-
-        // Find if any saved search matches current searchParams
-        const matchingSearch = searches.find((search: SavedSearchApi) =>
-          deepEqual(search.domain, searchParams),
-        );
-
-        onCurrentSavedSearchChange?.(matchingSearch || null);
-      } catch (error) {
-        console.error("Error checking current saved search:", error);
-        onCurrentSavedSearchChange?.(null);
-      }
-    };
-
-    checkCurrentSavedSearch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentModel, searchParams]);
 
   const getSavedSearches = useCallback(async (): Promise<
     DropdownMenuGroup[]
   > => {
-    if (!currentModel) {
-      onCurrentSavedSearchChange?.(null);
-      return [];
-    }
+    await onRefetchSavedSearches?.();
 
-    try {
-      const searchIds = await searchAllIdsRequest({
-        params: [["model", "=", currentModel]],
-        model: "ir.search",
-        order: "last_run desc",
-        context,
-      });
+    // Use context state to build dropdown items
+    const items: DropdownMenuItem[] = (savedSearches || []).map(
+      (search: SavedSearchApi) => {
+        const isCurrentlyActive = currentSavedSearch?.id === search.id;
+        return {
+          icon: <FilterOutlined />,
+          ...search,
+          name: isCurrentlyActive ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <strong>{search.name}</strong>
+              <CheckOutlined style={{ color: token.colorPrimary }} />
+            </div>
+          ) : (
+            search.name
+          ),
+        } as DropdownMenuItem;
+      },
+    );
 
-      if (searchIds.length === 0) {
-        onCurrentSavedSearchChange?.(null);
-        return [
-          {
-            items: [],
-          },
-        ];
-      }
-
-      const [searches] = await readObjectsRequest({
-        model: "ir.search",
-        ids: searchIds,
-        fieldsToRetrieve: ["id", "model", "domain", "name", "last_run"],
-        context,
-      });
-
-      let currentSavedSearch: SavedSearchApi | null = null;
-      const items: DropdownMenuItem[] = searches.map(
-        (search: SavedSearchApi) => {
-          const isCurrentlyActive = deepEqual(search.domain, searchParams);
-          if (isCurrentlyActive) {
-            currentSavedSearch = search;
-          }
-          return {
-            icon: <FilterOutlined />,
-            ...search,
-            name: isCurrentlyActive ? (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  width: "100%",
-                }}
-              >
-                <strong>{search.name}</strong>
-                <CheckOutlined style={{ color: token.colorPrimary }} />
-              </div>
-            ) : (
-              search.name
-            ),
-          } as DropdownMenuItem;
-        },
-      );
-
-      // Notify about current saved search
-      onCurrentSavedSearchChange?.(currentSavedSearch);
-
-      return [
-        {
-          items,
-        },
-      ];
-    } catch (error) {
-      console.error("Error fetching saved searches:", error);
-      return [
-        {
-          items: [],
-        },
-      ];
-    }
+    return [
+      {
+        items,
+      },
+    ];
   }, [
-    currentModel,
-    context,
-    searchParams,
+    onRefetchSavedSearches,
+    savedSearches,
+    currentSavedSearch,
     token.colorPrimary,
-    searchAllIdsRequest,
-    readObjectsRequest,
-    onCurrentSavedSearchChange,
   ]);
 
   const allViewFields = useMemo(() => {
@@ -269,7 +168,8 @@ const SavedSearchesButton = (props: Props) => {
     (item: DropdownMenuItem) => {
       const savedSearch = item as SavedSearchApi;
       if (savedSearch?.domain) {
-        onCurrentSavedSearchChange?.(savedSearch);
+        // Update context state
+        setCurrentSavedSearch?.(savedSearch);
 
         setSearchParams?.(savedSearch.domain);
 
@@ -295,7 +195,7 @@ const SavedSearchesButton = (props: Props) => {
       onApplySearch,
       logSearchAction,
       allViewFields,
-      onCurrentSavedSearchChange,
+      setCurrentSavedSearch,
     ],
   );
 
@@ -311,21 +211,8 @@ const SavedSearchesButton = (props: Props) => {
 
   const clearSearch = useCallback(() => {
     savedSearchesButtonRef?.current?.close();
-    onCurrentSavedSearchChange?.(null);
-    setSearchParams?.([]);
-    setSearchValues?.({});
-
-    if (onApplySearch) {
-      setTimeout(() => {
-        onApplySearch();
-      }, 100);
-    }
-  }, [
-    setSearchParams,
-    setSearchValues,
-    onApplySearch,
-    onCurrentSavedSearchChange,
-  ]);
+    onClearSavedSearch?.();
+  }, [onClearSavedSearch]);
 
   return (
     <Badge

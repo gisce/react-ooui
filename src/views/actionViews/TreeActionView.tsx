@@ -21,10 +21,14 @@ import { SearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
 import SearchTree from "@/widgets/views/SearchTree";
 import { SearchTreePaginated } from "@/widgets/views/Tree/Paginated/SearchTreePaginated";
 import { useDeepCompareEffect } from "use-deep-compare";
-import { useConfigContext } from "@/context/ConfigContext";
+import { useConfigContext, useFeatureIsEnabled } from "@/context/ConfigContext";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { determineTreeType, isTreeExpandable } from "@/helpers/treeHelper";
 import { useLocale } from "@gisce/react-formiga-components";
+import ConnectionProvider from "@/ConnectionProvider";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import deepEqual from "deep-equal";
+import { ErpFeatureKeys } from "@/models/erpFeature";
 
 const { useToken } = theme;
 
@@ -89,6 +93,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     setSelectedRowItems,
     currentSavedSearch,
     setCurrentSavedSearch,
+    setSavedSearches,
     setSearchVisible,
     setSearchParams,
     setSearchValues,
@@ -96,10 +101,69 @@ export const TreeActionView = (props: TreeActionViewProps) => {
   const { token } = useToken();
   const { t } = useLocale();
 
+  const savedSearchesEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_SAVED_SEARCHES,
+  );
+
+  const [searchAllIdsRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().searchAllIds,
+  );
+  const [readObjectsRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().readEvalUiObjects,
+  );
+
+  const fetchSavedSearches = useCallback(async () => {
+    if (!savedSearchesEnabled || !model) {
+      setSavedSearches?.([]);
+      setCurrentSavedSearch?.(null);
+      return;
+    }
+
+    try {
+      const searchIds = await searchAllIdsRequest({
+        params: [["model", "=", model]],
+        model: "ir.search",
+        order: "last_run desc",
+        context,
+      });
+
+      if (searchIds.length === 0) {
+        setSavedSearches?.([]);
+        setCurrentSavedSearch?.(null);
+        return;
+      }
+
+      const [searches] = await readObjectsRequest({
+        model: "ir.search",
+        ids: searchIds,
+        fieldsToRetrieve: ["id", "model", "domain", "name", "last_run"],
+        context,
+      });
+
+      setSavedSearches?.(searches);
+    } catch (error) {
+      console.error("Error fetching saved searches:", error);
+      setSavedSearches?.([]);
+      setCurrentSavedSearch?.(null);
+    }
+  }, [
+    savedSearchesEnabled,
+    model,
+    context,
+    searchAllIdsRequest,
+    readObjectsRequest,
+    setSavedSearches,
+    setCurrentSavedSearch,
+  ]);
+
   useEffect(() => {
     setContextTreeType?.(treeType);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [treeType]);
+
+  useEffect(() => {
+    fetchSavedSearches();
+  }, []);
 
   const onRowClicked = useCallback(
     (event: any) => {
@@ -249,6 +313,8 @@ export const TreeActionView = (props: TreeActionViewProps) => {
           toolbar={treeView?.toolbar}
           parentContext={context}
           treeExpandable={isTreeExpandable(treeView)}
+          onRefetchSavedSearches={fetchSavedSearches}
+          onClearSavedSearch={handleClearSavedSearch}
         />
       </TitleHeader>
       {treeType === "infinite" && (
