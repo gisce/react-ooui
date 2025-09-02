@@ -132,5 +132,4 @@ export default {
   saveAsNewSearchFilter: "Guardar como nuevo filtro de búsqueda",
   searchFilterName: "Nombre del filtro de búsqueda",
   searchFilterNamePlaceholder: "Introduce el nombre del filtro de búsqueda",
-  appliedSavedSearch: "Búsqueda guardada aplicada:",
 };

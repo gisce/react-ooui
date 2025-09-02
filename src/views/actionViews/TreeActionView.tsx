@@ -15,8 +15,8 @@ import {
   ActionViewContextType,
   useActionViewContext,
 } from "@/context/ActionViewContext";
-import { useLocale } from "@gisce/react-formiga-components";
 import { Typography, theme } from "antd";
+import { FilterOutlined } from "@ant-design/icons";
 import { SearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
 import SearchTree from "@/widgets/views/SearchTree";
 import { extractTreeXmlAttribute } from "@/helpers/treeHelper";
@@ -119,7 +119,6 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     setSelectedRowItems,
     currentSavedSearch,
   } = useContext(ActionViewContext) as ActionViewContextType;
-  const { t } = useLocale();
   const { token } = useToken();
 
   useEffect(() => {
@@ -173,13 +172,13 @@ export const TreeActionView = (props: TreeActionViewProps) => {
   const subtitle = useMemo(() => {
     return currentSavedSearch?.name ? (
       <Text style={{ fontSize: "14px", color: token.colorTextSecondary }}>
-        {t("appliedSavedSearch")}{" "}
+        <FilterOutlined style={{ marginRight: "8px" }} />
         <Text strong style={{ fontSize: "14px" }}>
           {currentSavedSearch.name}
         </Text>
       </Text>
     ) : null;
-  }, [currentSavedSearch?.name, t, token.colorTextSecondary]);
+  }, [currentSavedSearch?.name, token.colorTextSecondary]);
 
   if (!visible) {
     return null;
