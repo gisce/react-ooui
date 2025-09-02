@@ -94,9 +94,11 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     currentSavedSearch,
     setCurrentSavedSearch,
     setSavedSearches,
+    savedSearches,
     setSearchVisible,
     setSearchParams,
     setSearchValues,
+    searchParams,
   } = useContext(ActionViewContext) as ActionViewContextType;
   const { token } = useToken();
   const { t } = useLocale();
@@ -164,6 +166,32 @@ export const TreeActionView = (props: TreeActionViewProps) => {
   useEffect(() => {
     fetchSavedSearches();
   }, []);
+
+  // Auto-match search params to saved searches
+  useEffect(() => {
+    if (
+      savedSearchesEnabled &&
+      savedSearches &&
+      savedSearches.length > 0 &&
+      searchParams &&
+      !currentSavedSearch
+    ) {
+      // Find a saved search that matches current search params
+      const matchingSavedSearch = savedSearches.find((savedSearch: any) =>
+        deepEqual(savedSearch.domain, searchParams),
+      );
+
+      if (matchingSavedSearch) {
+        setCurrentSavedSearch?.(matchingSavedSearch);
+      }
+    }
+  }, [
+    savedSearchesEnabled,
+    savedSearches,
+    searchParams,
+    currentSavedSearch,
+    setCurrentSavedSearch,
+  ]);
 
   const onRowClicked = useCallback(
     (event: any) => {

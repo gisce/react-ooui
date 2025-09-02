@@ -54,6 +54,8 @@ export const useSavedSearches = ({
   const {
     currentSavedSearch: contextCurrentSavedSearch,
     setCurrentSavedSearch: setContextCurrentSavedSearch,
+    savedSearches,
+    setSavedSearches,
   } = useActionViewContext();
 
   const [internalSavedSearch, setInternalSavedSearch] =
@@ -182,6 +184,13 @@ export const useSavedSearches = ({
         setSavedSearchName(nameToUse);
         setHasChanges(false);
         setContextCurrentSavedSearch?.(updatedSearch);
+
+        if (savedSearches && setSavedSearches) {
+          const updatedSavedSearches = savedSearches.map((search: any) =>
+            search.id === currentSavedSearch.id ? updatedSearch : search,
+          );
+          setSavedSearches(updatedSavedSearches);
+        }
       } else {
         if (!savedSearchName.trim()) {
           setSaveAsNew(false);
@@ -225,6 +234,9 @@ export const useSavedSearches = ({
     context,
     updateRequest,
     createRequest,
+    setContextCurrentSavedSearch,
+    savedSearches,
+    setSavedSearches,
   ]);
 
   const handleSaveAsNew = useCallback(() => {
@@ -293,6 +305,13 @@ export const useSavedSearches = ({
         setSavedSearchName(nameToUse);
         setHasChanges(false);
         setContextCurrentSavedSearch?.(updatedSearch);
+
+        if (savedSearches && setSavedSearches) {
+          const updatedSavedSearches = savedSearches.map((search: any) =>
+            search.id === currentSavedSearch.id ? updatedSearch : search,
+          );
+          setSavedSearches(updatedSavedSearches);
+        }
       }
 
       setShowSaveModal(false);
@@ -312,6 +331,9 @@ export const useSavedSearches = ({
     context,
     createRequest,
     updateRequest,
+    setContextCurrentSavedSearch,
+    savedSearches,
+    setSavedSearches,
   ]);
 
   const handleNameClick = useCallback(() => {
@@ -327,21 +349,7 @@ export const useSavedSearches = ({
     [],
   );
 
-  const handleNameKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter") {
-        setIsEditingName(false);
-      } else if (e.key === "Escape") {
-        setSavedSearchName(currentSavedSearch?.name || "");
-        setIsEditingName(false);
-      }
-    },
-    [currentSavedSearch],
-  );
-
-  const handleNameBlur = useDeepCompareCallback(async () => {
-    setIsEditingName(false);
-
+  const updateSavedSearchName = useDeepCompareCallback(async () => {
     if (
       currentSavedSearch &&
       savedSearchName !== currentSavedSearch.name &&
@@ -358,16 +366,56 @@ export const useSavedSearches = ({
           context,
         });
 
-        setCurrentSavedSearch({
-          ...currentSavedSearch,
+        const updatedSearch = {
+          id: currentSavedSearch.id,
+          model: currentSavedSearch.model,
+          domain: currentSavedSearch.domain,
           name: savedSearchName.trim(),
+        };
+        setCurrentSavedSearch(updatedSearch);
+
+        if (savedSearches && setSavedSearches) {
+          const updatedSavedSearches = savedSearches.map((search: any) =>
+            search.id === currentSavedSearch.id ? updatedSearch : search,
+          );
+          setSavedSearches(updatedSavedSearches);
+        }
+
+        setContextCurrentSavedSearch?.((prev: any) => {
+          return prev?.id === updatedSearch.id ? updatedSearch : updatedSearch;
         });
       } catch (error) {
         console.error("Error updating search name:", error);
         setSavedSearchName(currentSavedSearch.name);
       }
     }
-  }, [currentSavedSearch, savedSearchName, updateRequest, context]);
+  }, [
+    currentSavedSearch,
+    savedSearchName,
+    updateRequest,
+    context,
+    setContextCurrentSavedSearch,
+    savedSearches,
+    setSavedSearches,
+  ]);
+
+  const handleNameKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter") {
+        setIsEditingName(false);
+        updateSavedSearchName();
+      } else if (e.key === "Escape") {
+        setSavedSearchName(currentSavedSearch?.name || "");
+        setIsEditingName(false);
+      }
+    },
+    [currentSavedSearch, updateSavedSearchName],
+  );
+
+  const handleNameBlur = useDeepCompareCallback(async () => {
+    setIsEditingName(false);
+    updateSavedSearchName();
+  }, [updateSavedSearchName]);
 
   const renderSavedSearchTitle = useDeepCompareCallback(
     (mainTitle: string) => {

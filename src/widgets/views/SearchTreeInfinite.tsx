@@ -43,6 +43,7 @@ import deepEqual from "deep-equal";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
 import SearchFilter from "./searchFilter/SearchFilter";
 import { useSearchTreeState } from "@/hooks/useSearchTreeState";
+import { useActionViewContext } from "@/context/ActionViewContext";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { useTreeSharedHooks } from "@/hooks/useTreeSharedHooks";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
@@ -100,6 +101,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const lastAssignedResults = useRef<any[]>([]);
   const hasRestoredSortStateForFirstTime = useRef<boolean>(false);
   const { showErrorNotification } = useErrorNotification();
+  const { setCurrentSavedSearch } = useActionViewContext();
 
   const [totalRows, setTotalRows] = useState<number | null>();
   const [nameSearchFetchCompleted, setNameSearchFetchCompleted] =
@@ -778,6 +780,11 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       setSearchParams?.(params);
       setSearchValues?.(values);
       setSearchVisible?.(false);
+
+      // Clear saved search if applying empty search parameters
+      if (!params || params.length === 0) {
+        setCurrentSavedSearch?.(null);
+      }
     },
     [
       changeSelectedRowItems,
@@ -785,6 +792,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       setSearchParams,
       setSearchValues,
       setSearchVisible,
+      setCurrentSavedSearch,
     ],
   );
 
