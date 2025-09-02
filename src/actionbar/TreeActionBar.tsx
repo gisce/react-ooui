@@ -49,6 +49,8 @@ type Props = {
   treeExpandable: boolean;
   toolbar?: any;
   domain: any;
+  onRefetchSavedSearches?: () => Promise<void>;
+  onClearSavedSearch?: () => void;
 };
 
 function TreeActionBarComponent({
@@ -56,6 +58,8 @@ function TreeActionBarComponent({
   treeExpandable,
   toolbar,
   domain,
+  onRefetchSavedSearches,
+  onClearSavedSearch,
 }: Props) {
   const {
     availableViews,
@@ -85,7 +89,6 @@ function TreeActionBarComponent({
     treeType,
     setSearchParams,
     setSearchValues,
-    setCurrentSavedSearch,
     permissions,
   } = useContext(ActionViewContext) as ActionViewContextType;
 
@@ -103,6 +106,10 @@ function TreeActionBarComponent({
   const handleRefresh = useCallback(() => {
     searchTreeRef?.current?.refreshResults();
   }, [searchTreeRef]);
+
+  const handleToggleSearch = useCallback(() => {
+    setSearchVisible?.(!searchVisible);
+  }, [searchVisible, setSearchVisible]);
 
   const { actionButtonProps, printButtonProps } = useTreeToolbarButtons({
     toolbar,
@@ -321,11 +328,12 @@ function TreeActionBarComponent({
             <SavedSearchesButton
               context={parentContext}
               searchVisible={!!searchVisible}
-              onToggleSearch={() => setSearchVisible?.(!searchVisible)}
+              onToggleSearch={handleToggleSearch}
               searchParams={searchParams}
               disabled={duplicatingItem || removingItem || treeIsLoading}
               onApplySearch={handleRefresh}
-              onCurrentSavedSearchChange={setCurrentSavedSearch}
+              onRefetchSavedSearches={onRefetchSavedSearches}
+              onClearSavedSearch={onClearSavedSearch}
             />
           ) : (
             <ButtonWithBadge

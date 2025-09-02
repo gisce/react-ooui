@@ -89,6 +89,8 @@ export type ActionViewContextType = Omit<
   setCurrentPage?: (value: number) => void;
   currentSavedSearch?: any;
   setCurrentSavedSearch?: (value: any) => void;
+  savedSearches?: any[];
+  setSavedSearches?: (value: any[]) => void;
 };
 
 export const ActionViewContext = createContext<ActionViewContextType | null>(
@@ -185,6 +187,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     initialCurrentPage || 1,
   );
   const [currentSavedSearch, setCurrentSavedSearch] = useState<any>(null);
+  const [savedSearches, setSavedSearches] = useState<any[]>([]);
 
   useEffect(() => {
     if (results && results.length > 0 && !currentItemIndex) {
@@ -296,6 +299,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setCurrentPage,
         currentSavedSearch,
         setCurrentSavedSearch,
+        savedSearches,
+        setSavedSearches,
         permissions,
         permissionsLoading,
         permissionsError,
@@ -383,6 +388,8 @@ export const useActionViewContext = () => {
       setCurrentPage: () => {},
       currentSavedSearch: null,
       setCurrentSavedSearch: () => {},
+      savedSearches: [],
+      setSavedSearches: () => {},
       permissions: null,
       permissionsLoading: false,
       permissionsError: null,
