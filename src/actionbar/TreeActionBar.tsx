@@ -34,6 +34,7 @@ import { ExportModal } from "..";
 import { mergeParams } from "@/helpers/searchHelper";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
+import SavedSearchesButton from "@/ui/SavedSearchesButton";
 import { useHotkeys } from "react-hotkeys-hook";
 import {
   useTreeToolbarButtons,
@@ -48,6 +49,8 @@ type Props = {
   treeExpandable: boolean;
   toolbar?: any;
   domain: any;
+  onRefetchSavedSearches?: () => Promise<void>;
+  onClearSavedSearch?: () => void;
 };
 
 function TreeActionBarComponent({
@@ -55,6 +58,8 @@ function TreeActionBarComponent({
   treeExpandable,
   toolbar,
   domain,
+  onRefetchSavedSearches,
+  onClearSavedSearch,
 }: Props) {
   const {
     availableViews,
@@ -90,6 +95,9 @@ function TreeActionBarComponent({
   const advancedExportEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_ADVANCED_EXPORT,
   );
+  const savedSearchesEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_SAVED_SEARCHES,
+  );
   const { t } = useLocale();
   const [exportModalVisible, setExportModalVisible] = useState(false);
   const isFirstMount = useRef(true);
@@ -98,6 +106,10 @@ function TreeActionBarComponent({
   const handleRefresh = useCallback(() => {
     searchTreeRef?.current?.refreshResults();
   }, [searchTreeRef]);
+
+  const handleToggleSearch = useCallback(() => {
+    setSearchVisible?.(!searchVisible);
+  }, [searchVisible, setSearchVisible]);
 
   const { actionButtonProps, printButtonProps } = useTreeToolbarButtons({
     toolbar,
@@ -312,18 +324,31 @@ function TreeActionBarComponent({
             searchText={searchTreeNameSearch}
             onSearch={handleSearch}
           />
-          <ButtonWithBadge
-            icon={
-              <FilterOutlined
-                style={{ color: searchVisible ? "white" : undefined }}
-              />
-            }
-            tooltip={t("advanced_search")}
-            type={searchVisible ? "primary" : "default"}
-            onClick={() => setSearchVisible?.(!searchVisible)}
-            disabled={duplicatingItem || removingItem || treeIsLoading}
-            badgeNumber={searchParams?.length}
-          />
+          {savedSearchesEnabled ? (
+            <SavedSearchesButton
+              context={parentContext}
+              searchVisible={!!searchVisible}
+              onToggleSearch={handleToggleSearch}
+              searchParams={searchParams}
+              disabled={duplicatingItem || removingItem || treeIsLoading}
+              onApplySearch={handleRefresh}
+              onRefetchSavedSearches={onRefetchSavedSearches}
+              onClearSavedSearch={onClearSavedSearch}
+            />
+          ) : (
+            <ButtonWithBadge
+              icon={
+                <FilterOutlined
+                  style={{ color: searchVisible ? "white" : undefined }}
+                />
+              }
+              tooltip={t("advanced_search")}
+              type={searchVisible ? "primary" : "default"}
+              onClick={() => setSearchVisible?.(!searchVisible)}
+              disabled={duplicatingItem || removingItem || treeIsLoading}
+              badgeNumber={searchParams?.length}
+            />
+          )}
           <ActionBarSeparator />
           <NewButton disabled={treeIsLoading || !permissions?.create} />
           <ActionButton

@@ -32,8 +32,8 @@ export function SearchField(props: Props) {
         name: field._id,
         string: field.label,
         selection: [
-          ["true", t("true")],
-          ["false", t("false")],
+          [true, t("true")],
+          [false, t("false")],
         ],
       });
 
