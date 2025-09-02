@@ -22,7 +22,7 @@ import SearchTree from "@/widgets/views/SearchTree";
 import { extractTreeXmlAttribute } from "@/helpers/treeHelper";
 import { SearchTreePaginated } from "@/widgets/views/Tree/Paginated/SearchTreePaginated";
 import { useDeepCompareEffect } from "use-deep-compare";
-import { useConfigContext , useFeatureIsEnabled } from "@/context/ConfigContext";
+import { useConfigContext, useFeatureIsEnabled } from "@/context/ConfigContext";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { useLocale } from "@gisce/react-formiga-components";
 import ConnectionProvider from "@/ConnectionProvider";
@@ -124,9 +124,11 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     currentSavedSearch,
     setCurrentSavedSearch,
     setSavedSearches,
+    savedSearches,
     setSearchVisible,
     setSearchParams,
     setSearchValues,
+    searchParams,
   } = useContext(ActionViewContext) as ActionViewContextType;
   const { token } = useToken();
   const { t } = useLocale();
@@ -194,6 +196,32 @@ export const TreeActionView = (props: TreeActionViewProps) => {
   useEffect(() => {
     fetchSavedSearches();
   }, []);
+
+  // Auto-match search params to saved searches
+  useEffect(() => {
+    if (
+      savedSearchesEnabled &&
+      savedSearches &&
+      savedSearches.length > 0 &&
+      searchParams &&
+      !currentSavedSearch
+    ) {
+      // Find a saved search that matches current search params
+      const matchingSavedSearch = savedSearches.find((savedSearch: any) =>
+        deepEqual(savedSearch.domain, searchParams),
+      );
+
+      if (matchingSavedSearch) {
+        setCurrentSavedSearch?.(matchingSavedSearch);
+      }
+    }
+  }, [
+    savedSearchesEnabled,
+    savedSearches,
+    searchParams,
+    currentSavedSearch,
+    setCurrentSavedSearch,
+  ]);
 
   const onRowClicked = useCallback(
     (event: any) => {

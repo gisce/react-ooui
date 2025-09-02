@@ -1,5 +1,6 @@
 import { mergeParams } from "@/helpers/searchHelper";
 import { useSearchTreeState } from "@/hooks/useSearchTreeState";
+import { useActionViewContext } from "@/context/ActionViewContext";
 import { PaginatedTableRef, CheckboxState } from "@gisce/react-formiga-table";
 import {
   CSSProperties,
@@ -94,6 +95,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   } = useSearchTreeState({ useLocalState: !rootTree });
 
   const { treeMaxLimit } = useConfigContext();
+  const { setCurrentSavedSearch } = useActionViewContext();
   const limit = Math.min(limitActionView, treeMaxLimit);
 
   // Local state
@@ -320,6 +322,11 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       setSearchParams?.(params);
       setSearchValues?.(values);
       setSearchVisible?.(false);
+
+      // Clear saved search if applying empty search parameters
+      if (!params || params.length === 0) {
+        setCurrentSavedSearch?.(null);
+      }
     },
     [
       setSelectedRowItems,
@@ -328,6 +335,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       setSearchParams,
       setSearchValues,
       setSearchVisible,
+      setCurrentSavedSearch,
     ],
   );
 
