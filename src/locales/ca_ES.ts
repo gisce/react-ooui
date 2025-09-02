@@ -130,4 +130,5 @@ export default {
   saveAsNewSearchFilter: "Desar com a nou filtre de cerca",
   searchFilterName: "Nom del filtre de cerca",
   searchFilterNamePlaceholder: "Introdueix el nom del filtre de cerca",
+  appliedSavedSearch: "Cerca guardada aplicada:",
 };
