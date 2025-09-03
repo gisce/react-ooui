@@ -324,7 +324,7 @@ function TreeActionBarComponent({
             searchText={searchTreeNameSearch}
             onSearch={handleSearch}
           />
-          {savedSearchesEnabled ? (
+          {savedSearchesEnabled && treeType !== "legacy" ? (
             <SavedSearchesButton
               context={parentContext}
               searchVisible={!!searchVisible}
