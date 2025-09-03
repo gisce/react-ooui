@@ -99,6 +99,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     setSearchParams,
     setSearchValues,
     searchParams,
+    isActive,
   } = useContext(ActionViewContext) as ActionViewContextType;
   const { token } = useToken();
   const { t } = useLocale();
@@ -118,7 +119,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     if (!savedSearchesEnabled || !model) {
       setSavedSearches?.([]);
       setCurrentSavedSearch?.(null);
-      return;
+      return [];
     }
 
     try {
@@ -132,7 +133,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
       if (searchIds.length === 0) {
         setSavedSearches?.([]);
         setCurrentSavedSearch?.(null);
-        return;
+        return [];
       }
 
       const [searches] = await readObjectsRequest({
@@ -143,10 +144,12 @@ export const TreeActionView = (props: TreeActionViewProps) => {
       });
 
       setSavedSearches?.(searches);
+      return searches || [];
     } catch (error) {
       console.error("Error fetching saved searches:", error);
       setSavedSearches?.([]);
       setCurrentSavedSearch?.(null);
+      return [];
     }
   }, [
     savedSearchesEnabled,
@@ -165,9 +168,19 @@ export const TreeActionView = (props: TreeActionViewProps) => {
 
   useEffect(() => {
     fetchSavedSearches();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Auto-match search params to saved searches
+  const wasActiveRef = useRef(isActive);
+
+  useEffect(() => {
+    if (isActive && !wasActiveRef.current && savedSearchesEnabled) {
+      fetchSavedSearches();
+    }
+    wasActiveRef.current = isActive;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive]);
+
   useEffect(() => {
     if (
       savedSearchesEnabled &&

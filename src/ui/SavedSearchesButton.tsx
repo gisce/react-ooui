@@ -77,7 +77,6 @@ const SavedSearchesButton = (props: Props) => {
     setSearchValues,
     currentView,
     availableViews,
-    savedSearches,
     currentSavedSearch,
     setCurrentSavedSearch,
   } = actionViewContext || {};
@@ -93,10 +92,9 @@ const SavedSearchesButton = (props: Props) => {
   const getSavedSearches = useCallback(async (): Promise<
     DropdownMenuGroup[]
   > => {
-    await onRefetchSavedSearches?.();
+    const freshSavedSearches = (await onRefetchSavedSearches?.()) || [];
 
-    // Use context state to build dropdown items
-    const items: DropdownMenuItem[] = (savedSearches || []).map(
+    const items: DropdownMenuItem[] = freshSavedSearches.map(
       (search: SavedSearchApi) => {
         const isCurrentlyActive = currentSavedSearch?.id === search.id;
         return {
@@ -126,12 +124,7 @@ const SavedSearchesButton = (props: Props) => {
         items,
       },
     ];
-  }, [
-    onRefetchSavedSearches,
-    savedSearches,
-    currentSavedSearch,
-    token.colorPrimary,
-  ]);
+  }, [onRefetchSavedSearches, currentSavedSearch, token.colorPrimary]);
 
   const allViewFields = useMemo(() => {
     if (!availableViews || availableViews.length === 0) {
