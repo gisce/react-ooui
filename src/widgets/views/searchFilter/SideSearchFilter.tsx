@@ -35,6 +35,7 @@ import { useLocale } from "@gisce/react-formiga-components";
 import { FloatingDrawer } from "@/ui/FloatingDrawer";
 import deepEqual from "deep-equal";
 import { useSavedSearches } from "@/hooks/useSavedSearches";
+import { useActionViewContext } from "@/context/ActionViewContext";
 
 type SideSearchFilterBaseProps = {
   onSubmit: (values: any) => void;
@@ -69,12 +70,11 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
     const topSectionRef = useRef<HTMLDivElement>(null);
     const [fieldAdditionOrder, setFieldAdditionOrder] = useState<string[]>([]);
 
-    useEffect(() => {
+    useDeepCompareEffect(() => {
       form.setFieldsValue(searchValues);
       const normalized = normalizeValues(searchValues || {});
       setConfirmedValues(normalized);
 
-      // Initialize field addition order from existing values
       const existingFields = Object.keys(normalized).filter(
         (key) => normalized[key] !== undefined,
       );
@@ -86,7 +86,7 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchValues]);
 
-    useEffect(() => {
+    useDeepCompareEffect(() => {
       const hasValues =
         Object.keys(confirmedValues).filter(
           (key) => confirmedValues[key] !== undefined,
@@ -230,7 +230,10 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
       const prevConfirmedValues = confirmedValues;
 
       setConfirmedValues(normalizedTouchedValues);
-      onChange?.(touchedValues);
+
+      if (!deepEqual(normalizedTouchedValues, prevConfirmedValues)) {
+        onChange?.(touchedValues);
+      }
 
       // Find the newly added field
       const prevKeys = Object.keys(prevConfirmedValues).filter(
@@ -424,48 +427,36 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
   } = props;
   const sfo = useRef<SearchFilterOoui>();
   const { t } = useLocale();
-  const [parsedSearchFields, setParsedSearchFields] = useState<Container>();
+  const parsedSearchFieldsRef = useRef<Container>();
   const sideSearchFilterRef = useRef<SideSearchFilterRef>(null);
-  const [searchParams, setSearchParams] = useState<any>();
+
+  // Get global context to sync initially
+  const {
+    currentSavedSearch: globalCurrentSavedSearch,
+    searchParams: globalSearchParams,
+  } = useActionViewContext();
+
+  // Internal search params for the sidebar (independent of global context)
+  const [internalSearchParams, setInternalSearchParams] = useState<any[]>([]);
+
+  // Internal search values for the sidebar (independent of global context)
+  const [internalSearchValues, setInternalSearchValues] = useState<any>({});
 
   const paramsToShow = useDeepCompareMemo(() => {
-    if (!isOpen) return [];
+    return internalSearchParams;
+  }, [internalSearchParams]);
 
-    if (searchParams) {
-      return searchParams;
-    }
-
-    if (searchValues && sfo.current?._advancedSearchContainer) {
-      return getParamsForFields(
-        searchValues,
-        sfo.current._advancedSearchContainer,
-      );
-    }
-
-    // If no advanced container yet but we have searchValues, try to estimate count
-    if (searchValues) {
-      return Object.keys(searchValues).filter((key) => {
-        const value = searchValues[key];
-        return (
-          value !== null &&
-          value !== undefined &&
-          value !== "" &&
-          (!Array.isArray(value) ||
-            value.some((v) => v !== null && v !== undefined && v !== ""))
-        );
-      });
-    }
-
-    return [];
-  }, [isOpen, searchParams, searchValues]);
+  const titleText = useDeepCompareMemo(() => {
+    return `${t("filter")} (${paramsToShow?.length || 0})`;
+  }, [t, paramsToShow]);
 
   const filledFieldsCount = useDeepCompareMemo(() => {
-    if (!searchValues) return 0;
+    if (!internalSearchValues) return 0;
 
     const uniqueFieldIds = new Set<string>();
 
-    Object.keys(searchValues).forEach((key) => {
-      const value = searchValues[key];
+    Object.keys(internalSearchValues).forEach((key) => {
+      const value = internalSearchValues[key];
       const hasValue =
         value !== null &&
         value !== undefined &&
@@ -480,17 +471,24 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
     });
 
     return uniqueFieldIds.size;
-  }, [searchValues]);
+  }, [internalSearchValues]);
+
+  const [internalSavedSearch, setInternalSavedSearch] = useState<any>(null);
+
+  useDeepCompareEffect(() => {
+    if (isOpen) {
+      setInternalSavedSearch(globalCurrentSavedSearch || null);
+    }
+  }, [isOpen, globalCurrentSavedSearch]);
 
   const {
     savedSearchName,
     hasChanges,
     showSaveModal,
-    saveAsNew,
-    tempModalName,
+    isModalSaveAsNew,
+    modalInputValue,
     setShowSaveModal,
-    setNewSearchName,
-    setTempModalName,
+    setModalInputValue,
     handleSave,
     handleSaveAsNew,
     handleModalSave,
@@ -503,20 +501,66 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
   } = useSavedSearches({
     currentModel,
     context,
-    searchParams:
-      searchParams ||
-      (searchValues && sfo.current?._advancedSearchContainer
-        ? getParamsForFields(searchValues, sfo.current._advancedSearchContainer)
-        : undefined),
+    searchParams: internalSearchParams,
     hasActiveFilters: Boolean(filledFieldsCount),
-    isOpen,
+    internalSavedSearch,
+    setInternalSavedSearch,
+    onSave: useCallback(() => {
+      // Trigger tree refresh without closing sidebar
+      const newParams = getParamsForFields(
+        internalSearchValues,
+        sfo.current?._advancedSearchContainer,
+      );
+      onSubmit({
+        params: newParams,
+        values: normalizeValues(internalSearchValues),
+        closeSidebar: false,
+      });
+    }, [onSubmit, internalSearchValues]),
   });
+
+  const wasOpenRef = useRef(false);
+
+  useDeepCompareEffect(() => {
+    if (isOpen && !wasOpenRef.current) {
+      // Opening sidebar for the first time or after being closed
+      // Add a small delay to ensure the context has been fully updated
+      setTimeout(() => {
+        if (!globalCurrentSavedSearch) {
+          // No saved search - check if we have search params to preserve
+          if (globalSearchParams && globalSearchParams.length > 0) {
+            // Preserve existing search params
+            setInternalSearchValues(searchValues || {});
+            setInternalSearchParams(globalSearchParams);
+          } else {
+            // No saved search and no params - reset to empty
+            setInternalSearchValues({});
+            setInternalSearchParams([]);
+          }
+        } else {
+          // Has saved search - load it
+          setInternalSearchValues(searchValues || {});
+          const initialParams =
+            globalSearchParams && globalSearchParams.length > 0
+              ? globalSearchParams
+              : searchValues && sfo.current?._advancedSearchContainer
+              ? getParamsForFields(
+                  searchValues,
+                  sfo.current._advancedSearchContainer,
+                )
+              : [];
+          setInternalSearchParams(initialParams || []);
+        }
+      }, 0);
+    }
+
+    wasOpenRef.current = isOpen;
+  }, [isOpen, globalSearchParams, searchValues, globalCurrentSavedSearch]);
 
   useEffect(() => {
     if (!isOpen) {
       return;
     }
-    setSearchParams(undefined);
     setTimeout(() => {
       const searchInput = document.querySelector(
         ".ant-input[placeholder*='enterFieldToFilter'], .ant-input[placeholder*='filter']",
@@ -530,16 +574,20 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
   useDeepCompareEffect(() => {
     sfo.current = new SearchFilterOoui(searchFields, fields, 1);
     sfo.current.parse();
-    setParsedSearchFields(sfo.current._advancedSearchContainer);
+    parsedSearchFieldsRef.current = sfo.current._advancedSearchContainer;
   }, [fields, searchFields, isOpen]);
 
   const onFinish = useCallback(
-    (values: any) => {
+    (values: any, closeSidebar = true) => {
       const newParams = getParamsForFields(
         values,
         sfo.current?._advancedSearchContainer,
       );
-      onSubmit({ params: newParams, values: normalizeValues(values) });
+      onSubmit({
+        params: newParams,
+        values: normalizeValues(values),
+        closeSidebar,
+      });
     },
     [onSubmit],
   );
@@ -551,18 +599,19 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
   const handleOnChange = useDeepCompareCallback(
     (values: any) => {
       const convertedValues = normalizeValues(values);
+      setInternalSearchValues(convertedValues);
 
-      if (deepEqual(convertedValues, searchValues)) {
-        setSearchParams(undefined);
+      if (deepEqual(convertedValues, internalSearchValues)) {
+        setInternalSearchParams([]);
         return;
       }
       const newParams = getParamsForFields(
         values,
         sfo.current?._advancedSearchContainer,
       );
-      setSearchParams(newParams);
+      setInternalSearchParams(newParams);
     },
-    [searchValues],
+    [internalSearchValues],
   );
 
   const handleClear = useDeepCompareCallback(
@@ -577,27 +626,30 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
         });
 
         sideSearchFilterRef.current?.setFieldsValue(filteredValues);
-        const newSearchParams = searchParams?.filter(
-          (entry: [string]) =>
-            entry[0].replace(/#.*$/, "") !== field.replace(/#.*$/, ""),
-        );
-        setSearchParams(newSearchParams);
+        const newSearchParams = internalSearchParams
+          ? internalSearchParams.filter(
+              (entry: [string]) =>
+                entry[0].replace(/#.*$/, "") !== field.replace(/#.*$/, ""),
+            )
+          : [];
+        setInternalSearchParams(newSearchParams);
         return;
       }
 
       sideSearchFilterRef.current?.resetFields();
       sideSearchFilterRef.current?.setFieldsValue({});
       sideSearchFilterRef.current?.resetInitialValues?.();
-      setSearchParams([]);
 
-      // Clear the saved search state as well
+      setInternalSearchParams([]);
+      setInternalSearchValues({});
+
       handleClearSavedSearch();
 
       if (onClearCallback) {
         onClearCallback();
       }
     },
-    [searchParams, onClearCallback, handleClearSavedSearch],
+    [internalSearchParams, onClearCallback, handleClearSavedSearch],
   );
 
   const headerButtons = useDeepCompareMemo(() => {
@@ -663,9 +715,7 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
   return (
     <>
       <FloatingDrawer
-        title={renderSavedSearchTitle(
-          `${t("filter")} (${paramsToShow?.length || 0})`,
-        )}
+        title={renderSavedSearchTitle(titleText)}
         isOpen={isOpen}
         onClose={onClose}
         headerButtons={headerButtons}
@@ -679,10 +729,13 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
       >
         {isOpen && (
           <SideSearchFilterComponent
+            key={`${internalSavedSearch?.id || "no-saved-search"}-${
+              Object.keys(internalSearchValues).length
+            }`}
             ref={sideSearchFilterRef}
-            searchFields={parsedSearchFields}
+            searchFields={parsedSearchFieldsRef.current}
             onSubmit={onFinish}
-            searchValues={searchValues}
+            searchValues={internalSearchValues}
             onChange={handleOnChange}
             onClear={handleClear}
           />
@@ -690,37 +743,38 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
       </FloatingDrawer>
 
       <Modal
-        title={saveAsNew ? t("saveAsNewSearchFilter") : t("saveSearchFilter")}
+        title={
+          isModalSaveAsNew ? t("saveAsNewSearchFilter") : t("saveSearchFilter")
+        }
         open={showSaveModal}
         onOk={handleModalSave}
         okButtonProps={{
-          disabled: !(tempModalName || savedSearchName)?.trim(),
+          disabled: !(modalInputValue || savedSearchName)?.trim(),
         }}
         onCancel={useCallback(() => {
           setShowSaveModal(false);
-          setNewSearchName("");
-          setTempModalName("");
-        }, [setShowSaveModal, setNewSearchName, setTempModalName])}
+          setModalInputValue("");
+        }, [setShowSaveModal, setModalInputValue])}
         okText={t("saveSearchFilter")}
         cancelText={t("cancel")}
         afterOpenChange={useCallback(
           (open: boolean) => {
-            if (open && !tempModalName) {
-              setTempModalName(savedSearchName || "");
+            if (open && !modalInputValue) {
+              setModalInputValue(savedSearchName || "");
             }
           },
-          [tempModalName, savedSearchName, setTempModalName],
+          [modalInputValue, savedSearchName, setModalInputValue],
         )}
       >
         <Form layout="vertical">
           <Form.Item label={t("searchFilterName")} required>
             <Input
-              value={tempModalName || savedSearchName || ""}
+              value={modalInputValue || savedSearchName || ""}
               onChange={useCallback(
                 (e: React.ChangeEvent<HTMLInputElement>) => {
-                  setTempModalName(e.target.value);
+                  setModalInputValue(e.target.value);
                 },
-                [setTempModalName],
+                [setModalInputValue],
               )}
               onKeyDown={useCallback(
                 (e: React.KeyboardEvent) => {
@@ -757,22 +811,10 @@ export const SideSearchFooter = ({
   onClear,
   onSubmit,
   searchParams,
-  shouldShowSaveButtons,
-  shouldShowSingleSaveButton,
-  shouldShowSaveButtonGroup,
-  handleSave,
-  handleSaveAsNew,
-  hasChanges,
 }: {
   onClear: () => void;
   onSubmit: () => void;
   searchParams?: any[];
-  shouldShowSaveButtons?: boolean;
-  shouldShowSingleSaveButton?: boolean;
-  shouldShowSaveButtonGroup?: boolean;
-  handleSave?: () => void;
-  handleSaveAsNew?: () => void;
-  hasChanges?: boolean;
 }) => {
   const { t } = useLocale();
 
