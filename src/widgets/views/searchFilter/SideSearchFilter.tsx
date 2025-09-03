@@ -519,23 +519,43 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
     }, [onSubmit, internalSearchValues]),
   });
 
+  const wasOpenRef = useRef(false);
+
   useDeepCompareEffect(() => {
-    if (isOpen) {
-      setInternalSearchValues(searchValues || {});
-
-      const initialParams =
-        globalSearchParams && globalSearchParams.length > 0
-          ? globalSearchParams
-          : searchValues && sfo.current?._advancedSearchContainer
-          ? getParamsForFields(
-              searchValues,
-              sfo.current._advancedSearchContainer,
-            )
-          : [];
-
-      setInternalSearchParams(initialParams || []);
+    if (isOpen && !wasOpenRef.current) {
+      // Opening sidebar for the first time or after being closed
+      // Add a small delay to ensure the context has been fully updated
+      setTimeout(() => {
+        if (!globalCurrentSavedSearch) {
+          // No saved search - check if we have search params to preserve
+          if (globalSearchParams && globalSearchParams.length > 0) {
+            // Preserve existing search params
+            setInternalSearchValues(searchValues || {});
+            setInternalSearchParams(globalSearchParams);
+          } else {
+            // No saved search and no params - reset to empty
+            setInternalSearchValues({});
+            setInternalSearchParams([]);
+          }
+        } else {
+          // Has saved search - load it
+          setInternalSearchValues(searchValues || {});
+          const initialParams =
+            globalSearchParams && globalSearchParams.length > 0
+              ? globalSearchParams
+              : searchValues && sfo.current?._advancedSearchContainer
+              ? getParamsForFields(
+                  searchValues,
+                  sfo.current._advancedSearchContainer,
+                )
+              : [];
+          setInternalSearchParams(initialParams || []);
+        }
+      }, 0);
     }
-  }, [isOpen, globalSearchParams, searchValues]);
+
+    wasOpenRef.current = isOpen;
+  }, [isOpen, globalSearchParams, searchValues, globalCurrentSavedSearch]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -709,6 +729,9 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
       >
         {isOpen && (
           <SideSearchFilterComponent
+            key={`${internalSavedSearch?.id || "no-saved-search"}-${
+              Object.keys(internalSearchValues).length
+            }`}
             ref={sideSearchFilterRef}
             searchFields={parsedSearchFieldsRef.current}
             onSubmit={onFinish}
