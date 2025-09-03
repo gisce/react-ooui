@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo, useEffect } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 import deepEqual from "deep-equal";
 import { Input, Typography } from "antd";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
@@ -17,6 +17,8 @@ export interface UseSavedSearchesOptions {
   searchParams?: any[];
   hasActiveFilters?: boolean;
   isOpen?: boolean;
+  internalCurrentSavedSearch?: any;
+  internalSetCurrentSavedSearch?: (value: any) => void;
 }
 
 export interface UseSavedSearchesReturn {
@@ -47,6 +49,8 @@ export const useSavedSearches = ({
   searchParams,
   hasActiveFilters,
   isOpen,
+  internalCurrentSavedSearch,
+  internalSetCurrentSavedSearch,
 }: UseSavedSearchesOptions): UseSavedSearchesReturn => {
   const savedSearchesEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_SAVED_SEARCHES,
@@ -58,17 +62,22 @@ export const useSavedSearches = ({
     setSavedSearches,
   } = useActionViewContext();
 
+  // Use custom saved search state if provided, otherwise use context
+  const actualCurrentSavedSearch =
+    internalCurrentSavedSearch !== undefined
+      ? internalCurrentSavedSearch
+      : contextCurrentSavedSearch;
+
   const [internalSavedSearch, setInternalSavedSearch] =
-    useState<SavedSearchApi | null>(contextCurrentSavedSearch);
+    useState<SavedSearchApi | null>(actualCurrentSavedSearch);
   const [savedSearchName, setSavedSearchName] = useState<string>(
-    contextCurrentSavedSearch?.name || "",
+    actualCurrentSavedSearch?.name || "",
   );
 
   const currentSavedSearch = internalSavedSearch;
   const setCurrentSavedSearch = setInternalSavedSearch;
   const [isEditingName, setIsEditingName] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [isExplicitlyCleared, setIsExplicitlyCleared] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [saveAsNew, setSaveAsNew] = useState(false);
   const [newSearchName, setNewSearchName] = useState("");
@@ -81,6 +90,7 @@ export const useSavedSearches = ({
     ConnectionProvider.getHandler().create,
   );
 
+  // Simplified synchronization - only sync when custom saved search is provided and different
   useDeepCompareEffect(() => {
     if (!savedSearchesEnabled) {
       setInternalSavedSearch(null);
@@ -88,43 +98,24 @@ export const useSavedSearches = ({
       return;
     }
 
+    // If using custom saved search state, sync with it
     if (
-      contextCurrentSavedSearch &&
-      contextCurrentSavedSearch.id !== internalSavedSearch?.id &&
-      !isExplicitlyCleared
+      internalSetCurrentSavedSearch &&
+      actualCurrentSavedSearch !== internalSavedSearch
     ) {
-      setInternalSavedSearch(contextCurrentSavedSearch);
-      setSavedSearchName(contextCurrentSavedSearch.name);
-      setIsExplicitlyCleared(false);
-
-      // When a saved search is loaded from context, reset hasChanges
+      setInternalSavedSearch(actualCurrentSavedSearch);
+      setSavedSearchName(actualCurrentSavedSearch?.name || "");
       setHasChanges(false);
-    } else if (
-      !contextCurrentSavedSearch &&
-      internalSavedSearch &&
-      !isExplicitlyCleared
-    ) {
-      setInternalSavedSearch(null);
-      setSavedSearchName("");
-      setHasChanges(Boolean(searchParams?.length));
     }
   }, [
     savedSearchesEnabled,
-    contextCurrentSavedSearch,
-    internalSavedSearch?.id,
-    isExplicitlyCleared,
+    actualCurrentSavedSearch,
+    internalSetCurrentSavedSearch,
   ]);
-
-  useDeepCompareEffect(() => {
-    // Only reset explicit clear flag when user starts adding parameters after clearing
-    if (isExplicitlyCleared && searchParams?.length) {
-      setIsExplicitlyCleared(false);
-    }
-  }, [searchParams, isExplicitlyCleared]);
 
   // Detect changes when searchParams differ from saved search domain
   useDeepCompareEffect(() => {
-    if (!savedSearchesEnabled || isExplicitlyCleared) {
+    if (!savedSearchesEnabled) {
       return;
     }
 
@@ -142,20 +133,7 @@ export const useSavedSearches = ({
       // No saved search and no params, no changes
       setHasChanges(false);
     }
-  }, [
-    searchParams,
-    currentSavedSearch?.domain,
-    savedSearchesEnabled,
-    isExplicitlyCleared,
-  ]);
-
-  const [wasOpen, setWasOpen] = useState(false);
-  useEffect(() => {
-    if (isOpen && !wasOpen && isExplicitlyCleared) {
-      setIsExplicitlyCleared(false);
-    }
-    setWasOpen(isOpen || false);
-  }, [isOpen, wasOpen, isExplicitlyCleared]);
+  }, [searchParams, currentSavedSearch?.domain, savedSearchesEnabled]);
 
   const handleSave = useDeepCompareCallback(async () => {
     if (!savedSearchesEnabled || !currentModel || !searchParams?.length) return;
@@ -248,13 +226,17 @@ export const useSavedSearches = ({
   }, [savedSearchesEnabled, savedSearchName]);
 
   const handleModalSave = useDeepCompareCallback(async () => {
-    if (!savedSearchesEnabled || !currentModel || !searchParams?.length) return;
+    if (!savedSearchesEnabled || !currentModel || !searchParams?.length) {
+      return;
+    }
 
     const nameToUse = saveAsNew
       ? tempModalName
       : tempModalName || savedSearchName || "Unnamed Search";
 
-    if (!nameToUse.trim()) return;
+    if (!nameToUse.trim()) {
+      return;
+    }
 
     try {
       if (saveAsNew || !currentSavedSearch) {
@@ -381,9 +363,7 @@ export const useSavedSearches = ({
           setSavedSearches(updatedSavedSearches);
         }
 
-        setContextCurrentSavedSearch?.((prev: any) => {
-          return prev?.id === updatedSearch.id ? updatedSearch : updatedSearch;
-        });
+        setContextCurrentSavedSearch?.(updatedSearch);
       } catch (error) {
         console.error("Error updating search name:", error);
         setSavedSearchName(currentSavedSearch.name);
@@ -422,8 +402,7 @@ export const useSavedSearches = ({
       if (
         savedSearchesEnabled &&
         savedSearchName &&
-        (currentSavedSearch || hasChanges) &&
-        !isExplicitlyCleared
+        (currentSavedSearch || hasChanges)
       ) {
         return (
           <div>
@@ -470,21 +449,18 @@ export const useSavedSearches = ({
       handleNameBlur,
       handleNameClick,
       savedSearchesEnabled,
-      isExplicitlyCleared,
     ],
   );
 
   const shouldShowSaveButtons = useMemo(
     () =>
       savedSearchesEnabled &&
-      !isExplicitlyCleared &&
       Boolean(searchParams?.length || hasActiveFilters || currentSavedSearch),
     [
       savedSearchesEnabled,
       searchParams?.length,
       hasActiveFilters,
       currentSavedSearch,
-      isExplicitlyCleared,
     ],
   );
 
@@ -514,7 +490,6 @@ export const useSavedSearches = ({
     setInternalSavedSearch(null);
     setSavedSearchName("");
     setHasChanges(false);
-    setIsExplicitlyCleared(true);
   }, [savedSearchesEnabled]);
 
   return {
