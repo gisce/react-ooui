@@ -16,22 +16,20 @@ export interface UseSavedSearchesOptions {
   context?: any;
   searchParams?: any[];
   hasActiveFilters?: boolean;
-  isOpen?: boolean;
-  internalCurrentSavedSearch?: any;
-  internalSetCurrentSavedSearch?: (value: any) => void;
+  internalSavedSearch?: SavedSearchApi | null;
+  setInternalSavedSearch?: (search: SavedSearchApi | null) => void;
+  onSave?: () => void;
 }
 
 export interface UseSavedSearchesReturn {
   savedSearchName: string;
   hasChanges: boolean;
   showSaveModal: boolean;
-  saveAsNew: boolean;
-  newSearchName: string;
-  tempModalName: string;
+  isModalSaveAsNew: boolean;
+  modalInputValue: string;
   setSavedSearchName: (name: string) => void;
   setShowSaveModal: (show: boolean) => void;
-  setNewSearchName: (name: string) => void;
-  setTempModalName: (name: string) => void;
+  setModalInputValue: (name: string) => void;
   handleSave: () => Promise<void>;
   handleSaveAsNew: () => void;
   handleModalSave: () => Promise<void>;
@@ -48,9 +46,9 @@ export const useSavedSearches = ({
   context,
   searchParams,
   hasActiveFilters,
-  isOpen,
-  internalCurrentSavedSearch,
-  internalSetCurrentSavedSearch,
+  internalSavedSearch,
+  setInternalSavedSearch,
+  onSave,
 }: UseSavedSearchesOptions): UseSavedSearchesReturn => {
   const savedSearchesEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_SAVED_SEARCHES,
@@ -62,26 +60,15 @@ export const useSavedSearches = ({
     setSavedSearches,
   } = useActionViewContext();
 
-  // Use custom saved search state if provided, otherwise use context
-  const actualCurrentSavedSearch =
-    internalCurrentSavedSearch !== undefined
-      ? internalCurrentSavedSearch
-      : contextCurrentSavedSearch;
-
-  const [internalSavedSearch, setInternalSavedSearch] =
-    useState<SavedSearchApi | null>(actualCurrentSavedSearch);
   const [savedSearchName, setSavedSearchName] = useState<string>(
-    actualCurrentSavedSearch?.name || "",
+    internalSavedSearch?.name || "",
   );
 
-  const currentSavedSearch = internalSavedSearch;
-  const setCurrentSavedSearch = setInternalSavedSearch;
   const [isEditingName, setIsEditingName] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
-  const [saveAsNew, setSaveAsNew] = useState(false);
-  const [newSearchName, setNewSearchName] = useState("");
-  const [tempModalName, setTempModalName] = useState("");
+  const [isModalSaveAsNew, setIsModalSaveAsNew] = useState(false);
+  const [modalInputValue, setModalInputValue] = useState("");
 
   const [updateRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().update,
@@ -90,27 +77,34 @@ export const useSavedSearches = ({
     ConnectionProvider.getHandler().create,
   );
 
-  // Simplified synchronization - only sync when custom saved search is provided and different
+  // Synchronization - sync with context and update name when internalSavedSearch changes
   useDeepCompareEffect(() => {
     if (!savedSearchesEnabled) {
-      setInternalSavedSearch(null);
+      setInternalSavedSearch?.(null);
       setSavedSearchName("");
       return;
     }
 
-    // If using custom saved search state, sync with it
+    // Always sync the name when internalSavedSearch changes (including from null to a value)
+    if (internalSavedSearch) {
+      setSavedSearchName(internalSavedSearch.name || "");
+    } else {
+      setSavedSearchName("");
+    }
+
+    // If using custom saved search state, sync with context
     if (
-      internalSetCurrentSavedSearch &&
-      actualCurrentSavedSearch !== internalSavedSearch
+      internalSavedSearch &&
+      contextCurrentSavedSearch !== internalSavedSearch
     ) {
-      setInternalSavedSearch(actualCurrentSavedSearch);
-      setSavedSearchName(actualCurrentSavedSearch?.name || "");
+      setInternalSavedSearch?.(contextCurrentSavedSearch);
       setHasChanges(false);
     }
   }, [
     savedSearchesEnabled,
-    actualCurrentSavedSearch,
-    internalSetCurrentSavedSearch,
+    contextCurrentSavedSearch,
+    internalSavedSearch,
+    setInternalSavedSearch,
   ]);
 
   // Detect changes when searchParams differ from saved search domain
@@ -119,11 +113,11 @@ export const useSavedSearches = ({
       return;
     }
 
-    if (currentSavedSearch) {
+    if (internalSavedSearch) {
       // If we have a saved search, check if current params differ from saved domain
       const hasChangedFromSaved = !deepEqual(
         searchParams,
-        currentSavedSearch.domain,
+        internalSavedSearch.domain,
       );
       setHasChanges(hasChangedFromSaved);
     } else if (searchParams?.length) {
@@ -133,18 +127,23 @@ export const useSavedSearches = ({
       // No saved search and no params, no changes
       setHasChanges(false);
     }
-  }, [searchParams, currentSavedSearch?.domain, savedSearchesEnabled]);
+  }, [
+    searchParams,
+    internalSavedSearch?.domain,
+    savedSearchesEnabled,
+    internalSavedSearch,
+  ]);
 
   const handleSave = useDeepCompareCallback(async () => {
     if (!savedSearchesEnabled || !currentModel || !searchParams?.length) return;
 
     try {
-      if (currentSavedSearch) {
+      if (internalSavedSearch) {
         const nameToUse = savedSearchName || "Unnamed Search";
 
         await updateRequest({
           model: "ir.search",
-          id: currentSavedSearch.id,
+          id: internalSavedSearch.id,
           values: {
             domain: searchParams,
             name: nameToUse,
@@ -154,25 +153,30 @@ export const useSavedSearches = ({
         });
 
         const updatedSearch = {
-          ...currentSavedSearch,
+          ...internalSavedSearch,
           domain: searchParams,
           name: nameToUse,
         };
-        setCurrentSavedSearch(updatedSearch);
+        setInternalSavedSearch?.(updatedSearch);
         setSavedSearchName(nameToUse);
         setHasChanges(false);
         setContextCurrentSavedSearch?.(updatedSearch);
 
         if (savedSearches && setSavedSearches) {
           const updatedSavedSearches = savedSearches.map((search: any) =>
-            search.id === currentSavedSearch.id ? updatedSearch : search,
+            search.id === internalSavedSearch.id ? updatedSearch : search,
           );
           setSavedSearches(updatedSavedSearches);
         }
+
+        // Trigger tree refresh after saving with parameters
+        if (onSave && searchParams?.length) {
+          onSave();
+        }
       } else {
         if (!savedSearchName.trim()) {
-          setSaveAsNew(false);
-          setTempModalName(savedSearchName || "");
+          setIsModalSaveAsNew(false);
+          setModalInputValue(savedSearchName || "");
           setShowSaveModal(true);
           return;
         }
@@ -182,7 +186,7 @@ export const useSavedSearches = ({
           values: {
             model: currentModel,
             domain: searchParams,
-            name: savedSearchName,
+            name: savedSearchName.trim(),
           },
           fields: ["model", "domain", "name"],
           context,
@@ -195,9 +199,14 @@ export const useSavedSearches = ({
             domain: searchParams,
             name: savedSearchName,
           };
-          setCurrentSavedSearch(createdSearch);
+          setInternalSavedSearch?.(createdSearch);
           setHasChanges(false);
           setContextCurrentSavedSearch?.(createdSearch);
+
+          // Trigger tree refresh after saving with parameters
+          if (onSave && searchParams?.length) {
+            onSave();
+          }
         }
       }
     } catch (error) {
@@ -207,7 +216,7 @@ export const useSavedSearches = ({
     savedSearchesEnabled,
     currentModel,
     searchParams,
-    currentSavedSearch,
+    internalSavedSearch,
     savedSearchName,
     context,
     updateRequest,
@@ -215,13 +224,13 @@ export const useSavedSearches = ({
     setContextCurrentSavedSearch,
     savedSearches,
     setSavedSearches,
+    setInternalSavedSearch,
   ]);
 
   const handleSaveAsNew = useCallback(() => {
     if (!savedSearchesEnabled) return;
-    setSaveAsNew(true);
-    setNewSearchName("");
-    setTempModalName(savedSearchName || "");
+    setIsModalSaveAsNew(true);
+    setModalInputValue(savedSearchName || "");
     setShowSaveModal(true);
   }, [savedSearchesEnabled, savedSearchName]);
 
@@ -230,16 +239,18 @@ export const useSavedSearches = ({
       return;
     }
 
-    const nameToUse = saveAsNew
-      ? tempModalName
-      : tempModalName || savedSearchName || "Unnamed Search";
+    const nameToUse = (
+      modalInputValue ||
+      savedSearchName ||
+      "Unnamed Search"
+    ).trim();
 
-    if (!nameToUse.trim()) {
+    if (!nameToUse) {
       return;
     }
 
     try {
-      if (saveAsNew || !currentSavedSearch) {
+      if (isModalSaveAsNew || !internalSavedSearch) {
         const newSearch = await createRequest({
           model: "ir.search",
           values: {
@@ -258,18 +269,20 @@ export const useSavedSearches = ({
             domain: searchParams,
             name: nameToUse,
           };
-          setCurrentSavedSearch(createdSearch);
+          setInternalSavedSearch?.(createdSearch);
           setSavedSearchName(nameToUse);
-          if (saveAsNew) {
-            setNewSearchName(nameToUse);
-          }
           setHasChanges(false);
           setContextCurrentSavedSearch?.(createdSearch);
+
+          // Trigger tree refresh after saving with parameters
+          if (onSave && searchParams?.length) {
+            onSave();
+          }
         }
       } else {
         await updateRequest({
           model: "ir.search",
-          id: currentSavedSearch.id,
+          id: internalSavedSearch.id,
           values: {
             domain: searchParams,
             name: nameToUse,
@@ -279,26 +292,25 @@ export const useSavedSearches = ({
         });
 
         const updatedSearch = {
-          ...currentSavedSearch,
+          ...internalSavedSearch,
           domain: searchParams,
           name: nameToUse,
         };
-        setCurrentSavedSearch(updatedSearch);
+        setInternalSavedSearch?.(updatedSearch);
         setSavedSearchName(nameToUse);
         setHasChanges(false);
         setContextCurrentSavedSearch?.(updatedSearch);
 
         if (savedSearches && setSavedSearches) {
           const updatedSavedSearches = savedSearches.map((search: any) =>
-            search.id === currentSavedSearch.id ? updatedSearch : search,
+            search.id === internalSavedSearch.id ? updatedSearch : search,
           );
           setSavedSearches(updatedSavedSearches);
         }
       }
 
       setShowSaveModal(false);
-      setNewSearchName("");
-      setTempModalName("");
+      setModalInputValue("");
     } catch (error) {
       console.error("Error saving search:", error);
     }
@@ -306,23 +318,24 @@ export const useSavedSearches = ({
     savedSearchesEnabled,
     currentModel,
     searchParams,
-    saveAsNew,
-    tempModalName,
+    isModalSaveAsNew,
+    modalInputValue,
     savedSearchName,
-    currentSavedSearch,
+    internalSavedSearch,
     context,
     createRequest,
     updateRequest,
     setContextCurrentSavedSearch,
     savedSearches,
     setSavedSearches,
+    setInternalSavedSearch,
   ]);
 
   const handleNameClick = useCallback(() => {
-    if (currentSavedSearch) {
+    if (internalSavedSearch) {
       setIsEditingName(true);
     }
-  }, [currentSavedSearch]);
+  }, [internalSavedSearch]);
 
   const handleNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -332,33 +345,37 @@ export const useSavedSearches = ({
   );
 
   const updateSavedSearchName = useDeepCompareCallback(async () => {
-    if (
-      currentSavedSearch &&
-      savedSearchName !== currentSavedSearch.name &&
-      savedSearchName.trim()
-    ) {
+    const trimmedName = savedSearchName.trim();
+
+    // Revert to original name if blank or whitespace-only
+    if (!trimmedName) {
+      setSavedSearchName(internalSavedSearch?.name || "");
+      return;
+    }
+
+    if (internalSavedSearch && trimmedName !== internalSavedSearch.name) {
       try {
         await updateRequest({
           model: "ir.search",
-          id: currentSavedSearch.id,
+          id: internalSavedSearch.id,
           values: {
-            name: savedSearchName.trim(),
+            name: trimmedName,
           },
           fields: ["name"],
           context,
         });
 
         const updatedSearch = {
-          id: currentSavedSearch.id,
-          model: currentSavedSearch.model,
-          domain: currentSavedSearch.domain,
-          name: savedSearchName.trim(),
+          id: internalSavedSearch.id,
+          model: internalSavedSearch.model,
+          domain: internalSavedSearch.domain,
+          name: trimmedName,
         };
-        setCurrentSavedSearch(updatedSearch);
+        setInternalSavedSearch?.(updatedSearch);
 
         if (savedSearches && setSavedSearches) {
           const updatedSavedSearches = savedSearches.map((search: any) =>
-            search.id === currentSavedSearch.id ? updatedSearch : search,
+            search.id === internalSavedSearch.id ? updatedSearch : search,
           );
           setSavedSearches(updatedSavedSearches);
         }
@@ -366,17 +383,18 @@ export const useSavedSearches = ({
         setContextCurrentSavedSearch?.(updatedSearch);
       } catch (error) {
         console.error("Error updating search name:", error);
-        setSavedSearchName(currentSavedSearch.name);
+        setSavedSearchName(internalSavedSearch.name);
       }
     }
   }, [
-    currentSavedSearch,
+    internalSavedSearch,
     savedSearchName,
     updateRequest,
     context,
     setContextCurrentSavedSearch,
     savedSearches,
     setSavedSearches,
+    setInternalSavedSearch,
   ]);
 
   const handleNameKeyDown = useCallback(
@@ -385,11 +403,11 @@ export const useSavedSearches = ({
         setIsEditingName(false);
         updateSavedSearchName();
       } else if (e.key === "Escape") {
-        setSavedSearchName(currentSavedSearch?.name || "");
+        setSavedSearchName(internalSavedSearch?.name || "");
         setIsEditingName(false);
       }
     },
-    [currentSavedSearch, updateSavedSearchName],
+    [internalSavedSearch, updateSavedSearchName],
   );
 
   const handleNameBlur = useDeepCompareCallback(async () => {
@@ -402,7 +420,7 @@ export const useSavedSearches = ({
       if (
         savedSearchesEnabled &&
         savedSearchName &&
-        (currentSavedSearch || hasChanges)
+        (internalSavedSearch || hasChanges)
       ) {
         return (
           <div>
@@ -425,7 +443,7 @@ export const useSavedSearches = ({
                   style={{
                     fontSize: "14px",
                     color: "#666",
-                    cursor: currentSavedSearch ? "pointer" : "default",
+                    cursor: internalSavedSearch ? "pointer" : "default",
                   }}
                   onClick={handleNameClick}
                 >
@@ -441,7 +459,7 @@ export const useSavedSearches = ({
     },
     [
       savedSearchName,
-      currentSavedSearch,
+      internalSavedSearch,
       hasChanges,
       isEditingName,
       handleNameChange,
@@ -455,54 +473,47 @@ export const useSavedSearches = ({
   const shouldShowSaveButtons = useMemo(
     () =>
       savedSearchesEnabled &&
-      Boolean(searchParams?.length || hasActiveFilters || currentSavedSearch),
+      Boolean(searchParams?.length || hasActiveFilters || internalSavedSearch),
     [
       savedSearchesEnabled,
       searchParams?.length,
       hasActiveFilters,
-      currentSavedSearch,
+      internalSavedSearch,
     ],
   );
 
   const shouldShowSingleSaveButton = useMemo(() => {
-    // No saved search: show "Save" (creates new)
-    if (!currentSavedSearch) return true;
-
-    // Has saved search but no changes: show "Save As New" only
-    if (currentSavedSearch && !hasChanges) return true;
-
-    // Has saved search and changes: show button group with dropdown
+    if (!internalSavedSearch) return true;
+    if (internalSavedSearch && !hasChanges) return true;
     return false;
-  }, [currentSavedSearch, hasChanges]);
+  }, [internalSavedSearch, hasChanges]);
 
   const shouldShowSaveButtonGroup = useMemo(
-    () => Boolean(currentSavedSearch && hasChanges),
-    [currentSavedSearch, hasChanges],
+    () => Boolean(internalSavedSearch && hasChanges),
+    [internalSavedSearch, hasChanges],
   );
 
   const shouldShowSaveAsNew = useMemo(
-    () => Boolean(currentSavedSearch && !hasChanges),
-    [currentSavedSearch, hasChanges],
+    () => Boolean(internalSavedSearch && !hasChanges),
+    [internalSavedSearch, hasChanges],
   );
 
   const handleClear = useCallback(() => {
     if (!savedSearchesEnabled) return;
-    setInternalSavedSearch(null);
+    setInternalSavedSearch?.(null);
     setSavedSearchName("");
     setHasChanges(false);
-  }, [savedSearchesEnabled]);
+  }, [savedSearchesEnabled, setInternalSavedSearch]);
 
   return {
     savedSearchName,
     hasChanges,
     showSaveModal,
-    saveAsNew,
-    newSearchName,
-    tempModalName,
+    isModalSaveAsNew,
+    modalInputValue,
     setSavedSearchName,
     setShowSaveModal,
-    setNewSearchName,
-    setTempModalName,
+    setModalInputValue,
     handleSave,
     handleSaveAsNew,
     handleModalSave,

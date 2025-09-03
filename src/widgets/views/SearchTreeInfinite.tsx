@@ -822,13 +822,19 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   );
 
   const onSideSearchFilterSubmit = useCallback(
-    ({ params, values }: any) => {
+    ({ params, values, closeSidebar = true }: any) => {
       changeSelectedRowItems([]);
       tableRef.current?.unselectAll();
       setSearchTreeNameSearch?.(undefined);
       setSearchParams?.(params);
       setSearchValues?.(values);
-      setSearchVisible?.(false);
+      setSearchVisible?.(!closeSidebar);
+
+      // If keeping sidebar open, manually trigger refresh since the automatic refresh
+      // logic depends on the sidebar closing
+      if (!closeSidebar) {
+        refresh();
+      }
 
       // Clear saved search if applying empty search parameters
       if (!params || params.length === 0) {
@@ -842,6 +848,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       setSearchValues,
       setSearchVisible,
       setCurrentSavedSearch,
+      refresh,
     ],
   );
 
