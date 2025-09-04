@@ -361,8 +361,8 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
         return;
       }
 
-      const preparedResults = await getTableItems(treeOoui, results, context);
-      updateAttributes?.(attrsEvaluated, treeOoui);
+      const preparedResults = getTableItems(treeOoui, results);
+      updateAttributes(attrsEvaluated, treeOoui);
 
       setTreeIsLoading(false);
       lastAssignedResults.current = [...preparedResults];
@@ -402,10 +402,11 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   ]);
 
   const refresh = useCallback(async () => {
-    clearAttributes?.();
+    clearAttributes();
     clearAutorefreshableFields();
     setTotalRowsLoading(true);
     setTreeFirstVisibleRow(0);
+    fetchColumnState();
     setSelectedRowItems([]);
     currentSearchParamsString.current = undefined;
 
@@ -420,6 +421,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     clearAttributes,
     clearAutorefreshableFields,
     setTreeFirstVisibleRow,
+    fetchColumnState,
     setSelectedRowItems,
     nameSearch,
     fetchResults,
