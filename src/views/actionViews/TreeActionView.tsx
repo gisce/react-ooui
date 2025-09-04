@@ -72,7 +72,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
   const previousVisibleRef = useRef(visible);
 
   const [treeType, setTreeType] = useState<TreeType>(DEFAULT_TREE_TYPE);
-  const { treeMaxLimit } = useConfigContext();
+  const { treeMaxLimit, globalValues } = useConfigContext();
 
   const { setLimit } = useActionViewContext();
 
@@ -124,7 +124,10 @@ export const TreeActionView = (props: TreeActionViewProps) => {
 
     try {
       const searchIds = await searchAllIdsRequest({
-        params: [["model", "=", model]],
+        params: [
+          ["model", "=", model],
+          ["create_uid", "=", globalValues?.uid],
+        ],
         model: "ir.search",
         order: "last_run desc",
         context,
@@ -155,6 +158,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     savedSearchesEnabled,
     model,
     context,
+    globalValues,
     searchAllIdsRequest,
     readObjectsRequest,
     setSavedSearches,
