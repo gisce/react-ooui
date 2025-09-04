@@ -255,6 +255,21 @@ export const convertParamsToValues = (params: any[], fields?: any) => {
           acc[baseKey + "#date"][1] = dateObj;
           acc[baseKey + "#time"][1] = dateObj;
         }
+      } else if (
+        type === "float" ||
+        type === "integer" ||
+        type === "float_time" ||
+        type === "progressbar"
+      ) {
+        // Handle numeric range operators
+        if (operator === ">=") {
+          acc[field + "#from"] = value;
+        } else if (operator === "<=") {
+          acc[field + "#to"] = value;
+        } else {
+          // For other operators (=, !=, etc.), just set the value
+          acc[field] = value;
+        }
       } else {
         // For other types, just set the value
         acc[field] = value;

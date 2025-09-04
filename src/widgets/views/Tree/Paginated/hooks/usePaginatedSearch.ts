@@ -1,5 +1,6 @@
 import { mergeParams } from "@/helpers/searchHelper";
 import { useSearchTreeState } from "@/hooks/useSearchTreeState";
+import { useActionViewContext } from "@/context/ActionViewContext";
 import { PaginatedTableRef, CheckboxState } from "@gisce/react-formiga-table";
 import {
   CSSProperties,
@@ -94,6 +95,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   } = useSearchTreeState({ useLocalState: !rootTree });
 
   const { treeMaxLimit } = useConfigContext();
+  const { setCurrentSavedSearch } = useActionViewContext();
   const limit = Math.min(limitActionView, treeMaxLimit);
 
   // Local state
@@ -312,114 +314,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     [setSearchVisible],
   );
 
-  const onSideSearchFilterSubmit = useCallback(
-    ({ params, values }: any) => {
-      setSelectedRowItems([]);
-      tableRef.current?.unselectAll();
-      setSearchTreeNameSearch?.(undefined);
-      setSearchParams?.(params);
-      setSearchValues?.(values);
-      setSearchVisible?.(false);
-    },
-    [
-      setSelectedRowItems,
-      tableRef,
-      setSearchTreeNameSearch,
-      setSearchParams,
-      setSearchValues,
-      setSearchVisible,
-    ],
-  );
-
-  // Effects
-  useEffect(() => {
-    if (treeViewFetching) {
-      return;
-    }
-    return () => {
-      cancelFetchTotalRows();
-      cancelSearchForTree();
-      cancelFetchAllIds();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [treeViewFetching]);
-
-  useEffect(() => {
-    return () => {
-      cancelParseConditions();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useDeepCompareEffect(() => {
-    if (!treeOoui || !treeView || treeViewFetching) {
-      return;
-    }
-    fetchResults();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    treeView,
-    treeOoui,
-    limit,
-    currentPage,
-    nameSearch,
-    domain,
-    actionViewOrder,
-  ]);
-
-  useEffect(() => {
-    // Skip if nameSearch hasn't actually changed
-    if (nameSearch === prevNameSearch.current) {
-      return;
-    }
-
-    // Only trigger a refresh when nameSearch actually changes
-    if (
-      (nameSearch !== undefined && prevNameSearch.current === undefined) ||
-      (typeof nameSearch === "string" &&
-        typeof prevNameSearch.current === "string" &&
-        nameSearch !== prevNameSearch.current)
-    ) {
-      // Reset search params and values
-      setSearchParams?.([]);
-      setSearchValues?.({});
-      tableRef.current?.unselectAll();
-
-      // Update the ref before processing to prevent duplicate refreshes
-      prevNameSearch.current = nameSearch;
-      return;
-    }
-
-    // If nameSearch was cleared (changed from a value to undefined)
-    if (nameSearch === undefined && prevNameSearch.current !== undefined) {
-      // Set loading state first thing
-      setTotalRowsLoading(true);
-    }
-
-    // Update the ref after processing
-    prevNameSearch.current = nameSearch;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nameSearch]);
-
-  useDeepCompareEffect(() => {
-    const searchParamsChanged = !deepEqual(
-      searchParams,
-      prevSearchParamsRef.current,
-    );
-    const searchVisibleChangedToFalse =
-      prevSearchVisibleRef.current && !searchVisible;
-
-    if (
-      searchParamsChanged &&
-      (searchVisibleChangedToFalse || filterType === "top")
-    ) {
-      refresh();
-    }
-
-    prevSearchParamsRef.current = searchParams;
-    prevSearchVisibleRef.current = searchVisible;
-  }, [searchParams, searchVisible]);
-
   const fetchResults = useCallback(async () => {
     if (!treeOoui || treeViewFetching) {
       return [];
@@ -568,6 +462,127 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     fetchResults,
     refreshFunctionFields,
   ]);
+
+  const onSideSearchFilterSubmit = useCallback(
+    ({ params, values, closeSidebar = true }: any) => {
+      setSelectedRowItems([]);
+      tableRef.current?.unselectAll();
+      setSearchTreeNameSearch?.(undefined);
+      setSearchParams?.(params);
+      setSearchValues?.(values);
+      setSearchVisible?.(!closeSidebar);
+
+      // If keeping sidebar open, manually trigger refresh since the automatic refresh
+      // logic depends on the sidebar closing
+      if (!closeSidebar) {
+        refresh();
+      }
+
+      // Clear saved search if applying empty search parameters
+      if (!params || params.length === 0) {
+        setCurrentSavedSearch?.(null);
+      }
+    },
+    [
+      setSelectedRowItems,
+      tableRef,
+      setSearchTreeNameSearch,
+      setSearchParams,
+      setSearchValues,
+      setSearchVisible,
+      setCurrentSavedSearch,
+      refresh,
+    ],
+  );
+
+  // Effects
+  useEffect(() => {
+    if (treeViewFetching) {
+      return;
+    }
+    return () => {
+      cancelFetchTotalRows();
+      cancelSearchForTree();
+      cancelFetchAllIds();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [treeViewFetching]);
+
+  useEffect(() => {
+    return () => {
+      cancelParseConditions();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useDeepCompareEffect(() => {
+    if (!treeOoui || !treeView || treeViewFetching) {
+      return;
+    }
+    fetchResults();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    treeView,
+    treeOoui,
+    limit,
+    currentPage,
+    nameSearch,
+    domain,
+    actionViewOrder,
+  ]);
+
+  useEffect(() => {
+    // Skip if nameSearch hasn't actually changed
+    if (nameSearch === prevNameSearch.current) {
+      return;
+    }
+
+    // Only trigger a refresh when nameSearch actually changes
+    if (
+      (nameSearch !== undefined && prevNameSearch.current === undefined) ||
+      (typeof nameSearch === "string" &&
+        typeof prevNameSearch.current === "string" &&
+        nameSearch !== prevNameSearch.current)
+    ) {
+      // Reset search params and values
+      setSearchParams?.([]);
+      setSearchValues?.({});
+      tableRef.current?.unselectAll();
+
+      // Update the ref before processing to prevent duplicate refreshes
+      prevNameSearch.current = nameSearch;
+      return;
+    }
+
+    // If nameSearch was cleared (changed from a value to undefined)
+    if (nameSearch === undefined && prevNameSearch.current !== undefined) {
+      // Set loading state first thing
+      setTotalRowsLoading(true);
+    }
+
+    // Update the ref after processing
+    prevNameSearch.current = nameSearch;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nameSearch]);
+
+  useDeepCompareEffect(() => {
+    const searchParamsChanged = !deepEqual(
+      searchParams,
+      prevSearchParamsRef.current,
+    );
+    const searchVisibleChangedToFalse =
+      prevSearchVisibleRef.current && !searchVisible;
+
+    if (
+      searchParamsChanged &&
+      (searchVisibleChangedToFalse || filterType === "top")
+    ) {
+      refresh();
+    }
+
+    prevSearchParamsRef.current = searchParams;
+    prevSearchVisibleRef.current = searchVisible;
+  }, [searchParams, searchVisible]);
 
   const onRequestPageChange = useCallback(
     (page: number, pageSize?: number) => {

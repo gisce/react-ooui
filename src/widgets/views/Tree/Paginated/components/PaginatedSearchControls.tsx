@@ -15,6 +15,8 @@ export const PaginatedSearchControls: FC<PaginatedSearchControlsProps> = ({
   onSearchFilterSubmit,
   onSideSearchFilterClose,
   onSideSearchFilterSubmit,
+  currentModel,
+  context,
 }) => {
   const searchFilterProps = useMemo(
     () => ({
@@ -48,6 +50,8 @@ export const PaginatedSearchControls: FC<PaginatedSearchControlsProps> = ({
         treeView?.search_fields,
       ]),
       searchValues,
+      currentModel,
+      context,
     }),
     [
       formView?.fields,
@@ -56,6 +60,8 @@ export const PaginatedSearchControls: FC<PaginatedSearchControlsProps> = ({
       treeView?.search_fields,
       searchValues,
       searchVisible,
+      currentModel,
+      context,
     ],
   );
 

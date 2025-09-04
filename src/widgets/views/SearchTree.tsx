@@ -293,7 +293,14 @@ function SearchTree(props: Props, ref: any) {
         treeView: treeView!,
       });
     },
-    [currentModel, formView, onRowClicked, treeButOpen, treeView],
+    [
+      currentModel,
+      formView,
+      onRowClicked,
+      showErrorNotification,
+      treeButOpen,
+      treeView,
+    ],
   );
 
   const selectAllRecords = useCallback(async () => {

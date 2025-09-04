@@ -41,6 +41,7 @@ import deepEqual from "deep-equal";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
 import SearchFilter from "./searchFilter/SearchFilter";
 import { useSearchTreeState } from "@/hooks/useSearchTreeState";
+import { useActionViewContext } from "@/context/ActionViewContext";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
 import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
@@ -101,6 +102,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const lastAssignedResults = useRef<any[]>([]);
   const hasRestoredSortStateForFirstTime = useRef<boolean>(false);
   const { showErrorNotification } = useErrorNotification();
+  const { setCurrentSavedSearch } = useActionViewContext();
 
   const [totalRows, setTotalRows] = useState<number | null>();
   const [nameSearchFetchCompleted, setNameSearchFetchCompleted] =
@@ -797,6 +799,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         treeView?.search_fields,
       ]),
       searchValues,
+      currentModel: model,
+      context: parentContext,
+      domain,
     }),
     [
       searchVisible,
@@ -805,6 +810,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       treeView?.fields,
       treeView?.search_fields,
       searchValues,
+      model,
+      parentContext,
+      domain,
     ],
   );
 
@@ -814,13 +822,24 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   );
 
   const onSideSearchFilterSubmit = useCallback(
-    ({ params, values }: any) => {
+    ({ params, values, closeSidebar = true }: any) => {
       changeSelectedRowItems([]);
       tableRef.current?.unselectAll();
       setSearchTreeNameSearch?.(undefined);
       setSearchParams?.(params);
       setSearchValues?.(values);
-      setSearchVisible?.(false);
+      setSearchVisible?.(!closeSidebar);
+
+      // If keeping sidebar open, manually trigger refresh since the automatic refresh
+      // logic depends on the sidebar closing
+      if (!closeSidebar) {
+        refresh();
+      }
+
+      // Clear saved search if applying empty search parameters
+      if (!params || params.length === 0) {
+        setCurrentSavedSearch?.(null);
+      }
     },
     [
       changeSelectedRowItems,
@@ -828,6 +847,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       setSearchParams,
       setSearchValues,
       setSearchVisible,
+      setCurrentSavedSearch,
+      refresh,
     ],
   );
 

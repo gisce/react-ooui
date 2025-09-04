@@ -236,6 +236,8 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
           onSearchFilterSubmit={onSearchFilterSubmit}
           onSideSearchFilterClose={onSideSearchFilterClose}
           onSideSearchFilterSubmit={onSideSearchFilterSubmit}
+          currentModel={model}
+          context={parentContext}
         />
       )}
       {!isExpandable && (
