@@ -213,13 +213,74 @@ function getGraphProps(props: GetGraphPropsType) {
     }
   }
 
-  if (type === "line" && yAxisOpts.mode === "auto" && yAxisOpts.valueOpts) {
-    const min = yAxisOpts.valueOpts.min;
-    const max = yAxisOpts.valueOpts.max;
-    graphProps.yAxis = {
-      min,
-      max,
-    };
+  // Auto-scale Y-axis for line and bar charts when mode is "auto" or when auto-scaling would be beneficial
+  if (type === "line" || type === "bar") {
+    let min: number | undefined;
+    let max: number | undefined;
+    let shouldAutoScale = yAxisOpts.mode === "auto";
+
+    // Auto-detect if auto-scaling would be beneficial
+    if (!shouldAutoScale && yAxisOpts.mode === "default") {
+      const values = data
+        .map((item: any) => item.value)
+        .filter((val: any) => typeof val === "number" && !isNaN(val));
+
+      if (values.length > 0) {
+        const dataMin = Math.min(...values);
+        const dataMax = Math.max(...values);
+        const range = dataMax - dataMin;
+
+        // Enable auto-scaling if:
+        // 1. The range is small compared to the minimum value (less than 10% of min value)
+        // 2. OR the minimum value is much greater than 0 (at least 10x the range from 0)
+        if (range > 0 && dataMin > 0) {
+          const rangeToMinRatio = range / dataMin;
+          const minToZeroRatio = dataMin / range;
+
+          if (rangeToMinRatio < 0.1 || minToZeroRatio > 10) {
+            shouldAutoScale = true;
+          }
+        }
+      }
+    }
+
+    if (shouldAutoScale) {
+      // If explicit valueOpts are provided, use those
+      if (yAxisOpts.valueOpts) {
+        min = yAxisOpts.valueOpts.min;
+        max = yAxisOpts.valueOpts.max;
+      } else {
+        // Auto-calculate min/max from the data
+        const values = data
+          .map((item: any) => item.value)
+          .filter((val: any) => typeof val === "number" && !isNaN(val));
+
+        if (values.length > 0) {
+          const dataMin = Math.min(...values);
+          const dataMax = Math.max(...values);
+
+          // Add some padding (5%) to make the chart more visually appealing
+          const range = dataMax - dataMin;
+          const padding = range * 0.05;
+
+          min = dataMin - padding;
+          max = dataMax + padding;
+
+          // Ensure min doesn't go below 0 if all values are positive and close to each other
+          if (dataMin >= 0 && min < 0) {
+            min = Math.max(0, dataMin - range * 0.02);
+          }
+        }
+      }
+
+      if (min !== undefined || max !== undefined) {
+        graphProps.yAxis = {
+          ...(graphProps.yAxis || {}),
+          min,
+          max,
+        };
+      }
+    }
   }
 
   return graphProps;
