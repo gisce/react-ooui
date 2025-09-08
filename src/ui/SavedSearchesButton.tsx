@@ -100,6 +100,7 @@ const SavedSearchesButton = (props: Props) => {
         return {
           icon: <FilterOutlined />,
           ...search,
+          originalData: search,
           name: isCurrentlyActive ? (
             <div
               style={{
@@ -159,7 +160,7 @@ const SavedSearchesButton = (props: Props) => {
 
   const handleMenuClick = useCallback(
     (item: DropdownMenuItem) => {
-      const savedSearch = item as SavedSearchApi;
+      const savedSearch = (item as any).originalData || item;
       if (savedSearch?.domain) {
         // Update context state
         setCurrentSavedSearch?.(savedSearch);
