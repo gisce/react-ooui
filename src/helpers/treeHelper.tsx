@@ -461,10 +461,10 @@ function determineTreeType(
   if (treeView?.arch) {
     const tagValue = extractTreeXmlAttribute(treeView.arch, "infinite");
     if (tagValue) {
-      if (tagValue === "1") {
+      if (tagValue === "1" || tagValue === "true") {
         return "infinite";
       }
-      if (tagValue === "0") {
+      if (tagValue === "0" || tagValue === "false") {
         return "paginated";
       }
     }
