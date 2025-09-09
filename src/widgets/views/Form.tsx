@@ -1000,7 +1000,6 @@ function Form(props: FormProps, ref: any) {
       !warningIsShown.current
     ) {
       const { title, message } = response.warning;
-      warningIsShown.current = true;
       setFieldMessagesArray([
         {
           field: fieldName,
@@ -1009,14 +1008,20 @@ function Form(props: FormProps, ref: any) {
         },
       ]);
 
-      showErrorNotification({
-        type: "warning",
-        title,
-        body: message,
-        onOk: () => {
-          warningIsShown.current = false;
-        },
-      });
+      if (
+        response.warning.popup === true ||
+        response.warning.popup === undefined
+      ) {
+        warningIsShown.current = true;
+        showErrorNotification({
+          type: "warning",
+          title,
+          body: message,
+          onOk: () => {
+            warningIsShown.current = false;
+          },
+        });
+      }
     }
 
     if (response.domain && Object.keys(response.domain).length > 0) {
