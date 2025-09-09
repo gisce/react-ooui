@@ -1,12 +1,13 @@
-import { useContext, useMemo, useState } from "react";
+import { useContext, useMemo, useState, useRef } from "react";
 import { useConfigContext } from "@/context/ConfigContext";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { fetchAction } from "@/widgets/views/Dashboard/dashboardHelper";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 
 export const useFormGraphData = (actionId: number) => {
+  const hasAlreadyFetchedRef = useRef(false);
   const [error, setError] = useState<any>();
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [actionData, setActionData] = useState<any>();
   const [treeShortcut, setTreeShortcut] = useState<ShortcutApi>();
   const formContext = useContext(FormContext) as FormContextType;
@@ -18,7 +19,9 @@ export const useFormGraphData = (actionId: number) => {
 
   const fetchData = async () => {
     setError(undefined);
-    setLoading(true);
+    if (!hasAlreadyFetchedRef.current) {
+      setLoading(true);
+    }
     try {
       const result = await fetchAction({
         actionId,
@@ -69,7 +72,10 @@ export const useFormGraphData = (actionId: number) => {
     } catch (err) {
       setError(err);
     }
-    setLoading(false);
+    if (!hasAlreadyFetchedRef.current) {
+      setLoading(false);
+      hasAlreadyFetchedRef.current = true;
+    }
   };
 
   return { actionData, treeShortcut, loading, error, fetchData };
