@@ -6,7 +6,7 @@ import {
   TreeType,
 } from "@/views/actionViews/TreeActionView";
 import { ColumnState } from "@gisce/react-formiga-table";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useMemo } from "react";
 import { PermissionsMap } from "@/hooks/usePermissions";
 
 type ActionViewProviderProps = {
@@ -87,6 +87,10 @@ export type ActionViewContextType = Omit<
   setOrder?: (value: ColumnState[] | undefined) => void;
   currentPage?: number;
   setCurrentPage?: (value: number) => void;
+  currentSavedSearch?: any;
+  setCurrentSavedSearch?: (value: any) => void;
+  savedSearches?: any[];
+  setSavedSearches?: (value: any[]) => void;
 };
 
 export const ActionViewContext = createContext<ActionViewContextType | null>(
@@ -150,11 +154,19 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [searchVisible, setSearchVisible] = useState<boolean>(false);
   const [graphIsLoading, setGraphIsLoading] = useState<boolean>(true);
   const [previousView, setPreviousView] = useState<View>();
+
+  // Memoized merged fields from all available views
+  const allViewFields = useMemo(() => {
+    if (!availableViews || availableViews.length === 0) {
+      return (currentView as any)?.fields || {};
+    }
+    return availableViews.reduce((mergedFields: any, view: any) => {
+      return { ...mergedFields, ...(view.fields || {}) };
+    }, {});
+  }, [availableViews, currentView]);
+
   const [searchValues, setSearchValues] = useState<any>(
-    convertParamsToValues(
-      initialSearchParams || [],
-      (currentView as TreeView).fields,
-    ),
+    convertParamsToValues(initialSearchParams || [], allViewFields),
   );
   const [treeFirstVisibleRow, setTreeFirstVisibleRow] = useState<number>(0);
   const [treeFirstVisibleColumn, setTreeFirstVisibleColumn] = useState<
@@ -174,6 +186,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [currentPage, setCurrentPage] = useState<number>(
     initialCurrentPage || 1,
   );
+  const [currentSavedSearch, setCurrentSavedSearch] = useState<any>(null);
+  const [savedSearches, setSavedSearches] = useState<any[]>([]);
 
   useEffect(() => {
     if (results && results.length > 0 && !currentItemIndex) {
@@ -285,6 +299,10 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setOrder,
         currentPage,
         setCurrentPage,
+        currentSavedSearch,
+        setCurrentSavedSearch,
+        savedSearches,
+        setSavedSearches,
         permissions,
         permissionsLoading,
         permissionsError,
@@ -370,6 +388,10 @@ export const useActionViewContext = () => {
       setOrder: () => {},
       currentPage: 1,
       setCurrentPage: () => {},
+      currentSavedSearch: null,
+      setCurrentSavedSearch: () => {},
+      savedSearches: [],
+      setSavedSearches: () => {},
       permissions: null,
       permissionsLoading: false,
       permissionsError: null,

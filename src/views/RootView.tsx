@@ -5,6 +5,7 @@ import {
   useRef,
   ReactNode,
   useEffect,
+  useCallback,
 } from "react";
 import { ConnectionProvider, ContentRootProvider, FormView } from "..";
 import Welcome from "./Welcome";
@@ -83,6 +84,24 @@ function RootView(props: RootViewProps, ref: any) {
     setTabs(tabs.filter((tab: any) => tab.key !== key));
     tabViewsCloseFunctions.current.delete(key);
   }
+
+  const reorderTabs = useCallback(
+    (oldIndex: number, newIndex: number) => {
+      const newTabs = [...tabs];
+      const [movedTab] = newTabs.splice(oldIndex, 1);
+      newTabs.splice(newIndex, 0, movedTab);
+      setTabs(newTabs);
+    },
+    [tabs],
+  );
+
+  const updateTabTitle = useCallback((key: string, newTitle: string) => {
+    setTabs((prevTabs) =>
+      prevTabs.map((tab) =>
+        tab.key === key ? { ...tab, title: newTitle } : tab,
+      ),
+    );
+  }, []);
 
   function registerViewCloseFn({
     tabKey,
@@ -214,6 +233,7 @@ function RootView(props: RootViewProps, ref: any) {
     initialViewType,
     res_id,
     domain = [],
+    context = {},
   }: {
     action: string;
     values?: any;
@@ -221,6 +241,7 @@ function RootView(props: RootViewProps, ref: any) {
     initialViewType?: ViewType;
     res_id?: number;
     domain?: any;
+    context?: any;
   }) {
     const dataForAction = await ConnectionProvider.getHandler().getActionData({
       action,
@@ -253,7 +274,7 @@ function RootView(props: RootViewProps, ref: any) {
           return await ConnectionProvider.getHandler().evalDomain({
             domain: rawDomain,
             values: globalValues,
-            context: { ...rootContext, ...parsedContext },
+            context: { ...rootContext, ...parsedContext, ...context },
           });
         }
         return [];
@@ -548,6 +569,7 @@ function RootView(props: RootViewProps, ref: any) {
     initialViewType,
     res_id,
     domain,
+    context,
   }: {
     model: string;
     values?: any;
@@ -555,6 +577,7 @@ function RootView(props: RootViewProps, ref: any) {
     initialViewType?: ViewType;
     res_id?: number;
     domain?: any;
+    context?: any;
   }) {
     const actionString =
       await ConnectionProvider.getHandler().getActionStringForModel(model);
@@ -565,6 +588,7 @@ function RootView(props: RootViewProps, ref: any) {
       initialViewType,
       res_id,
       domain,
+      context,
     });
   }
 
@@ -726,6 +750,8 @@ function RootView(props: RootViewProps, ref: any) {
       onChangeTab={(key: string) => {
         setActiveKey(key);
       }}
+      onReorderTabs={reorderTabs}
+      onUpdateTabTitle={updateTabTitle}
     >
       <ContentRootProvider
         ref={contentRootProvider}

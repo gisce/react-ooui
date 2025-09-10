@@ -25,6 +25,7 @@ export type TabManagerContextType = {
     initialViewType,
     res_id,
     domain,
+    context,
   }: {
     model: string;
     values?: any;
@@ -32,10 +33,13 @@ export type TabManagerContextType = {
     initialViewType?: ViewType;
     res_id?: number;
     domain?: any;
+    context?: any;
   }) => void;
   activeKey: string;
   onChangeTab: (key: string) => void;
   onRemoveTab: (key: string) => void;
+  onReorderTabs: (oldIndex: number, newIndex: number) => void;
+  onUpdateTabTitle?: (key: string, newTitle: string) => void;
   openShortcut: (shortcut: ShortcutApi) => void;
   tabs: Tab[];
   currentView?: View;
@@ -62,6 +66,8 @@ const TabManagerProvider = (props: TabManagerProviderProps): any => {
     activeKey,
     onChangeTab,
     onRemoveTab,
+    onReorderTabs,
+    onUpdateTabTitle,
     tabs,
   } = props;
 
@@ -93,6 +99,8 @@ const TabManagerProvider = (props: TabManagerProviderProps): any => {
         openShortcut,
         onChangeTab,
         onRemoveTab,
+        onReorderTabs,
+        onUpdateTabTitle,
         tabs,
         currentId,
         currentView,

@@ -14,12 +14,14 @@ type Props = {
   title?: string;
   children?: React.ReactNode;
   showSummary?: boolean;
+  subtitle?: React.ReactNode;
 };
 
 const TitleHeader: React.FC<Props> = ({
   title: titleProps,
   children,
   showSummary = true,
+  subtitle,
 }) => {
   const {
     title,
@@ -114,6 +116,7 @@ const TitleHeader: React.FC<Props> = ({
           <Title level={3} style={{ marginBottom: 0 }}>
             {titleProps || title}
           </Title>
+          {subtitle}
           {summary}
         </Col>
         <Col flex={3}>
