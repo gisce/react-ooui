@@ -1,7 +1,6 @@
-import { memo, useMemo } from "react";
+import { memo } from "react";
 import { PaginatedTable } from "@gisce/react-formiga-table";
 import { PaginatedTableContentProps } from "../SearchTreePaginated.types";
-import { CellRenderer } from "../../CellRenderer";
 import {
   PlusSquareOutlined,
   MinusSquareOutlined,
@@ -34,26 +33,10 @@ export const PaginatedTableComponent = memo(
     actionViewSortState,
     onSortChange,
     tableRef,
-    isFieldLoading,
     onChangeTreeType,
     onFetchChildrenForRecord,
     childField,
   }: PaginatedTableContentProps) => {
-    // Wrap column components to inject loading state
-    const columnsWithLoading = useMemo(() => {
-      return columns.map((column) => ({
-        ...column,
-        render: (value: any, record: any) => (
-          <CellRenderer
-            value={value}
-            record={record}
-            column={column}
-            isFieldLoading={isFieldLoading}
-          />
-        ),
-      }));
-    }, [columns, isFieldLoading]);
-
     if (!columns || !treeOoui) return null;
 
     return (
@@ -62,7 +45,7 @@ export const PaginatedTableComponent = memo(
         strings={strings}
         isLoading={isLoading}
         height={availableHeight}
-        columns={columnsWithLoading}
+        columns={columns}
         dataSource={results}
         onRowDoubleClick={handleRowDoubleClick}
         onRowSelectionChange={onRowHasBeenSelected}
@@ -100,3 +83,6 @@ export const PaginatedTableComponent = memo(
 );
 
 PaginatedTableComponent.displayName = "PaginatedTableComponent";
+
+// Use regular memo with ultra-stable columns
+export const StablePaginatedTableComponent = memo(PaginatedTableComponent);

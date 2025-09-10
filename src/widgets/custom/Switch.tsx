@@ -1,4 +1,3 @@
-import React from "react";
 import { Switch as AntdSwitch } from "antd";
 
 import Field from "@/common/Field";

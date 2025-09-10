@@ -32,7 +32,7 @@ const fillRowWithEmptiesToFit = ({
     );
   };
 
-  row.map((item: Widget, columnIndex: number) => {
+  row.forEach((item: Widget, columnIndex: number) => {
     totalColSpan += item.colspan;
 
     if (isLastItemAndMustFit(columnIndex)) {
@@ -123,8 +123,8 @@ const getMaxColspanForRows = (rows: Widget[][]) => {
 const rowsHaveAnyField = (rows: Widget[][]) => {
   let found = false;
 
-  rows.map((row: Widget[]) => {
-    row.map((item: Widget) => {
+  rows.forEach((row: Widget[]) => {
+    row.forEach((item: Widget) => {
       if (item instanceof Field) {
         found = true;
       }

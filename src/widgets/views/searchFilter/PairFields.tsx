@@ -6,10 +6,6 @@ import { Integer as IntegerOoui, Label as LabelOoui } from "@gisce/ooui";
 import Label from "@/widgets/base/Label";
 import { WidgetProps } from "@/types";
 
-type Props = {
-  ooui: any;
-};
-
 export function PairFields(props: WidgetProps): React.ReactElement {
   const { ooui, showLabel } = props;
   const { id, label, tooltip } = ooui;

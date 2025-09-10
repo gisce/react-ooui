@@ -1,5 +1,6 @@
 import { getNextPendingId } from "@/helpers/one2manyHelper";
-import { ConnectionProvider, One2manyItem } from "@/index";
+import { ConnectionProvider } from "@/index";
+import { One2manyItem } from "./One2manyInputLegacy";
 import { FormView, ViewType } from "@/types";
 import { useCallback, useState } from "react";
 import { useDeepCompareCallback } from "use-deep-compare";

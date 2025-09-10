@@ -2,7 +2,10 @@ import { ConnectionProvider, TreeView } from "..";
 import { useNetworkRequest } from "./useNetworkRequest";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useRef, useState, useCallback, useEffect, useMemo } from "react";
-import { InfiniteTableRef } from "@gisce/react-formiga-table";
+import {
+  InfiniteTableRef,
+  PaginatedTableRef,
+} from "@gisce/react-formiga-table";
 import { useBrowserVisibility } from "./useBrowserVisibility";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { getTableItems } from "@/helpers/treeHelper";
@@ -11,7 +14,7 @@ import { getAttributesConditionsFromOoui } from "./useTreeAttributesState";
 const AUTOREFRESH_INTERVAL_SECONDS = 3 * 1000;
 
 export type UseAutorefreshableTreeFieldsOpts = {
-  tableRef: React.RefObject<InfiniteTableRef>;
+  tableRef: React.RefObject<InfiniteTableRef | PaginatedTableRef>;
   model: string;
   context: any;
   autorefreshableFields?: string[];
@@ -114,7 +117,7 @@ export const useAutorefreshableTreeFields = (
 
     const ids = tableRef.current
       ?.getVisibleRowIds()
-      .filter((id: any) => id !== undefined && id !== null);
+      .filter((id: any) => id !== undefined && id !== null && id > 0); // Filter out negative/temporal IDs
 
     if (!ids || ids.length === 0) return;
 
@@ -130,7 +133,11 @@ export const useAutorefreshableTreeFields = (
         fieldsToRetrieve: autorefreshableFields,
         context,
       });
-      const preparedResults = getTableItems(treeOoui, resultsWithUpdatedFields);
+      const preparedResults = await getTableItems(
+        treeOoui,
+        resultsWithUpdatedFields,
+        context,
+      );
 
       // Get only the changed records
       const changedResults = preparedResults.filter((newItem) => {

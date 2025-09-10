@@ -38,7 +38,7 @@ import { DashboardActionView } from "./actionViews/DashboardActionView";
 import { resolveViewInfoPromises } from "@/helpers/viewHelper";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useAutoUpdateUrlAndTitle } from "@/hooks/useAutoUpdateUrlAndTitle";
-import { PermissionType, usePermissionsState } from "@/hooks/usePermissions";
+import { usePermissionsState } from "@/hooks/usePermissions";
 
 type Props = {
   domain: any;

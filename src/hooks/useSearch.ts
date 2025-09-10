@@ -393,7 +393,7 @@ export const useSearch = (opts: UseSearchOpts) => {
 
       setResults([...getResults(), ...children]);
 
-      return getTableItems(getTree(treeView!), children);
+      return await getTableItems(getTree(treeView!), children, context);
     },
     [treeView, model, context, getResults, setResults],
   );

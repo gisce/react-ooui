@@ -1,9 +1,4 @@
-import React from "react";
-import {
-  ColorPicker as AntdColorPicker,
-  ColorPickerProps as AntColorPickerProps,
-  GetProp,
-} from "antd";
+import { ColorPicker as AntdColorPicker } from "antd";
 import { ColorPicker as ColorPickerOoui } from "@gisce/ooui";
 
 import Field from "@/common/Field";
@@ -15,8 +10,6 @@ type ColorPickerProps = Omit<WidgetProps, "ooui"> & {
 };
 
 export const ColorPicker = (props: ColorPickerProps) => {
-  const { ooui } = props;
-
   return (
     <Field {...props}>
       <ColorPickerInput {...props} />

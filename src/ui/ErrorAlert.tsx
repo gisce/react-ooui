@@ -1,6 +1,5 @@
 import { parseError } from "@/helpers/errorHelper";
 import { Alert } from "antd";
-import React from "react";
 import { Interweave } from "interweave";
 
 export const ErrorAlert = ({

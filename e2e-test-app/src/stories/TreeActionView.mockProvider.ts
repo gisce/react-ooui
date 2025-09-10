@@ -12,31 +12,30 @@ const sortResults = (results: any[], order?: string) => {
     return results;
   }
 
-
   // Parse order string like "name asc, department desc"
-  const orderClauses = order.split(',').map(clause => clause.trim());
-  
+  const orderClauses = order.split(",").map((clause) => clause.trim());
+
   return [...results].sort((a, b) => {
     for (const clause of orderClauses) {
-      const [fieldName, direction = 'asc'] = clause.split(/\s+/);
-      const isDesc = direction.toLowerCase() === 'desc';
-      
+      const [fieldName, direction = "asc"] = clause.split(/\s+/);
+      const isDesc = direction.toLowerCase() === "desc";
+
       const aValue = a[fieldName];
       const bValue = b[fieldName];
-      
+
       // Handle null/undefined values
       if (aValue == null && bValue == null) continue;
       if (aValue == null) return isDesc ? 1 : -1;
       if (bValue == null) return isDesc ? -1 : 1;
-      
+
       let comparison = 0;
-      
+
       // Handle different data types
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
+      if (typeof aValue === "string" && typeof bValue === "string") {
         comparison = aValue.localeCompare(bValue);
-      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+      } else if (typeof aValue === "number" && typeof bValue === "number") {
         comparison = aValue - bValue;
-      } else if (fieldName === 'last_login' || fieldName === 'hire_date') {
+      } else if (fieldName === "last_login" || fieldName === "hire_date") {
         // Handle dates
         const aDate = new Date(aValue);
         const bDate = new Date(bValue);
@@ -45,7 +44,7 @@ const sortResults = (results: any[], order?: string) => {
         // Default string comparison
         comparison = String(aValue).localeCompare(String(bValue));
       }
-      
+
       if (comparison !== 0) {
         return isDesc ? -comparison : comparison;
       }
@@ -108,25 +107,22 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
   getView: async () => mockTreeView,
   getFields: async () => ({}),
   searchAllIds: async () => mockResults.map((r) => r.id),
-  searchCount: async (params) => {
-    console.log("searchCount called with params:", params);
+  searchCount: async (params: any) => {
     return mockResults.length;
   },
   search: async (params: any) => {
-    console.log("search called with params:", params);
     const { limit = 80, offset = 0, order } = params || {};
-    
+
     // Apply sorting first, then pagination
     let sortedResults = sortResults(mockResults, order);
     return sortedResults.slice(offset, offset + limit);
   },
-  searchForTree: async (params): Promise<SearchResponse> => {
-    console.log("searchForTree called with params:", params);
+  searchForTree: async (params: any): Promise<SearchResponse> => {
     const { limit = 80, offset = 0, onIdsRetrieved, order } = params || {};
 
     // Start with all results and apply sorting first
     let sortedResults = sortResults(mockResults, order);
-    
+
     // Then apply pagination
     const baseResults = sortedResults.slice(offset, offset + limit);
     const results = baseResults.map((result) => ({
@@ -145,17 +141,9 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
       ),
     }));
 
-    console.log(
-      "searchForTree returning results with status:",
-      results.map((r) => ({ id: r.id, hasStatus: r.id % 2 === 1 })),
-    );
 
     // Call the onIdsRetrieved callback with the fetched IDs - this is crucial for function fields!
     if (onIdsRetrieved && results.length > 0) {
-      console.log(
-        "Calling onIdsRetrieved with IDs:",
-        results.map((r) => r.id),
-      );
       onIdsRetrieved(results.map((r) => r.id));
     }
 
@@ -183,7 +171,6 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
     fieldsToRetrieve?: string[];
     context?: any;
   }) => {
-    console.log("readObjects called with params:", params);
     const { ids, fieldsToRetrieve } = params;
 
     if (!ids || !fieldsToRetrieve) {
@@ -238,8 +225,7 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
       };
     }),
   ],
-  parseConditions: async (params) => {
-    console.log("parseConditions called with params:", params);
+  parseConditions: async (params: any) => {
     const { values } = params || {};
 
     return (values || mockResults).map((result: any) => {
@@ -260,8 +246,7 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
   // Add all other required methods as no-ops
   defaultGet: async () => ({}),
   getActionData: async () => ({}),
-  nameSearch: async (params) => {
-    console.log("nameSearch called with params:", params);
+  nameSearch: async (params: any) => {
     return mockResults.map((result) => [result.id, result.name]);
   },
   duplicate: async () => ({}),
@@ -366,7 +351,6 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
     fields?: any;
   }) => {
     await new Promise((resolve) => setTimeout(resolve, 3000));
-    console.log("processSearchResults called with params:", params);
     const { searchIds, fieldsToRetrieve } = params;
 
     if (!searchIds || !fieldsToRetrieve || searchIds.length === 0) {
@@ -378,10 +362,6 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
       searchIds.includes(record.id),
     );
 
-    console.log(
-      "Found requested records:",
-      requestedRecords.map((r) => r.id),
-    );
 
     // Generate updated values for function fields
     const results = requestedRecords.map((record) => {

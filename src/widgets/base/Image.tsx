@@ -98,7 +98,7 @@ export const ImageInput = (props: ImageInputProps) => {
           () => (
             <ImageRender value={value} />
           ),
-          [value, ooui],
+          [value],
         )}
         <input
           type="file"

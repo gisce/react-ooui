@@ -30,7 +30,6 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
     onViewAttachmentDetails,
   } = props;
   const { formRef } = useContext(ActionViewContext) as ActionViewContextType;
-  const [preloading, setPreloading] = useState(false);
   const [preloadedAttachments, setPreloadedAttachments] = useState<
     Attachment[]
   >([]);
@@ -42,7 +41,6 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
     if (!attachments || attachments.length === 0) {
       return;
     }
-    setPreloading(true);
     try {
       const results = await ConnectionProvider.getHandler().readObjects({
         model: "ir.attachment",
@@ -61,7 +59,6 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
     } catch (error) {
       showErrorNotification(error);
     }
-    setPreloading(false);
   }, [attachments, formRef, showErrorNotification]);
 
   const openAttachmentLink = useCallback(
@@ -120,7 +117,6 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
         numberOfAttachments={attachments.length}
         attachments={preloadedAttachments}
         disabled={disabled}
-        loading={preloading}
         onAddNewAttachment={onAddNewAttachment}
         onListAllAttachments={onListAllAttachments}
         onOpenAttachmentLink={openAttachmentLink}
