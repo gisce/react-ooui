@@ -1,4 +1,3 @@
-import React from "react";
 import { Radio as RadioAnt, Space } from "antd";
 
 import Field from "@/common/Field";

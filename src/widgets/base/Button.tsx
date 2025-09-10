@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import Field from "@/common/Field";
 import { Button as AntButton } from "antd";
 import { Button as ButtonOoui } from "@gisce/ooui";

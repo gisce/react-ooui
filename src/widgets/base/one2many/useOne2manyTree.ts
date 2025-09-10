@@ -3,7 +3,7 @@ import { TreeView } from "@/types";
 import { InfiniteTableRef, SortDirection } from "@gisce/react-formiga-table";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useDeepCompareCallback } from "use-deep-compare";
-import { One2manyItem } from "./One2manyInput";
+import { One2manyItem } from "./One2manyInputLegacy";
 import {
   buildAttributes,
   fetchAndPrepareData,
@@ -99,6 +99,7 @@ export const useOne2manyTree = ({
         context,
         attrs,
         treeOoui,
+        skipFunctionFields: true,
       });
 
       const weCanAddOtherItems = realIdsToFetch.length < endRow - startRow;

@@ -1,5 +1,5 @@
 import ConnectionProvider from "@/ConnectionProvider";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Form, { FormProps } from "../Form";
 
 export const DashboardForm = (props: FormProps) => {
@@ -8,6 +8,7 @@ export const DashboardForm = (props: FormProps) => {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model]);
 
   async function fetchData() {

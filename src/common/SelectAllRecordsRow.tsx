@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { useContext, useState } from "react";
+import { useState } from "react";
 import { Spin } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
 import Link from "antd/es/typography/Link";

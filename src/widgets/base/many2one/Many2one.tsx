@@ -29,12 +29,6 @@ const mapToken = defaultAlgorithm(defaultSeed);
 
 type Props = {
   ooui: Many2oneOoui;
-  onOpenDetailClick?:
-    | ((event: React.MouseEvent<HTMLElement, MouseEvent>) => void)
-    | undefined;
-  onSearchClick?:
-    | ((event: React.MouseEvent<HTMLElement, MouseEvent>) => void)
-    | undefined;
 };
 
 export const Many2one = (props: Props) => {

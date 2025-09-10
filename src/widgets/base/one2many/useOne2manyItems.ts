@@ -1,4 +1,4 @@
-import { One2manyItem } from "./One2manyInput";
+import { One2manyItem } from "./One2manyInputLegacy";
 import { useDeepCompareMemo } from "use-deep-compare";
 
 export const useOne2manyItems = ({

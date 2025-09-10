@@ -4,7 +4,7 @@ import {
   Tree as TreeOoui,
 } from "@gisce/ooui";
 import { Graph } from "@/widgets/views/Graph/Graph";
-import { ViewType, Views } from "@/types";
+import { Views } from "@/types";
 
 type One2manyValue = {
   fields?: any;

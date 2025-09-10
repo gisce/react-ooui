@@ -88,6 +88,6 @@
     "**/*.spec.*",
     "src/__tests__",
     "src/stories",
-    "e2e"
+    "e2e-test-app"
   ]
 }

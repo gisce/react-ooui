@@ -1,51 +1,38 @@
-import React, {
-  useState,
-  useRef,
-  useContext,
-  useEffect,
-  useCallback,
-} from "react";
-import {
-  One2many as One2manyOoui,
-  Form as FormOoui,
-  Tree as TreeOoui,
-  parseGraph,
-  transformDomainForChildWidget,
-} from "@gisce/ooui";
-import { Alert, Spin } from "antd";
-import { Form, Tree } from "@/index";
-import { Graph } from "@/widgets/views/Graph/Graph";
-import { Views, ViewType } from "@/types";
-import ConnectionProvider from "@/ConnectionProvider";
-import { FormModal } from "@/widgets/modals/FormModal";
-import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
-import { showRemoveItemDialog } from "@/ui/RemoveItemDialog";
-import { showUnlinkItemDialog } from "@/ui/UnlinkItemDialog";
+import React, { useCallback, useContext, useMemo, useRef } from "react";
+import { One2manyInputProps as One2manyInputBasePropsBase } from "./One2many.types";
 import {
   One2manyContext,
   One2manyContextType,
 } from "@/context/One2manyContext";
+import { One2many as One2manyOoui } from "@gisce/ooui";
 import { FormContext, FormContextType } from "@/context/FormContext";
-import { One2manyTopBar } from "@/widgets/base/one2many/One2manyTopBar";
-import { readObjectValues, getNextPendingId } from "@/helpers/one2manyHelper";
-import { SearchModal } from "@/widgets/modals/SearchModal";
-import { useLocale } from "@gisce/react-formiga-components";
-import { sortResults } from "@/helpers/treeHelper";
-import { transformPlainMany2Ones } from "@/helpers/formHelper";
-import { useDeepCompareEffect } from "use-deep-compare";
+import { useOne2ManyDomain } from "./useOne2manyDomain";
+import { useOne2manyTree } from "./useOne2manyTree";
+import { One2manyTopBar } from "./One2manyTopBar";
+import { ViewType } from "@/types";
+import { useOne2manyForm } from "./useOne2manyForm";
+import { useOne2manyItems } from "./useOne2manyItems";
+import { One2manyForm } from "./One2manyForm";
+import { useOne2manyRemove } from "./useOne2manyRemove";
+import { InfiniteTableRef } from "@gisce/react-formiga-table";
+import { useDeepCompareCallback } from "use-deep-compare";
+import { FormModal, SearchModal, UserFeatureKeys } from "@/index";
+import { useOne2manyFormModal } from "./useOne2manyFormModal";
+import { useOne2manySearchModal } from "./useOne2manySearchModal";
+import { One2manyTree } from "./One2manyTree";
+import "@gisce/react-formiga-table/style.css";
+import { Graph } from "@/widgets/views/Graph/Graph";
+import { TreeType } from "@/views/actionViews/TreeActionView";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
 
-type One2manyValue = {
+const SUPPORTED_VIEWS = ["form", "tree", "graph"];
+
+export type One2manyValue = {
   fields?: any;
   items: One2manyItem[];
 };
 
-const ViewObjects = {
-  form: FormOoui,
-  tree: TreeOoui,
-  graph: Graph,
-};
-
-type One2manyItem = {
+export type One2manyItem = {
   operation?:
     | "original"
     | "pendingRemove"
@@ -58,189 +45,145 @@ type One2manyItem = {
   defaultValues?: any;
 };
 
-interface One2manyInputProps {
-  ooui: One2manyOoui;
-  value?: One2manyValue;
-  onChange?: (value: One2manyValue) => void;
-  views: Views;
-}
+export type One2manyInputBaseProps = One2manyInputBasePropsBase & {
+  parentViewId?: number;
+  treeViewId?: number;
+};
 
-function filterDuplicateItems(items: any) {
-  const ids = items.map((o: any) => o.id);
-  const filtered = items.filter((item: any, index: number) => {
-    const { id } = item;
-    return !ids.includes(id, index + 1);
-  });
-  return filtered;
-}
+export type One2manyInputProps = One2manyInputBaseProps & {
+  treeType: TreeType;
+};
 
-const One2manyInput: React.FC<One2manyInputProps> = (
+export const One2manyInput: React.FC<One2manyInputProps> = (
   props: One2manyInputProps,
 ) => {
-  const { value, onChange, ooui, views } = props;
-  const { items = [] } = value || {};
-
-  const { currentView, setCurrentView, itemIndex, setItemIndex } = useContext(
-    One2manyContext,
-  ) as One2manyContextType;
-
-  const formContext = useContext(FormContext) as FormContextType;
-  const {
-    activeId,
-    getFields,
-    getContext,
-    domain,
-    fetchValues: fetchParentFormValues,
-    getAllHierarchyValues,
-  } = formContext || {};
-  const { t } = useLocale();
-
-  const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>();
-  const [showFormModal, setShowFormModal] = useState<boolean>(false);
-  const [showSearchModal, setShowSearchModal] = useState<boolean>(false);
-  const [modalItem, setModalItem] = useState<One2manyItem>();
-  const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
-  const [continuousEntryMode, setContinuousEntryMode] =
-    useState<boolean>(false);
-  const [transformedDomain, setTransformedDomain] = useState<any[]>([]);
-  const [sorter, setSorter] = useState<any>();
-  const originalSortItemIds = useRef<number[]>();
-  const [colorsForResults, setColorsForResults] = useState<any>(undefined);
-  const formRef = useRef<any>();
-
+  const gridRef = useRef<InfiniteTableRef>(null);
+  const { value, onChange, ooui, views, treeType } = props;
+  const { items: one2manyItems = [] } = value || {};
+  const items = useOne2manyItems({ one2manyItems });
+  const { currentView, setCurrentView, itemIndex, setItemIndex, setTreeType } =
+    useContext(One2manyContext) as One2manyContextType;
   const {
     readOnly,
     relation,
-    context,
+    context: widgetContext,
     domain: widgetDomain,
+    id: fieldName,
   } = ooui as One2manyOoui;
-  const isMany2many = ooui.type === "many2many";
-  const { id: fieldName } = ooui;
-  const itemsToShow = items.filter(
-    (item) =>
-      (item.values || item.treeValues) && item.operation !== "pendingRemove",
-  );
-  const previousCurrentView = useRef<ViewType>();
-
-  useEffect(() => {
-    if (previousCurrentView.current !== currentView) {
-      previousCurrentView.current = currentView;
-      fetchDataIfNeeded();
-      return;
-    }
-
-    fetchDataIfNeeded();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, currentView]);
-
-  const fetchDataIfNeeded = useCallback(() => {
-    if (currentView === "form" && items.some((item) => !item.values)) {
-      fetchData();
-    } else if (
-      currentView === "tree" &&
-      items.some((item) => !item.treeValues)
-    ) {
-      fetchData();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, currentView]);
-
-  useDeepCompareEffect(() => {
-    parseDomain();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [domain]);
-
-  const triggerChange = (changedValue: One2manyItem[]) => {
-    onChange?.({
-      fields: views.get("form")?.fields || views.get("tree")?.fields,
-      items: filterDuplicateItems(changedValue),
-    });
-  };
-
-  const fetchData = async () => {
-    await fetchOriginalItemsFromApi();
-    if (itemIndex > itemsToShow.length - 1 && itemIndex !== 0) {
-      setItemIndex(0);
-    }
-  };
-
-  const fetchOriginalItemsFromApi = async (mode?: ViewType) => {
-    setIsLoading(true);
-    setFormHasChanges(false);
-    setError(undefined);
-
-    try {
-      const [itemsWithValues, evaluatedColorsForTree] = await readObjectValues({
-        treeView: {
-          arch: views.get("tree")?.arch,
-          fields: views.get("tree")?.fields,
-        },
-        formView: {
-          fields: views.get("form")?.fields || {},
-        },
-        model: relation,
-        items,
-        context: { ...getContext?.(), ...context },
-        currentView: mode || currentView,
-      });
-
-      if (!originalSortItemIds.current) {
-        originalSortItemIds.current = itemsWithValues.map((item) => item.id!);
-      }
-
-      if ((currentView || mode) === "tree" && evaluatedColorsForTree) {
-        setColorsForResults(evaluatedColorsForTree);
-      }
-
-      triggerChange(itemsWithValues);
-      return itemsWithValues;
-    } catch (err) {
-      setError(err as any);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useDeepCompareEffect(() => {
-    parseDomain();
-  }, [getAllHierarchyValues()]);
-
-  const parseDomain = useCallback(async () => {
-    let tempTransformedDomain: any[] = [];
-    if (widgetDomain) {
-      tempTransformedDomain = await ConnectionProvider.getHandler().evalDomain({
-        domain: widgetDomain,
-        values: transformPlainMany2Ones({
-          fields: getFields(),
-          values: getAllHierarchyValues(),
-        }),
-        fields: getFields(),
-        context: getContext(),
-      });
-    }
-
-    if (domain && domain.length > 0) {
-      tempTransformedDomain = tempTransformedDomain.concat(
-        transformDomainForChildWidget({
-          domain,
-          widgetFieldName: fieldName,
-        }),
-      );
-    }
-
-    if (tempTransformedDomain.length > 0) {
-      setTransformedDomain(tempTransformedDomain);
-    }
-  }, [
-    widgetDomain,
-    domain,
-    getFields,
-    getAllHierarchyValues,
+  const formContext = useContext(FormContext) as FormContextType;
+  const {
+    activeId,
     getContext,
+    fetchValues: fetchParentFormValues,
+  } = formContext || {};
+  const formRef = useRef<any>();
+
+  const showToggleButton = views.size > 1;
+  const showCreateButton = views.get("form")?.fields !== undefined;
+
+  const context = useMemo(() => {
+    return { ...getContext?.(), ...widgetContext };
+  }, [getContext, widgetContext]);
+
+  const domain = useOne2ManyDomain({
+    widgetDomain,
     fieldName,
-  ]);
+  });
+
+  const {
+    treeOoui,
+    onTreeFetchRows,
+    selectedRowKeys,
+    setSelectedRowKeys,
+    onChangeFirstVisibleRowIndex,
+    onGetFirstVisibileRowIndex,
+    onSelectionCheckboxClicked,
+  } = useOne2manyTree({
+    treeView: views.get("tree"),
+    relation,
+    context,
+    allRowsIds: items
+      .filter((item) => item.id !== undefined)
+      .map((item) => item.id!),
+    gridRef,
+  });
+
+  const title = useMemo(() => {
+    const { title } = views.get(currentView) || {};
+    return title || ooui.label;
+  }, [currentView, ooui.label, views]);
+
+  const isMany2many = ooui.type === "many2many";
+
+  const triggerChange = useCallback(
+    (changedValues: One2manyItem[]) => {
+      onChange?.({
+        fields: views.get("form")?.fields || views.get("tree")?.fields,
+        items: changedValues,
+      });
+    },
+    [onChange, views],
+  );
+
+  const {
+    formHasChanges,
+    onFormChanges,
+    showFormChangesDialogIfNeeded,
+    setFormHasChanges,
+  } = useOne2manyForm({
+    items,
+    formView: views.get("form"),
+    treeView: views.get("tree"),
+    relation,
+    context,
+    triggerChange,
+  });
+
+  const {
+    showFormModal,
+    modalItem,
+    continuousEntryMode,
+    onCancelFormModal,
+    onFormModalSubmitSucceed,
+    createItem,
+    openItemInFormModal,
+  } = useOne2manyFormModal({
+    activeId,
+    inv_field: ooui.inv_field,
+    showFormChangesDialogIfNeeded,
+    currentView,
+    triggerChange,
+    items,
+    setCurrentView,
+    setItemIndex,
+    context,
+    relation,
+    formView: views.get("form"),
+  });
+
+  const {
+    showSearchModal,
+    onSelectSearchValues,
+    onCloseSearchModal,
+    searchItem,
+  } = useOne2manySearchModal({
+    showFormChangesDialogIfNeeded,
+    currentView,
+    triggerChange,
+    items,
+    views,
+    context,
+    relation,
+  });
+
+  const { showRemoveConfirm } = useOne2manyRemove({
+    isMany2many,
+    items,
+    triggerChange,
+    setFormHasChanges,
+    selectedRowKeys,
+    setSelectedRowKeys,
+  });
 
   const toggleViewMode = () => {
     const keys = Array.from(views.keys());
@@ -256,7 +199,16 @@ const One2manyInput: React.FC<One2manyInputProps> = (
     }
   };
 
-  const previousItem = () => {
+  const onRowDoubleClick = useDeepCompareCallback(
+    (item: any) => {
+      if (!views.get("form")?.fields) return;
+      openItemInFormModal(item);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [items],
+  );
+
+  const onPreviousItem = useCallback(() => {
     if (itemIndex > 0) {
       if (currentView === "form") {
         showFormChangesDialogIfNeeded(() => {
@@ -266,10 +218,10 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         setItemIndex(itemIndex - 1);
       }
     }
-  };
+  }, [currentView, itemIndex, setItemIndex, showFormChangesDialogIfNeeded]);
 
-  const nextItem = () => {
-    const totalItems = itemsToShow.length;
+  const onNextItem = useCallback(() => {
+    const totalItems = items.length;
     if (itemIndex < totalItems - 1) {
       if (currentView === "form") {
         showFormChangesDialogIfNeeded(() => {
@@ -279,448 +231,99 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         setItemIndex(itemIndex + 1);
       }
     }
-  };
+  }, [
+    currentView,
+    itemIndex,
+    items.length,
+    setItemIndex,
+    showFormChangesDialogIfNeeded,
+  ]);
 
-  const reloadOriginalValuesForFormItem = async () => {
-    const currentId = itemsToShow[itemIndex].id!;
+  const showPointerCursorInRows = useMemo(() => {
+    return views.get("form")?.fields !== undefined;
+  }, [views]);
 
-    const updatedFormObject = (
-      await ConnectionProvider.getHandler().readObjects({
-        model: relation,
-        ids: [currentId],
-        fields: views.get("form").fields,
-        context: { ...getContext?.(), ...context },
-      })
-    )[0];
-    const updatedTreeObject = (
-      await ConnectionProvider.getHandler().readObjects({
-        model: relation,
-        ids: [currentId],
-        fields: views.get("tree").fields,
-        context: { ...getContext?.(), ...context },
-      })
-    )[0];
-
-    const updatedItems: One2manyItem[] = items.map((item) => {
-      if (item.id === currentId) {
-        return {
-          ...item,
-          operation: "original",
-          values: updatedFormObject,
-          treeValues: updatedTreeObject,
-        };
+  const handleTreeTypeChange = useCallback(
+    (newType: TreeType) => {
+      // Don't allow changing from/to legacy type in One2many
+      if (newType !== "legacy" && treeType !== "legacy") {
+        setTreeType(newType);
       }
-      return item;
-    });
+    },
+    [treeType, setTreeType],
+  );
 
-    triggerChange(updatedItems);
-  };
-
-  const showFormChangesDialogIfNeeded = (callback: () => void) => {
-    if (formHasChanges) {
-      showUnsavedChangesDialog({
-        t,
-        onOk: () => {
-          reloadOriginalValuesForFormItem();
-          callback();
-          setFormHasChanges(false);
-        },
-      });
-    } else {
-      callback();
-    }
-  };
-
-  const showRemoveConfirm = () => {
-    if (isMany2many) {
-      showUnlinkItemDialog({
-        t,
-        onOk: async () => {
-          if (currentView === "form") {
-            removeCurrentItem();
-          } else {
-            removeSelectedItems();
-          }
-        },
-      });
-      return;
-    }
-
-    showRemoveItemDialog({
-      t,
-      onOk: async () => {
-        if (currentView === "form") {
-          removeCurrentItem();
-        } else {
-          removeSelectedItems();
-        }
-      },
-    });
-  };
-
-  const createItem = async () => {
-    const { inv_field } = ooui;
-    let defaultValues: any;
-
-    if (inv_field && activeId) {
-      defaultValues = { [inv_field]: activeId };
-    }
-
-    if (currentView === "form") {
-      showFormChangesDialogIfNeeded(() => {
-        setContinuousEntryMode(true);
-        setModalItem({ defaultValues });
-        setShowFormModal(true);
-      });
-    } else {
-      setContinuousEntryMode(true);
-      setModalItem({ defaultValues });
-      setShowFormModal(true);
-    }
-  };
-
-  const searchItem = async () => {
-    if (currentView === "form") {
-      showFormChangesDialogIfNeeded(() => {
-        setShowSearchModal(true);
-      });
-    } else {
-      setShowSearchModal(true);
-    }
-  };
-
-  const removeCurrentItem = async () => {
-    setIsLoading(true);
-    setFormHasChanges(false);
-    setError(undefined);
-
-    try {
-      if (itemsToShow[itemIndex].id! > 0) {
-        const updatedItems = items.map((item) => {
-          if (item.id === itemsToShow[itemIndex].id!) {
-            return {
-              ...item,
-              operation: "pendingRemove",
-            } as One2manyItem;
-          } else {
-            return item;
-          }
-        });
-        triggerChange(updatedItems);
-      } else {
-        triggerChange(
-          items.filter((item) => item.id !== itemsToShow[itemIndex].id!),
-        );
-      }
-    } catch (err) {
-      setError(err as any);
-    }
-
-    setItemIndex(0);
-    setIsLoading(false);
-  };
-
-  const removeSelectedItems = async () => {
-    const itemsToRemove = itemsToShow.filter((item) => {
-      return selectedRowKeys.includes(item.id);
-    });
-
-    setIsLoading(true);
-    setFormHasChanges(false);
-    setError(undefined);
-
-    try {
-      const idsToRemove: number[] = itemsToRemove.map((item) => item.id!);
-
-      const updatedItems = items
-        .filter((item) => {
-          if (idsToRemove.includes(item.id!) && item.id! < 0) {
-            return false;
-          }
-          return true;
-        })
-        .map((item) => {
-          if (idsToRemove.includes(item.id!)) {
-            return {
-              ...item,
-              operation: "pendingRemove",
-            } as One2manyItem;
-          } else {
-            return item;
-          }
-        });
-      triggerChange(updatedItems);
-    } catch (err) {
-      setError(err as any);
-    }
-
-    setItemIndex(0);
-    setIsLoading(false);
-  };
-
-  // This is the callback called when a modal is done creating/updating the object
-  const onFormModalSubmitSucceed = (
-    id: number | undefined,
-    _: any,
-    values: any,
-    x2manyPendingLink: boolean = false,
-  ) => {
-    let updatedItems: One2manyItem[];
-
-    if (x2manyPendingLink) {
-      updatedItems = items.concat({
-        id,
-        operation: "pendingLink",
-        values: { ...values, id },
-        treeValues: { ...values, id },
-      });
-    } else if (id) {
-      updatedItems = items.map((item: One2manyItem) => {
-        if (item.id === id) {
-          return {
-            id,
-            operation: id > 0 ? "pendingUpdate" : "pendingCreate",
-            values: { ...values, id },
-            treeValues: { ...values, id },
-          };
-        }
-        return item;
-      });
-    } else {
-      const nextId = getNextPendingId(items);
-      updatedItems = items.concat({
-        id: nextId,
-        operation: "pendingCreate",
-        values: { ...values, id: nextId },
-        treeValues: { ...values, id: nextId },
-      });
-    }
-
-    triggerChange(updatedItems);
-
-    if (!continuousEntryMode) {
-      setShowFormModal(false);
-    }
-  };
-
-  const onTreeRowClicked = async (record: any) => {
-    const { id: itemId } = record;
-
-    let itemsToLoadFrom: One2manyItem[] | undefined = items;
-
-    // We should fetch the form data if needed in order to get the form values
-    const modalItem = items.find((item) => item.id === itemId);
-    if (modalItem?.values === undefined) {
-      itemsToLoadFrom = await fetchOriginalItemsFromApi("form");
-    }
-
-    // We show the detail for the clicked item in a Form modal
-    setModalItem(itemsToLoadFrom!.find((item) => item.id === itemId));
-    setContinuousEntryMode(false);
-    setShowFormModal(true);
-  };
-
-  const onSearchModalSelectValue = async (ids: number[]) => {
-    setIsLoading(true);
-
-    const updatedItems = items;
-    const filteredIds = ids.filter((id) => {
-      return !items.find((item) => item.id === id);
-    });
-
-    try {
-      for (const id of filteredIds) {
-        const updatedFormObject = (
-          await ConnectionProvider.getHandler().readObjects({
-            model: relation,
-            ids: [id],
-            fields: views.get("form").fields,
-            context: { ...getContext?.(), ...context },
-          })
-        )[0];
-        const updatedTreeObject = (
-          await ConnectionProvider.getHandler().readObjects({
-            model: relation,
-            ids: [id],
-            fields: views.get("tree").fields,
-            context: { ...getContext?.(), ...context },
-          })
-        )[0];
-        updatedItems.push({
-          id,
-          operation: "pendingLink",
-          values: updatedFormObject,
-          treeValues: updatedTreeObject,
-        });
-      }
-
-      triggerChange(updatedItems);
-    } catch (e) {
-      setError(e as any);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // TODO: improve this. Do we really have to parse the entire object just to get the title?
-  function getTitle() {
-    const ViewType: any = (ViewObjects as any)[currentView];
-    if (currentView === "graph") {
-      const parsedGraph = parseGraph(views.get("graph").arch);
-      return parsedGraph.string!;
-    } else {
-      const ooui = new ViewType(views.get(currentView).fields);
-      ooui.parse(views.get(currentView).arch);
-      return ooui.string!;
-    }
-  }
-
-  const content = () => {
-    if (currentView === "form") {
-      if (itemsToShow.length === 0) {
-        return t("noCurrentEntries");
-      }
-
-      if (
-        currentView !== previousCurrentView.current &&
-        items.some((item) => !item.values)
-      ) {
-        return <Spin />;
-      }
-
-      return (
-        <Form
-          ref={formRef}
-          formView={views.get("form")}
-          values={itemsToShow[itemIndex]?.values}
-          parentContext={{ ...getContext?.(), ...context }}
-          model={relation}
-          id={itemsToShow[itemIndex]?.id}
-          submitMode={"values"}
-          onFieldsChange={(values: any) => {
-            const currentItemId = itemsToShow[itemIndex]?.id;
-
-            const updatedItems = items.map((item) => {
-              if (item.id === currentItemId) {
-                return {
-                  ...item,
-                  operation:
-                    item.operation === "original"
-                      ? "pendingUpdate"
-                      : item.operation,
-                  values: { ...values, id: currentItemId },
-                  treeValues: { ...values, id: currentItemId },
-                };
-              }
-              return item;
-            });
-
-            triggerChange(updatedItems);
-
-            setFormHasChanges(true);
-          }}
-          readOnly={readOnly}
-        />
-      );
-    }
-
-    let resultsToShow = [];
-
-    if (itemsToShow.some((item) => item.treeValues)) {
-      resultsToShow = sorter
-        ? sortResults({
-            resultsToSort: itemsToShow.map((item) => item.treeValues),
-            sorter,
-            fields: {
-              ...views.get("tree").fields,
-              ...(views.get("form")?.fields || {}),
-            },
-          })
-        : itemsToShow.map((item) => item.treeValues);
-    }
-
-    if (currentView === "tree") {
-      return (
-        <Tree
-          total={itemsToShow.length}
-          limit={itemsToShow.length}
-          treeView={views.get("tree")}
-          results={resultsToShow}
-          loading={isLoading}
-          onRowClicked={
-            views.get("form")?.fields !== undefined
-              ? onTreeRowClicked
-              : undefined
-          }
-          showPagination={false}
-          selectedRowKeys={selectedRowKeys}
-          onRowSelectionChange={setSelectedRowKeys}
-          sorter={sorter}
-          onChangeSort={setSorter}
-          context={{ ...getContext?.(), ...context }}
-          colorsForResults={colorsForResults}
-          readonly={readOnly}
-          scrollY={ooui?.height}
-        />
-      );
-    }
-    if (currentView === "graph") {
-      const domain = [[`${ooui.inv_field}`, "=", activeId]];
-      return (
-        <Graph
-          viewData={views.get("graph")}
-          view_id={views.get("graph").view_id}
-          model={ooui.relation}
-          domain={domain}
-          context={{ ...getContext?.(), ...context }}
-          limit={0}
-        />
-      );
-    }
-  };
-
-  if (error) {
-    return <Alert className="mt-10" message={error} type="error" banner />;
-  }
-
-  // If we are in create mode we have to show the modal in continuous mode.
-  // This means the modal won't close after clicking OK, the modal will add the new item
-  // and will reset to defaults to let the user add a new item.
-  const mustClearAfterSave = continuousEntryMode;
-
-  if (isLoading) {
-    return <Spin />;
-  }
+  const enableNewTable = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_ONE2MANY_ENABLE_NEW_TABLE,
+  );
 
   return (
     <>
       <One2manyTopBar
         mode={currentView}
+        title={title}
+        currentId={items[itemIndex]?.id}
         model={relation}
-        currentId={itemsToShow[itemIndex]?.id}
-        title={getTitle()}
         readOnly={readOnly || false}
         isMany2Many={isMany2many}
         formHasChanges={formHasChanges}
-        totalItems={itemsToShow.length}
+        totalItems={items.length}
         currentItemIndex={itemIndex}
         onDelete={showRemoveConfirm}
         onCreateItem={createItem}
         onToggleViewMode={toggleViewMode}
-        onPreviousItem={previousItem}
-        onNextItem={nextItem}
+        onPreviousItem={onPreviousItem}
+        onNextItem={onNextItem}
         onSearchItem={searchItem}
         selectedRowKeys={selectedRowKeys}
-        showCreateButton={views.get("form")?.fields !== undefined}
-        showToggleButton={views.size > 1}
+        showCreateButton={showCreateButton}
+        showToggleButton={showToggleButton}
         toolbar={views.get(currentView)?.toolbar}
         context={{ ...getContext?.(), ...context }}
         formRef={formRef}
         onRefreshParentValues={() => {
           fetchParentFormValues?.({ forceRefresh: true });
+          gridRef.current?.refresh();
         }}
       />
-      {content()}
+      {currentView === "tree" && (
+        <One2manyTree
+          gridRef={gridRef}
+          height={ooui.height}
+          items={items}
+          readOnly={readOnly || false}
+          onFetchRecords={onTreeFetchRows}
+          ooui={treeOoui}
+          treeView={views.get("tree")}
+          context={context}
+          onRowDoubleClick={onRowDoubleClick}
+          showPointerCursorInRows={showPointerCursorInRows}
+          onRowSelectionChange={setSelectedRowKeys}
+          relation={relation}
+          onChangeFirstVisibleRowIndex={onChangeFirstVisibleRowIndex}
+          onGetFirstVisibleRowIndex={onGetFirstVisibileRowIndex}
+          selectedRowKeys={selectedRowKeys}
+          onSelectionCheckboxClicked={onSelectionCheckboxClicked}
+          dataForHash={{
+            parentViewId: props.parentViewId,
+            treeViewId: props.treeViewId,
+            one2ManyFieldName: fieldName,
+          }}
+          treeType={treeType}
+          onChangeTreeType={enableNewTable ? handleTreeTypeChange : undefined}
+        />
+      )}
+      {currentView === "form" && (
+        <One2manyForm
+          ref={formRef}
+          items={items}
+          formView={views.get("form")}
+          context={context}
+          relation={relation}
+          readOnly={readOnly || false}
+          onChange={onFormChanges}
+        />
+      )}
       <FormModal
         formView={views.get("form")}
         model={relation}
@@ -730,49 +333,36 @@ const One2manyInput: React.FC<One2manyInputProps> = (
         defaultValues={modalItem?.defaultValues}
         visible={showFormModal}
         onSubmitSucceed={onFormModalSubmitSucceed}
-        parentContext={{ ...getContext?.(), ...context }}
-        onCancel={(params?: { id?: number; values?: any }) => {
-          setContinuousEntryMode(false);
-
-          if (params?.id && params?.values) {
-            const updatedItems: One2manyItem[] = items.map(
-              (item: One2manyItem) => {
-                if (item.id === params.id) {
-                  return {
-                    ...item,
-                    values: { ...item.values, ...params.values },
-                    treeValues: { ...item.treeValues, ...params.values },
-                  };
-                }
-                return item;
-              },
-            );
-            triggerChange(updatedItems);
-          }
-
-          setShowFormModal(false);
-        }}
+        parentContext={context}
+        onCancel={onCancelFormModal}
         readOnly={readOnly}
-        mustClearAfterSave={mustClearAfterSave}
+        mustClearAfterSave={continuousEntryMode}
         onMustRefreshParent={() => {
           fetchParentFormValues?.({ forceRefresh: true });
+          gridRef.current?.refresh();
         }}
       />
       <SearchModal
-        domain={transformedDomain}
+        domain={domain}
         model={relation}
-        context={{ ...getContext?.(), ...context }}
+        context={context}
         visible={showSearchModal}
-        onSelectValues={async (ids: number[]) => {
-          setShowSearchModal(false);
-          onSearchModalSelectValue(ids);
-        }}
-        onCloseModal={() => {
-          setShowSearchModal(false);
-        }}
+        onSelectValues={onSelectSearchValues}
+        onCloseModal={onCloseSearchModal}
       />
+      {currentView === "graph" && (
+        <Graph
+          viewData={views.get("graph")}
+          view_id={views.get("graph").view_id}
+          model={relation}
+          domain={[[`${ooui.inv_field}`, "=", activeId]]}
+          context={context}
+          limit={0}
+        />
+      )}
+      {!SUPPORTED_VIEWS.includes(currentView) && (
+        <span>Unsupported view {currentView}</span>
+      )}
     </>
   );
 };
-
-export { One2manyInput, One2manyItem, One2manyValue };

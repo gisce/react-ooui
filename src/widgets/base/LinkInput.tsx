@@ -36,6 +36,7 @@ export const LinkInput = (props: LinkInputProps) => {
       setEditMode(true);
       setShowInput(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editMode, readOnly]);
 
   const onValueStringChange = (e: React.ChangeEvent<HTMLInputElement>) => {

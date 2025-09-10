@@ -1,14 +1,7 @@
 import GraphActionBar from "@/actionbar/GraphActionBar";
 import TitleHeader from "@/ui/TitleHeader";
 import { Graph } from "@/widgets/views/Graph/Graph";
-import {
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
-  useCallback,
-} from "react";
+import { useContext, useEffect, useRef, useState, useMemo } from "react";
 import {
   ActionViewContext,
   ActionViewContextType,

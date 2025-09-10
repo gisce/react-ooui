@@ -1,4 +1,4 @@
-import React, { useRef, useContext } from "react";
+import { useRef, useContext } from "react";
 import { Row, Col, Button, Input, Space, theme } from "antd";
 import Field from "@/common/Field";
 import { Binary as BinaryOoui } from "@gisce/ooui";
