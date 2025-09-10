@@ -29,6 +29,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import deepEqual from "deep-equal";
 import { ErpFeatureKeys } from "@/models/erpFeature";
+import { determineTreeType, isTreeExpandable } from "@/helpers/treeHelper";
 
 const { useToken } = theme;
 
