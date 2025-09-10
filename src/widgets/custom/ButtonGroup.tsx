@@ -21,6 +21,11 @@ type ItemsProps = {
   executeButtonAction: any;
 };
 
+type ButtonItemProps = {
+  button: ButtonOoui;
+  executeButtonAction: any;
+};
+
 export const ButtonGroup = (props: ButtonGroupProps) => {
   const { ooui } = props;
   const { defaultButton, secondaryButtons } = ooui;
@@ -100,67 +105,78 @@ export const ButtonGroup = (props: ButtonGroupProps) => {
   }
 };
 
-const Items = (props: ItemsProps) => {
+const ButtonItem = (props: ButtonItemProps) => {
   const { t } = useLocale();
+  const { button, executeButtonAction } = props;
+  const {
+    id,
+    caption,
+    activated,
+    buttonType,
+    confirmMessage,
+    icon,
+    context,
+    readOnly,
+    danger,
+  } = button;
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+
+  async function onClick_confirm() {
+    setIsRunning(true);
+    await executeButtonAction({ type: buttonType, action: id, context });
+    setIsRunning(false);
+  }
+
+  function onClick() {
+    if (confirmMessage) {
+      showConfirmDialog({
+        confirmMessage,
+        t,
+        onOk: () => {
+          onClick_confirm();
+        },
+      });
+      return;
+    }
+
+    onClick_confirm();
+  }
+
+  function getButtonIcon() {
+    if (isRunning) return <LoadingOutlined />;
+    if (icon) {
+      const Icon: React.ElementType = iconMapper(icon) as any;
+      return Icon && <Icon />;
+    }
+    return undefined;
+  }
+
+  return (
+    <Menu.Item
+      key={`menuitem-${caption}`}
+      disabled={!activated || readOnly}
+      onClick={onClick}
+      icon={getButtonIcon()}
+      danger={danger}
+    >
+      {caption}
+    </Menu.Item>
+  );
+};
+
+const Items = (props: ItemsProps) => {
   const { ooui, executeButtonAction } = props;
   if (!ooui) {
     return null;
   }
-  const items = ooui.map((button) => {
-    const {
-      id,
-      caption,
-      activated,
-      buttonType,
-      confirmMessage,
-      icon,
-      context,
-      readOnly,
-      danger,
-    } = button;
-    const [isRunning, setIsRunning] = useState<boolean>(false);
 
-    async function onClick_confirm() {
-      setIsRunning(true);
-      await executeButtonAction({ type: buttonType, action: id, context });
-      setIsRunning(false);
-    }
+  const items = ooui.map((button) => (
+    <ButtonItem
+      key={button.id}
+      button={button}
+      executeButtonAction={executeButtonAction}
+    />
+  ));
 
-    function onClick() {
-      if (confirmMessage) {
-        showConfirmDialog({
-          confirmMessage,
-          t,
-          onOk: () => {
-            onClick_confirm();
-          },
-        });
-        return;
-      }
-
-      onClick_confirm();
-    }
-
-    function getButtonIcon() {
-      if (isRunning) return <LoadingOutlined />;
-      if (icon) {
-        const Icon: React.ElementType = iconMapper(icon) as any;
-        return Icon && <Icon />;
-      }
-      return undefined;
-    }
-
-    return (
-      <Menu.Item
-        key={`menuitem-${caption}`}
-        disabled={!activated || readOnly}
-        onClick={onClick}
-        icon={getButtonIcon()}
-        danger={danger}
-      >
-        {caption}
-      </Menu.Item>
-    );
-  });
   return <Menu>{items}</Menu>;
 };

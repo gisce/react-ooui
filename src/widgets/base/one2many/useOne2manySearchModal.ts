@@ -1,5 +1,6 @@
 import { getValuesForFields } from "@/helpers/one2manyHelper";
-import { ConnectionProvider, One2manyItem, Views } from "@/index";
+import { ConnectionProvider, Views } from "@/index";
+import { One2manyItem } from "./One2manyInputLegacy";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useCallback, useState } from "react";
 import { useDeepCompareCallback } from "use-deep-compare";

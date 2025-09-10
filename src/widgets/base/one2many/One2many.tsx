@@ -4,19 +4,27 @@ import Field from "@/common/Field";
 import { Spin, Alert } from "antd";
 import { Views, ViewType } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
-import { One2manyInput } from "@/widgets/base/one2many/One2manyInput";
+import { One2manyInputLegacy } from "@/widgets/base/one2many/One2manyInputLegacy";
 import {
-  One2manyInput as One2manyInputInfinite,
-  One2manyInputInfiniteProps,
-} from "@/widgets/base/one2many/One2manyInputInfinite";
+  One2manyInput,
+  One2manyInputBaseProps,
+} from "@/widgets/base/one2many/One2manyInput";
+import { One2manyInput as One2manyInputInfinite } from "@/widgets/base/one2many/OldOne2manyInputInfinite";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { FormContext, FormContextType } from "@/context/FormContext";
-import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import {
+  useFeatureIsEnabled,
+  useUserFeatureIsEnabled,
+} from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
-import { DEFAULT_TREE_TYPE } from "@/views/actionViews/TreeActionView";
+import {
+  DEFAULT_TREE_TYPE,
+  TreeType,
+} from "@/views/actionViews/TreeActionView";
 import One2manyProvider, {
   useOne2manyContext,
 } from "@/context/One2manyContext";
+import { UserFeatureKeys } from "@/models/userFeature";
 
 const MIN_ITEMS_TO_USE_INFINITE = 30;
 
@@ -33,7 +41,7 @@ export const One2many = (props: Props) => {
   const [error, setError] = useState<string>();
   const [views, setViews] = useState<Views>(new Map<string, any>());
   const formContext = useContext(FormContext) as FormContextType;
-  const { getContext, formView } = formContext || {};
+  const { getContext, formView, refreshCounter } = formContext || {};
   const { view_id: parentViewId } = formView || {};
 
   useDeepCompareEffect(() => {
@@ -146,6 +154,7 @@ export const One2many = (props: Props) => {
         {...props}
       >
         <One2manyComponent
+          key={refreshCounter}
           ooui={ooui}
           views={views}
           parentViewId={parentViewId}
@@ -156,12 +165,47 @@ export const One2many = (props: Props) => {
   );
 };
 
-const One2manyComponent = (props: One2manyInputInfiniteProps) => {
+const One2manyComponent = (props: One2manyInputBaseProps) => {
   const { ooui, value } = props;
 
   const { treeType, setTreeType } = useOne2manyContext();
+  const enableNewTable = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_ONE2MANY_ENABLE_NEW_TABLE,
+  );
 
   useDeepCompareEffect(() => {
+    if (enableNewTable) {
+      const determineTreeType = (): TreeType => {
+        // Priority 1: Explicit infinite="1" in XML → always infinite
+        if (ooui.infinite === "1" || ooui.infinite === true) {
+          return "infinite";
+        }
+
+        // Priority 2: Explicit infinite="0" in XML → always paginated
+        if (ooui.infinite === "0" || ooui.infinite === false) {
+          return "paginated";
+        }
+
+        // Priority 3: No infinite attribute - depends on item count
+        if (ooui.infinite === undefined || ooui.infinite === null) {
+          // If new table feature is enabled, use paginated by default
+          // But still auto-switch to infinite for large datasets
+          if (
+            value &&
+            Array.isArray(value.items) &&
+            value.items.length >= MIN_ITEMS_TO_USE_INFINITE
+          ) {
+            return "infinite";
+          }
+          return "paginated";
+        }
+        return "paginated";
+      };
+
+      setTreeType(determineTreeType());
+      return;
+    }
+
     if (ooui.infinite) {
       setTreeType("infinite");
       return;
@@ -177,16 +221,20 @@ const One2manyComponent = (props: One2manyInputInfiniteProps) => {
     }
 
     setTreeType(DEFAULT_TREE_TYPE);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ooui.infinite, value]);
+  }, [ooui.infinite, value, enableNewTable]);
 
   if (treeType === undefined) {
     return <Spin />;
   }
 
-  return treeType === "infinite" ? (
-    <One2manyInputInfinite {...props} />
-  ) : (
-    <One2manyInput {...props} />
-  );
+  if (enableNewTable) {
+    return <One2manyInput {...props} treeType={treeType} />;
+  } else if (treeType === "infinite") {
+    // Old infinite table with refactor and improvements
+    return <One2manyInputInfinite {...props} />;
+  } else if (treeType === "legacy") {
+    return <One2manyInputLegacy {...props} />;
+  }
 };

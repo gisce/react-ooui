@@ -1,4 +1,3 @@
-import React from "react";
 import { Progress } from "antd";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";

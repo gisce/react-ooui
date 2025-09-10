@@ -19,7 +19,6 @@ import { Tooltip, theme } from "antd";
 import { FilterOutlined, CloseOutlined } from "@ant-design/icons";
 import { SearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
 import SearchTree from "@/widgets/views/SearchTree";
-import { extractTreeXmlAttribute } from "@/helpers/treeHelper";
 import { SearchTreePaginated } from "@/widgets/views/Tree/Paginated/SearchTreePaginated";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useConfigContext, useFeatureIsEnabled } from "@/context/ConfigContext";
@@ -29,6 +28,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import deepEqual from "deep-equal";
 import { ErpFeatureKeys } from "@/models/erpFeature";
+import { determineTreeType, isTreeExpandable } from "@/helpers/treeHelper";
 
 const { useToken } = theme;
 
@@ -77,44 +77,14 @@ export const TreeActionView = (props: TreeActionViewProps) => {
   const { setLimit } = useActionViewContext();
 
   useDeepCompareEffect(() => {
-    if (treeView.isExpandable) {
-      setTreeType("paginated");
-      return;
-    }
+    const newTreeType = determineTreeType({
+      treeView,
+      limit,
+      treeMaxLimit,
+    });
 
-    if (limit === 0) {
-      setTreeType("infinite");
-      return;
-    }
-
-    if (limit && limit > treeMaxLimit) {
-      setTreeType("infinite");
-      return;
-    }
-
-    if (!treeView?.arch) {
-      setTreeType("legacy");
-      return;
-    }
-
-    const tagValue = extractTreeXmlAttribute(treeView.arch, "infinite");
-    if (!tagValue) {
-      setTreeType("legacy");
-      return;
-    }
-
-    if (tagValue === "1") {
-      setTreeType("infinite");
-      return;
-    }
-
-    if (tagValue === "0") {
-      setTreeType("paginated");
-      return;
-    }
-
-    setTreeType("legacy");
-  }, [treeView]);
+    setTreeType(newTreeType);
+  }, [treeView, limit, treeMaxLimit]);
 
   const {
     currentView,
@@ -273,15 +243,18 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, treeType]);
 
-  const handleTreeTypeChange = useCallback((newType: TreeType) => {
-    setTreeType(newType);
-    if (newType === "paginated") {
-      setLimit?.(limit || DEFAULT_SEARCH_LIMIT);
-    }
-    if (newType === "infinite") {
-      setLimit?.(0);
-    }
-  }, []);
+  const handleTreeTypeChange = useCallback(
+    (newType: TreeType) => {
+      setTreeType(newType);
+      if (newType === "paginated") {
+        setLimit?.(limit || DEFAULT_SEARCH_LIMIT);
+      }
+      if (newType === "infinite") {
+        setLimit?.(0);
+      }
+    },
+    [limit, setLimit],
+  );
 
   const handleClearSavedSearch = useCallback(() => {
     setCurrentSavedSearch?.(null);
@@ -384,7 +357,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
           domain={domain}
           toolbar={treeView?.toolbar}
           parentContext={context}
-          treeExpandable={treeView?.isExpandable || false}
+          treeExpandable={isTreeExpandable(treeView)}
           onRefetchSavedSearches={fetchSavedSearches}
           onClearSavedSearch={handleClearSavedSearch}
         />

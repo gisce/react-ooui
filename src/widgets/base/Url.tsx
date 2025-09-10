@@ -1,4 +1,3 @@
-import React from "react";
 import isURL from "validator/lib/isURL";
 import Field from "@/common/Field";
 

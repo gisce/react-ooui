@@ -7,7 +7,7 @@ import {
 import { One2many as One2manyOoui } from "@gisce/ooui";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { useOne2ManyDomain } from "./useOne2manyDomain";
-import { useOne2manyTree } from "./useOne2manyTree";
+import { useOne2manyTree } from "./useOldOne2manyTree";
 import { One2manyTopBar } from "./One2manyTopBar";
 import { ViewType } from "@/types";
 import { useOne2manyForm } from "./useOne2manyForm";
@@ -19,7 +19,7 @@ import { useDeepCompareCallback } from "use-deep-compare";
 import { FormModal, SearchModal } from "@/index";
 import { useOne2manyFormModal } from "./useOne2manyFormModal";
 import { useOne2manySearchModal } from "./useOne2manySearchModal";
-import { One2manyTree } from "./One2manyTree";
+import { One2manyTree } from "./OldOne2manyTree";
 import "@gisce/react-formiga-table/style.css";
 import { Graph } from "@/widgets/views/Graph/Graph";
 import { useOne2manyTreeAggregates } from "./useOne2manyTreeAggregates";

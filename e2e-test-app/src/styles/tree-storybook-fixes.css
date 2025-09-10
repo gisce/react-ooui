@@ -1,7 +1,7 @@
 /* Story viewer specific CSS fixes for TreeActionView components */
 
-/* Ensure story root containers use full height */
-#root,
+/* Ensure story root containers use full height - but only when inside story pages */
+.story-page #root,
 .stories-main {
   height: 100vh !important;
   min-height: 100vh !important;
@@ -77,7 +77,7 @@ div[style*="position: sticky"][style*="top: 80"] {
   top: auto !important;
 }
 
-/* Ensure proper scroll behavior */
-body {
+/* Ensure proper scroll behavior - only for story pages, not index */
+.story-page body {
   overflow: hidden !important;
 }

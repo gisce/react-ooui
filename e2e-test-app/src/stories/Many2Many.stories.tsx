@@ -1,0 +1,83 @@
+import React, { useState, useEffect } from "react";
+import { Form, ConfigContextProvider } from "@gisce/react-ooui";
+import { NotificationProvider } from "@gisce/react-formiga-components";
+import { initializeMockProvider, initializePaginatedMockProvider } from "./One2Many.mockProvider";
+
+interface Many2ManyStoryProps {
+  paginated?: boolean;
+}
+
+const Many2ManyStory: React.FC<Many2ManyStoryProps> = ({ paginated = false }) => {
+  const [mockProviderReady, setMockProviderReady] = useState(false);
+
+  useEffect(() => {
+    // Initialize the appropriate mock provider when component mounts with many2many field type
+    // Use 2 lines for many2many to keep it minimal
+    paginated ? initializePaginatedMockProvider("many2many", 2) : initializeMockProvider("many2many", 2);
+    setMockProviderReady(true);
+
+    return () => {
+      // Cleanup if needed
+    };
+  }, [paginated]);
+
+  if (!mockProviderReady) {
+    return <div>Loading mock provider...</div>;
+  }
+
+  return (
+    <NotificationProvider>
+      <ConfigContextProvider
+        locale="en_US"
+        erpFeatures={{}}
+        userFeatures={{
+          features: {
+            "widget.one2many.enable_new_table": true,
+          },
+          canWriteFeatureFlags: false,
+        }}
+        globalValues={{}}
+        rootContext={{}}
+        devMode={false}
+        title={`Many2Many ${paginated ? 'Paginated' : 'Infinite'} Story Demo`}
+        treeMaxLimit={100}
+      >
+        <div
+          style={{
+            width: "100%",
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+            backgroundColor: "#f5f5f5",
+            padding: "20px",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "8px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              padding: "20px",
+              height: "100%",
+              overflow: "auto",
+            }}
+          >
+            <Form
+              model="sale.order"
+              id={1}
+              showFooter={true}
+              readOnly={false}
+              rootForm={true}
+              parentContext={{}}
+            />
+          </div>
+        </div>
+      </ConfigContextProvider>
+    </NotificationProvider>
+  );
+};
+
+// Export the specific story variants
+export const Infinite = () => <Many2ManyStory paginated={false} />;
+export const Paginated = () => <Many2ManyStory paginated={true} />;

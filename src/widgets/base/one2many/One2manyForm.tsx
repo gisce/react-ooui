@@ -5,7 +5,7 @@ import {
   One2manyContextType,
 } from "@/context/One2manyContext";
 import { useContext, forwardRef } from "react";
-import { One2manyItem } from "./One2manyInput";
+import { One2manyItem } from "./One2manyInputLegacy";
 import { filterDuplicateItems } from "@/helpers/one2manyHelper";
 import { useLocale } from "@gisce/react-formiga-components";
 

@@ -115,7 +115,7 @@ export const Comments = (props: CommentsTypeProps) => {
   const { data = [] } = props;
   const comments = data.map((c) => {
     const style = { float: c.isSender ? "right" : "left", width: "60%" };
-    return <Comment data={c} style={style} />;
+    return <Comment data={c} style={style} key={c.id} />;
   });
   return (
     <div>

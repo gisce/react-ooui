@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { One2manyItem } from "./One2manyInput";
+import { One2manyItem } from "./One2manyInputLegacy";
 import { TreeView, FormView } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
 import {

@@ -211,6 +211,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         )[0],
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [availableViews]);
 
   useEffect(() => {
@@ -224,6 +225,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         )[0],
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentView]);
 
   const callOnFormSave = async () => {

@@ -21,15 +21,9 @@ import {
   getOrderFromSortFields,
 } from "@/helpers/treeHelper";
 import { Tree as TreeOoui } from "@gisce/ooui";
-import { getKey } from "@/helpers/tree-columnStorageHelper";
-import { useTreeColumnStorageFetch } from "@/widgets/base/one2many/useTreeColumnStorageFetch";
-import { useTreeFunctionFieldsRead } from "@/hooks/useTreeFunctionFieldsRead";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
-import {
-  getAttributesConditionsFromOoui,
-  useTreeAttributesState,
-} from "@/hooks/useTreeAttributesState";
-import { useAutorefreshableTreeFields } from "@/hooks/useAutorefreshableTreeFields";
+import { getAttributesConditionsFromOoui } from "@/hooks/useTreeAttributesState";
+import { useTreeSharedHooks } from "@/hooks/useTreeSharedHooks";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 import { useConfigContext } from "@/context/ConfigContext";
 export const DEFAULT_PAGE_SIZE = DEFAULT_SEARCH_LIMIT;
@@ -46,6 +40,10 @@ export type PaginatedSearchProps = {
   context?: any;
   filterType?: "side" | "top";
   onChangeTreeType?: (type: TreeType) => void;
+  updateAttributes?: (attrsEvaluated: any[], treeOoui: TreeOoui) => void;
+  clearAttributes?: () => void;
+  colorsForResults?: React.MutableRefObject<{ [key: number]: string }>;
+  statusForResults?: React.MutableRefObject<{ [key: number]: string }>;
 };
 
 export const usePaginatedSearch = (props: PaginatedSearchProps) => {
@@ -61,6 +59,10 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     context,
     filterType = "side",
     onChangeTreeType,
+    updateAttributes,
+    clearAttributes,
+    colorsForResults,
+    statusForResults,
   } = props;
 
   // State from useSearchTreeState
@@ -117,23 +119,9 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   const SHOULD_MAKE_DEFERRED_FUNCTION_READ =
     treeView?.fields_in_conditions !== undefined;
 
-  const columnStateKey = useMemo(() => {
-    return getKey({ treeViewId: treeView?.view_id, model });
-  }, [treeView?.view_id, model]);
-
   const [parseConditions, cancelParseConditions] = useNetworkRequest(
     ConnectionProvider.getHandler().parseConditions,
   );
-
-  const {
-    fetchColumnState,
-    loading: getColumnStateInProgress,
-    getColumnState,
-    updateColumnState,
-  } = useTreeColumnStorageFetch({
-    key: columnStateKey,
-    treeViewFetching,
-  });
 
   const onFunctionFieldsUpdated = useCallback((updatedResults: any[]) => {
     lastAssignedResults.current = lastAssignedResults.current.map((result) => {
@@ -149,21 +137,12 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   }, []);
 
   const {
-    colorsForResults,
-    statusForResults,
-    updateAttributes,
-    clearAttributes,
-  } = useTreeAttributesState({
-    tableRef,
-  });
-
-  const {
     isFieldLoading,
-    refresh: refreshFunctionFields,
+    refreshFunctionFields,
+    clearAutorefreshableFields,
     addRecordsToCheckFunctionFields,
     onHasFunctionFieldsToParseConditions,
-    syncExternalRecordUpdates,
-  } = useTreeFunctionFieldsRead({
+  } = useTreeSharedHooks({
     model,
     treeView,
     tableRef,
@@ -173,20 +152,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     treeOoui,
     updateAttributes,
     results: actionViewResults,
-  });
-
-  // Setup auto-refresh fields
-  const { clear: clearAutorefreshableFields } = useAutorefreshableTreeFields({
-    model,
-    tableRef,
-    autorefreshableFields: treeOoui?.autorefreshableFields,
-    treeView,
-    context,
-    isActive,
-    treeOoui,
-    updateAttributes,
-    results: actionViewResults,
-    onRecordsUpdated: syncExternalRecordUpdates,
   });
 
   // Hooks
@@ -264,7 +229,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   }, [treeFirstVisibleColumn]);
 
   const onRowStyle = useCallback((item: Record<string, any>): CSSProperties => {
-    if (colorsForResults.current[item.node?.data?.id]) {
+    if (colorsForResults?.current?.[item.node?.data?.id]) {
       return { color: colorsForResults.current[item.node?.data?.id] };
     }
     return {};
@@ -272,7 +237,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   }, []);
 
   const onRowStatus = useCallback(
-    (record: any) => statusForResults.current?.[record.id],
+    (record: any) => statusForResults?.current?.[record.id],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
@@ -396,8 +361,8 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
         return;
       }
 
-      const preparedResults = getTableItems(treeOoui, results);
-      updateAttributes(attrsEvaluated, treeOoui);
+      const preparedResults = await getTableItems(treeOoui, results, context);
+      updateAttributes?.(attrsEvaluated, treeOoui);
 
       setTreeIsLoading(false);
       lastAssignedResults.current = [...preparedResults];
@@ -437,11 +402,10 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   ]);
 
   const refresh = useCallback(async () => {
-    clearAttributes();
+    clearAttributes?.();
     clearAutorefreshableFields();
     setTotalRowsLoading(true);
     setTreeFirstVisibleRow(0);
-    fetchColumnState();
     setSelectedRowItems([]);
     currentSearchParamsString.current = undefined;
 
@@ -456,7 +420,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     clearAttributes,
     clearAutorefreshableFields,
     setTreeFirstVisibleRow,
-    fetchColumnState,
     setSelectedRowItems,
     nameSearch,
     fetchResults,
@@ -698,7 +661,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
         context,
       });
 
-      const preparedResults = getTableItems(treeOoui!, children);
+      const preparedResults = await getTableItems(treeOoui!, children, context);
       const mergedResults = [...results, ...preparedResults];
 
       const conditions = getAttributesConditionsFromOoui({
@@ -712,7 +675,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
           context,
         });
 
-        updateAttributes(attrsEvaluated, treeOoui!);
+        updateAttributes?.(attrsEvaluated, treeOoui!);
         tableRef?.current?.refreshRowStyles();
       } catch (error) {
         console.error(error);
@@ -761,9 +724,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     selectAllRecords,
     onHeaderCheckboxClick,
     headerCheckboxState,
-    getColumnStateInProgress,
-    getColumnState,
-    updateColumnState,
     currentPage,
     limit,
     order: actionViewOrder,
