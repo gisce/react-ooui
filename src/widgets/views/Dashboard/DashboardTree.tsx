@@ -1,13 +1,27 @@
-import { useEffect, useState, useRef, memo } from "react";
+import { useEffect, useState, useRef, memo, useCallback } from "react";
 import { Alert, Spin } from "antd";
 
 import { Tree } from "@/widgets/views/Tree";
+import { SearchTreePaginated } from "@/widgets/views/Tree/Paginated/SearchTreePaginated";
+import { SearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
 import { FormView, TreeView } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
 
-import { getColorMap, getTree, sortResults } from "@/helpers/treeHelper";
+import {
+  getColorMap,
+  getTree,
+  sortResults,
+  determineTreeType,
+  isTreeExpandable,
+} from "@/helpers/treeHelper";
 import { mergeParams } from "@/helpers/searchHelper";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
+import { useConfigContext } from "@/context/ConfigContext";
+import { useDeepCompareEffect } from "use-deep-compare";
+import {
+  TreeType,
+  DEFAULT_TREE_TYPE,
+} from "@/views/actionViews/TreeActionView";
 
 type OnRowClickedData = {
   id: number;
@@ -23,6 +37,7 @@ type Props = {
   domain?: any;
   visible?: boolean;
   parentContext?: any;
+  treeExpandable?: boolean;
 };
 
 function DashboardTree(props: Props) {
@@ -34,6 +49,7 @@ function DashboardTree(props: Props) {
     domain = [],
     visible = true,
     parentContext = {},
+    treeExpandable,
   } = props;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -58,8 +74,10 @@ function DashboardTree(props: Props) {
   const [initialError, setInitialError] = useState<string>();
 
   const [tableRefreshing, setTableRefreshing] = useState<boolean>(false);
+  const [treeType, setTreeType] = useState<TreeType>(DEFAULT_TREE_TYPE);
 
   const actionDomain = useRef<any>([]);
+  const { treeMaxLimit } = useConfigContext();
 
   const onRequestPageChange = (page: number) => {
     setTableRefreshing(true);
@@ -145,7 +163,12 @@ function DashboardTree(props: Props) {
       });
     actionDomain.current = dataForAction.domain;
     setFormView(dataForAction.views.get("form"));
-    setTreeView(dataForAction.views.get("tree"));
+    const treeViewData = dataForAction.views.get("tree");
+    // Set isExpandable from treeExpandable prop if available
+    if (treeExpandable !== undefined) {
+      treeViewData.isExpandable = treeExpandable;
+    }
+    setTreeView(treeViewData);
     setCurrentModel(dataForAction.model);
     limitRef.current = dataForAction.limit;
   };
@@ -167,8 +190,26 @@ function DashboardTree(props: Props) {
       context: parentContext,
     })) as TreeView;
 
+    // Set isExpandable from treeExpandable prop if available
+    if (treeExpandable !== undefined) {
+      _treeView.isExpandable = treeExpandable;
+    }
+
     setTreeView(_treeView as TreeView);
   };
+
+  // Determine tree type using shared helper
+  useDeepCompareEffect(() => {
+    if (!treeView) return;
+
+    const newTreeType = determineTreeType({
+      treeView,
+      limit: limitRef.current,
+      treeMaxLimit,
+    });
+
+    setTreeType(newTreeType);
+  }, [treeView, treeMaxLimit]);
 
   useEffect(() => {
     if (action) {
@@ -178,6 +219,10 @@ function DashboardTree(props: Props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [action, model]);
+
+  const handleTreeTypeChange = useCallback((newType: TreeType) => {
+    setTreeType(newType);
+  }, []);
 
   const onRowClickedHandler = (record: any) => {
     const { id } = record;
@@ -195,33 +240,65 @@ function DashboardTree(props: Props) {
     searchError && console.error(searchError);
 
     return (
-      <div style={{ overflowY: "scroll" }}>
+      <div style={{ overflowY: "scroll", padding: 4, paddingRight: 12 }}>
         {searchError && (
           <Alert className="mt-10" message={searchError} type="error" banner />
         )}
-        <Tree
-          showPagination={false}
-          total={totalItems}
-          limit={limitRef.current}
-          page={page}
-          treeView={treeView}
-          results={results}
-          onRequestPageChange={onRequestPageChange}
-          loading={tableRefreshing}
-          onRowClicked={onRowClickedHandler}
-          colorsForResults={colorsForResults}
-          sorter={sorter}
-          onChangeSort={(newSorter) => {
-            setSorter?.(newSorter);
-            const sortedResults = sortResults({
-              resultsToSort: results,
-              sorter: newSorter,
-              fields: { ...treeView.fields, ...formView.fields },
-            });
-            setResults(sortedResults);
-          }}
-          context={parentContext}
-        />
+        {treeType === "infinite" && (
+          <SearchTreeInfinite
+            hideHeaders={true}
+            rootTree={false}
+            model={currentModel!}
+            parentContext={parentContext}
+            formView={formView}
+            treeView={treeView}
+            domain={domain}
+            onRowClicked={onRowClickedHandler}
+            onChangeTreeType={
+              !isTreeExpandable(treeView) ? handleTreeTypeChange : undefined
+            }
+          />
+        )}
+        {treeType === "paginated" && (
+          <SearchTreePaginated
+            hideHeaders={true}
+            rootTree={false}
+            model={currentModel!}
+            parentContext={parentContext}
+            formView={formView}
+            treeView={treeView}
+            domain={domain}
+            onRowClicked={onRowClickedHandler}
+            onChangeTreeType={
+              !isTreeExpandable(treeView) ? handleTreeTypeChange : undefined
+            }
+          />
+        )}
+        {treeType === "legacy" && (
+          <Tree
+            showPagination={false}
+            total={totalItems}
+            limit={limitRef.current}
+            page={page}
+            treeView={treeView}
+            results={results}
+            onRequestPageChange={onRequestPageChange}
+            loading={tableRefreshing}
+            onRowClicked={onRowClickedHandler}
+            colorsForResults={colorsForResults}
+            sorter={sorter}
+            onChangeSort={(newSorter) => {
+              setSorter?.(newSorter);
+              const sortedResults = sortResults({
+                resultsToSort: results,
+                sorter: newSorter,
+                fields: { ...treeView.fields, ...formView.fields },
+              });
+              setResults(sortedResults);
+            }}
+            context={parentContext}
+          />
+        )}
       </div>
     );
   };

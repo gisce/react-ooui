@@ -55,6 +55,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     nameSearch: nameSearchProps,
     filterType = "side",
     onChangeTreeType,
+    hideHeaders = false,
   } = props;
 
   // Refs
@@ -264,7 +265,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   // Render
   return (
     <Fragment>
-      {!isExpandable && (
+      {!isExpandable && !hideHeaders && (
         <PaginatedSearchControls
           filterType={filterType}
           formView={formView}
@@ -277,7 +278,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
           onSideSearchFilterSubmit={onSideSearchFilterSubmit}
         />
       )}
-      {!isExpandable && (
+      {!isExpandable && !hideHeaders && (
         <PaginationHeader
           total={totalRowsAdjusted}
           totalRowsLoading={totalRowsLoading}

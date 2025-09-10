@@ -427,6 +427,53 @@ function extractTreeXmlAttribute(
   return null;
 }
 
+function isTreeExpandable(treeView: TreeView): boolean {
+  return treeView.isExpandable === true;
+}
+
+export interface TreeTypeOptions {
+  treeView: TreeView;
+  limit?: number;
+  treeMaxLimit: number;
+}
+
+function determineTreeType(
+  options: TreeTypeOptions,
+): "infinite" | "paginated" | "legacy" {
+  const { treeView, limit, treeMaxLimit } = options;
+
+  // Priority 1: Expandable trees always use paginated mode
+  if (isTreeExpandable(treeView)) {
+    return "paginated";
+  }
+
+  // Priority 2: Zero limit means infinite scrolling
+  if (limit === 0) {
+    return "infinite";
+  }
+
+  // Priority 3: Large limits use infinite scrolling
+  if (limit && limit > treeMaxLimit) {
+    return "infinite";
+  }
+
+  // Priority 4: Check XML arch for explicit infinite attribute
+  if (treeView?.arch) {
+    const tagValue = extractTreeXmlAttribute(treeView.arch, "infinite");
+    if (tagValue) {
+      if (tagValue === "1" || tagValue === "true") {
+        return "infinite";
+      }
+      if (tagValue === "0" || tagValue === "false") {
+        return "paginated";
+      }
+    }
+  }
+
+  // Priority 5: Default fallback
+  return "legacy";
+}
+
 export {
   getTableColumns,
   getTableItems,
@@ -440,4 +487,6 @@ export {
   getOrderFromSortFields,
   extractTreeXmlAttribute,
   getSortedFieldsFromState,
+  isTreeExpandable,
+  determineTreeType,
 };
