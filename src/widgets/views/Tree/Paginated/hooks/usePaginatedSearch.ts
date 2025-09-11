@@ -44,6 +44,7 @@ export type PaginatedSearchProps = {
   clearAttributes?: () => void;
   colorsForResults?: React.MutableRefObject<{ [key: number]: string }>;
   statusForResults?: React.MutableRefObject<{ [key: number]: string }>;
+  disablePagination?: boolean;
 };
 
 export const usePaginatedSearch = (props: PaginatedSearchProps) => {
@@ -63,6 +64,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     clearAttributes,
     colorsForResults,
     statusForResults,
+    disablePagination = false,
   } = props;
 
   // State from useSearchTreeState
@@ -98,7 +100,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
   const { treeMaxLimit } = useConfigContext();
   const { setCurrentSavedSearch } = useActionViewContext();
-  const limit = Math.min(limitActionView, treeMaxLimit);
+  const limit = disablePagination ? 0 : Math.min(limitActionView, treeMaxLimit);
 
   // Local state
   const [totalRowsLoading, setTotalRowsLoading] = useState<boolean>(true);
@@ -319,7 +321,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       const { results, attrsEvaluated } = await searchForTree({
         params,
         limit,
-        offset: ((currentPage || 1) - 1) * limit,
+        offset: disablePagination ? 0 : ((currentPage || 1) - 1) * limit,
         model,
         fields: treeView!.field_parent
           ? { ...treeView!.fields, [treeView!.field_parent]: {} }

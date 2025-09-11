@@ -38,6 +38,7 @@ type Props = {
   visible?: boolean;
   parentContext?: any;
   treeExpandable?: boolean;
+  fixedHeight?: number;
 };
 
 function DashboardTree(props: Props) {
@@ -50,6 +51,7 @@ function DashboardTree(props: Props) {
     visible = true,
     parentContext = {},
     treeExpandable,
+    fixedHeight,
   } = props;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -130,7 +132,7 @@ function DashboardTree(props: Props) {
       return;
     }
 
-    if (visible) {
+    if (visible && treeType === "legacy") {
       fetchResults();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -240,7 +242,7 @@ function DashboardTree(props: Props) {
     searchError && console.error(searchError);
 
     return (
-      <div style={{ overflowY: "scroll", padding: 4, paddingRight: 12 }}>
+      <div style={{ overflowY: "scroll", padding: 4 }}>
         {searchError && (
           <Alert className="mt-10" message={searchError} type="error" banner />
         )}
@@ -254,9 +256,11 @@ function DashboardTree(props: Props) {
             treeView={treeView}
             domain={domain}
             onRowClicked={onRowClickedHandler}
+            hideSelectionColumn={true}
             onChangeTreeType={
               !isTreeExpandable(treeView) ? handleTreeTypeChange : undefined
             }
+            fixedHeight={fixedHeight}
           />
         )}
         {treeType === "paginated" && (
@@ -269,9 +273,11 @@ function DashboardTree(props: Props) {
             treeView={treeView}
             domain={domain}
             onRowClicked={onRowClickedHandler}
+            hideSelectionColumn={true}
             onChangeTreeType={
               !isTreeExpandable(treeView) ? handleTreeTypeChange : undefined
             }
+            fixedHeight={fixedHeight}
           />
         )}
         {treeType === "legacy" && (

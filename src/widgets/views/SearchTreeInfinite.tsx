@@ -79,6 +79,8 @@ export type SearchTreeInfiniteProps = {
   filterType?: "side" | "top";
   onChangeTreeType?: (type: TreeType) => void;
   hideHeaders?: boolean;
+  hideSelectionColumn?: boolean;
+  fixedHeight?: number;
 };
 
 function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
@@ -96,6 +98,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     filterType = "side",
     onChangeTreeType,
     hideHeaders = false,
+    hideSelectionColumn = false,
+    fixedHeight,
   } = props;
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
   const lastAssignedResults = useRef<any[]>([]);
@@ -108,10 +112,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     useState<boolean>(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const availableHeight = useAvailableHeight({
+  const calculatedHeight = useAvailableHeight({
     elementRef: containerRef,
     offset: HEIGHT_OFFSET,
   });
+  const availableHeight =
+    fixedHeight !== undefined ? fixedHeight : calculatedHeight;
 
   // Network request hooks
   const [searchCount, cancelSearchCount] = useNetworkRequest(
@@ -596,13 +602,17 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         onRequestData={onRequestData}
         onRowDoubleClick={onRowClicked}
         onRowStyle={onRowStyle}
-        onRowSelectionChange={changeSelectedRowKeys}
+        onRowSelectionChange={
+          hideSelectionColumn ? undefined : changeSelectedRowKeys
+        }
         onColumnChanged={updateColumnState}
         onGetColumnsState={getColumnState}
         onChangeFirstVisibleRowIndex={setTreeFirstVisibleRow}
         onGetFirstVisibleRowIndex={stableFirstVisibleRowIndex}
-        selectedRowKeys={selectedRowKeys}
-        onSelectionCheckboxClicked={onSelectionCheckboxClicked}
+        selectedRowKeys={hideSelectionColumn ? undefined : selectedRowKeys}
+        onSelectionCheckboxClicked={
+          hideSelectionColumn ? undefined : onSelectionCheckboxClicked
+        }
         totalRows={totalRows || 99999}
         footer={footerComponent}
         hasStatusColumn={treeOoui.status !== null}
@@ -621,6 +631,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     onRequestData,
     onRowClicked,
     onRowStyle,
+    hideSelectionColumn,
     changeSelectedRowKeys,
     updateColumnState,
     getColumnState,

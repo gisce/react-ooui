@@ -2,8 +2,8 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { useEffect, useState } from "react";
 import Form, { FormProps } from "../Form";
 
-export const DashboardForm = (props: FormProps) => {
-  const { model } = props;
+export const DashboardForm = (props: FormProps & { fixedHeight?: number }) => {
+  const { model, fixedHeight } = props;
   const [firstId, setFirstId] = useState<number>();
 
   useEffect(() => {
@@ -24,7 +24,9 @@ export const DashboardForm = (props: FormProps) => {
   }
 
   return (
-    <div style={{ padding: "0.5rem", overflowY: "scroll" }}>
+    <div
+      style={{ padding: "0.5rem", overflowY: "scroll", height: fixedHeight }}
+    >
       <Form {...props} model={model} id={firstId} readOnly />
     </div>
   );

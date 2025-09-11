@@ -29,6 +29,7 @@ import { UserFeatureKeys } from "@/models/userFeature";
 import { DashboardForm } from "../views/Dashboard/DashboardForm";
 import DashboardTree from "../views/Dashboard/DashboardTree";
 import { ShortcutApi } from "@/ui/FavouriteButton";
+import { useDeepCompareEffect } from "use-deep-compare";
 const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
@@ -38,6 +39,7 @@ type IndicatorProps = WidgetProps & {
 
 export const Indicator = (props: IndicatorProps) => {
   const { ooui } = props;
+  const { refreshCounter } = useFormContext();
 
   const hasActionId = ooui.actionId !== undefined;
   const hasActionField = ooui.actionField !== undefined;
@@ -46,10 +48,10 @@ export const Indicator = (props: IndicatorProps) => {
     <Field ooui={ooui}>
       {hasActionId || hasActionField ? (
         <ErrorBoundary>
-          <GraphIndicatorInput ooui={ooui} />
+          <GraphIndicatorInput key={refreshCounter} ooui={ooui} />
         </ErrorBoundary>
       ) : (
-        <IndicatorInput ooui={ooui} />
+        <IndicatorInput key={refreshCounter} ooui={ooui} />
       )}
     </Field>
   );
@@ -202,7 +204,7 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
 
   const { openShortcut } = useTabs();
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (!ooui || !effectiveActionId) {
       return;
     }
@@ -300,7 +302,12 @@ const CardContent = ({
     );
   } else if (initialView.type === "form") {
     return (
-      <DashboardForm key={initialView.id} model={model} actionDomain={domain} />
+      <DashboardForm
+        key={initialView.id}
+        model={model}
+        actionDomain={domain}
+        fixedHeight={fixedHeight}
+      />
     );
   } else if (initialView.type === "tree") {
     return (
@@ -311,6 +318,7 @@ const CardContent = ({
         view_id={initialView.id}
         onRowClicked={onRowClicked}
         treeExpandable={actionData.treeExpandable}
+        fixedHeight={fixedHeight}
       />
     );
   } else {
