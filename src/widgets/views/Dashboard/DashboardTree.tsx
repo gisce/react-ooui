@@ -132,7 +132,7 @@ function DashboardTree(props: Props) {
       return;
     }
 
-    if (visible) {
+    if (visible && treeType === "legacy") {
       fetchResults();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
