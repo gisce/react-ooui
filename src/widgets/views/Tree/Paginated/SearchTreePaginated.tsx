@@ -110,6 +110,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
 
   // Ensure columns is never undefined
   const safeColumns = useMemo(() => columns || [], [columns]);
+  const isExpandable = treeView?.isExpandable;
 
   // Pagination and search state
   const {
@@ -161,7 +162,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     clearAttributes,
     colorsForResults,
     statusForResults,
-    disablePagination: hideHeaders,
+    disablePagination: hideHeaders || isExpandable,
   });
 
   const paginatedColumns = useMemo(() => {
@@ -187,7 +188,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   });
 
   const handleRowDoubleClick = useCallbackRef((data: OnRowClickedData) => {
-    if (treeView?.isExpandable) {
+    if (isExpandable) {
       handleExpandableRowDoubleClick(data);
     } else {
       onRowClickedRef(data);
@@ -264,8 +265,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     }
     return nameSearchProps ? DEFAULT_SEARCH_LIMIT : limit || DEFAULT_PAGE_SIZE;
   }, [results?.length, totalRows, nameSearchProps, limit]);
-
-  const isExpandable = treeView?.isExpandable;
 
   // Render
   return (
