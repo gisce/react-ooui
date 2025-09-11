@@ -161,6 +161,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     clearAttributes,
     colorsForResults,
     statusForResults,
+    disablePagination: hideHeaders,
   });
 
   const paginatedColumns = useMemo(() => {
