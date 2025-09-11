@@ -29,6 +29,7 @@ import { UserFeatureKeys } from "@/models/userFeature";
 import { DashboardForm } from "../views/Dashboard/DashboardForm";
 import DashboardTree from "../views/Dashboard/DashboardTree";
 import { ShortcutApi } from "@/ui/FavouriteButton";
+import { useDeepCompareEffect } from "use-deep-compare";
 const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
@@ -202,7 +203,7 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
 
   const { openShortcut } = useTabs();
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (!ooui || !effectiveActionId) {
       return;
     }
