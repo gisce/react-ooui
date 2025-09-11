@@ -39,6 +39,7 @@ type IndicatorProps = WidgetProps & {
 
 export const Indicator = (props: IndicatorProps) => {
   const { ooui } = props;
+  const { refreshCounter } = useFormContext();
 
   const hasActionId = ooui.actionId !== undefined;
   const hasActionField = ooui.actionField !== undefined;
@@ -47,10 +48,10 @@ export const Indicator = (props: IndicatorProps) => {
     <Field ooui={ooui}>
       {hasActionId || hasActionField ? (
         <ErrorBoundary>
-          <GraphIndicatorInput ooui={ooui} />
+          <GraphIndicatorInput key={refreshCounter} ooui={ooui} />
         </ErrorBoundary>
       ) : (
-        <IndicatorInput ooui={ooui} />
+        <IndicatorInput key={refreshCounter} ooui={ooui} />
       )}
     </Field>
   );
