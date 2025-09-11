@@ -25,6 +25,7 @@ export type SearchTreePaginatedProps = {
   filterType?: "side" | "top";
   onChangeTreeType?: (type: TreeType) => void;
   hideHeaders?: boolean;
+  hideSelectionColumn?: boolean;
 };
 
 export type PaginatedSearchControlsProps = {

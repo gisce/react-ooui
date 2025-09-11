@@ -56,6 +56,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     filterType = "side",
     onChangeTreeType,
     hideHeaders = false,
+    hideSelectionColumn = false,
   } = props;
 
   // Refs
@@ -314,7 +315,9 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             availableHeight={availableHeight}
             results={results}
             handleRowDoubleClick={handleRowDoubleClick}
-            onRowHasBeenSelected={onRowHasBeenSelected}
+            onRowHasBeenSelected={
+              hideSelectionColumn ? undefined : onRowHasBeenSelected
+            }
             updateColumnState={updateColumnState}
             getColumnState={getColumnState}
             setTreeFirstVisibleRow={setTreeFirstVisibleRow}
@@ -325,8 +328,12 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             statusComp={statusComp}
             onRowStatus={onRowStatus}
             onRowStyle={onRowStyle}
-            headerCheckboxState={headerCheckboxState}
-            onHeaderCheckboxClick={onHeaderCheckboxClick}
+            headerCheckboxState={
+              hideSelectionColumn ? "unchecked" : headerCheckboxState
+            }
+            onHeaderCheckboxClick={
+              hideSelectionColumn ? () => {} : onHeaderCheckboxClick
+            }
             refresh={refreshCallbackRef}
             actionViewSortState={actionViewSortState}
             onSortChange={onSortChange}

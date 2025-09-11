@@ -254,6 +254,7 @@ function DashboardTree(props: Props) {
             treeView={treeView}
             domain={domain}
             onRowClicked={onRowClickedHandler}
+            hideSelectionColumn={true}
             onChangeTreeType={
               !isTreeExpandable(treeView) ? handleTreeTypeChange : undefined
             }
@@ -269,6 +270,7 @@ function DashboardTree(props: Props) {
             treeView={treeView}
             domain={domain}
             onRowClicked={onRowClickedHandler}
+            hideSelectionColumn={true}
             onChangeTreeType={
               !isTreeExpandable(treeView) ? handleTreeTypeChange : undefined
             }
