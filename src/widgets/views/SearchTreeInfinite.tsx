@@ -80,6 +80,7 @@ export type SearchTreeInfiniteProps = {
   onChangeTreeType?: (type: TreeType) => void;
   hideHeaders?: boolean;
   hideSelectionColumn?: boolean;
+  fixedHeight?: number;
 };
 
 function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
@@ -98,6 +99,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     onChangeTreeType,
     hideHeaders = false,
     hideSelectionColumn = false,
+    fixedHeight,
   } = props;
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
   const lastAssignedResults = useRef<any[]>([]);
@@ -110,10 +112,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     useState<boolean>(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const availableHeight = useAvailableHeight({
+  const calculatedHeight = useAvailableHeight({
     elementRef: containerRef,
     offset: HEIGHT_OFFSET,
   });
+  const availableHeight =
+    fixedHeight !== undefined ? fixedHeight : calculatedHeight;
 
   // Network request hooks
   const [searchCount, cancelSearchCount] = useNetworkRequest(

@@ -57,6 +57,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     onChangeTreeType,
     hideHeaders = false,
     hideSelectionColumn = false,
+    fixedHeight,
   } = props;
 
   // Refs
@@ -73,10 +74,12 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     context: parentContext,
   });
 
-  const availableHeight = useAvailableHeight({
+  const calculatedHeight = useAvailableHeight({
     elementRef: containerRef,
     offset: treeView?.isExpandable ? EXPANDABLE_HEIGHT_OFFSET : HEIGHT_OFFSET,
   });
+  const availableHeight =
+    fixedHeight !== undefined ? fixedHeight : calculatedHeight;
 
   const treeOoui: TreeOoui | undefined = useMemo(() => {
     if (!treeView) return;

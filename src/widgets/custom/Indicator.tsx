@@ -300,7 +300,12 @@ const CardContent = ({
     );
   } else if (initialView.type === "form") {
     return (
-      <DashboardForm key={initialView.id} model={model} actionDomain={domain} />
+      <DashboardForm
+        key={initialView.id}
+        model={model}
+        actionDomain={domain}
+        fixedHeight={fixedHeight}
+      />
     );
   } else if (initialView.type === "tree") {
     return (
@@ -311,6 +316,7 @@ const CardContent = ({
         view_id={initialView.id}
         onRowClicked={onRowClicked}
         treeExpandable={actionData.treeExpandable}
+        fixedHeight={fixedHeight}
       />
     );
   } else {
