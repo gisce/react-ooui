@@ -58,6 +58,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     hideHeaders = false,
     hideSelectionColumn = false,
     fixedHeight,
+    autoRefresh,
   } = props;
 
   // Refs
@@ -314,7 +315,9 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             columns={paginatedColumns}
             treeOoui={treeOoui!}
             strings={strings}
-            isLoading={treeIsLoading || isColumnStateLoading}
+            isLoading={
+              autoRefresh ? false : treeIsLoading || isColumnStateLoading
+            }
             availableHeight={availableHeight}
             results={results}
             handleRowDoubleClick={handleRowDoubleClick}
@@ -346,6 +349,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
               treeView?.isExpandable ? fetchChildrenForRecord : undefined
             }
             childField={treeView?.field_parent}
+            autoRefresh={autoRefresh}
           />
         )}
       </div>
