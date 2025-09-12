@@ -337,6 +337,7 @@ const CardContent = ({
         model={model}
         actionDomain={domain}
         fixedHeight={fixedHeight}
+        autoRefresh={autoRefresh}
       />
     );
   } else if (initialView.type === "tree") {
