@@ -37,6 +37,8 @@ type IndicatorProps = WidgetProps & {
   value?: number;
 };
 
+const AUTOREFRESH_INTERVAL_SECONDS = 3 * 1000;
+
 export const Indicator = (props: IndicatorProps) => {
   const { ooui } = props;
   const { refreshCounter } = useFormContext();
@@ -238,7 +240,13 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
             />
           ) : (
             initialView?.id && (
-              <CardContent fixedHeight={height} actionData={actionData} />
+              <CardContent
+                fixedHeight={height}
+                actionData={actionData}
+                autoRefresh={
+                  ooui.autoRefresh ? AUTOREFRESH_INTERVAL_SECONDS : undefined
+                }
+              />
             )
           )}
         </>
@@ -250,9 +258,11 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
 const CardContent = ({
   actionData,
   fixedHeight,
+  autoRefresh,
 }: {
   fixedHeight?: number;
   actionData: any;
+  autoRefresh?: number;
 }) => {
   const { initialView, views, model, domain, context, limit } = actionData;
   const readForViewFeature = useFeatureData(ErpFeatureKeys.FEATURE_READFORVIEW);
@@ -319,6 +329,7 @@ const CardContent = ({
         onRowClicked={onRowClicked}
         treeExpandable={actionData.treeExpandable}
         fixedHeight={fixedHeight}
+        autoRefresh={autoRefresh}
       />
     );
   } else {

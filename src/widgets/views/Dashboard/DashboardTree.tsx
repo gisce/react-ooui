@@ -39,6 +39,7 @@ type Props = {
   parentContext?: any;
   treeExpandable?: boolean;
   fixedHeight?: number;
+  autoRefresh?: number;
 };
 
 function DashboardTree(props: Props) {
@@ -52,6 +53,7 @@ function DashboardTree(props: Props) {
     parentContext = {},
     treeExpandable,
     fixedHeight,
+    autoRefresh,
   } = props;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -261,6 +263,7 @@ function DashboardTree(props: Props) {
               !isTreeExpandable(treeView) ? handleTreeTypeChange : undefined
             }
             fixedHeight={fixedHeight}
+            autoRefresh={autoRefresh}
           />
         )}
         {treeType === "paginated" && (
@@ -278,6 +281,7 @@ function DashboardTree(props: Props) {
               !isTreeExpandable(treeView) ? handleTreeTypeChange : undefined
             }
             fixedHeight={fixedHeight}
+            autoRefresh={autoRefresh}
           />
         )}
         {treeType === "legacy" && (
