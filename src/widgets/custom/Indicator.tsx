@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from "react";
 import { Tooltip, theme, Statistic, Card, Empty, Space } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
@@ -244,7 +250,9 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
                 fixedHeight={height}
                 actionData={actionData}
                 autoRefresh={
-                  ooui.autoRefresh ? AUTOREFRESH_INTERVAL_SECONDS : undefined
+                  (ooui as any).autoRefresh
+                    ? AUTOREFRESH_INTERVAL_SECONDS
+                    : undefined
                 }
               />
             )
@@ -268,6 +276,17 @@ const CardContent = ({
   const readForViewFeature = useFeatureData(ErpFeatureKeys.FEATURE_READFORVIEW);
   const GraphComponent = readForViewFeature?.isEnabled ? GraphServer : Graph;
   const { openShortcut } = useTabs();
+  const graphRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (autoRefresh && graphRef.current && initialView.type === "graph") {
+      const interval = setInterval(() => {
+        graphRef.current?.refresh();
+      }, autoRefresh);
+
+      return () => clearInterval(interval);
+    }
+  }, [autoRefresh, initialView.type]);
 
   const onRowClicked = useCallback(
     (record: any) => {
@@ -302,6 +321,7 @@ const CardContent = ({
   if (initialView.type === "graph") {
     return (
       <GraphComponent
+        ref={graphRef}
         view_id={initialView.id}
         model={model}
         context={context}
