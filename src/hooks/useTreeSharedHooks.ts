@@ -18,6 +18,7 @@ export type UseTreeSharedHooksProps = {
   updateAttributes?: (attrsEvaluated: any[], treeOoui: TreeOoui) => void;
   results?: any[];
   onResultsUpdated?: (updatedResults: any[]) => void;
+  autoRefresh?: number;
 };
 
 /**
@@ -34,8 +35,13 @@ export const useTreeSharedHooks = ({
   updateAttributes,
   results = [],
   onResultsUpdated,
+  autoRefresh,
 }: UseTreeSharedHooksProps) => {
-  // Function fields hook
+  // Centralized logic for determining if function fields should be deferred
+  const shouldMakeDeferredFunctionRead =
+    treeView?.fields_in_conditions !== undefined && !autoRefresh;
+
+  // Function fields hook - still active but won't be used for deferred loading when autoRefresh is true
   const {
     isFieldLoading,
     refresh: refreshFunctionFields,
@@ -52,16 +58,19 @@ export const useTreeSharedHooks = ({
     treeOoui,
     updateAttributes,
     results,
+    skipFunctionFieldsHandling: Boolean(autoRefresh),
   });
 
-  // Auto-refreshable fields hook
+  // Auto-refreshable fields hook - disabled when autoRefresh is true
   const { clear: clearAutorefreshableFields } = useAutorefreshableTreeFields({
     model,
     tableRef,
-    autorefreshableFields: treeOoui?.autorefreshableFields,
+    autorefreshableFields: autoRefresh
+      ? undefined
+      : treeOoui?.autorefreshableFields,
     treeView,
     context,
-    isActive,
+    isActive: autoRefresh ? false : isActive,
     treeOoui,
     updateAttributes,
     results,
@@ -90,6 +99,7 @@ export const useTreeSharedHooks = ({
       // Individual functions for backward compatibility
       refreshFunctionFields,
       clearAutorefreshableFields,
+      shouldMakeDeferredFunctionRead,
     }),
     [
       isFieldLoading,
@@ -100,6 +110,7 @@ export const useTreeSharedHooks = ({
       syncExternalRecordUpdates,
       refreshFunctionFields,
       clearAutorefreshableFields,
+      shouldMakeDeferredFunctionRead,
     ],
   );
 };
