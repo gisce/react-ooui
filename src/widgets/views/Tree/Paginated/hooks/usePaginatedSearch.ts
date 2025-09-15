@@ -26,6 +26,7 @@ import { getAttributesConditionsFromOoui } from "@/hooks/useTreeAttributesState"
 import { useTreeSharedHooks } from "@/hooks/useTreeSharedHooks";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 import { useConfigContext } from "@/context/ConfigContext";
+import { useTableAutoRefreshControl } from "@/hooks/useTableAutoRefreshControl";
 export const DEFAULT_PAGE_SIZE = DEFAULT_SEARCH_LIMIT;
 
 export type PaginatedSearchProps = {
@@ -45,6 +46,7 @@ export type PaginatedSearchProps = {
   colorsForResults?: React.MutableRefObject<{ [key: number]: string }>;
   statusForResults?: React.MutableRefObject<{ [key: number]: string }>;
   disablePagination?: boolean;
+  autoRefresh?: number;
 };
 
 export const usePaginatedSearch = (props: PaginatedSearchProps) => {
@@ -65,6 +67,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     colorsForResults,
     statusForResults,
     disablePagination = false,
+    autoRefresh,
   } = props;
 
   // State from useSearchTreeState
@@ -118,9 +121,6 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   const lastAssignedResults = useRef<any[]>([]);
   const fetchInProgress = useRef<boolean>(false);
 
-  const SHOULD_MAKE_DEFERRED_FUNCTION_READ =
-    treeView?.fields_in_conditions !== undefined;
-
   const [parseConditions, cancelParseConditions] = useNetworkRequest(
     ConnectionProvider.getHandler().parseConditions,
   );
@@ -144,6 +144,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     clearAutorefreshableFields,
     addRecordsToCheckFunctionFields,
     onHasFunctionFieldsToParseConditions,
+    shouldMakeDeferredFunctionRead,
   } = useTreeSharedHooks({
     model,
     treeView,
@@ -154,6 +155,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     treeOoui,
     updateAttributes,
     results: actionViewResults,
+    autoRefresh,
   });
 
   // Hooks
@@ -310,7 +312,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
       const attrs = getAttributesConditionsFromOoui({
         treeOoui,
         hasFunctionFieldsToParseConditions:
-          SHOULD_MAKE_DEFERRED_FUNCTION_READ &&
+          shouldMakeDeferredFunctionRead &&
           onHasFunctionFieldsToParseConditions(),
       });
 
@@ -330,9 +332,11 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
         attrs,
         order,
         name_search: nameSearch,
-        skipFunctionFields: SHOULD_MAKE_DEFERRED_FUNCTION_READ,
+        skipFunctionFields: shouldMakeDeferredFunctionRead,
         onIdsRetrieved: (ids: number[]) => {
-          addRecordsToCheckFunctionFields(ids);
+          if (shouldMakeDeferredFunctionRead) {
+            addRecordsToCheckFunctionFields(ids);
+          }
         },
       });
 
@@ -385,11 +389,12 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     nameSearch,
     domain,
     mergedParams,
-    SHOULD_MAKE_DEFERRED_FUNCTION_READ,
+    shouldMakeDeferredFunctionRead,
     onHasFunctionFieldsToParseConditions,
     mustUpdateTotal,
     searchForTree,
     limit,
+    disablePagination,
     currentPage,
     model,
     treeView,
@@ -635,6 +640,12 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     [results, setSelectedRowItems],
   );
 
+  // Control autorefresh based on ActionView active state
+  useTableAutoRefreshControl({
+    tableRef,
+    autoRefresh,
+  });
+
   const fetchChildrenForRecord = useCallback(
     async (record: any) => {
       const child_id = record[treeView?.field_parent || "child_id"];
@@ -643,7 +654,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
         ? { ...treeView!.fields, [treeView!.field_parent]: {} }
         : treeView!.fields;
 
-      if (SHOULD_MAKE_DEFERRED_FUNCTION_READ) {
+      if (shouldMakeDeferredFunctionRead) {
         // We need here the fields that are not function fields
         mergedFields = Object.entries(mergedFields).reduce(
           (acc: Record<string, any>, [fieldName, fieldValue]) => {
@@ -685,13 +696,15 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
       lastAssignedResults.current = [...mergedResults];
       setResults([...mergedResults]);
-      addRecordsToCheckFunctionFields(children.map((child: any) => child.id));
+      if (shouldMakeDeferredFunctionRead) {
+        addRecordsToCheckFunctionFields(children.map((child: any) => child.id));
+      }
 
       return preparedResults;
     },
     [
       treeView,
-      SHOULD_MAKE_DEFERRED_FUNCTION_READ,
+      shouldMakeDeferredFunctionRead,
       model,
       context,
       treeOoui,

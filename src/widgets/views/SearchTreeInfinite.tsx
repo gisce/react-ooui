@@ -53,6 +53,7 @@ import { getAttributesConditionsFromOoui } from "@/hooks/useTreeAttributesState"
 import { CellRenderer } from "./Tree/CellRenderer";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import { useTableAutoRefreshControl } from "@/hooks/useTableAutoRefreshControl";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -241,6 +242,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     clearAutorefreshableFields,
     addRecordsToCheckFunctionFields,
     onHasFunctionFieldsToParseConditions,
+    shouldMakeDeferredFunctionRead,
   } = useTreeSharedHooks({
     model,
     treeView,
@@ -250,6 +252,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     treeOoui,
     updateAttributes,
     results: actionViewResults,
+    autoRefresh,
   });
 
   // Calculate selectedRowKeys for shared hooks
@@ -373,13 +376,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
       const params = nameSearch ? domain : mergedParams;
 
-      const SHOULD_MAKE_DEFERRED_FUNCTION_READ =
-        treeView?.fields_in_conditions !== undefined;
-
       const attrs = getAttributesConditionsFromOoui({
         treeOoui,
         hasFunctionFieldsToParseConditions:
-          SHOULD_MAKE_DEFERRED_FUNCTION_READ &&
+          shouldMakeDeferredFunctionRead &&
           onHasFunctionFieldsToParseConditions(),
       });
 
@@ -395,9 +395,11 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         attrs,
         order,
         name_search: nameSearch,
-        skipFunctionFields: SHOULD_MAKE_DEFERRED_FUNCTION_READ,
+        skipFunctionFields: shouldMakeDeferredFunctionRead,
         onIdsRetrieved: (ids: number[]) => {
-          addRecordsToCheckFunctionFields(ids);
+          if (shouldMakeDeferredFunctionRead) {
+            addRecordsToCheckFunctionFields(ids);
+          }
         },
       });
 
@@ -478,6 +480,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       treeOoui,
       treeView,
       updateAttributes,
+      shouldMakeDeferredFunctionRead,
     ],
   );
 
@@ -583,6 +586,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const stableFirstVisibleRowIndex = useCallback(() => {
     return treeFirstVisibleRowRef.current;
   }, []);
+
+  // Control autorefresh based on ActionView active state
+  useTableAutoRefreshControl({
+    tableRef,
+    autoRefresh,
+  });
 
   // Calculate cache block size outside of render
   const cacheBlockSize = isNameSearchMode.current
