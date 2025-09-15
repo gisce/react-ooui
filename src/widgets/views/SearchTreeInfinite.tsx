@@ -53,6 +53,7 @@ import { getAttributesConditionsFromOoui } from "@/hooks/useTreeAttributesState"
 import { CellRenderer } from "./Tree/CellRenderer";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import { useTableAutoRefreshControl } from "@/hooks/useTableAutoRefreshControl";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -585,6 +586,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const stableFirstVisibleRowIndex = useCallback(() => {
     return treeFirstVisibleRowRef.current;
   }, []);
+
+  // Control autorefresh based on ActionView active state
+  useTableAutoRefreshControl({
+    tableRef,
+    autoRefresh,
+  });
 
   // Calculate cache block size outside of render
   const cacheBlockSize = isNameSearchMode.current

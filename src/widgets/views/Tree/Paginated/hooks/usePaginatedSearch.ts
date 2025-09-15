@@ -26,6 +26,7 @@ import { getAttributesConditionsFromOoui } from "@/hooks/useTreeAttributesState"
 import { useTreeSharedHooks } from "@/hooks/useTreeSharedHooks";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 import { useConfigContext } from "@/context/ConfigContext";
+import { useTableAutoRefreshControl } from "@/hooks/useTableAutoRefreshControl";
 export const DEFAULT_PAGE_SIZE = DEFAULT_SEARCH_LIMIT;
 
 export type PaginatedSearchProps = {
@@ -638,6 +639,12 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
     },
     [results, setSelectedRowItems],
   );
+
+  // Control autorefresh based on ActionView active state
+  useTableAutoRefreshControl({
+    tableRef,
+    autoRefresh,
+  });
 
   const fetchChildrenForRecord = useCallback(
     async (record: any) => {
