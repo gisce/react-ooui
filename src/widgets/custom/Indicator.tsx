@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from "react";
 import { Tooltip, theme, Statistic, Card, Empty, Space } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
@@ -36,6 +42,8 @@ type IndicatorProps = WidgetProps & {
   ooui: IndicatorOoui;
   value?: number;
 };
+
+const AUTOREFRESH_INTERVAL_SECONDS = 3 * 1000;
 
 export const Indicator = (props: IndicatorProps) => {
   const { ooui } = props;
@@ -238,7 +246,15 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
             />
           ) : (
             initialView?.id && (
-              <CardContent fixedHeight={height} actionData={actionData} />
+              <CardContent
+                fixedHeight={height}
+                actionData={actionData}
+                autoRefresh={
+                  (ooui as any).autoRefresh
+                    ? AUTOREFRESH_INTERVAL_SECONDS
+                    : undefined
+                }
+              />
             )
           )}
         </>
@@ -250,14 +266,27 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
 const CardContent = ({
   actionData,
   fixedHeight,
+  autoRefresh,
 }: {
   fixedHeight?: number;
   actionData: any;
+  autoRefresh?: number;
 }) => {
   const { initialView, views, model, domain, context, limit } = actionData;
   const readForViewFeature = useFeatureData(ErpFeatureKeys.FEATURE_READFORVIEW);
   const GraphComponent = readForViewFeature?.isEnabled ? GraphServer : Graph;
   const { openShortcut } = useTabs();
+  const graphRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (autoRefresh && graphRef.current && initialView.type === "graph") {
+      const interval = setInterval(() => {
+        graphRef.current?.refresh();
+      }, autoRefresh);
+
+      return () => clearInterval(interval);
+    }
+  }, [autoRefresh, initialView.type]);
 
   const onRowClicked = useCallback(
     (record: any) => {
@@ -292,6 +321,7 @@ const CardContent = ({
   if (initialView.type === "graph") {
     return (
       <GraphComponent
+        ref={graphRef}
         view_id={initialView.id}
         model={model}
         context={context}
@@ -307,6 +337,7 @@ const CardContent = ({
         model={model}
         actionDomain={domain}
         fixedHeight={fixedHeight}
+        autoRefresh={autoRefresh}
       />
     );
   } else if (initialView.type === "tree") {
@@ -319,6 +350,7 @@ const CardContent = ({
         onRowClicked={onRowClicked}
         treeExpandable={actionData.treeExpandable}
         fixedHeight={fixedHeight}
+        autoRefresh={autoRefresh}
       />
     );
   } else {

@@ -81,6 +81,7 @@ export type SearchTreeInfiniteProps = {
   hideHeaders?: boolean;
   hideSelectionColumn?: boolean;
   fixedHeight?: number;
+  autoRefresh?: number;
 };
 
 function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
@@ -100,6 +101,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     hideHeaders = false,
     hideSelectionColumn = false,
     fixedHeight,
+    autoRefresh,
   } = props;
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
   const lastAssignedResults = useRef<any[]>([]);
@@ -622,6 +624,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         initialSortState={actionViewSortState}
         cacheBlockSize={cacheBlockSize}
         onChangeTableType={onChangeTreeType}
+        autoRefresh={autoRefresh}
       />
     );
   }, [
@@ -647,6 +650,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     actionViewSortState,
     cacheBlockSize,
     onChangeTreeType,
+    autoRefresh,
   ]);
 
   const prevSearchParamsRef = useRef(searchParams);

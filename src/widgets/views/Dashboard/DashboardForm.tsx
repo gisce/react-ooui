@@ -1,15 +1,32 @@
 import ConnectionProvider from "@/ConnectionProvider";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Form, { FormProps } from "../Form";
 
-export const DashboardForm = (props: FormProps & { fixedHeight?: number }) => {
-  const { model, fixedHeight } = props;
+export const DashboardForm = (
+  props: FormProps & { fixedHeight?: number; autoRefresh?: number },
+) => {
+  const { model, fixedHeight, autoRefresh } = props;
   const [firstId, setFirstId] = useState<number>();
+  const formRef = useRef<any>(null);
 
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model]);
+
+  useEffect(() => {
+    if (autoRefresh && firstId) {
+      const interval = setInterval(async () => {
+        await fetchData();
+        // Small delay to ensure form has updated with new ID
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        formRef.current?.fetchValues();
+      }, autoRefresh);
+
+      return () => clearInterval(interval);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoRefresh, firstId]);
 
   async function fetchData() {
     const results: any[] = (await ConnectionProvider.getHandler().search({
@@ -27,7 +44,7 @@ export const DashboardForm = (props: FormProps & { fixedHeight?: number }) => {
     <div
       style={{ padding: "0.5rem", overflowY: "scroll", height: fixedHeight }}
     >
-      <Form {...props} model={model} id={firstId} readOnly />
+      <Form ref={formRef} {...props} model={model} id={firstId} readOnly />
     </div>
   );
 };

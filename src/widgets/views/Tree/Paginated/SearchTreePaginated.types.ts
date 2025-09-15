@@ -27,6 +27,7 @@ export type SearchTreePaginatedProps = {
   hideHeaders?: boolean;
   hideSelectionColumn?: boolean;
   fixedHeight?: number;
+  autoRefresh?: number;
 };
 
 export type PaginatedSearchControlsProps = {
@@ -73,4 +74,5 @@ export type PaginatedTableContentProps = {
   onChangeTreeType?: (type: TreeType) => void;
   onFetchChildrenForRecord?: (item: any) => Promise<any[]>;
   childField?: string;
+  autoRefresh?: number;
 };
