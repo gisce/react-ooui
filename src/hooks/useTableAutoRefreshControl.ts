@@ -4,6 +4,7 @@ import {
   PaginatedTableRef,
 } from "@gisce/react-formiga-table";
 import { useActionViewContext } from "@/context/ActionViewContext";
+import { useBrowserVisibility } from "./useBrowserVisibility";
 
 export type UseAutoRefreshControlProps = {
   tableRef: RefObject<InfiniteTableRef | PaginatedTableRef>;
@@ -19,19 +20,23 @@ export const useTableAutoRefreshControl = ({
   autoRefresh,
 }: UseAutoRefreshControlProps) => {
   const { isActive } = useActionViewContext();
+  const tabOrWindowIsVisible = useBrowserVisibility();
+
   useEffect(() => {
     // Only control autorefresh if it's enabled
     if (!autoRefresh || !tableRef.current) {
       return;
     }
 
-    if (isActive === false) {
-      // ActionView is inactive, pause autorefresh
+    if (isActive === false || !tabOrWindowIsVisible) {
+      // Pause if ActionView is inactive OR tab/window is not visible
       tableRef.current.pauseAutoRefresh?.();
-    } else {
-      // ActionView is active, resume autorefresh
+    } else if (
+      (isActive === undefined || isActive === true) &&
+      tabOrWindowIsVisible
+    ) {
       tableRef.current.resumeAutoRefresh?.();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isActive, autoRefresh]);
+  }, [isActive, autoRefresh, tabOrWindowIsVisible]);
 };
