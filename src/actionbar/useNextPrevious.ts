@@ -125,8 +125,13 @@ export const useNextPrevious = () => {
     }
   }, [treeType, handleInfiniteNavigation, handleFiniteNavigation]);
 
+  const shouldDisableNavigation = useCallback(() => {
+    return !results || results.length <= 1 || !totalItems || totalItems <= 1;
+  }, [totalItems, results]);
+
   return {
     onNextClick,
     onPreviousClick,
+    shouldDisableNavigation: shouldDisableNavigation(),
   };
 };

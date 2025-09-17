@@ -40,7 +40,7 @@ const TitleHeader: React.FC<Props> = ({
     if (!showSummary) return null;
 
     if (currentView?.type === "form" && currentId) {
-      if (totalItems === 0) {
+      if (totalItems === 0 || totalItems === undefined || !results?.length) {
         return (
           <>
             {t("editingDocument")} (id:{" "}
