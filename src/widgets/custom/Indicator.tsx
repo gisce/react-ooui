@@ -36,6 +36,8 @@ import { DashboardForm } from "../views/Dashboard/DashboardForm";
 import DashboardTree from "../views/Dashboard/DashboardTree";
 import { ShortcutApi } from "@/ui/FavouriteButton";
 import { useDeepCompareEffect } from "use-deep-compare";
+import { useActionViewContext } from "@/context/ActionViewContext";
+import { useBrowserVisibility } from "@/hooks/useBrowserVisibility";
 const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
@@ -277,16 +279,37 @@ const CardContent = ({
   const GraphComponent = readForViewFeature?.isEnabled ? GraphServer : Graph;
   const { openShortcut } = useTabs();
   const graphRef = useRef<any>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const { isActive } = useActionViewContext();
+  const tabOrWindowIsVisible = useBrowserVisibility();
 
   useEffect(() => {
-    if (autoRefresh && graphRef.current && initialView.type === "graph") {
-      const interval = setInterval(() => {
+    // Clear any existing interval first
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    if (
+      autoRefresh &&
+      graphRef.current &&
+      initialView.type === "graph" &&
+      isActive !== false &&
+      tabOrWindowIsVisible
+    ) {
+      intervalRef.current = setInterval(() => {
         graphRef.current?.refresh();
       }, autoRefresh);
-
-      return () => clearInterval(interval);
     }
-  }, [autoRefresh, initialView.type]);
+
+    // Cleanup on unmount
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [autoRefresh, initialView.type, isActive, tabOrWindowIsVisible]);
 
   const onRowClicked = useCallback(
     (record: any) => {
