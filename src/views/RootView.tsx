@@ -67,6 +67,7 @@ function RootView(props: RootViewProps, ref: any) {
     handleOpenActionUrl,
     handleOpenActionResourceUrl,
     handleOpenModelAndViews,
+    openDefaultActionForModel,
   }));
 
   function remove(key: string) {
