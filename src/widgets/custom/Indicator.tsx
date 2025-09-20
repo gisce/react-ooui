@@ -97,7 +97,7 @@ const IndicatorInput = (props: IndicatorInputProps) => {
   }, [ooui.icon, ooui.color, value]);
 
   const shouldShowMenu = useMemo(() => {
-    if (ooui.fieldType !== "many2one") {
+    if (ooui.fieldType !== "many2one" && ooui.fieldType !== "reference") {
       return false;
     }
 
@@ -159,6 +159,33 @@ const IndicatorInput = (props: IndicatorInputProps) => {
         )}
       </Space>
     );
+  }
+  if (ooui.fieldType === "reference" && value) {
+    // Handle reference field type similar to ReferenceTree
+    if (typeof value === "object" && value.model && value.name) {
+      const { model, id, name } = value;
+      const selectionDescription = ooui.selectionValues?.get(model);
+      formattedValue = (
+        <Space>
+          {selectionDescription && <>{`${selectionDescription}:`}</>}
+          <>{name}</>
+          {shouldShowMenu && id && <Many2oneSuffix id={id} model={model} />}
+        </Space>
+      );
+    } else if (typeof value === "string" && value.includes(",")) {
+      // Handle string format "model,id" - show as is for now
+      const [model, id] = value.split(",");
+      const selectionDescription = ooui.selectionValues?.get(model);
+      formattedValue = (
+        <Space>
+          {selectionDescription && <>{`${selectionDescription}:`}</>}
+          <>{value}</>
+          {shouldShowMenu && id && (
+            <Many2oneSuffix id={parseInt(id)} model={model} />
+          )}
+        </Space>
+      );
+    }
   }
   if (value && (ooui.fieldType === "float" || ooui.fieldType === "integer")) {
     try {
