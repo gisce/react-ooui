@@ -2,7 +2,7 @@ import Field from "@/common/Field";
 import ReactMarkdown from "react-markdown";
 import { WidgetProps } from "@/types";
 import remarkGfm from "remark-gfm";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 
 export const Markdown = (props: WidgetProps) => {
   return (
@@ -14,6 +14,7 @@ export const Markdown = (props: WidgetProps) => {
 
 export const MarkdownInput = (props: any) => {
   const { value, ooui, onChange } = props;
+  const checkboxCounterRef = useRef(0);
 
   // Parse the markdown to find checkbox positions
   const checkboxPositions = useMemo(() => {
@@ -63,13 +64,15 @@ export const MarkdownInput = (props: any) => {
     [onChange, value, checkboxPositions],
   );
 
-  const createCustomComponents = useCallback(() => {
-    let checkboxIndex = 0;
-
+  // Create stable components that don't recreate on every render
+  const components = useMemo(() => {
+    // Reset counter when components are recreated (when checkboxPositions change)
+    checkboxCounterRef.current = 0;
+    
     return {
       input: (props: any) => {
         if (props.type === "checkbox") {
-          const currentIndex = checkboxIndex++;
+          const currentIndex = checkboxCounterRef.current++;
           const position = checkboxPositions[currentIndex];
 
           return (
@@ -87,7 +90,7 @@ export const MarkdownInput = (props: any) => {
         return <input {...props} />;
       },
     };
-  }, [handleCheckboxChange, ooui?.readOnly, checkboxPositions]);
+  }, [checkboxPositions, handleCheckboxChange, ooui?.readOnly]);
 
   return (
     <div
@@ -99,7 +102,7 @@ export const MarkdownInput = (props: any) => {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         className="markdown-typography"
-        components={createCustomComponents()}
+        components={components}
       >
         {value}
       </ReactMarkdown>
