@@ -64,12 +64,64 @@ export const MarkdownInput = (props: any) => {
     [onChange, value, checkboxPositions],
   );
 
-  // Create stable components that don't recreate on every render
+  // Create custom components targeting the actual rendered structure
   const components = useMemo(() => {
-    // Reset counter when components are recreated (when checkboxPositions change)
     checkboxCounterRef.current = 0;
     
     return {
+      // Target list items instead of input elements
+      li: (props: any) => {
+        const { children, className, ...otherProps } = props;
+        
+        // Check if this is a task list item
+        if (className === "task-list-item") {
+          const currentIndex = checkboxCounterRef.current++;
+          const position = checkboxPositions[currentIndex];
+          
+          // Find the checkbox in the children and replace it
+          const processChildren = (children: any): any => {
+            if (Array.isArray(children)) {
+              return children.map(processChildren);
+            }
+            
+            if (children?.type === "input" && children?.props?.type === "checkbox") {
+              return (
+                <input
+                  type="checkbox"
+                  checked={position?.checked || false}
+                  onChange={(e) =>
+                    handleCheckboxChange(currentIndex, e.target.checked)
+                  }
+                  disabled={ooui?.readOnly || children.props.disabled}
+                  style={{ cursor: ooui?.readOnly ? "not-allowed" : "pointer" }}
+                />
+              );
+            }
+            
+            if (children?.props?.children) {
+              return {
+                ...children,
+                props: {
+                  ...children.props,
+                  children: processChildren(children.props.children)
+                }
+              };
+            }
+            
+            return children;
+          };
+          
+          return (
+            <li className={className} {...otherProps}>
+              {processChildren(children)}
+            </li>
+          );
+        }
+        
+        return <li className={className} {...otherProps}>{children}</li>;
+      },
+      
+      // Also try targeting input elements as a fallback
       input: (props: any) => {
         if (props.type === "checkbox") {
           const currentIndex = checkboxCounterRef.current++;
