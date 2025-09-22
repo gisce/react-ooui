@@ -2,7 +2,6 @@ import Field from "@/common/Field";
 import ReactMarkdown from "react-markdown";
 import { WidgetProps } from "@/types";
 import remarkGfm from "remark-gfm";
-import { Checkbox } from "antd";
 import { useCallback, useMemo } from "react";
 
 export const Markdown = (props: WidgetProps) => {
@@ -74,12 +73,14 @@ export const MarkdownInput = (props: any) => {
           const position = checkboxPositions[currentIndex];
 
           return (
-            <Checkbox
+            <input
+              type="checkbox"
               checked={position?.checked || false}
               onChange={(e) =>
                 handleCheckboxChange(currentIndex, e.target.checked)
               }
               disabled={ooui?.readOnly}
+              style={{ cursor: ooui?.readOnly ? "not-allowed" : "pointer" }}
             />
           );
         }
