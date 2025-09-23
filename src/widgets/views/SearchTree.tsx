@@ -134,7 +134,7 @@ function SearchTree(props: Props, ref: any) {
     page,
     limit: limitUsedInSearch,
     offset,
-    getResults,
+    results,
     requestPageChange,
     changeSort,
     fetchChildrenForRecord,
@@ -352,7 +352,7 @@ function SearchTree(props: Props, ref: any) {
           limit={limitUsedInSearch}
           page={page}
           treeView={treeView}
-          results={getResults()}
+          results={results}
           onRequestPageChange={requestPageChange}
           loading={tableRefreshing}
           onRowClicked={onRowClickedHandler}
@@ -380,7 +380,7 @@ function SearchTree(props: Props, ref: any) {
     colorsForResults,
     fetchChildrenForRecord,
     formView,
-    getResults,
+    results,
     limit,
     limitUsedInSearch,
     offset,
