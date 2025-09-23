@@ -34,8 +34,11 @@ export const FormModal = (props: FormModalProps) => {
   const [currentShortcutId, setCurrentShortcutId] = useState<number>();
   const { action_id, res_id, action_type, view_id } = actionData || {};
 
+  // Skip favourite feature if action_id, action_type, and res_id are missing
+  const shouldSkipFavourite = !action_id && !action_type && !res_id;
+
   useEffect(() => {
-    if (isMenuAction) {
+    if (isMenuAction && !shouldSkipFavourite) {
       checkFavourite();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -78,21 +81,25 @@ export const FormModal = (props: FormModalProps) => {
   function header() {
     return (
       <Row align="middle">
-        <Col>
-          <Button
-            type={isFavourite ? "primary" : "default"}
-            icon={
-              isFavourite ? (
-                <StarFilled style={{ color: "white" }} />
-              ) : (
-                <StarOutlined />
-              )
-            }
-            style={{ width: 30 }}
-            onClick={toggleFavourite}
-          ></Button>
+        {!shouldSkipFavourite && (
+          <Col>
+            <Button
+              type={isFavourite ? "primary" : "default"}
+              icon={
+                isFavourite ? (
+                  <StarFilled style={{ color: "white" }} />
+                ) : (
+                  <StarOutlined />
+                )
+              }
+              style={{ width: 30 }}
+              onClick={toggleFavourite}
+            ></Button>
+          </Col>
+        )}
+        <Col style={{ paddingLeft: shouldSkipFavourite ? 0 : 10 }}>
+          {formTitle}
         </Col>
-        <Col style={{ paddingLeft: 10 }}>{formTitle}</Col>
       </Row>
     );
   }
