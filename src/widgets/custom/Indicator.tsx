@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Tooltip, theme, Statistic, Card, Empty, Space } from "antd";
+import { Tooltip, theme, Statistic, Card, Empty, Space, Spin } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Field from "@/common/Field";
@@ -25,6 +25,7 @@ import styled from "styled-components";
 import dayjs from "@/helpers/dayjs";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import ConnectionProvider from "@/ConnectionProvider";
+import { useReferenceFieldValues } from "@/hooks/useReferenceFieldValues";
 import { UserFeatureKeys } from "@/models/userFeature";
 import { DashboardForm } from "../views/Dashboard/DashboardForm";
 import DashboardTree from "../views/Dashboard/DashboardTree";
@@ -64,11 +65,22 @@ const IndicatorInput = (props: IndicatorInputProps) => {
   const { token } = useToken();
   const { ooui, value } = props;
   const { locale } = useLocale();
+  const { getContext } = useFormContext();
   const [icon, setIcon] = useState<string>(ooui.icon);
   const [color, setColor] = useState<string>(ooui.color);
+  const [referenceData, setReferenceData] = useState<{
+    model: string;
+    modelName: string;
+    res_id: number;
+    recordName: string;
+  } | null>(null);
+  const [isLoadingReference, setIsLoadingReference] = useState(false);
   const [parseCondition, cancelRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().parseCondition,
   );
+  const { fetchReferenceValues } = useReferenceFieldValues({
+    context: getContext?.(),
+  });
   const disableArrowMenu = useUserFeatureIsEnabled(
     UserFeatureKeys.FEATURE_MANY2ONE_DISABLE_ARROW_MENU,
   );
@@ -96,8 +108,36 @@ const IndicatorInput = (props: IndicatorInputProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ooui.icon, ooui.color, value]);
 
+  useEffect(() => {
+    async function fetchReferenceData() {
+      if (
+        ooui.fieldType === "reference" &&
+        value &&
+        typeof value === "string"
+      ) {
+        setIsLoadingReference(true);
+        try {
+          const results = await fetchReferenceValues([value]);
+          const data = results.get(value);
+          if (data) {
+            setReferenceData(data);
+          }
+        } catch (error) {
+          console.error("Error fetching reference data:", error);
+        } finally {
+          setIsLoadingReference(false);
+        }
+      } else {
+        setReferenceData(null);
+        setIsLoadingReference(false);
+      }
+    }
+    fetchReferenceData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value, ooui.fieldType]);
+
   const shouldShowMenu = useMemo(() => {
-    if (ooui.fieldType !== "many2one") {
+    if (ooui.fieldType !== "many2one" && ooui.fieldType !== "reference") {
       return false;
     }
 
@@ -132,7 +172,29 @@ const IndicatorInput = (props: IndicatorInputProps) => {
   );
   const Icon: React.ElementType = iconMapper(icon) as any;
   let formattedValue = value;
-  if (ooui.selectionValues.size) {
+
+  if (ooui.fieldType === "reference") {
+    if (isLoadingReference) {
+      formattedValue = <Spin size="small" />;
+    } else if (referenceData) {
+      formattedValue = (
+        <Space>
+          <span>
+            {referenceData.modelName}:{" "}
+            <strong>{referenceData.recordName}</strong>
+          </span>
+          {shouldShowMenu && (
+            <Many2oneSuffix
+              id={referenceData.res_id}
+              model={referenceData.model}
+            />
+          )}
+        </Space>
+      );
+    } else {
+      formattedValue = " "; // Empty space instead of showing raw value
+    }
+  } else if (ooui.selectionValues.size) {
     formattedValue = ooui.selectionValues.get(value);
   } else if (Array.isArray(value)) {
     formattedValue = value[1];
@@ -149,8 +211,11 @@ const IndicatorInput = (props: IndicatorInputProps) => {
     formattedValue = value
       ? dayjs(value).format(formats[ooui.fieldType as keyof typeof formats])
       : " ";
-  }
-  if (ooui.fieldType === "many2one" && value && ooui.raw_props?.relation) {
+  } else if (
+    ooui.fieldType === "many2one" &&
+    value &&
+    ooui.raw_props?.relation
+  ) {
     formattedValue = (
       <Space>
         {formattedValue}
@@ -171,6 +236,7 @@ const IndicatorInput = (props: IndicatorInputProps) => {
       console.error(e);
     }
   }
+
   const field = (
     <Statistic
       title={title}
