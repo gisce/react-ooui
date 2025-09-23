@@ -2,6 +2,7 @@ import { Progress } from "antd";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
 import styled from "styled-components";
+import { useRef } from "react";
 
 export const ProgressBar = (props: WidgetProps) => {
   return (
@@ -12,7 +13,15 @@ export const ProgressBar = (props: WidgetProps) => {
 };
 
 export const ProgressBarInput = ({ value }: { value?: number }) => {
-  const textValue = `${(value || 0).toLocaleString("en-US", {
+  const lastValidValueRef = useRef<number>(0);
+
+  if (value !== undefined) {
+    lastValidValueRef.current = value;
+  }
+
+  const displayValue = value !== undefined ? value : lastValidValueRef.current;
+
+  const textValue = `${displayValue.toLocaleString("en-US", {
     minimumIntegerDigits: 1,
     maximumFractionDigits: 4,
     useGrouping: false,
@@ -20,7 +29,7 @@ export const ProgressBarInput = ({ value }: { value?: number }) => {
 
   return (
     <StyledProgressContainer>
-      <StyledProgress percent={value} />
+      <StyledProgress percent={displayValue} />
       <StyledText>{textValue}</StyledText>
     </StyledProgressContainer>
   );
