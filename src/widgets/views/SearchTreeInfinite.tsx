@@ -53,6 +53,7 @@ import { getAttributesConditionsFromOoui } from "@/hooks/useTreeAttributesState"
 import { CellRenderer } from "./Tree/CellRenderer";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import { useTableAutoRefreshControl } from "@/hooks/useTableAutoRefreshControl";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -79,6 +80,9 @@ export type SearchTreeInfiniteProps = {
   filterType?: "side" | "top";
   onChangeTreeType?: (type: TreeType) => void;
   hideHeaders?: boolean;
+  hideSelectionColumn?: boolean;
+  fixedHeight?: number;
+  autoRefresh?: number;
 };
 
 function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
@@ -96,6 +100,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     filterType = "side",
     onChangeTreeType,
     hideHeaders = false,
+    hideSelectionColumn = false,
+    fixedHeight,
+    autoRefresh,
   } = props;
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
   const lastAssignedResults = useRef<any[]>([]);
@@ -108,10 +115,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     useState<boolean>(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const availableHeight = useAvailableHeight({
+  const calculatedHeight = useAvailableHeight({
     elementRef: containerRef,
     offset: HEIGHT_OFFSET,
   });
+  const availableHeight =
+    fixedHeight !== undefined ? fixedHeight : calculatedHeight;
 
   // Network request hooks
   const [searchCount, cancelSearchCount] = useNetworkRequest(
@@ -233,6 +242,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     clearAutorefreshableFields,
     addRecordsToCheckFunctionFields,
     onHasFunctionFieldsToParseConditions,
+    shouldMakeDeferredFunctionRead,
   } = useTreeSharedHooks({
     model,
     treeView,
@@ -242,6 +252,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     treeOoui,
     updateAttributes,
     results: actionViewResults,
+    autoRefresh,
   });
 
   // Calculate selectedRowKeys for shared hooks
@@ -365,13 +376,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
       const params = nameSearch ? domain : mergedParams;
 
-      const SHOULD_MAKE_DEFERRED_FUNCTION_READ =
-        treeView?.fields_in_conditions !== undefined;
-
       const attrs = getAttributesConditionsFromOoui({
         treeOoui,
         hasFunctionFieldsToParseConditions:
-          SHOULD_MAKE_DEFERRED_FUNCTION_READ &&
+          shouldMakeDeferredFunctionRead &&
           onHasFunctionFieldsToParseConditions(),
       });
 
@@ -387,9 +395,11 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         attrs,
         order,
         name_search: nameSearch,
-        skipFunctionFields: SHOULD_MAKE_DEFERRED_FUNCTION_READ,
+        skipFunctionFields: shouldMakeDeferredFunctionRead,
         onIdsRetrieved: (ids: number[]) => {
-          addRecordsToCheckFunctionFields(ids);
+          if (shouldMakeDeferredFunctionRead) {
+            addRecordsToCheckFunctionFields(ids);
+          }
         },
       });
 
@@ -470,6 +480,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       treeOoui,
       treeView,
       updateAttributes,
+      shouldMakeDeferredFunctionRead,
     ],
   );
 
@@ -576,6 +587,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     return treeFirstVisibleRowRef.current;
   }, []);
 
+  // Control autorefresh based on ActionView active state
+  useTableAutoRefreshControl({
+    tableRef,
+    autoRefresh,
+  });
+
   // Calculate cache block size outside of render
   const cacheBlockSize = isNameSearchMode.current
     ? DEFAULT_SEARCH_LIMIT
@@ -596,13 +613,17 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         onRequestData={onRequestData}
         onRowDoubleClick={onRowClicked}
         onRowStyle={onRowStyle}
-        onRowSelectionChange={changeSelectedRowKeys}
+        onRowSelectionChange={
+          hideSelectionColumn ? undefined : changeSelectedRowKeys
+        }
         onColumnChanged={updateColumnState}
         onGetColumnsState={getColumnState}
         onChangeFirstVisibleRowIndex={setTreeFirstVisibleRow}
         onGetFirstVisibleRowIndex={stableFirstVisibleRowIndex}
-        selectedRowKeys={selectedRowKeys}
-        onSelectionCheckboxClicked={onSelectionCheckboxClicked}
+        selectedRowKeys={hideSelectionColumn ? undefined : selectedRowKeys}
+        onSelectionCheckboxClicked={
+          hideSelectionColumn ? undefined : onSelectionCheckboxClicked
+        }
         totalRows={totalRows || 99999}
         footer={footerComponent}
         hasStatusColumn={treeOoui.status !== null}
@@ -612,6 +633,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         initialSortState={actionViewSortState}
         cacheBlockSize={cacheBlockSize}
         onChangeTableType={onChangeTreeType}
+        autoRefresh={autoRefresh}
       />
     );
   }, [
@@ -621,6 +643,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     onRequestData,
     onRowClicked,
     onRowStyle,
+    hideSelectionColumn,
     changeSelectedRowKeys,
     updateColumnState,
     getColumnState,
@@ -636,6 +659,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     actionViewSortState,
     cacheBlockSize,
     onChangeTreeType,
+    autoRefresh,
   ]);
 
   const prevSearchParamsRef = useRef(searchParams);

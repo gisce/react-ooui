@@ -27,6 +27,7 @@ type UseTreeFunctionFieldsReadProps = {
   onExternalRecordsUpdate?: (
     syncFunction: (updatedRecords: any[]) => void,
   ) => void;
+  skipFunctionFieldsHandling?: boolean;
 };
 
 export const useTreeFunctionFieldsRead = ({
@@ -40,6 +41,7 @@ export const useTreeFunctionFieldsRead = ({
   updateAttributes,
   results = [],
   onExternalRecordsUpdate,
+  skipFunctionFieldsHandling = false,
 }: UseTreeFunctionFieldsReadProps) => {
   const [hasFunctionFields, setHasFunctionFields] = useState(false);
   const functionFields = useRef<string[]>([]);
@@ -224,6 +226,7 @@ export const useTreeFunctionFieldsRead = ({
     isActive,
     treeOoui,
     fetchFunctionFields,
+    context,
   ]);
 
   useDeepCompareEffect(() => {
@@ -361,20 +364,28 @@ export const useTreeFunctionFieldsRead = ({
     }
   }, [tableRef, processUpdatedResults]);
 
-  const isFieldLoading = useCallback((record: any, fieldName: string) => {
-    // First check if the field is a function field
-    if (!functionFields.current.includes(fieldName)) {
-      return false;
-    }
+  const isFieldLoading = useCallback(
+    (record: any, fieldName: string) => {
+      // If function fields handling is skipped (e.g., when autoRefresh is true), never show loading
+      if (skipFunctionFieldsHandling) {
+        return false;
+      }
 
-    // If record is currently being loaded, show loading state
-    if (loadingIds.current.has(record?.id)) {
-      return true;
-    }
+      // First check if the field is a function field
+      if (!functionFields.current.includes(fieldName)) {
+        return false;
+      }
 
-    // Then check if this record is not loaded yet
-    return !loadedRecords.current.find((r) => r.id === record?.id);
-  }, []);
+      // If record is currently being loaded, show loading state
+      if (loadingIds.current.has(record?.id)) {
+        return true;
+      }
+
+      // Then check if this record is not loaded yet
+      return !loadedRecords.current.find((r) => r.id === record?.id);
+    },
+    [skipFunctionFieldsHandling],
+  );
 
   useDeepCompareEffect(() => {
     const shouldStart = hasFunctionFields && internalIsActive;
