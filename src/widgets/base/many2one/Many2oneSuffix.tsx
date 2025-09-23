@@ -47,9 +47,6 @@ export const Many2oneSuffix = (props: Props) => {
   const [getToolbar, cancelGetToolbarRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().getToolbar,
   );
-  const [getFields, cancelGetFieldsRequest] = useNetworkRequest(
-    ConnectionProvider.getHandler().getFields,
-  );
   const [readObjects, cancelReadObjectsRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().readObjects,
   );
@@ -61,14 +58,8 @@ export const Many2oneSuffix = (props: Props) => {
   const cancelRequests = useCallback(() => {
     cancelGetViewRequest();
     cancelGetToolbarRequest();
-    cancelGetFieldsRequest();
     cancelReadObjectsRequest();
-  }, [
-    cancelGetViewRequest,
-    cancelGetToolbarRequest,
-    cancelGetFieldsRequest,
-    cancelReadObjectsRequest,
-  ]);
+  }, [cancelGetViewRequest, cancelGetToolbarRequest, cancelReadObjectsRequest]);
 
   const fetchData = useCallback(async (): Promise<
     ActionRelatePrint | undefined
