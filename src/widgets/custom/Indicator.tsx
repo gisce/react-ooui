@@ -5,7 +5,7 @@ import React, {
   useState,
   useRef,
 } from "react";
-import { Tooltip, theme, Statistic, Card, Empty, Space, Spin } from "antd";
+import { Tooltip, theme, Statistic, Card, Empty, Space } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
 import Field from "@/common/Field";
