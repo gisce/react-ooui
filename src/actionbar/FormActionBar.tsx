@@ -42,7 +42,8 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
     TabManagerContext,
   ) as TabManagerContextType;
   const { t } = useLocale();
-  const { onNextClick, onPreviousClick } = useNextPrevious();
+  const { onNextClick, onPreviousClick, shouldDisableNavigation } =
+    useNextPrevious();
   const { showErrorNotification } = useErrorNotification();
 
   const {
@@ -343,7 +344,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
       />
       <ActionBarSeparator />
       <NavigationButtons
-        disabled={mustDisableButtons || false}
+        disabled={mustDisableButtons || shouldDisableNavigation}
         onPreviousClick={onPreviousClick}
         onNextClick={onNextClick}
         tryAction={tryAction}
