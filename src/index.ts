@@ -97,6 +97,7 @@ import { TreeActionView } from "./views/actionViews/TreeActionView";
 import { FormActionView } from "./views/actionViews/FormActionView";
 import ActionViewProvider from "./context/ActionViewContext";
 import { DEFAULT_SEARCH_LIMIT } from "./models/constants";
+import { useBrowserVisibility } from "./hooks/useBrowserVisibility";
 
 export {
   Button,
@@ -197,4 +198,5 @@ export {
   ActionViewProvider,
   View,
   DEFAULT_SEARCH_LIMIT,
+  useBrowserVisibility,
 };
