@@ -36,6 +36,7 @@ export const PaginatedTableComponent = memo(
     onChangeTreeType,
     onFetchChildrenForRecord,
     childField,
+    autoRefresh,
   }: PaginatedTableContentProps) => {
     if (!columns || !treeOoui) return null;
 
@@ -66,6 +67,7 @@ export const PaginatedTableComponent = memo(
         initialSortState={actionViewSortState}
         onSortChange={onSortChange}
         onChangeTableType={onChangeTreeType}
+        autoRefresh={autoRefresh}
         expandableOpts={
           onFetchChildrenForRecord
             ? {

@@ -56,6 +56,9 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     filterType = "side",
     onChangeTreeType,
     hideHeaders = false,
+    hideSelectionColumn = false,
+    fixedHeight,
+    autoRefresh,
   } = props;
 
   // Refs
@@ -72,10 +75,12 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     context: parentContext,
   });
 
-  const availableHeight = useAvailableHeight({
+  const calculatedHeight = useAvailableHeight({
     elementRef: containerRef,
     offset: treeView?.isExpandable ? EXPANDABLE_HEIGHT_OFFSET : HEIGHT_OFFSET,
   });
+  const availableHeight =
+    fixedHeight !== undefined ? fixedHeight : calculatedHeight;
 
   const treeOoui: TreeOoui | undefined = useMemo(() => {
     if (!treeView) return;
@@ -106,6 +111,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
 
   // Ensure columns is never undefined
   const safeColumns = useMemo(() => columns || [], [columns]);
+  const isExpandable = treeView?.isExpandable;
 
   // Pagination and search state
   const {
@@ -157,6 +163,8 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     clearAttributes,
     colorsForResults,
     statusForResults,
+    disablePagination: hideHeaders || isExpandable,
+    autoRefresh,
   });
 
   const paginatedColumns = useMemo(() => {
@@ -182,7 +190,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   });
 
   const handleRowDoubleClick = useCallbackRef((data: OnRowClickedData) => {
-    if (treeView?.isExpandable) {
+    if (isExpandable) {
       handleExpandableRowDoubleClick(data);
     } else {
       onRowClickedRef(data);
@@ -260,8 +268,6 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
     return nameSearchProps ? DEFAULT_SEARCH_LIMIT : limit || DEFAULT_PAGE_SIZE;
   }, [results?.length, totalRows, nameSearchProps, limit]);
 
-  const isExpandable = treeView?.isExpandable;
-
   // Render
   return (
     <Fragment>
@@ -310,11 +316,15 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             columns={paginatedColumns}
             treeOoui={treeOoui!}
             strings={strings}
-            isLoading={treeIsLoading || isColumnStateLoading}
+            isLoading={
+              autoRefresh ? false : treeIsLoading || isColumnStateLoading
+            }
             availableHeight={availableHeight}
             results={results}
             handleRowDoubleClick={handleRowDoubleClick}
-            onRowHasBeenSelected={onRowHasBeenSelected}
+            onRowHasBeenSelected={
+              hideSelectionColumn ? undefined : onRowHasBeenSelected
+            }
             updateColumnState={updateColumnState}
             getColumnState={getColumnState}
             setTreeFirstVisibleRow={setTreeFirstVisibleRow}
@@ -325,8 +335,12 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
             statusComp={statusComp}
             onRowStatus={onRowStatus}
             onRowStyle={onRowStyle}
-            headerCheckboxState={headerCheckboxState}
-            onHeaderCheckboxClick={onHeaderCheckboxClick}
+            headerCheckboxState={
+              hideSelectionColumn ? "unchecked" : headerCheckboxState
+            }
+            onHeaderCheckboxClick={
+              hideSelectionColumn ? () => {} : onHeaderCheckboxClick
+            }
             refresh={refreshCallbackRef}
             actionViewSortState={actionViewSortState}
             onSortChange={onSortChange}
@@ -336,6 +350,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
               treeView?.isExpandable ? fetchChildrenForRecord : undefined
             }
             childField={treeView?.field_parent}
+            autoRefresh={autoRefresh}
           />
         )}
       </div>

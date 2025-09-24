@@ -35,6 +35,7 @@ import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { useDeepCompareEffect } from "use-deep-compare";
+import { dequal } from "dequal";
 
 type Props = {
   total?: number;
@@ -91,6 +92,7 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
     const tableRef = useRef<TableRef>(null);
 
     const [items, setItems] = useState<any[]>([]);
+    const previousResults = useRef<any[]>([]);
 
     const errorInParseColors = useRef<boolean>(false);
 
@@ -139,10 +141,14 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [treeView, title]);
 
-    useDeepCompareEffect(() => {
-      if (!treeOoui) {
+    useEffect(() => {
+      const resultsChanged = !dequal(previousResults.current, results);
+
+      if (!resultsChanged || !treeOoui) {
         return;
       }
+
+      previousResults.current = [...results];
       errorInParseColors.current = false;
 
       const loadItems = async () => {
@@ -151,7 +157,6 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
       };
 
       loadItems();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [results, treeOoui, context]);
 
     useEffect(() => {

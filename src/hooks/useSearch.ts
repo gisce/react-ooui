@@ -87,12 +87,8 @@ export const useSearch = (opts: UseSearchOpts) => {
     [setResultsActionView],
   );
 
-  const getResults = useCallback(() => {
-    if (!resultsActionView) {
-      return resultsInternal;
-    }
-    return resultsActionView;
-  }, [resultsActionView, resultsInternal]);
+  // Determine which results to use - prioritize actionView if available, fallback to internal
+  const results = resultsActionView || resultsInternal;
 
   const searchByNameSearch = useCallback(async () => {
     const searchResults = await ConnectionProvider.getHandler().nameSearch({
@@ -293,7 +289,7 @@ export const useSearch = (opts: UseSearchOpts) => {
       const sortedResults =
         newSorter !== undefined
           ? sortResults({
-              resultsToSort: getResults(),
+              resultsToSort: results,
               sorter: newSorter,
               fields: { ...treeView.fields, ...formView.fields },
             })
@@ -303,7 +299,7 @@ export const useSearch = (opts: UseSearchOpts) => {
     [
       sorter,
       setSorter,
-      getResults,
+      results,
       treeView?.fields,
       formView?.fields,
       setResults,
@@ -391,11 +387,11 @@ export const useSearch = (opts: UseSearchOpts) => {
         context,
       });
 
-      setResults([...getResults(), ...children]);
+      setResults([...results, ...children]);
 
       return await getTableItems(getTree(treeView!), children, context);
     },
-    [treeView, model, context, getResults, setResults],
+    [treeView, model, context, results, setResults],
   );
 
   const getAllIds = useCallback(async () => {
@@ -417,7 +413,7 @@ export const useSearch = (opts: UseSearchOpts) => {
     page,
     offset,
     limit: internalLimit.current,
-    getResults,
+    results, // Return the computed results value directly
     requestPageChange,
     changeSort,
     fetchChildrenForRecord,

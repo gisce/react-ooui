@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Tooltip, theme, Statistic, Card, Empty, Space, Spin } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
@@ -30,6 +36,9 @@ import { UserFeatureKeys } from "@/models/userFeature";
 import { DashboardForm } from "../views/Dashboard/DashboardForm";
 import DashboardTree from "../views/Dashboard/DashboardTree";
 import { ShortcutApi } from "@/ui/FavouriteButton";
+import { useDeepCompareEffect } from "use-deep-compare";
+import { useActionViewContext } from "@/context/ActionViewContext";
+import { useBrowserVisibility } from "@/hooks/useBrowserVisibility";
 const { useToken } = theme;
 
 type IndicatorProps = WidgetProps & {
@@ -37,8 +46,11 @@ type IndicatorProps = WidgetProps & {
   value?: number;
 };
 
+const AUTOREFRESH_INTERVAL_SECONDS = 3 * 1000;
+
 export const Indicator = (props: IndicatorProps) => {
   const { ooui } = props;
+  const { refreshCounter } = useFormContext();
 
   const hasActionId = ooui.actionId !== undefined;
   const hasActionField = ooui.actionField !== undefined;
@@ -47,10 +59,10 @@ export const Indicator = (props: IndicatorProps) => {
     <Field ooui={ooui}>
       {hasActionId || hasActionField ? (
         <ErrorBoundary>
-          <GraphIndicatorInput ooui={ooui} />
+          <GraphIndicatorInput key={refreshCounter} ooui={ooui} />
         </ErrorBoundary>
       ) : (
-        <IndicatorInput ooui={ooui} />
+        <IndicatorInput key={refreshCounter} ooui={ooui} />
       )}
     </Field>
   );
@@ -268,7 +280,7 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
 
   const { openShortcut } = useTabs();
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (!ooui || !effectiveActionId) {
       return;
     }
@@ -302,7 +314,15 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
             />
           ) : (
             initialView?.id && (
-              <CardContent fixedHeight={height} actionData={actionData} />
+              <CardContent
+                fixedHeight={height}
+                actionData={actionData}
+                autoRefresh={
+                  (ooui as any).autoRefresh
+                    ? AUTOREFRESH_INTERVAL_SECONDS
+                    : undefined
+                }
+              />
             )
           )}
         </>
@@ -314,14 +334,48 @@ const GraphIndicatorInput = (props: IndicatorInputProps) => {
 const CardContent = ({
   actionData,
   fixedHeight,
+  autoRefresh,
 }: {
   fixedHeight?: number;
   actionData: any;
+  autoRefresh?: number;
 }) => {
   const { initialView, views, model, domain, context, limit } = actionData;
   const readForViewFeature = useFeatureData(ErpFeatureKeys.FEATURE_READFORVIEW);
   const GraphComponent = readForViewFeature?.isEnabled ? GraphServer : Graph;
   const { openShortcut } = useTabs();
+  const graphRef = useRef<any>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const { isActive } = useActionViewContext();
+  const tabOrWindowIsVisible = useBrowserVisibility();
+
+  useEffect(() => {
+    // Clear any existing interval first
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    if (
+      autoRefresh &&
+      graphRef.current &&
+      initialView.type === "graph" &&
+      isActive !== false &&
+      tabOrWindowIsVisible
+    ) {
+      intervalRef.current = setInterval(() => {
+        graphRef.current?.refresh();
+      }, autoRefresh);
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [autoRefresh, initialView.type, isActive, tabOrWindowIsVisible]);
 
   const onRowClicked = useCallback(
     (record: any) => {
@@ -356,6 +410,7 @@ const CardContent = ({
   if (initialView.type === "graph") {
     return (
       <GraphComponent
+        ref={graphRef}
         view_id={initialView.id}
         model={model}
         context={context}
@@ -366,7 +421,13 @@ const CardContent = ({
     );
   } else if (initialView.type === "form") {
     return (
-      <DashboardForm key={initialView.id} model={model} actionDomain={domain} />
+      <DashboardForm
+        key={initialView.id}
+        model={model}
+        actionDomain={domain}
+        fixedHeight={fixedHeight}
+        autoRefresh={autoRefresh}
+      />
     );
   } else if (initialView.type === "tree") {
     return (
@@ -377,6 +438,8 @@ const CardContent = ({
         view_id={initialView.id}
         onRowClicked={onRowClicked}
         treeExpandable={actionData.treeExpandable}
+        fixedHeight={fixedHeight}
+        autoRefresh={autoRefresh}
       />
     );
   } else {
