@@ -333,23 +333,44 @@ function sortResults({
   }
 
   const { id: field, desc } = sorter;
-  const order = desc === false ? "ascend" : "descend";
+  const order = desc === true ? "descend" : "ascend";
 
-  const type = fields[field].type;
+  const type = fields[field]?.type;
 
   const sortFn = (a: any, b: any) => {
-    let aItem = a[field] || "";
-    let bItem = b[field] || "";
+    if (!a || !b) {
+      return 0;
+    }
+
+    let aItem = a[field];
+    let bItem = b[field];
 
     if (type === "many2one") {
       aItem = a[field]?.[1] || "";
       bItem = b[field]?.[1] || "";
     }
 
+    if (type === "float" || type === "integer" || type === "float_time") {
+      aItem = parseFloat(aItem) || 0;
+      bItem = parseFloat(bItem) || 0;
+    } else {
+      aItem = aItem || "";
+      bItem = bItem || "";
+    }
+
     if (aItem === bItem) {
       return 0;
     }
 
+    if (typeof aItem === "string" && typeof bItem === "string") {
+      const comparison = aItem.localeCompare(bItem, undefined, {
+        numeric: true,
+        sensitivity: "base",
+      });
+      return order === "ascend" ? comparison : -comparison;
+    }
+
+    // For non-string comparison (numbers, dates, etc.)
     if (order === "ascend") {
       return aItem > bItem ? 1 : -1;
     }
@@ -357,7 +378,9 @@ function sortResults({
     return aItem < bItem ? 1 : -1;
   };
 
-  return resultsToSort.sort(sortFn);
+  const sortedResults = resultsToSort.sort(sortFn);
+
+  return sortedResults;
 }
 
 function hasActualValues(obj: Record<string, any>): boolean {
