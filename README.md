@@ -51,4 +51,3 @@ You can browse our Storybook running:
 
 - `npm install`
 - `npm run storybook`
-
