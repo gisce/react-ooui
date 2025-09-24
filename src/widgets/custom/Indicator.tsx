@@ -2,8 +2,8 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useState,
   useRef,
+  useState,
 } from "react";
 import { Tooltip, theme, Statistic, Card, Empty, Space, Spin } from "antd";
 import { Indicator as IndicatorOoui } from "@gisce/ooui";
