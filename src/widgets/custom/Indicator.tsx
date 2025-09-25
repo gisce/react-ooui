@@ -223,11 +223,9 @@ const IndicatorInput = (props: IndicatorInputProps) => {
     formattedValue = value
       ? dayjs(value).format(formats[ooui.fieldType as keyof typeof formats])
       : " ";
-  } else if (
-    ooui.fieldType === "many2one" &&
-    value &&
-    ooui.raw_props?.relation
-  ) {
+  }
+
+  if (ooui.fieldType === "many2one" && value && ooui.raw_props?.relation) {
     formattedValue = (
       <Space>
         {formattedValue}
