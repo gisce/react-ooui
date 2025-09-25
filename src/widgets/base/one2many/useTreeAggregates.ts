@@ -107,6 +107,7 @@ export const useTreeAggregates = ({
         model,
         domain,
         aggregateFields: fieldsAndOpToRetrieve,
+        context: { active_test: false }, // See: https://github.com/gisce/webclient/issues/2549
       });
 
       let result: TreeAggregates;
