@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown";
 import { WidgetProps } from "@/types";
 import remarkGfm from "remark-gfm";
 import { useCallback, forwardRef, useRef, useState, useEffect } from "react";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 
 export const Markdown = (props: WidgetProps) => {
   return (
@@ -91,37 +92,39 @@ export const MarkdownInput = forwardRef<HTMLDivElement, any>(
     );
 
     return (
-      <div
-        ref={ref}
-        style={{
-          height: ooui?.height ? ooui.height + "px" : "100%",
-          overflow: "auto",
-        }}
-      >
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          className="markdown-typography"
-          components={{
-            input: (props: any) => {
-              if (props.type === "checkbox") {
-                return (
-                  <input
-                    {...props}
-                    disabled={false}
-                    onChange={(e) => {
-                      handleCheckboxClick(e.currentTarget);
-                    }}
-                    style={{ cursor: "pointer" }}
-                  />
-                );
-              }
-              return <input {...props} />;
-            },
+      <ErrorBoundary>
+        <div
+          ref={ref}
+          style={{
+            height: ooui?.height ? ooui.height + "px" : "100%",
+            overflow: "auto",
           }}
         >
-          {internalValue || ""}
-        </ReactMarkdown>
-      </div>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            className="markdown-typography"
+            components={{
+              input: (props: any) => {
+                if (props.type === "checkbox") {
+                  return (
+                    <input
+                      {...props}
+                      disabled={false}
+                      onChange={(e) => {
+                        handleCheckboxClick(e.currentTarget);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    />
+                  );
+                }
+                return <input {...props} />;
+              },
+            }}
+          >
+            {internalValue || ""}
+          </ReactMarkdown>
+        </div>
+      </ErrorBoundary>
     );
   },
 );
