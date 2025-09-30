@@ -22,6 +22,11 @@ import { transformPlainMany2Ones, stringFormat } from "@/helpers/formHelper";
 import { useFeatureData } from "./ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import {
+  ACTION_TYPE_REPORT,
+  ACTION_TYPE_WINDOW,
+  ACTION_TYPE_URL,
+} from "@/models/constants";
 
 export type ContentRootContextType = {
   processAction: ({
@@ -31,8 +36,8 @@ export type ContentRootContextType = {
     context,
   }: {
     actionData: any;
-    fields: any;
-    values: any;
+    fields?: any;
+    values?: any;
     context?: any;
     onRefreshParentValues?: () => void;
   }) => Promise<any>;
@@ -116,7 +121,7 @@ const ContentRootProvider = (
       id: reportId,
     } = reportData;
 
-    if (type !== "ir.actions.report.xml") {
+    if (type !== ACTION_TYPE_REPORT) {
       showErrorNotification({
         type: "error",
         title: "Error",
@@ -205,8 +210,8 @@ const ContentRootProvider = (
     onRefreshParentValues: onRefreshParentValuesFn,
   }: {
     actionData: any;
-    fields: any;
-    values: any;
+    fields?: any;
+    values?: any;
     context?: any;
     onRefreshParentValues?: any;
   }) {
@@ -215,16 +220,16 @@ const ContentRootProvider = (
       onRefreshParentValues.current.push(onRefreshParentValuesFn);
     }
 
-    if (type === "ir.actions.report.xml") {
+    if (type === ACTION_TYPE_REPORT) {
       return await generateReport({
         reportData: actionData,
         fields,
         values,
         context,
       });
-    } else if (type === "ir.actions.act_window") {
+    } else if (type === ACTION_TYPE_WINDOW) {
       return await runAction({ actionData, fields, values, context });
-    } else if (type === "ir.actions.act_url") {
+    } else if (type === ACTION_TYPE_URL) {
       window.open(
         stringFormat(actionData.url, { ...values, context }),
         "_blank",
@@ -255,7 +260,7 @@ const ContentRootProvider = (
     if (!_actionData.res_model) {
       actionData = (
         await ConnectionProvider.getHandler().readObjects({
-          model: "ir.actions.act_window",
+          model: ACTION_TYPE_WINDOW,
           ids: [parseInt(_actionData.id)],
           context,
         })

@@ -19,6 +19,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
 } from "@gisce/react-formiga-components";
+import { ACTION_TYPE_WIZARD } from "@/models/constants";
 const { useToken } = theme;
 
 export type ShortcutApi = {
@@ -119,7 +120,7 @@ const FavouriteButton = (props: Props) => {
 
   function handleMenuClick(item: DropdownMenuItem) {
     const shortcut = item as ShortcutApi;
-    if (shortcut?.action_type === "ir.actions.wizard") {
+    if (shortcut?.action_type === ACTION_TYPE_WIZARD) {
       return;
     }
     openShortcut(shortcut);

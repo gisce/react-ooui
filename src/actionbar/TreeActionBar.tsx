@@ -43,6 +43,7 @@ import {
 import { ActionBarSeparator } from "./ActionBarSeparator";
 import { ShareUrlButton } from "./ShareUrlButton";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
+import { ACTION_TYPE_REPORT } from "@/models/constants";
 
 type Props = {
   parentContext?: any;
@@ -241,7 +242,7 @@ function TreeActionBarComponent({
             id: -1,
             model: currentModel,
             report_name: "printscreen.list",
-            type: "ir.actions.report.xml",
+            type: ACTION_TYPE_REPORT,
             datas: {
               model: currentModel,
               ids: idsToExport,
