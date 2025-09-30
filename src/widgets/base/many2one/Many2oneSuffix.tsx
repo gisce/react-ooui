@@ -19,6 +19,7 @@ import {
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
+import { ACTION_TYPE_WINDOW } from "@/models/constants";
 
 type Props = {
   id: number;
@@ -155,7 +156,7 @@ export const Many2oneSuffix = (props: Props) => {
           target: "current",
           initialView: { type: "form" },
           action_id: -1,
-          action_type: "ir.actions.act_window",
+          action_type: ACTION_TYPE_WINDOW,
         });
         break;
       case "action":

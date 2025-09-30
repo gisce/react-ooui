@@ -57,6 +57,7 @@ import {
   FieldMessage,
   FieldMessageType,
 } from "../../hooks/useFieldMessages";
+import { ACTION_TYPE_WINDOW_CLOSE, MODEL_ACTIONS } from "@/models/constants";
 
 export type FormProps = {
   model: string;
@@ -1064,10 +1065,7 @@ function Form(props: FormProps, ref: any) {
       insideButtonModal
     ) {
       onSubmitSucceed?.(getCurrentId(), getValues(), getFormValues());
-    } else if (
-      response.type &&
-      response.type === "ir.actions.act_window_close"
-    ) {
+    } else if (response.type && response.type === ACTION_TYPE_WINDOW_CLOSE) {
       onSubmitSucceed?.(getCurrentId(), getValues(), getFormValues());
     } else if (response.type) {
       let responseContext = {};
@@ -1112,7 +1110,7 @@ function Form(props: FormProps, ref: any) {
   }) {
     const actionData = (
       await ConnectionProvider.getHandler().readObjects({
-        model: "ir.actions.actions",
+        model: MODEL_ACTIONS,
         ids: [parseInt(action)],
         context: parentContext,
       })
