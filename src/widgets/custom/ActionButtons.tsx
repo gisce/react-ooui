@@ -111,8 +111,21 @@ const ActionButtonsInput = (props: ActionButtonsInputProps) => {
     return null;
   }
 
+  // Get col from parsedWidgetProps or raw_props (number of columns for button layout)
+  const col = parseInt(
+    ooui.parsedWidgetProps?.col || ooui.raw_props?.col || "1",
+    10,
+  );
+
   const content = (
-    <Space direction="vertical" style={{ width: "100%" }}>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: `repeat(${col}, 1fr)`,
+        gap: "8px",
+        width: "100%",
+      }}
+    >
       {buttons.map((button, index) => (
         <ActionButton
           key={index}
@@ -122,7 +135,7 @@ const ActionButtonsInput = (props: ActionButtonsInputProps) => {
           disabled={isDisabled}
         />
       ))}
-    </Space>
+    </div>
   );
 
   return (
