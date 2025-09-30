@@ -53,19 +53,28 @@ export const MarkdownInput = forwardRef<HTMLDivElement, any>(
           let checkboxCount = 0;
           let updated = false;
 
+          const taskListPattern = /^(\s*[-*+]\s*)\[([ xX])\](\s+)(\S)/;
+
           for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
-            const match = line.match(/^(\s*[-*+]\s*)\[([ xX])\]/);
+            const match = line.match(taskListPattern);
 
             if (match) {
               if (checkboxCount === clickedIndex) {
-                const isCurrentlyChecked = match[2].trim() !== "";
+                const checkboxChar = match[2];
+                const isCurrentlyChecked = checkboxChar !== " ";
                 const newState = !isCurrentlyChecked;
 
                 lines[i] = line.replace(
-                  /^(\s*[-*+]\s*)\[([ xX])\]/,
-                  (_m: string, prefix: string) =>
-                    `${prefix}[${newState ? "x" : " "}]`,
+                  taskListPattern,
+                  (
+                    _m: string,
+                    prefix: string,
+                    _checkbox: string,
+                    spacing: string,
+                    firstChar: string,
+                  ) =>
+                    `${prefix}[${newState ? "x" : " "}]${spacing}${firstChar}`,
                 );
 
                 updated = true;
