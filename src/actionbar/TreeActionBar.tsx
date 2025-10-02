@@ -115,6 +115,7 @@ function TreeActionBarComponent({
   const { actionButtonProps, printButtonProps } = useTreeToolbarButtons({
     toolbar,
     model: currentModel,
+    view_id: currentView?.view_id,
     disabled: treeIsLoading,
     parentContext,
     selectedRowItems,

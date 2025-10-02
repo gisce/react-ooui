@@ -101,6 +101,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
     useFormToolbarButtons({
       toolbar,
       model: currentModel,
+      view_id: currentView?.view_id,
       mustDisableButtons,
       formRef,
       onRefreshParentValues: handleRefresh,

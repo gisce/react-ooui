@@ -13,6 +13,7 @@ import { useNetworkRequest } from "./useNetworkRequest";
 
 interface UseFormToolbarButtonsProps {
   model: string;
+  view_id?: number;
   mustDisableButtons?: boolean;
   formRef: RefObject<any>;
   onRefreshParentValues?: () => void;
@@ -39,6 +40,7 @@ export const useFormToolbarButtons = ({
   formRef,
   onRefreshParentValues,
   model,
+  view_id,
   toolbar: initialToolbar,
 }: UseFormToolbarButtonsProps) => {
   const { t } = useLocale();
@@ -94,6 +96,7 @@ export const useFormToolbarButtons = ({
       const toolbarData = await fetchToolbar({
         model,
         type: "form",
+        id: view_id,
         context: formRef.current.getContext(),
       });
       setFetchedToolbar(toolbarData);
@@ -104,7 +107,15 @@ export const useFormToolbarButtons = ({
     } finally {
       setIsLoading(false);
     }
-  }, [toolbar, fetchToolbar, model, formRef, initialToolbar, fetchedToolbar]);
+  }, [
+    toolbar,
+    fetchToolbar,
+    model,
+    view_id,
+    formRef,
+    initialToolbar,
+    fetchedToolbar,
+  ]);
 
   const getLoadingMenuItem = useCallback(
     (): MenuItem => ({

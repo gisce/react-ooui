@@ -63,6 +63,7 @@ export const One2many = (props: Props) => {
         const toolbar = await ConnectionProvider.getHandler().getToolbar({
           model: relation,
           type,
+          ...(view.view_id && { id: view.view_id }),
           context: { ...getContext?.(), ...context },
         });
         return { ...view, toolbar };
@@ -71,19 +72,18 @@ export const One2many = (props: Props) => {
     }
 
     if (getToolbarEnabled && (type === "form" || type === "tree")) {
-      // Get view and toolbar in parallel
-      const [viewData, toolbar] = await Promise.all([
-        ConnectionProvider.getHandler().getView({
-          model: relation,
-          type,
-          context: { ...getContext?.(), ...context },
-        }),
-        ConnectionProvider.getHandler().getToolbar({
-          model: relation,
-          type,
-          context: { ...getContext?.(), ...context },
-        }),
-      ]);
+      // Get view first, then toolbar with the view_id
+      const viewData = await ConnectionProvider.getHandler().getView({
+        model: relation,
+        type,
+        context: { ...getContext?.(), ...context },
+      });
+      const toolbar = await ConnectionProvider.getHandler().getToolbar({
+        model: relation,
+        type,
+        id: viewData.view_id,
+        context: { ...getContext?.(), ...context },
+      });
       return { ...viewData, toolbar };
     }
 

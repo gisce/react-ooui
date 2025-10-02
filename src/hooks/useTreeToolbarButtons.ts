@@ -13,6 +13,7 @@ interface UseTreeToolbarButtonsProps {
   selectedRowItems?: any[];
   onRefreshParentValues?: () => void;
   model: string;
+  view_id?: number;
   toolbar?: {
     action?: any[];
     print?: any[];
@@ -64,6 +65,7 @@ export const useTreeToolbarButtons = ({
   selectedRowItems = [],
   onRefreshParentValues,
   model,
+  view_id,
   toolbar: initialToolbar,
 }: UseTreeToolbarButtonsProps) => {
   const { t } = useLocale();
@@ -92,6 +94,7 @@ export const useTreeToolbarButtons = ({
       const toolbarData = await fetchToolbar({
         model,
         type: "tree",
+        id: view_id,
         context: parentContext,
       });
       setFetchedToolbar(toolbarData);
@@ -106,6 +109,7 @@ export const useTreeToolbarButtons = ({
     toolbar,
     fetchToolbar,
     model,
+    view_id,
     parentContext,
     initialToolbar,
     fetchedToolbar,
