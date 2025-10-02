@@ -115,6 +115,7 @@ function TreeActionBarComponent({
     toolbar,
     model: currentModel,
     view_id: currentView?.view_id,
+    treeView: currentView,
     disabled: treeIsLoading,
     parentContext,
     selectedRowItems,

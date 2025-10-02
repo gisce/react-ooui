@@ -497,6 +497,65 @@ function determineTreeType(
   return "legacy";
 }
 
+const getTreeFieldsForToolbar = (treeView: any): string[] | undefined => {
+  if (!treeView?.arch || !treeView?.fields) {
+    return undefined;
+  }
+
+  try {
+    const tree = getTree(treeView);
+    const fieldNames = tree.columns
+      .filter((col: any) => col.id && !col.invisible)
+      .map((col: any) => col.id);
+    return fieldNames.length > 0 ? fieldNames : undefined;
+  } catch (error) {
+    console.error("Error extracting tree fields for toolbar:", error);
+    return undefined;
+  }
+};
+
+const getTreeToolbarParams = ({
+  model,
+  view_id,
+  treeView,
+  context,
+}: {
+  model: string;
+  view_id?: number;
+  treeView?: any;
+  context?: any;
+}): {
+  model: string;
+  type: "tree";
+  id?: number;
+  fieldsToRetrieve?: string[];
+  context?: any;
+} => {
+  const params: {
+    model: string;
+    type: "tree";
+    id?: number;
+    fieldsToRetrieve?: string[];
+    context?: any;
+  } = {
+    model,
+    type: "tree",
+    context,
+  };
+
+  // If view_id exists, use it; otherwise for tree views, pass fieldsToRetrieve
+  if (view_id) {
+    params.id = view_id;
+  } else {
+    const fieldsToRetrieve = getTreeFieldsForToolbar(treeView);
+    if (fieldsToRetrieve && fieldsToRetrieve.length > 0) {
+      params.fieldsToRetrieve = fieldsToRetrieve;
+    }
+  }
+
+  return params;
+};
+
 export {
   getTableColumns,
   getTableItems,
@@ -512,4 +571,6 @@ export {
   getSortedFieldsFromState,
   isTreeExpandable,
   determineTreeType,
+  getTreeFieldsForToolbar,
+  getTreeToolbarParams,
 };

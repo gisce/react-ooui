@@ -6,6 +6,7 @@ import {
 } from "@/context/ContentRootContext";
 import { ConnectionProvider } from "..";
 import { useNetworkRequest } from "./useNetworkRequest";
+import { getTreeToolbarParams } from "@/helpers/treeHelper";
 
 interface UseTreeToolbarButtonsProps {
   disabled?: boolean;
@@ -14,6 +15,7 @@ interface UseTreeToolbarButtonsProps {
   onRefreshParentValues?: () => void;
   model: string;
   view_id?: number;
+  treeView?: any;
   toolbar?: {
     action?: any[];
     print?: any[];
@@ -66,6 +68,7 @@ export const useTreeToolbarButtons = ({
   onRefreshParentValues,
   model,
   view_id,
+  treeView,
   toolbar: initialToolbar,
 }: UseTreeToolbarButtonsProps) => {
   const { t } = useLocale();
@@ -91,12 +94,15 @@ export const useTreeToolbarButtons = ({
 
     try {
       setIsLoading(true);
-      const toolbarData = await fetchToolbar({
+
+      const toolbarParams = getTreeToolbarParams({
         model,
-        type: "tree",
-        id: view_id,
+        view_id,
+        treeView,
         context: parentContext,
       });
+
+      const toolbarData = await fetchToolbar(toolbarParams);
       setFetchedToolbar(toolbarData);
       return toolbarData;
     } catch (error) {
@@ -110,6 +116,7 @@ export const useTreeToolbarButtons = ({
     fetchToolbar,
     model,
     view_id,
+    treeView,
     parentContext,
     initialToolbar,
     fetchedToolbar,
