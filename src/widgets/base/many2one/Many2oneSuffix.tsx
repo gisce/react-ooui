@@ -69,18 +69,19 @@ export const Many2oneSuffix = (props: Props) => {
 
     try {
       if (getToolbarEnabled) {
-        // Get view first, then toolbar with the view_id
-        const viewData = await getView({
-          model,
-          type: "form",
-          context,
-        });
-        const newToolbar = await getToolbar({
-          model,
-          type: "form",
-          id: viewData.view_id,
-          context,
-        });
+        // Get fields and toolbar separately
+        const [viewData, newToolbar] = await Promise.all([
+          getView({
+            model,
+            type: "form",
+            context,
+          }),
+          getToolbar({
+            model,
+            type: "form",
+            context,
+          }),
+        ]);
         toolbar = newToolbar;
         fields = viewData.fields;
         setFormView({ ...viewData, toolbar } as FormView);
