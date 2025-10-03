@@ -268,6 +268,8 @@ function SearchTree(props: Props, ref: any) {
           ...record,
         },
         context: parentContext,
+        treeView,
+        view_id: treeView?.view_id,
       });
     },
     [currentModel, parentContext, processAction, treeView],

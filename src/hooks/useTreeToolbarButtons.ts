@@ -6,7 +6,6 @@ import {
 } from "@/context/ContentRootContext";
 import { ConnectionProvider } from "..";
 import { useNetworkRequest } from "./useNetworkRequest";
-import { getTreeToolbarParams } from "@/helpers/treeHelper";
 
 interface UseTreeToolbarButtonsProps {
   disabled?: boolean;
@@ -31,9 +30,13 @@ interface MenuItem {
 export const useRunTreeAction = ({
   selectedRowItems,
   onRefreshParentValues,
+  treeView,
+  view_id,
 }: {
   selectedRowItems?: any[];
   onRefreshParentValues?: () => void;
+  treeView?: any;
+  view_id?: number;
 }) => {
   const contentRootContext = useContext(
     ContentRootContext,
@@ -55,9 +58,11 @@ export const useRunTreeAction = ({
           active_ids: selectedRowItems?.map((item) => item.id),
         },
         onRefreshParentValues,
+        treeView,
+        view_id,
       });
     },
-    [processAction, selectedRowItems, onRefreshParentValues],
+    [processAction, selectedRowItems, onRefreshParentValues, treeView, view_id],
   );
 };
 
@@ -75,6 +80,8 @@ export const useTreeToolbarButtons = ({
   const runAction = useRunTreeAction({
     selectedRowItems,
     onRefreshParentValues,
+    treeView,
+    view_id,
   });
 
   const [fetchedToolbar, setFetchedToolbar] = useState<any>(null);
@@ -94,15 +101,11 @@ export const useTreeToolbarButtons = ({
 
     try {
       setIsLoading(true);
-
-      const toolbarParams = getTreeToolbarParams({
+      const toolbarData = await fetchToolbar({
         model,
-        view_id,
-        treeView,
+        type: "tree",
         context: parentContext,
       });
-
-      const toolbarData = await fetchToolbar(toolbarParams);
       setFetchedToolbar(toolbarData);
       return toolbarData;
     } catch (error) {
@@ -115,8 +118,6 @@ export const useTreeToolbarButtons = ({
     toolbar,
     fetchToolbar,
     model,
-    view_id,
-    treeView,
     parentContext,
     initialToolbar,
     fetchedToolbar,
@@ -184,6 +185,7 @@ export const useTreeToolbarButtons = ({
           datas: {
             ...(report.datas || {}),
             ids: selectedRowItems!.map((item) => item.id),
+            view_id,
           },
         },
         parentContext,

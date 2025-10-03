@@ -48,6 +48,7 @@ type One2manyTopBarProps = {
   toolbar?: any;
   form_view_id?: number;
   tree_view_id?: number;
+  treeView?: any;
   context?: any;
   formRef: RefObject<any>;
   onRefreshParentValues?: () => void;
@@ -74,6 +75,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
     toolbar,
     form_view_id,
     tree_view_id,
+    treeView,
     context,
     formRef,
     onRefreshParentValues,
@@ -130,6 +132,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
     toolbar,
     model,
     view_id: tree_view_id,
+    treeView,
     disabled: readOnly,
     parentContext: context,
     selectedRowItems: selectedRowKeys.map((key) => ({ id: key })),

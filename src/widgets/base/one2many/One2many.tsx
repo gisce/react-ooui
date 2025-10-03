@@ -4,7 +4,6 @@ import Field from "@/common/Field";
 import { Spin, Alert } from "antd";
 import { Views, ViewType } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
-import { getTreeToolbarParams } from "@/helpers/treeHelper";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { One2manyInputLegacy } from "@/widgets/base/one2many/One2manyInputLegacy";
 import {
@@ -77,22 +76,12 @@ export const One2many = (props: Props) => {
         !view.toolbar &&
         (type === "form" || type === "tree")
       ) {
-        const toolbarParams =
-          type === "tree"
-            ? getTreeToolbarParams({
-                model: relation,
-                view_id: view.view_id,
-                treeView: view,
-                context: { ...getContext?.(), ...context },
-              })
-            : {
-                model: relation,
-                type,
-                id: view.view_id,
-                context: { ...getContext?.(), ...context },
-              };
-
-        const toolbar = await getToolbar(toolbarParams);
+        const toolbar = await getToolbar({
+          model: relation,
+          type,
+          id: view.view_id,
+          context: { ...getContext?.(), ...context },
+        });
         return { ...view, toolbar };
       }
       return view;

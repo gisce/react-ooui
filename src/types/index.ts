@@ -221,6 +221,8 @@ type GenerateReportOptions = {
   fields: any;
   values: any;
   context?: any;
+  treeView?: any;
+  view_id?: number;
 };
 
 type GetReportRequest = {
@@ -238,7 +240,6 @@ type GetToolbarRequest = {
   model: string;
   id?: number;
   type: ViewType;
-  fieldsToRetrieve?: string[]; // For tree toolbars: column fields when no view_id
   context?: any;
 };
 
