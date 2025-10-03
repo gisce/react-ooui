@@ -46,8 +46,7 @@ type One2manyTopBarProps = {
   showToggleButton: boolean;
   showCreateButton: boolean;
   toolbar?: any;
-  form_view_id?: number;
-  tree_view_id?: number;
+  treeView?: any;
   context?: any;
   formRef: RefObject<any>;
   onRefreshParentValues?: () => void;
@@ -72,8 +71,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
     showCreateButton,
     showToggleButton,
     toolbar,
-    form_view_id,
-    tree_view_id,
+    treeView,
     context,
     formRef,
     onRefreshParentValues,
@@ -117,7 +115,6 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
     useFormToolbarButtons({
       toolbar,
       model,
-      view_id: form_view_id,
       mustDisableButtons: readOnly,
       formRef,
       onRefreshParentValues,
@@ -129,7 +126,8 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
   } = useTreeToolbarButtons({
     toolbar,
     model,
-    view_id: tree_view_id,
+    view_id: treeView?.view_id,
+    treeView,
     disabled: readOnly,
     parentContext: context,
     selectedRowItems: selectedRowKeys.map((key) => ({ id: key })),

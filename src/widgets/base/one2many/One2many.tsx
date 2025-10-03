@@ -1,9 +1,10 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { One2many as One2manyOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { Spin, Alert } from "antd";
 import { Views, ViewType } from "@/types";
 import ConnectionProvider from "@/ConnectionProvider";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { One2manyInputLegacy } from "@/widgets/base/one2many/One2manyInputLegacy";
 import {
   One2manyInput,
@@ -44,9 +45,24 @@ export const One2many = (props: Props) => {
   const { getContext, formView, refreshCounter } = formContext || {};
   const { view_id: parentViewId } = formView || {};
 
+  const [getView, cancelGetViewRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().getView,
+  );
+  const [getToolbar, cancelGetToolbarRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().getToolbar,
+  );
+
   useDeepCompareEffect(() => {
     fetchData();
   }, [ooui]);
+
+  useEffect(() => {
+    return () => {
+      cancelGetToolbarRequest();
+      cancelGetViewRequest();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getToolbarEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_GET_TOOLBAR,
@@ -60,10 +76,10 @@ export const One2many = (props: Props) => {
         !view.toolbar &&
         (type === "form" || type === "tree")
       ) {
-        const toolbar = await ConnectionProvider.getHandler().getToolbar({
+        const toolbar = await getToolbar({
           model: relation,
           type,
-          ...(view.view_id && { id: view.view_id }),
+          id: view.view_id,
           context: { ...getContext?.(), ...context },
         });
         return { ...view, toolbar };
@@ -73,12 +89,12 @@ export const One2many = (props: Props) => {
 
     if (getToolbarEnabled && (type === "form" || type === "tree")) {
       // Get view first, then toolbar with the view_id
-      const viewData = await ConnectionProvider.getHandler().getView({
+      const viewData = await getView({
         model: relation,
         type,
         context: { ...getContext?.(), ...context },
       });
-      const toolbar = await ConnectionProvider.getHandler().getToolbar({
+      const toolbar = await getToolbar({
         model: relation,
         type,
         id: viewData.view_id,
@@ -88,7 +104,7 @@ export const One2many = (props: Props) => {
     }
 
     // If toolbar not enabled or not form/tree view, just get view
-    return await ConnectionProvider.getHandler().getView({
+    return await getView({
       model: relation,
       type,
       context: { ...getContext?.(), ...context },

@@ -59,6 +59,8 @@ export const useExpandableTreeDoubleClick = ({
           ...record,
         },
         context: parentContext,
+        treeView,
+        view_id: treeView?.view_id,
       });
     },
     [

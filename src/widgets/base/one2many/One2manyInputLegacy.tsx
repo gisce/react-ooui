@@ -714,8 +714,7 @@ const One2manyInputLegacy: React.FC<One2manyInputProps> = (
         showCreateButton={views.get("form")?.fields !== undefined}
         showToggleButton={views.size > 1}
         toolbar={views.get(currentView)?.toolbar}
-        form_view_id={views.get("form")?.view_id}
-        tree_view_id={views.get("tree")?.view_id}
+        treeView={views.get("tree")}
         context={{ ...getContext?.(), ...context }}
         formRef={formRef}
         onRefreshParentValues={() => {

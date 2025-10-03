@@ -14,6 +14,7 @@ interface UseTreeToolbarButtonsProps {
   onRefreshParentValues?: () => void;
   model: string;
   view_id?: number;
+  treeView?: any;
   toolbar?: {
     action?: any[];
     print?: any[];
@@ -29,9 +30,13 @@ interface MenuItem {
 export const useRunTreeAction = ({
   selectedRowItems,
   onRefreshParentValues,
+  treeView,
+  view_id,
 }: {
   selectedRowItems?: any[];
   onRefreshParentValues?: () => void;
+  treeView?: any;
+  view_id?: number;
 }) => {
   const contentRootContext = useContext(
     ContentRootContext,
@@ -53,9 +58,11 @@ export const useRunTreeAction = ({
           active_ids: selectedRowItems?.map((item) => item.id),
         },
         onRefreshParentValues,
+        treeView,
+        view_id,
       });
     },
-    [processAction, selectedRowItems, onRefreshParentValues],
+    [processAction, selectedRowItems, onRefreshParentValues, treeView, view_id],
   );
 };
 
@@ -66,12 +73,15 @@ export const useTreeToolbarButtons = ({
   onRefreshParentValues,
   model,
   view_id,
+  treeView,
   toolbar: initialToolbar,
 }: UseTreeToolbarButtonsProps) => {
   const { t } = useLocale();
   const runAction = useRunTreeAction({
     selectedRowItems,
     onRefreshParentValues,
+    treeView,
+    view_id,
   });
 
   const [fetchedToolbar, setFetchedToolbar] = useState<any>(null);
@@ -94,7 +104,6 @@ export const useTreeToolbarButtons = ({
       const toolbarData = await fetchToolbar({
         model,
         type: "tree",
-        id: view_id,
         context: parentContext,
       });
       setFetchedToolbar(toolbarData);
@@ -109,7 +118,6 @@ export const useTreeToolbarButtons = ({
     toolbar,
     fetchToolbar,
     model,
-    view_id,
     parentContext,
     initialToolbar,
     fetchedToolbar,
@@ -177,6 +185,7 @@ export const useTreeToolbarButtons = ({
           datas: {
             ...(report.datas || {}),
             ids: selectedRowItems!.map((item) => item.id),
+            view_id,
           },
         },
         parentContext,
