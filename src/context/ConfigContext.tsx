@@ -13,6 +13,7 @@ type ConfigContextProps = Omit<ConfigContextValues, "treeMaxLimit"> & {
   locale: Locale;
   localizedStrings?: Strings;
   treeMaxLimit?: number;
+  onActionTriggered?: (actionResponse: any) => void;
 };
 
 type ConfigContextValues = {
@@ -23,6 +24,7 @@ type ConfigContextValues = {
   rootContext?: Record<string, any>;
   devMode?: boolean;
   treeMaxLimit: number;
+  onActionTriggered?: (actionResponse: any) => void;
 };
 
 const DEFAULT_MAX_SEARCH_LIMIT = 100;
@@ -38,6 +40,7 @@ const defaultConfigContext: ConfigContextValues = {
   rootContext: {},
   devMode: false,
   treeMaxLimit: DEFAULT_MAX_SEARCH_LIMIT,
+  onActionTriggered: undefined,
 };
 
 export const ConfigContext =
@@ -84,6 +87,7 @@ export const ConfigContextProvider = memo(
     treeMaxLimit = DEFAULT_MAX_SEARCH_LIMIT,
     children,
     userFeatures,
+    onActionTriggered,
   }: ConfigContextProps & { children?: React.ReactNode }) => {
     const providerValue = useMemo(
       () => ({
@@ -94,6 +98,7 @@ export const ConfigContextProvider = memo(
         devMode,
         title,
         treeMaxLimit,
+        onActionTriggered,
       }),
       [
         erpFeatures,
@@ -103,6 +108,7 @@ export const ConfigContextProvider = memo(
         devMode,
         title,
         treeMaxLimit,
+        onActionTriggered,
       ],
     );
 
