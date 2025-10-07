@@ -113,11 +113,12 @@ export const useOne2manyTree = ({
           ? [...realIdsToFetch, ...otherItems.map((item) => item.id!)]
           : realIdsToFetch;
 
-      const results = mergeWithOtherItems({
+      const results = await mergeWithOtherItems({
         finalResultIds,
         fetchedItems: preparedResults,
         otherItems,
         treeOoui,
+        context,
       });
 
       return { results, colors, status };

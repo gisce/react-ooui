@@ -291,24 +291,32 @@ const getIdsToFetch = ({
   return { realItemsIds, otherItems };
 };
 
-const mergeWithOtherItems = ({
+const mergeWithOtherItems = async ({
   finalResultIds,
   fetchedItems,
   otherItems,
   treeOoui,
+  context,
 }: {
   finalResultIds: number[];
   fetchedItems: One2manyItem[];
   otherItems: One2manyItem[];
   treeOoui: any;
+  context: any;
 }) => {
-  const transformedOtherItems = otherItems.map((item) => {
-    if (item.treeValues) {
-      const transformed = getTableItems(treeOoui, [item.treeValues]);
-      return transformed[0];
-    }
-    return item.treeValues;
-  });
+  const transformedOtherItems = await Promise.all(
+    otherItems.map(async (item) => {
+      if (item.treeValues) {
+        const transformed = await getTableItems(
+          treeOoui,
+          [item.treeValues],
+          context,
+        );
+        return transformed[0];
+      }
+      return item.treeValues;
+    }),
+  );
 
   // now we have to map the results to the original ids
   const resultsMapped = finalResultIds.map((id) => {
