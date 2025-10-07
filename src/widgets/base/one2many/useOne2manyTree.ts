@@ -88,19 +88,24 @@ export const useOne2manyTree = ({
 
       const attrs = buildAttributes(treeOoui);
 
-      const {
-        items: preparedResults,
-        colors,
-        status,
-      } = await fetchAndPrepareData({
-        relation,
-        ids: realIdsToFetch,
-        treeView,
-        context,
-        attrs,
-        treeOoui,
-        skipFunctionFields: true,
-      });
+      let preparedResults: any[] = [];
+      let colors = {};
+      let status = {};
+
+      if (realIdsToFetch.length > 0) {
+        const fetchedData = await fetchAndPrepareData({
+          relation,
+          ids: realIdsToFetch,
+          treeView,
+          context,
+          attrs,
+          treeOoui,
+          skipFunctionFields: true,
+        });
+        preparedResults = fetchedData.items;
+        colors = fetchedData.colors;
+        status = fetchedData.status;
+      }
 
       const weCanAddOtherItems = realIdsToFetch.length < endRow - startRow;
       const finalResultIds =
@@ -112,6 +117,7 @@ export const useOne2manyTree = ({
         finalResultIds,
         fetchedItems: preparedResults,
         otherItems,
+        treeOoui,
       });
 
       return { results, colors, status };
