@@ -28,7 +28,7 @@ import FormProvider, {
   FormContext,
   FormContextType,
 } from "@/context/FormContext";
-import { FormView, One2manyItem } from "@/index";
+import { ACTION_TYPE_UPDATE_TOKEN, FormView, One2manyItem } from "@/index";
 import {
   FormModalContext,
   FormModalContextType,
@@ -57,6 +57,7 @@ import {
   FieldMessage,
   FieldMessageType,
 } from "../../hooks/useFieldMessages";
+import { useConfigContext } from "@/context/ConfigContext";
 
 export type FormProps = {
   model: string;
@@ -172,6 +173,8 @@ function Form(props: FormProps, ref: any) {
     ContentRootContext,
   ) as ContentRootContextType;
   const { processAction, globalValues } = contentRootContext || {};
+
+  const { onActionTriggered } = useConfigContext();
 
   const { showErrorNotification } = useErrorNotification({
     onButtonAction: (actionData: any) => {
@@ -1069,6 +1072,8 @@ function Form(props: FormProps, ref: any) {
       response.type === "ir.actions.act_window_close"
     ) {
       onSubmitSucceed?.(getCurrentId(), getValues(), getFormValues());
+    } else if (response.type && response.type === ACTION_TYPE_UPDATE_TOKEN) {
+      onActionTriggered?.(response);
     } else if (response.type) {
       let responseContext = {};
 
