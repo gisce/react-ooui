@@ -295,18 +295,31 @@ const mergeWithOtherItems = ({
   finalResultIds,
   fetchedItems,
   otherItems,
+  treeOoui,
 }: {
   finalResultIds: number[];
   fetchedItems: One2manyItem[];
   otherItems: One2manyItem[];
+  treeOoui: any;
 }) => {
+  const transformedOtherItems = otherItems.map((item) => {
+    if (item.treeValues) {
+      const transformed = getTableItems(treeOoui, [item.treeValues]);
+      return transformed[0];
+    }
+    return item.treeValues;
+  });
+
   // now we have to map the results to the original ids
   const resultsMapped = finalResultIds.map((id) => {
     const result = fetchedItems.find((result) => result.id === id);
     if (result) {
       return result;
     }
-    return otherItems.find((item) => item.id === id)?.treeValues;
+    const otherItemIndex = otherItems.findIndex((item) => item.id === id);
+    return otherItemIndex !== -1
+      ? transformedOtherItems[otherItemIndex]
+      : undefined;
   });
 
   // Now we have to maintain the same order for resultsMapped that the one we have in preparedResults
