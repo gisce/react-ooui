@@ -319,6 +319,7 @@ const mergeWithOtherItems = async ({
   );
 
   // now we have to map the results to the original ids
+  // The order is already correct from finalResultIds, so we just map without re-sorting
   const resultsMapped = finalResultIds.map((id) => {
     const result = fetchedItems.find((result) => result.id === id);
     if (result) {
@@ -328,13 +329,6 @@ const mergeWithOtherItems = async ({
     return otherItemIndex !== -1
       ? transformedOtherItems[otherItemIndex]
       : undefined;
-  });
-
-  // Now we have to maintain the same order for resultsMapped that the one we have in preparedResults
-  resultsMapped.sort((a, b) => {
-    const indexA = fetchedItems.findIndex((result) => result.id === a.id);
-    const indexB = fetchedItems.findIndex((result) => result.id === b.id);
-    return indexA - indexB;
   });
 
   return resultsMapped;
