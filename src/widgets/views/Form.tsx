@@ -790,14 +790,18 @@ function Form(props: FormProps, ref: any) {
         assignNewValuesToForm({ values: {}, fields, reset: true });
       }
 
-      await fetchValues({ forceRefresh: true });
+      if (submitMode !== "2many") {
+        await fetchValues({ forceRefresh: true });
+      }
       submitSucceed = true;
 
-      showErrorNotification({
-        type: "success",
-        title: t("savedRegisters"),
-        duration: 3,
-      });
+      if (submitMode !== "2many") {
+        showErrorNotification({
+          type: "success",
+          title: t("savedRegisters"),
+          duration: 3,
+        });
+      }
     } catch (err) {
       formSubmitting.current = false;
       setIsSubmitting(false);
