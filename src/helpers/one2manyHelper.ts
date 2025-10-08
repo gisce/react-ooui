@@ -291,29 +291,44 @@ const getIdsToFetch = ({
   return { realItemsIds, otherItems };
 };
 
-const mergeWithOtherItems = ({
+const mergeWithOtherItems = async ({
   finalResultIds,
   fetchedItems,
   otherItems,
+  treeOoui,
+  context,
 }: {
   finalResultIds: number[];
   fetchedItems: One2manyItem[];
   otherItems: One2manyItem[];
+  treeOoui: any;
+  context: any;
 }) => {
+  const transformedOtherItems = await Promise.all(
+    otherItems.map(async (item) => {
+      if (item.treeValues) {
+        const transformed = await getTableItems(
+          treeOoui,
+          [item.treeValues],
+          context,
+        );
+        return transformed[0];
+      }
+      return item.treeValues;
+    }),
+  );
+
   // now we have to map the results to the original ids
+  // The order is already correct from finalResultIds, so we just map without re-sorting
   const resultsMapped = finalResultIds.map((id) => {
     const result = fetchedItems.find((result) => result.id === id);
     if (result) {
       return result;
     }
-    return otherItems.find((item) => item.id === id)?.treeValues;
-  });
-
-  // Now we have to maintain the same order for resultsMapped that the one we have in preparedResults
-  resultsMapped.sort((a, b) => {
-    const indexA = fetchedItems.findIndex((result) => result.id === a.id);
-    const indexB = fetchedItems.findIndex((result) => result.id === b.id);
-    return indexA - indexB;
+    const otherItemIndex = otherItems.findIndex((item) => item.id === id);
+    return otherItemIndex !== -1
+      ? transformedOtherItems[otherItemIndex]
+      : undefined;
   });
 
   return resultsMapped;
