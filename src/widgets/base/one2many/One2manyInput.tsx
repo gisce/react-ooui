@@ -287,14 +287,14 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
           gridRef.current?.refresh();
         }}
       />
-      {currentView === "tree" && (
+      {currentView === "tree" && views.get("tree") && (
         <One2manyTree
           gridRef={gridRef}
           height={ooui.height}
           items={items}
           readOnly={readOnly || false}
           onFetchRecords={onTreeFetchRows}
-          ooui={treeOoui}
+          ooui={treeOoui!}
           treeView={views.get("tree")}
           context={context}
           onRowDoubleClick={onRowDoubleClick}
@@ -314,7 +314,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
           onChangeTreeType={enableNewTable ? handleTreeTypeChange : undefined}
         />
       )}
-      {currentView === "form" && (
+      {currentView === "form" && views.get("form") && (
         <One2manyForm
           ref={formRef}
           items={items}
@@ -351,7 +351,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
         onSelectValues={onSelectSearchValues}
         onCloseModal={onCloseSearchModal}
       />
-      {currentView === "graph" && (
+      {currentView === "graph" && views.get("graph") && (
         <Graph
           viewData={views.get("graph")}
           view_id={views.get("graph").view_id}
