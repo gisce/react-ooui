@@ -105,7 +105,7 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
   });
 
   const [, aggregates] = useOne2manyTreeAggregates({
-    ooui: treeOoui,
+    ooui: treeOoui!,
     model: relation,
     items,
     selectedRowKeys,
@@ -275,14 +275,14 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
           gridRef.current?.refresh();
         }}
       />
-      {currentView === "tree" && (
+      {currentView === "tree" && views.get("tree") && (
         <One2manyTree
           gridRef={gridRef}
           height={ooui.height}
           items={items}
           readOnly={readOnly || false}
           onFetchRecords={onTreeFetchRows}
-          ooui={treeOoui}
+          ooui={treeOoui!}
           context={context}
           onRowDoubleClick={onRowDoubleClick}
           showPointerCursorInRows={showPointerCursorInRows}
@@ -300,7 +300,7 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
           aggregates={aggregates}
         />
       )}
-      {currentView === "form" && (
+      {currentView === "form" && views.get("form") && (
         <One2manyForm
           ref={formRef}
           items={items}
@@ -337,7 +337,7 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
         onSelectValues={onSelectSearchValues}
         onCloseModal={onCloseSearchModal}
       />
-      {currentView === "graph" && (
+      {currentView === "graph" && views.get("graph") && (
         <Graph
           viewData={views.get("graph")}
           view_id={views.get("graph").view_id}
