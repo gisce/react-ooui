@@ -117,11 +117,7 @@ export const One2many = (props: Props) => {
 
     try {
       if (mode && mode.length > 0) {
-        // Always ensure tree and form are included
-        const requiredViews: ViewType[] = ["tree", "form"];
-        const allViews = new Set([...requiredViews, ...(mode as ViewType[])]);
-
-        const viewPromises = Array.from(allViews).map(async (m: ViewType) => {
+        const viewPromises = (mode as ViewType[]).map(async (m: ViewType) => {
           const v = await getViewData(m);
           views.set(m, v);
         });
