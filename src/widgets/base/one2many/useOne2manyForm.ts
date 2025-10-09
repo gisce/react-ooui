@@ -20,7 +20,7 @@ export const useOne2manyForm = ({
   items: One2manyItem[];
   context: any[];
   relation: string;
-  treeView: TreeView;
+  treeView?: TreeView;
   formView?: FormView;
   triggerChange: (items: One2manyItem[]) => void;
 }) => {
@@ -52,7 +52,7 @@ export const useOne2manyForm = ({
         await ConnectionProvider.getHandler().readObjects({
           model: relation,
           ids: [id],
-          fields: treeView.fields,
+          fields: treeView?.fields,
           context,
         })
       )[0];
@@ -71,7 +71,7 @@ export const useOne2manyForm = ({
 
       return updatedItems;
     },
-    [context, formView, items, relation, treeView.fields],
+    [context, formView, items, relation, treeView?.fields],
   );
 
   const onFormChanges = useCallback(
