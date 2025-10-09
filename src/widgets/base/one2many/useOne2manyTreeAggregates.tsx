@@ -8,7 +8,7 @@ export const useOne2manyTreeAggregates = ({
   selectedRowKeys,
   model,
 }: {
-  ooui: TreeOoui;
+  ooui?: TreeOoui;
   items: One2manyItem[];
   selectedRowKeys: any[];
   model: string;
