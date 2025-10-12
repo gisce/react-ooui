@@ -113,6 +113,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const [totalRows, setTotalRows] = useState<number | null>();
   const [nameSearchFetchCompleted, setNameSearchFetchCompleted] =
     useState<boolean>(false);
+  const prevTotalRows = useRef<number | null>();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const calculatedHeight = useAvailableHeight({
@@ -180,24 +181,77 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const currentSearchParamsString = useRef<string>();
   const prevSortOrder = useRef<string>();
   const isUpdatingTotalRows = useRef<boolean>(false);
+  const prevNameSearchForTotalRows = useRef(nameSearch);
+  const manualRefreshJustCalled = useRef<boolean>(false);
 
+  // Reset scroll when totalRows changes (indicates new query/different results)
   useEffect(() => {
     if (
-      (nameSearch !== undefined && prevNameSearch.current === undefined) ||
-      (typeof nameSearch === "string" &&
-        typeof prevNameSearch.current === "string" &&
+      prevTotalRows.current !== undefined &&
+      prevTotalRows.current !== totalRows
+    ) {
+      setTreeFirstVisibleRow?.(0);
+
+      // Skip cache purge if:
+      // 1. We're staying in name search mode (both prev and current are name search)
+      // 2. A manual refresh was just called (from searchParams or nameSearch useEffect)
+      const wasInNameSearch = prevNameSearchForTotalRows.current !== undefined;
+      const isInNameSearch = nameSearch !== undefined;
+      const stayingInNameSearch = wasInNameSearch && isInNameSearch;
+
+      if (!stayingInNameSearch && !manualRefreshJustCalled.current) {
+        tableRef.current?.refresh();
+      }
+
+      // Reset the flag after checking
+      manualRefreshJustCalled.current = false;
+
+      setTimeout(() => {
+        tableRef.current?.scrollToTop();
+      }, 0);
+    }
+    prevTotalRows.current = totalRows;
+    prevNameSearchForTotalRows.current = nameSearch;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [totalRows]);
+
+  useEffect(() => {
+    const isNameSearchActive = nameSearch && nameSearch.trim().length > 0;
+    const wasNameSearchActive =
+      prevNameSearch.current &&
+      typeof prevNameSearch.current === "string" &&
+      prevNameSearch.current.trim().length > 0;
+
+    if (
+      (isNameSearchActive && !wasNameSearchActive) ||
+      (isNameSearchActive &&
+        wasNameSearchActive &&
         nameSearch !== prevNameSearch.current)
     ) {
-      isNameSearchMode.current = Boolean(nameSearch);
+      // Entering name search or changing search term
+      isNameSearchMode.current = true;
       setSearchParams?.([]);
       setSearchValues?.({});
+      changeSelectedRowItems([]);
       tableRef.current?.unselectAll();
-    } else if (
-      nameSearch === undefined &&
-      prevNameSearch.current !== undefined
-    ) {
+      // Reset scroll position to top when entering/changing name search
+      // This ensures the first data request starts from row 0
+      setTreeFirstVisibleRow?.(0);
+      tableRef.current?.scrollToTop();
+    } else if (!isNameSearchActive && wasNameSearchActive) {
+      // Exiting name search (either undefined or empty string)
       isNameSearchMode.current = false;
+      changeSelectedRowItems([]);
       tableRef.current?.unselectAll();
+      // Reset scroll position to top BEFORE calling refresh
+      // This ensures AG Grid will request from row 0, which triggers updateTotalRows
+      setTreeFirstVisibleRow?.(0);
+      tableRef.current?.scrollToTop();
+      // Call refresh to reload data and update totalRows when exiting name search
+      setTimeout(() => {
+        manualRefreshJustCalled.current = true;
+        refresh();
+      }, 0);
     }
     prevNameSearch.current = nameSearch;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -306,8 +360,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     }
 
     isUpdatingTotalRows.current = true;
-    setTotalRows(undefined);
-    setTotalItemsActionView(0);
+    // Don't reset totalRows to undefined - keep previous value during update
     try {
       const totalItems = await searchCount({
         params: nameSearch ? domain : mergedParams,
@@ -319,6 +372,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       setTotalItemsActionView(totalItems);
     } catch (err) {
       showErrorNotification(err);
+      // On error, preserve previous values if they exist
+      setTotalRows((prev) => prev ?? 0);
+      setTotalItemsActionView((prev) => prev ?? 0);
     } finally {
       isUpdatingTotalRows.current = false;
     }
@@ -431,8 +487,12 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
 
       if (results.length === 0) {
         lastAssignedResults.current = [];
-        setTotalRows(0);
-        setTotalItemsActionView(0);
+        // Only set totalRows to 0 if this is the first request (startRow === 0)
+        // Otherwise, 0 results just means we're beyond the end of the data
+        if (startRow === 0) {
+          setTotalRows(0);
+          setTotalItemsActionView(0);
+        }
         return [];
       }
 
@@ -553,8 +613,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         return results;
       } catch (error) {
         console.error(error);
-        setTotalRows(null);
-        setTotalItemsActionView(0);
+        // On error, preserve previous values if they exist
+        setTotalRows((prev) => prev ?? 0);
+        setTotalItemsActionView((prev) => prev ?? 0);
         setTreeIsLoading?.(false);
         showErrorNotification(error);
         throw error;
@@ -624,7 +685,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         onSelectionCheckboxClicked={
           hideSelectionColumn ? undefined : onSelectionCheckboxClicked
         }
-        totalRows={totalRows || 99999}
+        totalRows={totalRows ?? undefined}
         footer={footerComponent}
         hasStatusColumn={treeOoui.status !== null}
         statusComponent={statusComponent}
@@ -677,6 +738,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       searchParamsChanged &&
       (searchVisibleChangedToFalse || filterType === "top")
     ) {
+      manualRefreshJustCalled.current = true;
       refresh();
     }
 

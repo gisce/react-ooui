@@ -33,7 +33,7 @@ export type SearchTreeState = {
   searchQuery?: SearchQueryParams;
   setSearchQuery: (value: SearchQueryParams) => void;
   totalItems: number;
-  setTotalItems: (value: number) => void;
+  setTotalItems: (value: number | ((prev: number) => number)) => void;
   isActive?: boolean;
   order?: ColumnState[];
   setOrder: (value: ColumnState[] | undefined) => void;
