@@ -27,7 +27,7 @@ type ActionViewProviderProps = {
   sorter: any;
   setSorter: (sorter: any) => void;
   totalItems?: number;
-  setTotalItems: (totalItems: number) => void;
+  setTotalItems: (totalItems: number | ((prev: number) => number)) => void;
   selectedRowItems?: any[];
   setSelectedRowItems: (value: any[] | ((prevValue: any[]) => any[])) => void;
   setSearchTreeNameSearch: (searchString?: string) => void;
