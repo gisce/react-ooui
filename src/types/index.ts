@@ -221,6 +221,8 @@ type GenerateReportOptions = {
   fields: any;
   values: any;
   context?: any;
+  treeView?: any;
+  view_id?: number;
 };
 
 type GetReportRequest = {
@@ -228,6 +230,13 @@ type GetReportRequest = {
 };
 
 type GetViewRequest = {
+  model: string;
+  id?: number;
+  type: ViewType;
+  context?: any;
+};
+
+type GetToolbarRequest = {
   model: string;
   id?: number;
   type: ViewType;
@@ -421,7 +430,7 @@ type ConnectionProviderType = {
     },
     requestConfig?: any,
   ) => Promise<{ results: any; attrsEvaluated?: any }>;
-  getToolbar: (options: GetViewRequest, requestConfig?: any) => Promise<any>;
+  getToolbar: (options: GetToolbarRequest, requestConfig?: any) => Promise<any>;
   logAction: (
     options: { action_type: string; action_id: number; context: any },
     requestConfig?: any,
@@ -501,6 +510,7 @@ export type {
   CreateReportRequest,
   GetReportRequest,
   ExecuteOnChangeRequest,
+  GetToolbarRequest,
   ViewType,
   SearchAllIdsRequest,
   SearchCountRequest,

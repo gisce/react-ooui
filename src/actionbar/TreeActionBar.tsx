@@ -43,6 +43,7 @@ import {
 import { ActionBarSeparator } from "./ActionBarSeparator";
 import { ShareUrlButton } from "./ShareUrlButton";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
+import { getVisibleTreeFields } from "@/helpers/treeHelper";
 
 type Props = {
   parentContext?: any;
@@ -114,6 +115,8 @@ function TreeActionBarComponent({
   const { actionButtonProps, printButtonProps } = useTreeToolbarButtons({
     toolbar,
     model: currentModel,
+    view_id: currentView?.view_id,
+    treeView: currentView,
     disabled: treeIsLoading,
     parentContext,
     selectedRowItems,
@@ -123,6 +126,8 @@ function TreeActionBarComponent({
   const runAction = useRunTreeAction({
     selectedRowItems,
     onRefreshParentValues: handleRefresh,
+    treeView: currentView,
+    view_id: currentView?.view_id,
   });
 
   const hasNameSearch = useMemo(
@@ -243,6 +248,9 @@ function TreeActionBarComponent({
             report_name: "printscreen.list",
             type: "ir.actions.report.xml",
             datas: {
+              view_id: currentView?.view_id,
+              fields:
+                !currentView?.view_id && getVisibleTreeFields(currentView),
               model: currentModel,
               ids: idsToExport,
             },
@@ -253,7 +261,14 @@ function TreeActionBarComponent({
       }
       setExportModalVisible(true);
     },
-    [currentModel, parentContext, results, runAction, selectedRowItems],
+    [
+      currentModel,
+      currentView,
+      parentContext,
+      results,
+      runAction,
+      selectedRowItems,
+    ],
   );
 
   useEffect(() => {

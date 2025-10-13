@@ -279,6 +279,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
         showCreateButton={showCreateButton}
         showToggleButton={showToggleButton}
         toolbar={views.get(currentView)?.toolbar}
+        treeView={views.get("tree")}
         context={{ ...getContext?.(), ...context }}
         formRef={formRef}
         onRefreshParentValues={() => {
