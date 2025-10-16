@@ -152,6 +152,9 @@ test.describe("Infinite One2Many Component", () => {
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
+    // Wait for data to be fully loaded (debounce is 500ms in v1.16.1)
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(800);
 
     const firstRowCheckbox = page
       .locator(".ag-row")
@@ -159,7 +162,7 @@ test.describe("Infinite One2Many Component", () => {
       .locator('input[type="checkbox"]');
 
     await firstRowCheckbox.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
 
     await expect(firstRowCheckbox).toBeChecked();
 
@@ -178,6 +181,9 @@ test.describe("Infinite One2Many Component", () => {
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
+    // Wait for data to be fully loaded (debounce is 500ms in v1.16.1)
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(800);
 
     const rows = page.locator(".ag-row");
     const firstRowCheckbox = rows.nth(0).locator('input[type="checkbox"]');
@@ -187,7 +193,7 @@ test.describe("Infinite One2Many Component", () => {
     await firstRowCheckbox.click();
     await secondRowCheckbox.click();
     await thirdRowCheckbox.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
 
     await expect(firstRowCheckbox).toBeChecked();
     await expect(secondRowCheckbox).toBeChecked();
