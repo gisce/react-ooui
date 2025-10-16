@@ -155,6 +155,9 @@ test.describe("Infinite TreeActionView Component", () => {
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
+    // Wait for data to be fully loaded (debounce is 500ms in v1.16.1)
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(800);
 
     const firstRowCheckbox = page
       .locator(".ag-row")
@@ -162,7 +165,7 @@ test.describe("Infinite TreeActionView Component", () => {
       .locator('input[type="checkbox"]');
 
     await firstRowCheckbox.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
 
     await expect(firstRowCheckbox).toBeChecked();
 
@@ -189,6 +192,9 @@ test.describe("Infinite TreeActionView Component", () => {
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
+    // Wait for data to be fully loaded (debounce is 500ms in v1.16.1)
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(800);
 
     const rows = page.locator(".ag-row");
     const firstRowCheckbox = rows.nth(0).locator('input[type="checkbox"]');
@@ -198,7 +204,7 @@ test.describe("Infinite TreeActionView Component", () => {
     await firstRowCheckbox.click();
     await secondRowCheckbox.click();
     await thirdRowCheckbox.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
 
     await expect(firstRowCheckbox).toBeChecked();
     await expect(secondRowCheckbox).toBeChecked();
@@ -229,6 +235,9 @@ test.describe("Infinite TreeActionView Component", () => {
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
+    // Wait for data to be fully loaded (debounce is 500ms in v1.16.1)
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(800);
 
     const headerCheckbox = page
       .locator('.ag-header input[type="checkbox"]')
@@ -305,6 +314,9 @@ test.describe("Infinite TreeActionView Component", () => {
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
+    // Wait for data to be fully loaded (debounce is 500ms in v1.16.1)
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(800);
 
     const headerCheckbox = page
       .locator('.ag-header input[type="checkbox"]')
@@ -364,6 +376,9 @@ test.describe("Infinite TreeActionView Component", () => {
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
+    // Wait for data to be fully loaded (debounce is 500ms in v1.16.1)
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(800);
 
     // Test 1: Copy single row ID
     const firstRowCheckbox = page
@@ -371,7 +386,7 @@ test.describe("Infinite TreeActionView Component", () => {
       .first()
       .locator('input[type="checkbox"]');
     await firstRowCheckbox.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
 
     const copyButton = page.getByRole("button", { name: "Copy", exact: true });
     await expect(copyButton).toBeVisible();
@@ -462,6 +477,9 @@ test.describe("Infinite TreeActionView Component", () => {
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
+    // Wait for data to be fully loaded (debounce is 500ms in v1.16.1)
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(800);
 
     const statusBadges = page.locator(".ag-row .ag-cell .ant-badge");
     const badgeCount = await statusBadges.count();
@@ -499,6 +517,9 @@ test.describe("Infinite TreeActionView Component", () => {
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
+    // Wait for data to be fully loaded (debounce is 500ms in v1.16.1)
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(800);
 
     const statusDots = page.locator(
       ".ag-row .ag-cell .ant-badge .ant-badge-status-dot",
@@ -840,6 +861,9 @@ test.describe("Infinite TreeActionView Component", () => {
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-header", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
+    // Wait for data to be fully loaded (debounce is 500ms in v1.16.1)
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(800);
 
     const rows = page.locator(".ag-row");
     const rowCount = await rows.count();
@@ -936,6 +960,9 @@ test.describe("Infinite TreeActionView Component", () => {
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
+    // Wait for data to be fully loaded (debounce is 500ms in v1.16.1)
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(800);
 
     const totalSalaryElement = page.getByText(/Total.*[Ss]alary/);
 
@@ -949,7 +976,8 @@ test.describe("Infinite TreeActionView Component", () => {
       .first()
       .locator('input[type="checkbox"]');
     await firstRowCheckbox.click();
-    await page.waitForTimeout(500);
+    // Wait longer for aggregate to update (increased from 1000ms to account for debounce + calculation)
+    await page.waitForTimeout(1500);
 
     // Verify Total Salary equals first row salary
     const afterFirstSelection = await totalSalaryElement.textContent();
@@ -962,7 +990,7 @@ test.describe("Infinite TreeActionView Component", () => {
       .nth(1)
       .locator('input[type="checkbox"]');
     await secondRowCheckbox.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1500);
 
     // Verify Total Salary increased
     const afterSecondSelection = await totalSalaryElement.textContent();
@@ -977,7 +1005,7 @@ test.describe("Infinite TreeActionView Component", () => {
       .nth(2)
       .locator('input[type="checkbox"]');
     await thirdRowCheckbox.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1500);
 
     // Verify Total Salary increased again
     const afterThirdSelection = await totalSalaryElement.textContent();
@@ -988,7 +1016,7 @@ test.describe("Infinite TreeActionView Component", () => {
     await firstRowCheckbox.click();
     await secondRowCheckbox.click();
     await thirdRowCheckbox.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1500);
 
     // Verify it returns to "-"
     const afterDeselection = await totalSalaryElement.textContent();
@@ -1002,6 +1030,9 @@ test.describe("Infinite TreeActionView Component", () => {
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
+    // Wait for data to be fully loaded (debounce is 500ms in v1.16.1)
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(800);
 
     // Find the three dots menu button using the correct aria-label
     const threeDotsMenu = page.getByRole("button", { name: "More options" });
@@ -1013,7 +1044,7 @@ test.describe("Infinite TreeActionView Component", () => {
 
     // Click the three dots menu
     await threeDotsMenu.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
 
     // Verify menu options appeared
     const pageText = await page.textContent("body");
@@ -1288,6 +1319,8 @@ test.describe("Infinite TreeActionView Component", () => {
   test("should reset table view to original state when clicking Reset table view", async ({
     page,
   }) => {
+    test.setTimeout(60000); // Increase timeout to 60s for this complex test
+
     await page.goto(
       getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE),
     );
@@ -1295,6 +1328,18 @@ test.describe("Infinite TreeActionView Component", () => {
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-header", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
+    // Wait for data to be fully loaded (debounce is 500ms in v1.16.1)
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(1000);
+
+    // Wait for all columns to be rendered
+    await page.waitForFunction(
+      () => {
+        const headers = document.querySelectorAll(".ag-header-cell-text");
+        return headers.length >= 9; // Expect at least 9 columns
+      },
+      { timeout: 5000 }
+    );
 
     const getColumnOrder = async () => {
       return await page.locator(".ag-header-cell-text").allTextContents();
