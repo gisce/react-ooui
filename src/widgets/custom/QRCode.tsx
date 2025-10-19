@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState, useMemo } from "react";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
-import QRCodeLib from "qrcode";
+import { QRCode as AntdQRCode } from "antd";
+import type { QRCodeProps } from "antd";
 
 export const QRCode = (props: WidgetProps) => {
   return (
@@ -12,49 +12,7 @@ export const QRCode = (props: WidgetProps) => {
 };
 
 export const QRCodeInput = (props: any) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [error, setError] = useState<string>("");
   const { value, ooui } = props;
-
-  // Default options that can be overridden by ooui configuration
-  const qrOptions = useMemo(
-    () => ({
-      width: ooui.width || 200,
-      height: ooui.height || 200,
-      margin: ooui.margin || 2,
-      color: {
-        dark: ooui.darkColor || "#000000",
-        light: ooui.lightColor || "#ffffff",
-      },
-      errorCorrectionLevel: ooui.errorCorrectionLevel || "M",
-    }),
-    [
-      ooui.width,
-      ooui.height,
-      ooui.margin,
-      ooui.darkColor,
-      ooui.lightColor,
-      ooui.errorCorrectionLevel,
-    ],
-  );
-
-  useEffect(() => {
-    if (!value || !canvasRef.current) {
-      return;
-    }
-
-    const generateQRCode = async () => {
-      try {
-        setError("");
-        await QRCodeLib.toCanvas(canvasRef.current, String(value), qrOptions);
-      } catch (err) {
-        setError(`Error generating QR code: ${err}`);
-        console.error("QR Code generation error:", err);
-      }
-    };
-
-    generateQRCode();
-  }, [value, qrOptions]);
 
   if (!value) {
     return (
@@ -64,21 +22,23 @@ export const QRCodeInput = (props: any) => {
     );
   }
 
-  if (error) {
-    return <div style={{ color: "#ff4d4f", fontSize: "12px" }}>{error}</div>;
-  }
+  // Map OOUI configuration to Ant Design QRCode props
+  const qrCodeProps: QRCodeProps = {
+    value: String(value),
+    size: ooui.width || ooui.size || 200,
+    color: ooui.darkColor || "#000000",
+    bgColor: ooui.lightColor || "#ffffff",
+    bordered: ooui.border !== false,
+    errorLevel: ooui.errorCorrectionLevel || "M",
+    style: {
+      borderRadius: ooui.borderRadius || "4px",
+      ...ooui.style,
+    },
+  };
 
   return (
     <div style={{ textAlign: "center" }}>
-      <canvas
-        ref={canvasRef}
-        style={{
-          maxWidth: "100%",
-          height: "auto",
-          border: ooui.border ? "1px solid #d9d9d9" : "none",
-          borderRadius: ooui.borderRadius || "4px",
-        }}
-      />
+      <AntdQRCode {...qrCodeProps} />
       {ooui.showValue && (
         <div
           style={{
