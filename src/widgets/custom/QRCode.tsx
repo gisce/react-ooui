@@ -1,30 +1,44 @@
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
-import { QRCode as AntdQRCode } from "antd";
+import { QRCode as AntdQRCode, Space, Typography } from "antd";
+import { QRCode as OOUIQRCode } from "@gisce/ooui";
 import type { QRCodeProps } from "antd";
 
-export const QRCode = (props: WidgetProps) => {
+// Interfaz para el componente principal QRCode que extiende WidgetProps
+export interface QRCodeWidgetProps extends Omit<WidgetProps, "ooui"> {
+  ooui: OOUIQRCode;
+}
+
+// Interfaz específica para el componente QRCodeInput
+export interface QRCodeInputProps {
+  ooui: OOUIQRCode;
+  value?: any;
+}
+
+export const QRCode = (props: QRCodeWidgetProps) => {
   return (
     <Field {...props}>
-      <QRCodeInput {...props} />
+      <QRCodeInput ooui={props.ooui} value={props.value} />
     </Field>
   );
 };
 
-export const QRCodeInput = (props: any) => {
+export const QRCodeInput = (props: QRCodeInputProps) => {
   const { value, ooui } = props;
 
   if (!value) {
-    return (
-      <div style={{ color: "#999", fontStyle: "italic" }}>
-        No data to generate QR code
-      </div>
-    );
+    return null;
   }
+
+  // Extraer el ID y el texto de visualización del valor
+  // Si es un many2one (array), usar el primer elemento como ID y el segundo como texto
+  // Si no, usar el valor directamente
+  const qrValue = Array.isArray(value) ? String(value[0]) : String(value);
+  const displayValue = Array.isArray(value) ? value[1] : value;
 
   // Map OOUI configuration to Ant Design QRCode props
   const qrCodeProps: QRCodeProps = {
-    value: String(value),
+    value: qrValue,
     size: ooui.width || ooui.size || 200,
     color: ooui.darkColor || "#000000",
     bgColor: ooui.lightColor || "#ffffff",
@@ -37,20 +51,11 @@ export const QRCodeInput = (props: any) => {
   };
 
   return (
-    <div style={{ textAlign: "center" }}>
+    <Space direction="vertical" align="center">
       <AntdQRCode {...qrCodeProps} />
       {ooui.showValue && (
-        <div
-          style={{
-            marginTop: "8px",
-            fontSize: "12px",
-            color: "#666",
-            wordBreak: "break-all",
-          }}
-        >
-          {value}
-        </div>
+        <Typography.Text type="secondary">{displayValue}</Typography.Text>
       )}
-    </div>
+    </Space>
   );
 };
