@@ -31,8 +31,14 @@ export const QRCodeInput = (props: QRCodeInputProps) => {
     return null;
   }
 
+  // Extract the ID and display text from the value
+  // If it's a many2one (array), use the first element as ID and the second as text
+  // Otherwise, use the value directly
+  const qrValue = Array.isArray(value) ? String(value[0]) : String(value);
+  const displayValue = Array.isArray(value) ? value[1] : value;
+
   const qrCodeProps: QRCodeProps = {
-    value,
+    value: qrValue,
     size: ooui.width || DEFAULT_QRCODE_WIDTH,
     bordered: ooui.border !== false,
   };
@@ -41,7 +47,7 @@ export const QRCodeInput = (props: QRCodeInputProps) => {
     <Space direction="vertical" align="center">
       <AntdQRCode {...qrCodeProps} />
       {ooui.showValue && (
-        <Typography.Text type="secondary">{value}</Typography.Text>
+        <Typography.Text type="secondary">{displayValue}</Typography.Text>
       )}
     </Space>
   );
