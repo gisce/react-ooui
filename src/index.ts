@@ -53,6 +53,7 @@ import { GraphIndicator } from "@/widgets/views/Graph/GraphIndicator";
 import { Spinner } from "@/widgets/custom/Spinner";
 import { Carousel } from "@/widgets/custom/Carousel";
 import { ColorPicker } from "@/widgets/custom/ColorPicker";
+import { QRCode, QRCodeInput } from "@/widgets/custom/QRCode";
 
 import type {
   TreeView,
@@ -198,6 +199,8 @@ export {
   Spinner,
   Carousel,
   ColorPicker,
+  QRCode,
+  QRCodeInput,
   UserAllFeatureKeys,
   UserFeatureKeys,
   UserFeaturesMap,
