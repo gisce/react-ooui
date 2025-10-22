@@ -179,7 +179,7 @@ const FavouriteButton = (props: Props) => {
   }, [onRetrieveShortcuts, t]);
 
   const toggleFavourite = useCallback(() => {
-    if (isFavourite && currentShortcutId) {
+    if (isFavourite && currentShortcutId !== undefined) {
       // Show confirmation dialog when removing
       showConfirmDialog({
         onOk: async () => {
