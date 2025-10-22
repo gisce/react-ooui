@@ -66,7 +66,9 @@ const Label = (props: Props) => {
 
   return (
     <div
-      className={`flex flex-row items-center pb-1 pt-1 ${alignClass[labelAlgin]}`}
+      className={`flex flex-row items-center pb-1 pt-1 ${
+        alignClass[labelAlgin as keyof typeof alignClass]
+      }`}
     >
       {tooltip && (
         <Tooltip title={tooltip}>
