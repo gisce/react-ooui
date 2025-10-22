@@ -58,7 +58,8 @@ const Label = (props: Props) => {
     }
   }
   const responsiveAlign = responsiveBehaviour ? "left" : "right";
-  const labelAlgin = align || (fieldForLabel ? responsiveAlign : "left");
+  const labelAlgin =
+    ooui?.align || align || (fieldForLabel ? responsiveAlign : "left");
   const { token } = useToken();
 
   const TextType = labelSize === undefined ? Text : Title;
