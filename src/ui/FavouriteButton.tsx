@@ -8,6 +8,9 @@ import {
 } from "react";
 import { TableOutlined, FormOutlined, EditOutlined } from "@ant-design/icons";
 import { Tooltip, theme } from "antd";
+import showConfirmDialog from "@/ui/ConfirmDialog";
+import ConnectionProvider from "@/ConnectionProvider";
+import { FavouriteNameModal } from "@/ui/FavouriteNameModal";
 import {
   TabManagerContext,
   TabManagerContextType,
@@ -61,6 +64,8 @@ const FavouriteButton = (props: Props) => {
 
   const [isFavourite, setIsFavourite] = useState(false);
   const [currentShortcutId, setCurrentShortcutId] = useState<number>();
+  const [showNameModal, setShowNameModal] = useState(false);
+  const [initialFavouriteName, setInitialFavouriteName] = useState("");
   const { t } = useLocale();
 
   const { token } = useToken();
@@ -150,7 +155,7 @@ const FavouriteButton = (props: Props) => {
     if (shortcuts.length === 0) {
       return [
         {
-          label: t?.("no_favorites"),
+          label: t("no_favorites"),
           items: [],
         },
       ];
@@ -173,79 +178,162 @@ const FavouriteButton = (props: Props) => {
     ];
   }, [onRetrieveShortcuts, t]);
 
-  const toggleFavourite = useCallback(async () => {
+  const toggleFavourite = useCallback(() => {
     if (isFavourite && currentShortcutId) {
-      await onRemoveFavourite(currentShortcutId);
+      // Show confirmation dialog when removing
+      showConfirmDialog({
+        onOk: async () => {
+          try {
+            await onRemoveFavourite(currentShortcutId);
+            await getShortcuts();
+            setIsFavourite(false);
+          } catch (error) {
+            console.error("Error removing favourite:", error);
+          }
+        },
+        confirmMessage: t("confirmRemoveFavourite"),
+        t,
+      });
     } else {
+      // Show name input modal when adding
       if (!currentView) {
         return;
       }
 
       const currentTab = tabs.find((t) => t.key === activeKey);
-      const { action_id, action_type } = currentTab?.action || {};
-      const view_id = currentView.view_id!;
-      let res_id: boolean | number = false;
+      const tabTitle = currentTab?.title || "";
 
-      if (!action_id || !action_type) {
-        setIsFavourite(false);
-        return;
-      }
-
-      if (currentView.type === "form") {
-        res_id = currentId ? (currentId as number) : false;
-      }
-
-      await onAddFavourite({
-        action_id,
-        action_type,
-        view_id,
-        res_id,
-      });
+      setInitialFavouriteName(tabTitle);
+      setShowNameModal(true);
     }
-
-    await getShortcuts();
-    setIsFavourite(!isFavourite);
   }, [
     activeKey,
-    currentId,
     currentShortcutId,
     currentView,
     getShortcuts,
     isFavourite,
-    onAddFavourite,
     onRemoveFavourite,
     tabs,
+    t,
   ]);
 
-  return (
-    <FavouriteButtonUi
-      ref={favouriteButtonRef}
-      isFavourite={isFavourite}
-      onToggleFavourite={toggleFavourite}
-      onItemClick={handleMenuClick}
-      placement={"bottomRight"}
-      header={
-        <div style={{ width: 300, padding: 5, display: "flex" }}>
-          <div style={{ paddingLeft: 15, color: "#ccc" }}>
-            {t?.("favorites").toUpperCase()}
-          </div>
-          <div style={{ flexGrow: 1, paddingLeft: 10 }}>
-            <Tooltip title={t?.("edit_favorites")}>
-              <EditOutlined
-                style={{ color: token.colorPrimary, cursor: "pointer" }}
-                onClick={editFavourites}
-              />
-            </Tooltip>
-          </div>
-        </div>
+  const handleSaveFavourite = useCallback(
+    async (nameToUse: string) => {
+      if (!currentView) {
+        return;
       }
-      onOpenChange={(open: boolean) => {
-        if (!open) {
-          onDropdownClosed?.();
+
+      try {
+        const currentTab = tabs.find((t) => t.key === activeKey);
+        const { action_id, action_type } = currentTab?.action || {};
+        const view_id = currentView.view_id!;
+        let res_id: boolean | number = false;
+
+        if (!action_id || !action_type) {
+          setIsFavourite(false);
+          return;
         }
-      }}
-      onRetrieveData={getShortcuts}
-    />
+
+        if (currentView.type === "form") {
+          res_id = currentId ? (currentId as number) : false;
+        }
+
+        // Add favourite
+        await onAddFavourite({
+          action_id,
+          action_type,
+          view_id,
+          res_id,
+        });
+
+        // Check to get the shortcut ID
+        const shortcutId = await onCheckIsFavourite({
+          action_id,
+          action_type,
+          view_id,
+          res_id,
+        });
+
+        // Update the shortcut name if user provided a custom name
+        if (
+          shortcutId &&
+          typeof shortcutId === "number" &&
+          nameToUse &&
+          nameToUse !== currentTab?.title
+        ) {
+          await ConnectionProvider.getHandler().update({
+            model: "ir.ui.view_sc",
+            id: shortcutId,
+            values: { name: nameToUse },
+            fields: ["name"],
+          });
+        }
+
+        await getShortcuts();
+        setIsFavourite(true);
+        setShowNameModal(false);
+      } catch (error) {
+        console.error("Error saving favourite:", error);
+      }
+    },
+    [
+      activeKey,
+      currentId,
+      currentView,
+      getShortcuts,
+      onAddFavourite,
+      onCheckIsFavourite,
+      tabs,
+    ],
+  );
+
+  const handleCancelNameModal = useCallback(() => {
+    setShowNameModal(false);
+  }, []);
+
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        onDropdownClosed?.();
+      }
+    },
+    [onDropdownClosed],
+  );
+
+  return (
+    <>
+      <FavouriteButtonUi
+        ref={favouriteButtonRef}
+        isFavourite={isFavourite}
+        onToggleFavourite={toggleFavourite}
+        onItemClick={handleMenuClick}
+        placement={"bottomRight"}
+        header={
+          <div style={{ width: 300, padding: 5, display: "flex" }}>
+            <div style={{ paddingLeft: 15, color: "#ccc" }}>
+              {t("favorites").toUpperCase()}
+            </div>
+            <div style={{ flexGrow: 1, paddingLeft: 10 }}>
+              <Tooltip title={t("edit_favorites")}>
+                <EditOutlined
+                  style={{ color: token.colorPrimary, cursor: "pointer" }}
+                  onClick={editFavourites}
+                />
+              </Tooltip>
+            </div>
+          </div>
+        }
+        onOpenChange={handleOpenChange}
+        onRetrieveData={getShortcuts}
+      />
+
+      <FavouriteNameModal
+        visible={showNameModal}
+        initialName={initialFavouriteName}
+        onSave={handleSaveFavourite}
+        onCancel={handleCancelNameModal}
+      />
+    </>
   );
 };
 

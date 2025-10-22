@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState, useCallback } from "react";
 import { Button, Col, Modal, Row } from "antd";
 import Form, { FormProps } from "@/widgets/views/Form";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import FormModalProvider from "@/context/FormModalContext";
 import { StarOutlined, StarFilled } from "@ant-design/icons";
 import ConnectionProvider from "@/ConnectionProvider";
+import { FavouriteNameModal } from "@/ui/FavouriteNameModal";
+import { useFavouriteActions } from "@/hooks/useFavouriteActions";
+import { useDeepCompareEffect } from "use-deep-compare";
 
 type FormModalProps = FormProps & {
   visible: boolean;
@@ -35,9 +38,29 @@ export const FormModal = (props: FormModalProps) => {
   const { action_id, res_id, action_type, view_id } = actionData || {};
 
   // Skip favourite feature if action_id, action_type, and res_id are missing
-  const shouldSkipFavourite = !action_id && !action_type && !res_id;
+  // const shouldSkipFavourite = !action_id && !action_type && !res_id;
+  const shouldSkipFavourite = false;
 
-  useEffect(() => {
+  const {
+    showNameModal,
+    toggleFavourite: toggleFavouriteAction,
+    handleSaveFavourite: saveFavourite,
+    handleCancelNameModal,
+    initialName,
+  } = useFavouriteActions({
+    isFavourite,
+    currentShortcutId,
+    defaultName: formTitle,
+    onFavouriteAdded: (shortcutId) => {
+      setIsFavourite(true);
+      setCurrentShortcutId(shortcutId);
+    },
+    onFavouriteRemoved: () => {
+      setIsFavourite(false);
+    },
+  });
+
+  useDeepCompareEffect(() => {
     if (isMenuAction && !shouldSkipFavourite) {
       checkFavourite();
     }
@@ -59,24 +82,17 @@ export const FormModal = (props: FormModalProps) => {
     }
   }
 
-  async function toggleFavourite() {
-    if (isFavourite && currentShortcutId) {
-      await ConnectionProvider.getHandler().removeFavourite({
-        shortcut_id: currentShortcutId,
-      });
-    } else {
-      const { action_id, res_id, action_type, view_id } = actionData;
-
-      await ConnectionProvider.getHandler().addFavourite({
+  const handleSaveFavourite = useCallback(
+    async (nameToUse: string) => {
+      await saveFavourite(nameToUse, {
         action_id,
         action_type,
         view_id,
         res_id: res_id || false,
       });
-    }
-
-    setIsFavourite(!isFavourite);
-  }
+    },
+    [saveFavourite, action_id, action_type, view_id, res_id],
+  );
 
   function header() {
     return (
@@ -93,7 +109,7 @@ export const FormModal = (props: FormModalProps) => {
                 )
               }
               style={{ width: 30 }}
-              onClick={toggleFavourite}
+              onClick={toggleFavouriteAction}
             ></Button>
           </Col>
         )}
@@ -127,6 +143,13 @@ export const FormModal = (props: FormModalProps) => {
           {...rest}
         />
       </Modal>
+
+      <FavouriteNameModal
+        visible={showNameModal}
+        initialName={initialName}
+        onSave={handleSaveFavourite}
+        onCancel={handleCancelNameModal}
+      />
     </FormModalProvider>
   );
 };
