@@ -6,6 +6,7 @@ import {
   useRef,
   useContext,
   useCallback,
+  useMemo,
 } from "react";
 import { Form as FormOoui, parseContext } from "@gisce/ooui";
 import { Form as AntForm, Button, Divider, Space, Row, Spin } from "antd";
@@ -128,26 +129,32 @@ function Form(props: FormProps, ref: any) {
   const { t } = useLocale();
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [error, setError] = useState<any>();
+  const [error, setError] = useState<FormError>();
   const [formOoui, setFormOoui] = useState<FormOoui>();
   const [antForm] = AntForm.useForm();
   const [arch, setArch] = useState<string>();
-  const [fields, setFields] = useState<any>();
+  const [fields, setFields] = useState<Record<string, any>>();
   const formModalContext = useContext(FormModalContext) as FormModalContextType;
-  const [containerWidth, setContainerWidth] = useState<any>();
+  const [containerWidth, setContainerWidth] = useState<number>();
   const [defaultGetCalled, setDefaultGetCalled] = useState<boolean>(false);
   const [refreshCounter, setRefreshCounter] = useState<number>(0);
 
   const createdId = useRef<number>();
-  const originalFormValues = useRef<any>({});
-  const lastAssignedValues = useRef<any>({});
+  const originalFormValues = useRef<Record<string, any>>({});
+  const lastAssignedValues = useRef<Record<string, any>>({});
   const warningIsShown = useRef<boolean>(false);
   const formSubmitting = useRef<boolean>(false);
   const x2manyPendingLink = useRef<boolean>(false);
 
-  const widthToEvaluate =
-    parentWidth !== undefined ? parentWidth : containerWidth;
-  const responsiveBehaviour = widthToEvaluate < WIDTH_BREAKPOINT;
+  const widthToEvaluate = useMemo(
+    () => (parentWidth !== undefined ? parentWidth : containerWidth),
+    [parentWidth, containerWidth],
+  );
+
+  const responsiveBehaviour = useMemo(
+    () => (widthToEvaluate ?? 0) < WIDTH_BREAKPOINT,
+    [widthToEvaluate],
+  );
 
   const formContext = useContext(FormContext) as FormContextType;
   const { activeId: parentId, getPlainValues: getParentPlainValues } =
@@ -286,14 +293,47 @@ function Form(props: FormProps, ref: any) {
 
   const currentId = id || createdId.current;
 
-  function getFields() {
+  const getFields = useCallback(() => {
     return fields;
-  }
+  }, [fields]);
 
-  function getPlainValues() {
-    const values: any = getValues();
-    const fields: any = getFields();
-    const reformattedValues: { [key: string]: any } = {};
+  const getCurrentValues = useCallback(
+    (fields: Record<string, any>) => {
+      const currentValues = antForm.getFieldsValue(true);
+      return processValues(currentValues, fields);
+    },
+    [antForm],
+  );
+
+  const getAdditionalValues = useCallback(() => {
+    return {
+      id: getCurrentId()!,
+      active_id: getCurrentId()!,
+      active_ids: [getCurrentId()!],
+      parent_id: parentId,
+      ...globalValues,
+    };
+  }, [getCurrentId, parentId, globalValues]);
+
+  const getValues = useCallback(() => {
+    const values = {
+      ...getCurrentValues(fields),
+      ...getAdditionalValues(),
+    };
+
+    for (const key in values) {
+      if (values[key] === undefined) {
+        delete values[key];
+      }
+    }
+
+    return values;
+  }, [getCurrentValues, getAdditionalValues, fields]);
+
+  const getPlainValues = useCallback(() => {
+    const values = getValues();
+    const fields = getFields();
+    const reformattedValues: Record<string, any> = {};
 
     Object.keys(values).forEach((key) => {
       const value = values[key];
@@ -324,9 +364,9 @@ function Form(props: FormProps, ref: any) {
       ...getAdditionalValues(),
       ...reformattedValues,
     };
-  }
+  }, [getValues, getFields, getAdditionalValues]);
 
-  function getAllHierarchyValues() {
+  const getAllHierarchyValues = useCallback(() => {
     const currentValues = getPlainValues();
     const parentValues = getParentPlainValues?.();
 
@@ -338,9 +378,9 @@ function Form(props: FormProps, ref: any) {
       ...currentValues,
       parent: parentValues, // Keep parent values separately in case you need them
     };
-  }
+  }, [getPlainValues, getParentPlainValues]);
 
-  function getFormValues() {
+  const getFormValues = useCallback(() => {
     const values = {
       ...getCurrentValues(fields),
     };
@@ -352,42 +392,35 @@ function Form(props: FormProps, ref: any) {
     }
 
     return values;
-  }
+  }, [getCurrentValues, fields]);
 
-  function getContext() {
+  const getContext = useCallback(() => {
     return { ...parentContext, ...formOoui?.context };
-  }
+  }, [parentContext, formOoui]);
 
-  function getActiveIdsContext() {
+  const getActiveIdsContext = useCallback(() => {
     const currentId = getCurrentId()!;
 
     if (!currentId) {
       return {};
     }
     return { active_id: getCurrentId()!, active_ids: [getCurrentId()!] };
-  }
+  }, [getCurrentId]);
 
-  const getAdditionalValues = useCallback(() => {
-    return {
-      id: getCurrentId()!,
-      active_id: getCurrentId()!,
-      active_ids: [getCurrentId()!],
-      parent_id: parentId,
-      ...globalValues,
-    };
-  }, [getCurrentId, parentId, globalValues]);
+  const getDefaultValues = useCallback(
+    async (fields: Record<string, any>) => {
+      const formContext = getCurrentId() ? formOoui?.context : {};
+      return await ConnectionProvider.getHandler().defaultGet({
+        model,
+        fields,
+        context: { ...parentContext, ...formContext },
+        extraValues: defaultValues,
+      });
+    },
+    [getCurrentId, formOoui, model, parentContext, defaultValues],
+  );
 
-  const getDefaultValues = async (fields: any) => {
-    const formContext = getCurrentId() ? formOoui?.context : {};
-    return await ConnectionProvider.getHandler().defaultGet({
-      model,
-      fields,
-      context: { ...parentContext, ...formContext },
-      extraValues: defaultValues,
-    });
-  };
-
-  const formHasChanges = () => {
+  const formHasChanges = useCallback(() => {
     return (
       Object.keys(
         getTouchedValues({
@@ -397,30 +430,40 @@ function Form(props: FormProps, ref: any) {
         }),
       ).length !== 0
     );
-  };
+  }, [getCurrentValues, fields]);
 
-  const getCurrentValues = useCallback(
-    (fields: any) => {
-      const currentValues = antForm.getFieldsValue(true);
-      return processValues(currentValues, fields);
+  const assignNewValuesToForm = useCallback(
+    ({
+      values: newValues,
+      fields,
+      reset,
+      isDefaultGet = false,
+    }: {
+      values: any;
+      fields: any;
+      reset: boolean;
+      isDefaultGet?: boolean;
+    }) => {
+      const currentValues = reset ? {} : antForm.getFieldsValue(true);
+      const mergedValues = { ...currentValues, ...newValues };
+      const valuesProcessed = processValues(mergedValues, fields);
+      const fieldsToUpdate = Object.keys(fields).map((fieldName) => ({
+        name: fieldName,
+        touched: false,
+        value:
+          valuesProcessed[fieldName] !== undefined
+            ? valuesProcessed[fieldName]
+            : undefined,
+      }));
+
+      if (!isDefaultGet) {
+        lastAssignedValues.current = valuesProcessed;
+      }
+
+      antForm.setFields(fieldsToUpdate);
     },
     [antForm],
   );
-
-  const getValues = useCallback(() => {
-    const values = {
-      ...getCurrentValues(fields),
-      ...getAdditionalValues(),
-    };
-
-    for (const key in values) {
-      if (values[key] === undefined) {
-        delete values[key];
-      }
-    }
-
-    return values;
-  }, [getCurrentValues, getAdditionalValues, fields]);
 
   const onCancel = useCallback(() => {
     if (mustFetchParentValues.current) {
@@ -436,30 +479,36 @@ function Form(props: FormProps, ref: any) {
     setFormIsSaving,
   ]);
 
-  const setFieldValue = (field: string, value?: string) => {
-    assignNewValuesToForm({
-      values: {
-        ...processValues(antForm.getFieldsValue(true), fields),
-        [field]: value,
-      },
-      fields,
-      reset: false,
-    });
-  };
+  const setFieldValue = useCallback(
+    (field: string, value?: any) => {
+      assignNewValuesToForm({
+        values: {
+          ...processValues(antForm.getFieldsValue(true), fields),
+          [field]: value,
+        },
+        fields,
+        reset: false,
+      });
+    },
+    [assignNewValuesToForm, antForm, fields],
+  );
 
-  const getFieldValue = (field: string) => {
-    const values = antForm.getFieldsValue(true);
-    return values[field];
-  };
+  const getFieldValue = useCallback(
+    (field: string) => {
+      const values = antForm.getFieldsValue(true);
+      return values[field];
+    },
+    [antForm],
+  );
 
-  async function checkIfFormHasErrors() {
+  const checkIfFormHasErrors = useCallback(async (): Promise<boolean> => {
     try {
       await antForm.validateFields();
       return false;
     } catch (verror) {
       return true;
     }
-  }
+  }, [antForm]);
   const fetchData = async () => {
     setError(undefined);
     clearAllFieldMessages();
@@ -546,9 +595,8 @@ function Form(props: FormProps, ref: any) {
     }
   };
 
-  const cancelUnsavedChanges = async () => {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve) => {
+  const cancelUnsavedChanges = async (): Promise<boolean> => {
+    return new Promise<boolean>((resolve) => {
       if (formHasChanges()) {
         showUnsavedChangesDialog({
           t,
@@ -585,39 +633,6 @@ function Form(props: FormProps, ref: any) {
       context: parentContext,
     })) as FormView;
   };
-
-  const assignNewValuesToForm = useCallback(
-    ({
-      values: newValues,
-      fields,
-      reset,
-      isDefaultGet = false,
-    }: {
-      values: any;
-      fields: any;
-      reset: boolean;
-      isDefaultGet?: boolean;
-    }) => {
-      const currentValues = reset ? {} : antForm.getFieldsValue(true);
-      const mergedValues = { ...currentValues, ...newValues };
-      const valuesProcessed = processValues(mergedValues, fields);
-      const fieldsToUpdate = Object.keys(fields).map((fieldName) => ({
-        name: fieldName,
-        touched: false,
-        value:
-          valuesProcessed[fieldName] !== undefined
-            ? valuesProcessed[fieldName]
-            : undefined,
-      }));
-
-      if (!isDefaultGet) {
-        lastAssignedValues.current = valuesProcessed;
-      }
-
-      antForm.setFields(fieldsToUpdate);
-    },
-    [antForm],
-  );
 
   const fetchValuesFromApi = async ({
     fields,
@@ -1158,21 +1173,24 @@ function Form(props: FormProps, ref: any) {
     }
   }
 
-  function elementHasLostFocus() {
+  const elementHasLostFocus = useCallback(() => {
     checkFieldsChanges({ elementHasLostFocus: true });
-  }
+  }, [checkFieldsChanges]);
 
-  function updateOperationInProgress(value: boolean) {
-    parseForm({
-      fields,
-      arch: arch!,
-      values: getCurrentValues(fields),
-      operationInProgress: value,
-    });
-  }
+  const updateOperationInProgress = useCallback(
+    (value: boolean) => {
+      parseForm({
+        fields,
+        arch: arch!,
+        values: getCurrentValues(fields),
+        operationInProgress: value,
+      });
+    },
+    [parseForm, fields, arch, getCurrentValues],
+  );
 
   const onAutorefreshableFieldsChange = useCallback(
-    (newValues: any) => {
+    (newValues: Record<string, any>) => {
       if (!arch) {
         return;
       }
@@ -1263,17 +1281,17 @@ function Form(props: FormProps, ref: any) {
     }
   }
 
-  const content = () => {
-    if (!formOoui && !error) {
-      return <Spin />;
+  const content = useMemo(() => {
+    if (!visible) {
+      return null;
     }
 
     if (!model && !formViewProps) {
       return null;
     }
 
-    if (!visible) {
-      return null;
+    if (!formOoui && !error) {
+      return <Spin />;
     }
 
     return (
@@ -1320,9 +1338,39 @@ function Form(props: FormProps, ref: any) {
         </FormProvider>
       </>
     );
-  };
+  }, [
+    visible,
+    model,
+    formViewProps,
+    formOoui,
+    error,
+    getValues,
+    getPlainValues,
+    getAllHierarchyValues,
+    getFields,
+    actionDomain,
+    currentId,
+    setFieldValue,
+    getFieldValue,
+    executeButtonAction,
+    getContext,
+    submitForm,
+    fetchValues,
+    formHasChanges,
+    elementHasLostFocus,
+    fieldMessages,
+    setFieldMessage,
+    getFieldMessage,
+    getFieldMessageType,
+    clearFieldMessage,
+    clearAllFieldMessages,
+    refreshCounter,
+    antForm,
+    debouncedCheckFieldsChanges,
+    responsiveBehaviour,
+  ]);
 
-  const footer = () => {
+  const footer = useMemo(() => {
     return (
       <>
         <Divider />
@@ -1352,7 +1400,14 @@ function Form(props: FormProps, ref: any) {
         </Row>
       </>
     );
-  };
+  }, [isSubmitting, readOnly, cancelUnsavedChanges, submitForm]);
+
+  const handleResize = useCallback(
+    (contentRect: { bounds?: { width?: number } }) => {
+      setContainerWidth(contentRect.bounds?.width);
+    },
+    [],
+  );
 
   if (!visible) {
     return null;
@@ -1361,14 +1416,12 @@ function Form(props: FormProps, ref: any) {
   return (
     <Measure
       bounds
-      onResize={(contentRect) => {
-        setContainerWidth(contentRect.bounds?.width!);
-      }}
+      onResize={handleResize}
     >
       {({ measureRef }) => (
         <div className="pb-2" ref={measureRef}>
-          {content()}
-          {showFooter && footer()}
+          {content}
+          {showFooter && footer}
         </div>
       )}
     </Measure>
