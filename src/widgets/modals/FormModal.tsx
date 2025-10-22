@@ -38,8 +38,7 @@ export const FormModal = (props: FormModalProps) => {
   const { action_id, res_id, action_type, view_id } = actionData || {};
 
   // Skip favourite feature if action_id, action_type, and res_id are missing
-  // const shouldSkipFavourite = !action_id && !action_type && !res_id;
-  const shouldSkipFavourite = false;
+  const shouldSkipFavourite = !action_id && !action_type && !res_id;
 
   const {
     showNameModal,
