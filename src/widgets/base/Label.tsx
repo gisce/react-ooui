@@ -58,14 +58,17 @@ const Label = (props: Props) => {
     }
   }
   const responsiveAlign = responsiveBehaviour ? "left" : "right";
-  const labelAlgin = align || (fieldForLabel ? responsiveAlign : "left");
+  const labelAlgin =
+    ooui?.align || align || (fieldForLabel ? responsiveAlign : "left");
   const { token } = useToken();
 
   const TextType = labelSize === undefined ? Text : Title;
 
   return (
     <div
-      className={`flex flex-row items-center pb-1 pt-1 ${alignClass[labelAlgin]}`}
+      className={`flex flex-row items-center pb-1 pt-1 ${
+        alignClass[labelAlgin as keyof typeof alignClass]
+      }`}
     >
       {tooltip && (
         <Tooltip title={tooltip}>

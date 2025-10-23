@@ -458,6 +458,7 @@ function RootView(props: RootViewProps, ref: any) {
       overrideUnsettedLimit = false,
       values = {},
       domain,
+      name,
     } = shortcut;
     const action = `${action_type},${action_id}`;
 
@@ -544,7 +545,7 @@ function RootView(props: RootViewProps, ref: any) {
       context: { ...rootContext, ...parsedContext },
       model,
       views: finalViews,
-      title,
+      title: name || title,
       target,
       initialView,
       action_id,
