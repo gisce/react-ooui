@@ -128,4 +128,8 @@ export default {
   searchFilterName: "Search filter name",
   searchFilterNamePlaceholder: "Enter the search filter name",
   openSavedSearchInSidebar: "Open saved search in the sidebar",
+  confirmRemoveFavourite: "Are you sure you want to remove this favourite?",
+  favouriteName: "Favourite name",
+  saveFavourite: "Save favourite",
+  enterFavouriteName: "Enter favourite name",
 };
