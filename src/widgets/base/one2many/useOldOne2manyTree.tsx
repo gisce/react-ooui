@@ -19,7 +19,7 @@ export const useOne2manyTree = ({
   allRowsIds,
   gridRef,
 }: {
-  treeView: TreeView;
+  treeView?: TreeView;
   relation: string;
   context: any;
   allRowsIds: number[];
@@ -54,6 +54,7 @@ export const useOne2manyTree = ({
   }, []);
 
   const treeOoui = useMemo(() => {
+    if (!treeView) return undefined;
     return getTree(treeView);
   }, [treeView]);
 
@@ -95,7 +96,7 @@ export const useOne2manyTree = ({
       } = await fetchAndPrepareData({
         relation,
         ids: realIdsToFetch,
-        treeView,
+        treeView: treeView!,
         context,
         attrs,
         treeOoui,
@@ -107,10 +108,12 @@ export const useOne2manyTree = ({
           ? [...realIdsToFetch, ...otherItems.map((item) => item.id!)]
           : realIdsToFetch;
 
-      const results = mergeWithOtherItems({
+      const results = await mergeWithOtherItems({
         finalResultIds,
         fetchedItems: preparedResults,
         otherItems,
+        treeOoui,
+        context,
       });
 
       return { results, colors, status };

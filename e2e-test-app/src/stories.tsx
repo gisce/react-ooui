@@ -5,6 +5,8 @@ import { Infinite, Paginated } from "./stories/TreeActionView.stories";
 import { Infinite as One2ManyInfinite, Paginated as One2ManyPaginated } from "./stories/One2Many.stories";
 // Import the Many2Many stories
 import { Infinite as Many2ManyInfinite, Paginated as Many2ManyPaginated } from "./stories/Many2Many.stories";
+// Import QRCode demo
+import { QRCodeDemo } from "./stories/QRCode.stories";
 
 export interface Story {
   id: string;
@@ -15,6 +17,13 @@ export interface Story {
 }
 
 export const stories: Story[] = [
+  {
+    id: "qrcode-demo",
+    title: "QR Code Widget Demo",
+    component: QRCodeDemo,
+    description:
+      "Interactive demo of the QR Code widget showing how to generate QR codes from text/URLs. Features include customizable size, colors, border settings, and examples for different use cases like websites, contact information, WiFi credentials, and plain text.",
+  },
   {
     id: "tree-action-view-infinite",
     title: "TreeActionView - Infinite",

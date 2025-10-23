@@ -33,7 +33,12 @@ export type SearchTreeState = {
   searchQuery?: SearchQueryParams;
   setSearchQuery: (value: SearchQueryParams) => void;
   totalItems: number;
-  setTotalItems: (value: number) => void;
+  setTotalItems: (
+    value:
+      | number
+      | undefined
+      | ((prev: number | undefined) => number | undefined),
+  ) => void;
   isActive?: boolean;
   order?: ColumnState[];
   setOrder: (value: ColumnState[] | undefined) => void;
@@ -135,7 +140,18 @@ export function useSearchTreeState({
         searchQuery: localSearchQuery,
         setSearchQuery: setLocalSearchQuery,
         totalItems: localTotalItems,
-        setTotalItems: setLocalTotalItems,
+        setTotalItems: (value) => {
+          if (value === undefined) {
+            setLocalTotalItems(0);
+          } else if (typeof value === "function") {
+            setLocalTotalItems((prev) => {
+              const result = value(prev);
+              return result ?? 0;
+            });
+          } else {
+            setLocalTotalItems(value);
+          }
+        },
         isActive: undefined,
         order: localOrder,
         setOrder: setLocalOrder,

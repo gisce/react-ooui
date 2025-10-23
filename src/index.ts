@@ -53,6 +53,7 @@ import { GraphIndicator } from "@/widgets/views/Graph/GraphIndicator";
 import { Spinner } from "@/widgets/custom/Spinner";
 import { Carousel } from "@/widgets/custom/Carousel";
 import { ColorPicker } from "@/widgets/custom/ColorPicker";
+import { QRCode, QRCodeInput } from "@/widgets/custom/QRCode";
 
 import type {
   TreeView,
@@ -96,7 +97,16 @@ import dayjs from "./helpers/dayjs";
 import { TreeActionView } from "./views/actionViews/TreeActionView";
 import { FormActionView } from "./views/actionViews/FormActionView";
 import ActionViewProvider from "./context/ActionViewContext";
-import { DEFAULT_SEARCH_LIMIT } from "./models/constants";
+import {
+  DEFAULT_SEARCH_LIMIT,
+  ACTION_TYPE_WINDOW,
+  ACTION_TYPE_WINDOW_CLOSE,
+  ACTION_TYPE_WIZARD,
+  ACTION_TYPE_REPORT,
+  ACTION_TYPE_URL,
+  ACTION_TYPE_UPDATE_TOKEN,
+  MODEL_ACTIONS,
+} from "./models/constants";
 import { useBrowserVisibility } from "./hooks/useBrowserVisibility";
 
 export {
@@ -189,6 +199,8 @@ export {
   Spinner,
   Carousel,
   ColorPicker,
+  QRCode,
+  QRCodeInput,
   UserAllFeatureKeys,
   UserFeatureKeys,
   UserFeaturesMap,
@@ -198,5 +210,12 @@ export {
   ActionViewProvider,
   View,
   DEFAULT_SEARCH_LIMIT,
+  ACTION_TYPE_WINDOW,
+  ACTION_TYPE_WINDOW_CLOSE,
+  ACTION_TYPE_WIZARD,
+  ACTION_TYPE_REPORT,
+  ACTION_TYPE_URL,
+  ACTION_TYPE_UPDATE_TOKEN,
+  MODEL_ACTIONS,
   useBrowserVisibility,
 };

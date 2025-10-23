@@ -497,6 +497,23 @@ function determineTreeType(
   return "legacy";
 }
 
+const getVisibleTreeFields = (treeView: any): string[] | undefined => {
+  if (!treeView?.arch || !treeView?.fields) {
+    return undefined;
+  }
+
+  try {
+    const tree = getTree(treeView);
+    const fieldNames = tree.columns
+      .filter((col: any) => col.id && !col.invisible)
+      .map((col: any) => col.id);
+    return fieldNames.length > 0 ? fieldNames : undefined;
+  } catch (error) {
+    console.error("Error extracting visible tree fields:", error);
+    return undefined;
+  }
+};
+
 export {
   getTableColumns,
   getTableItems,
@@ -512,4 +529,5 @@ export {
   getSortedFieldsFromState,
   isTreeExpandable,
   determineTreeType,
+  getVisibleTreeFields,
 };

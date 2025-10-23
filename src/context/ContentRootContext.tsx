@@ -27,6 +27,7 @@ import {
   ACTION_TYPE_WINDOW,
   ACTION_TYPE_URL,
 } from "@/models/constants";
+import { getVisibleTreeFields } from "@/helpers/treeHelper";
 
 export type ContentRootContextType = {
   processAction: ({
@@ -34,12 +35,16 @@ export type ContentRootContextType = {
     fields,
     values,
     context,
+    treeView,
+    view_id,
   }: {
     actionData: any;
     fields?: any;
     values?: any;
     context?: any;
     onRefreshParentValues?: () => void;
+    treeView?: any;
+    view_id?: number;
   }) => Promise<any>;
   globalValues?: any;
 };
@@ -110,7 +115,14 @@ const ContentRootProvider = (
   );
 
   async function generateReport(options: GenerateReportOptions) {
-    const { reportData, fields, values, context = {} } = options;
+    const {
+      reportData,
+      fields,
+      values,
+      context = {},
+      treeView,
+      view_id,
+    } = options;
 
     const {
       context: reportContext,
@@ -120,6 +132,22 @@ const ContentRootProvider = (
       type,
       id: reportId,
     } = reportData;
+
+    // If view_id doesn't exist and we have a treeView, extract fields and add them to datas
+    if (!view_id && treeView) {
+      const fieldsToRetrieve = getVisibleTreeFields(treeView);
+      if (fieldsToRetrieve && fieldsToRetrieve.length > 0) {
+        datas.fields = fieldsToRetrieve;
+      }
+    }
+
+    // If view_id doesn't exist and we have a treeView, extract fields and add them to datas
+    if (!view_id && treeView) {
+      const fieldsToRetrieve = getVisibleTreeFields(treeView);
+      if (fieldsToRetrieve && fieldsToRetrieve.length > 0) {
+        datas.fields = fieldsToRetrieve;
+      }
+    }
 
     if (type !== ACTION_TYPE_REPORT) {
       showErrorNotification({
@@ -208,12 +236,16 @@ const ContentRootProvider = (
     values,
     context,
     onRefreshParentValues: onRefreshParentValuesFn,
+    treeView,
+    view_id,
   }: {
     actionData: any;
     fields?: any;
     values?: any;
     context?: any;
     onRefreshParentValues?: any;
+    treeView?: any;
+    view_id?: number;
   }) {
     const { type } = actionData;
     if (onRefreshParentValuesFn) {
@@ -226,6 +258,8 @@ const ContentRootProvider = (
         fields,
         values,
         context,
+        treeView,
+        view_id,
       });
     } else if (type === ACTION_TYPE_WINDOW) {
       return await runAction({ actionData, fields, values, context });
