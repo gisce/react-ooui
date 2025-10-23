@@ -133,4 +133,8 @@ export default {
   searchFilterName: "Nombre del filtro de búsqueda",
   searchFilterNamePlaceholder: "Introduce el nombre del filtro de búsqueda",
   openSavedSearchInSidebar: "Abrir búsqueda guardada en la barra lateral",
+  confirmRemoveFavourite: "¿Estás seguro de querer eliminar este favorito?",
+  favouriteName: "Nombre del favorito",
+  saveFavourite: "Guardar favorito",
+  enterFavouriteName: "Introduce el nombre del favorito",
 };
