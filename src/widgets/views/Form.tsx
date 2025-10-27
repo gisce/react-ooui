@@ -57,8 +57,8 @@ import {
   FieldMessage,
   FieldMessageType,
 } from "../../hooks/useFieldMessages";
-import { useConfigContext } from "@/context/ConfigContext";
 import { ACTION_TYPE_WINDOW_CLOSE, MODEL_ACTIONS } from "@/models/constants";
+import { useConfigContext } from "@/context/ConfigContext";
 
 export type FormProps = {
   model: string;
