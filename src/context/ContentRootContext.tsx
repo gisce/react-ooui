@@ -22,6 +22,11 @@ import { transformPlainMany2Ones, stringFormat } from "@/helpers/formHelper";
 import { useFeatureData } from "./ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import {
+  ACTION_TYPE_REPORT,
+  ACTION_TYPE_WINDOW,
+  ACTION_TYPE_URL,
+} from "@/models/constants";
 import { getVisibleTreeFields } from "@/helpers/treeHelper";
 
 export type ContentRootContextType = {
@@ -34,8 +39,8 @@ export type ContentRootContextType = {
     view_id,
   }: {
     actionData: any;
-    fields: any;
-    values: any;
+    fields?: any;
+    values?: any;
     context?: any;
     onRefreshParentValues?: () => void;
     treeView?: any;
@@ -136,7 +141,15 @@ const ContentRootProvider = (
       }
     }
 
-    if (type !== "ir.actions.report.xml") {
+    // If view_id doesn't exist and we have a treeView, extract fields and add them to datas
+    if (!view_id && treeView) {
+      const fieldsToRetrieve = getVisibleTreeFields(treeView);
+      if (fieldsToRetrieve && fieldsToRetrieve.length > 0) {
+        datas.fields = fieldsToRetrieve;
+      }
+    }
+
+    if (type !== ACTION_TYPE_REPORT) {
       showErrorNotification({
         type: "error",
         title: "Error",
@@ -227,8 +240,8 @@ const ContentRootProvider = (
     view_id,
   }: {
     actionData: any;
-    fields: any;
-    values: any;
+    fields?: any;
+    values?: any;
     context?: any;
     onRefreshParentValues?: any;
     treeView?: any;
@@ -239,7 +252,7 @@ const ContentRootProvider = (
       onRefreshParentValues.current.push(onRefreshParentValuesFn);
     }
 
-    if (type === "ir.actions.report.xml") {
+    if (type === ACTION_TYPE_REPORT) {
       return await generateReport({
         reportData: actionData,
         fields,
@@ -248,9 +261,9 @@ const ContentRootProvider = (
         treeView,
         view_id,
       });
-    } else if (type === "ir.actions.act_window") {
+    } else if (type === ACTION_TYPE_WINDOW) {
       return await runAction({ actionData, fields, values, context });
-    } else if (type === "ir.actions.act_url") {
+    } else if (type === ACTION_TYPE_URL) {
       window.open(
         stringFormat(actionData.url, { ...values, context }),
         "_blank",
@@ -281,7 +294,7 @@ const ContentRootProvider = (
     if (!_actionData.res_model) {
       actionData = (
         await ConnectionProvider.getHandler().readObjects({
-          model: "ir.actions.act_window",
+          model: ACTION_TYPE_WINDOW,
           ids: [parseInt(_actionData.id)],
           context,
         })
