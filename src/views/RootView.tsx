@@ -19,7 +19,11 @@ import { transformPlainMany2Ones } from "@/helpers/formHelper";
 import { nanoid } from "nanoid";
 import { useLocale } from "@gisce/react-formiga-components";
 import { useConfigContext, useFeatureData } from "@/context/ConfigContext";
-import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
+import {
+  DEFAULT_SEARCH_LIMIT,
+  ACTION_TYPE_WINDOW,
+  ACTION_TYPE_WIZARD,
+} from "@/models/constants";
 import { filterAllowedValues } from "@/helpers/shareUrlHelper";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
@@ -215,7 +219,7 @@ function RootView(props: RootViewProps, ref: any) {
 
     return await openAction({
       action_id: -1,
-      action_type: "ir.actions.act_window",
+      action_type: ACTION_TYPE_WINDOW,
       model,
       views: [[view.view_id, "form"]],
       context: rootContext,
@@ -249,7 +253,7 @@ function RootView(props: RootViewProps, ref: any) {
       context: rootContext,
     });
 
-    if (dataForAction.type === "ir.actions.wizard") {
+    if (dataForAction.type === ACTION_TYPE_WIZARD) {
       showErrorNotification({
         type: "error",
         title: "Error",
@@ -722,7 +726,7 @@ function RootView(props: RootViewProps, ref: any) {
 
     return await openAction({
       action_id: -1,
-      action_type: "ir.actions.act_window",
+      action_type: ACTION_TYPE_WINDOW,
       model,
       views: finalViews,
       context: rootContext,

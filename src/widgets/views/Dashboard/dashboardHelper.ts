@@ -1,6 +1,7 @@
 import ConnectionProvider from "@/ConnectionProvider";
 import { parseContext } from "@gisce/ooui";
 import { nanoid } from "nanoid";
+import { ACTION_TYPE_WINDOW } from "@/models/constants";
 
 export async function fetchAction({
   actionId,
@@ -11,7 +12,7 @@ export async function fetchAction({
   rootContext?: any;
   globalValues?: any;
 }): Promise<any> {
-  const actionType = "ir.actions.act_window";
+  const actionType = ACTION_TYPE_WINDOW;
   const action = `${actionType},${actionId}`;
 
   const dataForAction = await ConnectionProvider.getHandler().getActionData({

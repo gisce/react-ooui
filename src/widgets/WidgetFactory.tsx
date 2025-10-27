@@ -44,6 +44,7 @@ import { FiberGrid } from "./custom/FiberGrid";
 import { Timeline } from "./custom/Timeline";
 import { Indicator } from "./custom/Indicator";
 import { Tags } from "./custom/Tags";
+import { ActionButtons } from "./custom/ActionButtons";
 import { QRCode } from "./custom/QRCode";
 import { createElement } from "react";
 
@@ -140,6 +141,8 @@ const getWidgetType = (type: string) => {
       return Carousel;
     case "colorPicker":
       return ColorPicker;
+    case "action_buttons":
+      return ActionButtons;
     case "qrcode":
       return QRCode;
     default:
