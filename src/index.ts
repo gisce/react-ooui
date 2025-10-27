@@ -11,6 +11,7 @@ import { ProgressBar } from "@/widgets/base/ProgressBar";
 import { FloatTime } from "@/widgets/base/FloatTime";
 import { Integer } from "@/widgets/base/Integer";
 import Group from "@/widgets/containers/Group";
+import Card from "@/widgets/containers/Card";
 import Notebook from "@/widgets/containers/Notebook";
 import Form from "@/widgets/views/Form";
 import Label from "@/widgets/base/Label";
@@ -118,6 +119,7 @@ export {
   Many2one,
   Tree,
   Group,
+  Card,
   SearchFilter,
   Form,
   Notebook,
