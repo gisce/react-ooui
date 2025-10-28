@@ -39,6 +39,7 @@
 - Never use effects to transform render data, derive state from props, reset state for prop changes, or handle user interactions—calculate during render or via memoization instead.
 - Use effects only for side-effectful work such as data fetching, subscriptions, imperative DOM interaction, integrating external libraries, or analytics.
 - Export components wrapped in `memo` for performance unless a deliberate re-render is required.
+- Encapsulate components that could fail in `ErrorBoundary` (import from `antd/es/alert/ErrorBoundary`) to prevent crashes from propagating and improve error handling.
 
 ## Localization
 - Localize every user-facing string by reusing existing translation keys; search the locale files before adding new ones.
