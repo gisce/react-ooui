@@ -22,12 +22,12 @@ import { transformPlainMany2Ones, stringFormat } from "@/helpers/formHelper";
 import { useFeatureData } from "./ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
-import { getVisibleTreeFields } from "@/helpers/treeHelper";
 import {
   ACTION_TYPE_REPORT,
   ACTION_TYPE_WINDOW,
   ACTION_TYPE_URL,
 } from "@/models/constants";
+import { getVisibleTreeFields } from "@/helpers/treeHelper";
 
 export type ContentRootContextType = {
   processAction: ({
@@ -132,6 +132,14 @@ const ContentRootProvider = (
       type,
       id: reportId,
     } = reportData;
+
+    // If view_id doesn't exist and we have a treeView, extract fields and add them to datas
+    if (!view_id && treeView) {
+      const fieldsToRetrieve = getVisibleTreeFields(treeView);
+      if (fieldsToRetrieve && fieldsToRetrieve.length > 0) {
+        datas.fields = fieldsToRetrieve;
+      }
+    }
 
     // If view_id doesn't exist and we have a treeView, extract fields and add them to datas
     if (!view_id && treeView) {
