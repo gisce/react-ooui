@@ -46,6 +46,7 @@ import { Indicator } from "./custom/Indicator";
 import { Tags } from "./custom/Tags";
 import { ActionButtons } from "./custom/ActionButtons";
 import { QRCode } from "./custom/QRCode";
+import Card from "./containers/Card";
 import { createElement } from "react";
 
 const getWidgetType = (type: string) => {
@@ -145,6 +146,8 @@ const getWidgetType = (type: string) => {
       return ActionButtons;
     case "qrcode":
       return QRCode;
+    case "card":
+      return Card;
     default:
       return undefined;
   }
