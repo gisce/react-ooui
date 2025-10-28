@@ -490,72 +490,99 @@ export const YourViewComponent = (props: YourViewProps) => {
 
 **Location:** `/Users/marc/development/react-ooui/src/actionbar/YourViewActionBar.tsx`
 
+**Important:** Action bars should follow a consistent pattern across all views. Include these common buttons in order:
+
+1. **Filter Toggle** - Using `ButtonWithBadge` with badge count
+2. **Refresh Button** - Using `ActionButton`
+3. **Change View Button** - For switching between available views
+4. **Share URL Button** - For sharing the current state
+5. **Separators** - Using `ActionBarSeparator` for visual grouping
+
 ```typescript
 import { useContext } from "react";
 import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
-import { Button, Space, Tooltip } from "antd";
+import { Space } from "antd";
+import ChangeViewButton from "./ChangeViewButton";
+import ActionButton from "./ActionButton";
+import ButtonWithBadge from "./ButtonWithBadge";
+import { ShareUrlButton } from "./ShareUrlButton";
+import { ActionBarSeparator } from "./ActionBarSeparator";
 import { ReloadOutlined, FilterOutlined } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
+import { View } from "@/types";
 
 type YourViewActionBarProps = {
-  toolbar?: any;
-  parentContext?: any;
-  domain?: any;
   onRefresh?: () => void;
+  isLoading?: boolean;
 };
 
 const YourViewActionBar = (props: YourViewActionBarProps) => {
-  const { onRefresh } = props;
+  const { onRefresh, isLoading = false } = props;
   const { t } = useLocale();
 
-  const actionViewContext = useContext(
-    ActionViewContext,
-  ) as ActionViewContextType;
-
   const {
+    availableViews,
+    currentView,
+    setCurrentView,
+    searchParams,
     searchVisible,
     setSearchVisible,
-  } = actionViewContext || {};
-
-  const handleRefresh = () => {
-    if (onRefresh) {
-      onRefresh();
-    }
-  };
-
-  const handleToggleFilter = () => {
-    if (setSearchVisible) {
-      setSearchVisible(!searchVisible);
-    }
-  };
+    previousView,
+    setPreviousView,
+  } = useContext(ActionViewContext) as ActionViewContextType;
 
   return (
-    <Space size="small">
-      <Tooltip title={t("refresh")}>
-        <Button
-          icon={<ReloadOutlined />}
-          onClick={handleRefresh}
-          size="small"
-        />
-      </Tooltip>
+    <Space wrap={true}>
+      {/* Filter Toggle with Badge */}
+      <ButtonWithBadge
+        icon={
+          <FilterOutlined
+            style={{ color: searchVisible ? "white" : undefined }}
+          />
+        }
+        tooltip={t("advanced_search")}
+        type={searchVisible ? "primary" : "default"}
+        onClick={() => setSearchVisible?.(!searchVisible)}
+        disabled={isLoading}
+        badgeNumber={searchParams?.length}
+      />
 
-      <Tooltip title={t("filter")}>
-        <Button
-          icon={<FilterOutlined />}
-          onClick={handleToggleFilter}
-          size="small"
-          type={searchVisible ? "primary" : "default"}
-        />
-      </Tooltip>
+      {/* Refresh Button */}
+      <ActionButton
+        icon={<ReloadOutlined />}
+        tooltip={t("refresh")}
+        disabled={isLoading}
+        onClick={onRefresh}
+      />
+
+      {/* Change View Button */}
+      <ChangeViewButton
+        currentView={currentView}
+        availableViews={availableViews}
+        onChangeView={(newView: View) => {
+          setPreviousView?.(currentView);
+          setCurrentView?.(newView);
+        }}
+        previousView={previousView}
+        disabled={isLoading}
+      />
+
+      {/* Separator before utility buttons */}
+      <ActionBarSeparator />
+
+      {/* Share URL Button */}
+      <ShareUrlButton searchParams={searchParams} />
     </Space>
   );
 };
 
 export default YourViewActionBar;
 ```
+
+**Note:** This is the standard pattern used by Graph and Tree views. Adjust based on your view's specific needs, but maintain the same order and components for consistency.
 
 ### 3.5 Create Action View Wrapper
 
