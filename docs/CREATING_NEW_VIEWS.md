@@ -492,11 +492,10 @@ export const YourViewComponent = (props: YourViewProps) => {
 
 **Important:** Action bars should follow a consistent pattern across all views. Include these common buttons in order:
 
-1. **Filter Toggle** - Using `ButtonWithBadge` with badge count
-2. **Refresh Button** - Using `ActionButton`
-3. **Change View Button** - For switching between available views
-4. **Share URL Button** - For sharing the current state
-5. **Separators** - Using `ActionBarSeparator` for visual grouping
+1. **Refresh Button** - Using `ActionButton`
+2. **Change View Button** - For switching between available views
+3. **Share URL Button** - For sharing the current state
+4. **Separators** - Using `ActionBarSeparator` for visual grouping
 
 ```typescript
 import { useContext } from "react";
@@ -536,20 +535,6 @@ const YourViewActionBar = (props: YourViewActionBarProps) => {
 
   return (
     <Space wrap={true}>
-      {/* Filter Toggle with Badge */}
-      <ButtonWithBadge
-        icon={
-          <FilterOutlined
-            style={{ color: searchVisible ? "white" : undefined }}
-          />
-        }
-        tooltip={t("advanced_search")}
-        type={searchVisible ? "primary" : "default"}
-        onClick={() => setSearchVisible?.(!searchVisible)}
-        disabled={isLoading}
-        badgeNumber={searchParams?.length}
-      />
-
       {/* Refresh Button */}
       <ActionButton
         icon={<ReloadOutlined />}
@@ -791,7 +776,6 @@ npm run build:tsc
    - Verify view renders correctly
    - Test record interactions
    - Test refresh functionality
-   - Test filter toggle
    - Test record click → form view
 
 3. **Test Integration:**
