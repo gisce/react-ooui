@@ -285,18 +285,6 @@ export type View =
   | YourView;  // Add your view
 ```
 
-### 2.4 Update ConnectionProvider Types
-
-**File:** `/Users/marc/development/react-ooui/src/types/index.ts`
-
-```typescript
-// Update getView return type (around line 330)
-getView: (
-  options: GetViewRequest,
-  requestConfig?: any,
-) => Promise<FormView | TreeView | GraphView | KanbanView | YourView>;
-```
-
 ---
 
 ## Phase 3: React Components
