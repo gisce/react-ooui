@@ -137,4 +137,12 @@ export default {
   favouriteName: "Nombre del favorito",
   saveFavourite: "Guardar favorito",
   enterFavouriteName: "Introduce el nombre del favorito",
+  wip_limit: "Máximo de tarjetas por columna",
+  unlimited: "Ilimitado",
+  over_limit: "Sobre el límite",
+  no_records: "Sin registros",
+  wip_limit_reached: "Máximo de tarjetas alcanzado para esta columna",
+  card_moved_successfully: "Tarjeta movida correctamente",
+  error_moving_card: "Error al mover la tarjeta",
+  no_data: "Sin datos",
 };

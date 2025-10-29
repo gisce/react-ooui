@@ -132,4 +132,12 @@ export default {
   favouriteName: "Favourite name",
   saveFavourite: "Save favourite",
   enterFavouriteName: "Enter favourite name",
+  wip_limit: "Max cards per column",
+  unlimited: "Unlimited",
+  over_limit: "Over limit",
+  no_records: "No records",
+  wip_limit_reached: "Maximum cards reached for this column",
+  card_moved_successfully: "Card moved successfully",
+  error_moving_card: "Error moving card",
+  no_data: "No data",
 };
