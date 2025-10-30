@@ -27,7 +27,7 @@ type KanbanProps = {
 };
 
 export type KanbanRef = {
-  refresh: () => void;
+  refreshResults: () => void;
 };
 
 const KanbanComponentInner = (
@@ -113,7 +113,7 @@ const KanbanComponentInner = (
   });
 
   useImperativeHandle(ref, () => ({
-    refresh: () => {
+    refreshResults: () => {
       fetchRecords();
     },
   }));

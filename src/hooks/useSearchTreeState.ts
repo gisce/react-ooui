@@ -82,8 +82,8 @@ export function useSearchTreeState({
   // Return either context values or local state values based on isUnderActionViewContext
   return isUnderActionViewContext
     ? {
-        treeIsLoading: actionViewContext.treeIsLoading ?? false,
-        setTreeIsLoading: actionViewContext.setTreeIsLoading ?? (() => {}),
+        treeIsLoading: actionViewContext.viewIsLoading ?? false,
+        setTreeIsLoading: actionViewContext.setViewIsLoading ?? (() => {}),
         searchVisible: actionViewContext.searchVisible ?? false,
         setSearchVisible: actionViewContext.setSearchVisible ?? (() => {}),
         selectedRowItems: actionViewContext.selectedRowItems || [],
@@ -99,9 +99,9 @@ export function useSearchTreeState({
         setSearchParams: actionViewContext.setSearchParams ?? (() => {}),
         searchValues: actionViewContext.searchValues || {},
         setSearchValues: actionViewContext.setSearchValues ?? (() => {}),
-        searchTreeNameSearch: actionViewContext.searchTreeNameSearch,
+        searchTreeNameSearch: actionViewContext.searchNameSearch,
         setSearchTreeNameSearch:
-          actionViewContext.setSearchTreeNameSearch ?? (() => {}),
+          actionViewContext.setSearchNameSearch ?? (() => {}),
         results: actionViewContext.results || [],
         setResults: actionViewContext.setResults ?? (() => {}),
         searchQuery: actionViewContext.searchQuery,

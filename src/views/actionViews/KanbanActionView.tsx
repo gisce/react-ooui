@@ -1,7 +1,14 @@
-import { Fragment, useCallback, useState, useRef, memo } from "react";
+import {
+  Fragment,
+  useCallback,
+  useState,
+  useRef,
+  memo,
+  useEffect,
+} from "react";
 import { FormView, KanbanView, View } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
-import KanbanActionBar from "@/actionbar/KanbanActionBar";
+import TreeActionBar from "@/actionbar/TreeActionBar";
 import { KanbanComponent, KanbanRef } from "@/widgets/views/Kanban/Kanban";
 import { useActionViewContext } from "@/context/ActionViewContext";
 import { KanbanRecord } from "@/widgets/views/Kanban/useKanbanData";
@@ -15,28 +22,39 @@ export type KanbanActionViewProps = {
   domain: any;
   context: any;
   availableViews: View[];
+  viewRef: any;
 };
 
 const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
-  const { visible, kanbanView, model, context, domain, availableViews } = props;
+  const {
+    visible,
+    kanbanView,
+    model,
+    context,
+    domain,
+    availableViews,
+    viewRef,
+  } = props;
 
-  const { searchParams = [] } = useActionViewContext();
+  const { searchParams = [], setViewIsLoading } = useActionViewContext();
 
   const [isLoading, setIsLoading] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<
     KanbanRecord | undefined
   >();
-  const kanbanRef = useRef<KanbanRef>(null);
+
+  // Use viewRef from props instead of creating a new ref
+  const kanbanRef = viewRef as React.RefObject<KanbanRef>;
   const containerRef = useRef<HTMLDivElement>(null);
   const availableHeight = useAvailableHeight({
     elementRef: containerRef,
     offset: 10,
   });
 
-  const handleRefresh = useCallback(() => {
-    kanbanRef.current?.refresh();
-  }, []);
+  useEffect(() => {
+    setViewIsLoading?.(isLoading);
+  }, [isLoading, setViewIsLoading]);
 
   const handleCardClick = useCallback((record: KanbanRecord) => {
     setSelectedRecord(record);
@@ -51,8 +69,8 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
   const onFormModalSubmitSucceed = useCallback(() => {
     setShowFormModal(false);
     setSelectedRecord(undefined);
-    kanbanRef.current?.refresh();
-  }, []);
+    kanbanRef.current?.refreshResults();
+  }, [kanbanRef]);
 
   if (!visible) {
     return null;
@@ -63,7 +81,12 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
   return (
     <Fragment>
       <TitleHeader showSummary={false}>
-        <KanbanActionBar onRefresh={handleRefresh} isLoading={isLoading} />
+        <TreeActionBar
+          domain={domain}
+          toolbar={kanbanView.toolbar}
+          parentContext={context}
+          treeExpandable={false}
+        />
       </TitleHeader>
       <div
         ref={containerRef}

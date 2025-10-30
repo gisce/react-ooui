@@ -121,7 +121,7 @@ function ActionView(props: Props, ref: any) {
   });
 
   const formRef = useRef();
-  const searchTreeRef = useRef();
+  const viewRef = useRef();
 
   const tabManagerContext = useContext(
     TabManagerContext,
@@ -490,7 +490,7 @@ function ActionView(props: Props, ref: any) {
       setCurrentView={setCurrentView}
       availableViews={availableViews}
       formRef={formRef}
-      searchTreeRef={searchTreeRef}
+      viewRef={viewRef}
       onNewClicked={onNewClicked}
       currentId={currentId}
       setCurrentId={setCurrentId}
@@ -505,8 +505,8 @@ function ActionView(props: Props, ref: any) {
       setTotalItems={setTotalItems}
       selectedRowItems={selectedRowItems}
       setSelectedRowItems={setSelectedRowItems}
-      setSearchTreeNameSearch={setSearchTreeNameSearch}
-      searchTreeNameSearch={searchTreeNameSearch}
+      setSearchNameSearch={setSearchTreeNameSearch}
+      searchNameSearch={searchTreeNameSearch}
       goToResourceId={goToResourceId}
       limit={limit}
       isActive={tabKey === activeKey}
@@ -531,8 +531,8 @@ function ActionView(props: Props, ref: any) {
         setCurrentItemIndex={setCurrentItemIndex}
         formForcedValues={formForcedValues}
         limit={limit}
-        searchTreeRef={searchTreeRef}
-        searchTreeNameSearch={searchTreeNameSearch}
+        viewRef={viewRef}
+        searchNameSearch={searchTreeNameSearch}
         setCurrentView={setCurrentView}
         setCurrentId={setCurrentId}
       />
@@ -562,8 +562,8 @@ const ActionViewContent = ({
   setCurrentItemIndex,
   formForcedValues,
   limit,
-  searchTreeRef,
-  searchTreeNameSearch,
+  viewRef,
+  searchNameSearch,
   setCurrentView,
   setCurrentId,
 }: {
@@ -581,8 +581,8 @@ const ActionViewContent = ({
   setCurrentId: any;
   setCurrentView: any;
   limit?: number;
-  searchTreeRef: React.RefObject<any>;
-  searchTreeNameSearch?: string;
+  viewRef: React.RefObject<any>;
+  searchNameSearch?: string;
   formForcedValues: any;
 }) => {
   useAutoUpdateUrlAndTitle();
@@ -626,8 +626,8 @@ const ActionViewContent = ({
             domain={domain}
             formView={availableViews.find((v) => v.type === "form") as FormView}
             treeView={view as TreeView}
-            searchTreeRef={searchTreeRef}
-            searchTreeNameSearch={searchTreeNameSearch}
+            viewRef={viewRef}
+            searchNameSearch={searchNameSearch}
             availableViews={availableViews}
             results={results}
             setCurrentItemIndex={setCurrentItemIndex}
@@ -683,6 +683,7 @@ const ActionViewContent = ({
             context={context}
             domain={domain}
             availableViews={availableViews}
+            viewRef={viewRef}
           />
         );
       }
