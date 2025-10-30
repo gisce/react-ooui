@@ -143,4 +143,6 @@ export default {
   card_moved_successfully: "Targeta moguda correctament",
   error_moving_card: "Error en moure la targeta",
   no_data: "Sense dades",
+  error_parsing_kanban_view: "Error en parsejar la vista kanban",
+  error_loading_kanban_data: "Error en carregar les dades kanban",
 };

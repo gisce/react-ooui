@@ -15,6 +15,7 @@ import {
   FormView,
   GraphView,
   InitialViewData,
+  KanbanView,
   TreeView,
   View,
   ViewType,
@@ -35,6 +36,7 @@ import { GraphActionView } from "@/views/actionViews/GraphActionView";
 import { FormActionView } from "./actionViews/FormActionView";
 import { TreeActionView } from "./actionViews/TreeActionView";
 import { DashboardActionView } from "./actionViews/DashboardActionView";
+import { KanbanActionView } from "./actionViews/KanbanActionView";
 import { resolveViewInfoPromises } from "@/helpers/viewHelper";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useAutoUpdateUrlAndTitle } from "@/hooks/useAutoUpdateUrlAndTitle";
@@ -247,6 +249,14 @@ function ActionView(props: Props, ref: any) {
         case "graph": {
           viewDataRetrieved.push({
             ...(viewInfo as GraphView),
+            type: viewType,
+            extra: { action_id, action_type },
+          });
+          break;
+        }
+        case "kanban": {
+          viewDataRetrieved.push({
+            ...(viewInfo as KanbanView),
             type: viewType,
             extra: { action_id, action_type },
           });
@@ -657,6 +667,22 @@ const ActionViewContent = ({
               currentView!.type === view.type &&
               currentView!.view_id === view.view_id
             }
+          />
+        );
+      }
+      case "kanban": {
+        return (
+          <KanbanActionView
+            key={`${view.type}-${view.view_id}`}
+            visible={
+              currentView!.type === view.type &&
+              currentView!.view_id === view.view_id
+            }
+            kanbanView={view as KanbanView}
+            model={model}
+            context={context}
+            domain={domain}
+            availableViews={availableViews}
           />
         );
       }

@@ -145,4 +145,6 @@ export default {
   card_moved_successfully: "Tarjeta movida correctamente",
   error_moving_card: "Error al mover la tarjeta",
   no_data: "Sin datos",
+  error_parsing_kanban_view: "Error al parsear la vista kanban",
+  error_loading_kanban_data: "Error al cargar los datos kanban",
 };

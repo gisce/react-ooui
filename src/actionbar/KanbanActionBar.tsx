@@ -3,7 +3,7 @@ import {
   ActionViewContext,
   ActionViewContextType,
 } from "@/context/ActionViewContext";
-import { Space } from "antd";
+import { Space, Spin } from "antd";
 import ChangeViewButton from "./ChangeViewButton";
 import ActionButton from "./ActionButton";
 import { ShareUrlButton } from "./ShareUrlButton";
@@ -32,6 +32,13 @@ const KanbanActionBarComponent = (props: KanbanActionBarProps) => {
 
   return (
     <Space wrap={true}>
+      {isLoading && (
+        <>
+          <Spin />
+          <ActionBarSeparator />
+          <ActionBarSeparator />
+        </>
+      )}
       <ActionButton
         icon={<ReloadOutlined />}
         tooltip={t("refresh")}
