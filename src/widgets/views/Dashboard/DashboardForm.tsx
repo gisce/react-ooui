@@ -7,7 +7,7 @@ import { useBrowserVisibility } from "@/hooks/useBrowserVisibility";
 export const DashboardForm = (
   props: FormProps & { fixedHeight?: number; autoRefresh?: number },
 ) => {
-  const { model, fixedHeight, autoRefresh } = props;
+  const { model, view_id, fixedHeight, autoRefresh } = props;
   const [firstId, setFirstId] = useState<number>();
   const formRef = useRef<any>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -61,7 +61,14 @@ export const DashboardForm = (
     <div
       style={{ padding: "0.5rem", overflowY: "scroll", height: fixedHeight }}
     >
-      <Form ref={formRef} {...props} model={model} id={firstId} readOnly />
+      <Form
+        ref={formRef}
+        {...props}
+        model={model}
+        view_id={view_id}
+        id={firstId}
+        readOnly
+      />
     </div>
   );
 };

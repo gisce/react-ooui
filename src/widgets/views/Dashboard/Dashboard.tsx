@@ -298,7 +298,16 @@ function Dashboard(props: DashboardProps, ref: any) {
           );
         } else if (initialView?.type === "form") {
           childContent = (
-            <DashboardForm key={id} model={model} actionDomain={domain} />
+            <DashboardForm
+              key={id}
+              model={model}
+              view_id={
+                views.filter(
+                  (view: [number, string]) => view[1] === "form",
+                )[0][0]
+              }
+              actionDomain={domain}
+            />
           );
         } else if (initialView?.type === "tree") {
           childContent = (
