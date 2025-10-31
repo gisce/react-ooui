@@ -64,6 +64,7 @@ export type FormProps = {
   model: string;
   readOnly?: boolean;
   id?: number;
+  view_id?: number;
   formView?: FormView;
   values?: any;
   showFooter?: boolean;
@@ -104,6 +105,7 @@ function Form(props: FormProps, ref: any) {
   const {
     model,
     id,
+    view_id,
     onCancel: propsOnCancel,
     onSubmitSucceed: propsOnSubmitSucceed,
     showFooter = false,
@@ -583,6 +585,7 @@ function Form(props: FormProps, ref: any) {
     return (await ConnectionProvider.getHandler().getView({
       model,
       type: "form",
+      id: view_id,
       context: parentContext,
     })) as FormView;
   };
