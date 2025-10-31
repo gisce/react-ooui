@@ -6,7 +6,9 @@ import {
   forwardRef,
   useImperativeHandle,
   memo,
+  useRef,
 } from "react";
+import { useDeepCompareMemo } from "use-deep-compare";
 import { KanbanView } from "@/types";
 import { Kanban } from "@gisce/ooui";
 import { KanbanBoard } from "./KanbanBoard";
@@ -15,6 +17,9 @@ import { useKanbanAggregates } from "./useKanbanAggregates";
 import { Alert, Spin } from "antd";
 import { mergeParams } from "@/helpers/searchHelper";
 import { useLocale } from "@gisce/react-formiga-components";
+import { useAvailableHeight } from "@/hooks/useAvailableHeight";
+
+const HEIGHT_OFFSET = 10;
 
 type KanbanProps = {
   kanbanView: KanbanView;
@@ -47,6 +52,11 @@ const KanbanComponentInner = (
   const { t } = useLocale();
   const [kanbanDef, setKanbanDef] = useState<Kanban | null>(null);
   const [parsingError, setParsingError] = useState<Error | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const availableHeight = useAvailableHeight({
+    elementRef: containerRef,
+    offset: HEIGHT_OFFSET,
+  });
 
   useEffect(() => {
     if (!kanbanView.arch || !kanbanView.fields) {
@@ -151,45 +161,42 @@ const KanbanComponentInner = (
     [fetchRecords],
   );
 
-  if (parsingError) {
-    return (
-      <Alert
-        message={t("error_parsing_kanban_view")}
-        description={parsingError.message}
-        type="error"
-        showIcon
-      />
-    );
-  }
+  const containerStyle = useMemo(
+    () => ({
+      overflow: "hidden",
+      height: `${availableHeight}px`,
+    }),
+    [availableHeight],
+  );
 
-  if (dataError) {
-    return (
-      <Alert
-        message={t("error_loading_kanban_data")}
-        description={dataError.message}
-        type="error"
-        showIcon
-      />
-    );
-  }
+  const content = useDeepCompareMemo(() => {
+    if (parsingError) {
+      return (
+        <Alert
+          message={t("error_parsing_kanban_view")}
+          description={parsingError.message}
+          type="error"
+          showIcon
+        />
+      );
+    }
 
-  if (!kanbanDef) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "400px",
-        }}
-      >
-        <Spin size="large" />
-      </div>
-    );
-  }
+    if (dataError) {
+      return (
+        <Alert
+          message={t("error_loading_kanban_data")}
+          description={dataError.message}
+          type="error"
+          showIcon
+        />
+      );
+    }
 
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+    if (!kanbanDef) {
+      return <Spin size="large" />;
+    }
+
+    return (
       <KanbanBoard
         columns={columns}
         kanbanDef={kanbanDef}
@@ -203,6 +210,28 @@ const KanbanComponentInner = (
         onCardClick={onCardClick}
         onButtonClick={handleButtonClick}
       />
+    );
+  }, [
+    parsingError,
+    dataError,
+    kanbanDef,
+    availableHeight,
+    columns,
+    colorsForRecords,
+    context,
+    isLoadingData,
+    isRefreshingData,
+    aggregatesByColumn,
+    isLoadingAggregates,
+    hasAggregates,
+    onCardClick,
+    handleButtonClick,
+    t,
+  ]);
+
+  return (
+    <div ref={containerRef} style={containerStyle}>
+      {content}
     </div>
   );
 };
