@@ -40,6 +40,7 @@ import {
   ColorPicker,
 } from "@/index";
 import { Image } from "./base/Image";
+import { Icon } from "./base/Icon";
 import { FiberGrid } from "./custom/FiberGrid";
 import { Timeline } from "./custom/Timeline";
 import { Indicator } from "./custom/Indicator";
@@ -99,6 +100,8 @@ const getWidgetType = (type: string) => {
       return Binary;
     case "image":
       return Image;
+    case "icon":
+      return Icon;
     case "url":
       return Url;
     case "email":
