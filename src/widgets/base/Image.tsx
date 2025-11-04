@@ -36,13 +36,16 @@ export const ImageRender = (props: ImageRenderProps) => {
       return <MappedIcon />;
     } else {
       const imgStyle: any = { ...style };
-      if (width) {
+      if (width && height) {
         imgStyle.width = `${width}px`;
-      }
-      if (height) {
         imgStyle.height = `${height}px`;
-      }
-      if (!width && !height) {
+      } else if (width) {
+        imgStyle.width = `${width}px`;
+        imgStyle.height = "auto";
+      } else if (height) {
+        imgStyle.height = `${height}px`;
+        imgStyle.width = "auto";
+      } else {
         imgStyle.maxWidth = "100px";
       }
       return <img src={`data:image/*;base64,${value}`} style={imgStyle} />;
