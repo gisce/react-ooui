@@ -10,7 +10,7 @@ import {
 } from "@ant-design/icons";
 
 import { toBase64, getMimeType } from "@/helpers/filesHelper";
-import { iconMapper, useLocale } from "@gisce/react-formiga-components";
+import { Icon, iconMapper, useLocale } from "@gisce/react-formiga-components";
 
 type ImageProps = {
   ooui: ImageOoui;
@@ -19,31 +19,46 @@ type ImageProps = {
 type ImageRenderProps = {
   value?: string;
   style?: any;
+  width?: number;
+  height?: number;
 };
 
 export const ImageRender = (props: ImageRenderProps) => {
-  const { value, style = {} } = props;
+  const { value, style = {}, width, height } = props;
   if (value) {
-    const Icon: React.ElementType = iconMapper(value) as any;
-    if (Icon) {
-      return <Icon />;
+    const size = height || width;
+    const iconStyle: any = size ? { fontSize: size } : {};
+    const MappedIcon = iconMapper(
+      value,
+      size ? { style: iconStyle } : undefined,
+    );
+    if (MappedIcon) {
+      return <MappedIcon />;
     } else {
-      return (
-        <img
-          src={`data:image/*;base64,${value}`}
-          style={{ ...{ maxWidth: "100px" }, ...style }}
-        />
-      );
+      const imgStyle: any = { ...style };
+      if (width && height) {
+        imgStyle.width = `${width}px`;
+        imgStyle.height = `${height}px`;
+      } else if (width) {
+        imgStyle.width = `${width}px`;
+        imgStyle.height = "auto";
+      } else if (height) {
+        imgStyle.height = `${height}px`;
+        imgStyle.width = "auto";
+      } else {
+        imgStyle.maxWidth = "100px";
+      }
+      return <img src={`data:image/*;base64,${value}`} style={imgStyle} />;
     }
   }
 };
 
 export const Image = (props: ImageProps) => {
   const { ooui } = props;
-  const { required, id } = ooui;
+  const { required, id, width, height } = ooui;
 
   if (iconMapper(id)) {
-    return <ImageRender value={id} />;
+    return <ImageRender value={id} width={width} height={height} />;
   }
 
   return (
@@ -61,7 +76,7 @@ interface ImageInputProps {
 
 export const ImageInput = (props: ImageInputProps) => {
   const { ooui, value, onChange } = props;
-  const { readOnly } = ooui as ImageOoui;
+  const { readOnly, width, height } = ooui as ImageOoui;
   const inputFile = useRef(null);
   const { t } = useLocale();
 
@@ -96,9 +111,9 @@ export const ImageInput = (props: ImageInputProps) => {
       <Row gutter={8} wrap={false} justify="center">
         {useMemo(
           () => (
-            <ImageRender value={value} />
+            <ImageRender value={value} width={width} height={height} />
           ),
-          [value],
+          [value, width, height],
         )}
         <input
           type="file"
