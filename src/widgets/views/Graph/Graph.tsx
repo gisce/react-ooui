@@ -110,6 +110,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
       return (
         <GraphIndicator
           showPercent={indicator.showPercent}
+          progressbar={indicator.progressbar}
           totalDomain={indicator.totalDomain!}
           colorCondition={indicator.color}
           model={model}
