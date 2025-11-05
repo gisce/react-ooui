@@ -66,8 +66,23 @@ const GraphComp = (props: GraphProps, ref: any) => {
   switch (graphData.type) {
     case "indicatorField":
     case "indicator": {
-      const { value, total, percent, icon, color, suffix } =
-        graphData as GraphResponseIndicator;
+      const {
+        value,
+        total,
+        percent,
+        icon,
+        color,
+        suffix,
+        progressbar,
+        showPercent,
+      } = graphData as GraphResponseIndicator;
+
+      const shouldShowPercent =
+        showPercent !== undefined
+          ? showPercent
+          : progressbar
+          ? false
+          : isNumber(percent);
 
       return (
         <GraphIndicatorComp
@@ -77,7 +92,8 @@ const GraphComp = (props: GraphProps, ref: any) => {
           color={color}
           icon={icon}
           suffix={suffix}
-          showPercent={isNumber(percent)}
+          showPercent={shouldShowPercent}
+          progressbar={progressbar}
           fixedHeight={fixedHeight}
         />
       );
