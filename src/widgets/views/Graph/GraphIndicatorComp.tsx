@@ -3,7 +3,7 @@ import Measure from "react-measure";
 import Title from "antd/lib/typography/Title";
 import { iconMapper } from "@gisce/react-formiga-components";
 
-import { Col, Row } from "antd";
+import { Col, Row, Progress } from "antd";
 
 const fontGrowFactor = 0.7;
 const minFontSize = 30;
@@ -16,6 +16,7 @@ export type GraphIndicatorCompProps = {
   icon?: string;
   suffix?: string;
   showPercent?: boolean;
+  progressbar?: boolean;
   fixedHeight?: number;
 };
 
@@ -31,6 +32,7 @@ export const GraphIndicatorComp = (props: GraphIndicatorCompProps) => {
     icon,
     suffix,
     showPercent,
+    progressbar,
     fixedHeight,
   } = props;
 
@@ -43,14 +45,20 @@ export const GraphIndicatorComp = (props: GraphIndicatorCompProps) => {
       }}
     >
       {({ measureRef }) => {
-        const content = showPercent ? (
+        const availableHeight = fixedHeight || height || 200;
+        const availableWidth = width || 200;
+        const minDimension = Math.min(availableHeight, availableWidth);
+        const circleSize = minDimension > 0 ? minDimension : 200;
+        const innerSize = circleSize;
+
+        const indicatorContent = showPercent ? (
           <PercentageIndicator
             value={value!}
             total={totalValue!}
             percent={percent!}
-            measureRef={measureRef}
-            height={fixedHeight || height}
-            width={width}
+            measureRef={progressbar ? undefined : measureRef}
+            height={progressbar ? innerSize : availableHeight}
+            width={progressbar ? innerSize : availableWidth}
             color={color}
             icon={icon}
             suffix={suffix}
@@ -59,13 +67,36 @@ export const GraphIndicatorComp = (props: GraphIndicatorCompProps) => {
           <CommonIndicator
             value={value!}
             total={totalValue}
-            measureRef={measureRef}
-            height={fixedHeight || height}
-            width={width}
+            measureRef={progressbar ? undefined : measureRef}
+            height={progressbar ? innerSize : availableHeight}
+            width={progressbar ? innerSize : availableWidth}
             color={color}
             icon={icon}
             suffix={suffix}
           />
+        );
+
+        const content = progressbar ? (
+          <div
+            ref={measureRef}
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Progress
+              type="circle"
+              percent={percent || 0}
+              strokeColor={color}
+              width={circleSize}
+              format={() => indicatorContent}
+            />
+          </div>
+        ) : (
+          indicatorContent
         );
 
         return fixedHeight ? (

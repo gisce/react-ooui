@@ -15,6 +15,7 @@ export type GraphInidicatorProps = {
   colorCondition?: string | null;
   totalDomain?: string;
   showPercent?: boolean;
+  progressbar?: boolean;
   icon?: string;
   suffix?: string;
   field?: string;
@@ -31,6 +32,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
     colorCondition,
     totalDomain,
     showPercent = false,
+    progressbar = false,
     icon: iconProps,
     suffix,
     field,
@@ -216,6 +218,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
       icon={icon}
       suffix={suffix}
       showPercent={showPercent}
+      progressbar={progressbar}
       fixedHeight={fixedHeight}
     />
   );
