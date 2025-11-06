@@ -21,6 +21,7 @@ import { KanbanAggregatesByColumn } from "./useKanbanAggregates";
 
 type KanbanBoardProps = {
   colorsForRecords?: RefObject<{ [key: number]: string }>;
+  statusForRecords?: RefObject<{ [key: number]: string }>;
   columns: KanbanColumnType[];
   kanbanDef: Kanban;
   context?: any;
@@ -36,6 +37,7 @@ type KanbanBoardProps = {
 const KanbanBoardComponent = (props: KanbanBoardProps) => {
   const {
     colorsForRecords,
+    statusForRecords,
     columns,
     kanbanDef,
     context = {},
@@ -145,6 +147,7 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
             kanbanDef={kanbanDef}
             draggable={kanbanDef.drag}
             colorsForRecords={colorsForRecords}
+            statusForRecords={statusForRecords}
             sortable={kanbanDef.sort}
             allowSetMaxCards={false}
             context={context}

@@ -1,4 +1,4 @@
-import { memo, RefObject } from "react";
+import { memo, RefObject, useMemo } from "react";
 import { Badge, Button, Space, theme, Typography } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { useDroppable } from "@dnd-kit/core";
@@ -23,6 +23,7 @@ type KanbanColumnProps = {
   kanbanDef: Kanban;
   draggable: boolean;
   colorsForRecords?: RefObject<{ [key: number]: string }>;
+  statusForRecords?: RefObject<{ [key: number]: string }>;
   sortable: boolean;
   allowSetMaxCards: boolean;
   maxCards?: number;
@@ -40,6 +41,7 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
     kanbanDef,
     draggable,
     colorsForRecords,
+    statusForRecords,
     sortable,
     maxCards,
     context = {},
@@ -56,16 +58,34 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
     id: column.id,
   });
 
-  const recordIds = column.records.map((r) => r.id);
+  const recordIds = useMemo(
+    () => column.records.map((r) => r.id),
+    [column.records],
+  );
 
   const isOverLimit = maxCards !== undefined && column.count > maxCards;
 
-  const aggregatesSummary =
-    aggregates && Object.keys(aggregates).length > 0
+  const aggregatesSummary = useMemo(() => {
+    return aggregates && Object.keys(aggregates).length > 0
       ? Object.values(aggregates)
           .map((agg) => `${agg.label}: ${agg.amount}`)
           .join(", ")
       : null;
+  }, [aggregates]);
+
+  const cardClickHandlers = useMemo(() => {
+    if (!onCardClick) return {};
+    return column.records.reduce<Record<number, () => void>>((acc, record) => {
+      acc[record.id] = () => onCardClick(record);
+      return acc;
+    }, {});
+  }, [column.records, onCardClick]);
+
+  const hasStatusRibbon = useMemo(() => {
+    return column.records.some(
+      (record) => statusForRecords?.current?.[record.id],
+    );
+  }, [column.records, statusForRecords]);
 
   return (
     <div
@@ -135,6 +155,7 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
         ref={setNodeRef}
         style={{
           padding: "6px",
+          paddingRight: hasStatusRibbon ? "10px" : "6px",
           overflowY: "auto",
           flex: 1,
           backgroundColor: token.colorBgLayout,
@@ -148,12 +169,13 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
           {column.records.map((record) => (
             <KanbanCard
               color={colorsForRecords?.current?.[record.id]}
+              status={statusForRecords?.current?.[record.id]}
               key={record.id}
               record={record}
               kanbanDef={kanbanDef}
               draggable={draggable}
               context={context}
-              onClick={() => onCardClick?.(record)}
+              onClick={cardClickHandlers[record.id]}
               onButtonClick={onButtonClick}
             />
           ))}

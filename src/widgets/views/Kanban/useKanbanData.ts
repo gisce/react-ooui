@@ -55,6 +55,7 @@ export const useKanbanData = (params: UseKanbanDataParams) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const colorsForRecords = useRef<{ [key: number]: string }>({});
+  const statusForRecords = useRef<{ [key: number]: string }>({});
   const hasInitialDataRef = useRef(false);
   const previousViewIdRef = useRef<number | undefined>(viewId);
 
@@ -158,24 +159,40 @@ export const useKanbanData = (params: UseKanbanDataParams) => {
 
       setRecords(fetchedRecords);
 
-      if (kanbanDef?.colors && fetchedRecords.length > 0) {
+      if (
+        (kanbanDef?.colors || kanbanDef?.status) &&
+        fetchedRecords.length > 0
+      ) {
         try {
+          const conditions: any = {};
+          if (kanbanDef.colors) {
+            conditions.colors = kanbanDef.colors;
+          }
+          if (kanbanDef.status) {
+            conditions.status = kanbanDef.status;
+          }
+
           const attrsEvaluated = await parseConditions({
-            conditions: { colors: kanbanDef.colors },
+            conditions,
             values: fetchedRecords,
             context,
           });
 
           if (attrsEvaluated && Array.isArray(attrsEvaluated)) {
             attrsEvaluated.forEach((attr: any) => {
-              if (attr.id !== undefined && attr.colors) {
-                colorsForRecords.current[attr.id] = attr.colors;
+              if (attr.id !== undefined) {
+                if (attr.colors) {
+                  colorsForRecords.current[attr.id] = attr.colors;
+                }
+                if (attr.status) {
+                  statusForRecords.current[attr.id] = attr.status;
+                }
               }
             });
           }
         } catch (err: any) {
           if (err.name !== "AbortError") {
-            console.warn("Error evaluating colors:", err);
+            console.warn("Error evaluating colors/status:", err);
           }
         }
       }
@@ -295,6 +312,7 @@ export const useKanbanData = (params: UseKanbanDataParams) => {
     isRefreshing,
     error,
     colorsForRecords,
+    statusForRecords,
     fetchRecords,
     moveRecord,
     totalRows,

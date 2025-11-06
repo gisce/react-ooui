@@ -1,12 +1,14 @@
 import { memo, useMemo, useState, MouseEvent, useCallback } from "react";
-import { Card as AntCard, Button, Space, Typography, theme } from "antd";
+import { Card as AntCard, Badge, Button, Space, Typography, theme } from "antd";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import styled from "styled-components";
 import { KanbanRecord } from "./useKanbanData";
-import { Kanban, Button as KanbanButton } from "@gisce/ooui";
+import { Kanban } from "@gisce/ooui";
+import type { KanbanButton } from "@gisce/ooui/dist/Kanban";
 import ConnectionProvider from "@/ConnectionProvider";
 import { KANBAN_COMPONENTS } from "./kanbanComponents";
+import { Icon } from "@gisce/react-formiga-components";
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -51,6 +53,7 @@ type KanbanCardProps = {
   kanbanDef: Kanban;
   draggable: boolean;
   color?: string;
+  status?: string;
   context?: any;
   onClick?: () => void;
   onButtonClick?: (buttonName: string, recordId: number) => void;
@@ -62,6 +65,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
     kanbanDef,
     draggable,
     color,
+    status,
     context = {},
     onClick,
     onButtonClick,
@@ -157,12 +161,12 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
   );
 
   const visibleButtons = useMemo(() => {
-    return kanbanDef.buttons.filter((button: any) => {
+    return kanbanDef.buttons.filter((button: KanbanButton) => {
       if (!button.states) {
         return true;
       }
 
-      const currentState = record.state || record.status;
+      const currentState = record[kanbanDef.column_field];
       if (!currentState) {
         return true;
       }
@@ -172,7 +176,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
         .map((s: string) => s.trim());
       return allowedStates.includes(currentState);
     });
-  }, [kanbanDef.buttons, record]);
+  }, [kanbanDef.buttons, kanbanDef.column_field, record]);
 
   const handleButtonClick = useCallback(
     async (e: MouseEvent, button: KanbanButton) => {
@@ -205,45 +209,67 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
     [loadingButton, record, onButtonClick],
   );
 
+  const buttonClickHandlers = useMemo(() => {
+    return visibleButtons.reduce<Record<string, (e: MouseEvent) => void>>(
+      (acc, button) => {
+        acc[button.id] = (e: MouseEvent) => handleButtonClick(e, button);
+        return acc;
+      },
+      {},
+    );
+  }, [visibleButtons, handleButtonClick]);
+
+  const cardContent = (
+    <StyledCard
+      size="small"
+      onClick={onClick}
+      $bgColor={token.colorBgContainer}
+      $borderColor={token.colorBorder}
+      $primaryColor={token.colorPrimary}
+      $color={color}
+      styles={{
+        body: {
+          padding: "12px",
+          paddingLeft: "20px",
+          paddingTop: "12px",
+          paddingRight: status ? "24px" : "12px",
+        },
+      }}
+    >
+      {color && <ColorBar $color={color} />}
+      <div style={{ marginBottom: "8px" }}>
+        {kanbanDef.card_fields.map((field: any) => renderField(field))}
+      </div>
+
+      {visibleButtons.length > 0 && (
+        <Space size="small" wrap>
+          {visibleButtons.map((button: KanbanButton) => (
+            <Button
+              key={button.id}
+              size="small"
+              type={button.primary ? "primary" : "default"}
+              danger={button.danger}
+              loading={loadingButton === button.id}
+              onClick={buttonClickHandlers[button.id]}
+            >
+              {button.caption || button.id}
+            </Button>
+          ))}
+        </Space>
+      )}
+    </StyledCard>
+  );
+
   return (
     <CardWrapper>
       <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-        <StyledCard
-          size="small"
-          onClick={onClick}
-          $bgColor={token.colorBgContainer}
-          $borderColor={token.colorBorder}
-          $primaryColor={token.colorPrimary}
-          $color={color}
-          styles={{
-            body: {
-              padding: "12px",
-              paddingLeft: "20px",
-            },
-          }}
-        >
-          {color && <ColorBar $color={color} />}
-          <div style={{ marginBottom: "8px" }}>
-            {kanbanDef.card_fields.map((field: any) => renderField(field))}
-          </div>
-
-          {visibleButtons.length > 0 && (
-            <Space size="small" wrap>
-              {visibleButtons.map((button: any) => (
-                <Button
-                  key={button.id}
-                  size="small"
-                  type={button.primary ? "primary" : "default"}
-                  danger={button.danger}
-                  loading={loadingButton === button.id}
-                  onClick={(e) => handleButtonClick(e, button)}
-                >
-                  {button.caption || button.id}
-                </Button>
-              ))}
-            </Space>
-          )}
-        </StyledCard>
+        {status ? (
+          <Badge.Ribbon text={<Icon icon="point" />} color={status}>
+            {cardContent}
+          </Badge.Ribbon>
+        ) : (
+          cardContent
+        )}
       </div>
     </CardWrapper>
   );
