@@ -36,6 +36,50 @@ import { useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { dequal } from "dequal";
+import { useNumberFormatter } from "@/hooks/useNumberFormatter";
+
+type SummaryItem = {
+  label: string;
+  value: number;
+  type?: string;
+  decimalDigits?: number;
+  currency?: string;
+  format?: string;
+};
+
+const SummaryValue = memo(({ summary }: { summary: SummaryItem }) => {
+  const decimalDigits =
+    summary.type === "integer"
+      ? 0
+      : summary.decimalDigits !== undefined
+      ? summary.decimalDigits
+      : 2;
+
+  const formatNumber = useNumberFormatter({
+    decimalDigits,
+    currency: summary.currency,
+    format: (summary.format as any) || "decimal",
+  });
+
+  const formattedValue = formatNumber(summary.value);
+
+  return <>{formattedValue}</>;
+});
+SummaryValue.displayName = "SummaryValue";
+
+const SummaryRow = memo(({ summaries }: { summaries: SummaryItem[] }) => {
+  return (
+    <div className="p-1 pb-0 pl-2 mt-2 ">
+      {summaries.map((summary, index) => (
+        <span key={index}>
+          {summary.label}: <SummaryValue summary={summary} />
+          {index < summaries.length - 1 ? ", " : ""}
+        </span>
+      ))}
+    </div>
+  );
+});
+SummaryRow.displayName = "SummaryRow";
 
 type Props = {
   total?: number;
@@ -235,14 +279,21 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
       const sumFields = treeOoui.columns
         .filter((it) => it.sum !== undefined)
         .map((it) => {
-          return { label: it.sum, field: it.id };
+          return {
+            label: it.sum,
+            field: it.id,
+            type: it.type,
+            decimalDigits: (it as any).decimalDigits,
+            currency: (it as any).currency,
+            format: (it as any).format,
+          };
         });
 
       if (!sumFields || sumFields.length === 0) {
         return null;
       }
 
-      const summary: string[] = [];
+      const summary: SummaryItem[] = [];
       const sumItems =
         selectedRowKeys?.length > 0
           ? items.filter((result: any) => {
@@ -257,10 +308,17 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
           else return prev;
         }, 0);
 
-        summary.push(`${sumField.label}: ${Math.round(total * 100) / 100}`);
+        summary.push({
+          label: sumField.label,
+          value: total,
+          type: sumField.type,
+          decimalDigits: sumField.decimalDigits,
+          currency: sumField.currency,
+          format: sumField.format,
+        });
       });
 
-      return <div className="p-1 pb-0 pl-2 mt-2 ">{summary.join(", ")}</div>;
+      return <SummaryRow summaries={summary} />;
     }, [items, selectedRowKeys, treeOoui]);
 
     const dataTable = useMemo(() => {

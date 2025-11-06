@@ -109,6 +109,11 @@ import {
   MODEL_ACTIONS,
 } from "./models/constants";
 import { useBrowserVisibility } from "./hooks/useBrowserVisibility";
+import { useNumberFormatter } from "./hooks/useNumberFormatter";
+import type {
+  UseNumberFormatterOptions,
+  NumberFormatType,
+} from "./hooks/useNumberFormatter";
 
 export {
   Button,
@@ -220,4 +225,7 @@ export {
   ACTION_TYPE_UPDATE_TOKEN,
   MODEL_ACTIONS,
   useBrowserVisibility,
+  useNumberFormatter,
+  UseNumberFormatterOptions,
+  NumberFormatType,
 };

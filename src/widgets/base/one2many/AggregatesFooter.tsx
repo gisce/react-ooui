@@ -1,5 +1,23 @@
 import { TreeAggregates } from "./useTreeAggregates";
 import { LoadingOutlined } from "@ant-design/icons";
+import { useNumberFormatter } from "@/hooks/useNumberFormatter";
+import { memo } from "react";
+import { theme } from "antd";
+
+const { useToken } = theme;
+
+const AggregateValue = memo(({ amount }: { amount: number | string }) => {
+  const formatNumber = useNumberFormatter({
+    format: "decimal",
+  });
+
+  if (typeof amount === "string") {
+    return <>{amount}</>;
+  }
+
+  return <>{formatNumber(amount)}</>;
+});
+AggregateValue.displayName = "AggregateValue";
 
 export const AggregatesFooter = ({
   aggregates,
@@ -8,17 +26,34 @@ export const AggregatesFooter = ({
   aggregates: TreeAggregates;
   isLoading: boolean;
 }) => {
+  const { token } = useToken();
+
   const summary =
     aggregates &&
     Object.keys(aggregates)
       .sort()
       .map((fieldKey) => {
         const fieldAggregates = aggregates[fieldKey];
-        const fieldSummary = fieldAggregates.map((aggregate) => {
-          return `${aggregate.label}: ${aggregate.amount}`;
+        const fieldSummary = fieldAggregates.map((aggregate, index) => {
+          return (
+            <span key={`${fieldKey}-${index}`}>
+              {aggregate.label}: <AggregateValue amount={aggregate.amount} />
+            </span>
+          );
         });
-        return fieldSummary.join(", ");
-      });
+        return fieldSummary;
+      })
+      .flat()
+      .map((element, index, array) => (
+        <span key={index}>
+          {element}
+          {index < array.length - 1 ? (
+            <span style={{ margin: "0 8px", color: token.colorBorder }}>|</span>
+          ) : (
+            ""
+          )}
+        </span>
+      ));
 
   return (
     <div
@@ -31,7 +66,7 @@ export const AggregatesFooter = ({
       }}
     >
       {isLoading && <LoadingOutlined />}
-      {!isLoading && summary && summary.join(", ")}
+      {!isLoading && summary}
     </div>
   );
 };
