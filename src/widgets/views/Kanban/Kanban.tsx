@@ -10,6 +10,7 @@ import {
 import { useDeepCompareMemo } from "use-deep-compare";
 import { KanbanView } from "@/types";
 import { Kanban } from "@gisce/ooui";
+import type { KanbanButton } from "@gisce/ooui/dist/Kanban";
 import { KanbanBoard } from "./KanbanBoard";
 import { useKanbanData, KanbanRecord } from "./useKanbanData";
 import { useKanbanAggregates } from "./useKanbanAggregates";
@@ -84,10 +85,10 @@ const KanbanComponentInner = (
 
     if (
       kanbanDef.buttons.some(
-        (b: any) => b.states !== undefined && b.states !== null,
+        (b: KanbanButton) => b.states !== undefined && b.states !== null,
       )
     ) {
-      fields.push("state", "status");
+      fields.push(kanbanDef.column_field);
     }
 
     fields.push("__model");
@@ -102,6 +103,7 @@ const KanbanComponentInner = (
     error: dataError,
     fetchRecords,
     colorsForRecords,
+    statusForRecords,
     totalRows,
   } = useKanbanData({
     model,
@@ -191,6 +193,7 @@ const KanbanComponentInner = (
         columns={columns}
         kanbanDef={kanbanDef}
         colorsForRecords={colorsForRecords}
+        statusForRecords={statusForRecords}
         context={context}
         isLoading={isLoadingData}
         isRefreshing={isRefreshingData}
@@ -207,6 +210,7 @@ const KanbanComponentInner = (
     kanbanDef,
     columns,
     colorsForRecords,
+    statusForRecords,
     context,
     isLoadingData,
     isRefreshingData,
