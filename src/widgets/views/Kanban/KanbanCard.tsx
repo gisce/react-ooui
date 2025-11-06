@@ -264,7 +264,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
     <CardWrapper>
       <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
         {status ? (
-          <Badge.Ribbon text={<Icon icon="point" />} color={status}>
+          <Badge.Ribbon text={"●"} color={status}>
             {cardContent}
           </Badge.Ribbon>
         ) : (
