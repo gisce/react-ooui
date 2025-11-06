@@ -6,7 +6,6 @@ import {
   forwardRef,
   useImperativeHandle,
   memo,
-  useRef,
 } from "react";
 import { useDeepCompareMemo } from "use-deep-compare";
 import { KanbanView } from "@/types";
@@ -17,9 +16,6 @@ import { useKanbanAggregates } from "./useKanbanAggregates";
 import { Alert, Spin } from "antd";
 import { mergeParams } from "@/helpers/searchHelper";
 import { useLocale } from "@gisce/react-formiga-components";
-import { useAvailableHeight } from "@/hooks/useAvailableHeight";
-
-const HEIGHT_OFFSET = 10;
 
 type KanbanProps = {
   kanbanView: KanbanView;
@@ -29,6 +25,7 @@ type KanbanProps = {
   searchParams?: any[];
   onCardClick?: (record: KanbanRecord) => void;
   onLoadingChange?: (isLoading: boolean) => void;
+  onTotalRowsChange?: (totalRows: number) => void;
 };
 
 export type KanbanRef = {
@@ -47,16 +44,12 @@ const KanbanComponentInner = (
     searchParams = [],
     onCardClick,
     onLoadingChange,
+    onTotalRowsChange,
   } = props;
 
   const { t } = useLocale();
   const [kanbanDef, setKanbanDef] = useState<Kanban | null>(null);
   const [parsingError, setParsingError] = useState<Error | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const availableHeight = useAvailableHeight({
-    elementRef: containerRef,
-    offset: HEIGHT_OFFSET,
-  });
 
   useEffect(() => {
     if (!kanbanView.arch || !kanbanView.fields) {
@@ -109,6 +102,7 @@ const KanbanComponentInner = (
     error: dataError,
     fetchRecords,
     colorsForRecords,
+    totalRows,
   } = useKanbanData({
     model,
     domain,
@@ -154,19 +148,15 @@ const KanbanComponentInner = (
     onLoadingChange?.(isLoading);
   }, [isLoadingData, isRefreshingData, isLoadingAggregates, onLoadingChange]);
 
+  useEffect(() => {
+    onTotalRowsChange?.(totalRows);
+  }, [totalRows, onTotalRowsChange]);
+
   const handleButtonClick = useCallback(
     async (buttonName: string, recordId: number) => {
       await fetchRecords();
     },
     [fetchRecords],
-  );
-
-  const containerStyle = useMemo(
-    () => ({
-      overflow: "hidden",
-      height: `${availableHeight}px`,
-    }),
-    [availableHeight],
   );
 
   const content = useDeepCompareMemo(() => {
@@ -215,7 +205,6 @@ const KanbanComponentInner = (
     parsingError,
     dataError,
     kanbanDef,
-    availableHeight,
     columns,
     colorsForRecords,
     context,
@@ -229,11 +218,7 @@ const KanbanComponentInner = (
     t,
   ]);
 
-  return (
-    <div ref={containerRef} style={containerStyle}>
-      {content}
-    </div>
-  );
+  return <>{content}</>;
 };
 
 export const KanbanComponent = memo(

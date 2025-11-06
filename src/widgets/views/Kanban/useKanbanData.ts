@@ -286,6 +286,8 @@ export const useKanbanData = (params: UseKanbanDataParams) => {
     [],
   );
 
+  const totalRows = columns.reduce((sum, col) => sum + col.count, 0);
+
   return {
     columns,
     records,
@@ -295,5 +297,6 @@ export const useKanbanData = (params: UseKanbanDataParams) => {
     colorsForRecords,
     fetchRecords,
     moveRecord,
+    totalRows,
   };
 };

@@ -1,11 +1,27 @@
-import { Fragment, useCallback, useState, memo, useEffect } from "react";
-import { FormView, KanbanView, View } from "@/types";
+import {
+  Fragment,
+  useCallback,
+  useState,
+  memo,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
+import { FormView, KanbanView, TreeView, View } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
 import TreeActionBar from "@/actionbar/TreeActionBar";
 import { KanbanComponent, KanbanRef } from "@/widgets/views/Kanban/Kanban";
 import { useActionViewContext } from "@/context/ActionViewContext";
 import { KanbanRecord } from "@/widgets/views/Kanban/useKanbanData";
 import { FormModal } from "@/widgets/modals/FormModal";
+import { SearchTreeHeader } from "@/widgets/views/SearchTreeHeader";
+import { SideSearchFilter } from "@/widgets/views/searchFilter/SideSearchFilter";
+import { NameSearchWarning } from "@/widgets/views/Tree/NameSearchWarning";
+import { useSearchTreeState } from "@/hooks/useSearchTreeState";
+import { mergeSearchFields } from "@/helpers/formHelper";
+import { useAvailableHeight } from "@/hooks/useAvailableHeight";
+
+const HEIGHT_OFFSET = 10;
 
 export type KanbanActionViewProps = {
   kanbanView: KanbanView;
@@ -28,16 +44,44 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
     viewRef,
   } = props;
 
-  const { searchParams = [], setViewIsLoading } = useActionViewContext();
+  const { setViewIsLoading } = useActionViewContext();
+
+  const {
+    searchVisible,
+    setSearchVisible,
+    selectedRowItems,
+    setSelectedRowItems,
+    searchParams,
+    setSearchParams,
+    searchValues,
+    setSearchValues,
+    searchTreeNameSearch,
+    setSearchTreeNameSearch,
+  } = useSearchTreeState({ useLocalState: false });
 
   const [isLoading, setIsLoading] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<
     KanbanRecord | undefined
   >();
+  const [totalRows, setTotalRows] = useState<number | null>(null);
 
-  // Use viewRef from props instead of creating a new ref
   const kanbanRef = viewRef as React.RefObject<KanbanRef>;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const availableHeight = useAvailableHeight({
+    elementRef: containerRef,
+    offset: HEIGHT_OFFSET,
+  });
+
+  const containerStyle = useMemo(
+    () => ({
+      overflow: "hidden",
+      height: `${availableHeight}px`,
+      minHeight: `${availableHeight}px`,
+      maxHeight: `${availableHeight}px`,
+    }),
+    [availableHeight],
+  );
 
   useEffect(() => {
     setViewIsLoading?.(isLoading);
@@ -59,14 +103,97 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
     kanbanRef.current?.refreshResults();
   }, [kanbanRef]);
 
+  const handleTotalRowsChange = useCallback((total: number) => {
+    setTotalRows(total);
+  }, []);
+
+  const onSideSearchFilterClose = useCallback(
+    () => setSearchVisible?.(false),
+    [setSearchVisible],
+  );
+
+  const onSideSearchFilterSubmit = useCallback(
+    ({ params, values, closeSidebar = true }: any) => {
+      setSelectedRowItems?.([]);
+      setSearchTreeNameSearch?.(undefined);
+      setSearchParams?.(params);
+      setSearchValues?.(values);
+      if (closeSidebar) {
+        setSearchVisible?.(false);
+      }
+    },
+    [
+      setSelectedRowItems,
+      setSearchTreeNameSearch,
+      setSearchParams,
+      setSearchValues,
+      setSearchVisible,
+    ],
+  );
+
+  const onSideSearchFilterClear = useCallback(() => {
+    setSearchParams?.([]);
+    setSearchValues?.({});
+    setSearchVisible?.(false);
+  }, [setSearchParams, setSearchValues, setSearchVisible]);
+
+  const formView = useMemo(
+    () => availableViews.find((v) => v.type === "form") as FormView,
+    [availableViews],
+  );
+
+  const treeView = useMemo(
+    () => availableViews.find((v) => v.type === "tree") as TreeView | undefined,
+    [availableViews],
+  );
+
+  const sideSearchFilterProps = useMemo(
+    () => ({
+      isOpen: searchVisible || false,
+      fields: {
+        ...formView?.fields,
+        ...treeView?.fields,
+        ...kanbanView?.fields,
+      },
+      searchFields: mergeSearchFields([
+        formView?.search_fields,
+        treeView?.search_fields,
+        kanbanView?.search_fields,
+      ]),
+      searchValues,
+      currentModel: model,
+      context,
+    }),
+    [
+      searchVisible,
+      formView,
+      treeView,
+      kanbanView,
+      searchValues,
+      model,
+      context,
+    ],
+  );
+
+  const selectedRowKeys = useMemo(() => {
+    return selectedRowItems?.map((item: any) => item.id) || [];
+  }, [selectedRowItems]);
+
+  const shouldShowNameSearchWarning =
+    searchTreeNameSearch && totalRows !== undefined && totalRows !== null;
+
   if (!visible) {
     return null;
   }
 
-  const formView = availableViews.find((v) => v.type === "form") as FormView;
-
   return (
     <Fragment>
+      <SideSearchFilter
+        {...sideSearchFilterProps}
+        onClose={onSideSearchFilterClose}
+        onSubmit={onSideSearchFilterSubmit}
+        onClear={onSideSearchFilterClear}
+      />
       <TitleHeader showSummary={true}>
         <TreeActionBar
           domain={domain}
@@ -75,16 +202,30 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
           treeExpandable={false}
         />
       </TitleHeader>
-      <KanbanComponent
-        ref={kanbanRef}
-        kanbanView={kanbanView}
-        model={model}
-        domain={domain}
-        context={context}
-        searchParams={searchParams}
-        onCardClick={handleCardClick}
-        onLoadingChange={setIsLoading}
+      <SearchTreeHeader
+        selectedRowKeys={selectedRowKeys}
+        totalRows={totalRows}
+        customMiddleComponent={
+          shouldShowNameSearchWarning ? (
+            <NameSearchWarning
+              onFilterSearchClick={() => setSearchVisible?.(true)}
+            />
+          ) : undefined
+        }
       />
+      <div ref={containerRef} style={containerStyle}>
+        <KanbanComponent
+          ref={kanbanRef}
+          kanbanView={kanbanView}
+          model={model}
+          domain={domain}
+          context={context}
+          searchParams={searchParams || []}
+          onCardClick={handleCardClick}
+          onLoadingChange={setIsLoading}
+          onTotalRowsChange={handleTotalRowsChange}
+        />
+      </div>
       {formView && (
         <FormModal
           formView={formView}

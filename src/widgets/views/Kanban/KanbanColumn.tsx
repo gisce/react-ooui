@@ -80,13 +80,13 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
         maxHeight: "100%",
       }}
       bodyStyle={{
-        padding: "12px",
+        padding: "6px",
         overflowY: "auto",
         flex: 1,
         backgroundColor: token.colorBgLayout,
       }}
       headStyle={{
-        backgroundColor: token.colorPrimaryBg,
+        background: `linear-gradient(to bottom, ${token.colorPrimaryBg} 0%, ${token.colorBgLayout} 90%)`,
         borderBottom: `1px solid ${token.colorBorder}`,
       }}
       title={

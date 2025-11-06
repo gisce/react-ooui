@@ -6,7 +6,14 @@ import {
   TreeType,
 } from "@/views/actionViews/TreeActionView";
 import { ColumnState } from "@gisce/react-formiga-table";
-import { createContext, useContext, useEffect, useState, useMemo } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import { PermissionsMap } from "@/hooks/usePermissions";
 
 type ActionViewProviderProps = {
@@ -160,6 +167,11 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [graphIsLoading, setGraphIsLoading] = useState<boolean>(true);
   const [previousView, setPreviousView] = useState<View>();
 
+  const wrappedOnNewClicked = useCallback(() => {
+    setPreviousView(currentView);
+    onNewClicked();
+  }, [currentView, onNewClicked, setPreviousView]);
+
   // Memoized merged fields from all available views
   const allViewFields = useMemo(() => {
     if (!availableViews || availableViews.length === 0) {
@@ -251,7 +263,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         formRef,
         viewRef: searchTreeRef,
         onFormSave: callOnFormSave,
-        onNewClicked,
+        onNewClicked: wrappedOnNewClicked,
         currentId,
         setCurrentId,
         currentItemIndex,
