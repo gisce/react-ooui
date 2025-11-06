@@ -1,6 +1,6 @@
 import { memo, RefObject } from "react";
-import { Badge, Card, Space, theme, Typography } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
+import { Badge, Button, Space, theme, Typography } from "antd";
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { useDroppable } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -68,28 +68,26 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
       : null;
 
   return (
-    <Card
+    <div
       style={{
         width: "300px",
         minWidth: "300px",
+        height: "100%",
         backgroundColor: isOver ? token.colorPrimaryBg : token.colorBgLayout,
-        border: isOver ? `2px solid ${token.colorPrimary}` : undefined,
+        border: isOver ? `2px solid ${token.colorPrimary}` : "none",
+        borderRadius: token.borderRadiusLG,
         transition: "all 0.2s",
         display: "flex",
         flexDirection: "column",
-        maxHeight: "100%",
+        overflow: "hidden",
       }}
-      bodyStyle={{
-        padding: "6px",
-        overflowY: "auto",
-        flex: 1,
-        backgroundColor: token.colorBgLayout,
-      }}
-      headStyle={{
-        background: `linear-gradient(to bottom, ${token.colorPrimaryBg} 0%, ${token.colorBgLayout} 90%)`,
-        borderBottom: `1px solid ${token.colorBorder}`,
-      }}
-      title={
+    >
+      <div
+        style={{
+          background: `linear-gradient(to bottom, ${token.colorPrimaryBg} 0%, ${token.colorBgLayout} 90%)`,
+          padding: "12px 12px",
+        }}
+      >
         <div
           style={{
             display: "flex",
@@ -131,9 +129,17 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
             ) : null}
           </Space>
         </div>
-      }
-    >
-      <div ref={setNodeRef}>
+      </div>
+
+      <div
+        ref={setNodeRef}
+        style={{
+          padding: "6px",
+          overflowY: "auto",
+          flex: 1,
+          backgroundColor: token.colorBgLayout,
+        }}
+      >
         <SortableContext
           items={recordIds}
           strategy={verticalListSortingStrategy}
@@ -152,20 +158,39 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
             />
           ))}
         </SortableContext>
+
+        {column.records.length === 0 && (
+          <div
+            style={{
+              textAlign: "center",
+              padding: "20px",
+              color: token.colorTextSecondary,
+            }}
+          >
+            <Text type="secondary">{t("no_records")}</Text>
+          </div>
+        )}
       </div>
 
-      {column.records.length === 0 && (
-        <div
+      <div
+        style={{
+          background: token.colorBgLayout,
+          padding: "10px 8px",
+        }}
+      >
+        <Button
+          type="text"
+          icon={<PlusOutlined />}
           style={{
-            textAlign: "center",
-            padding: "20px",
-            color: token.colorTextSecondary,
+            width: "100%",
+            color: token.colorTextBase,
+            fontWeight: 400,
           }}
         >
-          <Text type="secondary">{t("no_records")}</Text>
-        </div>
-      )}
-    </Card>
+          {t("add_card")}
+        </Button>
+      </div>
+    </div>
   );
 };
 

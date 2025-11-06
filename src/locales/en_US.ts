@@ -142,4 +142,5 @@ export default {
   no_data: "No data",
   error_parsing_kanban_view: "Error parsing kanban view",
   error_loading_kanban_data: "Error loading kanban data",
+  add_card: "Add card",
 };
