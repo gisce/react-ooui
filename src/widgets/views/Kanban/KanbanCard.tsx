@@ -2,13 +2,41 @@ import { memo, useMemo, useState, MouseEvent, useCallback } from "react";
 import { Card as AntCard, Button, Space, Typography, theme } from "antd";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import styled from "styled-components";
 import { KanbanRecord } from "./useKanbanData";
 import { Kanban, Button as KanbanButton } from "@gisce/ooui";
 import ConnectionProvider from "@/ConnectionProvider";
-import { COLUMN_COMPONENTS } from "../Tree/treeComponents";
+import { KANBAN_COMPONENTS } from "./kanbanComponents";
 
 const { Text } = Typography;
 const { useToken } = theme;
+
+const StyledCard = styled(AntCard)<{
+  $bgColor: string;
+  $borderColor: string;
+  $primaryColor: string;
+}>`
+  position: relative;
+  margin-bottom: 8px;
+  background-color: ${(props) => props.$bgColor};
+  border: 1px solid ${(props) => props.$borderColor};
+  outline: none;
+  outline-offset: -1px;
+
+  &:hover {
+    outline: 3px solid ${(props) => props.$primaryColor};
+  }
+`;
+
+const ColorBar = styled.div<{ $color: string }>`
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background-color: ${(props) => props.$color};
+  border-radius: 7px 0 0 7px;
+`;
 
 type KanbanCardProps = {
   record: KanbanRecord;
@@ -32,7 +60,6 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
   } = props;
   const { token } = useToken();
   const [loadingButton, setLoadingButton] = useState<string | null>(null);
-  const [isHovered, setIsHovered] = useState(false);
 
   const {
     attributes,
@@ -56,12 +83,24 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
   const renderField = useCallback(
     (field: any) => {
       const fieldName = field.id;
-      const fieldValue = record[fieldName];
+      let fieldValue = record[fieldName];
       const fieldType = field.type as string;
 
-      const component = (COLUMN_COMPONENTS as any)?.[fieldType];
+      if (
+        fieldType === "many2one" &&
+        Array.isArray(fieldValue) &&
+        fieldValue.length === 2
+      ) {
+        fieldValue = {
+          id: fieldValue[0],
+          value: fieldValue[1],
+          model: field.relation,
+        };
+      }
 
-      if (component) {
+      const component = (KANBAN_COMPONENTS as any)?.[fieldType];
+
+      if (component && fieldValue) {
         const renderedContent = component({
           value: fieldValue,
           key: fieldName,
@@ -69,23 +108,39 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
           context,
         });
 
+        const handleFieldClick = (e: MouseEvent) => {
+          if (fieldType === "many2one") {
+            e.stopPropagation();
+          }
+        };
+
         return (
-          <div key={fieldName} style={{ marginBottom: "4px" }}>
-            <Text strong style={{ fontSize: "12px" }}>
-              {field.label || fieldName}:{" "}
-            </Text>
-            <span style={{ fontSize: "12px" }}>{renderedContent}</span>
+          <div
+            key={fieldName}
+            style={{ marginBottom: "4px" }}
+            onClick={handleFieldClick}
+          >
+            {!field.nolabel && (
+              <Text type="secondary" style={{ fontSize: "12px" }}>
+                {field.label || fieldName}:{" "}
+              </Text>
+            )}
+            <span style={{ fontSize: "12px", fontWeight: 600 }}>
+              {renderedContent}
+            </span>
           </div>
         );
       }
 
       return (
         <div key={fieldName} style={{ marginBottom: "4px" }}>
+          {!field.nolabel && (
+            <Text type="secondary" style={{ fontSize: "12px" }}>
+              {field.label || fieldName}:{" "}
+            </Text>
+          )}
           <Text strong style={{ fontSize: "12px" }}>
-            {field.label || fieldName}:{" "}
-          </Text>
-          <Text style={{ fontSize: "12px" }}>
-            {fieldValue?.toString() || "-"}
+            {fieldValue ? fieldValue.toString() : "-"}
           </Text>
         </div>
       );
@@ -142,45 +197,22 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
     [loadingButton, record, onButtonClick],
   );
 
-  const handleMouseEnter = useCallback(() => {
-    setIsHovered(true);
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setIsHovered(false);
-  }, []);
-
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <AntCard
+      <StyledCard
         size="small"
         onClick={onClick}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          marginBottom: "8px",
-          backgroundColor: token.colorBgContainer,
-          border: `1px solid ${token.colorBorder}`,
-          outline: isHovered ? `2px solid ${token.colorPrimary}` : "none",
-          outlineOffset: "-1px",
-        }}
+        $bgColor={token.colorBgContainer}
+        $borderColor={token.colorBorder}
+        $primaryColor={token.colorPrimary}
         styles={{
           body: {
             padding: "12px",
+            paddingLeft: "20px",
           },
         }}
       >
-        {color && (
-          <div
-            style={{
-              width: "40px",
-              height: "8px",
-              backgroundColor: color,
-              borderRadius: "4px",
-              marginBottom: "8px",
-            }}
-          />
-        )}
+        {color && <ColorBar $color={color} />}
         <div style={{ marginBottom: "8px" }}>
           {kanbanDef.card_fields.map((field: any) => renderField(field))}
         </div>
@@ -201,7 +233,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
             ))}
           </Space>
         )}
-      </AntCard>
+      </StyledCard>
     </div>
   );
 };

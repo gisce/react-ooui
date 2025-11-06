@@ -92,6 +92,8 @@ export type KanbanView = BaseView & {
   sort?: boolean;
   set_max_cards?: boolean;
   colors?: string;
+  toolbar?: any;
+  search_fields?: SearchFields;
 };
 
 export type View = TreeView | FormView | DashboardView | GraphView | KanbanView;

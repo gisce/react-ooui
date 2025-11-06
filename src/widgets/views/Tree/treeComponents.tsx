@@ -1,5 +1,5 @@
-import { ReactElement, useCallback, useEffect, useMemo, useState } from "react";
-import { Checkbox, Spin, ColorPicker, Tooltip } from "antd";
+import { ReactElement, useMemo } from "react";
+import { Checkbox, ColorPicker, Tooltip } from "antd";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../../base/ProgressBar";
 import { One2manyValue } from "../../base/one2many/One2manyInputLegacy";
@@ -8,7 +8,6 @@ import { Many2oneTree } from "../../base/many2one/Many2oneTree";
 import { ReferenceTree } from "../../base/ReferenceTree";
 import Avatar from "../../custom/Avatar";
 import { CustomTag, TagInput } from "../../custom/Tag";
-import ConnectionProvider from "@/ConnectionProvider";
 import { colorFromString } from "@/helpers/formHelper";
 import { EmailTagsRender } from "@/widgets/custom/EmailTags";
 import { ImageRender } from "@/widgets/base/Image";
@@ -20,7 +19,6 @@ import {
 import { useActionViewContext } from "@/context/ActionViewContext";
 import { useOne2manyContext } from "@/context/One2manyContext";
 import { DateValue, DateTimeValue } from "@gisce/react-formiga-components";
-import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { useDeepCompareMemo } from "use-deep-compare";
 
 export const BooleanComponent = ({

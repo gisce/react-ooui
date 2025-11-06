@@ -73,15 +73,15 @@ function TreeActionBarComponent({
     duplicatingItem,
     setDuplicatingItem,
     currentModel,
-    searchTreeRef,
+    viewRef,
     setCurrentId,
     setCurrentItemIndex,
     searchParams,
     searchVisible,
     setSearchVisible,
-    setSearchTreeNameSearch,
-    searchTreeNameSearch,
-    treeIsLoading,
+    setSearchNameSearch,
+    searchNameSearch,
+    viewIsLoading,
     setPreviousView,
     previousView,
     results,
@@ -106,8 +106,8 @@ function TreeActionBarComponent({
   const { showErrorNotification } = useErrorNotification();
 
   const handleRefresh = useCallback(() => {
-    searchTreeRef?.current?.refreshResults();
-  }, [searchTreeRef]);
+    viewRef?.current?.refreshResults();
+  }, [viewRef]);
 
   const handleToggleSearch = useCallback(() => {
     setSearchVisible?.(!searchVisible);
@@ -118,7 +118,7 @@ function TreeActionBarComponent({
     model: currentModel,
     view_id: currentView?.view_id,
     treeView: currentView,
-    disabled: treeIsLoading,
+    disabled: viewIsLoading,
     parentContext,
     selectedRowItems,
     onRefreshParentValues: handleRefresh,
@@ -132,10 +132,8 @@ function TreeActionBarComponent({
   });
 
   const hasNameSearch = useMemo(
-    () =>
-      searchTreeNameSearch !== undefined &&
-      searchTreeNameSearch.trim().length > 0,
-    [searchTreeNameSearch],
+    () => searchNameSearch !== undefined && searchNameSearch.trim().length > 0,
+    [searchNameSearch],
   );
 
   const finalDomain = useMemo(() => {
@@ -152,7 +150,7 @@ function TreeActionBarComponent({
         context: { ...parentContext },
       });
       if (newId) {
-        searchTreeRef?.current?.refreshResults();
+        viewRef?.current?.refreshResults();
       }
     } catch (e) {
       showErrorNotification(e);
@@ -162,7 +160,7 @@ function TreeActionBarComponent({
   }, [
     currentModel,
     parentContext,
-    searchTreeRef,
+    viewRef,
     selectedRowItems,
     setDuplicatingItem,
     showErrorNotification,
@@ -178,7 +176,7 @@ function TreeActionBarComponent({
       });
       setCurrentId?.(undefined);
       setCurrentItemIndex?.(undefined);
-      searchTreeRef?.current?.refreshResults();
+      viewRef?.current?.refreshResults();
     } catch (e) {
       showErrorNotification(e);
     } finally {
@@ -187,7 +185,7 @@ function TreeActionBarComponent({
   }, [
     currentModel,
     parentContext,
-    searchTreeRef,
+    viewRef,
     selectedRowItems,
     setCurrentId,
     setCurrentItemIndex,
@@ -205,32 +203,28 @@ function TreeActionBarComponent({
 
   const handleSearch = useCallback(
     (searchString?: string) => {
-      if (searchString === searchTreeNameSearch) {
+      if (searchString === searchNameSearch) {
         return;
       }
 
-      if (
-        searchString &&
-        searchString.trim().length > 0 &&
-        !searchTreeNameSearch
-      ) {
+      if (searchString && searchString.trim().length > 0 && !searchNameSearch) {
         setSearchParams?.([]);
         setSearchValues?.({});
       }
 
-      setSearchTreeNameSearch?.(searchString);
-      if (searchTreeNameSearch !== undefined) {
+      setSearchNameSearch?.(searchString);
+      if (searchNameSearch !== undefined) {
         setTimeout(() => {
-          searchTreeRef?.current?.refreshResults();
+          viewRef?.current?.refreshResults();
         }, 50);
       }
     },
     [
-      searchTreeNameSearch,
-      setSearchTreeNameSearch,
+      searchNameSearch,
+      setSearchNameSearch,
       setSearchParams,
       setSearchValues,
-      searchTreeRef,
+      viewRef,
     ],
   );
 
@@ -273,17 +267,17 @@ function TreeActionBarComponent({
   );
 
   useEffect(() => {
-    if (treeType === "infinite" && searchTreeNameSearch === undefined) {
+    if (treeType === "infinite" && searchNameSearch === undefined) {
       if (isFirstMount.current) {
         isFirstMount.current = false;
         return;
       }
 
       setTimeout(() => {
-        searchTreeRef?.current?.refreshResults();
+        viewRef?.current?.refreshResults();
       }, 0);
     }
-  }, [treeType, searchTreeNameSearch, searchTreeRef]);
+  }, [treeType, searchNameSearch, viewRef]);
 
   useHotkeys(
     "ctrl+l,command+l",
@@ -326,7 +320,7 @@ function TreeActionBarComponent({
 
   return (
     <Space wrap={true}>
-      {treeIsLoading && (
+      {viewIsLoading && (
         <>
           <Spin />
           <ActionBarSeparator />
@@ -336,8 +330,8 @@ function TreeActionBarComponent({
       {!treeExpandable && (
         <>
           <SearchBar
-            disabled={duplicatingItem || removingItem || treeIsLoading}
-            searchText={searchTreeNameSearch}
+            disabled={duplicatingItem || removingItem || viewIsLoading}
+            searchText={searchNameSearch}
             onSearch={handleSearch}
           />
           {savedSearchesEnabled && treeType !== "legacy" ? (
@@ -346,7 +340,7 @@ function TreeActionBarComponent({
               searchVisible={!!searchVisible}
               onToggleSearch={handleToggleSearch}
               searchParams={searchParams}
-              disabled={duplicatingItem || removingItem || treeIsLoading}
+              disabled={duplicatingItem || removingItem || viewIsLoading}
               onApplySearch={handleRefresh}
               onRefetchSavedSearches={onRefetchSavedSearches}
               onClearSavedSearch={onClearSavedSearch}
@@ -361,12 +355,12 @@ function TreeActionBarComponent({
               tooltip={t("advanced_search")}
               type={searchVisible ? "primary" : "default"}
               onClick={() => setSearchVisible?.(!searchVisible)}
-              disabled={duplicatingItem || removingItem || treeIsLoading}
+              disabled={duplicatingItem || removingItem || viewIsLoading}
               badgeNumber={searchParams?.length}
             />
           )}
           <ActionBarSeparator />
-          <NewButton disabled={treeIsLoading || !permissions?.create} />
+          <NewButton disabled={viewIsLoading || !permissions?.create} />
           <ActionButton
             icon={<CopyOutlined />}
             tooltip={t("duplicate")}
@@ -374,7 +368,7 @@ function TreeActionBarComponent({
               !selectedRowItems ||
               selectedRowItems?.length !== 1 ||
               duplicatingItem ||
-              treeIsLoading ||
+              viewIsLoading ||
               !permissions?.create
             }
             loading={duplicatingItem}
@@ -385,7 +379,7 @@ function TreeActionBarComponent({
             tooltip={t("delete")}
             disabled={
               !(selectedRowItems && selectedRowItems?.length > 0) ||
-              treeIsLoading ||
+              viewIsLoading ||
               !permissions?.unlink
             }
             loading={removingItem}
@@ -398,14 +392,14 @@ function TreeActionBarComponent({
         icon={<InfoCircleOutlined />}
         tooltip={t("showLogs")}
         disabled={
-          !(selectedRowItems && selectedRowItems?.length === 1) || treeIsLoading
+          !(selectedRowItems && selectedRowItems?.length === 1) || viewIsLoading
         }
         onClick={() => showLogInfo(currentModel!, selectedRowItems![0].id, t)}
       />
       <ActionButton
         icon={<ReloadOutlined />}
         tooltip={t("refresh")}
-        disabled={duplicatingItem || removingItem || treeIsLoading}
+        disabled={duplicatingItem || removingItem || viewIsLoading}
         onClick={handleRefresh}
       />
       {!treeExpandable && (
@@ -416,7 +410,7 @@ function TreeActionBarComponent({
             availableViews={availableViews}
             onChangeView={handleChangeView}
             previousView={previousView}
-            disabled={treeIsLoading}
+            disabled={viewIsLoading}
           />
         </>
       )}
@@ -446,7 +440,7 @@ function TreeActionBarComponent({
             ]}
             onItemClick={handleExportAction}
             disabled={
-              duplicatingItem || removingItem || treeIsLoading || hasNameSearch
+              duplicatingItem || removingItem || viewIsLoading || hasNameSearch
             }
           />
           <ExportModal

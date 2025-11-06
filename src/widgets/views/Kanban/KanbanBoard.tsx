@@ -133,7 +133,6 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
         style={{
           display: "flex",
           gap: "16px",
-          paddingTop: "16px",
           paddingBottom: "16px",
           overflowX: "auto",
           height: "100%",

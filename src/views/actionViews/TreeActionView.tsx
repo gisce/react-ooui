@@ -36,7 +36,7 @@ export type TreeActionViewProps = {
   formView: FormView;
   treeView: TreeView;
   visible: boolean;
-  searchTreeRef: any;
+  viewRef: any;
   model: string;
   domain: any;
   context: any;
@@ -45,7 +45,7 @@ export type TreeActionViewProps = {
   setCurrentId: (id?: number) => void;
   setCurrentView: (view: View) => void;
   availableViews: View[];
-  searchTreeNameSearch?: string;
+  searchNameSearch?: string;
   limit?: number;
 };
 
@@ -55,7 +55,7 @@ export const DEFAULT_TREE_TYPE: TreeType = "legacy";
 export const TreeActionView = (props: TreeActionViewProps) => {
   const {
     visible,
-    searchTreeRef,
+    viewRef,
     model,
     context,
     formView,
@@ -66,7 +66,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     setCurrentId,
     setCurrentView,
     availableViews,
-    searchTreeNameSearch,
+    searchNameSearch,
     limit,
   } = props;
   const previousVisibleRef = useRef(visible);
@@ -262,9 +262,9 @@ export const TreeActionView = (props: TreeActionViewProps) => {
     setSearchValues?.({});
 
     setTimeout(() => {
-      searchTreeRef?.current?.refreshResults();
+      viewRef?.current?.refreshResults();
     }, 100);
-  }, [setCurrentSavedSearch, setSearchParams, setSearchValues, searchTreeRef]);
+  }, [setCurrentSavedSearch, setSearchParams, setSearchValues, viewRef]);
 
   const handleOpenSidebar = useCallback(() => {
     setSearchVisible?.(true);
@@ -364,7 +364,7 @@ export const TreeActionView = (props: TreeActionViewProps) => {
       </TitleHeader>
       {treeType === "infinite" && (
         <SearchTreeInfinite
-          ref={searchTreeRef}
+          ref={viewRef}
           rootTree={true}
           model={model}
           parentContext={context}
@@ -377,11 +377,11 @@ export const TreeActionView = (props: TreeActionViewProps) => {
       )}
       {treeType === "paginated" && (
         <SearchTreePaginated
-          ref={searchTreeRef}
+          ref={viewRef}
           rootTree={true}
           model={model}
           parentContext={context}
-          nameSearch={searchTreeNameSearch}
+          nameSearch={searchNameSearch}
           formView={formView}
           treeView={treeView}
           domain={domain}
@@ -391,11 +391,11 @@ export const TreeActionView = (props: TreeActionViewProps) => {
       )}
       {treeType === "legacy" && (
         <SearchTree
-          ref={searchTreeRef}
+          ref={viewRef}
           rootTree={true}
           model={model}
           parentContext={context}
-          nameSearch={searchTreeNameSearch}
+          nameSearch={searchNameSearch}
           formView={formView}
           treeView={treeView}
           domain={domain}

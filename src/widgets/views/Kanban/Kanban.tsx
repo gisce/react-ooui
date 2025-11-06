@@ -7,6 +7,7 @@ import {
   useImperativeHandle,
   memo,
 } from "react";
+import { useDeepCompareMemo } from "use-deep-compare";
 import { KanbanView } from "@/types";
 import { Kanban } from "@gisce/ooui";
 import { KanbanBoard } from "./KanbanBoard";
@@ -24,10 +25,11 @@ type KanbanProps = {
   searchParams?: any[];
   onCardClick?: (record: KanbanRecord) => void;
   onLoadingChange?: (isLoading: boolean) => void;
+  onTotalRowsChange?: (totalRows: number) => void;
 };
 
 export type KanbanRef = {
-  refresh: () => void;
+  refreshResults: () => void;
 };
 
 const KanbanComponentInner = (
@@ -42,6 +44,7 @@ const KanbanComponentInner = (
     searchParams = [],
     onCardClick,
     onLoadingChange,
+    onTotalRowsChange,
   } = props;
 
   const { t } = useLocale();
@@ -99,6 +102,7 @@ const KanbanComponentInner = (
     error: dataError,
     fetchRecords,
     colorsForRecords,
+    totalRows,
   } = useKanbanData({
     model,
     domain,
@@ -113,7 +117,7 @@ const KanbanComponentInner = (
   });
 
   useImperativeHandle(ref, () => ({
-    refresh: () => {
+    refreshResults: () => {
       fetchRecords();
     },
   }));
@@ -144,6 +148,10 @@ const KanbanComponentInner = (
     onLoadingChange?.(isLoading);
   }, [isLoadingData, isRefreshingData, isLoadingAggregates, onLoadingChange]);
 
+  useEffect(() => {
+    onTotalRowsChange?.(totalRows);
+  }, [totalRows, onTotalRowsChange]);
+
   const handleButtonClick = useCallback(
     async (buttonName: string, recordId: number) => {
       await fetchRecords();
@@ -151,45 +159,34 @@ const KanbanComponentInner = (
     [fetchRecords],
   );
 
-  if (parsingError) {
-    return (
-      <Alert
-        message={t("error_parsing_kanban_view")}
-        description={parsingError.message}
-        type="error"
-        showIcon
-      />
-    );
-  }
+  const content = useDeepCompareMemo(() => {
+    if (parsingError) {
+      return (
+        <Alert
+          message={t("error_parsing_kanban_view")}
+          description={parsingError.message}
+          type="error"
+          showIcon
+        />
+      );
+    }
 
-  if (dataError) {
-    return (
-      <Alert
-        message={t("error_loading_kanban_data")}
-        description={dataError.message}
-        type="error"
-        showIcon
-      />
-    );
-  }
+    if (dataError) {
+      return (
+        <Alert
+          message={t("error_loading_kanban_data")}
+          description={dataError.message}
+          type="error"
+          showIcon
+        />
+      );
+    }
 
-  if (!kanbanDef) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "400px",
-        }}
-      >
-        <Spin size="large" />
-      </div>
-    );
-  }
+    if (!kanbanDef) {
+      return <Spin size="large" />;
+    }
 
-  return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+    return (
       <KanbanBoard
         columns={columns}
         kanbanDef={kanbanDef}
@@ -203,8 +200,25 @@ const KanbanComponentInner = (
         onCardClick={onCardClick}
         onButtonClick={handleButtonClick}
       />
-    </div>
-  );
+    );
+  }, [
+    parsingError,
+    dataError,
+    kanbanDef,
+    columns,
+    colorsForRecords,
+    context,
+    isLoadingData,
+    isRefreshingData,
+    aggregatesByColumn,
+    isLoadingAggregates,
+    hasAggregates,
+    onCardClick,
+    handleButtonClick,
+    t,
+  ]);
+
+  return <>{content}</>;
 };
 
 export const KanbanComponent = memo(
