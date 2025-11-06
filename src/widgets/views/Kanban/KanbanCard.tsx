@@ -5,7 +5,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { KanbanRecord } from "./useKanbanData";
 import { Kanban, Button as KanbanButton } from "@gisce/ooui";
 import ConnectionProvider from "@/ConnectionProvider";
-import { COLUMN_COMPONENTS } from "../Tree/treeComponents";
+import { KANBAN_COMPONENTS } from "./kanbanComponents";
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -59,7 +59,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
       const fieldValue = record[fieldName];
       const fieldType = field.type as string;
 
-      const component = (COLUMN_COMPONENTS as any)?.[fieldType];
+      const component = (KANBAN_COMPONENTS as any)?.[fieldType];
 
       if (component) {
         const renderedContent = component({
