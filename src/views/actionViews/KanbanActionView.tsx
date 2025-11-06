@@ -68,11 +68,13 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
 
   const kanbanRef = viewRef as React.RefObject<KanbanRef>;
   const containerRef = useRef<HTMLDivElement>(null);
+  const titleHeaderRef = useRef<HTMLDivElement>(null);
   const searchHeaderRef = useRef<HTMLDivElement>(null);
   const availableHeight = useAvailableHeight({
     elementRef: containerRef,
     offset: HEIGHT_OFFSET,
     dependencies: [searchHeaderRef.current],
+    observedRefs: [titleHeaderRef, searchHeaderRef],
   });
 
   const containerStyle = useMemo(
@@ -196,14 +198,16 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
         onSubmit={onSideSearchFilterSubmit}
         onClear={onSideSearchFilterClear}
       />
-      <TitleHeader showSummary={true}>
-        <TreeActionBar
-          domain={domain}
-          toolbar={kanbanView.toolbar}
-          parentContext={context}
-          treeExpandable={false}
-        />
-      </TitleHeader>
+      <div ref={titleHeaderRef}>
+        <TitleHeader showSummary={true}>
+          <TreeActionBar
+            domain={domain}
+            toolbar={kanbanView.toolbar}
+            parentContext={context}
+            treeExpandable={false}
+          />
+        </TitleHeader>
+      </div>
       <div ref={searchHeaderRef}>
         <SearchTreeHeader
           selectedRowKeys={selectedRowKeys}

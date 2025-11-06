@@ -4,6 +4,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { mergeParams } from "@/helpers/searchHelper";
 import { Kanban } from "@gisce/ooui";
+import { useLocale } from "@gisce/react-formiga-components";
 
 export type KanbanRecord = {
   id: number;
@@ -49,6 +50,8 @@ export const useKanbanData = (params: UseKanbanDataParams) => {
     viewId,
   } = params;
 
+  const { t } = useLocale();
+
   const [columns, setColumns] = useState<KanbanColumn[]>([]);
   const [records, setRecords] = useState<KanbanRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -82,34 +85,144 @@ export const useKanbanData = (params: UseKanbanDataParams) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const extractColumnId = useCallback((columnValue: any): string | null => {
-    if (!columnValue) return null;
+  const normalizeColumnValue = useCallback(
+    (
+      value: any,
+      fieldDefinition: any,
+    ): { originalValue: any; key: string; displayName: string } | null => {
+      if (value === null || value === undefined) {
+        if (fieldDefinition?.type !== "boolean") {
+          return null;
+        }
+      }
 
-    if (Array.isArray(columnValue) && columnValue.length === 2) {
-      return String(columnValue[0]);
-    }
+      const fieldType = fieldDefinition?.type;
 
-    return String(columnValue);
-  }, []);
+      switch (fieldType) {
+        case "many2one":
+          if (Array.isArray(value) && value.length === 2) {
+            return {
+              originalValue: value,
+              key: String(value[0]),
+              displayName: value[1],
+            };
+          }
+          return null;
+
+        case "selection": {
+          let selectionKey: any;
+          let selectionLabel: string;
+
+          if (Array.isArray(value) && value.length === 2) {
+            selectionKey = value[0];
+            selectionLabel = value[1];
+          } else {
+            selectionKey = value;
+            const selectionValues =
+              fieldDefinition?.selection || fieldDefinition?.selectionValues;
+            if (selectionValues) {
+              const found = selectionValues.find(
+                ([id]: [any, string]) => id === selectionKey,
+              );
+              selectionLabel = found ? found[1] : String(selectionKey);
+            } else {
+              selectionLabel = String(selectionKey);
+            }
+          }
+
+          return {
+            originalValue: value,
+            key: String(selectionKey),
+            displayName: selectionLabel,
+          };
+        }
+
+        case "boolean": {
+          const boolValue =
+            value === true || value === 1 || value === "true" || value === "1";
+          return {
+            originalValue: value,
+            key: String(boolValue),
+            displayName: boolValue ? t("yes") : t("no"),
+          };
+        }
+
+        case "reference": {
+          if (typeof value === "string" && value.includes(",")) {
+            const [, idPart] = value.split(",");
+            return {
+              originalValue: value,
+              key: idPart,
+              displayName: value,
+            };
+          }
+          return null;
+        }
+
+        default: {
+          if (value === null || value === undefined) {
+            return null;
+          }
+          const stringValue = String(value);
+          return {
+            originalValue: value,
+            key: stringValue,
+            displayName: stringValue,
+          };
+        }
+      }
+    },
+    [t],
+  );
+
+  const extractColumnId = useCallback(
+    (columnValue: any, fieldDefinition?: any): string | null => {
+      if (!fieldDefinition) {
+        if (!columnValue && columnValue !== false && columnValue !== 0)
+          return null;
+
+        if (Array.isArray(columnValue) && columnValue.length === 2) {
+          return String(columnValue[0]);
+        }
+
+        return String(columnValue);
+      }
+
+      const normalized = normalizeColumnValue(columnValue, fieldDefinition);
+      return normalized ? normalized.key : null;
+    },
+    [normalizeColumnValue],
+  );
 
   const extractColumnInfo = useCallback(
-    (columnValue: any): { id: string; label: string } | null => {
-      if (!columnValue) return null;
+    (
+      columnValue: any,
+      fieldDefinition?: any,
+    ): { id: string; label: string } | null => {
+      if (!fieldDefinition) {
+        if (!columnValue && columnValue !== false && columnValue !== 0)
+          return null;
 
-      if (Array.isArray(columnValue) && columnValue.length === 2) {
+        if (Array.isArray(columnValue) && columnValue.length === 2) {
+          return {
+            id: String(columnValue[0]),
+            label: columnValue[1],
+          };
+        }
+
+        const value = String(columnValue);
         return {
-          id: String(columnValue[0]),
-          label: columnValue[1],
+          id: value,
+          label: value,
         };
       }
 
-      const value = String(columnValue);
-      return {
-        id: value,
-        label: value,
-      };
+      const normalized = normalizeColumnValue(columnValue, fieldDefinition);
+      return normalized
+        ? { id: normalized.key, label: normalized.displayName }
+        : null;
     },
-    [],
+    [normalizeColumnValue],
   );
 
   const getColumnDefinitions = useCallback((): ColumnDefinition[] => {
@@ -118,18 +231,28 @@ export const useKanbanData = (params: UseKanbanDataParams) => {
     }
 
     const fieldType = columnFieldDefinition.type;
-    const selectionValues =
-      columnFieldDefinition.selection || columnFieldDefinition.selectionValues;
 
-    if (fieldType === "selection" && selectionValues) {
-      return selectionValues.map(([id, label]: [string, string]) => ({
-        id: String(id),
-        label: String(label),
-      }));
+    if (fieldType === "boolean") {
+      return [
+        { id: "false", label: t("no") },
+        { id: "true", label: t("yes") },
+      ];
+    }
+
+    if (fieldType === "selection") {
+      const selectionValues =
+        columnFieldDefinition.selection ||
+        columnFieldDefinition.selectionValues;
+      if (selectionValues) {
+        return selectionValues.map(([id, label]: [string, string]) => ({
+          id: String(id),
+          label: String(label),
+        }));
+      }
     }
 
     return [];
-  }, [columnFieldDefinition]);
+  }, [columnFieldDefinition, t]);
 
   const fetchRecords = useDeepCompareCallback(async () => {
     if (!enabled || !model || !columnField) {
@@ -203,7 +326,10 @@ export const useKanbanData = (params: UseKanbanDataParams) => {
       if (columnDefs.length === 0 && columnFieldDefinition) {
         fetchedRecords.forEach((record: KanbanRecord) => {
           const columnValue = record[columnField];
-          const columnInfo = extractColumnInfo(columnValue);
+          const columnInfo = extractColumnInfo(
+            columnValue,
+            columnFieldDefinition,
+          );
 
           if (!columnInfo) return;
 
@@ -230,7 +356,7 @@ export const useKanbanData = (params: UseKanbanDataParams) => {
 
       fetchedRecords.forEach((record: KanbanRecord) => {
         const columnValue = record[columnField];
-        const colId = extractColumnId(columnValue);
+        const colId = extractColumnId(columnValue, columnFieldDefinition);
 
         if (!colId) return;
 
