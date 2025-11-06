@@ -11,20 +11,28 @@ import { KANBAN_COMPONENTS } from "./kanbanComponents";
 const { Text } = Typography;
 const { useToken } = theme;
 
+const CardWrapper = styled.div`
+  margin-bottom: 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
 const StyledCard = styled(AntCard)<{
   $bgColor: string;
   $borderColor: string;
   $primaryColor: string;
+  $color?: string;
 }>`
   position: relative;
-  margin-bottom: 8px;
   background-color: ${(props) => props.$bgColor};
   border: 1px solid ${(props) => props.$borderColor};
   outline: none;
   outline-offset: -1px;
 
   &:hover {
-    outline: 3px solid ${(props) => props.$primaryColor};
+    outline: 3px solid ${(props) => props.$color || props.$primaryColor};
   }
 `;
 
@@ -198,43 +206,46 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
   );
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <StyledCard
-        size="small"
-        onClick={onClick}
-        $bgColor={token.colorBgContainer}
-        $borderColor={token.colorBorder}
-        $primaryColor={token.colorPrimary}
-        styles={{
-          body: {
-            padding: "12px",
-            paddingLeft: "20px",
-          },
-        }}
-      >
-        {color && <ColorBar $color={color} />}
-        <div style={{ marginBottom: "8px" }}>
-          {kanbanDef.card_fields.map((field: any) => renderField(field))}
-        </div>
+    <CardWrapper>
+      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+        <StyledCard
+          size="small"
+          onClick={onClick}
+          $bgColor={token.colorBgContainer}
+          $borderColor={token.colorBorder}
+          $primaryColor={token.colorPrimary}
+          $color={color}
+          styles={{
+            body: {
+              padding: "12px",
+              paddingLeft: "20px",
+            },
+          }}
+        >
+          {color && <ColorBar $color={color} />}
+          <div style={{ marginBottom: "8px" }}>
+            {kanbanDef.card_fields.map((field: any) => renderField(field))}
+          </div>
 
-        {visibleButtons.length > 0 && (
-          <Space size="small" wrap>
-            {visibleButtons.map((button: any) => (
-              <Button
-                key={button.id}
-                size="small"
-                type={button.primary ? "primary" : "default"}
-                danger={button.danger}
-                loading={loadingButton === button.id}
-                onClick={(e) => handleButtonClick(e, button)}
-              >
-                {button.caption || button.id}
-              </Button>
-            ))}
-          </Space>
-        )}
-      </StyledCard>
-    </div>
+          {visibleButtons.length > 0 && (
+            <Space size="small" wrap>
+              {visibleButtons.map((button: any) => (
+                <Button
+                  key={button.id}
+                  size="small"
+                  type={button.primary ? "primary" : "default"}
+                  danger={button.danger}
+                  loading={loadingButton === button.id}
+                  onClick={(e) => handleButtonClick(e, button)}
+                >
+                  {button.caption || button.id}
+                </Button>
+              ))}
+            </Space>
+          )}
+        </StyledCard>
+      </div>
+    </CardWrapper>
   );
 };
 
