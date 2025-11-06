@@ -232,7 +232,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
           padding: "12px",
           paddingLeft: "20px",
           paddingTop: "12px",
-          paddingRight: status ? "24px" : "12px",
+          paddingRight: status ? "16px" : "12px",
         },
       }}
     >
