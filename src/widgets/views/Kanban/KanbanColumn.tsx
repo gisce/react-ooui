@@ -111,13 +111,27 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
         <div
           style={{
             display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
+            gap: "8px",
             width: "100%",
           }}
         >
-          <Space>
-            <Text strong style={{ color: token.colorTextBase }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              flex: 1,
+              minWidth: 0,
+            }}
+          >
+            <Text
+              strong
+              style={{
+                color: token.colorTextBase,
+                minWidth: 0,
+                wordBreak: "break-word",
+              }}
+            >
               {column.label}
             </Text>
             <Badge
@@ -126,10 +140,17 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
                 backgroundColor: isOverLimit
                   ? token.colorError
                   : token.colorPrimary,
+                flexShrink: 0,
               }}
             />
-          </Space>
-          <Space size={8}>
+          </div>
+          <div
+            style={{
+              flexShrink: 0,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
             {isLoadingAggregates ? (
               <Space size={4}>
                 <LoadingOutlined
@@ -147,7 +168,7 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
                 {aggregatesSummary}
               </Text>
             ) : null}
-          </Space>
+          </div>
         </div>
       </div>
 

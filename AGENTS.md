@@ -18,7 +18,6 @@
   - `npm run check` (project lint pipeline).
   - `npx eslint src --ext .ts,.tsx` (scope this to touched files when practical).
   - `npm run build:tsc` for the TypeScript check that respects `tsconfig.build.json`.
-  - `npm run build:vite` to ensure the library bundles cleanly. `npm run build` executes both checks in parallel if preferred.
 - `npm run check` only triggers lint-staged; it does **not** cover the required TypeScript or ESLint passes.
 - `npm run build:tsc` runs `tsc -p tsconfig.build.json --noEmit`, satisfying the `npx tsc --noEmit` requirement.
 - Fix every ESLint warning and TypeScript error before handing work back.
