@@ -52,7 +52,7 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
 
   const { t } = useLocale();
   const [activeRecord, setActiveRecord] = useState<KanbanRecord | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const [overColumnId, setOverColumnId] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -71,7 +71,6 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
         const record = column.records.find((r) => r.id === recordId);
         if (record) {
           setActiveRecord(record);
-          setIsDragging(true);
           break;
         }
       }
@@ -79,16 +78,45 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
     [columns],
   );
 
-  const handleDragOver = useCallback((_event: DragOverEvent) => {}, []);
+  const handleDragOver = useCallback(
+    (event: DragOverEvent) => {
+      const { over } = event;
+      if (!over) {
+        setOverColumnId(null);
+        return;
+      }
+
+      // Check if we're over a column directly
+      const overColumn = columns.find((col) => col.id === over.id);
+      if (overColumn) {
+        setOverColumnId(overColumn.id);
+        return;
+      }
+
+      // Check if we're over a card - find which column it belongs to
+      for (const column of columns) {
+        const isOverCard = column.records.some(
+          (record) => record.id === over.id,
+        );
+        if (isOverCard) {
+          setOverColumnId(column.id);
+          return;
+        }
+      }
+
+      setOverColumnId(null);
+    },
+    [columns],
+  );
 
   const handleDragEnd = useCallback(async () => {
-    setIsDragging(false);
     setActiveRecord(null);
+    setOverColumnId(null);
   }, []);
 
   const handleDragCancel = useCallback(() => {
-    setIsDragging(false);
     setActiveRecord(null);
+    setOverColumnId(null);
   }, []);
 
   if (isLoading && !isRefreshing) {
@@ -148,7 +176,6 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
             draggable={kanbanDef.drag}
             colorsForRecords={colorsForRecords}
             statusForRecords={statusForRecords}
-            sortable={kanbanDef.sort}
             allowSetMaxCards={false}
             context={context}
             aggregates={
@@ -157,6 +184,7 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
             isLoadingAggregates={isLoadingAggregates}
             onCardClick={onCardClick}
             onButtonClick={onButtonClick}
+            isOver={overColumnId === column.id}
           />
         ))}
       </div>
@@ -165,7 +193,6 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
         {activeRecord ? (
           <div
             style={{
-              opacity: 0.8,
               cursor: "grabbing",
               transform: "rotate(5deg)",
             }}
@@ -174,6 +201,9 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
               record={activeRecord}
               kanbanDef={kanbanDef}
               draggable={false}
+              color={colorsForRecords?.current?.[activeRecord.id]}
+              status={statusForRecords?.current?.[activeRecord.id]}
+              context={context}
             />
           </div>
         ) : null}
