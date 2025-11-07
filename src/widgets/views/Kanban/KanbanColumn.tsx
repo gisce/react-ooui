@@ -24,12 +24,12 @@ type KanbanColumnProps = {
   draggable: boolean;
   colorsForRecords?: RefObject<{ [key: number]: string }>;
   statusForRecords?: RefObject<{ [key: number]: string }>;
-  sortable: boolean;
   allowSetMaxCards: boolean;
   maxCards?: number;
   context?: any;
   aggregates?: KanbanColumnAggregatesType;
   isLoadingAggregates?: boolean;
+  isOver?: boolean;
   onCardClick?: (record: KanbanRecord) => void;
   onButtonClick?: (buttonName: string, recordId: number) => void;
   onMaxCardsChange?: (colId: string, maxCards: number | undefined) => void;
@@ -42,11 +42,11 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
     draggable,
     colorsForRecords,
     statusForRecords,
-    sortable,
     maxCards,
     context = {},
     aggregates,
     isLoadingAggregates = false,
+    isOver = false,
     onCardClick,
     onButtonClick,
   } = props;
@@ -54,7 +54,7 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
   const { t } = useLocale();
   const { token } = useToken();
 
-  const { setNodeRef, isOver } = useDroppable({
+  const { setNodeRef } = useDroppable({
     id: column.id,
   });
 
@@ -89,12 +89,14 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
 
   return (
     <div
+      ref={setNodeRef}
       style={{
         width: "300px",
         minWidth: "300px",
         height: "100%",
         backgroundColor: isOver ? token.colorPrimaryBg : token.colorBgLayout,
-        border: isOver ? `2px solid ${token.colorPrimary}` : "none",
+        outlineOffset: "-3px",
+        outline: isOver ? `3px solid ${token.colorPrimary}` : "none",
         borderRadius: token.borderRadiusLG,
         transition: "all 0.2s",
         display: "flex",
@@ -173,7 +175,6 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
       </div>
 
       <div
-        ref={setNodeRef}
         style={{
           padding: "6px",
           paddingRight: hasStatusRibbon ? "10px" : "6px",
@@ -185,7 +186,7 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
         <SortableContext
           items={recordIds}
           strategy={verticalListSortingStrategy}
-          disabled={!sortable}
+          disabled={true}
         >
           {column.records.map((record) => (
             <KanbanCard
