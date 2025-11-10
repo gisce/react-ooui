@@ -10,7 +10,11 @@ import {
 import { Form as FormOoui, parseContext } from "@gisce/ooui";
 import { Form as AntForm, Button, Divider, Space, Row, Spin } from "antd";
 import Measure from "react-measure";
-import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import {
+  CheckOutlined,
+  CloseOutlined,
+  ExportOutlined,
+} from "@ant-design/icons";
 import debounce from "lodash/debounce";
 
 import Container from "@/widgets/containers/Container";
@@ -43,6 +47,10 @@ import {
   ContentRootContext,
   ContentRootContextType,
 } from "@/context/ContentRootContext";
+import {
+  TabManagerContext,
+  TabManagerContextType,
+} from "@/context/TabManagerContext";
 import { useLocale } from "@gisce/react-formiga-components";
 import {
   convertFrom2ManyRawValues,
@@ -176,6 +184,11 @@ function Form(props: FormProps, ref: any) {
     ContentRootContext,
   ) as ContentRootContextType;
   const { processAction, globalValues } = contentRootContext || {};
+
+  const tabManagerContext = useContext(
+    TabManagerContext,
+  ) as TabManagerContextType;
+  const { openAction } = tabManagerContext || {};
 
   const { onActionTriggered } = useConfigContext();
 
@@ -1324,11 +1337,38 @@ function Form(props: FormProps, ref: any) {
   };
 
   const footer = () => {
+    const currentId = getCurrentId();
+    const canOpenInNewTab = currentId && openAction;
+    const recordTitle = formOoui?.string || title || "";
+
     return (
       <>
         <Divider />
-        <Row justify="end">
-          <Space>
+        <Row justify="space-between">
+          {canOpenInNewTab && (
+            <Button
+              icon={<ExportOutlined />}
+              disabled={isSubmitting}
+              onClick={() => {
+                openAction({
+                  domain: [["id", "=", currentId]],
+                  context: parentContext,
+                  model,
+                  res_id: currentId,
+                  title: recordTitle,
+                  views: [[view_id || formViewProps?.view_id, "form"]],
+                  target: "current",
+                  initialView: { type: "form" },
+                  action_id: -1,
+                  action_type: "ir.actions.act_window",
+                });
+                onCancel?.();
+              }}
+            >
+              {t("openInNewTab")}
+            </Button>
+          )}
+          <Space style={{ marginLeft: "auto" }}>
             <Button
               icon={<CloseOutlined />}
               disabled={isSubmitting}
