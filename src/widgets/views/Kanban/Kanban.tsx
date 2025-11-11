@@ -25,6 +25,7 @@ type KanbanProps = {
   domain: any[];
   context: any;
   searchParams?: any[];
+  nameSearch?: string;
   onCardClick?: (record: KanbanRecord) => void;
   onLoadingChange?: (isLoading: boolean) => void;
   onTotalRowsChange?: (totalRows: number) => void;
@@ -44,10 +45,13 @@ const KanbanComponentInner = (
     domain,
     context,
     searchParams = [],
+    nameSearch,
     onCardClick,
     onLoadingChange,
     onTotalRowsChange,
   } = props;
+
+  const prevNameSearch = useRef(nameSearch);
 
   const { t } = useLocale();
   const [kanbanDef, setKanbanDef] = useState<Kanban | null>(null);
@@ -114,9 +118,24 @@ const KanbanComponentInner = (
   const columnRefs = useRef<Map<string, KanbanColumnRef>>(new Map());
   const [columnCounts, setColumnCounts] = useState<Record<string, number>>({});
 
+  useEffect(() => {
+    const isNameSearchActive = nameSearch && nameSearch.trim().length > 0;
+    const wasNameSearchActive =
+      prevNameSearch.current &&
+      typeof prevNameSearch.current === "string" &&
+      prevNameSearch.current.trim().length > 0;
+
+    if (!isNameSearchActive && wasNameSearchActive) {
+      columnRefs.current.forEach((ref) => {
+        ref.refresh();
+      });
+    }
+
+    prevNameSearch.current = nameSearch;
+  }, [nameSearch]);
+
   useImperativeHandle(ref, () => ({
     refreshResults: () => {
-      // Trigger refresh on all columns
       columnRefs.current.forEach((ref) => {
         ref.refresh();
       });
@@ -154,7 +173,6 @@ const KanbanComponentInner = (
     [],
   );
 
-  // Calculate and report total rows
   useEffect(() => {
     const totalRows = Object.values(columnCounts).reduce(
       (sum, count) => sum + count,
@@ -162,6 +180,10 @@ const KanbanComponentInner = (
     );
     onTotalRowsChange?.(totalRows);
   }, [columnCounts, onTotalRowsChange]);
+
+  useEffect(() => {
+    onLoadingChange?.(isLoadingColumns);
+  }, [isLoadingColumns, onLoadingChange]);
 
   const content = useDeepCompareMemo(() => {
     if (parsingError) {
@@ -198,6 +220,7 @@ const KanbanComponentInner = (
         domain={domain}
         context={context}
         searchParams={searchParams}
+        nameSearch={nameSearch}
         fieldsToRetrieve={fieldsToRetrieve}
         kanbanDef={kanbanDef}
         onCardClick={onCardClick}
@@ -216,6 +239,7 @@ const KanbanComponentInner = (
     domain,
     context,
     searchParams,
+    nameSearch,
     fieldsToRetrieve,
     onCardClick,
     handleButtonClick,

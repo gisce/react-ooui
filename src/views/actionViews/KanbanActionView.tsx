@@ -59,7 +59,7 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
     setSearchTreeNameSearch,
   } = useSearchTreeState({ useLocalState: false });
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [showFormModal, setShowFormModal] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<
     KanbanRecord | undefined
@@ -229,6 +229,7 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
           domain={domain}
           context={context}
           searchParams={searchParams || []}
+          nameSearch={searchTreeNameSearch}
           onCardClick={handleCardClick}
           onLoadingChange={setIsLoading}
           onTotalRowsChange={handleTotalRowsChange}

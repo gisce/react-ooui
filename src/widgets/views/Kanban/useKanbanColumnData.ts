@@ -24,6 +24,7 @@ type UseKanbanColumnDataParams = {
   columnField: string;
   columnValue: string;
   searchParams?: any[];
+  nameSearch?: string;
   fieldsToRetrieve?: string[];
   enabled?: boolean;
   kanbanDef?: Kanban;
@@ -37,6 +38,7 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
     columnField,
     columnValue,
     searchParams = [],
+    nameSearch,
     fieldsToRetrieve = [],
     enabled = true,
     kanbanDef,
@@ -49,12 +51,8 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
   const colorsForRecords = useRef<{ [key: number]: string }>({});
   const statusForRecords = useRef<{ [key: number]: string }>({});
 
-  const [searchRequest, cancelSearchRequest] = useNetworkRequest(
-    ConnectionProvider.getHandler().search,
-  );
-
-  const [parseConditions, cancelParseConditions] = useNetworkRequest(
-    ConnectionProvider.getHandler().parseConditions,
+  const [searchForTree, cancelSearchForTree] = useNetworkRequest(
+    ConnectionProvider.getHandler().searchForTree,
   );
 
   const [readAggregates, cancelReadAggregates] = useNetworkRequest(
@@ -63,8 +61,7 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
 
   useEffect(() => {
     return () => {
-      cancelSearchRequest();
-      cancelParseConditions();
+      cancelSearchForTree();
       cancelReadAggregates();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -93,8 +90,11 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
     setError(null);
 
     try {
-      // Merge domain with searchParams and add column filter
-      const baseDomain = mergeParams(domain, searchParams);
+      // When nameSearch is active: use ONLY domain (ignore searchParams)
+      // When nameSearch is NOT active: merge domain + searchParams
+      const baseDomain = nameSearch
+        ? domain
+        : mergeParams(domain, searchParams);
 
       // Extract the proper value for the search query
       // For many2one fields, columnValue is [id, name], we need just the id
@@ -109,90 +109,90 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
 
       const columnDomain = [...baseDomain, [columnField, "=", searchValue]];
 
-      const fields = [...new Set([...fieldsToRetrieve, columnField])];
+      // Build fields object for searchForTree
+      // searchForTree expects an object of field definitions, not an array of field names
+      const fieldsToFetch = [...new Set([...fieldsToRetrieve, columnField])];
+      const fieldsObject = kanbanDef?.fields
+        ? Object.keys(kanbanDef.fields).reduce(
+            (acc: any, fieldName: string) => {
+              if (fieldsToFetch.includes(fieldName)) {
+                acc[fieldName] = kanbanDef.fields[fieldName];
+              }
+              return acc;
+            },
+            {},
+          )
+        : {};
 
-      // Fetch records
-      const fetchedRecords = await searchRequest({
+      // Fetch records using searchForTree which supports name_search
+      const { results: fetchedRecords, attrsEvaluated } = await searchForTree({
         model,
         params: columnDomain,
         context,
-        fieldsToRetrieve: fields,
+        fields: fieldsObject,
         limit: 0,
+        offset: 0,
+        name_search: nameSearch,
       });
 
       setRecords(fetchedRecords);
 
       // Fetch aggregates if defined
       if (fieldsToAggregate) {
-        try {
-          const retrievedData = await readAggregates({
-            model,
-            domain: columnDomain,
-            aggregateFields: fieldsToAggregate,
-            context,
-          });
+        if (fetchedRecords.length > 0) {
+          try {
+            // Use the IDs from the fetched records to calculate aggregates
+            // This ensures aggregates match the actual filtered results (including name search)
+            const recordIds = fetchedRecords.map((r) => r.id);
+            const aggregateDomain = [["id", "in", recordIds]];
 
-          const columnAggregates: KanbanColumnAggregates = {};
-          Object.entries(retrievedData).forEach(([fieldName, values]) => {
-            const label = kanbanDef?.aggregations[fieldName] || fieldName;
-            columnAggregates[fieldName] = {
-              label,
-              amount: (values as Record<string, number>).sum || 0,
-            };
-          });
+            const retrievedData = await readAggregates({
+              model,
+              domain: aggregateDomain,
+              aggregateFields: fieldsToAggregate,
+              context,
+            });
 
-          setAggregates(columnAggregates);
-        } catch (err: any) {
-          if (err.name !== "AbortError") {
-            console.warn("Error fetching column aggregates:", err);
+            const columnAggregates: KanbanColumnAggregates = {};
+            Object.entries(retrievedData).forEach(([fieldName, values]) => {
+              const label = kanbanDef?.aggregations[fieldName] || fieldName;
+              columnAggregates[fieldName] = {
+                label,
+                amount: (values as Record<string, number>).sum || 0,
+              };
+            });
+
+            setAggregates(columnAggregates);
+          } catch (err: any) {
+            if (err.name !== "AbortError") {
+              console.warn("Error fetching column aggregates:", err);
+            }
+            setAggregates({});
           }
+        } else {
+          // No records, clear aggregates
           setAggregates({});
         }
       }
 
-      // Parse colors and status if defined
-      if (
-        (kanbanDef?.colors || kanbanDef?.status) &&
-        fetchedRecords.length > 0
-      ) {
-        try {
-          const conditions: any = {};
-          if (kanbanDef.colors) {
-            conditions.colors = kanbanDef.colors;
-          }
-          if (kanbanDef.status) {
-            conditions.status = kanbanDef.status;
-          }
+      // Parse colors and status from attrsEvaluated returned by searchForTree
+      if (attrsEvaluated && Array.isArray(attrsEvaluated)) {
+        const newColors: { [key: number]: string } = {};
+        const newStatus: { [key: number]: string } = {};
 
-          const attrsEvaluated = await parseConditions({
-            conditions,
-            values: fetchedRecords,
-            context,
-          });
-
-          if (attrsEvaluated && Array.isArray(attrsEvaluated)) {
-            const newColors: { [key: number]: string } = {};
-            const newStatus: { [key: number]: string } = {};
-
-            attrsEvaluated.forEach((attr: any) => {
-              if (attr.id !== undefined) {
-                if (attr.colors) {
-                  newColors[attr.id] = attr.colors;
-                }
-                if (attr.status) {
-                  newStatus[attr.id] = attr.status;
-                }
-              }
-            });
-
-            colorsForRecords.current = newColors;
-            statusForRecords.current = newStatus;
+        attrsEvaluated.forEach((attr: any) => {
+          if (attr.id !== undefined) {
+            if (attr.colors) {
+              newColors[attr.id] = attr.colors;
+            }
+            if (attr.status) {
+              newStatus[attr.id] = attr.status;
+            }
           }
-        } catch (err: any) {
-          if (err.name !== "AbortError") {
-            console.warn("Error evaluating colors/status:", err);
-          }
-        }
+        });
+
+        colorsForRecords.current = newColors;
+        statusForRecords.current = newStatus;
       }
     } catch (err: any) {
       if (err.name !== "AbortError") {
@@ -209,13 +209,13 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
     columnValue,
     domain,
     searchParams,
+    nameSearch,
     context,
     fieldsToRetrieve,
     fieldsToAggregate,
     kanbanDef,
-    searchRequest,
+    searchForTree,
     readAggregates,
-    parseConditions,
   ]);
 
   useDeepCompareEffect(() => {
@@ -227,6 +227,7 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
     columnValue,
     domain,
     searchParams,
+    nameSearch,
     context,
     fieldsToRetrieve,
   ]);
