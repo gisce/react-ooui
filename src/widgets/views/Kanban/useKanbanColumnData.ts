@@ -124,7 +124,19 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
           )
         : {};
 
-      // Fetch records using searchForTree which supports name_search
+      let order: string | undefined;
+      if (kanbanDef?.sort && !nameSearch) {
+        order = `${kanbanDef.sort} asc`;
+      }
+
+      const attrs: any = {};
+      if (kanbanDef?.colors) {
+        attrs.colors = kanbanDef.colors;
+      }
+      if (kanbanDef?.status) {
+        attrs.status = kanbanDef.status;
+      }
+
       const { results: fetchedRecords, attrsEvaluated } = await searchForTree({
         model,
         params: columnDomain,
@@ -132,6 +144,8 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
         fields: fieldsObject,
         limit: 0,
         offset: 0,
+        order,
+        attrs: Object.keys(attrs).length > 0 ? attrs : undefined,
         name_search: nameSearch,
       });
 
