@@ -12,7 +12,7 @@ import TitleHeader from "@/ui/TitleHeader";
 import TreeActionBar from "@/actionbar/TreeActionBar";
 import { KanbanComponent, KanbanRef } from "@/widgets/views/Kanban/Kanban";
 import { useActionViewContext } from "@/context/ActionViewContext";
-import { KanbanRecord } from "@/widgets/views/Kanban/useKanbanData";
+import { KanbanRecord } from "@/widgets/views/Kanban/types";
 import { FormModal } from "@/widgets/modals/FormModal";
 import { SearchTreeHeader } from "@/widgets/views/SearchTreeHeader";
 import { SideSearchFilter } from "@/widgets/views/searchFilter/SideSearchFilter";

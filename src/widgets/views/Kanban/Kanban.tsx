@@ -6,17 +6,18 @@ import {
   forwardRef,
   useImperativeHandle,
   memo,
+  useRef,
 } from "react";
 import { useDeepCompareMemo } from "use-deep-compare";
 import { KanbanView } from "@/types";
 import { Kanban } from "@gisce/ooui";
 import type { KanbanButton } from "@gisce/ooui/dist/Kanban";
 import { KanbanBoard } from "./KanbanBoard";
-import { useKanbanData, KanbanRecord } from "./useKanbanData";
-import { useKanbanAggregates } from "./useKanbanAggregates";
+import { KanbanRecord } from "./types";
+import { useKanbanColumns } from "./useKanbanColumns";
 import { Alert, Spin } from "antd";
-import { mergeParams } from "@/helpers/searchHelper";
 import { useLocale } from "@gisce/react-formiga-components";
+import { KanbanColumnRef } from "./KanbanColumn";
 
 type KanbanProps = {
   kanbanView: KanbanView;
@@ -98,68 +99,69 @@ const KanbanComponentInner = (
 
   const {
     columns,
-    isLoading: isLoadingData,
-    isRefreshing: isRefreshingData,
-    error: dataError,
-    fetchRecords,
-    colorsForRecords,
-    statusForRecords,
-    totalRows,
-  } = useKanbanData({
+    isLoading: isLoadingColumns,
+    error: columnsError,
+  } = useKanbanColumns({
     model,
     domain,
     context,
     columnField: kanbanDef?.column_field || "",
     columnFieldDefinition: columnFieldDef,
     searchParams,
-    fieldsToRetrieve,
     enabled: !!kanbanDef && !!columnFieldDef,
-    kanbanDef: kanbanDef || undefined,
-    viewId: kanbanView.view_id,
   });
+
+  const columnRefs = useRef<Map<string, KanbanColumnRef>>(new Map());
+  const [columnCounts, setColumnCounts] = useState<Record<string, number>>({});
 
   useImperativeHandle(ref, () => ({
     refreshResults: () => {
-      fetchRecords();
+      // Trigger refresh on all columns
+      columnRefs.current.forEach((ref) => {
+        ref.refresh();
+      });
     },
   }));
 
-  const columnIds = useMemo(() => columns.map((col) => col.id), [columns]);
-
-  const aggregatedDomain = useMemo(
-    () => mergeParams(domain, searchParams),
-    [domain, searchParams],
-  );
-
-  const {
-    aggregatesByColumn,
-    isLoading: isLoadingAggregates,
-    hasAggregates,
-  } = useKanbanAggregates({
-    kanbanDef: kanbanDef || undefined,
-    model,
-    domain: aggregatedDomain,
-    context,
-    columnField: kanbanDef?.column_field || "",
-    columnIds,
-    enabled: !!kanbanDef && columns.length > 0,
-  });
-
-  useEffect(() => {
-    const isLoading = isLoadingData || isRefreshingData || isLoadingAggregates;
-    onLoadingChange?.(isLoading);
-  }, [isLoadingData, isRefreshingData, isLoadingAggregates, onLoadingChange]);
-
-  useEffect(() => {
-    onTotalRowsChange?.(totalRows);
-  }, [totalRows, onTotalRowsChange]);
-
   const handleButtonClick = useCallback(
     async (buttonName: string, recordId: number) => {
-      await fetchRecords();
+      // Refresh all columns after button click
+      columnRefs.current.forEach((ref) => {
+        ref.refresh();
+      });
     },
-    [fetchRecords],
+    [],
   );
+
+  const setColumnRef = useCallback(
+    (columnId: string, ref: KanbanColumnRef | null) => {
+      if (ref) {
+        columnRefs.current.set(columnId, ref);
+      } else {
+        columnRefs.current.delete(columnId);
+      }
+    },
+    [],
+  );
+
+  const handleColumnCountChange = useCallback(
+    (columnId: string, count: number) => {
+      setColumnCounts((prev) => ({
+        ...prev,
+        [columnId]: count,
+      }));
+    },
+    [],
+  );
+
+  // Calculate and report total rows
+  useEffect(() => {
+    const totalRows = Object.values(columnCounts).reduce(
+      (sum, count) => sum + count,
+      0,
+    );
+    onTotalRowsChange?.(totalRows);
+  }, [columnCounts, onTotalRowsChange]);
 
   const content = useDeepCompareMemo(() => {
     if (parsingError) {
@@ -173,52 +175,52 @@ const KanbanComponentInner = (
       );
     }
 
-    if (dataError) {
+    if (columnsError) {
       return (
         <Alert
           message={t("error_loading_kanban_data")}
-          description={dataError.message}
+          description={columnsError.message}
           type="error"
           showIcon
         />
       );
     }
 
-    if (!kanbanDef) {
+    if (!kanbanDef || isLoadingColumns) {
       return <Spin size="large" />;
     }
 
     return (
       <KanbanBoard
         columns={columns}
-        kanbanDef={kanbanDef}
-        colorsForRecords={colorsForRecords}
-        statusForRecords={statusForRecords}
+        columnField={kanbanDef.column_field}
+        model={model}
+        domain={domain}
         context={context}
-        isLoading={isLoadingData}
-        isRefreshing={isRefreshingData}
-        aggregatesByColumn={aggregatesByColumn}
-        isLoadingAggregates={isLoadingAggregates}
-        hasAggregates={hasAggregates}
+        searchParams={searchParams}
+        fieldsToRetrieve={fieldsToRetrieve}
+        kanbanDef={kanbanDef}
         onCardClick={onCardClick}
         onButtonClick={handleButtonClick}
+        setColumnRef={setColumnRef}
+        onColumnCountChange={handleColumnCountChange}
       />
     );
   }, [
     parsingError,
-    dataError,
+    columnsError,
     kanbanDef,
     columns,
-    colorsForRecords,
-    statusForRecords,
+    isLoadingColumns,
+    model,
+    domain,
     context,
-    isLoadingData,
-    isRefreshingData,
-    aggregatesByColumn,
-    isLoadingAggregates,
-    hasAggregates,
+    searchParams,
+    fieldsToRetrieve,
     onCardClick,
     handleButtonClick,
+    setColumnRef,
+    handleColumnCountChange,
     t,
   ]);
 

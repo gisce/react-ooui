@@ -2,7 +2,7 @@ import { memo, useMemo, useState, MouseEvent, useCallback } from "react";
 import { Card as AntCard, Button, Space, Typography, theme } from "antd";
 import { useSortable } from "@dnd-kit/sortable";
 import styled from "styled-components";
-import { KanbanRecord } from "./useKanbanData";
+import { KanbanRecord } from "./types";
 import { Kanban } from "@gisce/ooui";
 import type { KanbanButton } from "@gisce/ooui/dist/Kanban";
 import ConnectionProvider from "@/ConnectionProvider";

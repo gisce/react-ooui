@@ -1,4 +1,10 @@
-import { memo, RefObject, useMemo } from "react";
+import {
+  memo,
+  useMemo,
+  forwardRef,
+  useImperativeHandle,
+  useEffect,
+} from "react";
 import { Badge, Button, Space, theme, Typography } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { useDroppable } from "@dnd-kit/core";
@@ -7,63 +13,103 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { KanbanCard } from "./KanbanCard";
-import {
-  KanbanColumn as KanbanColumnType,
-  KanbanRecord,
-} from "./useKanbanData";
+import { KanbanRecord, ColumnDefinition } from "./types";
 import { Kanban } from "@gisce/ooui";
 import { useLocale } from "@gisce/react-formiga-components";
-import { KanbanColumnAggregates as KanbanColumnAggregatesType } from "./useKanbanAggregates";
+import { useKanbanColumnData } from "./useKanbanColumnData";
 
 const { Text } = Typography;
 const { useToken } = theme;
 
+export type KanbanColumnRef = {
+  refresh: () => void;
+};
+
 type KanbanColumnProps = {
-  column: KanbanColumnType;
+  column: ColumnDefinition;
+  columnField: string;
+  model: string;
+  domain: any[];
+  context: any;
+  searchParams?: any[];
+  fieldsToRetrieve?: string[];
   kanbanDef: Kanban;
   draggable: boolean;
-  colorsForRecords?: RefObject<{ [key: number]: string }>;
-  statusForRecords?: RefObject<{ [key: number]: string }>;
   allowSetMaxCards: boolean;
   maxCards?: number;
-  context?: any;
-  aggregates?: KanbanColumnAggregatesType;
-  isLoadingAggregates?: boolean;
   isOver?: boolean;
   onCardClick?: (record: KanbanRecord) => void;
   onButtonClick?: (buttonName: string, recordId: number) => void;
   onMaxCardsChange?: (colId: string, maxCards: number | undefined) => void;
+  onCountChange: (columnId: string, count: number) => void;
 };
 
-const KanbanColumnComponent = (props: KanbanColumnProps) => {
+const KanbanColumnComponent = (
+  props: KanbanColumnProps,
+  ref: React.Ref<KanbanColumnRef>,
+) => {
   const {
     column,
+    columnField,
+    model,
+    domain,
+    context = {},
+    searchParams,
+    fieldsToRetrieve,
     kanbanDef,
     draggable,
-    colorsForRecords,
-    statusForRecords,
     maxCards,
-    context = {},
-    aggregates,
-    isLoadingAggregates = false,
     isOver = false,
     onCardClick,
     onButtonClick,
+    onCountChange,
   } = props;
+
+  const {
+    id: columnId,
+    label: columnLabel,
+    originalValue: columnOriginalValue,
+  } = column;
 
   const { t } = useLocale();
   const { token } = useToken();
 
-  const { setNodeRef } = useDroppable({
-    id: column.id,
+  const {
+    records,
+    count,
+    aggregates,
+    colorsForRecords,
+    statusForRecords,
+    isLoading,
+    refresh,
+  } = useKanbanColumnData({
+    model,
+    domain,
+    context,
+    columnField,
+    columnValue: columnOriginalValue,
+    searchParams,
+    fieldsToRetrieve,
+    enabled: true,
+    kanbanDef,
   });
 
-  const recordIds = useMemo(
-    () => column.records.map((r) => r.id),
-    [column.records],
-  );
+  useImperativeHandle(ref, () => ({
+    refresh,
+  }));
 
-  const isOverLimit = maxCards !== undefined && column.count > maxCards;
+  // Report count changes to parent
+  useEffect(() => {
+    onCountChange(columnId, count);
+  }, [columnId, count, onCountChange]);
+
+  const { setNodeRef } = useDroppable({
+    id: columnId,
+  });
+
+  const recordIds = useMemo(() => records.map((r) => r.id), [records]);
+
+  const isOverLimit = maxCards !== undefined && count > maxCards;
 
   const aggregatesSummary = useMemo(() => {
     return aggregates && Object.keys(aggregates).length > 0
@@ -75,17 +121,15 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
 
   const cardClickHandlers = useMemo(() => {
     if (!onCardClick) return {};
-    return column.records.reduce<Record<number, () => void>>((acc, record) => {
+    return records.reduce<Record<number, () => void>>((acc, record) => {
       acc[record.id] = () => onCardClick(record);
       return acc;
     }, {});
-  }, [column.records, onCardClick]);
+  }, [records, onCardClick]);
 
   const hasStatusRibbon = useMemo(() => {
-    return column.records.some(
-      (record) => statusForRecords?.current?.[record.id],
-    );
-  }, [column.records, statusForRecords]);
+    return records.some((record) => statusForRecords?.current?.[record.id]);
+  }, [records, statusForRecords]);
 
   return (
     <div
@@ -134,10 +178,10 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
                 wordBreak: "break-word",
               }}
             >
-              {column.label}
+              {columnLabel}
             </Text>
             <Badge
-              count={column.count}
+              count={count}
               style={{
                 backgroundColor: isOverLimit
                   ? token.colorError
@@ -153,7 +197,7 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
               alignItems: "center",
             }}
           >
-            {isLoadingAggregates ? (
+            {isLoading ? (
               <Space size={4}>
                 <LoadingOutlined
                   style={{ fontSize: "11px", color: token.colorTextBase }}
@@ -188,7 +232,7 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
           strategy={verticalListSortingStrategy}
           disabled={true}
         >
-          {column.records.map((record) => (
+          {records.map((record) => (
             <KanbanCard
               color={colorsForRecords?.current?.[record.id]}
               status={statusForRecords?.current?.[record.id]}
@@ -203,7 +247,7 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
           ))}
         </SortableContext>
 
-        {column.records.length === 0 && (
+        {records.length === 0 && (
           <div
             style={{
               textAlign: "center",
@@ -238,4 +282,6 @@ const KanbanColumnComponent = (props: KanbanColumnProps) => {
   );
 };
 
-export const KanbanColumn = memo(KanbanColumnComponent);
+export const KanbanColumn = memo(
+  forwardRef<KanbanColumnRef, KanbanColumnProps>(KanbanColumnComponent),
+);
