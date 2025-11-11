@@ -21,6 +21,7 @@ type KanbanBoardProps = {
   domain: any[];
   context: any;
   searchParams?: any[];
+  nameSearch?: string;
   fieldsToRetrieve?: string[];
   kanbanDef: Kanban;
   onCardClick?: (record: KanbanRecord) => void;
@@ -37,6 +38,7 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
     domain,
     context = {},
     searchParams,
+    nameSearch,
     fieldsToRetrieve,
     kanbanDef,
     onCardClick,
@@ -50,6 +52,7 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
   const colorsForRecordsRef = useRef<{ [key: number]: string }>({});
   const statusForRecordsRef = useRef<{ [key: number]: string }>({});
+  const allRecordsRef = useRef<{ [key: number]: KanbanRecord }>({});
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -63,9 +66,14 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
     const { active } = event;
     const recordId = active.id as number;
 
-    // For now, we'll handle drag state without needing all records
-    // The active record will be stored in state
-    setActiveRecord({ id: recordId } as KanbanRecord);
+    // Look up the full record from our records map
+    const fullRecord = allRecordsRef.current[recordId];
+    if (fullRecord) {
+      setActiveRecord(fullRecord);
+    } else {
+      // Fallback: set just the ID if record not found
+      setActiveRecord({ id: recordId } as KanbanRecord);
+    }
   }, []);
 
   const handleDragOver = useCallback(
@@ -97,6 +105,22 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
     setActiveRecord(null);
     setOverColumnId(null);
   }, []);
+
+  const handleRecordsUpdate = useCallback(
+    (records: KanbanRecord[], colors: any, status: any) => {
+      // Update allRecordsRef with the new records
+      records.forEach((record) => {
+        allRecordsRef.current[record.id] = record;
+        if (colors?.current?.[record.id]) {
+          colorsForRecordsRef.current[record.id] = colors.current[record.id];
+        }
+        if (status?.current?.[record.id]) {
+          statusForRecordsRef.current[record.id] = status.current[record.id];
+        }
+      });
+    },
+    [],
+  );
 
   if (columns.length === 0) {
     return (
@@ -142,6 +166,7 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
             domain={domain}
             context={context}
             searchParams={searchParams}
+            nameSearch={nameSearch}
             fieldsToRetrieve={fieldsToRetrieve}
             kanbanDef={kanbanDef}
             draggable={kanbanDef.drag}
@@ -149,6 +174,7 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
             onCardClick={onCardClick}
             onButtonClick={onButtonClick}
             onCountChange={onColumnCountChange}
+            onRecordsUpdate={handleRecordsUpdate}
             isOver={overColumnId === column.id}
           />
         ))}

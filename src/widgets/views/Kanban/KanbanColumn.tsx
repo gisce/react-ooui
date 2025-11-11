@@ -5,6 +5,7 @@ import {
   useImperativeHandle,
   useEffect,
 } from "react";
+import { useDeepCompareEffect } from "use-deep-compare";
 import { Badge, Button, Space, theme, Typography } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { useDroppable } from "@dnd-kit/core";
@@ -32,6 +33,7 @@ type KanbanColumnProps = {
   domain: any[];
   context: any;
   searchParams?: any[];
+  nameSearch?: string;
   fieldsToRetrieve?: string[];
   kanbanDef: Kanban;
   draggable: boolean;
@@ -42,6 +44,7 @@ type KanbanColumnProps = {
   onButtonClick?: (buttonName: string, recordId: number) => void;
   onMaxCardsChange?: (colId: string, maxCards: number | undefined) => void;
   onCountChange: (columnId: string, count: number) => void;
+  onRecordsUpdate?: (records: KanbanRecord[], colors: any, status: any) => void;
 };
 
 const KanbanColumnComponent = (
@@ -55,6 +58,7 @@ const KanbanColumnComponent = (
     domain,
     context = {},
     searchParams,
+    nameSearch,
     fieldsToRetrieve,
     kanbanDef,
     draggable,
@@ -63,6 +67,7 @@ const KanbanColumnComponent = (
     onCardClick,
     onButtonClick,
     onCountChange,
+    onRecordsUpdate,
   } = props;
 
   const {
@@ -89,6 +94,7 @@ const KanbanColumnComponent = (
     columnField,
     columnValue: columnOriginalValue,
     searchParams,
+    nameSearch,
     fieldsToRetrieve,
     enabled: true,
     kanbanDef,
@@ -102,6 +108,13 @@ const KanbanColumnComponent = (
   useEffect(() => {
     onCountChange(columnId, count);
   }, [columnId, count, onCountChange]);
+
+  // Report records updates to parent (for drag overlay)
+  useDeepCompareEffect(() => {
+    if (onRecordsUpdate && records.length > 0) {
+      onRecordsUpdate(records, colorsForRecords, statusForRecords);
+    }
+  }, [records, colorsForRecords, statusForRecords, onRecordsUpdate]);
 
   const { setNodeRef } = useDroppable({
     id: columnId,
