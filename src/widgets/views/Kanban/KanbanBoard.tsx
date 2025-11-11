@@ -1,4 +1,4 @@
-import { memo, useState, RefObject, useCallback } from "react";
+import { memo, useState, useCallback, useRef } from "react";
 import {
   DndContext,
   DragOverEvent,
@@ -8,51 +8,48 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { Spin } from "antd";
-import { KanbanColumn } from "./KanbanColumn";
+import { KanbanColumn, KanbanColumnRef } from "./KanbanColumn";
 import { KanbanCard } from "./KanbanCard";
-import {
-  KanbanColumn as KanbanColumnType,
-  KanbanRecord,
-} from "./useKanbanData";
+import { KanbanRecord, ColumnDefinition } from "./types";
 import { Kanban } from "@gisce/ooui";
 import { useLocale } from "@gisce/react-formiga-components";
-import { KanbanAggregatesByColumn } from "./useKanbanAggregates";
 
 type KanbanBoardProps = {
-  colorsForRecords?: RefObject<{ [key: number]: string }>;
-  statusForRecords?: RefObject<{ [key: number]: string }>;
-  columns: KanbanColumnType[];
+  columns: ColumnDefinition[];
+  columnField: string;
+  model: string;
+  domain: any[];
+  context: any;
+  searchParams?: any[];
+  fieldsToRetrieve?: string[];
   kanbanDef: Kanban;
-  context?: any;
-  isLoading?: boolean;
-  isRefreshing?: boolean;
-  aggregatesByColumn?: KanbanAggregatesByColumn;
-  isLoadingAggregates?: boolean;
-  hasAggregates?: boolean;
   onCardClick?: (record: KanbanRecord) => void;
   onButtonClick?: (buttonName: string, recordId: number) => void;
+  setColumnRef: (columnId: string, ref: KanbanColumnRef | null) => void;
+  onColumnCountChange: (columnId: string, count: number) => void;
 };
 
 const KanbanBoardComponent = (props: KanbanBoardProps) => {
   const {
-    colorsForRecords,
-    statusForRecords,
     columns,
-    kanbanDef,
+    columnField,
+    model,
+    domain,
     context = {},
-    isLoading = false,
-    isRefreshing = false,
-    aggregatesByColumn,
-    isLoadingAggregates = false,
-    hasAggregates = false,
+    searchParams,
+    fieldsToRetrieve,
+    kanbanDef,
     onCardClick,
     onButtonClick,
+    setColumnRef,
+    onColumnCountChange,
   } = props;
 
   const { t } = useLocale();
   const [activeRecord, setActiveRecord] = useState<KanbanRecord | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
+  const colorsForRecordsRef = useRef<{ [key: number]: string }>({});
+  const statusForRecordsRef = useRef<{ [key: number]: string }>({});
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -62,21 +59,14 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
     }),
   );
 
-  const handleDragStart = useCallback(
-    (event: DragStartEvent) => {
-      const { active } = event;
-      const recordId = active.id as number;
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    const { active } = event;
+    const recordId = active.id as number;
 
-      for (const column of columns) {
-        const record = column.records.find((r) => r.id === recordId);
-        if (record) {
-          setActiveRecord(record);
-          break;
-        }
-      }
-    },
-    [columns],
-  );
+    // For now, we'll handle drag state without needing all records
+    // The active record will be stored in state
+    setActiveRecord({ id: recordId } as KanbanRecord);
+  }, []);
 
   const handleDragOver = useCallback(
     (event: DragOverEvent) => {
@@ -93,17 +83,6 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
         return;
       }
 
-      // Check if we're over a card - find which column it belongs to
-      for (const column of columns) {
-        const isOverCard = column.records.some(
-          (record) => record.id === over.id,
-        );
-        if (isOverCard) {
-          setOverColumnId(column.id);
-          return;
-        }
-      }
-
       setOverColumnId(null);
     },
     [columns],
@@ -118,21 +97,6 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
     setActiveRecord(null);
     setOverColumnId(null);
   }, []);
-
-  if (isLoading && !isRefreshing) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "400px",
-        }}
-      >
-        <Spin size="large" />
-      </div>
-    );
-  }
 
   if (columns.length === 0) {
     return (
@@ -171,26 +135,27 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
         {columns.map((column) => (
           <KanbanColumn
             key={column.id}
+            ref={(ref) => setColumnRef(column.id, ref)}
             column={column}
+            columnField={columnField}
+            model={model}
+            domain={domain}
+            context={context}
+            searchParams={searchParams}
+            fieldsToRetrieve={fieldsToRetrieve}
             kanbanDef={kanbanDef}
             draggable={kanbanDef.drag}
-            colorsForRecords={colorsForRecords}
-            statusForRecords={statusForRecords}
             allowSetMaxCards={false}
-            context={context}
-            aggregates={
-              hasAggregates ? aggregatesByColumn?.[column.id] : undefined
-            }
-            isLoadingAggregates={isLoadingAggregates}
             onCardClick={onCardClick}
             onButtonClick={onButtonClick}
+            onCountChange={onColumnCountChange}
             isOver={overColumnId === column.id}
           />
         ))}
       </div>
 
       <DragOverlay>
-        {activeRecord ? (
+        {activeRecord && activeRecord.id ? (
           <div
             style={{
               cursor: "grabbing",
@@ -201,8 +166,8 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
               record={activeRecord}
               kanbanDef={kanbanDef}
               draggable={false}
-              color={colorsForRecords?.current?.[activeRecord.id]}
-              status={statusForRecords?.current?.[activeRecord.id]}
+              color={colorsForRecordsRef?.current?.[activeRecord.id]}
+              status={statusForRecordsRef?.current?.[activeRecord.id]}
               context={context}
             />
           </div>
