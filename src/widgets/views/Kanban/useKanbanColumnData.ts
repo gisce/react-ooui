@@ -143,7 +143,7 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
           try {
             // Use the IDs from the fetched records to calculate aggregates
             // This ensures aggregates match the actual filtered results (including name search)
-            const recordIds = fetchedRecords.map((r) => r.id);
+            const recordIds = fetchedRecords.map((r: any) => r.id);
             const aggregateDomain = [["id", "in", recordIds]];
 
             const retrievedData = await readAggregates({
