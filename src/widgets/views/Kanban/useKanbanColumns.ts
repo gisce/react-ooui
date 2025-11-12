@@ -14,6 +14,7 @@ type UseKanbanColumnsParams = {
   columnFieldDefinition: any;
   searchParams?: any[];
   enabled?: boolean;
+  columnDomain?: string | null;
 };
 
 export const useKanbanColumns = (params: UseKanbanColumnsParams) => {
@@ -25,6 +26,7 @@ export const useKanbanColumns = (params: UseKanbanColumnsParams) => {
     columnFieldDefinition,
     searchParams = [],
     enabled = true,
+    columnDomain = null,
   } = params;
 
   const { t } = useLocale();
@@ -34,6 +36,14 @@ export const useKanbanColumns = (params: UseKanbanColumnsParams) => {
 
   const [searchRequest, cancelSearchRequest] = useNetworkRequest(
     ConnectionProvider.getHandler().search,
+  );
+
+  const [getFieldsRequest, cancelGetFieldsRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().getFields,
+  );
+
+  const [evalDomainRequest, cancelEvalDomainRequest] = useNetworkRequest(
+    ConnectionProvider.getHandler().evalDomain,
   );
 
   const getStaticColumnDefinitions = useCallback(():
@@ -171,7 +181,61 @@ export const useKanbanColumns = (params: UseKanbanColumnsParams) => {
       return;
     }
 
-    // For dynamic columns (many2one, etc.), extract unique values from records
+    // For many2one fields, query the related model directly
+    if (
+      columnFieldDefinition?.type === "many2one" &&
+      columnFieldDefinition?.relation
+    ) {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        let parsedColumnDomain: any[] = [];
+
+        if (columnDomain) {
+          const relatedModelFields = await getFieldsRequest({
+            model: columnFieldDefinition.relation,
+            context,
+          });
+
+          parsedColumnDomain = await evalDomainRequest({
+            domain: columnDomain,
+            values: {},
+            fields: relatedModelFields,
+            context,
+          });
+        }
+
+        const fetchedRecords = await searchRequest({
+          model: columnFieldDefinition.relation,
+          params: parsedColumnDomain,
+          context,
+          fieldsToRetrieve: ["id", "name"],
+          limit: 0,
+        });
+
+        const dynamicColumns = fetchedRecords.map((record: any) => ({
+          id: String(record.id),
+          label: record.name || String(record.id),
+          originalValue: [record.id, record.name || String(record.id)],
+        }));
+
+        setColumns(dynamicColumns);
+      } catch (err: any) {
+        if (err.name !== "AbortError") {
+          console.error(
+            "Error fetching kanban columns from related model:",
+            err,
+          );
+          setError(err);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
+
+    // For other dynamic columns (reference, etc.), extract unique values from main model records
     setIsLoading(true);
     setError(null);
 
@@ -179,12 +243,14 @@ export const useKanbanColumns = (params: UseKanbanColumnsParams) => {
       const finalDomain = mergeParams(domain, searchParams);
 
       // Fetch only the column field to minimize data transfer
+      // Limit to 1000 records for column discovery to avoid killing the server
+      // This means columns with values only in records beyond 1000 won't appear
       const fetchedRecords = await searchRequest({
         model,
         params: finalDomain,
         context,
         fieldsToRetrieve: [columnField],
-        limit: 0,
+        limit: 1000,
       });
 
       // Extract unique column values
@@ -236,6 +302,9 @@ export const useKanbanColumns = (params: UseKanbanColumnsParams) => {
     normalizeColumnValue,
     columnFieldDefinition,
     searchRequest,
+    getFieldsRequest,
+    evalDomainRequest,
+    columnDomain,
   ]);
 
   useDeepCompareEffect(() => {
@@ -243,6 +312,8 @@ export const useKanbanColumns = (params: UseKanbanColumnsParams) => {
 
     return () => {
       cancelSearchRequest();
+      cancelGetFieldsRequest();
+      cancelEvalDomainRequest();
     };
   }, [enabled, model, columnField, domain, searchParams, context]);
 
