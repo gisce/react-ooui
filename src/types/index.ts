@@ -477,6 +477,7 @@ type ActionInfo = {
   res_id?: number | boolean;
   values?: any;
   forced_values?: any;
+  readOnly?: boolean;
   treeExpandable?: boolean;
   limit?: number;
   actionRawData?: ActionRawData;
