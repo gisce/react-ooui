@@ -154,7 +154,6 @@ const KanbanBoardComponent = (props: KanbanBoardProps) => {
           paddingBottom: "16px",
           overflowX: "auto",
           height: "100%",
-          justifyContent: "center",
         }}
       >
         {columns.map((column) => (
