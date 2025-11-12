@@ -11,13 +11,7 @@ import { KANBAN_COMPONENTS } from "./kanbanComponents";
 const { Text } = Typography;
 const { useToken } = theme;
 
-const CardWrapper = styled.div`
-  margin-bottom: 8px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-`;
+const CardWrapper = styled.div``;
 
 const StyledCard = styled(AntCard)<{
   $bgColor: string;

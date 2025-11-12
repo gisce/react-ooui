@@ -4,6 +4,8 @@ import {
   forwardRef,
   useImperativeHandle,
   useEffect,
+  useRef,
+  useCallback,
 } from "react";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { Badge, Button, Space, theme, Typography } from "antd";
@@ -13,6 +15,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { KanbanCard } from "./KanbanCard";
 import { KanbanRecord, ColumnDefinition } from "./types";
 import { Kanban } from "@gisce/ooui";
@@ -86,7 +89,10 @@ const KanbanColumnComponent = (
     colorsForRecords,
     statusForRecords,
     isLoading,
+    isLoadingMore,
+    hasMore,
     refresh,
+    fetchNextPage,
   } = useKanbanColumnData({
     model,
     domain,
@@ -143,6 +149,48 @@ const KanbanColumnComponent = (
   const hasStatusRibbon = useMemo(() => {
     return records.some((record) => statusForRecords?.current?.[record.id]);
   }, [records, statusForRecords]);
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const estimatedCardHeight = useMemo(() => {
+    const cardPadding = 24;
+    const fieldsContainerMargin = 8;
+    const cardWrapperMargin = 8;
+    const fieldHeight = 24;
+    const buttonAreaHeight = kanbanDef.buttons.length > 0 ? 40 : 0;
+
+    const numFields = kanbanDef.card_fields.length;
+    const totalFieldsHeight = numFields * fieldHeight;
+
+    return (
+      cardPadding +
+      fieldsContainerMargin +
+      totalFieldsHeight +
+      buttonAreaHeight +
+      cardWrapperMargin
+    );
+  }, [kanbanDef.card_fields.length, kanbanDef.buttons.length]);
+
+  const virtualizer = useVirtualizer({
+    count: records.length,
+    getScrollElement: () => scrollContainerRef.current,
+    estimateSize: useCallback(() => estimatedCardHeight, [estimatedCardHeight]),
+    overscan: 5,
+  });
+
+  const virtualItems = virtualizer.getVirtualItems();
+
+  useEffect(() => {
+    const [lastItem] = [...virtualItems].reverse();
+
+    if (!lastItem) {
+      return;
+    }
+
+    if (lastItem.index >= records.length - 5 && hasMore && !isLoadingMore) {
+      fetchNextPage();
+    }
+  }, [virtualItems, records.length, hasMore, isLoadingMore, fetchNextPage]);
 
   return (
     <div
@@ -232,6 +280,7 @@ const KanbanColumnComponent = (
       </div>
 
       <div
+        ref={scrollContainerRef}
         style={{
           padding: "6px",
           paddingRight: hasStatusRibbon ? "10px" : "6px",
@@ -245,22 +294,64 @@ const KanbanColumnComponent = (
           strategy={verticalListSortingStrategy}
           disabled={true}
         >
-          {records.map((record) => (
-            <KanbanCard
-              color={colorsForRecords?.current?.[record.id]}
-              status={statusForRecords?.current?.[record.id]}
-              key={record.id}
-              record={record}
-              kanbanDef={kanbanDef}
-              draggable={draggable}
-              context={context}
-              onClick={cardClickHandlers[record.id]}
-              onButtonClick={onButtonClick}
-            />
-          ))}
+          <div
+            style={{
+              height: `${virtualizer.getTotalSize()}px`,
+              width: "100%",
+              position: "relative",
+            }}
+          >
+            {virtualItems.map((virtualRow) => {
+              const record = records[virtualRow.index];
+              return (
+                <div
+                  key={record.id}
+                  data-index={virtualRow.index}
+                  ref={virtualizer.measureElement}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    transform: `translateY(${virtualRow.start}px)`,
+                    paddingBottom: "8px",
+                  }}
+                >
+                  <KanbanCard
+                    color={colorsForRecords?.current?.[record.id]}
+                    status={statusForRecords?.current?.[record.id]}
+                    record={record}
+                    kanbanDef={kanbanDef}
+                    draggable={draggable}
+                    context={context}
+                    onClick={cardClickHandlers[record.id]}
+                    onButtonClick={onButtonClick}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </SortableContext>
 
-        {records.length === 0 && (
+        {isLoadingMore && (
+          <div
+            style={{
+              textAlign: "center",
+              padding: "12px",
+            }}
+          >
+            <Space size={4}>
+              <LoadingOutlined
+                style={{ fontSize: "11px", color: token.colorTextBase }}
+              />
+              <Text type="secondary" style={{ fontSize: "11px" }}>
+                {t("loading")}
+              </Text>
+            </Space>
+          </div>
+        )}
+
+        {records.length === 0 && !isLoading && (
           <div
             style={{
               textAlign: "center",

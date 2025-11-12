@@ -20,6 +20,7 @@ import { NameSearchWarning } from "@/widgets/views/Tree/NameSearchWarning";
 import { useSearchTreeState } from "@/hooks/useSearchTreeState";
 import { mergeSearchFields } from "@/helpers/formHelper";
 import { useAvailableHeight } from "@/hooks/useAvailableHeight";
+import { useActionViewSavedSearches } from "@/hooks/useActionViewSavedSearches";
 
 const HEIGHT_OFFSET = 10;
 
@@ -111,6 +112,16 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
     setTotalRows(total);
   }, []);
 
+  const { fetchSavedSearches, handleClearSavedSearch, subtitle } =
+    useActionViewSavedSearches({
+      model,
+      context,
+      viewRef: kanbanRef,
+      setSearchParams,
+      setSearchValues,
+      setSearchVisible,
+    });
+
   const onSideSearchFilterClose = useCallback(
     () => setSearchVisible?.(false),
     [setSearchVisible],
@@ -199,12 +210,14 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
         onClear={onSideSearchFilterClear}
       />
       <div ref={titleHeaderRef}>
-        <TitleHeader showSummary={true}>
+        <TitleHeader showSummary={false} subtitle={subtitle}>
           <TreeActionBar
             domain={domain}
             toolbar={kanbanView.toolbar}
             parentContext={context}
             treeExpandable={false}
+            onRefetchSavedSearches={fetchSavedSearches}
+            onClearSavedSearch={handleClearSavedSearch}
           />
         </TitleHeader>
       </div>

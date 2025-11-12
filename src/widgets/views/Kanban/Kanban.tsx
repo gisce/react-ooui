@@ -113,6 +113,7 @@ const KanbanComponentInner = (
     columnFieldDefinition: columnFieldDef,
     searchParams,
     enabled: !!kanbanDef && !!columnFieldDef,
+    columnDomain: kanbanDef?.column_domain,
   });
 
   const columnRefs = useRef<Map<string, KanbanColumnRef>>(new Map());
