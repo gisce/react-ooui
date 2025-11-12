@@ -51,6 +51,7 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
   const [error, setError] = useState<Error | null>(null);
   const [currentOffset, setCurrentOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [totalCount, setTotalCount] = useState(0);
   const colorsForRecords = useRef<{ [key: number]: string }>({});
   const statusForRecords = useRef<{ [key: number]: string }>({});
 
@@ -64,10 +65,15 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
     ConnectionProvider.getHandler().readAggregates,
   );
 
+  const [searchCount, cancelSearchCount] = useNetworkRequest(
+    ConnectionProvider.getHandler().searchCount,
+  );
+
   useEffect(() => {
     return () => {
       cancelSearchForTree();
       cancelReadAggregates();
+      cancelSearchCount();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -120,6 +126,23 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
         }
 
         const columnDomain = [...baseDomain, [columnField, "=", searchValue]];
+
+        if (!isLoadingNextPage) {
+          try {
+            const countResult = await searchCount({
+              model,
+              params: columnDomain,
+              context,
+              name_search: nameSearch,
+            });
+            setTotalCount(countResult);
+          } catch (err: any) {
+            if (err.name !== "AbortError") {
+              console.error("Error fetching column count:", err);
+            }
+            setTotalCount(0);
+          }
+        }
 
         // Build fields object for searchForTree
         // searchForTree expects an object of field definitions, not an array of field names
@@ -272,6 +295,7 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
       fieldsToAggregate,
       kanbanDef,
       searchForTree,
+      searchCount,
       readAggregates,
       currentOffset,
       PAGE_SIZE,
@@ -297,6 +321,7 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
     setCurrentOffset(0);
     setHasMore(true);
     setAggregates({});
+    setTotalCount(0);
     colorsForRecords.current = {};
     statusForRecords.current = {};
     fetchData();
@@ -310,7 +335,7 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
 
   return {
     records,
-    count: records.length,
+    count: totalCount,
     aggregates,
     colorsForRecords,
     statusForRecords,
