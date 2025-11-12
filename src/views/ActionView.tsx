@@ -51,6 +51,7 @@ type Props = {
   initialView: InitialViewData;
   formDefaultValues?: any;
   formForcedValues?: any;
+  formReadOnly?: boolean;
   res_id?: number | boolean;
   action_id: number;
   action_type: string;
@@ -73,6 +74,7 @@ function ActionView(props: Props, ref: any) {
     initialView,
     formDefaultValues,
     formForcedValues = {},
+    formReadOnly,
     res_id = false,
     action_id,
     action_type,
@@ -520,6 +522,7 @@ function ActionView(props: Props, ref: any) {
         setResults={setResults}
         setCurrentItemIndex={setCurrentItemIndex}
         formForcedValues={formForcedValues}
+        formReadOnly={formReadOnly}
         limit={limit}
         searchTreeRef={searchTreeRef}
         searchTreeNameSearch={searchTreeNameSearch}
@@ -551,6 +554,7 @@ const ActionViewContent = ({
   setResults,
   setCurrentItemIndex,
   formForcedValues,
+  formReadOnly,
   limit,
   searchTreeRef,
   searchTreeNameSearch,
@@ -574,6 +578,7 @@ const ActionViewContent = ({
   searchTreeRef: React.RefObject<any>;
   searchTreeNameSearch?: string;
   formForcedValues: any;
+  formReadOnly?: boolean;
 }) => {
   useAutoUpdateUrlAndTitle();
 
@@ -596,6 +601,7 @@ const ActionViewContent = ({
             domain={domain}
             defaultValues={formDefaultValues}
             forcedValues={formForcedValues}
+            readOnly={formReadOnly}
             results={results}
             setResults={setResults}
             setCurrentItemIndex={setCurrentItemIndex}
