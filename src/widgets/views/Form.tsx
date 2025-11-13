@@ -141,6 +141,7 @@ function Form(props: FormProps, ref: any) {
 
   const createdId = useRef<number>();
   const originalFormValues = useRef<any>({});
+  const initialFormValues = useRef<any>(null);
   const lastAssignedValues = useRef<any>({});
   const warningIsShown = useRef<boolean>(false);
   const formSubmitting = useRef<boolean>(false);
@@ -532,6 +533,10 @@ function Form(props: FormProps, ref: any) {
 
     originalFormValues.current = processValues(values, _fields);
 
+    if (initialFormValues.current === null) {
+      initialFormValues.current = processValues(values, _fields);
+    }
+
     assignNewValuesToForm({
       values,
       fields: _fields,
@@ -760,6 +765,20 @@ function Form(props: FormProps, ref: any) {
     }
 
     if (!formHasChanges() && getCurrentId()! && callOnSubmitSucceed) {
+      const currentVals = getCurrentValues(fields);
+      const touchedFromInitial = getTouchedValues({
+        source: initialFormValues.current || originalFormValues.current,
+        target: currentVals,
+        fields,
+      });
+
+      if (Object.keys(touchedFromInitial).length > 0) {
+        formSubmitting.current = false;
+        setFormHasChanges?.(false);
+        onSubmitSucceed?.(getCurrentId(), getValues(), getFormValues());
+        return { succeed: true, id: getCurrentId()! };
+      }
+
       formSubmitting.current = false;
       setFormHasChanges?.(false);
       onCancel?.();

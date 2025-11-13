@@ -48,6 +48,7 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
   const [aggregates, setAggregates] = useState<KanbanColumnAggregates>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [currentOffset, setCurrentOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -98,12 +99,17 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
         return;
       }
 
+      const isInitialLoad = records.length === 0 && !isLoadingNextPage;
+
       if (isLoadingNextPage) {
         setIsLoadingMore(true);
       } else {
         setIsLoading(true);
-        setCurrentOffset(0);
-        setHasMore(true);
+        // Only reset offset/hasMore on initial load, not on refresh
+        if (isInitialLoad) {
+          setCurrentOffset(0);
+          setHasMore(true);
+        }
       }
       setError(null);
 
@@ -197,6 +203,7 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
           setCurrentOffset((prev) => prev + PAGE_SIZE);
           setHasMore(fetchedRecords.length === PAGE_SIZE);
         } else {
+          // For refresh: replace old data with new data smoothly
           setRecords(fetchedRecords);
           setCurrentOffset(PAGE_SIZE);
           setHasMore(fetchedRecords.length === PAGE_SIZE);
@@ -279,6 +286,7 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
           setIsLoadingMore(false);
         } else {
           setIsLoading(false);
+          setIsRefreshing(false);
         }
       }
     },
@@ -299,6 +307,7 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
       readAggregates,
       currentOffset,
       PAGE_SIZE,
+      records.length,
     ],
   );
 
@@ -317,13 +326,8 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
   ]);
 
   const refresh = useCallback(() => {
-    setRecords([]);
-    setCurrentOffset(0);
-    setHasMore(true);
-    setAggregates({});
-    setTotalCount(0);
-    colorsForRecords.current = {};
-    statusForRecords.current = {};
+    // Don't clear data - keep previous data visible during refresh
+    setIsRefreshing(true);
     fetchData();
   }, [fetchData]);
 
@@ -341,6 +345,7 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
     statusForRecords,
     isLoading,
     isLoadingMore,
+    isRefreshing,
     hasMore,
     error,
     refresh,

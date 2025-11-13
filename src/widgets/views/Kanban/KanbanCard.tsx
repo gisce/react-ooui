@@ -7,6 +7,7 @@ import { Kanban } from "@gisce/ooui";
 import type { KanbanButton } from "@gisce/ooui/dist/Kanban";
 import ConnectionProvider from "@/ConnectionProvider";
 import { KANBAN_COMPONENTS } from "./kanbanComponents";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -59,11 +60,17 @@ type KanbanCardProps = {
   record: KanbanRecord;
   kanbanDef: Kanban;
   draggable: boolean;
+  model: string;
   color?: string;
   status?: string;
   context?: any;
   onClick?: () => void;
-  onButtonClick?: (buttonName: string, recordId: number) => void;
+  onButtonClick?: (
+    buttonName: string,
+    recordId: number,
+    oldRecord: KanbanRecord,
+    newRecord?: KanbanRecord,
+  ) => void;
 };
 
 const KanbanCardComponent = (props: KanbanCardProps) => {
@@ -71,6 +78,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
     record,
     kanbanDef,
     draggable,
+    model,
     color,
     status,
     context = {},
@@ -79,6 +87,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
   } = props;
   const { token } = useToken();
   const [loadingButton, setLoadingButton] = useState<string | null>(null);
+  const { showErrorNotification } = useErrorNotification();
 
   const { attributes, listeners, setNodeRef, isDragging } = useSortable({
     id: record.id,
@@ -189,22 +198,63 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
       try {
         if (button.buttonType === "object") {
           await ConnectionProvider.getHandler().execute({
-            model: record.__model || "",
-            method: button.id,
-            args: [[record.id]],
-          } as any);
+            model,
+            action: button.id,
+            payload: [record.id],
+            context: {
+              ...context,
+              active_id: record.id,
+              active_ids: [record.id],
+            },
+          });
+
+          let newRecord: KanbanRecord | undefined;
+
+          try {
+            const fieldsObject = kanbanDef?.fields
+              ? Object.keys(kanbanDef.fields).reduce(
+                  (acc: any, fieldName: string) => {
+                    acc[fieldName] = kanbanDef.fields[fieldName];
+                    return acc;
+                  },
+                  {},
+                )
+              : {};
+
+            const updatedRecords =
+              await ConnectionProvider.getHandler().readObjects({
+                model,
+                ids: [record.id],
+                fields: fieldsObject,
+                context,
+              });
+
+            if (updatedRecords && updatedRecords.length > 0) {
+              newRecord = updatedRecords[0];
+            }
+          } catch (readErr) {
+            console.warn("Failed to fetch updated record:", readErr);
+          }
 
           if (onButtonClick) {
-            onButtonClick(button.id, record.id);
+            onButtonClick(button.id, record.id, record, newRecord);
           }
         }
       } catch (err) {
-        console.error("Error executing button action:", err);
+        showErrorNotification(err);
       } finally {
         setLoadingButton(null);
       }
     },
-    [loadingButton, record, onButtonClick],
+    [
+      loadingButton,
+      model,
+      record,
+      context,
+      onButtonClick,
+      showErrorNotification,
+      kanbanDef,
+    ],
   );
 
   const buttonClickHandlers = useMemo(() => {

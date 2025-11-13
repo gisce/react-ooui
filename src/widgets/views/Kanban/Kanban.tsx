@@ -12,12 +12,13 @@ import { useDeepCompareMemo } from "use-deep-compare";
 import { KanbanView } from "@/types";
 import { Kanban } from "@gisce/ooui";
 import type { KanbanButton } from "@gisce/ooui/dist/Kanban";
-import { KanbanBoard } from "./KanbanBoard";
+import { KanbanBoard, KanbanBoardRef } from "./KanbanBoard";
 import { KanbanRecord } from "./types";
 import { useKanbanColumns } from "./useKanbanColumns";
 import { Alert, Spin } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
 import { KanbanColumnRef } from "./KanbanColumn";
+import { normalizeColumnValue } from "@/helpers/kanbanHelper";
 
 type KanbanProps = {
   kanbanView: KanbanView;
@@ -33,6 +34,8 @@ type KanbanProps = {
 
 export type KanbanRef = {
   refreshResults: () => void;
+  refreshColumns: (columnIds: string[]) => void;
+  updateRecord: (id: number, updatedValues: Partial<KanbanRecord>) => void;
 };
 
 const KanbanComponentInner = (
@@ -117,6 +120,7 @@ const KanbanComponentInner = (
   });
 
   const columnRefs = useRef<Map<string, KanbanColumnRef>>(new Map());
+  const boardRef = useRef<KanbanBoardRef>(null);
   const [columnCounts, setColumnCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
@@ -135,22 +139,99 @@ const KanbanComponentInner = (
     prevNameSearch.current = nameSearch;
   }, [nameSearch]);
 
-  useImperativeHandle(ref, () => ({
-    refreshResults: () => {
-      columnRefs.current.forEach((ref) => {
-        ref.refresh();
-      });
-    },
-  }));
-
-  const handleButtonClick = useCallback(
-    async (buttonName: string, recordId: number) => {
-      // Refresh all columns after button click
-      columnRefs.current.forEach((ref) => {
-        ref.refresh();
-      });
+  const updateRecord = useCallback(
+    (id: number, updatedValues: Partial<KanbanRecord>) => {
+      boardRef.current?.updateRecord(id, updatedValues);
     },
     [],
+  );
+
+  const refreshColumns = useCallback((columnIds: string[]) => {
+    columnIds.forEach((columnId) => {
+      const ref = columnRefs.current.get(columnId);
+      if (ref) {
+        ref.refresh();
+      }
+    });
+  }, []);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      refreshResults: () => {
+        columnRefs.current.forEach((ref) => {
+          ref.refresh();
+        });
+      },
+      refreshColumns,
+      updateRecord,
+    }),
+    [refreshColumns, updateRecord],
+  );
+
+  const handleButtonClick = useCallback(
+    async (
+      _buttonName: string,
+      _recordId: number,
+      oldRecord: KanbanRecord,
+      newRecord?: KanbanRecord,
+    ) => {
+      const columnField = kanbanDef?.column_field;
+
+      if (newRecord && columnField) {
+        const oldColumnValue = oldRecord[columnField];
+        const newColumnValue = newRecord[columnField];
+
+        if (newColumnValue !== undefined && oldColumnValue !== newColumnValue) {
+          const columnFieldDef = kanbanDef?.fields?.[columnField];
+
+          if (columnFieldDef) {
+            const oldColumnInfo = normalizeColumnValue(
+              oldColumnValue,
+              columnFieldDef,
+              t,
+            );
+            const newColumnInfo = normalizeColumnValue(
+              newColumnValue,
+              columnFieldDef,
+              t,
+            );
+
+            const oldColumnId = oldColumnInfo?.id ?? null;
+            const newColumnId = newColumnInfo?.id ?? null;
+
+            if (oldColumnId && newColumnId) {
+              const columnsToRefresh =
+                oldColumnId === newColumnId
+                  ? [oldColumnId]
+                  : [oldColumnId, newColumnId];
+              refreshColumns(columnsToRefresh);
+              return;
+            }
+          }
+        } else {
+          // Column value didn't change, just refresh the current column
+          const columnFieldDef = kanbanDef?.fields?.[columnField];
+          if (columnFieldDef) {
+            const columnInfo = normalizeColumnValue(
+              oldColumnValue,
+              columnFieldDef,
+              t,
+            );
+            if (columnInfo?.id) {
+              refreshColumns([columnInfo.id]);
+              return;
+            }
+          }
+        }
+      }
+
+      // Fallback: refresh all columns
+      columnRefs.current.forEach((ref) => {
+        ref.refresh();
+      });
+    },
+    [kanbanDef, t, refreshColumns],
   );
 
   const setColumnRef = useCallback(
@@ -209,12 +290,15 @@ const KanbanComponentInner = (
       );
     }
 
-    if (!kanbanDef || isLoadingColumns) {
+    // Only show spinner on initial load (when no columns yet)
+    // Keep board visible with previous columns during refresh
+    if (!kanbanDef || (isLoadingColumns && columns.length === 0)) {
       return <Spin size="large" />;
     }
 
     return (
       <KanbanBoard
+        ref={boardRef}
         columns={columns}
         columnField={kanbanDef.column_field}
         model={model}
