@@ -14,6 +14,7 @@ import { KanbanComponent, KanbanRef } from "@/widgets/views/Kanban/Kanban";
 import { useActionViewContext } from "@/context/ActionViewContext";
 import { KanbanRecord } from "@/widgets/views/Kanban/types";
 import { FormModal } from "@/widgets/modals/FormModal";
+import { Kanban } from "@gisce/ooui";
 import { SearchTreeHeader } from "@/widgets/views/SearchTreeHeader";
 import { SideSearchFilter } from "@/widgets/views/searchFilter/SideSearchFilter";
 import { NameSearchWarning } from "@/widgets/views/Tree/NameSearchWarning";
@@ -21,6 +22,8 @@ import { useSearchTreeState } from "@/hooks/useSearchTreeState";
 import { mergeSearchFields } from "@/helpers/formHelper";
 import { useAvailableHeight } from "@/hooks/useAvailableHeight";
 import { useActionViewSavedSearches } from "@/hooks/useActionViewSavedSearches";
+import { normalizeColumnValue } from "@/helpers/kanbanHelper";
+import { useLocale } from "@gisce/react-formiga-components";
 
 const HEIGHT_OFFSET = 10;
 
@@ -46,6 +49,7 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
   } = props;
 
   const { setViewIsLoading } = useActionViewContext();
+  const { t } = useLocale();
 
   const {
     searchVisible,
@@ -92,21 +96,98 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
     setViewIsLoading?.(isLoading);
   }, [isLoading, setViewIsLoading]);
 
+  const kanbanColumnField = useMemo(() => {
+    if (!kanbanView.arch || !kanbanView.fields) {
+      return null;
+    }
+    try {
+      const kanban = new Kanban(kanbanView.fields);
+      kanban.parse(kanbanView.arch);
+      return kanban.column_field;
+    } catch {
+      return null;
+    }
+  }, [kanbanView.arch, kanbanView.fields]);
+
+  const getColumnIdFromValue = useCallback(
+    (value: any, fieldName: string | null): string | null => {
+      if (value === null || value === undefined || !fieldName) {
+        return null;
+      }
+
+      const fieldDef = kanbanView.fields?.[fieldName];
+      if (!fieldDef) {
+        return null;
+      }
+
+      const normalized = normalizeColumnValue(value, fieldDef, t);
+      return normalized?.id ?? null;
+    },
+    [kanbanView.fields, t],
+  );
+
   const handleCardClick = useCallback((record: KanbanRecord) => {
     setSelectedRecord(record);
     setShowFormModal(true);
   }, []);
 
-  const onCancelFormModal = useCallback(() => {
-    setShowFormModal(false);
-    setSelectedRecord(undefined);
-  }, []);
+  const handleCardValuesChanged = useCallback(
+    (id?: number, values?: any, oldRecord?: KanbanRecord) => {
+      if (!id || !values || !oldRecord) {
+        return;
+      }
 
-  const onFormModalSubmitSucceed = useCallback(() => {
-    setShowFormModal(false);
-    setSelectedRecord(undefined);
-    kanbanRef.current?.refreshResults();
-  }, [kanbanRef]);
+      if (kanbanColumnField) {
+        const oldColumnValue = oldRecord[kanbanColumnField];
+        const newColumnValue = values[kanbanColumnField];
+
+        if (newColumnValue !== undefined && oldColumnValue !== newColumnValue) {
+          const oldColumnId = getColumnIdFromValue(
+            oldColumnValue,
+            kanbanColumnField,
+          );
+          const newColumnId = getColumnIdFromValue(
+            newColumnValue,
+            kanbanColumnField,
+          );
+
+          if (oldColumnId && newColumnId) {
+            const columnsToRefresh =
+              oldColumnId === newColumnId
+                ? [oldColumnId]
+                : [oldColumnId, newColumnId];
+            kanbanRef.current?.refreshColumns(columnsToRefresh);
+          } else {
+            kanbanRef.current?.refreshResults();
+          }
+          return;
+        }
+      }
+
+      kanbanRef.current?.updateRecord(id, values);
+    },
+    [kanbanColumnField, getColumnIdFromValue, kanbanRef],
+  );
+
+  const onCancelFormModal = useCallback(
+    (params?: { id?: number; values?: any }) => {
+      setShowFormModal(false);
+      const oldRecord = selectedRecord;
+      setSelectedRecord(undefined);
+      handleCardValuesChanged(params?.id, params?.values, oldRecord);
+    },
+    [selectedRecord, handleCardValuesChanged],
+  );
+
+  const onFormModalSubmitSucceed = useCallback(
+    (id?: number, values?: any) => {
+      setShowFormModal(false);
+      const oldRecord = selectedRecord;
+      setSelectedRecord(undefined);
+      handleCardValuesChanged(id, values, oldRecord);
+    },
+    [selectedRecord, handleCardValuesChanged],
+  );
 
   const handleTotalRowsChange = useCallback((total: number) => {
     setTotalRows(total);
