@@ -258,6 +258,13 @@ const KanbanComponentInner = (
     [],
   );
 
+  const handleDragSuccess = useCallback(
+    (sourceColumnId: string, targetColumnId: string) => {
+      refreshColumns([sourceColumnId, targetColumnId]);
+    },
+    [refreshColumns],
+  );
+
   useEffect(() => {
     const totalRows = Object.values(columnCounts).reduce(
       (sum, count) => sum + count,
@@ -316,6 +323,7 @@ const KanbanComponentInner = (
         setColumnRef={setColumnRef}
         onColumnCountChange={handleColumnCountChange}
         onAddCardClick={onAddCardClick}
+        onDragSuccess={handleDragSuccess}
       />
     );
   }, [
@@ -335,6 +343,7 @@ const KanbanComponentInner = (
     setColumnRef,
     handleColumnCountChange,
     onAddCardClick,
+    handleDragSuccess,
     t,
   ]);
 

@@ -76,6 +76,7 @@ type KanbanCardProps = {
     oldRecord: KanbanRecord,
     newRecord?: KanbanRecord,
   ) => void;
+  isMoving?: boolean;
 };
 
 const KanbanCardComponent = (props: KanbanCardProps) => {
@@ -89,6 +90,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
     context = {},
     onClick,
     onButtonClick,
+    isMoving = false,
   } = props;
   const { token } = useToken();
   const [loadingButton, setLoadingButton] = useState<string | null>(null);
@@ -100,7 +102,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
   });
 
   const style = {
-    opacity: isDragging ? 0 : 1,
+    opacity: isDragging || isMoving ? 0 : 1,
     cursor: "pointer",
   };
 
