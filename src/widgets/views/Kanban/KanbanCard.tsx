@@ -1,13 +1,18 @@
-import { memo, useMemo, useState, MouseEvent, useCallback } from "react";
+import { memo, useState, useCallback, MouseEvent } from "react";
 import { Card as AntCard, Button, Space, Typography, theme } from "antd";
 import { useSortable } from "@dnd-kit/sortable";
 import styled from "styled-components";
+import { useDeepCompareMemo } from "use-deep-compare";
 import { KanbanRecord } from "./types";
-import { Kanban } from "@gisce/ooui";
-import type { KanbanButton } from "@gisce/ooui/dist/Kanban";
+import {
+  Kanban,
+  Button as ButtonOoui,
+  KanbanCard as OouiKanbanCard,
+} from "@gisce/ooui";
 import ConnectionProvider from "@/ConnectionProvider";
-import { KANBAN_COMPONENTS } from "./kanbanComponents";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
+import { KANBAN_COMPONENTS } from "./kanbanComponents";
+import { Icon } from "@gisce/react-formiga-components";
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -99,11 +104,42 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
     cursor: "pointer",
   };
 
+  const { visibleButtons, widgetMap } = useDeepCompareMemo(() => {
+    const kanbanCard = new OouiKanbanCard(kanbanDef);
+    const container = kanbanCard.parse(record);
+    const allWidgets = container.rows.flat();
+    const buttons = allWidgets.filter(
+      (w: any) => w instanceof ButtonOoui && !w.invisible,
+    ) as ButtonOoui[];
+    const map = new Map();
+    allWidgets.forEach((w: any) => {
+      if (w.id) {
+        map.set(w.id, w);
+      }
+    });
+    return {
+      visibleButtons: buttons,
+      widgetMap: map,
+    };
+  }, [kanbanDef, record]);
+
+  const visibleFields = useDeepCompareMemo(() => {
+    return kanbanDef.card_fields.filter((field: any) => {
+      const widget = widgetMap.get(field.id);
+      return !widget || !widget.invisible;
+    });
+  }, [kanbanDef.card_fields, widgetMap]);
+
   const renderField = useCallback(
     (field: any) => {
       const fieldName = field.id;
+      if (!fieldName || !kanbanDef.fields[fieldName]) {
+        return null;
+      }
+
       let fieldValue = record[fieldName];
       const fieldType = field.type as string;
+      const fieldDef = kanbanDef.fields[fieldName];
 
       if (
         fieldType === "many2one" &&
@@ -113,7 +149,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
         fieldValue = {
           id: fieldValue[0],
           value: fieldValue[1],
-          model: field.relation,
+          model: fieldDef?.relation,
         };
       }
 
@@ -164,29 +200,11 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
         </div>
       );
     },
-    [record, context],
+    [record, context, kanbanDef.fields],
   );
 
-  const visibleButtons = useMemo(() => {
-    return kanbanDef.buttons.filter((button: KanbanButton) => {
-      if (!button.states) {
-        return true;
-      }
-
-      const currentState = record[kanbanDef.column_field];
-      if (!currentState) {
-        return true;
-      }
-
-      const allowedStates = button.states
-        .split(",")
-        .map((s: string) => s.trim());
-      return allowedStates.includes(currentState);
-    });
-  }, [kanbanDef.buttons, kanbanDef.column_field, record]);
-
   const handleButtonClick = useCallback(
-    async (e: MouseEvent, button: KanbanButton) => {
+    async (e: MouseEvent, button: ButtonOoui) => {
       e.stopPropagation();
 
       if (loadingButton) {
@@ -257,7 +275,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
     ],
   );
 
-  const buttonClickHandlers = useMemo(() => {
+  const buttonClickHandlers = useDeepCompareMemo(() => {
     return visibleButtons.reduce<Record<string, (e: MouseEvent) => void>>(
       (acc, button) => {
         acc[button.id] = (e: MouseEvent) => handleButtonClick(e, button);
@@ -289,12 +307,12 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
           {color && <ColorBar $color={color} />}
           {status && <StatusDot $color={status} />}
           <div style={{ marginBottom: "8px" }}>
-            {kanbanDef.card_fields.map((field: any) => renderField(field))}
+            {visibleFields.map((field: any) => renderField(field))}
           </div>
 
           {visibleButtons.length > 0 && (
-            <Space size="small" wrap>
-              {visibleButtons.map((button: KanbanButton) => (
+            <Space size={[8, 8]} wrap>
+              {visibleButtons.map((button: ButtonOoui) => (
                 <Button
                   key={button.id}
                   size="small"
@@ -302,8 +320,9 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
                   danger={button.danger}
                   loading={loadingButton === button.id}
                   onClick={buttonClickHandlers[button.id]}
+                  icon={button.icon ? <Icon icon={button.icon} /> : undefined}
                 >
-                  {button.caption || button.id}
+                  {button.caption || button.label || button.id}
                 </Button>
               ))}
             </Space>

@@ -94,15 +94,16 @@ const KanbanComponentInner = (
     if (
       kanbanDef.buttons.some(
         (b: KanbanButton) => b.states !== undefined && b.states !== null,
-      )
+      ) &&
+      kanbanView.fields["state"]
     ) {
-      fields.push(kanbanDef.column_field);
+      fields.push("state");
     }
 
     fields.push("__model");
 
     return [...new Set(fields)];
-  }, [kanbanDef]);
+  }, [kanbanDef, kanbanView.fields]);
 
   const {
     columns,
