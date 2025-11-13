@@ -55,6 +55,7 @@ type KanbanColumnProps = {
   onMaxCardsChange?: (colId: string, maxCards: number | undefined) => void;
   onCountChange: (columnId: string, count: number) => void;
   onRecordsUpdate?: (records: KanbanRecord[], colors: any, status: any) => void;
+  onAddCardClick?: () => void;
 };
 
 const KanbanColumnComponent = (
@@ -78,6 +79,7 @@ const KanbanColumnComponent = (
     onButtonClick,
     onCountChange,
     onRecordsUpdate,
+    onAddCardClick,
   } = props;
 
   const {
@@ -122,13 +124,54 @@ const KanbanColumnComponent = (
 
   const updateRecord = useCallback(
     (id: number, updatedValues: Partial<KanbanRecord>) => {
-      setLocalRecords((prevRecords) =>
-        prevRecords.map((record) =>
-          record.id === id ? { ...record, ...updatedValues } : record,
-        ),
-      );
+      setLocalRecords((prevRecords) => {
+        const existingIndex = prevRecords.findIndex((r) => r.id === id);
+        const existingRecord = prevRecords[existingIndex];
+
+        const updatedRecord = existingRecord
+          ? { ...existingRecord, ...updatedValues }
+          : ({ id, ...updatedValues } as KanbanRecord);
+
+        const recordColumnValue = updatedRecord[columnField];
+
+        const shouldBeInThisColumn = (() => {
+          if (
+            Array.isArray(columnOriginalValue) &&
+            columnOriginalValue.length === 2
+          ) {
+            if (
+              Array.isArray(recordColumnValue) &&
+              recordColumnValue.length === 2
+            ) {
+              return recordColumnValue[0] === columnOriginalValue[0];
+            }
+            return recordColumnValue === columnOriginalValue[0];
+          }
+
+          if (
+            Array.isArray(recordColumnValue) &&
+            recordColumnValue.length === 2
+          ) {
+            return recordColumnValue[0] === columnOriginalValue;
+          }
+
+          return recordColumnValue === columnOriginalValue;
+        })();
+
+        if (shouldBeInThisColumn) {
+          if (existingRecord) {
+            const updated = [...prevRecords];
+            updated[existingIndex] = updatedRecord;
+            return updated;
+          } else {
+            return [updatedRecord, ...prevRecords];
+          }
+        } else {
+          return prevRecords.filter((r) => r.id !== id);
+        }
+      });
     },
-    [],
+    [columnField, columnOriginalValue],
   );
 
   useImperativeHandle(
@@ -419,6 +462,7 @@ const KanbanColumnComponent = (
         <Button
           type="text"
           icon={<PlusOutlined />}
+          onClick={onAddCardClick}
           style={{
             width: "100%",
             color: token.colorTextBase,

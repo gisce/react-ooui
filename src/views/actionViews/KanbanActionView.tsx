@@ -12,7 +12,7 @@ import TitleHeader from "@/ui/TitleHeader";
 import TreeActionBar from "@/actionbar/TreeActionBar";
 import { KanbanComponent, KanbanRef } from "@/widgets/views/Kanban/Kanban";
 import { useActionViewContext } from "@/context/ActionViewContext";
-import { KanbanRecord } from "@/widgets/views/Kanban/types";
+import { KanbanRecord, ColumnDefinition } from "@/widgets/views/Kanban/types";
 import { FormModal } from "@/widgets/modals/FormModal";
 import { Kanban } from "@gisce/ooui";
 import { SearchTreeHeader } from "@/widgets/views/SearchTreeHeader";
@@ -69,6 +69,8 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
   const [selectedRecord, setSelectedRecord] = useState<
     KanbanRecord | undefined
   >();
+  const [creatingInColumn, setCreatingInColumn] =
+    useState<ColumnDefinition | null>(null);
   const [totalRows, setTotalRows] = useState<number | null>(null);
 
   const kanbanRef = viewRef as React.RefObject<KanbanRef>;
@@ -131,6 +133,12 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
     setShowFormModal(true);
   }, []);
 
+  const handleAddCard = useCallback((column: ColumnDefinition) => {
+    setCreatingInColumn(column);
+    setSelectedRecord(undefined);
+    setShowFormModal(true);
+  }, []);
+
   const handleCardValuesChanged = useCallback(
     (id?: number, values?: any, oldRecord?: KanbanRecord) => {
       if (!id || !values || !oldRecord) {
@@ -174,6 +182,7 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
       setShowFormModal(false);
       const oldRecord = selectedRecord;
       setSelectedRecord(undefined);
+      setCreatingInColumn(null);
       handleCardValuesChanged(params?.id, params?.values, oldRecord);
     },
     [selectedRecord, handleCardValuesChanged],
@@ -182,11 +191,23 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
   const onFormModalSubmitSucceed = useCallback(
     (id?: number, values?: any) => {
       setShowFormModal(false);
-      const oldRecord = selectedRecord;
-      setSelectedRecord(undefined);
-      handleCardValuesChanged(id, values, oldRecord);
+
+      if (creatingInColumn && kanbanColumnField) {
+        kanbanRef.current?.refreshColumns([creatingInColumn.id]);
+        setCreatingInColumn(null);
+      } else {
+        const oldRecord = selectedRecord;
+        setSelectedRecord(undefined);
+        handleCardValuesChanged(id, values, oldRecord);
+      }
     },
-    [selectedRecord, handleCardValuesChanged],
+    [
+      creatingInColumn,
+      kanbanColumnField,
+      kanbanRef,
+      selectedRecord,
+      handleCardValuesChanged,
+    ],
   );
 
   const handleTotalRowsChange = useCallback((total: number) => {
@@ -327,17 +348,23 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
           onCardClick={handleCardClick}
           onLoadingChange={setIsLoading}
           onTotalRowsChange={handleTotalRowsChange}
+          onAddCardClick={handleAddCard}
         />
       </div>
       {formView && (
         <FormModal
           formView={formView}
           model={model}
-          id={selectedRecord?.id}
+          id={creatingInColumn ? undefined : selectedRecord?.id}
           visible={showFormModal}
           onSubmitSucceed={onFormModalSubmitSucceed}
           parentContext={context}
           onCancel={onCancelFormModal}
+          defaultValues={
+            creatingInColumn && kanbanColumnField
+              ? { [kanbanColumnField]: creatingInColumn.originalValue }
+              : undefined
+          }
         />
       )}
     </Fragment>
