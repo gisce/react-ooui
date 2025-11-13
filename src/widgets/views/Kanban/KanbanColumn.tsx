@@ -55,6 +55,7 @@ type KanbanColumnProps = {
   onMaxCardsChange?: (colId: string, maxCards: number | undefined) => void;
   onCountChange: (columnId: string, count: number) => void;
   onRecordsUpdate?: (records: KanbanRecord[], colors: any, status: any) => void;
+  onAddCardClick?: () => void;
 };
 
 const KanbanColumnComponent = (
@@ -78,6 +79,7 @@ const KanbanColumnComponent = (
     onButtonClick,
     onCountChange,
     onRecordsUpdate,
+    onAddCardClick,
   } = props;
 
   const {
@@ -419,6 +421,7 @@ const KanbanColumnComponent = (
         <Button
           type="text"
           icon={<PlusOutlined />}
+          onClick={onAddCardClick}
           style={{
             width: "100%",
             color: token.colorTextBase,

@@ -13,7 +13,7 @@ import { KanbanView } from "@/types";
 import { Kanban } from "@gisce/ooui";
 import type { KanbanButton } from "@gisce/ooui/dist/Kanban";
 import { KanbanBoard, KanbanBoardRef } from "./KanbanBoard";
-import { KanbanRecord } from "./types";
+import { KanbanRecord, ColumnDefinition } from "./types";
 import { useKanbanColumns } from "./useKanbanColumns";
 import { Alert, Spin } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
@@ -30,6 +30,7 @@ type KanbanProps = {
   onCardClick?: (record: KanbanRecord) => void;
   onLoadingChange?: (isLoading: boolean) => void;
   onTotalRowsChange?: (totalRows: number) => void;
+  onAddCardClick?: (column: ColumnDefinition) => void;
 };
 
 export type KanbanRef = {
@@ -52,6 +53,7 @@ const KanbanComponentInner = (
     onCardClick,
     onLoadingChange,
     onTotalRowsChange,
+    onAddCardClick,
   } = props;
 
   const prevNameSearch = useRef(nameSearch);
@@ -313,6 +315,7 @@ const KanbanComponentInner = (
         onButtonClick={handleButtonClick}
         setColumnRef={setColumnRef}
         onColumnCountChange={handleColumnCountChange}
+        onAddCardClick={onAddCardClick}
       />
     );
   }, [
@@ -331,6 +334,7 @@ const KanbanComponentInner = (
     handleButtonClick,
     setColumnRef,
     handleColumnCountChange,
+    onAddCardClick,
     t,
   ]);
 

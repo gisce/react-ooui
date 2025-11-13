@@ -5,8 +5,8 @@ import {
   useRef,
   forwardRef,
   useImperativeHandle,
-  useMemo,
 } from "react";
+import { useDeepCompareMemo } from "use-deep-compare";
 import {
   DndContext,
   DragOverEvent,
@@ -45,6 +45,7 @@ type KanbanBoardProps = {
   ) => void;
   setColumnRef: (columnId: string, ref: KanbanColumnRef | null) => void;
   onColumnCountChange: (columnId: string, count: number) => void;
+  onAddCardClick?: (column: ColumnDefinition) => void;
 };
 
 const KanbanBoardComponent = (
@@ -65,6 +66,7 @@ const KanbanBoardComponent = (
     onButtonClick,
     setColumnRef,
     onColumnCountChange,
+    onAddCardClick,
   } = props;
 
   const { t } = useLocale();
@@ -187,7 +189,7 @@ const KanbanBoardComponent = (
     [setColumnRef],
   );
 
-  const columnRefCallbacks = useMemo(() => {
+  const columnRefCallbacks = useDeepCompareMemo(() => {
     const callbacks: Record<string, (ref: KanbanColumnRef | null) => void> = {};
     columns.forEach((column) => {
       callbacks[column.id] = (ref: KanbanColumnRef | null) => {
@@ -196,6 +198,15 @@ const KanbanBoardComponent = (
     });
     return callbacks;
   }, [columns, handleColumnRef]);
+
+  const columnAddCardCallbacks = useDeepCompareMemo(() => {
+    if (!onAddCardClick) return {};
+    const callbacks: Record<string, () => void> = {};
+    columns.forEach((column) => {
+      callbacks[column.id] = () => onAddCardClick(column);
+    });
+    return callbacks;
+  }, [columns, onAddCardClick]);
 
   if (columns.length === 0) {
     return (
@@ -251,6 +262,7 @@ const KanbanBoardComponent = (
             onCountChange={onColumnCountChange}
             onRecordsUpdate={handleRecordsUpdate}
             isOver={overColumnId === column.id}
+            onAddCardClick={columnAddCardCallbacks[column.id]}
           />
         ))}
       </div>
