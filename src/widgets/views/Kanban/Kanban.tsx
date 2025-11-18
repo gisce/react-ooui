@@ -18,7 +18,6 @@ import { useKanbanColumns } from "./useKanbanColumns";
 import { Alert, Spin } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
 import { KanbanColumnRef } from "./KanbanColumn";
-import { normalizeColumnValue } from "@/helpers/kanbanHelper";
 
 type KanbanProps = {
   kanbanView: KanbanView;
@@ -161,71 +160,6 @@ const KanbanComponentInner = (
     [refreshColumns],
   );
 
-  const handleButtonClick = useCallback(
-    async (
-      _buttonName: string,
-      _recordId: number,
-      oldRecord: KanbanRecord,
-      newRecord?: KanbanRecord,
-    ) => {
-      const columnField = kanbanDef?.column_field;
-
-      if (newRecord && columnField) {
-        const oldColumnValue = oldRecord[columnField];
-        const newColumnValue = newRecord[columnField];
-
-        if (newColumnValue !== undefined && oldColumnValue !== newColumnValue) {
-          const columnFieldDef = kanbanDef?.fields?.[columnField];
-
-          if (columnFieldDef) {
-            const oldColumnInfo = normalizeColumnValue(
-              oldColumnValue,
-              columnFieldDef,
-              t,
-            );
-            const newColumnInfo = normalizeColumnValue(
-              newColumnValue,
-              columnFieldDef,
-              t,
-            );
-
-            const oldColumnId = oldColumnInfo?.id ?? null;
-            const newColumnId = newColumnInfo?.id ?? null;
-
-            if (oldColumnId && newColumnId) {
-              const columnsToRefresh =
-                oldColumnId === newColumnId
-                  ? [oldColumnId]
-                  : [oldColumnId, newColumnId];
-              refreshColumns(columnsToRefresh);
-              return;
-            }
-          }
-        } else {
-          // Column value didn't change, just refresh the current column
-          const columnFieldDef = kanbanDef?.fields?.[columnField];
-          if (columnFieldDef) {
-            const columnInfo = normalizeColumnValue(
-              oldColumnValue,
-              columnFieldDef,
-              t,
-            );
-            if (columnInfo?.id) {
-              refreshColumns([columnInfo.id]);
-              return;
-            }
-          }
-        }
-      }
-
-      // Fallback: refresh all columns
-      columnRefs.current.forEach((ref) => {
-        ref.refresh();
-      });
-    },
-    [kanbanDef, t, refreshColumns],
-  );
-
   const setColumnRef = useCallback(
     (columnId: string, ref: KanbanColumnRef | null) => {
       if (ref) {
@@ -302,7 +236,6 @@ const KanbanComponentInner = (
         nameSearch={nameSearch}
         fieldsToRetrieve={fieldsToRetrieve}
         onCardClick={onCardClick}
-        onButtonClick={handleButtonClick}
         setColumnRef={setColumnRef}
         onColumnCountChange={handleColumnCountChange}
         onAddCardClick={onAddCardClick}
@@ -322,7 +255,6 @@ const KanbanComponentInner = (
     nameSearch,
     fieldsToRetrieve,
     onCardClick,
-    handleButtonClick,
     setColumnRef,
     handleColumnCountChange,
     onAddCardClick,

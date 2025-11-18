@@ -1,7 +1,6 @@
-import { memo, useState, useCallback, MouseEvent } from "react";
-import { Card as AntCard, Button, Space, Typography, theme } from "antd";
+import { memo, useState, useCallback, MouseEvent, useEffect } from "react";
+import { Button, Space, Typography, theme } from "antd";
 import { useSortable } from "@dnd-kit/sortable";
-import styled from "styled-components";
 import { useDeepCompareMemo } from "use-deep-compare";
 import { KanbanRecord } from "./types";
 import {
@@ -11,55 +10,14 @@ import {
 } from "@gisce/ooui";
 import ConnectionProvider from "@/ConnectionProvider";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
+import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import { useProcessAction } from "@/hooks/useProcessAction";
 import { KANBAN_COMPONENTS } from "./kanbanComponents";
 import { Icon } from "@gisce/react-formiga-components";
+import { StyledCard, ColorBar, StatusDot } from "./KanbanCard.styles";
 
 const { Text } = Typography;
 const { useToken } = theme;
-
-const CardWrapper = styled.div``;
-
-const StyledCard = styled(AntCard)<{
-  $bgColor: string;
-  $borderColor: string;
-  $primaryColor: string;
-  $color?: string;
-}>`
-  position: relative;
-  background-color: ${(props) => props.$bgColor};
-  border: 1px solid ${(props) => props.$borderColor};
-  outline: none;
-  outline-offset: -1px;
-  overflow: visible;
-
-  .ant-card-body {
-    overflow: visible;
-  }
-
-  &:hover {
-    outline: 3px solid ${(props) => props.$color || props.$primaryColor};
-  }
-`;
-
-const ColorBar = styled.div<{ $color: string }>`
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 5px;
-  background-color: ${(props) => props.$color};
-  border-radius: 7px 0 0 7px;
-`;
-
-const StatusDot = styled.div<{ $color: string }>`
-  position: absolute;
-  right: 8px;
-  top: 8px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: ${(props) => props.$color};
-`;
 
 type KanbanCardProps = {
   record: KanbanRecord;
@@ -70,12 +28,7 @@ type KanbanCardProps = {
   status?: string;
   context?: any;
   onClick?: () => void;
-  onButtonClick?: (
-    buttonName: string,
-    recordId: number,
-    oldRecord: KanbanRecord,
-    newRecord?: KanbanRecord,
-  ) => void;
+  onRefreshAll?: () => void;
   isMoving?: boolean;
 };
 
@@ -89,12 +42,32 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
     status,
     context = {},
     onClick,
-    onButtonClick,
+    onRefreshAll,
     isMoving = false,
   } = props;
   const { token } = useToken();
   const [loadingButton, setLoadingButton] = useState<string | null>(null);
   const { showErrorNotification } = useErrorNotification();
+
+  const [executeButton, cancelExecuteButton] = useNetworkRequest(
+    ConnectionProvider.getHandler().execute,
+  );
+
+  useEffect(() => {
+    return () => {
+      cancelExecuteButton();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const onActionCompleted = useCallback(async () => {
+    onRefreshAll?.();
+  }, [onRefreshAll]);
+
+  const { runAction } = useProcessAction({
+    context,
+    onRefreshParentValues: onActionCompleted,
+  });
 
   const { attributes, listeners, setNodeRef, isDragging } = useSortable({
     id: record.id,
@@ -217,7 +190,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
 
       try {
         if (button.buttonType === "object") {
-          await ConnectionProvider.getHandler().execute({
+          const result = await executeButton({
             model,
             action: button.id,
             payload: [record.id],
@@ -228,37 +201,14 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
             },
           });
 
-          let newRecord: KanbanRecord | undefined;
-
-          try {
-            const fieldsObject = kanbanDef?.fields
-              ? Object.keys(kanbanDef.fields).reduce(
-                  (acc: any, fieldName: string) => {
-                    acc[fieldName] = kanbanDef.fields[fieldName];
-                    return acc;
-                  },
-                  {},
-                )
-              : {};
-
-            const updatedRecords =
-              await ConnectionProvider.getHandler().readObjects({
-                model,
-                ids: [record.id],
-                fields: fieldsObject,
-                context,
-              });
-
-            if (updatedRecords && updatedRecords.length > 0) {
-              newRecord = updatedRecords[0];
-            }
-          } catch (readErr) {
-            console.warn("Failed to fetch updated record:", readErr);
+          if (result && typeof result === "object" && result.type) {
+            await runAction({
+              actionData: result,
+            });
+            return;
           }
 
-          if (onButtonClick) {
-            onButtonClick(button.id, record.id, record, newRecord);
-          }
+          onRefreshAll?.();
         }
       } catch (err) {
         showErrorNotification(err);
@@ -271,9 +221,10 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
       model,
       record,
       context,
-      onButtonClick,
+      executeButton,
+      runAction,
+      onRefreshAll,
       showErrorNotification,
-      kanbanDef,
     ],
   );
 
@@ -288,50 +239,48 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
   }, [visibleButtons, handleButtonClick]);
 
   return (
-    <CardWrapper>
-      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-        <StyledCard
-          size="small"
-          onClick={onClick}
-          $bgColor={token.colorBgContainer}
-          $borderColor={token.colorBorder}
-          $primaryColor={token.colorPrimary}
-          $color={color}
-          styles={{
-            body: {
-              padding: "12px",
-              paddingLeft: "20px",
-              paddingTop: "12px",
-              paddingRight: status ? "20px" : "12px",
-            },
-          }}
-        >
-          {color && <ColorBar $color={color} />}
-          {status && <StatusDot $color={status} />}
-          <div style={{ marginBottom: "8px" }}>
-            {visibleFields.map((field: any) => renderField(field))}
-          </div>
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <StyledCard
+        size="small"
+        onClick={onClick}
+        $bgColor={token.colorBgContainer}
+        $borderColor={token.colorBorder}
+        $primaryColor={token.colorPrimary}
+        $color={color}
+        styles={{
+          body: {
+            padding: "12px",
+            paddingLeft: "20px",
+            paddingTop: "12px",
+            paddingRight: status ? "20px" : "12px",
+          },
+        }}
+      >
+        {color && <ColorBar $color={color} />}
+        {status && <StatusDot $color={status} />}
+        <div style={{ marginBottom: "8px" }}>
+          {visibleFields.map((field: any) => renderField(field))}
+        </div>
 
-          {visibleButtons.length > 0 && (
-            <Space size={[8, 8]} wrap>
-              {visibleButtons.map((button: ButtonOoui) => (
-                <Button
-                  key={button.id}
-                  size="small"
-                  type={button.primary ? "primary" : "default"}
-                  danger={button.danger}
-                  loading={loadingButton === button.id}
-                  onClick={buttonClickHandlers[button.id]}
-                  icon={button.icon ? <Icon icon={button.icon} /> : undefined}
-                >
-                  {button.caption || button.label || button.id}
-                </Button>
-              ))}
-            </Space>
-          )}
-        </StyledCard>
-      </div>
-    </CardWrapper>
+        {visibleButtons.length > 0 && (
+          <Space size={[8, 8]} wrap>
+            {visibleButtons.map((button: ButtonOoui) => (
+              <Button
+                key={button.id}
+                size="small"
+                type={button.primary ? "primary" : "default"}
+                danger={button.danger}
+                loading={loadingButton === button.id}
+                onClick={buttonClickHandlers[button.id]}
+                icon={button.icon ? <Icon icon={button.icon} /> : undefined}
+              >
+                {button.caption || button.label || button.id}
+              </Button>
+            ))}
+          </Space>
+        )}
+      </StyledCard>
+    </div>
   );
 };
 

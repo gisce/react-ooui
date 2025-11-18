@@ -42,16 +42,11 @@ type KanbanColumnProps = {
   maxCards?: number;
   isOver?: boolean;
   onCardClick?: (record: KanbanRecord) => void;
-  onButtonClick?: (
-    buttonName: string,
-    recordId: number,
-    oldRecord: KanbanRecord,
-    newRecord?: KanbanRecord,
-  ) => void;
   onMaxCardsChange?: (colId: string, maxCards: number | undefined) => void;
   onCountChange: (columnId: string, count: number) => void;
   onRecordsUpdate?: (records: KanbanRecord[], colors: any, status: any) => void;
   onAddCardClick?: () => void;
+  onRefreshAll?: () => void;
 };
 
 const KanbanColumnComponent = (
@@ -70,10 +65,10 @@ const KanbanColumnComponent = (
     maxCards,
     isOver = false,
     onCardClick,
-    onButtonClick,
     onCountChange,
     onRecordsUpdate,
     onAddCardClick,
+    onRefreshAll,
   } = props;
 
   const {
@@ -337,7 +332,7 @@ const KanbanColumnComponent = (
                     context={context}
                     model={model}
                     onClick={cardClickHandlers[record.id]}
-                    onButtonClick={onButtonClick}
+                    onRefreshAll={onRefreshAll}
                   />
                 </div>
               );

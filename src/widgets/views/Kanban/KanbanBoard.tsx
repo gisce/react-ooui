@@ -27,6 +27,7 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { normalizeColumnValue } from "@/helpers/kanbanHelper";
+import { useProcessAction } from "@/hooks/useProcessAction";
 
 export type KanbanBoardRef = {
   refreshAllColumns: () => void;
@@ -42,12 +43,6 @@ type KanbanBoardProps = {
   fieldsToRetrieve?: string[];
   kanbanDef: Kanban;
   onCardClick?: (record: KanbanRecord) => void;
-  onButtonClick?: (
-    buttonName: string,
-    recordId: number,
-    oldRecord: KanbanRecord,
-    newRecord?: KanbanRecord,
-  ) => void;
   setColumnRef: (columnId: string, ref: KanbanColumnRef | null) => void;
   onColumnCountChange: (columnId: string, count: number) => void;
   onAddCardClick?: (column: ColumnDefinition) => void;
@@ -68,7 +63,6 @@ const KanbanBoardComponent = (
     fieldsToRetrieve,
     kanbanDef,
     onCardClick,
-    onButtonClick,
     setColumnRef,
     onColumnCountChange,
     onAddCardClick,
@@ -83,7 +77,6 @@ const KanbanBoardComponent = (
   const statusForRecordsRef = useRef<{ [key: number]: string }>({});
   const allRecordsRef = useRef<{ [key: number]: KanbanRecord }>({});
   const columnRefsRef = useRef<{ [columnId: string]: KanbanColumnRef }>({});
-
   const [executeColumnChange, cancelExecuteColumnChange] = useNetworkRequest(
     ConnectionProvider.getHandler().rawExecute,
   );
@@ -186,6 +179,29 @@ const KanbanBoardComponent = (
     });
   }, []);
 
+  const refreshSourceAndTarget = useCallback(
+    (sourceId: string, targetId: string) => {
+      const targetRef = columnRefsRef.current[targetId];
+      if (targetRef) {
+        targetRef.refresh();
+      }
+      const sourceRef = columnRefsRef.current[sourceId];
+      if (sourceRef) {
+        sourceRef.refresh();
+      }
+    },
+    [],
+  );
+
+  const onActionCompleted = useCallback(async () => {
+    refreshAllColumns();
+  }, [refreshAllColumns]);
+
+  const { runAction } = useProcessAction({
+    context,
+    onRefreshParentValues: onActionCompleted,
+  });
+
   const handleDragEnd = useCallback(
     async (event: DragEndEvent) => {
       const { active, over } = event;
@@ -258,7 +274,7 @@ const KanbanBoardComponent = (
         const methodName =
           kanbanDef.on_change_column?.method || "on_change_column";
 
-        await executeColumnChange({
+        const result = await executeColumnChange({
           model,
           action: methodName,
           payload: [
@@ -274,16 +290,20 @@ const KanbanBoardComponent = (
           ],
         });
 
-        const targetColumnRef = columnRefsRef.current[targetColumn.id];
-        if (targetColumnRef) {
-          targetColumnRef.refresh();
+        if (result && typeof result === "object" && result.type) {
+          await runAction({
+            actionData: result,
+            // additionalContext: {
+            //   active_id: recordId,
+            //   active_ids: [recordId],
+            // },
+            // overrideValues: record,
+            // overrideFields: kanbanDef?.fields || {},
+          });
+          return;
         }
 
-        const sourceColumnRef =
-          columnRefsRef.current[sourceColumnNormalized.id];
-        if (sourceColumnRef) {
-          sourceColumnRef.refresh();
-        }
+        refreshSourceAndTarget(sourceColumnNormalized.id, targetColumn.id);
       } catch (err) {
         if (onDragSuccess) {
           onDragSuccess(targetColumn.id, sourceColumnNormalized.id);
@@ -302,6 +322,8 @@ const KanbanBoardComponent = (
       executeColumnChange,
       findColumnByValue,
       t,
+      runAction,
+      refreshSourceAndTarget,
     ],
   );
 
@@ -392,11 +414,11 @@ const KanbanBoardComponent = (
             fieldsToRetrieve={fieldsToRetrieve}
             allowSetMaxCards={false}
             onCardClick={onCardClick}
-            onButtonClick={onButtonClick}
             onCountChange={onColumnCountChange}
             onRecordsUpdate={handleRecordsUpdate}
             isOver={overColumnId === column.id}
             onAddCardClick={columnAddCardCallbacks[column.id]}
+            onRefreshAll={refreshAllColumns}
           />
         ))}
       </div>
