@@ -197,17 +197,15 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
           },
         );
 
+        setRecords(fetchedRecords);
+
         if (nameSearch) {
-          setRecords(fetchedRecords);
           setCurrentOffset(0);
           setHasMore(false);
         } else if (isLoadingNextPage) {
-          setRecords((prev) => [...prev, ...fetchedRecords]);
           setCurrentOffset((prev) => prev + PAGE_SIZE);
           setHasMore(fetchedRecords.length === PAGE_SIZE);
         } else {
-          // For refresh: replace old data with new data smoothly
-          setRecords(fetchedRecords);
           setCurrentOffset(PAGE_SIZE);
           setHasMore(fetchedRecords.length === PAGE_SIZE);
         }
