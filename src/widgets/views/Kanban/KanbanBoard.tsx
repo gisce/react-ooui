@@ -29,7 +29,7 @@ import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { normalizeColumnValue } from "@/helpers/kanbanHelper";
 
 export type KanbanBoardRef = {
-  updateRecord: (id: number, updatedValues: Partial<KanbanRecord>) => void;
+  refreshAllColumns: () => void;
 };
 
 type KanbanBoardProps = {
@@ -178,21 +178,13 @@ const KanbanBoardComponent = (
     [],
   );
 
-  const updateRecord = useCallback(
-    (id: number, updatedValues: Partial<KanbanRecord>) => {
-      allRecordsRef.current[id] = {
-        ...allRecordsRef.current[id],
-        ...updatedValues,
-      };
-
-      Object.values(columnRefsRef.current).forEach((columnRef) => {
-        if (columnRef) {
-          columnRef.updateRecord(id, updatedValues);
-        }
-      });
-    },
-    [],
-  );
+  const refreshAllColumns = useCallback(() => {
+    Object.values(columnRefsRef.current).forEach((columnRef) => {
+      if (columnRef) {
+        columnRef.refresh();
+      }
+    });
+  }, []);
 
   const handleDragEnd = useCallback(
     async (event: DragEndEvent) => {
@@ -259,12 +251,6 @@ const KanbanBoardComponent = (
         columnFieldDef,
         t,
       );
-      const originalRecord = { ...record };
-
-      updateRecord(recordId, {
-        ...record,
-        [kanbanDef.column_field]: targetColumn.originalValue,
-      });
 
       cleanup();
 
@@ -292,9 +278,13 @@ const KanbanBoardComponent = (
         if (targetColumnRef) {
           targetColumnRef.refresh();
         }
-      } catch (err) {
-        updateRecord(recordId, originalRecord);
 
+        const sourceColumnRef =
+          columnRefsRef.current[sourceColumnNormalized.id];
+        if (sourceColumnRef) {
+          sourceColumnRef.refresh();
+        }
+      } catch (err) {
         if (onDragSuccess) {
           onDragSuccess(targetColumn.id, sourceColumnNormalized.id);
         }
@@ -311,7 +301,6 @@ const KanbanBoardComponent = (
       onDragSuccess,
       executeColumnChange,
       findColumnByValue,
-      updateRecord,
       t,
     ],
   );
@@ -319,9 +308,9 @@ const KanbanBoardComponent = (
   useImperativeHandle(
     ref,
     () => ({
-      updateRecord,
+      refreshAllColumns,
     }),
-    [updateRecord],
+    [refreshAllColumns],
   );
 
   const handleColumnRef = useCallback(

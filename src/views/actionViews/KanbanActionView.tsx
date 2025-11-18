@@ -159,7 +159,7 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
         }
       }
 
-      kanbanRef.current?.updateRecord(id, values);
+      kanbanRef.current?.refreshResults();
     },
     [kanbanColumnField, getColumnIdFromValue, kanbanRef],
   );

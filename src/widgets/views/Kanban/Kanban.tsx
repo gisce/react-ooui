@@ -36,7 +36,6 @@ type KanbanProps = {
 export type KanbanRef = {
   refreshResults: () => void;
   refreshColumns: (columnIds: string[]) => void;
-  updateRecord: (id: number, updatedValues: Partial<KanbanRecord>) => void;
 };
 
 const KanbanComponentInner = (
@@ -140,13 +139,6 @@ const KanbanComponentInner = (
     prevNameSearch.current = nameSearch;
   }, [nameSearch]);
 
-  const updateRecord = useCallback(
-    (id: number, updatedValues: Partial<KanbanRecord>) => {
-      boardRef.current?.updateRecord(id, updatedValues);
-    },
-    [],
-  );
-
   const refreshColumns = useCallback((columnIds: string[]) => {
     columnIds.forEach((columnId) => {
       const ref = columnRefs.current.get(columnId);
@@ -165,9 +157,8 @@ const KanbanComponentInner = (
         });
       },
       refreshColumns,
-      updateRecord,
     }),
-    [refreshColumns, updateRecord],
+    [refreshColumns],
   );
 
   const handleButtonClick = useCallback(
