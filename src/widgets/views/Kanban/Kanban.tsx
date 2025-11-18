@@ -102,8 +102,6 @@ const KanbanComponentInner = (
       fields.push("state");
     }
 
-    fields.push("__model");
-
     return [...new Set(fields)];
   }, [kanbanDef, kanbanView.fields]);
 
@@ -124,7 +122,7 @@ const KanbanComponentInner = (
 
   const columnRefs = useRef<Map<string, KanbanColumnRef>>(new Map());
   const boardRef = useRef<KanbanBoardRef>(null);
-  const [columnCounts, setColumnCounts] = useState<Record<string, number>>({});
+  const columnCountsRef = useRef<Record<string, number>>({});
 
   useEffect(() => {
     const isNameSearchActive = nameSearch && nameSearch.trim().length > 0;
@@ -250,12 +248,17 @@ const KanbanComponentInner = (
 
   const handleColumnCountChange = useCallback(
     (columnId: string, count: number) => {
-      setColumnCounts((prev) => ({
-        ...prev,
+      columnCountsRef.current = {
+        ...columnCountsRef.current,
         [columnId]: count,
-      }));
+      };
+      const totalRows = Object.values(columnCountsRef.current).reduce(
+        (sum, c) => sum + c,
+        0,
+      );
+      onTotalRowsChange?.(totalRows);
     },
-    [],
+    [onTotalRowsChange],
   );
 
   const handleDragSuccess = useCallback(
@@ -264,14 +267,6 @@ const KanbanComponentInner = (
     },
     [refreshColumns],
   );
-
-  useEffect(() => {
-    const totalRows = Object.values(columnCounts).reduce(
-      (sum, count) => sum + count,
-      0,
-    );
-    onTotalRowsChange?.(totalRows);
-  }, [columnCounts, onTotalRowsChange]);
 
   useEffect(() => {
     onLoadingChange?.(isLoadingColumns);
@@ -300,8 +295,6 @@ const KanbanComponentInner = (
       );
     }
 
-    // Only show spinner on initial load (when no columns yet)
-    // Keep board visible with previous columns during refresh
     if (!kanbanDef || (isLoadingColumns && columns.length === 0)) {
       return <Spin size="large" />;
     }

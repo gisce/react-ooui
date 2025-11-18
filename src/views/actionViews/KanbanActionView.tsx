@@ -1,12 +1,4 @@
-import {
-  Fragment,
-  useCallback,
-  useState,
-  memo,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
+import { Fragment, useCallback, useState, memo, useMemo, useRef } from "react";
 import { FormView, KanbanView, TreeView, View } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
 import TreeActionBar from "@/actionbar/TreeActionBar";
@@ -64,7 +56,6 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
     setSearchTreeNameSearch,
   } = useSearchTreeState({ useLocalState: false });
 
-  const [isLoading, setIsLoading] = useState(true);
   const [showFormModal, setShowFormModal] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<
     KanbanRecord | undefined
@@ -93,10 +84,6 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
     }),
     [availableHeight],
   );
-
-  useEffect(() => {
-    setViewIsLoading?.(isLoading);
-  }, [isLoading, setViewIsLoading]);
 
   const kanbanColumnField = useMemo(() => {
     if (!kanbanView.arch || !kanbanView.fields) {
@@ -346,7 +333,7 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
           searchParams={searchParams || []}
           nameSearch={searchTreeNameSearch}
           onCardClick={handleCardClick}
-          onLoadingChange={setIsLoading}
+          onLoadingChange={setViewIsLoading}
           onTotalRowsChange={handleTotalRowsChange}
           onAddCardClick={handleAddCard}
         />
