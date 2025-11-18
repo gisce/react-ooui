@@ -248,15 +248,17 @@ const KanbanBoardComponent = (
         return;
       }
 
-      const getBackendValue = (value: any) => {
-        if (Array.isArray(value) && value.length === 2) {
-          return value[0];
-        }
-        return value;
-      };
+      const fromValue = normalizeColumnValue(
+        sourceColumnValue,
+        columnFieldDef,
+        t,
+      );
 
-      const fromValue = getBackendValue(sourceColumnValue);
-      const toValue = getBackendValue(targetColumn.originalValue);
+      const toValue = normalizeColumnValue(
+        targetColumn.originalValue,
+        columnFieldDef,
+        t,
+      );
       const originalRecord = { ...record };
 
       updateRecord(recordId, {
@@ -276,8 +278,8 @@ const KanbanBoardComponent = (
           payload: [
             [recordId],
             kanbanDef.column_field,
-            fromValue,
-            toValue,
+            fromValue?.id,
+            toValue?.id,
             {
               ...context,
               active_id: recordId,
