@@ -67,6 +67,7 @@ import {
 } from "../../hooks/useFieldMessages";
 import { ACTION_TYPE_WINDOW_CLOSE, MODEL_ACTIONS } from "@/models/constants";
 import { useConfigContext } from "@/context/ConfigContext";
+import { useProcessAction } from "@/hooks/useProcessAction";
 
 export type FormProps = {
   model: string;
@@ -184,7 +185,7 @@ function Form(props: FormProps, ref: any) {
   const contentRootContext = useContext(
     ContentRootContext,
   ) as ContentRootContextType;
-  const { processAction, globalValues } = contentRootContext || {};
+  const { globalValues } = contentRootContext || {};
 
   const tabManagerContext = useContext(
     TabManagerContext,
@@ -438,6 +439,65 @@ function Form(props: FormProps, ref: any) {
 
     return values;
   }, [getCurrentValues, getAdditionalValues, fields]);
+
+  const onRefreshParentValues = useCallback(async () => {
+    mustFetchParentValues.current = true;
+    await fetchValues({ forceRefresh: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const { runAction: runActionFromHook } = useProcessAction({
+    fields,
+    getValues,
+    context: parentContext,
+    onRefreshParentValues,
+  });
+
+  const runAction = useCallback(
+    async ({
+      actionData,
+      context = {},
+    }: {
+      actionData: any;
+      context?: any;
+    }) => {
+      const { closeParent } = await runActionFromHook({
+        actionData,
+        additionalContext: {
+          ...formOoui?.context,
+          ...context,
+        },
+      });
+
+      if (!rootForm && closeParent) {
+        onSubmitSucceed?.(getCurrentId(), getValues(), getFormValues());
+      }
+    },
+    [
+      runActionFromHook,
+      formOoui?.context,
+      rootForm,
+      onSubmitSucceed,
+      getCurrentId,
+      getValues,
+      getFormValues,
+    ],
+  );
+
+  const runActionButton = useCallback(
+    async ({ action, context }: { action: string; context: any }) => {
+      const actionData = (
+        await ConnectionProvider.getHandler().readObjects({
+          model: MODEL_ACTIONS,
+          ids: [parseInt(action)],
+          context: parentContext,
+        })
+      )[0];
+
+      await runAction({ actionData, context });
+    },
+    [runAction, parentContext],
+  );
 
   const onCancel = useCallback(() => {
     if (mustFetchParentValues.current) {
@@ -1174,52 +1234,6 @@ function Form(props: FormProps, ref: any) {
       onSubmitSucceed?.(getCurrentId(), getValues(), getFormValues());
     } else {
       await fetchValues({ forceRefresh: true });
-    }
-  }
-
-  async function runActionButton({
-    action,
-    context,
-  }: {
-    action: string;
-    context: any;
-  }) {
-    const actionData = (
-      await ConnectionProvider.getHandler().readObjects({
-        model: MODEL_ACTIONS,
-        ids: [parseInt(action)],
-        context: parentContext,
-      })
-    )[0];
-
-    await runAction({ actionData, context });
-  }
-
-  async function runAction({
-    actionData,
-    context = {},
-  }: {
-    actionData: any;
-    context?: any;
-  }) {
-    const { closeParent } =
-      (await processAction?.({
-        actionData,
-        fields,
-        values: getValues(),
-        context: {
-          ...parentContext,
-          ...formOoui?.context,
-          ...context,
-        },
-        onRefreshParentValues: async () => {
-          mustFetchParentValues.current = true;
-          await fetchValues({ forceRefresh: true });
-        },
-      })) || {};
-
-    if (!rootForm && closeParent) {
-      onSubmitSucceed?.(getCurrentId(), getValues(), getFormValues());
     }
   }
 

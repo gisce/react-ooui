@@ -18,7 +18,6 @@ import { useKanbanColumns } from "./useKanbanColumns";
 import { Alert, Spin } from "antd";
 import { useLocale } from "@gisce/react-formiga-components";
 import { KanbanColumnRef } from "./KanbanColumn";
-import { normalizeColumnValue } from "@/helpers/kanbanHelper";
 
 type KanbanProps = {
   kanbanView: KanbanView;
@@ -36,7 +35,6 @@ type KanbanProps = {
 export type KanbanRef = {
   refreshResults: () => void;
   refreshColumns: (columnIds: string[]) => void;
-  updateRecord: (id: number, updatedValues: Partial<KanbanRecord>) => void;
 };
 
 const KanbanComponentInner = (
@@ -102,8 +100,6 @@ const KanbanComponentInner = (
       fields.push("state");
     }
 
-    fields.push("__model");
-
     return [...new Set(fields)];
   }, [kanbanDef, kanbanView.fields]);
 
@@ -124,7 +120,7 @@ const KanbanComponentInner = (
 
   const columnRefs = useRef<Map<string, KanbanColumnRef>>(new Map());
   const boardRef = useRef<KanbanBoardRef>(null);
-  const [columnCounts, setColumnCounts] = useState<Record<string, number>>({});
+  const columnCountsRef = useRef<Record<string, number>>({});
 
   useEffect(() => {
     const isNameSearchActive = nameSearch && nameSearch.trim().length > 0;
@@ -141,13 +137,6 @@ const KanbanComponentInner = (
 
     prevNameSearch.current = nameSearch;
   }, [nameSearch]);
-
-  const updateRecord = useCallback(
-    (id: number, updatedValues: Partial<KanbanRecord>) => {
-      boardRef.current?.updateRecord(id, updatedValues);
-    },
-    [],
-  );
 
   const refreshColumns = useCallback((columnIds: string[]) => {
     columnIds.forEach((columnId) => {
@@ -167,74 +156,8 @@ const KanbanComponentInner = (
         });
       },
       refreshColumns,
-      updateRecord,
     }),
-    [refreshColumns, updateRecord],
-  );
-
-  const handleButtonClick = useCallback(
-    async (
-      _buttonName: string,
-      _recordId: number,
-      oldRecord: KanbanRecord,
-      newRecord?: KanbanRecord,
-    ) => {
-      const columnField = kanbanDef?.column_field;
-
-      if (newRecord && columnField) {
-        const oldColumnValue = oldRecord[columnField];
-        const newColumnValue = newRecord[columnField];
-
-        if (newColumnValue !== undefined && oldColumnValue !== newColumnValue) {
-          const columnFieldDef = kanbanDef?.fields?.[columnField];
-
-          if (columnFieldDef) {
-            const oldColumnInfo = normalizeColumnValue(
-              oldColumnValue,
-              columnFieldDef,
-              t,
-            );
-            const newColumnInfo = normalizeColumnValue(
-              newColumnValue,
-              columnFieldDef,
-              t,
-            );
-
-            const oldColumnId = oldColumnInfo?.id ?? null;
-            const newColumnId = newColumnInfo?.id ?? null;
-
-            if (oldColumnId && newColumnId) {
-              const columnsToRefresh =
-                oldColumnId === newColumnId
-                  ? [oldColumnId]
-                  : [oldColumnId, newColumnId];
-              refreshColumns(columnsToRefresh);
-              return;
-            }
-          }
-        } else {
-          // Column value didn't change, just refresh the current column
-          const columnFieldDef = kanbanDef?.fields?.[columnField];
-          if (columnFieldDef) {
-            const columnInfo = normalizeColumnValue(
-              oldColumnValue,
-              columnFieldDef,
-              t,
-            );
-            if (columnInfo?.id) {
-              refreshColumns([columnInfo.id]);
-              return;
-            }
-          }
-        }
-      }
-
-      // Fallback: refresh all columns
-      columnRefs.current.forEach((ref) => {
-        ref.refresh();
-      });
-    },
-    [kanbanDef, t, refreshColumns],
+    [refreshColumns],
   );
 
   const setColumnRef = useCallback(
@@ -250,12 +173,17 @@ const KanbanComponentInner = (
 
   const handleColumnCountChange = useCallback(
     (columnId: string, count: number) => {
-      setColumnCounts((prev) => ({
-        ...prev,
+      columnCountsRef.current = {
+        ...columnCountsRef.current,
         [columnId]: count,
-      }));
+      };
+      const totalRows = Object.values(columnCountsRef.current).reduce(
+        (sum, c) => sum + c,
+        0,
+      );
+      onTotalRowsChange?.(totalRows);
     },
-    [],
+    [onTotalRowsChange],
   );
 
   const handleDragSuccess = useCallback(
@@ -264,14 +192,6 @@ const KanbanComponentInner = (
     },
     [refreshColumns],
   );
-
-  useEffect(() => {
-    const totalRows = Object.values(columnCounts).reduce(
-      (sum, count) => sum + count,
-      0,
-    );
-    onTotalRowsChange?.(totalRows);
-  }, [columnCounts, onTotalRowsChange]);
 
   useEffect(() => {
     onLoadingChange?.(isLoadingColumns);
@@ -300,8 +220,6 @@ const KanbanComponentInner = (
       );
     }
 
-    // Only show spinner on initial load (when no columns yet)
-    // Keep board visible with previous columns during refresh
     if (!kanbanDef || (isLoadingColumns && columns.length === 0)) {
       return <Spin size="large" />;
     }
@@ -309,17 +227,15 @@ const KanbanComponentInner = (
     return (
       <KanbanBoard
         ref={boardRef}
+        kanbanDef={kanbanDef}
         columns={columns}
-        columnField={kanbanDef.column_field}
         model={model}
         domain={domain}
         context={context}
         searchParams={searchParams}
         nameSearch={nameSearch}
         fieldsToRetrieve={fieldsToRetrieve}
-        kanbanDef={kanbanDef}
         onCardClick={onCardClick}
-        onButtonClick={handleButtonClick}
         setColumnRef={setColumnRef}
         onColumnCountChange={handleColumnCountChange}
         onAddCardClick={onAddCardClick}
@@ -339,7 +255,6 @@ const KanbanComponentInner = (
     nameSearch,
     fieldsToRetrieve,
     onCardClick,
-    handleButtonClick,
     setColumnRef,
     handleColumnCountChange,
     onAddCardClick,

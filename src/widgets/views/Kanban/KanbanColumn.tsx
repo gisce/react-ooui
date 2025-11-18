@@ -6,7 +6,6 @@ import {
   useEffect,
   useRef,
   useCallback,
-  useState,
 } from "react";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { Badge, Button, Space, theme, Typography } from "antd";
@@ -28,12 +27,10 @@ const { useToken } = theme;
 
 export type KanbanColumnRef = {
   refresh: () => void;
-  updateRecord: (id: number, updatedValues: Partial<KanbanRecord>) => void;
 };
 
 type KanbanColumnProps = {
   column: ColumnDefinition;
-  columnField: string;
   model: string;
   domain: any[];
   context: any;
@@ -41,21 +38,15 @@ type KanbanColumnProps = {
   nameSearch?: string;
   fieldsToRetrieve?: string[];
   kanbanDef: Kanban;
-  draggable: boolean;
   allowSetMaxCards: boolean;
   maxCards?: number;
   isOver?: boolean;
   onCardClick?: (record: KanbanRecord) => void;
-  onButtonClick?: (
-    buttonName: string,
-    recordId: number,
-    oldRecord: KanbanRecord,
-    newRecord?: KanbanRecord,
-  ) => void;
   onMaxCardsChange?: (colId: string, maxCards: number | undefined) => void;
   onCountChange: (columnId: string, count: number) => void;
   onRecordsUpdate?: (records: KanbanRecord[], colors: any, status: any) => void;
   onAddCardClick?: () => void;
+  onRefreshAll?: () => void;
 };
 
 const KanbanColumnComponent = (
@@ -64,7 +55,6 @@ const KanbanColumnComponent = (
 ) => {
   const {
     column,
-    columnField,
     model,
     domain,
     context = {},
@@ -72,14 +62,13 @@ const KanbanColumnComponent = (
     nameSearch,
     fieldsToRetrieve,
     kanbanDef,
-    draggable,
     maxCards,
     isOver = false,
     onCardClick,
-    onButtonClick,
     onCountChange,
     onRecordsUpdate,
     onAddCardClick,
+    onRefreshAll,
   } = props;
 
   const {
@@ -92,7 +81,7 @@ const KanbanColumnComponent = (
   const { token } = useToken();
 
   const {
-    records: hookRecords,
+    records,
     count,
     aggregates,
     colorsForRecords,
@@ -107,7 +96,6 @@ const KanbanColumnComponent = (
     model,
     domain,
     context,
-    columnField,
     columnValue: columnOriginalValue,
     searchParams,
     nameSearch,
@@ -116,71 +104,12 @@ const KanbanColumnComponent = (
     kanbanDef,
   });
 
-  const [localRecords, setLocalRecords] = useState<KanbanRecord[]>(hookRecords);
-
-  useDeepCompareEffect(() => {
-    setLocalRecords(hookRecords);
-  }, [hookRecords]);
-
-  const updateRecord = useCallback(
-    (id: number, updatedValues: Partial<KanbanRecord>) => {
-      setLocalRecords((prevRecords) => {
-        const existingIndex = prevRecords.findIndex((r) => r.id === id);
-        const existingRecord = prevRecords[existingIndex];
-
-        const updatedRecord = existingRecord
-          ? { ...existingRecord, ...updatedValues }
-          : ({ id, ...updatedValues } as KanbanRecord);
-
-        const recordColumnValue = updatedRecord[columnField];
-
-        const shouldBeInThisColumn = (() => {
-          if (
-            Array.isArray(columnOriginalValue) &&
-            columnOriginalValue.length === 2
-          ) {
-            if (
-              Array.isArray(recordColumnValue) &&
-              recordColumnValue.length === 2
-            ) {
-              return recordColumnValue[0] === columnOriginalValue[0];
-            }
-            return recordColumnValue === columnOriginalValue[0];
-          }
-
-          if (
-            Array.isArray(recordColumnValue) &&
-            recordColumnValue.length === 2
-          ) {
-            return recordColumnValue[0] === columnOriginalValue;
-          }
-
-          return recordColumnValue === columnOriginalValue;
-        })();
-
-        if (shouldBeInThisColumn) {
-          if (existingRecord) {
-            const updated = [...prevRecords];
-            updated[existingIndex] = updatedRecord;
-            return updated;
-          } else {
-            return [updatedRecord, ...prevRecords];
-          }
-        } else {
-          return prevRecords.filter((r) => r.id !== id);
-        }
-      });
-    },
-    [columnField, columnOriginalValue],
-  );
-
   useImperativeHandle(
     ref,
     () => ({
       refresh,
-      updateRecord,
     }),
-    [refresh, updateRecord],
+    [refresh],
   );
 
   // Report count changes to parent
@@ -190,19 +119,16 @@ const KanbanColumnComponent = (
 
   // Report records updates to parent (for drag overlay)
   useDeepCompareEffect(() => {
-    if (onRecordsUpdate && localRecords.length > 0) {
-      onRecordsUpdate(localRecords, colorsForRecords, statusForRecords);
+    if (onRecordsUpdate && records.length > 0) {
+      onRecordsUpdate(records, colorsForRecords, statusForRecords);
     }
-  }, [localRecords, colorsForRecords, statusForRecords, onRecordsUpdate]);
+  }, [records, colorsForRecords, statusForRecords, onRecordsUpdate]);
 
   const { setNodeRef } = useDroppable({
     id: columnId,
   });
 
-  const recordIds = useMemo(
-    () => localRecords.map((r) => r.id),
-    [localRecords],
-  );
+  const recordIds = useMemo(() => records.map((r) => r.id), [records]);
 
   const isOverLimit = maxCards !== undefined && count > maxCards;
 
@@ -216,17 +142,15 @@ const KanbanColumnComponent = (
 
   const cardClickHandlers = useMemo(() => {
     if (!onCardClick) return {};
-    return localRecords.reduce<Record<number, () => void>>((acc, record) => {
+    return records.reduce<Record<number, () => void>>((acc, record) => {
       acc[record.id] = () => onCardClick(record);
       return acc;
     }, {});
-  }, [localRecords, onCardClick]);
+  }, [records, onCardClick]);
 
   const hasStatusRibbon = useMemo(() => {
-    return localRecords.some(
-      (record) => statusForRecords?.current?.[record.id],
-    );
-  }, [localRecords, statusForRecords]);
+    return records.some((record) => statusForRecords?.current?.[record.id]);
+  }, [records, statusForRecords]);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -250,7 +174,7 @@ const KanbanColumnComponent = (
   }, [kanbanDef.card_fields.length, kanbanDef.buttons.length]);
 
   const virtualizer = useVirtualizer({
-    count: localRecords.length,
+    count: records.length,
     getScrollElement: () => scrollContainerRef.current,
     estimateSize: useCallback(() => estimatedCardHeight, [estimatedCardHeight]),
     overscan: 5,
@@ -265,20 +189,14 @@ const KanbanColumnComponent = (
       return;
     }
 
-    if (
-      lastItem.index >= localRecords.length - 5 &&
-      hasMore &&
-      !isLoadingMore
-    ) {
+    if (lastItem.index >= records.length - 5 && hasMore && !isLoadingMore) {
       fetchNextPage();
     }
-  }, [
-    virtualItems,
-    localRecords.length,
-    hasMore,
-    isLoadingMore,
-    fetchNextPage,
-  ]);
+  }, [virtualItems, records.length, hasMore, isLoadingMore, fetchNextPage]);
+
+  if (count === 0 && !kanbanDef.drag) {
+    return null;
+  }
 
   return (
     <div
@@ -390,7 +308,7 @@ const KanbanColumnComponent = (
             }}
           >
             {virtualItems.map((virtualRow) => {
-              const record = localRecords[virtualRow.index];
+              const record = records[virtualRow.index];
               return (
                 <div
                   key={record.id}
@@ -410,11 +328,11 @@ const KanbanColumnComponent = (
                     status={statusForRecords?.current?.[record.id]}
                     record={record}
                     kanbanDef={kanbanDef}
-                    draggable={draggable}
+                    draggable={kanbanDef.drag}
                     context={context}
                     model={model}
                     onClick={cardClickHandlers[record.id]}
-                    onButtonClick={onButtonClick}
+                    onRefreshAll={onRefreshAll}
                   />
                 </div>
               );
@@ -440,7 +358,7 @@ const KanbanColumnComponent = (
           </div>
         )}
 
-        {localRecords.length === 0 && !isLoading && (
+        {records.length === 0 && !isLoading && (
           <div
             style={{
               textAlign: "center",

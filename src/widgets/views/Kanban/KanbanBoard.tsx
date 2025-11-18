@@ -27,14 +27,14 @@ import ConnectionProvider from "@/ConnectionProvider";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { normalizeColumnValue } from "@/helpers/kanbanHelper";
+import { useProcessAction } from "@/hooks/useProcessAction";
 
 export type KanbanBoardRef = {
-  updateRecord: (id: number, updatedValues: Partial<KanbanRecord>) => void;
+  refreshAllColumns: () => void;
 };
 
 type KanbanBoardProps = {
   columns: ColumnDefinition[];
-  columnField: string;
   model: string;
   domain: any[];
   context: any;
@@ -43,12 +43,6 @@ type KanbanBoardProps = {
   fieldsToRetrieve?: string[];
   kanbanDef: Kanban;
   onCardClick?: (record: KanbanRecord) => void;
-  onButtonClick?: (
-    buttonName: string,
-    recordId: number,
-    oldRecord: KanbanRecord,
-    newRecord?: KanbanRecord,
-  ) => void;
   setColumnRef: (columnId: string, ref: KanbanColumnRef | null) => void;
   onColumnCountChange: (columnId: string, count: number) => void;
   onAddCardClick?: (column: ColumnDefinition) => void;
@@ -61,7 +55,6 @@ const KanbanBoardComponent = (
 ) => {
   const {
     columns,
-    columnField,
     model,
     domain,
     context = {},
@@ -70,7 +63,6 @@ const KanbanBoardComponent = (
     fieldsToRetrieve,
     kanbanDef,
     onCardClick,
-    onButtonClick,
     setColumnRef,
     onColumnCountChange,
     onAddCardClick,
@@ -81,12 +73,10 @@ const KanbanBoardComponent = (
   const { showErrorNotification } = useErrorNotification();
   const [activeRecord, setActiveRecord] = useState<KanbanRecord | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
   const colorsForRecordsRef = useRef<{ [key: number]: string }>({});
   const statusForRecordsRef = useRef<{ [key: number]: string }>({});
   const allRecordsRef = useRef<{ [key: number]: KanbanRecord }>({});
   const columnRefsRef = useRef<{ [columnId: string]: KanbanColumnRef }>({});
-
   const [executeColumnChange, cancelExecuteColumnChange] = useNetworkRequest(
     ConnectionProvider.getHandler().rawExecute,
   );
@@ -110,8 +100,6 @@ const KanbanBoardComponent = (
     const { active } = event;
     const recordId = active.id as number;
 
-    setIsDragging(true);
-
     const fullRecord = allRecordsRef.current[recordId];
     if (fullRecord) {
       setActiveRecord(fullRecord);
@@ -122,7 +110,7 @@ const KanbanBoardComponent = (
 
   const findColumnByValue = useCallback(
     (value: any): ColumnDefinition | undefined => {
-      const columnFieldDef = kanbanDef.fields?.[columnField];
+      const columnFieldDef = kanbanDef.fields?.[kanbanDef.column_field];
       if (!columnFieldDef) return undefined;
 
       const normalizedValue = normalizeColumnValue(value, columnFieldDef, t);
@@ -130,7 +118,7 @@ const KanbanBoardComponent = (
 
       return columns.find((col) => col.id === normalizedValue.id);
     },
-    [columns, columnField, kanbanDef, t],
+    [columns, kanbanDef, t],
   );
 
   const handleDragOver = useCallback(
@@ -150,7 +138,7 @@ const KanbanBoardComponent = (
       const overRecordId = over.id as number;
       const overRecord = allRecordsRef.current[overRecordId];
       if (overRecord) {
-        const recordColumnValue = overRecord[columnField];
+        const recordColumnValue = overRecord[kanbanDef.column_field];
         const recordColumn = findColumnByValue(recordColumnValue);
         if (recordColumn) {
           setOverColumnId(recordColumn.id);
@@ -160,13 +148,12 @@ const KanbanBoardComponent = (
 
       setOverColumnId(null);
     },
-    [columns, columnField, findColumnByValue],
+    [columns, kanbanDef.column_field, findColumnByValue],
   );
 
   const handleDragCancel = useCallback(() => {
     setActiveRecord(null);
     setOverColumnId(null);
-    setIsDragging(false);
   }, []);
 
   const handleRecordsUpdate = useCallback(
@@ -184,21 +171,36 @@ const KanbanBoardComponent = (
     [],
   );
 
-  const updateRecord = useCallback(
-    (id: number, updatedValues: Partial<KanbanRecord>) => {
-      allRecordsRef.current[id] = {
-        ...allRecordsRef.current[id],
-        ...updatedValues,
-      };
+  const refreshAllColumns = useCallback(() => {
+    Object.values(columnRefsRef.current).forEach((columnRef) => {
+      if (columnRef) {
+        columnRef.refresh();
+      }
+    });
+  }, []);
 
-      Object.values(columnRefsRef.current).forEach((columnRef) => {
-        if (columnRef) {
-          columnRef.updateRecord(id, updatedValues);
-        }
-      });
+  const refreshSourceAndTarget = useCallback(
+    (sourceId: string, targetId: string) => {
+      const targetRef = columnRefsRef.current[targetId];
+      if (targetRef) {
+        targetRef.refresh();
+      }
+      const sourceRef = columnRefsRef.current[sourceId];
+      if (sourceRef) {
+        sourceRef.refresh();
+      }
     },
     [],
   );
+
+  const onActionCompleted = useCallback(async () => {
+    refreshAllColumns();
+  }, [refreshAllColumns]);
+
+  const { runAction } = useProcessAction({
+    context,
+    onRefreshParentValues: onActionCompleted,
+  });
 
   const handleDragEnd = useCallback(
     async (event: DragEndEvent) => {
@@ -207,7 +209,6 @@ const KanbanBoardComponent = (
       const cleanup = () => {
         setActiveRecord(null);
         setOverColumnId(null);
-        setIsDragging(false);
       };
 
       if (!over) {
@@ -223,8 +224,8 @@ const KanbanBoardComponent = (
         return;
       }
 
-      const sourceColumnValue = record[columnField];
-      const columnFieldDef = kanbanDef.fields?.[columnField];
+      const sourceColumnValue = record[kanbanDef.column_field];
+      const columnFieldDef = kanbanDef.fields?.[kanbanDef.column_field];
       const sourceColumnNormalized = columnFieldDef
         ? normalizeColumnValue(sourceColumnValue, columnFieldDef, t)
         : null;
@@ -240,7 +241,7 @@ const KanbanBoardComponent = (
         const overRecordId = over.id as number;
         const overRecord = allRecordsRef.current[overRecordId];
         if (overRecord) {
-          const overRecordColumnValue = overRecord[columnField];
+          const overRecordColumnValue = overRecord[kanbanDef.column_field];
           targetColumn = findColumnByValue(overRecordColumnValue);
         }
       }
@@ -255,21 +256,17 @@ const KanbanBoardComponent = (
         return;
       }
 
-      const getBackendValue = (value: any) => {
-        if (Array.isArray(value) && value.length === 2) {
-          return value[0];
-        }
-        return value;
-      };
+      const fromValue = normalizeColumnValue(
+        sourceColumnValue,
+        columnFieldDef,
+        t,
+      );
 
-      const fromValue = getBackendValue(sourceColumnValue);
-      const toValue = getBackendValue(targetColumn.originalValue);
-      const originalRecord = { ...record };
-
-      updateRecord(recordId, {
-        ...record,
-        [columnField]: targetColumn.originalValue,
-      });
+      const toValue = normalizeColumnValue(
+        targetColumn.originalValue,
+        columnFieldDef,
+        t,
+      );
 
       cleanup();
 
@@ -277,14 +274,14 @@ const KanbanBoardComponent = (
         const methodName =
           kanbanDef.on_change_column?.method || "on_change_column";
 
-        await executeColumnChange({
+        const result = await executeColumnChange({
           model,
           action: methodName,
           payload: [
             [recordId],
-            columnField,
-            fromValue,
-            toValue,
+            kanbanDef.column_field,
+            fromValue?.id,
+            toValue?.id,
             {
               ...context,
               active_id: recordId,
@@ -293,13 +290,21 @@ const KanbanBoardComponent = (
           ],
         });
 
-        const targetColumnRef = columnRefsRef.current[targetColumn.id];
-        if (targetColumnRef) {
-          targetColumnRef.refresh();
+        if (result && typeof result === "object" && result.type) {
+          await runAction({
+            actionData: result,
+            // additionalContext: {
+            //   active_id: recordId,
+            //   active_ids: [recordId],
+            // },
+            // overrideValues: record,
+            // overrideFields: kanbanDef?.fields || {},
+          });
+          return;
         }
-      } catch (err) {
-        updateRecord(recordId, originalRecord);
 
+        refreshSourceAndTarget(sourceColumnNormalized.id, targetColumn.id);
+      } catch (err) {
         if (onDragSuccess) {
           onDragSuccess(targetColumn.id, sourceColumnNormalized.id);
         }
@@ -309,7 +314,6 @@ const KanbanBoardComponent = (
     },
     [
       columns,
-      columnField,
       model,
       context,
       kanbanDef,
@@ -317,17 +321,18 @@ const KanbanBoardComponent = (
       onDragSuccess,
       executeColumnChange,
       findColumnByValue,
-      updateRecord,
       t,
+      runAction,
+      refreshSourceAndTarget,
     ],
   );
 
   useImperativeHandle(
     ref,
     () => ({
-      updateRecord,
+      refreshAllColumns,
     }),
-    [updateRecord],
+    [refreshAllColumns],
   );
 
   const handleColumnRef = useCallback(
@@ -399,23 +404,21 @@ const KanbanBoardComponent = (
           <KanbanColumn
             key={column.id}
             ref={columnRefCallbacks[column.id]}
+            kanbanDef={kanbanDef}
             column={column}
-            columnField={columnField}
             model={model}
             domain={domain}
             context={context}
             searchParams={searchParams}
             nameSearch={nameSearch}
             fieldsToRetrieve={fieldsToRetrieve}
-            kanbanDef={kanbanDef}
-            draggable={!isDragging}
             allowSetMaxCards={false}
             onCardClick={onCardClick}
-            onButtonClick={onButtonClick}
             onCountChange={onColumnCountChange}
             onRecordsUpdate={handleRecordsUpdate}
             isOver={overColumnId === column.id}
             onAddCardClick={columnAddCardCallbacks[column.id]}
+            onRefreshAll={refreshAllColumns}
           />
         ))}
       </div>

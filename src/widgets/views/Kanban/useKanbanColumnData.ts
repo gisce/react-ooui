@@ -21,7 +21,6 @@ type UseKanbanColumnDataParams = {
   model: string;
   domain: any[];
   context: any;
-  columnField: string;
   columnValue: string;
   searchParams?: any[];
   nameSearch?: string;
@@ -35,7 +34,6 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
     model,
     domain,
     context,
-    columnField,
     columnValue,
     searchParams = [],
     nameSearch,
@@ -95,7 +93,7 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
 
   const fetchData = useDeepCompareCallback(
     async (isLoadingNextPage = false) => {
-      if (!enabled || !model || !columnField) {
+      if (!enabled || !model || !kanbanDef?.column_field) {
         return;
       }
 
@@ -131,7 +129,10 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
           searchValue = false;
         }
 
-        const columnDomain = [...baseDomain, [columnField, "=", searchValue]];
+        const columnDomain = [
+          ...baseDomain,
+          [kanbanDef.column_field, "=", searchValue],
+        ];
 
         if (!isLoadingNextPage) {
           try {
@@ -152,7 +153,9 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
 
         // Build fields object for searchForTree
         // searchForTree expects an object of field definitions, not an array of field names
-        const fieldsToFetch = [...new Set([...fieldsToRetrieve, columnField])];
+        const fieldsToFetch = [
+          ...new Set([...fieldsToRetrieve, kanbanDef.column_field]),
+        ];
         const fieldsObject = kanbanDef?.fields
           ? Object.keys(kanbanDef.fields).reduce(
               (acc: any, fieldName: string) => {
@@ -194,17 +197,15 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
           },
         );
 
+        setRecords(fetchedRecords);
+
         if (nameSearch) {
-          setRecords(fetchedRecords);
           setCurrentOffset(0);
           setHasMore(false);
         } else if (isLoadingNextPage) {
-          setRecords((prev) => [...prev, ...fetchedRecords]);
           setCurrentOffset((prev) => prev + PAGE_SIZE);
           setHasMore(fetchedRecords.length === PAGE_SIZE);
         } else {
-          // For refresh: replace old data with new data smoothly
-          setRecords(fetchedRecords);
           setCurrentOffset(PAGE_SIZE);
           setHasMore(fetchedRecords.length === PAGE_SIZE);
         }
@@ -293,7 +294,7 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
     [
       enabled,
       model,
-      columnField,
+      kanbanDef?.column_field,
       columnValue,
       domain,
       searchParams,
@@ -316,7 +317,7 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
   }, [
     enabled,
     model,
-    columnField,
+    kanbanDef?.column_field,
     columnValue,
     domain,
     searchParams,
