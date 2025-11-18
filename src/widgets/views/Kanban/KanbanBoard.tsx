@@ -34,7 +34,6 @@ export type KanbanBoardRef = {
 
 type KanbanBoardProps = {
   columns: ColumnDefinition[];
-  columnField: string;
   model: string;
   domain: any[];
   context: any;
@@ -61,7 +60,6 @@ const KanbanBoardComponent = (
 ) => {
   const {
     columns,
-    columnField,
     model,
     domain,
     context = {},
@@ -81,7 +79,6 @@ const KanbanBoardComponent = (
   const { showErrorNotification } = useErrorNotification();
   const [activeRecord, setActiveRecord] = useState<KanbanRecord | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
   const colorsForRecordsRef = useRef<{ [key: number]: string }>({});
   const statusForRecordsRef = useRef<{ [key: number]: string }>({});
   const allRecordsRef = useRef<{ [key: number]: KanbanRecord }>({});
@@ -110,8 +107,6 @@ const KanbanBoardComponent = (
     const { active } = event;
     const recordId = active.id as number;
 
-    setIsDragging(true);
-
     const fullRecord = allRecordsRef.current[recordId];
     if (fullRecord) {
       setActiveRecord(fullRecord);
@@ -122,7 +117,7 @@ const KanbanBoardComponent = (
 
   const findColumnByValue = useCallback(
     (value: any): ColumnDefinition | undefined => {
-      const columnFieldDef = kanbanDef.fields?.[columnField];
+      const columnFieldDef = kanbanDef.fields?.[kanbanDef.column_field];
       if (!columnFieldDef) return undefined;
 
       const normalizedValue = normalizeColumnValue(value, columnFieldDef, t);
@@ -130,7 +125,7 @@ const KanbanBoardComponent = (
 
       return columns.find((col) => col.id === normalizedValue.id);
     },
-    [columns, columnField, kanbanDef, t],
+    [columns, kanbanDef, t],
   );
 
   const handleDragOver = useCallback(
@@ -150,7 +145,7 @@ const KanbanBoardComponent = (
       const overRecordId = over.id as number;
       const overRecord = allRecordsRef.current[overRecordId];
       if (overRecord) {
-        const recordColumnValue = overRecord[columnField];
+        const recordColumnValue = overRecord[kanbanDef.column_field];
         const recordColumn = findColumnByValue(recordColumnValue);
         if (recordColumn) {
           setOverColumnId(recordColumn.id);
@@ -160,13 +155,12 @@ const KanbanBoardComponent = (
 
       setOverColumnId(null);
     },
-    [columns, columnField, findColumnByValue],
+    [columns, kanbanDef.column_field, findColumnByValue],
   );
 
   const handleDragCancel = useCallback(() => {
     setActiveRecord(null);
     setOverColumnId(null);
-    setIsDragging(false);
   }, []);
 
   const handleRecordsUpdate = useCallback(
@@ -207,7 +201,6 @@ const KanbanBoardComponent = (
       const cleanup = () => {
         setActiveRecord(null);
         setOverColumnId(null);
-        setIsDragging(false);
       };
 
       if (!over) {
@@ -223,8 +216,8 @@ const KanbanBoardComponent = (
         return;
       }
 
-      const sourceColumnValue = record[columnField];
-      const columnFieldDef = kanbanDef.fields?.[columnField];
+      const sourceColumnValue = record[kanbanDef.column_field];
+      const columnFieldDef = kanbanDef.fields?.[kanbanDef.column_field];
       const sourceColumnNormalized = columnFieldDef
         ? normalizeColumnValue(sourceColumnValue, columnFieldDef, t)
         : null;
@@ -240,7 +233,7 @@ const KanbanBoardComponent = (
         const overRecordId = over.id as number;
         const overRecord = allRecordsRef.current[overRecordId];
         if (overRecord) {
-          const overRecordColumnValue = overRecord[columnField];
+          const overRecordColumnValue = overRecord[kanbanDef.column_field];
           targetColumn = findColumnByValue(overRecordColumnValue);
         }
       }
@@ -268,7 +261,7 @@ const KanbanBoardComponent = (
 
       updateRecord(recordId, {
         ...record,
-        [columnField]: targetColumn.originalValue,
+        [kanbanDef.column_field]: targetColumn.originalValue,
       });
 
       cleanup();
@@ -282,7 +275,7 @@ const KanbanBoardComponent = (
           action: methodName,
           payload: [
             [recordId],
-            columnField,
+            kanbanDef.column_field,
             fromValue,
             toValue,
             {
@@ -309,7 +302,6 @@ const KanbanBoardComponent = (
     },
     [
       columns,
-      columnField,
       model,
       context,
       kanbanDef,
@@ -399,16 +391,14 @@ const KanbanBoardComponent = (
           <KanbanColumn
             key={column.id}
             ref={columnRefCallbacks[column.id]}
+            kanbanDef={kanbanDef}
             column={column}
-            columnField={columnField}
             model={model}
             domain={domain}
             context={context}
             searchParams={searchParams}
             nameSearch={nameSearch}
             fieldsToRetrieve={fieldsToRetrieve}
-            kanbanDef={kanbanDef}
-            draggable={!isDragging}
             allowSetMaxCards={false}
             onCardClick={onCardClick}
             onButtonClick={onButtonClick}

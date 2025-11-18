@@ -33,7 +33,6 @@ export type KanbanColumnRef = {
 
 type KanbanColumnProps = {
   column: ColumnDefinition;
-  columnField: string;
   model: string;
   domain: any[];
   context: any;
@@ -41,7 +40,6 @@ type KanbanColumnProps = {
   nameSearch?: string;
   fieldsToRetrieve?: string[];
   kanbanDef: Kanban;
-  draggable: boolean;
   allowSetMaxCards: boolean;
   maxCards?: number;
   isOver?: boolean;
@@ -64,7 +62,6 @@ const KanbanColumnComponent = (
 ) => {
   const {
     column,
-    columnField,
     model,
     domain,
     context = {},
@@ -72,7 +69,6 @@ const KanbanColumnComponent = (
     nameSearch,
     fieldsToRetrieve,
     kanbanDef,
-    draggable,
     maxCards,
     isOver = false,
     onCardClick,
@@ -107,7 +103,6 @@ const KanbanColumnComponent = (
     model,
     domain,
     context,
-    columnField,
     columnValue: columnOriginalValue,
     searchParams,
     nameSearch,
@@ -132,7 +127,7 @@ const KanbanColumnComponent = (
           ? { ...existingRecord, ...updatedValues }
           : ({ id, ...updatedValues } as KanbanRecord);
 
-        const recordColumnValue = updatedRecord[columnField];
+        const recordColumnValue = updatedRecord[kanbanDef.column_field];
 
         const shouldBeInThisColumn = (() => {
           if (
@@ -171,7 +166,7 @@ const KanbanColumnComponent = (
         }
       });
     },
-    [columnField, columnOriginalValue],
+    [kanbanDef.column_field, columnOriginalValue],
   );
 
   useImperativeHandle(
@@ -279,6 +274,10 @@ const KanbanColumnComponent = (
     isLoadingMore,
     fetchNextPage,
   ]);
+
+  if (count === 0 && !kanbanDef.drag) {
+    return null;
+  }
 
   return (
     <div
@@ -410,7 +409,7 @@ const KanbanColumnComponent = (
                     status={statusForRecords?.current?.[record.id]}
                     record={record}
                     kanbanDef={kanbanDef}
-                    draggable={draggable}
+                    draggable={kanbanDef.drag}
                     context={context}
                     model={model}
                     onClick={cardClickHandlers[record.id]}

@@ -302,15 +302,14 @@ const KanbanComponentInner = (
     return (
       <KanbanBoard
         ref={boardRef}
+        kanbanDef={kanbanDef}
         columns={columns}
-        columnField={kanbanDef.column_field}
         model={model}
         domain={domain}
         context={context}
         searchParams={searchParams}
         nameSearch={nameSearch}
         fieldsToRetrieve={fieldsToRetrieve}
-        kanbanDef={kanbanDef}
         onCardClick={onCardClick}
         onButtonClick={handleButtonClick}
         setColumnRef={setColumnRef}
