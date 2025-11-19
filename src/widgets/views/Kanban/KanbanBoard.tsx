@@ -129,12 +129,21 @@ const KanbanBoardComponent = (
         return;
       }
 
+      // First, check if hovering over a column directly
       const overColumn = columns.find((col) => col.id === over.id);
       if (overColumn) {
         setOverColumnId(overColumn.id);
         return;
       }
 
+      // If over a card, try to get column from dnd-kit data first (most reliable)
+      const cardColumnId = over.data.current?.columnId as string | undefined;
+      if (cardColumnId) {
+        setOverColumnId(cardColumnId);
+        return;
+      }
+
+      // Fallback: try to find column from record cache
       const overRecordId = over.id as number;
       const overRecord = allRecordsRef.current[overRecordId];
       if (overRecord) {

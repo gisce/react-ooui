@@ -30,6 +30,7 @@ type KanbanCardProps = {
   onClick?: () => void;
   onRefreshAll?: () => void;
   isMoving?: boolean;
+  columnId?: string;
 };
 
 const KanbanCardComponent = (props: KanbanCardProps) => {
@@ -44,6 +45,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
     onClick,
     onRefreshAll,
     isMoving = false,
+    columnId,
   } = props;
   const { token } = useToken();
   const [loadingButton, setLoadingButton] = useState<string | null>(null);
@@ -72,6 +74,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
   const { attributes, listeners, setNodeRef, isDragging } = useSortable({
     id: record.id,
     disabled: !draggable,
+    data: { columnId },
   });
 
   const style = {

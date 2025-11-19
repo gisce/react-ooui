@@ -333,6 +333,7 @@ const KanbanColumnComponent = (
                     model={model}
                     onClick={cardClickHandlers[record.id]}
                     onRefreshAll={onRefreshAll}
+                    columnId={columnId}
                   />
                 </div>
               );
