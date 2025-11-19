@@ -51,8 +51,12 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
   const [currentOffset, setCurrentOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
-  const colorsForRecords = useRef<{ [key: number]: string }>({});
-  const statusForRecords = useRef<{ [key: number]: string }>({});
+  const [colorsForRecords, setColorsForRecords] = useState<{
+    [key: number]: string;
+  }>({});
+  const [statusForRecords, setStatusForRecords] = useState<{
+    [key: number]: string;
+  }>({});
 
   const PAGE_SIZE = 30;
 
@@ -264,17 +268,17 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
           });
 
           if (isLoadingNextPage) {
-            colorsForRecords.current = {
-              ...colorsForRecords.current,
+            setColorsForRecords((prev) => ({
+              ...prev,
               ...newColors,
-            };
-            statusForRecords.current = {
-              ...statusForRecords.current,
+            }));
+            setStatusForRecords((prev) => ({
+              ...prev,
               ...newStatus,
-            };
+            }));
           } else {
-            colorsForRecords.current = newColors;
-            statusForRecords.current = newStatus;
+            setColorsForRecords(newColors);
+            setStatusForRecords(newStatus);
           }
         }
       } catch (err: any) {

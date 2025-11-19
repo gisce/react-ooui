@@ -42,3 +42,11 @@ export const StatusDot = styled.div<{ $color: string }>`
   border-radius: 50%;
   background-color: ${(props) => props.$color};
 `;
+
+export const DropIndicator = styled.div<{ $color: string }>`
+  height: 3px;
+  background-color: ${(props) => props.$color};
+  border-radius: 2px;
+  margin-bottom: 8px;
+  transition: opacity 0.15s ease;
+`;

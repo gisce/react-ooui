@@ -17,6 +17,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  closestCenter,
 } from "@dnd-kit/core";
 import { KanbanColumn, KanbanColumnRef } from "./KanbanColumn";
 import { KanbanCard } from "./KanbanCard";
@@ -73,6 +74,7 @@ const KanbanBoardComponent = (
   const { showErrorNotification } = useErrorNotification();
   const [activeRecord, setActiveRecord] = useState<KanbanRecord | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<number | null>(null);
   const colorsForRecordsRef = useRef<{ [key: number]: string }>({});
   const statusForRecordsRef = useRef<{ [key: number]: string }>({});
   const allRecordsRef = useRef<{ [key: number]: KanbanRecord }>({});
@@ -123,9 +125,10 @@ const KanbanBoardComponent = (
 
   const handleDragOver = useCallback(
     (event: DragOverEvent) => {
-      const { over } = event;
+      const { over, active } = event;
       if (!over) {
         setOverColumnId(null);
+        setOverId(null);
         return;
       }
 
@@ -133,6 +136,7 @@ const KanbanBoardComponent = (
       const overColumn = columns.find((col) => col.id === over.id);
       if (overColumn) {
         setOverColumnId(overColumn.id);
+        setOverId(null);
         return;
       }
 
@@ -151,11 +155,17 @@ const KanbanBoardComponent = (
         const recordColumn = findColumnByValue(recordColumnValue);
         if (recordColumn) {
           setOverColumnId(recordColumn.id);
+          if (overRecordId !== active.id) {
+            setOverId(overRecordId);
+          } else {
+            setOverId(null);
+          }
           return;
         }
       }
 
       setOverColumnId(null);
+      setOverId(null);
     },
     [columns, kanbanDef.column_field, findColumnByValue],
   );
@@ -163,17 +173,22 @@ const KanbanBoardComponent = (
   const handleDragCancel = useCallback(() => {
     setActiveRecord(null);
     setOverColumnId(null);
+    setOverId(null);
   }, []);
 
   const handleRecordsUpdate = useCallback(
-    (records: KanbanRecord[], colors: any, status: any) => {
+    (
+      records: KanbanRecord[],
+      colors: { [key: number]: string },
+      status: { [key: number]: string },
+    ) => {
       records.forEach((record) => {
         allRecordsRef.current[record.id] = record;
-        if (colors?.current?.[record.id]) {
-          colorsForRecordsRef.current[record.id] = colors.current[record.id];
+        if (colors?.[record.id]) {
+          colorsForRecordsRef.current[record.id] = colors[record.id];
         }
-        if (status?.current?.[record.id]) {
-          statusForRecordsRef.current[record.id] = status.current[record.id];
+        if (status?.[record.id]) {
+          statusForRecordsRef.current[record.id] = status[record.id];
         }
       });
     },
@@ -218,6 +233,7 @@ const KanbanBoardComponent = (
       const cleanup = () => {
         setActiveRecord(null);
         setOverColumnId(null);
+        setOverId(null);
       };
 
       if (!over) {
@@ -395,6 +411,7 @@ const KanbanBoardComponent = (
   return (
     <DndContext
       sensors={sensors}
+      collisionDetection={closestCenter}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
@@ -428,6 +445,8 @@ const KanbanBoardComponent = (
             isOver={overColumnId === column.id}
             onAddCardClick={columnAddCardCallbacks[column.id]}
             onRefreshAll={refreshAllColumns}
+            activeId={activeRecord?.id ?? null}
+            overId={overId}
           />
         ))}
       </div>
