@@ -6,6 +6,7 @@ export const StyledCard = styled(AntCard)<{
   $borderColor: string;
   $primaryColor: string;
   $color?: string;
+  $isDraggingActive?: boolean;
 }>`
   position: relative;
   background-color: ${(props) => props.$bgColor};
@@ -19,7 +20,10 @@ export const StyledCard = styled(AntCard)<{
   }
 
   &:hover {
-    outline: 3px solid ${(props) => props.$color || props.$primaryColor};
+    outline: ${(props) =>
+      props.$isDraggingActive
+        ? "none"
+        : `3px solid ${props.$color || props.$primaryColor}`};
   }
 `;
 

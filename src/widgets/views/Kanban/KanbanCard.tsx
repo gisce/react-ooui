@@ -262,6 +262,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
         $borderColor={token.colorBorder}
         $primaryColor={token.colorPrimary}
         $color={color}
+        $isDraggingActive={activeId !== null}
         styles={{
           body: {
             padding: "12px",
