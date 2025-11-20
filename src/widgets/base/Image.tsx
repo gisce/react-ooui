@@ -10,7 +10,8 @@ import {
 } from "@ant-design/icons";
 
 import { toBase64, getMimeType } from "@/helpers/filesHelper";
-import { Icon, iconMapper, useLocale } from "@gisce/react-formiga-components";
+import { iconMapper, useLocale } from "@gisce/react-formiga-components";
+import { IconRender } from "./Icon";
 
 type ImageProps = {
   ooui: ImageOoui;
@@ -27,13 +28,8 @@ export const ImageRender = (props: ImageRenderProps) => {
   const { value, style = {}, width, height } = props;
   if (value) {
     const size = height || width;
-    const iconStyle: any = size ? { fontSize: size } : {};
-    const MappedIcon = iconMapper(
-      value,
-      size ? { style: iconStyle } : undefined,
-    );
-    if (MappedIcon) {
-      return <MappedIcon />;
+    if (iconMapper(value)) {
+      return <IconRender name={value} size={size} />;
     } else {
       const imgStyle: any = { ...style };
       if (width && height) {
@@ -55,7 +51,7 @@ export const ImageRender = (props: ImageRenderProps) => {
 
 export const Image = (props: ImageProps) => {
   const { ooui } = props;
-  const { required, id, width, height } = ooui;
+  const { required, id, width, height } = ooui as any;
 
   if (iconMapper(id)) {
     return <ImageRender value={id} width={width} height={height} />;
