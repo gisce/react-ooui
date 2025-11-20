@@ -14,7 +14,12 @@ import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { useProcessAction } from "@/hooks/useProcessAction";
 import { KANBAN_COMPONENTS } from "./kanbanComponents";
 import { Icon } from "@gisce/react-formiga-components";
-import { StyledCard, ColorBar, StatusDot } from "./KanbanCard.styles";
+import {
+  StyledCard,
+  ColorBar,
+  StatusDot,
+  DropIndicator,
+} from "./KanbanCard.styles";
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -30,6 +35,9 @@ type KanbanCardProps = {
   onClick?: () => void;
   onRefreshAll?: () => void;
   isMoving?: boolean;
+  isDropTarget?: boolean;
+  activeId?: number | null;
+  columnId?: string;
 };
 
 const KanbanCardComponent = (props: KanbanCardProps) => {
@@ -44,6 +52,9 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
     onClick,
     onRefreshAll,
     isMoving = false,
+    columnId,
+    isDropTarget = false,
+    activeId = null,
   } = props;
   const { token } = useToken();
   const [loadingButton, setLoadingButton] = useState<string | null>(null);
@@ -72,6 +83,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
   const { attributes, listeners, setNodeRef, isDragging } = useSortable({
     id: record.id,
     disabled: !draggable,
+    data: { columnId },
   });
 
   const style = {
@@ -238,8 +250,11 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
     );
   }, [visibleButtons, handleButtonClick]);
 
+  const showDropIndicator = isDropTarget && activeId !== null;
+
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {showDropIndicator && <DropIndicator $color={token.colorPrimary} />}
       <StyledCard
         size="small"
         onClick={onClick}
@@ -247,6 +262,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
         $borderColor={token.colorBorder}
         $primaryColor={token.colorPrimary}
         $color={color}
+        $isDraggingActive={activeId !== null}
         styles={{
           body: {
             padding: "12px",

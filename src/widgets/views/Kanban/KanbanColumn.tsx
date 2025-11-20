@@ -44,9 +44,15 @@ type KanbanColumnProps = {
   onCardClick?: (record: KanbanRecord) => void;
   onMaxCardsChange?: (colId: string, maxCards: number | undefined) => void;
   onCountChange: (columnId: string, count: number) => void;
-  onRecordsUpdate?: (records: KanbanRecord[], colors: any, status: any) => void;
+  onRecordsUpdate?: (
+    records: KanbanRecord[],
+    colors: { [key: number]: string },
+    status: { [key: number]: string },
+  ) => void;
   onAddCardClick?: () => void;
   onRefreshAll?: () => void;
+  activeId?: number | null;
+  overId?: number | null;
 };
 
 const KanbanColumnComponent = (
@@ -69,6 +75,8 @@ const KanbanColumnComponent = (
     onRecordsUpdate,
     onAddCardClick,
     onRefreshAll,
+    activeId = null,
+    overId = null,
   } = props;
 
   const {
@@ -149,7 +157,7 @@ const KanbanColumnComponent = (
   }, [records, onCardClick]);
 
   const hasStatusRibbon = useMemo(() => {
-    return records.some((record) => statusForRecords?.current?.[record.id]);
+    return records.some((record) => statusForRecords?.[record.id]);
   }, [records, statusForRecords]);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -298,7 +306,6 @@ const KanbanColumnComponent = (
         <SortableContext
           items={recordIds}
           strategy={verticalListSortingStrategy}
-          disabled={true}
         >
           <div
             style={{
@@ -324,8 +331,8 @@ const KanbanColumnComponent = (
                   }}
                 >
                   <KanbanCard
-                    color={colorsForRecords?.current?.[record.id]}
-                    status={statusForRecords?.current?.[record.id]}
+                    color={colorsForRecords?.[record.id]}
+                    status={statusForRecords?.[record.id]}
                     record={record}
                     kanbanDef={kanbanDef}
                     draggable={kanbanDef.drag}
@@ -333,6 +340,9 @@ const KanbanColumnComponent = (
                     model={model}
                     onClick={cardClickHandlers[record.id]}
                     onRefreshAll={onRefreshAll}
+                    columnId={columnId}
+                    isDropTarget={overId === record.id}
+                    activeId={activeId}
                   />
                 </div>
               );

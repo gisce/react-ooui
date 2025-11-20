@@ -6,6 +6,7 @@ export const StyledCard = styled(AntCard)<{
   $borderColor: string;
   $primaryColor: string;
   $color?: string;
+  $isDraggingActive?: boolean;
 }>`
   position: relative;
   background-color: ${(props) => props.$bgColor};
@@ -19,7 +20,10 @@ export const StyledCard = styled(AntCard)<{
   }
 
   &:hover {
-    outline: 3px solid ${(props) => props.$color || props.$primaryColor};
+    outline: ${(props) =>
+      props.$isDraggingActive
+        ? "none"
+        : `3px solid ${props.$color || props.$primaryColor}`};
   }
 `;
 
@@ -41,4 +45,12 @@ export const StatusDot = styled.div<{ $color: string }>`
   height: 10px;
   border-radius: 50%;
   background-color: ${(props) => props.$color};
+`;
+
+export const DropIndicator = styled.div<{ $color: string }>`
+  height: 3px;
+  background-color: ${(props) => props.$color};
+  border-radius: 2px;
+  margin-bottom: 8px;
+  transition: opacity 0.15s ease;
 `;
