@@ -153,7 +153,8 @@ function CommonIndicator({
     useGrouping: true,
   });
 
-  let finalValue = total ? `${localeValue}/${totalValue}` : `${localeValue}`;
+  let finalValue =
+    total !== undefined ? `${localeValue}/${totalValue}` : `${localeValue}`;
 
   if (suffix) {
     finalValue += " " + suffix;
@@ -227,11 +228,12 @@ function PercentageIndicator({
     useGrouping: true,
   });
 
-  let finalValue = total
-    ? `${localeValue}/${total?.toLocaleString("es-ES", {
-        useGrouping: true,
-      })}`
-    : `${localeValue}`;
+  let finalValue =
+    total !== undefined
+      ? `${localeValue}/${total?.toLocaleString("es-ES", {
+          useGrouping: true,
+        })}`
+      : `${localeValue}`;
 
   if (suffix) {
     finalValue += " " + suffix;

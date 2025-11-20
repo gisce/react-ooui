@@ -75,6 +75,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
         suffix,
         progressbar,
         showPercent,
+        showTotal,
       } = graphData as GraphResponseIndicator;
 
       const shouldShowPercent =
@@ -87,7 +88,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
       return (
         <GraphIndicatorComp
           value={value}
-          totalValue={total}
+          totalValue={showTotal !== false ? total : undefined}
           percent={percent}
           color={color}
           icon={icon}
