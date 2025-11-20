@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { One2many as One2manyOoui } from "@gisce/ooui";
 import Field from "@/common/Field";
 import { Spin, Alert } from "antd";
@@ -67,6 +67,13 @@ export const One2many = (props: Props) => {
   const getToolbarEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_GET_TOOLBAR,
   );
+
+  // Store user's tree type preference across refreshes
+  const userTreeTypePreferenceRef = useRef<TreeType | null>(null);
+
+  const onUserSelectTreeType = useCallback((type: TreeType) => {
+    userTreeTypePreferenceRef.current = type;
+  }, []);
 
   const getViewData = async (type: ViewType) => {
     const getViewPromise = ConnectionProvider.getHandler().getView({
@@ -181,14 +188,22 @@ export const One2many = (props: Props) => {
           views={views}
           parentViewId={parentViewId}
           treeViewId={views.get("tree")?.view_id}
+          userTreeTypePreferenceRef={userTreeTypePreferenceRef}
+          onUserSelectTreeType={onUserSelectTreeType}
         />
       </Field>
     </One2manyProvider>
   );
 };
 
-const One2manyComponent = (props: One2manyInputBaseProps) => {
-  const { ooui, value } = props;
+const One2manyComponent = (
+  props: One2manyInputBaseProps & {
+    userTreeTypePreferenceRef: React.RefObject<TreeType | null>;
+    onUserSelectTreeType: (type: TreeType) => void;
+  },
+) => {
+  const { ooui, value, userTreeTypePreferenceRef, onUserSelectTreeType } =
+    props;
 
   const { treeType, setTreeType } = useOne2manyContext();
   const enableNewTable = useUserFeatureIsEnabled(
@@ -224,7 +239,13 @@ const One2manyComponent = (props: One2manyInputBaseProps) => {
         return "paginated";
       };
 
-      setTreeType(determineTreeType());
+      // Check if user has manually selected a tree type
+      const userPreference = userTreeTypePreferenceRef.current;
+      if (userPreference && userPreference !== "legacy") {
+        setTreeType(userPreference);
+      } else {
+        setTreeType(determineTreeType());
+      }
       return;
     }
 
@@ -252,7 +273,13 @@ const One2manyComponent = (props: One2manyInputBaseProps) => {
   }
 
   if (enableNewTable) {
-    return <One2manyInput {...props} treeType={treeType} />;
+    return (
+      <One2manyInput
+        {...props}
+        treeType={treeType}
+        onUserSelectTreeType={onUserSelectTreeType}
+      />
+    );
   } else if (treeType === "infinite") {
     // Old infinite table with refactor and improvements
     return <One2manyInputInfinite {...props} />;
