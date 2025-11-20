@@ -13,6 +13,7 @@ export type FormActionViewProps = {
   context: any;
   defaultValues?: any;
   forcedValues?: any;
+  readOnly?: boolean;
   results: any[];
   setResults: (value: any[]) => void;
   setCurrentItemIndex: (value?: number) => void;
@@ -29,6 +30,7 @@ export const FormActionView = (props: FormActionViewProps) => {
     context,
     defaultValues,
     forcedValues,
+    readOnly,
     results,
     setResults,
     setCurrentItemIndex,
@@ -49,6 +51,7 @@ export const FormActionView = (props: FormActionViewProps) => {
         model={model}
         defaultValues={defaultValues}
         forcedValues={forcedValues}
+        readOnly={readOnly}
         formView={formView}
         actionDomain={domain}
         id={currentId}
