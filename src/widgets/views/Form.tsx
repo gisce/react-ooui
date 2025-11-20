@@ -10,7 +10,11 @@ import {
 import { Form as FormOoui, parseContext } from "@gisce/ooui";
 import { Form as AntForm, Button, Divider, Space, Row, Spin } from "antd";
 import Measure from "react-measure";
-import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import {
+  CheckOutlined,
+  CloseOutlined,
+  ExportOutlined,
+} from "@ant-design/icons";
 import debounce from "lodash/debounce";
 
 import Container from "@/widgets/containers/Container";
@@ -43,6 +47,10 @@ import {
   ContentRootContext,
   ContentRootContextType,
 } from "@/context/ContentRootContext";
+import {
+  TabManagerContext,
+  TabManagerContextType,
+} from "@/context/TabManagerContext";
 import { useLocale } from "@gisce/react-formiga-components";
 import {
   convertFrom2ManyRawValues,
@@ -50,7 +58,7 @@ import {
 } from "@/helpers/one2manyHelper";
 import { mergeFieldsContext } from "@/helpers/fieldsHelper";
 import { useAutorefreshableFormFields } from "@/hooks/useAutorefreshableFormFields";
-import { useDeepCompareEffect } from "use-deep-compare";
+import { useDeepCompareCallback, useDeepCompareEffect } from "use-deep-compare";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
 import {
   useFieldMessages,
@@ -176,6 +184,11 @@ function Form(props: FormProps, ref: any) {
     ContentRootContext,
   ) as ContentRootContextType;
   const { processAction, globalValues } = contentRootContext || {};
+
+  const tabManagerContext = useContext(
+    TabManagerContext,
+  ) as TabManagerContextType;
+  const { openAction } = tabManagerContext || {};
 
   const { onActionTriggered } = useConfigContext();
 
@@ -437,6 +450,38 @@ function Form(props: FormProps, ref: any) {
     onMustRefreshParent,
     propsOnCancel,
     setFormIsSaving,
+  ]);
+
+  const handleOpenInNewTab = useDeepCompareCallback(() => {
+    if (!openAction || !currentId) return;
+
+    const recordTitle = formOoui?.string || title || "";
+
+    openAction({
+      domain: [["id", "=", currentId]],
+      context: parentContext,
+      model,
+      res_id: currentId,
+      title: recordTitle,
+      views: [[view_id || formViewProps?.view_id, "form"]],
+      target: "current",
+      initialView: { type: "form" },
+      action_id: -1,
+      action_type: "ir.actions.act_window",
+      readOnly,
+    });
+    onCancel?.();
+  }, [
+    openAction,
+    currentId,
+    parentContext,
+    model,
+    formOoui?.string,
+    title,
+    view_id,
+    formViewProps,
+    onCancel,
+    readOnly,
   ]);
 
   const setFieldValue = (field: string, value?: string) => {
@@ -1324,11 +1369,23 @@ function Form(props: FormProps, ref: any) {
   };
 
   const footer = () => {
+    const currentId = getCurrentId();
+    const canOpenInNewTab = currentId && openAction;
+
     return (
       <>
         <Divider />
-        <Row justify="end">
-          <Space>
+        <Row justify="space-between">
+          {canOpenInNewTab && (
+            <Button
+              icon={<ExportOutlined />}
+              disabled={isSubmitting}
+              onClick={handleOpenInNewTab}
+            >
+              {t("openInNewTab")}
+            </Button>
+          )}
+          <Space style={{ marginLeft: "auto" }}>
             <Button
               icon={<CloseOutlined />}
               disabled={isSubmitting}

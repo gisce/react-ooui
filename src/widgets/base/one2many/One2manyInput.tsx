@@ -52,13 +52,15 @@ export type One2manyInputBaseProps = One2manyInputBasePropsBase & {
 
 export type One2manyInputProps = One2manyInputBaseProps & {
   treeType: TreeType;
+  onUserSelectTreeType?: (type: TreeType) => void;
 };
 
 export const One2manyInput: React.FC<One2manyInputProps> = (
   props: One2manyInputProps,
 ) => {
   const gridRef = useRef<InfiniteTableRef>(null);
-  const { value, onChange, ooui, views, treeType } = props;
+  const { value, onChange, ooui, views, treeType, onUserSelectTreeType } =
+    props;
   const { items: one2manyItems = [] } = value || {};
   const items = useOne2manyItems({ one2manyItems });
   const { currentView, setCurrentView, itemIndex, setItemIndex, setTreeType } =
@@ -247,10 +249,12 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     (newType: TreeType) => {
       // Don't allow changing from/to legacy type in One2many
       if (newType !== "legacy" && treeType !== "legacy") {
+        // Store user's preference so it persists across form refreshes
+        onUserSelectTreeType?.(newType);
         setTreeType(newType);
       }
     },
-    [treeType, setTreeType],
+    [treeType, setTreeType, onUserSelectTreeType],
   );
 
   const enableNewTable = useUserFeatureIsEnabled(

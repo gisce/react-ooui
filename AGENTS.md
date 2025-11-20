@@ -13,6 +13,7 @@
 - [Creating New Views](docs/CREATING_NEW_VIEWS.md)
 
 ## Workflow Rules
+- **Do not run `npm install` for routine checks or builds.** If you must install a new package, remind the user to run `npm run link` in the webclient afterward to redo the links.
 - Do not run Vitest (`npm run test`, `npm run test:*`) or start dev servers unless the user requests it.
 - After every change, run the full suite of checks in this order:
   - `npm run check` (project lint pipeline).

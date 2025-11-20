@@ -192,24 +192,11 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     ) {
       setTreeFirstVisibleRow?.(0);
 
-      // Skip cache purge if:
-      // 1. We're staying in name search mode (both prev and current are name search)
-      // 2. A manual refresh was just called (from searchParams or nameSearch useEffect)
-      const wasInNameSearch = prevNameSearchForTotalRows.current !== undefined;
-      const isInNameSearch = nameSearch !== undefined;
-      const stayingInNameSearch = wasInNameSearch && isInNameSearch;
-
-      if (!stayingInNameSearch && !manualRefreshJustCalled.current) {
-        tableRef.current?.refresh();
-      }
-
-      // Reset the flag after checking
-      manualRefreshJustCalled.current = false;
-
       setTimeout(() => {
         tableRef.current?.scrollToTop();
       }, 0);
     }
+
     prevTotalRows.current = totalRows;
     prevNameSearchForTotalRows.current = nameSearch;
     // eslint-disable-next-line react-hooks/exhaustive-deps
