@@ -51,14 +51,18 @@ export const GraphIndicatorComp = (props: GraphIndicatorCompProps) => {
         const circleSize = minDimension > 0 ? minDimension : 200;
         const innerSize = circleSize;
 
+        // For non-progressbar indicators, use old simple logic (no fallbacks)
+        const simpleHeight = fixedHeight || height;
+        const simpleWidth = width;
+
         const indicatorContent = showPercent ? (
           <PercentageIndicator
             value={value!}
             total={totalValue!}
             percent={percent!}
             measureRef={progressbar ? undefined : measureRef}
-            height={progressbar ? innerSize : availableHeight}
-            width={progressbar ? innerSize : availableWidth}
+            height={progressbar ? innerSize : simpleHeight}
+            width={progressbar ? innerSize : simpleWidth}
             color={color}
             icon={icon}
             suffix={suffix}
@@ -68,8 +72,8 @@ export const GraphIndicatorComp = (props: GraphIndicatorCompProps) => {
             value={value!}
             total={totalValue}
             measureRef={progressbar ? undefined : measureRef}
-            height={progressbar ? innerSize : availableHeight}
-            width={progressbar ? innerSize : availableWidth}
+            height={progressbar ? innerSize : simpleHeight}
+            width={progressbar ? innerSize : simpleWidth}
             color={color}
             icon={icon}
             suffix={suffix}
