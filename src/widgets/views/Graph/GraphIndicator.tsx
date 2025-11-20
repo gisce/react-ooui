@@ -22,6 +22,7 @@ export type GraphInidicatorProps = {
   operator?: Operator;
   manualIds?: number[];
   fixedHeight?: number;
+  showTotal?: boolean;
 };
 
 export const GraphIndicator = (props: GraphInidicatorProps) => {
@@ -39,6 +40,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
     operator,
     manualIds,
     fixedHeight,
+    showTotal,
   } = props;
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState<number>();
@@ -212,7 +214,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
   return (
     <GraphIndicatorComp
       value={value!}
-      totalValue={totalValue!}
+      totalValue={showTotal !== false ? totalValue! : undefined}
       percent={percent!}
       color={color}
       icon={icon}
