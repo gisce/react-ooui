@@ -410,12 +410,6 @@ const KanbanBoardComponent = (
         if (result && typeof result === "object" && result.type) {
           await runAction({
             actionData: result,
-            // additionalContext: {
-            //   active_id: recordId,
-            //   active_ids: [recordId],
-            // },
-            // overrideValues: record,
-            // overrideFields: kanbanDef?.fields || {},
           });
           return;
         }
