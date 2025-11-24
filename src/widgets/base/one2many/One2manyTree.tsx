@@ -65,6 +65,19 @@ export type One2manyTreeProps = {
 
 const DEFAULT_HEIGHT = 400;
 
+const findChangedItems = (
+  current: One2manyItem[],
+  previous: One2manyItem[],
+): One2manyItem[] => {
+  return current.filter((item) => {
+    const prevItem = previous.find((p) => p.id === item.id);
+    if (!prevItem) return true;
+    return (
+      JSON.stringify(item.treeValues) !== JSON.stringify(prevItem.treeValues)
+    );
+  });
+};
+
 export const One2manyTree = ({
   items,
   height,
@@ -313,25 +326,35 @@ export const One2manyTree = ({
       return;
     }
 
+    // Find which item(s) changed
+    const changedItems = findChangedItems(items, prevItemsValue.current);
     prevItemsValue.current = items;
 
-    // Refresh table for both modes
     clearAttributes();
-    if (treeType === "paginated") {
-      // Force a refresh of the paginated table by changing the key
-      setRefreshKey((prev) => prev + 1);
-      // Also refresh the paginated results when items change
-      if (items.length > 0) {
-        onPaginatedRequestData().then(setPaginatedResults);
-      } else {
-        setPaginatedResults([]);
-        setPaginatedLoading(false);
-      }
-    } else {
-      tableRef?.current?.refresh();
+
+    if (changedItems.length > 0) {
+      const transformLocally = async () => {
+        const changedItemsWithValues = changedItems
+          .filter((item) => item.treeValues)
+          .map((item) => item.treeValues);
+
+        if (changedItemsWithValues.length === 0) {
+          return;
+        }
+
+        const transformed = await getTableItems(
+          ooui,
+          changedItemsWithValues,
+          context,
+        );
+
+        tableRef?.current?.updateRows(transformed);
+      };
+      transformLocally();
     }
+
     tableRef?.current?.unselectAll();
-  }, [items, treeType]);
+  }, [items, treeType, clearAttributes, tableRef, ooui, context]);
 
   // Shared callbacks for both modes - stabilize all callbacks
   const onGetFirstVisibleRowIndex = useCallback(() => {

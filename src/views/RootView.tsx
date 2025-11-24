@@ -612,6 +612,7 @@ function RootView(props: RootViewProps, ref: any) {
       res_id,
       values,
       forced_values,
+      readOnly,
       treeExpandable = false,
       limit,
       searchParams,
@@ -679,6 +680,7 @@ function RootView(props: RootViewProps, ref: any) {
             res_id={res_id}
             formDefaultValues={values}
             formForcedValues={forced_values}
+            formReadOnly={readOnly}
             treeExpandable={treeExpandable}
             limit={limit}
             initialSearchParams={searchParams}
