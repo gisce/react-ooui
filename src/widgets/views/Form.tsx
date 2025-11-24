@@ -152,6 +152,7 @@ function Form(props: FormProps, ref: any) {
   const createdId = useRef<number>();
   const originalFormValues = useRef<any>({});
   const lastAssignedValues = useRef<any>({});
+  const defaultGetValues = useRef<any>({});
   const warningIsShown = useRef<boolean>(false);
   const formSubmitting = useRef<boolean>(false);
   const x2manyPendingLink = useRef<boolean>(false);
@@ -711,7 +712,9 @@ function Form(props: FormProps, ref: any) {
       setAttachments?.(results);
     } else {
       setAttachments?.([]);
-      values = await getDefaultValues(fields);
+      const defaults = await getDefaultValues(fields);
+      defaultGetValues.current = defaults;
+      values = defaults;
       if ((values as any).id) {
         createdId.current = (values as any).id;
       }
@@ -801,7 +804,11 @@ function Form(props: FormProps, ref: any) {
 
       if (mustClearAfterSave) {
         createdId.current = undefined;
-        assignNewValuesToForm({ values: {}, fields, reset: true });
+        assignNewValuesToForm({
+          values: defaultGetValues.current,
+          fields,
+          reset: true,
+        });
       }
 
       return { succeed: true, id: currentId };
@@ -836,7 +843,11 @@ function Form(props: FormProps, ref: any) {
 
       if (mustClearAfterSave) {
         createdId.current = undefined;
-        assignNewValuesToForm({ values: {}, fields, reset: true });
+        assignNewValuesToForm({
+          values: defaultGetValues.current,
+          fields,
+          reset: true,
+        });
       }
 
       if (submitMode !== "2many") {

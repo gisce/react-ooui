@@ -1071,16 +1071,7 @@ test.describe("Infinite TreeActionView Component", () => {
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-header", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
-    // Wait for AG Grid to be fully initialized
-    await page.waitForFunction(
-      () => {
-        const grid = document.querySelector(".ag-root");
-        const headers = document.querySelectorAll(".ag-header-cell");
-        const rows = document.querySelectorAll(".ag-row");
-        return grid && headers.length > 0 && rows.length > 0;
-      },
-      { timeout: 5000 }
-    );
+    await page.waitForTimeout(3000);
 
     const getColumnOrder = async () => {
       return await page.evaluate(() => {
@@ -1140,29 +1131,7 @@ test.describe("Infinite TreeActionView Component", () => {
 
     // Perform drag operation
     await firstLabel.dragTo(secondLabel);
-    
-    // Wait for the column order to change instead of using a fixed timeout
-    try {
-      await page.waitForFunction(
-        (expectedOrder) => {
-          const headers = Array.from(document.querySelectorAll(".ag-header-cell"));
-          const currentOrder = headers
-            .map((header) => ({
-              text: header.textContent?.trim(),
-              x: header.getBoundingClientRect().x
-            }))
-            .filter((item) => item.text && item.text !== "")
-            .sort((a, b) => a.x - b.x)
-            .map((item) => item.text);
-          
-          return JSON.stringify(currentOrder) !== JSON.stringify(expectedOrder);
-        },
-        originalOrder,
-        { timeout: 10000 }
-      );
-    } catch (error) {
-      throw error;
-    }
+    await page.waitForTimeout(5000); // Wait for drag animation to complete and localStorage updates
 
     // Check order after drag
     const orderAfterDrag = await getColumnOrder();
@@ -1177,16 +1146,7 @@ test.describe("Infinite TreeActionView Component", () => {
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-header", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
-    // Wait for AG Grid to be fully initialized
-    await page.waitForFunction(
-      () => {
-        const grid = document.querySelector(".ag-root");
-        const headers = document.querySelectorAll(".ag-header-cell");
-        const rows = document.querySelectorAll(".ag-row");
-        return grid && headers.length > 0 && rows.length > 0;
-      },
-      { timeout: 5000 }
-    );
+    await page.waitForTimeout(3000); // Increased timeout
 
     const orderAfterReload = await getColumnOrder();
 
