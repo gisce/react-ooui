@@ -53,6 +53,7 @@ type KanbanColumnProps = {
   onRefreshAll?: () => void;
   activeId?: number | null;
   overId?: number | null;
+  dropPosition?: "above" | "below" | null;
 };
 
 const KanbanColumnComponent = (
@@ -77,6 +78,7 @@ const KanbanColumnComponent = (
     onRefreshAll,
     activeId = null,
     overId = null,
+    dropPosition = null,
   } = props;
 
   const {
@@ -309,11 +311,14 @@ const KanbanColumnComponent = (
         >
           <div
             style={{
-              height: `${virtualizer.getTotalSize()}px`,
+              height: `${virtualizer.getTotalSize() + 16}px`,
               width: "100%",
               position: "relative",
             }}
           >
+            {/* Spacer for drop indicator above first card */}
+            <div style={{ height: "8px" }} />
+
             {virtualItems.map((virtualRow) => {
               const record = records[virtualRow.index];
               return (
@@ -326,7 +331,7 @@ const KanbanColumnComponent = (
                     top: 0,
                     left: 0,
                     width: "100%",
-                    transform: `translateY(${virtualRow.start}px)`,
+                    transform: `translateY(${virtualRow.start + 8}px)`,
                     paddingBottom: "8px",
                   }}
                 >
@@ -343,10 +348,14 @@ const KanbanColumnComponent = (
                     columnId={columnId}
                     isDropTarget={overId === record.id}
                     activeId={activeId}
+                    dropPosition={dropPosition}
                   />
                 </div>
               );
             })}
+
+            {/* Spacer for drop indicator below last card */}
+            <div style={{ height: "8px" }} />
           </div>
         </SortableContext>
 

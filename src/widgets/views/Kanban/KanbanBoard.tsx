@@ -18,6 +18,8 @@ import {
   useSensor,
   useSensors,
   closestCenter,
+  pointerWithin,
+  type CollisionDetection,
 } from "@dnd-kit/core";
 import { KanbanColumn, KanbanColumnRef } from "./KanbanColumn";
 import { KanbanCard } from "./KanbanCard";
@@ -29,6 +31,31 @@ import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { normalizeColumnValue } from "@/helpers/kanbanHelper";
 import { useProcessAction } from "@/hooks/useProcessAction";
+
+const customCollisionDetection: CollisionDetection = (args) => {
+  // First, try to find collision with pointer directly over elements
+  const pointerCollisions = pointerWithin(args);
+  if (pointerCollisions.length > 0) {
+    return pointerCollisions;
+  }
+
+  // Next, try closest center detection for cards
+  const centerCollisions = closestCenter(args);
+  if (centerCollisions.length > 0) {
+    return centerCollisions;
+  }
+
+  // Fallback: return column droppables when no card is close enough
+  // This ensures columns are detected when hovering in empty space
+  const columnCollisions = args.droppableContainers
+    .filter((container) => typeof container.id === "string")
+    .map((container) => ({
+      id: container.id,
+      data: container.data,
+    }));
+
+  return columnCollisions;
+};
 
 export type KanbanBoardRef = {
   refreshAllColumns: () => void;
@@ -75,6 +102,12 @@ const KanbanBoardComponent = (
   const [activeRecord, setActiveRecord] = useState<KanbanRecord | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
   const [overId, setOverId] = useState<number | null>(null);
+  const [dropPosition, setDropPosition] = useState<"above" | "below" | null>(
+    null,
+  );
+  const lastOverInColumnRef = useRef<{
+    [columnId: string]: { recordId: number; position: "above" | "below" };
+  }>({});
   const colorsForRecordsRef = useRef<{ [key: number]: string }>({});
   const statusForRecordsRef = useRef<{ [key: number]: string }>({});
   const allRecordsRef = useRef<{ [key: number]: KanbanRecord }>({});
@@ -126,29 +159,67 @@ const KanbanBoardComponent = (
   const handleDragOver = useCallback(
     (event: DragOverEvent) => {
       const { over, active } = event;
+
       if (!over) {
         setOverColumnId(null);
         setOverId(null);
+        setDropPosition(null);
         return;
       }
 
-      // First, check if hovering over a column directly
-      const overColumn = columns.find((col) => col.id === over.id);
-      if (overColumn) {
-        setOverColumnId(overColumn.id);
-        setOverId(null);
+      // Type-safe check: if over.id is a string, it's a column ID
+      if (typeof over.id === "string") {
+        // Hovering over a column directly (empty space)
+        const overColumn = columns.find((col) => col.id === over.id);
+        if (overColumn) {
+          const lastInColumn = lastOverInColumnRef.current[overColumn.id];
+          setOverColumnId(overColumn.id);
+          // Persist the last known drop indicator position in this column
+          if (lastInColumn) {
+            setOverId(lastInColumn.recordId);
+            setDropPosition(lastInColumn.position);
+          } else {
+            setOverId(null);
+            setDropPosition(null);
+          }
+        }
         return;
       }
 
-      // If over a card, try to get column from dnd-kit data first (most reliable)
+      // If we get here, over.id is a number, so it's a card ID
+      const overRecordId = over.id as number;
+
+      // Get column from dnd-kit data (most reliable)
       const cardColumnId = over.data.current?.columnId as string | undefined;
+
       if (cardColumnId) {
         setOverColumnId(cardColumnId);
+        if (overRecordId !== active.id) {
+          setOverId(overRecordId);
+          const rect = over.rect;
+          if (rect) {
+            const midY = rect.top + rect.height / 2;
+            const pointerY =
+              event.activatorEvent && "clientY" in event.activatorEvent
+                ? (event.activatorEvent.clientY as number)
+                : 0;
+            const position = pointerY < midY ? "above" : "below";
+            setDropPosition(position);
+            // Store this position so it persists when hovering over empty space
+            lastOverInColumnRef.current[cardColumnId] = {
+              recordId: overRecordId,
+              position,
+            };
+          }
+        } else {
+          // Hovering over self - don't show indicator
+          setOverId(null);
+          setDropPosition(null);
+        }
         return;
       }
 
       // Fallback: try to find column from record cache
-      const overRecordId = over.id as number;
       const overRecord = allRecordsRef.current[overRecordId];
       if (overRecord) {
         const recordColumnValue = overRecord[kanbanDef.column_field];
@@ -157,15 +228,34 @@ const KanbanBoardComponent = (
           setOverColumnId(recordColumn.id);
           if (overRecordId !== active.id) {
             setOverId(overRecordId);
+            const rect = over.rect;
+            if (rect) {
+              const midY = rect.top + rect.height / 2;
+              const pointerY =
+                event.activatorEvent && "clientY" in event.activatorEvent
+                  ? (event.activatorEvent.clientY as number)
+                  : 0;
+              const position = pointerY < midY ? "above" : "below";
+              setDropPosition(position);
+              // Store this position so it persists when hovering over empty space
+              lastOverInColumnRef.current[recordColumn.id] = {
+                recordId: overRecordId,
+                position,
+              };
+            }
           } else {
+            // Hovering over self - don't show indicator
             setOverId(null);
+            setDropPosition(null);
           }
           return;
         }
       }
 
+      // Couldn't determine what we're over - clear states
       setOverColumnId(null);
       setOverId(null);
+      setDropPosition(null);
     },
     [columns, kanbanDef.column_field, findColumnByValue],
   );
@@ -174,6 +264,7 @@ const KanbanBoardComponent = (
     setActiveRecord(null);
     setOverColumnId(null);
     setOverId(null);
+    setDropPosition(null);
   }, []);
 
   const handleRecordsUpdate = useCallback(
@@ -234,6 +325,7 @@ const KanbanBoardComponent = (
         setActiveRecord(null);
         setOverColumnId(null);
         setOverId(null);
+        setDropPosition(null);
       };
 
       if (!over) {
@@ -411,7 +503,7 @@ const KanbanBoardComponent = (
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCenter}
+      collisionDetection={customCollisionDetection}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
@@ -447,6 +539,7 @@ const KanbanBoardComponent = (
             onRefreshAll={refreshAllColumns}
             activeId={activeRecord?.id ?? null}
             overId={overId}
+            dropPosition={dropPosition}
           />
         ))}
       </div>
@@ -457,6 +550,7 @@ const KanbanBoardComponent = (
             style={{
               cursor: "grabbing",
               transform: "rotate(5deg)",
+              opacity: 0.5,
             }}
           >
             <KanbanCard
