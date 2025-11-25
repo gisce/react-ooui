@@ -117,7 +117,7 @@ const KanbanBoardComponent = (
     ConnectionProvider.getHandler().rawExecute,
   );
   const [executeReorderElement, cancelReorderElement] = useNetworkRequest(
-    ConnectionProvider.getHandler().execute,
+    ConnectionProvider.getHandler().rawExecute,
   );
 
   useEffect(() => {
@@ -274,12 +274,47 @@ const KanbanBoardComponent = (
     setDropPosition(null);
   }, []);
 
+  const calculatePrevNextIds = useCallback(
+    (
+      targetColumnId: string,
+      targetOverId: number,
+      targetDropPosition: "above" | "below",
+      draggedRecordId: number,
+    ): { prevId: number | null; nextId: number | null } => {
+      const columnRecordIds = columnRecordIdsRef.current[targetColumnId] || [];
+      const filteredIds = columnRecordIds.filter(
+        (id) => id !== draggedRecordId,
+      );
+      const overIndex = filteredIds.indexOf(targetOverId);
+
+      if (overIndex === -1) {
+        return { prevId: null, nextId: null };
+      }
+
+      if (targetDropPosition === "above") {
+        const prevId = overIndex > 0 ? filteredIds[overIndex - 1] : null;
+        const nextId = targetOverId;
+        return { prevId, nextId };
+      } else {
+        const prevId = targetOverId;
+        const nextId =
+          overIndex < filteredIds.length - 1
+            ? filteredIds[overIndex + 1]
+            : null;
+        return { prevId, nextId };
+      }
+    },
+    [],
+  );
+
   const handleRecordsUpdate = useCallback(
     (
+      columnId: string,
       records: KanbanRecord[],
       colors: { [key: number]: string },
       status: { [key: number]: string },
     ) => {
+      columnRecordIdsRef.current[columnId] = records.map((r) => r.id);
       records.forEach((record) => {
         allRecordsRef.current[record.id] = record;
         if (colors?.[record.id]) {
@@ -328,6 +363,9 @@ const KanbanBoardComponent = (
     async (event: DragEndEvent) => {
       const { active, over } = event;
 
+      const currentOverId = overId;
+      const currentDropPosition = dropPosition;
+
       const cleanup = () => {
         setActiveRecord(null);
         setOverColumnId(null);
@@ -348,24 +386,13 @@ const KanbanBoardComponent = (
         return;
       }
 
-      const sourceColumnValue = record[kanbanDef.column_field];
-      const columnFieldDef = kanbanDef.fields?.[kanbanDef.column_field];
-      const sourceColumnNormalized = columnFieldDef
-        ? normalizeColumnValue(sourceColumnValue, columnFieldDef, t)
-        : null;
-
-      if (!sourceColumnNormalized) {
-        cleanup();
-        return;
-      }
-
       let targetColumn: ColumnDefinition | undefined;
+      let droppedOnCard = false;
 
       if (typeof over.id === "string") {
-        // Dropping on a column directly (empty space)
         targetColumn = columns.find((col) => col.id === over.id);
       } else {
-        // Dropping on a card - get column from card's data
+        droppedOnCard = true;
         const cardColumnId = over.data.current?.columnId as string | undefined;
         if (cardColumnId) {
           targetColumn = columns.find((col) => col.id === cardColumnId);
@@ -377,26 +404,63 @@ const KanbanBoardComponent = (
         return;
       }
 
-      if (sourceColumnNormalized.id === targetColumn.id) {
+      const sourceColumnValue = record[kanbanDef.column_field];
+      const columnFieldDef = kanbanDef.fields?.[kanbanDef.column_field];
+      const sourceColumnNormalized = columnFieldDef
+        ? normalizeColumnValue(sourceColumnValue, columnFieldDef, t)
+        : null;
+
+      if (!sourceColumnNormalized) {
         cleanup();
         return;
       }
 
-      const fromValue = normalizeColumnValue(
-        sourceColumnValue,
-        columnFieldDef,
-        t,
-      );
-
-      const toValue = normalizeColumnValue(
-        targetColumn.originalValue,
-        columnFieldDef,
-        t,
-      );
+      const isSameColumn = sourceColumnNormalized.id === targetColumn.id;
 
       cleanup();
 
       try {
+        if (droppedOnCard && currentOverId && currentDropPosition) {
+          const { prevId, nextId } = calculatePrevNextIds(
+            targetColumn.id,
+            currentOverId,
+            currentDropPosition,
+            recordId,
+          );
+
+          await executeReorderElement({
+            model,
+            action: "reorder_element",
+            payload: [
+              recordId,
+              prevId,
+              nextId,
+              kanbanDef.sort || null,
+              context,
+            ],
+          });
+        }
+
+        if (isSameColumn) {
+          const columnRef = columnRefsRef.current[targetColumn.id];
+          if (columnRef) {
+            columnRef.refresh();
+          }
+          return;
+        }
+
+        const fromValue = normalizeColumnValue(
+          sourceColumnValue,
+          columnFieldDef,
+          t,
+        );
+
+        const toValue = normalizeColumnValue(
+          targetColumn.originalValue,
+          columnFieldDef,
+          t,
+        );
+
         const methodName =
           kanbanDef.on_change_column?.method || "on_change_column";
 
@@ -440,9 +504,13 @@ const KanbanBoardComponent = (
       showErrorNotification,
       onDragSuccess,
       executeColumnChange,
+      executeReorderElement,
+      calculatePrevNextIds,
       t,
       runAction,
       refreshSourceAndTarget,
+      overId,
+      dropPosition,
     ],
   );
 

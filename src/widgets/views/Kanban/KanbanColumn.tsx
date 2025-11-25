@@ -45,6 +45,7 @@ type KanbanColumnProps = {
   onMaxCardsChange?: (colId: string, maxCards: number | undefined) => void;
   onCountChange: (columnId: string, count: number) => void;
   onRecordsUpdate?: (
+    columnId: string,
     records: KanbanRecord[],
     colors: { [key: number]: string },
     status: { [key: number]: string },
@@ -127,12 +128,12 @@ const KanbanColumnComponent = (
     onCountChange(columnId, count);
   }, [columnId, count, onCountChange]);
 
-  // Report records updates to parent (for drag overlay)
+  // Report records updates to parent (for drag overlay and reorder)
   useDeepCompareEffect(() => {
     if (onRecordsUpdate && records.length > 0) {
-      onRecordsUpdate(records, colorsForRecords, statusForRecords);
+      onRecordsUpdate(columnId, records, colorsForRecords, statusForRecords);
     }
-  }, [records, colorsForRecords, statusForRecords, onRecordsUpdate]);
+  }, [columnId, records, colorsForRecords, statusForRecords, onRecordsUpdate]);
 
   const { setNodeRef } = useDroppable({
     id: columnId,
@@ -167,7 +168,6 @@ const KanbanColumnComponent = (
   const estimatedCardHeight = useMemo(() => {
     const cardPadding = 24;
     const fieldsContainerMargin = 8;
-    const cardWrapperMargin = 8;
     const fieldHeight = 24;
     const buttonAreaHeight = kanbanDef.buttons.length > 0 ? 40 : 0;
 
@@ -175,11 +175,7 @@ const KanbanColumnComponent = (
     const totalFieldsHeight = numFields * fieldHeight;
 
     return (
-      cardPadding +
-      fieldsContainerMargin +
-      totalFieldsHeight +
-      buttonAreaHeight +
-      cardWrapperMargin
+      cardPadding + fieldsContainerMargin + totalFieldsHeight + buttonAreaHeight
     );
   }, [kanbanDef.card_fields.length, kanbanDef.buttons.length]);
 
@@ -187,7 +183,12 @@ const KanbanColumnComponent = (
     count: records.length,
     getScrollElement: () => scrollContainerRef.current,
     estimateSize: useCallback(() => estimatedCardHeight, [estimatedCardHeight]),
+    getItemKey: useCallback(
+      (index: number) => records[index]?.id ?? index,
+      [records],
+    ),
     overscan: 5,
+    gap: 8,
   });
 
   const virtualItems = virtualizer.getVirtualItems();
@@ -311,14 +312,11 @@ const KanbanColumnComponent = (
         >
           <div
             style={{
-              height: `${virtualizer.getTotalSize() + 16}px`,
+              height: `${virtualizer.getTotalSize()}px`,
               width: "100%",
               position: "relative",
             }}
           >
-            {/* Spacer for drop indicator above first card */}
-            <div style={{ height: "8px" }} />
-
             {virtualItems.map((virtualRow) => {
               const record = records[virtualRow.index];
               return (
@@ -331,8 +329,7 @@ const KanbanColumnComponent = (
                     top: 0,
                     left: 0,
                     width: "100%",
-                    transform: `translateY(${virtualRow.start + 8}px)`,
-                    paddingBottom: "8px",
+                    transform: `translateY(${virtualRow.start}px)`,
                   }}
                 >
                   <KanbanCard
@@ -353,9 +350,6 @@ const KanbanColumnComponent = (
                 </div>
               );
             })}
-
-            {/* Spacer for drop indicator below last card */}
-            <div style={{ height: "8px" }} />
           </div>
         </SortableContext>
 

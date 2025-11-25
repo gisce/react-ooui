@@ -60,5 +60,6 @@ export const DropIndicator = styled.div<{
   border-radius: 2px;
   transition: opacity 0.15s ease;
   z-index: 10;
-  ${(props) => (props.$position === "above" ? "top: -4px;" : "bottom: -4px;")}
+  ${(props) =>
+    props.$position === "above" ? "top: -5.5px;" : "bottom: -5.5px;"}
 `;
