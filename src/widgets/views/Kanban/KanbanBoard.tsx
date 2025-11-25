@@ -112,13 +112,18 @@ const KanbanBoardComponent = (
   const statusForRecordsRef = useRef<{ [key: number]: string }>({});
   const allRecordsRef = useRef<{ [key: number]: KanbanRecord }>({});
   const columnRefsRef = useRef<{ [columnId: string]: KanbanColumnRef }>({});
+  const columnRecordIdsRef = useRef<{ [columnId: string]: number[] }>({});
   const [executeColumnChange, cancelExecuteColumnChange] = useNetworkRequest(
     ConnectionProvider.getHandler().rawExecute,
+  );
+  const [executeReorderElement, cancelReorderElement] = useNetworkRequest(
+    ConnectionProvider.getHandler().execute,
   );
 
   useEffect(() => {
     return () => {
       cancelExecuteColumnChange();
+      cancelReorderElement();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -199,10 +204,11 @@ const KanbanBoardComponent = (
           const rect = over.rect;
           if (rect) {
             const midY = rect.top + rect.height / 2;
-            const pointerY =
+            const initialY =
               event.activatorEvent && "clientY" in event.activatorEvent
                 ? (event.activatorEvent.clientY as number)
                 : 0;
+            const pointerY = initialY + event.delta.y;
             const position = pointerY < midY ? "above" : "below";
             setDropPosition(position);
             // Store this position so it persists when hovering over empty space
@@ -231,10 +237,11 @@ const KanbanBoardComponent = (
             const rect = over.rect;
             if (rect) {
               const midY = rect.top + rect.height / 2;
-              const pointerY =
+              const initialY =
                 event.activatorEvent && "clientY" in event.activatorEvent
                   ? (event.activatorEvent.clientY as number)
                   : 0;
+              const pointerY = initialY + event.delta.y;
               const position = pointerY < midY ? "above" : "below";
               setDropPosition(position);
               // Store this position so it persists when hovering over empty space
@@ -352,14 +359,16 @@ const KanbanBoardComponent = (
         return;
       }
 
-      let targetColumn = columns.find((col) => col.id === over.id);
+      let targetColumn: ColumnDefinition | undefined;
 
-      if (!targetColumn) {
-        const overRecordId = over.id as number;
-        const overRecord = allRecordsRef.current[overRecordId];
-        if (overRecord) {
-          const overRecordColumnValue = overRecord[kanbanDef.column_field];
-          targetColumn = findColumnByValue(overRecordColumnValue);
+      if (typeof over.id === "string") {
+        // Dropping on a column directly (empty space)
+        targetColumn = columns.find((col) => col.id === over.id);
+      } else {
+        // Dropping on a card - get column from card's data
+        const cardColumnId = over.data.current?.columnId as string | undefined;
+        if (cardColumnId) {
+          targetColumn = columns.find((col) => col.id === cardColumnId);
         }
       }
 
@@ -431,7 +440,6 @@ const KanbanBoardComponent = (
       showErrorNotification,
       onDragSuccess,
       executeColumnChange,
-      findColumnByValue,
       t,
       runAction,
       refreshSourceAndTarget,
