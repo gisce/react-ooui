@@ -123,12 +123,10 @@ const KanbanColumnComponent = (
     [refresh],
   );
 
-  // Report count changes to parent
   useEffect(() => {
     onCountChange(columnId, count);
   }, [columnId, count, onCountChange]);
 
-  // Report records updates to parent (for drag overlay and reorder)
   useDeepCompareEffect(() => {
     if (onRecordsUpdate && records.length > 0) {
       onRecordsUpdate(columnId, records, colorsForRecords, statusForRecords);

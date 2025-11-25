@@ -387,12 +387,10 @@ const KanbanBoardComponent = (
       }
 
       let targetColumn: ColumnDefinition | undefined;
-      let droppedOnCard = false;
 
       if (typeof over.id === "string") {
         targetColumn = columns.find((col) => col.id === over.id);
       } else {
-        droppedOnCard = true;
         const cardColumnId = over.data.current?.columnId as string | undefined;
         if (cardColumnId) {
           targetColumn = columns.find((col) => col.id === cardColumnId);
@@ -417,14 +415,25 @@ const KanbanBoardComponent = (
 
       const isSameColumn = sourceColumnNormalized.id === targetColumn.id;
 
+      let finalOverId = currentOverId;
+      let finalDropPosition = currentDropPosition;
+
+      if (!finalOverId && targetColumn) {
+        const lastOver = lastOverInColumnRef.current[targetColumn.id];
+        if (lastOver) {
+          finalOverId = lastOver.recordId;
+          finalDropPosition = lastOver.position;
+        }
+      }
+
       cleanup();
 
       try {
-        if (droppedOnCard && currentOverId && currentDropPosition) {
+        if (finalOverId && finalDropPosition) {
           const { prevId, nextId } = calculatePrevNextIds(
             targetColumn.id,
-            currentOverId,
-            currentDropPosition,
+            finalOverId,
+            finalDropPosition,
             recordId,
           );
 
@@ -464,14 +473,22 @@ const KanbanBoardComponent = (
         const methodName =
           kanbanDef.on_change_column?.method || "on_change_column";
 
+        if (
+          !fromValue?.id ||
+          !toValue?.id ||
+          parseInt(fromValue?.id) === parseInt(toValue?.id)
+        ) {
+          return;
+        }
+
         const result = await executeColumnChange({
           model,
           action: methodName,
           payload: [
             [recordId],
             kanbanDef.column_field,
-            fromValue?.id,
-            toValue?.id,
+            fromValue?.id ? parseInt(fromValue?.id) : null,
+            toValue?.id ? parseInt(toValue?.id) : null,
             {
               ...context,
               active_id: recordId,
