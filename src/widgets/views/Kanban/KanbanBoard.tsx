@@ -429,28 +429,32 @@ const KanbanBoardComponent = (
       cleanup();
 
       try {
-        if (finalOverId && finalDropPosition) {
-          const { prevId, nextId } = calculatePrevNextIds(
-            targetColumn.id,
-            finalOverId,
-            finalDropPosition,
-            recordId,
-          );
-
-          await executeReorderElement({
-            model,
-            action: "reorder_element",
-            payload: [
-              recordId,
-              prevId,
-              nextId,
-              kanbanDef.sort || null,
-              context,
-            ],
-          });
-        }
-
+        // Same column - just reorder
         if (isSameColumn) {
+          if (finalOverId && finalDropPosition) {
+            const { prevId, nextId } = calculatePrevNextIds(
+              targetColumn.id,
+              finalOverId,
+              finalDropPosition,
+              recordId,
+            );
+
+            // Skip reorder if no valid position reference
+            if (prevId !== null || nextId !== null) {
+              await executeReorderElement({
+                model,
+                action: "reorder_element",
+                payload: [
+                  recordId,
+                  prevId,
+                  nextId,
+                  kanbanDef.sort || null,
+                  context,
+                ],
+              });
+            }
+          }
+
           const columnRef = columnRefsRef.current[targetColumn.id];
           if (columnRef) {
             columnRef.refresh();
@@ -458,6 +462,7 @@ const KanbanBoardComponent = (
           return;
         }
 
+        // Different column - execute column change first, then reorder
         const fromValue = normalizeColumnValue(
           sourceColumnValue,
           columnFieldDef,
@@ -481,6 +486,7 @@ const KanbanBoardComponent = (
           return;
         }
 
+        // Execute column change first
         const result = await executeColumnChange({
           model,
           action: methodName,
@@ -502,6 +508,31 @@ const KanbanBoardComponent = (
             actionData: result,
           });
           return;
+        }
+
+        // Execute reorder after column change completes
+        if (finalOverId && finalDropPosition) {
+          const { prevId, nextId } = calculatePrevNextIds(
+            targetColumn.id,
+            finalOverId,
+            finalDropPosition,
+            recordId,
+          );
+
+          // Skip reorder if no valid position reference
+          if (prevId !== null || nextId !== null) {
+            await executeReorderElement({
+              model,
+              action: "reorder_element",
+              payload: [
+                recordId,
+                prevId,
+                nextId,
+                kanbanDef.sort || null,
+                context,
+              ],
+            });
+          }
         }
 
         refreshSourceAndTarget(sourceColumnNormalized.id, targetColumn.id);
