@@ -15,7 +15,7 @@ export const normalizeColumnValue = (
     case "many2one":
       if (Array.isArray(value) && value.length === 2) {
         return {
-          id: value[0],
+          id: String(value[0]),
           label: value[1],
           originalValue: value,
         };
