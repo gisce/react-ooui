@@ -47,10 +47,19 @@ export const StatusDot = styled.div<{ $color: string }>`
   background-color: ${(props) => props.$color};
 `;
 
-export const DropIndicator = styled.div<{ $color: string }>`
+export const DropIndicator = styled.div<{
+  $color: string;
+  $position: "above" | "below";
+}>`
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
   height: 3px;
   background-color: ${(props) => props.$color};
   border-radius: 2px;
-  margin-bottom: 8px;
   transition: opacity 0.15s ease;
+  z-index: 10;
+  ${(props) =>
+    props.$position === "above" ? "top: -5.5px;" : "bottom: -5.5px;"}
 `;

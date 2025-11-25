@@ -38,6 +38,7 @@ type KanbanCardProps = {
   isDropTarget?: boolean;
   activeId?: number | null;
   columnId?: string;
+  dropPosition?: "above" | "below" | null;
 };
 
 const KanbanCardComponent = (props: KanbanCardProps) => {
@@ -55,6 +56,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
     columnId,
     isDropTarget = false,
     activeId = null,
+    dropPosition = null,
   } = props;
   const { token } = useToken();
   const [loadingButton, setLoadingButton] = useState<string | null>(null);
@@ -250,11 +252,19 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
     );
   }, [visibleButtons, handleButtonClick]);
 
-  const showDropIndicator = isDropTarget && activeId !== null;
+  const showDropIndicator =
+    isDropTarget && activeId !== null && dropPosition !== null;
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      {showDropIndicator && <DropIndicator $color={token.colorPrimary} />}
+    <div
+      ref={setNodeRef}
+      style={{ ...style, position: "relative" }}
+      {...attributes}
+      {...listeners}
+    >
+      {showDropIndicator && (
+        <DropIndicator $color={token.colorPrimary} $position={dropPosition} />
+      )}
       <StyledCard
         size="small"
         onClick={onClick}

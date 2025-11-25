@@ -45,6 +45,7 @@ type KanbanColumnProps = {
   onMaxCardsChange?: (colId: string, maxCards: number | undefined) => void;
   onCountChange: (columnId: string, count: number) => void;
   onRecordsUpdate?: (
+    columnId: string,
     records: KanbanRecord[],
     colors: { [key: number]: string },
     status: { [key: number]: string },
@@ -53,6 +54,7 @@ type KanbanColumnProps = {
   onRefreshAll?: () => void;
   activeId?: number | null;
   overId?: number | null;
+  dropPosition?: "above" | "below" | null;
 };
 
 const KanbanColumnComponent = (
@@ -77,6 +79,7 @@ const KanbanColumnComponent = (
     onRefreshAll,
     activeId = null,
     overId = null,
+    dropPosition = null,
   } = props;
 
   const {
@@ -125,12 +128,12 @@ const KanbanColumnComponent = (
     onCountChange(columnId, count);
   }, [columnId, count, onCountChange]);
 
-  // Report records updates to parent (for drag overlay)
+  // Report records updates to parent (for drag overlay and reorder)
   useDeepCompareEffect(() => {
     if (onRecordsUpdate && records.length > 0) {
-      onRecordsUpdate(records, colorsForRecords, statusForRecords);
+      onRecordsUpdate(columnId, records, colorsForRecords, statusForRecords);
     }
-  }, [records, colorsForRecords, statusForRecords, onRecordsUpdate]);
+  }, [columnId, records, colorsForRecords, statusForRecords, onRecordsUpdate]);
 
   const { setNodeRef } = useDroppable({
     id: columnId,
@@ -165,7 +168,6 @@ const KanbanColumnComponent = (
   const estimatedCardHeight = useMemo(() => {
     const cardPadding = 24;
     const fieldsContainerMargin = 8;
-    const cardWrapperMargin = 8;
     const fieldHeight = 24;
     const buttonAreaHeight = kanbanDef.buttons.length > 0 ? 40 : 0;
 
@@ -173,11 +175,7 @@ const KanbanColumnComponent = (
     const totalFieldsHeight = numFields * fieldHeight;
 
     return (
-      cardPadding +
-      fieldsContainerMargin +
-      totalFieldsHeight +
-      buttonAreaHeight +
-      cardWrapperMargin
+      cardPadding + fieldsContainerMargin + totalFieldsHeight + buttonAreaHeight
     );
   }, [kanbanDef.card_fields.length, kanbanDef.buttons.length]);
 
@@ -185,7 +183,12 @@ const KanbanColumnComponent = (
     count: records.length,
     getScrollElement: () => scrollContainerRef.current,
     estimateSize: useCallback(() => estimatedCardHeight, [estimatedCardHeight]),
+    getItemKey: useCallback(
+      (index: number) => records[index]?.id ?? index,
+      [records],
+    ),
     overscan: 5,
+    gap: 8,
   });
 
   const virtualItems = virtualizer.getVirtualItems();
@@ -327,7 +330,6 @@ const KanbanColumnComponent = (
                     left: 0,
                     width: "100%",
                     transform: `translateY(${virtualRow.start}px)`,
-                    paddingBottom: "8px",
                   }}
                 >
                   <KanbanCard
@@ -343,6 +345,7 @@ const KanbanColumnComponent = (
                     columnId={columnId}
                     isDropTarget={overId === record.id}
                     activeId={activeId}
+                    dropPosition={dropPosition}
                   />
                 </div>
               );
