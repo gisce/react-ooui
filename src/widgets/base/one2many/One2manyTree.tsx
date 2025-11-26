@@ -425,10 +425,14 @@ export const One2manyTree = ({
   const onPaginatedRequestDataRef = useCallbackRef(onPaginatedRequestData);
 
   useDeepCompareEffect(() => {
-    if (treeType === "paginated" && items.length > 0) {
-      onPaginatedRequestDataRef().then(setPaginatedResults);
+    if (treeType === "paginated") {
+      if (items.length > 0) {
+        onPaginatedRequestDataRef().then(setPaginatedResults);
+      } else {
+        setPaginatedResults([]);
+      }
     }
-  }, [treeType]);
+  }, [treeType, items]);
 
   // Results based on tree type
   const results = useMemo(() => {
