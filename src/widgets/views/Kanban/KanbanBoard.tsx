@@ -6,6 +6,7 @@ import {
   forwardRef,
   useImperativeHandle,
   useEffect,
+  useMemo,
 } from "react";
 import { useDeepCompareMemo } from "use-deep-compare";
 import {
@@ -120,6 +121,35 @@ const KanbanBoardComponent = (
   const allRecordsRef = useRef<{ [key: number]: KanbanRecord }>({});
   const columnRefsRef = useRef<{ [columnId: string]: KanbanColumnRef }>({});
   const columnRecordIdsRef = useRef<{ [columnId: string]: number[] }>({});
+  const [columnOrder, setColumnOrder] = useState<string[]>([]);
+
+  // Sync columnOrder when columns change
+  useEffect(() => {
+    if (columns.length > 0) {
+      setColumnOrder((prevOrder) => {
+        // If no previous order, use columns order
+        if (prevOrder.length === 0) {
+          return columns.map((c) => c.id);
+        }
+        // Merge: keep existing order for columns that still exist, append new ones
+        const existingIds = new Set(columns.map((c) => c.id));
+        const validPrevOrder = prevOrder.filter((id) => existingIds.has(id));
+        const newIds = columns
+          .map((c) => c.id)
+          .filter((id) => !validPrevOrder.includes(id));
+        return [...validPrevOrder, ...newIds];
+      });
+    }
+  }, [columns]);
+
+  // Compute ordered columns based on columnOrder
+  const orderedColumns = useMemo(() => {
+    if (columnOrder.length === 0) return columns;
+    return columnOrder
+      .map((id) => columns.find((c) => c.id === id))
+      .filter((c): c is ColumnDefinition => c !== undefined);
+  }, [columns, columnOrder]);
+
   const [executeColumnChange, cancelExecuteColumnChange] = useNetworkRequest(
     ConnectionProvider.getHandler().rawExecute,
   );
@@ -364,6 +394,28 @@ const KanbanBoardComponent = (
         [columnId]: limit,
       }));
       // Future: Call server API here (setVisualizationOptions)
+    },
+    [],
+  );
+
+  const handleMoveColumn = useCallback(
+    (columnId: string, direction: "left" | "right") => {
+      setColumnOrder((prevOrder) => {
+        const currentIndex = prevOrder.indexOf(columnId);
+        if (currentIndex === -1) return prevOrder;
+
+        const newIndex =
+          direction === "left" ? currentIndex - 1 : currentIndex + 1;
+        if (newIndex < 0 || newIndex >= prevOrder.length) return prevOrder;
+
+        const newOrder = [...prevOrder];
+        [newOrder[currentIndex], newOrder[newIndex]] = [
+          newOrder[newIndex],
+          newOrder[currentIndex],
+        ];
+        return newOrder;
+      });
+      // Future: Call server API here to persist column order
     },
     [],
   );
@@ -619,6 +671,22 @@ const KanbanBoardComponent = (
     return callbacks;
   }, [columns, onAddCardClick]);
 
+  const columnMoveLeftCallbacks = useDeepCompareMemo(() => {
+    const callbacks: Record<string, () => void> = {};
+    orderedColumns.forEach((column) => {
+      callbacks[column.id] = () => handleMoveColumn(column.id, "left");
+    });
+    return callbacks;
+  }, [orderedColumns, handleMoveColumn]);
+
+  const columnMoveRightCallbacks = useDeepCompareMemo(() => {
+    const callbacks: Record<string, () => void> = {};
+    orderedColumns.forEach((column) => {
+      callbacks[column.id] = () => handleMoveColumn(column.id, "right");
+    });
+    return callbacks;
+  }, [orderedColumns, handleMoveColumn]);
+
   const handleOpenColumnInNewTab = useCallback(
     (columnDomain: any[]) => {
       onOpenColumnInNewTab?.(columnDomain);
@@ -661,7 +729,7 @@ const KanbanBoardComponent = (
           height: "100%",
         }}
       >
-        {columns.map((column) => (
+        {orderedColumns.map((column, index) => (
           <KanbanColumn
             key={column.id}
             ref={columnRefCallbacks[column.id]}
@@ -683,6 +751,10 @@ const KanbanBoardComponent = (
             onAddCardClick={columnAddCardCallbacks[column.id]}
             onRefreshAll={refreshAllColumns}
             onOpenColumnInNewTab={handleOpenColumnInNewTab}
+            onMoveLeft={columnMoveLeftCallbacks[column.id]}
+            onMoveRight={columnMoveRightCallbacks[column.id]}
+            isFirstColumn={index === 0}
+            isLastColumn={index === orderedColumns.length - 1}
             activeId={activeRecord?.id ?? null}
             overId={overId}
             dropPosition={dropPosition}

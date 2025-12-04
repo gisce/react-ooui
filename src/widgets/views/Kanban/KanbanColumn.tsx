@@ -74,6 +74,8 @@ type KanbanColumnProps = {
   onOpenColumnInNewTab?: (domain: any[]) => void;
   onMoveLeft?: () => void;
   onMoveRight?: () => void;
+  isFirstColumn?: boolean;
+  isLastColumn?: boolean;
   activeId?: number | null;
   overId?: number | null;
   dropPosition?: "above" | "below" | null;
@@ -104,6 +106,8 @@ const KanbanColumnComponent = (
     onOpenColumnInNewTab,
     onMoveLeft,
     onMoveRight,
+    isFirstColumn = false,
+    isLastColumn = false,
     activeId = null,
     overId = null,
     dropPosition = null,
@@ -224,15 +228,12 @@ const KanbanColumnComponent = (
             label: t("open_column_in_new_tab"),
             icon: <IconExternalLink size={16} />,
           },
-          ...(allowSetMaxCards
-            ? [
-                {
-                  key: "setLimit",
-                  label: t("set_limit"),
-                  icon: <IconListNumbers size={16} />,
-                },
-              ]
-            : []),
+          {
+            key: "setLimit",
+            label: t("set_limit"),
+            icon: <IconListNumbers size={16} />,
+            disabled: !allowSetMaxCards,
+          },
         ],
       },
       {
@@ -243,16 +244,18 @@ const KanbanColumnComponent = (
             key: "moveLeft",
             label: t("move_left"),
             icon: <IconArrowLeft size={16} />,
+            disabled: isFirstColumn,
           },
           {
             key: "moveRight",
             label: t("move_right"),
             icon: <IconArrowRight size={16} />,
+            disabled: isLastColumn,
           },
         ],
       },
     ],
-    [t, allowSetMaxCards],
+    [t, allowSetMaxCards, isFirstColumn, isLastColumn],
   );
 
   const handleMenuClick: MenuProps["onClick"] = useCallback(
