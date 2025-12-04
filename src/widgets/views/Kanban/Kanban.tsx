@@ -232,6 +232,7 @@ const KanbanComponentInner = (
         kanbanDef={kanbanDef}
         columns={columns}
         model={model}
+        viewId={kanbanView.view_id}
         domain={domain}
         context={context}
         searchParams={searchParams}
@@ -253,6 +254,7 @@ const KanbanComponentInner = (
     columns,
     isLoadingColumns,
     model,
+    kanbanView.view_id,
     domain,
     context,
     searchParams,

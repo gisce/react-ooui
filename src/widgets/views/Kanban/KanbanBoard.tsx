@@ -32,6 +32,7 @@ import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { normalizeColumnValue } from "@/helpers/kanbanHelper";
 import { useProcessAction } from "@/hooks/useProcessAction";
+import { useKanbanColumnPrefs } from "./useKanbanColumnPrefs";
 
 const customCollisionDetection: CollisionDetection = (args) => {
   // First, try to find collision with pointer directly over elements
@@ -65,6 +66,7 @@ export type KanbanBoardRef = {
 type KanbanBoardProps = {
   columns: ColumnDefinition[];
   model: string;
+  viewId: number;
   domain: any[];
   context: any;
   searchParams?: any[];
@@ -87,6 +89,7 @@ const KanbanBoardComponent = (
   const {
     columns,
     model,
+    viewId,
     domain,
     context = {},
     searchParams,
@@ -122,16 +125,52 @@ const KanbanBoardComponent = (
   const columnRefsRef = useRef<{ [columnId: string]: KanbanColumnRef }>({});
   const columnRecordIdsRef = useRef<{ [columnId: string]: number[] }>({});
   const [columnOrder, setColumnOrder] = useState<string[]>([]);
+  const prefsLoadedRef = useRef(false);
 
-  // Sync columnOrder when columns change
+  const { getColumnPrefs, saveColumnPrefs } = useKanbanColumnPrefs(
+    viewId,
+    model,
+  );
+
   useEffect(() => {
-    if (columns.length > 0) {
+    if (columns.length > 0 && !prefsLoadedRef.current) {
+      prefsLoadedRef.current = true;
+      getColumnPrefs()
+        .then((prefs) => {
+          if (prefs && prefs.length > 0) {
+            const orderedIds = prefs
+              .sort((a, b) => a.order - b.order)
+              .map((p) => p.colId)
+              .filter((id) => columns.some((c) => c.id === id));
+
+            const newColumnIds = columns
+              .map((c) => c.id)
+              .filter((id) => !orderedIds.includes(id));
+
+            if (orderedIds.length > 0) {
+              setColumnOrder([...orderedIds, ...newColumnIds]);
+            } else {
+              setColumnOrder(columns.map((c) => c.id));
+            }
+
+            const limits: Record<string, number | undefined> = {};
+            prefs.forEach((p) => {
+              if (p.maxCards > 0) {
+                limits[p.colId] = p.maxCards;
+              }
+            });
+            if (Object.keys(limits).length > 0) {
+              setColumnLimits(limits);
+            }
+          } else {
+            setColumnOrder(columns.map((c) => c.id));
+          }
+        })
+        .catch(() => {
+          setColumnOrder(columns.map((c) => c.id));
+        });
+    } else if (columns.length > 0 && prefsLoadedRef.current) {
       setColumnOrder((prevOrder) => {
-        // If no previous order, use columns order
-        if (prevOrder.length === 0) {
-          return columns.map((c) => c.id);
-        }
-        // Merge: keep existing order for columns that still exist, append new ones
         const existingIds = new Set(columns.map((c) => c.id));
         const validPrevOrder = prevOrder.filter((id) => existingIds.has(id));
         const newIds = columns
@@ -140,7 +179,7 @@ const KanbanBoardComponent = (
         return [...validPrevOrder, ...newIds];
       });
     }
-  }, [columns]);
+  }, [columns, getColumnPrefs]);
 
   // Compute ordered columns based on columnOrder
   const orderedColumns = useMemo(() => {
@@ -149,6 +188,18 @@ const KanbanBoardComponent = (
       .map((id) => columns.find((c) => c.id === id))
       .filter((c): c is ColumnDefinition => c !== undefined);
   }, [columns, columnOrder]);
+
+  const buildAndSavePrefs = useCallback(
+    (newOrder: string[], newLimits: Record<string, number | undefined>) => {
+      const prefs = newOrder.map((colId, index) => ({
+        colId,
+        order: index + 1,
+        maxCards: newLimits[colId] ?? 0,
+      }));
+      saveColumnPrefs(prefs);
+    },
+    [saveColumnPrefs],
+  );
 
   const [executeColumnChange, cancelExecuteColumnChange] = useNetworkRequest(
     ConnectionProvider.getHandler().rawExecute,
@@ -389,13 +440,13 @@ const KanbanBoardComponent = (
 
   const handleColumnLimitChange = useCallback(
     (columnId: string, limit: number | undefined) => {
-      setColumnLimits((prev) => ({
-        ...prev,
-        [columnId]: limit,
-      }));
-      // Future: Call server API here (setVisualizationOptions)
+      setColumnLimits((prev) => {
+        const newLimits = { ...prev, [columnId]: limit };
+        buildAndSavePrefs(columnOrder, newLimits);
+        return newLimits;
+      });
     },
-    [],
+    [columnOrder, buildAndSavePrefs],
   );
 
   const handleMoveColumn = useCallback(
@@ -413,11 +464,11 @@ const KanbanBoardComponent = (
           newOrder[newIndex],
           newOrder[currentIndex],
         ];
+        buildAndSavePrefs(newOrder, columnLimits);
         return newOrder;
       });
-      // Future: Call server API here to persist column order
     },
-    [],
+    [columnLimits, buildAndSavePrefs],
   );
 
   const handleMoveToPosition = useCallback(
@@ -430,23 +481,20 @@ const KanbanBoardComponent = (
         const currentIndex = prevOrder.indexOf(columnId);
         if (currentIndex === -1) return prevOrder;
 
-        // Remove column from current position
         const newOrder = prevOrder.filter((id) => id !== columnId);
 
-        // Find target position
         const targetIndex = newOrder.indexOf(targetColumnId);
         if (targetIndex === -1) return prevOrder;
 
-        // Insert at new position
         const insertIndex =
           position === "before" ? targetIndex : targetIndex + 1;
         newOrder.splice(insertIndex, 0, columnId);
 
+        buildAndSavePrefs(newOrder, columnLimits);
         return newOrder;
       });
-      // Future: Call server API here to persist column order
     },
-    [],
+    [columnLimits, buildAndSavePrefs],
   );
 
   const onActionCompleted = useCallback(async () => {
