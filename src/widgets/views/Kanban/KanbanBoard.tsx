@@ -101,6 +101,9 @@ const KanbanBoardComponent = (
   const { showErrorNotification } = useErrorNotification();
   const [activeRecord, setActiveRecord] = useState<KanbanRecord | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
+  const [columnLimits, setColumnLimits] = useState<
+    Record<string, number | undefined>
+  >({});
   const [overId, setOverId] = useState<number | null>(null);
   const [dropPosition, setDropPosition] = useState<"above" | "below" | null>(
     null,
@@ -346,6 +349,17 @@ const KanbanBoardComponent = (
       if (sourceRef) {
         sourceRef.refresh();
       }
+    },
+    [],
+  );
+
+  const handleColumnLimitChange = useCallback(
+    (columnId: string, limit: number | undefined) => {
+      setColumnLimits((prev) => ({
+        ...prev,
+        [columnId]: limit,
+      }));
+      // Future: Call server API here (setVisualizationOptions)
     },
     [],
   );
@@ -649,6 +663,8 @@ const KanbanBoardComponent = (
             nameSearch={nameSearch}
             fieldsToRetrieve={fieldsToRetrieve}
             allowSetMaxCards={false}
+            maxCards={columnLimits[column.id]}
+            onMaxCardsChange={handleColumnLimitChange}
             onCardClick={onCardClick}
             onCountChange={onColumnCountChange}
             onRecordsUpdate={handleRecordsUpdate}

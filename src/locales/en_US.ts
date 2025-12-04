@@ -149,4 +149,7 @@ export default {
   position: "Position",
   move_left: "Move left",
   move_right: "Move right",
+  set_column_limit: "Set column limit",
+  column_limit: "Column limit",
+  column_limit_description: "A limit on the number of items in a column",
 };

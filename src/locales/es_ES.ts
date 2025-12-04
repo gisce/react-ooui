@@ -154,4 +154,8 @@ export default {
   position: "Posición",
   move_left: "Mover a la izquierda",
   move_right: "Mover a la derecha",
+  set_column_limit: "Establecer límite de columna",
+  column_limit: "Límite de columna",
+  column_limit_description:
+    "Un límite en el número de elementos en una columna",
 };

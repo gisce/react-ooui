@@ -6,6 +6,7 @@ import {
   useEffect,
   useRef,
   useCallback,
+  useState,
 } from "react";
 import { useDeepCompareEffect } from "use-deep-compare";
 import {
@@ -33,6 +34,7 @@ import { KanbanRecord, ColumnDefinition } from "./types";
 import { Kanban } from "@gisce/ooui";
 import { useLocale, getTablerIcon } from "@gisce/react-formiga-components";
 import { useKanbanColumnData } from "./useKanbanColumnData";
+import { SetColumnLimitModal } from "./SetColumnLimitModal";
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -70,7 +72,6 @@ type KanbanColumnProps = {
   onAddCardClick?: () => void;
   onRefreshAll?: () => void;
   onOpenColumnInNewTab?: () => void;
-  onSetLimit?: () => void;
   onMoveLeft?: () => void;
   onMoveRight?: () => void;
   activeId?: number | null;
@@ -94,12 +95,12 @@ const KanbanColumnComponent = (
     maxCards,
     isOver = false,
     onCardClick,
+    onMaxCardsChange,
     onCountChange,
     onRecordsUpdate,
     onAddCardClick,
     onRefreshAll,
     onOpenColumnInNewTab,
-    onSetLimit,
     onMoveLeft,
     onMoveRight,
     activeId = null,
@@ -115,6 +116,7 @@ const KanbanColumnComponent = (
 
   const { t } = useLocale();
   const { token } = useToken();
+  const [showLimitModal, setShowLimitModal] = useState(false);
 
   const {
     records,
@@ -252,15 +254,34 @@ const KanbanColumnComponent = (
       if (key === "openInNewTab") {
         onOpenColumnInNewTab?.();
       } else if (key === "setLimit") {
-        onSetLimit?.();
+        setShowLimitModal(true);
       } else if (key === "moveLeft") {
         onMoveLeft?.();
       } else if (key === "moveRight") {
         onMoveRight?.();
       }
     },
-    [onOpenColumnInNewTab, onSetLimit, onMoveLeft, onMoveRight],
+    [onOpenColumnInNewTab, onMoveLeft, onMoveRight],
   );
+
+  const handleLimitSave = useCallback(
+    (limit: number | undefined) => {
+      onMaxCardsChange?.(columnId, limit);
+      setShowLimitModal(false);
+    },
+    [onMaxCardsChange, columnId],
+  );
+
+  const handleLimitCancel = useCallback(() => {
+    setShowLimitModal(false);
+  }, []);
+
+  const badgeContent = useMemo(() => {
+    if (maxCards !== undefined && maxCards > 0) {
+      return `${count} / ${maxCards}`;
+    }
+    return count;
+  }, [count, maxCards]);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -380,7 +401,8 @@ const KanbanColumnComponent = (
                 {columnLabel}
               </Text>
               <Badge
-                count={count}
+                count={badgeContent}
+                overflowCount={999999}
                 style={{
                   backgroundColor: isOverLimit
                     ? token.colorError
@@ -520,6 +542,12 @@ const KanbanColumnComponent = (
           </Button>
         </div>
       </div>
+      <SetColumnLimitModal
+        visible={showLimitModal}
+        initialLimit={maxCards}
+        onSave={handleLimitSave}
+        onCancel={handleLimitCancel}
+      />
     </div>
   );
 };
