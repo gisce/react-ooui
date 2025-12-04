@@ -65,6 +65,12 @@ type KanbanColumnProps = {
   maxCards?: number;
   isOver?: boolean;
   onCardClick?: (record: KanbanRecord) => void;
+  onCardSelect?: (
+    record: KanbanRecord,
+    columnId: string,
+    modifiers: { isCtrlCmd: boolean; isShift: boolean },
+  ) => void;
+  selectedCardIds?: number[];
   onMaxCardsChange?: (colId: string, maxCards: number | undefined) => void;
   onCountChange: (columnId: string, count: number) => void;
   onRecordsUpdate?: (
@@ -107,6 +113,8 @@ const KanbanColumnComponent = (
     maxCards,
     isOver = false,
     onCardClick,
+    onCardSelect,
+    selectedCardIds,
     onMaxCardsChange,
     onCountChange,
     onRecordsUpdate,
@@ -223,6 +231,20 @@ const KanbanColumnComponent = (
       return acc;
     }, {});
   }, [records, onCardClick]);
+
+  const cardSelectHandlers = useMemo(() => {
+    if (!onCardSelect) return {};
+    return records.reduce<
+      Record<
+        number,
+        (modifiers: { isCtrlCmd: boolean; isShift: boolean }) => void
+      >
+    >((acc, record) => {
+      acc[record.id] = (modifiers: { isCtrlCmd: boolean; isShift: boolean }) =>
+        onCardSelect(record, columnId, modifiers);
+      return acc;
+    }, {});
+  }, [records, onCardSelect, columnId]);
 
   const hasStatusRibbon = useMemo(() => {
     return records.some((record) => statusForRecords?.[record.id]);
@@ -537,9 +559,11 @@ const KanbanColumnComponent = (
                       context={context}
                       model={model}
                       onClick={cardClickHandlers[record.id]}
+                      onSelect={cardSelectHandlers[record.id]}
                       onRefreshAll={onRefreshAll}
                       columnId={columnId}
                       isDropTarget={overId === record.id}
+                      isSelected={selectedCardIds?.includes(record.id)}
                       activeId={activeId}
                       dropPosition={dropPosition}
                     />

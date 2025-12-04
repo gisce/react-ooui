@@ -27,9 +27,17 @@ type KanbanProps = {
   searchParams?: any[];
   nameSearch?: string;
   onCardClick?: (record: KanbanRecord) => void;
+  onCardSelect?: (
+    record: KanbanRecord,
+    columnId: string,
+    modifiers: { isCtrlCmd: boolean; isShift: boolean },
+  ) => void;
+  onColumnRecordIdsChange?: (columnId: string, recordIds: number[]) => void;
+  selectedCardIds?: number[];
   onLoadingChange?: (isLoading: boolean) => void;
   onTotalRowsChange?: (totalRows: number) => void;
   onAddCardClick?: (column: ColumnDefinition) => void;
+  onDragStart?: () => void;
   onOpenColumnInNewTab?: (domain: any[]) => void;
 };
 
@@ -50,9 +58,13 @@ const KanbanComponentInner = (
     searchParams = [],
     nameSearch,
     onCardClick,
+    onCardSelect,
+    onColumnRecordIdsChange,
+    selectedCardIds,
     onLoadingChange,
     onTotalRowsChange,
     onAddCardClick,
+    onDragStart,
     onOpenColumnInNewTab,
   } = props;
 
@@ -240,9 +252,13 @@ const KanbanComponentInner = (
         fieldsToRetrieve={fieldsToRetrieve}
         allowSetMaxCards={kanbanDef.set_max_cards === true}
         onCardClick={onCardClick}
+        onCardSelect={onCardSelect}
+        onColumnRecordIdsChange={onColumnRecordIdsChange}
+        selectedCardIds={selectedCardIds}
         setColumnRef={setColumnRef}
         onColumnCountChange={handleColumnCountChange}
         onAddCardClick={onAddCardClick}
+        onDragStart={onDragStart}
         onDragSuccess={handleDragSuccess}
         onOpenColumnInNewTab={onOpenColumnInNewTab}
       />
@@ -262,9 +278,13 @@ const KanbanComponentInner = (
     fieldsToRetrieve,
     kanbanDef?.set_max_cards,
     onCardClick,
+    onCardSelect,
+    onColumnRecordIdsChange,
+    selectedCardIds,
     setColumnRef,
     handleColumnCountChange,
     onAddCardClick,
+    onDragStart,
     handleDragSuccess,
     onOpenColumnInNewTab,
     t,

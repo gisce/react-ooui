@@ -75,9 +75,17 @@ type KanbanBoardProps = {
   kanbanDef: Kanban;
   allowSetMaxCards?: boolean;
   onCardClick?: (record: KanbanRecord) => void;
+  onCardSelect?: (
+    record: KanbanRecord,
+    columnId: string,
+    modifiers: { isCtrlCmd: boolean; isShift: boolean },
+  ) => void;
+  onColumnRecordIdsChange?: (columnId: string, recordIds: number[]) => void;
+  selectedCardIds?: number[];
   setColumnRef: (columnId: string, ref: KanbanColumnRef | null) => void;
   onColumnCountChange: (columnId: string, count: number) => void;
   onAddCardClick?: (column: ColumnDefinition) => void;
+  onDragStart?: () => void;
   onDragSuccess?: (sourceColumnId: string, targetColumnId: string) => void;
   onOpenColumnInNewTab?: (domain: any[]) => void;
 };
@@ -98,9 +106,13 @@ const KanbanBoardComponent = (
     kanbanDef,
     allowSetMaxCards = false,
     onCardClick,
+    onCardSelect,
+    onColumnRecordIdsChange,
+    selectedCardIds,
     setColumnRef,
     onColumnCountChange,
     onAddCardClick,
+    onDragStart: onDragStartProp,
     onDragSuccess,
     onOpenColumnInNewTab,
   } = props;
@@ -224,17 +236,22 @@ const KanbanBoardComponent = (
     }),
   );
 
-  const handleDragStart = useCallback((event: DragStartEvent) => {
-    const { active } = event;
-    const recordId = active.id as number;
+  const handleDragStart = useCallback(
+    (event: DragStartEvent) => {
+      onDragStartProp?.();
 
-    const fullRecord = allRecordsRef.current[recordId];
-    if (fullRecord) {
-      setActiveRecord(fullRecord);
-    } else {
-      setActiveRecord({ id: recordId } as KanbanRecord);
-    }
-  }, []);
+      const { active } = event;
+      const recordId = active.id as number;
+
+      const fullRecord = allRecordsRef.current[recordId];
+      if (fullRecord) {
+        setActiveRecord(fullRecord);
+      } else {
+        setActiveRecord({ id: recordId } as KanbanRecord);
+      }
+    },
+    [onDragStartProp],
+  );
 
   const findColumnByValue = useCallback(
     (value: any): ColumnDefinition | undefined => {
@@ -402,7 +419,9 @@ const KanbanBoardComponent = (
       colors: { [key: number]: string },
       status: { [key: number]: string },
     ) => {
-      columnRecordIdsRef.current[columnId] = records.map((r) => r.id);
+      const recordIds = records.map((r) => r.id);
+      columnRecordIdsRef.current[columnId] = recordIds;
+      onColumnRecordIdsChange?.(columnId, recordIds);
       records.forEach((record) => {
         allRecordsRef.current[record.id] = record;
         if (colors?.[record.id]) {
@@ -413,7 +432,7 @@ const KanbanBoardComponent = (
         }
       });
     },
-    [],
+    [onColumnRecordIdsChange],
   );
 
   const refreshAllColumns = useCallback(() => {
@@ -841,6 +860,8 @@ const KanbanBoardComponent = (
             maxCards={columnLimits[column.id]}
             onMaxCardsChange={handleColumnLimitChange}
             onCardClick={onCardClick}
+            onCardSelect={onCardSelect}
+            selectedCardIds={selectedCardIds}
             onCountChange={onColumnCountChange}
             onRecordsUpdate={handleRecordsUpdate}
             isOver={overColumnId === column.id}

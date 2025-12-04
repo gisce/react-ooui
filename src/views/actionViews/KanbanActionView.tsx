@@ -14,6 +14,7 @@ import { useSearchTreeState } from "@/hooks/useSearchTreeState";
 import { mergeSearchFields } from "@/helpers/formHelper";
 import { useAvailableHeight } from "@/hooks/useAvailableHeight";
 import { useActionViewSavedSearches } from "@/hooks/useActionViewSavedSearches";
+import { useMultiSelect } from "@/hooks/useMultiSelect";
 import { normalizeColumnValue } from "@/helpers/kanbanHelper";
 import { useLocale } from "@gisce/react-formiga-components";
 import { ACTION_TYPE_WINDOW } from "@/models/constants";
@@ -71,6 +72,7 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const titleHeaderRef = useRef<HTMLDivElement>(null);
   const searchHeaderRef = useRef<HTMLDivElement>(null);
+  const columnRecordIdsRef = useRef<Record<string, number[]>>({});
   const availableHeight = useAvailableHeight({
     elementRef: containerRef,
     offset: HEIGHT_OFFSET,
@@ -122,6 +124,50 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
     setSelectedRecord(record);
     setShowFormModal(true);
   }, []);
+
+  const handleColumnRecordIdsChange = useCallback(
+    (columnId: string, recordIds: number[]) => {
+      columnRecordIdsRef.current[columnId] = recordIds;
+    },
+    [],
+  );
+
+  const getOrderedIds = useCallback((itemId: number): number[] | null => {
+    for (const ids of Object.values(columnRecordIdsRef.current)) {
+      if (ids.includes(itemId)) {
+        return ids;
+      }
+    }
+    return null;
+  }, []);
+
+  const { handleSelect, clearSelection } = useMultiSelect({
+    selectedItems: selectedRowItems || [],
+    setSelectedItems: setSelectedRowItems || (() => {}),
+    getOrderedIds,
+  });
+
+  const handleCardSelect = useCallback(
+    (
+      record: KanbanRecord,
+      _columnId: string,
+      modifiers: { isCtrlCmd: boolean; isShift: boolean },
+    ) => {
+      handleSelect({ id: record.id }, modifiers);
+    },
+    [handleSelect],
+  );
+
+  const handleContainerClick = useCallback(
+    (e: React.MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest(".ant-card")) {
+        return;
+      }
+      clearSelection();
+    },
+    [clearSelection],
+  );
 
   const handleAddCard = useCallback((column: ColumnDefinition) => {
     setCreatingInColumn(column);
@@ -349,7 +395,11 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
           }
         />
       </div>
-      <div ref={containerRef} style={containerStyle}>
+      <div
+        ref={containerRef}
+        style={containerStyle}
+        onClick={handleContainerClick}
+      >
         <KanbanComponent
           ref={kanbanRef}
           kanbanView={kanbanView}
@@ -359,9 +409,13 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
           searchParams={searchParams || []}
           nameSearch={searchTreeNameSearch}
           onCardClick={handleCardClick}
+          onCardSelect={handleCardSelect}
+          onColumnRecordIdsChange={handleColumnRecordIdsChange}
+          selectedCardIds={selectedRowKeys}
           onLoadingChange={setViewIsLoading}
           onTotalRowsChange={handleTotalRowsChange}
           onAddCardClick={handleAddCard}
+          onDragStart={clearSelection}
           onOpenColumnInNewTab={handleOpenColumnInNewTab}
         />
       </div>

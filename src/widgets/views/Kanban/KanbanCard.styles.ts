@@ -7,16 +7,36 @@ export const StyledCard = styled(AntCard)<{
   $primaryColor: string;
   $color?: string;
   $isDraggingActive?: boolean;
+  $isSelected?: boolean;
+  $selectedBgColor?: string;
 }>`
   position: relative;
-  background-color: ${(props) => props.$bgColor};
+  background-color: ${(props) =>
+    props.$isSelected && props.$selectedBgColor
+      ? props.$selectedBgColor
+      : props.$bgColor};
   border: 1px solid ${(props) => props.$borderColor};
-  outline: none;
+  outline: ${(props) =>
+    props.$isSelected && !props.$isDraggingActive
+      ? `3px solid ${props.$color || props.$primaryColor}`
+      : "none"};
   outline-offset: -1px;
   overflow: visible;
 
   .ant-card-body {
     overflow: visible;
+  }
+
+  cursor: grab;
+  user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  button,
+  a {
+    cursor: pointer;
   }
 
   &:hover {
