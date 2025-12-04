@@ -6,7 +6,6 @@ import { KanbanComponent, KanbanRef } from "@/widgets/views/Kanban/Kanban";
 import { useActionViewContext } from "@/context/ActionViewContext";
 import { useTabs } from "@/context/TabManagerContext";
 import { KanbanRecord, ColumnDefinition } from "@/widgets/views/Kanban/types";
-import { FormModal } from "@/widgets/modals/FormModal";
 import { Kanban } from "@gisce/ooui";
 import { SearchTreeHeader } from "@/widgets/views/SearchTreeHeader";
 import { SideSearchFilter } from "@/widgets/views/searchFilter/SideSearchFilter";
@@ -18,6 +17,7 @@ import { useActionViewSavedSearches } from "@/hooks/useActionViewSavedSearches";
 import { normalizeColumnValue } from "@/helpers/kanbanHelper";
 import { useLocale } from "@gisce/react-formiga-components";
 import { ACTION_TYPE_WINDOW } from "@/models/constants";
+import { FormSidePanel } from "@/widgets/modals/FormSidePanel";
 
 const HEIGHT_OFFSET = 10;
 
@@ -366,7 +366,7 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
         />
       </div>
       {formView && (
-        <FormModal
+        <FormSidePanel
           formView={formView}
           model={model}
           id={creatingInColumn ? undefined : selectedRecord?.id}
