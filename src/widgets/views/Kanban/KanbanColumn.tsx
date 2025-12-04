@@ -71,7 +71,7 @@ type KanbanColumnProps = {
   ) => void;
   onAddCardClick?: () => void;
   onRefreshAll?: () => void;
-  onOpenColumnInNewTab?: () => void;
+  onOpenColumnInNewTab?: (domain: any[]) => void;
   onMoveLeft?: () => void;
   onMoveRight?: () => void;
   activeId?: number | null;
@@ -92,6 +92,7 @@ const KanbanColumnComponent = (
     nameSearch,
     fieldsToRetrieve,
     kanbanDef,
+    allowSetMaxCards,
     maxCards,
     isOver = false,
     onCardClick,
@@ -124,6 +125,7 @@ const KanbanColumnComponent = (
     aggregates,
     colorsForRecords,
     statusForRecords,
+    columnDomain,
     isLoading,
     isLoadingMore,
     isRefreshing,
@@ -222,11 +224,15 @@ const KanbanColumnComponent = (
             label: t("open_column_in_new_tab"),
             icon: <IconExternalLink size={16} />,
           },
-          {
-            key: "setLimit",
-            label: t("set_limit"),
-            icon: <IconListNumbers size={16} />,
-          },
+          ...(allowSetMaxCards
+            ? [
+                {
+                  key: "setLimit",
+                  label: t("set_limit"),
+                  icon: <IconListNumbers size={16} />,
+                },
+              ]
+            : []),
         ],
       },
       {
@@ -246,13 +252,13 @@ const KanbanColumnComponent = (
         ],
       },
     ],
-    [t],
+    [t, allowSetMaxCards],
   );
 
   const handleMenuClick: MenuProps["onClick"] = useCallback(
     ({ key }: { key: string }) => {
       if (key === "openInNewTab") {
-        onOpenColumnInNewTab?.();
+        onOpenColumnInNewTab?.(columnDomain);
       } else if (key === "setLimit") {
         setShowLimitModal(true);
       } else if (key === "moveLeft") {
@@ -261,7 +267,7 @@ const KanbanColumnComponent = (
         onMoveRight?.();
       }
     },
-    [onOpenColumnInNewTab, onMoveLeft, onMoveRight],
+    [onOpenColumnInNewTab, columnDomain, onMoveLeft, onMoveRight],
   );
 
   const handleLimitSave = useCallback(

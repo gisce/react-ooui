@@ -90,7 +90,6 @@ export type KanbanView = BaseView & {
   column_field: string;
   drag?: boolean;
   sort?: boolean;
-  set_max_cards?: boolean;
   colors?: string;
   toolbar?: any;
   search_fields?: SearchFields;

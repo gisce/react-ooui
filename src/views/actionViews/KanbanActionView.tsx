@@ -1,9 +1,10 @@
 import { Fragment, useCallback, useState, memo, useMemo, useRef } from "react";
-import { FormView, KanbanView, TreeView, View } from "@/types";
+import { FormView, KanbanView, TreeView, View, ViewType } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
 import TreeActionBar from "@/actionbar/TreeActionBar";
 import { KanbanComponent, KanbanRef } from "@/widgets/views/Kanban/Kanban";
 import { useActionViewContext } from "@/context/ActionViewContext";
+import { useTabs } from "@/context/TabManagerContext";
 import { KanbanRecord, ColumnDefinition } from "@/widgets/views/Kanban/types";
 import { FormModal } from "@/widgets/modals/FormModal";
 import { Kanban } from "@gisce/ooui";
@@ -16,6 +17,7 @@ import { useAvailableHeight } from "@/hooks/useAvailableHeight";
 import { useActionViewSavedSearches } from "@/hooks/useActionViewSavedSearches";
 import { normalizeColumnValue } from "@/helpers/kanbanHelper";
 import { useLocale } from "@gisce/react-formiga-components";
+import { ACTION_TYPE_WINDOW } from "@/models/constants";
 
 const HEIGHT_OFFSET = 10;
 
@@ -40,7 +42,8 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
     viewRef,
   } = props;
 
-  const { setViewIsLoading } = useActionViewContext();
+  const { setViewIsLoading, title } = useActionViewContext();
+  const { openAction } = useTabs();
   const { t } = useLocale();
 
   const {
@@ -241,6 +244,29 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
     setSearchVisible?.(false);
   }, [setSearchParams, setSearchValues, setSearchVisible]);
 
+  const handleOpenColumnInNewTab = useCallback(
+    (columnDomain: any[]) => {
+      const views = availableViews.map(
+        (v) => [v.view_id, v.type] as [number, ViewType],
+      );
+      const treeViewEntry = views.find((v) => v[1] === "tree");
+
+      openAction({
+        model,
+        domain: columnDomain,
+        context,
+        views,
+        title,
+        target: "current",
+        initialView: { id: treeViewEntry?.[0] ?? 0, type: "tree" },
+        action_id: (kanbanView as any).extra?.action_id ?? -1,
+        action_type:
+          (kanbanView as any).extra?.action_type ?? ACTION_TYPE_WINDOW,
+      });
+    },
+    [model, context, availableViews, title, kanbanView, openAction],
+  );
+
   const formView = useMemo(
     () => availableViews.find((v) => v.type === "form") as FormView,
     [availableViews],
@@ -336,6 +362,7 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
           onLoadingChange={setViewIsLoading}
           onTotalRowsChange={handleTotalRowsChange}
           onAddCardClick={handleAddCard}
+          onOpenColumnInNewTab={handleOpenColumnInNewTab}
         />
       </div>
       {formView && (

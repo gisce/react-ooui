@@ -70,11 +70,13 @@ type KanbanBoardProps = {
   nameSearch?: string;
   fieldsToRetrieve?: string[];
   kanbanDef: Kanban;
+  allowSetMaxCards?: boolean;
   onCardClick?: (record: KanbanRecord) => void;
   setColumnRef: (columnId: string, ref: KanbanColumnRef | null) => void;
   onColumnCountChange: (columnId: string, count: number) => void;
   onAddCardClick?: (column: ColumnDefinition) => void;
   onDragSuccess?: (sourceColumnId: string, targetColumnId: string) => void;
+  onOpenColumnInNewTab?: (domain: any[]) => void;
 };
 
 const KanbanBoardComponent = (
@@ -90,11 +92,13 @@ const KanbanBoardComponent = (
     nameSearch,
     fieldsToRetrieve,
     kanbanDef,
+    allowSetMaxCards = false,
     onCardClick,
     setColumnRef,
     onColumnCountChange,
     onAddCardClick,
     onDragSuccess,
+    onOpenColumnInNewTab,
   } = props;
 
   const { t } = useLocale();
@@ -615,6 +619,13 @@ const KanbanBoardComponent = (
     return callbacks;
   }, [columns, onAddCardClick]);
 
+  const handleOpenColumnInNewTab = useCallback(
+    (columnDomain: any[]) => {
+      onOpenColumnInNewTab?.(columnDomain);
+    },
+    [onOpenColumnInNewTab],
+  );
+
   if (columns.length === 0) {
     return (
       <div
@@ -662,7 +673,7 @@ const KanbanBoardComponent = (
             searchParams={searchParams}
             nameSearch={nameSearch}
             fieldsToRetrieve={fieldsToRetrieve}
-            allowSetMaxCards={false}
+            allowSetMaxCards={allowSetMaxCards}
             maxCards={columnLimits[column.id]}
             onMaxCardsChange={handleColumnLimitChange}
             onCardClick={onCardClick}
@@ -671,6 +682,7 @@ const KanbanBoardComponent = (
             isOver={overColumnId === column.id}
             onAddCardClick={columnAddCardCallbacks[column.id]}
             onRefreshAll={refreshAllColumns}
+            onOpenColumnInNewTab={handleOpenColumnInNewTab}
             activeId={activeRecord?.id ?? null}
             overId={overId}
             dropPosition={dropPosition}

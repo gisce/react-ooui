@@ -30,6 +30,7 @@ type KanbanProps = {
   onLoadingChange?: (isLoading: boolean) => void;
   onTotalRowsChange?: (totalRows: number) => void;
   onAddCardClick?: (column: ColumnDefinition) => void;
+  onOpenColumnInNewTab?: (domain: any[]) => void;
 };
 
 export type KanbanRef = {
@@ -52,6 +53,7 @@ const KanbanComponentInner = (
     onLoadingChange,
     onTotalRowsChange,
     onAddCardClick,
+    onOpenColumnInNewTab,
   } = props;
 
   const prevNameSearch = useRef(nameSearch);
@@ -235,11 +237,13 @@ const KanbanComponentInner = (
         searchParams={searchParams}
         nameSearch={nameSearch}
         fieldsToRetrieve={fieldsToRetrieve}
+        allowSetMaxCards={kanbanDef.set_max_cards === true}
         onCardClick={onCardClick}
         setColumnRef={setColumnRef}
         onColumnCountChange={handleColumnCountChange}
         onAddCardClick={onAddCardClick}
         onDragSuccess={handleDragSuccess}
+        onOpenColumnInNewTab={onOpenColumnInNewTab}
       />
     );
   }, [
@@ -254,11 +258,13 @@ const KanbanComponentInner = (
     searchParams,
     nameSearch,
     fieldsToRetrieve,
+    kanbanDef?.set_max_cards,
     onCardClick,
     setColumnRef,
     handleColumnCountChange,
     onAddCardClick,
     handleDragSuccess,
+    onOpenColumnInNewTab,
     t,
   ]);
 
