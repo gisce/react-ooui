@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   useDeepCompareCallback,
   useDeepCompareEffect,
@@ -95,6 +95,20 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
     return result;
   }, [kanbanDef?.aggregations]);
 
+  const columnDomain = useDeepCompareMemo(() => {
+    if (!kanbanDef?.column_field) return domain;
+
+    let searchValue: any = columnValue;
+    if (Array.isArray(columnValue) && columnValue.length === 2) {
+      searchValue = columnValue[0];
+    } else if (columnValue === "" || columnValue === "false") {
+      searchValue = false;
+    }
+
+    const baseDomain = nameSearch ? domain : mergeParams(domain, searchParams);
+    return [...baseDomain, [kanbanDef.column_field, "=", searchValue]];
+  }, [domain, searchParams, nameSearch, kanbanDef?.column_field, columnValue]);
+
   const fetchData = useDeepCompareCallback(
     async (isLoadingNextPage = false) => {
       if (!enabled || !model || !kanbanDef?.column_field) {
@@ -116,28 +130,6 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
       setError(null);
 
       try {
-        // When nameSearch is active: use ONLY domain (ignore searchParams)
-        // When nameSearch is NOT active: merge domain + searchParams
-        const baseDomain = nameSearch
-          ? domain
-          : mergeParams(domain, searchParams);
-
-        // Extract the proper value for the search query
-        // For many2one fields, columnValue is [id, name], we need just the id
-        let searchValue: any = columnValue;
-        if (Array.isArray(columnValue) && columnValue.length === 2) {
-          // many2one field: use the ID (first element)
-          searchValue = columnValue[0];
-        } else if (columnValue === "" || columnValue === "false") {
-          // Handle empty/false string values
-          searchValue = false;
-        }
-
-        const columnDomain = [
-          ...baseDomain,
-          [kanbanDef.column_field, "=", searchValue],
-        ];
-
         if (!isLoadingNextPage) {
           try {
             const countResult = await searchCount({
@@ -348,6 +340,7 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
     aggregates,
     colorsForRecords,
     statusForRecords,
+    columnDomain,
     isLoading,
     isLoadingMore,
     isRefreshing,

@@ -21,6 +21,7 @@
   - `npm run build:tsc` for the TypeScript check that respects `tsconfig.build.json`.
 - `npm run check` only triggers lint-staged; it does **not** cover the required TypeScript or ESLint passes.
 - `npm run build:tsc` runs `tsc -p tsconfig.build.json --noEmit`, satisfying the `npx tsc --noEmit` requirement.
+- Do not run `npx tsc` on individual files; always use `npm run build:tsc` for the full project check.
 - Fix every ESLint warning and TypeScript error before handing work back.
 - Keep type safety and readability high; never finish a task without running the checks above.
 

@@ -1,11 +1,11 @@
 import { Fragment, useCallback, useState, memo, useMemo, useRef } from "react";
-import { FormView, KanbanView, TreeView, View } from "@/types";
+import { FormView, KanbanView, TreeView, View, ViewType } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
 import TreeActionBar from "@/actionbar/TreeActionBar";
 import { KanbanComponent, KanbanRef } from "@/widgets/views/Kanban/Kanban";
 import { useActionViewContext } from "@/context/ActionViewContext";
+import { useTabs } from "@/context/TabManagerContext";
 import { KanbanRecord, ColumnDefinition } from "@/widgets/views/Kanban/types";
-import { FormModal } from "@/widgets/modals/FormModal";
 import { Kanban } from "@gisce/ooui";
 import { SearchTreeHeader } from "@/widgets/views/SearchTreeHeader";
 import { SideSearchFilter } from "@/widgets/views/searchFilter/SideSearchFilter";
@@ -14,8 +14,11 @@ import { useSearchTreeState } from "@/hooks/useSearchTreeState";
 import { mergeSearchFields } from "@/helpers/formHelper";
 import { useAvailableHeight } from "@/hooks/useAvailableHeight";
 import { useActionViewSavedSearches } from "@/hooks/useActionViewSavedSearches";
+import { useMultiSelect } from "@/hooks/useMultiSelect";
 import { normalizeColumnValue } from "@/helpers/kanbanHelper";
 import { useLocale } from "@gisce/react-formiga-components";
+import { ACTION_TYPE_WINDOW } from "@/models/constants";
+import { FormSidePanel } from "@/widgets/modals/FormSidePanel";
 
 const HEIGHT_OFFSET = 10;
 
@@ -40,7 +43,8 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
     viewRef,
   } = props;
 
-  const { setViewIsLoading } = useActionViewContext();
+  const { setViewIsLoading, title } = useActionViewContext();
+  const { openAction } = useTabs();
   const { t } = useLocale();
 
   const {
@@ -68,6 +72,7 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const titleHeaderRef = useRef<HTMLDivElement>(null);
   const searchHeaderRef = useRef<HTMLDivElement>(null);
+  const columnRecordIdsRef = useRef<Record<string, number[]>>({});
   const availableHeight = useAvailableHeight({
     elementRef: containerRef,
     offset: HEIGHT_OFFSET,
@@ -119,6 +124,50 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
     setSelectedRecord(record);
     setShowFormModal(true);
   }, []);
+
+  const handleColumnRecordIdsChange = useCallback(
+    (columnId: string, recordIds: number[]) => {
+      columnRecordIdsRef.current[columnId] = recordIds;
+    },
+    [],
+  );
+
+  const getOrderedIds = useCallback((itemId: number): number[] | null => {
+    for (const ids of Object.values(columnRecordIdsRef.current)) {
+      if (ids.includes(itemId)) {
+        return ids;
+      }
+    }
+    return null;
+  }, []);
+
+  const { handleSelect, clearSelection } = useMultiSelect({
+    selectedItems: selectedRowItems || [],
+    setSelectedItems: setSelectedRowItems || (() => {}),
+    getOrderedIds,
+  });
+
+  const handleCardSelect = useCallback(
+    (
+      record: KanbanRecord,
+      _columnId: string,
+      modifiers: { isCtrlCmd: boolean; isShift: boolean },
+    ) => {
+      handleSelect({ id: record.id }, modifiers);
+    },
+    [handleSelect],
+  );
+
+  const handleContainerClick = useCallback(
+    (e: React.MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest(".ant-card")) {
+        return;
+      }
+      clearSelection();
+    },
+    [clearSelection],
+  );
 
   const handleAddCard = useCallback((column: ColumnDefinition) => {
     setCreatingInColumn(column);
@@ -241,6 +290,29 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
     setSearchVisible?.(false);
   }, [setSearchParams, setSearchValues, setSearchVisible]);
 
+  const handleOpenColumnInNewTab = useCallback(
+    (columnDomain: any[]) => {
+      const views = availableViews.map(
+        (v) => [v.view_id, v.type] as [number, ViewType],
+      );
+      const treeViewEntry = views.find((v) => v[1] === "tree");
+
+      openAction({
+        model,
+        domain: columnDomain,
+        context,
+        views,
+        title,
+        target: "current",
+        initialView: { id: treeViewEntry?.[0] ?? 0, type: "tree" },
+        action_id: (kanbanView as any).extra?.action_id ?? -1,
+        action_type:
+          (kanbanView as any).extra?.action_type ?? ACTION_TYPE_WINDOW,
+      });
+    },
+    [model, context, availableViews, title, kanbanView, openAction],
+  );
+
   const formView = useMemo(
     () => availableViews.find((v) => v.type === "form") as FormView,
     [availableViews],
@@ -323,7 +395,11 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
           }
         />
       </div>
-      <div ref={containerRef} style={containerStyle}>
+      <div
+        ref={containerRef}
+        style={containerStyle}
+        onClick={handleContainerClick}
+      >
         <KanbanComponent
           ref={kanbanRef}
           kanbanView={kanbanView}
@@ -333,13 +409,18 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
           searchParams={searchParams || []}
           nameSearch={searchTreeNameSearch}
           onCardClick={handleCardClick}
+          onCardSelect={handleCardSelect}
+          onColumnRecordIdsChange={handleColumnRecordIdsChange}
+          selectedCardIds={selectedRowKeys}
           onLoadingChange={setViewIsLoading}
           onTotalRowsChange={handleTotalRowsChange}
           onAddCardClick={handleAddCard}
+          onDragStart={clearSelection}
+          onOpenColumnInNewTab={handleOpenColumnInNewTab}
         />
       </div>
       {formView && (
-        <FormModal
+        <FormSidePanel
           formView={formView}
           model={model}
           id={creatingInColumn ? undefined : selectedRecord?.id}

@@ -148,4 +148,16 @@ export default {
   error_parsing_kanban_view: "Error al parsear la vista kanban",
   error_loading_kanban_data: "Error al cargar los datos kanban",
   add_card: "Añadir tarjeta",
+  open_column_in_new_tab: "Abrir columna en nueva pestaña",
+  set_limit: "Establecer límite",
+  column: "Columna",
+  position: "Posición",
+  move_left: "Mover a la izquierda",
+  move_right: "Mover a la derecha",
+  move_before: "Mover antes de...",
+  move_after: "Mover después de...",
+  set_column_limit: "Establecer límite de columna",
+  column_limit: "Límite de columna",
+  column_limit_description:
+    "Un límite en el número de elementos en una columna",
 };

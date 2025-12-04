@@ -6,6 +6,7 @@ import {
   forwardRef,
   useImperativeHandle,
   useEffect,
+  useMemo,
 } from "react";
 import { useDeepCompareMemo } from "use-deep-compare";
 import {
@@ -31,6 +32,7 @@ import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { normalizeColumnValue } from "@/helpers/kanbanHelper";
 import { useProcessAction } from "@/hooks/useProcessAction";
+import { useKanbanColumnPrefs } from "./useKanbanColumnPrefs";
 
 const customCollisionDetection: CollisionDetection = (args) => {
   // First, try to find collision with pointer directly over elements
@@ -64,17 +66,28 @@ export type KanbanBoardRef = {
 type KanbanBoardProps = {
   columns: ColumnDefinition[];
   model: string;
+  viewId: number;
   domain: any[];
   context: any;
   searchParams?: any[];
   nameSearch?: string;
   fieldsToRetrieve?: string[];
   kanbanDef: Kanban;
+  allowSetMaxCards?: boolean;
   onCardClick?: (record: KanbanRecord) => void;
+  onCardSelect?: (
+    record: KanbanRecord,
+    columnId: string,
+    modifiers: { isCtrlCmd: boolean; isShift: boolean },
+  ) => void;
+  onColumnRecordIdsChange?: (columnId: string, recordIds: number[]) => void;
+  selectedCardIds?: number[];
   setColumnRef: (columnId: string, ref: KanbanColumnRef | null) => void;
   onColumnCountChange: (columnId: string, count: number) => void;
   onAddCardClick?: (column: ColumnDefinition) => void;
+  onDragStart?: () => void;
   onDragSuccess?: (sourceColumnId: string, targetColumnId: string) => void;
+  onOpenColumnInNewTab?: (domain: any[]) => void;
 };
 
 const KanbanBoardComponent = (
@@ -84,23 +97,33 @@ const KanbanBoardComponent = (
   const {
     columns,
     model,
+    viewId,
     domain,
     context = {},
     searchParams,
     nameSearch,
     fieldsToRetrieve,
     kanbanDef,
+    allowSetMaxCards = false,
     onCardClick,
+    onCardSelect,
+    onColumnRecordIdsChange,
+    selectedCardIds,
     setColumnRef,
     onColumnCountChange,
     onAddCardClick,
+    onDragStart: onDragStartProp,
     onDragSuccess,
+    onOpenColumnInNewTab,
   } = props;
 
   const { t } = useLocale();
   const { showErrorNotification } = useErrorNotification();
   const [activeRecord, setActiveRecord] = useState<KanbanRecord | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
+  const [columnLimits, setColumnLimits] = useState<
+    Record<string, number | undefined>
+  >({});
   const [overId, setOverId] = useState<number | null>(null);
   const [dropPosition, setDropPosition] = useState<"above" | "below" | null>(
     null,
@@ -113,6 +136,83 @@ const KanbanBoardComponent = (
   const allRecordsRef = useRef<{ [key: number]: KanbanRecord }>({});
   const columnRefsRef = useRef<{ [columnId: string]: KanbanColumnRef }>({});
   const columnRecordIdsRef = useRef<{ [columnId: string]: number[] }>({});
+  const [columnOrder, setColumnOrder] = useState<string[]>([]);
+  const prefsLoadedRef = useRef(false);
+
+  const { getColumnPrefs, saveColumnPrefs } = useKanbanColumnPrefs(
+    viewId,
+    model,
+  );
+
+  useEffect(() => {
+    if (columns.length > 0 && !prefsLoadedRef.current) {
+      prefsLoadedRef.current = true;
+      getColumnPrefs()
+        .then((prefs) => {
+          if (prefs && prefs.length > 0) {
+            const orderedIds = prefs
+              .sort((a, b) => a.order - b.order)
+              .map((p) => p.colId)
+              .filter((id) => columns.some((c) => c.id === id));
+
+            const newColumnIds = columns
+              .map((c) => c.id)
+              .filter((id) => !orderedIds.includes(id));
+
+            if (orderedIds.length > 0) {
+              setColumnOrder([...orderedIds, ...newColumnIds]);
+            } else {
+              setColumnOrder(columns.map((c) => c.id));
+            }
+
+            const limits: Record<string, number | undefined> = {};
+            prefs.forEach((p) => {
+              if (p.maxCards > 0) {
+                limits[p.colId] = p.maxCards;
+              }
+            });
+            if (Object.keys(limits).length > 0) {
+              setColumnLimits(limits);
+            }
+          } else {
+            setColumnOrder(columns.map((c) => c.id));
+          }
+        })
+        .catch(() => {
+          setColumnOrder(columns.map((c) => c.id));
+        });
+    } else if (columns.length > 0 && prefsLoadedRef.current) {
+      setColumnOrder((prevOrder) => {
+        const existingIds = new Set(columns.map((c) => c.id));
+        const validPrevOrder = prevOrder.filter((id) => existingIds.has(id));
+        const newIds = columns
+          .map((c) => c.id)
+          .filter((id) => !validPrevOrder.includes(id));
+        return [...validPrevOrder, ...newIds];
+      });
+    }
+  }, [columns, getColumnPrefs]);
+
+  // Compute ordered columns based on columnOrder
+  const orderedColumns = useMemo(() => {
+    if (columnOrder.length === 0) return columns;
+    return columnOrder
+      .map((id) => columns.find((c) => c.id === id))
+      .filter((c): c is ColumnDefinition => c !== undefined);
+  }, [columns, columnOrder]);
+
+  const buildAndSavePrefs = useCallback(
+    (newOrder: string[], newLimits: Record<string, number | undefined>) => {
+      const prefs = newOrder.map((colId, index) => ({
+        colId,
+        order: index + 1,
+        maxCards: newLimits[colId] ?? 0,
+      }));
+      saveColumnPrefs(prefs);
+    },
+    [saveColumnPrefs],
+  );
+
   const [executeColumnChange, cancelExecuteColumnChange] = useNetworkRequest(
     ConnectionProvider.getHandler().rawExecute,
   );
@@ -136,17 +236,22 @@ const KanbanBoardComponent = (
     }),
   );
 
-  const handleDragStart = useCallback((event: DragStartEvent) => {
-    const { active } = event;
-    const recordId = active.id as number;
+  const handleDragStart = useCallback(
+    (event: DragStartEvent) => {
+      onDragStartProp?.();
 
-    const fullRecord = allRecordsRef.current[recordId];
-    if (fullRecord) {
-      setActiveRecord(fullRecord);
-    } else {
-      setActiveRecord({ id: recordId } as KanbanRecord);
-    }
-  }, []);
+      const { active } = event;
+      const recordId = active.id as number;
+
+      const fullRecord = allRecordsRef.current[recordId];
+      if (fullRecord) {
+        setActiveRecord(fullRecord);
+      } else {
+        setActiveRecord({ id: recordId } as KanbanRecord);
+      }
+    },
+    [onDragStartProp],
+  );
 
   const findColumnByValue = useCallback(
     (value: any): ColumnDefinition | undefined => {
@@ -314,7 +419,9 @@ const KanbanBoardComponent = (
       colors: { [key: number]: string },
       status: { [key: number]: string },
     ) => {
-      columnRecordIdsRef.current[columnId] = records.map((r) => r.id);
+      const recordIds = records.map((r) => r.id);
+      columnRecordIdsRef.current[columnId] = recordIds;
+      onColumnRecordIdsChange?.(columnId, recordIds);
       records.forEach((record) => {
         allRecordsRef.current[record.id] = record;
         if (colors?.[record.id]) {
@@ -325,7 +432,7 @@ const KanbanBoardComponent = (
         }
       });
     },
-    [],
+    [onColumnRecordIdsChange],
   );
 
   const refreshAllColumns = useCallback(() => {
@@ -348,6 +455,65 @@ const KanbanBoardComponent = (
       }
     },
     [],
+  );
+
+  const handleColumnLimitChange = useCallback(
+    (columnId: string, limit: number | undefined) => {
+      setColumnLimits((prev) => {
+        const newLimits = { ...prev, [columnId]: limit };
+        buildAndSavePrefs(columnOrder, newLimits);
+        return newLimits;
+      });
+    },
+    [columnOrder, buildAndSavePrefs],
+  );
+
+  const handleMoveColumn = useCallback(
+    (columnId: string, direction: "left" | "right") => {
+      setColumnOrder((prevOrder) => {
+        const currentIndex = prevOrder.indexOf(columnId);
+        if (currentIndex === -1) return prevOrder;
+
+        const newIndex =
+          direction === "left" ? currentIndex - 1 : currentIndex + 1;
+        if (newIndex < 0 || newIndex >= prevOrder.length) return prevOrder;
+
+        const newOrder = [...prevOrder];
+        [newOrder[currentIndex], newOrder[newIndex]] = [
+          newOrder[newIndex],
+          newOrder[currentIndex],
+        ];
+        buildAndSavePrefs(newOrder, columnLimits);
+        return newOrder;
+      });
+    },
+    [columnLimits, buildAndSavePrefs],
+  );
+
+  const handleMoveToPosition = useCallback(
+    (
+      columnId: string,
+      targetColumnId: string,
+      position: "before" | "after",
+    ) => {
+      setColumnOrder((prevOrder) => {
+        const currentIndex = prevOrder.indexOf(columnId);
+        if (currentIndex === -1) return prevOrder;
+
+        const newOrder = prevOrder.filter((id) => id !== columnId);
+
+        const targetIndex = newOrder.indexOf(targetColumnId);
+        if (targetIndex === -1) return prevOrder;
+
+        const insertIndex =
+          position === "before" ? targetIndex : targetIndex + 1;
+        newOrder.splice(insertIndex, 0, columnId);
+
+        buildAndSavePrefs(newOrder, columnLimits);
+        return newOrder;
+      });
+    },
+    [columnLimits, buildAndSavePrefs],
   );
 
   const onActionCompleted = useCallback(async () => {
@@ -601,6 +767,48 @@ const KanbanBoardComponent = (
     return callbacks;
   }, [columns, onAddCardClick]);
 
+  const columnMoveLeftCallbacks = useDeepCompareMemo(() => {
+    const callbacks: Record<string, () => void> = {};
+    orderedColumns.forEach((column) => {
+      callbacks[column.id] = () => handleMoveColumn(column.id, "left");
+    });
+    return callbacks;
+  }, [orderedColumns, handleMoveColumn]);
+
+  const columnMoveRightCallbacks = useDeepCompareMemo(() => {
+    const callbacks: Record<string, () => void> = {};
+    orderedColumns.forEach((column) => {
+      callbacks[column.id] = () => handleMoveColumn(column.id, "right");
+    });
+    return callbacks;
+  }, [orderedColumns, handleMoveColumn]);
+
+  // Memoize column info for submenus (id + label only)
+  const allColumnsInfo = useMemo(
+    () => orderedColumns.map((c) => ({ id: c.id, label: c.label })),
+    [orderedColumns],
+  );
+
+  // Memoize move to position callbacks per column
+  const columnMoveToPositionCallbacks = useDeepCompareMemo(() => {
+    const callbacks: Record<
+      string,
+      (targetId: string, position: "before" | "after") => void
+    > = {};
+    orderedColumns.forEach((column) => {
+      callbacks[column.id] = (targetId: string, position: "before" | "after") =>
+        handleMoveToPosition(column.id, targetId, position);
+    });
+    return callbacks;
+  }, [orderedColumns, handleMoveToPosition]);
+
+  const handleOpenColumnInNewTab = useCallback(
+    (columnDomain: any[]) => {
+      onOpenColumnInNewTab?.(columnDomain);
+    },
+    [onOpenColumnInNewTab],
+  );
+
   if (columns.length === 0) {
     return (
       <div
@@ -636,7 +844,7 @@ const KanbanBoardComponent = (
           height: "100%",
         }}
       >
-        {columns.map((column) => (
+        {orderedColumns.map((column, index) => (
           <KanbanColumn
             key={column.id}
             ref={columnRefCallbacks[column.id]}
@@ -648,13 +856,24 @@ const KanbanBoardComponent = (
             searchParams={searchParams}
             nameSearch={nameSearch}
             fieldsToRetrieve={fieldsToRetrieve}
-            allowSetMaxCards={false}
+            allowSetMaxCards={allowSetMaxCards}
+            maxCards={columnLimits[column.id]}
+            onMaxCardsChange={handleColumnLimitChange}
             onCardClick={onCardClick}
+            onCardSelect={onCardSelect}
+            selectedCardIds={selectedCardIds}
             onCountChange={onColumnCountChange}
             onRecordsUpdate={handleRecordsUpdate}
             isOver={overColumnId === column.id}
             onAddCardClick={columnAddCardCallbacks[column.id]}
             onRefreshAll={refreshAllColumns}
+            onOpenColumnInNewTab={handleOpenColumnInNewTab}
+            onMoveLeft={columnMoveLeftCallbacks[column.id]}
+            onMoveRight={columnMoveRightCallbacks[column.id]}
+            onMoveToPosition={columnMoveToPositionCallbacks[column.id]}
+            isFirstColumn={index === 0}
+            isLastColumn={index === orderedColumns.length - 1}
+            allColumns={allColumnsInfo}
             activeId={activeRecord?.id ?? null}
             overId={overId}
             dropPosition={dropPosition}

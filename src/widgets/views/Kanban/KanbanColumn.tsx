@@ -6,10 +6,23 @@ import {
   useEffect,
   useRef,
   useCallback,
+  useState,
 } from "react";
 import { useDeepCompareEffect } from "use-deep-compare";
-import { Badge, Button, Space, theme, Typography } from "antd";
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  Badge,
+  Button,
+  Dropdown,
+  MenuProps,
+  Space,
+  theme,
+  Typography,
+} from "antd";
+import {
+  EllipsisOutlined,
+  LoadingOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import { useDroppable } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -19,11 +32,21 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { KanbanCard } from "./KanbanCard";
 import { KanbanRecord, ColumnDefinition } from "./types";
 import { Kanban } from "@gisce/ooui";
-import { useLocale } from "@gisce/react-formiga-components";
+import { useLocale, getTablerIcon } from "@gisce/react-formiga-components";
 import { useKanbanColumnData } from "./useKanbanColumnData";
+import { SetColumnLimitModal } from "./SetColumnLimitModal";
 
 const { Text } = Typography;
 const { useToken } = theme;
+
+const IconListNumbers = getTablerIcon("IconListNumbers") as React.FC<any>;
+const IconExternalLink = getTablerIcon("IconExternalLink") as React.FC<any>;
+const IconArrowLeft = getTablerIcon("IconArrowLeft") as React.FC<any>;
+const IconArrowRight = getTablerIcon("IconArrowRight") as React.FC<any>;
+const IconArrowBarToLeft = getTablerIcon("IconArrowBarToLeft") as React.FC<any>;
+const IconArrowBarToRight = getTablerIcon(
+  "IconArrowBarToRight",
+) as React.FC<any>;
 
 export type KanbanColumnRef = {
   refresh: () => void;
@@ -42,6 +65,12 @@ type KanbanColumnProps = {
   maxCards?: number;
   isOver?: boolean;
   onCardClick?: (record: KanbanRecord) => void;
+  onCardSelect?: (
+    record: KanbanRecord,
+    columnId: string,
+    modifiers: { isCtrlCmd: boolean; isShift: boolean },
+  ) => void;
+  selectedCardIds?: number[];
   onMaxCardsChange?: (colId: string, maxCards: number | undefined) => void;
   onCountChange: (columnId: string, count: number) => void;
   onRecordsUpdate?: (
@@ -52,6 +81,16 @@ type KanbanColumnProps = {
   ) => void;
   onAddCardClick?: () => void;
   onRefreshAll?: () => void;
+  onOpenColumnInNewTab?: (domain: any[]) => void;
+  onMoveLeft?: () => void;
+  onMoveRight?: () => void;
+  onMoveToPosition?: (
+    targetColumnId: string,
+    position: "before" | "after",
+  ) => void;
+  isFirstColumn?: boolean;
+  isLastColumn?: boolean;
+  allColumns?: Array<{ id: string; label: string }>;
   activeId?: number | null;
   overId?: number | null;
   dropPosition?: "above" | "below" | null;
@@ -70,13 +109,24 @@ const KanbanColumnComponent = (
     nameSearch,
     fieldsToRetrieve,
     kanbanDef,
+    allowSetMaxCards,
     maxCards,
     isOver = false,
     onCardClick,
+    onCardSelect,
+    selectedCardIds,
+    onMaxCardsChange,
     onCountChange,
     onRecordsUpdate,
     onAddCardClick,
     onRefreshAll,
+    onOpenColumnInNewTab,
+    onMoveLeft,
+    onMoveRight,
+    onMoveToPosition,
+    isFirstColumn = false,
+    isLastColumn = false,
+    allColumns = [],
     activeId = null,
     overId = null,
     dropPosition = null,
@@ -90,6 +140,7 @@ const KanbanColumnComponent = (
 
   const { t } = useLocale();
   const { token } = useToken();
+  const [showLimitModal, setShowLimitModal] = useState(false);
 
   const {
     records,
@@ -97,6 +148,7 @@ const KanbanColumnComponent = (
     aggregates,
     colorsForRecords,
     statusForRecords,
+    columnDomain,
     isLoading,
     isLoadingMore,
     isRefreshing,
@@ -149,6 +201,29 @@ const KanbanColumnComponent = (
       : null;
   }, [aggregates]);
 
+  const previousAggregatesSummaryRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (aggregatesSummary && !isLoading && !isRefreshing) {
+      previousAggregatesSummaryRef.current = aggregatesSummary;
+    }
+  }, [aggregatesSummary, isLoading, isRefreshing]);
+
+  const displayAggregates = useMemo(() => {
+    if (aggregatesSummary && !isLoading && !isRefreshing) {
+      return aggregatesSummary;
+    }
+    if (previousAggregatesSummaryRef.current) {
+      return previousAggregatesSummaryRef.current;
+    }
+    if (isLoading && aggregates && Object.keys(aggregates).length > 0) {
+      return Object.values(aggregates)
+        .map((agg) => `${agg.label}: ...`)
+        .join(", ");
+    }
+    return null;
+  }, [aggregatesSummary, aggregates, isLoading, isRefreshing]);
+
   const cardClickHandlers = useMemo(() => {
     if (!onCardClick) return {};
     return records.reduce<Record<number, () => void>>((acc, record) => {
@@ -157,9 +232,136 @@ const KanbanColumnComponent = (
     }, {});
   }, [records, onCardClick]);
 
+  const cardSelectHandlers = useMemo(() => {
+    if (!onCardSelect) return {};
+    return records.reduce<
+      Record<
+        number,
+        (modifiers: { isCtrlCmd: boolean; isShift: boolean }) => void
+      >
+    >((acc, record) => {
+      acc[record.id] = (modifiers: { isCtrlCmd: boolean; isShift: boolean }) =>
+        onCardSelect(record, columnId, modifiers);
+      return acc;
+    }, {});
+  }, [records, onCardSelect, columnId]);
+
   const hasStatusRibbon = useMemo(() => {
     return records.some((record) => statusForRecords?.[record.id]);
   }, [records, statusForRecords]);
+
+  // Filter out current column for submenu options
+  const otherColumns = useMemo(
+    () => allColumns.filter((c) => c.id !== columnId),
+    [allColumns, columnId],
+  );
+
+  const menuItems: MenuProps["items"] = useMemo(
+    () => [
+      {
+        type: "group" as const,
+        label: t("column"),
+        children: [
+          {
+            key: "openInNewTab",
+            label: t("open_column_in_new_tab"),
+            icon: <IconExternalLink size={16} />,
+          },
+          {
+            key: "setLimit",
+            label: t("set_limit"),
+            icon: <IconListNumbers size={16} />,
+            disabled: !allowSetMaxCards,
+          },
+        ],
+      },
+      {
+        type: "group" as const,
+        label: t("position"),
+        children: [
+          {
+            key: "moveLeft",
+            label: t("move_left"),
+            icon: <IconArrowLeft size={16} />,
+            disabled: isFirstColumn,
+          },
+          {
+            key: "moveRight",
+            label: t("move_right"),
+            icon: <IconArrowRight size={16} />,
+            disabled: isLastColumn,
+          },
+          {
+            key: "moveBefore",
+            label: t("move_before"),
+            icon: <IconArrowBarToLeft size={16} />,
+            disabled: otherColumns.length === 0,
+            children: otherColumns.map((col) => ({
+              key: `moveBefore_${col.id}`,
+              label: col.label,
+            })),
+          },
+          {
+            key: "moveAfter",
+            label: t("move_after"),
+            icon: <IconArrowBarToRight size={16} />,
+            disabled: otherColumns.length === 0,
+            children: otherColumns.map((col) => ({
+              key: `moveAfter_${col.id}`,
+              label: col.label,
+            })),
+          },
+        ],
+      },
+    ],
+    [t, allowSetMaxCards, isFirstColumn, isLastColumn, otherColumns],
+  );
+
+  const handleMenuClick: MenuProps["onClick"] = useCallback(
+    ({ key }: { key: string }) => {
+      if (key === "openInNewTab") {
+        onOpenColumnInNewTab?.(columnDomain);
+      } else if (key === "setLimit") {
+        setShowLimitModal(true);
+      } else if (key === "moveLeft") {
+        onMoveLeft?.();
+      } else if (key === "moveRight") {
+        onMoveRight?.();
+      } else if (key.startsWith("moveBefore_")) {
+        const targetId = key.replace("moveBefore_", "");
+        onMoveToPosition?.(targetId, "before");
+      } else if (key.startsWith("moveAfter_")) {
+        const targetId = key.replace("moveAfter_", "");
+        onMoveToPosition?.(targetId, "after");
+      }
+    },
+    [
+      onOpenColumnInNewTab,
+      columnDomain,
+      onMoveLeft,
+      onMoveRight,
+      onMoveToPosition,
+    ],
+  );
+
+  const handleLimitSave = useCallback(
+    (limit: number | undefined) => {
+      onMaxCardsChange?.(columnId, limit);
+      setShowLimitModal(false);
+    },
+    [onMaxCardsChange, columnId],
+  );
+
+  const handleLimitCancel = useCallback(() => {
+    setShowLimitModal(false);
+  }, []);
+
+  const badgeContent = useMemo(() => {
+    if (maxCards !== undefined && maxCards > 0) {
+      return `${count} / ${maxCards}`;
+    }
+    return count;
+  }, [count, maxCards]);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -209,71 +411,175 @@ const KanbanColumnComponent = (
 
   return (
     <div
-      ref={setNodeRef}
       style={{
-        width: "300px",
-        minWidth: "300px",
-        height: "100%",
-        backgroundColor: isOver ? token.colorPrimaryBg : token.colorBgLayout,
-        outlineOffset: "-3px",
-        outline: isOver ? `3px solid ${token.colorPrimary}` : "none",
-        borderRadius: token.borderRadiusLG,
-        transition: "all 0.2s",
         display: "flex",
         flexDirection: "column",
-        overflow: "hidden",
+        height: "100%",
       }}
     >
       <div
         style={{
-          background: `linear-gradient(to bottom, ${token.colorPrimaryBg} 0%, ${token.colorBgLayout} 90%)`,
-          padding: "12px 12px",
+          height: "25px",
+          textAlign: "center",
+          paddingRight: "4px",
+          flexShrink: 0,
+        }}
+      >
+        {displayAggregates && (
+          <Text type="secondary" style={{ fontWeight: 300, fontSize: "11px" }}>
+            {displayAggregates}
+          </Text>
+        )}
+      </div>
+      <div
+        ref={setNodeRef}
+        style={{
+          width: "300px",
+          minWidth: "300px",
+          flex: 1,
+          minHeight: 0,
+          backgroundColor: isOver ? token.colorPrimaryBg : token.colorBgLayout,
+          outlineOffset: "-3px",
+          outline: isOver ? `3px solid ${token.colorPrimary}` : "none",
+          borderRadius: token.borderRadiusLG,
+          transition: "all 0.2s",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
         }}
       >
         <div
           style={{
-            display: "flex",
-            gap: "8px",
-            width: "100%",
+            background: `linear-gradient(to bottom, ${token.colorPrimaryBg} 0%, ${token.colorBgLayout} 90%)`,
+            padding: "12px 12px",
           }}
         >
           <div
             style={{
               display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              flex: 1,
-              minWidth: 0,
+              gap: "8px",
+              width: "100%",
             }}
           >
-            <Text
-              strong
+            <div
               style={{
-                color: token.colorTextBase,
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                flex: 1,
                 minWidth: 0,
-                wordBreak: "break-word",
               }}
             >
-              {columnLabel}
-            </Text>
-            <Badge
-              count={count}
-              style={{
-                backgroundColor: isOverLimit
-                  ? token.colorError
-                  : token.colorPrimary,
-                flexShrink: 0,
-              }}
-            />
-          </div>
-          <div
-            style={{
-              flexShrink: 0,
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
+              <Text
+                strong
+                style={{
+                  color: token.colorTextBase,
+                  minWidth: 0,
+                  wordBreak: "break-word",
+                }}
+              >
+                {columnLabel}
+              </Text>
+              <Badge
+                count={badgeContent}
+                overflowCount={999999}
+                style={{
+                  backgroundColor: isOverLimit
+                    ? token.colorError
+                    : token.colorPrimary,
+                  flexShrink: 0,
+                }}
+              />
+            </div>
             {isLoading || isRefreshing ? (
+              <Button
+                type="text"
+                size="small"
+                icon={<LoadingOutlined />}
+                style={{ color: token.colorTextSecondary }}
+              />
+            ) : (
+              <Dropdown
+                menu={{ items: menuItems, onClick: handleMenuClick }}
+                trigger={["click"]}
+              >
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<EllipsisOutlined />}
+                  style={{ color: token.colorTextSecondary }}
+                />
+              </Dropdown>
+            )}
+          </div>
+        </div>
+
+        <div
+          ref={scrollContainerRef}
+          style={{
+            padding: "6px",
+            paddingRight: hasStatusRibbon ? "10px" : "6px",
+            overflowY: "auto",
+            flex: 1,
+            backgroundColor: token.colorBgLayout,
+          }}
+        >
+          <SortableContext
+            items={recordIds}
+            strategy={verticalListSortingStrategy}
+          >
+            <div
+              style={{
+                height: `${virtualizer.getTotalSize()}px`,
+                width: "100%",
+                position: "relative",
+              }}
+            >
+              {virtualItems.map((virtualRow) => {
+                const record = records[virtualRow.index];
+                return (
+                  <div
+                    key={record.id}
+                    data-index={virtualRow.index}
+                    ref={virtualizer.measureElement}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                  >
+                    <KanbanCard
+                      color={colorsForRecords?.[record.id]}
+                      status={statusForRecords?.[record.id]}
+                      record={record}
+                      kanbanDef={kanbanDef}
+                      draggable={kanbanDef.drag}
+                      context={context}
+                      model={model}
+                      onClick={cardClickHandlers[record.id]}
+                      onSelect={cardSelectHandlers[record.id]}
+                      onRefreshAll={onRefreshAll}
+                      columnId={columnId}
+                      isDropTarget={overId === record.id}
+                      isSelected={selectedCardIds?.includes(record.id)}
+                      activeId={activeId}
+                      dropPosition={dropPosition}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </SortableContext>
+
+          {isLoadingMore && (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "12px",
+              }}
+            >
               <Space size={4}>
                 <LoadingOutlined
                   style={{ fontSize: "11px", color: token.colorTextBase }}
@@ -282,125 +588,48 @@ const KanbanColumnComponent = (
                   {t("loading")}
                 </Text>
               </Space>
-            ) : aggregatesSummary ? (
-              <Text
-                type="secondary"
-                style={{ fontWeight: 300, fontSize: "11px" }}
-              >
-                {aggregatesSummary}
-              </Text>
-            ) : null}
-          </div>
+            </div>
+          )}
+
+          {records.length === 0 && !isLoading && (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "20px",
+                color: token.colorTextSecondary,
+              }}
+            >
+              <Text type="secondary">{t("no_records")}</Text>
+            </div>
+          )}
         </div>
-      </div>
 
-      <div
-        ref={scrollContainerRef}
-        style={{
-          padding: "6px",
-          paddingRight: hasStatusRibbon ? "10px" : "6px",
-          overflowY: "auto",
-          flex: 1,
-          backgroundColor: token.colorBgLayout,
-        }}
-      >
-        <SortableContext
-          items={recordIds}
-          strategy={verticalListSortingStrategy}
-        >
-          <div
-            style={{
-              height: `${virtualizer.getTotalSize()}px`,
-              width: "100%",
-              position: "relative",
-            }}
-          >
-            {virtualItems.map((virtualRow) => {
-              const record = records[virtualRow.index];
-              return (
-                <div
-                  key={record.id}
-                  data-index={virtualRow.index}
-                  ref={virtualizer.measureElement}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    transform: `translateY(${virtualRow.start}px)`,
-                  }}
-                >
-                  <KanbanCard
-                    color={colorsForRecords?.[record.id]}
-                    status={statusForRecords?.[record.id]}
-                    record={record}
-                    kanbanDef={kanbanDef}
-                    draggable={kanbanDef.drag}
-                    context={context}
-                    model={model}
-                    onClick={cardClickHandlers[record.id]}
-                    onRefreshAll={onRefreshAll}
-                    columnId={columnId}
-                    isDropTarget={overId === record.id}
-                    activeId={activeId}
-                    dropPosition={dropPosition}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        </SortableContext>
-
-        {isLoadingMore && (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "12px",
-            }}
-          >
-            <Space size={4}>
-              <LoadingOutlined
-                style={{ fontSize: "11px", color: token.colorTextBase }}
-              />
-              <Text type="secondary" style={{ fontSize: "11px" }}>
-                {t("loading")}
-              </Text>
-            </Space>
-          </div>
-        )}
-
-        {records.length === 0 && !isLoading && (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "20px",
-              color: token.colorTextSecondary,
-            }}
-          >
-            <Text type="secondary">{t("no_records")}</Text>
-          </div>
-        )}
-      </div>
-
-      <div
-        style={{
-          background: token.colorBgLayout,
-          padding: "10px 8px",
-        }}
-      >
-        <Button
-          type="text"
-          icon={<PlusOutlined />}
-          onClick={onAddCardClick}
+        <div
           style={{
-            width: "100%",
-            color: token.colorTextBase,
-            fontWeight: 400,
+            background: token.colorBgLayout,
+            padding: "10px 8px",
           }}
         >
-          {t("add_card")}
-        </Button>
+          <Button
+            type="text"
+            icon={<PlusOutlined />}
+            onClick={onAddCardClick}
+            style={{
+              width: "100%",
+              color: token.colorTextBase,
+              fontWeight: 400,
+            }}
+          >
+            {t("add_card")}
+          </Button>
+        </div>
       </div>
+      <SetColumnLimitModal
+        visible={showLimitModal}
+        initialLimit={maxCards}
+        onSave={handleLimitSave}
+        onCancel={handleLimitCancel}
+      />
     </div>
   );
 };

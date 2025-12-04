@@ -27,9 +27,18 @@ type KanbanProps = {
   searchParams?: any[];
   nameSearch?: string;
   onCardClick?: (record: KanbanRecord) => void;
+  onCardSelect?: (
+    record: KanbanRecord,
+    columnId: string,
+    modifiers: { isCtrlCmd: boolean; isShift: boolean },
+  ) => void;
+  onColumnRecordIdsChange?: (columnId: string, recordIds: number[]) => void;
+  selectedCardIds?: number[];
   onLoadingChange?: (isLoading: boolean) => void;
   onTotalRowsChange?: (totalRows: number) => void;
   onAddCardClick?: (column: ColumnDefinition) => void;
+  onDragStart?: () => void;
+  onOpenColumnInNewTab?: (domain: any[]) => void;
 };
 
 export type KanbanRef = {
@@ -49,9 +58,14 @@ const KanbanComponentInner = (
     searchParams = [],
     nameSearch,
     onCardClick,
+    onCardSelect,
+    onColumnRecordIdsChange,
+    selectedCardIds,
     onLoadingChange,
     onTotalRowsChange,
     onAddCardClick,
+    onDragStart,
+    onOpenColumnInNewTab,
   } = props;
 
   const prevNameSearch = useRef(nameSearch);
@@ -230,16 +244,23 @@ const KanbanComponentInner = (
         kanbanDef={kanbanDef}
         columns={columns}
         model={model}
+        viewId={kanbanView.view_id}
         domain={domain}
         context={context}
         searchParams={searchParams}
         nameSearch={nameSearch}
         fieldsToRetrieve={fieldsToRetrieve}
+        allowSetMaxCards={kanbanDef.set_max_cards === true}
         onCardClick={onCardClick}
+        onCardSelect={onCardSelect}
+        onColumnRecordIdsChange={onColumnRecordIdsChange}
+        selectedCardIds={selectedCardIds}
         setColumnRef={setColumnRef}
         onColumnCountChange={handleColumnCountChange}
         onAddCardClick={onAddCardClick}
+        onDragStart={onDragStart}
         onDragSuccess={handleDragSuccess}
+        onOpenColumnInNewTab={onOpenColumnInNewTab}
       />
     );
   }, [
@@ -249,16 +270,23 @@ const KanbanComponentInner = (
     columns,
     isLoadingColumns,
     model,
+    kanbanView.view_id,
     domain,
     context,
     searchParams,
     nameSearch,
     fieldsToRetrieve,
+    kanbanDef?.set_max_cards,
     onCardClick,
+    onCardSelect,
+    onColumnRecordIdsChange,
+    selectedCardIds,
     setColumnRef,
     handleColumnCountChange,
     onAddCardClick,
+    onDragStart,
     handleDragSuccess,
+    onOpenColumnInNewTab,
     t,
   ]);
 

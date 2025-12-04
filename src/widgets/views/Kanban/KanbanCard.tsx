@@ -21,7 +21,7 @@ import {
   DropIndicator,
 } from "./KanbanCard.styles";
 
-const { Text } = Typography;
+const { Text, Link } = Typography;
 const { useToken } = theme;
 
 type KanbanCardProps = {
@@ -33,9 +33,11 @@ type KanbanCardProps = {
   status?: string;
   context?: any;
   onClick?: () => void;
+  onSelect?: (modifiers: { isCtrlCmd: boolean; isShift: boolean }) => void;
   onRefreshAll?: () => void;
   isMoving?: boolean;
   isDropTarget?: boolean;
+  isSelected?: boolean;
   activeId?: number | null;
   columnId?: string;
   dropPosition?: "above" | "below" | null;
@@ -51,10 +53,12 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
     status,
     context = {},
     onClick,
+    onSelect,
     onRefreshAll,
     isMoving = false,
     columnId,
     isDropTarget = false,
+    isSelected = false,
     activeId = null,
     dropPosition = null,
   } = props;
@@ -90,7 +94,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
 
   const style = {
     opacity: isDragging || isMoving ? 0 : 1,
-    cursor: "pointer",
+    cursor: "grab",
   };
 
   const { visibleButtons, widgetMap } = useDeepCompareMemo(() => {
@@ -120,7 +124,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
   }, [kanbanDef.card_fields, widgetMap]);
 
   const renderField = useCallback(
-    (field: any) => {
+    (field: any, isFirstField: boolean) => {
       const fieldName = field.id;
       if (!fieldName || !kanbanDef.fields[fieldName]) {
         return null;
@@ -144,6 +148,24 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
 
       const component = (KANBAN_COMPONENTS as any)?.[fieldType];
 
+      const handleFieldClick = (e: MouseEvent) => {
+        if (fieldType === "many2one") {
+          e.stopPropagation();
+        }
+      };
+
+      const handleLinkClick = (e: MouseEvent) => {
+        e.stopPropagation();
+        onClick?.();
+      };
+
+      const renderLabel = () =>
+        !field.nolabel ? (
+          <Text type="secondary" style={{ fontSize: "12px" }}>
+            {field.label || fieldName}:{" "}
+          </Text>
+        ) : null;
+
       if (component && fieldValue) {
         const renderedContent = component({
           value: fieldValue,
@@ -152,11 +174,22 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
           context,
         });
 
-        const handleFieldClick = (e: MouseEvent) => {
-          if (fieldType === "many2one") {
-            e.stopPropagation();
-          }
-        };
+        const fieldContent = (
+          <>
+            {renderLabel()}
+            <span style={{ fontSize: "12px", fontWeight: 600 }}>
+              {renderedContent}
+            </span>
+          </>
+        );
+
+        if (isFirstField && onClick) {
+          return (
+            <div key={fieldName} style={{ marginBottom: "4px" }}>
+              <Link onClick={handleLinkClick}>{fieldContent}</Link>
+            </div>
+          );
+        }
 
         return (
           <div
@@ -164,32 +197,35 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
             style={{ marginBottom: "4px" }}
             onClick={handleFieldClick}
           >
-            {!field.nolabel && (
-              <Text type="secondary" style={{ fontSize: "12px" }}>
-                {field.label || fieldName}:{" "}
-              </Text>
-            )}
-            <span style={{ fontSize: "12px", fontWeight: 600 }}>
-              {renderedContent}
-            </span>
+            {fieldContent}
+          </div>
+        );
+      }
+
+      const simpleFieldContent = (
+        <>
+          {renderLabel()}
+          <Text strong style={{ fontSize: "12px" }}>
+            {fieldValue ? fieldValue.toString() : "-"}
+          </Text>
+        </>
+      );
+
+      if (isFirstField && onClick) {
+        return (
+          <div key={fieldName} style={{ marginBottom: "4px" }}>
+            <Link onClick={handleLinkClick}>{simpleFieldContent}</Link>
           </div>
         );
       }
 
       return (
         <div key={fieldName} style={{ marginBottom: "4px" }}>
-          {!field.nolabel && (
-            <Text type="secondary" style={{ fontSize: "12px" }}>
-              {field.label || fieldName}:{" "}
-            </Text>
-          )}
-          <Text strong style={{ fontSize: "12px" }}>
-            {fieldValue ? fieldValue.toString() : "-"}
-          </Text>
+          {simpleFieldContent}
         </div>
       );
     },
-    [record, context, kanbanDef.fields],
+    [record, context, kanbanDef.fields, onClick],
   );
 
   const handleButtonClick = useCallback(
@@ -252,6 +288,21 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
     );
   }, [visibleButtons, handleButtonClick]);
 
+  const handleCardClick = useCallback(
+    (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest("a, button")) {
+        return;
+      }
+      e.stopPropagation();
+      onSelect?.({
+        isCtrlCmd: e.metaKey || e.ctrlKey,
+        isShift: e.shiftKey,
+      });
+    },
+    [onSelect],
+  );
+
   const showDropIndicator =
     isDropTarget && activeId !== null && dropPosition !== null;
 
@@ -267,12 +318,14 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
       )}
       <StyledCard
         size="small"
-        onClick={onClick}
+        onClick={handleCardClick}
         $bgColor={token.colorBgContainer}
         $borderColor={token.colorBorder}
         $primaryColor={token.colorPrimary}
         $color={color}
         $isDraggingActive={activeId !== null}
+        $isSelected={isSelected}
+        $selectedBgColor={token.colorPrimaryBg}
         styles={{
           body: {
             padding: "12px",
@@ -285,7 +338,9 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
         {color && <ColorBar $color={color} />}
         {status && <StatusDot $color={status} />}
         <div style={{ marginBottom: "8px" }}>
-          {visibleFields.map((field: any) => renderField(field))}
+          {visibleFields.map((field: any, index: number) =>
+            renderField(field, index === 0),
+          )}
         </div>
 
         {visibleButtons.length > 0 && (
