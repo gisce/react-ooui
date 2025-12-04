@@ -420,6 +420,35 @@ const KanbanBoardComponent = (
     [],
   );
 
+  const handleMoveToPosition = useCallback(
+    (
+      columnId: string,
+      targetColumnId: string,
+      position: "before" | "after",
+    ) => {
+      setColumnOrder((prevOrder) => {
+        const currentIndex = prevOrder.indexOf(columnId);
+        if (currentIndex === -1) return prevOrder;
+
+        // Remove column from current position
+        const newOrder = prevOrder.filter((id) => id !== columnId);
+
+        // Find target position
+        const targetIndex = newOrder.indexOf(targetColumnId);
+        if (targetIndex === -1) return prevOrder;
+
+        // Insert at new position
+        const insertIndex =
+          position === "before" ? targetIndex : targetIndex + 1;
+        newOrder.splice(insertIndex, 0, columnId);
+
+        return newOrder;
+      });
+      // Future: Call server API here to persist column order
+    },
+    [],
+  );
+
   const onActionCompleted = useCallback(async () => {
     refreshAllColumns();
   }, [refreshAllColumns]);
@@ -687,6 +716,25 @@ const KanbanBoardComponent = (
     return callbacks;
   }, [orderedColumns, handleMoveColumn]);
 
+  // Memoize column info for submenus (id + label only)
+  const allColumnsInfo = useMemo(
+    () => orderedColumns.map((c) => ({ id: c.id, label: c.label })),
+    [orderedColumns],
+  );
+
+  // Memoize move to position callbacks per column
+  const columnMoveToPositionCallbacks = useDeepCompareMemo(() => {
+    const callbacks: Record<
+      string,
+      (targetId: string, position: "before" | "after") => void
+    > = {};
+    orderedColumns.forEach((column) => {
+      callbacks[column.id] = (targetId: string, position: "before" | "after") =>
+        handleMoveToPosition(column.id, targetId, position);
+    });
+    return callbacks;
+  }, [orderedColumns, handleMoveToPosition]);
+
   const handleOpenColumnInNewTab = useCallback(
     (columnDomain: any[]) => {
       onOpenColumnInNewTab?.(columnDomain);
@@ -753,8 +801,10 @@ const KanbanBoardComponent = (
             onOpenColumnInNewTab={handleOpenColumnInNewTab}
             onMoveLeft={columnMoveLeftCallbacks[column.id]}
             onMoveRight={columnMoveRightCallbacks[column.id]}
+            onMoveToPosition={columnMoveToPositionCallbacks[column.id]}
             isFirstColumn={index === 0}
             isLastColumn={index === orderedColumns.length - 1}
+            allColumns={allColumnsInfo}
             activeId={activeRecord?.id ?? null}
             overId={overId}
             dropPosition={dropPosition}

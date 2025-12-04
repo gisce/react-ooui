@@ -43,6 +43,10 @@ const IconListNumbers = getTablerIcon("IconListNumbers") as React.FC<any>;
 const IconExternalLink = getTablerIcon("IconExternalLink") as React.FC<any>;
 const IconArrowLeft = getTablerIcon("IconArrowLeft") as React.FC<any>;
 const IconArrowRight = getTablerIcon("IconArrowRight") as React.FC<any>;
+const IconArrowBarToLeft = getTablerIcon("IconArrowBarToLeft") as React.FC<any>;
+const IconArrowBarToRight = getTablerIcon(
+  "IconArrowBarToRight",
+) as React.FC<any>;
 
 export type KanbanColumnRef = {
   refresh: () => void;
@@ -74,8 +78,13 @@ type KanbanColumnProps = {
   onOpenColumnInNewTab?: (domain: any[]) => void;
   onMoveLeft?: () => void;
   onMoveRight?: () => void;
+  onMoveToPosition?: (
+    targetColumnId: string,
+    position: "before" | "after",
+  ) => void;
   isFirstColumn?: boolean;
   isLastColumn?: boolean;
+  allColumns?: Array<{ id: string; label: string }>;
   activeId?: number | null;
   overId?: number | null;
   dropPosition?: "above" | "below" | null;
@@ -106,8 +115,10 @@ const KanbanColumnComponent = (
     onOpenColumnInNewTab,
     onMoveLeft,
     onMoveRight,
+    onMoveToPosition,
     isFirstColumn = false,
     isLastColumn = false,
+    allColumns = [],
     activeId = null,
     overId = null,
     dropPosition = null,
@@ -217,6 +228,12 @@ const KanbanColumnComponent = (
     return records.some((record) => statusForRecords?.[record.id]);
   }, [records, statusForRecords]);
 
+  // Filter out current column for submenu options
+  const otherColumns = useMemo(
+    () => allColumns.filter((c) => c.id !== columnId),
+    [allColumns, columnId],
+  );
+
   const menuItems: MenuProps["items"] = useMemo(
     () => [
       {
@@ -252,10 +269,30 @@ const KanbanColumnComponent = (
             icon: <IconArrowRight size={16} />,
             disabled: isLastColumn,
           },
+          {
+            key: "moveBefore",
+            label: t("move_before"),
+            icon: <IconArrowBarToLeft size={16} />,
+            disabled: otherColumns.length === 0,
+            children: otherColumns.map((col) => ({
+              key: `moveBefore_${col.id}`,
+              label: col.label,
+            })),
+          },
+          {
+            key: "moveAfter",
+            label: t("move_after"),
+            icon: <IconArrowBarToRight size={16} />,
+            disabled: otherColumns.length === 0,
+            children: otherColumns.map((col) => ({
+              key: `moveAfter_${col.id}`,
+              label: col.label,
+            })),
+          },
         ],
       },
     ],
-    [t, allowSetMaxCards, isFirstColumn, isLastColumn],
+    [t, allowSetMaxCards, isFirstColumn, isLastColumn, otherColumns],
   );
 
   const handleMenuClick: MenuProps["onClick"] = useCallback(
@@ -268,9 +305,21 @@ const KanbanColumnComponent = (
         onMoveLeft?.();
       } else if (key === "moveRight") {
         onMoveRight?.();
+      } else if (key.startsWith("moveBefore_")) {
+        const targetId = key.replace("moveBefore_", "");
+        onMoveToPosition?.(targetId, "before");
+      } else if (key.startsWith("moveAfter_")) {
+        const targetId = key.replace("moveAfter_", "");
+        onMoveToPosition?.(targetId, "after");
       }
     },
-    [onOpenColumnInNewTab, columnDomain, onMoveLeft, onMoveRight],
+    [
+      onOpenColumnInNewTab,
+      columnDomain,
+      onMoveLeft,
+      onMoveRight,
+      onMoveToPosition,
+    ],
   );
 
   const handleLimitSave = useCallback(

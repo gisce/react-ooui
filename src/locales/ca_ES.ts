@@ -152,6 +152,8 @@ export default {
   position: "Posició",
   move_left: "Moure a l'esquerra",
   move_right: "Moure a la dreta",
+  move_before: "Moure abans de...",
+  move_after: "Moure després de...",
   set_column_limit: "Establir límit de columna",
   column_limit: "Límit de columna",
   column_limit_description: "Un límit al nombre d'elements en una columna",
