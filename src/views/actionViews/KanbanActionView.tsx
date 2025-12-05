@@ -19,6 +19,7 @@ import { normalizeColumnValue } from "@/helpers/kanbanHelper";
 import { useLocale } from "@gisce/react-formiga-components";
 import { ACTION_TYPE_WINDOW } from "@/models/constants";
 import { FormSidePanel } from "@/widgets/modals/FormSidePanel";
+import { FormModal } from "@/widgets/modals/FormModal";
 
 const HEIGHT_OFFSET = 10;
 
@@ -420,7 +421,7 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
         />
       </div>
       {formView && (
-        <FormSidePanel
+        <FormModal
           formView={formView}
           model={model}
           id={creatingInColumn ? undefined : selectedRecord?.id}
