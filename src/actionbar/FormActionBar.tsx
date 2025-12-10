@@ -29,6 +29,7 @@ import {
 } from "@/context/TabManagerContext";
 import AttachmentsButton from "./AttachmentsButton";
 import { Attachment } from "./AttachmentsButtonWrapper";
+import { CommentsButton } from "./CommentsButton";
 import { useNextPrevious } from "./useNextPrevious";
 import {
   saveDocument,
@@ -73,6 +74,9 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
     goToResourceId,
     isActive,
     permissions,
+    commentsPanelVisible,
+    setCommentsPanelVisible,
+    commentCount,
   } = useActionViewContext();
 
   const { openDefaultActionForModel } = tabManagerContext || {};
@@ -359,6 +363,11 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
         onAddNewAttachment={handleAddNewAttachment}
         onListAllAttachments={handleListAllAttachments}
         onViewAttachmentDetails={handleViewAttachmentDetails}
+      />
+      <CommentsButton
+        disabled={mustDisableButtons || currentId === undefined}
+        commentCount={commentCount ?? 0}
+        onClick={() => setCommentsPanelVisible?.(!commentsPanelVisible)}
       />
       <ActionBarSeparator />
       <ShareUrlButton res_id={currentId} />

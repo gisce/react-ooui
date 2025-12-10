@@ -132,4 +132,7 @@ export default {
   favouriteName: "Favourite name",
   saveFavourite: "Save favourite",
   enterFavouriteName: "Enter favourite name",
+  comments: "Comments",
+  writeComment: "Write a comment...",
+  noComments: "No comments",
 };

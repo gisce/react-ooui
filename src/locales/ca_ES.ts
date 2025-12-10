@@ -135,4 +135,7 @@ export default {
   favouriteName: "Nom del preferit",
   saveFavourite: "Desar preferit",
   enterFavouriteName: "Introdueix el nom del preferit",
+  comments: "Comentaris",
+  writeComment: "Escriu un comentari...",
+  noComments: "No hi ha comentaris",
 };

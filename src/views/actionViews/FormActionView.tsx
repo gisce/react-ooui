@@ -1,7 +1,12 @@
+import { useEffect, useCallback, useMemo, CSSProperties } from "react";
 import FormActionBar from "@/actionbar/FormActionBar";
+import { CommentsSidePanel } from "@/actionbar/CommentsSidePanel";
 import { FormView } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
 import Form from "@/widgets/views/Form";
+import { useActionViewContext } from "@/context/ActionViewContext";
+import { useRecordComments } from "@/hooks/useRecordComments";
+import { useConfigContext } from "@/context/ConfigContext";
 
 export type FormActionViewProps = {
   formView?: FormView;
@@ -36,6 +41,63 @@ export const FormActionView = (props: FormActionViewProps) => {
     setCurrentItemIndex,
   } = props;
 
+  const { commentsPanelVisible, setCommentsPanelVisible, setCommentCount } =
+    useActionViewContext();
+  const { globalValues } = useConfigContext();
+
+  const { comments, loading, fetchComments, addComment } = useRecordComments({
+    model,
+    resourceId: currentId,
+    context,
+  });
+
+  useEffect(() => {
+    setCommentCount?.(comments.length);
+  }, [comments.length, setCommentCount]);
+
+  useEffect(() => {
+    if (commentsPanelVisible && currentId) {
+      fetchComments();
+    }
+  }, [commentsPanelVisible, currentId, fetchComments]);
+
+  const handleAddComment = useCallback(
+    async (body: string) => {
+      await addComment(body);
+      await fetchComments();
+    },
+    [addComment, fetchComments],
+  );
+
+  const handleClosePanel = useCallback(() => {
+    setCommentsPanelVisible?.(false);
+  }, [setCommentsPanelVisible]);
+
+  const handleSubmitSucceed = useCallback(
+    (id?: number, values?: any) => {
+      if (id === undefined) return;
+      const itemIndex = results!.findIndex((item: any) => {
+        return item.id === id;
+      });
+      if (itemIndex === -1) {
+        results!.push(values);
+        setResults(results);
+        setCurrentItemIndex(results!.length - 1);
+      }
+    },
+    [results, setResults, setCurrentItemIndex],
+  );
+
+  const containerStyle = useMemo(
+    (): CSSProperties => ({ display: "flex", flex: 1, overflow: "hidden" }),
+    [],
+  );
+
+  const formWrapperStyle = useMemo(
+    (): CSSProperties => ({ flex: 1, overflow: "auto" }),
+    [],
+  );
+
   if (!visible) {
     return null;
   }
@@ -45,28 +107,33 @@ export const FormActionView = (props: FormActionViewProps) => {
       <TitleHeader>
         <FormActionBar toolbar={formView?.toolbar} />
       </TitleHeader>
-      <Form
-        rootForm={true}
-        ref={formRef}
-        model={model}
-        defaultValues={defaultValues}
-        forcedValues={forcedValues}
-        readOnly={readOnly}
-        formView={formView}
-        actionDomain={domain}
-        id={currentId}
-        parentContext={context}
-        onSubmitSucceed={(id, values) => {
-          const itemIndex = results!.findIndex((item: any) => {
-            return item.id === id;
-          });
-          if (itemIndex === -1) {
-            results!.push(values);
-            setResults(results);
-            setCurrentItemIndex(results!.length - 1);
-          }
-        }}
-      />
+      <div style={containerStyle}>
+        <div style={formWrapperStyle}>
+          <Form
+            rootForm={true}
+            ref={formRef}
+            model={model}
+            defaultValues={defaultValues}
+            forcedValues={forcedValues}
+            readOnly={readOnly}
+            formView={formView}
+            actionDomain={domain}
+            id={currentId}
+            parentContext={context}
+            onSubmitSucceed={handleSubmitSucceed}
+          />
+        </div>
+        {currentId !== undefined && (
+          <CommentsSidePanel
+            visible={commentsPanelVisible ?? false}
+            comments={comments}
+            loading={loading}
+            onClose={handleClosePanel}
+            onAddComment={handleAddComment}
+            currentUserId={globalValues?.uid}
+          />
+        )}
+      </div>
     </>
   );
 };
