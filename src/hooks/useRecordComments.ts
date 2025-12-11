@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDeepCompareCallback } from "use-deep-compare";
 import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "./useNetworkRequest";
-import { RecordComment } from "@/types/comments";
+import { RecordComment, MentionUser } from "@/types/comments";
 
 export type UseRecordCommentsOpts = {
   model: string;
@@ -58,11 +58,33 @@ export const useRecordComments = (opts: UseRecordCommentsOpts) => {
     [model, resourceId, context, executeRequest],
   );
 
+  const fetchMentionUsers = useDeepCompareCallback(
+    async (query: string): Promise<MentionUser[]> => {
+      if (!resourceId) {
+        return [];
+      }
+
+      try {
+        const result = await executeRequest({
+          model,
+          action: "autocomplete_users_for_mentions",
+          payload: [resourceId, query],
+          context,
+        });
+        return result || [];
+      } catch {
+        return [];
+      }
+    },
+    [model, resourceId, context, executeRequest],
+  );
+
   return {
     comments,
     loading,
     fetchComments,
     addComment,
+    fetchMentionUsers,
     cancelRequest,
     commentCount: comments.length,
   };

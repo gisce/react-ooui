@@ -110,6 +110,7 @@ import {
   MODEL_ACTIONS,
 } from "./models/constants";
 import { useBrowserVisibility } from "./hooks/useBrowserVisibility";
+import { UserAvatar } from "./ui/UserAvatar";
 
 export {
   Button,
@@ -222,4 +223,5 @@ export {
   ACTION_TYPE_UPDATE_TOKEN,
   MODEL_ACTIONS,
   useBrowserVisibility,
+  UserAvatar,
 };

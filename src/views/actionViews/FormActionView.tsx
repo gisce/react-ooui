@@ -16,7 +16,8 @@ import TitleHeader from "@/ui/TitleHeader";
 import Form from "@/widgets/views/Form";
 import { useActionViewContext } from "@/context/ActionViewContext";
 import { useRecordComments } from "@/hooks/useRecordComments";
-import { useConfigContext } from "@/context/ConfigContext";
+import { useConfigContext, useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
 
 export type FormActionViewProps = {
   formView?: FormView;
@@ -58,6 +59,9 @@ export const FormActionView = (props: FormActionViewProps) => {
     setRefreshComments,
   } = useActionViewContext();
   const { globalValues } = useConfigContext();
+  const commentsEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_COMMENTS_SYSTEM,
+  );
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [panelTopOffset, setPanelTopOffset] = useState(0);
@@ -90,26 +94,30 @@ export const FormActionView = (props: FormActionViewProps) => {
     };
   }, [visible]);
 
-  const { comments, loading, fetchComments, addComment } = useRecordComments({
-    model,
-    resourceId: currentId,
-    context,
-  });
+  const { comments, loading, fetchComments, addComment, fetchMentionUsers } =
+    useRecordComments({
+      model,
+      resourceId: currentId,
+      context,
+    });
 
   useEffect(() => {
+    if (!commentsEnabled) return;
     setCommentCount?.(comments.length);
-  }, [comments.length, setCommentCount]);
+  }, [commentsEnabled, comments.length, setCommentCount]);
 
   useEffect(() => {
+    if (!commentsEnabled) return;
     if (currentId) {
       fetchComments();
     }
-  }, [currentId, fetchComments]);
+  }, [commentsEnabled, currentId, fetchComments]);
 
   useEffect(() => {
+    if (!commentsEnabled) return;
     setRefreshComments?.(fetchComments);
     return () => setRefreshComments?.(undefined);
-  }, [fetchComments, setRefreshComments]);
+  }, [commentsEnabled, fetchComments, setRefreshComments]);
 
   const handleAddComment = useCallback(
     async (body: string) => {
@@ -147,10 +155,11 @@ export const FormActionView = (props: FormActionViewProps) => {
     (): CSSProperties => ({
       flex: 1,
       overflow: "auto",
-      marginRight: commentsPanelVisible ? COMMENTS_PANEL_WIDTH : 0,
+      marginRight:
+        commentsEnabled && commentsPanelVisible ? COMMENTS_PANEL_WIDTH : 0,
       transition: "margin-right 0.3s ease",
     }),
-    [commentsPanelVisible],
+    [commentsEnabled, commentsPanelVisible],
   );
 
   if (!visible) {
@@ -178,7 +187,7 @@ export const FormActionView = (props: FormActionViewProps) => {
             onSubmitSucceed={handleSubmitSucceed}
           />
         </div>
-        {currentId !== undefined && (
+        {commentsEnabled && currentId !== undefined && (
           <CommentsSidePanel
             visible={commentsPanelVisible ?? false}
             comments={comments}
@@ -187,6 +196,7 @@ export const FormActionView = (props: FormActionViewProps) => {
             topOffset={panelTopOffset}
             onAddComment={handleAddComment}
             onFetchComments={fetchComments}
+            onFetchMentionUsers={fetchMentionUsers}
             currentUserId={globalValues?.uid}
           />
         )}

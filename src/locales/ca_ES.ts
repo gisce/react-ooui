@@ -138,4 +138,5 @@ export default {
   comments: "Comentaris",
   writeComment: "Escriu un comentari...",
   noComments: "No hi ha comentaris",
+  noMatches: "Sense coincidències",
 };

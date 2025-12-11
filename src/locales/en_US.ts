@@ -135,4 +135,5 @@ export default {
   comments: "Comments",
   writeComment: "Write a comment...",
   noComments: "No comments",
+  noMatches: "No matches",
 };

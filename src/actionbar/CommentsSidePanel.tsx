@@ -11,22 +11,20 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Typography,
   Button,
-  Input,
-  Avatar,
   Spin,
   Empty,
   theme,
   Tooltip,
+  Mentions,
 } from "antd";
 import { CloseOutlined, SendOutlined } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
-import { RecordComment } from "@/types/comments";
-import { colorFromString } from "@/helpers/formHelper";
+import { RecordComment, MentionUser } from "@/types/comments";
 import dayjs from "@/helpers/dayjs";
+import { UserAvatar } from "@/ui/UserAvatar";
 
 const { Title, Text } = Typography;
-const { TextArea } = Input;
 const { useToken } = theme;
 
 export const COMMENTS_PANEL_WIDTH = 450;
@@ -54,8 +52,6 @@ const EMPTY_CONTAINER_STYLE: CSSProperties = {
 const MESSAGES_WRAPPER_STYLE: CSSProperties = {
   display: "flex",
   flexDirection: "column",
-  justifyContent: "flex-end",
-  minHeight: "100%",
 };
 const TITLE_STYLE: CSSProperties = { margin: 0 };
 
@@ -66,17 +62,9 @@ export type CommentsSidePanelProps = {
   onClose: () => void;
   onAddComment: (body: string) => Promise<void>;
   onFetchComments: () => void;
+  onFetchMentionUsers: (query: string) => Promise<MentionUser[]>;
   currentUserId?: number;
   topOffset?: number;
-};
-
-const getInitials = (name: string): string => {
-  return name
-    .split(" ")
-    .filter((word) => word.length > 1)
-    .slice(0, 2)
-    .map((word) => word[0].toUpperCase())
-    .join("");
 };
 
 type MessageBubbleProps = {
@@ -84,11 +72,30 @@ type MessageBubbleProps = {
   isOwnMessage: boolean;
 };
 
+const renderMessageWithMentions = (body: string): React.ReactNode => {
+  const mentionRegex = /@(\w+)/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = mentionRegex.exec(body)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(body.slice(lastIndex, match.index));
+    }
+    parts.push(<strong key={match.index}>@{match[1]}</strong>);
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < body.length) {
+    parts.push(body.slice(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : body;
+};
+
 const MessageBubble = memo(({ comment, isOwnMessage }: MessageBubbleProps) => {
   const { token } = useToken();
   const userName = comment["create_uid.name"];
-  const initials = getInitials(userName);
-  const avatarColor = colorFromString(userName);
   const absoluteTime = dayjs(comment.create_date).format("HH:mm · DD/MM/YYYY");
   const relativeTime = dayjs(comment.create_date).fromNow();
 
@@ -133,14 +140,6 @@ const MessageBubble = memo(({ comment, isOwnMessage }: MessageBubbleProps) => {
       gap: 8,
     }),
     [],
-  );
-
-  const avatarStyle = useMemo(
-    () => ({
-      backgroundColor: avatarColor,
-      flexShrink: 0,
-    }),
-    [avatarColor],
   );
 
   const nameStyle = useMemo(
@@ -194,15 +193,11 @@ const MessageBubble = memo(({ comment, isOwnMessage }: MessageBubbleProps) => {
       {isOwnMessage ? (
         <>
           <Text style={nameStyle}>{userName}</Text>
-          <Avatar style={avatarStyle} size={28}>
-            {initials}
-          </Avatar>
+          <UserAvatar userName={userName} size={28} style={{ flexShrink: 0 }} />
         </>
       ) : (
         <>
-          <Avatar style={avatarStyle} size={28}>
-            {initials}
-          </Avatar>
+          <UserAvatar userName={userName} size={28} style={{ flexShrink: 0 }} />
           <Text style={nameStyle}>{userName}</Text>
         </>
       )}
@@ -227,7 +222,9 @@ const MessageBubble = memo(({ comment, isOwnMessage }: MessageBubbleProps) => {
           )}
         </div>
         <div style={bubbleStyle}>
-          <Text style={messageStyle}>{comment.body}</Text>
+          <Text style={messageStyle}>
+            {renderMessageWithMentions(comment.body)}
+          </Text>
         </div>
       </div>
     </>
@@ -243,6 +240,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     onClose,
     onAddComment,
     onFetchComments,
+    onFetchMentionUsers,
     currentUserId,
     topOffset = 0,
   } = props;
@@ -251,6 +249,9 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
   const [newComment, setNewComment] = useState("");
   const [sending, setSending] = useState(false);
   const [shouldRender, setShouldRender] = useState(visible);
+  const [mentionUsers, setMentionUsers] = useState<MentionUser[]>([]);
+  const [mentionSearching, setMentionSearching] = useState(false);
+  const [mentionDropdownOpen, setMentionDropdownOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -289,19 +290,57 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === "Enter" && !e.shiftKey) {
+      if (e.key === "Enter" && !e.shiftKey && !mentionDropdownOpen) {
         e.preventDefault();
         handleSend();
       }
     },
-    [handleSend],
+    [handleSend, mentionDropdownOpen],
   );
 
-  const handleCommentChange = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setNewComment(e.target.value);
+  const handleCommentChange = useCallback((value: string) => {
+    setNewComment(value);
+  }, []);
+
+  const handleMentionSearch = useCallback(
+    async (text: string, prefix: string) => {
+      if (prefix !== "@") return;
+      setMentionDropdownOpen(true);
+      setMentionSearching(true);
+      setMentionUsers([]);
+      const users = await onFetchMentionUsers(text);
+      const filteredUsers = currentUserId
+        ? users.filter((user) => user.id !== currentUserId)
+        : users;
+      setMentionUsers(filteredUsers);
+      setMentionSearching(false);
     },
-    [],
+    [onFetchMentionUsers, currentUserId],
+  );
+
+  const handleMentionSelect = useCallback(() => {
+    setMentionDropdownOpen(false);
+  }, []);
+
+  const handleMentionBlur = useCallback(() => {
+    setMentionDropdownOpen(false);
+  }, []);
+
+  const mentionOptions = useMemo(
+    () =>
+      mentionUsers.map((user) => ({
+        value: user.login,
+        label: (
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <UserAvatar userName={user.name} size={24} />
+            <span>{user.name}</span>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              @{user.login}
+            </Text>
+          </div>
+        ),
+      })),
+    [mentionUsers],
   );
 
   const panelStyle = useMemo(
@@ -407,10 +446,19 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
 
           <div style={footerStyle}>
             <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
-              <TextArea
+              <Mentions
                 value={newComment}
                 onChange={handleCommentChange}
                 onKeyDown={handleKeyDown}
+                onSearch={handleMentionSearch}
+                onSelect={handleMentionSelect}
+                onBlur={handleMentionBlur}
+                options={mentionOptions}
+                loading={mentionSearching}
+                filterOption={false}
+                notFoundContent={
+                  mentionSearching ? <Spin size="small" /> : t("noMatches")
+                }
                 placeholder={t("writeComment")}
                 autoSize={TEXT_AREA_AUTO_SIZE}
                 disabled={sending}

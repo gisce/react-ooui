@@ -8,3 +8,9 @@ export type RecordComment = {
   "create_uid.login": string;
   "create_uid.name": string;
 };
+
+export type MentionUser = {
+  id: number;
+  login: string;
+  name: string;
+};

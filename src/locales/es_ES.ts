@@ -140,4 +140,5 @@ export default {
   comments: "Comentarios",
   writeComment: "Escribe un comentario...",
   noComments: "No hay comentarios",
+  noMatches: "Sin coincidencias",
 };
