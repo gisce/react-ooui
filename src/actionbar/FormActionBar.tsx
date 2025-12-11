@@ -77,6 +77,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
     commentsPanelVisible,
     setCommentsPanelVisible,
     commentCount,
+    refreshComments,
   } = useActionViewContext();
 
   const { openDefaultActionForModel } = tabManagerContext || {};
@@ -98,8 +99,11 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
   );
 
   const handleRefresh = useCallback(() => {
-    tryAction(() => (formRef.current as any).fetchValues());
-  }, [tryAction, formRef]);
+    tryAction(() => {
+      (formRef.current as any).fetchValues();
+      refreshComments?.();
+    });
+  }, [tryAction, formRef, refreshComments]);
 
   const { actionButtonProps, printButtonProps, relateButtonProps } =
     useFormToolbarButtons({

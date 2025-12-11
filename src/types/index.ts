@@ -332,6 +332,7 @@ type ConnectionProviderType = {
     requestConfig?: any,
   ) => Promise<any>;
   execute: (options: ExecuteRequest, requestConfig?: any) => Promise<any>;
+  rawExecute: (options: ExecuteRequest, requestConfig?: any) => Promise<any>;
   readObjects: (
     options: ReadObjectsRequest,
     requestConfig?: any,

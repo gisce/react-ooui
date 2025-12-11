@@ -6,7 +6,14 @@ import {
   TreeType,
 } from "@/views/actionViews/TreeActionView";
 import { ColumnState } from "@gisce/react-formiga-table";
-import { createContext, useContext, useEffect, useState, useMemo } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import { PermissionsMap } from "@/hooks/usePermissions";
 
 type ActionViewProviderProps = {
@@ -100,6 +107,8 @@ export type ActionViewContextType = Omit<
   setCommentsPanelVisible?: (value: boolean) => void;
   commentCount?: number;
   setCommentCount?: (value: number) => void;
+  refreshComments?: () => Promise<void>;
+  setRefreshComments?: (fn: (() => Promise<void>) | undefined) => void;
 };
 
 export const ActionViewContext = createContext<ActionViewContextType | null>(
@@ -200,6 +209,15 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [commentsPanelVisible, setCommentsPanelVisible] =
     useState<boolean>(false);
   const [commentCount, setCommentCount] = useState<number>(0);
+  const [refreshComments, setRefreshCommentsState] = useState<{
+    fn: (() => Promise<void>) | undefined;
+  }>({ fn: undefined });
+  const setRefreshComments = useCallback(
+    (fn: (() => Promise<void>) | undefined) => {
+      setRefreshCommentsState({ fn });
+    },
+    [],
+  );
 
   useEffect(() => {
     if (results && results.length > 0 && !currentItemIndex) {
@@ -319,6 +337,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setCommentsPanelVisible,
         commentCount,
         setCommentCount,
+        refreshComments: refreshComments.fn,
+        setRefreshComments,
         permissions,
         permissionsLoading,
         permissionsError,
@@ -412,6 +432,8 @@ export const useActionViewContext = () => {
       setCommentsPanelVisible: () => {},
       commentCount: 0,
       setCommentCount: () => {},
+      refreshComments: undefined,
+      setRefreshComments: () => {},
       permissions: null,
       permissionsLoading: false,
       permissionsError: null,

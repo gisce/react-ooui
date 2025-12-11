@@ -1,6 +1,16 @@
-import { useEffect, useCallback, useMemo, CSSProperties } from "react";
+import {
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  CSSProperties,
+} from "react";
 import FormActionBar from "@/actionbar/FormActionBar";
-import { CommentsSidePanel } from "@/actionbar/CommentsSidePanel";
+import {
+  CommentsSidePanel,
+  COMMENTS_PANEL_WIDTH,
+} from "@/actionbar/CommentsSidePanel";
 import { FormView } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
 import Form from "@/widgets/views/Form";
@@ -41,9 +51,44 @@ export const FormActionView = (props: FormActionViewProps) => {
     setCurrentItemIndex,
   } = props;
 
-  const { commentsPanelVisible, setCommentsPanelVisible, setCommentCount } =
-    useActionViewContext();
+  const {
+    commentsPanelVisible,
+    setCommentsPanelVisible,
+    setCommentCount,
+    setRefreshComments,
+  } = useActionViewContext();
   const { globalValues } = useConfigContext();
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [panelTopOffset, setPanelTopOffset] = useState(0);
+
+  useEffect(() => {
+    if (!visible) return;
+
+    const stickyHeader = containerRef.current
+      ?.previousElementSibling as HTMLElement;
+
+    const updateOffset = () => {
+      if (stickyHeader) {
+        const rect = stickyHeader.getBoundingClientRect();
+        setPanelTopOffset(rect.bottom - 15);
+      }
+    };
+
+    updateOffset();
+
+    const resizeObserver = new ResizeObserver(updateOffset);
+    if (stickyHeader) {
+      resizeObserver.observe(stickyHeader);
+    }
+
+    window.addEventListener("resize", updateOffset);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateOffset);
+    };
+  }, [visible]);
 
   const { comments, loading, fetchComments, addComment } = useRecordComments({
     model,
@@ -56,10 +101,15 @@ export const FormActionView = (props: FormActionViewProps) => {
   }, [comments.length, setCommentCount]);
 
   useEffect(() => {
-    if (commentsPanelVisible && currentId) {
+    if (currentId) {
       fetchComments();
     }
-  }, [commentsPanelVisible, currentId, fetchComments]);
+  }, [currentId, fetchComments]);
+
+  useEffect(() => {
+    setRefreshComments?.(fetchComments);
+    return () => setRefreshComments?.(undefined);
+  }, [fetchComments, setRefreshComments]);
 
   const handleAddComment = useCallback(
     async (body: string) => {
@@ -94,8 +144,13 @@ export const FormActionView = (props: FormActionViewProps) => {
   );
 
   const formWrapperStyle = useMemo(
-    (): CSSProperties => ({ flex: 1, overflow: "auto" }),
-    [],
+    (): CSSProperties => ({
+      flex: 1,
+      overflow: "auto",
+      marginRight: commentsPanelVisible ? COMMENTS_PANEL_WIDTH : 0,
+      transition: "margin-right 0.3s ease",
+    }),
+    [commentsPanelVisible],
   );
 
   if (!visible) {
@@ -107,7 +162,7 @@ export const FormActionView = (props: FormActionViewProps) => {
       <TitleHeader>
         <FormActionBar toolbar={formView?.toolbar} />
       </TitleHeader>
-      <div style={containerStyle}>
+      <div ref={containerRef} style={containerStyle}>
         <div style={formWrapperStyle}>
           <Form
             rootForm={true}
@@ -129,7 +184,9 @@ export const FormActionView = (props: FormActionViewProps) => {
             comments={comments}
             loading={loading}
             onClose={handleClosePanel}
+            topOffset={panelTopOffset}
             onAddComment={handleAddComment}
+            onFetchComments={fetchComments}
             currentUserId={globalValues?.uid}
           />
         )}

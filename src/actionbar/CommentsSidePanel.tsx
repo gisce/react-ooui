@@ -16,10 +16,11 @@ import {
   Spin,
   Empty,
   theme,
-  Space,
+  Tooltip,
 } from "antd";
 import { CloseOutlined, SendOutlined } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import { RecordComment } from "@/types/comments";
 import { colorFromString } from "@/helpers/formHelper";
 import dayjs from "@/helpers/dayjs";
@@ -28,18 +29,33 @@ const { Title, Text } = Typography;
 const { TextArea } = Input;
 const { useToken } = theme;
 
-const PANEL_WIDTH = 350;
+export const COMMENTS_PANEL_WIDTH = 450;
 const TEXT_AREA_AUTO_SIZE = { minRows: 1, maxRows: 4 };
 const CONTENT_AREA_STYLE: CSSProperties = {
   flex: 1,
   overflowY: "auto",
   padding: 16,
+  display: "flex",
+  flexDirection: "column",
+  minHeight: 0,
 };
 const LOADING_CONTAINER_STYLE: CSSProperties = {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  height: "100%",
+  flex: 1,
+};
+const EMPTY_CONTAINER_STYLE: CSSProperties = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  flex: 1,
+};
+const MESSAGES_WRAPPER_STYLE: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-end",
+  minHeight: "100%",
 };
 const TITLE_STYLE: CSSProperties = { margin: 0 };
 
@@ -49,7 +65,9 @@ export type CommentsSidePanelProps = {
   loading: boolean;
   onClose: () => void;
   onAddComment: (body: string) => Promise<void>;
+  onFetchComments: () => void;
   currentUserId?: number;
+  topOffset?: number;
 };
 
 const getInitials = (name: string): string => {
@@ -68,21 +86,53 @@ type MessageBubbleProps = {
 
 const MessageBubble = memo(({ comment, isOwnMessage }: MessageBubbleProps) => {
   const { token } = useToken();
-  const userName = comment.create_uid[1];
+  const userName = comment["create_uid.name"];
   const initials = getInitials(userName);
   const avatarColor = colorFromString(userName);
-  const formattedTime = dayjs(comment.create_date).format("HH:mm");
-  const formattedDate = dayjs(comment.create_date).format("DD/MM/YYYY");
+  const absoluteTime = dayjs(comment.create_date).format("HH:mm · DD/MM/YYYY");
+  const relativeTime = dayjs(comment.create_date).fromNow();
 
   const containerStyle = useMemo(
     (): CSSProperties => ({
       display: "flex",
-      flexDirection: isOwnMessage ? "row-reverse" : "row",
-      alignItems: "flex-start",
-      gap: 8,
-      marginBottom: 16,
+      flexDirection: "column",
+      alignItems: isOwnMessage ? "flex-end" : "flex-start",
+      marginBottom: 8,
     }),
     [isOwnMessage],
+  );
+
+  const separatorStyle = useMemo(
+    (): CSSProperties => ({
+      width: "70%",
+      height: 1,
+      backgroundColor: token.colorBorderSecondary,
+      marginTop: 8,
+      marginBottom: 8,
+      alignSelf: "center",
+    }),
+    [token.colorBorderSecondary],
+  );
+
+  const headerStyle = useMemo(
+    (): CSSProperties => ({
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 8,
+      marginBottom: 6,
+      width: "100%",
+    }),
+    [],
+  );
+
+  const avatarNameGroupStyle = useMemo(
+    (): CSSProperties => ({
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+    }),
+    [],
   );
 
   const avatarStyle = useMemo(
@@ -93,75 +143,126 @@ const MessageBubble = memo(({ comment, isOwnMessage }: MessageBubbleProps) => {
     [avatarColor],
   );
 
-  const contentWrapperStyle = useMemo(
+  const nameStyle = useMemo(
     (): CSSProperties => ({
-      maxWidth: "75%",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: isOwnMessage ? "flex-end" : "flex-start",
+      fontSize: 13,
+      fontWeight: 600,
     }),
-    [isOwnMessage],
+    [],
   );
 
-  const headerStyle = useMemo(
+  const timestampStyle = useMemo(
     (): CSSProperties => ({
-      display: "flex",
-      gap: 8,
-      marginBottom: 4,
-      flexDirection: isOwnMessage ? "row-reverse" : "row",
+      fontSize: 11,
+      flexShrink: 0,
     }),
-    [isOwnMessage],
+    [],
   );
 
   const bubbleStyle = useMemo(
-    () => ({
+    (): CSSProperties => ({
       backgroundColor: isOwnMessage
-        ? token.colorBgTextHover
-        : token.colorFillSecondary,
+        ? token.colorPrimaryBg
+        : token.colorFillTertiary,
       padding: "8px 12px",
       borderRadius: 12,
-      borderTopLeftRadius: isOwnMessage ? 12 : 4,
-      borderTopRightRadius: isOwnMessage ? 4 : 12,
+      display: "inline-block",
+      marginLeft: isOwnMessage ? 0 : 32,
+      marginRight: isOwnMessage ? 28 : 0,
     }),
-    [isOwnMessage, token.colorBgTextHover, token.colorFillSecondary],
+    [token.colorPrimaryBg, token.colorFillTertiary, isOwnMessage],
+  );
+
+  const messageStyle = useMemo(
+    (): CSSProperties => ({
+      whiteSpace: "pre-wrap",
+      wordBreak: "break-word",
+    }),
+    [],
+  );
+
+  const timestampElement = (
+    <Tooltip title={absoluteTime}>
+      <Text type="secondary" style={timestampStyle}>
+        {relativeTime}
+      </Text>
+    </Tooltip>
+  );
+
+  const avatarNameElement = (
+    <div style={avatarNameGroupStyle}>
+      {isOwnMessage ? (
+        <>
+          <Text style={nameStyle}>{userName}</Text>
+          <Avatar style={avatarStyle} size={28}>
+            {initials}
+          </Avatar>
+        </>
+      ) : (
+        <>
+          <Avatar style={avatarStyle} size={28}>
+            {initials}
+          </Avatar>
+          <Text style={nameStyle}>{userName}</Text>
+        </>
+      )}
+    </div>
   );
 
   return (
-    <div style={containerStyle}>
-      <Avatar style={avatarStyle} size={36}>
-        {initials}
-      </Avatar>
-      <div style={contentWrapperStyle}>
+    <>
+      <div style={separatorStyle} />
+      <div style={containerStyle}>
         <div style={headerStyle}>
-          <Text strong style={{ fontSize: 12 }}>
-            {userName}
-          </Text>
-          <Text type="secondary" style={{ fontSize: 11 }}>
-            {formattedTime}
-          </Text>
-          <Text type="secondary" style={{ fontSize: 11 }}>
-            {formattedDate}
-          </Text>
+          {isOwnMessage ? (
+            <>
+              {timestampElement}
+              {avatarNameElement}
+            </>
+          ) : (
+            <>
+              {avatarNameElement}
+              {timestampElement}
+            </>
+          )}
         </div>
         <div style={bubbleStyle}>
-          <Text style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-            {comment.body}
-          </Text>
+          <Text style={messageStyle}>{comment.body}</Text>
         </div>
       </div>
-    </div>
+    </>
   );
 });
 MessageBubble.displayName = "MessageBubble";
 
 const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
-  const { visible, comments, loading, onClose, onAddComment, currentUserId } =
-    props;
+  const {
+    visible,
+    comments,
+    loading,
+    onClose,
+    onAddComment,
+    onFetchComments,
+    currentUserId,
+    topOffset = 0,
+  } = props;
   const { token } = useToken();
   const { t } = useLocale();
   const [newComment, setNewComment] = useState("");
   const [sending, setSending] = useState(false);
+  const [shouldRender, setShouldRender] = useState(visible);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (visible) {
+      setShouldRender(true);
+      onFetchComments();
+    }
+  }, [visible, onFetchComments]);
+
+  const handleExitComplete = useCallback(() => {
+    setShouldRender(false);
+  }, []);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -205,15 +306,26 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
 
   const panelStyle = useMemo(
     (): CSSProperties => ({
-      height: "100%",
+      position: "fixed",
+      top: topOffset,
+      right: 0,
+      bottom: 0,
+      width: COMMENTS_PANEL_WIDTH,
       backgroundColor: token.colorBgContainer,
       borderLeft: `1px solid ${token.colorBorder}`,
+      borderTop: `1px solid ${token.colorBorder}`,
+      borderTopLeftRadius: token.borderRadiusLG,
       display: "flex",
       flexDirection: "column",
       overflow: "hidden",
-      flexShrink: 0,
+      zIndex: 50,
     }),
-    [token.colorBgContainer, token.colorBorder],
+    [
+      token.colorBgContainer,
+      token.colorBorder,
+      topOffset,
+      token.borderRadiusLG,
+    ],
   );
 
   const panelHeaderStyle = useMemo(
@@ -224,25 +336,31 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
       padding: "12px 16px",
       borderBottom: `1px solid ${token.colorBorder}`,
       backgroundColor: token.colorBgElevated,
+      flexShrink: 0,
     }),
     [token.colorBorder, token.colorBgElevated],
   );
 
   const footerStyle = useMemo(
-    () => ({
+    (): CSSProperties => ({
       padding: 12,
       borderTop: `1px solid ${token.colorBorder}`,
       backgroundColor: token.colorBgElevated,
+      flexShrink: 0,
     }),
     [token.colorBorder, token.colorBgElevated],
   );
 
+  if (!shouldRender) {
+    return null;
+  }
+
   return (
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={handleExitComplete}>
       {visible && (
         <motion.div
           initial={{ width: 0, opacity: 0 }}
-          animate={{ width: PANEL_WIDTH, opacity: 1 }}
+          animate={{ width: COMMENTS_PANEL_WIDTH, opacity: 1 }}
           exit={{ width: 0, opacity: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           style={panelStyle}
@@ -259,32 +377,36 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
             />
           </div>
 
-          <div style={CONTENT_AREA_STYLE}>
-            {loading ? (
-              <div style={LOADING_CONTAINER_STYLE}>
-                <Spin />
-              </div>
-            ) : comments.length === 0 ? (
-              <Empty
-                description={t("noComments")}
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-              />
-            ) : (
-              <>
-                {comments.map((comment) => (
-                  <MessageBubble
-                    key={comment.id}
-                    comment={comment}
-                    isOwnMessage={comment.create_uid[0] === currentUserId}
+          <ErrorBoundary>
+            <div style={CONTENT_AREA_STYLE}>
+              {loading ? (
+                <div style={LOADING_CONTAINER_STYLE}>
+                  <Spin />
+                </div>
+              ) : comments.length === 0 ? (
+                <div style={EMPTY_CONTAINER_STYLE}>
+                  <Empty
+                    description={t("noComments")}
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
                   />
-                ))}
-                <div ref={messagesEndRef} />
-              </>
-            )}
-          </div>
+                </div>
+              ) : (
+                <div style={MESSAGES_WRAPPER_STYLE}>
+                  {[...comments].reverse().map((comment) => (
+                    <MessageBubble
+                      key={comment.id}
+                      comment={comment}
+                      isOwnMessage={comment.create_uid === currentUserId}
+                    />
+                  ))}
+                  <div ref={messagesEndRef} />
+                </div>
+              )}
+            </div>
+          </ErrorBoundary>
 
           <div style={footerStyle}>
-            <Space.Compact style={{ width: "100%" }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
               <TextArea
                 value={newComment}
                 onChange={handleCommentChange}
@@ -301,7 +423,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                 loading={sending}
                 disabled={!newComment.trim()}
               />
-            </Space.Compact>
+            </div>
           </div>
         </motion.div>
       )}

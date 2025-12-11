@@ -16,7 +16,7 @@ export const useRecordComments = (opts: UseRecordCommentsOpts) => {
   const [loading, setLoading] = useState(false);
 
   const [executeRequest, cancelRequest] = useNetworkRequest(
-    ConnectionProvider.getHandler().execute,
+    ConnectionProvider.getHandler().rawExecute,
   );
 
   const fetchComments = useDeepCompareCallback(async () => {
@@ -50,7 +50,7 @@ export const useRecordComments = (opts: UseRecordCommentsOpts) => {
       const commentId = await executeRequest({
         model,
         action: "add_comment",
-        payload: [[resourceId], body],
+        payload: [resourceId, body],
         context,
       });
       return commentId;
