@@ -160,4 +160,8 @@ export default {
   column_limit: "Límite de columna",
   column_limit_description:
     "Un límite en el número de elementos en una columna",
+  comments: "Comentarios",
+  writeComment: "Escribe un comentario...",
+  noComments: "No hay comentarios",
+  noMatches: "Sin coincidencias",
 };
