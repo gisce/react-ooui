@@ -36,7 +36,7 @@ export const CommentMarkdown = ({
           <MarkdownInput
             value={comment.body}
             components={COMMENT_COMPONENTS}
-            // className=""
+            className=""
           />
         </Form.Item>
       </Form>

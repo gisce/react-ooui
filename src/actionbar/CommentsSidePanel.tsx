@@ -60,6 +60,7 @@ export type CommentsSidePanelProps = {
   onFetchComments: () => void;
   onFetchMentionUsers: (query: string) => Promise<MentionUser[]>;
   currentUserId?: number;
+  canAddComment?: boolean;
 };
 
 type MessageBubbleProps = {
@@ -226,6 +227,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     onFetchComments,
     onFetchMentionUsers,
     currentUserId,
+    canAddComment,
   } = props;
   const { token } = useToken();
   const { t } = useLocale();
@@ -442,35 +444,37 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
             </div>
           </ErrorBoundary>
 
-          <div style={footerStyle}>
-            <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
-              <Mentions
-                value={newComment}
-                onChange={handleCommentChange}
-                onKeyDown={handleKeyDown}
-                onSearch={handleMentionSearch}
-                onSelect={handleMentionSelect}
-                onBlur={handleMentionBlur}
-                options={mentionOptions}
-                loading={mentionSearching}
-                filterOption={false}
-                notFoundContent={
-                  mentionSearching ? <Spin size="small" /> : t("noMatches")
-                }
-                placeholder={t("writeComment")}
-                autoSize={TEXT_AREA_AUTO_SIZE}
-                disabled={sending}
-                style={{ flex: 1 }}
-              />
-              <Button
-                type="primary"
-                icon={<SendOutlined />}
-                onClick={handleSend}
-                loading={sending}
-                disabled={!newComment.trim()}
-              />
+          {canAddComment && (
+            <div style={footerStyle}>
+              <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
+                <Mentions
+                  value={newComment}
+                  onChange={handleCommentChange}
+                  onKeyDown={handleKeyDown}
+                  onSearch={handleMentionSearch}
+                  onSelect={handleMentionSelect}
+                  onBlur={handleMentionBlur}
+                  options={mentionOptions}
+                  loading={mentionSearching}
+                  filterOption={false}
+                  notFoundContent={
+                    mentionSearching ? <Spin size="small" /> : t("noMatches")
+                  }
+                  placeholder={t("writeComment")}
+                  autoSize={TEXT_AREA_AUTO_SIZE}
+                  disabled={sending}
+                  style={{ flex: 1 }}
+                />
+                <Button
+                  type="primary"
+                  icon={<SendOutlined />}
+                  onClick={handleSend}
+                  loading={sending}
+                  disabled={!newComment.trim()}
+                />
+              </div>
             </div>
-          </div>
+          )}
         </motion.div>
       )}
     </AnimatePresence>
