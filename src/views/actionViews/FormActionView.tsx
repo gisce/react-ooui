@@ -54,6 +54,7 @@ export const FormActionView = (props: FormActionViewProps) => {
     setCommentsPanelVisible,
     setCommentCount,
     setRefreshComments,
+    permissions,
   } = useActionViewContext();
   const { globalValues } = useConfigContext();
   const { token } = useToken();
@@ -185,6 +186,7 @@ export const FormActionView = (props: FormActionViewProps) => {
             onFetchComments={fetchComments}
             onFetchMentionUsers={fetchMentionUsers}
             currentUserId={globalValues?.uid}
+            canAddComment={permissions?.write}
           />
         )}
       </div>
