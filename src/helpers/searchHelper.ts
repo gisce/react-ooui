@@ -7,6 +7,54 @@ const convertBooleanParamIfNeeded = (value: any) => {
   return value;
 };
 
+const optimizeEqualRangeParams = (params: any[]) => {
+  // Group params by field name to find >= and <= pairs
+  const fieldMap: Record<
+    string,
+    { gte?: any; lte?: any; index: { gte?: number; lte?: number } }
+  > = {};
+
+  params.forEach((param, index) => {
+    if (Array.isArray(param) && param.length === 3) {
+      const [field, operator, value] = param;
+      if (operator === ">=" || operator === "<=") {
+        if (!fieldMap[field]) {
+          fieldMap[field] = { index: {} };
+        }
+        if (operator === ">=") {
+          fieldMap[field].gte = value;
+          fieldMap[field].index.gte = index;
+        } else {
+          fieldMap[field].lte = value;
+          fieldMap[field].index.lte = index;
+        }
+      }
+    }
+  });
+
+  // Find fields where gte === lte and replace with =
+  const indicesToRemove: number[] = [];
+  const replacements: Array<{ index: number; param: any[] }> = [];
+
+  Object.entries(fieldMap).forEach(([field, { gte, lte, index }]) => {
+    if (gte !== undefined && lte !== undefined && gte === lte) {
+      // Replace >= with = and mark <= for removal
+      replacements.push({ index: index.gte!, param: [field, "=", gte] });
+      indicesToRemove.push(index.lte!);
+    }
+  });
+
+  // Apply changes
+  const result = params
+    .map((param, i) => {
+      const replacement = replacements.find((r) => r.index === i);
+      return replacement ? replacement.param : param;
+    })
+    .filter((_, i) => !indicesToRemove.includes(i));
+
+  return result;
+};
+
 export const getParamsForFields = (values: any, widgetContainer: any) => {
   const filteredValues = removeUndefinedFields(values);
   const groupedDateTime = groupDateTimeValuesIfNeeded(filteredValues);
@@ -29,7 +77,8 @@ export const getParamsForFields = (values: any, widgetContainer: any) => {
     return [...acc, curVal];
   }, []);
 
-  return paramsForFields;
+  // Optimize equal range values to use = instead of >= and <=
+  return optimizeEqualRangeParams(paramsForFields);
 };
 
 const getParamForField = (key: string, value: any, widgetContainer: any) => {
