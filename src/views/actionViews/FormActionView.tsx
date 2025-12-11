@@ -178,6 +178,8 @@ export const FormActionView = (props: FormActionViewProps) => {
             visible={commentsPanelVisible ?? false}
             comments={comments}
             loading={loading}
+            model={model}
+            resourceId={currentId}
             onClose={handleClosePanel}
             onAddComment={handleAddComment}
             onFetchComments={fetchComments}

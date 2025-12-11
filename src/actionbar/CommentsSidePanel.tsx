@@ -23,6 +23,7 @@ import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import { RecordComment, MentionUser } from "@/types/comments";
 import dayjs from "@/helpers/dayjs";
 import { UserAvatar } from "@/ui/UserAvatar";
+import { CommentMarkdown } from "@/ui/CommentMarkdown";
 
 const { Title, Text } = Typography;
 const { useToken } = theme;
@@ -52,6 +53,8 @@ export type CommentsSidePanelProps = {
   visible: boolean;
   comments: RecordComment[];
   loading: boolean;
+  model: string;
+  resourceId: number;
   onClose: () => void;
   onAddComment: (body: string) => Promise<void>;
   onFetchComments: () => void;
@@ -62,166 +65,153 @@ export type CommentsSidePanelProps = {
 type MessageBubbleProps = {
   comment: RecordComment;
   isOwnMessage: boolean;
+  model: string;
+  resourceId: number;
 };
 
-const renderMessageWithMentions = (body: string): React.ReactNode => {
-  const mentionRegex = /@(\w+)/g;
-  const parts: React.ReactNode[] = [];
-  let lastIndex = 0;
-  let match;
+const MessageBubble = memo(
+  ({ comment, isOwnMessage, model, resourceId }: MessageBubbleProps) => {
+    const { token } = useToken();
+    const userName = comment["create_uid.name"];
+    const absoluteTime = dayjs(comment.create_date).format(
+      "HH:mm · DD/MM/YYYY",
+    );
+    const relativeTime = dayjs(comment.create_date).fromNow();
 
-  while ((match = mentionRegex.exec(body)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push(body.slice(lastIndex, match.index));
-    }
-    parts.push(<strong key={match.index}>@{match[1]}</strong>);
-    lastIndex = match.index + match[0].length;
-  }
+    const containerStyle = useMemo(
+      (): CSSProperties => ({
+        display: "flex",
+        flexDirection: "column",
+        alignItems: isOwnMessage ? "flex-end" : "flex-start",
+        marginBottom: 8,
+      }),
+      [isOwnMessage],
+    );
 
-  if (lastIndex < body.length) {
-    parts.push(body.slice(lastIndex));
-  }
+    const separatorStyle = useMemo(
+      (): CSSProperties => ({
+        width: "70%",
+        height: 1,
+        backgroundColor: token.colorBorderSecondary,
+        marginTop: 8,
+        marginBottom: 8,
+        alignSelf: "center",
+      }),
+      [token.colorBorderSecondary],
+    );
 
-  return parts.length > 0 ? parts : body;
-};
+    const headerStyle = useMemo(
+      (): CSSProperties => ({
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 8,
+        marginBottom: 6,
+        width: "100%",
+      }),
+      [],
+    );
 
-const MessageBubble = memo(({ comment, isOwnMessage }: MessageBubbleProps) => {
-  const { token } = useToken();
-  const userName = comment["create_uid.name"];
-  const absoluteTime = dayjs(comment.create_date).format("HH:mm · DD/MM/YYYY");
-  const relativeTime = dayjs(comment.create_date).fromNow();
+    const avatarNameGroupStyle = useMemo(
+      (): CSSProperties => ({
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+      }),
+      [],
+    );
 
-  const containerStyle = useMemo(
-    (): CSSProperties => ({
-      display: "flex",
-      flexDirection: "column",
-      alignItems: isOwnMessage ? "flex-end" : "flex-start",
-      marginBottom: 8,
-    }),
-    [isOwnMessage],
-  );
+    const nameStyle = useMemo(
+      (): CSSProperties => ({
+        fontSize: 13,
+        fontWeight: 600,
+      }),
+      [],
+    );
 
-  const separatorStyle = useMemo(
-    (): CSSProperties => ({
-      width: "70%",
-      height: 1,
-      backgroundColor: token.colorBorderSecondary,
-      marginTop: 8,
-      marginBottom: 8,
-      alignSelf: "center",
-    }),
-    [token.colorBorderSecondary],
-  );
+    const timestampStyle = useMemo(
+      (): CSSProperties => ({
+        fontSize: 11,
+        flexShrink: 0,
+      }),
+      [],
+    );
 
-  const headerStyle = useMemo(
-    (): CSSProperties => ({
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      gap: 8,
-      marginBottom: 6,
-      width: "100%",
-    }),
-    [],
-  );
+    const bubbleStyle = useMemo(
+      (): CSSProperties => ({
+        backgroundColor: isOwnMessage
+          ? token.colorPrimaryBg
+          : token.colorFillTertiary,
+        padding: "8px 12px",
+        borderRadius: 12,
+        display: "inline-block",
+        marginLeft: isOwnMessage ? 0 : 32,
+        marginRight: isOwnMessage ? 28 : 0,
+      }),
+      [token.colorPrimaryBg, token.colorFillTertiary, isOwnMessage],
+    );
 
-  const avatarNameGroupStyle = useMemo(
-    (): CSSProperties => ({
-      display: "flex",
-      alignItems: "center",
-      gap: 8,
-    }),
-    [],
-  );
+    const timestampElement = (
+      <Tooltip title={absoluteTime}>
+        <Text type="secondary" style={timestampStyle}>
+          {relativeTime}
+        </Text>
+      </Tooltip>
+    );
 
-  const nameStyle = useMemo(
-    (): CSSProperties => ({
-      fontSize: 13,
-      fontWeight: 600,
-    }),
-    [],
-  );
-
-  const timestampStyle = useMemo(
-    (): CSSProperties => ({
-      fontSize: 11,
-      flexShrink: 0,
-    }),
-    [],
-  );
-
-  const bubbleStyle = useMemo(
-    (): CSSProperties => ({
-      backgroundColor: isOwnMessage
-        ? token.colorPrimaryBg
-        : token.colorFillTertiary,
-      padding: "8px 12px",
-      borderRadius: 12,
-      display: "inline-block",
-      marginLeft: isOwnMessage ? 0 : 32,
-      marginRight: isOwnMessage ? 28 : 0,
-    }),
-    [token.colorPrimaryBg, token.colorFillTertiary, isOwnMessage],
-  );
-
-  const messageStyle = useMemo(
-    (): CSSProperties => ({
-      whiteSpace: "pre-wrap",
-      wordBreak: "break-word",
-    }),
-    [],
-  );
-
-  const timestampElement = (
-    <Tooltip title={absoluteTime}>
-      <Text type="secondary" style={timestampStyle}>
-        {relativeTime}
-      </Text>
-    </Tooltip>
-  );
-
-  const avatarNameElement = (
-    <div style={avatarNameGroupStyle}>
-      {isOwnMessage ? (
-        <>
-          <Text style={nameStyle}>{userName}</Text>
-          <UserAvatar userName={userName} size={28} style={{ flexShrink: 0 }} />
-        </>
-      ) : (
-        <>
-          <UserAvatar userName={userName} size={28} style={{ flexShrink: 0 }} />
-          <Text style={nameStyle}>{userName}</Text>
-        </>
-      )}
-    </div>
-  );
-
-  return (
-    <>
-      <div style={separatorStyle} />
-      <div style={containerStyle}>
-        <div style={headerStyle}>
-          {isOwnMessage ? (
-            <>
-              {timestampElement}
-              {avatarNameElement}
-            </>
-          ) : (
-            <>
-              {avatarNameElement}
-              {timestampElement}
-            </>
-          )}
-        </div>
-        <div style={bubbleStyle}>
-          <Text style={messageStyle}>
-            {renderMessageWithMentions(comment.body)}
-          </Text>
-        </div>
+    const avatarNameElement = (
+      <div style={avatarNameGroupStyle}>
+        {isOwnMessage ? (
+          <>
+            <Text style={nameStyle}>{userName}</Text>
+            <UserAvatar
+              userName={userName}
+              size={28}
+              style={{ flexShrink: 0 }}
+            />
+          </>
+        ) : (
+          <>
+            <UserAvatar
+              userName={userName}
+              size={28}
+              style={{ flexShrink: 0 }}
+            />
+            <Text style={nameStyle}>{userName}</Text>
+          </>
+        )}
       </div>
-    </>
-  );
-});
+    );
+
+    return (
+      <>
+        <div style={separatorStyle} />
+        <div style={containerStyle}>
+          <div style={headerStyle}>
+            {isOwnMessage ? (
+              <>
+                {timestampElement}
+                {avatarNameElement}
+              </>
+            ) : (
+              <>
+                {avatarNameElement}
+                {timestampElement}
+              </>
+            )}
+          </div>
+          <div style={bubbleStyle}>
+            <CommentMarkdown
+              comment={comment}
+              model={model}
+              resourceId={resourceId}
+            />
+          </div>
+        </div>
+      </>
+    );
+  },
+);
 MessageBubble.displayName = "MessageBubble";
 
 const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
@@ -229,6 +219,8 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     visible,
     comments,
     loading,
+    model,
+    resourceId,
     onClose,
     onAddComment,
     onFetchComments,
@@ -257,14 +249,19 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
   }, []);
 
   const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
   }, []);
 
   useEffect(() => {
-    if (visible && comments.length > 0) {
-      scrollToBottom();
+    if (visible && comments.length > 0 && !loading) {
+      // Use setTimeout to ensure content is fully rendered before scrolling
+      setTimeout(() => {
+        scrollToBottom();
+      }, 50);
     }
-  }, [visible, comments.length, scrollToBottom]);
+  }, [visible, comments.length, loading, scrollToBottom]);
 
   const handleSend = useCallback(async () => {
     if (!newComment.trim() || sending) return;
@@ -435,6 +432,8 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                       key={comment.id}
                       comment={comment}
                       isOwnMessage={comment.create_uid === currentUserId}
+                      model={model}
+                      resourceId={resourceId}
                     />
                   ))}
                   <div ref={messagesEndRef} />
