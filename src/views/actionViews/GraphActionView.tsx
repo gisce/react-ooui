@@ -1,7 +1,14 @@
 import GraphActionBar from "@/actionbar/GraphActionBar";
 import TitleHeader from "@/ui/TitleHeader";
 import { Graph } from "@/widgets/views/Graph/Graph";
-import { useContext, useEffect, useRef, useState, useMemo } from "react";
+import {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  CSSProperties,
+} from "react";
 import {
   ActionViewContext,
   ActionViewContextType,
@@ -22,6 +29,11 @@ import {
   useDeepCompareEffect,
   useDeepCompareMemo,
 } from "use-deep-compare";
+
+const CONTENT_CONTAINER_STYLE: CSSProperties = {
+  height: "calc(100vh - 80px - 102px)",
+  overflow: "auto",
+};
 
 export type GraphActionViewProps = {
   viewData: GraphView;
@@ -216,48 +228,49 @@ export const GraphActionView = (props: GraphActionViewProps) => {
           }}
         />
       </TitleHeader>
-
-      <SearchFilter
-        fields={{
-          ...treeView?.fields,
-          ...formView?.fields,
-          ...graphView?.fields,
-        }}
-        searchFields={searchFields}
-        limit={limit!}
-        onClear={clear}
-        offset={offset}
-        isSearching={searchFilterLoading}
-        onSubmit={(opts: {
-          params: any;
-          limit: number;
-          offset: number;
-          searchValues: any;
-        }) => {
-          setApplyLimit(false);
-          setSearchParams?.(opts.params);
-          setSearchVisible?.(false);
-        }}
-        searchError={searchError}
-        searchVisible={searchVisible}
-        searchValues={searchValues}
-        showLimitOptions={false}
-      />
-      {tableRefreshing || idsLoading ? (
-        <Spin />
-      ) : (
-        <GraphComponent
-          ref={graphRef}
-          view_id={viewData.view_id}
-          viewData={viewData}
-          model={model}
-          context={context}
-          domain={mergeParams(searchParams || [], domain)}
-          limit={applyLimit ? limit : undefined}
-          fixedHeight={GRAPH_DEFAULT_HEIGHT}
-          manualIds={manualIds}
+      <div style={CONTENT_CONTAINER_STYLE}>
+        <SearchFilter
+          fields={{
+            ...treeView?.fields,
+            ...formView?.fields,
+            ...graphView?.fields,
+          }}
+          searchFields={searchFields}
+          limit={limit!}
+          onClear={clear}
+          offset={offset}
+          isSearching={searchFilterLoading}
+          onSubmit={(opts: {
+            params: any;
+            limit: number;
+            offset: number;
+            searchValues: any;
+          }) => {
+            setApplyLimit(false);
+            setSearchParams?.(opts.params);
+            setSearchVisible?.(false);
+          }}
+          searchError={searchError}
+          searchVisible={searchVisible}
+          searchValues={searchValues}
+          showLimitOptions={false}
         />
-      )}
+        {tableRefreshing || idsLoading ? (
+          <Spin />
+        ) : (
+          <GraphComponent
+            ref={graphRef}
+            view_id={viewData.view_id}
+            viewData={viewData}
+            model={model}
+            context={context}
+            domain={mergeParams(searchParams || [], domain)}
+            limit={applyLimit ? limit : undefined}
+            fixedHeight={GRAPH_DEFAULT_HEIGHT}
+            manualIds={manualIds}
+          />
+        )}
+      </div>
     </>
   );
 };

@@ -9,6 +9,7 @@ import {
   useMemo,
   useRef,
   useState,
+  CSSProperties,
 } from "react";
 import {
   ActionViewContext,
@@ -31,6 +32,11 @@ import { ErpFeatureKeys } from "@/models/erpFeature";
 import { determineTreeType, isTreeExpandable } from "@/helpers/treeHelper";
 
 const { useToken } = theme;
+
+const CONTENT_CONTAINER_STYLE: CSSProperties = {
+  height: "calc(100vh - 80px - 102px)",
+  overflow: "auto",
+};
 
 export type TreeActionViewProps = {
   formView: FormView;
@@ -362,46 +368,48 @@ export const TreeActionView = (props: TreeActionViewProps) => {
           onClearSavedSearch={handleClearSavedSearch}
         />
       </TitleHeader>
-      {treeType === "infinite" && (
-        <SearchTreeInfinite
-          ref={searchTreeRef}
-          rootTree={true}
-          model={model}
-          parentContext={context}
-          formView={formView}
-          treeView={treeView}
-          domain={domain}
-          onRowClicked={onRowClicked}
-          onChangeTreeType={handleTreeTypeChange}
-        />
-      )}
-      {treeType === "paginated" && (
-        <SearchTreePaginated
-          ref={searchTreeRef}
-          rootTree={true}
-          model={model}
-          parentContext={context}
-          nameSearch={searchTreeNameSearch}
-          formView={formView}
-          treeView={treeView}
-          domain={domain}
-          onRowClicked={onRowClicked}
-          onChangeTreeType={handleTreeTypeChange}
-        />
-      )}
-      {treeType === "legacy" && (
-        <SearchTree
-          ref={searchTreeRef}
-          rootTree={true}
-          model={model}
-          parentContext={context}
-          nameSearch={searchTreeNameSearch}
-          formView={formView}
-          treeView={treeView}
-          domain={domain}
-          onRowClicked={onRowClicked}
-        />
-      )}
+      <div style={CONTENT_CONTAINER_STYLE}>
+        {treeType === "infinite" && (
+          <SearchTreeInfinite
+            ref={searchTreeRef}
+            rootTree={true}
+            model={model}
+            parentContext={context}
+            formView={formView}
+            treeView={treeView}
+            domain={domain}
+            onRowClicked={onRowClicked}
+            onChangeTreeType={handleTreeTypeChange}
+          />
+        )}
+        {treeType === "paginated" && (
+          <SearchTreePaginated
+            ref={searchTreeRef}
+            rootTree={true}
+            model={model}
+            parentContext={context}
+            nameSearch={searchTreeNameSearch}
+            formView={formView}
+            treeView={treeView}
+            domain={domain}
+            onRowClicked={onRowClicked}
+            onChangeTreeType={handleTreeTypeChange}
+          />
+        )}
+        {treeType === "legacy" && (
+          <SearchTree
+            ref={searchTreeRef}
+            rootTree={true}
+            model={model}
+            parentContext={context}
+            nameSearch={searchTreeNameSearch}
+            formView={formView}
+            treeView={treeView}
+            domain={domain}
+            onRowClicked={onRowClicked}
+          />
+        )}
+      </div>
     </Fragment>
   );
 };

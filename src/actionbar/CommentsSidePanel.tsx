@@ -28,15 +28,8 @@ const { Title, Text } = Typography;
 const { useToken } = theme;
 
 export const COMMENTS_PANEL_WIDTH = 450;
+export const COMMENTS_PANEL_GAP = 8;
 const TEXT_AREA_AUTO_SIZE = { minRows: 1, maxRows: 4 };
-const CONTENT_AREA_STYLE: CSSProperties = {
-  flex: 1,
-  overflowY: "auto",
-  padding: 16,
-  display: "flex",
-  flexDirection: "column",
-  minHeight: 0,
-};
 const LOADING_CONTAINER_STYLE: CSSProperties = {
   display: "flex",
   justifyContent: "center",
@@ -64,7 +57,6 @@ export type CommentsSidePanelProps = {
   onFetchComments: () => void;
   onFetchMentionUsers: (query: string) => Promise<MentionUser[]>;
   currentUserId?: number;
-  topOffset?: number;
 };
 
 type MessageBubbleProps = {
@@ -242,7 +234,6 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     onFetchComments,
     onFetchMentionUsers,
     currentUserId,
-    topOffset = 0,
   } = props;
   const { token } = useToken();
   const { t } = useLocale();
@@ -343,28 +334,36 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     [mentionUsers],
   );
 
+  const contentAreaStyle = useMemo(
+    (): CSSProperties => ({
+      flex: 1,
+      overflowY: "auto",
+      overscrollBehavior: "contain",
+      scrollbarWidth: "thin",
+      scrollbarColor: `${token.colorTextQuaternary} ${token.colorBgContainer}`,
+      padding: 16,
+      display: "flex",
+      flexDirection: "column",
+      minHeight: 0,
+    }),
+    [token.colorTextQuaternary, token.colorBgContainer],
+  );
+
   const panelStyle = useMemo(
     (): CSSProperties => ({
-      position: "fixed",
-      top: topOffset,
+      position: "absolute",
+      top: 0,
       right: 0,
       bottom: 0,
       width: COMMENTS_PANEL_WIDTH,
       backgroundColor: token.colorBgContainer,
       borderLeft: `1px solid ${token.colorBorder}`,
-      borderTop: `1px solid ${token.colorBorder}`,
-      borderTopLeftRadius: token.borderRadiusLG,
       display: "flex",
       flexDirection: "column",
       overflow: "hidden",
       zIndex: 50,
     }),
-    [
-      token.colorBgContainer,
-      token.colorBorder,
-      topOffset,
-      token.borderRadiusLG,
-    ],
+    [token.colorBgContainer, token.colorBorder],
   );
 
   const panelHeaderStyle = useMemo(
@@ -417,7 +416,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
           </div>
 
           <ErrorBoundary>
-            <div style={CONTENT_AREA_STYLE}>
+            <div style={contentAreaStyle}>
               {loading ? (
                 <div style={LOADING_CONTAINER_STYLE}>
                   <Spin />

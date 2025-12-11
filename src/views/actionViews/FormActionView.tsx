@@ -1,15 +1,9 @@
-import {
-  useEffect,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-  CSSProperties,
-} from "react";
+import { useEffect, useCallback, useMemo, useRef, CSSProperties } from "react";
 import FormActionBar from "@/actionbar/FormActionBar";
 import {
   CommentsSidePanel,
   COMMENTS_PANEL_WIDTH,
+  COMMENTS_PANEL_GAP,
 } from "@/actionbar/CommentsSidePanel";
 import { FormView } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
@@ -18,6 +12,9 @@ import { useActionViewContext } from "@/context/ActionViewContext";
 import { useRecordComments } from "@/hooks/useRecordComments";
 import { useConfigContext, useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
+import { theme } from "antd";
+
+const { useToken } = theme;
 
 export type FormActionViewProps = {
   formView?: FormView;
@@ -59,40 +56,12 @@ export const FormActionView = (props: FormActionViewProps) => {
     setRefreshComments,
   } = useActionViewContext();
   const { globalValues } = useConfigContext();
+  const { token } = useToken();
   const commentsEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_COMMENTS_SYSTEM,
   );
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const [panelTopOffset, setPanelTopOffset] = useState(0);
-
-  useEffect(() => {
-    if (!visible) return;
-
-    const stickyHeader = containerRef.current
-      ?.previousElementSibling as HTMLElement;
-
-    const updateOffset = () => {
-      if (stickyHeader) {
-        const rect = stickyHeader.getBoundingClientRect();
-        setPanelTopOffset(rect.bottom - 15);
-      }
-    };
-
-    updateOffset();
-
-    const resizeObserver = new ResizeObserver(updateOffset);
-    if (stickyHeader) {
-      resizeObserver.observe(stickyHeader);
-    }
-
-    window.addEventListener("resize", updateOffset);
-
-    return () => {
-      resizeObserver.disconnect();
-      window.removeEventListener("resize", updateOffset);
-    };
-  }, [visible]);
 
   const { comments, loading, fetchComments, addComment, fetchMentionUsers } =
     useRecordComments({
@@ -147,19 +116,36 @@ export const FormActionView = (props: FormActionViewProps) => {
   );
 
   const containerStyle = useMemo(
-    (): CSSProperties => ({ display: "flex", flex: 1, overflow: "hidden" }),
-    [],
+    (): CSSProperties => ({
+      display: "flex",
+      flex: 1,
+      overflow: "hidden",
+      position: "relative",
+      height: "calc(100vh - 80px - 102px)",
+      backgroundColor: token.colorBgContainer,
+    }),
+    [token.colorBgContainer],
   );
 
   const formWrapperStyle = useMemo(
     (): CSSProperties => ({
       flex: 1,
       overflow: "auto",
+      scrollbarWidth: "thin",
+      scrollbarColor: `${token.colorTextQuaternary} ${token.colorBgContainer}`,
+      paddingRight: COMMENTS_PANEL_GAP,
       marginRight:
-        commentsEnabled && commentsPanelVisible ? COMMENTS_PANEL_WIDTH : 0,
+        commentsEnabled && commentsPanelVisible
+          ? COMMENTS_PANEL_WIDTH + COMMENTS_PANEL_GAP
+          : 0,
       transition: "margin-right 0.3s ease",
     }),
-    [commentsEnabled, commentsPanelVisible],
+    [
+      commentsEnabled,
+      commentsPanelVisible,
+      token.colorTextQuaternary,
+      token.colorBgContainer,
+    ],
   );
 
   if (!visible) {
@@ -193,7 +179,6 @@ export const FormActionView = (props: FormActionViewProps) => {
             comments={comments}
             loading={loading}
             onClose={handleClosePanel}
-            topOffset={panelTopOffset}
             onAddComment={handleAddComment}
             onFetchComments={fetchComments}
             onFetchMentionUsers={fetchMentionUsers}
