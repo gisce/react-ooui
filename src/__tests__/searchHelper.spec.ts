@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { mergeParams } from "../helpers/searchHelper";
+import { mergeParams, getParamsForFields } from "../helpers/searchHelper";
 
 describe("mergeParams", () => {
   it("should return domainParams when searchParams is empty array", () => {
@@ -252,5 +252,129 @@ describe("mergeParams", () => {
     ];
 
     expect(result).toEqual(expected);
+  });
+});
+
+describe("getParamsForFields - equal range optimization", () => {
+  // Mock widgetContainer
+  const createMockWidgetContainer = (fields: Record<string, string>) => ({
+    findById: (id: string) => {
+      const baseId = id.split("#")[0];
+      return fields[baseId] ? { type: fields[baseId] } : undefined;
+    },
+  });
+
+  it("should convert equal numeric range (>=, <=) to single = condition", () => {
+    const widgetContainer = createMockWidgetContainer({ amount: "float" });
+    const values = {
+      "amount#from": 10,
+      "amount#to": 10,
+    };
+
+    const result = getParamsForFields(values, widgetContainer);
+
+    expect(result).toEqual([["amount", "=", 10]]);
+  });
+
+  it("should keep separate conditions when range values are different", () => {
+    const widgetContainer = createMockWidgetContainer({ amount: "float" });
+    const values = {
+      "amount#from": 10,
+      "amount#to": 20,
+    };
+
+    const result = getParamsForFields(values, widgetContainer);
+
+    expect(result).toEqual([
+      ["amount", ">=", 10],
+      ["amount", "<=", 20],
+    ]);
+  });
+
+  it("should handle single-sided range (only from)", () => {
+    const widgetContainer = createMockWidgetContainer({ amount: "integer" });
+    const values = {
+      "amount#from": 10,
+    };
+
+    const result = getParamsForFields(values, widgetContainer);
+
+    expect(result).toEqual([["amount", ">=", 10]]);
+  });
+
+  it("should handle single-sided range (only to)", () => {
+    const widgetContainer = createMockWidgetContainer({ amount: "integer" });
+    const values = {
+      "amount#to": 20,
+    };
+
+    const result = getParamsForFields(values, widgetContainer);
+
+    expect(result).toEqual([["amount", "<=", 20]]);
+  });
+
+  it("should optimize multiple fields with equal ranges", () => {
+    const widgetContainer = createMockWidgetContainer({
+      amount: "float",
+      quantity: "integer",
+    });
+    const values = {
+      "amount#from": 100,
+      "amount#to": 100,
+      "quantity#from": 5,
+      "quantity#to": 5,
+    };
+
+    const result = getParamsForFields(values, widgetContainer);
+
+    expect(result).toContainEqual(["amount", "=", 100]);
+    expect(result).toContainEqual(["quantity", "=", 5]);
+    expect(result).toHaveLength(2);
+  });
+
+  it("should handle mixed fields: some with equal ranges, some with different ranges", () => {
+    const widgetContainer = createMockWidgetContainer({
+      amount: "float",
+      quantity: "integer",
+    });
+    const values = {
+      "amount#from": 100,
+      "amount#to": 100,
+      "quantity#from": 5,
+      "quantity#to": 10,
+    };
+
+    const result = getParamsForFields(values, widgetContainer);
+
+    expect(result).toContainEqual(["amount", "=", 100]);
+    expect(result).toContainEqual(["quantity", ">=", 5]);
+    expect(result).toContainEqual(["quantity", "<=", 10]);
+    expect(result).toHaveLength(3);
+  });
+
+  it("should work with progressbar type", () => {
+    const widgetContainer = createMockWidgetContainer({
+      progress: "progressbar",
+    });
+    const values = {
+      "progress#from": 50,
+      "progress#to": 50,
+    };
+
+    const result = getParamsForFields(values, widgetContainer);
+
+    expect(result).toEqual([["progress", "=", 50]]);
+  });
+
+  it("should work with float_time type", () => {
+    const widgetContainer = createMockWidgetContainer({ hours: "float_time" });
+    const values = {
+      "hours#from": 8.5,
+      "hours#to": 8.5,
+    };
+
+    const result = getParamsForFields(values, widgetContainer);
+
+    expect(result).toEqual([["hours", "=", 8.5]]);
   });
 });
