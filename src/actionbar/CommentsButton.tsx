@@ -22,12 +22,9 @@ const CommentsButtonComponent = (props: CommentsButtonProps) => {
     >
       <MessageOutlined />
       {commentCount > 0 && (
-        <Badge
-          count={commentCount}
-          size="small"
-          color="gray"
-          style={{ fontSize: 8 }}
-        />
+        <span
+          style={{ marginLeft: 4, fontWeight: "bold" }}
+        >{`${commentCount}`}</span>
       )}
     </ButtonWithTooltip>
   );
