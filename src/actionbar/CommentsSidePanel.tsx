@@ -28,6 +28,14 @@ import { CommentMarkdown } from "@/ui/CommentMarkdown";
 const { Title, Text } = Typography;
 const { useToken } = theme;
 
+const capitalize = (str: string): string =>
+  str.charAt(0).toUpperCase() + str.slice(1);
+
+const getDayLabel = (date: string): string => {
+  // dayjs calendar() uses locale-specific formats configured in helpers/dayjs.ts
+  return capitalize(dayjs(date).calendar());
+};
+
 export const COMMENTS_PANEL_WIDTH = 450;
 export const COMMENTS_PANEL_GAP = 8;
 const TEXT_AREA_AUTO_SIZE = { minRows: 1, maxRows: 4 };
@@ -66,18 +74,29 @@ export type CommentsSidePanelProps = {
 type MessageBubbleProps = {
   comment: RecordComment;
   isOwnMessage: boolean;
+  isFirstInGroup: boolean;
+  isFirstOfDay: boolean;
+  dayLabel?: string;
   model: string;
   resourceId: number;
 };
 
 const MessageBubble = memo(
-  ({ comment, isOwnMessage, model, resourceId }: MessageBubbleProps) => {
+  ({
+    comment,
+    isOwnMessage,
+    isFirstInGroup,
+    isFirstOfDay,
+    dayLabel,
+    model,
+    resourceId,
+  }: MessageBubbleProps) => {
     const { token } = useToken();
     const userName = comment["create_uid.name"];
     const absoluteTime = dayjs(comment.create_date).format(
       "HH:mm · DD/MM/YYYY",
     );
-    const relativeTime = dayjs(comment.create_date).fromNow();
+    const timeOnly = dayjs(comment.create_date).format("HH:mm");
 
     const containerStyle = useMemo(
       (): CSSProperties => ({
@@ -101,16 +120,46 @@ const MessageBubble = memo(
       [token.colorBorderSecondary],
     );
 
+    const daySeparatorStyle = useMemo(
+      (): CSSProperties => ({
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        marginTop: 16,
+        marginBottom: 12,
+        width: "100%",
+      }),
+      [],
+    );
+
+    const dayLineStyle = useMemo(
+      (): CSSProperties => ({
+        flex: 1,
+        height: 1,
+        backgroundColor: token.colorBorderSecondary,
+      }),
+      [token.colorBorderSecondary],
+    );
+
+    const dayLabelStyle = useMemo(
+      (): CSSProperties => ({
+        fontSize: 12,
+        fontWeight: 500,
+        color: token.colorTextTertiary,
+      }),
+      [token.colorTextTertiary],
+    );
+
     const headerStyle = useMemo(
       (): CSSProperties => ({
         display: "flex",
         alignItems: "center",
-        justifyContent: "space-between",
+        justifyContent: isOwnMessage ? "flex-end" : "flex-start",
         gap: 8,
         marginBottom: 6,
         width: "100%",
       }),
-      [],
+      [isOwnMessage],
     );
 
     const avatarNameGroupStyle = useMemo(
@@ -130,14 +179,6 @@ const MessageBubble = memo(
       [],
     );
 
-    const timestampStyle = useMemo(
-      (): CSSProperties => ({
-        fontSize: 11,
-        flexShrink: 0,
-      }),
-      [],
-    );
-
     const bubbleStyle = useMemo(
       (): CSSProperties => ({
         backgroundColor: isOwnMessage
@@ -146,18 +187,29 @@ const MessageBubble = memo(
         padding: "8px 12px",
         borderRadius: 12,
         display: "inline-block",
-        marginLeft: isOwnMessage ? 0 : 32,
-        marginRight: isOwnMessage ? 28 : 0,
       }),
       [token.colorPrimaryBg, token.colorFillTertiary, isOwnMessage],
     );
 
-    const timestampElement = (
-      <Tooltip title={absoluteTime}>
-        <Text type="secondary" style={timestampStyle}>
-          {relativeTime}
-        </Text>
-      </Tooltip>
+    const bubbleRowStyle = useMemo(
+      (): CSSProperties => ({
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        justifyContent: isOwnMessage ? "flex-end" : "flex-start",
+        marginLeft: isOwnMessage ? 0 : 32,
+        marginRight: isOwnMessage ? 28 : 0,
+      }),
+      [isOwnMessage],
+    );
+
+    const inlineTimestampStyle = useMemo(
+      (): CSSProperties => ({
+        fontSize: 10,
+        color: token.colorTextQuaternary,
+        flexShrink: 0,
+      }),
+      [token.colorTextQuaternary],
     );
 
     const avatarNameElement = (
@@ -184,29 +236,34 @@ const MessageBubble = memo(
       </div>
     );
 
+    const inlineTimestamp = (
+      <Tooltip title={absoluteTime}>
+        <Text style={inlineTimestampStyle}>{timeOnly}</Text>
+      </Tooltip>
+    );
+
     return (
       <>
-        <div style={separatorStyle} />
-        <div style={containerStyle}>
-          <div style={headerStyle}>
-            {isOwnMessage ? (
-              <>
-                {timestampElement}
-                {avatarNameElement}
-              </>
-            ) : (
-              <>
-                {avatarNameElement}
-                {timestampElement}
-              </>
-            )}
+        {isFirstOfDay && dayLabel && (
+          <div style={daySeparatorStyle}>
+            <div style={dayLineStyle} />
+            <Text style={dayLabelStyle}>{dayLabel}</Text>
+            <div style={dayLineStyle} />
           </div>
-          <div style={bubbleStyle}>
-            <CommentMarkdown
-              comment={comment}
-              model={model}
-              resourceId={resourceId}
-            />
+        )}
+        {isFirstInGroup && !isFirstOfDay && <div style={separatorStyle} />}
+        <div style={containerStyle}>
+          {isFirstInGroup && <div style={headerStyle}>{avatarNameElement}</div>}
+          <div style={bubbleRowStyle}>
+            {isOwnMessage && inlineTimestamp}
+            <div style={bubbleStyle}>
+              <CommentMarkdown
+                comment={comment}
+                model={model}
+                resourceId={resourceId}
+              />
+            </div>
+            {!isOwnMessage && inlineTimestamp}
           </div>
         </div>
       </>
@@ -238,6 +295,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
   const [mentionSearching, setMentionSearching] = useState(false);
   const [mentionDropdownOpen, setMentionDropdownOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const mentionsRef = useRef<any>(null);
 
   useEffect(() => {
     if (visible) {
@@ -275,6 +333,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
       setTimeout(scrollToBottom, 100);
     } finally {
       setSending(false);
+      setTimeout(() => mentionsRef.current?.focus(), 0);
     }
   }, [newComment, sending, onAddComment, scrollToBottom]);
 
@@ -429,15 +488,35 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                 </div>
               ) : (
                 <div style={MESSAGES_WRAPPER_STYLE}>
-                  {[...comments].reverse().map((comment) => (
-                    <MessageBubble
-                      key={comment.id}
-                      comment={comment}
-                      isOwnMessage={comment.create_uid === currentUserId}
-                      model={model}
-                      resourceId={resourceId}
-                    />
-                  ))}
+                  {[...comments].reverse().map((comment, index, arr) => {
+                    const prevComment = index > 0 ? arr[index - 1] : null;
+                    const isFirstInGroup =
+                      !prevComment ||
+                      prevComment.create_uid !== comment.create_uid;
+                    const isFirstOfDay =
+                      !prevComment ||
+                      !dayjs(prevComment.create_date).isSame(
+                        dayjs(comment.create_date),
+                        "day",
+                      );
+
+                    return (
+                      <MessageBubble
+                        key={comment.id}
+                        comment={comment}
+                        isOwnMessage={comment.create_uid === currentUserId}
+                        isFirstInGroup={isFirstInGroup || isFirstOfDay}
+                        isFirstOfDay={isFirstOfDay}
+                        dayLabel={
+                          isFirstOfDay
+                            ? getDayLabel(comment.create_date)
+                            : undefined
+                        }
+                        model={model}
+                        resourceId={resourceId}
+                      />
+                    );
+                  })}
                   <div ref={messagesEndRef} />
                 </div>
               )}
@@ -448,6 +527,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
             <div style={footerStyle}>
               <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
                 <Mentions
+                  ref={mentionsRef}
                   value={newComment}
                   onChange={handleCommentChange}
                   onKeyDown={handleKeyDown}
