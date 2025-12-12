@@ -394,6 +394,15 @@ function hasActualValues(obj: Record<string, any>): boolean {
   return false;
 }
 
+const getFieldNameFromColId = (colId: string): string => {
+  // Match pattern: fieldName_N where N is a number (ag-grid's duplicate suffix)
+  const match = colId.match(/^(.+)_(\d+)$/);
+  if (match) {
+    return match[1];
+  }
+  return colId;
+};
+
 const getSortedFieldsFromState = ({
   state,
 }: {
@@ -410,15 +419,18 @@ const getSortedFieldsFromState = ({
   if (columnsWithSort.length === 0) {
     return undefined;
   }
-  const sortFields = columnsWithSort.reduce(
-    (acc, col) => ({
-      ...acc,
-      [col.colId]: col.sort,
-    }),
-    {},
-  );
 
-  return sortFields;
+  // Use a Map to deduplicate by field name (first occurrence wins based on sortIndex)
+  const sortFieldsMap = new Map<string, SortDirection>();
+  columnsWithSort.forEach((col) => {
+    const fieldName = getFieldNameFromColId(col.colId);
+    // Only add if not already present (first occurrence by sortIndex wins)
+    if (!sortFieldsMap.has(fieldName)) {
+      sortFieldsMap.set(fieldName, col.sort as SortDirection);
+    }
+  });
+
+  return Object.fromEntries(sortFieldsMap);
 };
 
 const getOrderFromSortFields = (sortFields?: Record<string, SortDirection>) => {
