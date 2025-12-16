@@ -138,5 +138,4 @@ export default {
   saveFavourite: "Guardar favorito",
   enterFavouriteName: "Introduce el nombre del favorito",
   createNewRecord: "Crear un nuevo registro",
-  quickCreateTitle: "Crear nuevo registro",
 };

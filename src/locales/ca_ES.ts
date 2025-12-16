@@ -136,5 +136,4 @@ export default {
   saveFavourite: "Desar preferit",
   enterFavouriteName: "Introdueix el nom del preferit",
   createNewRecord: "Crear un nou registre",
-  quickCreateTitle: "Crear nou registre",
 };

@@ -133,5 +133,4 @@ export default {
   saveFavourite: "Save favourite",
   enterFavouriteName: "Enter favourite name",
   createNewRecord: "Create a new record",
-  quickCreateTitle: "Create new record",
 };
