@@ -28,11 +28,14 @@ export function SearchField(props: Props) {
   const { t } = useLocale();
 
   const widgetType = field.type;
-  // Check if the original widget prop specifies many2one_lazy
   const originalWidget = (field as any).raw_props?.widget;
+  const fieldType = (field as any).fieldType;
 
-  // Handle many2one_lazy before the switch (raw_props.widget has the original widget type)
-  if (originalWidget === "many2one_lazy") {
+  const shouldUseLazyM2o =
+    originalWidget === "many2one_lazy" ||
+    (originalWidget === "selection" && fieldType === "many2one");
+
+  if (shouldUseLazyM2o) {
     const m2oField = field as any;
     const m2oOoui = new Many2oneOoui({
       name: field._id,

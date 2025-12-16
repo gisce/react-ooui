@@ -86,8 +86,13 @@ const getParamForField = (key: string, value: any, widgetContainer: any) => {
   const field = widgetContainer.findById(filteredKey);
   const type = field?.type;
   const originalWidget = field?.raw_props?.widget;
+  const fieldType = field?.fieldType;
 
-  if (originalWidget === "many2one_lazy") {
+  const isLazyMany2one =
+    originalWidget === "many2one_lazy" ||
+    (originalWidget === "selection" && fieldType === "many2one");
+
+  if (isLazyMany2one) {
     const id = Array.isArray(value) ? value[0] : value;
     return [filteredKey, "=", id];
   }
@@ -128,9 +133,6 @@ const getParamForField = (key: string, value: any, widgetContainer: any) => {
         convertBooleanParamIfNeeded(valueEntry),
       ),
     ];
-  } else if (type === "many2one_lazy") {
-    const id = Array.isArray(value) ? value[0] : value;
-    return [filteredKey, "=", id];
   } else {
     return [key, "=", convertBooleanParamIfNeeded(value)];
   }
