@@ -56,6 +56,7 @@ export const Many2oneLazy = (props: Props) => {
 interface Many2oneLazyWidgetProps {
   showAdvancedSearch?: boolean;
   showCreate?: boolean;
+  showOpen?: boolean;
   limit?: number;
 }
 
@@ -112,6 +113,7 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
     () => ({
       showAdvancedSearch: ooui.parsedWidgetProps?.showAdvancedSearch ?? true,
       showCreate: ooui.parsedWidgetProps?.showCreate ?? true,
+      showOpen: ooui.parsedWidgetProps?.showOpen ?? true,
       limit: ooui.parsedWidgetProps?.limit ?? DEFAULT_LIMIT,
     }),
     [ooui.parsedWidgetProps],
@@ -483,7 +485,7 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
           options={options}
           labelRender={labelRender}
           suffixIcon={
-            id ? (
+            id && widgetProps.showOpen ? (
               <Many2oneSuffix
                 id={id}
                 model={relation}
