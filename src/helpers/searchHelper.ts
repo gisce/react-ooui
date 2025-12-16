@@ -93,6 +93,17 @@ const getParamForField = (key: string, value: any, widgetContainer: any) => {
     (originalWidget === "selection" && fieldType === "many2one");
 
   if (isLazyMany2one) {
+    // Check if multi-select format: [[id, name], [id, name], ...]
+    if (
+      Array.isArray(value) &&
+      value.length > 0 &&
+      Array.isArray(value[0]) &&
+      typeof value[0][0] === "number"
+    ) {
+      const ids = value.map((item: [number, string]) => item[0]);
+      return [filteredKey, "in", ids];
+    }
+    // Single select: existing behavior
     const id = Array.isArray(value) ? value[0] : value;
     return [filteredKey, "=", id];
   }
@@ -331,6 +342,17 @@ export const convertParamsToValues = (params: any[], fields?: any) => {
           // For other operators (=, !=, etc.), just set the value
           acc[field] = value;
         }
+      } else if (
+        type === "many2one" &&
+        operator === "in" &&
+        Array.isArray(value)
+      ) {
+        // Multi-select lazy many2one: convert IDs to [[id, ""], ...] format
+        // Names will be fetched by the component
+        acc[field] = value.map((id: number) => [id, ""]);
+      } else if (type === "many2one" && operator === "=") {
+        // Single-select lazy many2one: convert to [id, ""] format
+        acc[field] = [value, ""];
       } else {
         // For other types, just set the value
         acc[field] = value;
