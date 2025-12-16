@@ -38,7 +38,15 @@ const getTableColumns = (
   const tableColumns = tree.columns.map((column) => {
     const type = column.type;
     const key = column.id;
-    const component = components?.[type];
+    const fieldType = column.fieldType;
+
+    const isEffectivelyMany2one =
+      type === "many2one" ||
+      type === "many2one_lazy" ||
+      (type === "selection" && fieldType === "many2one");
+
+    const componentType = isEffectivelyMany2one ? "many2one" : type;
+    const component = components?.[componentType];
     let render;
 
     if (component) {
@@ -71,7 +79,7 @@ const getTableColumns = (
         let aItem = a[key] || "";
         let bItem = b[key] || "";
 
-        if (type === "many2one") {
+        if (isEffectivelyMany2one) {
           aItem = a[key]?.value || "";
           bItem = b[key]?.value || "";
         }
@@ -83,7 +91,7 @@ const getTableColumns = (
       isSortable:
         (type !== "one2many" &&
           !column.isFunction &&
-          (type !== "many2one" || many2oneSortEnabled)) ||
+          (!isEffectivelyMany2one || many2oneSortEnabled)) ||
         column.isSortable,
     };
   });
@@ -232,6 +240,17 @@ const getTableItems = async (
           } else {
             parsedItem[key] = item[key];
           }
+        } else if (
+          widget instanceof Selection &&
+          widget.fieldType === "many2one"
+        ) {
+          parsedItem[key] = item[key] &&
+            Array.isArray(item[key]) &&
+            item[key].length === 2 && {
+              model: widget.raw_props?.relation,
+              id: item[key][0],
+              value: item[key][1],
+            };
         } else if (widget instanceof Selection) {
           parsedItem[key] = item[key];
         } else if (widget instanceof Many2one) {

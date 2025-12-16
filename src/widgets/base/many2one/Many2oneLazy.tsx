@@ -8,7 +8,7 @@ import {
 } from "react";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { Select, Divider, Empty, Spin, theme } from "antd";
-import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
+import { SearchOutlined, PlusOutlined, CloseOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import debounce from "lodash/debounce";
 import {
@@ -31,6 +31,11 @@ import { UserFeatureKeys } from "@/models/userFeature";
 
 const { defaultAlgorithm, defaultSeed } = theme;
 const mapToken = defaultAlgorithm(defaultSeed);
+
+// Type definitions for single and multi-select modes
+type Many2oneSingleValue = [number | undefined, string] | undefined;
+type Many2oneMultiValue = Array<[number, string]>;
+type Many2oneValue = Many2oneSingleValue | Many2oneMultiValue;
 
 type Props = {
   ooui: Many2oneOoui;
@@ -62,8 +67,9 @@ interface Many2oneLazyWidgetProps {
 
 interface Many2oneLazyInputProps {
   ooui: Many2oneOoui;
-  value?: [number | undefined, string];
-  onChange?: (value: [number | undefined, string]) => void;
+  value?: Many2oneValue;
+  onChange?: (value: Many2oneValue) => void;
+  allowMultiSelect?: boolean;
 }
 
 interface SelectOption {
@@ -77,7 +83,7 @@ const DEBOUNCE_DELAY = 300;
 export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
   props: Many2oneLazyInputProps,
 ) => {
-  const { value, onChange, ooui } = props;
+  const { value, onChange, ooui, allowMultiSelect = false } = props;
   const {
     required,
     relation,
@@ -107,7 +113,7 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
   const [searchDomain, setSearchDomain] = useState<unknown[]>([]);
   const transformedDomain = useRef<unknown[]>([]);
   const hasLoadedInitial = useRef<boolean>(false);
-  const fetchedNameForId = useRef<number | undefined>(undefined);
+  const fetchedNamesForIds = useRef<Set<number>>(new Set());
 
   const widgetProps: Many2oneLazyWidgetProps = useMemo(
     () => ({
@@ -142,8 +148,29 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
     return result;
   }, [ooui.showMenu, disableArrowMenu]);
 
+  // Normalize value based on mode (single vs multi-select)
+  const normalizedMultiValue = useMemo((): Array<[number, string]> => {
+    if (!allowMultiSelect) return [];
+    if (value === undefined || value === null) return [];
+    // Check if it's already in multi format: [[id, name], ...]
+    if (
+      Array.isArray(value) &&
+      value.length > 0 &&
+      Array.isArray(value[0]) &&
+      typeof value[0][0] === "number"
+    ) {
+      return value as Array<[number, string]>;
+    }
+    // Single value format [id, name] - convert to multi format
+    if (Array.isArray(value) && typeof value[0] === "number") {
+      return [[value[0], value[1] as string]];
+    }
+    return [];
+  }, [value, allowMultiSelect]);
+
   // Handle both array format [id, name] and plain number format (from URL params)
-  const normalizedValue = useMemo(() => {
+  const normalizedSingleValue = useMemo((): [number, string] | undefined => {
+    if (allowMultiSelect) return undefined;
     if (value === undefined || value === null) {
       return undefined;
     }
@@ -151,11 +178,22 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
     if (typeof value === "number") {
       return [value, ""] as [number, string];
     }
-    return value;
-  }, [value]);
+    // Handle single value format [id, name]
+    if (Array.isArray(value) && typeof value[0] === "number") {
+      return value as [number, string];
+    }
+    return undefined;
+  }, [value, allowMultiSelect]);
 
-  const id = normalizedValue?.[0];
-  const text = normalizedValue?.[1] ?? "";
+  // Single mode: id and text from normalized value
+  const id = normalizedSingleValue?.[0];
+  const text = normalizedSingleValue?.[1] ?? "";
+
+  // Multi mode: array of selected ids for the Select component
+  const selectedIds = useMemo(
+    () => normalizedMultiValue.map((item) => item[0]),
+    [normalizedMultiValue],
+  );
 
   const [executeEvalDomain, cancelEvalDomain] = useNetworkRequest(
     ConnectionProvider.getHandler().evalDomain,
@@ -178,7 +216,15 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
   }, [cancelEvalDomain, cancelNameSearch, cancelNameGet]);
 
   const triggerChange = useCallback(
-    (changedValue: [number | undefined, string]) => {
+    (changedValue: Many2oneValue) => {
+      onChange?.(changedValue);
+      elementHasLostFocus?.();
+    },
+    [onChange, elementHasLostFocus],
+  );
+
+  const triggerMultiChange = useCallback(
+    (changedValue: Array<[number, string]>) => {
       onChange?.(changedValue);
       elementHasLostFocus?.();
     },
@@ -222,6 +268,14 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
 
   const performNameSearch = useCallback(
     async (searchValue: string) => {
+      // Guard: don't search if relation is not defined
+      if (!relation) {
+        console.warn(
+          "Many2oneLazy: Cannot perform name_search without relation",
+        );
+        return;
+      }
+
       setLoading(true);
       try {
         await parseDomain();
@@ -296,6 +350,12 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
 
   const fetchNameAndUpdate = useCallback(
     async (selectedId: number) => {
+      // Guard: don't fetch if relation is not defined
+      if (!relation) {
+        console.warn("Many2oneLazy: Cannot fetch name without relation");
+        return;
+      }
+
       setLoading(true);
       try {
         const result = await executeNameGet({
@@ -322,29 +382,157 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
     ],
   );
 
-  useDeepCompareEffect(() => {
-    if (id && !text && relation && fetchedNameForId.current !== id) {
-      fetchedNameForId.current = id;
-      const fetchName = async () => {
-        try {
-          const result = await executeNameGet({
-            action: "name_get",
-            payload: [id],
-            model: relation,
-            context: { ...getContext?.(), ...context },
-          });
-          if (result?.[0]?.[1]) {
-            onChange?.([id, result[0][1]]);
-          }
-        } catch {
-          // Silently fail - the ID is still valid for searching
-        }
-      };
-      fetchName();
-    }
-  }, [id, text, relation, context, getContext, onChange, executeNameGet]);
+  // Multi-select: fetch names for multiple IDs and update
+  const fetchNamesAndUpdate = useCallback(
+    async (
+      newIds: number[],
+      existingItems: Array<[number, string]>,
+    ): Promise<void> => {
+      if (newIds.length === 0) {
+        triggerMultiChange(existingItems);
+        return;
+      }
 
-  const handleChange = useCallback(
+      // Guard: don't fetch if relation is not defined
+      if (!relation) {
+        console.warn("Many2oneLazy: Cannot fetch names without relation");
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const result = await executeNameGet({
+          action: "name_get",
+          payload: newIds,
+          model: relation,
+          context: { ...getContext?.(), ...context },
+        });
+
+        // Build map of id -> name from response
+        const nameMap = new Map<number, string>();
+        result.forEach((item: [number, string]) => {
+          nameMap.set(item[0], item[1]);
+        });
+
+        // Create new items from fetched names
+        const newItems: Array<[number, string]> = newIds
+          .map((itemId) => {
+            const name = nameMap.get(itemId);
+            return name ? ([itemId, name] as [number, string]) : null;
+          })
+          .filter((item): item is [number, string] => item !== null);
+
+        // Combine existing items with new items
+        triggerMultiChange([...existingItems, ...newItems]);
+      } catch (err) {
+        showErrorNotification(err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [
+      relation,
+      context,
+      getContext,
+      triggerMultiChange,
+      showErrorNotification,
+      executeNameGet,
+    ],
+  );
+
+  // Single mode: fetch name for ID when text is missing
+  useDeepCompareEffect(() => {
+    if (!allowMultiSelect && id && !text && relation) {
+      if (!fetchedNamesForIds.current.has(id)) {
+        fetchedNamesForIds.current.add(id);
+        const fetchName = async () => {
+          try {
+            const result = await executeNameGet({
+              action: "name_get",
+              payload: [id],
+              model: relation,
+              context: { ...getContext?.(), ...context },
+            });
+            if (result?.[0]?.[1]) {
+              onChange?.([id, result[0][1]]);
+            }
+          } catch {
+            // Silently fail - the ID is still valid for searching
+          }
+        };
+        fetchName();
+      }
+    }
+  }, [
+    allowMultiSelect,
+    id,
+    text,
+    relation,
+    context,
+    getContext,
+    onChange,
+    executeNameGet,
+  ]);
+
+  // Multi mode: fetch names for IDs with missing names
+  useDeepCompareEffect(() => {
+    if (allowMultiSelect && relation && normalizedMultiValue.length > 0) {
+      const idsWithMissingNames = normalizedMultiValue
+        .filter(
+          ([itemId, name]) => !name && !fetchedNamesForIds.current.has(itemId),
+        )
+        .map(([itemId]) => itemId);
+
+      if (idsWithMissingNames.length > 0) {
+        idsWithMissingNames.forEach((itemId) =>
+          fetchedNamesForIds.current.add(itemId),
+        );
+
+        const fetchNames = async () => {
+          try {
+            const result = await executeNameGet({
+              action: "name_get",
+              payload: idsWithMissingNames,
+              model: relation,
+              context: { ...getContext?.(), ...context },
+            });
+
+            // Build map of id -> name from response
+            const nameMap = new Map<number, string>();
+            result.forEach((item: [number, string]) => {
+              nameMap.set(item[0], item[1]);
+            });
+
+            // Update existing items with fetched names
+            const updatedItems = normalizedMultiValue.map(
+              ([itemId, name]): [number, string] => {
+                if (!name && nameMap.has(itemId)) {
+                  return [itemId, nameMap.get(itemId)!];
+                }
+                return [itemId, name];
+              },
+            );
+
+            onChange?.(updatedItems);
+          } catch {
+            // Silently fail - IDs are still valid for searching
+          }
+        };
+        fetchNames();
+      }
+    }
+  }, [
+    allowMultiSelect,
+    normalizedMultiValue,
+    relation,
+    context,
+    getContext,
+    onChange,
+    executeNameGet,
+  ]);
+
+  // Single mode: handle value change
+  const handleSingleChange = useCallback(
     (selectedValue: number | undefined) => {
       if (selectedValue === undefined) {
         triggerChange([undefined, ""]);
@@ -356,16 +544,48 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
     [triggerChange, fetchNameAndUpdate, performNameSearch],
   );
 
+  // Multi mode: handle selection changes
+  const handleMultiChange = useCallback(
+    (selectedValues: number[]) => {
+      // Find which IDs are new (not in current selection)
+      const currentIds = new Set(
+        normalizedMultiValue.map(([itemId]) => itemId),
+      );
+      const newIds = selectedValues.filter((itemId) => !currentIds.has(itemId));
+
+      // Keep existing items that are still selected
+      const existingItems = normalizedMultiValue.filter(([itemId]) =>
+        selectedValues.includes(itemId),
+      );
+
+      // Fetch names for new IDs
+      void fetchNamesAndUpdate(newIds, existingItems);
+    },
+    [normalizedMultiValue, fetchNamesAndUpdate],
+  );
+
+  // Remove a single item in multi-select mode
+  const handleRemoveItem = useCallback(
+    (itemIdToRemove: number) => {
+      const updatedItems = normalizedMultiValue.filter(
+        ([itemId]) => itemId !== itemIdToRemove,
+      );
+      triggerMultiChange(updatedItems);
+    },
+    [normalizedMultiValue, triggerMultiChange],
+  );
+
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
-      if (event.code === "Backspace" && id !== undefined) {
+      // Only handle backspace clear in single mode
+      if (!allowMultiSelect && event.code === "Backspace" && id !== undefined) {
         event.preventDefault();
         event.stopPropagation();
         triggerChange([undefined, ""]);
         void performNameSearch("");
       }
     },
-    [id, triggerChange, performNameSearch],
+    [allowMultiSelect, id, triggerChange, performNameSearch],
   );
 
   const handleAdvancedSearchClick = useCallback(() => {
@@ -381,11 +601,26 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
   const handleSearchModalSelect = useCallback(
     async (ids: number[]) => {
       setShowSearchModal(false);
-      if (ids.length > 0) {
+      if (ids.length === 0) return;
+
+      if (allowMultiSelect) {
+        // Multi mode: add selected IDs to existing selection
+        const currentIds = new Set(
+          normalizedMultiValue.map(([itemId]) => itemId),
+        );
+        const newIds = ids.filter((itemId) => !currentIds.has(itemId));
+        void fetchNamesAndUpdate(newIds, normalizedMultiValue);
+      } else {
+        // Single mode: just select the first one
         await fetchNameAndUpdate(ids[0]);
       }
     },
-    [fetchNameAndUpdate],
+    [
+      allowMultiSelect,
+      normalizedMultiValue,
+      fetchNameAndUpdate,
+      fetchNamesAndUpdate,
+    ],
   );
 
   const handleSearchModalClose = useCallback(() => {
@@ -460,10 +695,44 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
     [text],
   );
 
+  // Tag renderer for multi-select mode
+  const tagRender = useCallback(
+    (tagProps: {
+      label: React.ReactNode;
+      value: number;
+      closable: boolean;
+      onClose: () => void;
+    }) => {
+      const { value: tagValue, closable, onClose } = tagProps;
+      // Find the name for this ID from normalizedMultiValue
+      const item = normalizedMultiValue.find(([itemId]) => itemId === tagValue);
+      const displayName = item?.[1] || `ID: ${tagValue}`;
+
+      const handleClose = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        handleRemoveItem(tagValue);
+        onClose();
+      };
+
+      return (
+        <SelectedTag>
+          <span>{displayName}</span>
+          {closable && !readOnly && (
+            <CloseButton onClick={handleClose}>
+              <CloseOutlined />
+            </CloseButton>
+          )}
+        </SelectedTag>
+      );
+    },
+    [normalizedMultiValue, handleRemoveItem, readOnly],
+  );
+
   const CustomSelect: typeof Select =
     required && !readOnly ? RequiredSelect : Select;
 
-  const shouldHideInput = !dropdownOpen && !!id;
+  const shouldHideInput = !allowMultiSelect && !dropdownOpen && !!id;
 
   return (
     <>
@@ -472,20 +741,26 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
           showSearch
           allowClear={false}
           open={dropdownOpen}
-          value={id}
+          mode={allowMultiSelect ? "multiple" : undefined}
+          value={allowMultiSelect ? selectedIds : id}
           loading={loading}
           disabled={readOnly}
           filterOption={false}
           onSearch={handleSearch}
-          onChange={handleChange}
+          onChange={
+            allowMultiSelect
+              ? (handleMultiChange as (value: unknown) => void)
+              : (handleSingleChange as (value: unknown) => void)
+          }
           onDropdownVisibleChange={handleDropdownVisibleChange}
           onKeyDown={handleKeyDown}
           dropdownRender={dropdownRender}
           notFoundContent={notFoundContent}
           options={options}
-          labelRender={labelRender}
+          labelRender={allowMultiSelect ? undefined : labelRender}
+          tagRender={allowMultiSelect ? tagRender : undefined}
           suffixIcon={
-            id && widgetProps.showOpen ? (
+            !allowMultiSelect && id && widgetProps.showOpen ? (
               <Many2oneSuffix
                 id={id}
                 model={relation}
@@ -495,11 +770,17 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
             ) : undefined
           }
         >
-          {id && text && (
+          {!allowMultiSelect && id && text && (
             <Select.Option key={id} value={id}>
               {text}
             </Select.Option>
           )}
+          {allowMultiSelect &&
+            normalizedMultiValue.map(([itemId, itemName]) => (
+              <Select.Option key={itemId} value={itemId}>
+                {itemName || `ID: ${itemId}`}
+              </Select.Option>
+            ))}
         </CustomSelect>
       </SelectWrapper>
       <SearchModal
@@ -570,5 +851,31 @@ const SelectWrapper = styled.div<{ $hideInput: boolean }>`
       caret-color: transparent !important;
       color: transparent !important;
     `}
+  }
+`;
+
+const SelectedTag = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background-color: ${mapToken.colorFillSecondary};
+  border-radius: ${mapToken.borderRadiusSM}px;
+  font-size: ${mapToken.fontSize}px;
+  line-height: 1.4;
+  margin: 2px 4px 2px 0;
+`;
+
+const CloseButton = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 10px;
+  color: ${mapToken.colorTextSecondary};
+  margin-left: 2px;
+
+  &:hover {
+    color: ${mapToken.colorText};
   }
 `;

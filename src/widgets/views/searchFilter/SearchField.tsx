@@ -28,16 +28,22 @@ export function SearchField(props: Props) {
   const { t } = useLocale();
 
   const widgetType = field.type;
-  // Check if the original widget prop specifies many2one_lazy
   const originalWidget = (field as any).raw_props?.widget;
+  const fieldType = (field as any).fieldType;
+  const m2oField = field as any;
+  const fieldRelation = m2oField.relation || m2oField.raw_props?.relation;
 
-  // Handle many2one_lazy before the switch (raw_props.widget has the original widget type)
-  if (originalWidget === "many2one_lazy") {
-    const m2oField = field as any;
+  // Only use lazy M2O if we have a relation to query
+  const shouldUseLazyM2o =
+    fieldRelation &&
+    (originalWidget === "many2one_lazy" ||
+      (originalWidget === "selection" && fieldType === "many2one"));
+
+  if (shouldUseLazyM2o) {
     const m2oOoui = new Many2oneOoui({
       name: field._id,
       string: field.label,
-      relation: m2oField.relation || m2oField.raw_props?.relation,
+      relation: fieldRelation,
       context: field.context,
       domain: field.domain,
     });
@@ -48,7 +54,7 @@ export function SearchField(props: Props) {
 
     return (
       <FieldWrapper ooui={m2oOoui} layout="vertical" showLabel>
-        <Many2oneLazyInput ooui={m2oOoui} />
+        <Many2oneLazyInput ooui={m2oOoui} allowMultiSelect />
       </FieldWrapper>
     );
   }

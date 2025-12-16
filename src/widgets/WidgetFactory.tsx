@@ -163,7 +163,12 @@ const createReactWidget = (props: any) => {
   const { ooui } = props;
   const { type }: { type: string } = ooui;
 
-  const widgetClass: any = getWidgetType(type);
+  let effectiveType = type;
+  if (type === "selection" && ooui.fieldType === "many2one") {
+    effectiveType = "many2one_lazy";
+  }
+
+  const widgetClass: any = getWidgetType(effectiveType);
 
   if (!widgetClass) {
     return null;
