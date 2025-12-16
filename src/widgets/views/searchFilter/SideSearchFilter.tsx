@@ -125,8 +125,20 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
       if (!searchFields) return;
 
       const rows = searchFields?.rows;
+      const rawFields = rows?.flatMap((row) => row) as Field[];
 
-      const fields = rows?.flatMap((row) => row) as Field[];
+      // Filter out invalid fields (undefined, null, or missing id/label)
+      const fields = rawFields?.filter((field) => {
+        const isValid =
+          field && field.id !== undefined && field.label !== undefined;
+        if (!isValid) {
+          console.error(
+            "[SideSearchFilter] Invalid field filtered out - field type may not be supported:",
+            field?.type,
+          );
+        }
+        return isValid;
+      });
 
       const currentValues = Object.keys(confirmedValues).reduce<
         Record<string, boolean>
