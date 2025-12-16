@@ -10,8 +10,11 @@ import {
   Char as CharOoui,
   SearchFieldTypes,
   Selection as SelectionOoui,
+  Many2one as Many2oneOoui,
 } from "@gisce/ooui";
 import { MultiSelection } from "@/widgets/base/MultiSelection";
+import { Many2oneLazyInput } from "@/widgets/base/many2one/Many2oneLazy";
+import FieldWrapper from "@/common/Field";
 
 type Props = {
   field: Field;
@@ -25,6 +28,30 @@ export function SearchField(props: Props) {
   const { t } = useLocale();
 
   const widgetType = field.type;
+  // Check if the original widget prop specifies many2one_lazy
+  const originalWidget = (field as any).raw_props?.widget;
+
+  // Handle many2one_lazy before the switch (raw_props.widget has the original widget type)
+  if (originalWidget === "many2one_lazy") {
+    const m2oField = field as any;
+    const m2oOoui = new Many2oneOoui({
+      name: field._id,
+      string: field.label,
+      relation: m2oField.relation || m2oField.raw_props?.relation,
+      context: field.context,
+      domain: field.domain,
+    });
+    m2oOoui.parsedWidgetProps = {
+      showCreate: false,
+      showAdvancedSearch: true,
+    };
+
+    return (
+      <FieldWrapper ooui={m2oOoui} layout="vertical" showLabel>
+        <Many2oneLazyInput ooui={m2oOoui} />
+      </FieldWrapper>
+    );
+  }
 
   switch (widgetType) {
     case SearchFieldTypes.boolean: {

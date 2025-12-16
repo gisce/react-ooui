@@ -285,10 +285,43 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
     const handleKeyPress = useCallback(
       (event: React.KeyboardEvent) => {
         if (event.key === "Enter") {
-          form.submit();
+          // Prevent form submission on Enter
+          event.preventDefault();
+
+          // Focus on the first visible filtered field
+          if (searchFields) {
+            const rows = searchFields?.rows;
+            const fields = rows?.flatMap((row) => row) as Field[];
+
+            // Sort fields alphabetically like they're displayed
+            const sortedFields = fields.sort((a, b) =>
+              normalizeString(a.label).localeCompare(normalizeString(b.label)),
+            );
+
+            // Find the first field that matches the search
+            const firstMatchingField = sortedFields.find(
+              (field) => !searchText || matchSearch(searchText, field),
+            );
+
+            if (firstMatchingField) {
+              const fieldContainerId = `field-container-${firstMatchingField.id}-bottom`;
+              const container = document.getElementById(fieldContainerId);
+              if (container) {
+                const input = container.querySelector(
+                  "input, .ant-select-selector",
+                );
+                if (input instanceof HTMLElement) {
+                  input.focus();
+                  if (input.classList.contains("ant-select-selector")) {
+                    input.click();
+                  }
+                }
+              }
+            }
+          }
         }
       },
-      [form],
+      [searchFields, searchText],
     );
 
     return (

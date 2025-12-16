@@ -39,6 +39,7 @@ import {
   Carousel,
   ColorPicker,
 } from "@/index";
+import { Many2oneLazy } from "./base/many2one/Many2oneLazy";
 import { Image } from "./base/Image";
 import { Icon } from "./base/Icon";
 import { FiberGrid } from "./custom/FiberGrid";
@@ -74,6 +75,8 @@ const getWidgetType = (type: string) => {
       return Selection;
     case "many2one":
       return Many2one;
+    case "many2one_lazy":
+      return Many2oneLazy;
     case "boolean":
       return Boolean;
     case "integer":
