@@ -140,8 +140,20 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
     return result;
   }, [ooui.showMenu, disableArrowMenu]);
 
-  const id = value?.[0];
-  const text = value?.[1] ?? "";
+  // Handle both array format [id, name] and plain number format (from URL params)
+  const normalizedValue = useMemo(() => {
+    if (value === undefined || value === null) {
+      return undefined;
+    }
+    // If value is a number (not an array), convert to [id, ""] format
+    if (typeof value === "number") {
+      return [value, ""] as [number, string];
+    }
+    return value;
+  }, [value]);
+
+  const id = normalizedValue?.[0];
+  const text = normalizedValue?.[1] ?? "";
 
   const [executeEvalDomain, cancelEvalDomain] = useNetworkRequest(
     ConnectionProvider.getHandler().evalDomain,
@@ -307,6 +319,28 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
       executeNameGet,
     ],
   );
+
+  useDeepCompareEffect(() => {
+    if (id && !text && relation && fetchedNameForId.current !== id) {
+      fetchedNameForId.current = id;
+      const fetchName = async () => {
+        try {
+          const result = await executeNameGet({
+            action: "name_get",
+            payload: [id],
+            model: relation,
+            context: { ...getContext?.(), ...context },
+          });
+          if (result?.[0]?.[1]) {
+            onChange?.([id, result[0][1]]);
+          }
+        } catch {
+          // Silently fail - the ID is still valid for searching
+        }
+      };
+      fetchName();
+    }
+  }, [id, text, relation, context, getContext, onChange, executeNameGet]);
 
   const handleChange = useCallback(
     (selectedValue: number | undefined) => {
