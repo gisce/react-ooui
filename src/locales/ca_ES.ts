@@ -161,4 +161,5 @@ export default {
   writeComment: "Escriu un comentari...",
   noComments: "No hi ha comentaris",
   noMatches: "Sense coincidències",
+  createNewRecord: "Crear un nou registre",
 };

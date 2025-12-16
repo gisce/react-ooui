@@ -158,4 +158,5 @@ export default {
   writeComment: "Write a comment...",
   noComments: "No comments",
   noMatches: "No matches",
+  createNewRecord: "Create a new record",
 };
