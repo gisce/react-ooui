@@ -268,14 +268,6 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
 
   const performNameSearch = useCallback(
     async (searchValue: string) => {
-      // Guard: don't search if relation is not defined
-      if (!relation) {
-        console.warn(
-          "Many2oneLazy: Cannot perform name_search without relation",
-        );
-        return;
-      }
-
       setLoading(true);
       try {
         await parseDomain();
@@ -350,12 +342,6 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
 
   const fetchNameAndUpdate = useCallback(
     async (selectedId: number) => {
-      // Guard: don't fetch if relation is not defined
-      if (!relation) {
-        console.warn("Many2oneLazy: Cannot fetch name without relation");
-        return;
-      }
-
       setLoading(true);
       try {
         const result = await executeNameGet({
@@ -390,12 +376,6 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
     ): Promise<void> => {
       if (newIds.length === 0) {
         triggerMultiChange(existingItems);
-        return;
-      }
-
-      // Guard: don't fetch if relation is not defined
-      if (!relation) {
-        console.warn("Many2oneLazy: Cannot fetch names without relation");
         return;
       }
 

@@ -50,6 +50,7 @@ import { ActionButtons } from "./custom/ActionButtons";
 import { QRCode } from "./custom/QRCode";
 import Card from "./containers/Card";
 import { createElement } from "react";
+import { Many2one as Many2oneOoui } from "@gisce/ooui";
 
 const getWidgetType = (type: string) => {
   switch (type) {
@@ -164,8 +165,23 @@ const createReactWidget = (props: any) => {
   const { type }: { type: string } = ooui;
 
   let effectiveType = type;
+  let effectiveOoui = ooui;
+
+  // When a Selection field has fieldType="many2one", render as Many2oneLazy
+  // but we need to create a proper Many2oneOoui with the relation property
   if (type === "selection" && ooui.fieldType === "many2one") {
     effectiveType = "many2one_lazy";
+    // Create a proper Many2oneOoui with relation from raw_props
+    effectiveOoui = new Many2oneOoui({
+      name: ooui._id,
+      string: ooui.label,
+      relation: ooui.relation || ooui.raw_props?.relation,
+      context: ooui.context,
+      domain: ooui.domain,
+      readOnly: ooui.readOnly,
+      required: ooui.required,
+    });
+    effectiveOoui.parsedWidgetProps = ooui.parsedWidgetProps;
   }
 
   const widgetClass: any = getWidgetType(effectiveType);
@@ -174,7 +190,7 @@ const createReactWidget = (props: any) => {
     return null;
   }
 
-  return createElement(widgetClass, props);
+  return createElement(widgetClass, { ...props, ooui });
 };
 
 export { createReactWidget };
