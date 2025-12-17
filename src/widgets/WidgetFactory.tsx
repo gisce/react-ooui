@@ -190,7 +190,7 @@ const createReactWidget = (props: any) => {
     return null;
   }
 
-  return createElement(widgetClass, { ...props, ooui });
+  return createElement(widgetClass, { ...props, ooui: effectiveOoui });
 };
 
 export { createReactWidget };
