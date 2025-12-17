@@ -247,6 +247,7 @@ const getTableItems = async (
           }
         } else if (
           widget instanceof Selection &&
+          widget.type === "selection" &&
           widget.fieldType === "many2one"
         ) {
           parsedItem[key] = item[key] &&
