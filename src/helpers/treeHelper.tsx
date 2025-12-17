@@ -51,7 +51,12 @@ const getTableColumns = (
 
     if (component) {
       render = (value: any) => {
-        return component({ value, key, ooui: column, context });
+        // For Selection widgets that are effectively many2one, hide the arrow menu
+        let effectiveOoui: any = column;
+        if (type === "selection" && fieldType === "many2one") {
+          effectiveOoui = { ...column, showMenu: false };
+        }
+        return component({ value, key, ooui: effectiveOoui, context });
       };
     } else {
       render = (value: any) => {
