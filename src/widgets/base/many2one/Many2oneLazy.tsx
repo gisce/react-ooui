@@ -8,6 +8,7 @@ import {
 } from "react";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { Select, Divider, Empty, Spin, theme } from "antd";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import { SearchOutlined, PlusOutlined, CloseOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import debounce from "lodash/debounce";
@@ -46,15 +47,17 @@ export const Many2oneLazy = (props: Props) => {
   const { required } = ooui;
 
   const validator = async (_: unknown, value: unknown) => {
-    if (!value) throw new Error();
-    if (!Array.isArray(value)) throw new Error();
-    if (Array.isArray(value) && !value[0]) throw new Error();
+    if (!value) throw new Error("This field is required");
+    if (!Array.isArray(value)) throw new Error("Invalid value format");
+    if (Array.isArray(value) && !value[0]) throw new Error("Please select a value");
   };
 
   return (
-    <Field required={required} type="array" validator={validator} {...props}>
-      <Many2oneLazyInput ooui={ooui} />
-    </Field>
+    <ErrorBoundary>
+      <Field required={required} type="array" validator={validator} {...props}>
+        <Many2oneLazyInput ooui={ooui} />
+      </Field>
+    </ErrorBoundary>
   );
 };
 
@@ -215,6 +218,11 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
     };
   }, [cancelEvalDomain, cancelNameSearch, cancelNameGet]);
 
+  // Clear the fetched names cache when value changes to prevent memory leaks
+  useEffect(() => {
+    fetchedNamesForIds.current.clear();
+  }, [allowMultiSelect ? normalizedMultiValue : normalizedSingleValue]);
+
   const triggerChange = useCallback(
     (changedValue: Many2oneValue) => {
       onChange?.(changedValue);
@@ -231,31 +239,34 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
     [onChange, elementHasLostFocus],
   );
 
-  const parseDomain = useCallback(async () => {
-    transformedDomain.current = [];
+  // Memoize the parsed domain to avoid re-parsing on every search
+  const parsedDomainMemo = useMemo(() => {
+    return async () => {
+      let result: unknown[] = [];
 
-    if (widgetDomain) {
-      transformedDomain.current = await executeEvalDomain({
-        domain: widgetDomain,
-        values: transformPlainMany2Ones({
+      if (widgetDomain) {
+        result = await executeEvalDomain({
+          domain: widgetDomain,
+          values: transformPlainMany2Ones({
+            fields: getFields?.() ?? {},
+            values: getAllHierarchyValues?.() ?? {},
+          }),
           fields: getFields?.() ?? {},
-          values: getAllHierarchyValues?.() ?? {},
-        }),
-        fields: getFields?.() ?? {},
-        context: getContext?.() ?? {},
-      });
-    }
+          context: getContext?.() ?? {},
+        });
+      }
 
-    if (domain && domain.length > 0) {
-      transformedDomain.current = transformedDomain.current.concat(
-        transformDomainForChildWidget({
-          domain,
-          widgetFieldName: fieldName,
-        }),
-      );
-    }
+      if (domain && domain.length > 0) {
+        result = result.concat(
+          transformDomainForChildWidget({
+            domain,
+            widgetFieldName: fieldName,
+          }),
+        );
+      }
 
-    setSearchDomain(transformedDomain.current);
+      return result;
+    };
   }, [
     widgetDomain,
     domain,
@@ -265,6 +276,11 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
     getAllHierarchyValues,
     executeEvalDomain,
   ]);
+
+  const parseDomain = useCallback(async () => {
+    transformedDomain.current = await parsedDomainMemo();
+    setSearchDomain(transformedDomain.current);
+  }, [parsedDomainMemo]);
 
   const performNameSearch = useCallback(
     async (searchValue: string) => {
