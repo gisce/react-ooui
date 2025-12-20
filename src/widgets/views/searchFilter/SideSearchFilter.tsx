@@ -125,8 +125,12 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
       if (!searchFields) return;
 
       const rows = searchFields?.rows;
+      const rawFields = rows?.flatMap((row) => row) as Field[];
 
-      const fields = rows?.flatMap((row) => row) as Field[];
+      // Filter out invalid fields (undefined, null, or missing id/label)
+      const fields = rawFields?.filter(
+        (field) => field && field.id !== undefined && field.label !== undefined,
+      );
 
       const currentValues = Object.keys(confirmedValues).reduce<
         Record<string, boolean>
