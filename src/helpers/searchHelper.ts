@@ -55,7 +55,11 @@ const optimizeEqualRangeParams = (params: any[]) => {
   return result;
 };
 
-export const getParamsForFields = (values: any, widgetContainer: any) => {
+export const getParamsForFields = (
+  values: any,
+  widgetContainer: any,
+  selectionToLazy?: boolean,
+) => {
   const filteredValues = removeUndefinedFields(values);
   const groupedDateTime = groupDateTimeValuesIfNeeded(filteredValues);
   const groupedValues = ungroupDateValuesIfNeeded(
@@ -65,7 +69,12 @@ export const getParamsForFields = (values: any, widgetContainer: any) => {
 
   const params = [
     ...Object.keys(groupedValues).map((key) => {
-      return getParamForField(key, groupedValues[key], widgetContainer);
+      return getParamForField(
+        key,
+        groupedValues[key],
+        widgetContainer,
+        selectionToLazy,
+      );
     }),
   ];
 
@@ -81,7 +90,12 @@ export const getParamsForFields = (values: any, widgetContainer: any) => {
   return optimizeEqualRangeParams(paramsForFields);
 };
 
-const getParamForField = (key: string, value: any, widgetContainer: any) => {
+const getParamForField = (
+  key: string,
+  value: any,
+  widgetContainer: any,
+  selectionToLazy?: boolean,
+) => {
   const filteredKey = key.split("#")[0];
   const field = widgetContainer.findById(filteredKey);
   const type = field?.type;
@@ -90,7 +104,9 @@ const getParamForField = (key: string, value: any, widgetContainer: any) => {
 
   const isLazyMany2one =
     originalWidget === "many2one_lazy" ||
-    (originalWidget === "selection" && fieldType === "many2one");
+    (selectionToLazy &&
+      originalWidget === "selection" &&
+      fieldType === "many2one");
 
   if (isLazyMany2one) {
     // Check if multi-select format: [[id, name], [id, name], ...]

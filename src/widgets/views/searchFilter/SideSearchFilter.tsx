@@ -36,6 +36,8 @@ import { FloatingDrawer } from "@/ui/FloatingDrawer";
 import deepEqual from "deep-equal";
 import { useSavedSearches } from "@/hooks/useSavedSearches";
 import { useActionViewContext } from "@/context/ActionViewContext";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
+import { UserFeatureKeys } from "@/models/userFeature";
 
 type SideSearchFilterBaseProps = {
   onSubmit: (values: any) => void;
@@ -464,6 +466,9 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
   } = props;
   const sfo = useRef<SearchFilterOoui>();
   const { t } = useLocale();
+  const selectionToLazy = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+  );
   const parsedSearchFieldsRef = useRef<Container>();
   const sideSearchFilterRef = useRef<SideSearchFilterRef>(null);
 
@@ -547,13 +552,14 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
       const newParams = getParamsForFields(
         internalSearchValues,
         sfo.current?._advancedSearchContainer,
+        selectionToLazy,
       );
       onSubmit({
         params: newParams,
         values: normalizeValues(internalSearchValues),
         closeSidebar: false,
       });
-    }, [onSubmit, internalSearchValues]),
+    }, [onSubmit, internalSearchValues, selectionToLazy]),
   });
 
   const wasOpenRef = useRef(false);
@@ -584,6 +590,7 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
               ? getParamsForFields(
                   searchValues,
                   sfo.current._advancedSearchContainer,
+                  selectionToLazy,
                 )
               : [];
           setInternalSearchParams(initialParams || []);
@@ -619,6 +626,7 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
       const newParams = getParamsForFields(
         values,
         sfo.current?._advancedSearchContainer,
+        selectionToLazy,
       );
       onSubmit({
         params: newParams,
@@ -626,7 +634,7 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
         closeSidebar,
       });
     },
-    [onSubmit],
+    [onSubmit, selectionToLazy],
   );
 
   const handleSubmit = useCallback(() => {
@@ -645,10 +653,11 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
       const newParams = getParamsForFields(
         values,
         sfo.current?._advancedSearchContainer,
+        selectionToLazy,
       );
       setInternalSearchParams(newParams);
     },
-    [internalSearchValues],
+    [internalSearchValues, selectionToLazy],
   );
 
   const handleClear = useDeepCompareCallback(

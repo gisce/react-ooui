@@ -15,6 +15,8 @@ import {
 import { MultiSelection } from "@/widgets/base/MultiSelection";
 import { Many2oneLazyInput } from "@/widgets/base/many2one/Many2oneLazy";
 import FieldWrapper from "@/common/Field";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
+import { UserFeatureKeys } from "@/models/userFeature";
 
 type Props = {
   field: Field;
@@ -26,6 +28,9 @@ export function SearchField(props: Props) {
   field.required = false;
 
   const { t } = useLocale();
+  const selectionToLazy = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+  );
 
   const widgetType = field.type;
   const originalWidget = (field as any).raw_props?.widget;
@@ -37,7 +42,9 @@ export function SearchField(props: Props) {
   const shouldUseLazyM2o =
     fieldRelation &&
     (originalWidget === "many2one_lazy" ||
-      (originalWidget === "selection" && fieldType === "many2one"));
+      (selectionToLazy &&
+        originalWidget === "selection" &&
+        fieldType === "many2one"));
 
   if (shouldUseLazyM2o) {
     const m2oOoui = new Many2oneOoui({

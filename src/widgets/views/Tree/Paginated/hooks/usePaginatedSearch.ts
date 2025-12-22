@@ -25,8 +25,12 @@ import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { getAttributesConditionsFromOoui } from "@/hooks/useTreeAttributesState";
 import { useTreeSharedHooks } from "@/hooks/useTreeSharedHooks";
 import { TreeType } from "@/views/actionViews/TreeActionView";
-import { useConfigContext } from "@/context/ConfigContext";
+import {
+  useConfigContext,
+  useUserFeatureIsEnabled,
+} from "@/context/ConfigContext";
 import { useTableAutoRefreshControl } from "@/hooks/useTableAutoRefreshControl";
+import { UserFeatureKeys } from "@/models/userFeature";
 export const DEFAULT_PAGE_SIZE = DEFAULT_SEARCH_LIMIT;
 
 export type PaginatedSearchProps = {
@@ -103,6 +107,9 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
 
   const { treeMaxLimit } = useConfigContext();
   const { setCurrentSavedSearch } = useActionViewContext();
+  const selectionToLazy = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+  );
   const limit = disablePagination ? 0 : Math.min(limitActionView, treeMaxLimit);
 
   // Local state
@@ -367,7 +374,12 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
         return;
       }
 
-      const preparedResults = await getTableItems(treeOoui, results, context);
+      const preparedResults = await getTableItems(
+        treeOoui,
+        results,
+        context,
+        selectionToLazy,
+      );
       updateAttributes?.(attrsEvaluated, treeOoui);
 
       setTreeIsLoading(false);
@@ -674,7 +686,12 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
         context,
       });
 
-      const preparedResults = await getTableItems(treeOoui!, children, context);
+      const preparedResults = await getTableItems(
+        treeOoui!,
+        children,
+        context,
+        selectionToLazy,
+      );
       const mergedResults = [...results, ...preparedResults];
 
       const conditions = getAttributesConditionsFromOoui({
