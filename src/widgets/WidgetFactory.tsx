@@ -161,7 +161,7 @@ const getWidgetType = (type: string) => {
 };
 
 const createReactWidget = (props: any) => {
-  const { ooui } = props;
+  const { ooui, selectionToLazy } = props;
   const { type }: { type: string } = ooui;
 
   let effectiveType = type;
@@ -169,7 +169,12 @@ const createReactWidget = (props: any) => {
 
   // When a Selection field has fieldType="many2one", render as Many2oneLazy
   // but we need to create a proper Many2oneOoui with the relation property
-  if (type === "selection" && ooui.fieldType === "many2one") {
+  // Only convert if the feature flag is enabled
+  if (
+    selectionToLazy &&
+    type === "selection" &&
+    ooui.fieldType === "many2one"
+  ) {
     effectiveType = "many2one_lazy";
     // Create a proper Many2oneOoui with relation from raw_props
     effectiveOoui = new Many2oneOoui({

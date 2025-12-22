@@ -32,8 +32,12 @@ import {
 import { SelectAllRecordsRow } from "@/common/SelectAllRecordsRow";
 import { COLUMN_COMPONENTS } from "./treeComponents";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
-import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import {
+  useFeatureIsEnabled,
+  useUserFeatureIsEnabled,
+} from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
+import { UserFeatureKeys } from "@/models/userFeature";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { dequal } from "dequal";
 
@@ -110,6 +114,9 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
     const many2oneSortEnabled = useFeatureIsEnabled(
       ErpFeatureKeys.FEATURE_MANY2ONE_SORT,
     );
+    const selectionToLazy = useUserFeatureIsEnabled(
+      UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+    );
 
     const columns = useMemo(() => {
       if (!treeOoui) {
@@ -123,8 +130,9 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
         },
         context,
         many2oneSortEnabled,
+        selectionToLazy,
       );
-    }, [treeOoui, context, many2oneSortEnabled]);
+    }, [treeOoui, context, many2oneSortEnabled, selectionToLazy]);
 
     useImperativeHandle(ref, () => ({
       unselectAll: () => {
@@ -152,7 +160,12 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
       errorInParseColors.current = false;
 
       const loadItems = async () => {
-        const items = await getTableItems(treeOoui, results, context);
+        const items = await getTableItems(
+          treeOoui,
+          results,
+          context,
+          selectionToLazy,
+        );
         setItems(items);
       };
 

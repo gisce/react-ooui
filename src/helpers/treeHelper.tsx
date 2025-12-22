@@ -34,6 +34,7 @@ const getTableColumns = (
   components: any,
   context: any,
   many2oneSortEnabled: boolean = false,
+  selectionToLazy?: boolean,
 ): Column[] => {
   const tableColumns = tree.columns.map((column) => {
     const type = column.type;
@@ -107,6 +108,7 @@ const getTableItems = async (
   treeOoui: TreeOoui,
   results: any[],
   context: any = {},
+  selectionToLazy?: boolean,
 ): Promise<any[]> => {
   // First pass: identify all tags and reference widgets and collect their data requirements
   const tagsRequests: Map<
