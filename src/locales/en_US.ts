@@ -132,6 +132,7 @@ export default {
   favouriteName: "Favourite name",
   saveFavourite: "Save favourite",
   enterFavouriteName: "Enter favourite name",
+  openInListView: "Open in list view",
   wip_limit: "Max cards per column",
   unlimited: "Unlimited",
   over_limit: "Over limit",
