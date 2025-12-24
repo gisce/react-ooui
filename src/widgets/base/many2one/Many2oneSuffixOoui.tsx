@@ -43,12 +43,14 @@ type Many2oneSuffixProps = {
   >;
   onItemClick?: (opts: Many2OneSuffixOnItemClickOpts) => void;
   onOpenChange?: (open: boolean) => void;
+  openOnly?: boolean;
 };
 
 export const Many2oneSuffixOoui = ({
   onRetrieveData,
   onItemClick,
   onOpenChange,
+  openOnly = false,
 }: Many2oneSuffixProps) => {
   const [actionModalVisible, setActionModalVisible] = useState<boolean>(false);
   const [printModalVisible, setPrintModalVisible] = useState<boolean>(false);
@@ -60,6 +62,21 @@ export const Many2oneSuffixOoui = ({
   }>();
 
   const fetchMenuItems = useCallback(async (): Promise<DropdownMenuGroup[]> => {
+    if (openOnly) {
+      return [
+        {
+          sticky: true,
+          items: [
+            {
+              id: "open",
+              name: t("open"),
+              icon: <ExportOutlined />,
+            },
+          ],
+        },
+      ];
+    }
+
     const {
       actionItems = [],
       relateItems = [],
@@ -99,7 +116,7 @@ export const Many2oneSuffixOoui = ({
         items: relateItems as DropdownMenuItem[],
       },
     ];
-  }, [t, onRetrieveData]);
+  }, [t, onRetrieveData, openOnly]);
 
   return (
     <Fragment>

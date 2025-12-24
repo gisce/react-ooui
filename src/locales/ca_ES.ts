@@ -136,4 +136,5 @@ export default {
   saveFavourite: "Desar preferit",
   enterFavouriteName: "Introdueix el nom del preferit",
   openInListView: "Obrir en vista de llista",
+  createNewRecord: "Crear un nou registre",
 };

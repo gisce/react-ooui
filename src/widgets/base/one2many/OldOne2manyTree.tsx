@@ -23,8 +23,12 @@ import {
   getKey,
 } from "@/helpers/o2m-columnStorageHelper";
 import { useLocale } from "@gisce/react-formiga-components";
-import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import {
+  useFeatureIsEnabled,
+  useUserFeatureIsEnabled,
+} from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
+import { UserFeatureKeys } from "@/models/userFeature";
 
 export type One2manyTreeProps = {
   items: One2manyItem[];
@@ -107,6 +111,9 @@ export const One2manyTree = ({
   const many2oneSortEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_MANY2ONE_SORT,
   );
+  const selectionToLazy = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+  );
 
   useDeepCompareEffect(() => {
     itemsRef.current = items;
@@ -139,6 +146,7 @@ export const One2manyTree = ({
           ooui,
           changedItemsWithValues,
           context,
+          selectionToLazy,
         );
 
         tableRef?.current?.updateRows(transformed);
@@ -159,8 +167,9 @@ export const One2manyTree = ({
       },
       context,
       many2oneSortEnabled,
+      selectionToLazy,
     );
-  }, [context, ooui, many2oneSortEnabled]);
+  }, [context, ooui, many2oneSortEnabled, selectionToLazy]);
 
   const onRequestData = useCallback(
     async ({

@@ -55,7 +55,11 @@ const optimizeEqualRangeParams = (params: any[]) => {
   return result;
 };
 
-export const getParamsForFields = (values: any, widgetContainer: any) => {
+export const getParamsForFields = (
+  values: any,
+  widgetContainer: any,
+  selectionToLazy?: boolean,
+) => {
   const filteredValues = removeUndefinedFields(values);
   const groupedDateTime = groupDateTimeValuesIfNeeded(filteredValues);
   const groupedValues = ungroupDateValuesIfNeeded(
@@ -65,7 +69,12 @@ export const getParamsForFields = (values: any, widgetContainer: any) => {
 
   const params = [
     ...Object.keys(groupedValues).map((key) => {
-      return getParamForField(key, groupedValues[key], widgetContainer);
+      return getParamForField(
+        key,
+        groupedValues[key],
+        widgetContainer,
+        selectionToLazy,
+      );
     }),
   ];
 
@@ -81,9 +90,39 @@ export const getParamsForFields = (values: any, widgetContainer: any) => {
   return optimizeEqualRangeParams(paramsForFields);
 };
 
-const getParamForField = (key: string, value: any, widgetContainer: any) => {
+const getParamForField = (
+  key: string,
+  value: any,
+  widgetContainer: any,
+  selectionToLazy?: boolean,
+) => {
   const filteredKey = key.split("#")[0];
-  const type = widgetContainer.findById(filteredKey)?.type;
+  const field = widgetContainer.findById(filteredKey);
+  const type = field?.type;
+  const originalWidget = field?.raw_props?.widget;
+  const fieldType = field?.fieldType;
+
+  const isLazyMany2one =
+    originalWidget === "many2one_lazy" ||
+    (selectionToLazy &&
+      originalWidget === "selection" &&
+      fieldType === "many2one");
+
+  if (isLazyMany2one) {
+    // Check if multi-select format: [[id, name], [id, name], ...]
+    if (
+      Array.isArray(value) &&
+      value.length > 0 &&
+      Array.isArray(value[0]) &&
+      typeof value[0][0] === "number"
+    ) {
+      const ids = value.map((item: [number, string]) => item[0]);
+      return [filteredKey, "in", ids];
+    }
+    // Single select: existing behavior
+    const id = Array.isArray(value) ? value[0] : value;
+    return [filteredKey, "=", id];
+  }
 
   if (
     type === "char" ||
@@ -319,6 +358,17 @@ export const convertParamsToValues = (params: any[], fields?: any) => {
           // For other operators (=, !=, etc.), just set the value
           acc[field] = value;
         }
+      } else if (
+        type === "many2one" &&
+        operator === "in" &&
+        Array.isArray(value)
+      ) {
+        // Multi-select lazy many2one: convert IDs to [[id, ""], ...] format
+        // Names will be fetched by the component
+        acc[field] = value.map((id: number) => [id, ""]);
+      } else if (type === "many2one" && operator === "=") {
+        // Single-select lazy many2one: convert to [id, ""] format
+        acc[field] = [value, ""];
       } else {
         // For other types, just set the value
         acc[field] = value;
