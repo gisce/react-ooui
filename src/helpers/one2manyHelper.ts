@@ -297,12 +297,14 @@ const mergeWithOtherItems = async ({
   otherItems,
   treeOoui,
   context,
+  selectionToLazy,
 }: {
   finalResultIds: number[];
   fetchedItems: One2manyItem[];
   otherItems: One2manyItem[];
   treeOoui: any;
   context: any;
+  selectionToLazy?: boolean;
 }) => {
   const transformedOtherItems = await Promise.all(
     otherItems.map(async (item) => {
@@ -311,6 +313,7 @@ const mergeWithOtherItems = async ({
           treeOoui,
           [item.treeValues],
           context,
+          selectionToLazy,
         );
         return transformed[0];
       }
@@ -363,6 +366,7 @@ const fetchAndPrepareData = async ({
   attrs,
   treeOoui,
   skipFunctionFields = false,
+  selectionToLazy,
 }: {
   relation: string;
   ids: number[];
@@ -371,6 +375,7 @@ const fetchAndPrepareData = async ({
   attrs: any;
   treeOoui: any;
   skipFunctionFields?: boolean;
+  selectionToLazy?: boolean;
 }) => {
   // Filter out negative/temporal IDs to avoid server requests
   const validIds = ids.filter((id) => id > 0);
@@ -390,6 +395,7 @@ const fetchAndPrepareData = async ({
         treeOoui,
         ids.map((id) => ({ id })),
         context,
+        selectionToLazy,
       ),
       colors: {},
       status: {},
@@ -417,7 +423,7 @@ const fetchAndPrepareData = async ({
   });
 
   return {
-    items: await getTableItems(treeOoui, allData, context),
+    items: await getTableItems(treeOoui, allData, context, selectionToLazy),
     colors: getColorMap(fetchedData[1] || {}),
     status: getStatusMap(fetchedData[1] || {}),
   };

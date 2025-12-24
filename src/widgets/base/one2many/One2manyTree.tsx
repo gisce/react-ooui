@@ -11,6 +11,8 @@ import { Tree as TreeOoui } from "@gisce/ooui";
 import { RefObject, useCallback, useMemo, useRef, useState } from "react";
 import { getSortedFieldsFromState, getTableItems } from "@/helpers/treeHelper";
 import { useDeepCompareEffect, useDeepCompareMemo } from "use-deep-compare";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
+import { UserFeatureKeys } from "@/models/userFeature";
 import { useSharedAggregates } from "./useTreeAggregates";
 import { Spin } from "antd";
 import {
@@ -102,6 +104,9 @@ export const One2manyTree = ({
   const internalGridRef = useRef<InfiniteTableRef | PaginatedTableRef>(null);
   const tableRef: RefObject<InfiniteTableRef | PaginatedTableRef> =
     gridRef || internalGridRef;
+  const selectionToLazy = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+  );
 
   const prevItemsValue = useRef<One2manyItem[]>();
   const itemsRef = useRef<One2manyItem[]>(items);
@@ -346,6 +351,7 @@ export const One2manyTree = ({
           ooui,
           changedItemsWithValues,
           context,
+          selectionToLazy,
         );
 
         tableRef?.current?.updateRows(transformed);
@@ -459,7 +465,7 @@ export const One2manyTree = ({
           context,
         });
 
-        return await getTableItems(ooui, children, context);
+        return await getTableItems(ooui, children, context, selectionToLazy);
       } catch (error) {
         console.error("Error fetching children:", error);
         return [];
