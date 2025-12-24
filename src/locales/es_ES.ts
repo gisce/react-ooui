@@ -137,4 +137,5 @@ export default {
   favouriteName: "Nombre del favorito",
   saveFavourite: "Guardar favorito",
   enterFavouriteName: "Introduce el nombre del favorito",
+  openInListView: "Abrir en vista de lista",
 };

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useRef } from "react";
+import { useCallback, useContext, useMemo, useRef } from "react";
 import { One2manyInputProps as One2manyInputBasePropsBase } from "./One2many.types";
 import {
   One2manyContext,
@@ -24,6 +24,7 @@ import "@gisce/react-formiga-table/style.css";
 import { Graph } from "@/widgets/views/Graph/Graph";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
+import { useTabs } from "@/context/TabManagerContext";
 
 const SUPPORTED_VIEWS = ["form", "tree", "graph"];
 
@@ -261,6 +262,37 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     UserFeatureKeys.FEATURE_ONE2MANY_ENABLE_NEW_TABLE,
   );
 
+  const { openAction } = useTabs();
+
+  const itemIds = useMemo(() => {
+    return items
+      .filter((item) => item.id !== undefined && item.id > 0)
+      .map((item) => item.id!);
+  }, [items]);
+
+  const canOpenInListView = useMemo(() => {
+    return itemIds.length > 0;
+  }, [itemIds]);
+
+  const handleOpenInListView = useCallback(() => {
+    if (!canOpenInListView) return;
+
+    openAction({
+      model: relation,
+      domain: [["id", "in", itemIds]],
+      context,
+      views: [
+        [views.get("tree")?.view_id, "tree"],
+        [views.get("form")?.view_id, "form"],
+      ],
+      title,
+      target: "current",
+      initialView: { type: "tree" },
+      action_id: -1,
+      action_type: "ir.actions.act_window",
+    });
+  }, [canOpenInListView, openAction, relation, itemIds, context, views, title]);
+
   return (
     <>
       <One2manyTopBar
@@ -290,6 +322,8 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
           fetchParentFormValues?.({ forceRefresh: true });
           gridRef.current?.refresh();
         }}
+        onOpenInListView={handleOpenInListView}
+        canOpenInListView={canOpenInListView}
       />
       {currentView === "tree" && views.get("tree") && (
         <One2manyTree
