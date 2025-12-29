@@ -9,6 +9,8 @@ import {
 import { useState, useCallback, useRef } from "react";
 import { ConnectionProvider, FormView, TreeView } from "..";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
+import { UserFeatureKeys } from "@/models/userFeature";
 
 type UseSearchOpts = {
   model: string;
@@ -64,6 +66,10 @@ export const useSearch = (opts: UseSearchOpts) => {
     setSearchValues,
     clearSelection,
   } = opts;
+
+  const selectionToLazy = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+  );
 
   const [tableRefreshing, setTableRefreshing] = useState<boolean>(false);
   const [searchFilterLoading, setSearchFilterLoading] =
@@ -389,9 +395,14 @@ export const useSearch = (opts: UseSearchOpts) => {
 
       setResults([...results, ...children]);
 
-      return await getTableItems(getTree(treeView!), children, context);
+      return await getTableItems(
+        getTree(treeView!),
+        children,
+        context,
+        selectionToLazy,
+      );
     },
-    [treeView, model, context, results, setResults],
+    [treeView, model, context, results, setResults, selectionToLazy],
   );
 
   const getAllIds = useCallback(async () => {

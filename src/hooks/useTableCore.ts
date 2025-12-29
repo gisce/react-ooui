@@ -7,8 +7,11 @@ import { useTreeColumnStorageFetch } from "@/widgets/base/one2many/useTreeColumn
 import { useDeepCompareMemo } from "use-deep-compare";
 import { getTableColumns } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "../widgets/views/Tree/treeComponents";
-import { useFeatureIsEnabled } from "@/context/ConfigContext";
-import { ErpFeatureKeys } from "..";
+import {
+  useFeatureIsEnabled,
+  useUserFeatureIsEnabled,
+} from "@/context/ConfigContext";
+import { ErpFeatureKeys, UserFeatureKeys } from "..";
 import { useTreeAttributesState } from "./useTreeAttributesState";
 
 export interface SharedTableColors {
@@ -65,6 +68,9 @@ export const useTableCore = ({
   const many2oneSortEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_MANY2ONE_SORT,
   );
+  const selectionToLazy = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+  );
 
   // Get table columns
   const columns = useDeepCompareMemo(() => {
@@ -74,8 +80,9 @@ export const useTableCore = ({
       { ...COLUMN_COMPONENTS },
       parentContext,
       many2oneSortEnabled,
+      selectionToLazy,
     );
-  }, [treeOoui, parentContext, many2oneSortEnabled]);
+  }, [treeOoui, parentContext, many2oneSortEnabled, selectionToLazy]);
 
   // Column state management (optional)
   const columnStateResult = useTreeColumnStorageFetch({

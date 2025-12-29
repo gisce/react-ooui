@@ -4,8 +4,11 @@ import { getTableColumns } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "../widgets/views/Tree/treeComponents";
 import { useMemo } from "react";
 import { useLocale } from "@gisce/react-formiga-components";
-import { useFeatureIsEnabled } from "@/context/ConfigContext";
-import { ErpFeatureKeys } from "..";
+import {
+  useFeatureIsEnabled,
+  useUserFeatureIsEnabled,
+} from "@/context/ConfigContext";
+import { ErpFeatureKeys, UserFeatureKeys } from "..";
 
 export const useTableConfiguration = (
   treeOoui: TreeOoui | undefined,
@@ -15,6 +18,9 @@ export const useTableConfiguration = (
   const many2oneSortEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_MANY2ONE_SORT,
   );
+  const selectionToLazy = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+  );
 
   const columns = useDeepCompareMemo(() => {
     if (!treeOoui) return undefined;
@@ -23,8 +29,9 @@ export const useTableConfiguration = (
       { ...COLUMN_COMPONENTS },
       parentContext,
       many2oneSortEnabled,
+      selectionToLazy,
     );
-  }, [treeOoui, parentContext, many2oneSortEnabled]);
+  }, [treeOoui, parentContext, many2oneSortEnabled, selectionToLazy]);
 
   const strings = useMemo(
     () => ({
