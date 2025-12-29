@@ -8,7 +8,12 @@ import {
 } from "react";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { Select, Divider, Empty, Spin, theme } from "antd";
-import { SearchOutlined, PlusOutlined, CloseOutlined } from "@ant-design/icons";
+import {
+  SearchOutlined,
+  PlusOutlined,
+  CloseOutlined,
+  CloseCircleFilled,
+} from "@ant-design/icons";
 import styled from "styled-components";
 import debounce from "lodash/debounce";
 import {
@@ -568,6 +573,16 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
     [allowMultiSelect, id, triggerChange, performNameSearch],
   );
 
+  const handleClear = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      triggerChange([undefined, ""]);
+      void performNameSearch("");
+    },
+    [triggerChange, performNameSearch],
+  );
+
   const handleAdvancedSearchClick = useCallback(() => {
     setDropdownOpen(false);
     setShowSearchModal(true);
@@ -740,13 +755,18 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
           labelRender={allowMultiSelect ? undefined : labelRender}
           tagRender={allowMultiSelect ? tagRender : undefined}
           suffixIcon={
-            !allowMultiSelect && id && widgetProps.showOpen ? (
-              <Many2oneSuffix
-                id={id}
-                model={relation}
-                context={{ ...getContext?.(), ...context }}
-                openOnly={!shouldShowMenu}
-              />
+            !allowMultiSelect && id ? (
+              <SuffixContainer>
+                {!readOnly && <ClearIcon onClick={handleClear} />}
+                {widgetProps.showOpen && (
+                  <Many2oneSuffix
+                    id={id}
+                    model={relation}
+                    context={{ ...getContext?.(), ...context }}
+                    openOnly={!shouldShowMenu}
+                  />
+                )}
+              </SuffixContainer>
             ) : undefined
           }
         >
@@ -857,5 +877,22 @@ const CloseButton = styled.span`
 
   &:hover {
     color: ${mapToken.colorText};
+  }
+`;
+
+const SuffixContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const ClearIcon = styled(CloseCircleFilled)`
+  color: ${mapToken.colorTextQuaternary};
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.2s;
+
+  &:hover {
+    color: ${mapToken.colorTextTertiary};
   }
 `;
