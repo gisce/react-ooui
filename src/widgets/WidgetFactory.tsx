@@ -39,6 +39,7 @@ import {
   Carousel,
   ColorPicker,
 } from "@/index";
+import { Many2oneLazy } from "./base/many2one/Many2oneLazy";
 import { Image } from "./base/Image";
 import { Icon } from "./base/Icon";
 import { FiberGrid } from "./custom/FiberGrid";
@@ -49,6 +50,7 @@ import { ActionButtons } from "./custom/ActionButtons";
 import { QRCode } from "./custom/QRCode";
 import Card from "./containers/Card";
 import { createElement } from "react";
+import { Many2one as Many2oneOoui } from "@gisce/ooui";
 
 const getWidgetType = (type: string) => {
   switch (type) {
@@ -74,6 +76,8 @@ const getWidgetType = (type: string) => {
       return Selection;
     case "many2one":
       return Many2one;
+    case "many2one_lazy":
+      return Many2oneLazy;
     case "boolean":
       return Boolean;
     case "integer":
@@ -157,16 +161,41 @@ const getWidgetType = (type: string) => {
 };
 
 const createReactWidget = (props: any) => {
-  const { ooui } = props;
+  const { ooui, selectionToLazy } = props;
   const { type }: { type: string } = ooui;
 
-  const widgetClass: any = getWidgetType(type);
+  let effectiveType = type;
+  let effectiveOoui = ooui;
+
+  // When a Selection field has fieldType="many2one", render as Many2oneLazy
+  // but we need to create a proper Many2oneOoui with the relation property
+  // Only convert if the feature flag is enabled
+  if (
+    selectionToLazy &&
+    type === "selection" &&
+    ooui.fieldType === "many2one"
+  ) {
+    effectiveType = "many2one_lazy";
+    // Create a proper Many2oneOoui with relation from raw_props
+    effectiveOoui = new Many2oneOoui({
+      name: ooui._id,
+      string: ooui.label,
+      relation: ooui.relation || ooui.raw_props?.relation,
+      context: ooui.context,
+      domain: ooui.domain,
+      readOnly: ooui.readOnly,
+      required: ooui.required,
+    });
+    effectiveOoui.parsedWidgetProps = ooui.parsedWidgetProps;
+  }
+
+  const widgetClass: any = getWidgetType(effectiveType);
 
   if (!widgetClass) {
     return null;
   }
 
-  return createElement(widgetClass, props);
+  return createElement(widgetClass, { ...props, ooui: effectiveOoui });
 };
 
 export { createReactWidget };
