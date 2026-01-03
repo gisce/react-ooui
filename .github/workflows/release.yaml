@@ -2,6 +2,7 @@ name: Release
 
 env:
   LIBRARY_NAME: "gisce/react-ooui"
+  NODE_VERSION: "24.12.0"
 
 on:
   push:
@@ -28,7 +29,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "24.12.0"
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -92,7 +93,7 @@ jobs:
             branch: ${{ needs.release.outputs.branch_name }}
     steps:
       - name: Call update version dependency flow for each project
-        uses: gisce/create-update-version-pr@v0.0.9
+        uses: gisce/create-update-version-pr@v0.0.10
         with:
           dependentProject: ${{ matrix.project }}
           tagName: ${{ needs.release.outputs.tag_name }}
@@ -100,6 +101,7 @@ jobs:
           libraryName: ${{ env.LIBRARY_NAME }}
           githubToken: ${{ secrets.GH_PAT }}
           releaseType: ${{ needs.release.outputs.release_type }}
+          nodeVersion: ${{ env.NODE_VERSION }}
 
   create-sync-prs:
     name: Create sync PRs
