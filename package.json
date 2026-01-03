@@ -1,10 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "2.118.0-alpha.1",
-  "engines": {
-    "node": "20.5.0"
-  },
-  "packageManager": "npm@9.8.0",
+  "version": "2.117.1",
   "publishConfig": {
     "access": "public"
   },
