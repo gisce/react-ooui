@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   release:
-    if: '!contains(github.event.head_commit.message, ''[skip ci]'')'
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     name: Release
     runs-on: ubuntu-latest
     outputs:
@@ -28,7 +28,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20.5.0'
+          node-version: "24.12.0"
 
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -108,7 +108,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: ['alpha', 'v2-develop']
+        target: ["alpha", "v2-develop"]
     steps:
       - name: Call create sync pr
         uses: gisce/create-sync-pr@v0.0.26
