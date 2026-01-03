@@ -42,7 +42,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@gisce/fiber-diagram": "2.2.0",
     "@gisce/ooui": "2.45.0-alpha.1",
-    "@gisce/react-formiga-components": "1.19.0",
+    "@gisce/react-formiga-components": "1.20.0-alpha.1",
     "@gisce/react-formiga-table": "1.17.0",
     "@monaco-editor/react": "^4.4.5",
     "@tanstack/react-virtual": "^3.13.12",
