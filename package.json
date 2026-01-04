@@ -45,6 +45,7 @@
     "@types/deep-equal": "^1.0.4",
     "antd": "5.29.3",
     "buffer": "^6.0.3",
+    "deep-equal": "^2.2.3",
     "file-type-buffer-browser": "git+ssh://git@github.com/mguellsegarra/file-type-buffer-browser.git",
     "focus-trap-react": "^11.0.3",
     "framer-motion": "^11.5.5",
