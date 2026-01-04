@@ -546,7 +546,6 @@ export const One2manyTree = ({
       onSelectionCheckboxClicked={onSelectionCheckboxClicked}
       totalRows={totalRows}
       footer={footerComponent}
-      isLoading={false}
       hasStatusColumn={ooui.status !== null}
       statusComponent={statusComponent}
       onRowStatus={onRowStatus}
