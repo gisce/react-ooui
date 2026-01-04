@@ -76,8 +76,8 @@ const ContentRootProvider = (
   ref: any,
 ): any => {
   const { children, globalValues = {} } = props;
-  const reportInProgressInterval = useRef<any>();
-  const waitingForReport = useRef<boolean>();
+  const reportInProgressInterval = useRef<any>(null);
+  const waitingForReport = useRef<boolean | undefined>(undefined);
   const [reportGenerating, setReportGenerating] = useState<boolean>(false);
   const tabManagerContext = useContext(
     TabManagerContext,

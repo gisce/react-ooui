@@ -75,7 +75,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
   const [searchText, setSearchText] = useState<string>();
   const searchButtonTappedRef = useRef<boolean>(false);
   const [inputText, setInputText] = useState<string>("");
-  const inputTextRef = useRef<string>();
+  const inputTextRef = useRef<string | undefined>(undefined);
   const formContext = useContext(FormContext) as FormContextType;
   const {
     domain,

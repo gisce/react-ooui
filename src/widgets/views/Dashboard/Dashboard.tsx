@@ -42,8 +42,8 @@ function Dashboard(props: DashboardProps, ref: any) {
     moveItemsEnabled,
   } = useContext(DashboardActionContext) as DashboardActionContextType;
 
-  const itemsFields = useRef<any>();
-  const boardFields = useRef<any>();
+  const itemsFields = useRef<any>(null);
+  const boardFields = useRef<any>(null);
   const [getView] = useNetworkRequest(ConnectionProvider.getHandler().getView);
   const [readObjects] = useNetworkRequest(
     ConnectionProvider.getHandler().readObjects,

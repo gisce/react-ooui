@@ -34,7 +34,7 @@ export const FloatTimeInput: React.FC<FloatTimeInputProps> = (
     required && !readOnly
       ? { backgroundColor: token.colorPrimaryBg }
       : undefined;
-  const inputTextRef = useRef<string>();
+  const inputTextRef = useRef<string | undefined>(undefined);
   const [inputText, setInputText] = useState<string>();
   const formContext = useContext(FormContext) as FormContextType;
   const { elementHasLostFocus } = formContext || {};

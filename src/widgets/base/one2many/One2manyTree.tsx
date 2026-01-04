@@ -53,7 +53,7 @@ export type One2manyTreeProps = {
     status: { [key: number]: string };
   }>;
   onRowSelectionChange: (selectedIds: number[]) => void;
-  gridRef?: React.RefObject<InfiniteTableRef>;
+  gridRef?: React.RefObject<InfiniteTableRef | null>;
   relation: string;
   onChangeFirstVisibleRowIndex?: (index: number) => void;
   onGetFirstVisibleRowIndex?: () => number | undefined;
@@ -101,14 +101,16 @@ export const One2manyTree = ({
   treeType,
   onChangeTreeType,
 }: One2manyTreeProps) => {
-  const internalGridRef = useRef<InfiniteTableRef | PaginatedTableRef>(null);
-  const tableRef: RefObject<InfiniteTableRef | PaginatedTableRef> =
+  const internalGridRef = useRef<InfiniteTableRef | PaginatedTableRef | null>(
+    null,
+  );
+  const tableRef: RefObject<InfiniteTableRef | PaginatedTableRef | null> =
     gridRef || internalGridRef;
   const selectionToLazy = useUserFeatureIsEnabled(
     UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
   );
 
-  const prevItemsValue = useRef<One2manyItem[]>();
+  const prevItemsValue = useRef<One2manyItem[] | undefined>(undefined);
   const itemsRef = useRef<One2manyItem[]>(items);
 
   // Shared state for both modes

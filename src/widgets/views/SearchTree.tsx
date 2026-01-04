@@ -80,7 +80,7 @@ function SearchTree(props: Props, ref: any) {
 
   const [searchFilterHeight, setSearchFilterHeight] = useState<number>(200);
 
-  const expandableClickActionData = useRef<any>();
+  const expandableClickActionData = useRef<any>(null);
 
   const { height } = useWindowDimensions();
 

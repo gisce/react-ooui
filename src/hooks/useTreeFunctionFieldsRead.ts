@@ -19,7 +19,7 @@ const AUTOREFRESH_INTERVAL_SECONDS = 0.5 * 1000;
 type UseTreeFunctionFieldsReadProps = {
   model: string;
   treeView?: TreeView;
-  tableRef: React.RefObject<InfiniteTableRef | PaginatedTableRef>;
+  tableRef: React.RefObject<InfiniteTableRef | PaginatedTableRef | null>;
   context?: any;
   isActive?: boolean;
   onResultsUpdated?: (updatedResults: any[]) => void;

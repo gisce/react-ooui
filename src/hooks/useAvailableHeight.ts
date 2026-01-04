@@ -5,7 +5,7 @@ export const useAvailableHeight = <T extends HTMLElement>({
   offset = 0,
   dependencies = [],
 }: {
-  elementRef: RefObject<T>;
+  elementRef: RefObject<T | null>;
   offset?: number;
   dependencies?: React.DependencyList;
 }): number => {

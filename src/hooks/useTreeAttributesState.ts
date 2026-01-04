@@ -6,7 +6,7 @@ import { InfiniteTableRef } from "@gisce/react-formiga-table";
 export function useTreeAttributesState({
   tableRef,
 }: {
-  tableRef?: React.RefObject<InfiniteTableRef>;
+  tableRef?: React.RefObject<InfiniteTableRef | null>;
 } = {}) {
   const colorsForResults = useRef<{ [key: number]: string }>({});
   const statusForResults = useRef<{ [key: number]: string }>({});

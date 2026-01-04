@@ -55,7 +55,7 @@ function SearchFilter(props: Props) {
   const [simpleSearchFields, setSimpleSearchFields] = useState<Container>();
   const [advancedSearchFields, setAdvancedSearchFields] = useState<Container>();
   const [advancedFilter, setAdvancedFilter] = useState(false);
-  const sfo = useRef<SearchFilterOoui>();
+  const sfo = useRef<SearchFilterOoui | undefined>(undefined);
   const { token } = useToken();
   const selectionToLazy = useUserFeatureIsEnabled(
     UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,

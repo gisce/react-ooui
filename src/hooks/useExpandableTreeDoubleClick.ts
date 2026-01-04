@@ -16,7 +16,7 @@ export const useExpandableTreeDoubleClick = ({
   currentModel: string;
   parentContext: any;
 }) => {
-  const expandableClickActionData = useRef<any>();
+  const expandableClickActionData = useRef<any>(null);
   const contentRootContext = useContext(
     ContentRootContext,
   ) as ContentRootContextType;

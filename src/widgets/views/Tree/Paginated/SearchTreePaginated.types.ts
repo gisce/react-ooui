@@ -70,7 +70,7 @@ export type PaginatedTableContentProps = {
   refresh: () => void;
   actionViewSortState?: any;
   onSortChange: (state: any) => void;
-  tableRef: RefObject<PaginatedTableRef>;
+  tableRef: RefObject<PaginatedTableRef | null>;
   onChangeTreeType?: (type: TreeType) => void;
   onFetchChildrenForRecord?: (item: any) => Promise<any[]>;
   childField?: string;

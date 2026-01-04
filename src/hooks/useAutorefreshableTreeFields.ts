@@ -16,7 +16,7 @@ import { UserFeatureKeys } from "@/models/userFeature";
 const AUTOREFRESH_INTERVAL_SECONDS = 3 * 1000;
 
 export type UseAutorefreshableTreeFieldsOpts = {
-  tableRef: React.RefObject<InfiniteTableRef | PaginatedTableRef>;
+  tableRef: React.RefObject<InfiniteTableRef | PaginatedTableRef | null>;
   model: string;
   context: any;
   autorefreshableFields?: string[];

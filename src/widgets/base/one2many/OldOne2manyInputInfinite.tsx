@@ -72,7 +72,7 @@ export const One2manyInput: React.FC<One2manyInputInfiniteProps> = (
     getContext,
     fetchValues: fetchParentFormValues,
   } = formContext || {};
-  const formRef = useRef<any>();
+  const formRef = useRef<any>(null);
 
   const showToggleButton = views.size > 1;
   const showCreateButton = views.get("form")?.fields !== undefined;

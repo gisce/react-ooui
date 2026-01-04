@@ -16,7 +16,7 @@ export type DashboardActionViewProps = {
 
 export const DashboardActionView = (props: DashboardActionViewProps) => {
   const { dashboardData, visible } = props;
-  const dashboardRef = useRef();
+  const dashboardRef = useRef(null);
   const tabManagerContext = useContext(
     TabManagerContext,
   ) as TabManagerContextType;

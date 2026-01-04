@@ -62,7 +62,7 @@ function RootView(props: RootViewProps, ref: any) {
     },
   ]);
   const tabViewsCloseFunctions = useRef(new Map<string, any>());
-  const contentRootProvider = useRef();
+  const contentRootProvider = useRef(null);
 
   useImperativeHandle(ref, () => ({
     retrieveAndOpenAction,

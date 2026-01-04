@@ -40,7 +40,7 @@ export type PaginatedSearchProps = {
   model: string;
   rootTree?: boolean;
   nameSearchProps?: string;
-  tableRef: React.RefObject<PaginatedTableRef>;
+  tableRef: React.RefObject<PaginatedTableRef | null>;
   domain?: any;
   context?: any;
   filterType?: "side" | "top";
@@ -124,7 +124,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   const prevNameSearch = useRef(nameSearch);
   const prevSearchParamsRef = useRef(searchParams);
   const prevSearchVisibleRef = useRef(searchVisible);
-  const currentSearchParamsString = useRef<string>();
+  const currentSearchParamsString = useRef<string | undefined>(undefined);
   const lastAssignedResults = useRef<any[]>([]);
   const fetchInProgress = useRef<boolean>(false);
 

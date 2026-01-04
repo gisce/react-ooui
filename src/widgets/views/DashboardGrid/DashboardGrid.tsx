@@ -9,23 +9,14 @@ const ResponsiveReactGridLayout = WidthProvider(Responsive);
 export const DashboardGrid = (props: DashboardGridProps) => {
   const { children = [], onPositionItemsChanged } = props;
 
-  const items = React.Children.map(
-    children,
-    (
-      child:
-        | boolean
-        | React.ReactChild
-        | React.ReactFragment
-        | React.ReactPortal,
-    ) => {
-      const { parms, id } = (child as any).props;
-      return (
-        <div key={id} data-grid={parms}>
-          {child}
-        </div>
-      );
-    },
-  );
+  const items = React.Children.map(children, (child: React.ReactNode) => {
+    const { parms, id } = (child as any).props;
+    return (
+      <div key={id} data-grid={parms}>
+        {child}
+      </div>
+    );
+  });
 
   return (
     <ResponsiveReactGridLayout

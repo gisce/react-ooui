@@ -464,12 +464,12 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
     currentModel,
     context,
   } = props;
-  const sfo = useRef<SearchFilterOoui>();
+  const sfo = useRef<SearchFilterOoui | undefined>(undefined);
   const { t } = useLocale();
   const selectionToLazy = useUserFeatureIsEnabled(
     UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
   );
-  const parsedSearchFieldsRef = useRef<Container>();
+  const parsedSearchFieldsRef = useRef<Container | undefined>(undefined);
   const sideSearchFilterRef = useRef<SideSearchFilterRef>(null);
 
   // Get global context to sync initially

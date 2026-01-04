@@ -11,7 +11,7 @@ import {
 export type UseTreeSharedHooksProps = {
   model: string;
   treeView?: TreeView;
-  tableRef: React.RefObject<InfiniteTableRef | PaginatedTableRef>;
+  tableRef: React.RefObject<InfiniteTableRef | PaginatedTableRef | null>;
   context?: any;
   isActive?: boolean;
   treeOoui?: TreeOoui;

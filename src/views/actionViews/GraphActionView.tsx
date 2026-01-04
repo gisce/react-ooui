@@ -45,7 +45,7 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     treeView,
     graphView,
   } = props;
-  const graphRef = useRef();
+  const graphRef = useRef(null);
   const readForViewEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_READFORVIEW,
   );

@@ -106,9 +106,9 @@ const One2manyInputLegacy: React.FC<One2manyInputProps> = (
     useState<boolean>(false);
   const [transformedDomain, setTransformedDomain] = useState<any[]>([]);
   const [sorter, setSorter] = useState<any>();
-  const originalSortItemIds = useRef<number[]>();
+  const originalSortItemIds = useRef<number[] | undefined>(undefined);
   const [colorsForResults, setColorsForResults] = useState<any>(undefined);
-  const formRef = useRef<any>();
+  const formRef = useRef<any>(null);
 
   const {
     readOnly,
@@ -122,7 +122,7 @@ const One2manyInputLegacy: React.FC<One2manyInputProps> = (
     (item) =>
       (item.values || item.treeValues) && item.operation !== "pendingRemove",
   );
-  const previousCurrentView = useRef<ViewType>();
+  const previousCurrentView = useRef<ViewType | undefined>(undefined);
 
   useEffect(() => {
     if (previousCurrentView.current !== currentView) {

@@ -120,8 +120,8 @@ function ActionView(props: Props, ref: any) {
     enabled: !!model,
   });
 
-  const formRef = useRef();
-  const searchTreeRef = useRef();
+  const formRef = useRef(null);
+  const searchTreeRef = useRef(null);
 
   const tabManagerContext = useContext(
     TabManagerContext,

@@ -106,7 +106,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     fixedHeight,
     autoRefresh,
   } = props;
-  const tableRef: RefObject<InfiniteTableRef> = useRef(null);
+  const tableRef = useRef<InfiniteTableRef | null>(null);
   const selectionToLazy = useUserFeatureIsEnabled(
     UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
   );
@@ -115,10 +115,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const { showErrorNotification } = useErrorNotification();
   const { setCurrentSavedSearch } = useActionViewContext();
 
-  const [totalRows, setTotalRows] = useState<number | null>();
+  const [totalRows, setTotalRows] = useState<number | null>(null);
   const [nameSearchFetchCompleted, setNameSearchFetchCompleted] =
     useState<boolean>(false);
-  const prevTotalRows = useRef<number | null>();
+  const prevTotalRows = useRef<number | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const calculatedHeight = useAvailableHeight({
@@ -183,8 +183,8 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const prevNameSearch = useRef(nameSearch);
   const isNameSearchMode = useRef(false);
 
-  const currentSearchParamsString = useRef<string>();
-  const prevSortOrder = useRef<string>();
+  const currentSearchParamsString = useRef<string | undefined>(undefined);
+  const prevSortOrder = useRef<string | undefined>(undefined);
   const isUpdatingTotalRows = useRef<boolean>(false);
   const prevNameSearchForTotalRows = useRef(nameSearch);
   const manualRefreshJustCalled = useRef<boolean>(false);

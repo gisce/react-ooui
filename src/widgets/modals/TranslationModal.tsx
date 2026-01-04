@@ -39,7 +39,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [valuesForLangs, setValuesForLangs] = useState<ValuesForLangs>({});
 
-  const originalValuesForLangs = useRef<ValuesForLangs>();
+  const originalValuesForLangs = useRef<ValuesForLangs | undefined>(undefined);
   const { showErrorNotification } = useErrorNotification();
 
   useEffect(() => {

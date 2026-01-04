@@ -149,7 +149,7 @@ function Form(props: FormProps, ref: any) {
   const [defaultGetCalled, setDefaultGetCalled] = useState<boolean>(false);
   const [refreshCounter, setRefreshCounter] = useState<number>(0);
 
-  const createdId = useRef<number>();
+  const createdId = useRef<number | undefined>(undefined);
   const originalFormValues = useRef<any>({});
   const lastAssignedValues = useRef<any>({});
   const defaultGetValues = useRef<any>({});

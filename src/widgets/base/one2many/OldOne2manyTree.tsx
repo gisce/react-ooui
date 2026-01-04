@@ -53,7 +53,7 @@ export type One2manyTreeProps = {
     status: { [key: number]: string };
   }>;
   onRowSelectionChange: (selectedIds: number[]) => void;
-  gridRef?: React.RefObject<InfiniteTableRef>;
+  gridRef?: React.RefObject<InfiniteTableRef | null>;
   relation: string;
   onChangeFirstVisibleRowIndex?: (index: number) => void;
   onGetFirstVisibleRowIndex?: () => number | undefined;
@@ -98,13 +98,16 @@ export const One2manyTree = ({
   selectedRowKeys = [],
   showPointerCursorInRows = true,
 }: One2manyTreeProps) => {
-  const internalGridRef = useRef<InfiniteTableRef>();
-  const tableRef: RefObject<InfiniteTableRef> = gridRef! || internalGridRef!;
+  const internalGridRef = useRef<InfiniteTableRef | null>(null);
+  const tableRef: RefObject<InfiniteTableRef | null> =
+    gridRef! || internalGridRef!;
 
   const colorsForResults = useRef<{ [key: number]: string }>({});
-  const statusForResults = useRef<{ [key: number]: string }>();
+  const statusForResults = useRef<{ [key: number]: string } | undefined>(
+    undefined,
+  );
 
-  const prevItemsValue = useRef<One2manyItem[]>();
+  const prevItemsValue = useRef<One2manyItem[] | undefined>(undefined);
   const itemsRef = useRef<One2manyItem[]>(items);
   const { t } = useLocale();
 

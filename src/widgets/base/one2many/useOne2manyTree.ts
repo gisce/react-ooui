@@ -23,7 +23,7 @@ export const useOne2manyTree = ({
   relation: string;
   context: any;
   allRowsIds: number[];
-  gridRef: React.RefObject<InfiniteTableRef>;
+  gridRef: React.RefObject<InfiniteTableRef | null>;
 }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<any>([]);
   const firstVisibleRowIndex = useRef(0);

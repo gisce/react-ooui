@@ -7,7 +7,7 @@ import { useActionViewContext } from "@/context/ActionViewContext";
 import { useBrowserVisibility } from "./useBrowserVisibility";
 
 export type UseAutoRefreshControlProps = {
-  tableRef: RefObject<InfiniteTableRef | PaginatedTableRef>;
+  tableRef: RefObject<InfiniteTableRef | PaginatedTableRef | null>;
   autoRefresh?: number;
 };
 

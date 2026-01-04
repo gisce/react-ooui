@@ -62,7 +62,7 @@ function SearchTreePaginatedComp(props: SearchTreePaginatedProps, ref: any) {
   } = props;
 
   // Refs
-  const tableRef: RefObject<PaginatedTableRef> = useRef(null);
+  const tableRef = useRef<PaginatedTableRef | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const onRowClickedRef = useCallbackRef(onRowClicked);
   const { treeMaxLimit } = useConfigContext();
