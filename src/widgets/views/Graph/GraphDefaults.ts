@@ -1,15 +1,5 @@
 import dayjs from "@/helpers/dayjs";
 
-const formatter = (graphType: "pie" | "default" | "barGrouped") => {
-  return (object: any) => {
-    const formattedValue = object.value.toLocaleString("es-ES", {
-      useGrouping: true,
-    });
-    const name = graphType === "pie" ? object.x : object.type;
-    return { name, value: formattedValue };
-  };
-};
-
 const axisFormatter = (value: any) => {
   if (typeof value === "string" && stringIsValidNumeric(value)) {
     return parseFloat(value).toLocaleString("es-ES", {
@@ -43,74 +33,103 @@ export const isNumber = (value: any) => {
 
 const DefaultGraphOptions = {
   default: {
-    padding: "auto",
-    xAxis: {
-      tickCount: 5,
-      label: {
-        formatter: axisFormatter,
+    autoFit: true,
+    axis: {
+      x: {
+        tickCount: 5,
+        labelFormatter: axisFormatter,
       },
-    },
-    yAxis: {
-      label: {
-        formatter: axisFormatter,
+      y: {
+        labelFormatter: axisFormatter,
       },
     },
     legend: {
-      maxWidthRatio: 0.5,
-      maxItemWidth: 1000,
+      color: {
+        maxWidth: 0.5,
+        itemWidth: 1000,
+      },
     },
     tooltip: {
-      formatter: formatter("default"),
+      items: [
+        {
+          channel: "y",
+          valueFormatter: (value: any) => {
+            if (isNumber(value)) {
+              return value.toLocaleString("es-ES", { useGrouping: true });
+            }
+            return value;
+          },
+        },
+      ],
     },
   },
   pie: {
     autoFit: true,
-    appendPadding: 10,
+    inset: 10,
     radius: 0.9,
-    label: null,
+    label: false,
     legend: {
-      maxWidthRatio: 0.5,
-      maxItemWidth: 1000,
+      color: {
+        position: "right",
+        // Simplified config - pagination doesn't work in @ant-design/plots v2
+        // Just constrain width to prevent 2-column layout
+        maxWidth: 280,
+        rowPadding: 4,
+        itemMarkerSize: 8,
+      },
     },
     tooltip: {
-      formatter: formatter("pie"),
+      title: (d: any) => d.x, // Show category name as tooltip title
+      items: [
+        {
+          channel: "y",
+          valueFormatter: (value: any) => {
+            if (isNumber(value)) {
+              return value.toLocaleString("es-ES", { useGrouping: true });
+            }
+            return value;
+          },
+        },
+      ],
     },
-    interactions: [
-      {
-        type: "element-active",
-      },
-    ],
+    interaction: {
+      elementHighlight: true,
+    },
   },
   barGrouped: {
-    isGroup: true,
+    group: true,
     legend: {
-      maxWidthRatio: 0.5,
-      maxItemWidth: 1000,
-    },
-    tooltip: {
-      formatter: formatter("barGrouped"),
-    },
-    xAxis: {
-      label: {
-        formatter: axisFormatter,
+      color: {
+        maxWidth: 0.5,
+        itemWidth: 1000,
       },
     },
-    yAxis: {
-      label: {
-        formatter: axisFormatter,
+    tooltip: {
+      items: [
+        {
+          channel: "y",
+          valueFormatter: (value: any) => {
+            if (isNumber(value)) {
+              return value.toLocaleString("es-ES", { useGrouping: true });
+            }
+            return value;
+          },
+        },
+      ],
+    },
+    axis: {
+      x: {
+        labelFormatter: axisFormatter,
+      },
+      y: {
+        labelFormatter: axisFormatter,
       },
     },
     label: {
-      position: "middle",
-      layout: [
+      position: "inside",
+      transform: [
         {
-          type: "interval-adjust-position",
-        },
-        {
-          type: "interval-hide-overlap",
-        },
-        {
-          type: "adjust-color",
+          type: "overlapDodgeY",
         },
       ],
     },
@@ -163,8 +182,7 @@ function getDateType(dateString: string): string | null {
 export const PieLabelOptions = {
   inner: {
     label: {
-      type: "inner",
-      offset: "-30%",
+      position: "inside",
       style: {
         fontSize: 12,
         textAlign: "center",
@@ -173,8 +191,8 @@ export const PieLabelOptions = {
   },
   spider: {
     label: {
-      type: "spider",
-      labelHeight: 28,
+      position: "spider",
+      transform: [{ type: "overlapDodgeY" }],
     },
   },
 };

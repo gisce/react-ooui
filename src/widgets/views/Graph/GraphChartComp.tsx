@@ -82,22 +82,24 @@ export const GraphChartComp = ({
     if (piePercents === undefined) {
       return undefined;
     }
-    return {
-      formatter: (_: unknown, item: any) => {
-        return getPercentValueForX(item.id);
-      },
+    // v2 API: itemValueFormatter receives (datum, index, data)
+    return (datum: any) => {
+      return getPercentValueForX(datum.x);
     };
   }, [getPercentValueForX, piePercents]);
 
   const pieLabelFormatter = useCallback(
-    ({ percent, x }: { percent: number; x: string }) => {
+    // v2 API: label.text receives (datum, index, data)
+    (datum: any) => {
+      const total = data.reduce((acc: number, obj: any) => acc + obj.value, 0);
+      const percent = total > 0 ? datum.value / total : 0;
       // Hide labels for percents lower than 0.07
       if (percent < 0.07) {
         return "";
       }
-      return getPercentValueForX(x);
+      return getPercentValueForX(datum.x);
     },
-    [getPercentValueForX],
+    [getPercentValueForX, data],
   );
 
   const Chart = (types as any)[type!];
@@ -111,6 +113,7 @@ export const GraphChartComp = ({
       isStack,
       pieItemValueFormatter,
       pieLabelFormatter,
+      piePercents,
       yAxisOpts,
       fixedHeight,
     });
@@ -122,6 +125,7 @@ export const GraphChartComp = ({
     isStack,
     pieItemValueFormatter,
     pieLabelFormatter,
+    piePercents,
     yAxisOpts,
     fixedHeight,
   ]);
@@ -169,6 +173,7 @@ type GetGraphPropsType = GraphCompProps & {
   height?: number;
   pieItemValueFormatter?: any;
   pieLabelFormatter?: any;
+  piePercents?: Array<{ x: string; percent: number }>;
   fixedHeight?: number;
 };
 
@@ -180,6 +185,7 @@ function getGraphProps(props: GetGraphPropsType) {
     isStack,
     pieItemValueFormatter,
     pieLabelFormatter,
+    piePercents,
     yAxisOpts = { mode: "default" },
     fixedHeight,
   } = props;
@@ -196,48 +202,99 @@ function getGraphProps(props: GetGraphPropsType) {
     graphProps.colorField = "x";
     graphProps.angleField = "value";
 
-    graphProps = { ...graphProps, ...PieLabelOptions.inner };
+    // v2 API: Configure legend with position, percentages inline, and pagination
+    const getPercentForX = (x: string) => {
+      if (!piePercents) return "";
+      const found = piePercents.find((p) => p.x === x);
+      return found ? `${found.percent}%` : "";
+    };
 
-    graphProps.legend.itemValue = pieItemValueFormatter;
-    graphProps.label.content = pieLabelFormatter;
+    graphProps.legend = {
+      color: {
+        ...(graphProps.legend?.color || {}),
+        // G2 v5 / @antv/component: Use itemLabelText to show name + percentage INLINE
+        itemLabelText: (datum: any) => {
+          // Handle various datum structures from G2 v5 legend
+          const label =
+            datum?.label ??
+            datum?.id ??
+            datum?.name ??
+            datum?.value ??
+            String(datum);
+          const percent = getPercentForX(String(label));
+          return percent ? `${label} ${percent}` : String(label);
+        },
+      },
+    };
+
+    // v2 API: Update label with text function
+    graphProps.label = {
+      ...PieLabelOptions.inner.label,
+      text: pieLabelFormatter,
+    };
   } else {
+    // v2 API: Use colorField instead of seriesField
     graphProps.xField = "x";
     graphProps.yField = "value";
-    graphProps.seriesField = "type";
+    graphProps.colorField = "type";
 
-    graphProps.isGroup = isGroup;
+    // v2 API: Use group instead of isGroup
+    graphProps.group = isGroup;
 
     if (isStack) {
-      graphProps.isStack = true;
-      graphProps.groupField = "stacked";
-      graphProps.tooltip = {
-        fields: ["type", "value", "x"],
-        formatter: (datum: any) => {
-          const formattedValue = datum.value.toLocaleString("es-ES", {
-            useGrouping: true,
-          });
-          return {
-            name: datum.type,
-            value: formattedValue,
-          };
-        },
-        customItems: (originalItems: any[]) => {
-          if (originalItems.length === 0) return originalItems;
-          const xValue = originalItems[0].data.x;
-          const total = data
-            .filter((item) => item.x === xValue)
-            .reduce((acc, item) => acc + item.value, 0);
-          const totalFormatted = total.toLocaleString("es-ES", {
-            useGrouping: true,
-          });
-          return [
-            ...originalItems,
-            {
-              name: "Total",
-              value: totalFormatted,
-              color: "transparent",
-            },
-          ];
+      // v2 API: Use stack instead of isStack, groupField is handled automatically
+      graphProps.stack = true;
+
+      // v2 API: tooltip configuration with custom render for totals
+      graphProps.interaction = {
+        ...(graphProps.interaction || {}),
+        tooltip: {
+          render: (
+            _: any,
+            { title, items }: { title: string; items: any[] },
+          ) => {
+            if (items.length === 0) return null;
+
+            // Calculate total for this x value
+            const xValue = title;
+            const total = data
+              .filter((item) => item.x === xValue)
+              .reduce((acc, item) => acc + item.value, 0);
+            const totalFormatted = total.toLocaleString("es-ES", {
+              useGrouping: true,
+            });
+
+            // Build HTML for tooltip
+            const itemsHtml = items
+              .map(
+                (item) =>
+                  `<div style="display: flex; justify-content: space-between; gap: 8px;">
+                    <span style="display: flex; align-items: center; gap: 4px;">
+                      <span style="width: 8px; height: 8px; border-radius: 50%; background: ${
+                        item.color
+                      };"></span>
+                      ${item.name}
+                    </span>
+                    <span>${
+                      typeof item.value === "number"
+                        ? item.value.toLocaleString("es-ES", {
+                            useGrouping: true,
+                          })
+                        : item.value
+                    }</span>
+                  </div>`,
+              )
+              .join("");
+
+            return `<div style="padding: 8px;">
+              <div style="font-weight: bold; margin-bottom: 8px;">${title}</div>
+              ${itemsHtml}
+              <div style="border-top: 1px solid #ccc; margin-top: 8px; padding-top: 8px; display: flex; justify-content: space-between;">
+                <span>Total</span>
+                <span>${totalFormatted}</span>
+              </div>
+            </div>`;
+          },
         },
       };
     }
@@ -246,9 +303,12 @@ function getGraphProps(props: GetGraphPropsType) {
   if (type === "line" && yAxisOpts.mode === "auto" && yAxisOpts.valueOpts) {
     const min = yAxisOpts.valueOpts.min;
     const max = yAxisOpts.valueOpts.max;
-    graphProps.yAxis = {
-      min,
-      max,
+    // v2 API: Use scale.y.domain instead of yAxis.min/max
+    graphProps.scale = {
+      ...(graphProps.scale || {}),
+      y: {
+        domain: [min, max],
+      },
     };
   }
 

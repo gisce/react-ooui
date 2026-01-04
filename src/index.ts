@@ -53,6 +53,10 @@ import { HTMLPreview } from "@/widgets/custom/HTMLPreview";
 import { Alert } from "@/widgets/custom/Alert";
 import { DashboardGrid } from "@/widgets/views/DashboardGrid";
 import { GraphIndicator } from "@/widgets/views/Graph/GraphIndicator";
+import { GraphChartComp } from "@/widgets/views/Graph/GraphChartComp";
+import type { GraphCompProps } from "@/widgets/views/Graph/GraphChartComp";
+import { GraphIndicatorComp } from "@/widgets/views/Graph/GraphIndicatorComp";
+import type { GraphIndicatorCompProps } from "@/widgets/views/Graph/GraphIndicatorComp";
 import { Spinner } from "@/widgets/custom/Spinner";
 import { Carousel } from "@/widgets/custom/Carousel";
 import { ColorPicker } from "@/widgets/custom/ColorPicker";
@@ -180,6 +184,10 @@ export {
   Dashboard,
   GraphIndicator,
   GraphCard,
+  GraphChartComp,
+  GraphCompProps,
+  GraphIndicatorComp,
+  GraphIndicatorCompProps,
   DashboardGrid,
   Tags,
   Tag,
