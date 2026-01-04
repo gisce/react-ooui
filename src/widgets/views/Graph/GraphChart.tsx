@@ -5,6 +5,7 @@ import { useDeepCompareEffect } from "use-deep-compare";
 import { GraphChartComp } from "./GraphChartComp";
 import { CenteredSpinner } from "@/ui/CenteredSpinner";
 import { GraphChart as GraphChartOoui } from "@gisce/ooui";
+import { ChartEngine } from "./engines";
 
 export type GraphChartProps = {
   model: string;
@@ -14,6 +15,7 @@ export type GraphChartProps = {
   limit?: number;
   manualIds?: number[];
   fixedHeight?: number;
+  engine?: ChartEngine;
 };
 
 export const GraphChart = ({
@@ -24,6 +26,7 @@ export const GraphChart = ({
   limit,
   manualIds,
   fixedHeight,
+  engine = "ant",
 }: GraphChartProps) => {
   const { t } = useLocale();
 
@@ -62,6 +65,7 @@ export const GraphChart = ({
       numItems={evaluatedEntries!.length}
       yAxisOpts={yAxisOpts}
       fixedHeight={fixedHeight}
+      engine={engine}
     />
   );
 };
