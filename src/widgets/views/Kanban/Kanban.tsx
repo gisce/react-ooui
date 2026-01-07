@@ -39,6 +39,7 @@ type KanbanProps = {
   onAddCardClick?: (column: ColumnDefinition) => void;
   onDragStart?: () => void;
   onOpenColumnInNewTab?: (domain: any[]) => void;
+  onSelectAllInColumn?: (columnId: string) => void;
 };
 
 export type KanbanRef = {
@@ -66,6 +67,7 @@ const KanbanComponentInner = (
     onAddCardClick,
     onDragStart,
     onOpenColumnInNewTab,
+    onSelectAllInColumn,
   } = props;
 
   const prevNameSearch = useRef(nameSearch);
@@ -261,6 +263,7 @@ const KanbanComponentInner = (
         onDragStart={onDragStart}
         onDragSuccess={handleDragSuccess}
         onOpenColumnInNewTab={onOpenColumnInNewTab}
+        onSelectAllInColumn={onSelectAllInColumn}
       />
     );
   }, [
@@ -287,6 +290,7 @@ const KanbanComponentInner = (
     onDragStart,
     handleDragSuccess,
     onOpenColumnInNewTab,
+    onSelectAllInColumn,
     t,
   ]);
 

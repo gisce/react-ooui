@@ -147,6 +147,7 @@ export default {
   error_parsing_kanban_view: "Error en parsejar la vista kanban",
   error_loading_kanban_data: "Error en carregar les dades kanban",
   add_card: "Afegir targeta",
+  select_all_cards: "Seleccionar totes les targetes",
   open_column_in_new_tab: "Obrir columna en una nova pestanya",
   set_limit: "Establir límit",
   column: "Columna",

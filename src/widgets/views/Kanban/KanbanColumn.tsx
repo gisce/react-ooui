@@ -47,6 +47,7 @@ const IconArrowBarToLeft = getTablerIcon("IconArrowBarToLeft") as React.FC<any>;
 const IconArrowBarToRight = getTablerIcon(
   "IconArrowBarToRight",
 ) as React.FC<any>;
+const IconChecks = getTablerIcon("IconChecks") as React.FC<any>;
 
 export type KanbanColumnRef = {
   refresh: () => void;
@@ -88,6 +89,7 @@ type KanbanColumnProps = {
     targetColumnId: string,
     position: "before" | "after",
   ) => void;
+  onSelectAllInColumn?: (columnId: string) => void;
   isFirstColumn?: boolean;
   isLastColumn?: boolean;
   allColumns?: Array<{ id: string; label: string }>;
@@ -124,6 +126,7 @@ const KanbanColumnComponent = (
     onMoveLeft,
     onMoveRight,
     onMoveToPosition,
+    onSelectAllInColumn,
     isFirstColumn = false,
     isLastColumn = false,
     allColumns = [],
@@ -273,6 +276,12 @@ const KanbanColumnComponent = (
             icon: <IconListNumbers size={16} />,
             disabled: !allowSetMaxCards,
           },
+          {
+            key: "selectAllCards",
+            label: t("select_all_cards"),
+            icon: <IconChecks size={16} />,
+            disabled: records.length === 0,
+          },
         ],
       },
       {
@@ -314,7 +323,14 @@ const KanbanColumnComponent = (
         ],
       },
     ],
-    [t, allowSetMaxCards, isFirstColumn, isLastColumn, otherColumns],
+    [
+      t,
+      allowSetMaxCards,
+      isFirstColumn,
+      isLastColumn,
+      otherColumns,
+      records.length,
+    ],
   );
 
   const handleMenuClick: MenuProps["onClick"] = useCallback(
@@ -333,6 +349,8 @@ const KanbanColumnComponent = (
       } else if (key.startsWith("moveAfter_")) {
         const targetId = key.replace("moveAfter_", "");
         onMoveToPosition?.(targetId, "after");
+      } else if (key === "selectAllCards") {
+        onSelectAllInColumn?.(columnId);
       }
     },
     [
@@ -341,6 +359,8 @@ const KanbanColumnComponent = (
       onMoveLeft,
       onMoveRight,
       onMoveToPosition,
+      onSelectAllInColumn,
+      columnId,
     ],
   );
 

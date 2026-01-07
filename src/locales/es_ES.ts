@@ -149,6 +149,7 @@ export default {
   error_parsing_kanban_view: "Error al parsear la vista kanban",
   error_loading_kanban_data: "Error al cargar los datos kanban",
   add_card: "Añadir tarjeta",
+  select_all_cards: "Seleccionar todas las tarjetas",
   open_column_in_new_tab: "Abrir columna en nueva pestaña",
   set_limit: "Establecer límite",
   column: "Columna",

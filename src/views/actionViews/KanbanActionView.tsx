@@ -314,6 +314,24 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
     [model, context, availableViews, title, kanbanView, openAction],
   );
 
+  const selectedRowItemsRef = useRef(selectedRowItems);
+  selectedRowItemsRef.current = selectedRowItems;
+
+  const handleSelectAllInColumn = useCallback(
+    (columnId: string) => {
+      const columnRecordIds = columnRecordIdsRef.current[columnId] || [];
+      const currentSelectedIds = new Set(
+        (selectedRowItemsRef.current || []).map(
+          (item: { id: number }) => item.id,
+        ),
+      );
+      columnRecordIds.forEach((id) => currentSelectedIds.add(id));
+      const mergedItems = Array.from(currentSelectedIds).map((id) => ({ id }));
+      setSelectedRowItems?.(mergedItems);
+    },
+    [setSelectedRowItems],
+  );
+
   const formView = useMemo(
     () => availableViews.find((v) => v.type === "form") as FormView,
     [availableViews],
@@ -418,6 +436,7 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
           onAddCardClick={handleAddCard}
           onDragStart={clearSelection}
           onOpenColumnInNewTab={handleOpenColumnInNewTab}
+          onSelectAllInColumn={handleSelectAllInColumn}
         />
       </div>
       {formView && (

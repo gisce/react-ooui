@@ -88,6 +88,7 @@ type KanbanBoardProps = {
   onDragStart?: () => void;
   onDragSuccess?: (sourceColumnId: string, targetColumnId: string) => void;
   onOpenColumnInNewTab?: (domain: any[]) => void;
+  onSelectAllInColumn?: (columnId: string) => void;
 };
 
 const KanbanBoardComponent = (
@@ -115,6 +116,7 @@ const KanbanBoardComponent = (
     onDragStart: onDragStartProp,
     onDragSuccess,
     onOpenColumnInNewTab,
+    onSelectAllInColumn,
   } = props;
 
   const { t } = useLocale();
@@ -868,6 +870,7 @@ const KanbanBoardComponent = (
             onAddCardClick={columnAddCardCallbacks[column.id]}
             onRefreshAll={refreshAllColumns}
             onOpenColumnInNewTab={handleOpenColumnInNewTab}
+            onSelectAllInColumn={onSelectAllInColumn}
             onMoveLeft={columnMoveLeftCallbacks[column.id]}
             onMoveRight={columnMoveRightCallbacks[column.id]}
             onMoveToPosition={columnMoveToPositionCallbacks[column.id]}
