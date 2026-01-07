@@ -43,7 +43,7 @@ type Props = {
   disabled?: boolean;
   context: any;
   onApplySearch?: () => void;
-  onRefetchSavedSearches?: () => Promise<void>;
+  onRefetchSavedSearches?: () => Promise<any[]>;
   onClearSavedSearch?: () => void;
 };
 

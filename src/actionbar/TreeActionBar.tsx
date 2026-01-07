@@ -51,7 +51,7 @@ type Props = {
   treeExpandable: boolean;
   toolbar?: any;
   domain: any;
-  onRefetchSavedSearches?: () => Promise<void>;
+  onRefetchSavedSearches?: () => Promise<any[]>;
   onClearSavedSearch?: () => void;
 };
 

@@ -21,7 +21,7 @@ export type UseActionViewSavedSearchesParams = {
 };
 
 export type UseActionViewSavedSearchesReturn = {
-  fetchSavedSearches: () => Promise<void>;
+  fetchSavedSearches: () => Promise<any[]>;
   handleClearSavedSearch: () => void;
   handleOpenSidebar: () => void;
   subtitle: React.ReactNode;
@@ -60,11 +60,11 @@ export const useActionViewSavedSearches = ({
     ConnectionProvider.getHandler().readEvalUiObjects,
   );
 
-  const fetchSavedSearches = useCallback(async () => {
+  const fetchSavedSearches = useCallback(async (): Promise<any[]> => {
     if (!savedSearchesEnabled || !model) {
       setSavedSearches?.([]);
       setCurrentSavedSearch?.(null);
-      return;
+      return [];
     }
 
     try {
@@ -81,7 +81,7 @@ export const useActionViewSavedSearches = ({
       if (searchIds.length === 0) {
         setSavedSearches?.([]);
         setCurrentSavedSearch?.(null);
-        return;
+        return [];
       }
 
       const [searches] = await readObjectsRequest({
@@ -92,10 +92,12 @@ export const useActionViewSavedSearches = ({
       });
 
       setSavedSearches?.(searches);
+      return searches || [];
     } catch (error) {
       console.error("Error fetching saved searches:", error);
       setSavedSearches?.([]);
       setCurrentSavedSearch?.(null);
+      return [];
     }
   }, [
     savedSearchesEnabled,
