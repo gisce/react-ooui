@@ -7,7 +7,15 @@ import {
   useRef,
   useState,
 } from "react";
-import { Form, Button, Input, Space, Modal, Dropdown } from "antd";
+import {
+  Form,
+  Button,
+  Input,
+  Space,
+  Modal,
+  Dropdown,
+  type InputRef,
+} from "antd";
 import {
   useDeepCompareEffect,
   useDeepCompareCallback,
@@ -71,6 +79,7 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
     const [topSectionHeight, setTopSectionHeight] = useState(0);
     const topSectionRef = useRef<HTMLDivElement>(null);
     const [fieldAdditionOrder, setFieldAdditionOrder] = useState<string[]>([]);
+    const filterInputRef = useRef<InputRef>(null);
 
     useDeepCompareEffect(() => {
       form.setFieldsValue(searchValues);
@@ -291,11 +300,14 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
     const handleKeyPress = useCallback(
       (event: React.KeyboardEvent) => {
         if (event.key === "Enter") {
-          // Prevent form submission on Enter
-          event.preventDefault();
+          // Check if the filter input is currently focused
+          const isFilterInputFocused =
+            filterInputRef.current?.input === document.activeElement;
 
-          // Focus on the first visible filtered field
-          if (searchFields) {
+          if (isFilterInputFocused && searchFields) {
+            // Filter input is focused → focus on first matching field
+            event.preventDefault();
+
             const rows = searchFields?.rows;
             const fields = rows?.flatMap((row) => row) as Field[];
 
@@ -324,10 +336,14 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
                 }
               }
             }
+          } else {
+            // Filter input is NOT focused → submit the form
+            event.preventDefault();
+            form.submit();
           }
         }
       },
-      [searchFields, searchText],
+      [searchFields, searchText, form],
     );
 
     return (
@@ -396,17 +412,13 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
               }}
             >
               <Input
+                ref={filterInputRef}
                 placeholder={t("enterFieldToFilter")}
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 allowClear
                 prefix={<SearchOutlined />}
                 name={undefined}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                  }
-                }}
               />
             </div>
             <div
