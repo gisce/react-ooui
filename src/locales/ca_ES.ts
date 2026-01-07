@@ -160,4 +160,5 @@ export default {
   set_column_limit: "Establir límit de columna",
   column_limit: "Límit de columna",
   column_limit_description: "Un límit al nombre d'elements en una columna",
+  clearSelection: "Netejar selecció",
 };
