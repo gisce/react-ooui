@@ -160,4 +160,6 @@ export default {
   column_limit: "Límite de columna",
   column_limit_description:
     "Un límite en el número de elementos en una columna",
+  openInListView: "Abrir en vista de lista",
+  createNewRecord: "Crear un nuevo registro",
 };

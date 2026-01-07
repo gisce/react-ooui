@@ -11,6 +11,8 @@ import { Tree as TreeOoui } from "@gisce/ooui";
 import { getTableItems } from "@/helpers/treeHelper";
 import { TreeView } from "@/types/index";
 import { getAttributesConditionsFromOoui } from "./useTreeAttributesState";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
+import { UserFeatureKeys } from "@/models/userFeature";
 
 const AUTOREFRESH_INTERVAL_SECONDS = 0.5 * 1000;
 
@@ -43,6 +45,9 @@ export const useTreeFunctionFieldsRead = ({
   onExternalRecordsUpdate,
   skipFunctionFieldsHandling = false,
 }: UseTreeFunctionFieldsReadProps) => {
+  const selectionToLazy = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+  );
   const [hasFunctionFields, setHasFunctionFields] = useState(false);
   const functionFields = useRef<string[]>([]);
   const fields = treeView?.fields;
@@ -195,6 +200,7 @@ export const useTreeFunctionFieldsRead = ({
         treeOoui,
         functionResults,
         context,
+        selectionToLazy,
       );
 
       // Add the loaded ids to the loaded ids set, ensuring no duplicates by ID

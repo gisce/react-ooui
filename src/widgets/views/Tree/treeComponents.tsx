@@ -314,6 +314,7 @@ export const TagsComponent = ({
 export const COLUMN_COMPONENTS = {
   boolean: BooleanComponent,
   many2one: Many2OneComponent,
+  many2one_lazy: Many2OneComponent,
   text: TextComponent,
   one2many: One2ManyComponent,
   many2many: One2ManyComponent,

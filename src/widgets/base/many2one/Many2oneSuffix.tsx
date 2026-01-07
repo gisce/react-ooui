@@ -25,10 +25,11 @@ type Props = {
   id: number;
   model: string;
   context?: any;
+  openOnly?: boolean;
 };
 
 export const Many2oneSuffix = (props: Props) => {
-  const { id, model, context = {} } = props;
+  const { id, model, context = {}, openOnly } = props;
   const [formView, setFormView] = useState<FormView>();
   const [targetValues, setTargetValues] = useState<any>();
 
@@ -197,6 +198,7 @@ export const Many2oneSuffix = (props: Props) => {
           cancelRequests();
         }
       }}
+      openOnly={openOnly}
     />
   );
 };

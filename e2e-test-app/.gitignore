@@ -6,3 +6,4 @@ playwright/.cache/
 e2e/screenshots/
 node_modules/
 *.png
+build
