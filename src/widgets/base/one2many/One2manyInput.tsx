@@ -162,11 +162,14 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     context,
     relation,
     formView: views.get("form"),
+    onAfterSubmit: () => {
+      gridRef.current?.refresh();
+    },
   });
 
   const {
     showSearchModal,
-    onSelectSearchValues,
+    onSelectSearchValues: onSelectSearchValuesBase,
     onCloseSearchModal,
     searchItem,
   } = useOne2manySearchModal({
@@ -179,6 +182,17 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     relation,
   });
 
+  const onSelectSearchValues = useCallback(
+    async (ids: number[]) => {
+      await onSelectSearchValuesBase(ids);
+      // Defer refresh to next tick to ensure modal transition is complete
+      setTimeout(() => {
+        gridRef.current?.refresh();
+      }, 0);
+    },
+    [onSelectSearchValuesBase],
+  );
+
   const { showRemoveConfirm } = useOne2manyRemove({
     isMany2many,
     items,
@@ -186,6 +200,9 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     setFormHasChanges,
     selectedRowKeys,
     setSelectedRowKeys,
+    onAfterRemove: () => {
+      gridRef.current?.refresh();
+    },
   });
 
   const toggleViewMode = () => {
