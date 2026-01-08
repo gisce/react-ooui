@@ -28,12 +28,45 @@ export const EmailTags = (props: EmailTagsProps) => {
 interface EmailTagsRenderProps {
   emails: string[] | string;
   handleClose?: (email: string) => void;
+  showCopyIcon?: boolean;
 }
 
 export const EmailTagsRender: React.FC<EmailTagsRenderProps> = ({
   emails,
   handleClose,
+  showCopyIcon = false,
 }) => {
+  const { token } = theme.useToken();
+  const { t } = useLocale();
+  const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
+
+  const handleCopySingleEmail = useCallback(
+    (email: string, e: React.MouseEvent) => {
+      e.stopPropagation();
+      try {
+        const tempInput = document.createElement("textarea");
+        tempInput.value = email;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        tempInput.setSelectionRange(0, 99999);
+        const successful = document.execCommand("copy");
+        document.body.removeChild(tempInput);
+
+        if (successful) {
+          setCopiedEmail(email);
+          message.success(t("emailsCopiedToClipboard"));
+          setTimeout(() => setCopiedEmail(null), 2000);
+        } else {
+          throw new Error("Copy command was unsuccessful.");
+        }
+      } catch (err) {
+        console.error("Error copying to clipboard:", err);
+        message.error(t("errorCopyingToClipboard"));
+      }
+    },
+    [t],
+  );
+
   if (!emails) {
     return null;
   }
@@ -53,8 +86,41 @@ export const EmailTagsRender: React.FC<EmailTagsRenderProps> = ({
               : "error"
           }
           onClose={() => handleClose && handleClose(email)}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: token.sizeXXS,
+          }}
         >
           {email}
+          {showCopyIcon && (
+            <span
+              onClick={(e) => handleCopySingleEmail(email, e)}
+              style={{
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                marginLeft: token.sizeXXS,
+              }}
+              title={t("copyToClipboard")}
+            >
+              {copiedEmail === email ? (
+                <CheckOutlined
+                  style={{
+                    fontSize: token.fontSizeSM,
+                    color: token.colorSuccess,
+                  }}
+                />
+              ) : (
+                <CopyOutlined
+                  style={{
+                    fontSize: token.fontSizeSM,
+                    color: token.colorTextSecondary,
+                  }}
+                />
+              )}
+            </span>
+          )}
         </Tag>
       ))}
     </>
@@ -232,6 +298,7 @@ export const EmailTagsInput: React.FC<EmailTagsInputProps> = ({
         <EmailTagsRender
           emails={emails}
           handleClose={!readonly ? handleClose : undefined}
+          showCopyIcon
         />
         <Input
           readOnly={readonly}
