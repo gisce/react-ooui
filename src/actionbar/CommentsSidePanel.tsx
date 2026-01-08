@@ -337,16 +337,19 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     });
   }, []);
 
-  // Find the first unread message ID
+  // Find the first unread message ID (oldest unread for scroll positioning)
   const firstUnreadMessageId = useMemo(() => {
-    if (!lastMessageRead || lastMessageRead === false) {
+    if (lastMessageRead === false || lastMessageRead === undefined) {
       return null;
     }
-    // Comments are displayed reversed, so we find from the original order
-    const unreadComment = comments.find(
+    // Comments from API are newest-first, but display is oldest-first (reversed)
+    // Find the oldest unread = smallest ID > lastMessageRead
+    const unreadComments = comments.filter(
       (c) => c.id > (lastMessageRead as number),
     );
-    return unreadComment?.id ?? null;
+    if (unreadComments.length === 0) return null;
+    // Last in the array is the oldest (smallest ID) since array is newest-first
+    return unreadComments[unreadComments.length - 1].id;
   }, [comments, lastMessageRead]);
 
   // Scroll to first unread message or bottom
@@ -365,9 +368,10 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
   // Mark all messages as read when scrolling completes or panel closes
   const markAllAsRead = useCallback(() => {
     if (!onMarkAsRead || comments.length === 0) return;
-    const lastComment = comments[comments.length - 1];
-    if (lastComment && lastComment.id !== lastMessageRead) {
-      onMarkAsRead(lastComment.id);
+    // Comments are ordered newest-first from API, so comments[0] is the newest
+    const newestComment = comments[0];
+    if (newestComment && newestComment.id !== lastMessageRead) {
+      onMarkAsRead(newestComment.id);
     }
   }, [onMarkAsRead, comments, lastMessageRead]);
 
