@@ -106,8 +106,8 @@ function SearchTree(props: Props, ref: any) {
     sorter = undefined,
     setSorter = undefined,
     setTotalItems: setActionViewTotalItems = undefined,
-    setSearchTreeNameSearch = undefined,
-    setTreeIsLoading = undefined,
+    setSearchNameSearch = undefined,
+    setViewIsLoading = undefined,
     searchValues = {},
     setSearchValues = undefined,
     limit = DEFAULT_SEARCH_LIMIT,
@@ -144,13 +144,13 @@ function SearchTree(props: Props, ref: any) {
     getAllIds,
   } = useSearch({
     model: currentModel!,
-    setSearchTreeNameSearch,
+    setSearchTreeNameSearch: setSearchNameSearch,
     setSelectedRowItems: changeSelectedRowKeys,
     setSearchParams,
     setSearchValues,
     searchParams,
     setSearchVisible,
-    setTreeIsLoading,
+    setTreeIsLoading: setViewIsLoading,
     nameSearch,
     searchNameGetDoneRef,
     context: parentContext,
@@ -193,14 +193,14 @@ function SearchTree(props: Props, ref: any) {
     setInitialFetchDone(false);
     setIsLoading(true);
     setInitialError(undefined);
-    setTreeIsLoading?.(true);
+    setViewIsLoading?.(true);
 
     try {
       await fetchModelData();
       setInitialFetchDone(true);
     } catch (error) {
       showErrorNotification(error);
-      setTreeIsLoading?.(false);
+      setViewIsLoading?.(false);
     } finally {
       setIsLoading(false);
     }
