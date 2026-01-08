@@ -15,6 +15,7 @@ interface FloatingDrawerProps {
   title?: React.ReactNode;
   footer?: React.ReactNode;
   headerButtons?: React.ReactNode;
+  width?: string | number;
 }
 
 export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
@@ -24,6 +25,7 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
   title,
   footer,
   headerButtons,
+  width = "500px",
 }) => {
   const [showDrawer, setShowDrawer] = useState(isOpen);
   const [hasModalOpen, setHasModalOpen] = useState(false);
@@ -141,7 +143,7 @@ export const FloatingDrawer: React.FC<FloatingDrawerProps> = ({
                 top: 0,
                 right: 0,
                 bottom: 0,
-                width: "500px",
+                width,
                 backgroundColor: "white",
                 boxShadow: "-2px 0 5px rgba(0, 0, 0, 0.1)",
                 zIndex: 1000,

@@ -27,4 +27,12 @@ export default defineConfig({
     host: true,
     strictPort: true,
   },
+  preview: {
+    port: 6006,
+  },
+  optimizeDeps: {
+    // Exclude the local linked package from Vite's dependency pre-bundling
+    // This prevents "Failed to resolve entry for package" errors in CI
+    exclude: ["@gisce/react-ooui"],
+  },
 });

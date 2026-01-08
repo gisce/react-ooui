@@ -1,18 +1,20 @@
 import { useLocale } from "@gisce/react-formiga-components";
 import { Row, Col, Spin, Typography } from "antd";
 import { ReactNode } from "react";
-const { Text } = Typography;
+const { Text, Link } = Typography;
 
 export type SearchTreeHeaderProps = {
   totalRows?: number | null;
   selectedRowKeys: number[];
   customMiddleComponent?: ReactNode;
+  onClearSelection?: () => void;
 };
 
 export const SearchTreeHeader = ({
   totalRows,
   selectedRowKeys,
   customMiddleComponent,
+  onClearSelection,
 }: SearchTreeHeaderProps) => {
   const { t } = useLocale();
 
@@ -27,7 +29,10 @@ export const SearchTreeHeader = ({
       style={{ height: 40, maxHeight: 40, overflow: "hidden" }}
     >
       <Col span={sideColSpan}>
-        <SearchTreeSelectionSummary selectedRowKeys={selectedRowKeys} />
+        <SearchTreeSelectionSummary
+          selectedRowKeys={selectedRowKeys}
+          onClearSelection={onClearSelection}
+        />
       </Col>
       {customMiddleComponent && (
         <Col span={middleColSpan} className="text-center">
@@ -50,15 +55,25 @@ export const SearchTreeHeader = ({
 
 const SearchTreeSelectionSummary = ({
   selectedRowKeys,
+  onClearSelection,
 }: {
   selectedRowKeys: number[];
+  onClearSelection?: () => void;
 }) => {
   const { t } = useLocale();
+
+  const clearSelectionLink = onClearSelection ? (
+    <>
+      {" "}
+      - <Link onClick={onClearSelection}>{t("clearSelection")}</Link>
+    </>
+  ) : null;
+
   if (selectedRowKeys.length === 1) {
     return (
       <>
         1 {t("selectedRegisters")} - (id:{" "}
-        <Text copyable>{selectedRowKeys[0]}</Text>)
+        <Text copyable>{selectedRowKeys[0]}</Text>){clearSelectionLink}
       </>
     );
   } else if (selectedRowKeys.length > 1) {
@@ -70,6 +85,7 @@ const SearchTreeSelectionSummary = ({
             text: selectedRowKeys.join(", "),
           }}
         ></Text>
+        {clearSelectionLink}
       </>
     );
   }
