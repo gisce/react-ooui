@@ -9,6 +9,7 @@ export type UserAvatarProps = Omit<AvatarProps, "children"> & {
 };
 
 const getInitials = (name: string): string => {
+  if (!name) return "?";
   return name
     .split(" ")
     .filter((word) => word.length > 1)
@@ -21,7 +22,10 @@ const UserAvatarComponent = (props: UserAvatarProps) => {
   const { userName, style, ...avatarProps } = props;
 
   const initials = useMemo(() => getInitials(userName), [userName]);
-  const backgroundColor = useMemo(() => colorFromString(userName), [userName]);
+  const backgroundColor = useMemo(
+    () => colorFromString(userName || ""),
+    [userName],
+  );
 
   const mergedStyle = useMemo(
     (): CSSProperties => ({

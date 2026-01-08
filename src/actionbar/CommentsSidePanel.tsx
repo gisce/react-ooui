@@ -20,10 +20,11 @@ import {
 import { CloseOutlined, SendOutlined } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
-import { RecordComment, MentionUser } from "@/types/comments";
+import { RecordComment, MentionUser, Participant } from "@/types/comments";
 import dayjs from "@/helpers/dayjs";
 import { UserAvatar } from "@/ui/UserAvatar";
 import { CommentMarkdown } from "@/ui/CommentMarkdown";
+import { ParticipantsSection } from "./ParticipantsSection";
 
 const { Title, Text } = Typography;
 const { useToken } = theme;
@@ -69,6 +70,11 @@ export type CommentsSidePanelProps = {
   onFetchMentionUsers: (query: string) => Promise<MentionUser[]>;
   currentUserId?: number;
   canAddComment?: boolean;
+  participants?: Participant[];
+  participantsLoading?: boolean;
+  isMuted?: boolean;
+  muteUpdating?: boolean;
+  onToggleMute?: () => void;
 };
 
 type MessageBubbleProps = {
@@ -285,6 +291,11 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     onFetchMentionUsers,
     currentUserId,
     canAddComment,
+    participants = [],
+    participantsLoading = false,
+    isMuted = false,
+    muteUpdating = false,
+    onToggleMute,
   } = props;
   const { token } = useToken();
   const { t } = useLocale();
@@ -473,9 +484,19 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
             />
           </div>
 
+          {onToggleMute && (
+            <ParticipantsSection
+              participants={participants}
+              isMuted={isMuted}
+              loading={participantsLoading}
+              updating={muteUpdating}
+              onToggleMute={onToggleMute}
+            />
+          )}
+
           <ErrorBoundary>
             <div style={contentAreaStyle}>
-              {loading ? (
+              {loading && comments.length === 0 ? (
                 <div style={LOADING_CONTAINER_STYLE}>
                   <Spin />
                 </div>

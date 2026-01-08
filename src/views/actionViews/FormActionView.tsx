@@ -1,4 +1,5 @@
 import { useEffect, useCallback, useMemo, useRef, CSSProperties } from "react";
+import { useDeepCompareEffect } from "use-deep-compare";
 import FormActionBar from "@/actionbar/FormActionBar";
 import {
   CommentsSidePanel,
@@ -10,6 +11,7 @@ import TitleHeader from "@/ui/TitleHeader";
 import Form from "@/widgets/views/Form";
 import { useActionViewContext } from "@/context/ActionViewContext";
 import { useRecordComments } from "@/hooks/useRecordComments";
+import { useParticipants } from "@/hooks/useParticipants";
 import { useConfigContext, useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { theme } from "antd";
@@ -71,6 +73,20 @@ export const FormActionView = (props: FormActionViewProps) => {
       context,
     });
 
+  const {
+    participants,
+    loading: participantsLoading,
+    updating: muteUpdating,
+    fetchParticipants,
+    toggleMute,
+    isMuted,
+  } = useParticipants({
+    model,
+    resourceId: currentId,
+    currentUserId: globalValues?.uid,
+    context,
+  });
+
   useEffect(() => {
     if (!commentsEnabled) return;
     setCommentCount?.(comments.length);
@@ -88,6 +104,13 @@ export const FormActionView = (props: FormActionViewProps) => {
     setRefreshComments?.(fetchComments);
     return () => setRefreshComments?.(undefined);
   }, [commentsEnabled, fetchComments, setRefreshComments]);
+
+  useDeepCompareEffect(() => {
+    if (!commentsEnabled) return;
+    if (currentId && commentsPanelVisible) {
+      fetchParticipants();
+    }
+  }, [commentsEnabled, currentId, commentsPanelVisible, fetchParticipants]);
 
   const handleAddComment = useCallback(
     async (body: string) => {
@@ -187,6 +210,11 @@ export const FormActionView = (props: FormActionViewProps) => {
             onFetchMentionUsers={fetchMentionUsers}
             currentUserId={globalValues?.uid}
             canAddComment={permissions?.write}
+            participants={participants}
+            participantsLoading={participantsLoading}
+            isMuted={isMuted}
+            muteUpdating={muteUpdating}
+            onToggleMute={toggleMute}
           />
         )}
       </div>

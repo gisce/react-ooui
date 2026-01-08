@@ -14,3 +14,11 @@ export type MentionUser = {
   login: string;
   name: string;
 };
+
+export type Participant = {
+  id: number;
+  user_id: number;
+  name: string;
+  is_muted: boolean;
+  last_message_read?: number;
+};

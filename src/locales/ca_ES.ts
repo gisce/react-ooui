@@ -141,4 +141,10 @@ export default {
   writeComment: "Escriu un comentari...",
   noComments: "No hi ha comentaris",
   noMatches: "Sense coincidències",
+  unsubscribe: "Cancel·lar subscripció",
+  subscribe: "Subscriure's",
+  receivingNotifications:
+    "Reps notificacions perquè estàs subscrit a aquest fil.",
+  mutedNotifications: "Has silenciat les notificacions d'aquest fil.",
+  participants: "Participants",
 };

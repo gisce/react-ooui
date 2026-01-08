@@ -143,4 +143,10 @@ export default {
   writeComment: "Escribe un comentario...",
   noComments: "No hay comentarios",
   noMatches: "Sin coincidencias",
+  unsubscribe: "Cancelar suscripción",
+  subscribe: "Suscribirse",
+  receivingNotifications:
+    "Recibes notificaciones porque estás suscrito a este hilo.",
+  mutedNotifications: "Has silenciado las notificaciones de este hilo.",
+  participants: "Participantes",
 };

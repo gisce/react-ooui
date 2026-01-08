@@ -138,4 +138,10 @@ export default {
   writeComment: "Write a comment...",
   noComments: "No comments",
   noMatches: "No matches",
+  unsubscribe: "Unsubscribe",
+  subscribe: "Subscribe",
+  receivingNotifications:
+    "You're receiving notifications because you're subscribed to this thread.",
+  mutedNotifications: "You've muted notifications for this thread.",
+  participants: "Participants",
 };
