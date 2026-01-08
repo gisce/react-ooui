@@ -7,7 +7,59 @@ const convertBooleanParamIfNeeded = (value: any) => {
   return value;
 };
 
-export const getParamsForFields = (values: any, widgetContainer: any) => {
+const optimizeEqualRangeParams = (params: any[]) => {
+  // Group params by field name to find >= and <= pairs
+  const fieldMap: Record<
+    string,
+    { gte?: any; lte?: any; index: { gte?: number; lte?: number } }
+  > = {};
+
+  params.forEach((param, index) => {
+    if (Array.isArray(param) && param.length === 3) {
+      const [field, operator, value] = param;
+      if (operator === ">=" || operator === "<=") {
+        if (!fieldMap[field]) {
+          fieldMap[field] = { index: {} };
+        }
+        if (operator === ">=") {
+          fieldMap[field].gte = value;
+          fieldMap[field].index.gte = index;
+        } else {
+          fieldMap[field].lte = value;
+          fieldMap[field].index.lte = index;
+        }
+      }
+    }
+  });
+
+  // Find fields where gte === lte and replace with =
+  const indicesToRemove: number[] = [];
+  const replacements: Array<{ index: number; param: any[] }> = [];
+
+  Object.entries(fieldMap).forEach(([field, { gte, lte, index }]) => {
+    if (gte !== undefined && lte !== undefined && gte === lte) {
+      // Replace >= with = and mark <= for removal
+      replacements.push({ index: index.gte!, param: [field, "=", gte] });
+      indicesToRemove.push(index.lte!);
+    }
+  });
+
+  // Apply changes
+  const result = params
+    .map((param, i) => {
+      const replacement = replacements.find((r) => r.index === i);
+      return replacement ? replacement.param : param;
+    })
+    .filter((_, i) => !indicesToRemove.includes(i));
+
+  return result;
+};
+
+export const getParamsForFields = (
+  values: any,
+  widgetContainer: any,
+  selectionToLazy?: boolean,
+) => {
   const filteredValues = removeUndefinedFields(values);
   const groupedDateTime = groupDateTimeValuesIfNeeded(filteredValues);
   const groupedValues = ungroupDateValuesIfNeeded(
@@ -17,7 +69,12 @@ export const getParamsForFields = (values: any, widgetContainer: any) => {
 
   const params = [
     ...Object.keys(groupedValues).map((key) => {
-      return getParamForField(key, groupedValues[key], widgetContainer);
+      return getParamForField(
+        key,
+        groupedValues[key],
+        widgetContainer,
+        selectionToLazy,
+      );
     }),
   ];
 
@@ -29,12 +86,43 @@ export const getParamsForFields = (values: any, widgetContainer: any) => {
     return [...acc, curVal];
   }, []);
 
-  return paramsForFields;
+  // Optimize equal range values to use = instead of >= and <=
+  return optimizeEqualRangeParams(paramsForFields);
 };
 
-const getParamForField = (key: string, value: any, widgetContainer: any) => {
+const getParamForField = (
+  key: string,
+  value: any,
+  widgetContainer: any,
+  selectionToLazy?: boolean,
+) => {
   const filteredKey = key.split("#")[0];
-  const type = widgetContainer.findById(filteredKey)?.type;
+  const field = widgetContainer.findById(filteredKey);
+  const type = field?.type;
+  const originalWidget = field?.raw_props?.widget;
+  const fieldType = field?.fieldType;
+
+  const isLazyMany2one =
+    originalWidget === "many2one_lazy" ||
+    (selectionToLazy &&
+      originalWidget === "selection" &&
+      fieldType === "many2one");
+
+  if (isLazyMany2one) {
+    // Check if multi-select format: [[id, name], [id, name], ...]
+    if (
+      Array.isArray(value) &&
+      value.length > 0 &&
+      Array.isArray(value[0]) &&
+      typeof value[0][0] === "number"
+    ) {
+      const ids = value.map((item: [number, string]) => item[0]);
+      return [filteredKey, "in", ids];
+    }
+    // Single select: existing behavior
+    const id = Array.isArray(value) ? value[0] : value;
+    return [filteredKey, "=", id];
+  }
 
   if (
     type === "char" ||
@@ -270,6 +358,17 @@ export const convertParamsToValues = (params: any[], fields?: any) => {
           // For other operators (=, !=, etc.), just set the value
           acc[field] = value;
         }
+      } else if (
+        type === "many2one" &&
+        operator === "in" &&
+        Array.isArray(value)
+      ) {
+        // Multi-select lazy many2one: convert IDs to [[id, ""], ...] format
+        // Names will be fetched by the component
+        acc[field] = value.map((id: number) => [id, ""]);
+      } else if (type === "many2one" && operator === "=") {
+        // Single-select lazy many2one: convert to [id, ""] format
+        acc[field] = [value, ""];
       } else {
         // For other types, just set the value
         acc[field] = value;

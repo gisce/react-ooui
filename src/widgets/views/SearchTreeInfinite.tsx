@@ -54,6 +54,8 @@ import { CellRenderer } from "./Tree/CellRenderer";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { useTableAutoRefreshControl } from "@/hooks/useTableAutoRefreshControl";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
+import { UserFeatureKeys } from "@/models/userFeature";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -105,6 +107,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     autoRefresh,
   } = props;
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
+  const selectionToLazy = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+  );
   const lastAssignedResults = useRef<any[]>([]);
   const hasRestoredSortStateForFirstTime = useRef<boolean>(false);
   const { showErrorNotification } = useErrorNotification();
@@ -192,24 +197,11 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     ) {
       setTreeFirstVisibleRow?.(0);
 
-      // Skip cache purge if:
-      // 1. We're staying in name search mode (both prev and current are name search)
-      // 2. A manual refresh was just called (from searchParams or nameSearch useEffect)
-      const wasInNameSearch = prevNameSearchForTotalRows.current !== undefined;
-      const isInNameSearch = nameSearch !== undefined;
-      const stayingInNameSearch = wasInNameSearch && isInNameSearch;
-
-      if (!stayingInNameSearch && !manualRefreshJustCalled.current) {
-        tableRef.current?.refresh();
-      }
-
-      // Reset the flag after checking
-      manualRefreshJustCalled.current = false;
-
       setTimeout(() => {
         tableRef.current?.scrollToTop();
       }, 0);
     }
+
     prevTotalRows.current = totalRows;
     prevNameSearchForTotalRows.current = nameSearch;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -500,6 +492,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         treeOoui,
         results,
         parentContext,
+        selectionToLazy,
       );
       updateAttributes(attrsEvaluated, treeOoui);
 

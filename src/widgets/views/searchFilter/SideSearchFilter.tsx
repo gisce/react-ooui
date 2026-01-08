@@ -7,7 +7,15 @@ import {
   useRef,
   useState,
 } from "react";
-import { Form, Button, Input, Space, Modal, Dropdown } from "antd";
+import {
+  Form,
+  Button,
+  Input,
+  Space,
+  Modal,
+  Dropdown,
+  type InputRef,
+} from "antd";
 import {
   useDeepCompareEffect,
   useDeepCompareCallback,
@@ -36,6 +44,8 @@ import { FloatingDrawer } from "@/ui/FloatingDrawer";
 import deepEqual from "deep-equal";
 import { useSavedSearches } from "@/hooks/useSavedSearches";
 import { useActionViewContext } from "@/context/ActionViewContext";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
+import { UserFeatureKeys } from "@/models/userFeature";
 
 type SideSearchFilterBaseProps = {
   onSubmit: (values: any) => void;
@@ -69,6 +79,7 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
     const [topSectionHeight, setTopSectionHeight] = useState(0);
     const topSectionRef = useRef<HTMLDivElement>(null);
     const [fieldAdditionOrder, setFieldAdditionOrder] = useState<string[]>([]);
+    const filterInputRef = useRef<InputRef>(null);
 
     useDeepCompareEffect(() => {
       form.setFieldsValue(searchValues);
@@ -125,8 +136,12 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
       if (!searchFields) return;
 
       const rows = searchFields?.rows;
+      const rawFields = rows?.flatMap((row) => row) as Field[];
 
-      const fields = rows?.flatMap((row) => row) as Field[];
+      // Filter out invalid fields (undefined, null, or missing id/label)
+      const fields = rawFields?.filter(
+        (field) => field && field.id !== undefined && field.label !== undefined,
+      );
 
       const currentValues = Object.keys(confirmedValues).reduce<
         Record<string, boolean>
@@ -285,10 +300,50 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
     const handleKeyPress = useCallback(
       (event: React.KeyboardEvent) => {
         if (event.key === "Enter") {
-          form.submit();
+          // Check if the filter input is currently focused
+          const isFilterInputFocused =
+            filterInputRef.current?.input === document.activeElement;
+
+          if (isFilterInputFocused && searchFields) {
+            // Filter input is focused → focus on first matching field
+            event.preventDefault();
+
+            const rows = searchFields?.rows;
+            const fields = rows?.flatMap((row) => row) as Field[];
+
+            // Sort fields alphabetically like they're displayed
+            const sortedFields = fields.sort((a, b) =>
+              normalizeString(a.label).localeCompare(normalizeString(b.label)),
+            );
+
+            // Find the first field that matches the search
+            const firstMatchingField = sortedFields.find(
+              (field) => !searchText || matchSearch(searchText, field),
+            );
+
+            if (firstMatchingField) {
+              const fieldContainerId = `field-container-${firstMatchingField.id}-bottom`;
+              const container = document.getElementById(fieldContainerId);
+              if (container) {
+                const input = container.querySelector(
+                  "input, .ant-select-selector",
+                );
+                if (input instanceof HTMLElement) {
+                  input.focus();
+                  if (input.classList.contains("ant-select-selector")) {
+                    input.click();
+                  }
+                }
+              }
+            }
+          } else {
+            // Filter input is NOT focused → submit the form
+            event.preventDefault();
+            form.submit();
+          }
         }
       },
-      [form],
+      [searchFields, searchText, form],
     );
 
     return (
@@ -357,17 +412,13 @@ export const SideSearchFilterComponent = forwardRef<any, SideSearchFilterProps>(
               }}
             >
               <Input
+                ref={filterInputRef}
                 placeholder={t("enterFieldToFilter")}
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 allowClear
                 prefix={<SearchOutlined />}
                 name={undefined}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                  }
-                }}
               />
             </div>
             <div
@@ -427,6 +478,9 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
   } = props;
   const sfo = useRef<SearchFilterOoui>();
   const { t } = useLocale();
+  const selectionToLazy = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+  );
   const parsedSearchFieldsRef = useRef<Container>();
   const sideSearchFilterRef = useRef<SideSearchFilterRef>(null);
 
@@ -510,13 +564,14 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
       const newParams = getParamsForFields(
         internalSearchValues,
         sfo.current?._advancedSearchContainer,
+        selectionToLazy,
       );
       onSubmit({
         params: newParams,
         values: normalizeValues(internalSearchValues),
         closeSidebar: false,
       });
-    }, [onSubmit, internalSearchValues]),
+    }, [onSubmit, internalSearchValues, selectionToLazy]),
   });
 
   const wasOpenRef = useRef(false);
@@ -547,6 +602,7 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
               ? getParamsForFields(
                   searchValues,
                   sfo.current._advancedSearchContainer,
+                  selectionToLazy,
                 )
               : [];
           setInternalSearchParams(initialParams || []);
@@ -582,6 +638,7 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
       const newParams = getParamsForFields(
         values,
         sfo.current?._advancedSearchContainer,
+        selectionToLazy,
       );
       onSubmit({
         params: newParams,
@@ -589,7 +646,7 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
         closeSidebar,
       });
     },
-    [onSubmit],
+    [onSubmit, selectionToLazy],
   );
 
   const handleSubmit = useCallback(() => {
@@ -608,10 +665,11 @@ export const SideSearchFilter = (props: SideSearchFilterContainerProps) => {
       const newParams = getParamsForFields(
         values,
         sfo.current?._advancedSearchContainer,
+        selectionToLazy,
       );
       setInternalSearchParams(newParams);
     },
-    [internalSearchValues],
+    [internalSearchValues, selectionToLazy],
   );
 
   const handleClear = useDeepCompareCallback(

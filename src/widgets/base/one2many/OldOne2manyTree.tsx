@@ -10,6 +10,7 @@ import { RefObject, useCallback, useRef } from "react";
 import {
   getSortedFieldsFromState,
   getTableColumns,
+  getTableItems,
 } from "@/helpers/treeHelper";
 import { COLUMN_COMPONENTS } from "@/widgets/views/Tree/treeComponents";
 import { useDeepCompareEffect, useDeepCompareMemo } from "use-deep-compare";
@@ -22,8 +23,12 @@ import {
   getKey,
 } from "@/helpers/o2m-columnStorageHelper";
 import { useLocale } from "@gisce/react-formiga-components";
-import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import {
+  useFeatureIsEnabled,
+  useUserFeatureIsEnabled,
+} from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
+import { UserFeatureKeys } from "@/models/userFeature";
 
 export type One2manyTreeProps = {
   items: One2manyItem[];
@@ -61,6 +66,19 @@ export type One2manyTreeProps = {
 
 const DEFAULT_HEIGHT = 400;
 
+const findChangedItems = (
+  current: One2manyItem[],
+  previous: One2manyItem[],
+): One2manyItem[] => {
+  return current.filter((item) => {
+    const prevItem = previous.find((p) => p.id === item.id);
+    if (!prevItem) return true;
+    return (
+      JSON.stringify(item.treeValues) !== JSON.stringify(prevItem.treeValues)
+    );
+  });
+};
+
 export const One2manyTree = ({
   items,
   height,
@@ -93,6 +111,9 @@ export const One2manyTree = ({
   const many2oneSortEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_MANY2ONE_SORT,
   );
+  const selectionToLazy = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+  );
 
   useDeepCompareEffect(() => {
     itemsRef.current = items;
@@ -101,10 +122,40 @@ export const One2manyTree = ({
       return;
     }
 
+    // Find which item(s) changed
+    const changedItems = findChangedItems(items, prevItemsValue.current);
     prevItemsValue.current = items;
-    tableRef?.current?.refresh();
+
+    // Clear color and status caches when items change
+    colorsForResults.current = {};
+    if (statusForResults.current) {
+      statusForResults.current = {};
+    }
+
+    if (changedItems.length > 0) {
+      const transformLocally = async () => {
+        const changedItemsWithValues = changedItems
+          .filter((item) => item.treeValues)
+          .map((item) => item.treeValues);
+
+        if (changedItemsWithValues.length === 0) {
+          return;
+        }
+
+        const transformed = await getTableItems(
+          ooui,
+          changedItemsWithValues,
+          context,
+          selectionToLazy,
+        );
+
+        tableRef?.current?.updateRows(transformed);
+      };
+      transformLocally();
+    }
+
     tableRef?.current?.unselectAll();
-  }, [items]);
+  }, [items, ooui, context]);
 
   const totalRows = useDeepCompareMemo(() => items.length, [items]);
 
@@ -116,8 +167,9 @@ export const One2manyTree = ({
       },
       context,
       many2oneSortEnabled,
+      selectionToLazy,
     );
-  }, [context, ooui, many2oneSortEnabled]);
+  }, [context, ooui, many2oneSortEnabled, selectionToLazy]);
 
   const onRequestData = useCallback(
     async ({
