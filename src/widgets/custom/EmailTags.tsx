@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useContext } from "react";
 import { Input, Tag, theme, Button, message } from "antd";
 import type { InputRef } from "antd";
-import { CopyOutlined, CheckOutlined } from "@ant-design/icons";
+import { CopyOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
 
 import Field from "@/common/Field";
@@ -89,7 +89,8 @@ export const EmailTagsRender: React.FC<EmailTagsRenderProps> = ({
           style={{
             display: "inline-flex",
             alignItems: "center",
-            gap: token.sizeXXS,
+            gap: 2,
+            paddingInlineEnd: 4,
           }}
         >
           {email}
@@ -100,7 +101,7 @@ export const EmailTagsRender: React.FC<EmailTagsRenderProps> = ({
                 cursor: "pointer",
                 display: "inline-flex",
                 alignItems: "center",
-                marginLeft: token.sizeXXS,
+                marginLeft: 2,
               }}
               title={t("copyToClipboard")}
             >
