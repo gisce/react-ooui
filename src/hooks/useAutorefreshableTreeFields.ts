@@ -10,6 +10,8 @@ import { useBrowserVisibility } from "./useBrowserVisibility";
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { getTableItems } from "@/helpers/treeHelper";
 import { getAttributesConditionsFromOoui } from "./useTreeAttributesState";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
+import { UserFeatureKeys } from "@/models/userFeature";
 
 const AUTOREFRESH_INTERVAL_SECONDS = 3 * 1000;
 
@@ -41,6 +43,10 @@ export const useAutorefreshableTreeFields = (
     results,
     onRecordsUpdated,
   } = opts;
+
+  const selectionToLazy = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+  );
 
   const fieldDefs = useMemo(() => {
     return treeView?.field_parent
@@ -137,6 +143,7 @@ export const useAutorefreshableTreeFields = (
         treeOoui,
         resultsWithUpdatedFields,
         context,
+        selectionToLazy,
       );
 
       // Get only the changed records

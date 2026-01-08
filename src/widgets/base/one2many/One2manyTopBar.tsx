@@ -14,6 +14,7 @@ import {
   EnterOutlined,
   InfoCircleOutlined,
   CopyOutlined,
+  ExportOutlined,
 } from "@ant-design/icons";
 import { ViewType } from "@/types";
 import { theme, Badge } from "antd";
@@ -50,6 +51,8 @@ type One2manyTopBarProps = {
   context?: any;
   formRef: RefObject<any>;
   onRefreshParentValues?: () => void;
+  onOpenInListView?: () => void;
+  canOpenInListView?: boolean;
 };
 
 function One2manyTopBarComponent(props: One2manyTopBarProps) {
@@ -76,6 +79,8 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
     formRef,
     onRefreshParentValues,
     currentId,
+    onOpenInListView,
+    canOpenInListView,
   } = props;
 
   const { token } = useToken();
@@ -227,6 +232,17 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
                   onOk: async () => duplicate(),
                 })
               }
+            />
+          </>
+        )}
+        {onOpenInListView && (
+          <>
+            <Separator />
+            <ButtonWithTooltip
+              icon={<ExportOutlined />}
+              tooltip={t("openInListView")}
+              disabled={!canOpenInListView}
+              onClick={onOpenInListView}
             />
           </>
         )}

@@ -54,6 +54,8 @@ import { CellRenderer } from "./Tree/CellRenderer";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { useTableAutoRefreshControl } from "@/hooks/useTableAutoRefreshControl";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
+import { UserFeatureKeys } from "@/models/userFeature";
 
 export const HEIGHT_OFFSET = 10;
 export const MAX_ROWS_TO_SELECT = 200;
@@ -105,6 +107,9 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
     autoRefresh,
   } = props;
   const tableRef: RefObject<InfiniteTableRef> = useRef(null);
+  const selectionToLazy = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+  );
   const lastAssignedResults = useRef<any[]>([]);
   const hasRestoredSortStateForFirstTime = useRef<boolean>(false);
   const { showErrorNotification } = useErrorNotification();
@@ -487,6 +492,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         treeOoui,
         results,
         parentContext,
+        selectionToLazy,
       );
       updateAttributes(attrsEvaluated, treeOoui);
 

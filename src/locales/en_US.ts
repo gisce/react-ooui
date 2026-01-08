@@ -132,6 +132,8 @@ export default {
   favouriteName: "Favourite name",
   saveFavourite: "Save favourite",
   enterFavouriteName: "Enter favourite name",
+  openInListView: "Open in list view",
+  createNewRecord: "Create a new record",
   comments: "Comments",
   writeComment: "Write a comment...",
   noComments: "No comments",
