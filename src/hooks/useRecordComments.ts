@@ -102,6 +102,31 @@ export const useRecordComments = (opts: UseRecordCommentsOpts) => {
     [model, resourceId, context, executeRequest],
   );
 
+  const markAsRead = useDeepCompareCallback(
+    async (messageId: number) => {
+      if (!resourceId || !messageId) {
+        return;
+      }
+
+      try {
+        await executeRequest({
+          model,
+          action: "set_comments_read_until",
+          payload: [resourceId, messageId],
+          context,
+        });
+
+        // Update local userStatus to reflect the new last_message_read
+        setUserStatus((prev) =>
+          prev ? { ...prev, last_message_read: messageId } : prev,
+        );
+      } catch {
+        // Silently fail - reading status is not critical
+      }
+    },
+    [model, resourceId, context, executeRequest],
+  );
+
   return {
     comments,
     participants,
@@ -110,6 +135,7 @@ export const useRecordComments = (opts: UseRecordCommentsOpts) => {
     fetchComments,
     addComment,
     fetchMentionUsers,
+    markAsRead,
     cancelRequest,
     commentCount: comments.length,
   };

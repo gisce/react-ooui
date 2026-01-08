@@ -73,6 +73,7 @@ export const FormActionView = (props: FormActionViewProps) => {
     fetchComments,
     addComment,
     fetchMentionUsers,
+    markAsRead,
   } = useRecordComments({
     model,
     resourceId: currentId,
@@ -211,6 +212,8 @@ export const FormActionView = (props: FormActionViewProps) => {
             isMuted={isMuted}
             muteUpdating={muteUpdating}
             onToggleMute={userStatus ? toggleMute : undefined}
+            lastMessageRead={userStatus?.last_message_read}
+            onMarkAsRead={userStatus ? markAsRead : undefined}
           />
         )}
       </div>

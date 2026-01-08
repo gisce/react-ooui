@@ -75,6 +75,8 @@ export type CommentsSidePanelProps = {
   isMuted?: boolean;
   muteUpdating?: boolean;
   onToggleMute?: () => void;
+  lastMessageRead?: number | false;
+  onMarkAsRead?: (messageId: number) => void;
 };
 
 type MessageBubbleProps = {
@@ -300,6 +302,8 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     isMuted = false,
     muteUpdating = false,
     onToggleMute,
+    lastMessageRead,
+    onMarkAsRead,
   } = props;
   const { token } = useToken();
   const { t } = useLocale();
@@ -309,8 +313,11 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
   const [mentionUsers, setMentionUsers] = useState<MentionUser[]>([]);
   const [mentionSearching, setMentionSearching] = useState(false);
   const [mentionDropdownOpen, setMentionDropdownOpen] = useState(false);
+  const [hasScrolledToUnread, setHasScrolledToUnread] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const mentionsRef = useRef<any>(null);
+  const contentAreaRef = useRef<HTMLDivElement>(null);
+  const messageRefs = useRef<Map<number, HTMLDivElement>>(new Map());
 
   useEffect(() => {
     if (visible) {
@@ -321,6 +328,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
 
   const handleExitComplete = useCallback(() => {
     setShouldRender(false);
+    setHasScrolledToUnread(false);
   }, []);
 
   const scrollToBottom = useCallback(() => {
@@ -329,14 +337,58 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     });
   }, []);
 
+  // Find the first unread message ID
+  const firstUnreadMessageId = useMemo(() => {
+    if (!lastMessageRead || lastMessageRead === false) {
+      return null;
+    }
+    // Comments are displayed reversed, so we find from the original order
+    const unreadComment = comments.find(
+      (c) => c.id > (lastMessageRead as number),
+    );
+    return unreadComment?.id ?? null;
+  }, [comments, lastMessageRead]);
+
+  // Scroll to first unread message or bottom
+  const scrollToUnreadOrBottom = useCallback(() => {
+    if (firstUnreadMessageId && messageRefs.current.has(firstUnreadMessageId)) {
+      const element = messageRefs.current.get(firstUnreadMessageId);
+      element?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    } else {
+      scrollToBottom();
+    }
+  }, [firstUnreadMessageId, scrollToBottom]);
+
+  // Mark all messages as read when scrolling completes or panel closes
+  const markAllAsRead = useCallback(() => {
+    if (!onMarkAsRead || comments.length === 0) return;
+    const lastComment = comments[comments.length - 1];
+    if (lastComment && lastComment.id !== lastMessageRead) {
+      onMarkAsRead(lastComment.id);
+    }
+  }, [onMarkAsRead, comments, lastMessageRead]);
+
   useEffect(() => {
-    if (visible && comments.length > 0 && !loading) {
+    if (visible && comments.length > 0 && !loading && !hasScrolledToUnread) {
       // Use setTimeout to ensure content is fully rendered before scrolling
       setTimeout(() => {
-        scrollToBottom();
+        scrollToUnreadOrBottom();
+        setHasScrolledToUnread(true);
+        // Mark as read after scrolling (user has seen the messages)
+        setTimeout(markAllAsRead, 500);
       }, 50);
     }
-  }, [visible, comments.length, loading, scrollToBottom]);
+  }, [
+    visible,
+    comments.length,
+    loading,
+    hasScrolledToUnread,
+    scrollToUnreadOrBottom,
+    markAllAsRead,
+  ]);
 
   const handleSend = useCallback(async () => {
     if (!newComment.trim() || sending) return;
@@ -503,7 +555,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
           )}
 
           <ErrorBoundary>
-            <div style={contentAreaStyle}>
+            <div ref={contentAreaRef} style={contentAreaStyle}>
               {loading && comments.length === 0 ? (
                 <div style={LOADING_CONTAINER_STYLE}>
                   <Spin />
@@ -530,20 +582,28 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                       );
 
                     return (
-                      <MessageBubble
+                      <div
                         key={comment.id}
-                        comment={comment}
-                        isOwnMessage={comment.create_uid === currentUserId}
-                        isFirstInGroup={isFirstInGroup || isFirstOfDay}
-                        isFirstOfDay={isFirstOfDay}
-                        dayLabel={
-                          isFirstOfDay
-                            ? getDayLabel(comment.create_date)
-                            : undefined
-                        }
-                        model={model}
-                        resourceId={resourceId}
-                      />
+                        ref={(el) => {
+                          if (el) {
+                            messageRefs.current.set(comment.id, el);
+                          }
+                        }}
+                      >
+                        <MessageBubble
+                          comment={comment}
+                          isOwnMessage={comment.create_uid === currentUserId}
+                          isFirstInGroup={isFirstInGroup || isFirstOfDay}
+                          isFirstOfDay={isFirstOfDay}
+                          dayLabel={
+                            isFirstOfDay
+                              ? getDayLabel(comment.create_date)
+                              : undefined
+                          }
+                          model={model}
+                          resourceId={resourceId}
+                        />
+                      </div>
                     );
                   })}
                   <div ref={messagesEndRef} />
