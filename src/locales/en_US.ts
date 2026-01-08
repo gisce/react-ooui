@@ -161,4 +161,5 @@ export default {
   noComments: "No comments",
   noMatches: "No matches",
   createNewRecord: "Create a new record",
+  clearSelection: "Clear selection",
 };

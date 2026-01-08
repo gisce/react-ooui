@@ -164,4 +164,5 @@ export default {
   noComments: "No hi ha comentaris",
   noMatches: "Sense coincidències",
   createNewRecord: "Crear un nou registre",
+  clearSelection: "Netejar selecció",
 };

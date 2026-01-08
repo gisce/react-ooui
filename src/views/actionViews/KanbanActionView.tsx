@@ -405,6 +405,7 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
         <SearchTreeHeader
           selectedRowKeys={selectedRowKeys}
           totalRows={totalRows}
+          onClearSelection={clearSelection}
           customMiddleComponent={
             shouldShowNameSearchWarning ? (
               <NameSearchWarning

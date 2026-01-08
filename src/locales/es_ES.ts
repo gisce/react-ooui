@@ -167,4 +167,5 @@ export default {
   noComments: "No hay comentarios",
   noMatches: "Sin coincidencias",
   createNewRecord: "Crear un nuevo registro",
+  clearSelection: "Limpiar selección",
 };
