@@ -249,30 +249,34 @@ const MessageBubble = memo(
     );
 
     return (
-      <>
-        {isFirstOfDay && dayLabel && (
-          <div style={daySeparatorStyle}>
-            <div style={dayLineStyle} />
-            <Text style={dayLabelStyle}>{dayLabel}</Text>
-            <div style={dayLineStyle} />
-          </div>
-        )}
-        {isFirstInGroup && !isFirstOfDay && <div style={separatorStyle} />}
-        <div style={containerStyle}>
-          {isFirstInGroup && <div style={headerStyle}>{avatarNameElement}</div>}
-          <div style={bubbleRowStyle}>
-            {isOwnMessage && inlineTimestamp}
-            <div style={bubbleStyle}>
-              <CommentMarkdown
-                comment={comment}
-                model={model}
-                resourceId={resourceId}
-              />
+      <ErrorBoundary>
+        <>
+          {isFirstOfDay && dayLabel && (
+            <div style={daySeparatorStyle}>
+              <div style={dayLineStyle} />
+              <Text style={dayLabelStyle}>{dayLabel}</Text>
+              <div style={dayLineStyle} />
             </div>
-            {!isOwnMessage && inlineTimestamp}
+          )}
+          {isFirstInGroup && !isFirstOfDay && <div style={separatorStyle} />}
+          <div style={containerStyle}>
+            {isFirstInGroup && (
+              <div style={headerStyle}>{avatarNameElement}</div>
+            )}
+            <div style={bubbleRowStyle}>
+              {isOwnMessage && inlineTimestamp}
+              <div style={bubbleStyle}>
+                <CommentMarkdown
+                  comment={comment}
+                  model={model}
+                  resourceId={resourceId}
+                />
+              </div>
+              {!isOwnMessage && inlineTimestamp}
+            </div>
           </div>
-        </div>
-      </>
+        </>
+      </ErrorBoundary>
     );
   },
 );
