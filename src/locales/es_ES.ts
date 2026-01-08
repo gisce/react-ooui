@@ -121,6 +121,8 @@ export default {
   unlink: "Desvincular",
   share: "Compartir URL",
   urlCopiedToClipboard: "URL copiada al portapapeles",
+  emailsCopiedToClipboard: "Emails copiados al portapapeles",
+  errorCopyingToClipboard: "Error al copiar al portapapeles",
   copyToClipboard: "Copiar al portapapeles",
   nameSearchLimitNote:
     "Se muestran solo los primeros 80 registros. Si desea ver más registros, utilice la búsqueda por filtros.",

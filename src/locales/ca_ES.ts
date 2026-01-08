@@ -120,6 +120,8 @@ export default {
   share: "Compartir URL",
   copyToClipboard: "Copiar al porta-retalls",
   urlCopiedToClipboard: "URL copiada al porta-retalls",
+  emailsCopiedToClipboard: "Emails copiats al porta-retalls",
+  errorCopyingToClipboard: "Error en copiar al porta-retalls",
   nameSearchLimitNote:
     "Només es mostren els primers 80 registres. Si necessiteu veure més registres, utilitzeu la cerca per filtres.",
   filterSearchLink: "cerca per filtres",
