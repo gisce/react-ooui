@@ -472,26 +472,30 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           style={panelStyle}
         >
-          <div style={panelHeaderStyle}>
-            <Title level={5} style={TITLE_STYLE}>
-              {t("comments")}
-            </Title>
-            <Button
-              type="text"
-              icon={<CloseOutlined />}
-              onClick={onClose}
-              size="small"
-            />
-          </div>
+          <ErrorBoundary>
+            <div style={panelHeaderStyle}>
+              <Title level={5} style={TITLE_STYLE}>
+                {t("comments")}
+              </Title>
+              <Button
+                type="text"
+                icon={<CloseOutlined />}
+                onClick={onClose}
+                size="small"
+              />
+            </div>
+          </ErrorBoundary>
 
           {onToggleMute && (
-            <ParticipantsSection
-              participants={participants}
-              isMuted={isMuted}
-              loading={participantsLoading}
-              updating={muteUpdating}
-              onToggleMute={onToggleMute}
-            />
+            <ErrorBoundary>
+              <ParticipantsSection
+                participants={participants}
+                isMuted={isMuted}
+                loading={participantsLoading}
+                updating={muteUpdating}
+                onToggleMute={onToggleMute}
+              />
+            </ErrorBoundary>
           )}
 
           <ErrorBoundary>
@@ -545,36 +549,40 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
           </ErrorBoundary>
 
           {canAddComment && (
-            <div style={footerStyle}>
-              <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
-                <Mentions
-                  ref={mentionsRef}
-                  value={newComment}
-                  onChange={handleCommentChange}
-                  onKeyDown={handleKeyDown}
-                  onSearch={handleMentionSearch}
-                  onSelect={handleMentionSelect}
-                  onBlur={handleMentionBlur}
-                  options={mentionOptions}
-                  loading={mentionSearching}
-                  filterOption={false}
-                  notFoundContent={
-                    mentionSearching ? <Spin size="small" /> : t("noMatches")
-                  }
-                  placeholder={t("writeComment")}
-                  autoSize={TEXT_AREA_AUTO_SIZE}
-                  disabled={sending}
-                  style={{ flex: 1 }}
-                />
-                <Button
-                  type="primary"
-                  icon={<SendOutlined />}
-                  onClick={handleSend}
-                  loading={sending}
-                  disabled={!newComment.trim()}
-                />
+            <ErrorBoundary>
+              <div style={footerStyle}>
+                <div
+                  style={{ display: "flex", gap: 8, alignItems: "flex-end" }}
+                >
+                  <Mentions
+                    ref={mentionsRef}
+                    value={newComment}
+                    onChange={handleCommentChange}
+                    onKeyDown={handleKeyDown}
+                    onSearch={handleMentionSearch}
+                    onSelect={handleMentionSelect}
+                    onBlur={handleMentionBlur}
+                    options={mentionOptions}
+                    loading={mentionSearching}
+                    filterOption={false}
+                    notFoundContent={
+                      mentionSearching ? <Spin size="small" /> : t("noMatches")
+                    }
+                    placeholder={t("writeComment")}
+                    autoSize={TEXT_AREA_AUTO_SIZE}
+                    disabled={sending}
+                    style={{ flex: 1 }}
+                  />
+                  <Button
+                    type="primary"
+                    icon={<SendOutlined />}
+                    onClick={handleSend}
+                    loading={sending}
+                    disabled={!newComment.trim()}
+                  />
+                </div>
               </div>
-            </div>
+            </ErrorBoundary>
           )}
         </motion.div>
       )}

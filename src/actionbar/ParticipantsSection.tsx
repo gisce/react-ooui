@@ -1,5 +1,6 @@
 import { memo, useMemo, CSSProperties } from "react";
 import { Typography, Button, Spin, Tooltip, Avatar, theme } from "antd";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import { BellOutlined, BellFilled } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
 import { Participant } from "@/types/comments";
@@ -92,43 +93,49 @@ const ParticipantsSectionComponent = ({
   }
 
   return (
-    <div style={sectionStyle}>
-      <div style={notificationRowStyle}>
-        <div style={notificationTextStyle}>
-          <Text style={explanatoryTextStyle}>
-            {isMuted ? t("mutedNotifications") : t("receivingNotifications")}
-          </Text>
-        </div>
-        <Tooltip
-          placement="left"
-          title={isMuted ? t("subscribe") : t("unsubscribe")}
-        >
-          <Button
-            loading={updating}
-            onClick={onToggleMute}
-            icon={isMuted ? <BellOutlined /> : <BellFilled />}
-          />
-        </Tooltip>
-      </div>
-
-      {participants.length > 0 && (
-        <div style={participantsRowStyle}>
-          <Text style={participantsLabelStyle}>{t("participants") + ":"}</Text>
-          <Avatar.Group
-            max={{ count: 5, style: { backgroundColor: token.colorPrimary } }}
-            size={24}
+    <ErrorBoundary>
+      <div style={sectionStyle}>
+        <div style={notificationRowStyle}>
+          <div style={notificationTextStyle}>
+            <Text style={explanatoryTextStyle}>
+              {isMuted ? t("mutedNotifications") : t("receivingNotifications")}
+            </Text>
+          </div>
+          <Tooltip
+            placement="left"
+            title={isMuted ? t("subscribe") : t("unsubscribe")}
           >
-            {participants.map((participant) => (
-              <Tooltip key={participant.id} title={participant.name}>
-                <span>
-                  <UserAvatar userName={participant.name} size={24} />
-                </span>
-              </Tooltip>
-            ))}
-          </Avatar.Group>
+            <Button
+              loading={updating}
+              onClick={onToggleMute}
+              icon={isMuted ? <BellOutlined /> : <BellFilled />}
+            />
+          </Tooltip>
         </div>
-      )}
-    </div>
+
+        {participants.length > 0 && (
+          <div style={participantsRowStyle}>
+            <Text style={participantsLabelStyle}>
+              {t("participants") + ":"}
+            </Text>
+            <Avatar.Group
+              max={{ count: 5, style: { backgroundColor: token.colorPrimary } }}
+              size={24}
+            >
+              {participants.map((participant) => (
+                <ErrorBoundary key={participant.id}>
+                  <Tooltip title={participant.name}>
+                    <span>
+                      <UserAvatar userName={participant.name} size={24} />
+                    </span>
+                  </Tooltip>
+                </ErrorBoundary>
+              ))}
+            </Avatar.Group>
+          </div>
+        )}
+      </div>
+    </ErrorBoundary>
   );
 };
 
