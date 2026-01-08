@@ -65,7 +65,7 @@ const SearchTreeSelectionSummary = ({
   const clearSelectionLink = onClearSelection ? (
     <>
       {" "}
-      | <Link onClick={onClearSelection}>{t("clearSelection")}</Link>
+      - <Link onClick={onClearSelection}>{t("clearSelection")}</Link>
     </>
   ) : null;
 
