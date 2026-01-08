@@ -1,6 +1,8 @@
 import React, { useState, useRef, useCallback, useContext } from "react";
-import { Input, Tag, theme } from "antd";
+import { Input, Tag, theme, Button, message } from "antd";
 import type { InputRef } from "antd";
+import { CopyOutlined, CheckOutlined } from "@ant-design/icons";
+import { useLocale } from "@gisce/react-formiga-components";
 
 import Field from "@/common/Field";
 import { Email as EmailOOui } from "@gisce/ooui";
@@ -73,6 +75,7 @@ export const EmailTagsInput: React.FC<EmailTagsInputProps> = ({
   readonly = false,
 }) => {
   const { token } = theme.useToken();
+  const { t } = useLocale();
   const [emails, setEmails] = useState<string[]>(
     value
       ? value
@@ -82,9 +85,36 @@ export const EmailTagsInput: React.FC<EmailTagsInputProps> = ({
       : [],
   );
   const [inputValue, setInputValue] = useState<string>("");
+  const [isCopied, setIsCopied] = useState(false);
   const inputRef = useRef<InputRef>(null);
   const formContext = useContext(FormContext) as FormContextType;
   const { elementHasLostFocus } = formContext || {};
+
+  const handleCopyEmails = useCallback(() => {
+    if (emails.length === 0) return;
+
+    const emailString = emails.join("; ");
+    try {
+      const tempInput = document.createElement("textarea");
+      tempInput.value = emailString;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      tempInput.setSelectionRange(0, 99999);
+      const successful = document.execCommand("copy");
+      document.body.removeChild(tempInput);
+
+      if (successful) {
+        setIsCopied(true);
+        message.success(t("emailsCopiedToClipboard"));
+        setTimeout(() => setIsCopied(false), 2000);
+      } else {
+        throw new Error("Copy command was unsuccessful.");
+      }
+    } catch (err) {
+      console.error("Error copying to clipboard:", err);
+      message.error(t("errorCopyingToClipboard"));
+    }
+  }, [emails, t]);
 
   useDeepCompareEffect(() => {
     if (value) {
@@ -182,38 +212,64 @@ export const EmailTagsInput: React.FC<EmailTagsInputProps> = ({
     <div
       style={{
         display: "flex",
-        flexWrap: "wrap",
         alignItems: "center",
         gap: token.sizeXS,
-        border: `${token.lineWidth}px ${token.lineType} ${token.colorBorder}`,
-        padding: token.paddingXS,
-        borderRadius: token.borderRadius,
       }}
-      onClick={() => inputRef.current?.focus()}
     >
-      <EmailTagsRender
-        emails={emails}
-        handleClose={!readonly ? handleClose : undefined}
-      />
-      <Input
-        readOnly={readonly}
-        ref={inputRef}
-        type="text"
-        value={inputValue}
-        onChange={handleInputChange}
-        onPressEnter={handleInputConfirm}
-        onBlur={handleInputConfirm}
+      <div
         style={{
-          flexGrow: 1,
-          minWidth: "100px",
-          border: "none",
-          outline: "none",
-          boxShadow: "none",
-          width: "auto",
-          marginLeft: 0,
-          paddingLeft: 0,
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          gap: token.sizeXS,
+          border: `${token.lineWidth}px ${token.lineType} ${token.colorBorder}`,
+          padding: token.paddingXS,
+          borderRadius: token.borderRadius,
+          flex: 1,
         }}
-      />
+        onClick={() => inputRef.current?.focus()}
+      >
+        <EmailTagsRender
+          emails={emails}
+          handleClose={!readonly ? handleClose : undefined}
+        />
+        <Input
+          readOnly={readonly}
+          ref={inputRef}
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onPressEnter={handleInputConfirm}
+          onBlur={handleInputConfirm}
+          style={{
+            flexGrow: 1,
+            minWidth: "100px",
+            border: "none",
+            outline: "none",
+            boxShadow: "none",
+            width: "auto",
+            marginLeft: 0,
+            paddingLeft: 0,
+          }}
+        />
+      </div>
+      {emails.length > 0 && (
+        <Button
+          type="text"
+          title={t("copyToClipboard")}
+          icon={
+            isCopied ? (
+              <CheckOutlined style={{ color: token.colorSuccess }} />
+            ) : (
+              <CopyOutlined style={{ color: token.colorTextSecondary }} />
+            )
+          }
+          onClick={handleCopyEmails}
+          style={{
+            flexShrink: 0,
+          }}
+        />
+      )}
     </div>
   );
 };
