@@ -2,7 +2,12 @@ import { useState } from "react";
 import { useDeepCompareCallback } from "use-deep-compare";
 import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "./useNetworkRequest";
-import { RecordComment, MentionUser } from "@/types/comments";
+import {
+  RecordComment,
+  MentionUser,
+  Participant,
+  UserStatus,
+} from "@/types/comments";
 
 export type UseRecordCommentsOpts = {
   model: string;
@@ -13,6 +18,8 @@ export type UseRecordCommentsOpts = {
 export const useRecordComments = (opts: UseRecordCommentsOpts) => {
   const { model, resourceId, context } = opts;
   const [comments, setComments] = useState<RecordComment[]>([]);
+  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [userStatus, setUserStatus] = useState<UserStatus | null>(null);
   const [loading, setLoading] = useState(false);
 
   const [executeRequest, cancelRequest] = useNetworkRequest(
@@ -22,6 +29,8 @@ export const useRecordComments = (opts: UseRecordCommentsOpts) => {
   const fetchComments = useDeepCompareCallback(async () => {
     if (!resourceId) {
       setComments([]);
+      setParticipants([]);
+      setUserStatus(null);
       return;
     }
 
@@ -33,9 +42,23 @@ export const useRecordComments = (opts: UseRecordCommentsOpts) => {
         payload: [[resourceId]],
         context,
       });
-      setComments(result || []);
+
+      // Detect format: new format is object with 'comments' key, old format is array
+      if (result && !Array.isArray(result) && "comments" in result) {
+        // New format: { comments, participants, user_status }
+        setComments(result.comments || []);
+        setParticipants(result.participants || []);
+        setUserStatus(result.user_status || null);
+      } else {
+        // Old format: array of comments (backward compatibility)
+        setComments(result || []);
+        setParticipants([]);
+        setUserStatus(null);
+      }
     } catch (error) {
       setComments([]);
+      setParticipants([]);
+      setUserStatus(null);
     } finally {
       setLoading(false);
     }
@@ -81,6 +104,8 @@ export const useRecordComments = (opts: UseRecordCommentsOpts) => {
 
   return {
     comments,
+    participants,
+    userStatus,
     loading,
     fetchComments,
     addComment,

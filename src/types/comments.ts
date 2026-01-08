@@ -7,6 +7,7 @@ export type RecordComment = {
   create_uid: number;
   "create_uid.login": string;
   "create_uid.name": string;
+  is_unread?: boolean;
 };
 
 export type MentionUser = {
@@ -17,8 +18,13 @@ export type MentionUser = {
 
 export type Participant = {
   id: number;
-  user_id: number;
   name: string;
+  login: string;
   is_muted: boolean;
-  last_message_read?: number;
+};
+
+export type UserStatus = {
+  is_participant: boolean;
+  is_muted: boolean;
+  last_message_read: number | false;
 };

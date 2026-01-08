@@ -1,5 +1,4 @@
 import { useEffect, useCallback, useMemo, useRef, CSSProperties } from "react";
-import { useDeepCompareEffect } from "use-deep-compare";
 import FormActionBar from "@/actionbar/FormActionBar";
 import {
   CommentsSidePanel,
@@ -66,24 +65,28 @@ export const FormActionView = (props: FormActionViewProps) => {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { comments, loading, fetchComments, addComment, fetchMentionUsers } =
-    useRecordComments({
-      model,
-      resourceId: currentId,
-      context,
-    });
+  const {
+    comments,
+    participants,
+    userStatus,
+    loading,
+    fetchComments,
+    addComment,
+    fetchMentionUsers,
+  } = useRecordComments({
+    model,
+    resourceId: currentId,
+    context,
+  });
 
   const {
-    participants,
-    loading: participantsLoading,
-    updating: muteUpdating,
-    fetchParticipants,
-    toggleMute,
     isMuted,
+    updating: muteUpdating,
+    toggleMute,
   } = useParticipants({
     model,
     resourceId: currentId,
-    currentUserId: globalValues?.uid,
+    userStatus,
     context,
   });
 
@@ -104,13 +107,6 @@ export const FormActionView = (props: FormActionViewProps) => {
     setRefreshComments?.(fetchComments);
     return () => setRefreshComments?.(undefined);
   }, [commentsEnabled, fetchComments, setRefreshComments]);
-
-  useDeepCompareEffect(() => {
-    if (!commentsEnabled) return;
-    if (currentId && commentsPanelVisible) {
-      fetchParticipants();
-    }
-  }, [commentsEnabled, currentId, commentsPanelVisible, fetchParticipants]);
 
   const handleAddComment = useCallback(
     async (body: string) => {
@@ -211,10 +207,10 @@ export const FormActionView = (props: FormActionViewProps) => {
             currentUserId={globalValues?.uid}
             canAddComment={permissions?.write}
             participants={participants}
-            participantsLoading={participantsLoading}
+            participantsLoading={loading}
             isMuted={isMuted}
             muteUpdating={muteUpdating}
-            onToggleMute={toggleMute}
+            onToggleMute={userStatus ? toggleMute : undefined}
           />
         )}
       </div>
