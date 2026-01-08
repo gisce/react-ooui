@@ -1,9 +1,7 @@
 import Field from "@/common/Field";
 import { Time as TimeOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
-import dayjs from "@/helpers/dayjs";
-import { Dayjs } from "dayjs";
-import { TimePicker } from "../../common/TimePicker";
+import { MaskedTimeInput } from "@gisce/react-formiga-components";
 
 const Time = (props: WidgetProps) => {
   const { ooui } = props;
@@ -18,24 +16,24 @@ const Time = (props: WidgetProps) => {
 type TimeInputProps = {
   ooui: TimeOoui;
   value?: string;
-  onChange?: (value?: string) => void;
+  onChange?: (value?: string | null) => void;
 };
 
 export const TimeInput = (props: TimeInputProps) => {
-  const { readOnly } = props.ooui;
+  const { readOnly, required } = props.ooui;
 
-  const onChange = (_time: Dayjs | null, timestring?: string) => {
+  const handleChange = (value: string | null | undefined) => {
     if (props.onChange) {
-      props.onChange(timestring);
+      props.onChange(value ?? undefined);
     }
   };
 
   return (
-    <TimePicker
-      onChange={onChange}
-      numberOfSelectsToHide={3} // Since it has hours, minutes, and seconds
-      value={props.value ? dayjs(props.value, "HH:mm:ss") : undefined}
-      disabled={readOnly}
+    <MaskedTimeInput
+      value={props.value}
+      onChange={handleChange}
+      readOnly={readOnly}
+      required={required}
     />
   );
 };
