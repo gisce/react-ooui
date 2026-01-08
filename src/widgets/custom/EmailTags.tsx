@@ -255,7 +255,6 @@ export const EmailTagsInput: React.FC<EmailTagsInputProps> = ({
       </div>
       {emails.length > 0 && (
         <Button
-          type="text"
           title={t("copyToClipboard")}
           icon={
             isCopied ? (
@@ -267,6 +266,8 @@ export const EmailTagsInput: React.FC<EmailTagsInputProps> = ({
           onClick={handleCopyEmails}
           style={{
             flexShrink: 0,
+            height: token.controlHeight + 2 * token.paddingXS,
+            width: token.controlHeight + 2 * token.paddingXS,
           }}
         />
       )}
