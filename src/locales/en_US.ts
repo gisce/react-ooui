@@ -156,10 +156,5 @@ export default {
   set_column_limit: "Set column limit",
   column_limit: "Column limit",
   column_limit_description: "A limit on the number of items in a column",
-  comments: "Comments",
-  writeComment: "Write a comment...",
-  noComments: "No comments",
-  noMatches: "No matches",
-  createNewRecord: "Create a new record",
   clearSelection: "Clear selection",
 };
