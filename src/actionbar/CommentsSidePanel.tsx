@@ -20,10 +20,11 @@ import {
 import { CloseOutlined, SendOutlined } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
-import { RecordComment, MentionUser } from "@/types/comments";
+import { RecordComment, MentionUser, Participant } from "@/types/comments";
 import dayjs from "@/helpers/dayjs";
 import { UserAvatar } from "@/ui/UserAvatar";
 import { CommentMarkdown } from "@/ui/CommentMarkdown";
+import { ParticipantsSection } from "./ParticipantsSection";
 
 const { Title, Text } = Typography;
 const { useToken } = theme;
@@ -69,6 +70,13 @@ export type CommentsSidePanelProps = {
   onFetchMentionUsers: (query: string) => Promise<MentionUser[]>;
   currentUserId?: number;
   canAddComment?: boolean;
+  participants?: Participant[];
+  participantsLoading?: boolean;
+  isMuted?: boolean;
+  muteUpdating?: boolean;
+  onToggleMute?: () => void;
+  lastMessageRead?: number | false;
+  onMarkAsRead?: (messageId: number) => void;
 };
 
 type MessageBubbleProps = {
@@ -243,30 +251,34 @@ const MessageBubble = memo(
     );
 
     return (
-      <>
-        {isFirstOfDay && dayLabel && (
-          <div style={daySeparatorStyle}>
-            <div style={dayLineStyle} />
-            <Text style={dayLabelStyle}>{dayLabel}</Text>
-            <div style={dayLineStyle} />
-          </div>
-        )}
-        {isFirstInGroup && !isFirstOfDay && <div style={separatorStyle} />}
-        <div style={containerStyle}>
-          {isFirstInGroup && <div style={headerStyle}>{avatarNameElement}</div>}
-          <div style={bubbleRowStyle}>
-            {isOwnMessage && inlineTimestamp}
-            <div style={bubbleStyle}>
-              <CommentMarkdown
-                comment={comment}
-                model={model}
-                resourceId={resourceId}
-              />
+      <ErrorBoundary>
+        <>
+          {isFirstOfDay && dayLabel && (
+            <div style={daySeparatorStyle}>
+              <div style={dayLineStyle} />
+              <Text style={dayLabelStyle}>{dayLabel}</Text>
+              <div style={dayLineStyle} />
             </div>
-            {!isOwnMessage && inlineTimestamp}
+          )}
+          {isFirstInGroup && !isFirstOfDay && <div style={separatorStyle} />}
+          <div style={containerStyle}>
+            {isFirstInGroup && (
+              <div style={headerStyle}>{avatarNameElement}</div>
+            )}
+            <div style={bubbleRowStyle}>
+              {isOwnMessage && inlineTimestamp}
+              <div style={bubbleStyle}>
+                <CommentMarkdown
+                  comment={comment}
+                  model={model}
+                  resourceId={resourceId}
+                />
+              </div>
+              {!isOwnMessage && inlineTimestamp}
+            </div>
           </div>
-        </div>
-      </>
+        </>
+      </ErrorBoundary>
     );
   },
 );
@@ -285,6 +297,13 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     onFetchMentionUsers,
     currentUserId,
     canAddComment,
+    participants = [],
+    participantsLoading = false,
+    isMuted = false,
+    muteUpdating = false,
+    onToggleMute,
+    lastMessageRead,
+    onMarkAsRead,
   } = props;
   const { token } = useToken();
   const { t } = useLocale();
@@ -294,8 +313,11 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
   const [mentionUsers, setMentionUsers] = useState<MentionUser[]>([]);
   const [mentionSearching, setMentionSearching] = useState(false);
   const [mentionDropdownOpen, setMentionDropdownOpen] = useState(false);
+  const [hasScrolledToUnread, setHasScrolledToUnread] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const mentionsRef = useRef<any>(null);
+  const contentAreaRef = useRef<HTMLDivElement>(null);
+  const messageRefs = useRef<Map<number, HTMLDivElement>>(new Map());
 
   useEffect(() => {
     if (visible) {
@@ -306,6 +328,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
 
   const handleExitComplete = useCallback(() => {
     setShouldRender(false);
+    setHasScrolledToUnread(false);
   }, []);
 
   const scrollToBottom = useCallback(() => {
@@ -314,14 +337,58 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     });
   }, []);
 
+  // Find the first unread message ID
+  const firstUnreadMessageId = useMemo(() => {
+    if (!lastMessageRead || lastMessageRead === false) {
+      return null;
+    }
+    // Comments are displayed reversed, so we find from the original order
+    const unreadComment = comments.find(
+      (c) => c.id > (lastMessageRead as number),
+    );
+    return unreadComment?.id ?? null;
+  }, [comments, lastMessageRead]);
+
+  // Scroll to first unread message or bottom
+  const scrollToUnreadOrBottom = useCallback(() => {
+    if (firstUnreadMessageId && messageRefs.current.has(firstUnreadMessageId)) {
+      const element = messageRefs.current.get(firstUnreadMessageId);
+      element?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    } else {
+      scrollToBottom();
+    }
+  }, [firstUnreadMessageId, scrollToBottom]);
+
+  // Mark all messages as read when scrolling completes or panel closes
+  const markAllAsRead = useCallback(() => {
+    if (!onMarkAsRead || comments.length === 0) return;
+    const lastComment = comments[comments.length - 1];
+    if (lastComment && lastComment.id !== lastMessageRead) {
+      onMarkAsRead(lastComment.id);
+    }
+  }, [onMarkAsRead, comments, lastMessageRead]);
+
   useEffect(() => {
-    if (visible && comments.length > 0 && !loading) {
+    if (visible && comments.length > 0 && !loading && !hasScrolledToUnread) {
       // Use setTimeout to ensure content is fully rendered before scrolling
       setTimeout(() => {
-        scrollToBottom();
+        scrollToUnreadOrBottom();
+        setHasScrolledToUnread(true);
+        // Mark as read after scrolling (user has seen the messages)
+        setTimeout(markAllAsRead, 500);
       }, 50);
     }
-  }, [visible, comments.length, loading, scrollToBottom]);
+  }, [
+    visible,
+    comments.length,
+    loading,
+    hasScrolledToUnread,
+    scrollToUnreadOrBottom,
+    markAllAsRead,
+  ]);
 
   const handleSend = useCallback(async () => {
     if (!newComment.trim() || sending) return;
@@ -461,21 +528,35 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           style={panelStyle}
         >
-          <div style={panelHeaderStyle}>
-            <Title level={5} style={TITLE_STYLE}>
-              {t("comments")}
-            </Title>
-            <Button
-              type="text"
-              icon={<CloseOutlined />}
-              onClick={onClose}
-              size="small"
-            />
-          </div>
+          <ErrorBoundary>
+            <div style={panelHeaderStyle}>
+              <Title level={5} style={TITLE_STYLE}>
+                {t("comments")}
+              </Title>
+              <Button
+                type="text"
+                icon={<CloseOutlined />}
+                onClick={onClose}
+                size="small"
+              />
+            </div>
+          </ErrorBoundary>
+
+          {onToggleMute && (
+            <ErrorBoundary>
+              <ParticipantsSection
+                participants={participants}
+                isMuted={isMuted}
+                loading={participantsLoading}
+                updating={muteUpdating}
+                onToggleMute={onToggleMute}
+              />
+            </ErrorBoundary>
+          )}
 
           <ErrorBoundary>
-            <div style={contentAreaStyle}>
-              {loading ? (
+            <div ref={contentAreaRef} style={contentAreaStyle}>
+              {loading && comments.length === 0 ? (
                 <div style={LOADING_CONTAINER_STYLE}>
                   <Spin />
                 </div>
@@ -501,20 +582,28 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                       );
 
                     return (
-                      <MessageBubble
+                      <div
                         key={comment.id}
-                        comment={comment}
-                        isOwnMessage={comment.create_uid === currentUserId}
-                        isFirstInGroup={isFirstInGroup || isFirstOfDay}
-                        isFirstOfDay={isFirstOfDay}
-                        dayLabel={
-                          isFirstOfDay
-                            ? getDayLabel(comment.create_date)
-                            : undefined
-                        }
-                        model={model}
-                        resourceId={resourceId}
-                      />
+                        ref={(el) => {
+                          if (el) {
+                            messageRefs.current.set(comment.id, el);
+                          }
+                        }}
+                      >
+                        <MessageBubble
+                          comment={comment}
+                          isOwnMessage={comment.create_uid === currentUserId}
+                          isFirstInGroup={isFirstInGroup || isFirstOfDay}
+                          isFirstOfDay={isFirstOfDay}
+                          dayLabel={
+                            isFirstOfDay
+                              ? getDayLabel(comment.create_date)
+                              : undefined
+                          }
+                          model={model}
+                          resourceId={resourceId}
+                        />
+                      </div>
                     );
                   })}
                   <div ref={messagesEndRef} />
@@ -524,36 +613,40 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
           </ErrorBoundary>
 
           {canAddComment && (
-            <div style={footerStyle}>
-              <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
-                <Mentions
-                  ref={mentionsRef}
-                  value={newComment}
-                  onChange={handleCommentChange}
-                  onKeyDown={handleKeyDown}
-                  onSearch={handleMentionSearch}
-                  onSelect={handleMentionSelect}
-                  onBlur={handleMentionBlur}
-                  options={mentionOptions}
-                  loading={mentionSearching}
-                  filterOption={false}
-                  notFoundContent={
-                    mentionSearching ? <Spin size="small" /> : t("noMatches")
-                  }
-                  placeholder={t("writeComment")}
-                  autoSize={TEXT_AREA_AUTO_SIZE}
-                  disabled={sending}
-                  style={{ flex: 1 }}
-                />
-                <Button
-                  type="primary"
-                  icon={<SendOutlined />}
-                  onClick={handleSend}
-                  loading={sending}
-                  disabled={!newComment.trim()}
-                />
+            <ErrorBoundary>
+              <div style={footerStyle}>
+                <div
+                  style={{ display: "flex", gap: 8, alignItems: "flex-end" }}
+                >
+                  <Mentions
+                    ref={mentionsRef}
+                    value={newComment}
+                    onChange={handleCommentChange}
+                    onKeyDown={handleKeyDown}
+                    onSearch={handleMentionSearch}
+                    onSelect={handleMentionSelect}
+                    onBlur={handleMentionBlur}
+                    options={mentionOptions}
+                    loading={mentionSearching}
+                    filterOption={false}
+                    notFoundContent={
+                      mentionSearching ? <Spin size="small" /> : t("noMatches")
+                    }
+                    placeholder={t("writeComment")}
+                    autoSize={TEXT_AREA_AUTO_SIZE}
+                    disabled={sending}
+                    style={{ flex: 1 }}
+                  />
+                  <Button
+                    type="primary"
+                    icon={<SendOutlined />}
+                    onClick={handleSend}
+                    loading={sending}
+                    disabled={!newComment.trim()}
+                  />
+                </div>
               </div>
-            </div>
+            </ErrorBoundary>
           )}
         </motion.div>
       )}

@@ -10,6 +10,7 @@ import TitleHeader from "@/ui/TitleHeader";
 import Form from "@/widgets/views/Form";
 import { useActionViewContext } from "@/context/ActionViewContext";
 import { useRecordComments } from "@/hooks/useRecordComments";
+import { useParticipants } from "@/hooks/useParticipants";
 import { useConfigContext, useFeatureIsEnabled } from "@/context/ConfigContext";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { theme } from "antd";
@@ -64,12 +65,31 @@ export const FormActionView = (props: FormActionViewProps) => {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { comments, loading, fetchComments, addComment, fetchMentionUsers } =
-    useRecordComments({
-      model,
-      resourceId: currentId,
-      context,
-    });
+  const {
+    comments,
+    participants,
+    userStatus,
+    loading,
+    fetchComments,
+    addComment,
+    fetchMentionUsers,
+    markAsRead,
+  } = useRecordComments({
+    model,
+    resourceId: currentId,
+    context,
+  });
+
+  const {
+    isMuted,
+    updating: muteUpdating,
+    toggleMute,
+  } = useParticipants({
+    model,
+    resourceId: currentId,
+    userStatus,
+    context,
+  });
 
   useEffect(() => {
     if (!commentsEnabled) return;
@@ -187,6 +207,13 @@ export const FormActionView = (props: FormActionViewProps) => {
             onFetchMentionUsers={fetchMentionUsers}
             currentUserId={globalValues?.uid}
             canAddComment={permissions?.write}
+            participants={participants}
+            participantsLoading={loading}
+            isMuted={isMuted}
+            muteUpdating={muteUpdating}
+            onToggleMute={userStatus ? toggleMute : undefined}
+            lastMessageRead={userStatus?.last_message_read}
+            onMarkAsRead={userStatus ? markAsRead : undefined}
           />
         )}
       </div>

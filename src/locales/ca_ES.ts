@@ -167,4 +167,10 @@ export default {
   noMatches: "Sense coincidències",
   createNewRecord: "Crear un nou registre",
   clearSelection: "Netejar selecció",
+  unsubscribe: "Cancel·lar subscripció",
+  subscribe: "Subscriure's",
+  receivingNotifications:
+    "Reps notificacions perquè estàs subscrit a aquest fil.",
+  mutedNotifications: "Has silenciat les notificacions d'aquest fil.",
+  participants: "Participants",
 };

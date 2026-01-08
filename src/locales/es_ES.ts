@@ -170,4 +170,10 @@ export default {
   noMatches: "Sin coincidencias",
   createNewRecord: "Crear un nuevo registro",
   clearSelection: "Limpiar selección",
+  unsubscribe: "Cancelar suscripción",
+  subscribe: "Suscribirse",
+  receivingNotifications:
+    "Recibes notificaciones porque estás suscrito a este hilo.",
+  mutedNotifications: "Has silenciado las notificaciones de este hilo.",
+  participants: "Participantes",
 };

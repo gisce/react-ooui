@@ -164,4 +164,10 @@ export default {
   noMatches: "No matches",
   createNewRecord: "Create a new record",
   clearSelection: "Clear selection",
+  unsubscribe: "Unsubscribe",
+  subscribe: "Subscribe",
+  receivingNotifications:
+    "You're receiving notifications because you're subscribed to this thread.",
+  mutedNotifications: "You've muted notifications for this thread.",
+  participants: "Participants",
 };
