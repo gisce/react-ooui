@@ -163,4 +163,5 @@ export default {
     "Un límite en el número de elementos en una columna",
   openInListView: "Abrir en vista de lista",
   createNewRecord: "Crear un nuevo registro",
+  clearSelection: "Limpiar selección",
 };
