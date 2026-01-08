@@ -6,6 +6,7 @@ import {
   FormOutlined,
   AreaChartOutlined,
   CalendarOutlined,
+  BorderOuterOutlined,
 } from "@ant-design/icons";
 import {
   useLocale,
@@ -30,6 +31,7 @@ const iconsForViewTypes = {
   form: <FormOutlined />,
   graph: <AreaChartOutlined />,
   calendar: <CalendarOutlined />,
+  kanban: <BorderOuterOutlined />,
 };
 
 function getIconForView(view?: View) {
