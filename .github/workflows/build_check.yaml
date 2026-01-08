@@ -31,8 +31,9 @@ jobs:
         run: npm test
 
       - name: Run e2e tests
+        timeout-minutes: 30
         run: |
           cd e2e-test-app
           npm install
-          npx playwright install
+          npx playwright install --with-deps chromium
           npm test
