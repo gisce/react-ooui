@@ -146,13 +146,22 @@ export const FormActionView = (props: FormActionViewProps) => {
     [results, setResults, setCurrentItemIndex],
   );
 
+  const wrapperStyle = useMemo(
+    (): CSSProperties => ({
+      display: "flex",
+      flexDirection: "column",
+      height: "calc(100vh - 80px)",
+    }),
+    [],
+  );
+
   const containerStyle = useMemo(
     (): CSSProperties => ({
       display: "flex",
       flex: 1,
       overflow: "hidden",
       position: "relative",
-      height: "calc(100vh - 80px - 102px)",
+      minHeight: 0,
       backgroundColor: token.colorBgContainer,
     }),
     [token.colorBgContainer],
@@ -184,7 +193,7 @@ export const FormActionView = (props: FormActionViewProps) => {
   }
 
   return (
-    <>
+    <div style={wrapperStyle}>
       <TitleHeader>
         <FormActionBar toolbar={formView?.toolbar} />
       </TitleHeader>
@@ -228,6 +237,6 @@ export const FormActionView = (props: FormActionViewProps) => {
           />
         )}
       </div>
-    </>
+    </div>
   );
 };
