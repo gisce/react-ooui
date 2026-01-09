@@ -152,4 +152,7 @@ export default {
   notParticipant:
     "No participas en este hilo. Suscríbete para recibir notificaciones.",
   participants: "Participantes",
+  sending: "Enviando...",
+  failedToSend: "Error al enviar",
+  retry: "Reintentar",
 };

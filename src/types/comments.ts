@@ -28,3 +28,12 @@ export type UserStatus = {
   is_muted: boolean;
   last_message_read: number | false;
 };
+
+export type PendingCommentStatus = "sending" | "failed";
+
+export type PendingComment = {
+  tempId: string;
+  body: string;
+  status: PendingCommentStatus;
+  createdAt: string;
+};
