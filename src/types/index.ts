@@ -84,7 +84,18 @@ export type GraphView = BaseViewExtra & {
   search_fields?: SearchFields;
 };
 
-export type View = TreeView | FormView | DashboardView | GraphView;
+export type KanbanView = BaseView & {
+  arch: string;
+  fields: any;
+  column_field: string;
+  drag?: boolean;
+  sort?: boolean;
+  colors?: string;
+  toolbar?: any;
+  search_fields?: SearchFields;
+};
+
+export type View = TreeView | FormView | DashboardView | GraphView | KanbanView;
 
 type SearchResponse = {
   totalItems: () => Promise<number>;
@@ -307,10 +318,7 @@ type ConnectionProviderType = {
     },
     requestConfig?: any,
   ) => Promise<ViewData>;
-  getView: (
-    options: GetViewRequest,
-    requestConfig?: any,
-  ) => Promise<FormView | TreeView | GraphView>;
+  getView: (options: GetViewRequest, requestConfig?: any) => Promise<View>;
   getFields: (options: GetFieldsRequest, requestConfig?: any) => Promise<any>;
   searchAllIds: (
     options: SearchAllIdsRequest,
@@ -331,6 +339,7 @@ type ConnectionProviderType = {
     options: DeleteObjectsRequest,
     requestConfig?: any,
   ) => Promise<any>;
+  rawExecute: (options: ExecuteRequest, requestConfig?: any) => Promise<any>;
   execute: (options: ExecuteRequest, requestConfig?: any) => Promise<any>;
   readObjects: (
     options: ReadObjectsRequest,
@@ -452,7 +461,7 @@ type ConnectionProviderType = {
   ) => Promise<boolean | Record<string, boolean>>;
 };
 
-type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar";
+type ViewType = "tree" | "form" | "dashboard" | "graph" | "calendar" | "kanban";
 type ViewTuple = [number | undefined, ViewType];
 
 type ActionInfo = {
