@@ -21,11 +21,18 @@ import {
 import { CloseOutlined, SendOutlined, ReloadOutlined } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
-import { RecordComment, MentionUser, Participant } from "@/types/comments";
+import {
+  RecordComment,
+  MentionUser,
+  Participant,
+  PendingComment,
+} from "@/types/comments";
 import dayjs from "@/helpers/dayjs";
 import { UserAvatar } from "@/ui/UserAvatar";
 import { CommentMarkdown } from "@/ui/CommentMarkdown";
 import { ParticipantsSection } from "./ParticipantsSection";
+import { PendingMessageBubble } from "./PendingMessageBubble";
+import { nanoid } from "nanoid";
 
 const { Title, Text } = Typography;
 const { useToken } = theme;
@@ -33,10 +40,8 @@ const { useToken } = theme;
 const capitalize = (str: string): string =>
   str.charAt(0).toUpperCase() + str.slice(1);
 
-const getDayLabel = (date: string): string => {
-  // dayjs calendar() uses locale-specific formats configured in helpers/dayjs.ts
-  return capitalize(dayjs(date).calendar());
-};
+const getDayLabel = (date: string): string =>
+  capitalize(dayjs(date).calendar());
 
 export const COMMENTS_PANEL_WIDTH = 450;
 export const COMMENTS_PANEL_GAP = 8;
@@ -366,7 +371,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
   const { token } = useToken();
   const { t } = useLocale();
   const [newComment, setNewComment] = useState("");
-  const [sending, setSending] = useState(false);
+  const [pendingComments, setPendingComments] = useState<PendingComment[]>([]);
   const [shouldRender, setShouldRender] = useState(visible);
   const [mentionUsers, setMentionUsers] = useState<MentionUser[]>([]);
   const [mentionSearching, setMentionSearching] = useState(false);
@@ -374,10 +379,12 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
   const [hasScrolledToUnread, setHasScrolledToUnread] = useState(false);
   const [dividerMounted, setDividerMounted] = useState(false);
   const [hasFetchedSinceOpen, setHasFetchedSinceOpen] = useState(false);
+  const [recentlySent, setRecentlySent] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const mentionsRef = useRef<any>(null);
   const contentAreaRef = useRef<HTMLDivElement>(null);
   const messageRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+  const recentlySentTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const newestMessageId = comments.length > 0 ? comments[0].id : null;
 
@@ -387,7 +394,6 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
       setNewComment("");
       setHasFetchedSinceOpen(false);
       onFetchComments();
-      // Auto-focus input after panel animation
       setTimeout(() => mentionsRef.current?.focus(), 300);
     }
   }, [visible, onFetchComments]);
@@ -407,6 +413,12 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     setHasScrolledToUnread(false);
     setDividerMounted(false);
     setHasFetchedSinceOpen(false);
+    setPendingComments([]);
+    setRecentlySent(false);
+    if (recentlySentTimeoutRef.current) {
+      clearTimeout(recentlySentTimeoutRef.current);
+      recentlySentTimeoutRef.current = null;
+    }
 
     if (
       onMarkAsRead &&
@@ -425,7 +437,15 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
 
   const isReadStatusKnown = lastMessageRead !== undefined;
 
+  const isSendingMessage = useMemo(
+    () => pendingComments.some((p) => p.status === "sending"),
+    [pendingComments],
+  );
+
   const firstUnreadMessageId = useMemo(() => {
+    if (isSendingMessage || recentlySent) {
+      return null;
+    }
     if (lastMessageRead === false || lastMessageRead === undefined) {
       return null;
     }
@@ -434,7 +454,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     );
     if (unreadComments.length === 0) return null;
     return unreadComments[unreadComments.length - 1].id;
-  }, [comments, lastMessageRead]);
+  }, [comments, lastMessageRead, isSendingMessage, recentlySent]);
 
   const scrollToElement = useCallback((element: HTMLDivElement) => {
     if (!contentAreaRef.current) return;
@@ -497,19 +517,73 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     scrollToElement,
   ]);
 
-  const handleSend = useCallback(async () => {
-    if (!newComment.trim() || sending) return;
+  useEffect(() => {
+    return () => {
+      if (recentlySentTimeoutRef.current) {
+        clearTimeout(recentlySentTimeoutRef.current);
+      }
+    };
+  }, []);
 
-    setSending(true);
-    try {
-      await onAddComment(newComment.trim());
-      setNewComment("");
-      setTimeout(scrollToBottom, 100);
-    } finally {
-      setSending(false);
-      setTimeout(() => mentionsRef.current?.focus(), 0);
-    }
-  }, [newComment, sending, onAddComment, scrollToBottom]);
+  const sendMessage = useCallback(
+    async (tempId: string, body: string) => {
+      try {
+        await onAddComment(body);
+        setPendingComments((prev) => prev.filter((p) => p.tempId !== tempId));
+        if (recentlySentTimeoutRef.current) {
+          clearTimeout(recentlySentTimeoutRef.current);
+        }
+        setRecentlySent(true);
+        recentlySentTimeoutRef.current = setTimeout(
+          () => setRecentlySent(false),
+          1000,
+        );
+      } catch {
+        setPendingComments((prev) =>
+          prev.map((p) =>
+            p.tempId === tempId ? { ...p, status: "failed" as const } : p,
+          ),
+        );
+      }
+    },
+    [onAddComment],
+  );
+
+  const handleSend = useCallback(() => {
+    const body = newComment.trim();
+    if (!body) return;
+
+    const tempId = nanoid();
+    const pendingMessage: PendingComment = {
+      tempId,
+      body,
+      status: "sending",
+      createdAt: new Date().toISOString(),
+    };
+
+    setPendingComments((prev) => [...prev, pendingMessage]);
+    setNewComment("");
+    setTimeout(scrollToBottom, 100);
+    setTimeout(() => mentionsRef.current?.focus(), 0);
+
+    void sendMessage(tempId, body);
+  }, [newComment, scrollToBottom, sendMessage]);
+
+  const handleRetry = useCallback(
+    (tempId: string) => {
+      const pending = pendingComments.find((p) => p.tempId === tempId);
+      if (!pending) return;
+
+      setPendingComments((prev) =>
+        prev.map((p) =>
+          p.tempId === tempId ? { ...p, status: "sending" as const } : p,
+        ),
+      );
+
+      void sendMessage(tempId, pending.body);
+    },
+    [pendingComments, sendMessage],
+  );
 
   const handleToggleMute = useCallback(async () => {
     await onToggleMute?.();
@@ -518,12 +592,17 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === "Enter" && !e.shiftKey && !mentionDropdownOpen) {
+      if (
+        e.key === "Enter" &&
+        !e.shiftKey &&
+        !mentionDropdownOpen &&
+        newComment.trim()
+      ) {
         e.preventDefault();
         handleSend();
       }
     },
-    [handleSend, mentionDropdownOpen],
+    [handleSend, mentionDropdownOpen, newComment],
   );
 
   const handleCommentChange = useCallback((value: string) => {
@@ -749,6 +828,13 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                       </div>
                     );
                   })}
+                  {pendingComments.map((pending) => (
+                    <PendingMessageBubble
+                      key={pending.tempId}
+                      pending={pending}
+                      onRetry={handleRetry}
+                    />
+                  ))}
                   <div ref={messagesEndRef} />
                 </div>
               )}
@@ -777,14 +863,12 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                     }
                     placeholder={t("writeComment")}
                     autoSize={TEXT_AREA_AUTO_SIZE}
-                    disabled={sending}
                     style={{ flex: 1 }}
                   />
                   <Button
                     type="primary"
                     icon={<SendOutlined />}
                     onClick={handleSend}
-                    loading={sending}
                     disabled={!newComment.trim()}
                   />
                 </div>

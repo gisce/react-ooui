@@ -176,4 +176,7 @@ export default {
   notParticipant:
     "No participes en aquest fil. Subscriu-te per rebre notificacions.",
   participants: "Participants",
+  sending: "Enviant...",
+  failedToSend: "Error en enviar",
+  retry: "Reintentar",
 };

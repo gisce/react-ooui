@@ -173,4 +173,7 @@ export default {
   notParticipant:
     "You're not a participant in this thread. Subscribe to receive notifications.",
   participants: "Participants",
+  sending: "Sending...",
+  failedToSend: "Failed to send",
+  retry: "Retry",
 };
