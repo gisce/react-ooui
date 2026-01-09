@@ -116,7 +116,7 @@ export const FormActionView = (props: FormActionViewProps) => {
   const handleAddComment = useCallback(
     async (body: string) => {
       const newCommentId = await addComment(body);
-      await fetchComments();
+      await fetchComments({ silent: true });
       if (newCommentId) {
         markAsRead(newCommentId);
       }
