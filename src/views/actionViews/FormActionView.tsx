@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useMemo, useRef, CSSProperties } from "react";
+import { useEffect, useCallback, useMemo, CSSProperties } from "react";
 import FormActionBar from "@/actionbar/FormActionBar";
 import {
   CommentsSidePanel,
@@ -63,8 +63,6 @@ export const FormActionView = (props: FormActionViewProps) => {
     ErpFeatureKeys.FEATURE_COMMENTS_SYSTEM,
   );
 
-  const containerRef = useRef<HTMLDivElement>(null);
-
   const {
     comments,
     participants,
@@ -92,7 +90,6 @@ export const FormActionView = (props: FormActionViewProps) => {
     context,
   });
 
-  // Reset comment count when navigating to a different record
   useEffect(() => {
     if (!commentsEnabled) return;
     setCommentCount?.(0);
@@ -134,9 +131,7 @@ export const FormActionView = (props: FormActionViewProps) => {
   const handleSubmitSucceed = useCallback(
     (id?: number, values?: any) => {
       if (id === undefined) return;
-      const itemIndex = results!.findIndex((item: any) => {
-        return item.id === id;
-      });
+      const itemIndex = results!.findIndex((item: any) => item.id === id);
       if (itemIndex === -1) {
         results!.push(values);
         setResults(results);
@@ -188,7 +183,7 @@ export const FormActionView = (props: FormActionViewProps) => {
       <TitleHeader>
         <FormActionBar toolbar={formView?.toolbar} />
       </TitleHeader>
-      <div ref={containerRef} style={containerStyle}>
+      <div style={containerStyle}>
         <div style={formWrapperStyle}>
           <Form
             rootForm={true}
