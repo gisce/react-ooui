@@ -146,5 +146,7 @@ export default {
   receivingNotifications:
     "Reps notificacions perquè estàs subscrit a aquest fil.",
   mutedNotifications: "Has silenciat les notificacions d'aquest fil.",
+  notParticipant:
+    "No participes en aquest fil. Subscriu-te per rebre notificacions.",
   participants: "Participants",
 };

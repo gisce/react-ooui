@@ -143,5 +143,7 @@ export default {
   receivingNotifications:
     "You're receiving notifications because you're subscribed to this thread.",
   mutedNotifications: "You've muted notifications for this thread.",
+  notParticipant:
+    "You're not a participant in this thread. Subscribe to receive notifications.",
   participants: "Participants",
 };

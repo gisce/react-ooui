@@ -17,7 +17,7 @@ import {
   Tooltip,
   Mentions,
 } from "antd";
-import { CloseOutlined, SendOutlined } from "@ant-design/icons";
+import { CloseOutlined, SendOutlined, ReloadOutlined } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import { RecordComment, MentionUser, Participant } from "@/types/comments";
@@ -66,12 +66,13 @@ export type CommentsSidePanelProps = {
   resourceId: number;
   onClose: () => void;
   onAddComment: (body: string) => Promise<void>;
-  onFetchComments: () => void;
+  onFetchComments: (opts?: { silent?: boolean }) => void;
   onFetchMentionUsers: (query: string) => Promise<MentionUser[]>;
   currentUserId?: number;
   canAddComment?: boolean;
   participants?: Participant[];
   participantsLoading?: boolean;
+  isParticipant?: boolean;
   isMuted?: boolean;
   muteUpdating?: boolean;
   onToggleMute?: () => void;
@@ -299,6 +300,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     canAddComment,
     participants = [],
     participantsLoading = false,
+    isParticipant = false,
     isMuted = false,
     muteUpdating = false,
     onToggleMute,
@@ -322,7 +324,10 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
   useEffect(() => {
     if (visible) {
       setShouldRender(true);
+      setNewComment("");
       onFetchComments();
+      // Auto-focus input after panel animation
+      setTimeout(() => mentionsRef.current?.focus(), 300);
     }
   }, [visible, onFetchComments]);
 
@@ -407,6 +412,12 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
       setTimeout(() => mentionsRef.current?.focus(), 0);
     }
   }, [newComment, sending, onAddComment, scrollToBottom]);
+
+  const handleToggleMute = useCallback(async () => {
+    await onToggleMute?.();
+    // Silent refetch to update participants list
+    onFetchComments({ silent: true });
+  }, [onToggleMute, onFetchComments]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -534,9 +545,21 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
         >
           <ErrorBoundary>
             <div style={panelHeaderStyle}>
-              <Title level={5} style={TITLE_STYLE}>
-                {t("comments")}
-              </Title>
+              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                <Title level={5} style={TITLE_STYLE}>
+                  {t("comments")}
+                </Title>
+                <Tooltip title={t("refresh")}>
+                  <Button
+                    type="text"
+                    icon={
+                      <ReloadOutlined style={{ color: token.colorPrimary }} />
+                    }
+                    onClick={() => onFetchComments()}
+                    size="small"
+                  />
+                </Tooltip>
+              </div>
               <Button
                 type="text"
                 icon={<CloseOutlined />}
@@ -550,10 +573,11 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
             <ErrorBoundary>
               <ParticipantsSection
                 participants={participants}
+                isParticipant={isParticipant}
                 isMuted={isMuted}
                 loading={participantsLoading}
                 updating={muteUpdating}
-                onToggleMute={onToggleMute}
+                onToggleMute={handleToggleMute}
               />
             </ErrorBoundary>
           )}

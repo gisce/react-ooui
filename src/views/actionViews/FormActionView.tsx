@@ -81,6 +81,7 @@ export const FormActionView = (props: FormActionViewProps) => {
   });
 
   const {
+    isParticipant,
     isMuted,
     updating: muteUpdating,
     toggleMute,
@@ -90,6 +91,12 @@ export const FormActionView = (props: FormActionViewProps) => {
     userStatus,
     context,
   });
+
+  // Reset comment count when navigating to a different record
+  useEffect(() => {
+    if (!commentsEnabled) return;
+    setCommentCount?.(0);
+  }, [commentsEnabled, currentId, setCommentCount]);
 
   useEffect(() => {
     if (!commentsEnabled) return;
@@ -209,6 +216,7 @@ export const FormActionView = (props: FormActionViewProps) => {
             canAddComment={permissions?.write}
             participants={participants}
             participantsLoading={loading}
+            isParticipant={isParticipant}
             isMuted={isMuted}
             muteUpdating={muteUpdating}
             onToggleMute={userStatus ? toggleMute : undefined}

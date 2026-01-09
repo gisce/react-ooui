@@ -11,6 +11,7 @@ const { useToken } = theme;
 
 export type ParticipantsSectionProps = {
   participants: Participant[];
+  isParticipant: boolean;
   isMuted: boolean;
   loading: boolean;
   updating: boolean;
@@ -19,6 +20,7 @@ export type ParticipantsSectionProps = {
 
 const ParticipantsSectionComponent = ({
   participants,
+  isParticipant,
   isMuted,
   loading,
   updating,
@@ -98,17 +100,26 @@ const ParticipantsSectionComponent = ({
         <div style={notificationRowStyle}>
           <div style={notificationTextStyle}>
             <Text style={explanatoryTextStyle}>
-              {isMuted ? t("mutedNotifications") : t("receivingNotifications")}
+              {!isParticipant
+                ? t("notParticipant")
+                : isMuted
+                ? t("mutedNotifications")
+                : t("receivingNotifications")}
             </Text>
           </div>
           <Tooltip
             placement="left"
-            title={isMuted ? t("subscribe") : t("unsubscribe")}
+            title={
+              !isParticipant || isMuted ? t("subscribe") : t("unsubscribe")
+            }
           >
             <Button
+              type={isParticipant && !isMuted ? "primary" : "default"}
               loading={updating}
               onClick={onToggleMute}
-              icon={isMuted ? <BellOutlined /> : <BellFilled />}
+              icon={
+                !isParticipant || isMuted ? <BellOutlined /> : <BellFilled />
+              }
             />
           </Tooltip>
         </div>
