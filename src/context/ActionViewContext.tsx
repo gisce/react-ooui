@@ -54,6 +54,7 @@ type ActionViewProviderProps = {
   permissions?: PermissionsMap | null;
   permissionsLoading?: boolean;
   permissionsError?: Error | null;
+  initialOpenComments?: boolean;
 };
 
 export type ActionViewContextType = Omit<
@@ -157,6 +158,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     permissions,
     permissionsLoading,
     permissionsError,
+    initialOpenComments,
   } = props;
 
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
@@ -211,8 +213,9 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   );
   const [currentSavedSearch, setCurrentSavedSearch] = useState<any>(null);
   const [savedSearches, setSavedSearches] = useState<any[]>([]);
-  const [commentsPanelVisible, setCommentsPanelVisible] =
-    useState<boolean>(false);
+  const [commentsPanelVisible, setCommentsPanelVisible] = useState<boolean>(
+    initialOpenComments ?? false,
+  );
   const [commentCount, setCommentCount] = useState<number>(0);
   const [refreshComments, setRefreshCommentsState] = useState<{
     fn: (() => Promise<void>) | undefined;
