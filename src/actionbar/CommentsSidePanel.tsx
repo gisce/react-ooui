@@ -264,7 +264,9 @@ const MessageBubble = memo(
               <div style={dayLineStyle} />
             </div>
           )}
-          {isFirstInGroup && !isFirstOfDay && <div style={separatorStyle} />}
+          {isFirstInGroup && !isFirstOfDay && !skipSeparator && (
+            <div style={separatorStyle} />
+          )}
           <div style={containerStyle}>
             {isFirstInGroup && (
               <div style={headerStyle}>{avatarNameElement}</div>
@@ -742,6 +744,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                           }
                           model={model}
                           resourceId={resourceId}
+                          skipSeparator={isFirstUnread}
                         />
                       </div>
                     );
