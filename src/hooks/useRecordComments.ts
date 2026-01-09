@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useDeepCompareCallback } from "use-deep-compare";
 import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "./useNetworkRequest";
@@ -26,43 +26,62 @@ export const useRecordComments = (opts: UseRecordCommentsOpts) => {
     ConnectionProvider.getHandler().rawExecute,
   );
 
-  const fetchComments = useDeepCompareCallback(async () => {
-    if (!resourceId) {
+  const prevResourceIdRef = useRef(resourceId);
+
+  // Reset state when navigating to a different record (not on initial mount)
+  useEffect(() => {
+    if (prevResourceIdRef.current !== resourceId) {
       setComments([]);
       setParticipants([]);
       setUserStatus(null);
-      return;
+      prevResourceIdRef.current = resourceId;
     }
+  }, [resourceId]);
 
-    setLoading(true);
-    try {
-      const result = await executeRequest({
-        model,
-        action: "get_comments",
-        payload: [[resourceId]],
-        context,
-      });
-
-      // Detect format: new format is object with 'comments' key, old format is array
-      if (result && !Array.isArray(result) && "comments" in result) {
-        // New format: { comments, participants, user_status }
-        setComments(result.comments || []);
-        setParticipants(result.participants || []);
-        setUserStatus(result.user_status || null);
-      } else {
-        // Old format: array of comments (backward compatibility)
-        setComments(result || []);
+  const fetchComments = useDeepCompareCallback(
+    async (opts?: { silent?: boolean }) => {
+      if (!resourceId) {
+        setComments([]);
         setParticipants([]);
         setUserStatus(null);
+        return;
       }
-    } catch (error) {
-      setComments([]);
-      setParticipants([]);
-      setUserStatus(null);
-    } finally {
-      setLoading(false);
-    }
-  }, [model, resourceId, context, executeRequest]);
+
+      if (!opts?.silent) {
+        setLoading(true);
+      }
+      try {
+        const result = await executeRequest({
+          model,
+          action: "get_comments",
+          payload: [[resourceId]],
+          context,
+        });
+
+        // Detect format: new format is object with 'comments' key, old format is array
+        if (result && !Array.isArray(result) && "comments" in result) {
+          // New format: { comments, participants, user_status }
+          setComments(result.comments || []);
+          setParticipants(result.participants || []);
+          setUserStatus(result.user_status || null);
+        } else {
+          // Old format: array of comments (backward compatibility)
+          setComments(result || []);
+          setParticipants([]);
+          setUserStatus(null);
+        }
+      } catch (error) {
+        setComments([]);
+        setParticipants([]);
+        setUserStatus(null);
+      } finally {
+        if (!opts?.silent) {
+          setLoading(false);
+        }
+      }
+    },
+    [model, resourceId, context, executeRequest],
+  );
 
   const addComment = useDeepCompareCallback(
     async (body: string) => {

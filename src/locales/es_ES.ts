@@ -175,5 +175,7 @@ export default {
   receivingNotifications:
     "Recibes notificaciones porque estás suscrito a este hilo.",
   mutedNotifications: "Has silenciado las notificaciones de este hilo.",
+  notParticipant:
+    "No participas en este hilo. Suscríbete para recibir notificaciones.",
   participants: "Participantes",
 };

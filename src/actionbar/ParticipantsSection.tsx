@@ -11,6 +11,7 @@ const { useToken } = theme;
 
 export type ParticipantsSectionProps = {
   participants: Participant[];
+  isParticipant: boolean;
   isMuted: boolean;
   loading: boolean;
   updating: boolean;
@@ -19,6 +20,7 @@ export type ParticipantsSectionProps = {
 
 const ParticipantsSectionComponent = ({
   participants,
+  isParticipant,
   isMuted,
   loading,
   updating,
@@ -84,6 +86,14 @@ const ParticipantsSectionComponent = ({
     [],
   );
 
+  const isSubscribed = isParticipant && !isMuted;
+
+  const notificationStatusText = useMemo(() => {
+    if (!isParticipant) return t("notParticipant");
+    if (isMuted) return t("mutedNotifications");
+    return t("receivingNotifications");
+  }, [isParticipant, isMuted, t]);
+
   if (loading) {
     return (
       <div style={sectionStyle}>
@@ -97,18 +107,17 @@ const ParticipantsSectionComponent = ({
       <div style={sectionStyle}>
         <div style={notificationRowStyle}>
           <div style={notificationTextStyle}>
-            <Text style={explanatoryTextStyle}>
-              {isMuted ? t("mutedNotifications") : t("receivingNotifications")}
-            </Text>
+            <Text style={explanatoryTextStyle}>{notificationStatusText}</Text>
           </div>
           <Tooltip
             placement="left"
-            title={isMuted ? t("subscribe") : t("unsubscribe")}
+            title={isSubscribed ? t("unsubscribe") : t("subscribe")}
           >
             <Button
+              type={isSubscribed ? "primary" : "default"}
               loading={updating}
               onClick={onToggleMute}
-              icon={isMuted ? <BellOutlined /> : <BellFilled />}
+              icon={isSubscribed ? <BellFilled /> : <BellOutlined />}
             />
           </Tooltip>
         </div>
