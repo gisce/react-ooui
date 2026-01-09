@@ -285,6 +285,55 @@ const MessageBubble = memo(
 );
 MessageBubble.displayName = "MessageBubble";
 
+type UnreadDividerProps = {
+  label: string;
+};
+
+const UnreadDivider = memo(({ label }: UnreadDividerProps) => {
+  const { token } = useToken();
+
+  const containerStyle = useMemo(
+    (): CSSProperties => ({
+      display: "flex",
+      alignItems: "center",
+      gap: 12,
+      marginTop: 16,
+      marginBottom: 12,
+      width: "100%",
+    }),
+    [],
+  );
+
+  const lineStyle = useMemo(
+    (): CSSProperties => ({
+      flex: 1,
+      height: 2,
+      backgroundColor: token.colorWarning,
+    }),
+    [token.colorWarning],
+  );
+
+  const labelStyle = useMemo(
+    (): CSSProperties => ({
+      fontSize: 12,
+      fontWeight: 600,
+      color: token.colorWarning,
+      textTransform: "uppercase",
+      letterSpacing: 0.5,
+    }),
+    [token.colorWarning],
+  );
+
+  return (
+    <div style={containerStyle} role="separator" aria-label={label}>
+      <div style={lineStyle} />
+      <span style={labelStyle}>{label}</span>
+      <div style={lineStyle} />
+    </div>
+  );
+});
+UnreadDivider.displayName = "UnreadDivider";
+
 const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
   const {
     visible,
@@ -617,6 +666,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                         dayjs(comment.create_date),
                         "day",
                       );
+                    const isFirstUnread = comment.id === firstUnreadMessageId;
 
                     return (
                       <div
@@ -627,6 +677,9 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                           }
                         }}
                       >
+                        {isFirstUnread && (
+                          <UnreadDivider label={t("newMessages")} />
+                        )}
                         <MessageBubble
                           comment={comment}
                           isOwnMessage={comment.create_uid === currentUserId}

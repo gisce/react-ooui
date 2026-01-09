@@ -140,6 +140,7 @@ export default {
   comments: "Comentaris",
   writeComment: "Escriu un comentari...",
   noComments: "No hi ha comentaris",
+  newMessages: "Missatges nous",
   noMatches: "Sense coincidències",
   unsubscribe: "Cancel·lar subscripció",
   subscribe: "Subscriure's",
