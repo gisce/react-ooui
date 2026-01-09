@@ -529,6 +529,15 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     [token.colorBorder, token.colorBgElevated],
   );
 
+  const headerTitleGroupStyle = useMemo(
+    (): CSSProperties => ({
+      display: "flex",
+      alignItems: "center",
+      gap: 4,
+    }),
+    [],
+  );
+
   if (!shouldRender) {
     return null;
   }
@@ -545,7 +554,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
         >
           <ErrorBoundary>
             <div style={panelHeaderStyle}>
-              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <div style={headerTitleGroupStyle}>
                 <Title level={5} style={TITLE_STYLE}>
                   {t("comments")}
                 </Title>

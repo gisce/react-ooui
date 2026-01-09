@@ -39,7 +39,7 @@ export const useParticipants = (opts: UseParticipantsOpts) => {
   }, [userStatus]);
 
   const toggleMute = useDeepCompareCallback(async () => {
-    if (!resourceId) return;
+    if (!resourceId || updating) return;
 
     // Determine if user is currently NOT receiving notifications:
     // - Non-participants don't receive (even if is_muted is false)
@@ -73,6 +73,7 @@ export const useParticipants = (opts: UseParticipantsOpts) => {
   }, [
     model,
     resourceId,
+    updating,
     serverIsParticipant,
     serverIsMuted,
     context,

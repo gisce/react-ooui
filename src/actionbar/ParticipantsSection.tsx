@@ -86,6 +86,14 @@ const ParticipantsSectionComponent = ({
     [],
   );
 
+  const isSubscribed = isParticipant && !isMuted;
+
+  const notificationStatusText = useMemo(() => {
+    if (!isParticipant) return t("notParticipant");
+    if (isMuted) return t("mutedNotifications");
+    return t("receivingNotifications");
+  }, [isParticipant, isMuted, t]);
+
   if (loading) {
     return (
       <div style={sectionStyle}>
@@ -99,27 +107,17 @@ const ParticipantsSectionComponent = ({
       <div style={sectionStyle}>
         <div style={notificationRowStyle}>
           <div style={notificationTextStyle}>
-            <Text style={explanatoryTextStyle}>
-              {!isParticipant
-                ? t("notParticipant")
-                : isMuted
-                ? t("mutedNotifications")
-                : t("receivingNotifications")}
-            </Text>
+            <Text style={explanatoryTextStyle}>{notificationStatusText}</Text>
           </div>
           <Tooltip
             placement="left"
-            title={
-              !isParticipant || isMuted ? t("subscribe") : t("unsubscribe")
-            }
+            title={isSubscribed ? t("unsubscribe") : t("subscribe")}
           >
             <Button
-              type={isParticipant && !isMuted ? "primary" : "default"}
+              type={isSubscribed ? "primary" : "default"}
               loading={updating}
               onClick={onToggleMute}
-              icon={
-                !isParticipant || isMuted ? <BellOutlined /> : <BellFilled />
-              }
+              icon={isSubscribed ? <BellFilled /> : <BellOutlined />}
             />
           </Tooltip>
         </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useDeepCompareCallback } from "use-deep-compare";
 import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "./useNetworkRequest";
@@ -26,11 +26,16 @@ export const useRecordComments = (opts: UseRecordCommentsOpts) => {
     ConnectionProvider.getHandler().rawExecute,
   );
 
-  // Reset state when navigating to a different record
+  const prevResourceIdRef = useRef(resourceId);
+
+  // Reset state when navigating to a different record (not on initial mount)
   useEffect(() => {
-    setComments([]);
-    setParticipants([]);
-    setUserStatus(null);
+    if (prevResourceIdRef.current !== resourceId) {
+      setComments([]);
+      setParticipants([]);
+      setUserStatus(null);
+      prevResourceIdRef.current = resourceId;
+    }
   }, [resourceId]);
 
   const fetchComments = useDeepCompareCallback(
