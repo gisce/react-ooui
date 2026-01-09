@@ -17,14 +17,12 @@ import {
   theme,
   Tooltip,
   Mentions,
-  Dropdown,
 } from "antd";
 import {
-  CloseOutlined,
   DeleteOutlined,
-  MoreOutlined,
   ReloadOutlined,
   SendOutlined,
+  CloseOutlined,
 } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
@@ -244,32 +242,45 @@ const MessageBubble = memo(
     const bubbleRowWrapperStyle = useMemo(
       (): CSSProperties => ({
         position: "relative",
-        borderRadius: 8,
+        borderRadius: 6,
         padding: "4px 8px",
         width: "100%",
         backgroundColor:
-          isOwnMessage && isHovered ? token.colorFillQuaternary : "transparent",
-        transition: "background-color 0.15s",
+          isOwnMessage && isHovered ? "rgba(0, 0, 0, 0.04)" : "transparent",
+        transition: "background-color 0.1s ease-out",
       }),
-      [isHovered, isOwnMessage, token.colorFillQuaternary],
+      [isHovered, isOwnMessage],
     );
 
-    const toolbarStyle = useMemo(
+    const removeActionStyle = useMemo(
       (): CSSProperties => ({
         position: "absolute",
         top: "50%",
-        right: 4,
+        left: 8,
         transform: "translateY(-50%)",
-        backgroundColor: token.colorBgElevated,
-        borderRadius: 4,
-        boxShadow: token.boxShadowSecondary,
-        padding: 0,
         zIndex: 1,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        fontSize: 13,
+        color: token.colorTextQuaternary,
+        cursor: "pointer",
+        opacity: isHovered ? 1 : 0,
+        transition: "opacity 0.12s ease-out, color 0.15s ease",
+        pointerEvents: isHovered ? "auto" : "none",
       }),
-      [token.colorBgElevated, token.boxShadowSecondary],
+      [isHovered, token.colorTextQuaternary],
+    );
+
+    const [isRemoveHovered, setIsRemoveHovered] = useState(false);
+
+    const handleRemoveMouseEnter = useCallback(
+      () => setIsRemoveHovered(true),
+      [],
+    );
+    const handleRemoveMouseLeave = useCallback(
+      () => setIsRemoveHovered(false),
+      [],
     );
 
     const handleMouseEnter = useCallback(() => setIsHovered(true), []);
@@ -285,19 +296,6 @@ const MessageBubble = memo(
         },
       });
     }, [t, onDeleteComment, comment.id]);
-
-    const menuItems = useMemo(
-      () => [
-        {
-          key: "remove",
-          label: t("removeComment"),
-          icon: <DeleteOutlined />,
-          danger: true,
-          onClick: handleDeleteClick,
-        },
-      ],
-      [t, handleDeleteClick],
-    );
 
     const avatarNameElement = (
       <div style={avatarNameGroupStyle}>
@@ -351,36 +349,22 @@ const MessageBubble = memo(
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
-              {isOwnMessage && isHovered && (
-                <div style={toolbarStyle}>
-                  <Dropdown
-                    menu={{ items: menuItems }}
-                    trigger={["click"]}
-                    placement="bottomRight"
+              {isOwnMessage && (
+                <Tooltip title={t("delete")} placement="top">
+                  <span
+                    style={{
+                      ...removeActionStyle,
+                      color: isRemoveHovered
+                        ? token.colorError
+                        : token.colorTextQuaternary,
+                    }}
+                    onClick={handleDeleteClick}
+                    onMouseEnter={handleRemoveMouseEnter}
+                    onMouseLeave={handleRemoveMouseLeave}
                   >
-                    <Button
-                      icon={
-                        <MoreOutlined
-                          style={{
-                            marginTop: 4,
-                            fontSize: 18,
-                            fontWeight: 600,
-                            color: token.colorText,
-                          }}
-                        />
-                      }
-                      style={{
-                        padding: 0,
-                        width: 26,
-                        height: 26,
-                        minWidth: 26,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    />
-                  </Dropdown>
-                </div>
+                    <DeleteOutlined />
+                  </span>
+                </Tooltip>
               )}
               <div style={bubbleRowStyle}>
                 {isOwnMessage && inlineTimestamp}
