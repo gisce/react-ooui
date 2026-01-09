@@ -17,8 +17,15 @@ import {
   theme,
   Tooltip,
   Mentions,
+  Dropdown,
 } from "antd";
-import { CloseOutlined, SendOutlined, ReloadOutlined } from "@ant-design/icons";
+import {
+  CloseOutlined,
+  DeleteOutlined,
+  MoreOutlined,
+  ReloadOutlined,
+  SendOutlined,
+} from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import {
@@ -33,6 +40,7 @@ import { CommentMarkdown } from "@/ui/CommentMarkdown";
 import { ParticipantsSection } from "./ParticipantsSection";
 import { PendingMessageBubble } from "./PendingMessageBubble";
 import { nanoid } from "nanoid";
+import showConfirmDialog from "@/ui/ConfirmDialog";
 
 const { Title, Text } = Typography;
 const { useToken } = theme;
@@ -95,6 +103,7 @@ type MessageBubbleProps = {
   model: string;
   resourceId: number;
   skipSeparator?: boolean;
+  onDeleteComment?: (commentId: number) => void;
 };
 
 const MessageBubble = memo(
@@ -107,8 +116,11 @@ const MessageBubble = memo(
     model,
     resourceId,
     skipSeparator = false,
+    onDeleteComment,
   }: MessageBubbleProps) => {
     const { token } = useToken();
+    const { t } = useLocale();
+    const [isHovered, setIsHovered] = useState(false);
     const userName = comment["create_uid.name"];
     const absoluteTime = dayjs(comment.create_date).format(
       "HH:mm · DD/MM/YYYY",
@@ -229,6 +241,64 @@ const MessageBubble = memo(
       [token.colorTextQuaternary],
     );
 
+    const bubbleRowWrapperStyle = useMemo(
+      (): CSSProperties => ({
+        position: "relative",
+        borderRadius: 8,
+        padding: "4px 8px",
+        width: "100%",
+        backgroundColor:
+          isOwnMessage && isHovered ? token.colorFillQuaternary : "transparent",
+        transition: "background-color 0.15s",
+      }),
+      [isHovered, isOwnMessage, token.colorFillQuaternary],
+    );
+
+    const toolbarStyle = useMemo(
+      (): CSSProperties => ({
+        position: "absolute",
+        top: "50%",
+        right: 4,
+        transform: "translateY(-50%)",
+        backgroundColor: token.colorBgElevated,
+        borderRadius: 4,
+        boxShadow: token.boxShadowSecondary,
+        padding: 0,
+        zIndex: 1,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }),
+      [token.colorBgElevated, token.boxShadowSecondary],
+    );
+
+    const handleMouseEnter = useCallback(() => setIsHovered(true), []);
+    const handleMouseLeave = useCallback(() => setIsHovered(false), []);
+
+    const handleDeleteClick = useCallback(() => {
+      showConfirmDialog({
+        confirmMessage: t("confirmDeleteComment"),
+        t,
+        onOk: () => {
+          // TODO: Network call for removing comment is WIP
+          onDeleteComment?.(comment.id);
+        },
+      });
+    }, [t, onDeleteComment, comment.id]);
+
+    const menuItems = useMemo(
+      () => [
+        {
+          key: "remove",
+          label: t("removeComment"),
+          icon: <DeleteOutlined />,
+          danger: true,
+          onClick: handleDeleteClick,
+        },
+      ],
+      [t, handleDeleteClick],
+    );
+
     const avatarNameElement = (
       <div style={avatarNameGroupStyle}>
         {isOwnMessage ? (
@@ -276,16 +346,53 @@ const MessageBubble = memo(
             {isFirstInGroup && (
               <div style={headerStyle}>{avatarNameElement}</div>
             )}
-            <div style={bubbleRowStyle}>
-              {isOwnMessage && inlineTimestamp}
-              <div style={bubbleStyle}>
-                <CommentMarkdown
-                  comment={comment}
-                  model={model}
-                  resourceId={resourceId}
-                />
+            <div
+              style={bubbleRowWrapperStyle}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              {isOwnMessage && isHovered && (
+                <div style={toolbarStyle}>
+                  <Dropdown
+                    menu={{ items: menuItems }}
+                    trigger={["click"]}
+                    placement="bottomRight"
+                  >
+                    <Button
+                      icon={
+                        <MoreOutlined
+                          style={{
+                            marginTop: 4,
+                            fontSize: 18,
+                            fontWeight: 600,
+                            color: token.colorText,
+                          }}
+                        />
+                      }
+                      style={{
+                        padding: 0,
+                        width: 26,
+                        height: 26,
+                        minWidth: 26,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    />
+                  </Dropdown>
+                </div>
+              )}
+              <div style={bubbleRowStyle}>
+                {isOwnMessage && inlineTimestamp}
+                <div style={bubbleStyle}>
+                  <CommentMarkdown
+                    comment={comment}
+                    model={model}
+                    resourceId={resourceId}
+                  />
+                </div>
+                {!isOwnMessage && inlineTimestamp}
               </div>
-              {!isOwnMessage && inlineTimestamp}
             </div>
           </div>
         </>
@@ -633,6 +740,11 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     setMentionDropdownOpen(false);
   }, []);
 
+  const handleDeleteComment = useCallback((commentId: number) => {
+    // TODO: Network call for removing comment is WIP
+    console.log("Delete comment:", commentId);
+  }, []);
+
   const mentionOptions = useMemo(
     () =>
       mentionUsers.map((user) => ({
@@ -824,6 +936,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                           model={model}
                           resourceId={resourceId}
                           skipSeparator={isFirstUnread}
+                          onDeleteComment={handleDeleteComment}
                         />
                       </div>
                     );
