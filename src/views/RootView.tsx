@@ -205,10 +205,12 @@ function RootView(props: RootViewProps, ref: any) {
     model,
     view_id,
     res_id,
+    openComments,
   }: {
     model: string;
     res_id: number;
     view_id?: number;
+    openComments?: boolean;
   }) {
     const view = await ConnectionProvider.getHandler().getView({
       model,
@@ -228,6 +230,7 @@ function RootView(props: RootViewProps, ref: any) {
       target: "current",
       initialView: { id: view.view_id, type: "form" },
       res_id,
+      openComments,
     });
   }
 
@@ -618,6 +621,7 @@ function RootView(props: RootViewProps, ref: any) {
       searchParams,
       currentPage,
       order,
+      openComments,
     } = parms;
 
     const key = nanoid();
@@ -686,6 +690,7 @@ function RootView(props: RootViewProps, ref: any) {
             initialSearchParams={searchParams}
             currentPage={currentPage}
             order={order}
+            openComments={openComments}
           />
         ),
         key,

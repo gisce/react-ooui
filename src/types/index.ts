@@ -476,6 +476,7 @@ type ActionInfo = {
   searchParams?: any[];
   currentPage?: number;
   order?: any[];
+  openComments?: boolean;
 };
 
 type Tab = {
