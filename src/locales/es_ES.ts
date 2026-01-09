@@ -167,6 +167,7 @@ export default {
   comments: "Comentarios",
   writeComment: "Escribe un comentario...",
   noComments: "No hay comentarios",
+  newMessages: "Mensajes nuevos",
   noMatches: "Sin coincidencias",
   createNewRecord: "Crear un nuevo registro",
   clearSelection: "Limpiar selección",

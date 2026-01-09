@@ -164,6 +164,7 @@ export default {
   comments: "Comentaris",
   writeComment: "Escriu un comentari...",
   noComments: "No hi ha comentaris",
+  newMessages: "Missatges nous",
   noMatches: "Sense coincidències",
   createNewRecord: "Crear un nou registre",
   clearSelection: "Netejar selecció",

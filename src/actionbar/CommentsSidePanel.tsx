@@ -5,6 +5,7 @@ import {
   useRef,
   useEffect,
   useMemo,
+  forwardRef,
   CSSProperties,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -88,6 +89,7 @@ type MessageBubbleProps = {
   dayLabel?: string;
   model: string;
   resourceId: number;
+  skipSeparator?: boolean;
 };
 
 const MessageBubble = memo(
@@ -99,6 +101,7 @@ const MessageBubble = memo(
     dayLabel,
     model,
     resourceId,
+    skipSeparator = false,
   }: MessageBubbleProps) => {
     const { token } = useToken();
     const userName = comment["create_uid.name"];
@@ -261,7 +264,9 @@ const MessageBubble = memo(
               <div style={dayLineStyle} />
             </div>
           )}
-          {isFirstInGroup && !isFirstOfDay && <div style={separatorStyle} />}
+          {isFirstInGroup && !isFirstOfDay && !skipSeparator && (
+            <div style={separatorStyle} />
+          )}
           <div style={containerStyle}>
             {isFirstInGroup && (
               <div style={headerStyle}>{avatarNameElement}</div>
@@ -284,6 +289,57 @@ const MessageBubble = memo(
   },
 );
 MessageBubble.displayName = "MessageBubble";
+
+type UnreadDividerProps = {
+  label: string;
+};
+
+const UnreadDivider = memo(
+  forwardRef<HTMLDivElement, UnreadDividerProps>(({ label }, ref) => {
+    const { token } = useToken();
+
+    const containerStyle = useMemo(
+      (): CSSProperties => ({
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        marginTop: 16,
+        marginBottom: 12,
+        width: "100%",
+      }),
+      [],
+    );
+
+    const lineStyle = useMemo(
+      (): CSSProperties => ({
+        flex: 1,
+        height: 2,
+        backgroundColor: token.colorWarning,
+      }),
+      [token.colorWarning],
+    );
+
+    const labelStyle = useMemo(
+      (): CSSProperties => ({
+        fontSize: 12,
+        fontWeight: 600,
+        color: token.colorWarning,
+        textTransform: "uppercase",
+        letterSpacing: 0.5,
+      }),
+      [token.colorWarning],
+    );
+
+    return (
+      <div ref={ref} style={containerStyle} role="separator" aria-label={label}>
+        <div style={lineStyle} />
+        <span style={labelStyle}>{label}</span>
+        <div style={lineStyle} />
+      </div>
+    );
+  }),
+);
+UnreadDivider.displayName = "UnreadDivider";
 
 const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
   const {
@@ -316,25 +372,50 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
   const [mentionSearching, setMentionSearching] = useState(false);
   const [mentionDropdownOpen, setMentionDropdownOpen] = useState(false);
   const [hasScrolledToUnread, setHasScrolledToUnread] = useState(false);
+  const [dividerMounted, setDividerMounted] = useState(false);
+  const [hasFetchedSinceOpen, setHasFetchedSinceOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const mentionsRef = useRef<any>(null);
   const contentAreaRef = useRef<HTMLDivElement>(null);
   const messageRefs = useRef<Map<number, HTMLDivElement>>(new Map());
 
+  const newestMessageId = comments.length > 0 ? comments[0].id : null;
+
   useEffect(() => {
     if (visible) {
       setShouldRender(true);
       setNewComment("");
+      setHasFetchedSinceOpen(false);
       onFetchComments();
       // Auto-focus input after panel animation
       setTimeout(() => mentionsRef.current?.focus(), 300);
     }
   }, [visible, onFetchComments]);
 
+  const prevLoadingRef = useRef(loading);
+  useEffect(() => {
+    const wasLoading = prevLoadingRef.current;
+    prevLoadingRef.current = loading;
+
+    if (wasLoading && !loading && visible) {
+      setHasFetchedSinceOpen(true);
+    }
+  }, [loading, visible]);
+
   const handleExitComplete = useCallback(() => {
     setShouldRender(false);
     setHasScrolledToUnread(false);
-  }, []);
+    setDividerMounted(false);
+    setHasFetchedSinceOpen(false);
+
+    if (
+      onMarkAsRead &&
+      newestMessageId &&
+      newestMessageId !== lastMessageRead
+    ) {
+      onMarkAsRead(newestMessageId);
+    }
+  }, [onMarkAsRead, newestMessageId, lastMessageRead]);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({
@@ -342,61 +423,78 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     });
   }, []);
 
-  // Find the first unread message ID (oldest unread for scroll positioning)
+  const isReadStatusKnown = lastMessageRead !== undefined;
+
   const firstUnreadMessageId = useMemo(() => {
     if (lastMessageRead === false || lastMessageRead === undefined) {
       return null;
     }
-    // Comments from API are newest-first, but display is oldest-first (reversed)
-    // Find the oldest unread = smallest ID > lastMessageRead
     const unreadComments = comments.filter(
       (c) => c.id > (lastMessageRead as number),
     );
     if (unreadComments.length === 0) return null;
-    // Last in the array is the oldest (smallest ID) since array is newest-first
     return unreadComments[unreadComments.length - 1].id;
   }, [comments, lastMessageRead]);
 
-  // Scroll to first unread message or bottom
-  const scrollToUnreadOrBottom = useCallback(() => {
-    if (firstUnreadMessageId && messageRefs.current.has(firstUnreadMessageId)) {
-      const element = messageRefs.current.get(firstUnreadMessageId);
-      element?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    } else {
-      scrollToBottom();
-    }
-  }, [firstUnreadMessageId, scrollToBottom]);
+  const scrollToElement = useCallback((element: HTMLDivElement) => {
+    if (!contentAreaRef.current) return;
+    const container = contentAreaRef.current;
+    const containerRect = container.getBoundingClientRect();
+    const elementRect = element.getBoundingClientRect();
+    const relativeTop =
+      elementRect.top - containerRect.top + container.scrollTop;
+    const containerPadding = 16;
+    const targetScroll = relativeTop - containerPadding;
+    container.scrollTo({
+      top: targetScroll,
+      behavior: "smooth",
+    });
+  }, []);
 
-  // Mark all messages as read when scrolling completes or panel closes
-  const markAllAsRead = useCallback(() => {
-    if (!onMarkAsRead || comments.length === 0) return;
-    // Comments are ordered newest-first from API, so comments[0] is the newest
-    const newestComment = comments[0];
-    if (newestComment && newestComment.id !== lastMessageRead) {
-      onMarkAsRead(newestComment.id);
-    }
-  }, [onMarkAsRead, comments, lastMessageRead]);
+  const unreadDividerRef = useRef<HTMLDivElement | null>(null);
+
+  const unreadDividerRefCallback = useCallback(
+    (element: HTMLDivElement | null) => {
+      unreadDividerRef.current = element;
+      setDividerMounted(element !== null);
+    },
+    [],
+  );
 
   useEffect(() => {
-    if (visible && comments.length > 0 && !loading && !hasScrolledToUnread) {
-      // Use setTimeout to ensure content is fully rendered before scrolling
-      setTimeout(() => {
-        scrollToUnreadOrBottom();
+    if (
+      visible &&
+      comments.length > 0 &&
+      !loading &&
+      !hasScrolledToUnread &&
+      isReadStatusKnown &&
+      hasFetchedSinceOpen
+    ) {
+      if (firstUnreadMessageId && dividerMounted && unreadDividerRef.current) {
         setHasScrolledToUnread(true);
-        // Mark as read after scrolling (user has seen the messages)
-        setTimeout(markAllAsRead, 500);
-      }, 50);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            if (unreadDividerRef.current) {
+              scrollToElement(unreadDividerRef.current);
+            }
+          });
+        });
+      } else if (!firstUnreadMessageId) {
+        scrollToBottom();
+        setHasScrolledToUnread(true);
+      }
     }
   }, [
     visible,
     comments.length,
     loading,
     hasScrolledToUnread,
-    scrollToUnreadOrBottom,
-    markAllAsRead,
+    isReadStatusKnown,
+    hasFetchedSinceOpen,
+    firstUnreadMessageId,
+    dividerMounted,
+    scrollToBottom,
+    scrollToElement,
   ]);
 
   const handleSend = useCallback(async () => {
@@ -415,7 +513,6 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
 
   const handleToggleMute = useCallback(async () => {
     await onToggleMute?.();
-    // Silent refetch to update participants list
     onFetchComments({ silent: true });
   }, [onToggleMute, onFetchComments]);
 
@@ -617,16 +714,24 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                         dayjs(comment.create_date),
                         "day",
                       );
+                    const isFirstUnread = comment.id === firstUnreadMessageId;
 
                     return (
                       <div
                         key={comment.id}
+                        data-message-id={comment.id}
                         ref={(el) => {
                           if (el) {
                             messageRefs.current.set(comment.id, el);
                           }
                         }}
                       >
+                        {isFirstUnread && (
+                          <UnreadDivider
+                            ref={unreadDividerRefCallback}
+                            label={t("newMessages")}
+                          />
+                        )}
                         <MessageBubble
                           comment={comment}
                           isOwnMessage={comment.create_uid === currentUserId}
@@ -639,6 +744,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                           }
                           model={model}
                           resourceId={resourceId}
+                          skipSeparator={isFirstUnread}
                         />
                       </div>
                     );

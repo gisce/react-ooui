@@ -118,10 +118,13 @@ export const FormActionView = (props: FormActionViewProps) => {
 
   const handleAddComment = useCallback(
     async (body: string) => {
-      await addComment(body);
+      const newCommentId = await addComment(body);
       await fetchComments();
+      if (newCommentId) {
+        markAsRead(newCommentId);
+      }
     },
-    [addComment, fetchComments],
+    [addComment, fetchComments, markAsRead],
   );
 
   const handleClosePanel = useCallback(() => {
