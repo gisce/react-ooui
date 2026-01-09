@@ -35,6 +35,7 @@ const ParticipantsSectionComponent = ({
       borderBottom: `1px solid ${token.colorBorder}`,
       backgroundColor: token.colorBgLayout,
       flexShrink: 0,
+      minHeight: 82,
     }),
     [token.colorBorder, token.colorBgLayout],
   );
@@ -96,7 +97,14 @@ const ParticipantsSectionComponent = ({
 
   if (loading) {
     return (
-      <div style={sectionStyle}>
+      <div
+        style={{
+          ...sectionStyle,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <Spin size="small" />
       </div>
     );
