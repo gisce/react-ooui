@@ -1,7 +1,12 @@
 import Field from "@/common/Field";
 import { Time as TimeOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
-import { MaskedTimeInput } from "@gisce/react-formiga-components";
+import { DateMaskedInput } from "@gisce/react-formiga-components";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
+import { UserFeatureKeys } from "@/models/userFeature";
+import dayjs from "@/helpers/dayjs";
+import { Dayjs } from "dayjs";
+import { TimePicker } from "@/common/TimePicker";
 
 const Time = (props: WidgetProps) => {
   const { ooui } = props;
@@ -21,6 +26,9 @@ type TimeInputProps = {
 
 export const TimeInput = (props: TimeInputProps) => {
   const { readOnly, required } = props.ooui;
+  const useMaskedInput = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_DATE_USE_MASKED_INPUT,
+  );
 
   const handleChange = (value: string | null | undefined) => {
     if (props.onChange) {
@@ -28,12 +36,30 @@ export const TimeInput = (props: TimeInputProps) => {
     }
   };
 
+  if (useMaskedInput) {
+    return (
+      <DateMaskedInput
+        type="time"
+        value={props.value}
+        onChange={handleChange}
+        readOnly={readOnly}
+        required={required}
+      />
+    );
+  }
+
+  const handleTimePickerChange = (_time: Dayjs | null, timestring?: string) => {
+    if (props.onChange) {
+      props.onChange(timestring);
+    }
+  };
+
   return (
-    <MaskedTimeInput
-      value={props.value}
-      onChange={handleChange}
-      readOnly={readOnly}
-      required={required}
+    <TimePicker
+      onChange={handleTimePickerChange}
+      numberOfSelectsToHide={3}
+      value={props.value ? dayjs(props.value, "HH:mm:ss") : undefined}
+      disabled={readOnly}
     />
   );
 };
