@@ -137,6 +137,7 @@ export default {
   comments: "Comments",
   writeComment: "Write a comment...",
   noComments: "No comments",
+  newMessages: "New messages",
   noMatches: "No matches",
   unsubscribe: "Unsubscribe",
   subscribe: "Subscribe",
