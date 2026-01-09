@@ -1,11 +1,28 @@
 import { memo, useMemo, useCallback, CSSProperties } from "react";
-import { Typography, Button, theme } from "antd";
+import { Button, theme } from "antd";
 import { ExclamationCircleFilled, LoadingOutlined } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import { PendingComment } from "@/types/comments";
 
-const { Text } = Typography;
 const { useToken } = theme;
+
+const CONTAINER_STYLE: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "flex-end",
+  marginBottom: 8,
+};
+
+const BUBBLE_ROW_STYLE: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  justifyContent: "flex-end",
+  marginRight: 28,
+};
+
+const ICON_STYLE: CSSProperties = { fontSize: 12 };
 
 export type PendingMessageBubbleProps = {
   pending: PendingComment;
@@ -20,27 +37,6 @@ const PendingMessageBubbleComponent = ({
   const { t } = useLocale();
   const isSending = pending.status === "sending";
   const isFailed = pending.status === "failed";
-
-  const containerStyle = useMemo(
-    (): CSSProperties => ({
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "flex-end",
-      marginBottom: 8,
-    }),
-    [],
-  );
-
-  const bubbleRowStyle = useMemo(
-    (): CSSProperties => ({
-      display: "flex",
-      alignItems: "center",
-      gap: 8,
-      justifyContent: "flex-end",
-      marginRight: 28,
-    }),
-    [],
-  );
 
   const bubbleStyle = useMemo(
     (): CSSProperties => ({
@@ -94,35 +90,37 @@ const PendingMessageBubbleComponent = ({
   }, [onRetry, pending.tempId]);
 
   return (
-    <div style={containerStyle}>
-      <div style={bubbleRowStyle}>
-        <div style={statusStyle}>
-          {isSending && (
-            <>
-              <LoadingOutlined spin style={{ fontSize: 12 }} />
-              <span>{t("sending")}</span>
-            </>
-          )}
-          {isFailed && (
-            <>
-              <ExclamationCircleFilled style={{ fontSize: 12 }} />
-              <span>{t("failedToSend")}</span>
-              <Button
-                type="link"
-                size="small"
-                style={retryButtonStyle}
-                onClick={handleRetryClick}
-              >
-                {t("retry")}
-              </Button>
-            </>
-          )}
-        </div>
-        <div style={bubbleStyle}>
-          <div style={bodyStyle}>{pending.body}</div>
+    <ErrorBoundary>
+      <div style={CONTAINER_STYLE}>
+        <div style={BUBBLE_ROW_STYLE}>
+          <div style={statusStyle}>
+            {isSending && (
+              <>
+                <LoadingOutlined spin style={ICON_STYLE} />
+                <span>{t("sending")}</span>
+              </>
+            )}
+            {isFailed && (
+              <>
+                <ExclamationCircleFilled style={ICON_STYLE} />
+                <span>{t("failedToSend")}</span>
+                <Button
+                  type="link"
+                  size="small"
+                  style={retryButtonStyle}
+                  onClick={handleRetryClick}
+                >
+                  {t("retry")}
+                </Button>
+              </>
+            )}
+          </div>
+          <div style={bubbleStyle}>
+            <div style={bodyStyle}>{pending.body}</div>
+          </div>
         </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 };
 

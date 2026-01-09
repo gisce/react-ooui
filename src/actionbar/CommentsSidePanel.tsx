@@ -40,10 +40,8 @@ const { useToken } = theme;
 const capitalize = (str: string): string =>
   str.charAt(0).toUpperCase() + str.slice(1);
 
-const getDayLabel = (date: string): string => {
-  // dayjs calendar() uses locale-specific formats configured in helpers/dayjs.ts
-  return capitalize(dayjs(date).calendar());
-};
+const getDayLabel = (date: string): string =>
+  capitalize(dayjs(date).calendar());
 
 export const COMMENTS_PANEL_WIDTH = 450;
 export const COMMENTS_PANEL_GAP = 8;
@@ -386,6 +384,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
   const mentionsRef = useRef<any>(null);
   const contentAreaRef = useRef<HTMLDivElement>(null);
   const messageRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+  const recentlySentTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const newestMessageId = comments.length > 0 ? comments[0].id : null;
 
@@ -395,7 +394,6 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
       setNewComment("");
       setHasFetchedSinceOpen(false);
       onFetchComments();
-      // Auto-focus input after panel animation
       setTimeout(() => mentionsRef.current?.focus(), 300);
     }
   }, [visible, onFetchComments]);
@@ -415,6 +413,12 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     setHasScrolledToUnread(false);
     setDividerMounted(false);
     setHasFetchedSinceOpen(false);
+    setPendingComments([]);
+    setRecentlySent(false);
+    if (recentlySentTimeoutRef.current) {
+      clearTimeout(recentlySentTimeoutRef.current);
+      recentlySentTimeoutRef.current = null;
+    }
 
     if (
       onMarkAsRead &&
@@ -433,10 +437,12 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
 
   const isReadStatusKnown = lastMessageRead !== undefined;
 
-  const isSendingMessage = pendingComments.some((p) => p.status === "sending");
+  const isSendingMessage = useMemo(
+    () => pendingComments.some((p) => p.status === "sending"),
+    [pendingComments],
+  );
 
   const firstUnreadMessageId = useMemo(() => {
-    // Hide unread divider while sending or right after send to avoid visual glitch
     if (isSendingMessage || recentlySent) {
       return null;
     }
@@ -511,14 +517,27 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     scrollToElement,
   ]);
 
+  useEffect(() => {
+    return () => {
+      if (recentlySentTimeoutRef.current) {
+        clearTimeout(recentlySentTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const sendMessage = useCallback(
     async (tempId: string, body: string) => {
       try {
         await onAddComment(body);
         setPendingComments((prev) => prev.filter((p) => p.tempId !== tempId));
-        // Keep divider hidden briefly after send completes to avoid glitch
+        if (recentlySentTimeoutRef.current) {
+          clearTimeout(recentlySentTimeoutRef.current);
+        }
         setRecentlySent(true);
-        setTimeout(() => setRecentlySent(false), 1000);
+        recentlySentTimeoutRef.current = setTimeout(
+          () => setRecentlySent(false),
+          1000,
+        );
       } catch {
         setPendingComments((prev) =>
           prev.map((p) =>
