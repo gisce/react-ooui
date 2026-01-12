@@ -18,7 +18,7 @@ const SwitchInput = (props: any) => {
   const { required, readOnly, ...restProps } = props;
 
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-row items-center">
       <AntdSwitch disabled={readOnly} {...restProps} />
     </div>
   );

@@ -26,7 +26,7 @@ const BooleanInput = (props: any) => {
     required && !readOnly ? RequiredCheckbox : AntCheckbox;
 
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-row items-center">
       <CustomCheckbox disabled={readOnly} {...restProps} />
     </div>
   );
