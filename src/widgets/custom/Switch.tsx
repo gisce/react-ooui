@@ -1,7 +1,12 @@
-import { Switch as AntdSwitch } from "antd";
+import { Switch as AntdSwitch, theme } from "antd";
+import styled from "styled-components";
 
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
+
+const { defaultAlgorithm, defaultSeed } = theme;
+
+const mapToken = defaultAlgorithm(defaultSeed);
 
 export const Switch = (props: WidgetProps) => {
   const { ooui } = props;
@@ -17,9 +22,21 @@ export const Switch = (props: WidgetProps) => {
 const SwitchInput = (props: any) => {
   const { required, readOnly, ...restProps } = props;
 
+  const CustomSwitch: any = required && !readOnly ? RequiredSwitch : AntdSwitch;
+
   return (
     <div className="flex flex-row">
-      <AntdSwitch disabled={readOnly} {...restProps} />
+      <CustomSwitch disabled={readOnly} {...restProps} />
     </div>
   );
 };
+
+const RequiredSwitch = styled(AntdSwitch)`
+  &.ant-switch {
+    background-color: ${mapToken.colorPrimaryBg};
+  }
+
+  &.ant-switch-checked {
+    background-color: ${mapToken.colorPrimary};
+  }
+`;
