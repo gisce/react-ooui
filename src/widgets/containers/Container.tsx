@@ -1,6 +1,8 @@
 import React from "react";
 import { Container as ContainerOoui, Widget, Label } from "@gisce/ooui";
 import { createReactWidget } from "@/widgets/WidgetFactory";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
+import { UserFeatureKeys } from "@/models/userFeature";
 
 import {
   getTemplateColumns,
@@ -20,6 +22,9 @@ const Container = (props: Props): React.ReactElement => {
   const { container, responsiveBehaviour } = props;
   const { rows } = container;
   let { columns } = container;
+  const selectionToLazy = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+  );
 
   // We check for the largest colspan for each row
   // And if the value is smaller than the columns value
@@ -75,6 +80,7 @@ const Container = (props: Props): React.ReactElement => {
           {createReactWidget({
             ooui: item,
             responsiveBehaviour,
+            selectionToLazy,
           })}
         </div>
       );

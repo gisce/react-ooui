@@ -30,6 +30,9 @@ export type GraphResponseIndicator = GraphResponse & {
   icon?: string;
   percent?: number;
   suffix?: string;
+  progressbar?: boolean;
+  showPercent?: boolean;
+  showTotal?: boolean;
 };
 
 export const useServerGraphData = (opts: GraphDataQueryOpts) => {

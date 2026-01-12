@@ -210,6 +210,36 @@ function getGraphProps(props: GetGraphPropsType) {
     if (isStack) {
       graphProps.isStack = true;
       graphProps.groupField = "stacked";
+      graphProps.tooltip = {
+        fields: ["type", "value", "x"],
+        formatter: (datum: any) => {
+          const formattedValue = datum.value.toLocaleString("es-ES", {
+            useGrouping: true,
+          });
+          return {
+            name: datum.type,
+            value: formattedValue,
+          };
+        },
+        customItems: (originalItems: any[]) => {
+          if (originalItems.length === 0) return originalItems;
+          const xValue = originalItems[0].data.x;
+          const total = data
+            .filter((item) => item.x === xValue)
+            .reduce((acc, item) => acc + item.value, 0);
+          const totalFormatted = total.toLocaleString("es-ES", {
+            useGrouping: true,
+          });
+          return [
+            ...originalItems,
+            {
+              name: "Total",
+              value: totalFormatted,
+              color: "transparent",
+            },
+          ];
+        },
+      };
     }
   }
 

@@ -11,6 +11,8 @@ import { Tree as TreeOoui } from "@gisce/ooui";
 import { RefObject, useCallback, useMemo, useRef, useState } from "react";
 import { getSortedFieldsFromState, getTableItems } from "@/helpers/treeHelper";
 import { useDeepCompareEffect, useDeepCompareMemo } from "use-deep-compare";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
+import { UserFeatureKeys } from "@/models/userFeature";
 import { useSharedAggregates } from "./useTreeAggregates";
 import { Spin } from "antd";
 import {
@@ -65,6 +67,19 @@ export type One2manyTreeProps = {
 
 const DEFAULT_HEIGHT = 400;
 
+const findChangedItems = (
+  current: One2manyItem[],
+  previous: One2manyItem[],
+): One2manyItem[] => {
+  return current.filter((item) => {
+    const prevItem = previous.find((p) => p.id === item.id);
+    if (!prevItem) return true;
+    return (
+      JSON.stringify(item.treeValues) !== JSON.stringify(prevItem.treeValues)
+    );
+  });
+};
+
 export const One2manyTree = ({
   items,
   height,
@@ -89,6 +104,9 @@ export const One2manyTree = ({
   const internalGridRef = useRef<InfiniteTableRef | PaginatedTableRef>(null);
   const tableRef: RefObject<InfiniteTableRef | PaginatedTableRef> =
     gridRef || internalGridRef;
+  const selectionToLazy = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+  );
 
   const prevItemsValue = useRef<One2manyItem[]>();
   const itemsRef = useRef<One2manyItem[]>(items);
@@ -313,25 +331,36 @@ export const One2manyTree = ({
       return;
     }
 
+    // Find which item(s) changed
+    const changedItems = findChangedItems(items, prevItemsValue.current);
     prevItemsValue.current = items;
 
-    // Refresh table for both modes
     clearAttributes();
-    if (treeType === "paginated") {
-      // Force a refresh of the paginated table by changing the key
-      setRefreshKey((prev) => prev + 1);
-      // Also refresh the paginated results when items change
-      if (items.length > 0) {
-        onPaginatedRequestData().then(setPaginatedResults);
-      } else {
-        setPaginatedResults([]);
-        setPaginatedLoading(false);
-      }
-    } else {
-      tableRef?.current?.refresh();
+
+    if (changedItems.length > 0) {
+      const transformLocally = async () => {
+        const changedItemsWithValues = changedItems
+          .filter((item) => item.treeValues)
+          .map((item) => item.treeValues);
+
+        if (changedItemsWithValues.length === 0) {
+          return;
+        }
+
+        const transformed = await getTableItems(
+          ooui,
+          changedItemsWithValues,
+          context,
+          selectionToLazy,
+        );
+
+        tableRef?.current?.updateRows(transformed);
+      };
+      transformLocally();
     }
+
     tableRef?.current?.unselectAll();
-  }, [items, treeType]);
+  }, [items, treeType, clearAttributes, tableRef, ooui, context]);
 
   // Shared callbacks for both modes - stabilize all callbacks
   const onGetFirstVisibleRowIndex = useCallback(() => {
@@ -402,10 +431,14 @@ export const One2manyTree = ({
   const onPaginatedRequestDataRef = useCallbackRef(onPaginatedRequestData);
 
   useDeepCompareEffect(() => {
-    if (treeType === "paginated" && items.length > 0) {
-      onPaginatedRequestDataRef().then(setPaginatedResults);
+    if (treeType === "paginated") {
+      if (items.length > 0) {
+        onPaginatedRequestDataRef().then(setPaginatedResults);
+      } else {
+        setPaginatedResults([]);
+      }
     }
-  }, [treeType]);
+  }, [treeType, items]);
 
   // Results based on tree type
   const results = useMemo(() => {
@@ -432,7 +465,7 @@ export const One2manyTree = ({
           context,
         });
 
-        return await getTableItems(ooui, children, context);
+        return await getTableItems(ooui, children, context, selectionToLazy);
       } catch (error) {
         console.error("Error fetching children:", error);
         return [];

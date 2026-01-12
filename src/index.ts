@@ -4,6 +4,7 @@ import { Char } from "@/widgets/base/Char";
 import { Selection } from "@/widgets/base/Selection";
 import { Boolean } from "@/widgets/base/Boolean";
 import { Many2one } from "@/widgets/base/many2one/Many2one";
+import { Many2oneLazy } from "@/widgets/base/many2one/Many2oneLazy";
 import { One2many } from "@/widgets/base/one2many/One2many";
 import { Tree } from "@/widgets/views/Tree";
 import { Float } from "@/widgets/base/Float";
@@ -35,6 +36,7 @@ import ActionBar from "@/actionbar/FormActionBar";
 import { Url } from "@/widgets/base/Url";
 import { Email } from "@/widgets/base/Email";
 import { Image } from "@/widgets/base/Image";
+import { Icon } from "@/widgets/base/Icon";
 import showConfirmDialog from "@/ui/ConfirmDialog";
 import Dashboard from "@/widgets/views/Dashboard/Dashboard";
 import { Tags } from "@/widgets/custom/Tags";
@@ -117,6 +119,7 @@ export {
   Selection,
   Boolean,
   Many2one,
+  Many2oneLazy,
   Tree,
   Group,
   Card,
@@ -168,6 +171,7 @@ export {
   Url,
   Email,
   Image,
+  Icon,
   ContentRootProvider,
   showConfirmDialog,
   NameSearchRequest,

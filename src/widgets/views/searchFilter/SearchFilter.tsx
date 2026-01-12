@@ -15,6 +15,8 @@ import { SearchParams } from "./SearchParams";
 
 import { getParamsForFields } from "@/helpers/searchHelper";
 import Measure from "react-measure";
+import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
+import { UserFeatureKeys } from "@/models/userFeature";
 const { useToken } = theme;
 
 type Props = {
@@ -55,6 +57,9 @@ function SearchFilter(props: Props) {
   const [advancedFilter, setAdvancedFilter] = useState(false);
   const sfo = useRef<SearchFilterOoui>();
   const { token } = useToken();
+  const selectionToLazy = useUserFeatureIsEnabled(
+    UserFeatureKeys.FEATURE_MANY2ONE_SELECTION_TO_LAZY,
+  );
 
   const [form] = Form.useForm();
 
@@ -109,6 +114,7 @@ function SearchFilter(props: Props) {
     const newParams = getParamsForFields(
       values,
       sfo.current?._advancedSearchContainer,
+      selectionToLazy,
     );
 
     onSubmit({ params: newParams, offset, limit, searchValues: values });
