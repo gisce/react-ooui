@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { getMimeType, openBase64InNewTab } from "@/helpers/filesHelper";
+import { getMimeType, downloadBase64File } from "@/helpers/filesHelper";
 import ConnectionProvider from "@/ConnectionProvider";
 import {
   ActionViewContext,
@@ -91,7 +91,11 @@ function AttachmentsButton(props: AttachmentsButtonProps) {
 
       if (retrievedAttachment.datas) {
         const fileType: any = await getMimeType(retrievedAttachment.datas);
-        openBase64InNewTab(retrievedAttachment.datas, fileType.mime);
+        const filename =
+          retrievedAttachment.datas_fname ||
+          retrievedAttachment.name ||
+          `attachment.${fileType.ext}`;
+        downloadBase64File(retrievedAttachment.datas, fileType.mime, filename);
       } else {
         onViewAttachmentDetails(retrievedAttachment);
       }
