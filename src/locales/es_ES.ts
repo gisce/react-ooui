@@ -16,6 +16,8 @@ export default {
   listAllAttachments: "Ver todos los adjuntos",
   viewAs: "Ver cómo",
   confirmRemoveItem: "Estás seguro de querer eliminar éste registro?",
+  confirmDeleteComment: "¿Estás seguro de querer eliminar este comentario?",
+  removeComment: "Eliminar comentario",
   save: "Guardar",
   delete: "Eliminar",
   refresh: "Refrescar",

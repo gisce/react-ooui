@@ -5,7 +5,6 @@ import {
   useRef,
   useEffect,
   useMemo,
-  forwardRef,
   CSSProperties,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,7 +17,7 @@ import {
   Tooltip,
   Mentions,
 } from "antd";
-import { CloseOutlined, SendOutlined, ReloadOutlined } from "@ant-design/icons";
+import { ReloadOutlined, SendOutlined, CloseOutlined } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import {
@@ -29,9 +28,10 @@ import {
 } from "@/types/comments";
 import dayjs from "@/helpers/dayjs";
 import { UserAvatar } from "@/ui/UserAvatar";
-import { CommentMarkdown } from "@/ui/CommentMarkdown";
 import { ParticipantsSection } from "./ParticipantsSection";
 import { PendingMessageBubble } from "./PendingMessageBubble";
+import { MessageBubble } from "./MessageBubble";
+import { UnreadDivider } from "./UnreadDivider";
 import { nanoid } from "nanoid";
 
 const { Title, Text } = Typography;
@@ -45,23 +45,28 @@ const getDayLabel = (date: string): string =>
 
 export const COMMENTS_PANEL_WIDTH = 450;
 export const COMMENTS_PANEL_GAP = 8;
+
 const TEXT_AREA_AUTO_SIZE = { minRows: 1, maxRows: 4 };
+
 const LOADING_CONTAINER_STYLE: CSSProperties = {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
   flex: 1,
 };
+
 const EMPTY_CONTAINER_STYLE: CSSProperties = {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
   flex: 1,
 };
+
 const MESSAGES_WRAPPER_STYLE: CSSProperties = {
   display: "flex",
   flexDirection: "column",
 };
+
 const TITLE_STYLE: CSSProperties = { margin: 0 };
 
 export type CommentsSidePanelProps = {
@@ -72,6 +77,7 @@ export type CommentsSidePanelProps = {
   resourceId: number;
   onClose: () => void;
   onAddComment: (body: string) => Promise<void>;
+  onDeleteComment?: (commentId: number) => void;
   onFetchComments: (opts?: { silent?: boolean }) => void;
   onFetchMentionUsers: (query: string) => Promise<MentionUser[]>;
   currentUserId?: number;
@@ -86,266 +92,6 @@ export type CommentsSidePanelProps = {
   onMarkAsRead?: (messageId: number) => void;
 };
 
-type MessageBubbleProps = {
-  comment: RecordComment;
-  isOwnMessage: boolean;
-  isFirstInGroup: boolean;
-  isFirstOfDay: boolean;
-  dayLabel?: string;
-  model: string;
-  resourceId: number;
-  skipSeparator?: boolean;
-};
-
-const MessageBubble = memo(
-  ({
-    comment,
-    isOwnMessage,
-    isFirstInGroup,
-    isFirstOfDay,
-    dayLabel,
-    model,
-    resourceId,
-    skipSeparator = false,
-  }: MessageBubbleProps) => {
-    const { token } = useToken();
-    const userName = comment["create_uid.name"];
-    const absoluteTime = dayjs(comment.create_date).format(
-      "HH:mm · DD/MM/YYYY",
-    );
-    const timeOnly = dayjs(comment.create_date).format("HH:mm");
-
-    const containerStyle = useMemo(
-      (): CSSProperties => ({
-        display: "flex",
-        flexDirection: "column",
-        alignItems: isOwnMessage ? "flex-end" : "flex-start",
-        marginBottom: 8,
-      }),
-      [isOwnMessage],
-    );
-
-    const separatorStyle = useMemo(
-      (): CSSProperties => ({
-        width: "70%",
-        height: 1,
-        backgroundColor: token.colorBorderSecondary,
-        marginTop: 8,
-        marginBottom: 8,
-        alignSelf: "center",
-      }),
-      [token.colorBorderSecondary],
-    );
-
-    const daySeparatorStyle = useMemo(
-      (): CSSProperties => ({
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        marginTop: 16,
-        marginBottom: 12,
-        width: "100%",
-      }),
-      [],
-    );
-
-    const dayLineStyle = useMemo(
-      (): CSSProperties => ({
-        flex: 1,
-        height: 1,
-        backgroundColor: token.colorBorderSecondary,
-      }),
-      [token.colorBorderSecondary],
-    );
-
-    const dayLabelStyle = useMemo(
-      (): CSSProperties => ({
-        fontSize: 12,
-        fontWeight: 500,
-        color: token.colorTextTertiary,
-      }),
-      [token.colorTextTertiary],
-    );
-
-    const headerStyle = useMemo(
-      (): CSSProperties => ({
-        display: "flex",
-        alignItems: "center",
-        justifyContent: isOwnMessage ? "flex-end" : "flex-start",
-        gap: 8,
-        marginBottom: 6,
-        width: "100%",
-      }),
-      [isOwnMessage],
-    );
-
-    const avatarNameGroupStyle = useMemo(
-      (): CSSProperties => ({
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-      }),
-      [],
-    );
-
-    const nameStyle = useMemo(
-      (): CSSProperties => ({
-        fontSize: 13,
-        fontWeight: 600,
-      }),
-      [],
-    );
-
-    const bubbleStyle = useMemo(
-      (): CSSProperties => ({
-        backgroundColor: isOwnMessage
-          ? token.colorPrimaryBg
-          : token.colorFillTertiary,
-        padding: "8px 12px",
-        borderRadius: 12,
-        display: "inline-block",
-      }),
-      [token.colorPrimaryBg, token.colorFillTertiary, isOwnMessage],
-    );
-
-    const bubbleRowStyle = useMemo(
-      (): CSSProperties => ({
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        justifyContent: isOwnMessage ? "flex-end" : "flex-start",
-        marginLeft: isOwnMessage ? 0 : 32,
-        marginRight: isOwnMessage ? 28 : 0,
-      }),
-      [isOwnMessage],
-    );
-
-    const inlineTimestampStyle = useMemo(
-      (): CSSProperties => ({
-        fontSize: 10,
-        color: token.colorTextQuaternary,
-        flexShrink: 0,
-      }),
-      [token.colorTextQuaternary],
-    );
-
-    const avatarNameElement = (
-      <div style={avatarNameGroupStyle}>
-        {isOwnMessage ? (
-          <>
-            <Text style={nameStyle}>{userName}</Text>
-            <UserAvatar
-              userName={userName}
-              size={28}
-              style={{ flexShrink: 0 }}
-            />
-          </>
-        ) : (
-          <>
-            <UserAvatar
-              userName={userName}
-              size={28}
-              style={{ flexShrink: 0 }}
-            />
-            <Text style={nameStyle}>{userName}</Text>
-          </>
-        )}
-      </div>
-    );
-
-    const inlineTimestamp = (
-      <Tooltip title={absoluteTime}>
-        <Text style={inlineTimestampStyle}>{timeOnly}</Text>
-      </Tooltip>
-    );
-
-    return (
-      <ErrorBoundary>
-        <>
-          {isFirstOfDay && dayLabel && (
-            <div style={daySeparatorStyle}>
-              <div style={dayLineStyle} />
-              <Text style={dayLabelStyle}>{dayLabel}</Text>
-              <div style={dayLineStyle} />
-            </div>
-          )}
-          {isFirstInGroup && !isFirstOfDay && !skipSeparator && (
-            <div style={separatorStyle} />
-          )}
-          <div style={containerStyle}>
-            {isFirstInGroup && (
-              <div style={headerStyle}>{avatarNameElement}</div>
-            )}
-            <div style={bubbleRowStyle}>
-              {isOwnMessage && inlineTimestamp}
-              <div style={bubbleStyle}>
-                <CommentMarkdown
-                  comment={comment}
-                  model={model}
-                  resourceId={resourceId}
-                />
-              </div>
-              {!isOwnMessage && inlineTimestamp}
-            </div>
-          </div>
-        </>
-      </ErrorBoundary>
-    );
-  },
-);
-MessageBubble.displayName = "MessageBubble";
-
-type UnreadDividerProps = {
-  label: string;
-};
-
-const UnreadDivider = memo(
-  forwardRef<HTMLDivElement, UnreadDividerProps>(({ label }, ref) => {
-    const { token } = useToken();
-
-    const containerStyle = useMemo(
-      (): CSSProperties => ({
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        marginTop: 16,
-        marginBottom: 12,
-        width: "100%",
-      }),
-      [],
-    );
-
-    const lineStyle = useMemo(
-      (): CSSProperties => ({
-        flex: 1,
-        height: 2,
-        backgroundColor: token.colorWarning,
-      }),
-      [token.colorWarning],
-    );
-
-    const labelStyle = useMemo(
-      (): CSSProperties => ({
-        fontSize: 12,
-        fontWeight: 600,
-        color: token.colorWarning,
-        textTransform: "uppercase",
-        letterSpacing: 0.5,
-      }),
-      [token.colorWarning],
-    );
-
-    return (
-      <div ref={ref} style={containerStyle} role="separator" aria-label={label}>
-        <div style={lineStyle} />
-        <span style={labelStyle}>{label}</span>
-        <div style={lineStyle} />
-      </div>
-    );
-  }),
-);
-UnreadDivider.displayName = "UnreadDivider";
-
 const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
   const {
     visible,
@@ -355,6 +101,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     resourceId,
     onClose,
     onAddComment,
+    onDeleteComment,
     onFetchComments,
     onFetchMentionUsers,
     currentUserId,
@@ -368,8 +115,10 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     lastMessageRead,
     onMarkAsRead,
   } = props;
+
   const { token } = useToken();
   const { t } = useLocale();
+
   const [newComment, setNewComment] = useState("");
   const [pendingComments, setPendingComments] = useState<PendingComment[]>([]);
   const [shouldRender, setShouldRender] = useState(visible);
@@ -380,61 +129,16 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
   const [dividerMounted, setDividerMounted] = useState(false);
   const [hasFetchedSinceOpen, setHasFetchedSinceOpen] = useState(false);
   const [recentlySent, setRecentlySent] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const mentionsRef = useRef<any>(null);
   const contentAreaRef = useRef<HTMLDivElement>(null);
   const messageRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const recentlySentTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const prevLoadingRef = useRef(loading);
+  const unreadDividerRef = useRef<HTMLDivElement | null>(null);
 
   const newestMessageId = comments.length > 0 ? comments[0].id : null;
-
-  useEffect(() => {
-    if (visible) {
-      setShouldRender(true);
-      setNewComment("");
-      setHasFetchedSinceOpen(false);
-      onFetchComments();
-      setTimeout(() => mentionsRef.current?.focus(), 300);
-    }
-  }, [visible, onFetchComments]);
-
-  const prevLoadingRef = useRef(loading);
-  useEffect(() => {
-    const wasLoading = prevLoadingRef.current;
-    prevLoadingRef.current = loading;
-
-    if (wasLoading && !loading && visible) {
-      setHasFetchedSinceOpen(true);
-    }
-  }, [loading, visible]);
-
-  const handleExitComplete = useCallback(() => {
-    setShouldRender(false);
-    setHasScrolledToUnread(false);
-    setDividerMounted(false);
-    setHasFetchedSinceOpen(false);
-    setPendingComments([]);
-    setRecentlySent(false);
-    if (recentlySentTimeoutRef.current) {
-      clearTimeout(recentlySentTimeoutRef.current);
-      recentlySentTimeoutRef.current = null;
-    }
-
-    if (
-      onMarkAsRead &&
-      newestMessageId &&
-      newestMessageId !== lastMessageRead
-    ) {
-      onMarkAsRead(newestMessageId);
-    }
-  }, [onMarkAsRead, newestMessageId, lastMessageRead]);
-
-  const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({
-      behavior: "smooth",
-    });
-  }, []);
-
   const isReadStatusKnown = lastMessageRead !== undefined;
 
   const isSendingMessage = useMemo(
@@ -456,6 +160,117 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     return unreadComments[unreadComments.length - 1].id;
   }, [comments, lastMessageRead, isSendingMessage, recentlySent]);
 
+  const contentAreaStyle = useMemo(
+    (): CSSProperties => ({
+      flex: 1,
+      overflowY: "auto",
+      overscrollBehavior: "contain",
+      scrollbarWidth: "thin",
+      scrollbarColor: `${token.colorTextQuaternary} ${token.colorBgContainer}`,
+      padding: 16,
+      display: "flex",
+      flexDirection: "column",
+      minHeight: 0,
+    }),
+    [token.colorTextQuaternary, token.colorBgContainer],
+  );
+
+  const panelStyle = useMemo(
+    (): CSSProperties => ({
+      position: "absolute",
+      top: 0,
+      right: 0,
+      bottom: 0,
+      width: COMMENTS_PANEL_WIDTH,
+      backgroundColor: token.colorBgContainer,
+      borderLeft: `1px solid ${token.colorBorder}`,
+      display: "flex",
+      flexDirection: "column",
+      overflow: "hidden",
+      zIndex: 50,
+    }),
+    [token.colorBgContainer, token.colorBorder],
+  );
+
+  const panelHeaderStyle = useMemo(
+    (): CSSProperties => ({
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: "12px 16px",
+      borderBottom: `1px solid ${token.colorBorder}`,
+      backgroundColor: token.colorBgElevated,
+      flexShrink: 0,
+    }),
+    [token.colorBorder, token.colorBgElevated],
+  );
+
+  const footerStyle = useMemo(
+    (): CSSProperties => ({
+      padding: 12,
+      borderTop: `1px solid ${token.colorBorder}`,
+      backgroundColor: token.colorBgElevated,
+      flexShrink: 0,
+    }),
+    [token.colorBorder, token.colorBgElevated],
+  );
+
+  const headerTitleGroupStyle = useMemo(
+    (): CSSProperties => ({
+      display: "flex",
+      alignItems: "center",
+      gap: 4,
+    }),
+    [],
+  );
+
+  const mentionOptions = useMemo(
+    () =>
+      mentionUsers.map((user) => ({
+        value: user.login,
+        label: (
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <UserAvatar userName={user.name} size={24} />
+            <span>{user.name}</span>
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              @{user.login}
+            </Text>
+          </div>
+        ),
+      })),
+    [mentionUsers],
+  );
+
+  useEffect(() => {
+    if (visible) {
+      setShouldRender(true);
+      setNewComment("");
+      setHasFetchedSinceOpen(false);
+      onFetchComments();
+      setTimeout(() => mentionsRef.current?.focus(), 300);
+    }
+  }, [visible, onFetchComments]);
+
+  useEffect(() => {
+    const wasLoading = prevLoadingRef.current;
+    prevLoadingRef.current = loading;
+    if (wasLoading && !loading && visible) {
+      setHasFetchedSinceOpen(true);
+    }
+  }, [loading, visible]);
+
+  useEffect(() => {
+    return () => {
+      if (recentlySentTimeoutRef.current) {
+        clearTimeout(recentlySentTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
   const scrollToElement = useCallback((element: HTMLDivElement) => {
     if (!contentAreaRef.current) return;
     const container = contentAreaRef.current;
@@ -465,13 +280,8 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
       elementRect.top - containerRect.top + container.scrollTop;
     const containerPadding = 16;
     const targetScroll = relativeTop - containerPadding;
-    container.scrollTo({
-      top: targetScroll,
-      behavior: "smooth",
-    });
+    container.scrollTo({ top: targetScroll, behavior: "smooth" });
   }, []);
-
-  const unreadDividerRef = useRef<HTMLDivElement | null>(null);
 
   const unreadDividerRefCallback = useCallback(
     (element: HTMLDivElement | null) => {
@@ -517,13 +327,25 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     scrollToElement,
   ]);
 
-  useEffect(() => {
-    return () => {
-      if (recentlySentTimeoutRef.current) {
-        clearTimeout(recentlySentTimeoutRef.current);
-      }
-    };
-  }, []);
+  const handleExitComplete = useCallback(() => {
+    setShouldRender(false);
+    setHasScrolledToUnread(false);
+    setDividerMounted(false);
+    setHasFetchedSinceOpen(false);
+    setPendingComments([]);
+    setRecentlySent(false);
+    if (recentlySentTimeoutRef.current) {
+      clearTimeout(recentlySentTimeoutRef.current);
+      recentlySentTimeoutRef.current = null;
+    }
+    if (
+      onMarkAsRead &&
+      newestMessageId &&
+      newestMessageId !== lastMessageRead
+    ) {
+      onMarkAsRead(newestMessageId);
+    }
+  }, [onMarkAsRead, newestMessageId, lastMessageRead]);
 
   const sendMessage = useCallback(
     async (tempId: string, body: string) => {
@@ -633,85 +455,11 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     setMentionDropdownOpen(false);
   }, []);
 
-  const mentionOptions = useMemo(
-    () =>
-      mentionUsers.map((user) => ({
-        value: user.login,
-        label: (
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <UserAvatar userName={user.name} size={24} />
-            <span>{user.name}</span>
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              @{user.login}
-            </Text>
-          </div>
-        ),
-      })),
-    [mentionUsers],
-  );
-
-  const contentAreaStyle = useMemo(
-    (): CSSProperties => ({
-      flex: 1,
-      overflowY: "auto",
-      overscrollBehavior: "contain",
-      scrollbarWidth: "thin",
-      scrollbarColor: `${token.colorTextQuaternary} ${token.colorBgContainer}`,
-      padding: 16,
-      display: "flex",
-      flexDirection: "column",
-      minHeight: 0,
-    }),
-    [token.colorTextQuaternary, token.colorBgContainer],
-  );
-
-  const panelStyle = useMemo(
-    (): CSSProperties => ({
-      position: "absolute",
-      top: 0,
-      right: 0,
-      bottom: 0,
-      width: COMMENTS_PANEL_WIDTH,
-      backgroundColor: token.colorBgContainer,
-      borderLeft: `1px solid ${token.colorBorder}`,
-      display: "flex",
-      flexDirection: "column",
-      overflow: "hidden",
-      zIndex: 50,
-    }),
-    [token.colorBgContainer, token.colorBorder],
-  );
-
-  const panelHeaderStyle = useMemo(
-    (): CSSProperties => ({
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      padding: "12px 16px",
-      borderBottom: `1px solid ${token.colorBorder}`,
-      backgroundColor: token.colorBgElevated,
-      flexShrink: 0,
-    }),
-    [token.colorBorder, token.colorBgElevated],
-  );
-
-  const footerStyle = useMemo(
-    (): CSSProperties => ({
-      padding: 12,
-      borderTop: `1px solid ${token.colorBorder}`,
-      backgroundColor: token.colorBgElevated,
-      flexShrink: 0,
-    }),
-    [token.colorBorder, token.colorBgElevated],
-  );
-
-  const headerTitleGroupStyle = useMemo(
-    (): CSSProperties => ({
-      display: "flex",
-      alignItems: "center",
-      gap: 4,
-    }),
-    [],
+  const handleDeleteComment = useCallback(
+    (commentId: number) => {
+      onDeleteComment?.(commentId);
+    },
+    [onDeleteComment],
   );
 
   if (!shouldRender) {
@@ -824,6 +572,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                           model={model}
                           resourceId={resourceId}
                           skipSeparator={isFirstUnread}
+                          onDeleteComment={handleDeleteComment}
                         />
                       </div>
                     );

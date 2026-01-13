@@ -16,6 +16,8 @@ export default {
   listAllAttachments: "Veure tots els adjunts",
   viewAs: "Veure com",
   confirmRemoveItem: "Estàs segur de volguer eliminar aquest item?",
+  confirmDeleteComment: "Estàs segur de voler eliminar aquest comentari?",
+  removeComment: "Eliminar comentari",
   save: "Desar",
   delete: "Eliminar",
   refresh: "Refrescar",

@@ -15,6 +15,8 @@ export default {
   listAllAttachments: "View all the attachments",
   viewAs: "View as",
   confirmRemoveItem: "Are you sure to remove this item?",
+  confirmDeleteComment: "Are you sure you want to delete this comment?",
+  removeComment: "Remove comment",
   save: "Save",
   delete: "Delete",
   refresh: "Refresh",
