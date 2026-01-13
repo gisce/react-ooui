@@ -69,12 +69,15 @@ const Container = (props: Props): React.ReactElement => {
         fieldInRows = true;
       }
 
+      // Switch widgets need min-content to prevent overflow into adjacent cells
+      const cellMinWidth = item.type === "switch" ? "min-content" : 0;
+
       return (
         <div
           key={item.key}
           style={{
             ...getSpanStyleForItem({ item, responsiveBehaviour }),
-            minWidth: 0,
+            minWidth: cellMinWidth,
           }}
         >
           {createReactWidget({
