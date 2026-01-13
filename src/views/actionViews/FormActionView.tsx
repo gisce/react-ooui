@@ -4,7 +4,7 @@ import {
   CommentsSidePanel,
   COMMENTS_PANEL_WIDTH,
   COMMENTS_PANEL_GAP,
-} from "@/actionbar/CommentsSidePanel";
+} from "@/comments/CommentsSidePanel";
 import { FormView } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
 import Form from "@/widgets/views/Form";
@@ -70,6 +70,7 @@ export const FormActionView = (props: FormActionViewProps) => {
     loading,
     fetchComments,
     addComment,
+    deleteComment,
     fetchMentionUsers,
     markAsRead,
   } = useRecordComments({
@@ -217,6 +218,7 @@ export const FormActionView = (props: FormActionViewProps) => {
             resourceId={currentId}
             onClose={handleClosePanel}
             onAddComment={handleAddComment}
+            onDeleteComment={deleteComment}
             onFetchComments={fetchComments}
             onFetchMentionUsers={fetchMentionUsers}
             currentUserId={globalValues?.uid}

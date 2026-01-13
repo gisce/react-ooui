@@ -146,6 +146,34 @@ export const useRecordComments = (opts: UseRecordCommentsOpts) => {
     [model, resourceId, context, executeRequest],
   );
 
+  const deleteComment = useDeepCompareCallback(
+    (commentId: number) => {
+      if (!commentId) {
+        return;
+      }
+
+      const commentToRestore = comments.find((c) => c.id === commentId);
+      if (!commentToRestore) {
+        return;
+      }
+
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+
+      ConnectionProvider.getHandler()
+        .deleteObjects({
+          model: "message.comment",
+          ids: [commentId],
+          context,
+        })
+        .catch(() => {
+          setComments((prev) =>
+            [...prev, commentToRestore].sort((a, b) => b.id - a.id),
+          );
+        });
+    },
+    [comments, context],
+  );
+
   return {
     comments,
     participants,
@@ -153,6 +181,7 @@ export const useRecordComments = (opts: UseRecordCommentsOpts) => {
     loading,
     fetchComments,
     addComment,
+    deleteComment,
     fetchMentionUsers,
     markAsRead,
     cancelRequest,
