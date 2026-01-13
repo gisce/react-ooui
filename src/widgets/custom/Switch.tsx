@@ -1,7 +1,10 @@
-import { Switch as AntdSwitch } from "antd";
+import { Switch as AntdSwitch, theme } from "antd";
+import styled from "styled-components";
 
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
+
+const { useToken } = theme;
 
 export const Switch = (props: WidgetProps) => {
   const { ooui } = props;
@@ -16,10 +19,23 @@ export const Switch = (props: WidgetProps) => {
 
 const SwitchInput = (props: any) => {
   const { required, readOnly, ...restProps } = props;
+  const { token } = useToken();
 
-  return (
-    <div className="flex flex-row">
-      <AntdSwitch disabled={readOnly} {...restProps} />
-    </div>
-  );
+  if (required && !readOnly) {
+    return (
+      <RequiredSwitch
+        disabled={readOnly}
+        $requiredColor={token.colorPrimaryBg}
+        {...restProps}
+      />
+    );
+  }
+
+  return <AntdSwitch disabled={readOnly} {...restProps} />;
 };
+
+const RequiredSwitch = styled(AntdSwitch)<{ $requiredColor: string }>`
+  .ant-switch-handle::before {
+    background-color: ${(props) => props.$requiredColor};
+  }
+`;
