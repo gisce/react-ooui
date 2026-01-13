@@ -8,7 +8,7 @@ import {
 import { useCallback, useRef } from "react";
 import { ConnectionProvider } from "..";
 import showInfo from "@/ui/InfoDialog";
-import { getMimeType, openBase64InNewTab } from "@/helpers/filesHelper";
+import { getMimeType, downloadBase64File } from "@/helpers/filesHelper";
 
 export const useExport = ({
   model,
@@ -67,7 +67,13 @@ export const useExport = ({
       await new Promise((resolve) => setTimeout(resolve, 200));
 
       const fileType: any = await getMimeType(datas);
-      openBase64InNewTab(datas, fileType.mime);
+
+      const timestamp = new Date().toISOString().split("T")[0];
+      // Use exportType for extension since MIME detection fails for CSV/text files
+      const extension = String(options.exportType).toLowerCase();
+      const filename = `export_${model}_${timestamp}.${extension}`;
+
+      downloadBase64File(datas, fileType.mime, filename);
     },
     [domain, selectedRegistersToExport, model, limit, context, onClose, t],
   );
