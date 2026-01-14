@@ -10,6 +10,7 @@ const { useToken } = theme;
 const AggregateValue = memo(({ amount }: { amount: number | string }) => {
   const formatNumber = useNumberFormatter({
     format: "decimal",
+    localized: true,
   });
 
   if (typeof amount === "string") {

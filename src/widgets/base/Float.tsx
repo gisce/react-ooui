@@ -16,6 +16,7 @@ const mapToken = defaultAlgorithm(defaultSeed);
 export const Float = memo((props: WidgetProps) => {
   const { ooui } = props;
   const { id, decimalDigits, readOnly, required } = ooui as FloatOoui;
+  const localized = (ooui as any).parsedWidgetProps?.localized ?? false;
 
   const formContext = useContext(FormContext) as FormContextType;
 
@@ -33,6 +34,7 @@ export const Float = memo((props: WidgetProps) => {
 
   const { formatter, parser, decimalSeparator } = useLocalizedInput({
     decimalDigits,
+    localized,
   });
 
   return (
@@ -45,7 +47,7 @@ export const Float = memo((props: WidgetProps) => {
         id={id}
         precision={decimalDigits}
         formatter={formatter}
-        parser={parser}
+        parser={localized ? parser : undefined}
         decimalSeparator={decimalSeparator}
         onBlur={elementHasLostFocus}
         changeOnWheel={false}

@@ -4,6 +4,7 @@ import { useLocale } from "@gisce/react-formiga-components";
 export type UseLocalizedInputOptions = {
   decimalDigits?: number;
   isInteger?: boolean;
+  localized?: boolean;
 };
 
 type LocaleSeparators = {
@@ -30,10 +31,14 @@ const getLocaleSeparators = (locale: string): LocaleSeparators => {
 };
 
 export const useLocalizedInput = (options: UseLocalizedInputOptions = {}) => {
-  const { decimalDigits, isInteger = false } = options;
+  const { decimalDigits, isInteger = false, localized = false } = options;
   const { locale } = useLocale();
 
-  const separators = useMemo(() => getLocaleSeparators(locale), [locale]);
+  const separators = useMemo(
+    () =>
+      localized ? getLocaleSeparators(locale) : { decimal: ".", thousands: "" },
+    [locale, localized],
+  );
 
   const formatter = useCallback(
     (value: number | string | undefined): string => {
@@ -45,6 +50,14 @@ export const useLocalizedInput = (options: UseLocalizedInputOptions = {}) => {
 
       if (isNaN(numValue)) {
         return "";
+      }
+
+      if (!localized) {
+        if (isInteger) {
+          return `${Math.trunc(numValue)}`.replace(/[^0-9-]+/g, "");
+        }
+        // For floats: just strip non-numeric, let InputNumber precision handle decimals (v2 behavior)
+        return `${numValue}`.replace(/[^0-9.-]+/g, "");
       }
 
       const browserLocale = locale.replace("_", "-");
@@ -62,7 +75,7 @@ export const useLocalizedInput = (options: UseLocalizedInputOptions = {}) => {
 
       return numValue.toLocaleString(browserLocale, formatOptions);
     },
-    [locale, decimalDigits, isInteger],
+    [locale, decimalDigits, isInteger, localized],
   );
 
   const parser = useCallback(
@@ -74,11 +87,13 @@ export const useLocalizedInput = (options: UseLocalizedInputOptions = {}) => {
       const isNegative = displayValue.startsWith("-");
       let cleanValue = isNegative ? displayValue.slice(1) : displayValue;
 
-      const escapedThousands = separators.thousands.replace(
-        /[.*+?^${}()|[\]\\]/g,
-        "\\$&",
-      );
-      cleanValue = cleanValue.replace(new RegExp(escapedThousands, "g"), "");
+      if (separators.thousands) {
+        const escapedThousands = separators.thousands.replace(
+          /[.*+?^${}()|[\]\\]/g,
+          "\\$&",
+        );
+        cleanValue = cleanValue.replace(new RegExp(escapedThousands, "g"), "");
+      }
 
       const escapedDecimal = separators.decimal.replace(
         /[.*+?^${}()|[\]\\]/g,

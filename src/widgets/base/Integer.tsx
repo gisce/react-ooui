@@ -19,6 +19,7 @@ type IntegerProps = WidgetProps & {
 export const Integer = memo((props: IntegerProps) => {
   const { ooui, onChange } = props;
   const { id, readOnly, required } = ooui;
+  const localized = (ooui as any).parsedWidgetProps?.localized ?? false;
   const { token } = useToken();
   const requiredStyle =
     required && !readOnly
@@ -38,7 +39,10 @@ export const Integer = memo((props: IntegerProps) => {
     return content ? <AddonElement content={content} /> : null;
   }, []);
 
-  const { formatter, parser } = useLocalizedInput({ isInteger: true });
+  const { formatter, parser } = useLocalizedInput({
+    isInteger: true,
+    localized,
+  });
 
   const handleChange = useCallback(
     (newValue: any) => {
@@ -57,7 +61,7 @@ export const Integer = memo((props: IntegerProps) => {
         className={"w-full "}
         disabled={readOnly}
         formatter={formatter}
-        parser={parser}
+        parser={localized ? parser : undefined}
         onChange={handleChange}
         onBlur={elementHasLostFocus}
         precision={0}

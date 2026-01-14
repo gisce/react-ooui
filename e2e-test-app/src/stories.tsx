@@ -22,7 +22,14 @@ import { Infinite as Many2ManyInfinite, Paginated as Many2ManyPaginated } from "
 // Import QRCode demo
 import { QRCodeDemo } from "./stories/QRCode.stories";
 // Import Form stories
-import { Default as FormDefault, Spanish as FormSpanish, French as FormFrench } from "./stories/Form.stories";
+import {
+  Default as FormDefault,
+  Spanish as FormSpanish,
+  French as FormFrench,
+  SpanishLocalized as FormSpanishLocalized,
+  FrenchLocalized as FormFrenchLocalized,
+  EnglishLocalized as FormEnglishLocalized,
+} from "./stories/Form.stories";
 
 export interface Story {
   id: string;
@@ -160,6 +167,28 @@ export const stories: Story[] = [
     title: "Form - French",
     component: FormFrench,
     description:
-      "Form view with integer and float fields using French locale (fr_FR). Numbers display with space for thousands, comma for decimal (e.g., 1 234,56).",
+      "Form view with integer and float fields using French locale (fr_FR). Default behavior shows period decimal separator.",
+  },
+  // Localized Form stories (opt-in localization via widget_props)
+  {
+    id: "form-spanish-localized",
+    title: "Form - Spanish (Localized)",
+    component: FormSpanishLocalized,
+    description:
+      "Form view with localized=true fields using Spanish locale (es_ES). Numbers display with comma as decimal separator (e.g., 1.234,56).",
+  },
+  {
+    id: "form-french-localized",
+    title: "Form - French (Localized)",
+    component: FormFrenchLocalized,
+    description:
+      "Form view with localized=true fields using French locale (fr_FR). Numbers display with space for thousands, comma for decimal (e.g., 1 234,56).",
+  },
+  {
+    id: "form-english-localized",
+    title: "Form - English (Localized)",
+    component: FormEnglishLocalized,
+    description:
+      "Form view with localized=true fields using English locale (en_US). Numbers display with comma for thousands, period for decimal (e.g., 1,234.56).",
   },
 ];

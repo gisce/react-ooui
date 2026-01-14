@@ -7,15 +7,24 @@ export type UseNumberFormatterOptions = {
   decimalDigits?: number;
   currency?: string;
   format?: NumberFormatType;
+  localized?: boolean;
 };
 
 export const useNumberFormatter = (options: UseNumberFormatterOptions = {}) => {
   const { locale } = useLocale();
+  const { localized = false } = options;
 
   return useCallback(
     (value: number | null | undefined): string => {
       if (value === null || value === undefined || isNaN(value)) {
         return "";
+      }
+
+      if (!localized) {
+        if (options.decimalDigits !== undefined) {
+          return value.toFixed(options.decimalDigits);
+        }
+        return `${value}`;
       }
 
       const browserLocale = locale.replace("_", "-");
@@ -37,6 +46,12 @@ export const useNumberFormatter = (options: UseNumberFormatterOptions = {}) => {
 
       return value.toLocaleString(browserLocale, formatOptions);
     },
-    [locale, options.decimalDigits, options.currency, options.format],
+    [
+      locale,
+      options.decimalDigits,
+      options.currency,
+      options.format,
+      localized,
+    ],
   );
 };
