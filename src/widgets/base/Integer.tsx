@@ -5,6 +5,7 @@ import { WidgetProps } from "@/types";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import styled from "styled-components";
 import { AddonElement } from "@/common/AddonElement";
+import { useLocalizedInput } from "@/hooks/useLocalizedInput";
 const { useToken } = theme;
 
 const { defaultAlgorithm, defaultSeed } = theme;
@@ -37,22 +38,7 @@ export const Integer = memo((props: IntegerProps) => {
     return content ? <AddonElement content={content} /> : null;
   }, []);
 
-  const formatter = useCallback((value: any) => {
-    // Check if value is not undefined and is a valid number
-    if (value === undefined) {
-      return "";
-    }
-
-    if (typeof value === "string" && !isNaN(parseFloat(value))) {
-      const truncatedValue = Math.trunc(parseFloat(value));
-      return `${truncatedValue}`.replace(/[^0-9-]+/g, "");
-    } else if (typeof value === "number") {
-      const truncatedValue = Math.trunc(value);
-      return `${truncatedValue}`.replace(/[^0-9-]+/g, "");
-    }
-
-    return "";
-  }, []);
+  const { formatter, parser } = useLocalizedInput({ isInteger: true });
 
   const handleChange = useCallback(
     (newValue: any) => {
@@ -71,6 +57,7 @@ export const Integer = memo((props: IntegerProps) => {
         className={"w-full "}
         disabled={readOnly}
         formatter={formatter}
+        parser={parser}
         onChange={handleChange}
         onBlur={elementHasLostFocus}
         precision={0}

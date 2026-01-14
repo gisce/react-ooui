@@ -3,6 +3,7 @@ import {
   useNumberFormatter,
   NumberFormatType,
 } from "@/hooks/useNumberFormatter";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 
 export type SummaryItem = {
   label: string;
@@ -36,14 +37,16 @@ SummaryValue.displayName = "SummaryValue";
 export const SummaryRow = memo(
   ({ summaries }: { summaries: SummaryItem[] }) => {
     return (
-      <div className="p-1 pb-0 pl-2 mt-2">
-        {summaries.map((summary, index) => (
-          <span key={summary.label}>
-            {summary.label}: <SummaryValue summary={summary} />
-            {index < summaries.length - 1 ? ", " : ""}
-          </span>
-        ))}
-      </div>
+      <ErrorBoundary>
+        <div className="p-1 pb-0 pl-2 mt-2">
+          {summaries.map((summary, index) => (
+            <span key={summary.label}>
+              {summary.label}: <SummaryValue summary={summary} />
+              {index < summaries.length - 1 ? ", " : ""}
+            </span>
+          ))}
+        </div>
+      </ErrorBoundary>
     );
   },
 );

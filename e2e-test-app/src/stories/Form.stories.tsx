@@ -1,26 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Form, ConfigContextProvider } from "@gisce/react-ooui";
 import { NotificationProvider } from "@gisce/react-formiga-components";
-import { initializeMockProvider, initializePaginatedMockProvider } from "./One2Many.mockProvider";
+import { initializeFormMockProvider } from "./Form.mockProvider";
 
-interface One2ManyStoryProps {
-  paginated?: boolean;
+interface FormStoryProps {
   locale?: string;
+  productId?: number;
 }
 
-const One2ManyStory: React.FC<One2ManyStoryProps> = ({ paginated = false, locale = "en_US" }) => {
+const FormStory: React.FC<FormStoryProps> = ({ locale = "en_US", productId = 1 }) => {
   const [mockProviderReady, setMockProviderReady] = useState(false);
 
   useEffect(() => {
-    // Initialize the appropriate mock provider when component mounts
-    // Use 50 lines for one2many to trigger infinite scroll
-    paginated ? initializePaginatedMockProvider("one2many", 50) : initializeMockProvider("one2many", 50);
+    initializeFormMockProvider();
     setMockProviderReady(true);
-
-    return () => {
-      // Cleanup if needed
-    };
-  }, [paginated]);
+  }, []);
 
   if (!mockProviderReady) {
     return <div>Loading mock provider...</div>;
@@ -32,15 +26,13 @@ const One2ManyStory: React.FC<One2ManyStoryProps> = ({ paginated = false, locale
         locale={locale}
         erpFeatures={{}}
         userFeatures={{
-          features: {
-            "widget.one2many.enable_new_table": true,
-          },
+          features: {},
           canWriteFeatureFlags: false,
         }}
         globalValues={{}}
         rootContext={{}}
         devMode={false}
-        title={`One2Many ${paginated ? 'Paginated' : 'Infinite'} Story Demo (${locale})`}
+        title={`Form Story Demo (${locale})`}
         treeMaxLimit={100}
       >
         <div
@@ -65,8 +57,8 @@ const One2ManyStory: React.FC<One2ManyStoryProps> = ({ paginated = false, locale
             }}
           >
             <Form
-              model="sale.order"
-              id={1}
+              model="product.product"
+              id={productId}
               showFooter={true}
               readOnly={false}
               rootForm={true}
@@ -79,16 +71,11 @@ const One2ManyStory: React.FC<One2ManyStoryProps> = ({ paginated = false, locale
   );
 };
 
-// Export the specific story variants
-export const Infinite = () => <One2ManyStory paginated={false} />;
-export const Paginated = () => <One2ManyStory paginated={true} />;
+// English locale (default)
+export const Default = () => <FormStory />;
 
-// Spanish locale variants for testing number localization
-export const InfiniteSpanish = () => <One2ManyStory paginated={false} locale="es_ES" />;
-export const PaginatedSpanish = () => <One2ManyStory paginated={true} locale="es_ES" />;
+// Spanish locale for testing number localization
+export const Spanish = () => <FormStory locale="es_ES" />;
 
-// French locale variant - uses space for thousands, comma for decimal
-export const InfiniteFrench = () => <One2ManyStory paginated={false} locale="fr_FR" />;
-
-// No locale specified - should fallback to English formatting
-export const InfiniteNoLocale = () => <One2ManyStory paginated={false} locale={undefined} />;
+// French locale for testing number localization
+export const French = () => <FormStory locale="fr_FR" />;

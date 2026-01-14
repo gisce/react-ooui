@@ -1,17 +1,28 @@
 import React from "react";
 // Import the TreeActionView stories (now pure React components)
-import { Infinite, Paginated, InfiniteSpanish, PaginatedSpanish } from "./stories/TreeActionView.stories";
+import {
+  Infinite,
+  Paginated,
+  InfiniteSpanish,
+  PaginatedSpanish,
+  InfiniteFrench,
+  InfiniteNoLocale,
+} from "./stories/TreeActionView.stories";
 // Import the One2Many stories
 import {
   Infinite as One2ManyInfinite,
   Paginated as One2ManyPaginated,
   InfiniteSpanish as One2ManyInfiniteSpanish,
   PaginatedSpanish as One2ManyPaginatedSpanish,
+  InfiniteFrench as One2ManyInfiniteFrench,
+  InfiniteNoLocale as One2ManyInfiniteNoLocale,
 } from "./stories/One2Many.stories";
 // Import the Many2Many stories
 import { Infinite as Many2ManyInfinite, Paginated as Many2ManyPaginated } from "./stories/Many2Many.stories";
 // Import QRCode demo
 import { QRCodeDemo } from "./stories/QRCode.stories";
+// Import Form stories
+import { Default as FormDefault, Spanish as FormSpanish, French as FormFrench } from "./stories/Form.stories";
 
 export interface Story {
   id: string;
@@ -98,5 +109,57 @@ export const stories: Story[] = [
     component: One2ManyPaginatedSpanish,
     description:
       "One2Many with pagination using Spanish locale (es_ES) for testing number localization. Numbers should display with comma as decimal separator.",
+  },
+  // French locale stories
+  {
+    id: "tree-action-view-infinite-french",
+    title: "TreeActionView - Infinite (French)",
+    component: InfiniteFrench,
+    description:
+      "TreeActionView with French locale (fr_FR). Numbers display with space for thousands, comma for decimal (e.g., 1 234,56).",
+  },
+  {
+    id: "one2many-infinite-french",
+    title: "One2Many - Infinite (French)",
+    component: One2ManyInfiniteFrench,
+    description:
+      "One2Many with French locale (fr_FR). Numbers display with space for thousands, comma for decimal.",
+  },
+  // No locale (fallback) stories
+  {
+    id: "tree-action-view-infinite-no-locale",
+    title: "TreeActionView - Infinite (No Locale)",
+    component: InfiniteNoLocale,
+    description:
+      "TreeActionView without explicit locale. Should fallback to English formatting (comma for thousands, period for decimal).",
+  },
+  {
+    id: "one2many-infinite-no-locale",
+    title: "One2Many - Infinite (No Locale)",
+    component: One2ManyInfiniteNoLocale,
+    description:
+      "One2Many without explicit locale. Should fallback to English formatting.",
+  },
+  // Form stories for testing form input number localization
+  {
+    id: "form-default",
+    title: "Form - Default (English)",
+    component: FormDefault,
+    description:
+      "Form view with integer and float fields using English locale (en_US). Numbers display with period as decimal separator (e.g., 1,234.56).",
+  },
+  {
+    id: "form-spanish",
+    title: "Form - Spanish",
+    component: FormSpanish,
+    description:
+      "Form view with integer and float fields using Spanish locale (es_ES). Numbers should display with comma as decimal separator (e.g., 1.234,56).",
+  },
+  {
+    id: "form-french",
+    title: "Form - French",
+    component: FormFrench,
+    description:
+      "Form view with integer and float fields using French locale (fr_FR). Numbers display with space for thousands, comma for decimal (e.g., 1 234,56).",
   },
 ];

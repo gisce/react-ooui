@@ -3,6 +3,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useNumberFormatter } from "@/hooks/useNumberFormatter";
 import { memo, useMemo } from "react";
 import { theme } from "antd";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 
 const { useToken } = theme;
 
@@ -63,18 +64,20 @@ export const AggregatesFooter = memo(
     }, [aggregates, token.colorBorder]);
 
     return (
-      <div
-        style={{
-          height: "100%",
-          width: "100%",
-          display: "flex",
-          alignItems: "end",
-          paddingLeft: 2,
-        }}
-      >
-        {isLoading && <LoadingOutlined />}
-        {!isLoading && summary}
-      </div>
+      <ErrorBoundary>
+        <div
+          style={{
+            height: "100%",
+            width: "100%",
+            display: "flex",
+            alignItems: "end",
+            paddingLeft: 2,
+          }}
+        >
+          {isLoading && <LoadingOutlined />}
+          {!isLoading && summary}
+        </div>
+      </ErrorBoundary>
     );
   },
 );

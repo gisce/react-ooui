@@ -116,6 +116,8 @@ import type {
   UseNumberFormatterOptions,
   NumberFormatType,
 } from "./hooks/useNumberFormatter";
+import { useLocalizedInput } from "./hooks/useLocalizedInput";
+import type { UseLocalizedInputOptions } from "./hooks/useLocalizedInput";
 
 export {
   Button,
@@ -232,4 +234,6 @@ export {
   useNumberFormatter,
   UseNumberFormatterOptions,
   NumberFormatType,
+  useLocalizedInput,
+  UseLocalizedInputOptions,
 };

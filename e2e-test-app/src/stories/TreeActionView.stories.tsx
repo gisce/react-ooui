@@ -74,6 +74,29 @@ export const PaginatedSpanish: React.FC = () => {
   return <TreeActionViewWrapper {...args} locale="es_ES" />;
 };
 
+// French locale variant - uses space for thousands, comma for decimal
+export const InfiniteFrench: React.FC = () => {
+  const args = {
+    ...defaultArgs,
+    treeView: mockTreeViewInfinite,
+    limit: 0,
+  } as TreeActionViewProps;
+
+  return <TreeActionViewWrapper {...args} locale="fr_FR" />;
+};
+
+// No locale specified - should fallback to English formatting
+export const InfiniteNoLocale: React.FC = () => {
+  const args = {
+    ...defaultArgs,
+    treeView: mockTreeViewInfinite,
+    limit: 0,
+  } as TreeActionViewProps;
+
+  // Pass undefined locale to test fallback behavior
+  return <TreeActionViewWrapper {...args} locale={undefined} />;
+};
+
 // Story metadata for our custom story viewer
 export const meta = {
   title: "Views/TreeActionView",
