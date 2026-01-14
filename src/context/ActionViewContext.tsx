@@ -1,6 +1,6 @@
 import { convertParamsToValues } from "@/helpers/searchHelper";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
-import { TreeView, View } from "@/types";
+import { View } from "@/types";
 import {
   DEFAULT_TREE_TYPE,
   TreeType,

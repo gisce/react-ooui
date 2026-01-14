@@ -12,6 +12,26 @@ import showConfirmDialog from "@/ui/ConfirmDialog";
 const { Text } = Typography;
 const { useToken } = theme;
 
+const DAY_SEPARATOR_STYLE: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 12,
+  marginTop: 16,
+  marginBottom: 12,
+  width: "100%",
+};
+
+const AVATAR_NAME_GROUP_STYLE: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+};
+
+const NAME_STYLE: CSSProperties = {
+  fontSize: 13,
+  fontWeight: 600,
+};
+
 export type MessageBubbleProps = {
   comment: RecordComment;
   isOwnMessage: boolean;
@@ -69,18 +89,6 @@ export const MessageBubble = memo(
       [token.colorBorderSecondary],
     );
 
-    const daySeparatorStyle = useMemo(
-      (): CSSProperties => ({
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        marginTop: 16,
-        marginBottom: 12,
-        width: "100%",
-      }),
-      [],
-    );
-
     const dayLineStyle = useMemo(
       (): CSSProperties => ({
         flex: 1,
@@ -109,23 +117,6 @@ export const MessageBubble = memo(
         width: "100%",
       }),
       [isOwnMessage],
-    );
-
-    const avatarNameGroupStyle = useMemo(
-      (): CSSProperties => ({
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-      }),
-      [],
-    );
-
-    const nameStyle = useMemo(
-      (): CSSProperties => ({
-        fontSize: 13,
-        fontWeight: 600,
-      }),
-      [],
     );
 
     const bubbleStyle = useMemo(
@@ -189,13 +180,13 @@ export const MessageBubble = memo(
         alignItems: "center",
         justifyContent: "center",
         fontSize: 12,
-        color: token.colorTextQuaternary,
+        color: isRemoveHovered ? token.colorError : token.colorTextQuaternary,
         cursor: "pointer",
         opacity: isHovered ? 1 : 0,
         transition: "opacity 0.12s ease-out, color 0.15s ease",
         pointerEvents: isHovered ? "auto" : "none",
       }),
-      [isHovered, token.colorTextQuaternary],
+      [isHovered, isRemoveHovered, token.colorTextQuaternary, token.colorError],
     );
 
     const handleRemoveMouseEnter = useCallback(
@@ -220,10 +211,10 @@ export const MessageBubble = memo(
     }, [t, onDeleteComment, comment.id]);
 
     const avatarNameElement = (
-      <div style={avatarNameGroupStyle}>
+      <div style={AVATAR_NAME_GROUP_STYLE}>
         {isOwnMessage ? (
           <>
-            <Text style={nameStyle}>{userName}</Text>
+            <Text style={NAME_STYLE}>{userName}</Text>
             <UserAvatar
               userName={userName}
               size={28}
@@ -237,7 +228,7 @@ export const MessageBubble = memo(
               size={28}
               style={{ flexShrink: 0 }}
             />
-            <Text style={nameStyle}>{userName}</Text>
+            <Text style={NAME_STYLE}>{userName}</Text>
           </>
         )}
       </div>
@@ -253,7 +244,7 @@ export const MessageBubble = memo(
       <ErrorBoundary>
         <>
           {isFirstOfDay && dayLabel && (
-            <div style={daySeparatorStyle}>
+            <div style={DAY_SEPARATOR_STYLE}>
               <div style={dayLineStyle} />
               <Text style={dayLabelStyle}>{dayLabel}</Text>
               <div style={dayLineStyle} />
@@ -274,12 +265,7 @@ export const MessageBubble = memo(
               {isOwnMessage && onDeleteComment && (
                 <Tooltip title={t("delete")} placement="top">
                   <span
-                    style={{
-                      ...removeActionStyle,
-                      color: isRemoveHovered
-                        ? token.colorError
-                        : token.colorTextQuaternary,
-                    }}
+                    style={removeActionStyle}
                     onClick={handleDeleteClick}
                     onMouseEnter={handleRemoveMouseEnter}
                     onMouseLeave={handleRemoveMouseLeave}

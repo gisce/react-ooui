@@ -131,12 +131,12 @@ export const FormActionView = (props: FormActionViewProps) => {
 
   const handleSubmitSucceed = useCallback(
     (id?: number, values?: any) => {
-      if (id === undefined) return;
-      const itemIndex = results!.findIndex((item: any) => item.id === id);
+      if (id === undefined || !results) return;
+      const itemIndex = results.findIndex((item: any) => item.id === id);
       if (itemIndex === -1) {
-        results!.push(values);
-        setResults(results);
-        setCurrentItemIndex(results!.length - 1);
+        const updatedResults = [...results, values];
+        setResults(updatedResults);
+        setCurrentItemIndex(updatedResults.length - 1);
       }
     },
     [results, setResults, setCurrentItemIndex],

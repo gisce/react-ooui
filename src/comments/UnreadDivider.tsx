@@ -3,6 +3,15 @@ import { theme } from "antd";
 
 const { useToken } = theme;
 
+const CONTAINER_STYLE: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 12,
+  marginTop: 16,
+  marginBottom: 12,
+  width: "100%",
+};
+
 export type UnreadDividerProps = {
   label: string;
 };
@@ -11,18 +20,6 @@ const UnreadDividerComponent = forwardRef<HTMLDivElement, UnreadDividerProps>(
   (props: UnreadDividerProps, ref) => {
     const { label } = props;
     const { token } = useToken();
-
-    const containerStyle = useMemo(
-      (): CSSProperties => ({
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        marginTop: 16,
-        marginBottom: 12,
-        width: "100%",
-      }),
-      [],
-    );
 
     const lineStyle = useMemo(
       (): CSSProperties => ({
@@ -45,7 +42,12 @@ const UnreadDividerComponent = forwardRef<HTMLDivElement, UnreadDividerProps>(
     );
 
     return (
-      <div ref={ref} style={containerStyle} role="separator" aria-label={label}>
+      <div
+        ref={ref}
+        style={CONTAINER_STYLE}
+        role="separator"
+        aria-label={label}
+      >
         <div style={lineStyle} />
         <span style={labelStyle}>{label}</span>
         <div style={lineStyle} />

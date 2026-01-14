@@ -9,6 +9,31 @@ import { UserAvatar } from "@/ui/UserAvatar";
 const { Text } = Typography;
 const { useToken } = theme;
 
+const NOTIFICATION_ROW_STYLE: CSSProperties = {
+  display: "flex",
+  alignItems: "flex-start",
+  justifyContent: "space-between",
+  gap: 12,
+};
+
+const NOTIFICATION_TEXT_STYLE: CSSProperties = {
+  flex: 1,
+  minWidth: 0,
+};
+
+const PARTICIPANTS_ROW_STYLE: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  marginTop: 12,
+};
+
+const PARTICIPANTS_LABEL_STYLE: CSSProperties = {
+  fontSize: 12,
+  fontWeight: 600,
+  flexShrink: 0,
+};
+
 export type ParticipantsSectionProps = {
   participants: Participant[];
   isParticipant: boolean;
@@ -40,24 +65,6 @@ const ParticipantsSectionComponent = ({
     [token.colorBorder, token.colorBgLayout],
   );
 
-  const notificationRowStyle = useMemo(
-    (): CSSProperties => ({
-      display: "flex",
-      alignItems: "flex-start",
-      justifyContent: "space-between",
-      gap: 12,
-    }),
-    [],
-  );
-
-  const notificationTextStyle = useMemo(
-    (): CSSProperties => ({
-      flex: 1,
-      minWidth: 0,
-    }),
-    [],
-  );
-
   const explanatoryTextStyle = useMemo(
     (): CSSProperties => ({
       fontSize: 12,
@@ -66,25 +73,6 @@ const ParticipantsSectionComponent = ({
       display: "block",
     }),
     [token.colorTextSecondary],
-  );
-
-  const participantsRowStyle = useMemo(
-    (): CSSProperties => ({
-      display: "flex",
-      alignItems: "center",
-      gap: 8,
-      marginTop: 12,
-    }),
-    [],
-  );
-
-  const participantsLabelStyle = useMemo(
-    (): CSSProperties => ({
-      fontSize: 12,
-      fontWeight: 600,
-      flexShrink: 0,
-    }),
-    [],
   );
 
   const isSubscribed = isParticipant && !isMuted;
@@ -113,8 +101,8 @@ const ParticipantsSectionComponent = ({
   return (
     <ErrorBoundary>
       <div style={sectionStyle}>
-        <div style={notificationRowStyle}>
-          <div style={notificationTextStyle}>
+        <div style={NOTIFICATION_ROW_STYLE}>
+          <div style={NOTIFICATION_TEXT_STYLE}>
             <Text style={explanatoryTextStyle}>{notificationStatusText}</Text>
           </div>
           <Tooltip
@@ -131,8 +119,8 @@ const ParticipantsSectionComponent = ({
         </div>
 
         {participants.length > 0 && (
-          <div style={participantsRowStyle}>
-            <Text style={participantsLabelStyle}>
+          <div style={PARTICIPANTS_ROW_STYLE}>
+            <Text style={PARTICIPANTS_LABEL_STYLE}>
               {t("participants") + ":"}
             </Text>
             <Avatar.Group

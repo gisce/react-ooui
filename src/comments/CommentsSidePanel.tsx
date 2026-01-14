@@ -48,14 +48,7 @@ export const COMMENTS_PANEL_GAP = 8;
 
 const TEXT_AREA_AUTO_SIZE = { minRows: 1, maxRows: 4 };
 
-const LOADING_CONTAINER_STYLE: CSSProperties = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  flex: 1,
-};
-
-const EMPTY_CONTAINER_STYLE: CSSProperties = {
+const CENTERED_CONTAINER_STYLE: CSSProperties = {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
@@ -68,6 +61,12 @@ const MESSAGES_WRAPPER_STYLE: CSSProperties = {
 };
 
 const TITLE_STYLE: CSSProperties = { margin: 0 };
+
+const HEADER_TITLE_GROUP_STYLE: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 4,
+};
 
 export type CommentsSidePanelProps = {
   visible: boolean;
@@ -213,15 +212,6 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
       flexShrink: 0,
     }),
     [token.colorBorder, token.colorBgElevated],
-  );
-
-  const headerTitleGroupStyle = useMemo(
-    (): CSSProperties => ({
-      display: "flex",
-      alignItems: "center",
-      gap: 4,
-    }),
-    [],
   );
 
   const mentionOptions = useMemo(
@@ -427,10 +417,6 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     [handleSend, mentionDropdownOpen, newComment],
   );
 
-  const handleCommentChange = useCallback((value: string) => {
-    setNewComment(value);
-  }, []);
-
   const handleMentionSearch = useCallback(
     async (text: string, prefix: string) => {
       if (prefix !== "@") return;
@@ -455,13 +441,6 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
     setMentionDropdownOpen(false);
   }, []);
 
-  const handleDeleteComment = useCallback(
-    (commentId: number) => {
-      onDeleteComment?.(commentId);
-    },
-    [onDeleteComment],
-  );
-
   if (!shouldRender) {
     return null;
   }
@@ -478,7 +457,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
         >
           <ErrorBoundary>
             <div style={panelHeaderStyle}>
-              <div style={headerTitleGroupStyle}>
+              <div style={HEADER_TITLE_GROUP_STYLE}>
                 <Title level={5} style={TITLE_STYLE}>
                   {t("comments")}
                 </Title>
@@ -518,11 +497,11 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
           <ErrorBoundary>
             <div ref={contentAreaRef} style={contentAreaStyle}>
               {loading && comments.length === 0 ? (
-                <div style={LOADING_CONTAINER_STYLE}>
+                <div style={CENTERED_CONTAINER_STYLE}>
                   <Spin />
                 </div>
               ) : comments.length === 0 ? (
-                <div style={EMPTY_CONTAINER_STYLE}>
+                <div style={CENTERED_CONTAINER_STYLE}>
                   <Empty
                     description={t("noComments")}
                     image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -572,7 +551,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                           model={model}
                           resourceId={resourceId}
                           skipSeparator={isFirstUnread}
-                          onDeleteComment={handleDeleteComment}
+                          onDeleteComment={onDeleteComment}
                         />
                       </div>
                     );
@@ -599,7 +578,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                   <Mentions
                     ref={mentionsRef}
                     value={newComment}
-                    onChange={handleCommentChange}
+                    onChange={setNewComment}
                     onKeyDown={handleKeyDown}
                     onSearch={handleMentionSearch}
                     onSelect={handleMentionSelect}
