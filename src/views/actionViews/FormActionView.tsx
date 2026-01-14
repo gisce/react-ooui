@@ -1,7 +1,21 @@
+import { useEffect, useCallback, useMemo, CSSProperties } from "react";
 import FormActionBar from "@/actionbar/FormActionBar";
+import {
+  CommentsSidePanel,
+  COMMENTS_PANEL_WIDTH,
+  COMMENTS_PANEL_GAP,
+} from "@/comments/CommentsSidePanel";
 import { FormView } from "@/types";
 import TitleHeader from "@/ui/TitleHeader";
 import Form from "@/widgets/views/Form";
+import { useActionViewContext } from "@/context/ActionViewContext";
+import { useRecordComments } from "@/hooks/useRecordComments";
+import { useParticipants } from "@/hooks/useParticipants";
+import { useConfigContext, useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
+import { theme } from "antd";
+
+const { useToken } = theme;
 
 export type FormActionViewProps = {
   formView?: FormView;
@@ -36,37 +50,190 @@ export const FormActionView = (props: FormActionViewProps) => {
     setCurrentItemIndex,
   } = props;
 
+  const {
+    commentsPanelVisible,
+    setCommentsPanelVisible,
+    setCommentCount,
+    setRefreshComments,
+    permissions,
+  } = useActionViewContext();
+  const { globalValues } = useConfigContext();
+  const { token } = useToken();
+  const commentsEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_COMMENTS_SYSTEM,
+  );
+
+  const {
+    comments,
+    participants,
+    userStatus,
+    loading,
+    fetchComments,
+    addComment,
+    deleteComment,
+    fetchMentionUsers,
+    markAsRead,
+  } = useRecordComments({
+    model,
+    resourceId: currentId,
+    context,
+  });
+
+  const {
+    isParticipant,
+    isMuted,
+    updating: muteUpdating,
+    toggleMute,
+  } = useParticipants({
+    model,
+    resourceId: currentId,
+    userStatus,
+    context,
+  });
+
+  useEffect(() => {
+    if (!commentsEnabled) return;
+    setCommentCount?.(0);
+  }, [commentsEnabled, currentId, setCommentCount]);
+
+  useEffect(() => {
+    if (!commentsEnabled) return;
+    setCommentCount?.(comments.length);
+  }, [commentsEnabled, comments.length, setCommentCount]);
+
+  useEffect(() => {
+    if (!commentsEnabled) return;
+    if (currentId) {
+      fetchComments();
+    }
+  }, [commentsEnabled, currentId, fetchComments]);
+
+  useEffect(() => {
+    if (!commentsEnabled) return;
+    setRefreshComments?.(fetchComments);
+    return () => setRefreshComments?.(undefined);
+  }, [commentsEnabled, fetchComments, setRefreshComments]);
+
+  const handleAddComment = useCallback(
+    async (body: string) => {
+      const newCommentId = await addComment(body);
+      await fetchComments({ silent: true });
+      if (newCommentId) {
+        markAsRead(newCommentId);
+      }
+    },
+    [addComment, fetchComments, markAsRead],
+  );
+
+  const handleClosePanel = useCallback(() => {
+    setCommentsPanelVisible?.(false);
+  }, [setCommentsPanelVisible]);
+
+  const handleSubmitSucceed = useCallback(
+    (id?: number, values?: any) => {
+      if (id === undefined || !results) return;
+      const itemIndex = results.findIndex((item: any) => item.id === id);
+      if (itemIndex === -1) {
+        const updatedResults = [...results, values];
+        setResults(updatedResults);
+        setCurrentItemIndex(updatedResults.length - 1);
+      }
+    },
+    [results, setResults, setCurrentItemIndex],
+  );
+
+  const wrapperStyle = useMemo(
+    (): CSSProperties => ({
+      display: "flex",
+      flexDirection: "column",
+      height: "calc(100vh - 80px)",
+    }),
+    [],
+  );
+
+  const containerStyle = useMemo(
+    (): CSSProperties => ({
+      display: "flex",
+      flex: 1,
+      overflow: "hidden",
+      position: "relative",
+      minHeight: 0,
+      backgroundColor: token.colorBgContainer,
+    }),
+    [token.colorBgContainer],
+  );
+
+  const formWrapperStyle = useMemo(
+    (): CSSProperties => ({
+      flex: 1,
+      overflow: "auto",
+      scrollbarWidth: "thin",
+      scrollbarColor: `${token.colorTextQuaternary} ${token.colorBgContainer}`,
+      paddingRight: COMMENTS_PANEL_GAP,
+      marginRight:
+        commentsEnabled && commentsPanelVisible
+          ? COMMENTS_PANEL_WIDTH + COMMENTS_PANEL_GAP
+          : 0,
+      transition: "margin-right 0.3s ease",
+    }),
+    [
+      commentsEnabled,
+      commentsPanelVisible,
+      token.colorTextQuaternary,
+      token.colorBgContainer,
+    ],
+  );
+
   if (!visible) {
     return null;
   }
 
   return (
-    <>
+    <div style={wrapperStyle}>
       <TitleHeader>
         <FormActionBar toolbar={formView?.toolbar} />
       </TitleHeader>
-      <Form
-        rootForm={true}
-        ref={formRef}
-        model={model}
-        defaultValues={defaultValues}
-        forcedValues={forcedValues}
-        readOnly={readOnly}
-        formView={formView}
-        actionDomain={domain}
-        id={currentId}
-        parentContext={context}
-        onSubmitSucceed={(id, values) => {
-          const itemIndex = results!.findIndex((item: any) => {
-            return item.id === id;
-          });
-          if (itemIndex === -1) {
-            results!.push(values);
-            setResults(results);
-            setCurrentItemIndex(results!.length - 1);
-          }
-        }}
-      />
-    </>
+      <div style={containerStyle}>
+        <div style={formWrapperStyle}>
+          <Form
+            rootForm={true}
+            ref={formRef}
+            model={model}
+            defaultValues={defaultValues}
+            forcedValues={forcedValues}
+            readOnly={readOnly}
+            formView={formView}
+            actionDomain={domain}
+            id={currentId}
+            parentContext={context}
+            onSubmitSucceed={handleSubmitSucceed}
+          />
+        </div>
+        {commentsEnabled && currentId !== undefined && (
+          <CommentsSidePanel
+            visible={commentsPanelVisible ?? false}
+            comments={comments}
+            loading={loading}
+            model={model}
+            resourceId={currentId}
+            onClose={handleClosePanel}
+            onAddComment={handleAddComment}
+            onDeleteComment={deleteComment}
+            onFetchComments={fetchComments}
+            onFetchMentionUsers={fetchMentionUsers}
+            currentUserId={globalValues?.uid}
+            canAddComment={permissions?.write}
+            participants={participants}
+            participantsLoading={loading}
+            isParticipant={isParticipant}
+            isMuted={isMuted}
+            muteUpdating={muteUpdating}
+            onToggleMute={userStatus ? toggleMute : undefined}
+            lastMessageRead={userStatus?.last_message_read}
+            onMarkAsRead={userStatus ? markAsRead : undefined}
+          />
+        )}
+      </div>
+    </div>
   );
 };

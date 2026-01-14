@@ -54,6 +54,7 @@ type ActionViewProviderProps = {
   permissions?: PermissionsMap | null;
   permissionsLoading?: boolean;
   permissionsError?: Error | null;
+  initialOpenComments?: boolean;
 };
 
 export type ActionViewContextType = Omit<
@@ -103,6 +104,12 @@ export type ActionViewContextType = Omit<
   setCurrentSavedSearch?: (value: any) => void;
   savedSearches?: any[];
   setSavedSearches?: (value: any[]) => void;
+  commentsPanelVisible?: boolean;
+  setCommentsPanelVisible?: (value: boolean) => void;
+  commentCount?: number;
+  setCommentCount?: (value: number) => void;
+  refreshComments?: () => Promise<void>;
+  setRefreshComments?: (fn: (() => Promise<void>) | undefined) => void;
 };
 
 export const ActionViewContext = createContext<ActionViewContextType | null>(
@@ -151,6 +158,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     permissions,
     permissionsLoading,
     permissionsError,
+    initialOpenComments,
   } = props;
 
   const [formIsSaving, setFormIsSaving] = useState<boolean>(false);
@@ -205,6 +213,19 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   );
   const [currentSavedSearch, setCurrentSavedSearch] = useState<any>(null);
   const [savedSearches, setSavedSearches] = useState<any[]>([]);
+  const [commentsPanelVisible, setCommentsPanelVisible] = useState<boolean>(
+    initialOpenComments ?? false,
+  );
+  const [commentCount, setCommentCount] = useState<number>(0);
+  const [refreshComments, setRefreshCommentsState] = useState<{
+    fn: (() => Promise<void>) | undefined;
+  }>({ fn: undefined });
+  const setRefreshComments = useCallback(
+    (fn: (() => Promise<void>) | undefined) => {
+      setRefreshCommentsState({ fn });
+    },
+    [],
+  );
 
   useEffect(() => {
     if (results && results.length > 0 && !currentItemIndex) {
@@ -320,6 +341,12 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setCurrentSavedSearch,
         savedSearches,
         setSavedSearches,
+        commentsPanelVisible,
+        setCommentsPanelVisible,
+        commentCount,
+        setCommentCount,
+        refreshComments: refreshComments.fn,
+        setRefreshComments,
         permissions,
         permissionsLoading,
         permissionsError,
@@ -409,6 +436,12 @@ export const useActionViewContext = () => {
       setCurrentSavedSearch: () => {},
       savedSearches: [],
       setSavedSearches: () => {},
+      commentsPanelVisible: false,
+      setCommentsPanelVisible: () => {},
+      commentCount: 0,
+      setCommentCount: () => {},
+      refreshComments: undefined,
+      setRefreshComments: () => {},
       permissions: null,
       permissionsLoading: false,
       permissionsError: null,

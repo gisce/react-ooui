@@ -112,7 +112,7 @@ const TitleHeader: React.FC<Props> = ({
   ]);
 
   return (
-    <div style={{ position: "sticky", top: 80, zIndex: 3 }}>
+    <div style={{ zIndex: 3 }}>
       <Row
         className="shadow-md"
         style={{
