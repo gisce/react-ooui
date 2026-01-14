@@ -10,9 +10,11 @@ export type UseNumberFormatterOptions = {
   localized?: boolean;
 };
 
-export const useNumberFormatter = (options: UseNumberFormatterOptions = {}) => {
+export function useNumberFormatter(
+  options: UseNumberFormatterOptions = {},
+): (value: number | null | undefined) => string {
   const { locale } = useLocale();
-  const { localized = false } = options;
+  const { localized = false, decimalDigits, currency, format } = options;
 
   return useCallback(
     (value: number | null | undefined): string => {
@@ -21,10 +23,9 @@ export const useNumberFormatter = (options: UseNumberFormatterOptions = {}) => {
       }
 
       if (!localized) {
-        if (options.decimalDigits !== undefined) {
-          return value.toFixed(options.decimalDigits);
-        }
-        return `${value}`;
+        return decimalDigits !== undefined
+          ? value.toFixed(decimalDigits)
+          : `${value}`;
       }
 
       const browserLocale = locale.replace("_", "-");
@@ -32,26 +33,20 @@ export const useNumberFormatter = (options: UseNumberFormatterOptions = {}) => {
         useGrouping: true,
       };
 
-      if (options.decimalDigits !== undefined) {
-        formatOptions.minimumFractionDigits = options.decimalDigits;
-        formatOptions.maximumFractionDigits = options.decimalDigits;
+      if (decimalDigits !== undefined) {
+        formatOptions.minimumFractionDigits = decimalDigits;
+        formatOptions.maximumFractionDigits = decimalDigits;
       }
 
-      if (options.format === "currency" && options.currency) {
+      if (format === "currency" && currency) {
         formatOptions.style = "currency";
-        formatOptions.currency = options.currency;
-      } else if (options.format === "percent") {
+        formatOptions.currency = currency;
+      } else if (format === "percent") {
         formatOptions.style = "percent";
       }
 
       return value.toLocaleString(browserLocale, formatOptions);
     },
-    [
-      locale,
-      options.decimalDigits,
-      options.currency,
-      options.format,
-      localized,
-    ],
+    [locale, decimalDigits, currency, format, localized],
   );
-};
+}
