@@ -166,6 +166,8 @@ export default {
   column_limit: "Límite de columna",
   column_limit_description:
     "Un límite en el número de elementos en una columna",
+  openInListView: "Abrir en vista de lista",
+  createNewRecord: "Crear un nuevo registro",
   comments: "Comentarios",
   writeComment: "Escribe un comentario...",
   noComments: "No hay comentarios",
@@ -184,4 +186,5 @@ export default {
   sending: "Enviando...",
   failedToSend: "Error al enviar",
   retry: "Reintentar",
+  clearSelection: "Limpiar selección",
 };
