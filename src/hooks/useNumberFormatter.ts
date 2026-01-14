@@ -19,7 +19,9 @@ export const useNumberFormatter = (options: UseNumberFormatterOptions = {}) => {
       }
 
       const browserLocale = locale.replace("_", "-");
-      const formatOptions: Intl.NumberFormatOptions = {};
+      const formatOptions: Intl.NumberFormatOptions = {
+        useGrouping: true,
+      };
 
       if (options.decimalDigits !== undefined) {
         formatOptions.minimumFractionDigits = options.decimalDigits;
