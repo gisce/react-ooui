@@ -265,6 +265,8 @@ export const MessageBubble = memo(
               {isOwnMessage && onDeleteComment && (
                 <Tooltip title={t("delete")} placement="top">
                   <span
+                    role="button"
+                    aria-label={t("delete")}
                     style={removeActionStyle}
                     onClick={handleDeleteClick}
                     onMouseEnter={handleRemoveMouseEnter}

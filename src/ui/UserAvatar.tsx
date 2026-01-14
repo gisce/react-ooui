@@ -36,7 +36,7 @@ const UserAvatarComponent = (props: UserAvatarProps) => {
   );
 
   return (
-    <Avatar {...avatarProps} style={mergedStyle}>
+    <Avatar {...avatarProps} style={mergedStyle} aria-label={userName}>
       {initials}
     </Avatar>
   );
