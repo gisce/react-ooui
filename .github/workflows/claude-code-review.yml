@@ -1,0 +1,62 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    # Optional: Only run on specific file changes
+    # paths:
+    #   - "src/**/*.ts"
+    #   - "src/**/*.tsx"
+    #   - "src/**/*.js"
+    #   - "src/**/*.jsx"
+
+jobs:
+  claude-review:
+    # Optional: Filter by PR author
+    # if: |
+    #   github.event.pull_request.user.login == 'external-contributor' ||
+    #   github.event.pull_request.user.login == 'new-developer' ||
+    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Clone webclient-workflow-plugin and copy SKILL.md to CLAUDE.md
+        run: |
+          git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/gisce/webclient-workflow-plugin.git /tmp/webclient-workflow-plugin
+          cp /tmp/webclient-workflow-plugin/webclient-workflow/skills/webclient-workflow/SKILL.md ./CLAUDE.md
+
+      - name: Run Claude Code Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ secrets.GH_PAT }}  # Custom PAT for cross-repo access
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Please review this pull request and provide feedback on:
+            - Code quality and best practices
+            - Potential bugs or issues
+            - Performance considerations
+            - Security concerns
+            - Test coverage
+
+            Use the repository's CLAUDE.md for guidance on style and conventions. Be constructive and helpful in your feedback.
+
+            Use `gh pr comment` with your Bash tool to leave your review as a comment on the PR.
+
+          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
+          # or https://code.claude.com/docs/en/cli-reference for available options
+          # Allow specific gh commands and git commands for cross-repo work
+          claude_args: '--model claude-opus-4-5-20251101 --allowed-tools "Bash(gh repo view:*),Bash(gh repo clone:*),Bash(gh api repos/:*),Bash(gh pr:*),Bash(gh issue:*),Bash(gh search:*),Bash(git clone:*),Bash(git -C:*),Bash(git checkout:*),Bash(git branch:*),Bash(git fetch:*),Bash(git pull:*),Bash(git remote:*),Bash(npm:*),Bash(cd:*),WebFetch,WebSearch"'

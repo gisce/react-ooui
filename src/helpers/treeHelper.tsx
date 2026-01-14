@@ -34,16 +34,30 @@ const getTableColumns = (
   components: any,
   context: any,
   many2oneSortEnabled: boolean = false,
+  selectionToLazy?: boolean,
 ): Column[] => {
   const tableColumns = tree.columns.map((column) => {
     const type = column.type;
     const key = column.id;
-    const component = components?.[type];
+    const fieldType = column.fieldType;
+
+    const isEffectivelyMany2one =
+      type === "many2one" ||
+      type === "many2one_lazy" ||
+      (type === "selection" && fieldType === "many2one");
+
+    const componentType = isEffectivelyMany2one ? "many2one" : type;
+    const component = components?.[componentType];
     let render;
 
     if (component) {
       render = (value: any) => {
-        return component({ value, key, ooui: column, context });
+        // For Selection widgets that are effectively many2one, hide the arrow menu
+        let effectiveOoui: any = column;
+        if (type === "selection" && fieldType === "many2one") {
+          effectiveOoui = { ...column, showMenu: false };
+        }
+        return component({ value, key, ooui: effectiveOoui, context });
       };
     } else {
       render = (value: any) => {
@@ -71,7 +85,7 @@ const getTableColumns = (
         let aItem = a[key] || "";
         let bItem = b[key] || "";
 
-        if (type === "many2one") {
+        if (isEffectivelyMany2one) {
           aItem = a[key]?.value || "";
           bItem = b[key]?.value || "";
         }
@@ -83,7 +97,7 @@ const getTableColumns = (
       isSortable:
         (type !== "one2many" &&
           !column.isFunction &&
-          (type !== "many2one" || many2oneSortEnabled)) ||
+          (!isEffectivelyMany2one || many2oneSortEnabled)) ||
         column.isSortable,
     };
   });
@@ -94,6 +108,7 @@ const getTableItems = async (
   treeOoui: TreeOoui,
   results: any[],
   context: any = {},
+  selectionToLazy?: boolean,
 ): Promise<any[]> => {
   // First pass: identify all tags and reference widgets and collect their data requirements
   const tagsRequests: Map<
@@ -232,6 +247,18 @@ const getTableItems = async (
           } else {
             parsedItem[key] = item[key];
           }
+        } else if (
+          widget instanceof Selection &&
+          widget.type === "selection" &&
+          widget.fieldType === "many2one"
+        ) {
+          parsedItem[key] = item[key] &&
+            Array.isArray(item[key]) &&
+            item[key].length === 2 && {
+              model: widget.raw_props?.relation,
+              id: item[key][0],
+              value: item[key][1],
+            };
         } else if (widget instanceof Selection) {
           parsedItem[key] = item[key];
         } else if (widget instanceof Many2one) {
@@ -394,6 +421,15 @@ function hasActualValues(obj: Record<string, any>): boolean {
   return false;
 }
 
+const getFieldNameFromColId = (colId: string): string => {
+  // Match pattern: fieldName_N where N is a number (ag-grid's duplicate suffix)
+  const match = colId.match(/^(.+)_(\d+)$/);
+  if (match) {
+    return match[1];
+  }
+  return colId;
+};
+
 const getSortedFieldsFromState = ({
   state,
 }: {
@@ -410,15 +446,18 @@ const getSortedFieldsFromState = ({
   if (columnsWithSort.length === 0) {
     return undefined;
   }
-  const sortFields = columnsWithSort.reduce(
-    (acc, col) => ({
-      ...acc,
-      [col.colId]: col.sort,
-    }),
-    {},
-  );
 
-  return sortFields;
+  // Use a Map to deduplicate by field name (first occurrence wins based on sortIndex)
+  const sortFieldsMap = new Map<string, SortDirection>();
+  columnsWithSort.forEach((col) => {
+    const fieldName = getFieldNameFromColId(col.colId);
+    // Only add if not already present (first occurrence by sortIndex wins)
+    if (!sortFieldsMap.has(fieldName)) {
+      sortFieldsMap.set(fieldName, col.sort as SortDirection);
+    }
+  });
+
+  return Object.fromEntries(sortFieldsMap);
 };
 
 const getOrderFromSortFields = (sortFields?: Record<string, SortDirection>) => {

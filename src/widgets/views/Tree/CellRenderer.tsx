@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { SkeletonPill } from "@gisce/react-formiga-components";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 
 export const CellRenderer = memo(
   ({
@@ -16,8 +17,11 @@ export const CellRenderer = memo(
     if (isFieldLoading?.(record, column.key)) {
       return <SkeletonPill />;
     }
-    // eslint-disable-next-line react/prop-types
-    return column.render(value, column.key, column?.ooui, column?.context);
+    return (
+      <ErrorBoundary>
+        {column.render(value, column.key, column?.ooui, column?.context)}
+      </ErrorBoundary>
+    );
   },
 );
 
