@@ -5,9 +5,10 @@ import { initializeMockProvider, initializePaginatedMockProvider } from "./One2M
 
 interface One2ManyStoryProps {
   paginated?: boolean;
+  locale?: string;
 }
 
-const One2ManyStory: React.FC<One2ManyStoryProps> = ({ paginated = false }) => {
+const One2ManyStory: React.FC<One2ManyStoryProps> = ({ paginated = false, locale = "en_US" }) => {
   const [mockProviderReady, setMockProviderReady] = useState(false);
 
   useEffect(() => {
@@ -28,7 +29,7 @@ const One2ManyStory: React.FC<One2ManyStoryProps> = ({ paginated = false }) => {
   return (
     <NotificationProvider>
       <ConfigContextProvider
-        locale="en_US"
+        locale={locale}
         erpFeatures={{}}
         userFeatures={{
           features: {
@@ -39,7 +40,7 @@ const One2ManyStory: React.FC<One2ManyStoryProps> = ({ paginated = false }) => {
         globalValues={{}}
         rootContext={{}}
         devMode={false}
-        title={`One2Many ${paginated ? 'Paginated' : 'Infinite'} Story Demo`}
+        title={`One2Many ${paginated ? 'Paginated' : 'Infinite'} Story Demo (${locale})`}
         treeMaxLimit={100}
       >
         <div
@@ -81,3 +82,7 @@ const One2ManyStory: React.FC<One2ManyStoryProps> = ({ paginated = false }) => {
 // Export the specific story variants
 export const Infinite = () => <One2ManyStory paginated={false} />;
 export const Paginated = () => <One2ManyStory paginated={true} />;
+
+// Spanish locale variants for testing number localization
+export const InfiniteSpanish = () => <One2ManyStory paginated={false} locale="es_ES" />;
+export const PaginatedSpanish = () => <One2ManyStory paginated={true} locale="es_ES" />;

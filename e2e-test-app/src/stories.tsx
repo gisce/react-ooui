@@ -1,8 +1,13 @@
 import React from "react";
 // Import the TreeActionView stories (now pure React components)
-import { Infinite, Paginated } from "./stories/TreeActionView.stories";
+import { Infinite, Paginated, InfiniteSpanish, PaginatedSpanish } from "./stories/TreeActionView.stories";
 // Import the One2Many stories
-import { Infinite as One2ManyInfinite, Paginated as One2ManyPaginated } from "./stories/One2Many.stories";
+import {
+  Infinite as One2ManyInfinite,
+  Paginated as One2ManyPaginated,
+  InfiniteSpanish as One2ManyInfiniteSpanish,
+  PaginatedSpanish as One2ManyPaginatedSpanish,
+} from "./stories/One2Many.stories";
 // Import the Many2Many stories
 import { Infinite as Many2ManyInfinite, Paginated as Many2ManyPaginated } from "./stories/Many2Many.stories";
 // Import QRCode demo
@@ -65,5 +70,33 @@ export const stories: Story[] = [
     component: Many2ManyPaginated,
     description:
       "A form view with a Many2Many widget displaying related records with pagination controls. The Many2Many field shows product details, quantities, prices, and automatically calculates subtotals for many-to-many relationships. Features include: dynamic subtotal calculations, sum fields showing totals, product selection with many2one fields, autorefreshable timestamp columns (Last Updated), function columns (Total Amount), and pagination controls for easy navigation through large datasets in many-to-many contexts.",
-  }
+  },
+  {
+    id: "tree-action-view-infinite-spanish",
+    title: "TreeActionView - Infinite (Spanish)",
+    component: InfiniteSpanish,
+    description:
+      "The infinite tree view with Spanish locale (es_ES) for testing number localization. Numbers should display with comma as decimal separator (e.g., 1.234,56).",
+  },
+  {
+    id: "tree-action-view-paginated-spanish",
+    title: "TreeActionView - Paginated (Spanish)",
+    component: PaginatedSpanish,
+    description:
+      "The paginated tree view with Spanish locale (es_ES) for testing number localization. Numbers should display with comma as decimal separator (e.g., 1.234,56).",
+  },
+  {
+    id: "one2many-infinite-spanish",
+    title: "One2Many - Infinite (Spanish)",
+    component: One2ManyInfiniteSpanish,
+    description:
+      "One2Many with infinite scroll using Spanish locale (es_ES) for testing number localization. Numbers should display with comma as decimal separator.",
+  },
+  {
+    id: "one2many-paginated-spanish",
+    title: "One2Many - Paginated (Spanish)",
+    component: One2ManyPaginatedSpanish,
+    description:
+      "One2Many with pagination using Spanish locale (es_ES) for testing number localization. Numbers should display with comma as decimal separator.",
+  },
 ];
