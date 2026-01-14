@@ -2,12 +2,17 @@ import DashboardActionBar from "@/actionbar/DashboardActionBar";
 import DashboardActionProvider from "@/context/DashboardActionContext";
 import TitleHeader from "@/ui/TitleHeader";
 import Dashboard from "@/widgets/views/Dashboard/Dashboard";
-import { useContext, useRef } from "react";
+import { useContext, useRef, CSSProperties } from "react";
 import {
   TabManagerContext,
   TabManagerContextType,
 } from "@/context/TabManagerContext";
 import { DashboardProps } from "@/types";
+
+const CONTENT_CONTAINER_STYLE: CSSProperties = {
+  height: "calc(100vh - 80px - 102px)",
+  overflow: "auto",
+};
 
 export type DashboardActionViewProps = {
   dashboardData: DashboardProps;
@@ -40,13 +45,15 @@ export const DashboardActionView = (props: DashboardActionViewProps) => {
       <TitleHeader>
         <DashboardActionBar />
       </TitleHeader>
-      <Dashboard
-        ref={dashboardRef}
-        model={dashboardData!.model}
-        id={dashboardData!.id}
-        context={dashboardData?.context}
-        configAction={dashboardData?.configAction}
-      />
+      <div style={CONTENT_CONTAINER_STYLE}>
+        <Dashboard
+          ref={dashboardRef}
+          model={dashboardData!.model}
+          id={dashboardData!.id}
+          context={dashboardData?.context}
+          configAction={dashboardData?.configAction}
+        />
+      </div>
     </DashboardActionProvider>
   );
 };

@@ -1,8 +1,15 @@
 import Field from "@/common/Field";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { Components } from "react-markdown";
 import { WidgetProps } from "@/types";
 import remarkGfm from "remark-gfm";
-import { useCallback, forwardRef, useRef, useState, useEffect } from "react";
+import {
+  useCallback,
+  forwardRef,
+  useRef,
+  useState,
+  useEffect,
+  CSSProperties,
+} from "react";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 
 export const Markdown = (props: WidgetProps) => {
@@ -13,10 +20,29 @@ export const Markdown = (props: WidgetProps) => {
   );
 };
 
-export const MarkdownInput = forwardRef<HTMLDivElement, any>(
-  (props: any, ref) => {
-    const { value = "", onChange, ...restProps } = props;
-    const { ooui } = restProps;
+export const transformMentions = (text: string): string => {
+  return text.replace(/@(\p{L}[\p{L}\p{N}_]*)/gu, "**@$1**");
+};
+
+export type MarkdownInputProps = {
+  value?: string;
+  onChange?: (value: string) => void;
+  ooui?: { height?: number };
+  components?: Components;
+  containerStyle?: CSSProperties;
+  className?: string;
+};
+
+export const MarkdownInput = forwardRef<HTMLDivElement, MarkdownInputProps>(
+  (props, ref) => {
+    const {
+      value = "",
+      onChange,
+      ooui,
+      components: customComponents,
+      containerStyle,
+      className = "markdown-typography",
+    } = props;
     const [internalValue, setInternalValue] = useState(value);
     const isProcessingCheckbox = useRef(false);
 
@@ -100,37 +126,44 @@ export const MarkdownInput = forwardRef<HTMLDivElement, any>(
       [internalValue, onChange],
     );
 
+    const defaultContainerStyle: CSSProperties = {
+      height: ooui?.height ? ooui.height + "px" : "100%",
+      overflow: "auto",
+    };
+
+    const defaultComponents: Components = {
+      input: (inputProps: any) => {
+        const { node, ...rest } = inputProps;
+        if (rest.type === "checkbox") {
+          return (
+            <input
+              {...rest}
+              disabled={false}
+              onChange={(e) => {
+                handleCheckboxClick(e.currentTarget);
+              }}
+              style={{ cursor: "pointer" }}
+            />
+          );
+        }
+        return <input {...rest} />;
+      },
+    };
+
+    const mergedComponents: Components = {
+      ...defaultComponents,
+      ...customComponents,
+    };
+
     return (
       <ErrorBoundary>
-        <div
-          ref={ref}
-          style={{
-            height: ooui?.height ? ooui.height + "px" : "100%",
-            overflow: "auto",
-          }}
-        >
+        <div ref={ref} style={containerStyle ?? defaultContainerStyle}>
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
-            className="markdown-typography"
-            components={{
-              input: (props: any) => {
-                if (props.type === "checkbox") {
-                  return (
-                    <input
-                      {...props}
-                      disabled={false}
-                      onChange={(e) => {
-                        handleCheckboxClick(e.currentTarget);
-                      }}
-                      style={{ cursor: "pointer" }}
-                    />
-                  );
-                }
-                return <input {...props} />;
-              },
-            }}
+            className={className}
+            components={mergedComponents}
           >
-            {internalValue || ""}
+            {transformMentions(internalValue || "")}
           </ReactMarkdown>
         </div>
       </ErrorBoundary>

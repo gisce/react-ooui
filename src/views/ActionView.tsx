@@ -62,6 +62,7 @@ type Props = {
   initialSearchParams?: any[];
   currentPage?: number;
   order?: any[];
+  openComments?: boolean;
 };
 
 function ActionView(props: Props, ref: any) {
@@ -85,6 +86,7 @@ function ActionView(props: Props, ref: any) {
     initialSearchParams = [],
     currentPage,
     order,
+    openComments,
   } = props;
   const [currentView, setCurrentViewInternal] = useState<View>();
 
@@ -518,6 +520,7 @@ function ActionView(props: Props, ref: any) {
       permissions={permissions}
       permissionsLoading={permissionsLoading}
       permissionsError={permissionsError}
+      initialOpenComments={openComments}
     >
       <ActionViewContent
         availableViews={availableViews}

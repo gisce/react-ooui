@@ -29,6 +29,7 @@ import {
 } from "@/context/TabManagerContext";
 import AttachmentsButton from "./AttachmentsButton";
 import { Attachment } from "./AttachmentsButtonWrapper";
+import { CommentsButton } from "./CommentsButton";
 import { useNextPrevious } from "./useNextPrevious";
 import {
   saveDocument,
@@ -36,12 +37,17 @@ import {
 } from "@/hooks/useFormToolbarButtons";
 import { ActionBarSeparator } from "./ActionBarSeparator";
 import { ShareUrlButton } from "./ShareUrlButton";
+import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
 
 function FormActionBarComponent({ toolbar }: { toolbar: any }) {
   const tabManagerContext = useContext(
     TabManagerContext,
   ) as TabManagerContextType;
   const { t } = useLocale();
+  const commentsEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_COMMENTS_SYSTEM,
+  );
   const { onNextClick, onPreviousClick, shouldDisableNavigation } =
     useNextPrevious();
   const { showErrorNotification } = useErrorNotification();
@@ -73,6 +79,10 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
     goToResourceId,
     isActive,
     permissions,
+    commentsPanelVisible,
+    setCommentsPanelVisible,
+    commentCount,
+    refreshComments,
   } = useActionViewContext();
 
   const { openDefaultActionForModel } = tabManagerContext || {};
@@ -94,8 +104,11 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
   );
 
   const handleRefresh = useCallback(() => {
-    tryAction(() => (formRef.current as any).fetchValues());
-  }, [tryAction, formRef]);
+    tryAction(() => {
+      (formRef.current as any).fetchValues();
+      refreshComments?.();
+    });
+  }, [tryAction, formRef, refreshComments]);
 
   const { actionButtonProps, printButtonProps, relateButtonProps } =
     useFormToolbarButtons({
@@ -360,6 +373,13 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
         onListAllAttachments={handleListAllAttachments}
         onViewAttachmentDetails={handleViewAttachmentDetails}
       />
+      {commentsEnabled && (
+        <CommentsButton
+          disabled={mustDisableButtons || currentId === undefined}
+          commentCount={commentCount ?? 0}
+          onClick={() => setCommentsPanelVisible?.(!commentsPanelVisible)}
+        />
+      )}
       <ActionBarSeparator />
       <ShareUrlButton res_id={currentId} />
     </Space>
