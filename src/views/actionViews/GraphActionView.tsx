@@ -77,8 +77,8 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     sorter = undefined,
     setSorter = undefined,
     setTotalItems: setActionViewTotalItems = undefined,
-    setSearchTreeNameSearch = undefined,
-    setTreeIsLoading = undefined,
+    setSearchNameSearch = undefined,
+    setViewIsLoading = undefined,
     limit,
     setLimit,
     searchParams,
@@ -86,7 +86,7 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     setSearchValues,
     currentView,
     totalItems,
-    searchTreeNameSearch,
+    searchNameSearch,
   } = actionViewContext || {};
 
   const [applyLimit, setApplyLimit] = useState(true);
@@ -109,7 +109,7 @@ export const GraphActionView = (props: GraphActionViewProps) => {
       return;
     }
     const allRowsResults = await ConnectionProvider.getHandler().searchAllIds({
-      params: searchTreeNameSearch ? domain : mergedParams,
+      params: searchNameSearch ? domain : mergedParams,
       model,
       context,
       totalItems,
@@ -117,7 +117,7 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     setManualIds(allRowsResults);
   }, [
     visible,
-    searchTreeNameSearch,
+    searchNameSearch,
     domain,
     mergedParams,
     model,
@@ -150,7 +150,7 @@ export const GraphActionView = (props: GraphActionViewProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     visible,
-    searchTreeNameSearch,
+    searchNameSearch,
     domain,
     mergedParams,
     totalItems,
@@ -174,13 +174,13 @@ export const GraphActionView = (props: GraphActionViewProps) => {
   const { clear, searchFilterLoading, searchError, offset, tableRefreshing } =
     useSearch({
       model,
-      setSearchTreeNameSearch,
+      setSearchTreeNameSearch: setSearchNameSearch,
       setSelectedRowItems,
       searchParams,
       setSearchValues,
       setSearchParams,
       setSearchVisible,
-      setTreeIsLoading,
+      setTreeIsLoading: setViewIsLoading,
       context,
       formView: formView!,
       treeView: treeView!,

@@ -66,7 +66,10 @@ const TitleHeader: React.FC<Props> = ({
       );
     }
 
-    if (currentView?.type === "tree" && selectedRowItems?.length) {
+    if (
+      (currentView?.type === "tree" || currentView?.type === "kanban") &&
+      selectedRowItems?.length
+    ) {
       if (selectedRowItems.length === 1) {
         return (
           <>
@@ -83,6 +86,14 @@ const TitleHeader: React.FC<Props> = ({
               text: selectedRowItems.map((reg) => reg.id).join(", "),
             }}
           />
+        </>
+      );
+    }
+
+    if (currentView?.type === "kanban" && totalItems !== undefined) {
+      return (
+        <>
+          {totalItems} {totalItems === 1 ? t("register") : t("registers")}
         </>
       );
     }

@@ -22,7 +22,7 @@ type ActionViewProviderProps = {
   setCurrentView: (view: View) => void;
   availableViews: View[];
   formRef: any;
-  searchTreeRef: any;
+  viewRef: any;
   onNewClicked: () => void;
   currentId?: number;
   setCurrentId: (id?: number) => void;
@@ -42,8 +42,8 @@ type ActionViewProviderProps = {
   ) => void;
   selectedRowItems?: any[];
   setSelectedRowItems: (value: any[] | ((prevValue: any[]) => any[])) => void;
-  setSearchTreeNameSearch: (searchString?: string) => void;
-  searchTreeNameSearch?: string;
+  setSearchNameSearch: (searchString?: string) => void;
+  searchNameSearch?: string;
   goToResourceId: (ids: number[], openInSameTab?: boolean) => Promise<void>;
   limit?: number;
   isActive: boolean;
@@ -70,8 +70,8 @@ export type ActionViewContextType = Omit<
   setRemovingItem?: (value: boolean) => void;
   formIsLoading?: boolean;
   setFormIsLoading?: (value: boolean) => void;
-  treeIsLoading?: boolean;
-  setTreeIsLoading?: (value: boolean) => void;
+  viewIsLoading?: boolean;
+  setViewIsLoading?: (value: boolean) => void;
   graphIsLoading?: boolean;
   setGraphIsLoading?: (value: boolean) => void;
   attachments?: any;
@@ -132,7 +132,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     setCurrentView,
     availableViews,
     formRef,
-    searchTreeRef,
+    viewRef: searchTreeRef,
     onNewClicked,
     currentId,
     setCurrentId,
@@ -147,8 +147,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     setTotalItems,
     setSelectedRowItems,
     selectedRowItems,
-    searchTreeNameSearch,
-    setSearchTreeNameSearch,
+    searchNameSearch: searchTreeNameSearch,
+    setSearchNameSearch: setSearchTreeNameSearch,
     goToResourceId,
     limit: limitProps,
     isActive,
@@ -165,7 +165,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [formHasChanges, setFormHasChanges] = useState<boolean>(false);
   const [removingItem, setRemovingItem] = useState<boolean>(false);
   const [formIsLoading, setFormIsLoading] = useState<boolean>(true);
-  const [treeIsLoading, setTreeIsLoading] = useState<boolean>(true);
+  const [viewIsLoading, setViewIsLoading] = useState<boolean>(true);
   const [attachments, setAttachments] = useState<any>([]);
   const [duplicatingItem, setDuplicatingItem] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useState<any[]>(
@@ -174,6 +174,11 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
   const [searchVisible, setSearchVisible] = useState<boolean>(false);
   const [graphIsLoading, setGraphIsLoading] = useState<boolean>(true);
   const [previousView, setPreviousView] = useState<View>();
+
+  const wrappedOnNewClicked = useCallback(() => {
+    setPreviousView(currentView);
+    onNewClicked();
+  }, [currentView, onNewClicked, setPreviousView]);
 
   // Memoized merged fields from all available views
   const allViewFields = useMemo(() => {
@@ -277,9 +282,9 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         formHasChanges,
         setFormHasChanges,
         formRef,
-        searchTreeRef,
+        viewRef: searchTreeRef,
         onFormSave: callOnFormSave,
-        onNewClicked,
+        onNewClicked: wrappedOnNewClicked,
         currentId,
         setCurrentId,
         currentItemIndex,
@@ -291,8 +296,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setRemovingItem,
         formIsLoading,
         setFormIsLoading,
-        treeIsLoading,
-        setTreeIsLoading,
+        viewIsLoading,
+        setViewIsLoading,
         attachments,
         setAttachments,
         selectedRowItems,
@@ -307,8 +312,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setSorter,
         totalItems,
         setTotalItems,
-        searchTreeNameSearch,
-        setSearchTreeNameSearch,
+        searchNameSearch: searchTreeNameSearch,
+        setSearchNameSearch: setSearchTreeNameSearch,
         setGraphIsLoading,
         graphIsLoading,
         previousView,
@@ -368,7 +373,7 @@ export const useActionViewContext = () => {
       setCurrentView: () => {},
       availableViews: [],
       formRef: { current: null },
-      searchTreeRef: { current: null },
+      viewRef: { current: null },
       onNewClicked: () => {},
       currentId: undefined,
       setCurrentId: () => {},
@@ -383,8 +388,8 @@ export const useActionViewContext = () => {
       setTotalItems: () => {},
       selectedRowItems: [],
       setSelectedRowItems: () => {},
-      setSearchTreeNameSearch: () => {},
-      searchTreeNameSearch: undefined,
+      setSearchNameSearch: () => {},
+      searchNameSearch: undefined,
       goToResourceId: async () => {},
       limit: DEFAULT_SEARCH_LIMIT,
       isActive: undefined,
@@ -397,8 +402,8 @@ export const useActionViewContext = () => {
       setRemovingItem: () => {},
       formIsLoading: false,
       setFormIsLoading: () => {},
-      treeIsLoading: false,
-      setTreeIsLoading: () => {},
+      viewIsLoading: false,
+      setViewIsLoading: () => {},
       graphIsLoading: false,
       setGraphIsLoading: () => {},
       attachments: [],
