@@ -26,6 +26,7 @@ export const SummaryValue = memo(({ summary }: { summary: SummaryItem }) => {
     decimalDigits,
     currency: summary.currency,
     format: summary.format ?? "decimal",
+    localized: true,
   });
 
   const formattedValue = formatNumber(summary.value);

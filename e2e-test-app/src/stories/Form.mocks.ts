@@ -1,4 +1,66 @@
-// Mock form view with integer and float fields for testing number localization
+// Fields definition shared between all form views
+const formFields = {
+  name: {
+    type: "char",
+    string: "Product Name",
+    required: true,
+  },
+  code: {
+    type: "char",
+    string: "Product Code",
+  },
+  // Float fields for price
+  list_price: {
+    type: "float",
+    string: "Sale Price",
+    digits: [16, 2],
+  },
+  cost_price: {
+    type: "float",
+    string: "Cost Price",
+    digits: [16, 2],
+  },
+  margin_percent: {
+    type: "float",
+    string: "Margin %",
+    digits: [16, 2],
+  },
+  // Integer fields for inventory
+  quantity_available: {
+    type: "integer",
+    string: "Available Qty",
+  },
+  quantity_reserved: {
+    type: "integer",
+    string: "Reserved Qty",
+  },
+  reorder_point: {
+    type: "integer",
+    string: "Reorder Point",
+  },
+  reorder_quantity: {
+    type: "integer",
+    string: "Reorder Qty",
+  },
+  // Float fields for measurements
+  weight: {
+    type: "float",
+    string: "Weight (kg)",
+    digits: [16, 3],
+  },
+  volume: {
+    type: "float",
+    string: "Volume (m³)",
+    digits: [16, 4],
+  },
+  // Integer field for rating
+  rating: {
+    type: "integer",
+    string: "Rating (1-100)",
+  },
+};
+
+// Mock form view with integer and float fields - DEFAULT (no localization)
 export const mockFormView = {
   view_id: 3001,
   type: "form",
@@ -25,66 +87,37 @@ export const mockFormView = {
         <field name="rating"/>
       </group>
     </form>`,
-  fields: {
-    name: {
-      type: "char",
-      string: "Product Name",
-      required: true,
-    },
-    code: {
-      type: "char",
-      string: "Product Code",
-    },
-    // Float fields for price
-    list_price: {
-      type: "float",
-      string: "Sale Price",
-      digits: [16, 2],
-    },
-    cost_price: {
-      type: "float",
-      string: "Cost Price",
-      digits: [16, 2],
-    },
-    margin_percent: {
-      type: "float",
-      string: "Margin %",
-      digits: [16, 2],
-    },
-    // Integer fields for inventory
-    quantity_available: {
-      type: "integer",
-      string: "Available Qty",
-    },
-    quantity_reserved: {
-      type: "integer",
-      string: "Reserved Qty",
-    },
-    reorder_point: {
-      type: "integer",
-      string: "Reorder Point",
-    },
-    reorder_quantity: {
-      type: "integer",
-      string: "Reorder Qty",
-    },
-    // Float fields for measurements
-    weight: {
-      type: "float",
-      string: "Weight (kg)",
-      digits: [16, 3],
-    },
-    volume: {
-      type: "float",
-      string: "Volume (m³)",
-      digits: [16, 4],
-    },
-    // Integer field for rating
-    rating: {
-      type: "integer",
-      string: "Rating (1-100)",
-    },
-  },
+  fields: formFields,
+};
+
+// Mock form view with LOCALIZED fields (opt-in localization via widget_props)
+export const mockFormViewLocalized = {
+  view_id: 3002,
+  type: "form",
+  arch: `<?xml version="1.0"?>
+    <form string="Product (Localized)">
+      <group>
+        <field name="name"/>
+        <field name="code"/>
+      </group>
+      <group string="Pricing">
+        <field name="list_price" widget_props='{"localized": true}'/>
+        <field name="cost_price" widget_props='{"localized": true}'/>
+        <field name="margin_percent" widget_props='{"localized": true}'/>
+      </group>
+      <group string="Inventory">
+        <field name="quantity_available" widget_props='{"localized": true}'/>
+        <field name="quantity_reserved" widget_props='{"localized": true}'/>
+        <field name="reorder_point" widget_props='{"localized": true}'/>
+        <field name="reorder_quantity" widget_props='{"localized": true}'/>
+      </group>
+      <group string="Metrics">
+        <field name="weight" widget_props='{"localized": true}'/>
+        <field name="volume" widget_props='{"localized": true}'/>
+        <field name="rating" widget_props='{"localized": true}'/>
+      </group>
+    </form>`,
+  fields: formFields,
 };
 
 // Mock product data

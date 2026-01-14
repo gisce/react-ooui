@@ -1,19 +1,26 @@
 import { ConnectionProvider, ConnectionProviderType } from "@gisce/react-ooui";
-import { mockFormView, mockProduct, mockProducts } from "./Form.mocks";
+import { mockFormView, mockFormViewLocalized, mockProduct, mockProducts } from "./Form.mocks";
+
+// Flag to control which view to use
+let useLocalizedView = false;
+
+export function setUseLocalizedView(localized: boolean) {
+  useLocalizedView = localized;
+}
 
 class FormMockConnectionProvider implements ConnectionProvider {
   private productData: any[] = [...mockProducts];
 
   async fieldsViewGet({ model, viewId, viewType, context }: any) {
     if (model === "product.product" && viewType === "form") {
-      return mockFormView;
+      return useLocalizedView ? mockFormViewLocalized : mockFormView;
     }
     throw new Error(`View not found for model: ${model}, type: ${viewType}`);
   }
 
   async getView({ model, type, context }: any) {
     if (model === "product.product" && type === "form") {
-      return mockFormView;
+      return useLocalizedView ? mockFormViewLocalized : mockFormView;
     }
     throw new Error(`View not found for model: ${model}, type: ${type}`);
   }

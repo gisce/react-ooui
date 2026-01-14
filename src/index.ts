@@ -115,7 +115,6 @@ import {
   MODEL_ACTIONS,
 } from "./models/constants";
 import { useBrowserVisibility } from "./hooks/useBrowserVisibility";
-import { UserAvatar } from "./ui/UserAvatar";
 import { useNumberFormatter } from "./hooks/useNumberFormatter";
 import type {
   UseNumberFormatterOptions,
@@ -123,6 +122,7 @@ import type {
 } from "./hooks/useNumberFormatter";
 import { useLocalizedInput } from "./hooks/useLocalizedInput";
 import type { UseLocalizedInputOptions } from "./hooks/useLocalizedInput";
+import { UserAvatar } from "./ui/UserAvatar";
 
 export {
   Button,
@@ -236,12 +236,12 @@ export {
   ACTION_TYPE_UPDATE_TOKEN,
   MODEL_ACTIONS,
   useBrowserVisibility,
-  UserAvatar,
-  transformMentions,
-  MarkdownInput,
   useNumberFormatter,
   UseNumberFormatterOptions,
   NumberFormatType,
   useLocalizedInput,
   UseLocalizedInputOptions,
+  UserAvatar,
+  transformMentions,
+  MarkdownInput,
 };

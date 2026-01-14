@@ -141,7 +141,6 @@ export default {
   favouriteName: "Nombre del favorito",
   saveFavourite: "Guardar favorito",
   enterFavouriteName: "Introduce el nombre del favorito",
-  openInListView: "Abrir en vista de lista",
   wip_limit: "Máximo de tarjetas por columna",
   unlimited: "Ilimitado",
   over_limit: "Sobre el límite",
@@ -166,13 +165,13 @@ export default {
   column_limit: "Límite de columna",
   column_limit_description:
     "Un límite en el número de elementos en una columna",
+  openInListView: "Abrir en vista de lista",
+  createNewRecord: "Crear un nuevo registro",
   comments: "Comentarios",
   writeComment: "Escribe un comentario...",
   noComments: "No hay comentarios",
   newMessages: "Mensajes nuevos",
   noMatches: "Sin coincidencias",
-  createNewRecord: "Crear un nuevo registro",
-  clearSelection: "Limpiar selección",
   unsubscribe: "Cancelar suscripción",
   subscribe: "Suscribirse",
   receivingNotifications:
@@ -184,4 +183,5 @@ export default {
   sending: "Enviando...",
   failedToSend: "Error al enviar",
   retry: "Reintentar",
+  clearSelection: "Limpiar selección",
 };

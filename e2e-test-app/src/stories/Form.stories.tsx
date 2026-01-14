@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Form, ConfigContextProvider } from "@gisce/react-ooui";
 import { NotificationProvider } from "@gisce/react-formiga-components";
-import { initializeFormMockProvider } from "./Form.mockProvider";
+import { initializeFormMockProvider, setUseLocalizedView } from "./Form.mockProvider";
 
 interface FormStoryProps {
   locale?: string;
   productId?: number;
+  localized?: boolean;
 }
 
-const FormStory: React.FC<FormStoryProps> = ({ locale = "en_US", productId = 1 }) => {
+const FormStory: React.FC<FormStoryProps> = ({ locale = "en_US", productId = 1, localized = false }) => {
   const [mockProviderReady, setMockProviderReady] = useState(false);
 
   useEffect(() => {
+    setUseLocalizedView(localized);
     initializeFormMockProvider();
     setMockProviderReady(true);
-  }, []);
+  }, [localized]);
 
   if (!mockProviderReady) {
     return <div>Loading mock provider...</div>;
@@ -32,7 +34,7 @@ const FormStory: React.FC<FormStoryProps> = ({ locale = "en_US", productId = 1 }
         globalValues={{}}
         rootContext={{}}
         devMode={false}
-        title={`Form Story Demo (${locale})`}
+        title={`Form Story Demo (${locale}${localized ? " - Localized" : ""})`}
         treeMaxLimit={100}
       >
         <div
@@ -71,11 +73,18 @@ const FormStory: React.FC<FormStoryProps> = ({ locale = "en_US", productId = 1 }
   );
 };
 
-// English locale (default)
+// DEFAULT (no localization) - numbers show with period decimal separator
 export const Default = () => <FormStory />;
 
-// Spanish locale for testing number localization
+// Spanish locale WITHOUT localized fields - still shows period decimal (default behavior)
 export const Spanish = () => <FormStory locale="es_ES" />;
 
-// French locale for testing number localization
+// French locale WITHOUT localized fields - still shows period decimal (default behavior)
 export const French = () => <FormStory locale="fr_FR" />;
+
+// LOCALIZED variants - numbers show with locale-specific formatting
+export const SpanishLocalized = () => <FormStory locale="es_ES" localized={true} />;
+
+export const FrenchLocalized = () => <FormStory locale="fr_FR" localized={true} />;
+
+export const EnglishLocalized = () => <FormStory locale="en_US" localized={true} />;

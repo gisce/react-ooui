@@ -175,9 +175,17 @@ export const FloatTimeComponent = ({ value }: { value: any }): ReactElement => {
   return useMemo(() => <>{parseFloatToString(value)}</>, [value]);
 };
 
-export const NumberComponent = ({ value }: { value: number }): ReactElement => {
+export const NumberComponent = ({
+  value,
+  ooui,
+}: {
+  value: number;
+  ooui?: any;
+}): ReactElement => {
+  const localized = ooui?.parsedWidgetProps?.localized ?? false;
   const formatNumber = useNumberFormatter({
     format: "decimal",
+    localized,
   });
 
   return useMemo(
@@ -188,12 +196,16 @@ export const NumberComponent = ({ value }: { value: number }): ReactElement => {
 
 export const IntegerComponent = ({
   value,
+  ooui,
 }: {
   value: number;
+  ooui?: any;
 }): ReactElement => {
+  const localized = ooui?.parsedWidgetProps?.localized ?? false;
   const formatNumber = useNumberFormatter({
     decimalDigits: 0,
     format: "decimal",
+    localized,
   });
 
   return useMemo(

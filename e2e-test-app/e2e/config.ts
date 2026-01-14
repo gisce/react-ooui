@@ -22,6 +22,9 @@ export const E2E_TEST_APP_CONFIG = {
       DEFAULT: "form-default",
       SPANISH: "form-spanish",
       FRENCH: "form-french",
+      SPANISH_LOCALIZED: "form-spanish-localized",
+      FRENCH_LOCALIZED: "form-french-localized",
+      ENGLISH_LOCALIZED: "form-english-localized",
     },
   },
 } as const;

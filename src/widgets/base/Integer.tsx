@@ -1,4 +1,4 @@
-import { memo, useCallback, useContext, useMemo } from "react";
+import { memo, useCallback, useContext } from "react";
 import { InputNumber, InputNumberProps, theme } from "antd";
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
@@ -6,11 +6,13 @@ import { FormContext, FormContextType } from "@/context/FormContext";
 import styled from "styled-components";
 import { AddonElement } from "@/common/AddonElement";
 import { useLocalizedInput } from "@/hooks/useLocalizedInput";
-const { useToken } = theme;
 
 const { defaultAlgorithm, defaultSeed } = theme;
-
 const mapToken = defaultAlgorithm(defaultSeed);
+
+function renderAddon(content?: string): React.ReactNode {
+  return content ? <AddonElement content={content} /> : null;
+}
 
 type IntegerProps = WidgetProps & {
   onChange?: (newValue: number) => void;
@@ -18,50 +20,40 @@ type IntegerProps = WidgetProps & {
 
 export const Integer = memo((props: IntegerProps) => {
   const { ooui, onChange } = props;
-  const { id, readOnly, required } = ooui;
-  const { token } = useToken();
-  const requiredStyle =
-    required && !readOnly
-      ? { backgroundColor: token.colorPrimaryBg }
-      : undefined;
+  const { id, readOnly, required, prefix, suffix } = ooui;
+  const localized = (ooui as any).parsedWidgetProps?.localized ?? false;
+
   const formContext = useContext(FormContext) as FormContextType;
-
   const { elementHasLostFocus } = formContext || {};
-  const isRequired = useMemo(() => required && !readOnly, [required, readOnly]);
 
-  const Component: React.ComponentType<InputNumberProps> = useMemo(
-    () => (isRequired ? RequiredInteger : InputNumber),
-    [isRequired],
-  );
+  const isRequired = required && !readOnly;
+  const Component: React.ComponentType<InputNumberProps> = isRequired
+    ? RequiredInteger
+    : InputNumber;
 
-  const renderAddonElement = useCallback((content?: string) => {
-    return content ? <AddonElement content={content} /> : null;
-  }, []);
-
-  const { formatter, parser } = useLocalizedInput({ isInteger: true });
+  const { formatter, parser } = useLocalizedInput({
+    isInteger: true,
+    localized,
+  });
 
   const handleChange = useCallback(
-    (newValue: any) => {
-      const newNumber = newValue as number;
-      onChange?.(newNumber);
-    },
+    (value: number | string | null) => onChange?.(value as number),
     [onChange],
   );
 
   return (
-    <Field required={isRequired} type={"number"} {...props}>
+    <Field required={isRequired} type="number" {...props}>
       <Component
-        addonBefore={renderAddonElement(ooui.prefix)}
-        addonAfter={renderAddonElement(ooui.suffix)}
+        addonBefore={renderAddon(prefix)}
+        addonAfter={renderAddon(suffix)}
         id={id}
-        className={"w-full "}
+        className="w-full"
         disabled={readOnly}
         formatter={formatter}
-        parser={parser}
+        parser={localized ? parser : undefined}
         onChange={handleChange}
         onBlur={elementHasLostFocus}
         precision={0}
-        style={requiredStyle}
         changeOnWheel={false}
       />
     </Field>
