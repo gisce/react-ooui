@@ -1,4 +1,4 @@
-import { ReactElement, memo, useMemo } from "react";
+import { ReactElement, useMemo } from "react";
 import { Checkbox, ColorPicker, Tooltip } from "antd";
 import { parseFloatToString } from "@/helpers/timeHelper";
 import { ProgressBarInput } from "../../base/ProgressBar";
@@ -175,34 +175,32 @@ export const FloatTimeComponent = ({ value }: { value: any }): ReactElement => {
   return useMemo(() => <>{parseFloatToString(value)}</>, [value]);
 };
 
-export const NumberComponent = memo(
-  ({ value }: { value: number }): ReactElement => {
-    const formatNumber = useNumberFormatter({
-      format: "decimal",
-    });
+export const NumberComponent = ({ value }: { value: number }): ReactElement => {
+  const formatNumber = useNumberFormatter({
+    format: "decimal",
+  });
 
-    return useMemo(
-      () => <div style={{ textAlign: "right" }}>{formatNumber(value)}</div>,
-      [value, formatNumber],
-    );
-  },
-);
-NumberComponent.displayName = "NumberComponent";
+  return useMemo(
+    () => <div style={{ textAlign: "right" }}>{formatNumber(value)}</div>,
+    [value, formatNumber],
+  );
+};
 
-export const IntegerComponent = memo(
-  ({ value }: { value: number }): ReactElement => {
-    const formatNumber = useNumberFormatter({
-      decimalDigits: 0,
-      format: "decimal",
-    });
+export const IntegerComponent = ({
+  value,
+}: {
+  value: number;
+}): ReactElement => {
+  const formatNumber = useNumberFormatter({
+    decimalDigits: 0,
+    format: "decimal",
+  });
 
-    return useMemo(
-      () => <div style={{ textAlign: "right" }}>{formatNumber(value)}</div>,
-      [value, formatNumber],
-    );
-  },
-);
-IntegerComponent.displayName = "IntegerComponent";
+  return useMemo(
+    () => <div style={{ textAlign: "right" }}>{formatNumber(value)}</div>,
+    [value, formatNumber],
+  );
+};
 
 export const ImageComponent = ({ value }: { value: string }): ReactElement => {
   return useMemo(
