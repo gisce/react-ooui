@@ -7,6 +7,7 @@ import { WidgetProps } from "@/types";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import styled from "styled-components";
 import { AddonElement } from "@/common/AddonElement";
+import { useLocalizedInput } from "@/hooks/useLocalizedInput";
 
 const { defaultAlgorithm, defaultSeed } = theme;
 
@@ -30,9 +31,9 @@ export const Float = memo((props: WidgetProps) => {
     return content ? <AddonElement content={content} /> : null;
   }, []);
 
-  const formatter = useCallback((value: any) => {
-    return `${value}`.replace(/[^0-9.-]+/g, "");
-  }, []);
+  const { formatter, parser, decimalSeparator } = useLocalizedInput({
+    decimalDigits,
+  });
 
   return (
     <Field required={isRequired} type="number" {...props}>
@@ -44,7 +45,8 @@ export const Float = memo((props: WidgetProps) => {
         id={id}
         precision={decimalDigits}
         formatter={formatter}
-        decimalSeparator="."
+        parser={parser}
+        decimalSeparator={decimalSeparator}
         onBlur={elementHasLostFocus}
         changeOnWheel={false}
       />

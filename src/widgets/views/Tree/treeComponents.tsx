@@ -20,6 +20,7 @@ import { useActionViewContext } from "@/context/ActionViewContext";
 import { useOne2manyContext } from "@/context/One2manyContext";
 import { DateValue, DateTimeValue } from "@gisce/react-formiga-components";
 import { useDeepCompareMemo } from "use-deep-compare";
+import { useNumberFormatter } from "@/hooks/useNumberFormatter";
 
 export const BooleanComponent = ({
   value,
@@ -175,9 +176,29 @@ export const FloatTimeComponent = ({ value }: { value: any }): ReactElement => {
 };
 
 export const NumberComponent = ({ value }: { value: number }): ReactElement => {
+  const formatNumber = useNumberFormatter({
+    format: "decimal",
+  });
+
   return useMemo(
-    () => <div style={{ textAlign: "right" }}>{value}</div>,
-    [value],
+    () => <div style={{ textAlign: "right" }}>{formatNumber(value)}</div>,
+    [value, formatNumber],
+  );
+};
+
+export const IntegerComponent = ({
+  value,
+}: {
+  value: number;
+}): ReactElement => {
+  const formatNumber = useNumberFormatter({
+    decimalDigits: 0,
+    format: "decimal",
+  });
+
+  return useMemo(
+    () => <div style={{ textAlign: "right" }}>{formatNumber(value)}</div>,
+    [value, formatNumber],
   );
 };
 
@@ -321,7 +342,7 @@ export const COLUMN_COMPONENTS = {
   progressbar: ProgressBarComponent,
   float_time: FloatTimeComponent,
   image: ImageComponent,
-  integer: NumberComponent,
+  integer: IntegerComponent,
   float: NumberComponent,
   reference: ReferenceComponent,
   tag: TagComponent,

@@ -116,6 +116,13 @@ import {
 } from "./models/constants";
 import { useBrowserVisibility } from "./hooks/useBrowserVisibility";
 import { UserAvatar } from "./ui/UserAvatar";
+import { useNumberFormatter } from "./hooks/useNumberFormatter";
+import type {
+  UseNumberFormatterOptions,
+  NumberFormatType,
+} from "./hooks/useNumberFormatter";
+import { useLocalizedInput } from "./hooks/useLocalizedInput";
+import type { UseLocalizedInputOptions } from "./hooks/useLocalizedInput";
 
 export {
   Button,
@@ -232,4 +239,9 @@ export {
   UserAvatar,
   transformMentions,
   MarkdownInput,
+  useNumberFormatter,
+  UseNumberFormatterOptions,
+  NumberFormatType,
+  useLocalizedInput,
+  UseLocalizedInputOptions,
 };

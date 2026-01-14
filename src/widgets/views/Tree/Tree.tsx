@@ -40,6 +40,7 @@ import { ErpFeatureKeys } from "@/models/erpFeature";
 import { UserFeatureKeys } from "@/models/userFeature";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { dequal } from "dequal";
+import { SummaryItem, SummaryRow } from "./TreeSummary";
 
 type Props = {
   total?: number;
@@ -248,14 +249,21 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
       const sumFields = treeOoui.columns
         .filter((it) => it.sum !== undefined)
         .map((it) => {
-          return { label: it.sum, field: it.id };
+          return {
+            label: it.sum,
+            field: it.id,
+            type: it.type,
+            decimalDigits: (it as any).decimalDigits,
+            currency: (it as any).currency,
+            format: (it as any).format,
+          };
         });
 
       if (!sumFields || sumFields.length === 0) {
         return null;
       }
 
-      const summary: string[] = [];
+      const summary: SummaryItem[] = [];
       const sumItems =
         selectedRowKeys?.length > 0
           ? items.filter((result: any) => {
@@ -270,10 +278,17 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
           else return prev;
         }, 0);
 
-        summary.push(`${sumField.label}: ${Math.round(total * 100) / 100}`);
+        summary.push({
+          label: sumField.label,
+          value: total,
+          type: sumField.type,
+          decimalDigits: sumField.decimalDigits,
+          currency: sumField.currency,
+          format: sumField.format,
+        });
       });
 
-      return <div className="p-1 pb-0 pl-2 mt-2 ">{summary.join(", ")}</div>;
+      return <SummaryRow summaries={summary} />;
     }, [items, selectedRowKeys, treeOoui]);
 
     const dataTable = useMemo(() => {

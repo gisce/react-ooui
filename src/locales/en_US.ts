@@ -116,7 +116,7 @@ export default {
   previousItem: "Previous item",
   nextItem: "Next item",
   unlink: "Unlink",
-  share: "Compartir URL",
+  share: "Share URL",
   urlCopiedToClipboard: "URL copied to clipboard",
   emailsCopiedToClipboard: "Emails copied to clipboard",
   errorCopyingToClipboard: "Error copying to clipboard",
