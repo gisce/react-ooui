@@ -339,8 +339,8 @@ type ConnectionProviderType = {
     options: DeleteObjectsRequest,
     requestConfig?: any,
   ) => Promise<any>;
-  rawExecute: (options: ExecuteRequest, requestConfig?: any) => Promise<any>;
   execute: (options: ExecuteRequest, requestConfig?: any) => Promise<any>;
+  rawExecute: (options: ExecuteRequest, requestConfig?: any) => Promise<any>;
   readObjects: (
     options: ReadObjectsRequest,
     requestConfig?: any,
@@ -484,6 +484,7 @@ type ActionInfo = {
   searchParams?: any[];
   currentPage?: number;
   order?: any[];
+  openComments?: boolean;
 };
 
 type Tab = {

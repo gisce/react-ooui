@@ -42,7 +42,11 @@ import Dashboard from "@/widgets/views/Dashboard/Dashboard";
 import { Tags } from "@/widgets/custom/Tags";
 import { Tag } from "@/widgets/custom/Tag";
 import { MultiCheckbox } from "./widgets/custom/MultiCheckbox";
-import { Markdown } from "@/widgets/custom/Markdown";
+import {
+  Markdown,
+  MarkdownInput,
+  transformMentions,
+} from "@/widgets/custom/Markdown";
 import { Radio } from "@/widgets/custom/Radio";
 import { Switch } from "@/widgets/custom/Switch";
 import { Steps } from "@/widgets/custom/Steps";
@@ -111,6 +115,7 @@ import {
   MODEL_ACTIONS,
 } from "./models/constants";
 import { useBrowserVisibility } from "./hooks/useBrowserVisibility";
+import { UserAvatar } from "./ui/UserAvatar";
 
 export {
   Button,
@@ -224,4 +229,7 @@ export {
   ACTION_TYPE_UPDATE_TOKEN,
   MODEL_ACTIONS,
   useBrowserVisibility,
+  UserAvatar,
+  transformMentions,
+  MarkdownInput,
 };

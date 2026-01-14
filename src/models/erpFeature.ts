@@ -12,6 +12,7 @@ export enum ErpFeatureKeys {
   FEATURE_SAVED_SEARCHES = "saved_searches",
   FEATURE_USER_NOTIFICATIONS = "user_notifications",
   FEATURE_SSE_SESSION_NOTIFICATIONS = "sse_session_notifications",
+  FEATURE_COMMENTS_SYSTEM = "comments_system",
   // ... add more features here
 }
 
