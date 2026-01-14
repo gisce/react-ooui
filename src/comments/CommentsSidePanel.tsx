@@ -469,6 +469,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                     }
                     onClick={() => onFetchComments()}
                     size="small"
+                    aria-label={t("refresh")}
                   />
                 </Tooltip>
               </div>
@@ -477,6 +478,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                 icon={<CloseOutlined />}
                 onClick={onClose}
                 size="small"
+                aria-label={t("close")}
               />
             </div>
           </ErrorBoundary>
@@ -598,6 +600,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                     icon={<SendOutlined />}
                     onClick={handleSend}
                     disabled={!newComment.trim()}
+                    aria-label={t("send")}
                   />
                 </div>
               </div>
