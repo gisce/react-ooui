@@ -40,50 +40,7 @@ import { ErpFeatureKeys } from "@/models/erpFeature";
 import { UserFeatureKeys } from "@/models/userFeature";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { dequal } from "dequal";
-import { useNumberFormatter } from "@/hooks/useNumberFormatter";
-
-type SummaryItem = {
-  label: string;
-  value: number;
-  type?: string;
-  decimalDigits?: number;
-  currency?: string;
-  format?: string;
-};
-
-const SummaryValue = memo(({ summary }: { summary: SummaryItem }) => {
-  const decimalDigits =
-    summary.type === "integer"
-      ? 0
-      : summary.decimalDigits !== undefined
-      ? summary.decimalDigits
-      : 2;
-
-  const formatNumber = useNumberFormatter({
-    decimalDigits,
-    currency: summary.currency,
-    format: (summary.format as any) || "decimal",
-  });
-
-  const formattedValue = formatNumber(summary.value);
-
-  return <>{formattedValue}</>;
-});
-SummaryValue.displayName = "SummaryValue";
-
-const SummaryRow = memo(({ summaries }: { summaries: SummaryItem[] }) => {
-  return (
-    <div className="p-1 pb-0 pl-2 mt-2 ">
-      {summaries.map((summary, index) => (
-        <span key={index}>
-          {summary.label}: <SummaryValue summary={summary} />
-          {index < summaries.length - 1 ? ", " : ""}
-        </span>
-      ))}
-    </div>
-  );
-});
-SummaryRow.displayName = "SummaryRow";
+import { SummaryItem, SummaryRow } from "./TreeSummary";
 
 type Props = {
   total?: number;
