@@ -74,6 +74,9 @@ export function useLocalizedInput(options: UseLocalizedInputOptions = {}): {
       } else if (decimalDigits !== undefined) {
         formatOptions.minimumFractionDigits = decimalDigits;
         formatOptions.maximumFractionDigits = decimalDigits;
+      } else {
+        // Prevent Intl.NumberFormat from rounding (default is 3 decimals)
+        formatOptions.maximumFractionDigits = 20;
       }
 
       return numValue.toLocaleString(browserLocale, formatOptions);

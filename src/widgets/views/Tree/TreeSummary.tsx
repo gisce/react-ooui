@@ -14,13 +14,15 @@ export type SummaryItem = {
   format?: NumberFormatType;
 };
 
+function getDecimalDigits(summary: SummaryItem): number {
+  if (summary.type === "integer") {
+    return 0;
+  }
+  return summary.decimalDigits ?? 2;
+}
+
 export const SummaryValue = memo(({ summary }: { summary: SummaryItem }) => {
-  const decimalDigits =
-    summary.type === "integer"
-      ? 0
-      : summary.decimalDigits !== undefined
-      ? summary.decimalDigits
-      : 2;
+  const decimalDigits = getDecimalDigits(summary);
 
   const formatNumber = useNumberFormatter({
     decimalDigits,
