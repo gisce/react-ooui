@@ -2,7 +2,7 @@ import { ReactElement, useMemo } from "react";
 import { COLUMN_COMPONENTS } from "@/widgets/views/Tree/treeComponents";
 import { useNumberFormatter } from "@/hooks/useNumberFormatter";
 
-export const NumberComponent = ({
+export const FloatComponent = ({
   value,
   ooui,
 }: {
@@ -10,9 +10,11 @@ export const NumberComponent = ({
   ooui?: any;
 }): ReactElement => {
   const localized = ooui?.parsedWidgetProps?.localized ?? false;
+  const decimalDigits = ooui?.decimalDigits;
   const formatNumber = useNumberFormatter({
     format: "decimal",
     localized,
+    decimalDigits,
   });
 
   return useMemo(
@@ -44,5 +46,5 @@ export const IntegerComponent = ({
 export const KANBAN_COMPONENTS = {
   ...COLUMN_COMPONENTS,
   integer: IntegerComponent,
-  float: NumberComponent,
+  float: FloatComponent,
 };

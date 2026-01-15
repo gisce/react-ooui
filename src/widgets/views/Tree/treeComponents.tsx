@@ -175,7 +175,7 @@ export const FloatTimeComponent = ({ value }: { value: any }): ReactElement => {
   return useMemo(() => <>{parseFloatToString(value)}</>, [value]);
 };
 
-export const NumberComponent = ({
+export const FloatComponent = ({
   value,
   ooui,
 }: {
@@ -183,9 +183,11 @@ export const NumberComponent = ({
   ooui?: any;
 }): ReactElement => {
   const localized = ooui?.parsedWidgetProps?.localized ?? false;
+  const decimalDigits = ooui?.decimalDigits;
   const formatNumber = useNumberFormatter({
     format: "decimal",
     localized,
+    decimalDigits,
   });
 
   return useMemo(
@@ -355,7 +357,7 @@ export const COLUMN_COMPONENTS = {
   float_time: FloatTimeComponent,
   image: ImageComponent,
   integer: IntegerComponent,
-  float: NumberComponent,
+  float: FloatComponent,
   reference: ReferenceComponent,
   tag: TagComponent,
   selection: SelectionComponent,
