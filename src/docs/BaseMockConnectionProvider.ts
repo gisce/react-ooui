@@ -43,7 +43,9 @@ export class BaseMockConnectionProvider {
   }) {
     const { model, ids } = params;
     if (model === this.config.model) {
-      return this.data.filter((r) => ids.includes(r.id));
+      const records = this.data.filter((r) => ids.includes(r.id));
+      // Transform one2many/many2many field values to the expected format
+      return records.map((record) => this.transformRecordFields(record));
     }
     if (this.config.relatedModels?.[model]) {
       return this.config.relatedModels[model].records.filter((r) =>
@@ -53,13 +55,82 @@ export class BaseMockConnectionProvider {
     return [];
   }
 
+  /**
+   * Transform one2many and many2many field values to the format expected by react-ooui.
+   * For one2many/many2many fields, the format is:
+   * { fields: {...}, items: [{ id, operation: "original", values: {...}, treeValues: {...} }] }
+   */
+  protected transformRecordFields(record: MockRecord): MockRecord {
+    const transformed = { ...record };
+    const fields = this.config.view.fields;
+
+    for (const [fieldName, fieldDef] of Object.entries(fields)) {
+      const value = record[fieldName];
+      if (!value) continue;
+
+      if (fieldDef.type === "one2many" || fieldDef.type === "many2many") {
+        const relationModel = fieldDef.relation;
+        if (!relationModel) continue;
+
+        const relatedConfig = this.config.relatedModels?.[relationModel];
+        if (!relatedConfig) continue;
+
+        // Get the IDs from the value
+        let relatedIds: number[] = [];
+        if (Array.isArray(value)) {
+          // Handle many2many format [[6, 0, [ids]]] or one2many format [ids]
+          if (
+            value.length > 0 &&
+            Array.isArray(value[0]) &&
+            value[0][0] === 6
+          ) {
+            relatedIds = value[0][2] || [];
+          } else {
+            relatedIds = value.filter(
+              (v): v is number => typeof v === "number",
+            );
+          }
+        }
+
+        // Get the related records
+        const relatedRecords = relatedConfig.records.filter((r) =>
+          relatedIds.includes(r.id),
+        );
+
+        // Transform to the expected format
+        transformed[fieldName] = {
+          fields: relatedConfig.view?.fields || {},
+          items: relatedRecords.map((relatedRecord) => ({
+            id: relatedRecord.id,
+            operation: "original",
+            values: relatedRecord,
+            treeValues: relatedRecord,
+          })),
+        };
+      }
+    }
+
+    return transformed;
+  }
+
   async read({ model, ids }: any) {
     return this.readObjects({ model, ids });
   }
 
-  async search({ model }: any) {
+  async search({ model, fieldsToRetrieve }: any) {
     if (model === this.config.model) {
+      // If fieldsToRetrieve is provided, return full records (search+read)
+      if (fieldsToRetrieve && fieldsToRetrieve.length > 0) {
+        return this.data;
+      }
       return this.data.map((r) => r.id);
+    }
+    // Also check related models
+    if (this.config.relatedModels?.[model]) {
+      if (fieldsToRetrieve && fieldsToRetrieve.length > 0) {
+        return this.config.relatedModels[model].records;
+      }
+      return this.config.relatedModels[model].records.map((r) => r.id);
     }
     return [];
   }
@@ -148,7 +219,7 @@ export class BaseMockConnectionProvider {
     return extraValues || {};
   }
 
-  async executeOnChange() {
+  async executeOnChange(_params?: any) {
     return { value: {}, warning: null, domain: {} };
   }
 
@@ -173,19 +244,19 @@ export class BaseMockConnectionProvider {
   async fieldsGet() {
     return {};
   }
-  async getDefaults() {
+  async getDefaults(_params?: any) {
     return {};
   }
-  async getToolbar() {
+  async getToolbar(_params?: any) {
     return { action: {}, relate: [], print: [], other: [] };
   }
-  async execute() {
+  async execute(_params?: any): Promise<any> {
     return null;
   }
-  async executeButton() {
+  async executeButton(_params?: any): Promise<any> {
     return null;
   }
-  async executeWorkflow() {
+  async executeWorkflow(_params?: any): Promise<any> {
     return null;
   }
   async searchCount({ model }: any) {
@@ -212,7 +283,7 @@ export class BaseMockConnectionProvider {
   async getDashboardActionData() {
     return {};
   }
-  async evalDomain() {
+  async evalDomain(_params?: any) {
     return [];
   }
   async evalContext() {
