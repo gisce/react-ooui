@@ -12,6 +12,57 @@ type LocaleSeparators = {
   thousands: string;
 };
 
+function detectDecimalSeparator(value: string): {
+  decimal: string | null;
+  thousands: string | null;
+} {
+  const cleanValue = value.replace(/\s/g, "");
+
+  const hasDot = cleanValue.includes(".");
+  const hasComma = cleanValue.includes(",");
+
+  if (!hasDot && !hasComma) {
+    return { decimal: null, thousands: null };
+  }
+
+  if (hasDot && hasComma) {
+    const lastDot = cleanValue.lastIndexOf(".");
+    const lastComma = cleanValue.lastIndexOf(",");
+
+    const trailingMatch = cleanValue.match(/[.,](\d+)$/);
+    if (trailingMatch && /^0+$/.test(trailingMatch[1])) {
+      const trailingSep =
+        cleanValue[cleanValue.length - trailingMatch[0].length];
+      if (trailingSep === "," && lastDot < lastComma) {
+        return { decimal: ".", thousands: null };
+      }
+      if (trailingSep === "." && lastComma < lastDot) {
+        return { decimal: ",", thousands: null };
+      }
+    }
+
+    if (lastDot > lastComma) {
+      return { decimal: ".", thousands: "," };
+    }
+    return { decimal: ",", thousands: "." };
+  }
+
+  const separator = hasDot ? "." : ",";
+  const parts = cleanValue.split(separator);
+
+  if (parts.length > 2) {
+    const isValidThousandsPattern = parts
+      .slice(1)
+      .every((p) => /^\d{3}$/.test(p));
+    if (isValidThousandsPattern) {
+      return { decimal: null, thousands: separator };
+    }
+    return { decimal: separator, thousands: null };
+  }
+
+  return { decimal: separator, thousands: null };
+}
+
 function getLocaleSeparators(locale: string): LocaleSeparators {
   const browserLocale = locale.replace("_", "-");
   const formatted = new Intl.NumberFormat(browserLocale, {
@@ -93,10 +144,23 @@ export function useLocalizedInput(options: UseLocalizedInputOptions = {}): {
       const isNegative = displayValue.startsWith("-");
       let cleanValue = isNegative ? displayValue.slice(1) : displayValue;
 
-      if (separators.thousands) {
-        cleanValue = cleanValue.split(separators.thousands).join("");
+      if (localized) {
+        const detected = detectDecimalSeparator(cleanValue);
+
+        if (detected.thousands) {
+          cleanValue = cleanValue.split(detected.thousands).join("");
+        }
+
+        if (detected.decimal && detected.decimal !== ".") {
+          cleanValue = cleanValue.split(detected.decimal).join(".");
+        }
+      } else {
+        if (separators.thousands) {
+          cleanValue = cleanValue.split(separators.thousands).join("");
+        }
+        cleanValue = cleanValue.split(separators.decimal).join(".");
       }
-      cleanValue = cleanValue.split(separators.decimal).join(".");
+
       cleanValue = cleanValue.replace(/[^0-9.]/g, "");
 
       if (isNegative) {
@@ -106,7 +170,7 @@ export function useLocalizedInput(options: UseLocalizedInputOptions = {}): {
       const result = parseFloat(cleanValue);
       return isNaN(result) ? "" : result;
     },
-    [separators],
+    [localized, separators],
   );
 
   return {

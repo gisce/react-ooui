@@ -45,7 +45,7 @@ export const Float = memo((props: WidgetProps) => {
         precision={decimalDigits}
         formatter={formatter}
         parser={localized ? parser : undefined}
-        decimalSeparator={decimalSeparator}
+        decimalSeparator={localized ? undefined : decimalSeparator}
         onBlur={elementHasLostFocus}
         changeOnWheel={false}
       />
