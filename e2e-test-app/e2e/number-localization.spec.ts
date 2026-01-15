@@ -109,7 +109,9 @@ test.describe("Form Input Number Localization", () => {
     test("should display Float inputs with Spanish format when localized=true", async ({
       page,
     }) => {
-      await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.SPANISH_LOCALIZED));
+      await page.goto(
+        getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.SPANISH_LOCALIZED),
+      );
 
       await page.waitForSelector('input[type="text"]', { state: "visible" });
       await page.waitForTimeout(500);
@@ -125,7 +127,9 @@ test.describe("Form Input Number Localization", () => {
     test("should display Integer inputs with Spanish thousands separator when localized=true", async ({
       page,
     }) => {
-      await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.SPANISH_LOCALIZED));
+      await page.goto(
+        getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.SPANISH_LOCALIZED),
+      );
 
       await page.waitForSelector('input[type="text"]', { state: "visible" });
       await page.waitForTimeout(500);
@@ -147,7 +151,9 @@ test.describe("Form Input Number Localization", () => {
     test("should display Float inputs with French format when localized=true", async ({
       page,
     }) => {
-      await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.FRENCH_LOCALIZED));
+      await page.goto(
+        getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.FRENCH_LOCALIZED),
+      );
 
       await page.waitForSelector('input[type="text"]', { state: "visible" });
       await page.waitForTimeout(500);
@@ -162,7 +168,9 @@ test.describe("Form Input Number Localization", () => {
     test("should display Integer inputs with French thousands separator when localized=true", async ({
       page,
     }) => {
-      await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.FRENCH_LOCALIZED));
+      await page.goto(
+        getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.FRENCH_LOCALIZED),
+      );
 
       await page.waitForSelector('input[type="text"]', { state: "visible" });
       await page.waitForTimeout(500);
@@ -184,7 +192,9 @@ test.describe("Form Input Number Localization", () => {
     test("should display Float inputs with English format when localized=true", async ({
       page,
     }) => {
-      await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.ENGLISH_LOCALIZED));
+      await page.goto(
+        getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.ENGLISH_LOCALIZED),
+      );
 
       await page.waitForSelector('input[type="text"]', { state: "visible" });
       await page.waitForTimeout(500);
@@ -199,7 +209,9 @@ test.describe("Form Input Number Localization", () => {
     test("should display Integer inputs with English thousands separator when localized=true", async ({
       page,
     }) => {
-      await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.ENGLISH_LOCALIZED));
+      await page.goto(
+        getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.ENGLISH_LOCALIZED),
+      );
 
       await page.waitForSelector('input[type="text"]', { state: "visible" });
       await page.waitForTimeout(500);
@@ -221,7 +233,9 @@ test.describe("Form Input Number Localization", () => {
     test("should preserve raw internal value when editing Float with Spanish format", async ({
       page,
     }) => {
-      await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.SPANISH_LOCALIZED));
+      await page.goto(
+        getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.SPANISH_LOCALIZED),
+      );
 
       await page.waitForSelector('input[type="text"]', { state: "visible" });
       await page.waitForTimeout(500);
@@ -280,19 +294,11 @@ test.describe("One2Many Aggregates (Always Localized)", () => {
     await secondRowCheckbox.click();
     await expect(secondRowCheckbox).toBeChecked({ timeout: 5000 });
 
-    // Wait for aggregates to appear
-    const aggregateElements = page.locator(
-      "text=/Total.*Qty|.*Total.*Price|.*Avg.*Price|Sum:|Avg:|Count:/i",
+    // Wait for aggregates with numeric values to appear
+    const aggregateWithNumber = page.locator(
+      "text=/(Total.*Qty|Total.*Price|Avg.*Price|Sum:|Avg:|Count:).*\\d+/i",
     );
-    await expect(aggregateElements.first()).toBeVisible({ timeout: 10000 });
-
-    // Get aggregate text
-    const aggregateTexts = await aggregateElements.allTextContents();
-    const combinedText = aggregateTexts.join(" ");
-
-    // Aggregates should contain numeric values
-    const hasNumericValue = /\d+/.test(combinedText);
-    expect(hasNumericValue).toBe(true);
+    await expect(aggregateWithNumber.first()).toBeVisible({ timeout: 10000 });
   });
 });
 
@@ -301,7 +307,9 @@ test.describe("Tree Summary Row (Always Localized)", () => {
     page,
   }) => {
     await page.goto(
-      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE_SPANISH),
+      getStoryUrl(
+        E2E_TEST_APP_CONFIG.STORIES.TREE_ACTION_VIEW.INFINITE_SPANISH,
+      ),
     );
 
     await page.waitForSelector(".ag-root", { state: "visible" });
@@ -336,9 +344,7 @@ test.describe("Tree Grid Cells - Default Behavior", () => {
     page,
   }) => {
     // This test verifies that tree grid cells use raw number format by default
-    await page.goto(
-      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE),
-    );
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.ONE2MANY.INFINITE));
 
     await page.waitForSelector(".ag-root", { state: "visible" });
     await page.waitForSelector(".ag-row", { state: "visible" });
@@ -353,5 +359,134 @@ test.describe("Tree Grid Cells - Default Behavior", () => {
 
     // There should be numeric cells with raw format (period decimal)
     expect(numericCells.length).toBeGreaterThan(0);
+  });
+});
+
+test.describe("Non-Localized Mode - Original Behavior Preserved", () => {
+  test("should parse period as decimal separator (original behavior)", async ({
+    page,
+  }) => {
+    // Without localized: true, period should work as decimal (original v2 behavior)
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.SPANISH));
+
+    await page.waitForSelector('input[type="text"]', { state: "visible" });
+    await page.waitForTimeout(500);
+
+    const floatInput = page.locator(".ant-input-number-input").first();
+
+    await floatInput.click();
+    await floatInput.fill("123.45");
+    await floatInput.blur();
+
+    await page.waitForTimeout(300);
+
+    // Non-localized: displays with period as decimal (raw format)
+    const displayValue = await floatInput.inputValue();
+    expect(displayValue).toMatch(/^123\.45/);
+  });
+
+  test("should NOT accept comma as decimal in non-localized mode", async ({
+    page,
+  }) => {
+    // Without localized: true, comma should be stripped (original v2 behavior)
+    await page.goto(getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.SPANISH));
+
+    await page.waitForSelector('input[type="text"]', { state: "visible" });
+    await page.waitForTimeout(500);
+
+    const floatInput = page.locator(".ant-input-number-input").first();
+
+    await floatInput.click();
+    await floatInput.fill("123,45");
+    await floatInput.blur();
+
+    await page.waitForTimeout(300);
+
+    // Non-localized: comma is stripped, result is 12345 (original behavior)
+    const displayValue = await floatInput.inputValue();
+    expect(displayValue).toBe("12345");
+  });
+});
+
+test.describe("Smart Decimal Separator Detection", () => {
+  test("Spanish locale: should accept period as decimal separator in input", async ({
+    page,
+  }) => {
+    // User types "123.45" with period in Spanish locale
+    // BUG: Currently parses as 12345 (period treated as thousands separator)
+    //      and displays as "12.345,00" (Spanish format for 12345)
+    // EXPECTED: Should parse as 123.45 and display as "123,45"
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.SPANISH_LOCALIZED),
+    );
+
+    await page.waitForSelector('input[type="text"]', { state: "visible" });
+    await page.waitForTimeout(500);
+
+    const floatInput = page.locator(".ant-input-number-input").first();
+
+    // Clear and type a value using period as decimal (common user habit)
+    await floatInput.click();
+    await floatInput.fill("123.45");
+    await floatInput.blur();
+
+    await page.waitForTimeout(300);
+
+    // Display should be in Spanish format: "123,45" (not "12.345,00" which would mean 12345)
+    const displayValue = await floatInput.inputValue();
+    // If bug exists: displays "12.345,00" (12345 in Spanish)
+    // If fixed: displays "123,45" (123.45 in Spanish)
+    expect(displayValue).toMatch(/^123,45/);
+  });
+
+  test("Spanish locale: should still handle full Spanish format with both separators", async ({
+    page,
+  }) => {
+    // User types "1.234,56" (full Spanish format with thousands and decimal)
+    // Should parse as 1234.56 and display as "1.234,56"
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.SPANISH_LOCALIZED),
+    );
+
+    await page.waitForSelector('input[type="text"]', { state: "visible" });
+    await page.waitForTimeout(500);
+
+    const floatInput = page.locator(".ant-input-number-input").first();
+
+    await floatInput.click();
+    await floatInput.fill("1.234,56");
+    await floatInput.blur();
+
+    await page.waitForTimeout(300);
+
+    // Display should be "1.234,56" (1234.56 in Spanish format)
+    const displayValue = await floatInput.inputValue();
+    expect(displayValue).toMatch(/^1\.234,56/);
+  });
+
+  test("Spanish locale: single period separator should be treated as decimal", async ({
+    page,
+  }) => {
+    // User types "1.23" with period as decimal
+    // Note: Sale Price field has decimalDigits: 2
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.SPANISH_LOCALIZED),
+    );
+
+    await page.waitForSelector('input[type="text"]', { state: "visible" });
+    await page.waitForTimeout(500);
+
+    const floatInput = page.locator(".ant-input-number-input").first();
+
+    await floatInput.click();
+    await floatInput.fill("1.23");
+    await floatInput.blur();
+
+    await page.waitForTimeout(300);
+
+    // Display should be "1,23" (1.23 in Spanish format, treating period as decimal)
+    // If period was treated as thousands, it would show "123,00"
+    const displayValue = await floatInput.inputValue();
+    expect(displayValue).toBe("1,23");
   });
 });
