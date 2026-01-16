@@ -175,24 +175,54 @@ export const FloatTimeComponent = ({ value }: { value: any }): ReactElement => {
   return useMemo(() => <>{parseFloatToString(value)}</>, [value]);
 };
 
+const LocalizedFloat = ({
+  value,
+  decimalDigits,
+}: {
+  value: number | false | null | undefined;
+  decimalDigits?: number;
+}): ReactElement => {
+  const formatNumber = useNumberFormatter({
+    format: "decimal",
+    localized: true,
+    decimalDigits,
+  });
+  return <>{formatNumber(value)}</>;
+};
+
+const LocalizedInteger = ({
+  value,
+}: {
+  value: number | false | null | undefined;
+}): ReactElement => {
+  const formatNumber = useNumberFormatter({
+    decimalDigits: 0,
+    format: "decimal",
+    localized: true,
+  });
+  return <>{formatNumber(value)}</>;
+};
+
 export const FloatComponent = ({
   value,
   ooui,
 }: {
-  value: number;
+  value: number | false | null | undefined;
   ooui?: any;
 }): ReactElement => {
   const localized = ooui?.parsedWidgetProps?.localized ?? false;
-  const decimalDigits = ooui?.decimalDigits;
-  const formatNumber = useNumberFormatter({
-    format: "decimal",
-    localized,
-    decimalDigits,
-  });
 
   return useMemo(
-    () => <div style={{ textAlign: "right" }}>{formatNumber(value)}</div>,
-    [value, formatNumber],
+    () => (
+      <div style={{ textAlign: "right" }}>
+        {localized ? (
+          <LocalizedFloat value={value} decimalDigits={ooui?.decimalDigits} />
+        ) : (
+          value
+        )}
+      </div>
+    ),
+    [localized, value, ooui?.decimalDigits],
   );
 };
 
@@ -200,19 +230,18 @@ export const IntegerComponent = ({
   value,
   ooui,
 }: {
-  value: number;
+  value: number | false | null | undefined;
   ooui?: any;
 }): ReactElement => {
   const localized = ooui?.parsedWidgetProps?.localized ?? false;
-  const formatNumber = useNumberFormatter({
-    decimalDigits: 0,
-    format: "decimal",
-    localized,
-  });
 
   return useMemo(
-    () => <div style={{ textAlign: "right" }}>{formatNumber(value)}</div>,
-    [value, formatNumber],
+    () => (
+      <div style={{ textAlign: "right" }}>
+        {localized ? <LocalizedInteger value={value} /> : value}
+      </div>
+    ),
+    [localized, value],
   );
 };
 

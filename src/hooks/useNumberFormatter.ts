@@ -12,13 +12,17 @@ export type UseNumberFormatterOptions = {
 
 export function useNumberFormatter(
   options: UseNumberFormatterOptions = {},
-): (value: number | null | undefined) => string {
+): (value: number | false | null | undefined) => string {
   const { locale } = useLocale();
   const { localized = false, decimalDigits, currency, format } = options;
 
   return useCallback(
-    (value: number | null | undefined): string => {
-      if (value === null || value === undefined || isNaN(value)) {
+    (value: number | false | null | undefined): string => {
+      if (value === false || value === null || value === undefined) {
+        return "";
+      }
+
+      if (typeof value !== "number" || isNaN(value)) {
         return "";
       }
 
@@ -37,7 +41,6 @@ export function useNumberFormatter(
         formatOptions.minimumFractionDigits = decimalDigits;
         formatOptions.maximumFractionDigits = decimalDigits;
       } else {
-        // Prevent Intl.NumberFormat from rounding (default is 3 decimals)
         formatOptions.maximumFractionDigits = 20;
       }
 
