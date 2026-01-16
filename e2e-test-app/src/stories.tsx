@@ -7,6 +7,7 @@ import {
   PaginatedSpanish,
   InfiniteFrench,
   InfiniteNoLocale,
+  InfiniteWithStringNumbers,
 } from "./stories/TreeActionView.stories";
 // Import the One2Many stories
 import {
@@ -139,6 +140,14 @@ export const stories: Story[] = [
     component: InfiniteNoLocale,
     description:
       "TreeActionView without explicit locale. Should fallback to English formatting (comma for thousands, period for decimal).",
+  },
+  // String-typed numbers test (ERP backend simulation)
+  {
+    id: "tree-action-view-string-numbers",
+    title: "TreeActionView - String Numbers (ERP Bug Test)",
+    component: InfiniteWithStringNumbers,
+    description:
+      "Tests that tree view handles string-typed numbers from ERP backend. Bug fixed: TypeError: i.toFixed is not a function. ERP backends often return numbers as strings in JSON.",
   },
   {
     id: "one2many-infinite-no-locale",

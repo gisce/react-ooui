@@ -12,20 +12,34 @@ export type UseNumberFormatterOptions = {
 
 export function useNumberFormatter(
   options: UseNumberFormatterOptions = {},
-): (value: number | null | undefined) => string {
+): (value: number | string | null | undefined) => string {
   const { locale } = useLocale();
   const { localized = false, decimalDigits, currency, format } = options;
 
   return useCallback(
-    (value: number | null | undefined): string => {
-      if (value === null || value === undefined || isNaN(value)) {
+    (value: number | string | null | undefined): string => {
+      // Handle null/undefined/empty string
+      if (value === null || value === undefined || value === "") {
+        return "";
+      }
+
+      // Convert string values to numbers (ERP backends often return numbers as strings)
+      let numericValue: number;
+      if (typeof value === "string") {
+        numericValue = parseFloat(value);
+      } else {
+        numericValue = value;
+      }
+
+      // Handle NaN after conversion
+      if (isNaN(numericValue)) {
         return "";
       }
 
       if (!localized) {
         return decimalDigits !== undefined
-          ? value.toFixed(decimalDigits)
-          : `${value}`;
+          ? numericValue.toFixed(decimalDigits)
+          : `${numericValue}`;
       }
 
       const browserLocale = locale.replace("_", "-");
@@ -48,7 +62,7 @@ export function useNumberFormatter(
         formatOptions.style = "percent";
       }
 
-      return value.toLocaleString(browserLocale, formatOptions);
+      return numericValue.toLocaleString(browserLocale, formatOptions);
     },
     [locale, decimalDigits, currency, format, localized],
   );
