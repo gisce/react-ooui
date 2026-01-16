@@ -179,7 +179,7 @@ export const FloatComponent = ({
   value,
   ooui,
 }: {
-  value: number;
+  value: number | false | null | undefined;
   ooui?: any;
 }): ReactElement => {
   const localized = ooui?.parsedWidgetProps?.localized ?? false;
@@ -191,8 +191,12 @@ export const FloatComponent = ({
   });
 
   return useMemo(
-    () => <div style={{ textAlign: "right" }}>{formatNumber(value)}</div>,
-    [value, formatNumber],
+    () => (
+      <div style={{ textAlign: "right" }}>
+        {localized ? formatNumber(value) : value}
+      </div>
+    ),
+    [localized, formatNumber, value],
   );
 };
 
@@ -200,7 +204,7 @@ export const IntegerComponent = ({
   value,
   ooui,
 }: {
-  value: number;
+  value: number | false | null | undefined;
   ooui?: any;
 }): ReactElement => {
   const localized = ooui?.parsedWidgetProps?.localized ?? false;
@@ -211,8 +215,12 @@ export const IntegerComponent = ({
   });
 
   return useMemo(
-    () => <div style={{ textAlign: "right" }}>{formatNumber(value)}</div>,
-    [value, formatNumber],
+    () => (
+      <div style={{ textAlign: "right" }}>
+        {localized ? formatNumber(value) : value}
+      </div>
+    ),
+    [localized, formatNumber, value],
   );
 };
 

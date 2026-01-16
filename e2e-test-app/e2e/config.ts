@@ -9,6 +9,7 @@ export const E2E_TEST_APP_CONFIG = {
       PAGINATED_SPANISH: "tree-action-view-paginated-spanish",
       INFINITE_FRENCH: "tree-action-view-infinite-french",
       INFINITE_NO_LOCALE: "tree-action-view-infinite-no-locale",
+      FALSE_VALUES: "tree-false-values",
     },
     ONE2MANY: {
       INFINITE: "one2many-infinite",

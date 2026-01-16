@@ -30,6 +30,8 @@ import {
   FrenchLocalized as FormFrenchLocalized,
   EnglishLocalized as FormEnglishLocalized,
 } from "./stories/Form.stories";
+// Import False Values test story
+import { FalseValuesInfinite } from "./stories/TreeActionViewFalseValues.stories";
 
 export interface Story {
   id: string;
@@ -190,5 +192,13 @@ export const stories: Story[] = [
     component: FormEnglishLocalized,
     description:
       "Form view with localized=true fields using English locale (en_US). Numbers display with comma for thousands, period for decimal (e.g., 1,234.56).",
+  },
+  // False values test - simulates ERP returning false for empty float values
+  {
+    id: "tree-false-values",
+    title: "TreeActionView - False Values Bug",
+    component: FalseValuesInfinite,
+    description:
+      "Tests handling of false/null/undefined values in float and integer fields. ERP sometimes returns 'false' instead of null/0 for empty values. This should NOT cause TypeError: a.toFixed is not a function.",
   },
 ];
