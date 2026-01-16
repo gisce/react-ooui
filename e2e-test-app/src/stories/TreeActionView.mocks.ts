@@ -269,21 +269,34 @@ export const generateMockData = (count: number) => {
       priority,
       is_vip: isVip,
       performance_score: performanceScore,
+      // Function field - initially undefined to trigger loading
       annual_bonus: undefined,
+      // Autorefreshable field - last login timestamp
       last_login: new Date(
         Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000,
       ).toISOString(),
+      // Additional computed field
       years_of_service: new Date().getFullYear() - (2015 + (i % 9)),
-      computed_rating: undefined,
+      computed_rating: undefined, // Function field - initially undefined
     };
   });
 };
 
-export const mockResults = generateMockData(250);
+export const mockResults = generateMockData(250); // Generate 250 records for testing
 
+/**
+ * Generate mock data with string-typed numbers (simulating ERP backend behavior).
+ *
+ * IMPORTANT: Real ERP backends (OpenERP/Odoo) often return numeric values as strings
+ * in JSON responses. For example: { "salary": "45000", "performance_score": "85" }
+ * instead of: { "salary": 45000, "performance_score": 85 }
+ *
+ * This function generates data that mimics this behavior for testing purposes.
+ */
 export const generateMockDataWithStringNumbers = (count: number) => {
   return generateMockData(count).map((record) => ({
     ...record,
+    // Convert numeric fields to strings to simulate ERP backend data
     salary: String(record.salary),
     performance_score: String(record.performance_score),
     years_of_service: String(record.years_of_service),

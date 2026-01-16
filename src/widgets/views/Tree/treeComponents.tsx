@@ -310,6 +310,7 @@ export const TagsComponent = ({
   ooui: any;
   context: any;
 }): ReactElement => {
+  // Expect prefetched data - value.items should contain enriched items with name property
   const enrichedItems = useDeepCompareMemo(
     () => value?.items || [],
     [value?.items],

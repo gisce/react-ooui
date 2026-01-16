@@ -126,8 +126,8 @@ export function useLocalizedInput(options: UseLocalizedInputOptions = {}): {
         formatOptions.minimumFractionDigits = decimalDigits;
         formatOptions.maximumFractionDigits = decimalDigits;
       } else {
-        const MAX_FRACTION_DIGITS_NO_ROUNDING = 20;
-        formatOptions.maximumFractionDigits = MAX_FRACTION_DIGITS_NO_ROUNDING;
+        // Prevent Intl.NumberFormat from rounding (default is 3 decimals)
+        formatOptions.maximumFractionDigits = 20;
       }
 
       return numValue.toLocaleString(browserLocale, formatOptions);
