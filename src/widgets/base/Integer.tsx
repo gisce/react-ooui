@@ -31,7 +31,7 @@ export const Integer = memo((props: IntegerProps) => {
     ? RequiredInteger
     : InputNumber;
 
-  const { formatter, parser } = useLocalizedInput({
+  const { formatter, parser, onFocus, onBlur } = useLocalizedInput({
     isInteger: true,
     localized,
   });
@@ -40,6 +40,11 @@ export const Integer = memo((props: IntegerProps) => {
     (value: number | string | null) => onChange?.(value as number),
     [onChange],
   );
+
+  const handleBlur = useCallback(() => {
+    onBlur();
+    elementHasLostFocus?.();
+  }, [onBlur, elementHasLostFocus]);
 
   return (
     <Field required={isRequired} type="number" {...props}>
@@ -52,7 +57,8 @@ export const Integer = memo((props: IntegerProps) => {
         formatter={formatter}
         parser={localized ? parser : undefined}
         onChange={handleChange}
-        onBlur={elementHasLostFocus}
+        onFocus={localized ? onFocus : undefined}
+        onBlur={localized ? handleBlur : elementHasLostFocus}
         precision={0}
         changeOnWheel={false}
       />

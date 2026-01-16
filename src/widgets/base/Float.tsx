@@ -1,4 +1,4 @@
-import { memo, useContext } from "react";
+import { memo, useCallback, useContext } from "react";
 import { InputNumber, InputNumberProps, theme } from "antd";
 import Field from "@/common/Field";
 import { Float as FloatOoui } from "@gisce/ooui";
@@ -29,10 +29,16 @@ export const Float = memo((props: WidgetProps) => {
     ? RequiredFloat
     : InputNumber;
 
-  const { formatter, parser, decimalSeparator } = useLocalizedInput({
-    decimalDigits,
-    localized,
-  });
+  const { formatter, parser, decimalSeparator, onFocus, onBlur } =
+    useLocalizedInput({
+      decimalDigits,
+      localized,
+    });
+
+  const handleBlur = useCallback(() => {
+    onBlur();
+    elementHasLostFocus?.();
+  }, [onBlur, elementHasLostFocus]);
 
   return (
     <Field required={isRequired} type="number" {...props}>
@@ -46,7 +52,8 @@ export const Float = memo((props: WidgetProps) => {
         formatter={formatter}
         parser={localized ? parser : undefined}
         decimalSeparator={localized ? undefined : decimalSeparator}
-        onBlur={elementHasLostFocus}
+        onFocus={localized ? onFocus : undefined}
+        onBlur={localized ? handleBlur : elementHasLostFocus}
         changeOnWheel={false}
       />
     </Field>
