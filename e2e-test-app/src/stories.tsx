@@ -30,8 +30,10 @@ import {
   FrenchLocalized as FormFrenchLocalized,
   EnglishLocalized as FormEnglishLocalized,
 } from "./stories/Form.stories";
-// Import False Values test story
+// Import False Values test story (non-localized path)
 import { FalseValuesInfinite } from "./stories/TreeActionViewFalseValues.stories";
+// Import Localized Decimals test story (localized path)
+import { TreeActionViewLocalizedDecimals } from "./stories/TreeActionViewLocalizedDecimals.stories";
 
 export interface Story {
   id: string;
@@ -193,12 +195,20 @@ export const stories: Story[] = [
     description:
       "Form view with localized=true fields using English locale (en_US). Numbers display with comma for thousands, period for decimal (e.g., 1,234.56).",
   },
-  // False values test - simulates ERP returning false for empty float values
+  // False values test (non-localized path) - verifies React renders falsy values correctly
   {
     id: "tree-false-values",
-    title: "TreeActionView - False Values Bug",
+    title: "TreeActionView - False Values (Non-Localized)",
     component: FalseValuesInfinite,
     description:
-      "Tests handling of false/null/undefined values in float and integer fields. ERP sometimes returns 'false' instead of null/0 for empty values. This should NOT cause TypeError: a.toFixed is not a function.",
+      "Tests non-localized path with false/null/undefined values. Verifies rows render without errors when ERP returns 'false' for empty values.",
+  },
+  // Localized number formatting test - verifies decimal preservation and false/null/undefined handling
+  {
+    id: "tree-localized-decimals",
+    title: "TreeActionView - Localized Decimals",
+    component: TreeActionViewLocalizedDecimals,
+    description:
+      "Tests that localized numbers preserve server decimal places. Field with digits:[16,6] should show 18.87 as '18,87' not '18,870000'. Also tests false/null/undefined handling in localized mode.",
   },
 ];

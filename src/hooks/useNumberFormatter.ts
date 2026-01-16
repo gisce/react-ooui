@@ -38,7 +38,6 @@ export function useNumberFormatter(
       };
 
       if (decimalDigits !== undefined) {
-        formatOptions.minimumFractionDigits = decimalDigits;
         formatOptions.maximumFractionDigits = decimalDigits;
       } else {
         formatOptions.maximumFractionDigits = 20;

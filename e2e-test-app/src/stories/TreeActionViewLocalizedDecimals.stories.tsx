@@ -8,28 +8,28 @@ import {
 } from "@gisce/react-ooui";
 import { NotificationProvider } from "@gisce/react-formiga-components";
 import {
-  mockTreeViewWithFloats,
-  mockResultsWithFalseValues,
-  initializeFalseValuesMockProvider,
-} from "./TreeActionViewFalseValues.mockProvider";
+  mockTreeViewLocalizedDecimals,
+  mockResultsLocalizedDecimals,
+  initializeLocalizedDecimalsMockProvider,
+} from "./TreeActionViewLocalizedDecimals.mockProvider";
 
 type TreeActionViewProps = React.ComponentProps<typeof TreeActionView>;
 
-const FalseValuesWrapper = () => {
+const LocalizedDecimalsWrapper = () => {
   const [isReady, setIsReady] = useState(false);
-  const [currentView, setCurrentView] = useState<View>(mockTreeViewWithFloats);
+  const [currentView, setCurrentView] = useState<View>(mockTreeViewLocalizedDecimals);
   const [currentId, setCurrentId] = useState<number | undefined>(1);
   const [currentItemIndex, setCurrentItemIndex] = useState<number | undefined>(0);
-  const [results, setResults] = useState(mockResultsWithFalseValues);
+  const [results, setResults] = useState(mockResultsLocalizedDecimals);
   const [sorter, setSorter] = useState<any>();
-  const [totalItems, setTotalItems] = useState<number>(mockResultsWithFalseValues.length);
+  const [totalItems, setTotalItems] = useState<number>(mockResultsLocalizedDecimals.length);
   const [selectedRowItems, setSelectedRowItems] = useState<any[]>([]);
 
   const formRef = { current: null };
   const searchTreeRef = useRef<any>({ refreshResults: () => {} });
 
   useEffect(() => {
-    initializeFalseValuesMockProvider();
+    initializeLocalizedDecimalsMockProvider();
     setIsReady(true);
   }, []);
 
@@ -51,20 +51,20 @@ const FalseValuesWrapper = () => {
   return (
     <NotificationProvider>
       <ConfigContextProvider
-        locale="en_US"
+        locale="es_ES"
         erpFeatures={{}}
         userFeatures={{ features: {}, canWriteFeatureFlags: false }}
         globalValues={{}}
         rootContext={{}}
         devMode={false}
-        title="False Values Test"
+        title="Localized Decimals Test"
         treeMaxLimit={100}
       >
         <ActionViewProvider
-          title="False Values Test"
+          title="Localized Decimals Test"
           currentView={currentView}
           setCurrentView={setCurrentView}
-          availableViews={[mockTreeViewWithFloats]}
+          availableViews={[mockTreeViewLocalizedDecimals]}
           formRef={formRef}
           searchTreeRef={searchTreeRef}
           onNewClicked={() => {}}
@@ -108,14 +108,14 @@ const FalseValuesWrapper = () => {
           >
             <div style={{ height: "100%", width: "100%", position: "relative" }}>
               <TreeActionView
-                treeView={mockTreeViewWithFloats}
+                treeView={mockTreeViewLocalizedDecimals}
                 visible={true}
                 searchTreeRef={searchTreeRef}
                 model="demo.model"
                 domain={[]}
                 context={{}}
                 results={results}
-                availableViews={[mockTreeViewWithFloats]}
+                availableViews={[mockTreeViewLocalizedDecimals]}
                 setCurrentItemIndex={setCurrentItemIndex}
                 setCurrentId={setCurrentId}
                 setCurrentView={setCurrentView}
@@ -129,12 +129,12 @@ const FalseValuesWrapper = () => {
   );
 };
 
-export const FalseValuesInfinite: React.FC = () => {
-  return <FalseValuesWrapper />;
+export const TreeActionViewLocalizedDecimals: React.FC = () => {
+  return <LocalizedDecimalsWrapper />;
 };
 
 export const meta = {
-  title: "Views/TreeActionViewFalseValues",
+  title: "Views/TreeActionViewLocalizedDecimals",
   component: TreeActionView,
 };
 
