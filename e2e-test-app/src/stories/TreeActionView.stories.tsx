@@ -7,12 +7,10 @@ import {
   mockTreeViewInfinite,
   mockTreeViewPaginated,
   mockResults,
-  mockResultsWithStringNumbers,
   mockAvailableViews,
 } from "./TreeActionView.mocks";
 import { TreeActionViewWrapper } from "./TreeActionView.wrapper";
 import { initializeMockProvider } from "./TreeActionView.mockProvider";
-import { initializeStringNumbersMockProvider } from "./TreeActionView.stringNumbersMockProvider";
 
 // Initialize the mock connection provider
 initializeMockProvider();
@@ -97,31 +95,6 @@ export const InfiniteNoLocale: React.FC = () => {
 
   // Pass undefined locale to test fallback behavior
   return <TreeActionViewWrapper {...args} locale={undefined} />;
-};
-
-/**
- * Test story for string-typed numbers from ERP backend.
- *
- * This story tests that the tree view renders correctly when numeric fields
- * are returned as strings (which is common with ERP backends like OpenERP/Odoo).
- *
- * Bug fixed: TypeError: i.toFixed is not a function
- * Root cause: useNumberFormatter was calling .toFixed() on string values
- */
-export const InfiniteWithStringNumbers: React.FC = () => {
-  // Switch to the string numbers mock provider for this story
-  React.useEffect(() => {
-    initializeStringNumbersMockProvider();
-  }, []);
-
-  const args = {
-    ...defaultArgs,
-    treeView: mockTreeViewInfinite,
-    results: mockResultsWithStringNumbers,
-    limit: 0,
-  } as TreeActionViewProps;
-
-  return <TreeActionViewWrapper {...args} locale="es_ES" />;
 };
 
 // Story metadata for our custom story viewer
