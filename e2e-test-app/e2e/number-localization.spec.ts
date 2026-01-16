@@ -408,6 +408,39 @@ test.describe("Non-Localized Mode - Original Behavior Preserved", () => {
   });
 });
 
+test.describe("Typing Experience in Localized Mode", () => {
+  test("Spanish locale: should not add thousands separator while typing", async ({
+    page,
+  }) => {
+    await page.goto(
+      getStoryUrl(E2E_TEST_APP_CONFIG.STORIES.FORM.SPANISH_LOCALIZED),
+    );
+    await page.waitForSelector('input[type="text"]', { state: "visible" });
+
+    const floatInput = page.locator(".ant-input-number-input").first();
+    await floatInput.click();
+    await floatInput.clear();
+
+    // Type characters one by one
+    await floatInput.pressSequentially("3200");
+
+    // While typing/focused, should NOT have thousands separator
+    const valueWhileTyping = await floatInput.inputValue();
+    expect(valueWhileTyping).toBe("3200"); // NOT "3.200"
+
+    // Now type decimal separator and decimals
+    await floatInput.pressSequentially(",5");
+    const valueWithDecimal = await floatInput.inputValue();
+    expect(valueWithDecimal).toBe("3200,5"); // User sees what they typed
+
+    // On blur, formatting should be applied
+    await floatInput.blur();
+    await page.waitForTimeout(300);
+    const valueAfterBlur = await floatInput.inputValue();
+    expect(valueAfterBlur).toMatch(/3\.200,50?/); // Now formatted with thousands separator
+  });
+});
+
 test.describe("Smart Decimal Separator Detection", () => {
   test("Spanish locale: should accept period as decimal separator in input", async ({
     page,

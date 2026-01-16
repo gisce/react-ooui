@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useLocale } from "@gisce/react-formiga-components";
 
 export type UseLocalizedInputOptions = {
@@ -85,9 +85,22 @@ export function useLocalizedInput(options: UseLocalizedInputOptions = {}): {
   parser: (displayValue: string | undefined) => number | string;
   decimalSeparator: string;
   thousandsSeparator: string;
+  onFocus: () => void;
+  onBlur: () => void;
 } {
   const { decimalDigits, isInteger = false, localized = false } = options;
   const { locale } = useLocale();
+  const isFocusedRef = useRef(false);
+  const [, setFocusState] = useState(false);
+
+  const onFocus = useCallback(() => {
+    isFocusedRef.current = true;
+  }, []);
+
+  const onBlur = useCallback(() => {
+    isFocusedRef.current = false;
+    setFocusState((prev) => !prev);
+  }, []);
 
   const separators = useMemo(
     () =>
@@ -116,14 +129,16 @@ export function useLocalizedInput(options: UseLocalizedInputOptions = {}): {
 
       const browserLocale = locale.replace("_", "-");
       const formatOptions: Intl.NumberFormatOptions = {
-        useGrouping: true,
+        useGrouping: !isFocusedRef.current,
       };
 
       if (isInteger) {
         formatOptions.minimumFractionDigits = 0;
         formatOptions.maximumFractionDigits = 0;
       } else if (decimalDigits !== undefined) {
-        formatOptions.minimumFractionDigits = decimalDigits;
+        formatOptions.minimumFractionDigits = isFocusedRef.current
+          ? 0
+          : decimalDigits;
         formatOptions.maximumFractionDigits = decimalDigits;
       } else {
         // Prevent Intl.NumberFormat from rounding (default is 3 decimals)
@@ -178,5 +193,7 @@ export function useLocalizedInput(options: UseLocalizedInputOptions = {}): {
     parser,
     decimalSeparator: separators.decimal,
     thousandsSeparator: separators.thousands,
+    onFocus,
+    onBlur,
   };
 }
