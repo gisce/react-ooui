@@ -10,6 +10,7 @@ export const E2E_TEST_APP_CONFIG = {
       INFINITE_FRENCH: "tree-action-view-infinite-french",
       INFINITE_NO_LOCALE: "tree-action-view-infinite-no-locale",
       FALSE_VALUES: "tree-false-values",
+      LOCALIZED_DECIMALS: "tree-localized-decimals",
     },
     ONE2MANY: {
       INFINITE: "one2many-infinite",
