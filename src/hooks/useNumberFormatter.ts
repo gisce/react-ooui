@@ -18,20 +18,13 @@ export function useNumberFormatter(
 
   return useCallback(
     (value: number | string | null | undefined): string => {
-      // Handle null/undefined/empty string
       if (value === null || value === undefined || value === "") {
         return "";
       }
 
-      // Convert string values to numbers (ERP backends often return numbers as strings)
-      let numericValue: number;
-      if (typeof value === "string") {
-        numericValue = parseFloat(value);
-      } else {
-        numericValue = value;
-      }
+      const numericValue =
+        typeof value === "string" ? parseFloat(value) : value;
 
-      // Handle NaN after conversion
       if (isNaN(numericValue)) {
         return "";
       }
@@ -51,8 +44,8 @@ export function useNumberFormatter(
         formatOptions.minimumFractionDigits = decimalDigits;
         formatOptions.maximumFractionDigits = decimalDigits;
       } else {
-        // Prevent Intl.NumberFormat from rounding (default is 3 decimals)
-        formatOptions.maximumFractionDigits = 20;
+        const MAX_FRACTION_DIGITS_NO_ROUNDING = 20;
+        formatOptions.maximumFractionDigits = MAX_FRACTION_DIGITS_NO_ROUNDING;
       }
 
       if (format === "currency" && currency) {

@@ -10,16 +10,7 @@ import {
   mockTreeViewInfinite,
 } from "./TreeActionView.mocks";
 
-/**
- * Mock Connection Provider that returns numeric fields as STRINGS.
- *
- * This simulates the real ERP backend behavior where numbers often come as strings
- * in JSON responses. This provider is used to test that the application handles
- * string-typed numeric values correctly without throwing errors like:
- *   "TypeError: i.toFixed is not a function"
- */
 
-// Helper function to parse order string and sort results
 const sortResults = (results: any[], order?: string) => {
   if (!order || !order.trim()) {
     return results;
@@ -42,7 +33,6 @@ const sortResults = (results: any[], order?: string) => {
       let comparison = 0;
 
       if (typeof aValue === "string" && typeof bValue === "string") {
-        // Try to compare as numbers if both look like numbers
         const aNum = parseFloat(aValue);
         const bNum = parseFloat(bValue);
         if (!isNaN(aNum) && !isNaN(bNum)) {
@@ -88,11 +78,9 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
     let sortedResults = sortResults(mockResultsWithStringNumbers, order);
     const baseResults = sortedResults.slice(offset, offset + limit);
 
-    // Return results with STRING-typed numbers (this is the key part of this test)
     const results = baseResults.map((result) => ({
       ...result,
       last_login: new Date().toISOString(),
-      // IMPORTANT: These are STRINGS, not numbers - simulating ERP backend
       annual_bonus: String(
         Math.floor(Math.random() * 10000 + 1000),
       ),
@@ -147,7 +135,6 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
             break;
 
           default:
-            // Return values as strings for numeric fields
             const originalValue = (record as any)[fieldName];
             if (typeof originalValue === "number") {
               updatedRecord[fieldName] = String(originalValue);
@@ -297,7 +284,6 @@ const mockConnectionProvider: Partial<ConnectionProviderType> = {
       searchIds.includes(record.id),
     );
 
-    // Return STRING-typed numeric values
     const results = requestedRecords.map((record) => {
       const updatedRecord: any = { id: record.id };
 
