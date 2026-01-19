@@ -26,8 +26,14 @@ const StoryDimensionsContext = createContext<{
   modalHeight: number;
 } | null>(null);
 
+// Extended props to support locale
+type TreeActionViewWrapperProps = TreeActionViewProps & {
+  locale?: string;
+};
+
 // Wrapper component with context providers and proper dimensions
-export const TreeActionViewWrapper = (props: TreeActionViewProps) => {
+export const TreeActionViewWrapper = (props: TreeActionViewWrapperProps) => {
+  const { locale = "en_US", ...restProps } = props;
   const [currentView, setCurrentView] = useState<View>(props.treeView);
   const [currentId, setCurrentId] = useState<number | undefined>(
     props.results && props.results.length > 0 ? props.results[0].id : undefined,
@@ -91,7 +97,7 @@ export const TreeActionViewWrapper = (props: TreeActionViewProps) => {
     >
       <NotificationProvider>
         <ConfigContextProvider
-          locale="en_US"
+          locale={locale}
           erpFeatures={{}}
           userFeatures={{ features: {}, canWriteFeatureFlags: false }}
           globalValues={{}}

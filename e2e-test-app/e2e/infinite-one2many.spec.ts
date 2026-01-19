@@ -253,9 +253,10 @@ test.describe("Infinite One2Many Component", () => {
     await expect(aggregateElements.first()).toBeVisible({ timeout: 10000 });
 
     const aggregatesAfterSelection = await aggregateElements.count();
+    // Get all aggregate text combined (new format has each aggregate in separate spans)
     const aggregateTextAfterSelection =
       aggregatesAfterSelection > 0
-        ? await aggregateElements.first().textContent()
+        ? await aggregateElements.allTextContents().then(texts => texts.join(' '))
         : null;
 
     // Unselect all rows and wait for them to be unchecked
