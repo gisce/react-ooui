@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "2.121.0",
+  "version": "2.121.1",
   "publishConfig": {
     "access": "public"
   },
@@ -13,6 +13,10 @@
     ".": {
       "import": "./dist/react-ooui.es.js",
       "types": "./dist/index.d.ts"
+    },
+    "./docs": {
+      "import": "./dist/docs.es.js",
+      "types": "./dist/docs/index.d.ts"
     }
   },
   "scripts": {

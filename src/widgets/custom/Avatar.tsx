@@ -3,19 +3,26 @@ import { WidgetProps } from "@/types";
 import { Avatar as AntdAvatar, Tooltip } from "antd";
 import { Avatar as AvatarOoui } from "@gisce/ooui";
 import { colorFromString } from "@/helpers/formHelper";
+import Field from "@/common/Field";
 
 type AvatarProps = WidgetProps & {
+  ooui: AvatarOoui;
+};
+
+type AvatarInputProps = {
   ooui: AvatarOoui;
   value?: any;
 };
 
-const Avatar = (props: AvatarProps): React.ReactElement | null => {
-  const { ooui, value } = props;
+const AvatarInput = ({
+  ooui,
+  value,
+}: AvatarInputProps): React.ReactElement | null => {
   if (!value) {
     return null;
   }
   let formattedValue = value;
-  if (ooui.selectionValues.size) {
+  if (ooui.selectionValues?.size) {
     formattedValue = ooui.selectionValues.get(value);
   } else if (Array.isArray(value)) {
     formattedValue = value[1];
@@ -37,4 +44,15 @@ const Avatar = (props: AvatarProps): React.ReactElement | null => {
   );
 };
 
+const Avatar = (props: AvatarProps): React.ReactElement => {
+  const { ooui } = props;
+  return (
+    <Field type={"string"} {...props}>
+      <AvatarInput ooui={ooui} />
+    </Field>
+  );
+};
+
+// Export for tree view usage where value is passed directly
+export { AvatarInput };
 export default Avatar;
