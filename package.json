@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "2.122.0-alpha.8",
+  "version": "2.121.1",
   "publishConfig": {
     "access": "public"
   },
