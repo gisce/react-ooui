@@ -6,7 +6,7 @@ import { One2manyValue } from "../../base/one2many/One2manyInputLegacy";
 import { Interweave } from "interweave";
 import { Many2oneTree } from "../../base/many2one/Many2oneTree";
 import { ReferenceTree } from "../../base/ReferenceTree";
-import Avatar from "../../custom/Avatar";
+import { AvatarInput } from "../../custom/Avatar";
 import { CustomTag, TagInput } from "../../custom/Tag";
 import { colorFromString } from "@/helpers/formHelper";
 import { EmailTagsRender } from "@/widgets/custom/EmailTags";
@@ -326,7 +326,10 @@ export const AvatarComponent = ({
   ooui: any;
   context: any;
 }): ReactElement => {
-  return useMemo(() => <Avatar ooui={ooui} value={value} />, [ooui, value]);
+  return useMemo(
+    () => <AvatarInput ooui={ooui} value={value} />,
+    [ooui, value],
+  );
 };
 
 export const TagsComponent = ({
