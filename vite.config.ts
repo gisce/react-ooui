@@ -21,10 +21,13 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: true,
     lib: {
-      entry: path.resolve(__dirname, "src/index.ts"),
+      entry: {
+        "react-ooui": path.resolve(__dirname, "src/index.ts"),
+        docs: path.resolve(__dirname, "src/docs/index.ts"),
+      },
       name: "react-ooui",
       formats: ["es"],
-      fileName: (format) => `react-ooui.${format}.js`,
+      fileName: (format, entryName) => `${entryName}.${format}.js`,
     },
     rollupOptions: {
       // We manually add these since they are not directly in package.json, but they end up in the bundle if we don't exclude them.
