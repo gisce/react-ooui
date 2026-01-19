@@ -48,6 +48,7 @@ import { Indicator } from "./custom/Indicator";
 import { Tags } from "./custom/Tags";
 import { ActionButtons } from "./custom/ActionButtons";
 import { QRCode } from "./custom/QRCode";
+import Avatar from "./custom/Avatar";
 import Card from "./containers/Card";
 import { createElement } from "react";
 import { Many2one as Many2oneOoui } from "@gisce/ooui";
@@ -155,6 +156,8 @@ const getWidgetType = (type: string) => {
       return QRCode;
     case "card":
       return Card;
+    case "avatar":
+      return Avatar;
     default:
       return undefined;
   }
