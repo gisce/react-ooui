@@ -1,6 +1,7 @@
 import { parseError } from "@/helpers/errorHelper";
 import { Alert } from "antd";
 import { Interweave } from "interweave";
+import { JSONStringify } from "json-with-bigint";
 
 export const ErrorAlert = ({
   error,
@@ -26,8 +27,8 @@ export const ErrorAlert = ({
     messageType = type;
   } else {
     messageContent = error.message
-      ? JSON.stringify(error.message)
-      : JSON.stringify(error);
+      ? JSONStringify(error.message)
+      : JSONStringify(error);
   }
 
   console.error(error);
