@@ -5,6 +5,7 @@ import { Operator, graphProcessor } from "@gisce/ooui";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { GraphIndicatorComp } from "./GraphIndicatorComp";
 import { CenteredSpinner } from "@/ui/CenteredSpinner";
+import { JSONStringify } from "json-with-bigint";
 
 const { getValueForOperator } = graphProcessor;
 
@@ -196,7 +197,7 @@ export const GraphIndicator = (props: GraphInidicatorProps) => {
       }
       setError(undefined);
     } catch (err) {
-      setError(JSON.stringify(err));
+      setError(JSONStringify(err));
     }
 
     setLoading(false);

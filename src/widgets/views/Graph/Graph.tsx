@@ -22,6 +22,7 @@ import {
 } from "@/context/ActionViewContext";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { CenteredSpinner } from "@/ui/CenteredSpinner";
+import { JSONStringify } from "json-with-bigint";
 
 export type GraphProps = {
   view_id: number;
@@ -87,7 +88,7 @@ const GraphComp = (props: GraphProps, ref: any) => {
       console.error(err);
       setLoading(false);
       setGraphIsLoading?.(false);
-      return <>{JSON.stringify(err)}</>;
+      return <>{JSONStringify(err)}</>;
     }
   }
 
