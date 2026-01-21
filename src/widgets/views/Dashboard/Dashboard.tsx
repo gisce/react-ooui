@@ -28,6 +28,7 @@ import { DashboardForm } from "./DashboardForm";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { GraphServer } from "../Graph/GraphServer";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
+import { JSONStringify } from "json-with-bigint";
 
 const itemsField = "line_ids";
 
