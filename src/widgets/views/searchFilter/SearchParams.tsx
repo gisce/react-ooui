@@ -23,8 +23,8 @@ export function SearchParams(props: SearchParamsProps): React.ReactElement {
         {t("limit") + " :"}
         <Integer
           ooui={limitOoui}
-          onChange={(newValue: number) => {
-            onLimitChange?.(newValue);
+          onChange={(newValue) => {
+            onLimitChange?.(newValue as number);
           }}
         />
         {t("first") + " :"}

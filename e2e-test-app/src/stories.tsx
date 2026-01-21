@@ -34,6 +34,20 @@ import {
 import { FalseValuesInfinite } from "./stories/TreeActionViewFalseValues.stories";
 // Import Localized Decimals test story (localized path)
 import { TreeActionViewLocalizedDecimals } from "./stories/TreeActionViewLocalizedDecimals.stories";
+// Import BigInt form stories (for testing BigInt handling in integer fields)
+import {
+  BigIntIntegerField,
+  BigIntIntegerFieldSpanish,
+} from "./stories/BigIntForm.stories";
+// Import Integer onChange test stories (for testing number/bigint type return values)
+import {
+  NonLocalizedEnglish as IntegerOnChangeNonLocalizedEnglish,
+  NonLocalizedSpanish as IntegerOnChangeNonLocalizedSpanish,
+  LocalizedEnglish as IntegerOnChangeLocalizedEnglish,
+  LocalizedSpanish as IntegerOnChangeLocalizedSpanish,
+  WithInitialValue as IntegerOnChangeWithInitialValue,
+  WithBigIntInitialValue as IntegerOnChangeWithBigIntInitialValue,
+} from "./stories/IntegerOnChange.stories";
 
 export interface Story {
   id: string;
@@ -210,5 +224,63 @@ export const stories: Story[] = [
     component: TreeActionViewLocalizedDecimals,
     description:
       "Tests that localized numbers preserve server decimal places. Field with digits:[16,6] should show 18.87 as '18,87' not '18,870000'. Also tests false/null/undefined handling in localized mode.",
+  },
+  // BigInt integer field tests - verifies handling of values > Number.MAX_SAFE_INTEGER
+  {
+    id: "bigintform-bigint-integer-field",
+    title: "BigInt Form - Integer Field",
+    component: BigIntIntegerField,
+    description:
+      "Tests BigInt handling in integer fields. Values exceeding Number.MAX_SAFE_INTEGER (9007199254740991) should display correctly without precision loss. This test exposes bugs in parseFloat() and Math.trunc() used in useLocalizedInput.ts formatter.",
+  },
+  {
+    id: "bigintform-bigint-integer-field-spanish",
+    title: "BigInt Form - Integer Field (Spanish)",
+    component: BigIntIntegerFieldSpanish,
+    description:
+      "Tests BigInt handling in integer fields with Spanish locale. BigInt values should display correctly with proper locale formatting.",
+  },
+  // Integer onChange type tests - verify number/bigint return types
+  {
+    id: "integeronchange-non-localized-english",
+    title: "Integer onChange - Non-Localized (English)",
+    component: IntegerOnChangeNonLocalizedEnglish,
+    description:
+      "Tests Integer widget onChange type returns. Normal integers should return 'number' type, BigInt values should return 'bigint' type.",
+  },
+  {
+    id: "integeronchange-non-localized-spanish",
+    title: "Integer onChange - Non-Localized (Spanish)",
+    component: IntegerOnChangeNonLocalizedSpanish,
+    description:
+      "Tests Integer widget onChange type returns with Spanish locale (non-localized mode).",
+  },
+  {
+    id: "integeronchange-localized-english",
+    title: "Integer onChange - Localized (English)",
+    component: IntegerOnChangeLocalizedEnglish,
+    description:
+      "Tests Integer widget onChange type returns with localized English formatting.",
+  },
+  {
+    id: "integeronchange-localized-spanish",
+    title: "Integer onChange - Localized (Spanish)",
+    component: IntegerOnChangeLocalizedSpanish,
+    description:
+      "Tests Integer widget onChange type returns with localized Spanish formatting (comma decimal, period thousands).",
+  },
+  {
+    id: "integeronchange-with-initial-value",
+    title: "Integer onChange - With Initial Value",
+    component: IntegerOnChangeWithInitialValue,
+    description:
+      "Tests Integer widget with pre-populated initial value of 1500.",
+  },
+  {
+    id: "integeronchange-with-big-int-initial-value",
+    title: "Integer onChange - With BigInt Initial Value",
+    component: IntegerOnChangeWithBigIntInitialValue,
+    description:
+      "Tests Integer widget with BigInt initial value (9007199254740992 - first unsafe integer).",
   },
 ];

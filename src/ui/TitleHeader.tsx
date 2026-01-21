@@ -47,7 +47,7 @@ const TitleHeader: React.FC<Props> = ({
             <Text
               copyable={{ icon: <CopyOutlined style={{ color: "red" }} /> }}
             >
-              {currentId}
+              {String(currentId)}
             </Text>
             )
           </>
@@ -61,7 +61,7 @@ const TitleHeader: React.FC<Props> = ({
           {t("register")} {currentItemNumber}{" "}
           {treeType === "infinite" ? t("of") : "/"} {itemCount}{" "}
           {treeType !== "infinite" && `${t("of")} ${totalItems}`} -{" "}
-          {t("editingDocument")} (id: <Text copyable>{currentId}</Text>)
+          {t("editingDocument")} (id: <Text copyable>{String(currentId)}</Text>)
         </>
       );
     }
@@ -74,7 +74,7 @@ const TitleHeader: React.FC<Props> = ({
         return (
           <>
             1 {t("selectedRegisters")} - (id:{" "}
-            <Text copyable>{selectedRowItems[0].id}</Text>)
+            <Text copyable>{String(selectedRowItems[0].id)}</Text>)
           </>
         );
       }

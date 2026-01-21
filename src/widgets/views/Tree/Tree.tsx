@@ -55,8 +55,8 @@ type Props = {
   onRowSelectionChange?: (selectedRowKeys: any[]) => void;
   selectedRowKeys?: number[];
   scrollY?: number;
-  colorsForResults?: { [key: number]: string };
-  statusForResults?: { [key: number]: string };
+  colorsForResults?: { [key: string]: string };
+  statusForResults?: { [key: string]: string };
   onChangeSort?: (results: any) => void;
   sorter?: any;
   onFetchChildrenForRecord?: (item: any) => Promise<any[]>;
@@ -324,16 +324,18 @@ export const UnmemoizedTree = forwardRef<TableRef, Props>(
           loading={loading}
           loadingComponent={<Spin />}
           onRowStyle={(record: any) => {
-            if (colorsForResults![record.id]) {
-              return { color: colorsForResults![record.id] };
+            if (colorsForResults![String(record.id)]) {
+              return { color: colorsForResults![String(record.id)] };
             }
             return undefined;
           }}
           onRowStatus={
             hasActualValues(statusForResults)
               ? (record: any) => {
-                  if (statusForResults![record.id]) {
-                    return <Badge color={statusForResults[record.id]} />;
+                  if (statusForResults![String(record.id)]) {
+                    return (
+                      <Badge color={statusForResults[String(record.id)]} />
+                    );
                   }
                   return undefined;
                 }

@@ -15,6 +15,7 @@ import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
 import { UserFeatureKeys } from "@/models/userFeature";
 import { useSharedAggregates } from "./useTreeAggregates";
 import { Spin } from "antd";
+import { JSONStringify } from "json-with-bigint";
 import {
   One2manyTreeDataForHash,
   getKey,
@@ -49,8 +50,8 @@ export type One2manyTreeProps = {
     sortFields?: Record<string, SortDirection>;
   }) => Promise<{
     results: any[];
-    colors: { [key: number]: string };
-    status: { [key: number]: string };
+    colors: { [key: string]: string };
+    status: { [key: string]: string };
   }>;
   onRowSelectionChange: (selectedIds: number[]) => void;
   gridRef?: React.RefObject<InfiniteTableRef>;
@@ -75,7 +76,7 @@ const findChangedItems = (
     const prevItem = previous.find((p) => p.id === item.id);
     if (!prevItem) return true;
     return (
-      JSON.stringify(item.treeValues) !== JSON.stringify(prevItem.treeValues)
+      JSONStringify(item.treeValues) !== JSONStringify(prevItem.treeValues)
     );
   });
 };
@@ -238,8 +239,8 @@ export const One2manyTree = ({
       if (colors || status) {
         const attrsEvaluated = results.map((result) => ({
           id: result.id,
-          colors: colors?.[result.id],
-          status: status?.[result.id],
+          colors: colors?.[String(result.id)],
+          status: status?.[String(result.id)],
         }));
         updateAttributes(attrsEvaluated, ooui);
       }
@@ -297,8 +298,8 @@ export const One2manyTree = ({
       if (colors || status) {
         const attrsEvaluated = results.map((result) => ({
           id: result.id,
-          colors: colors?.[result.id],
-          status: status?.[result.id],
+          colors: colors?.[String(result.id)],
+          status: status?.[String(result.id)],
         }));
         updateAttributes(attrsEvaluated, ooui);
       }

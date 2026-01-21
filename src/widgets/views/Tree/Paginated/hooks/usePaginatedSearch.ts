@@ -15,6 +15,7 @@ import { ConnectionProvider, TreeView } from "../../../../..";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useDeepCompareEffect } from "use-deep-compare";
 import deepEqual from "deep-equal";
+import { JSONStringify } from "json-with-bigint";
 import {
   getTableItems,
   getSortedFieldsFromState,
@@ -47,8 +48,8 @@ export type PaginatedSearchProps = {
   onChangeTreeType?: (type: TreeType) => void;
   updateAttributes?: (attrsEvaluated: any[], treeOoui: TreeOoui) => void;
   clearAttributes?: () => void;
-  colorsForResults?: React.MutableRefObject<{ [key: number]: string }>;
-  statusForResults?: React.MutableRefObject<{ [key: number]: string }>;
+  colorsForResults?: React.MutableRefObject<{ [key: string]: string }>;
+  statusForResults?: React.MutableRefObject<{ [key: string]: string }>;
   disablePagination?: boolean;
   autoRefresh?: number;
 };
@@ -191,7 +192,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   // Helper functions
   const mustUpdateTotal = useCallback(() => {
     const params = nameSearch ? domain : mergedParams;
-    const paramsString = `${JSON.stringify(params)}-${nameSearch}`;
+    const paramsString = `${JSONStringify(params)}-${nameSearch}`;
 
     if (paramsString !== currentSearchParamsString.current) {
       currentSearchParamsString.current = paramsString;
@@ -240,15 +241,15 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   }, [treeFirstVisibleColumn]);
 
   const onRowStyle = useCallback((item: Record<string, any>): CSSProperties => {
-    if (colorsForResults?.current?.[item.node?.data?.id]) {
-      return { color: colorsForResults.current[item.node?.data?.id] };
+    if (colorsForResults?.current?.[String(item.node?.data?.id)]) {
+      return { color: colorsForResults.current[String(item.node?.data?.id)] };
     }
     return {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onRowStatus = useCallback(
-    (record: any) => statusForResults?.current?.[record.id],
+    (record: any) => statusForResults?.current?.[String(record.id)],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
