@@ -114,6 +114,29 @@ export function useLocalizedInput(options: UseLocalizedInputOptions = {}): {
         return "";
       }
 
+      // For integers with stringMode, handle BigInt strings without precision loss
+      if (isInteger && typeof value === "string") {
+        // Check if it's a valid integer string (possibly with leading minus)
+        if (/^-?\d+$/.test(value)) {
+          if (!localized) {
+            // Non-localized: return as-is to preserve precision
+            return value;
+          }
+          // Localized: use BigInt + Intl.NumberFormat for large numbers
+          try {
+            const bigIntValue = BigInt(value);
+            const browserLocale = locale.replace("_", "-");
+            return new Intl.NumberFormat(browserLocale, {
+              useGrouping: !isFocusedRef.current,
+            }).format(bigIntValue);
+          } catch {
+            // Fallback to returning the value as-is
+            return value;
+          }
+        }
+      }
+
+      // For floats or small integers, use the original Number-based logic
       const numValue = typeof value === "string" ? parseFloat(value) : value;
 
       if (isNaN(numValue)) {
@@ -182,10 +205,17 @@ export function useLocalizedInput(options: UseLocalizedInputOptions = {}): {
         cleanValue = "-" + cleanValue;
       }
 
+      // For integers, return string to preserve BigInt precision
+      if (isInteger) {
+        // Remove any decimal part for integers
+        const intPart = cleanValue.split(".")[0];
+        return intPart || "";
+      }
+
       const result = parseFloat(cleanValue);
       return isNaN(result) ? "" : result;
     },
-    [localized, separators],
+    [localized, separators, isInteger],
   );
 
   return {

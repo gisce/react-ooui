@@ -32,6 +32,14 @@ export const E2E_TEST_APP_CONFIG = {
       DEFAULT: "bigintform-bigint-integer-field",
       SPANISH: "bigintform-bigint-integer-field-spanish",
     },
+    INTEGER_ONCHANGE: {
+      NON_LOCALIZED_ENGLISH: "integeronchange-non-localized-english",
+      NON_LOCALIZED_SPANISH: "integeronchange-non-localized-spanish",
+      LOCALIZED_ENGLISH: "integeronchange-localized-english",
+      LOCALIZED_SPANISH: "integeronchange-localized-spanish",
+      WITH_INITIAL_VALUE: "integeronchange-with-initial-value",
+      WITH_BIGINT_INITIAL_VALUE: "integeronchange-with-big-int-initial-value",
+    },
   },
 } as const;
 

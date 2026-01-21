@@ -73,7 +73,7 @@ const SearchTreeSelectionSummary = ({
     return (
       <>
         1 {t("selectedRegisters")} - (id:{" "}
-        <Text copyable>{selectedRowKeys[0]}</Text>){clearSelectionLink}
+        <Text copyable>{String(selectedRowKeys[0])}</Text>){clearSelectionLink}
       </>
     );
   } else if (selectedRowKeys.length > 1) {
