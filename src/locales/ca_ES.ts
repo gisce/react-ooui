@@ -5,7 +5,7 @@ export default {
   advanced_search: "Cerca avançada",
   search: "Buscar",
   parameters: "Paràmetres",
-  limit: "Limit",
+  limit: "Límit",
   first: "Primer",
   no_results: "No hi ha resultats",
   summary:
@@ -97,7 +97,7 @@ export default {
   advancedExport: "Exportació avançada",
   savedRegisters: "Registre guardat correctament",
   errorWhileSavingForm: "Error en guardar el formulari",
-  autor: "Autor",
+  author: "Autor",
   recordsSelected:
     "Hi ha {numberOfSelectedRows} registres seleccionats en aquesta pàgina.",
   selectAllRecords: "Seleccionar tots els {totalRecords} registres.",

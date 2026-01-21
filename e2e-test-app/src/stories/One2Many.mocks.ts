@@ -34,7 +34,7 @@ export const mockOne2ManyTreeView = {
       <field name="sequence" widget="handle"/>
       <field name="description"/>
       <field name="quantity" sum="Total Qty"/>
-      <field name="price_unit" sum="Avg Price"/>
+      <field name="price_unit" sum="Avg Price" widget_props='{"localized": true}'/>
       <field name="discount"/>
       <field name="total_amount" sum="Total Amount"/>
       <field name="last_updated" autorefresh="1"/>
@@ -73,6 +73,7 @@ export const mockOne2ManyTreeView = {
       type: "float",
       string: "Unit Price",
       required: true,
+      digits: [16, 4],
     },
     discount: {
       type: "float",
@@ -181,6 +182,9 @@ export function generateMockOrderLines(orderId: number, count: number = 200) {
     const discount = i % 5 === 0 ? i % 25 : 0; // Every 5th item has discount
     const priceUnit = product.list_price * (1 + ((i % 10) - 5) * 0.02); // Small variation based on index
 
+    // First item uses 4-decimal value for precision testing
+    const finalPriceUnit = i === 1 ? 123.4567 : Math.round(priceUnit * 100) / 100;
+
     lines.push({
       id: i,
       sequence: i * 10,
@@ -189,7 +193,7 @@ export function generateMockOrderLines(orderId: number, count: number = 200) {
       product_id_name: product.name, // Add separate name field
       description: `${product.name}\nStandard configuration`,
       quantity: quantity,
-      price_unit: Math.round(priceUnit * 100) / 100,
+      price_unit: finalPriceUnit,
       discount: discount,
       price_subtotal: 0, // Will be calculated as function field
       total_amount: undefined, // Function field - initially undefined to trigger loading

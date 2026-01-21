@@ -20,6 +20,7 @@ import { useActionViewContext } from "@/context/ActionViewContext";
 import { useOne2manyContext } from "@/context/One2manyContext";
 import { DateValue, DateTimeValue } from "@gisce/react-formiga-components";
 import { useDeepCompareMemo } from "use-deep-compare";
+import { useNumberFormatter } from "@/hooks/useNumberFormatter";
 
 export const BooleanComponent = ({
   value,
@@ -174,10 +175,73 @@ export const FloatTimeComponent = ({ value }: { value: any }): ReactElement => {
   return useMemo(() => <>{parseFloatToString(value)}</>, [value]);
 };
 
-export const NumberComponent = ({ value }: { value: number }): ReactElement => {
+const LocalizedFloat = ({
+  value,
+  decimalDigits,
+}: {
+  value: number | false | null | undefined;
+  decimalDigits?: number;
+}): ReactElement => {
+  const formatNumber = useNumberFormatter({
+    format: "decimal",
+    localized: true,
+    decimalDigits,
+  });
+  return <>{formatNumber(value)}</>;
+};
+
+const LocalizedInteger = ({
+  value,
+}: {
+  value: number | false | null | undefined;
+}): ReactElement => {
+  const formatNumber = useNumberFormatter({
+    decimalDigits: 0,
+    format: "decimal",
+    localized: true,
+  });
+  return <>{formatNumber(value)}</>;
+};
+
+export const FloatComponent = ({
+  value,
+  ooui,
+}: {
+  value: number | false | null | undefined;
+  ooui?: any;
+}): ReactElement => {
+  const localized = ooui?.parsedWidgetProps?.localized ?? false;
+
   return useMemo(
-    () => <div style={{ textAlign: "right" }}>{value}</div>,
-    [value],
+    () => (
+      <div style={{ textAlign: "right" }}>
+        {localized ? (
+          <LocalizedFloat value={value} decimalDigits={ooui?.decimalDigits} />
+        ) : (
+          value
+        )}
+      </div>
+    ),
+    [localized, value, ooui?.decimalDigits],
+  );
+};
+
+export const IntegerComponent = ({
+  value,
+  ooui,
+}: {
+  value: number | false | null | undefined;
+  ooui?: any;
+}): ReactElement => {
+  const localized = ooui?.parsedWidgetProps?.localized ?? false;
+
+  return useMemo(
+    () => (
+      <div style={{ textAlign: "right" }}>
+        {localized ? <LocalizedInteger value={value} /> : value}
+      </div>
+    ),
+    [localized, value],
   );
 };
 
@@ -324,8 +388,8 @@ export const COLUMN_COMPONENTS = {
   progressbar: ProgressBarComponent,
   float_time: FloatTimeComponent,
   image: ImageComponent,
-  integer: NumberComponent,
-  float: NumberComponent,
+  integer: IntegerComponent,
+  float: FloatComponent,
   reference: ReferenceComponent,
   tag: TagComponent,
   selection: SelectionComponent,

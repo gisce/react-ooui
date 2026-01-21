@@ -260,9 +260,10 @@ test.describe("Paginated One2Many Component", () => {
     await page.waitForTimeout(500);
 
     const aggregatesAfterSelection = await aggregateElements.count();
+    // Get all aggregate text combined (new format has each aggregate in separate spans)
     const aggregateTextAfterSelection =
       aggregatesAfterSelection > 0
-        ? await aggregateElements.first().textContent()
+        ? await aggregateElements.allTextContents().then(texts => texts.join(' '))
         : null;
 
     await firstRowCheckbox.click();
