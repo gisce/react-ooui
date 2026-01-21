@@ -50,8 +50,8 @@ export type One2manyTreeProps = {
     sortFields?: Record<string, SortDirection>;
   }) => Promise<{
     results: any[];
-    colors: { [key: number]: string };
-    status: { [key: number]: string };
+    colors: { [key: string]: string };
+    status: { [key: string]: string };
   }>;
   onRowSelectionChange: (selectedIds: number[]) => void;
   gridRef?: React.RefObject<InfiniteTableRef>;
@@ -239,8 +239,8 @@ export const One2manyTree = ({
       if (colors || status) {
         const attrsEvaluated = results.map((result) => ({
           id: result.id,
-          colors: colors?.[result.id],
-          status: status?.[result.id],
+          colors: colors?.[String(result.id)],
+          status: status?.[String(result.id)],
         }));
         updateAttributes(attrsEvaluated, ooui);
       }
@@ -298,8 +298,8 @@ export const One2manyTree = ({
       if (colors || status) {
         const attrsEvaluated = results.map((result) => ({
           id: result.id,
-          colors: colors?.[result.id],
-          status: status?.[result.id],
+          colors: colors?.[String(result.id)],
+          status: status?.[String(result.id)],
         }));
         updateAttributes(attrsEvaluated, ooui);
       }

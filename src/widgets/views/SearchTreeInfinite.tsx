@@ -502,10 +502,10 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
         attrsEvaluated.forEach((attr) => {
           if (attr.id !== undefined) {
             if (attr.colors) {
-              colorsForResults.current[attr.id] = attr.colors;
+              colorsForResults.current[String(attr.id)] = attr.colors;
             }
             if (attr.status) {
-              statusForResults.current[attr.id] = attr.status;
+              statusForResults.current[String(attr.id)] = attr.status;
             }
           }
         });

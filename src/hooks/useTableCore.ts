@@ -15,11 +15,11 @@ import { ErpFeatureKeys, UserFeatureKeys } from "..";
 import { useTreeAttributesState } from "./useTreeAttributesState";
 
 export interface SharedTableColors {
-  [key: number]: string;
+  [key: string]: string;
 }
 
 export interface SharedTableStatus {
-  [key: number]: string;
+  [key: string]: string;
 }
 
 export interface UseTableCoreProps {
@@ -104,8 +104,10 @@ export const useTableCore = ({
   // Row styling based on colors
   const onRowStyle = useCallback(
     (record: any) => {
-      if (colorsForResults.current[record.node?.data?.id]) {
-        return { color: colorsForResults.current[record.node?.data?.id] };
+      if (colorsForResults.current[String(record.node?.data?.id)]) {
+        return {
+          color: colorsForResults.current[String(record.node?.data?.id)],
+        };
       }
       return undefined;
     },
@@ -121,7 +123,7 @@ export const useTableCore = ({
 
   // Row status getter
   const onRowStatus = useCallback(
-    (record: any) => statusForResults.current?.[record.id],
+    (record: any) => statusForResults.current?.[String(record.id)],
     [statusForResults],
   );
 

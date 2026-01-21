@@ -50,8 +50,8 @@ export type One2manyTreeProps = {
     sortFields?: Record<string, SortDirection>;
   }) => Promise<{
     results: any[];
-    colors: { [key: number]: string };
-    status: { [key: number]: string };
+    colors: { [key: string]: string };
+    status: { [key: string]: string };
   }>;
   onRowSelectionChange: (selectedIds: number[]) => void;
   gridRef?: React.RefObject<InfiniteTableRef>;
@@ -102,8 +102,8 @@ export const One2manyTree = ({
   const internalGridRef = useRef<InfiniteTableRef>();
   const tableRef: RefObject<InfiniteTableRef> = gridRef! || internalGridRef!;
 
-  const colorsForResults = useRef<{ [key: number]: string }>({});
-  const statusForResults = useRef<{ [key: number]: string }>();
+  const colorsForResults = useRef<{ [key: string]: string }>({});
+  const statusForResults = useRef<{ [key: string]: string }>();
 
   const prevItemsValue = useRef<One2manyItem[]>();
   const itemsRef = useRef<One2manyItem[]>(items);
@@ -250,7 +250,9 @@ export const One2manyTree = ({
       statusComponent={(status: any) => (
         <Badge color={status} style={{ marginLeft: 7 }} />
       )}
-      onRowStatus={(record: any) => statusForResults.current?.[record.id]}
+      onRowStatus={(record: any) =>
+        statusForResults.current?.[String(record.id)]
+      }
       strings={{
         resetTableViewLabel: t("resetTableView"),
       }}

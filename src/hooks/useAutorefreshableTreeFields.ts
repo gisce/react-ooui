@@ -148,7 +148,7 @@ export const useAutorefreshableTreeFields = (
 
       // Get only the changed records
       const changedResults = preparedResults.filter((newItem) => {
-        const previousItem = previousValuesRef.current[newItem.id];
+        const previousItem = previousValuesRef.current[String(newItem.id)];
         return hasFieldsChanged(newItem, previousItem);
       });
 
@@ -183,7 +183,7 @@ export const useAutorefreshableTreeFields = (
 
           // Update previous values only for changed records
           changedResults.forEach((result) => {
-            previousValuesRef.current[result.id] = result;
+            previousValuesRef.current[String(result.id)] = result;
           });
         } catch (error) {
           if (error.name !== "AbortError") {

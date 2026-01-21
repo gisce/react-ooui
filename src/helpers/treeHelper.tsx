@@ -341,7 +341,7 @@ function getItemsAttributes(attributes: object[], attribute: string) {
   }
   const map: any = {};
   attributes.forEach((entry: any) => {
-    map[entry.id] = entry[attribute];
+    map[String(entry.id)] = entry[attribute];
   });
   return map;
 }

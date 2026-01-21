@@ -77,8 +77,8 @@ type KanbanColumnProps = {
   onRecordsUpdate?: (
     columnId: string,
     records: KanbanRecord[],
-    colors: { [key: number]: string },
-    status: { [key: number]: string },
+    colors: { [key: string]: string },
+    status: { [key: string]: string },
   ) => void;
   onAddCardClick?: () => void;
   onRefreshAll?: () => void;
@@ -229,8 +229,8 @@ const KanbanColumnComponent = (
 
   const cardClickHandlers = useMemo(() => {
     if (!onCardClick) return {};
-    return records.reduce<Record<number, () => void>>((acc, record) => {
-      acc[record.id] = () => onCardClick(record);
+    return records.reduce<Record<string, () => void>>((acc, record) => {
+      acc[String(record.id)] = () => onCardClick(record);
       return acc;
     }, {});
   }, [records, onCardClick]);
@@ -239,18 +239,20 @@ const KanbanColumnComponent = (
     if (!onCardSelect) return {};
     return records.reduce<
       Record<
-        number,
+        string,
         (modifiers: { isCtrlCmd: boolean; isShift: boolean }) => void
       >
     >((acc, record) => {
-      acc[record.id] = (modifiers: { isCtrlCmd: boolean; isShift: boolean }) =>
-        onCardSelect(record, columnId, modifiers);
+      acc[String(record.id)] = (modifiers: {
+        isCtrlCmd: boolean;
+        isShift: boolean;
+      }) => onCardSelect(record, columnId, modifiers);
       return acc;
     }, {});
   }, [records, onCardSelect, columnId]);
 
   const hasStatusRibbon = useMemo(() => {
-    return records.some((record) => statusForRecords?.[record.id]);
+    return records.some((record) => statusForRecords?.[String(record.id)]);
   }, [records, statusForRecords]);
 
   // Filter out current column for submenu options
@@ -559,7 +561,7 @@ const KanbanColumnComponent = (
                 const record = records[virtualRow.index];
                 return (
                   <div
-                    key={record.id}
+                    key={String(record.id)}
                     data-index={virtualRow.index}
                     ref={virtualizer.measureElement}
                     style={{
@@ -571,15 +573,15 @@ const KanbanColumnComponent = (
                     }}
                   >
                     <KanbanCard
-                      color={colorsForRecords?.[record.id]}
-                      status={statusForRecords?.[record.id]}
+                      color={colorsForRecords?.[String(record.id)]}
+                      status={statusForRecords?.[String(record.id)]}
                       record={record}
                       kanbanDef={kanbanDef}
                       draggable={kanbanDef.drag}
                       context={context}
                       model={model}
-                      onClick={cardClickHandlers[record.id]}
-                      onSelect={cardSelectHandlers[record.id]}
+                      onClick={cardClickHandlers[String(record.id)]}
+                      onSelect={cardSelectHandlers[String(record.id)]}
                       onRefreshAll={onRefreshAll}
                       columnId={columnId}
                       isDropTarget={overId === record.id}
