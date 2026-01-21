@@ -18,6 +18,7 @@ import { TreeAggregates } from "./useTreeAggregates";
 import { AggregatesFooter } from "./AggregatesFooter";
 import { useTreeColumnStorageFetch } from "./useTreeColumnStorageFetch";
 import { Spin, Badge } from "antd";
+import { JSONStringify } from "json-with-bigint";
 import {
   One2manyTreeDataForHash,
   getKey,
@@ -74,7 +75,7 @@ const findChangedItems = (
     const prevItem = previous.find((p) => p.id === item.id);
     if (!prevItem) return true;
     return (
-      JSON.stringify(item.treeValues) !== JSON.stringify(prevItem.treeValues)
+      JSONStringify(item.treeValues) !== JSONStringify(prevItem.treeValues)
     );
   });
 };

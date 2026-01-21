@@ -20,6 +20,7 @@ import {
   getTableItems,
   getTree,
 } from "@/helpers/treeHelper";
+import { JSONStringify } from "json-with-bigint";
 import {
   useDeepCompareCallback,
   useDeepCompareEffect,
@@ -333,7 +334,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
   const mustUpdateTotal = useCallback(() => {
     const params = nameSearch ? domain : mergedParams;
 
-    const paramsString = `${JSON.stringify(params)}-${nameSearch}`;
+    const paramsString = `${JSONStringify(params)}-${nameSearch}`;
 
     if (paramsString !== currentSearchParamsString.current) {
       currentSearchParamsString.current = paramsString;

@@ -15,6 +15,7 @@ import { ConnectionProvider, TreeView } from "../../../../..";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useDeepCompareEffect } from "use-deep-compare";
 import deepEqual from "deep-equal";
+import { JSONStringify } from "json-with-bigint";
 import {
   getTableItems,
   getSortedFieldsFromState,
@@ -191,7 +192,7 @@ export const usePaginatedSearch = (props: PaginatedSearchProps) => {
   // Helper functions
   const mustUpdateTotal = useCallback(() => {
     const params = nameSearch ? domain : mergedParams;
-    const paramsString = `${JSON.stringify(params)}-${nameSearch}`;
+    const paramsString = `${JSONStringify(params)}-${nameSearch}`;
 
     if (paramsString !== currentSearchParamsString.current) {
       currentSearchParamsString.current = paramsString;

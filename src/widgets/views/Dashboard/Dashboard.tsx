@@ -187,7 +187,7 @@ function Dashboard(props: DashboardProps, ref: any) {
         id: dashboardItem.id,
       };
 
-      return JSON.stringify(itemPosition) !== JSON.stringify(remotePosition);
+      return JSONStringify(itemPosition) !== JSONStringify(remotePosition);
     });
 
     if (differences.length === 0) {
@@ -212,7 +212,7 @@ function Dashboard(props: DashboardProps, ref: any) {
         operation: "pendingUpdate",
         values: {
           ...dashboardItem.values,
-          position: JSON.stringify(diffItem).replace(/"/g, "'"),
+          position: JSONStringify(diffItem).replace(/"/g, "'"),
         },
       };
     });

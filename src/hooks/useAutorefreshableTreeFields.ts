@@ -12,6 +12,7 @@ import { getTableItems } from "@/helpers/treeHelper";
 import { getAttributesConditionsFromOoui } from "./useTreeAttributesState";
 import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
 import { UserFeatureKeys } from "@/models/userFeature";
+import { JSONStringify } from "json-with-bigint";
 
 const AUTOREFRESH_INTERVAL_SECONDS = 3 * 1000;
 
@@ -83,8 +84,7 @@ export const useAutorefreshableTreeFields = (
 
       return autorefreshableFields?.some(
         (field) =>
-          JSON.stringify(newItem[field]) !==
-          JSON.stringify(previousItem[field]),
+          JSONStringify(newItem[field]) !== JSONStringify(previousItem[field]),
       );
     },
     [autorefreshableFields],

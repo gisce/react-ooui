@@ -15,6 +15,7 @@ import {
   TabManagerContext,
   TabManagerContextType,
 } from "@/context/TabManagerContext";
+import { JSONStringify } from "json-with-bigint";
 import {
   useLocale,
   FavouriteButton as FavouriteButtonUi,
@@ -115,7 +116,7 @@ const FavouriteButton = (props: Props) => {
     if (!favouriteQuery) {
       return;
     }
-    return JSON.stringify(favouriteQuery);
+    return JSONStringify(favouriteQuery);
   }, [favouriteQuery]);
 
   useEffect(() => {
