@@ -28,10 +28,6 @@ export const E2E_TEST_APP_CONFIG = {
       FRENCH_LOCALIZED: "form-french-localized",
       ENGLISH_LOCALIZED: "form-english-localized",
     },
-    BIGINT_FORM: {
-      DEFAULT: "bigintform-bigint-integer-field",
-      SPANISH: "bigintform-bigint-integer-field-spanish",
-    },
   },
 } as const;
 

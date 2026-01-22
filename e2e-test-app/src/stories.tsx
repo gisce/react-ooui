@@ -34,11 +34,6 @@ import {
 import { FalseValuesInfinite } from "./stories/TreeActionViewFalseValues.stories";
 // Import Localized Decimals test story (localized path)
 import { TreeActionViewLocalizedDecimals } from "./stories/TreeActionViewLocalizedDecimals.stories";
-// Import BigInt form stories (for testing BigInt handling in integer fields)
-import {
-  BigIntIntegerField,
-  BigIntIntegerFieldSpanish,
-} from "./stories/BigIntForm.stories";
 
 export interface Story {
   id: string;
@@ -215,20 +210,5 @@ export const stories: Story[] = [
     component: TreeActionViewLocalizedDecimals,
     description:
       "Tests that localized numbers preserve server decimal places. Field with digits:[16,6] should show 18.87 as '18,87' not '18,870000'. Also tests false/null/undefined handling in localized mode.",
-  },
-  // BigInt integer field tests - verifies handling of values > Number.MAX_SAFE_INTEGER
-  {
-    id: "bigintform-bigint-integer-field",
-    title: "BigInt Form - Integer Field",
-    component: BigIntIntegerField,
-    description:
-      "Tests BigInt handling in integer fields. Values exceeding Number.MAX_SAFE_INTEGER (9007199254740991) should display correctly without precision loss. This test exposes bugs in parseFloat() and Math.trunc() used in useLocalizedInput.ts formatter.",
-  },
-  {
-    id: "bigintform-bigint-integer-field-spanish",
-    title: "BigInt Form - Integer Field (Spanish)",
-    component: BigIntIntegerFieldSpanish,
-    description:
-      "Tests BigInt handling in integer fields with Spanish locale. BigInt values should display correctly with proper locale formatting.",
   },
 ];
