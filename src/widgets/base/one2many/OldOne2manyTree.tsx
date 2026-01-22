@@ -18,7 +18,6 @@ import { TreeAggregates } from "./useTreeAggregates";
 import { AggregatesFooter } from "./AggregatesFooter";
 import { useTreeColumnStorageFetch } from "./useTreeColumnStorageFetch";
 import { Spin, Badge } from "antd";
-import { JSONStringify } from "json-with-bigint";
 import {
   One2manyTreeDataForHash,
   getKey,
@@ -50,8 +49,8 @@ export type One2manyTreeProps = {
     sortFields?: Record<string, SortDirection>;
   }) => Promise<{
     results: any[];
-    colors: { [key: string]: string };
-    status: { [key: string]: string };
+    colors: { [key: number]: string };
+    status: { [key: number]: string };
   }>;
   onRowSelectionChange: (selectedIds: number[]) => void;
   gridRef?: React.RefObject<InfiniteTableRef>;
@@ -75,7 +74,7 @@ const findChangedItems = (
     const prevItem = previous.find((p) => p.id === item.id);
     if (!prevItem) return true;
     return (
-      JSONStringify(item.treeValues) !== JSONStringify(prevItem.treeValues)
+      JSON.stringify(item.treeValues) !== JSON.stringify(prevItem.treeValues)
     );
   });
 };
@@ -102,8 +101,8 @@ export const One2manyTree = ({
   const internalGridRef = useRef<InfiniteTableRef>();
   const tableRef: RefObject<InfiniteTableRef> = gridRef! || internalGridRef!;
 
-  const colorsForResults = useRef<{ [key: string]: string }>({});
-  const statusForResults = useRef<{ [key: string]: string }>();
+  const colorsForResults = useRef<{ [key: number]: string }>({});
+  const statusForResults = useRef<{ [key: number]: string }>();
 
   const prevItemsValue = useRef<One2manyItem[]>();
   const itemsRef = useRef<One2manyItem[]>(items);
@@ -250,9 +249,7 @@ export const One2manyTree = ({
       statusComponent={(status: any) => (
         <Badge color={status} style={{ marginLeft: 7 }} />
       )}
-      onRowStatus={(record: any) =>
-        statusForResults.current?.[String(record.id)]
-      }
+      onRowStatus={(record: any) => statusForResults.current?.[record.id]}
       strings={{
         resetTableViewLabel: t("resetTableView"),
       }}

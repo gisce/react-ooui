@@ -39,15 +39,6 @@ import {
   BigIntIntegerField,
   BigIntIntegerFieldSpanish,
 } from "./stories/BigIntForm.stories";
-// Import Integer onChange test stories (for testing number/bigint type return values)
-import {
-  NonLocalizedEnglish as IntegerOnChangeNonLocalizedEnglish,
-  NonLocalizedSpanish as IntegerOnChangeNonLocalizedSpanish,
-  LocalizedEnglish as IntegerOnChangeLocalizedEnglish,
-  LocalizedSpanish as IntegerOnChangeLocalizedSpanish,
-  WithInitialValue as IntegerOnChangeWithInitialValue,
-  WithBigIntInitialValue as IntegerOnChangeWithBigIntInitialValue,
-} from "./stories/IntegerOnChange.stories";
 
 export interface Story {
   id: string;
@@ -239,48 +230,5 @@ export const stories: Story[] = [
     component: BigIntIntegerFieldSpanish,
     description:
       "Tests BigInt handling in integer fields with Spanish locale. BigInt values should display correctly with proper locale formatting.",
-  },
-  // Integer onChange type tests - verify number/bigint return types
-  {
-    id: "integeronchange-non-localized-english",
-    title: "Integer onChange - Non-Localized (English)",
-    component: IntegerOnChangeNonLocalizedEnglish,
-    description:
-      "Tests Integer widget onChange type returns. Normal integers should return 'number' type, BigInt values should return 'bigint' type.",
-  },
-  {
-    id: "integeronchange-non-localized-spanish",
-    title: "Integer onChange - Non-Localized (Spanish)",
-    component: IntegerOnChangeNonLocalizedSpanish,
-    description:
-      "Tests Integer widget onChange type returns with Spanish locale (non-localized mode).",
-  },
-  {
-    id: "integeronchange-localized-english",
-    title: "Integer onChange - Localized (English)",
-    component: IntegerOnChangeLocalizedEnglish,
-    description:
-      "Tests Integer widget onChange type returns with localized English formatting.",
-  },
-  {
-    id: "integeronchange-localized-spanish",
-    title: "Integer onChange - Localized (Spanish)",
-    component: IntegerOnChangeLocalizedSpanish,
-    description:
-      "Tests Integer widget onChange type returns with localized Spanish formatting (comma decimal, period thousands).",
-  },
-  {
-    id: "integeronchange-with-initial-value",
-    title: "Integer onChange - With Initial Value",
-    component: IntegerOnChangeWithInitialValue,
-    description:
-      "Tests Integer widget with pre-populated initial value of 1500.",
-  },
-  {
-    id: "integeronchange-with-big-int-initial-value",
-    title: "Integer onChange - With BigInt Initial Value",
-    component: IntegerOnChangeWithBigIntInitialValue,
-    description:
-      "Tests Integer widget with BigInt initial value (9007199254740992 - first unsafe integer).",
   },
 ];

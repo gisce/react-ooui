@@ -52,10 +52,10 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
   const [hasMore, setHasMore] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
   const [colorsForRecords, setColorsForRecords] = useState<{
-    [key: string]: string;
+    [key: number]: string;
   }>({});
   const [statusForRecords, setStatusForRecords] = useState<{
-    [key: string]: string;
+    [key: number]: string;
   }>({});
 
   const PAGE_SIZE = 30;
@@ -245,16 +245,16 @@ export const useKanbanColumnData = (params: UseKanbanColumnDataParams) => {
 
         // Parse colors and status from attrsEvaluated returned by searchForTree
         if (attrsEvaluated && Array.isArray(attrsEvaluated)) {
-          const newColors: { [key: string]: string } = {};
-          const newStatus: { [key: string]: string } = {};
+          const newColors: { [key: number]: string } = {};
+          const newStatus: { [key: number]: string } = {};
 
           attrsEvaluated.forEach((attr: any) => {
             if (attr.id !== undefined) {
               if (attr.colors) {
-                newColors[String(attr.id)] = attr.colors;
+                newColors[attr.id] = attr.colors;
               }
               if (attr.status) {
-                newStatus[String(attr.id)] = attr.status;
+                newStatus[attr.id] = attr.status;
               }
             }
           });

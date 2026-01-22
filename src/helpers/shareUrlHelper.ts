@@ -1,5 +1,4 @@
 import { ActionInfo, ActionRawData } from "@/types";
-import { JSONStringify } from "json-with-bigint";
 
 const OPEN_ACTION_PATH = "action";
 // Parameters to exclude from the URL
@@ -32,7 +31,7 @@ export const createShareOpenUrl = (action: ActionInfo) => {
 
 const convertToString = (value: any): string => {
   if (typeof value === "object") {
-    return JSONStringify(value);
+    return JSON.stringify(value);
   }
   return value.toString();
 };

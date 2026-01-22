@@ -133,9 +133,9 @@ const KanbanBoardComponent = (
   const lastOverInColumnRef = useRef<{
     [columnId: string]: { recordId: number; position: "above" | "below" };
   }>({});
-  const colorsForRecordsRef = useRef<{ [key: string]: string }>({});
-  const statusForRecordsRef = useRef<{ [key: string]: string }>({});
-  const allRecordsRef = useRef<{ [key: string]: KanbanRecord }>({});
+  const colorsForRecordsRef = useRef<{ [key: number]: string }>({});
+  const statusForRecordsRef = useRef<{ [key: number]: string }>({});
+  const allRecordsRef = useRef<{ [key: number]: KanbanRecord }>({});
   const columnRefsRef = useRef<{ [columnId: string]: KanbanColumnRef }>({});
   const columnRecordIdsRef = useRef<{ [columnId: string]: number[] }>({});
   const [columnOrder, setColumnOrder] = useState<string[]>([]);
@@ -245,7 +245,7 @@ const KanbanBoardComponent = (
       const { active } = event;
       const recordId = active.id as number;
 
-      const fullRecord = allRecordsRef.current[String(recordId)];
+      const fullRecord = allRecordsRef.current[recordId];
       if (fullRecord) {
         setActiveRecord(fullRecord);
       } else {
@@ -333,7 +333,7 @@ const KanbanBoardComponent = (
       }
 
       // Fallback: try to find column from record cache
-      const overRecord = allRecordsRef.current[String(overRecordId)];
+      const overRecord = allRecordsRef.current[overRecordId];
       if (overRecord) {
         const recordColumnValue = overRecord[kanbanDef.column_field];
         const recordColumn = findColumnByValue(recordColumnValue);
@@ -418,21 +418,19 @@ const KanbanBoardComponent = (
     (
       columnId: string,
       records: KanbanRecord[],
-      colors: { [key: string]: string },
-      status: { [key: string]: string },
+      colors: { [key: number]: string },
+      status: { [key: number]: string },
     ) => {
       const recordIds = records.map((r) => r.id);
       columnRecordIdsRef.current[columnId] = recordIds;
       onColumnRecordIdsChange?.(columnId, recordIds);
       records.forEach((record) => {
-        allRecordsRef.current[String(record.id)] = record;
-        if (colors?.[String(record.id)]) {
-          colorsForRecordsRef.current[String(record.id)] =
-            colors[String(record.id)];
+        allRecordsRef.current[record.id] = record;
+        if (colors?.[record.id]) {
+          colorsForRecordsRef.current[record.id] = colors[record.id];
         }
-        if (status?.[String(record.id)]) {
-          statusForRecordsRef.current[String(record.id)] =
-            status[String(record.id)];
+        if (status?.[record.id]) {
+          statusForRecordsRef.current[record.id] = status[record.id];
         }
       });
     },
@@ -549,7 +547,7 @@ const KanbanBoardComponent = (
       }
 
       const recordId = active.id as number;
-      const record = allRecordsRef.current[String(recordId)];
+      const record = allRecordsRef.current[recordId];
 
       if (!record) {
         cleanup();
@@ -900,8 +898,8 @@ const KanbanBoardComponent = (
               kanbanDef={kanbanDef}
               draggable={false}
               model={model}
-              color={colorsForRecordsRef?.current?.[String(activeRecord.id)]}
-              status={statusForRecordsRef?.current?.[String(activeRecord.id)]}
+              color={colorsForRecordsRef?.current?.[activeRecord.id]}
+              status={statusForRecordsRef?.current?.[activeRecord.id]}
               context={context}
             />
           </div>

@@ -28,7 +28,6 @@ import { DashboardForm } from "./DashboardForm";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { GraphServer } from "../Graph/GraphServer";
 import { useFeatureIsEnabled } from "@/context/ConfigContext";
-import { JSONStringify } from "json-with-bigint";
 
 const itemsField = "line_ids";
 
@@ -188,7 +187,7 @@ function Dashboard(props: DashboardProps, ref: any) {
         id: dashboardItem.id,
       };
 
-      return JSONStringify(itemPosition) !== JSONStringify(remotePosition);
+      return JSON.stringify(itemPosition) !== JSON.stringify(remotePosition);
     });
 
     if (differences.length === 0) {
@@ -213,7 +212,7 @@ function Dashboard(props: DashboardProps, ref: any) {
         operation: "pendingUpdate",
         values: {
           ...dashboardItem.values,
-          position: JSONStringify(diffItem).replace(/"/g, "'"),
+          position: JSON.stringify(diffItem).replace(/"/g, "'"),
         },
       };
     });
