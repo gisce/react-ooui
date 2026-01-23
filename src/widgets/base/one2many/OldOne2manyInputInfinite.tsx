@@ -38,7 +38,7 @@ export type One2manyItem = {
     | "pendingUpdate"
     | "pendingCreate"
     | "pendingLink";
-  id?: number;
+  id?: number | string;
   values?: any;
   treeValues?: any;
   defaultValues?: any;

@@ -22,7 +22,7 @@ import { ErpFeatureKeys } from "@/models/erpFeature";
 import { ACTION_TYPE_WINDOW } from "@/models/constants";
 
 type Props = {
-  id: number;
+  id: number | string;
   model: string;
   context?: any;
   openOnly?: boolean;
