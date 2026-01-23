@@ -40,7 +40,7 @@ export const useOne2manySearchModal = ({
   }, []);
 
   const onSearchModalSelectValue = useDeepCompareCallback(
-    async (ids: number[]) => {
+    async (ids: Array<number | string>) => {
       const updatedItems = [...items];
       const filteredIds = ids.filter((id) => {
         return !items.find((item) => item.id === id);
@@ -50,7 +50,7 @@ export const useOne2manySearchModal = ({
         const updatedObjects =
           await ConnectionProvider.getHandler().readObjects({
             model: relation,
-            ids: filteredIds,
+            ids: filteredIds as number[],
             fields: {
               ...views.get("form").fields,
               ...views.get("tree").fields,
@@ -82,7 +82,7 @@ export const useOne2manySearchModal = ({
   );
 
   const onSelectSearchValues = useCallback(
-    async (ids: number[]) => {
+    async (ids: Array<number | string>) => {
       await onSearchModalSelectValue(ids);
       setShowSearchModal(false);
     },

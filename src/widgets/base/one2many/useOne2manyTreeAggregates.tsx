@@ -1,6 +1,7 @@
 import { Tree as TreeOoui } from "@gisce/ooui";
 import { One2manyItem } from "./One2manyInput";
 import { useTreeAggregates } from "./useTreeAggregates";
+import { isExistingId } from "@/helpers/idUtils";
 
 export const useOne2manyTreeAggregates = ({
   ooui,
@@ -13,7 +14,7 @@ export const useOne2manyTreeAggregates = ({
   selectedRowKeys: any[];
   model: string;
 }) => {
-  const realItems = items.filter((it) => it.id && it.id > 0);
+  const realItems = items.filter((it) => isExistingId(it.id));
   let domain;
   if (selectedRowKeys.length > 0) {
     domain = [["id", "in", selectedRowKeys]];

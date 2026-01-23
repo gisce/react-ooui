@@ -54,8 +54,8 @@ type Props = {
   formDefaultValues?: any;
   formForcedValues?: any;
   formReadOnly?: boolean;
-  res_id?: number | boolean;
-  action_id: number;
+  res_id?: number | string | boolean;
+  action_id: number | string;
   action_type: string;
   treeExpandable?: boolean;
   limit?: number;
@@ -97,9 +97,9 @@ function ActionView(props: Props, ref: any) {
     ? (res_id as number)
     : undefined;
 
-  const [currentId, setCurrentIdInternal] = useState<number | undefined>(
-    res_id_parsed,
-  );
+  const [currentId, setCurrentIdInternal] = useState<
+    number | string | undefined
+  >(res_id_parsed);
   const [selectedRowItems, setSelectedRowItems] = useState<any[]>([]);
   const [currentItemIndex, setCurrentItemIndex] = useState<number>();
   const [results, setResults] = useState<any>([]);
@@ -148,7 +148,7 @@ function ActionView(props: Props, ref: any) {
     [activeKey, tabs, currentView, currentItemIndex, results],
   );
 
-  function setCurrentId(id?: number) {
+  function setCurrentId(id?: number | string) {
     setCurrentIdInternal(id);
     setCurrentIdTabContext?.(id);
   }
@@ -399,7 +399,10 @@ function ActionView(props: Props, ref: any) {
     setGtResourceModalVisible(true);
   }
 
-  async function goToResourceId(ids: number[], openInSameTab?: boolean) {
+  async function goToResourceId(
+    ids: Array<number | string>,
+    openInSameTab?: boolean,
+  ) {
     setSearchingForResourceId(true);
 
     let mode: ViewType;
@@ -576,7 +579,7 @@ const ActionViewContent = ({
 }: {
   availableViews: View[];
   formRef: React.RefObject<any>;
-  currentId: number | undefined;
+  currentId: number | string | undefined;
   currentView: View;
   model: string;
   context: any;

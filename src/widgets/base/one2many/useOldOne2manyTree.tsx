@@ -22,7 +22,7 @@ export const useOne2manyTree = ({
   treeView?: TreeView;
   relation: string;
   context: any;
-  allRowsIds: number[];
+  allRowsIds: Array<number | string>;
   gridRef: React.RefObject<InfiniteTableRef>;
 }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<any>([]);
@@ -38,7 +38,7 @@ export const useOne2manyTree = ({
 
     if (mustSelectAll) {
       setSelectedRowKeys(allRowsIds);
-      gridRef.current?.setSelectedRows(allRowsIds);
+      gridRef.current?.setSelectedRows(allRowsIds as number[]);
     } else {
       setSelectedRowKeys([]);
       gridRef.current?.setSelectedRows([]);

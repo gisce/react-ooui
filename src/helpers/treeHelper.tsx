@@ -9,6 +9,7 @@ import {
 import { TreeView, Column } from "@/types";
 import { SortDirection, ColumnState } from "@gisce/react-formiga-table";
 import ConnectionProvider from "@/ConnectionProvider";
+import { safeParseId, isExistingId } from "@/helpers/idUtils";
 
 const getTree = (treeView: TreeView): TreeOoui => {
   const xml = treeView.arch;
@@ -116,7 +117,7 @@ const getTableItems = async (
     { relation: string; field: string; allIds: Set<number> }
   > = new Map();
 
-  const referenceRequests: Map<string, Set<number>> = new Map();
+  const referenceRequests: Map<string, Set<number | string>> = new Map();
 
   results.forEach((item: any) => {
     Object.keys(item).forEach((key) => {
@@ -143,13 +144,13 @@ const getTableItems = async (
         } else if (widget instanceof Reference && item[key]) {
           // Reference widgets have values like "model,id"
           const [model, id] = item[key].split(",");
-          const intId = parseInt(id);
+          const parsedId = safeParseId(id);
 
-          if (model && !isNaN(intId)) {
+          if (model && isExistingId(parsedId)) {
             if (!referenceRequests.has(model)) {
               referenceRequests.set(model, new Set());
             }
-            referenceRequests.get(model)!.add(intId);
+            referenceRequests.get(model)!.add(parsedId as number | string);
           }
         }
       }
@@ -189,7 +190,7 @@ const getTableItems = async (
   }
 
   // Fetch reference data using name_get for each model
-  const referenceDataMap: Map<string, Map<number, string>> = new Map();
+  const referenceDataMap: Map<string, Map<number | string, string>> = new Map();
 
   for (const [model, ids] of referenceRequests) {
     if (ids.size > 0) {
@@ -229,16 +230,18 @@ const getTableItems = async (
           // Reference widgets with prefetched data
           if (item[key]) {
             const [model, id] = item[key].split(",");
-            const intId = parseInt(id);
+            const parsedId = safeParseId(id);
 
-            if (model && !isNaN(intId)) {
+            if (model && isExistingId(parsedId)) {
               const referenceData = referenceDataMap.get(model);
-              const name = referenceData?.get(intId) || `Unknown (${intId})`;
+              const name =
+                referenceData?.get(parsedId as number | string) ||
+                `Unknown (${parsedId})`;
 
               parsedItem[key] = {
                 originalValue: item[key],
                 model,
-                id: intId,
+                id: parsedId,
                 name,
               };
             } else {
