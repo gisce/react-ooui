@@ -21,7 +21,6 @@ import {
   ViewType,
 } from "@/types/index";
 import ConnectionProvider from "@/ConnectionProvider";
-import { JSONStringify } from "json-with-bigint";
 
 import ActionViewProvider from "@/context/ActionViewContext";
 import {
@@ -302,7 +301,7 @@ function ActionView(props: Props, ref: any) {
       });
       console.error(
         "Error determining the first view to show for model",
-        JSONStringify({
+        JSON.stringify({
           model,
           views,
           initialView,

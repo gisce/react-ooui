@@ -1,7 +1,6 @@
 import { One2manyItem } from "@/widgets/base/one2many/One2manyInputLegacy";
 import { Form as FormOoui } from "@gisce/ooui";
 import { generate } from "@ant-design/colors";
-import { JSONStringify } from "json-with-bigint";
 
 const filteredValues = (values: any, fields: any) => {
   if (!fields) {
@@ -51,8 +50,8 @@ export const getTouchedValues = ({
       : false;
 
     if (is2Many) {
-      const sourceValue = JSONStringify(source[key]);
-      const targetValue = JSONStringify(target[key]);
+      const sourceValue = JSON.stringify(source[key]);
+      const targetValue = JSON.stringify(target[key]);
       if (sourceValue === targetValue) {
         return;
       }
@@ -81,15 +80,15 @@ export const getTouchedValues = ({
             differences[key] = target[key];
           }
         } else {
-          const sourceValue = JSONStringify(source[key]);
-          const targetValue = JSONStringify(target[key]);
+          const sourceValue = JSON.stringify(source[key]);
+          const targetValue = JSON.stringify(target[key]);
           if (sourceValue !== targetValue) {
             differences[key] = target[key];
           }
         }
       } else {
-        const sourceValue = JSONStringify(source[key]);
-        const targetValue = JSONStringify(target[key]);
+        const sourceValue = JSON.stringify(source[key]);
+        const targetValue = JSON.stringify(target[key]);
         if (sourceValue !== targetValue) {
           differences[key] = target[key];
         }

@@ -7,7 +7,6 @@ import {
 } from "@gisce/ooui";
 import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
-import { JSONStringify } from "json-with-bigint";
 
 const { processGraphData } = graphProcessor;
 const { getFieldsToRetrieve } = graphFieldUtils;
@@ -74,7 +73,7 @@ export const useGraphData = (opts: GraphDataOpts) => {
         },
       }));
     } catch (e) {
-      setError("Error fetching graph data values: " + JSONStringify(e));
+      setError("Error fetching graph data values: " + JSON.stringify(e));
       setLoading(false);
       return;
     }
