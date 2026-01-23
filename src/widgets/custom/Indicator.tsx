@@ -83,7 +83,7 @@ const IndicatorInput = (props: IndicatorInputProps) => {
   const [referenceData, setReferenceData] = useState<{
     model: string;
     modelName: string;
-    res_id: number;
+    res_id: number | string;
     recordName: string;
   } | null>(null);
   const [isLoadingReference, setIsLoadingReference] = useState(false);

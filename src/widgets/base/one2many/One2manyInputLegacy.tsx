@@ -28,6 +28,7 @@ import {
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { One2manyTopBar } from "@/widgets/base/one2many/One2manyTopBar";
 import { readObjectValues, getNextPendingId } from "@/helpers/one2manyHelper";
+import { isExistingId, isTempId, idsEqual } from "@/helpers/idUtils";
 import { SearchModal } from "@/widgets/modals/SearchModal";
 import { useLocale } from "@gisce/react-formiga-components";
 import { sortResults } from "@/helpers/treeHelper";
@@ -52,7 +53,7 @@ type One2manyItem = {
     | "pendingUpdate"
     | "pendingCreate"
     | "pendingLink";
-  id?: number;
+  id?: number | string;
   values?: any;
   treeValues?: any;
   defaultValues?: any;
@@ -106,7 +107,7 @@ const One2manyInputLegacy: React.FC<One2manyInputProps> = (
     useState<boolean>(false);
   const [transformedDomain, setTransformedDomain] = useState<any[]>([]);
   const [sorter, setSorter] = useState<any>();
-  const originalSortItemIds = useRef<number[]>();
+  const originalSortItemIds = useRef<Array<number | string>>();
   const [colorsForResults, setColorsForResults] = useState<any>(undefined);
   const formRef = useRef<any>();
 
@@ -287,7 +288,7 @@ const One2manyInputLegacy: React.FC<One2manyInputProps> = (
     const updatedFormObject = (
       await ConnectionProvider.getHandler().readObjects({
         model: relation,
-        ids: [currentId],
+        ids: [currentId] as number[],
         fields: views.get("form").fields,
         context: { ...getContext?.(), ...context },
       })
@@ -295,7 +296,7 @@ const One2manyInputLegacy: React.FC<One2manyInputProps> = (
     const updatedTreeObject = (
       await ConnectionProvider.getHandler().readObjects({
         model: relation,
-        ids: [currentId],
+        ids: [currentId] as number[],
         fields: views.get("tree").fields,
         context: { ...getContext?.(), ...context },
       })
@@ -395,7 +396,7 @@ const One2manyInputLegacy: React.FC<One2manyInputProps> = (
     setError(undefined);
 
     try {
-      if (itemsToShow[itemIndex].id! > 0) {
+      if (isExistingId(itemsToShow[itemIndex].id)) {
         const updatedItems = items.map((item) => {
           if (item.id === itemsToShow[itemIndex].id!) {
             return {
@@ -430,17 +431,20 @@ const One2manyInputLegacy: React.FC<One2manyInputProps> = (
     setError(undefined);
 
     try {
-      const idsToRemove: number[] = itemsToRemove.map((item) => item.id!);
+      const idsToRemove = itemsToRemove.map((item) => item.id!);
 
       const updatedItems = items
         .filter((item) => {
-          if (idsToRemove.includes(item.id!) && item.id! < 0) {
+          if (
+            idsToRemove.some((id) => idsEqual(id, item.id)) &&
+            isTempId(item.id)
+          ) {
             return false;
           }
           return true;
         })
         .map((item) => {
-          if (idsToRemove.includes(item.id!)) {
+          if (idsToRemove.some((id) => idsEqual(id, item.id))) {
             return {
               ...item,
               operation: "pendingRemove",
@@ -460,7 +464,7 @@ const One2manyInputLegacy: React.FC<One2manyInputProps> = (
 
   // This is the callback called when a modal is done creating/updating the object
   const onFormModalSubmitSucceed = (
-    id: number | undefined,
+    id: number | string | undefined,
     _: any,
     values: any,
     x2manyPendingLink: boolean = false,
@@ -479,7 +483,7 @@ const One2manyInputLegacy: React.FC<One2manyInputProps> = (
         if (item.id === id) {
           return {
             id,
-            operation: id > 0 ? "pendingUpdate" : "pendingCreate",
+            operation: isExistingId(id) ? "pendingUpdate" : "pendingCreate",
             values: { ...values, id },
             treeValues: { ...values, id },
           };
@@ -520,7 +524,7 @@ const One2manyInputLegacy: React.FC<One2manyInputProps> = (
     setShowFormModal(true);
   };
 
-  const onSearchModalSelectValue = async (ids: number[]) => {
+  const onSearchModalSelectValue = async (ids: Array<number | string>) => {
     setIsLoading(true);
 
     const updatedItems = items;
@@ -533,7 +537,7 @@ const One2manyInputLegacy: React.FC<One2manyInputProps> = (
         const updatedFormObject = (
           await ConnectionProvider.getHandler().readObjects({
             model: relation,
-            ids: [id],
+            ids: [id] as number[],
             fields: views.get("form").fields,
             context: { ...getContext?.(), ...context },
           })
@@ -541,7 +545,7 @@ const One2manyInputLegacy: React.FC<One2manyInputProps> = (
         const updatedTreeObject = (
           await ConnectionProvider.getHandler().readObjects({
             model: relation,
-            ids: [id],
+            ids: [id] as number[],
             fields: views.get("tree").fields,
             context: { ...getContext?.(), ...context },
           })
@@ -732,7 +736,7 @@ const One2manyInputLegacy: React.FC<One2manyInputProps> = (
         visible={showFormModal}
         onSubmitSucceed={onFormModalSubmitSucceed}
         parentContext={{ ...getContext?.(), ...context }}
-        onCancel={(params?: { id?: number; values?: any }) => {
+        onCancel={(params?: { id?: number | string; values?: any }) => {
           setContinuousEntryMode(false);
 
           if (params?.id && params?.values) {
@@ -764,7 +768,7 @@ const One2manyInputLegacy: React.FC<One2manyInputProps> = (
         model={relation}
         context={{ ...getContext?.(), ...context }}
         visible={showSearchModal}
-        onSelectValues={async (ids: number[]) => {
+        onSelectValues={async (ids: Array<number | string>) => {
           setShowSearchModal(false);
           onSearchModalSelectValue(ids);
         }}

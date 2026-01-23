@@ -38,8 +38,8 @@ const { defaultAlgorithm, defaultSeed } = theme;
 const mapToken = defaultAlgorithm(defaultSeed);
 
 // Type definitions for single and multi-select modes
-type Many2oneSingleValue = [number | undefined, string] | undefined;
-type Many2oneMultiValue = Array<[number, string]>;
+type Many2oneSingleValue = [number | string | undefined, string] | undefined;
+type Many2oneMultiValue = Array<[number | string, string]>;
 type Many2oneValue = Many2oneSingleValue | Many2oneMultiValue;
 
 type Props = {
@@ -118,7 +118,7 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
   const [searchDomain, setSearchDomain] = useState<unknown[]>([]);
   const transformedDomain = useRef<unknown[]>([]);
   const hasLoadedInitial = useRef<boolean>(false);
-  const fetchedNamesForIds = useRef<Set<number>>(new Set());
+  const fetchedNamesForIds = useRef<Set<number | string>>(new Set());
 
   const widgetProps: Many2oneLazyWidgetProps = useMemo(
     () => ({
@@ -154,7 +154,7 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
   }, [ooui.showMenu, disableArrowMenu]);
 
   // Normalize value based on mode (single vs multi-select)
-  const normalizedMultiValue = useMemo((): Array<[number, string]> => {
+  const normalizedMultiValue = useMemo((): Array<[number | string, string]> => {
     if (!allowMultiSelect) return [];
     if (value === undefined || value === null) return [];
     // Check if it's already in multi format: [[id, name], ...]
@@ -162,12 +162,15 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
       Array.isArray(value) &&
       value.length > 0 &&
       Array.isArray(value[0]) &&
-      typeof value[0][0] === "number"
+      (typeof value[0][0] === "number" || typeof value[0][0] === "string")
     ) {
-      return value as Array<[number, string]>;
+      return value as Array<[number | string, string]>;
     }
     // Single value format [id, name] - convert to multi format
-    if (Array.isArray(value) && typeof value[0] === "number") {
+    if (
+      Array.isArray(value) &&
+      (typeof value[0] === "number" || typeof value[0] === "string")
+    ) {
       return [[value[0], value[1] as string]];
     }
     return [];
@@ -229,7 +232,7 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
   );
 
   const triggerMultiChange = useCallback(
-    (changedValue: Array<[number, string]>) => {
+    (changedValue: Array<[number | string, string]>) => {
       onChange?.(changedValue);
       elementHasLostFocus?.();
     },
@@ -346,7 +349,7 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
   );
 
   const fetchNameAndUpdate = useCallback(
-    async (selectedId: number) => {
+    async (selectedId: number | string) => {
       setLoading(true);
       try {
         const result = await executeNameGet({
@@ -376,8 +379,8 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
   // Multi-select: fetch names for multiple IDs and update
   const fetchNamesAndUpdate = useCallback(
     async (
-      newIds: number[],
-      existingItems: Array<[number, string]>,
+      newIds: Array<number | string>,
+      existingItems: Array<[number | string, string]>,
     ): Promise<void> => {
       if (newIds.length === 0) {
         triggerMultiChange(existingItems);
@@ -394,18 +397,18 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
         });
 
         // Build map of id -> name from response
-        const nameMap = new Map<number, string>();
-        result.forEach((item: [number, string]) => {
+        const nameMap = new Map<number | string, string>();
+        result.forEach((item: [number | string, string]) => {
           nameMap.set(item[0], item[1]);
         });
 
         // Create new items from fetched names
-        const newItems: Array<[number, string]> = newIds
+        const newItems: Array<[number | string, string]> = newIds
           .map((itemId) => {
             const name = nameMap.get(itemId);
-            return name ? ([itemId, name] as [number, string]) : null;
+            return name ? ([itemId, name] as [number | string, string]) : null;
           })
-          .filter((item): item is [number, string] => item !== null);
+          .filter((item): item is [number | string, string] => item !== null);
 
         // Combine existing items with new items
         triggerMultiChange([...existingItems, ...newItems]);
@@ -483,14 +486,14 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
             });
 
             // Build map of id -> name from response
-            const nameMap = new Map<number, string>();
-            result.forEach((item: [number, string]) => {
+            const nameMap = new Map<number | string, string>();
+            result.forEach((item: [number | string, string]) => {
               nameMap.set(item[0], item[1]);
             });
 
             // Update existing items with fetched names
             const updatedItems = normalizedMultiValue.map(
-              ([itemId, name]): [number, string] => {
+              ([itemId, name]): [number | string, string] => {
                 if (!name && nameMap.has(itemId)) {
                   return [itemId, nameMap.get(itemId)!];
                 }
@@ -540,7 +543,7 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
 
       // Keep existing items that are still selected
       const existingItems = normalizedMultiValue.filter(([itemId]) =>
-        selectedValues.includes(itemId),
+        selectedValues.some((v) => v === itemId),
       );
 
       // Fetch names for new IDs
@@ -551,7 +554,7 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
 
   // Remove a single item in multi-select mode
   const handleRemoveItem = useCallback(
-    (itemIdToRemove: number) => {
+    (itemIdToRemove: number | string) => {
       const updatedItems = normalizedMultiValue.filter(
         ([itemId]) => itemId !== itemIdToRemove,
       );
@@ -594,7 +597,7 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
   }, []);
 
   const handleSearchModalSelect = useCallback(
-    async (ids: number[]) => {
+    async (ids: Array<number | string>) => {
       setShowSearchModal(false);
       if (ids.length === 0) return;
 
@@ -623,7 +626,7 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
   }, []);
 
   const handleFormModalSuccess = useCallback(
-    (createdId?: number) => {
+    (createdId?: number | string) => {
       setShowFormModal(false);
       if (createdId) {
         void fetchNameAndUpdate(createdId);

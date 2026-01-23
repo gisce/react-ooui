@@ -39,7 +39,7 @@ export type MessageBubbleProps = {
   isFirstOfDay: boolean;
   dayLabel?: string;
   model: string;
-  resourceId: number;
+  resourceId: number | string;
   skipSeparator?: boolean;
   onDeleteComment?: (commentId: number) => void;
 };

@@ -7,6 +7,7 @@ import {
   getTableItems,
   getTree,
 } from "./treeHelper";
+import { isTempId, isExistingId } from "@/helpers/idUtils";
 
 type ReadObjectValuesOptions = {
   items: One2manyItem[];
@@ -40,11 +41,11 @@ const readObjectValues = async (
     (item) => !operationsToRead.includes(item.operation!),
   );
 
-  // We get a number array of id's, filtering out negative/temporal IDs
+  // We get an array of id's, filtering out negative/temporal IDs
   const idsToFetch = items
     .filter((item) => operationsToRead.includes(item.operation!))
     .map((item) => item.id)
-    .filter((id) => (id as number) > 0) as number[]; // Skip negative/temporal IDs
+    .filter((id) => isExistingId(id)) as Array<number | string>; // Skip negative/temporal IDs
 
   const fieldsToRetrieve: { [key: string]: any } = {
     form: formView.fields,
@@ -58,7 +59,7 @@ const readObjectValues = async (
     const colors = getTree(treeView as TreeView)?.colors;
     const results = await ConnectionProvider.getHandler().readEvalUiObjects({
       model,
-      ids: idsToFetch,
+      ids: idsToFetch as any, // IDs can be number or string (BigInt)
       arch: treeView?.arch!,
       fields: treeView!.fields,
       context,
@@ -71,7 +72,7 @@ const readObjectValues = async (
   } else {
     values = await ConnectionProvider.getHandler().readObjects({
       model,
-      ids: idsToFetch,
+      ids: idsToFetch as any, // IDs can be number or string (BigInt)
       fields: fieldsToRetrieve[currentView as string],
       context,
     });
@@ -169,8 +170,8 @@ const linkItem = async (options: LinkItemOptions) => {
 
 const getNextPendingId = (items: One2manyItem[]) => {
   const negativeIds: number[] = items
-    .filter((item) => item.id && item.id < 0)
-    .map((item) => item.id!);
+    .filter((item) => item.id && isTempId(item.id))
+    .map((item) => item.id as number);
   if (negativeIds.length === 0) {
     return -1;
   } else {
@@ -278,7 +279,7 @@ const getIdsToFetch = ({
     return (
       item &&
       (item.operation === "original" || item.operation === "pendingLink") &&
-      id > 0 // Skip negative/temporal IDs
+      isExistingId(id) // Skip negative/temporal IDs
     );
   });
 
@@ -299,7 +300,7 @@ const mergeWithOtherItems = async ({
   context,
   selectionToLazy,
 }: {
-  finalResultIds: number[];
+  finalResultIds: Array<number | string>;
   fetchedItems: One2manyItem[];
   otherItems: One2manyItem[];
   treeOoui: any;
@@ -378,7 +379,7 @@ const fetchAndPrepareData = async ({
   selectionToLazy?: boolean;
 }) => {
   // Filter out negative/temporal IDs to avoid server requests
-  const validIds = ids.filter((id) => id > 0);
+  const validIds = ids.filter((id) => isExistingId(id));
   const fieldsToRetrieve: string[] = skipFunctionFields
     ? Object.keys(treeView.fields).reduce<string[]>((acc, fieldName) => {
         const field = treeView.fields[fieldName];
@@ -414,7 +415,7 @@ const fetchAndPrepareData = async ({
 
   // Combine fetched data with placeholder data for negative IDs
   const allData = ids.map((id) => {
-    if (id > 0) {
+    if (isExistingId(id)) {
       return fetchedData[0].find((item: any) => item.id === id) || { id };
     } else {
       // Return placeholder data for negative/temporal IDs

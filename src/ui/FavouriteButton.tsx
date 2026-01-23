@@ -26,13 +26,13 @@ import { ACTION_TYPE_WIZARD } from "@/models/constants";
 const { useToken } = theme;
 
 export type ShortcutApi = {
-  action_id: number;
+  action_id: number | string;
   action_type: string;
-  id?: number;
+  id?: number | string;
   name: string;
-  res_id: number | boolean;
+  res_id: number | string | boolean;
   res_model: string;
-  view_id: number;
+  view_id: number | string;
   view_type: string;
   overrideUnsettedLimit?: boolean;
   values?: any;
@@ -40,10 +40,10 @@ export type ShortcutApi = {
 };
 
 export type FavouriteOptions = {
-  action_id: number;
+  action_id: number | string;
   action_type: string;
-  res_id: number | boolean;
-  view_id: number;
+  res_id: number | string | boolean;
+  view_id: number | string;
 };
 
 type Props = {

@@ -19,7 +19,7 @@ type SearchSelectionProps = {
   visible: boolean;
   model: string;
   nameSearch?: string;
-  onSelectValues: (values: number[]) => Promise<void>;
+  onSelectValues: (values: Array<number | string>) => Promise<void>;
   onCloseModal: () => void;
   domain?: unknown;
   context?: Record<string, unknown>;
@@ -27,7 +27,7 @@ type SearchSelectionProps = {
 };
 
 interface RowClickEvent {
-  id: number;
+  id: number | string;
 }
 
 export const SearchModal = ({
@@ -41,7 +41,9 @@ export const SearchModal = ({
   canCreate = true,
 }: SearchSelectionProps) => {
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<Array<number | string>>(
+    [],
+  );
   const [operationInProgress, setOperationInProgress] = useState(false);
 
   const { modalWidth, modalHeight } = useWindowDimensions();
@@ -66,7 +68,7 @@ export const SearchModal = ({
   }, [treeView?.arch]);
 
   const handleSelectValues = useCallback(
-    async (keys: number[]) => {
+    async (keys: Array<number | string>) => {
       setOperationInProgress(true);
       try {
         await onSelectValuesProps(keys);
@@ -113,7 +115,7 @@ export const SearchModal = ({
   }, [handleCloseModal]);
 
   const handleCreateModalSuccess = useCallback(
-    (id?: number) => {
+    (id?: number | string) => {
       setShowCreateModal(false);
       handleCloseModal();
       if (id) void handleSelectValues([id]);
