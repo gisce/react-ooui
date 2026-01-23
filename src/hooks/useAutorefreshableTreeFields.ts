@@ -12,7 +12,6 @@ import { getTableItems } from "@/helpers/treeHelper";
 import { getAttributesConditionsFromOoui } from "./useTreeAttributesState";
 import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
 import { UserFeatureKeys } from "@/models/userFeature";
-import { JSONStringify } from "json-with-bigint";
 
 const AUTOREFRESH_INTERVAL_SECONDS = 3 * 1000;
 
@@ -84,7 +83,8 @@ export const useAutorefreshableTreeFields = (
 
       return autorefreshableFields?.some(
         (field) =>
-          JSONStringify(newItem[field]) !== JSONStringify(previousItem[field]),
+          JSON.stringify(newItem[field]) !==
+          JSON.stringify(previousItem[field]),
       );
     },
     [autorefreshableFields],
@@ -148,7 +148,7 @@ export const useAutorefreshableTreeFields = (
 
       // Get only the changed records
       const changedResults = preparedResults.filter((newItem) => {
-        const previousItem = previousValuesRef.current[String(newItem.id)];
+        const previousItem = previousValuesRef.current[newItem.id];
         return hasFieldsChanged(newItem, previousItem);
       });
 
@@ -183,7 +183,7 @@ export const useAutorefreshableTreeFields = (
 
           // Update previous values only for changed records
           changedResults.forEach((result) => {
-            previousValuesRef.current[String(result.id)] = result;
+            previousValuesRef.current[result.id] = result;
           });
         } catch (error) {
           if (error.name !== "AbortError") {

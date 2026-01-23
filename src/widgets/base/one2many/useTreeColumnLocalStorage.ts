@@ -1,6 +1,5 @@
 import { ColumnState } from "@gisce/react-formiga-table";
 import { useDeepCompareCallback } from "use-deep-compare";
-import { JSONStringify, JSONParse } from "json-with-bigint";
 
 export const useTreeColumnLocalStorage = (key?: string) => {
   const getColumnState = useDeepCompareCallback(async (): Promise<
@@ -11,7 +10,7 @@ export const useTreeColumnLocalStorage = (key?: string) => {
     }
     // Get the column state values from the localstorage for the curent model
     const columnState = localStorage.getItem(key);
-    return columnState ? JSONParse(columnState) : undefined;
+    return columnState ? JSON.parse(columnState) : undefined;
   }, [key]);
 
   const updateColumnState = useDeepCompareCallback(
@@ -19,7 +18,7 @@ export const useTreeColumnLocalStorage = (key?: string) => {
       if (!key) {
         return;
       }
-      localStorage.setItem(key, JSONStringify(state));
+      localStorage.setItem(key, JSON.stringify(state));
     },
     [key],
   );

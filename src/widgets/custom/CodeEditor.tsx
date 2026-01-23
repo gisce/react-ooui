@@ -2,7 +2,6 @@ import { useCallback, useContext, useMemo } from "react";
 import Editor from "@monaco-editor/react";
 import { FormContext, FormContextType } from "@/context/FormContext";
 import { CodeEditor as CodeEditorOoui } from "@gisce/ooui";
-import { JSONStringify } from "json-with-bigint";
 
 import Field from "@/common/Field";
 import { WidgetProps } from "@/types";
@@ -39,7 +38,7 @@ export const CodeEditorInput = (
   const adjustedValue = useMemo(() => {
     if (lang === "json" && typeof value === "object") {
       try {
-        return JSONStringify(value, null, "\t");
+        return JSON.stringify(value, null, "\t");
       } catch (error) {
         console.error("Error stringifying JSON:", error);
         return "";

@@ -11,7 +11,6 @@ import { ConnectionProvider, FormView, TreeView } from "..";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
 import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
 import { UserFeatureKeys } from "@/models/userFeature";
-import { JSONStringify } from "json-with-bigint";
 
 type UseSearchOpts = {
   model: string;
@@ -291,7 +290,7 @@ export const useSearch = (opts: UseSearchOpts) => {
 
   const changeSort = useCallback(
     (newSorter: any) => {
-      if (JSONStringify(newSorter) === JSONStringify(sorter)) return;
+      if (JSON.stringify(newSorter) === JSON.stringify(sorter)) return;
       setSorter?.(newSorter);
       const sortedResults =
         newSorter !== undefined
