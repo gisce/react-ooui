@@ -8,11 +8,7 @@ import {
   mockExpenseAvailableViews,
 } from "./ExpenseInfinite.mocks";
 import { ExpenseInfiniteWrapper } from "./ExpenseInfinite.wrapper";
-import { initializeExpenseMockProvider } from "./ExpenseInfinite.mockProvider";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
-
-// Initialize the mock connection provider
-initializeExpenseMockProvider();
 
 // Default args for stories
 const defaultArgs: Partial<TreeActionViewProps> = {

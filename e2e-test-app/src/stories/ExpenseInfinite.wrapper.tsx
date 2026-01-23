@@ -1,4 +1,4 @@
-import React, { useState, createContext, useRef, memo } from "react";
+import React, { useState, createContext, useRef, memo, useEffect } from "react";
 import {
   TreeActionView,
   View,
@@ -11,6 +11,7 @@ import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 type TreeActionViewProps = React.ComponentProps<typeof TreeActionView>;
 import { NotificationProvider } from "@gisce/react-formiga-components";
 import { mockExpenseResults } from "./ExpenseInfinite.mocks";
+import { initializeExpenseMockProvider } from "./ExpenseInfinite.mockProvider";
 
 // Simple wrapper component for story viewer compatibility
 const SimpleWrapper: React.FC<{ children: React.ReactNode }> = ({
@@ -44,6 +45,11 @@ type ExpenseInfiniteWrapperProps = TreeActionViewProps & {
 const ExpenseInfiniteWrapperComponent = (
   props: ExpenseInfiniteWrapperProps,
 ) => {
+  // Initialize mock provider only when this component mounts (not at module import time)
+  useEffect(() => {
+    initializeExpenseMockProvider();
+  }, []);
+
   const { locale = "ca_ES", ...restProps } = props;
   const [currentView, setCurrentView] = useState<View>(props.treeView);
   const [currentId, setCurrentId] = useState<number | undefined>(
