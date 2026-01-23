@@ -52,7 +52,6 @@ export function SearchField(props: Props) {
       string: field.label,
       relation: fieldRelation,
       context: field.context,
-      domain: field.domain,
     });
     m2oOoui.parsedWidgetProps = {
       showCreate: false,
