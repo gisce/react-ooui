@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { mergeParams, getParamsForFields } from "../helpers/searchHelper";
+import {
+  mergeParams,
+  getParamsForFields,
+  convertParamsToValues,
+} from "../helpers/searchHelper";
+import dayjs from "@/helpers/dayjs";
 
 describe("mergeParams", () => {
   it("should return domainParams when searchParams is empty array", () => {
@@ -376,5 +381,132 @@ describe("getParamsForFields - equal range optimization", () => {
     const result = getParamsForFields(values, widgetContainer);
 
     expect(result).toEqual([["hours", "=", 8.5]]);
+  });
+
+  it("should NOT optimize equal date range (keep >= and <=) for server compatibility", () => {
+    // The server handles >= and <= specially for date/datetime fields:
+    // - >= adds 00:00:00 (start of day)
+    // - <= adds 23:59:59 (end of day)
+    // But = has no special handling, so we should NOT optimize
+    const widgetContainer = createMockWidgetContainer({ date_start: "date" });
+    const testDate = dayjs("2024-01-15");
+    const values = {
+      date_start: [testDate, dayjs("2024-01-15")], // Same date, different dayjs instances
+    };
+
+    const result = getParamsForFields(values, widgetContainer);
+
+    expect(result).toEqual([
+      ["date_start", ">=", "2024-01-15"],
+      ["date_start", "<=", "2024-01-15"],
+    ]);
+  });
+
+  it("should keep separate conditions when date range values are different", () => {
+    const widgetContainer = createMockWidgetContainer({ date_start: "date" });
+    const values = {
+      date_start: [dayjs("2024-01-15"), dayjs("2024-01-20")],
+    };
+
+    const result = getParamsForFields(values, widgetContainer);
+
+    expect(result).toEqual([
+      ["date_start", ">=", "2024-01-15"],
+      ["date_start", "<=", "2024-01-20"],
+    ]);
+  });
+
+  it("should handle single-sided date range (only start date)", () => {
+    const widgetContainer = createMockWidgetContainer({ date_start: "date" });
+    const values = {
+      date_start: [dayjs("2024-01-15"), null],
+    };
+
+    const result = getParamsForFields(values, widgetContainer);
+
+    expect(result).toEqual([["date_start", ">=", "2024-01-15"]]);
+  });
+
+  it("should handle single-sided date range (only end date)", () => {
+    const widgetContainer = createMockWidgetContainer({ date_start: "date" });
+    const values = {
+      date_start: [null, dayjs("2024-01-20")],
+    };
+
+    const result = getParamsForFields(values, widgetContainer);
+
+    expect(result).toEqual([["date_start", "<=", "2024-01-20"]]);
+  });
+
+  it("should NOT optimize datetime range with same value (keep >= and <=)", () => {
+    // For datetime fields, = "2024-01-15 00:00:00" only matches exact midnight,
+    // while >= and <= allows matching records throughout the day
+    const widgetContainer = createMockWidgetContainer({
+      date_start: "datetime",
+    });
+    const values = {
+      "date_start#date": [dayjs("2024-01-15"), dayjs("2024-01-15")],
+      "date_start#time": [dayjs("1970-01-01 00:00"), dayjs("1970-01-01 00:00")],
+    };
+
+    const result = getParamsForFields(values, widgetContainer);
+
+    // Should NOT be optimized to = because datetime = only matches exact time
+    expect(result).toEqual([
+      ["date_start", ">=", "2024-01-15 00:00:00"],
+      ["date_start", "<=", "2024-01-15 00:00:00"],
+    ]);
+  });
+
+  it("should NOT optimize datetime range even with different times on same day", () => {
+    const widgetContainer = createMockWidgetContainer({
+      date_start: "datetime",
+    });
+    const values = {
+      "date_start#date": [dayjs("2024-01-15"), dayjs("2024-01-15")],
+      "date_start#time": [dayjs("1970-01-01 08:00"), dayjs("1970-01-01 18:00")],
+    };
+
+    const result = getParamsForFields(values, widgetContainer);
+
+    expect(result).toEqual([
+      ["date_start", ">=", "2024-01-15 08:00:00"],
+      ["date_start", "<=", "2024-01-15 18:00:00"],
+    ]);
+  });
+});
+
+describe("convertParamsToValues", () => {
+  it("should convert date params with >= and <= operators to [start, end] array", () => {
+    const params = [
+      ["date_start", ">=", "2024-01-15"],
+      ["date_start", "<=", "2024-01-20"],
+    ];
+    const fields = { date_start: { type: "date" } };
+
+    const result = convertParamsToValues(params, fields);
+
+    expect(result.date_start[0].format("YYYY-MM-DD")).toBe("2024-01-15");
+    expect(result.date_start[1].format("YYYY-MM-DD")).toBe("2024-01-20");
+  });
+
+  it("should handle single-sided date range (only >=)", () => {
+    const params = [["date_start", ">=", "2024-01-15"]];
+    const fields = { date_start: { type: "date" } };
+
+    const result = convertParamsToValues(params, fields);
+
+    expect(result.date_start[0].format("YYYY-MM-DD")).toBe("2024-01-15");
+    expect(result.date_start[1]).toBeNull();
+  });
+
+  it("should handle single-sided date range (only <=)", () => {
+    const params = [["date_start", "<=", "2024-01-20"]];
+    const fields = { date_start: { type: "date" } };
+
+    const result = convertParamsToValues(params, fields);
+
+    expect(result.date_start[0]).toBeNull();
+    expect(result.date_start[1].format("YYYY-MM-DD")).toBe("2024-01-20");
   });
 });
