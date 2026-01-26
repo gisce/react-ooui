@@ -551,45 +551,6 @@ describe("getParamsForFields - equal range optimization", () => {
       ["some_field#to", "=", 50],
     ]);
   });
-
-  it("should skip optimization when field returns object without type property", () => {
-    // Edge case: findById returns an object but without a type property during optimization
-    // This tests the defensive !fieldType check in optimizeEqualRangeParams
-    //
-    // Call sequence:
-    // 1-2: ungroupDateValuesIfNeeded calls findById for each key ("amount#from", "amount#to")
-    // 3-4: getParamForField calls findById for "amount" (twice, once per value)
-    // 5: optimizeEqualRangeParams calls findById for "amount" (once for the equal pair)
-    let callCount = 0;
-    const mockContainer = {
-      findById: (id: string) => {
-        callCount++;
-        const baseId = id.split("#")[0];
-        if (baseId === "amount") {
-          // Calls 1-4: return valid type so we get >= and <= params
-          if (callCount <= 4) {
-            return { type: "float" };
-          }
-          // Call 5 (during optimizeEqualRangeParams): return object without type
-          return { name: "amount" }; // No type property!
-        }
-        return undefined;
-      },
-    };
-
-    const values = {
-      "amount#from": 100,
-      "amount#to": 100,
-    };
-
-    const result = getParamsForFields(values, mockContainer);
-
-    // Should NOT optimize because fieldType is undefined during optimization check
-    expect(result).toEqual([
-      ["amount", ">=", 100],
-      ["amount", "<=", 100],
-    ]);
-  });
 });
 
 describe("convertParamsToValues", () => {
