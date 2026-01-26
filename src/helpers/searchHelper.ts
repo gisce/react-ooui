@@ -7,7 +7,7 @@ const convertBooleanParamIfNeeded = (value: any) => {
   return value;
 };
 
-const optimizeEqualRangeParams = (params: any[]) => {
+const optimizeEqualRangeParams = (params: any[], widgetContainer?: any) => {
   // Group params by field name to find >= and <= pairs
   const fieldMap: Record<
     string,
@@ -33,12 +33,14 @@ const optimizeEqualRangeParams = (params: any[]) => {
   });
 
   // Find fields where gte === lte and replace with =
+  // Skip date/datetime: server handles >= and <= specially but not =
   const indicesToRemove: number[] = [];
   const replacements: Array<{ index: number; param: any[] }> = [];
 
   Object.entries(fieldMap).forEach(([field, { gte, lte, index }]) => {
     if (gte !== undefined && lte !== undefined && gte === lte) {
-      // Replace >= with = and mark <= for removal
+      const fieldType = widgetContainer?.findById(field)?.type;
+      if (fieldType === "date" || fieldType === "datetime") return;
       replacements.push({ index: index.gte!, param: [field, "=", gte] });
       indicesToRemove.push(index.lte!);
     }
@@ -87,7 +89,7 @@ export const getParamsForFields = (
   }, []);
 
   // Optimize equal range values to use = instead of >= and <=
-  return optimizeEqualRangeParams(paramsForFields);
+  return optimizeEqualRangeParams(paramsForFields, widgetContainer);
 };
 
 const getParamForField = (
