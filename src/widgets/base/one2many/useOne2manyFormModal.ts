@@ -4,6 +4,7 @@ import { One2manyItem } from "./One2manyInputLegacy";
 import { FormView, ViewType } from "@/types";
 import { useCallback, useState } from "react";
 import { useDeepCompareCallback } from "use-deep-compare";
+import { isExistingId } from "@/helpers/idUtils";
 
 export const useOne2manyFormModal = ({
   currentView,
@@ -21,7 +22,7 @@ export const useOne2manyFormModal = ({
 }: {
   currentView: string;
   inv_field?: string;
-  activeId?: number;
+  activeId?: number | string;
   showFormChangesDialogIfNeeded: (callback: () => void) => void;
   items: One2manyItem[];
   triggerChange: (items: One2manyItem[]) => void;
@@ -58,7 +59,7 @@ export const useOne2manyFormModal = ({
   }, [activeId, currentView, inv_field, showFormChangesDialogIfNeeded]);
 
   const onCancelFormModal = useCallback(
-    (params?: { id?: number; values?: any }) => {
+    (params?: { id?: number | string; values?: any }) => {
       setContinuousEntryMode(false);
 
       if (params?.id && params?.values) {
@@ -82,7 +83,7 @@ export const useOne2manyFormModal = ({
 
   const onFormModalSubmitSucceed = useDeepCompareCallback(
     (
-      id: number | undefined,
+      id: number | string | undefined,
       _: any,
       values: any,
       x2manyPendingLink: boolean = false,
@@ -101,7 +102,7 @@ export const useOne2manyFormModal = ({
           if (item.id === id) {
             return {
               id,
-              operation: id > 0 ? "pendingUpdate" : "pendingCreate",
+              operation: isExistingId(id) ? "pendingUpdate" : "pendingCreate",
               values: { ...values, id },
               treeValues: { ...values, id },
             };
@@ -144,7 +145,7 @@ export const useOne2manyFormModal = ({
       if (modalItem?.values === undefined) {
         itemsToLoadFrom = await ConnectionProvider.getHandler().readObjects({
           model: relation,
-          ids: [item.id!],
+          ids: [item.id!] as number[],
           fields: formView.fields,
           context,
         });

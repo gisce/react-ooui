@@ -8,6 +8,7 @@ import { useCallback, useContext } from "react";
 import { One2manyItem } from "./One2manyInputLegacy";
 import { showUnlinkItemDialog } from "@/ui/UnlinkItemDialog";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
+import { isTempId, idsEqual, isExistingId } from "@/helpers/idUtils";
 
 export const useOne2manyRemove = ({
   isMany2many,
@@ -22,8 +23,8 @@ export const useOne2manyRemove = ({
   triggerChange: (items: One2manyItem[]) => void;
   items: One2manyItem[];
   setFormHasChanges: (hasChanges: boolean) => void;
-  selectedRowKeys: number[];
-  setSelectedRowKeys: (selectedRowKeys: number[]) => void;
+  selectedRowKeys: Array<number | string>;
+  setSelectedRowKeys: (selectedRowKeys: Array<number | string>) => void;
   onAfterRemove?: () => void;
 }) => {
   const { t } = useLocale();
@@ -41,17 +42,20 @@ export const useOne2manyRemove = ({
     setFormHasChanges(false);
 
     try {
-      const idsToRemove: number[] = itemsToRemove.map((item) => item.id!);
+      const idsToRemove = itemsToRemove.map((item) => item.id!);
 
       const updatedItems = items
         .filter((item) => {
-          if (idsToRemove.includes(item.id!) && item.id! < 0) {
+          if (
+            idsToRemove.some((id) => idsEqual(id, item.id)) &&
+            isTempId(item.id)
+          ) {
             return false;
           }
           return true;
         })
         .map((item) => {
-          if (idsToRemove.includes(item.id!)) {
+          if (idsToRemove.some((id) => idsEqual(id, item.id))) {
             return {
               ...item,
               operation: "pendingRemove",
@@ -86,7 +90,7 @@ export const useOne2manyRemove = ({
     setFormHasChanges(false);
 
     try {
-      if (items[itemIndex].id! > 0) {
+      if (isExistingId(items[itemIndex].id)) {
         const updatedItems = items.map((item) => {
           if (item.id === items[itemIndex].id!) {
             return {
@@ -145,28 +149,30 @@ export const useOne2manyRemove = ({
 };
 
 interface IdCount {
-  [key: number]: number;
+  [key: string]: number;
 }
 
 function getItemsToRemove({
   selectedRowKeys,
   items,
 }: {
-  selectedRowKeys: number[];
+  selectedRowKeys: Array<number | string>;
   items: One2manyItem[];
 }) {
   const itemsToRemove: One2manyItem[] = [];
   // Count the number of times each id appears in selectedRowKeys
   const idCount = selectedRowKeys.reduce<IdCount>((acc: IdCount, id) => {
-    acc[id] = (acc[id] || 0) + 1;
+    const key = String(id);
+    acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {});
 
   // Loop over items and push items to remove based on the count
   items.forEach((item) => {
-    if (item.id && idCount[item.id] > 0) {
+    const key = String(item.id);
+    if (item.id && idCount[key] > 0) {
       itemsToRemove.push(item);
-      idCount[item.id] -= 1; // Decrement the count each time an item is added to itemsToRemove
+      idCount[key] -= 1; // Decrement the count each time an item is added to itemsToRemove
     }
   });
   return itemsToRemove;

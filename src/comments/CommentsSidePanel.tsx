@@ -73,7 +73,7 @@ export type CommentsSidePanelProps = {
   comments: RecordComment[];
   loading: boolean;
   model: string;
-  resourceId: number;
+  resourceId: number | string;
   onClose: () => void;
   onAddComment: (body: string) => Promise<void>;
   onDeleteComment?: (commentId: number) => void;

@@ -21,6 +21,7 @@ import { theme, Badge } from "antd";
 import { useFormToolbarButtons } from "@/hooks/useFormToolbarButtons";
 import { useTreeToolbarButtons } from "@/hooks/useTreeToolbarButtons";
 import { showLogInfo } from "@/helpers/logInfoHelper";
+import { isExistingId, isTempId, safeParseId } from "@/helpers/idUtils";
 import { showConfirmDialog } from "@/index";
 import { useDuplicateItem } from "@/hooks/useDuplicateItem";
 import { useFormContext } from "@/context/FormContext";
@@ -32,7 +33,7 @@ type One2manyTopBarProps = {
   mode: ViewType;
   model: string;
   isMany2Many: boolean;
-  currentId: number | undefined;
+  currentId: number | string | undefined;
   readOnly: boolean;
   formHasChanges: boolean;
   onToggleViewMode: () => void;
@@ -154,7 +155,7 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
     readOnly ||
     duplicatingItem ||
     (mode === "tree" && selectedRowKeys.length !== 1) ||
-    (mode === "form" && (currentId === undefined || currentId < 0)) ||
+    (mode === "form" && (currentId === undefined || isTempId(currentId))) ||
     !canCreateModel ||
     !canWriteFormModel;
 
@@ -200,17 +201,19 @@ function One2manyTopBarComponent(props: One2manyTopBarProps) {
                 !(
                   (mode === "form" &&
                     currentId !== undefined &&
-                    currentId > 0) ||
+                    isExistingId(currentId)) ||
                   (mode === "tree" &&
                     selectedRowKeys.length === 1 &&
                     selectedRowKeys?.[0] !== undefined &&
-                    parseInt(selectedRowKeys[0]) > 0)
+                    isExistingId(safeParseId(selectedRowKeys[0])))
                 )
               }
               onClick={() =>
                 showLogInfo(
                   model,
-                  mode === "form" ? currentId! : parseInt(selectedRowKeys![0]),
+                  mode === "form"
+                    ? currentId!
+                    : safeParseId(selectedRowKeys![0])!,
                   t,
                 )
               }

@@ -3,13 +3,13 @@ import showInfo from "@/ui/InfoDialog";
 
 async function showLogInfo(
   model: string,
-  currentId: number,
+  currentId: number | string,
   translateFn: Function,
 ) {
   const logInfo = (
     (await ConnectionProvider.getHandler().getLogInfo({
       model,
-      ids: [currentId],
+      ids: [currentId] as number[],
     })) as any
   )[0];
 

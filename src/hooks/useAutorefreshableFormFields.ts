@@ -3,12 +3,13 @@ import { useNetworkRequest } from "./useNetworkRequest";
 import { useDeepCompareEffect } from "use-deep-compare";
 import { useRef, useState, useCallback, useEffect } from "react";
 import { useBrowserVisibility } from "./useBrowserVisibility";
+import { isExistingId } from "@/helpers/idUtils";
 
 const AUTOREFRESH_INTERVAL_SECONDS = 3 * 1000;
 
 export type UseAutorefreshableFormFieldsOpts = {
   model: string;
-  id?: number;
+  id?: number | string;
   context: any;
   autorefreshableFields?: string[];
   fieldDefs: any;
@@ -55,13 +56,17 @@ export const useAutorefreshableFormFields = (
   }, [isActive, tabOrWindowIsVisible]);
 
   const refresh = useCallback(async () => {
-    if (!id || id <= 0 || !autorefreshableFields?.length || !internalIsActive)
+    if (
+      !isExistingId(id) ||
+      !autorefreshableFields?.length ||
+      !internalIsActive
+    )
       return; // Skip negative/temporal IDs
 
     try {
       const [result] = await fetchRequest({
         model,
-        ids: [id],
+        ids: [id] as number[],
         fields: fieldDefs,
         fieldsToRetrieve: autorefreshableFields,
         context,
@@ -83,7 +88,7 @@ export const useAutorefreshableFormFields = (
 
   useDeepCompareEffect(() => {
     const shouldStart =
-      id && id > 0 && autorefreshableFields?.length && internalIsActive; // Skip negative/temporal IDs
+      isExistingId(id) && autorefreshableFields?.length && internalIsActive; // Skip negative/temporal IDs
 
     if (shouldStart) {
       refresh();

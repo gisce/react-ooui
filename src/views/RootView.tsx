@@ -27,6 +27,7 @@ import {
 import { filterAllowedValues } from "@/helpers/shareUrlHelper";
 import { ErpFeatureKeys } from "@/models/erpFeature";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import { safeParseId } from "@/helpers/idUtils";
 
 type RootViewProps = {
   children: ReactNode;
@@ -266,7 +267,7 @@ function RootView(props: RootViewProps, ref: any) {
     }
 
     const [action_type, action_id_string] = action.split(",");
-    const action_id = parseInt(action_id_string);
+    const action_id = safeParseId(action_id_string) as number | string;
 
     const rawContext = dataForAction.context;
     const parsedContext = parseContext({

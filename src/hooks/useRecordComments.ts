@@ -8,10 +8,11 @@ import {
   Participant,
   UserStatus,
 } from "@/types/comments";
+import { compareIds } from "@/helpers/idUtils";
 
 export type UseRecordCommentsOpts = {
   model: string;
-  resourceId?: number;
+  resourceId?: number | string;
   context?: any;
 };
 
@@ -167,7 +168,7 @@ export const useRecordComments = (opts: UseRecordCommentsOpts) => {
         })
         .catch(() => {
           setComments((prev) =>
-            [...prev, commentToRestore].sort((a, b) => b.id - a.id),
+            [...prev, commentToRestore].sort((a, b) => compareIds(b.id, a.id)),
           );
         });
     },

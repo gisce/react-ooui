@@ -27,6 +27,7 @@ import {
   getOnChangePayload,
 } from "@/helpers/formHelper";
 import ConnectionProvider from "@/ConnectionProvider";
+import { isTempId } from "@/helpers/idUtils";
 import showUnsavedChangesDialog from "@/ui/UnsavedChangesDialog";
 import FormProvider, {
   FormContext,
@@ -71,7 +72,7 @@ import { useConfigContext } from "@/context/ConfigContext";
 export type FormProps = {
   model: string;
   readOnly?: boolean;
-  id?: number;
+  id?: number | string;
   view_id?: number;
   formView?: FormView;
   values?: any;
@@ -80,14 +81,14 @@ export type FormProps = {
   mustClearAfterSave?: boolean;
   submitMode?: "api" | "values" | "2many";
   onSubmitSucceed?: (
-    id?: number,
+    id?: number | string,
     values?: any,
     formValues?: any,
     x2manyPendingLink?: boolean,
     mustRefreshParent?: boolean,
   ) => void;
   onSubmitError?: (error: any) => void;
-  onCancel?: (params?: { id?: number; values?: any }) => void;
+  onCancel?: (params?: { id?: number | string; values?: any }) => void;
   onFieldsChange?: (values: any) => void;
   postSaveAction?: (event: any) => Promise<void>;
   insideButtonModal?: boolean;
@@ -149,7 +150,7 @@ function Form(props: FormProps, ref: any) {
   const [defaultGetCalled, setDefaultGetCalled] = useState<boolean>(false);
   const [refreshCounter, setRefreshCounter] = useState<number>(0);
 
-  const createdId = useRef<number>();
+  const createdId = useRef<number | string>();
   const originalFormValues = useRef<any>({});
   const initialFormValues = useRef<any>(null);
   const lastAssignedValues = useRef<any>({});
@@ -242,7 +243,7 @@ function Form(props: FormProps, ref: any) {
     // In the case we set the id to undefined for creating a new item
     if (
       (id === undefined && fields) ||
-      (id !== undefined && fields && id < 0)
+      (id !== undefined && fields && isTempId(id))
     ) {
       createdId.current = undefined;
       setFormOoui(undefined);
@@ -279,7 +280,7 @@ function Form(props: FormProps, ref: any) {
   }, [error]);
 
   const onSubmitSucceed = (
-    id?: number,
+    id?: number | string,
     values?: any,
     formValues?: any,
     x2manyPendingLink?: boolean,
@@ -695,7 +696,7 @@ function Form(props: FormProps, ref: any) {
       values = (
         await ConnectionProvider.getHandler().readObjects({
           model,
-          ids: [getCurrentId()!],
+          ids: [getCurrentId()!] as number[],
           fields: mergeFieldsContext(fields, ooui?.contextForFields),
           context: parentContext,
         })
@@ -740,7 +741,7 @@ function Form(props: FormProps, ref: any) {
 
       await ConnectionProvider.getHandler().update({
         model,
-        id: getCurrentId()!,
+        id: getCurrentId()! as number,
         values: { ...touchedValues, ...forcedValues },
         fields,
         context: {
@@ -1050,7 +1051,7 @@ function Form(props: FormProps, ref: any) {
     const response = await ConnectionProvider.getHandler().executeOnChange({
       model,
       action: onChangeFieldAction.method,
-      ids: getCurrentId()! ? [getCurrentId()!] : [],
+      ids: getCurrentId()! ? [getCurrentId()! as number] : [],
       payload,
       fields,
     });

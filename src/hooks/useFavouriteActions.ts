@@ -5,10 +5,10 @@ import showConfirmDialog from "@/ui/ConfirmDialog";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 
 export type FavouriteActionOptions = {
-  action_id: number;
+  action_id: number | string;
   action_type: string;
-  view_id: number;
-  res_id: number | boolean;
+  view_id: number | string;
+  res_id: number | string | boolean;
 };
 
 type UseFavouriteActionsParams = {

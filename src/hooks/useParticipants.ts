@@ -6,7 +6,7 @@ import { UserStatus } from "@/types/comments";
 
 export type UseParticipantsOpts = {
   model: string;
-  resourceId?: number;
+  resourceId?: number | string;
   userStatus: UserStatus | null;
   context?: any;
 };
