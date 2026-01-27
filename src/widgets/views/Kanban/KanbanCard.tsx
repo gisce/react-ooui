@@ -1,5 +1,13 @@
-import { memo, useState, useCallback, MouseEvent, useEffect } from "react";
+import {
+  memo,
+  useState,
+  useCallback,
+  MouseEvent,
+  useEffect,
+  createElement,
+} from "react";
 import { Button, Space, Typography, theme } from "antd";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import { useSortable } from "@dnd-kit/sortable";
 import { useDeepCompareMemo } from "use-deep-compare";
 import { KanbanRecord } from "./types";
@@ -167,7 +175,7 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
         ) : null;
 
       if (component && fieldValue) {
-        const renderedContent = component({
+        const renderedContent = createElement(component, {
           value: fieldValue,
           key: fieldName,
           ooui: field,
@@ -337,29 +345,31 @@ const KanbanCardComponent = (props: KanbanCardProps) => {
       >
         {color && <ColorBar $color={color} />}
         {status && <StatusDot $color={status} />}
-        <div style={{ marginBottom: "8px" }}>
-          {visibleFields.map((field: any, index: number) =>
-            renderField(field, index === 0),
-          )}
-        </div>
+        <ErrorBoundary>
+          <div style={{ marginBottom: "8px" }}>
+            {visibleFields.map((field: any, index: number) =>
+              renderField(field, index === 0),
+            )}
+          </div>
 
-        {visibleButtons.length > 0 && (
-          <Space size={[8, 8]} wrap>
-            {visibleButtons.map((button: ButtonOoui) => (
-              <Button
-                key={button.id}
-                size="small"
-                type={button.primary ? "primary" : "default"}
-                danger={button.danger}
-                loading={loadingButton === button.id}
-                onClick={buttonClickHandlers[button.id]}
-                icon={button.icon ? <Icon icon={button.icon} /> : undefined}
-              >
-                {button.caption || button.label || button.id}
-              </Button>
-            ))}
-          </Space>
-        )}
+          {visibleButtons.length > 0 && (
+            <Space size={[8, 8]} wrap>
+              {visibleButtons.map((button: ButtonOoui) => (
+                <Button
+                  key={button.id}
+                  size="small"
+                  type={button.primary ? "primary" : "default"}
+                  danger={button.danger}
+                  loading={loadingButton === button.id}
+                  onClick={buttonClickHandlers[button.id]}
+                  icon={button.icon ? <Icon icon={button.icon} /> : undefined}
+                >
+                  {button.caption || button.label || button.id}
+                </Button>
+              ))}
+            </Space>
+          )}
+        </ErrorBoundary>
       </StyledCard>
     </div>
   );

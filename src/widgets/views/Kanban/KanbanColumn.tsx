@@ -18,6 +18,7 @@ import {
   theme,
   Typography,
 } from "antd";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import {
   EllipsisOutlined,
   LoadingOutlined,
@@ -399,14 +400,27 @@ const KanbanColumnComponent = (
     );
   }, [kanbanDef.card_fields.length, kanbanDef.buttons.length]);
 
+  const getEstimateSize = useCallback(
+    () => estimatedCardHeight,
+    [estimatedCardHeight],
+  );
+
+  const getItemKey = useCallback(
+    (index: number) => {
+      const recordId = records[index]?.id;
+      // Use a unique placeholder key with columnId to prevent key collisions during transitions
+      return recordId !== undefined
+        ? recordId
+        : `${columnId}-placeholder-${index}`;
+    },
+    [records, columnId],
+  );
+
   const virtualizer = useVirtualizer({
     count: records.length,
     getScrollElement: () => scrollContainerRef.current,
-    estimateSize: useCallback(() => estimatedCardHeight, [estimatedCardHeight]),
-    getItemKey: useCallback(
-      (index: number) => records[index]?.id ?? index,
-      [records],
-    ),
+    estimateSize: getEstimateSize,
+    getItemKey,
     overscan: 5,
     gap: 8,
   });
@@ -570,23 +584,25 @@ const KanbanColumnComponent = (
                       transform: `translateY(${virtualRow.start}px)`,
                     }}
                   >
-                    <KanbanCard
-                      color={colorsForRecords?.[record.id]}
-                      status={statusForRecords?.[record.id]}
-                      record={record}
-                      kanbanDef={kanbanDef}
-                      draggable={kanbanDef.drag}
-                      context={context}
-                      model={model}
-                      onClick={cardClickHandlers[record.id]}
-                      onSelect={cardSelectHandlers[record.id]}
-                      onRefreshAll={onRefreshAll}
-                      columnId={columnId}
-                      isDropTarget={overId === record.id}
-                      isSelected={selectedCardIds?.includes(record.id)}
-                      activeId={activeId}
-                      dropPosition={dropPosition}
-                    />
+                    <ErrorBoundary>
+                      <KanbanCard
+                        color={colorsForRecords?.[record.id]}
+                        status={statusForRecords?.[record.id]}
+                        record={record}
+                        kanbanDef={kanbanDef}
+                        draggable={kanbanDef.drag}
+                        context={context}
+                        model={model}
+                        onClick={cardClickHandlers[record.id]}
+                        onSelect={cardSelectHandlers[record.id]}
+                        onRefreshAll={onRefreshAll}
+                        columnId={columnId}
+                        isDropTarget={overId === record.id}
+                        isSelected={selectedCardIds?.includes(record.id)}
+                        activeId={activeId}
+                        dropPosition={dropPosition}
+                      />
+                    </ErrorBoundary>
                   </div>
                 );
               })}
