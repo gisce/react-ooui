@@ -18,10 +18,7 @@ import {
   InfiniteNoLocale as One2ManyInfiniteNoLocale,
 } from "./stories/One2Many.stories";
 // Import the Many2Many stories
-import {
-  Infinite as Many2ManyInfinite,
-  Paginated as Many2ManyPaginated,
-} from "./stories/Many2Many.stories";
+import { Infinite as Many2ManyInfinite, Paginated as Many2ManyPaginated } from "./stories/Many2Many.stories";
 // Import QRCode demo
 import { QRCodeDemo } from "./stories/QRCode.stories";
 // Import Form stories
@@ -37,8 +34,6 @@ import {
 import { FalseValuesInfinite } from "./stories/TreeActionViewFalseValues.stories";
 // Import Localized Decimals test story (localized path)
 import { TreeActionViewLocalizedDecimals } from "./stories/TreeActionViewLocalizedDecimals.stories";
-// Import Expense Infinite story (Bug #2903 reproduction)
-import { ExpenseInfinite } from "./stories/ExpenseInfinite.stories";
 
 export interface Story {
   id: string;
@@ -215,13 +210,5 @@ export const stories: Story[] = [
     component: TreeActionViewLocalizedDecimals,
     description:
       "Tests that localized numbers preserve server decimal places. Field with digits:[16,6] should show 18.87 as '18,87' not '18,870000'. Also tests false/null/undefined handling in localized mode.",
-  },
-  // Bug #2903 reproduction - Infinite table render glitches
-  {
-    id: "expense-infinite",
-    title: "Expense - Infinite (Bug #2903)",
-    component: ExpenseInfinite,
-    description:
-      "Reproduces infinite table render glitches from issue #2903. 130 expense records with a function field (amount). Test for duplicate rows, missing fields on scroll, and wrong selection behavior.",
   },
 ];
