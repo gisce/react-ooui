@@ -57,7 +57,11 @@ export const useExport = ({
           fields: fields.current,
         }),
         domain: exportDomain,
-        limit: options.registersAmount === "all" ? 0 : limit,
+        limit:
+          options.registersAmount === "all" ||
+          options.registersAmount === "selected"
+            ? 0
+            : limit,
         context,
         format: options.exportType,
       });
