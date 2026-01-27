@@ -14,7 +14,7 @@ import { getAttributesConditionsFromOoui } from "./useTreeAttributesState";
 import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
 import { UserFeatureKeys } from "@/models/userFeature";
 
-const AUTOREFRESH_INTERVAL_SECONDS = 0.1 * 1000;
+const AUTOREFRESH_INTERVAL_SECONDS = 0.5 * 1000;
 
 type UseTreeFunctionFieldsReadProps = {
   model: string;

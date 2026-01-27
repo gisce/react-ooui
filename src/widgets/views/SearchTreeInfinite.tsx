@@ -462,14 +462,7 @@ function SearchTreeInfiniteComp(props: SearchTreeInfiniteProps, ref: any) {
       if (mustUpdateTotal() || prevSortOrder.current !== order) {
         setActionViewResults?.(results);
       } else {
-        // Deduplicate by ID when appending results to prevent duplicate rows
-        const existingIds = new Set(
-          (actionViewResults || []).map((r: { id: number }) => r.id),
-        );
-        const newResults = results.filter(
-          (r: { id: number }) => !existingIds.has(r.id),
-        );
-        const appendedResults = [...(actionViewResults || []), ...newResults];
+        const appendedResults = [...(actionViewResults || []), ...results];
         setActionViewResults?.(appendedResults);
       }
 
