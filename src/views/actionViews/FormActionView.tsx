@@ -22,7 +22,7 @@ export type FormActionViewProps = {
   visible: boolean;
   formRef: any;
   model: string;
-  currentId?: number;
+  currentId?: number | string;
   domain: any;
   context: any;
   defaultValues?: any;
@@ -130,7 +130,7 @@ export const FormActionView = (props: FormActionViewProps) => {
   }, [setCommentsPanelVisible]);
 
   const handleSubmitSucceed = useCallback(
-    (id?: number, values?: any) => {
+    (id?: number | string, values?: any) => {
       if (id === undefined || !results) return;
       const itemIndex = results.findIndex((item: any) => item.id === id);
       if (itemIndex === -1) {

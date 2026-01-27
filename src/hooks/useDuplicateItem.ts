@@ -3,7 +3,7 @@ import { ConnectionProvider } from "..";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
 
 type UseDuplicateItemProps = {
-  currentId?: number;
+  currentId?: number | string;
   currentModel: string;
   onItemDuplicated?: (id: number) => void;
   context?: any;
@@ -25,7 +25,7 @@ export const useDuplicateItem = ({
       }
       setDuplicatingItem(true);
       const newId = await ConnectionProvider.getHandler().duplicate({
-        id: currentId,
+        id: currentId as number,
         model: currentModel,
         context,
       });

@@ -25,6 +25,7 @@ import { Graph } from "@/widgets/views/Graph/Graph";
 import { TreeType } from "@/views/actionViews/TreeActionView";
 import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
 import { useTabs } from "@/context/TabManagerContext";
+import { isExistingId } from "@/helpers/idUtils";
 
 const SUPPORTED_VIEWS = ["form", "tree", "graph"];
 
@@ -40,7 +41,7 @@ export type One2manyItem = {
     | "pendingUpdate"
     | "pendingCreate"
     | "pendingLink";
-  id?: number;
+  id?: number | string;
   values?: any;
   treeValues?: any;
   defaultValues?: any;
@@ -183,7 +184,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
   });
 
   const onSelectSearchValues = useCallback(
-    async (ids: number[]) => {
+    async (ids: Array<number | string>) => {
       await onSelectSearchValuesBase(ids);
       // Defer refresh to next tick to ensure modal transition is complete
       setTimeout(() => {
@@ -283,7 +284,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
 
   const itemIds = useMemo(() => {
     return items
-      .filter((item) => item.id !== undefined && item.id > 0)
+      .filter((item) => isExistingId(item.id))
       .map((item) => item.id!);
   }, [items]);
 

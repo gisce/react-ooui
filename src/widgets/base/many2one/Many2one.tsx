@@ -195,7 +195,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
     setShowSearchModal(true);
   };
 
-  const fetchNameAndUpdate = async (id: number) => {
+  const fetchNameAndUpdate = async (id: number | string) => {
     setSearching(true);
 
     try {
@@ -361,7 +361,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
         visible={showSearchModal}
         nameSearch={!id ? searchText : undefined}
         canCreate={canCreate}
-        onSelectValues={async (ids: number[]) => {
+        onSelectValues={async (ids: Array<number | string>) => {
           setShowSearchModal(false);
           fetchNameAndUpdate(ids[0]);
           searchButtonTappedRef.current = false;
@@ -377,7 +377,7 @@ export const Many2oneInput: React.FC<Many2oneInputProps> = (
         parentContext={{ ...getContext?.(), ...context }}
         id={value && value[0]}
         visible={showFormModal}
-        onSubmitSucceed={(id?: number) => {
+        onSubmitSucceed={(id?: number | string) => {
           setShowFormModal(false);
           fetchNameAndUpdate(id!);
         }}

@@ -1,16 +1,17 @@
 import { useCallback, useEffect } from "react";
 import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "./useNetworkRequest";
+import { safeParseId, isExistingId } from "@/helpers/idUtils";
 
 interface ReferenceValue {
   model: string;
-  res_id: number;
+  res_id: number | string;
 }
 
 interface ReferenceResult {
   model: string;
   modelName: string;
-  res_id: number;
+  res_id: number | string;
   recordName: string;
 }
 
@@ -46,11 +47,11 @@ export const useReferenceFieldValues = (
 
         const [model, idStr] = parts;
         const modelTrimmed = model?.trim();
-        const res_id = parseInt(idStr.trim(), 10);
+        const res_id = safeParseId(idStr);
 
-        if (!modelTrimmed || isNaN(res_id) || res_id <= 0) return null;
+        if (!modelTrimmed || !isExistingId(res_id)) return null;
 
-        return { model: modelTrimmed, res_id };
+        return { model: modelTrimmed, res_id: res_id as number | string };
       } catch (error) {
         console.error("Error parsing reference string:", error);
         return null;
@@ -64,7 +65,7 @@ export const useReferenceFieldValues = (
       referenceStrings: string[],
     ): Promise<Map<string, ReferenceResult>> => {
       const results = new Map<string, ReferenceResult>();
-      const modelGroups = new Map<string, Set<number>>();
+      const modelGroups = new Map<string, Set<number | string>>();
       const uniqueModels = new Set<string>();
 
       // Group references by model
@@ -138,7 +139,10 @@ export const useReferenceFieldValues = (
         for (const nameResult of nameResults) {
           if (Array.isArray(nameResult) && nameResult.length >= 2) {
             const [res_id, recordName] = nameResult;
-            if (typeof res_id === "number" && typeof recordName === "string") {
+            if (
+              (typeof res_id === "number" || typeof res_id === "string") &&
+              typeof recordName === "string"
+            ) {
               const key = `${model},${res_id}`;
               results.set(key, { model, modelName, res_id, recordName });
             }
