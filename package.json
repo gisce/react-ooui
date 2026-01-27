@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "2.123.0-alpha.15",
+  "version": "2.122.2",
   "publishConfig": {
     "access": "public"
   },
@@ -43,7 +43,7 @@
     "@gisce/fiber-diagram": "2.2.0",
     "@gisce/ooui": "2.46.0-alpha.3",
     "@gisce/react-formiga-components": "1.20.0",
-    "@gisce/react-formiga-table": "1.18.0-alpha.4",
+    "@gisce/react-formiga-table": "1.17.2",
     "@monaco-editor/react": "^4.4.5",
     "@tanstack/react-virtual": "^3.13.12",
     "@types/deep-equal": "^1.0.4",
