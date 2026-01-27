@@ -16,6 +16,7 @@ import { KanbanBoard, KanbanBoardRef } from "./KanbanBoard";
 import { KanbanRecord, ColumnDefinition } from "./types";
 import { useKanbanColumns } from "./useKanbanColumns";
 import { Alert, Spin } from "antd";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import { useLocale } from "@gisce/react-formiga-components";
 import { KanbanColumnRef } from "./KanbanColumn";
 
@@ -241,30 +242,32 @@ const KanbanComponentInner = (
     }
 
     return (
-      <KanbanBoard
-        ref={boardRef}
-        kanbanDef={kanbanDef}
-        columns={columns}
-        model={model}
-        viewId={kanbanView.view_id}
-        domain={domain}
-        context={context}
-        searchParams={searchParams}
-        nameSearch={nameSearch}
-        fieldsToRetrieve={fieldsToRetrieve}
-        allowSetMaxCards={kanbanDef.set_max_cards === true}
-        onCardClick={onCardClick}
-        onCardSelect={onCardSelect}
-        onColumnRecordIdsChange={onColumnRecordIdsChange}
-        selectedCardIds={selectedCardIds}
-        setColumnRef={setColumnRef}
-        onColumnCountChange={handleColumnCountChange}
-        onAddCardClick={onAddCardClick}
-        onDragStart={onDragStart}
-        onDragSuccess={handleDragSuccess}
-        onOpenColumnInNewTab={onOpenColumnInNewTab}
-        onSelectAllInColumn={onSelectAllInColumn}
-      />
+      <ErrorBoundary>
+        <KanbanBoard
+          ref={boardRef}
+          kanbanDef={kanbanDef}
+          columns={columns}
+          model={model}
+          viewId={kanbanView.view_id}
+          domain={domain}
+          context={context}
+          searchParams={searchParams}
+          nameSearch={nameSearch}
+          fieldsToRetrieve={fieldsToRetrieve}
+          allowSetMaxCards={kanbanDef.set_max_cards === true}
+          onCardClick={onCardClick}
+          onCardSelect={onCardSelect}
+          onColumnRecordIdsChange={onColumnRecordIdsChange}
+          selectedCardIds={selectedCardIds}
+          setColumnRef={setColumnRef}
+          onColumnCountChange={handleColumnCountChange}
+          onAddCardClick={onAddCardClick}
+          onDragStart={onDragStart}
+          onDragSuccess={handleDragSuccess}
+          onOpenColumnInNewTab={onOpenColumnInNewTab}
+          onSelectAllInColumn={onSelectAllInColumn}
+        />
+      </ErrorBoundary>
     );
   }, [
     parsingError,
