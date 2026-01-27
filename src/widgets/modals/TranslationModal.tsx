@@ -14,7 +14,7 @@ import { useErrorNotification } from "@/hooks/useErrorNotification";
 type TranslationModalProps = {
   visible: boolean;
   model: string;
-  id: number;
+  id: number | string;
   field: string;
   onCloseModal: () => void;
   onSubmitSucceed: () => void;
@@ -89,7 +89,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
       const retrievedValue = (
         await ConnectionProvider.getHandler().readObjects({
           model,
-          ids: [id],
+          ids: [id] as number[],
           fieldsToRetrieve: [field],
           context: { lang: lang.code },
         })
@@ -136,7 +136,7 @@ export const TranslationModal = (props: TranslationModalProps) => {
         ) {
           await ConnectionProvider.getHandler().update({
             model,
-            id,
+            id: id as number,
             values: { [field]: valuesForLangs[langCode] },
             context: {
               lang: langCode,

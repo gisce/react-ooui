@@ -31,7 +31,7 @@ export type InitialViewData = {
 
 export type BaseViewExtra = {
   extra?: {
-    action_id: number;
+    action_id: number | string;
     action_type: string;
   };
 };
@@ -281,9 +281,9 @@ type EvalDomainRequest = {
 };
 
 type IsShortcutFavoriteOptions = {
-  action_id: number;
+  action_id: number | string;
   action_type: string;
-  res_id: number | boolean;
+  res_id: number | string | boolean;
   view_id: number;
   context?: any;
 };
@@ -441,7 +441,7 @@ type ConnectionProviderType = {
   ) => Promise<{ results: any; attrsEvaluated?: any }>;
   getToolbar: (options: GetToolbarRequest, requestConfig?: any) => Promise<any>;
   logAction: (
-    options: { action_type: string; action_id: number; context: any },
+    options: { action_type: string; action_id: number | string; context: any },
     requestConfig?: any,
   ) => Promise<any>;
   checkPermission: (
@@ -472,9 +472,9 @@ type ActionInfo = {
   title: string;
   target: string;
   initialView: InitialViewData;
-  action_id: number;
+  action_id: number | string;
   action_type: string;
-  res_id?: number | boolean;
+  res_id?: number | string | boolean;
   values?: any;
   forced_values?: any;
   readOnly?: boolean;

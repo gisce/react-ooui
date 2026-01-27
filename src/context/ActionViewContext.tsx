@@ -24,8 +24,8 @@ type ActionViewProviderProps = {
   formRef: any;
   viewRef: any;
   onNewClicked: () => void;
-  currentId?: number;
-  setCurrentId: (id?: number) => void;
+  currentId?: number | string;
+  setCurrentId: (id?: number | string) => void;
   setCurrentItemIndex: (value?: number) => void;
   currentItemIndex?: number;
   results?: any[];
@@ -44,7 +44,10 @@ type ActionViewProviderProps = {
   setSelectedRowItems: (value: any[] | ((prevValue: any[]) => any[])) => void;
   setSearchNameSearch: (searchString?: string) => void;
   searchNameSearch?: string;
-  goToResourceId: (ids: number[], openInSameTab?: boolean) => Promise<void>;
+  goToResourceId: (
+    ids: Array<number | string>,
+    openInSameTab?: boolean,
+  ) => Promise<void>;
   limit?: number;
   isActive: boolean;
   children: React.ReactNode;

@@ -177,7 +177,7 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
   }, []);
 
   const handleCardValuesChanged = useCallback(
-    (id?: number, values?: any, oldRecord?: KanbanRecord) => {
+    (id?: number | string, values?: any, oldRecord?: KanbanRecord) => {
       if (!id || !values || !oldRecord) {
         return;
       }
@@ -215,7 +215,7 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
   );
 
   const onCancelFormModal = useCallback(
-    (params?: { id?: number; values?: any }) => {
+    (params?: { id?: number | string; values?: any }) => {
       setShowFormModal(false);
       const oldRecord = selectedRecord;
       setSelectedRecord(undefined);
@@ -226,7 +226,7 @@ const KanbanActionViewComponent = (props: KanbanActionViewProps) => {
   );
 
   const onFormModalSubmitSucceed = useCallback(
-    (id?: number, values?: any) => {
+    (id?: number | string, values?: any) => {
       setShowFormModal(false);
 
       if (creatingInColumn && kanbanColumnField) {

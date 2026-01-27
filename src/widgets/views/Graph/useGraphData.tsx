@@ -7,6 +7,7 @@ import {
 } from "@gisce/ooui";
 import ConnectionProvider from "@/ConnectionProvider";
 import { useNetworkRequest } from "@/hooks/useNetworkRequest";
+import { safeParseId, isExistingId } from "@/helpers/idUtils";
 
 const { processGraphData } = graphProcessor;
 const { getFieldsToRetrieve } = graphFieldUtils;
@@ -257,7 +258,7 @@ async function getValuesWithReferencesNamesIfNeeded({
   const updatedValuesByField = await Promise.all(
     referenceFields.map(async (field) => {
       // Group values by model for this field
-      const modelGroups: { [key: string]: number[] } = {};
+      const modelGroups: { [key: string]: Array<number | string> } = {};
 
       values.forEach((value) => {
         const refValue = value[field];
@@ -269,7 +270,10 @@ async function getValuesWithReferencesNamesIfNeeded({
         if (!modelGroups[refModel]) {
           modelGroups[refModel] = [];
         }
-        modelGroups[refModel].push(parseInt(refId, 10));
+        const parsedId = safeParseId(refId);
+        if (isExistingId(parsedId)) {
+          modelGroups[refModel].push(parsedId as number | string);
+        }
       });
 
       // Make parallel name_get calls for each model group

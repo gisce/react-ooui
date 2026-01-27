@@ -37,12 +37,12 @@ export const useOne2manyForm = ({
   }, [itemIndex, items]);
 
   const getOriginalItemsWithRestoredItemId = useCallback(
-    async ({ id }: { id: number }) => {
+    async ({ id }: { id: number | string }) => {
       if (!formView) return;
       const updatedFormObject = (
         await ConnectionProvider.getHandler().readObjects({
           model: relation,
-          ids: [id],
+          ids: [id] as number[],
           fields: formView.fields,
           context,
         })
@@ -51,7 +51,7 @@ export const useOne2manyForm = ({
       const updatedTreeObject = (
         await ConnectionProvider.getHandler().readObjects({
           model: relation,
-          ids: [id],
+          ids: [id] as number[],
           fields: treeView?.fields,
           context,
         })
