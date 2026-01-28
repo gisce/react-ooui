@@ -95,6 +95,18 @@ export const getTouchedValues = ({
       }
     } else if (source[key] === undefined && target[key] !== undefined) {
       differences[key] = target[key];
+    } else if (fields[key]?.type === "json") {
+      const sourceStr =
+        typeof source[key] === "object"
+          ? JSON.stringify(source[key], null, "\t")
+          : source[key];
+      const targetStr =
+        typeof target[key] === "object"
+          ? JSON.stringify(target[key], null, "\t")
+          : target[key];
+      if (sourceStr !== targetStr) {
+        differences[key] = target[key];
+      }
     } else if (source[key] !== target[key]) {
       if (target[key] === undefined) {
         differences[key] = null;
