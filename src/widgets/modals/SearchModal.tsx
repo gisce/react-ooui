@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { Modal, Button, Divider, Row, Space } from "antd";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import { FormModal } from "./FormModal";
 import { SearchTreeInfinite } from "@/widgets/views/SearchTreeInfinite";
 import {
@@ -137,18 +138,20 @@ export const SearchModal = ({
         maskClosable={false}
       >
         {!fetchingViewsInfo && (
-          <SearchTreeComp
-            formView={formView!}
-            treeView={treeView!}
-            model={model}
-            nameSearch={nameSearch}
-            onRowClicked={handleRowClicked}
-            treeScrollY={modalHeight * 0.3}
-            domain={domain}
-            parentContext={context}
-            onChangeSelectedRowKeys={setSelectedRowKeys}
-            filterType={"top"}
-          />
+          <ErrorBoundary>
+            <SearchTreeComp
+              formView={formView!}
+              treeView={treeView!}
+              model={model}
+              nameSearch={nameSearch}
+              onRowClicked={handleRowClicked}
+              treeScrollY={modalHeight * 0.3}
+              domain={domain}
+              parentContext={context}
+              onChangeSelectedRowKeys={setSelectedRowKeys}
+              filterType={"top"}
+            />
+          </ErrorBoundary>
         )}
         <Divider />
         <Row justify="end">
