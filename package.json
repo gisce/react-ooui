@@ -41,7 +41,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@gisce/fiber-diagram": "2.2.0",
-    "@gisce/ooui": "2.46.0-alpha.3",
+    "@gisce/ooui": "2.46.0-alpha.4",
     "@gisce/react-formiga-components": "1.20.0",
     "@gisce/react-formiga-table": "1.17.2",
     "@monaco-editor/react": "^4.4.5",
