@@ -8,7 +8,7 @@ import React, {
   useEffect,
 } from "react";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
-import { openBase64InNewTab, getMimeType } from "@/helpers/filesHelper";
+import { downloadBase64File, getMimeType } from "@/helpers/filesHelper";
 import { parseContext } from "@gisce/ooui";
 import ConnectionProvider from "@/ConnectionProvider";
 import { Modal, Spin } from "antd";
@@ -220,7 +220,11 @@ const ContentRootProvider = (
         clearInterval(reportInProgressInterval.current);
         setReportGenerating(false);
         const fileType: any = await getMimeType(reportState.result);
-        openBase64InNewTab(reportState.result, fileType.mime);
+        downloadBase64File(
+          reportState.result,
+          fileType.mime,
+          `report.${fileType.ext}`,
+        );
       }
     } catch (error) {
       waitingForReport.current = false;
