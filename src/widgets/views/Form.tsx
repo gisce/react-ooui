@@ -67,7 +67,8 @@ import {
   FieldMessageType,
 } from "../../hooks/useFieldMessages";
 import { ACTION_TYPE_WINDOW_CLOSE, MODEL_ACTIONS } from "@/models/constants";
-import { useConfigContext } from "@/context/ConfigContext";
+import { useConfigContext, useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
 
 export type FormProps = {
   model: string;
@@ -194,6 +195,9 @@ function Form(props: FormProps, ref: any) {
   const { openAction } = tabManagerContext || {};
 
   const { onActionTriggered } = useConfigContext();
+  const attachmentsFeatureEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_GET_ATTACHMENTS,
+  );
 
   const { showErrorNotification } = useErrorNotification({
     onButtonAction: (actionData: any) => {
@@ -706,15 +710,33 @@ function Form(props: FormProps, ref: any) {
       if (insideButtonModal) {
         return { values, defaultGetCalled };
       }
-      const results = await ConnectionProvider.getHandler().search({
-        params: [
-          ["res_model", "=", model],
-          ["res_id", "=", getCurrentId()!],
-        ],
-        fieldsToRetrieve: ["id", "name"],
-        context: getContext(),
-        model: "ir.attachment",
-      });
+      let results: any[] = [];
+      if (attachmentsFeatureEnabled) {
+        const attachmentIds = await ConnectionProvider.getHandler().execute({
+          model,
+          action: "get_attachments",
+          payload: [getCurrentId()!],
+          context: getContext(),
+        });
+        if (attachmentIds && attachmentIds.length > 0) {
+          results = await ConnectionProvider.getHandler().readObjects({
+            model: "ir.attachment",
+            ids: attachmentIds,
+            fieldsToRetrieve: ["id", "name"],
+            context: getContext(),
+          });
+        }
+      } else {
+        results = await ConnectionProvider.getHandler().search({
+          params: [
+            ["res_model", "=", model],
+            ["res_id", "=", getCurrentId()!],
+          ],
+          fieldsToRetrieve: ["id", "name"],
+          context: getContext(),
+          model: "ir.attachment",
+        });
+      }
       setAttachments?.(results);
     } else {
       setAttachments?.([]);
