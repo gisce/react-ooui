@@ -46,7 +46,8 @@ export function SearchField(props: Props) {
     (originalWidget === "many2one_lazy" ||
       (selectionToLazy &&
         originalWidget === "selection" &&
-        fieldType === "many2one"));
+        fieldType === "many2one") ||
+      fieldType === "many2many");
 
   if (shouldUseLazyM2o) {
     const m2oOoui = new Many2oneOoui({
