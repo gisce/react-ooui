@@ -303,10 +303,11 @@ describe("A SearchFilterHelper instance", () => {
       expect(fieldParams[1]).toBe("ilike");
       expect(fieldParams[2]).toBe("lorem ipsum");
     });
-    test("should return properly a many2many parameter", () => {
+    test("should return properly a many2many parameter without fieldRelation (non-lazy)", () => {
       const fields = {
         field: {
           type: "many2many",
+          // No fieldRelation - should use ilike operator
         },
       };
       const values = {
@@ -324,6 +325,59 @@ describe("A SearchFilterHelper instance", () => {
       expect(fieldParams[0]).toBe("field");
       expect(fieldParams[1]).toBe("ilike");
       expect(fieldParams[2]).toBe("lorem ipsum");
+    });
+    test("should return properly a many2many parameter with fieldRelation and single select (lazy)", () => {
+      const fields = {
+        field: {
+          type: "many2many",
+          fieldType: "many2many",
+          fieldRelation: "res.partner",
+        },
+      };
+      const values = {
+        field: [1, "Partner Name"],
+      };
+      const params = getParamsForFields(
+        values,
+        createMockWidgetContainer(fields),
+      );
+      expect(Array.isArray(params)).toBeTruthy();
+      expect(params.length).toBe(1);
+      expect(Array.isArray(params[0])).toBeTruthy();
+      expect(params[0].length).toBe(3);
+      const fieldParams = params[0];
+      expect(fieldParams[0]).toBe("field");
+      expect(fieldParams[1]).toBe("=");
+      expect(fieldParams[2]).toBe(1);
+    });
+    test("should return properly a many2many parameter with fieldRelation and multi-select (lazy)", () => {
+      const fields = {
+        field: {
+          type: "many2many",
+          fieldType: "many2many",
+          fieldRelation: "res.partner",
+        },
+      };
+      const values = {
+        field: [
+          [1, "Partner One"],
+          [2, "Partner Two"],
+          [3, "Partner Three"],
+        ],
+      };
+      const params = getParamsForFields(
+        values,
+        createMockWidgetContainer(fields),
+      );
+      expect(Array.isArray(params)).toBeTruthy();
+      expect(params.length).toBe(1);
+      expect(Array.isArray(params[0])).toBeTruthy();
+      expect(params[0].length).toBe(3);
+      const fieldParams = params[0];
+      expect(fieldParams[0]).toBe("field");
+      expect(fieldParams[1]).toBe("in");
+      expect(Array.isArray(fieldParams[2])).toBeTruthy();
+      expect(fieldParams[2]).toEqual([1, 2, 3]);
     });
     test("should return properly a selection parameter", () => {
       const fields = {
