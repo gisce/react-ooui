@@ -63,6 +63,7 @@ type ActionViewProviderProps = {
 export type ObjectProps = {
   without_attachments?: boolean;
   without_comments?: boolean;
+  use_get_attachments?: boolean;
 };
 
 export type ActionViewContextType = Omit<

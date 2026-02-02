@@ -728,8 +728,8 @@ function Form(props: FormProps, ref: any) {
       const attachmentsAllowed = !resolvedObjectProps?.without_attachments;
       let results: any[] = [];
       if (attachmentsAllowed) {
-        try {
-          // Try to use the new get_attachments method
+        if (resolvedObjectProps?.use_get_attachments) {
+          // Use the new get_attachments method
           const attachmentIds = await ConnectionProvider.getHandler().execute({
             model,
             action: "get_attachments",
@@ -744,8 +744,8 @@ function Form(props: FormProps, ref: any) {
               context: getContext(),
             });
           }
-        } catch (error) {
-          // Fallback to traditional search if get_attachments is not available
+        } else {
+          // Use traditional search method
           results = await ConnectionProvider.getHandler().search({
             params: [
               ["res_model", "=", model],

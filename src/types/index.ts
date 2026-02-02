@@ -63,6 +63,7 @@ type FormView = TreeView & {
   object_props?: {
     without_attachments?: boolean;
     without_comments?: boolean;
+    use_get_attachments?: boolean;
   };
 };
 
