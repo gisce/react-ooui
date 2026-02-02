@@ -48,6 +48,9 @@ export const COMMENTS_PANEL_GAP = 8;
 
 const TEXT_AREA_AUTO_SIZE = { minRows: 1, maxRows: 4 };
 
+const isFirefox =
+  typeof navigator !== "undefined" && /firefox/i.test(navigator.userAgent);
+
 const CENTERED_CONTAINER_STYLE: CSSProperties = {
   display: "flex",
   justifyContent: "center",
@@ -131,7 +134,6 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const mentionsRef = useRef<any>(null);
-  const isComposing = useRef(false);
   const contentAreaRef = useRef<HTMLDivElement>(null);
   const messageRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const recentlySentTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -405,9 +407,6 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (isComposing.current || e.nativeEvent.isComposing) {
-        return;
-      }
       if (
         e.key === "Enter" &&
         !e.shiftKey &&
@@ -443,14 +442,6 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
 
   const handleMentionBlur = useCallback(() => {
     setMentionDropdownOpen(false);
-  }, []);
-
-  const handleCompositionStart = useCallback(() => {
-    isComposing.current = true;
-  }, []);
-
-  const handleCompositionEnd = useCallback(() => {
-    isComposing.current = false;
   }, []);
 
   if (!shouldRender) {
@@ -594,8 +585,6 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                     value={newComment}
                     onChange={setNewComment}
                     onKeyDown={handleKeyDown}
-                    onCompositionStart={handleCompositionStart}
-                    onCompositionEnd={handleCompositionEnd}
                     onSearch={handleMentionSearch}
                     onSelect={handleMentionSelect}
                     onBlur={handleMentionBlur}
@@ -606,7 +595,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                       mentionSearching ? <Spin size="small" /> : t("noMatches")
                     }
                     placeholder={t("writeComment")}
-                    autoSize={TEXT_AREA_AUTO_SIZE}
+                    autoSize={isFirefox ? undefined : TEXT_AREA_AUTO_SIZE}
                     style={{ flex: 1 }}
                   />
                   <Button
