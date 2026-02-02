@@ -109,7 +109,7 @@ const getParamForField = (
     (selectionToLazy &&
       originalWidget === "selection" &&
       fieldType === "many2one") ||
-    (fieldType === "many2many" && field?.fieldRelation);
+    fieldType === "many2many";
 
   if (shouldUseLazyLoading) {
     // Check if multi-select format: [[id, name], [id, name], ...]
