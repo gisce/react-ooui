@@ -692,16 +692,10 @@ function Form(props: FormProps, ref: any) {
   }) => {
     let values = {};
     let defaultGetCalled = false;
-    let resolvedObjectProps: ObjectProps = {};
 
-    // Use object_props from view data if available
-    if (object_props) {
-      resolvedObjectProps = object_props;
-      if (setObjectProps) {
-        setObjectProps(resolvedObjectProps);
-      }
-    } else if (setObjectProps) {
-      setObjectProps({});
+    // Set object_props to context
+    if (setObjectProps) {
+      setObjectProps(object_props || {});
     }
 
     if (getCurrentId()!) {
@@ -725,7 +719,7 @@ function Form(props: FormProps, ref: any) {
       if (insideButtonModal) {
         return { values, defaultGetCalled };
       }
-      const attachmentsAllowed = !resolvedObjectProps?.without_attachments;
+      const attachmentsAllowed = !object_props?.without_attachments;
       let results: any[] = [];
       if (attachmentsAllowed) {
         // Use the new get_attachments method
