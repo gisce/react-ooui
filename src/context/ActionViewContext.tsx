@@ -60,6 +60,11 @@ type ActionViewProviderProps = {
   initialOpenComments?: boolean;
 };
 
+export type ObjectProps = {
+  without_attachments?: boolean;
+  without_comments?: boolean;
+};
+
 export type ActionViewContextType = Omit<
   ActionViewProviderProps,
   "children"
@@ -113,14 +118,8 @@ export type ActionViewContextType = Omit<
   setCommentCount?: (value: number) => void;
   refreshComments?: () => Promise<void>;
   setRefreshComments?: (fn: (() => Promise<void>) | undefined) => void;
-  objectProps?: {
-    without_attachments?: boolean;
-    without_comments?: boolean;
-  };
-  setObjectProps?: (value: {
-    without_attachments?: boolean;
-    without_comments?: boolean;
-  }) => void;
+  objectProps?: ObjectProps;
+  setObjectProps?: (value: ObjectProps) => void;
 };
 
 export const ActionViewContext = createContext<ActionViewContextType | null>(
@@ -228,10 +227,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     initialOpenComments ?? false,
   );
   const [commentCount, setCommentCount] = useState<number>(0);
-  const [objectProps, setObjectProps] = useState<{
-    without_attachments?: boolean;
-    without_comments?: boolean;
-  }>({});
+  const [objectProps, setObjectProps] = useState<ObjectProps>();
   const [refreshComments, setRefreshCommentsState] = useState<{
     fn: (() => Promise<void>) | undefined;
   }>({ fn: undefined });
@@ -379,7 +375,7 @@ export const useIsUnderActionViewContext = () => {
   return !!context;
 };
 
-export const useActionViewContext = () => {
+export const useActionViewContext = (): ActionViewContextType => {
   const context = useContext(ActionViewContext);
 
   // If no context, return empty functions and default values
@@ -409,7 +405,7 @@ export const useActionViewContext = () => {
       searchNameSearch: undefined,
       goToResourceId: async () => {},
       limit: DEFAULT_SEARCH_LIMIT,
-      isActive: undefined,
+      isActive: false,
       formIsSaving: false,
       setFormIsSaving: () => {},
       formHasChanges: false,
@@ -459,12 +455,12 @@ export const useActionViewContext = () => {
       setCommentCount: () => {},
       refreshComments: undefined,
       setRefreshComments: () => {},
-      objectProps: {},
+      objectProps: undefined,
       setObjectProps: () => {},
       permissions: null,
       permissionsLoading: false,
       permissionsError: null,
-    };
+    } as unknown as ActionViewContextType;
   }
 
   return context;

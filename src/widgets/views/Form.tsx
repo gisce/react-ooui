@@ -42,6 +42,7 @@ import {
 import {
   ActionViewContext,
   ActionViewContextType,
+  ObjectProps,
 } from "@/context/ActionViewContext";
 
 import {
@@ -692,12 +693,7 @@ function Form(props: FormProps, ref: any) {
   }) => {
     let values = {};
     let defaultGetCalled = false;
-    let resolvedObjectProps:
-      | {
-          without_attachments?: boolean;
-          without_comments?: boolean;
-        }
-      | undefined;
+    let resolvedObjectProps: ObjectProps = {};
 
     if (objectPropsFeatureEnabled && setObjectProps) {
       try {
@@ -738,7 +734,7 @@ function Form(props: FormProps, ref: any) {
         return { values, defaultGetCalled };
       }
       const attachmentsAllowed =
-        !resolvedObjectProps?.without_attachments || !objectPropsFeatureEnabled;
+        !objectPropsFeatureEnabled || !resolvedObjectProps?.without_attachments;
       let results: any[] = [];
       if (attachmentsAllowed) {
         if (attachmentsFeatureEnabled) {
