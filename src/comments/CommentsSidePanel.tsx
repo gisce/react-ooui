@@ -131,7 +131,6 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const mentionsRef = useRef<any>(null);
-  const isComposing = useRef(false);
   const contentAreaRef = useRef<HTMLDivElement>(null);
   const messageRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const recentlySentTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -405,9 +404,6 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (isComposing.current || e.nativeEvent.isComposing) {
-        return;
-      }
       if (
         e.key === "Enter" &&
         !e.shiftKey &&
@@ -443,14 +439,6 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
 
   const handleMentionBlur = useCallback(() => {
     setMentionDropdownOpen(false);
-  }, []);
-
-  const handleCompositionStart = useCallback(() => {
-    isComposing.current = true;
-  }, []);
-
-  const handleCompositionEnd = useCallback(() => {
-    isComposing.current = false;
   }, []);
 
   if (!shouldRender) {
@@ -594,8 +582,6 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                     value={newComment}
                     onChange={setNewComment}
                     onKeyDown={handleKeyDown}
-                    onCompositionStart={handleCompositionStart}
-                    onCompositionEnd={handleCompositionEnd}
                     onSearch={handleMentionSearch}
                     onSelect={handleMentionSelect}
                     onBlur={handleMentionBlur}
