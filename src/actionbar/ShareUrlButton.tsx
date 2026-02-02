@@ -12,7 +12,7 @@ const IconExternalLink = getTablerIcon("IconExternalLink") as React.FC<any>;
 const IconShare2 = getTablerIcon("IconShare2") as React.FC<any>;
 
 export type ShareUrlButtonProps = {
-  res_id?: number;
+  res_id?: number | string;
   searchParams?: any[];
 };
 

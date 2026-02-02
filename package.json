@@ -1,6 +1,6 @@
 {
   "name": "@gisce/react-ooui",
-  "version": "2.122.0",
+  "version": "2.124.0",
   "publishConfig": {
     "access": "public"
   },
@@ -41,9 +41,9 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@gisce/fiber-diagram": "2.2.0",
-    "@gisce/ooui": "2.45.0",
-    "@gisce/react-formiga-components": "1.20.0",
-    "@gisce/react-formiga-table": "1.17.1",
+    "@gisce/ooui": "2.45.1",
+    "@gisce/react-formiga-components": "1.21.0",
+    "@gisce/react-formiga-table": "1.17.2",
     "@monaco-editor/react": "^4.4.5",
     "@tanstack/react-virtual": "^3.13.12",
     "@types/deep-equal": "^1.0.4",

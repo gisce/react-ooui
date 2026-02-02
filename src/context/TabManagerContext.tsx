@@ -44,8 +44,8 @@ export type TabManagerContextType = {
   tabs: Tab[];
   currentView?: View;
   setCurrentView?: (view?: View) => void;
-  currentId?: number;
-  setCurrentId?: (id?: number) => void;
+  currentId?: number | string;
+  setCurrentId?: (id?: number | string) => void;
   currentTab?: Tab;
 };
 
@@ -72,7 +72,7 @@ const TabManagerProvider = (props: TabManagerProviderProps): any => {
   } = props;
 
   const [currentView, setCurrentView] = useState<View>();
-  const [currentId, setCurrentId] = useState<number>();
+  const [currentId, setCurrentId] = useState<number | string>();
   const currentTab = useMemo(() => {
     return tabs.find((t) => t.key === activeKey);
   }, [tabs, activeKey]);

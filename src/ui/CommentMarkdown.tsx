@@ -7,7 +7,7 @@ import { RecordComment } from "@/types/comments";
 type CommentMarkdownProps = {
   comment: RecordComment;
   model: string;
-  resourceId: number;
+  resourceId: number | string;
 };
 
 const PARAGRAPH_STYLE: CSSProperties = {

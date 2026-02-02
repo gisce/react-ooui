@@ -2,10 +2,11 @@ import { useRef } from "react";
 import { Button, Col, Form, Input, Modal, Row, Space } from "antd";
 import { PlusOutlined, EnterOutlined, CloseOutlined } from "@ant-design/icons";
 import { useLocale } from "@gisce/react-formiga-components";
+import { safeParseId } from "@/helpers/idUtils";
 
 type Props = {
   visible: boolean;
-  onIdSubmitted: (ids: number[], openInSameTab?: boolean) => void;
+  onIdSubmitted: (ids: Array<number | string>, openInSameTab?: boolean) => void;
   onCancel: () => void;
   isSearching: boolean;
 };
@@ -18,7 +19,12 @@ export const GoToResourceModal = (props: Props) => {
   const openInSameTab = useRef(false);
 
   function handleSubmit(values: any) {
-    const ids = values.id.split(",").map((id: string) => parseInt(id.trim()));
+    const ids = values.id
+      .split(",")
+      .map((id: string) => safeParseId(id.trim()))
+      .filter(
+        (id: number | string | null): id is number | string => id !== null,
+      );
     onIdSubmitted(ids, openInSameTab.current);
     openInSameTab.current = false;
   }

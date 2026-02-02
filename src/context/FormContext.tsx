@@ -3,7 +3,7 @@ import { FormView } from "..";
 import { FieldMessageType, FieldMessages } from "../hooks/useFieldMessages";
 
 export type FormContextType = {
-  activeId?: number;
+  activeId?: number | string;
   activeModel: string;
   setFieldValue: (field: string, value?: string) => void;
   getFieldValue: (field: string) => string;
@@ -24,7 +24,7 @@ export type FormContextType = {
   domain: any[];
   submitForm?: (options?: {
     callOnSubmitSucceed?: boolean;
-  }) => Promise<{ succeed: boolean; id: number }>;
+  }) => Promise<{ succeed: boolean; id: number | string }>;
   fetchValues?: (options?: any) => void;
   formHasChanges?: () => boolean;
   elementHasLostFocus?: () => void;

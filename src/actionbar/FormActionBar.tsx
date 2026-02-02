@@ -124,7 +124,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
       setRemovingItem?.(true);
       await ConnectionProvider.getHandler().deleteObjects({
         model: currentModel!,
-        ids: [currentId!],
+        ids: [currentId!] as number[],
         context: (formRef.current as any).getContext(),
       });
 
@@ -163,7 +163,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
     try {
       setDuplicatingItem?.(true);
       const newId = await ConnectionProvider.getHandler().duplicate({
-        id: currentId!,
+        id: currentId! as number,
         model: currentModel!,
         context: (formRef.current as any).getContext(),
       });

@@ -32,7 +32,7 @@ type UseSearchOpts = {
   setResultsActionView?: (value: any[]) => void;
   resultsActionView?: any[];
   domain: any;
-  currentId?: number;
+  currentId?: number | string;
   limit?: number;
   setLimit?: (value: number) => void;
   setSearchValues?: (value: any) => void;

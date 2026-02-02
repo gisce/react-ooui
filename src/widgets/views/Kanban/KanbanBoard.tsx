@@ -33,6 +33,7 @@ import { useNetworkRequest } from "@/hooks/useNetworkRequest";
 import { normalizeColumnValue } from "@/helpers/kanbanHelper";
 import { useProcessAction } from "@/hooks/useProcessAction";
 import { useKanbanColumnPrefs } from "./useKanbanColumnPrefs";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 
 const customCollisionDetection: CollisionDetection = (args) => {
   // First, try to find collision with pointer directly over elements
@@ -847,40 +848,41 @@ const KanbanBoardComponent = (
         }}
       >
         {orderedColumns.map((column, index) => (
-          <KanbanColumn
-            key={column.id}
-            ref={columnRefCallbacks[column.id]}
-            kanbanDef={kanbanDef}
-            column={column}
-            model={model}
-            domain={domain}
-            context={context}
-            searchParams={searchParams}
-            nameSearch={nameSearch}
-            fieldsToRetrieve={fieldsToRetrieve}
-            allowSetMaxCards={allowSetMaxCards}
-            maxCards={columnLimits[column.id]}
-            onMaxCardsChange={handleColumnLimitChange}
-            onCardClick={onCardClick}
-            onCardSelect={onCardSelect}
-            selectedCardIds={selectedCardIds}
-            onCountChange={onColumnCountChange}
-            onRecordsUpdate={handleRecordsUpdate}
-            isOver={overColumnId === column.id}
-            onAddCardClick={columnAddCardCallbacks[column.id]}
-            onRefreshAll={refreshAllColumns}
-            onOpenColumnInNewTab={handleOpenColumnInNewTab}
-            onSelectAllInColumn={onSelectAllInColumn}
-            onMoveLeft={columnMoveLeftCallbacks[column.id]}
-            onMoveRight={columnMoveRightCallbacks[column.id]}
-            onMoveToPosition={columnMoveToPositionCallbacks[column.id]}
-            isFirstColumn={index === 0}
-            isLastColumn={index === orderedColumns.length - 1}
-            allColumns={allColumnsInfo}
-            activeId={activeRecord?.id ?? null}
-            overId={overId}
-            dropPosition={dropPosition}
-          />
+          <ErrorBoundary key={column.id}>
+            <KanbanColumn
+              ref={columnRefCallbacks[column.id]}
+              kanbanDef={kanbanDef}
+              column={column}
+              model={model}
+              domain={domain}
+              context={context}
+              searchParams={searchParams}
+              nameSearch={nameSearch}
+              fieldsToRetrieve={fieldsToRetrieve}
+              allowSetMaxCards={allowSetMaxCards}
+              maxCards={columnLimits[column.id]}
+              onMaxCardsChange={handleColumnLimitChange}
+              onCardClick={onCardClick}
+              onCardSelect={onCardSelect}
+              selectedCardIds={selectedCardIds}
+              onCountChange={onColumnCountChange}
+              onRecordsUpdate={handleRecordsUpdate}
+              isOver={overColumnId === column.id}
+              onAddCardClick={columnAddCardCallbacks[column.id]}
+              onRefreshAll={refreshAllColumns}
+              onOpenColumnInNewTab={handleOpenColumnInNewTab}
+              onSelectAllInColumn={onSelectAllInColumn}
+              onMoveLeft={columnMoveLeftCallbacks[column.id]}
+              onMoveRight={columnMoveRightCallbacks[column.id]}
+              onMoveToPosition={columnMoveToPositionCallbacks[column.id]}
+              isFirstColumn={index === 0}
+              isLastColumn={index === orderedColumns.length - 1}
+              allColumns={allColumnsInfo}
+              activeId={activeRecord?.id ?? null}
+              overId={overId}
+              dropPosition={dropPosition}
+            />
+          </ErrorBoundary>
         ))}
       </div>
 
