@@ -197,9 +197,6 @@ function Form(props: FormProps, ref: any) {
   const { openAction } = tabManagerContext || {};
 
   const { onActionTriggered } = useConfigContext();
-  const attachmentsFeatureEnabled = useFeatureIsEnabled(
-    ErpFeatureKeys.FEATURE_GET_ATTACHMENTS,
-  );
 
   const { showErrorNotification } = useErrorNotification({
     onButtonAction: (actionData: any) => {
@@ -731,14 +728,15 @@ function Form(props: FormProps, ref: any) {
       const attachmentsAllowed = !resolvedObjectProps?.without_attachments;
       let results: any[] = [];
       if (attachmentsAllowed) {
-        if (attachmentsFeatureEnabled) {
+        try {
+          // Try to use the new get_attachments method
           const attachmentIds = await ConnectionProvider.getHandler().execute({
             model,
             action: "get_attachments",
             payload: [getCurrentId()!],
             context: getContext(),
           });
-          if (attachmentIds && attachmentIds.length > 0) {
+          if (Array.isArray(attachmentIds) && attachmentIds.length > 0) {
             results = await ConnectionProvider.getHandler().readObjects({
               model: "ir.attachment",
               ids: attachmentIds,
@@ -746,7 +744,8 @@ function Form(props: FormProps, ref: any) {
               context: getContext(),
             });
           }
-        } else {
+        } catch (error) {
+          // Fallback to traditional search if get_attachments is not available
           results = await ConnectionProvider.getHandler().search({
             params: [
               ["res_model", "=", model],
