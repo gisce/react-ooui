@@ -728,32 +728,19 @@ function Form(props: FormProps, ref: any) {
       const attachmentsAllowed = !resolvedObjectProps?.without_attachments;
       let results: any[] = [];
       if (attachmentsAllowed) {
-        if (resolvedObjectProps?.use_get_attachments) {
-          // Use the new get_attachments method
-          const attachmentIds = await ConnectionProvider.getHandler().execute({
-            model,
-            action: "get_attachments",
-            payload: [getCurrentId()!],
-            context: getContext(),
-          });
-          if (Array.isArray(attachmentIds) && attachmentIds.length > 0) {
-            results = await ConnectionProvider.getHandler().readObjects({
-              model: "ir.attachment",
-              ids: attachmentIds,
-              fieldsToRetrieve: ["id", "name"],
-              context: getContext(),
-            });
-          }
-        } else {
-          // Use traditional search method
-          results = await ConnectionProvider.getHandler().search({
-            params: [
-              ["res_model", "=", model],
-              ["res_id", "=", getCurrentId()!],
-            ],
+        // Use the new get_attachments method
+        const attachmentIds = await ConnectionProvider.getHandler().execute({
+          model,
+          action: "get_attachments",
+          payload: [getCurrentId()!],
+          context: getContext(),
+        });
+        if (Array.isArray(attachmentIds) && attachmentIds.length > 0) {
+          results = await ConnectionProvider.getHandler().readObjects({
+            model: "ir.attachment",
+            ids: attachmentIds,
             fieldsToRetrieve: ["id", "name"],
             context: getContext(),
-            model: "ir.attachment",
           });
         }
         setAttachments?.(results);
