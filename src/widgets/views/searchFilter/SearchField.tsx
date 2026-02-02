@@ -18,7 +18,6 @@ import { Many2oneLazyInput } from "@/widgets/base/many2one/Many2oneLazy";
 import FieldWrapper from "@/common/Field";
 import { useUserFeatureIsEnabled } from "@/context/ConfigContext";
 import { UserFeatureKeys } from "@/models/userFeature";
-import { getSafeSearchDomain } from "@/helpers/domainHelper";
 
 type Props = {
   field: Field;
@@ -55,7 +54,7 @@ export function SearchField(props: Props) {
       string: field.label,
       relation: fieldRelation,
       context: field.context,
-      domain: getSafeSearchDomain((field as any).domain),
+      domain: field.domain,
     });
     m2oOoui.parsedWidgetProps = {
       showCreate: false,
