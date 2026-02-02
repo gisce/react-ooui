@@ -200,9 +200,6 @@ function Form(props: FormProps, ref: any) {
   const attachmentsFeatureEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_GET_ATTACHMENTS,
   );
-  const objectPropsFeatureEnabled = useFeatureIsEnabled(
-    ErpFeatureKeys.FEATURE_GET_OBJECT_PROPS,
-  );
 
   const { showErrorNotification } = useErrorNotification({
     onButtonAction: (actionData: any) => {
@@ -700,23 +697,10 @@ function Form(props: FormProps, ref: any) {
     let defaultGetCalled = false;
     let resolvedObjectProps: ObjectProps = {};
 
-    // Use object_props from view data if available, otherwise fallback to API call
+    // Use object_props from view data if available
     if (object_props) {
       resolvedObjectProps = object_props;
       if (setObjectProps) {
-        setObjectProps(resolvedObjectProps);
-      }
-    } else if (objectPropsFeatureEnabled && setObjectProps) {
-      try {
-        const propsResult = await ConnectionProvider.getHandler().execute({
-          model,
-          action: "get_object_props",
-          context: getContext(),
-        });
-        resolvedObjectProps = propsResult || {};
-        setObjectProps(resolvedObjectProps);
-      } catch (err) {
-        resolvedObjectProps = {};
         setObjectProps(resolvedObjectProps);
       }
     } else if (setObjectProps) {
@@ -744,8 +728,7 @@ function Form(props: FormProps, ref: any) {
       if (insideButtonModal) {
         return { values, defaultGetCalled };
       }
-      const attachmentsAllowed =
-        !objectPropsFeatureEnabled || !resolvedObjectProps?.without_attachments;
+      const attachmentsAllowed = !resolvedObjectProps?.without_attachments;
       let results: any[] = [];
       if (attachmentsAllowed) {
         if (attachmentsFeatureEnabled) {
