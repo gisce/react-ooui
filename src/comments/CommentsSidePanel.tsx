@@ -48,6 +48,9 @@ export const COMMENTS_PANEL_GAP = 8;
 
 const TEXT_AREA_AUTO_SIZE = { minRows: 1, maxRows: 4 };
 
+const isFirefox =
+  typeof navigator !== "undefined" && /firefox/i.test(navigator.userAgent);
+
 const CENTERED_CONTAINER_STYLE: CSSProperties = {
   display: "flex",
   justifyContent: "center",
@@ -592,7 +595,7 @@ const CommentsSidePanelComponent = (props: CommentsSidePanelProps) => {
                       mentionSearching ? <Spin size="small" /> : t("noMatches")
                     }
                     placeholder={t("writeComment")}
-                    autoSize={TEXT_AREA_AUTO_SIZE}
+                    autoSize={isFirefox ? undefined : TEXT_AREA_AUTO_SIZE}
                     style={{ flex: 1 }}
                   />
                   <Button
