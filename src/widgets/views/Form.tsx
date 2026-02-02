@@ -179,6 +179,7 @@ function Form(props: FormProps, ref: any) {
     setCurrentId = undefined,
     setFormIsLoading = undefined,
     setAttachments = undefined,
+    setObjectProps = undefined,
     title = undefined,
     setTitle = undefined,
     isActive = undefined,
@@ -197,6 +198,9 @@ function Form(props: FormProps, ref: any) {
   const { onActionTriggered } = useConfigContext();
   const attachmentsFeatureEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_GET_ATTACHMENTS,
+  );
+  const objectPropsFeatureEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_GET_OBJECT_PROPS,
   );
 
   const { showErrorNotification } = useErrorNotification({
@@ -688,6 +692,29 @@ function Form(props: FormProps, ref: any) {
   }) => {
     let values = {};
     let defaultGetCalled = false;
+    let resolvedObjectProps:
+      | {
+          without_attachments?: boolean;
+          without_comments?: boolean;
+        }
+      | undefined;
+
+    if (objectPropsFeatureEnabled && setObjectProps) {
+      try {
+        const propsResult = await ConnectionProvider.getHandler().execute({
+          model,
+          action: "get_object_props",
+          context: getContext(),
+        });
+        resolvedObjectProps = propsResult || {};
+        setObjectProps(resolvedObjectProps);
+      } catch (err) {
+        resolvedObjectProps = {};
+        setObjectProps(resolvedObjectProps);
+      }
+    } else if (setObjectProps) {
+      setObjectProps({});
+    }
 
     if (getCurrentId()!) {
       const ooui =
@@ -710,34 +737,40 @@ function Form(props: FormProps, ref: any) {
       if (insideButtonModal) {
         return { values, defaultGetCalled };
       }
+      const attachmentsAllowed =
+        !resolvedObjectProps?.without_attachments || !objectPropsFeatureEnabled;
       let results: any[] = [];
-      if (attachmentsFeatureEnabled) {
-        const attachmentIds = await ConnectionProvider.getHandler().execute({
-          model,
-          action: "get_attachments",
-          payload: [getCurrentId()!],
-          context: getContext(),
-        });
-        if (attachmentIds && attachmentIds.length > 0) {
-          results = await ConnectionProvider.getHandler().readObjects({
-            model: "ir.attachment",
-            ids: attachmentIds,
-            fieldsToRetrieve: ["id", "name"],
+      if (attachmentsAllowed) {
+        if (attachmentsFeatureEnabled) {
+          const attachmentIds = await ConnectionProvider.getHandler().execute({
+            model,
+            action: "get_attachments",
+            payload: [getCurrentId()!],
             context: getContext(),
           });
+          if (attachmentIds && attachmentIds.length > 0) {
+            results = await ConnectionProvider.getHandler().readObjects({
+              model: "ir.attachment",
+              ids: attachmentIds,
+              fieldsToRetrieve: ["id", "name"],
+              context: getContext(),
+            });
+          }
+        } else {
+          results = await ConnectionProvider.getHandler().search({
+            params: [
+              ["res_model", "=", model],
+              ["res_id", "=", getCurrentId()!],
+            ],
+            fieldsToRetrieve: ["id", "name"],
+            context: getContext(),
+            model: "ir.attachment",
+          });
         }
+        setAttachments?.(results);
       } else {
-        results = await ConnectionProvider.getHandler().search({
-          params: [
-            ["res_model", "=", model],
-            ["res_id", "=", getCurrentId()!],
-          ],
-          fieldsToRetrieve: ["id", "name"],
-          context: getContext(),
-          model: "ir.attachment",
-        });
+        setAttachments?.([]);
       }
-      setAttachments?.(results);
     } else {
       setAttachments?.([]);
       const defaults = await getDefaultValues(fields);

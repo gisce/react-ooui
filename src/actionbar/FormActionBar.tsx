@@ -45,7 +45,7 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
     TabManagerContext,
   ) as TabManagerContextType;
   const { t } = useLocale();
-  const commentsEnabled = useFeatureIsEnabled(
+  const commentsFeatureEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_COMMENTS_SYSTEM,
   );
   const { onNextClick, onPreviousClick, shouldDisableNavigation } =
@@ -83,9 +83,13 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
     setCommentsPanelVisible,
     commentCount,
     refreshComments,
+    objectProps,
   } = useActionViewContext();
 
   const { openDefaultActionForModel } = tabManagerContext || {};
+  const commentsAllowed =
+    commentsFeatureEnabled && !objectProps?.without_comments;
+  const attachmentsAllowed = !objectProps?.without_attachments;
 
   const mustDisableButtons = useMemo(
     () => formIsSaving || removingItem || formIsLoading || duplicatingItem,
@@ -367,15 +371,17 @@ function FormActionBarComponent({ toolbar }: { toolbar: any }) {
       <DropdownButton icon={<PrinterOutlined />} {...printButtonProps} />
       <DropdownButton icon={<EnterOutlined />} {...relateButtonProps} />
       <AttachmentsButton
-        disabled={mustDisableButtons}
+        disabled={mustDisableButtons || !attachmentsAllowed}
         attachments={attachments}
         onAddNewAttachment={handleAddNewAttachment}
         onListAllAttachments={handleListAllAttachments}
         onViewAttachmentDetails={handleViewAttachmentDetails}
       />
-      {commentsEnabled && (
+      {commentsFeatureEnabled && (
         <CommentsButton
-          disabled={mustDisableButtons || currentId === undefined}
+          disabled={
+            mustDisableButtons || currentId === undefined || !commentsAllowed
+          }
           commentCount={commentCount ?? 0}
           onClick={() => setCommentsPanelVisible?.(!commentsPanelVisible)}
         />

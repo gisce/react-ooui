@@ -113,6 +113,14 @@ export type ActionViewContextType = Omit<
   setCommentCount?: (value: number) => void;
   refreshComments?: () => Promise<void>;
   setRefreshComments?: (fn: (() => Promise<void>) | undefined) => void;
+  objectProps?: {
+    without_attachments?: boolean;
+    without_comments?: boolean;
+  };
+  setObjectProps?: (value: {
+    without_attachments?: boolean;
+    without_comments?: boolean;
+  }) => void;
 };
 
 export const ActionViewContext = createContext<ActionViewContextType | null>(
@@ -220,6 +228,10 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     initialOpenComments ?? false,
   );
   const [commentCount, setCommentCount] = useState<number>(0);
+  const [objectProps, setObjectProps] = useState<{
+    without_attachments?: boolean;
+    without_comments?: boolean;
+  }>({});
   const [refreshComments, setRefreshCommentsState] = useState<{
     fn: (() => Promise<void>) | undefined;
   }>({ fn: undefined });
@@ -350,6 +362,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setCommentCount,
         refreshComments: refreshComments.fn,
         setRefreshComments,
+        objectProps,
+        setObjectProps,
         permissions,
         permissionsLoading,
         permissionsError,
@@ -445,6 +459,8 @@ export const useActionViewContext = () => {
       setCommentCount: () => {},
       refreshComments: undefined,
       setRefreshComments: () => {},
+      objectProps: {},
+      setObjectProps: () => {},
       permissions: null,
       permissionsLoading: false,
       permissionsError: null,

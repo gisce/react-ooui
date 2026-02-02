@@ -56,12 +56,15 @@ export const FormActionView = (props: FormActionViewProps) => {
     setCommentCount,
     setRefreshComments,
     permissions,
+    objectProps,
   } = useActionViewContext();
   const { globalValues } = useConfigContext();
   const { token } = useToken();
-  const commentsEnabled = useFeatureIsEnabled(
+  const commentsFeatureEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_COMMENTS_SYSTEM,
   );
+  const commentsAllowed =
+    commentsFeatureEnabled && !objectProps?.without_comments;
 
   const {
     comments,
@@ -92,27 +95,31 @@ export const FormActionView = (props: FormActionViewProps) => {
   });
 
   useEffect(() => {
-    if (!commentsEnabled) return;
+    if (!commentsAllowed) {
+      setCommentCount?.(0);
+      setCommentsPanelVisible?.(false);
+      return;
+    }
     setCommentCount?.(0);
-  }, [commentsEnabled, currentId, setCommentCount]);
+  }, [commentsAllowed, currentId, setCommentCount, setCommentsPanelVisible]);
 
   useEffect(() => {
-    if (!commentsEnabled) return;
+    if (!commentsAllowed) return;
     setCommentCount?.(comments.length);
-  }, [commentsEnabled, comments.length, setCommentCount]);
+  }, [commentsAllowed, comments.length, setCommentCount]);
 
   useEffect(() => {
-    if (!commentsEnabled) return;
+    if (!commentsAllowed) return;
     if (currentId) {
       fetchComments();
     }
-  }, [commentsEnabled, currentId, fetchComments]);
+  }, [commentsAllowed, currentId, fetchComments]);
 
   useEffect(() => {
-    if (!commentsEnabled) return;
+    if (!commentsAllowed) return;
     setRefreshComments?.(fetchComments);
     return () => setRefreshComments?.(undefined);
-  }, [commentsEnabled, fetchComments, setRefreshComments]);
+  }, [commentsAllowed, fetchComments, setRefreshComments]);
 
   const handleAddComment = useCallback(
     async (body: string) => {
@@ -171,13 +178,13 @@ export const FormActionView = (props: FormActionViewProps) => {
       scrollbarColor: `${token.colorTextQuaternary} ${token.colorBgContainer}`,
       paddingRight: COMMENTS_PANEL_GAP,
       marginRight:
-        commentsEnabled && commentsPanelVisible
+        commentsAllowed && commentsPanelVisible
           ? COMMENTS_PANEL_WIDTH + COMMENTS_PANEL_GAP
           : 0,
       transition: "margin-right 0.3s ease",
     }),
     [
-      commentsEnabled,
+      commentsAllowed,
       commentsPanelVisible,
       token.colorTextQuaternary,
       token.colorBgContainer,
@@ -209,7 +216,7 @@ export const FormActionView = (props: FormActionViewProps) => {
             onSubmitSucceed={handleSubmitSucceed}
           />
         </div>
-        {commentsEnabled && currentId !== undefined && (
+        {commentsAllowed && currentId !== undefined && (
           <CommentsSidePanel
             visible={commentsPanelVisible ?? false}
             comments={comments}
