@@ -74,7 +74,10 @@ export const BinaryInput = (props: BinaryInputProps) => {
 
   async function openFile() {
     const fileType: any = await getMimeType(value!);
-    openBase64InNewTab(value!, fileType.mime);
+    const fileName = getFieldValue(filenameField);
+    const name = getFieldValue("name");
+    const resolvedName = fileName || name || `file.${fileType.ext}`;
+    openBase64InNewTab(value!, fileType.mime, resolvedName);
   }
 
   async function onChangeFile(event: any) {
