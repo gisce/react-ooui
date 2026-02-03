@@ -200,9 +200,6 @@ function Form(props: FormProps, ref: any) {
   const attachmentsFeatureEnabled = useFeatureIsEnabled(
     ErpFeatureKeys.FEATURE_GET_ATTACHMENTS,
   );
-  const objectPropsFeatureEnabled = useFeatureIsEnabled(
-    ErpFeatureKeys.FEATURE_GET_OBJECT_PROPS,
-  );
 
   const { showErrorNotification } = useErrorNotification({
     onButtonAction: (actionData: any) => {
@@ -534,13 +531,14 @@ function Form(props: FormProps, ref: any) {
         view = await getFormView();
       }
 
-      const { fields, arch } = view;
+      const { fields, arch, object_props } = view;
       setFields(fields);
       setArch(arch);
 
       await fetchValues({
         fields,
         arch,
+        object_props,
       });
     } catch (err) {
       setError(err);
@@ -552,6 +550,7 @@ function Form(props: FormProps, ref: any) {
     fields?: any;
     arch?: string;
     forceRefresh?: boolean;
+    object_props?: ObjectProps;
   };
 
   const fetchValues = async (options?: FetchValuesOptions) => {
@@ -582,6 +581,7 @@ function Form(props: FormProps, ref: any) {
         await fetchValuesFromApi({
           fields: _fields,
           arch: _arch!,
+          object_props: options?.object_props,
         }));
     }
 
@@ -687,29 +687,18 @@ function Form(props: FormProps, ref: any) {
   const fetchValuesFromApi = async ({
     fields,
     arch,
+    object_props,
   }: {
     fields: any;
     arch: string;
+    object_props?: ObjectProps;
   }) => {
     let values = {};
     let defaultGetCalled = false;
-    let resolvedObjectProps: ObjectProps = {};
 
-    if (objectPropsFeatureEnabled && setObjectProps) {
-      try {
-        const propsResult = await ConnectionProvider.getHandler().execute({
-          model,
-          action: "get_object_props",
-          context: getContext(),
-        });
-        resolvedObjectProps = propsResult || {};
-        setObjectProps(resolvedObjectProps);
-      } catch (err) {
-        resolvedObjectProps = {};
-        setObjectProps(resolvedObjectProps);
-      }
-    } else if (setObjectProps) {
-      setObjectProps({});
+    // Set object_props to context
+    if (setObjectProps) {
+      setObjectProps(object_props || {});
     }
 
     if (getCurrentId()!) {
@@ -733,18 +722,18 @@ function Form(props: FormProps, ref: any) {
       if (insideButtonModal) {
         return { values, defaultGetCalled };
       }
-      const attachmentsAllowed =
-        !objectPropsFeatureEnabled || !resolvedObjectProps?.without_attachments;
+      const attachmentsAllowed = !object_props?.without_attachments;
       let results: any[] = [];
       if (attachmentsAllowed) {
         if (attachmentsFeatureEnabled) {
+          // Use the new get_attachments method
           const attachmentIds = await ConnectionProvider.getHandler().execute({
             model,
             action: "get_attachments",
             payload: [getCurrentId()!],
             context: getContext(),
           });
-          if (attachmentIds && attachmentIds.length > 0) {
+          if (Array.isArray(attachmentIds) && attachmentIds.length > 0) {
             results = await ConnectionProvider.getHandler().readObjects({
               model: "ir.attachment",
               ids: attachmentIds,
@@ -753,6 +742,7 @@ function Form(props: FormProps, ref: any) {
             });
           }
         } else {
+          // Fallback to traditional search + read method
           results = await ConnectionProvider.getHandler().search({
             params: [
               ["res_model", "=", model],
