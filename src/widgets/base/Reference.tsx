@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col } from "antd";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import {
   Reference as ReferenceOoui,
   Selection as SelectionOoui,
@@ -18,9 +19,11 @@ export const Reference = (props: Props) => {
   const { required } = ooui;
 
   return (
-    <Field required={required} {...props}>
-      <ReferenceInput ooui={ooui} />
-    </Field>
+    <ErrorBoundary>
+      <Field required={required} {...props}>
+        <ReferenceInput ooui={ooui} />
+      </Field>
+    </ErrorBoundary>
   );
 };
 

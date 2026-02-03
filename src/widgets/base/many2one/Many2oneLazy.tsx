@@ -243,15 +243,25 @@ export const Many2oneLazyInput: React.FC<Many2oneLazyInputProps> = (
     transformedDomain.current = [];
 
     if (widgetDomain) {
-      transformedDomain.current = await executeEvalDomain({
-        domain: widgetDomain,
-        values: transformPlainMany2Ones({
+      try {
+        transformedDomain.current = await executeEvalDomain({
+          domain: widgetDomain,
+          values: transformPlainMany2Ones({
+            fields: getFields?.() ?? {},
+            values: getAllHierarchyValues?.() ?? {},
+          }),
           fields: getFields?.() ?? {},
-          values: getAllHierarchyValues?.() ?? {},
-        }),
-        fields: getFields?.() ?? {},
-        context: getContext?.() ?? {},
-      });
+          context: getContext?.() ?? {},
+        });
+      } catch (error) {
+        console.error(
+          `Failed to evaluate domain for field "${fieldName}":`,
+          widgetDomain,
+          error,
+        );
+        // Set to empty domain to avoid breaking the widget
+        transformedDomain.current = [];
+      }
     }
 
     if (domain && domain.length > 0) {
