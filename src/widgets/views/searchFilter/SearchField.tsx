@@ -5,6 +5,7 @@ import { DateTimeRangePicker } from "./DateTimeRangePicker";
 import { PairFields } from "./PairFields";
 import { useLocale } from "@gisce/react-formiga-components";
 
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import {
   Field,
   Char as CharOoui,
@@ -97,12 +98,14 @@ export function SearchField(props: Props) {
     }
     default: {
       return (
-        <Char
-          ooui={field as CharOoui}
-          layout="vertical"
-          showLabel
-          isSearchField
-        />
+        <ErrorBoundary>
+          <Char
+            ooui={field as CharOoui}
+            layout="vertical"
+            showLabel
+            isSearchField
+          />
+        </ErrorBoundary>
       );
     }
   }
