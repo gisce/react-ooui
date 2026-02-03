@@ -1,7 +1,5 @@
 import { fileTypeFromBuffer } from "file-type-buffer-browser";
 
-const TWO_MB = 2 * 1024 * 1024;
-
 export function getFilesize(base64string: string) {
   const buffer = Buffer.from(base64string, "base64");
   const inKbs = buffer.length / 1e3;
@@ -30,22 +28,18 @@ export const toBase64 = (file: File): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 
-function base64ToBlob(data: string, mimeType: string): Blob {
+export function downloadBase64File(
+  data: string,
+  mimeType: string,
+  filename: string,
+): void {
   const byteCharacters = atob(data);
   const byteNumbers = new Array(byteCharacters.length);
   for (let i = 0; i < byteCharacters.length; i++) {
     byteNumbers[i] = byteCharacters.charCodeAt(i);
   }
   const byteArray = new Uint8Array(byteNumbers);
-  return new Blob([byteArray], { type: mimeType });
-}
-
-export function downloadBase64File(
-  data: string,
-  mimeType: string,
-  filename: string,
-): void {
-  const blob = base64ToBlob(data, mimeType);
+  const blob = new Blob([byteArray], { type: mimeType });
   const url = URL.createObjectURL(blob);
 
   const downloadLink = document.createElement("a");
@@ -57,20 +51,9 @@ export function downloadBase64File(
   setTimeout(() => URL.revokeObjectURL(url), 100);
 }
 
-export function openOrDownloadBase64File(
-  data: string,
-  mimeType: string,
-  filename: string,
-): void {
-  const blob = base64ToBlob(data, mimeType);
-
-  if (blob.size < TWO_MB) {
-    openBase64InNewTab(data, mimeType);
-  } else {
-    downloadBase64File(data, mimeType, filename);
-  }
-}
-
+/**
+ * @deprecated
+ */
 export function openBase64InNewTab(data: string, mimeType: string) {
   const byteCharacters = atob(data);
   const byteNumbers = new Array(byteCharacters.length);
