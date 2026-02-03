@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { Button, Col, Modal, Row } from "antd";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import Form, { FormProps } from "@/widgets/views/Form";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import FormModalProvider from "@/context/FormModalContext";
@@ -132,15 +133,17 @@ export const FormModal = (props: FormModalProps) => {
         onCancel={() => onCancel?.()}
         maskClosable={false}
       >
-        <Form
-          key={`${model}-${id}-${action_id}-${res_id}-${action_type}-${view_id}-${title}`}
-          id={id || res_id}
-          showFooter={true}
-          insideButtonModal={buttonModal}
-          onCancel={onCancel}
-          parentWidth={contentWidth}
-          {...rest}
-        />
+        <ErrorBoundary>
+          <Form
+            key={`${model}-${id}-${action_id}-${res_id}-${action_type}-${view_id}-${title}`}
+            id={id || res_id}
+            showFooter={true}
+            insideButtonModal={buttonModal}
+            onCancel={onCancel}
+            parentWidth={contentWidth}
+            {...rest}
+          />
+        </ErrorBoundary>
       </Modal>
 
       <FavouriteNameModal
