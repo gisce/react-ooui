@@ -21,7 +21,7 @@ export const Markdown = (props: WidgetProps) => {
 };
 
 export const transformMentions = (text: string): string => {
-  return text.replace(/@(\p{L}[\p{L}\p{N}_]*)/gu, "**@$1**");
+  return text.replace(/@(\p{L}[\p{L}\p{N}._-]*)/gu, "**@$1**");
 };
 
 export type MarkdownInputProps = {
