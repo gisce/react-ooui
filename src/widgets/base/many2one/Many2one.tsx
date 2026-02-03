@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useContext, useMemo } from "react";
 import { Input, Button, Row, Col, theme } from "antd";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import {
   SearchOutlined,
   FolderOpenOutlined,
@@ -41,9 +42,16 @@ export const Many2one = (props: Props) => {
   };
 
   return (
-    <Field required={required} type={"array"} validator={validator} {...props}>
-      <Many2oneInput ooui={ooui} />
-    </Field>
+    <ErrorBoundary>
+      <Field
+        required={required}
+        type={"array"}
+        validator={validator}
+        {...props}
+      >
+        <Many2oneInput ooui={ooui} />
+      </Field>
+    </ErrorBoundary>
   );
 };
 

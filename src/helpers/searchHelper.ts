@@ -104,13 +104,14 @@ const getParamForField = (
   const originalWidget = field?.raw_props?.widget;
   const fieldType = field?.fieldType;
 
-  const isLazyMany2one =
+  const shouldUseLazyLoading =
     originalWidget === "many2one_lazy" ||
     (selectionToLazy &&
       originalWidget === "selection" &&
-      fieldType === "many2one");
+      fieldType === "many2one") ||
+    fieldType === "many2many";
 
-  if (isLazyMany2one) {
+  if (shouldUseLazyLoading) {
     // Check if multi-select format: [[id, name], [id, name], ...]
     if (
       Array.isArray(value) &&

@@ -1,5 +1,6 @@
 import { useContext, useState, memo, useCallback, useMemo } from "react";
 import { Col, Input, Row, theme } from "antd";
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import Field from "@/common/Field";
 import { Char as CharOoui } from "@gisce/ooui";
 import { WidgetProps } from "@/types";
@@ -72,9 +73,11 @@ export const Char = (props: CharProps) => {
   }
 
   return (
-    <Field required={required} {...props}>
-      {input}
-    </Field>
+    <ErrorBoundary>
+      <Field required={required} {...props}>
+        {input}
+      </Field>
+    </ErrorBoundary>
   );
 };
 
@@ -96,11 +99,12 @@ const CharInput = memo(
 
     const computedValue = useMemo(() => {
       if (!value) return value;
-      if (ooui.selectionValues.size) {
+
+      if (ooui.selectionValues?.size) {
         return ooui.selectionValues.get(value);
       }
       return Array.isArray(value) ? value[1] : value;
-    }, [ooui.selectionValues, value]);
+    }, [ooui, value]);
 
     const isRequired = useMemo(
       () => required && !readOnly,
@@ -108,7 +112,7 @@ const CharInput = memo(
     );
 
     const forceDisabled = useMemo(
-      () => Array.isArray(value) || Boolean(ooui.selectionValues.size),
+      () => Array.isArray(value) || Boolean(ooui.selectionValues?.size),
       [value, ooui.selectionValues],
     );
 
