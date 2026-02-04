@@ -366,9 +366,10 @@ export const TagsComponent = ({
     () => (
       <div
         style={{
-          maxWidth: "300px",
-          whiteSpace: "break-spaces",
-          lineHeight: "30px",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "4px",
+          alignItems: "center",
         }}
       >
         {tags}
