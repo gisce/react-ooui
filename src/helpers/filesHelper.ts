@@ -73,6 +73,5 @@ export function openBase64InNewTab(
     downloadBase64File(data, mimeType, filename);
     return false;
   }
-  setTimeout(() => URL.revokeObjectURL(fileURL), 1000);
   return true;
 }
