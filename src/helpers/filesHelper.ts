@@ -54,7 +54,11 @@ export function downloadBase64File(
 /**
  * @deprecated
  */
-export function openBase64InNewTab(data: string, mimeType: string) {
+export function openBase64InNewTab(
+  data: string,
+  mimeType: string,
+  filename: string,
+): boolean {
   const byteCharacters = atob(data);
   const byteNumbers = new Array(byteCharacters.length);
   for (let i = 0; i < byteCharacters.length; i++) {
@@ -63,5 +67,12 @@ export function openBase64InNewTab(data: string, mimeType: string) {
   const byteArray = new Uint8Array(byteNumbers);
   const file = new Blob([byteArray], { type: mimeType });
   const fileURL = URL.createObjectURL(file);
-  window.open(fileURL);
+  const result = window.open(fileURL);
+  if (!result) {
+    URL.revokeObjectURL(fileURL);
+    downloadBase64File(data, mimeType, filename);
+    return false;
+  }
+  setTimeout(() => URL.revokeObjectURL(fileURL), 1000);
+  return true;
 }
