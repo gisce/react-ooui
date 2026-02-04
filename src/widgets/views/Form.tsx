@@ -526,7 +526,11 @@ function Form(props: FormProps, ref: any) {
 
     try {
       if (formViewProps) {
-        view = { arch: formViewProps.arch, fields: formViewProps.fields };
+        view = {
+          arch: formViewProps.arch,
+          fields: formViewProps.fields,
+          object_props: formViewProps.object_props,
+        };
       } else {
         view = await getFormView();
       }
