@@ -1,6 +1,6 @@
 import { convertParamsToValues } from "@/helpers/searchHelper";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
-import { View } from "@/types";
+import { View, ObjectProps } from "@/types";
 import {
   DEFAULT_TREE_TYPE,
   TreeType,
@@ -15,6 +15,9 @@ import {
   useCallback,
 } from "react";
 import { PermissionsMap } from "@/hooks/usePermissions";
+
+// Re-export ObjectProps for backward compatibility
+export type { ObjectProps };
 
 type ActionViewProviderProps = {
   title: string;
@@ -58,11 +61,6 @@ type ActionViewProviderProps = {
   permissionsLoading?: boolean;
   permissionsError?: Error | null;
   initialOpenComments?: boolean;
-};
-
-export type ObjectProps = {
-  without_attachments?: boolean;
-  without_comments?: boolean;
 };
 
 export type ActionViewContextType = Omit<
@@ -460,7 +458,7 @@ export const useActionViewContext = (): ActionViewContextType => {
       permissions: null,
       permissionsLoading: false,
       permissionsError: null,
-    } as unknown as ActionViewContextType;
+    } as ActionViewContextType;
   }
 
   return context;

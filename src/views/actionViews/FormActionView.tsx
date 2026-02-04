@@ -100,7 +100,9 @@ export const FormActionView = (props: FormActionViewProps) => {
       setCommentsPanelVisible?.(false);
       return;
     }
-    setCommentCount?.(0);
+    if (currentId) {
+      setCommentCount?.(0);
+    }
   }, [commentsAllowed, currentId, setCommentCount, setCommentsPanelVisible]);
 
   useEffect(() => {
@@ -110,10 +112,11 @@ export const FormActionView = (props: FormActionViewProps) => {
 
   useEffect(() => {
     if (!commentsAllowed) return;
+    if (objectProps === undefined) return; // Wait for objectProps to load
     if (currentId) {
       fetchComments();
     }
-  }, [commentsAllowed, currentId, fetchComments]);
+  }, [commentsAllowed, objectProps, currentId, fetchComments]);
 
   useEffect(() => {
     if (!commentsAllowed) return;

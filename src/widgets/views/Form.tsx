@@ -180,6 +180,7 @@ function Form(props: FormProps, ref: any) {
     setCurrentId = undefined,
     setFormIsLoading = undefined,
     setAttachments = undefined,
+    objectProps = undefined,
     setObjectProps = undefined,
     title = undefined,
     setTitle = undefined,
@@ -526,7 +527,11 @@ function Form(props: FormProps, ref: any) {
 
     try {
       if (formViewProps) {
-        view = { arch: formViewProps.arch, fields: formViewProps.fields };
+        view = {
+          arch: formViewProps.arch,
+          fields: formViewProps.fields,
+          object_props: formViewProps.object_props,
+        };
       } else {
         view = await getFormView();
       }
@@ -581,7 +586,7 @@ function Form(props: FormProps, ref: any) {
         await fetchValuesFromApi({
           fields: _fields,
           arch: _arch!,
-          object_props: options?.object_props,
+          object_props: options?.object_props ?? objectProps,
         }));
     }
 
@@ -725,25 +730,8 @@ function Form(props: FormProps, ref: any) {
       const attachmentsAllowed = !object_props?.without_attachments;
       let results: any[] = [];
       if (attachmentsAllowed) {
-        if (attachmentsFeatureEnabled) {
-          // Use the new get_attachments method
-          const attachmentIds = await ConnectionProvider.getHandler().execute({
-            model,
-            action: "get_attachments",
-            payload: [getCurrentId()!],
-            context: getContext(),
-          });
-          if (Array.isArray(attachmentIds) && attachmentIds.length > 0) {
-            results = await ConnectionProvider.getHandler().readObjects({
-              model: "ir.attachment",
-              ids: attachmentIds,
-              fieldsToRetrieve: ["id", "name"],
-              context: getContext(),
-            });
-          }
-        } else {
-          // Fallback to traditional search + read method
-          results = await ConnectionProvider.getHandler().search({
+        const searchAttachments = async (): Promise<any[]> => {
+          return ConnectionProvider.getHandler().search({
             params: [
               ["res_model", "=", model],
               ["res_id", "=", getCurrentId()!],
@@ -752,6 +740,33 @@ function Form(props: FormProps, ref: any) {
             context: getContext(),
             model: "ir.attachment",
           });
+        };
+
+        if (attachmentsFeatureEnabled) {
+          try {
+            // Use the new get_attachments method
+            const attachmentIds = await ConnectionProvider.getHandler().execute(
+              {
+                model,
+                action: "get_attachments",
+                payload: [getCurrentId()!],
+                context: getContext(),
+              },
+            );
+            if (Array.isArray(attachmentIds) && attachmentIds.length > 0) {
+              results = await ConnectionProvider.getHandler().readObjects({
+                model: "ir.attachment",
+                ids: attachmentIds,
+                fieldsToRetrieve: ["id", "name"],
+                context: getContext(),
+              });
+            }
+          } catch {
+            // Fallback to traditional search method on error
+            results = await searchAttachments();
+          }
+        } else {
+          results = await searchAttachments();
         }
         setAttachments?.(results);
       } else {
