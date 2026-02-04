@@ -127,6 +127,9 @@ export const MessageBubble = memo(
         padding: "8px 12px",
         borderRadius: 12,
         display: "inline-block",
+        maxWidth: "100%",
+        overflowWrap: "break-word",
+        wordBreak: "break-word",
       }),
       [token.colorPrimaryBg, token.colorFillTertiary, isOwnMessage],
     );
