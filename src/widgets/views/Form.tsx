@@ -180,6 +180,7 @@ function Form(props: FormProps, ref: any) {
     setCurrentId = undefined,
     setFormIsLoading = undefined,
     setAttachments = undefined,
+    objectProps = undefined,
     setObjectProps = undefined,
     title = undefined,
     setTitle = undefined,
@@ -585,7 +586,7 @@ function Form(props: FormProps, ref: any) {
         await fetchValuesFromApi({
           fields: _fields,
           arch: _arch!,
-          object_props: options?.object_props,
+          object_props: options?.object_props ?? objectProps,
         }));
     }
 

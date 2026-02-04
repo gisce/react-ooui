@@ -100,7 +100,9 @@ export const FormActionView = (props: FormActionViewProps) => {
       setCommentsPanelVisible?.(false);
       return;
     }
-    setCommentCount?.(0);
+    if (currentId) {
+      setCommentCount?.(0);
+    }
   }, [commentsAllowed, currentId, setCommentCount, setCommentsPanelVisible]);
 
   useEffect(() => {
