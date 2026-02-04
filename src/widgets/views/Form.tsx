@@ -42,6 +42,7 @@ import {
 import {
   ActionViewContext,
   ActionViewContextType,
+  ObjectProps,
 } from "@/context/ActionViewContext";
 
 import {
@@ -67,7 +68,8 @@ import {
   FieldMessageType,
 } from "../../hooks/useFieldMessages";
 import { ACTION_TYPE_WINDOW_CLOSE, MODEL_ACTIONS } from "@/models/constants";
-import { useConfigContext } from "@/context/ConfigContext";
+import { useConfigContext, useFeatureIsEnabled } from "@/context/ConfigContext";
+import { ErpFeatureKeys } from "@/models/erpFeature";
 
 export type FormProps = {
   model: string;
@@ -178,6 +180,7 @@ function Form(props: FormProps, ref: any) {
     setCurrentId = undefined,
     setFormIsLoading = undefined,
     setAttachments = undefined,
+    setObjectProps = undefined,
     title = undefined,
     setTitle = undefined,
     isActive = undefined,
@@ -194,6 +197,9 @@ function Form(props: FormProps, ref: any) {
   const { openAction } = tabManagerContext || {};
 
   const { onActionTriggered } = useConfigContext();
+  const attachmentsFeatureEnabled = useFeatureIsEnabled(
+    ErpFeatureKeys.FEATURE_GET_ATTACHMENTS,
+  );
 
   const { showErrorNotification } = useErrorNotification({
     onButtonAction: (actionData: any) => {
@@ -525,13 +531,14 @@ function Form(props: FormProps, ref: any) {
         view = await getFormView();
       }
 
-      const { fields, arch } = view;
+      const { fields, arch, object_props } = view;
       setFields(fields);
       setArch(arch);
 
       await fetchValues({
         fields,
         arch,
+        object_props,
       });
     } catch (err) {
       setError(err);
@@ -543,6 +550,7 @@ function Form(props: FormProps, ref: any) {
     fields?: any;
     arch?: string;
     forceRefresh?: boolean;
+    object_props?: ObjectProps;
   };
 
   const fetchValues = async (options?: FetchValuesOptions) => {
@@ -573,6 +581,7 @@ function Form(props: FormProps, ref: any) {
         await fetchValuesFromApi({
           fields: _fields,
           arch: _arch!,
+          object_props: options?.object_props,
         }));
     }
 
@@ -678,12 +687,19 @@ function Form(props: FormProps, ref: any) {
   const fetchValuesFromApi = async ({
     fields,
     arch,
+    object_props,
   }: {
     fields: any;
     arch: string;
+    object_props?: ObjectProps;
   }) => {
     let values = {};
     let defaultGetCalled = false;
+
+    // Set object_props to context
+    if (setObjectProps) {
+      setObjectProps(object_props || {});
+    }
 
     if (getCurrentId()!) {
       const ooui =
@@ -706,16 +722,41 @@ function Form(props: FormProps, ref: any) {
       if (insideButtonModal) {
         return { values, defaultGetCalled };
       }
-      const results = await ConnectionProvider.getHandler().search({
-        params: [
-          ["res_model", "=", model],
-          ["res_id", "=", getCurrentId()!],
-        ],
-        fieldsToRetrieve: ["id", "name"],
-        context: getContext(),
-        model: "ir.attachment",
-      });
-      setAttachments?.(results);
+      const attachmentsAllowed = !object_props?.without_attachments;
+      let results: any[] = [];
+      if (attachmentsAllowed) {
+        if (attachmentsFeatureEnabled) {
+          // Use the new get_attachments method
+          const attachmentIds = await ConnectionProvider.getHandler().execute({
+            model,
+            action: "get_attachments",
+            payload: [getCurrentId()!],
+            context: getContext(),
+          });
+          if (Array.isArray(attachmentIds) && attachmentIds.length > 0) {
+            results = await ConnectionProvider.getHandler().readObjects({
+              model: "ir.attachment",
+              ids: attachmentIds,
+              fieldsToRetrieve: ["id", "name"],
+              context: getContext(),
+            });
+          }
+        } else {
+          // Fallback to traditional search + read method
+          results = await ConnectionProvider.getHandler().search({
+            params: [
+              ["res_model", "=", model],
+              ["res_id", "=", getCurrentId()!],
+            ],
+            fieldsToRetrieve: ["id", "name"],
+            context: getContext(),
+            model: "ir.attachment",
+          });
+        }
+        setAttachments?.(results);
+      } else {
+        setAttachments?.([]);
+      }
     } else {
       setAttachments?.([]);
       const defaults = await getDefaultValues(fields);

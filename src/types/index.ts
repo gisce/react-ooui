@@ -60,6 +60,10 @@ export type TreeView = BaseView & {
 type FormView = TreeView & {
   search_fields?: SearchFields;
   toolbar?: any;
+  object_props?: {
+    without_attachments?: boolean;
+    without_comments?: boolean;
+  };
 };
 
 export type DashboardView = BaseViewExtra & {
