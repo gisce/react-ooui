@@ -110,10 +110,11 @@ export const FormActionView = (props: FormActionViewProps) => {
 
   useEffect(() => {
     if (!commentsAllowed) return;
+    if (objectProps === undefined) return; // Wait for objectProps to load
     if (currentId) {
       fetchComments();
     }
-  }, [commentsAllowed, currentId, fetchComments]);
+  }, [commentsAllowed, objectProps, currentId, fetchComments]);
 
   useEffect(() => {
     if (!commentsAllowed) return;

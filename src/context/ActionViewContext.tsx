@@ -458,7 +458,7 @@ export const useActionViewContext = (): ActionViewContextType => {
       permissions: null,
       permissionsLoading: false,
       permissionsError: null,
-    } as unknown as ActionViewContextType;
+    } as ActionViewContextType;
   }
 
   return context;
