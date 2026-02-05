@@ -181,4 +181,5 @@ export default {
   sending: "Enviant...",
   failedToSend: "Error en enviar",
   retry: "Reintentar",
+  andXMore: "i {count} més",
 };
