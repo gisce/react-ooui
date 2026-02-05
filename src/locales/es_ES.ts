@@ -184,4 +184,5 @@ export default {
   failedToSend: "Error al enviar",
   retry: "Reintentar",
   clearSelection: "Limpiar selección",
+  andXMore: "y {count} más",
 };
