@@ -178,4 +178,5 @@ export default {
   sending: "Sending...",
   failedToSend: "Failed to send",
   retry: "Retry",
+  andXMore: "and {count} more",
 };
