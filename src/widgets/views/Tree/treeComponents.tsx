@@ -7,8 +7,7 @@ import { Interweave } from "interweave";
 import { Many2oneTree } from "../../base/many2one/Many2oneTree";
 import { ReferenceTree } from "../../base/ReferenceTree";
 import { AvatarInput } from "../../custom/Avatar";
-import { CustomTag, TagInput } from "../../custom/Tag";
-import { colorFromString } from "@/helpers/formHelper";
+import { TagInput } from "../../custom/Tag";
 import { EmailTagsRender } from "@/widgets/custom/EmailTags";
 import { ImageRender } from "@/widgets/base/Image";
 import {
@@ -19,8 +18,8 @@ import {
 import { useActionViewContext } from "@/context/ActionViewContext";
 import { useOne2manyContext } from "@/context/One2manyContext";
 import { DateValue, DateTimeValue } from "@gisce/react-formiga-components";
-import { useDeepCompareMemo } from "use-deep-compare";
 import { useNumberFormatter } from "@/hooks/useNumberFormatter";
+import { TagsTreeComponent } from "./TagsTreeComponent";
 
 export const BooleanComponent = ({
   value,
@@ -332,53 +331,6 @@ export const AvatarComponent = ({
   );
 };
 
-export const TagsComponent = ({
-  value,
-  ooui,
-  context,
-}: {
-  value: any;
-  key: string;
-  ooui: any;
-  context: any;
-}): ReactElement => {
-  // Expect prefetched data - value.items should contain enriched items with name property
-  const enrichedItems = useDeepCompareMemo(
-    () => value?.items || [],
-    [value?.items],
-  );
-
-  const tags = useMemo(
-    () =>
-      enrichedItems.map((item: any) => {
-        const { id, name } = item;
-        const color = colorFromString(name);
-        return (
-          <CustomTag key={`${id}`} color={color}>
-            {name}
-          </CustomTag>
-        );
-      }),
-    [enrichedItems],
-  );
-
-  return useMemo(
-    () => (
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "4px",
-          alignItems: "center",
-        }}
-      >
-        {tags}
-      </div>
-    ),
-    [tags],
-  );
-};
-
 export const COLUMN_COMPONENTS = {
   boolean: BooleanComponent,
   many2one: Many2OneComponent,
@@ -397,7 +349,7 @@ export const COLUMN_COMPONENTS = {
   date: DateComponent,
   datetime: DateTimeComponent,
   avatar: AvatarComponent,
-  tags: TagsComponent,
+  tags: TagsTreeComponent,
   email: EmailTagsComponent,
   colorPicker: ColorPickerComponent,
   char: CharComponent,
