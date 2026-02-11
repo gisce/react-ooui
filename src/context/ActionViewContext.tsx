@@ -1,6 +1,6 @@
 import { convertParamsToValues } from "@/helpers/searchHelper";
 import { DEFAULT_SEARCH_LIMIT } from "@/models/constants";
-import { View } from "@/types";
+import { View, ObjectProps } from "@/types";
 import {
   DEFAULT_TREE_TYPE,
   TreeType,
@@ -15,6 +15,9 @@ import {
   useCallback,
 } from "react";
 import { PermissionsMap } from "@/hooks/usePermissions";
+
+// Re-export ObjectProps for backward compatibility
+export type { ObjectProps };
 
 type ActionViewProviderProps = {
   title: string;
@@ -113,6 +116,8 @@ export type ActionViewContextType = Omit<
   setCommentCount?: (value: number) => void;
   refreshComments?: () => Promise<void>;
   setRefreshComments?: (fn: (() => Promise<void>) | undefined) => void;
+  objectProps?: ObjectProps;
+  setObjectProps?: (value: ObjectProps) => void;
 };
 
 export const ActionViewContext = createContext<ActionViewContextType | null>(
@@ -220,6 +225,7 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
     initialOpenComments ?? false,
   );
   const [commentCount, setCommentCount] = useState<number>(0);
+  const [objectProps, setObjectProps] = useState<ObjectProps>();
   const [refreshComments, setRefreshCommentsState] = useState<{
     fn: (() => Promise<void>) | undefined;
   }>({ fn: undefined });
@@ -350,6 +356,8 @@ const ActionViewProvider = (props: ActionViewProviderProps): any => {
         setCommentCount,
         refreshComments: refreshComments.fn,
         setRefreshComments,
+        objectProps,
+        setObjectProps,
         permissions,
         permissionsLoading,
         permissionsError,
@@ -365,7 +373,7 @@ export const useIsUnderActionViewContext = () => {
   return !!context;
 };
 
-export const useActionViewContext = () => {
+export const useActionViewContext = (): ActionViewContextType => {
   const context = useContext(ActionViewContext);
 
   // If no context, return empty functions and default values
@@ -395,7 +403,7 @@ export const useActionViewContext = () => {
       searchNameSearch: undefined,
       goToResourceId: async () => {},
       limit: DEFAULT_SEARCH_LIMIT,
-      isActive: undefined,
+      isActive: false,
       formIsSaving: false,
       setFormIsSaving: () => {},
       formHasChanges: false,
@@ -445,10 +453,12 @@ export const useActionViewContext = () => {
       setCommentCount: () => {},
       refreshComments: undefined,
       setRefreshComments: () => {},
+      objectProps: undefined,
+      setObjectProps: () => {},
       permissions: null,
       permissionsLoading: false,
       permissionsError: null,
-    };
+    } as ActionViewContextType;
   }
 
   return context;
