@@ -113,6 +113,7 @@ export const One2manyTree = ({
   const prevItemsValue = useRef<One2manyItem[]>();
   const itemsRef = useRef<One2manyItem[]>(items);
   const lastHandledMutationSeqRef = useRef(localMutationSeq ?? 0);
+  const prevTreeTypeRef = useRef<TreeType>(treeType);
 
   // Shared state for both modes
   const [treeFirstVisibleRow, setTreeFirstVisibleRow] = useState<number>(0);
@@ -491,12 +492,23 @@ export const One2manyTree = ({
   const onPaginatedRequestDataRef = useCallbackRef(onPaginatedRequestData);
 
   useDeepCompareEffect(() => {
-    if (treeType !== "paginated") return;
+    const modeJustSwitchedToPaginated =
+      prevTreeTypeRef.current !== "paginated" && treeType === "paginated";
+    prevTreeTypeRef.current = treeType;
 
-    const currentSeq = localMutationSeq ?? 0;
-    if (currentSeq !== lastHandledMutationSeqRef.current) {
-      lastHandledMutationSeqRef.current = currentSeq;
+    if (treeType !== "paginated") {
+      setPaginatedResults([]);
       return;
+    }
+
+    if (!modeJustSwitchedToPaginated) {
+      const currentSeq = localMutationSeq ?? 0;
+      if (currentSeq !== lastHandledMutationSeqRef.current) {
+        lastHandledMutationSeqRef.current = currentSeq;
+        return;
+      }
+    } else {
+      lastHandledMutationSeqRef.current = localMutationSeq ?? 0;
     }
 
     if (items.length > 0) {
@@ -610,7 +622,6 @@ export const One2manyTree = ({
       onSelectionCheckboxClicked={onSelectionCheckboxClicked}
       totalRows={totalRows}
       footer={footerComponent}
-      isLoading={false}
       hasStatusColumn={ooui.status !== null}
       statusComponent={statusComponent}
       onRowStatus={onRowStatus}
