@@ -159,6 +159,7 @@ function Form(props: FormProps, ref: any) {
   const defaultGetValues = useRef<any>({});
   const warningIsShown = useRef<boolean>(false);
   const formSubmitting = useRef<boolean>(false);
+  const formOperationInProgress = useRef<boolean>(false);
   const x2manyPendingLink = useRef<boolean>(false);
 
   const widthToEvaluate =
@@ -840,6 +841,10 @@ function Form(props: FormProps, ref: any) {
   };
 
   const submitForm = async (options?: { callOnSubmitSucceed?: boolean }) => {
+    if (formSubmitting.current) {
+      return { succeed: false, id: getCurrentId()! };
+    }
+
     let submitSucceed = false;
     const { callOnSubmitSucceed = true } = options || {};
     formSubmitting.current = true;
@@ -1346,25 +1351,28 @@ function Form(props: FormProps, ref: any) {
     action: string;
     context?: any;
   }) {
-    // If the type of the button it's a cancel, we just close our form
     if (type === "cancel") {
       onCancel?.();
       return;
     }
 
-    // We check for required fields
-    if (await checkIfFormHasErrors()) {
-      showErrorNotification({
-        type: "error",
-        title: t("formHasErrors"),
-        body: t("fillRequiredFields"),
-      });
+    if (formOperationInProgress.current) {
       return;
     }
-
-    let mustBlockButtons = false;
+    formOperationInProgress.current = true;
 
     try {
+      if (await checkIfFormHasErrors()) {
+        showErrorNotification({
+          type: "error",
+          title: t("formHasErrors"),
+          body: t("fillRequiredFields"),
+        });
+        return;
+      }
+
+      let mustBlockButtons = false;
+
       if (!readOnly && (formHasChanges() || getCurrentId() === undefined)) {
         mustBlockButtons = true;
         updateOperationInProgress(true);
@@ -1391,8 +1399,10 @@ function Form(props: FormProps, ref: any) {
       }
       mustBlockButtons && updateOperationInProgress(false);
     } catch (err) {
-      mustBlockButtons && updateOperationInProgress(false);
+      updateOperationInProgress(false);
       showErrorNotification(err);
+    } finally {
+      formOperationInProgress.current = false;
     }
   }
 
