@@ -18,7 +18,6 @@ export const useOne2manyFormModal = ({
   relation,
   formView,
   context,
-  onAfterSubmit,
 }: {
   currentView: string;
   inv_field?: string;
@@ -31,7 +30,6 @@ export const useOne2manyFormModal = ({
   relation: string;
   formView?: FormView;
   context: any;
-  onAfterSubmit?: () => void;
 }) => {
   const [showFormModal, setShowFormModal] = useState<boolean>(false);
   const [modalItem, setModalItem] = useState<One2manyItem>();
@@ -98,13 +96,21 @@ export const useOne2manyFormModal = ({
           treeValues: { ...values, id },
         });
       } else if (id) {
+        const op = isExistingId(id) ? "pendingUpdate" : "pendingCreate";
         updatedItems = items.map((item: One2manyItem) => {
           if (item.id === id) {
-            return {
+            const mergedValues = { ...item.values, ...values, id };
+            const mergedTreeValues = {
+              ...(item.treeValues ?? item.values),
+              ...values,
               id,
-              operation: isExistingId(id) ? "pendingUpdate" : "pendingCreate",
-              values: { ...values, id },
-              treeValues: { ...values, id },
+            };
+            return {
+              ...item,
+              id,
+              operation: op,
+              values: mergedValues,
+              treeValues: mergedTreeValues,
             };
           }
           return item;
@@ -121,16 +127,11 @@ export const useOne2manyFormModal = ({
 
       triggerChange(updatedItems);
 
-      // Defer refresh to next tick to ensure state updates are complete
-      setTimeout(() => {
-        onAfterSubmit?.();
-      }, 0);
-
       if (!continuousEntryMode) {
         setShowFormModal(false);
       }
     },
-    [continuousEntryMode, items, triggerChange, onAfterSubmit],
+    [continuousEntryMode, items, triggerChange],
   );
 
   const openItemInFormModal = useDeepCompareCallback(

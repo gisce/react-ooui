@@ -81,6 +81,11 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     fetchValues: fetchParentFormValues,
   } = formContext || {};
   const formRef = useRef<any>();
+  const localMutationSeqRef = useRef(0);
+
+  const markLocalMutation = useCallback(() => {
+    localMutationSeqRef.current += 1;
+  }, []);
 
   const showToggleButton = views.size > 1;
   const showCreateButton = views.get("form")?.fields !== undefined;
@@ -143,6 +148,14 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     triggerChange,
   });
 
+  const triggerChangeWithLocalMutation = useCallback(
+    (changedValues: One2manyItem[]) => {
+      markLocalMutation();
+      triggerChange(changedValues);
+    },
+    [markLocalMutation, triggerChange],
+  );
+
   const {
     showFormModal,
     modalItem,
@@ -156,16 +169,13 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
     inv_field: ooui.inv_field,
     showFormChangesDialogIfNeeded,
     currentView,
-    triggerChange,
+    triggerChange: triggerChangeWithLocalMutation,
     items,
     setCurrentView,
     setItemIndex,
     context,
     relation,
     formView: views.get("form"),
-    onAfterSubmit: () => {
-      gridRef.current?.refresh();
-    },
   });
 
   const {
@@ -176,7 +186,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
   } = useOne2manySearchModal({
     showFormChangesDialogIfNeeded,
     currentView,
-    triggerChange,
+    triggerChange: triggerChangeWithLocalMutation,
     items,
     views,
     context,
@@ -186,10 +196,6 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
   const onSelectSearchValues = useCallback(
     async (ids: Array<number | string>) => {
       await onSelectSearchValuesBase(ids);
-      // Defer refresh to next tick to ensure modal transition is complete
-      setTimeout(() => {
-        gridRef.current?.refresh();
-      }, 0);
     },
     [onSelectSearchValuesBase],
   );
@@ -197,13 +203,10 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
   const { showRemoveConfirm } = useOne2manyRemove({
     isMany2many,
     items,
-    triggerChange,
+    triggerChange: triggerChangeWithLocalMutation,
     setFormHasChanges,
     selectedRowKeys,
     setSelectedRowKeys,
-    onAfterRemove: () => {
-      gridRef.current?.refresh();
-    },
   });
 
   const toggleViewMode = () => {
@@ -368,6 +371,7 @@ export const One2manyInput: React.FC<One2manyInputProps> = (
           }}
           treeType={treeType}
           onChangeTreeType={enableNewTable ? handleTreeTypeChange : undefined}
+          localMutationSeq={localMutationSeqRef.current}
         />
       )}
       {currentView === "form" && views.get("form") && (

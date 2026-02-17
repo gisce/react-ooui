@@ -71,7 +71,7 @@ export const useOne2manyTree = ({
       sortFields?: Record<string, SortDirection>;
     }) => {
       const order = getOrderFromSortFields(sortFields);
-      const { realItemsIds, otherItems } = getIdsToFetch({
+      const { realItemsIds, otherItems, idsToFetchSliced } = getIdsToFetch({
         allItems,
         ...(order ? {} : { range: { startRow, endRow } }),
       });
@@ -108,11 +108,18 @@ export const useOne2manyTree = ({
         status = fetchedData.status;
       }
 
-      const weCanAddOtherItems = realIdsToFetch.length < endRow - startRow;
-      const finalResultIds =
-        weCanAddOtherItems && otherItems.length > 0
-          ? [...realIdsToFetch, ...otherItems.map((item) => item.id!)]
-          : realIdsToFetch;
+      const getFinalResultIds = () => {
+        if (!order) {
+          return idsToFetchSliced;
+        }
+        const hasRoomForOtherItems =
+          realIdsToFetch.length < endRow - startRow && otherItems.length > 0;
+        if (hasRoomForOtherItems) {
+          return [...realIdsToFetch, ...otherItems.map((item) => item.id!)];
+        }
+        return realIdsToFetch;
+      };
+      const finalResultIds = getFinalResultIds();
 
       const results = await mergeWithOtherItems({
         finalResultIds,
