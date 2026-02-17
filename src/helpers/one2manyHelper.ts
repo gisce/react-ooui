@@ -264,32 +264,37 @@ const getIdsToFetch = ({
     endRow: number;
   };
 }) => {
-  const idsToFetch = allItems.map((item) => item.id) as number[];
+  const visibleItems = allItems.filter(
+    (item) => item.operation !== "pendingRemove",
+  );
 
-  // now slice the records with startRow and endRow if needed
+  const idsToFetch = visibleItems.map((item) => item.id) as number[];
+
   const idsToFetchSliced = range
     ? idsToFetch.slice(range.startRow, range.endRow)
     : idsToFetch;
 
-  // in this idsToFetchSliced we have the ids of the records that theoretically we have to fetch
-  // however, it's possible that these items have operation different than original,
-  // and we have to skip these items to being fetched, and passed later on to the callback as they were originally
+  const idsInPage = new Set(idsToFetchSliced);
+
   const realItemsIds = idsToFetchSliced.filter((id) => {
-    const item = allItems.find((item) => item.id === id);
+    const item = visibleItems.find((item) => item.id === id);
     return (
       item &&
       (item.operation === "original" || item.operation === "pendingLink") &&
-      isExistingId(id) // Skip negative/temporal IDs
+      isExistingId(id)
     );
   });
 
-  const otherItems = allItems.filter((item: One2manyItem) => {
+  const otherItems = visibleItems.filter((item: One2manyItem) => {
     return (
-      item && item.operation !== "original" && item.operation !== "pendingLink"
+      item &&
+      item.operation !== "original" &&
+      item.operation !== "pendingLink" &&
+      idsInPage.has(item.id as number)
     );
   });
 
-  return { realItemsIds, otherItems };
+  return { realItemsIds, otherItems, idsToFetchSliced };
 };
 
 const mergeWithOtherItems = async ({

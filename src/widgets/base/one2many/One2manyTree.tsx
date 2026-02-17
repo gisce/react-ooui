@@ -63,6 +63,7 @@ export type One2manyTreeProps = {
   showPointerCursorInRows?: boolean;
   treeType: TreeType;
   onChangeTreeType?: (type: TreeType) => void;
+  localMutationSeq?: number;
 };
 
 const DEFAULT_HEIGHT = 400;
@@ -100,6 +101,7 @@ export const One2manyTree = ({
   showPointerCursorInRows = true,
   treeType,
   onChangeTreeType,
+  localMutationSeq,
 }: One2manyTreeProps) => {
   const internalGridRef = useRef<InfiniteTableRef | PaginatedTableRef>(null);
   const tableRef: RefObject<InfiniteTableRef | PaginatedTableRef> =
@@ -110,6 +112,7 @@ export const One2manyTree = ({
 
   const prevItemsValue = useRef<One2manyItem[]>();
   const itemsRef = useRef<One2manyItem[]>(items);
+  const lastHandledMutationSeqRef = useRef(localMutationSeq ?? 0);
 
   // Shared state for both modes
   const [treeFirstVisibleRow, setTreeFirstVisibleRow] = useState<number>(0);
@@ -222,7 +225,6 @@ export const One2manyTree = ({
         endRow,
         sortFields,
       });
-
       // Update color and status refs
       if (colors) {
         colorsForResults.current = { ...colorsForResults.current, ...colors };
@@ -281,7 +283,6 @@ export const One2manyTree = ({
         endRow: items.length,
         sortFields,
       });
-
       // Update color and status refs for paginated mode too
       if (colors) {
         colorsForResults.current = { ...colorsForResults.current, ...colors };
@@ -325,42 +326,102 @@ export const One2manyTree = ({
   ]);
 
   useDeepCompareEffect(() => {
+    let isMounted = true;
+
     itemsRef.current = items;
     if (prevItemsValue.current === undefined) {
       prevItemsValue.current = items;
       return;
     }
 
-    // Find which item(s) changed
-    const changedItems = findChangedItems(items, prevItemsValue.current);
+    const prevItems = prevItemsValue.current;
     prevItemsValue.current = items;
+
+    const prevIds = new Set(prevItems.map((item) => item.id));
+    const currentIds = new Set(items.map((item) => item.id));
+
+    const newItems = items.filter((item) => !prevIds.has(item.id));
+    const removedIds = new Set(
+      prevItems
+        .filter((item) => !currentIds.has(item.id))
+        .map((item) => item.id),
+    );
+    const editedItems = findChangedItems(
+      items.filter((item) => prevIds.has(item.id)),
+      prevItems,
+    );
 
     clearAttributes();
 
-    if (changedItems.length > 0) {
+    if (editedItems.length > 0) {
       const transformLocally = async () => {
-        const changedItemsWithValues = changedItems
+        const editedItemsWithValues = editedItems
           .filter((item) => item.treeValues)
           .map((item) => item.treeValues);
 
-        if (changedItemsWithValues.length === 0) {
-          return;
-        }
+        if (editedItemsWithValues.length === 0) return;
 
         const transformed = await getTableItems(
           ooui,
-          changedItemsWithValues,
+          editedItemsWithValues,
           context,
           selectionToLazy,
         );
 
-        tableRef?.current?.updateRows(transformed);
+        if (isMounted) {
+          tableRef?.current?.updateRows(transformed);
+        }
       };
       transformLocally();
     }
 
+    if (newItems.length > 0) {
+      if (treeType === "paginated") {
+        const appendNewItems = async () => {
+          const newItemsWithValues = newItems
+            .filter((item) => item.treeValues)
+            .map((item) => item.treeValues);
+          if (newItemsWithValues.length === 0) return;
+          const transformed = await getTableItems(
+            ooui,
+            newItemsWithValues,
+            context,
+            selectionToLazy,
+          );
+          if (isMounted) {
+            setPaginatedResults((prev) => [...prev, ...transformed]);
+          }
+        };
+        appendNewItems();
+      } else {
+        tableRef?.current?.refresh();
+      }
+    }
+
+    if (removedIds.size > 0) {
+      if (treeType === "paginated") {
+        setPaginatedResults((prev) =>
+          prev.filter((r) => !removedIds.has(r.id)),
+        );
+      } else {
+        tableRef?.current?.refresh();
+      }
+    }
+
     tableRef?.current?.unselectAll();
-  }, [items, treeType, clearAttributes, tableRef, ooui, context]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    items,
+    treeType,
+    clearAttributes,
+    tableRef,
+    ooui,
+    context,
+    selectionToLazy,
+  ]);
 
   // Shared callbacks for both modes - stabilize all callbacks
   const onGetFirstVisibleRowIndex = useCallback(() => {
@@ -382,7 +443,6 @@ export const One2manyTree = ({
   const refresh = useCallback(() => {
     clearAttributes();
     if (treeType === "paginated") {
-      // Force a refresh of the table by changing the key, this will trigger a refresh of the table
       setRefreshKey((prev) => prev + 1);
     } else {
       tableRef?.current?.refresh();
@@ -431,14 +491,20 @@ export const One2manyTree = ({
   const onPaginatedRequestDataRef = useCallbackRef(onPaginatedRequestData);
 
   useDeepCompareEffect(() => {
-    if (treeType === "paginated") {
-      if (items.length > 0) {
-        onPaginatedRequestDataRef().then(setPaginatedResults);
-      } else {
-        setPaginatedResults([]);
-      }
+    if (treeType !== "paginated") return;
+
+    const currentSeq = localMutationSeq ?? 0;
+    if (currentSeq !== lastHandledMutationSeqRef.current) {
+      lastHandledMutationSeqRef.current = currentSeq;
+      return;
     }
-  }, [treeType, items]);
+
+    if (items.length > 0) {
+      onPaginatedRequestDataRef().then(setPaginatedResults);
+    } else {
+      setPaginatedResults([]);
+    }
+  }, [treeType, items, localMutationSeq]);
 
   // Results based on tree type
   const results = useMemo(() => {
