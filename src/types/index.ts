@@ -57,9 +57,15 @@ export type TreeView = BaseView & {
   fields_in_conditions?: FieldsInConditions;
 };
 
+export type ObjectProps = {
+  without_attachments?: boolean;
+  without_comments?: boolean;
+};
+
 type FormView = TreeView & {
   search_fields?: SearchFields;
   toolbar?: any;
+  object_props?: ObjectProps;
 };
 
 export type DashboardView = BaseViewExtra & {
