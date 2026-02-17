@@ -151,6 +151,7 @@ function Form(props: FormProps, ref: any) {
   const [containerWidth, setContainerWidth] = useState<any>();
   const [defaultGetCalled, setDefaultGetCalled] = useState<boolean>(false);
   const [refreshCounter, setRefreshCounter] = useState<number>(0);
+  const [operationInProgress, setOperationInProgress] = useState(false);
 
   const createdId = useRef<number | string>();
   const originalFormValues = useRef<any>({});
@@ -159,6 +160,7 @@ function Form(props: FormProps, ref: any) {
   const defaultGetValues = useRef<any>({});
   const warningIsShown = useRef<boolean>(false);
   const formSubmitting = useRef<boolean>(false);
+  const formOperationInProgress = useRef<boolean>(false);
   const x2manyPendingLink = useRef<boolean>(false);
 
   const widthToEvaluate =
@@ -840,6 +842,10 @@ function Form(props: FormProps, ref: any) {
   };
 
   const submitForm = async (options?: { callOnSubmitSucceed?: boolean }) => {
+    if (formSubmitting.current) {
+      return { succeed: false, id: getCurrentId()! };
+    }
+
     let submitSucceed = false;
     const { callOnSubmitSucceed = true } = options || {};
     formSubmitting.current = true;
@@ -1346,28 +1352,29 @@ function Form(props: FormProps, ref: any) {
     action: string;
     context?: any;
   }) {
-    // If the type of the button it's a cancel, we just close our form
     if (type === "cancel") {
       onCancel?.();
       return;
     }
 
-    // We check for required fields
-    if (await checkIfFormHasErrors()) {
-      showErrorNotification({
-        type: "error",
-        title: t("formHasErrors"),
-        body: t("fillRequiredFields"),
-      });
+    if (formOperationInProgress.current) {
       return;
     }
-
-    let mustBlockButtons = false;
+    formOperationInProgress.current = true;
+    setOperationInProgress(true);
+    updateOperationInProgress(true);
 
     try {
+      if (await checkIfFormHasErrors()) {
+        showErrorNotification({
+          type: "error",
+          title: t("formHasErrors"),
+          body: t("fillRequiredFields"),
+        });
+        return;
+      }
+
       if (!readOnly && (formHasChanges() || getCurrentId() === undefined)) {
-        mustBlockButtons = true;
-        updateOperationInProgress(true);
         if (submitMode === "2many") {
           await submitApi({ callOnSubmitSucceed: false });
           x2manyPendingLink.current = true;
@@ -1389,10 +1396,12 @@ function Form(props: FormProps, ref: any) {
       } else if (type === "action") {
         await runActionButton({ action, context: updatedContext });
       }
-      mustBlockButtons && updateOperationInProgress(false);
     } catch (err) {
-      mustBlockButtons && updateOperationInProgress(false);
       showErrorNotification(err);
+    } finally {
+      updateOperationInProgress(false);
+      setOperationInProgress(false);
+      formOperationInProgress.current = false;
     }
   }
 
@@ -1435,6 +1444,7 @@ function Form(props: FormProps, ref: any) {
           clearFieldMessage={clearFieldMessage}
           clearAllFieldMessages={clearAllFieldMessages}
           refreshCounter={refreshCounter}
+          operationInProgress={operationInProgress}
         >
           <AntForm
             form={antForm}
