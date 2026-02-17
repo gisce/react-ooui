@@ -57,8 +57,12 @@ export const One2manyForm = forwardRef(
                   item.operation === "original"
                     ? "pendingUpdate"
                     : item.operation,
-                values: { ...values, id: currentItemId },
-                treeValues: { ...values, id: currentItemId },
+                values: { ...item.values, ...values, id: currentItemId },
+                treeValues: {
+                  ...(item.treeValues ?? item.values),
+                  ...values,
+                  id: currentItemId,
+                },
               };
             }
             return item;

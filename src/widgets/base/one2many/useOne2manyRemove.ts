@@ -17,7 +17,6 @@ export const useOne2manyRemove = ({
   setFormHasChanges,
   selectedRowKeys,
   setSelectedRowKeys,
-  onAfterRemove,
 }: {
   isMany2many: boolean;
   triggerChange: (items: One2manyItem[]) => void;
@@ -25,7 +24,6 @@ export const useOne2manyRemove = ({
   setFormHasChanges: (hasChanges: boolean) => void;
   selectedRowKeys: Array<number | string>;
   setSelectedRowKeys: (selectedRowKeys: Array<number | string>) => void;
-  onAfterRemove?: () => void;
 }) => {
   const { t } = useLocale();
   const { currentView, itemIndex, setItemIndex } = useContext(
@@ -66,10 +64,6 @@ export const useOne2manyRemove = ({
         });
       triggerChange(updatedItems);
       setSelectedRowKeys([]);
-      // Defer refresh to next tick to ensure state updates are complete
-      setTimeout(() => {
-        onAfterRemove?.();
-      }, 0);
     } catch (err) {
       showErrorNotification(err);
     }
@@ -83,7 +77,6 @@ export const useOne2manyRemove = ({
     setSelectedRowKeys,
     triggerChange,
     showErrorNotification,
-    onAfterRemove,
   ]);
 
   const removeCurrentItem = useCallback(async () => {
@@ -105,10 +98,6 @@ export const useOne2manyRemove = ({
       } else {
         triggerChange(items.filter((item) => item.id !== items[itemIndex].id!));
       }
-      // Defer refresh to next tick to ensure state updates are complete
-      setTimeout(() => {
-        onAfterRemove?.();
-      }, 0);
     } catch (err) {
       showErrorNotification(err);
     }
@@ -121,7 +110,6 @@ export const useOne2manyRemove = ({
     setItemIndex,
     triggerChange,
     showErrorNotification,
-    onAfterRemove,
   ]);
 
   const onOk = useCallback(async () => {
