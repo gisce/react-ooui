@@ -151,6 +151,7 @@ function Form(props: FormProps, ref: any) {
   const [containerWidth, setContainerWidth] = useState<any>();
   const [defaultGetCalled, setDefaultGetCalled] = useState<boolean>(false);
   const [refreshCounter, setRefreshCounter] = useState<number>(0);
+  const [operationInProgress, setOperationInProgress] = useState(false);
 
   const createdId = useRef<number | string>();
   const originalFormValues = useRef<any>({});
@@ -1360,6 +1361,8 @@ function Form(props: FormProps, ref: any) {
       return;
     }
     formOperationInProgress.current = true;
+    setOperationInProgress(true);
+    updateOperationInProgress(true);
 
     try {
       if (await checkIfFormHasErrors()) {
@@ -1371,11 +1374,7 @@ function Form(props: FormProps, ref: any) {
         return;
       }
 
-      let mustBlockButtons = false;
-
       if (!readOnly && (formHasChanges() || getCurrentId() === undefined)) {
-        mustBlockButtons = true;
-        updateOperationInProgress(true);
         if (submitMode === "2many") {
           await submitApi({ callOnSubmitSucceed: false });
           x2manyPendingLink.current = true;
@@ -1397,11 +1396,11 @@ function Form(props: FormProps, ref: any) {
       } else if (type === "action") {
         await runActionButton({ action, context: updatedContext });
       }
-      mustBlockButtons && updateOperationInProgress(false);
     } catch (err) {
-      updateOperationInProgress(false);
       showErrorNotification(err);
     } finally {
+      updateOperationInProgress(false);
+      setOperationInProgress(false);
       formOperationInProgress.current = false;
     }
   }
@@ -1445,6 +1444,7 @@ function Form(props: FormProps, ref: any) {
           clearFieldMessage={clearFieldMessage}
           clearAllFieldMessages={clearAllFieldMessages}
           refreshCounter={refreshCounter}
+          operationInProgress={operationInProgress}
         >
           <AntForm
             form={antForm}

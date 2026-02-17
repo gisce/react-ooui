@@ -39,7 +39,8 @@ export type FormContextType = {
   getFieldMessageType: (field: string) => FieldMessageType | undefined;
   clearFieldMessage: (field: string) => void;
   clearAllFieldMessages: () => void;
-  refreshCounter?: number; // Added to track form refreshes
+  refreshCounter?: number;
+  operationInProgress?: boolean;
 };
 
 export const FormContext = React.createContext<FormContextType | null>(null);
@@ -74,6 +75,7 @@ const FormProvider = (props: FormProviderProps): any => {
     clearFieldMessage,
     clearAllFieldMessages,
     refreshCounter,
+    operationInProgress,
   } = props;
 
   return (
@@ -102,6 +104,7 @@ const FormProvider = (props: FormProviderProps): any => {
         clearFieldMessage,
         clearAllFieldMessages,
         refreshCounter,
+        operationInProgress,
       }}
     >
       {children}

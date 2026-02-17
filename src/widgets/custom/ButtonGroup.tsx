@@ -41,7 +41,7 @@ export const ButtonGroup = (props: ButtonGroupProps) => {
     readOnly,
   } = defaultButton || {};
   const formContext = useContext(FormContext) as FormContextType;
-  const { executeButtonAction } = formContext || {};
+  const { executeButtonAction, operationInProgress } = formContext || {};
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const { t } = useLocale();
 
@@ -82,7 +82,7 @@ export const ButtonGroup = (props: ButtonGroupProps) => {
     return (
       <Field ooui={new FieldOoui({ ...{ defaultButton } })}>
         <Dropdown.Button
-          disabled={!activated || readOnly}
+          disabled={!activated || readOnly || operationInProgress}
           onClick={onClick}
           icon={<DownOutlined />}
           type={primary ? "primary" : undefined}
@@ -120,6 +120,8 @@ const ButtonItem = (props: ButtonItemProps) => {
     danger,
   } = button;
   const [isRunning, setIsRunning] = useState<boolean>(false);
+  const buttonFormContext = useContext(FormContext) as FormContextType;
+  const { operationInProgress } = buttonFormContext || {};
 
   async function onClick_confirm() {
     setIsRunning(true);
@@ -154,7 +156,7 @@ const ButtonItem = (props: ButtonItemProps) => {
   return (
     <Menu.Item
       key={`menuitem-${caption}`}
-      disabled={!activated || readOnly}
+      disabled={!activated || readOnly || operationInProgress}
       onClick={onClick}
       icon={getButtonIcon()}
       danger={danger}
