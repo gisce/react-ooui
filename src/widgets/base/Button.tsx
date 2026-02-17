@@ -24,7 +24,7 @@ export const Button = (props: Props) => {
     readOnly,
   } = ooui;
   const formContext = useContext(FormContext) as FormContextType;
-  const { executeButtonAction } = formContext || {};
+  const { executeButtonAction, operationInProgress } = formContext || {};
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const { t } = useLocale();
 
@@ -58,7 +58,7 @@ export const Button = (props: Props) => {
     <Field ooui={ooui}>
       <AntButton
         block
-        disabled={!activated || readOnly || isRunning}
+        disabled={!activated || readOnly || isRunning || operationInProgress}
         onClick={onClick}
         icon={getButtonIcon()}
         type={ooui.primary ? "primary" : "default"}
